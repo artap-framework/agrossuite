@@ -215,7 +215,7 @@ macx-g++|macx-g++42 {
     LIBS += -lblas
 }
 
-win32-msvc2008 {
+win32-msvc2010 {
     DEFINES += "finite=_finite"
     DEFINES += "popen=_popen"
 

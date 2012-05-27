@@ -134,7 +134,7 @@ linux-g++|linux-g++-64|linux-g++-32 {
     LIBS += $$system(python -c "\"import distutils.sysconfig; print distutils.sysconfig.get_config_var('LOCALMODLIBS')\"")
 }
 
-win32-msvc2008 {
+win32-msvc2010 {
     DEFINES += WIN32
     DEFINES += IMPLEMENT_C99
     DEFINES += "finite=_finite"
