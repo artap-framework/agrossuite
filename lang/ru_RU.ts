@@ -6,57 +6,57 @@
     <message>
         <location filename="../src/gui.cpp" line="686"/>
         <source>About...</source>
-        <translation type="unfinished"></translation>
+        <translation>О программе ...</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="702"/>
         <source>Agros2D</source>
-        <translation type="unfinished"></translation>
+        <translation>Agros2D</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="703"/>
         <source>Hermes2D</source>
-        <translation type="unfinished"></translation>
+        <translation>Hermes2D</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="704"/>
         <source>Libraries</source>
-        <translation type="unfinished"></translation>
+        <translation>Библиотека</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="705"/>
         <source>License</source>
-        <translation type="unfinished"></translation>
+        <translation>Лицензия</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="707"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="708"/>
         <source>Check version</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверить версию</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="728"/>
         <source>&lt;h3&gt;Agros2D %1&lt;/h3&gt;Agros2D is a multiplatform multiphysics application for the solution of partial differential equations (PDE) based on the &lt;a href=&quot;http://hpfem.org/hermes/&quot;&gt;Hermes&lt;/a&gt; library using higher order finite element method (&lt;i&gt;hp&lt;/i&gt;-FEM) with automatic adaptivity.&lt;br/&gt;&lt;br/&gt;Web page: &lt;a href=&quot;http://agros2d.org/&quot;&gt;http://agros2d.org/&lt;/a&gt;&lt;br/&gt;Facebook: &lt;a href=&quot;http://www.facebook.com/pages/Agros2D/132524130149770?sk=info&quot;&gt;http://www.facebook.com/pages/Agros2D/...&lt;/a&gt;&lt;br/&gt;Discussion: &lt;a href=&quot;http://groups.google.com/group/agros2d/&quot;&gt;http://groups.google.com/group/agros2d/&lt;/a&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Authors:&lt;/b&gt;&lt;p&gt;&lt;b&gt;Pavel Karban&lt;/b&gt; - main developer (University of West Bohemia, Pilsen))&lt;br/&gt;&lt;b&gt;FrantiÅ¡ek Mach&lt;/b&gt; - developer, documentation (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Pavel KÅ¯s&lt;/b&gt; - developer (Institute of Thermomechanics ASCR, Prague)&lt;br/&gt;&lt;b&gt;David PÃ¡nek&lt;/b&gt; - developer (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;LukÃ¡Å¡ Koudela&lt;/b&gt; - developer - RF module (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Bartosz Sawicki&lt;/b&gt; - Polish translation (Warsaw University of Technology, Warsaw)&lt;br/&gt;&lt;b&gt;VÃ¡clav Kotlan&lt;/b&gt; - German translation (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Petr KropÃ­k&lt;/b&gt; - University of West Bohemia, Pilsen&lt;br/&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Agros2D %1&lt;/h3&gt;Agros2D is a multiplatform multiphysics application for the solution of partial differential equations (PDE) based on the &lt;a href=&quot;http://hpfem.org/hermes/&quot;&gt;Hermes&lt;/a&gt; library using higher order finite element method (&lt;i&gt;hp&lt;/i&gt;-FEM) with automatic adaptivity.&lt;br/&gt;&lt;br/&gt;Web page: &lt;a href=&quot;http://agros2d.org/&quot;&gt;http://agros2d.org/&lt;/a&gt;&lt;br/&gt;Facebook: &lt;a href=&quot;http://www.facebook.com/pages/Agros2D/132524130149770?sk=info&quot;&gt;http://www.facebook.com/pages/Agros2D/...&lt;/a&gt;&lt;br/&gt;Discussion: &lt;a href=&quot;http://groups.google.com/group/agros2d/&quot;&gt;http://groups.google.com/group/agros2d/&lt;/a&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Authors:&lt;/b&gt;&lt;p&gt;&lt;b&gt;Pavel Karban&lt;/b&gt; - main developer (University of West Bohemia, Pilsen))&lt;br/&gt;&lt;b&gt;František Mach&lt;/b&gt; - developer, documentation (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Pavel Kůs&lt;/b&gt; - developer (Institute of Thermomechanics ASCR, Prague)&lt;br/&gt;&lt;b&gt;David Pánek&lt;/b&gt; - developer (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Lukáš Koudela&lt;/b&gt; - developer - RF module (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Bartosz Sawicki&lt;/b&gt; - Polish translation (Warsaw University of Technology, Warsaw)&lt;br/&gt;&lt;b&gt;Václav Kotlan&lt;/b&gt; - German translation (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Petr Kropí­k&lt;/b&gt; - University of West Bohemia, Pilsen&lt;br/&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="770"/>
         <source>&lt;h3&gt;Hermes&lt;/h3&gt;Web page: &lt;a href=&quot;http://hpfem.org/hermes/&quot;&gt;http://hpfem.org/hermes/&lt;/a&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Authors (Hermes2D):&lt;/b&gt;&lt;p&gt;&lt;b&gt;Pavel Solin&lt;/b&gt; (project leader, University of Nevada, Reno)&lt;br/&gt;&lt;b&gt;Martin Zitka&lt;/b&gt; (formerly University of Texas at El Paso)&lt;br/&gt;&lt;b&gt;Tomas Vejchodsky&lt;/b&gt; (Academy of Sciences of the Czech Republic, Prague)&lt;br/&gt;&lt;b&gt;Svatava Vyvialova&lt;/b&gt; (formerly University of Texas at El Paso)&lt;br/&gt;&lt;b&gt;Jakub Cerveny&lt;/b&gt; (formerly University of Texas at El Paso)&lt;br/&gt;&lt;b&gt;Lenka Dubcova&lt;/b&gt; (Academy of Sciences of the Czech Republic, Prague)&lt;br/&gt;&lt;b&gt;Ondrej Certik&lt;/b&gt; (University of Nevada, Reno)&lt;br/&gt;&lt;b&gt;Robert Cimrman&lt;/b&gt; (New Technologies Research Centre, Pilsen)&lt;br/&gt;&lt;b&gt;Ivo Hanak&lt;/b&gt; (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;David Andrs&lt;/b&gt; (formerly University of Nevada, Reno)&lt;br/&gt;&lt;b&gt;Pavel Karban&lt;/b&gt; (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Frantisek Mach&lt;/b&gt; (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Sameer Regmi&lt;/b&gt; (University of Nevada, Reno)&lt;br/&gt;&lt;b&gt;David Puga&lt;/b&gt;l (University of Nevada, Reno)&lt;br/&gt;&lt;b&gt;Ma Zhonghua&lt;/b&gt; (China University of Petroleum, Beijing)&lt;br/&gt;&lt;b&gt;Milan Hanus&lt;/b&gt; (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Damien Lebrun-Grandie&lt;/b&gt; (Texas A&amp;M University)&lt;br/&gt;&lt;b&gt;Lukas Korous&lt;/b&gt; (Charles University, Prague)&lt;br/&gt;&lt;b&gt;Valmor de Almeida&lt;/b&gt; (Oak Ridge National Laboratory, Oak Ridge)&lt;br/&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Hermes&lt;/h3&gt;Web page: &lt;a href=&quot;http://hpfem.org/hermes/&quot;&gt;http://hpfem.org/hermes/&lt;/a&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Authors (Hermes2D):&lt;/b&gt;&lt;p&gt;&lt;b&gt;Pavel Solin&lt;/b&gt; (project leader, University of Nevada, Reno)&lt;br/&gt;&lt;b&gt;Martin Zitka&lt;/b&gt; (formerly University of Texas at El Paso)&lt;br/&gt;&lt;b&gt;Tomas Vejchodsky&lt;/b&gt; (Academy of Sciences of the Czech Republic, Prague)&lt;br/&gt;&lt;b&gt;Svatava Vyvialova&lt;/b&gt; (formerly University of Texas at El Paso)&lt;br/&gt;&lt;b&gt;Jakub Cerveny&lt;/b&gt; (formerly University of Texas at El Paso)&lt;br/&gt;&lt;b&gt;Lenka Dubcova&lt;/b&gt; (Academy of Sciences of the Czech Republic, Prague)&lt;br/&gt;&lt;b&gt;Ondrej Certik&lt;/b&gt; (University of Nevada, Reno)&lt;br/&gt;&lt;b&gt;Robert Cimrman&lt;/b&gt; (New Technologies Research Centre, Pilsen)&lt;br/&gt;&lt;b&gt;Ivo Hanak&lt;/b&gt; (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;David Andrs&lt;/b&gt; (formerly University of Nevada, Reno)&lt;br/&gt;&lt;b&gt;Pavel Karban&lt;/b&gt; (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Frantisek Mach&lt;/b&gt; (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Sameer Regmi&lt;/b&gt; (University of Nevada, Reno)&lt;br/&gt;&lt;b&gt;David Puga&lt;/b&gt;l (University of Nevada, Reno)&lt;br/&gt;&lt;b&gt;Ma Zhonghua&lt;/b&gt; (China University of Petroleum, Beijing)&lt;br/&gt;&lt;b&gt;Milan Hanus&lt;/b&gt; (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Damien Lebrun-Grandie&lt;/b&gt; (Texas A&amp;M University)&lt;br/&gt;&lt;b&gt;Lukas Korous&lt;/b&gt; (Charles University, Prague)&lt;br/&gt;&lt;b&gt;Valmor de Almeida&lt;/b&gt; (Oak Ridge National Laboratory, Oak Ridge)&lt;br/&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="810"/>
         <source>&lt;h3&gt;Libraries&lt;/h3&gt;&lt;b&gt;Nokia Qt:&lt;/b&gt; Nokia Qt (&lt;a href=&quot;http://qt.nokia.com/&quot;&gt;Qt - A cross-platform framework&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Qwt:&lt;/b&gt; Qwt (&lt;a href=&quot;http://qwt.sourceforge.net/&quot;&gt;Qt Widgets for Technical Applications&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Python:&lt;/b&gt; Python Programming Language (&lt;a href=&quot;http://www.python.org&quot;&gt;Python&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;dxflib:&lt;/b&gt; Andrew Mustun (&lt;a href=&quot;http://www.ribbonsoft.com/dxflib.html&quot;&gt;RibbonSoft&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Triangle:&lt;/b&gt; Jonathan Richard Shewchuk (&lt;a href=&quot;http://www.cs.cmu.edu/~quake/triangle.html&quot;&gt;Triangle&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;FFmpeg:&lt;/b&gt; FFmpeg group (&lt;a href=&quot;http://ffmpeg.org/&quot;&gt;FFmpeg&lt;/a&gt;)&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Libraries&lt;/h3&gt;&lt;b&gt;Nokia Qt:&lt;/b&gt; Nokia Qt (&lt;a href=&quot;http://qt.nokia.com/&quot;&gt;Qt - A cross-platform framework&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Qwt:&lt;/b&gt; Qwt (&lt;a href=&quot;http://qwt.sourceforge.net/&quot;&gt;Qt Widgets for Technical Applications&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Python:&lt;/b&gt; Python Programming Language (&lt;a href=&quot;http://www.python.org&quot;&gt;Python&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;dxflib:&lt;/b&gt; Andrew Mustun (&lt;a href=&quot;http://www.ribbonsoft.com/dxflib.html&quot;&gt;RibbonSoft&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Triangle:&lt;/b&gt; Jonathan Richard Shewchuk (&lt;a href=&quot;http://www.cs.cmu.edu/~quake/triangle.html&quot;&gt;Triangle&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;FFmpeg:&lt;/b&gt; FFmpeg group (&lt;a href=&quot;http://ffmpeg.org/&quot;&gt;FFmpeg&lt;/a&gt;)&lt;br/&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="833"/>
         <source>&lt;h3&gt;License:&lt;/h3&gt;&lt;p&gt;Agros2D is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or (at your option) any later version.&lt;/p&gt;&lt;p&gt;Agros2D is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;/p&gt;&lt;p&gt;You should have received a copy of the GNU General Public License along with Agros2D. If not, see &lt;a href=&quot;http://www.gnu.org/licenses/&quot;&gt;http://www.gnu.org/licenses/&lt;/a&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;License:&lt;/h3&gt;&lt;p&gt;Agros2D is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or (at your option) any later version.&lt;/p&gt;&lt;p&gt;Agros2D is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;/p&gt;&lt;p&gt;You should have received a copy of the GNU General Public License along with Agros2D. If not, see &lt;a href=&quot;http://www.gnu.org/licenses/&quot;&gt;http://www.gnu.org/licenses/&lt;/a&gt;.</translation>
     </message>
 </context>
 <context>
@@ -64,12 +64,12 @@
     <message>
         <location filename="../src/gui.cpp" line="187"/>
         <source>Export image to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт изображения в файл</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="187"/>
         <source>PNG files (*.png)</source>
-        <translation type="unfinished"></translation>
+        <translation>PNG файлы (*.png)</translation>
     </message>
 </context>
 <context>
@@ -78,127 +78,127 @@
         <location filename="../src/chartdialog.cpp" line="77"/>
         <location filename="../src/chartdialog.cpp" line="345"/>
         <source>Chart</source>
-        <translation type="unfinished"></translation>
+        <translation>График</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="164"/>
         <source>Plot</source>
-        <translation type="unfinished"></translation>
+        <translation>Чертить, наносить</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="168"/>
         <source>Save image</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить изображение</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="172"/>
         <source>Export</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="198"/>
         <source>Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Начало</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="208"/>
         <source>End</source>
-        <translation type="unfinished"></translation>
+        <translation>Конец</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="219"/>
         <source>Angle</source>
-        <translation type="unfinished"></translation>
+        <translation>Угол</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="223"/>
         <source>Length</source>
-        <translation type="unfinished"></translation>
+        <translation>Длина</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="242"/>
         <source>Horizontal axis</source>
-        <translation type="unfinished"></translation>
+        <translation>Горизонтальная ось</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="250"/>
         <source>Reverse</source>
-        <translation type="unfinished"></translation>
+        <translation>Противоположное направление</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="258"/>
         <source>Points:</source>
-        <translation type="unfinished"></translation>
+        <translation>Количество точек:</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="261"/>
         <source>Time step:</source>
-        <translation type="unfinished"></translation>
+        <translation>Отрезок времени:</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="264"/>
         <source>Points and time step</source>
-        <translation type="unfinished"></translation>
+        <translation>Точка и отрезок времени</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="279"/>
         <source>Point</source>
-        <translation type="unfinished"></translation>
+        <translation>Точка</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="292"/>
         <source>Variable:</source>
-        <translation type="unfinished"></translation>
+        <translation>Величина:</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="293"/>
         <source>Component:</source>
-        <translation type="unfinished"></translation>
+        <translation>Компонент:</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="330"/>
         <source>Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Геометрия</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="331"/>
         <source>Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Время</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="346"/>
         <source>Table</source>
-        <translation type="unfinished"></translation>
+        <translation>Таблица</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="406"/>
         <source>Length (m)</source>
-        <translation type="unfinished"></translation>
+        <translation>Длина (m)</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="516"/>
         <source>Time (s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Время (s)</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="576"/>
         <source>Scalar</source>
-        <translation type="unfinished"></translation>
+        <translation>Скаляр</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="580"/>
         <source>Magnitude</source>
-        <translation type="unfinished"></translation>
+        <translation>Модуль</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="613"/>
         <source>Export data to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт данных в файл</translation>
     </message>
     <message>
         <location filename="../src/chartdialog.cpp" line="613"/>
         <source>CSV files (*.csv);;Matlab/Octave script (*.m)</source>
-        <translation type="unfinished"></translation>
+        <translation>Файлы CSV (*.csv);;Matlab/Octave скрипты (*.m)</translation>
     </message>
 </context>
 <context>
@@ -208,22 +208,22 @@
         <location filename="../src/util.cpp" line="1842"/>
         <location filename="../src/util.cpp" line="1846"/>
         <source>New version</source>
-        <translation type="unfinished"></translation>
+        <translation>Новая версия</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1827"/>
         <source>File is corrupted or network is disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл поврежден или не подключен к сети.</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1834"/>
         <source>&lt;b&gt;New version available.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Actual version: %1&lt;br/&gt;New version: %2&lt;br/&gt;&lt;br/&gt;URL: &lt;a href=&quot;%3&quot;&gt;%3&lt;/a&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Новая версия приложения.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Текущая версия: %1&lt;br/&gt;Новая версия: %2&lt;br/&gt;&lt;br/&gt;URL: &lt;a href=&quot;%3&quot;&gt;%3&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1846"/>
         <source>You are using actual version.</source>
-        <translation type="unfinished"></translation>
+        <translation>Использование текущей версии.</translation>
     </message>
 </context>
 <context>
@@ -231,357 +231,357 @@
     <message>
         <location filename="../src/configdialog.cpp" line="33"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройка</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="131"/>
         <source>Language change</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменение языка</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="132"/>
         <source>Interface language has been changed. You must restart the application.</source>
-        <translation type="unfinished"></translation>
+        <translation>Был изменён язык. Теперь вы должны перезапустить приложение.</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="238"/>
         <source>Main</source>
-        <translation type="unfinished"></translation>
+        <translation>Основной</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="243"/>
         <location filename="../src/configdialog.cpp" line="382"/>
         <source>Solver</source>
-        <translation type="unfinished"></translation>
+        <translation>Pешающее устройство</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="248"/>
         <location filename="../src/configdialog.cpp" line="554"/>
         <source>Colors</source>
-        <translation type="unfinished"></translation>
+        <translation>Цвета</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="253"/>
         <source>Python</source>
-        <translation type="unfinished"></translation>
+        <translation>Python</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="298"/>
         <source>UI:</source>
-        <translation type="unfinished"></translation>
+        <translation>UI:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="300"/>
         <source>Language:</source>
-        <translation type="unfinished"></translation>
+        <translation>Язык:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="302"/>
         <source>Default physic field:</source>
-        <translation type="unfinished"></translation>
+        <translation>Исходное физич поле:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="305"/>
         <location filename="../src/configdialog.cpp" line="494"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Генеральный</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="312"/>
         <source>Collaboration server URL:</source>
-        <translation type="unfinished"></translation>
+        <translation>Адреса сервера для сотрудничества:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="315"/>
         <source>Collaboration</source>
-        <translation type="unfinished"></translation>
+        <translation>Cотрудничество</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="319"/>
         <source>Enabled application log</source>
-        <translation type="unfinished"></translation>
+        <translation>Позволить запись приложений</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="320"/>
         <source>Enabled progress log</source>
-        <translation type="unfinished"></translation>
+        <translation>Позволить запись в процессе решения</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="323"/>
         <source>Clear application log</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить запись приложения</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="334"/>
         <source>Logs</source>
-        <translation type="unfinished"></translation>
+        <translation>Записи</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="338"/>
         <source>Show value result in line edit input</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать результаты в текстовых полях</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="339"/>
         <source>Check new version during startup.</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверить наличие новой версии при запуске.</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="340"/>
         <source>Enable experimental features</source>
-        <translation type="unfinished"></translation>
+        <translation>Позволить экспериментальные функции</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="341"/>
         <source>Warning: Agros2D should be unstable!</source>
-        <translation type="unfinished"></translation>
+        <translation>Внимание: Agros2D может быть нестабильной!</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="348"/>
         <source>Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Другое</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="369"/>
         <source>Delete files with initial mesh (Triangle)</source>
-        <translation type="unfinished"></translation>
+        <translation>Удаление файлов с исходной сетки (Треугольник)</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="370"/>
         <source>Delete files with solution mesh (Hermes2D)</source>
-        <translation type="unfinished"></translation>
+        <translation>Удаление файлов с компьютерными сетями (Hermes2D)</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="372"/>
         <source>Save problem with solution</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить проблемы с решением</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="373"/>
         <source>Show convergence chart after solving</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать график сближения после решения</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="388"/>
         <source>Curvilinear elements</source>
-        <translation type="unfinished"></translation>
+        <translation>Криволинейные элементы</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="391"/>
         <source>Angle segments count:</source>
-        <translation type="unfinished"></translation>
+        <translation>Количество сигментов угла:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="395"/>
         <source>Mesh</source>
-        <translation type="unfinished"></translation>
+        <translation>Сеть</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="407"/>
         <source>Maximum number of DOFs:</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное количество DOFs:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="420"/>
         <source>&lt;b&gt;&lt;/b&gt;default value is 1.0, this parameter influences&lt;br/&gt;the selection of candidates in hp-adaptivity</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;&lt;/b&gt; Начальное начение - 1.0, этот параметр влияет &lt;br/&gt;на отбор кандидатов hp-адаптивность</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="422"/>
         <source>&lt;b&gt;&lt;/b&gt;quantitative parameter of the adapt(...) function&lt;br/&gt;with different meanings for various adaptive strategies</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;&lt;/b&gt;количественный параметр адаптивной функции&lt;br/&gt;с различными значениями для различных адаптационных стратегий</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="424"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
+        <translation>0</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="425"/>
         <source>1</source>
-        <translation type="unfinished"></translation>
+        <translation>1</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="426"/>
         <source>2</source>
-        <translation type="unfinished"></translation>
+        <translation>2</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="427"/>
         <source>&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;0&lt;/b&gt;&lt;/td&gt;&lt;td&gt;refine elements until sqrt(&lt;b&gt;threshold&lt;/b&gt;)&lt;br/&gt;times total error is processed.&lt;br/&gt;If more elements have similar errors,&lt;br/&gt;refine all to keep the mesh symmetric&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;refine all elements&lt;br/&gt;whose error is larger than &lt;b&gt;threshold&lt;/b&gt;&lt;br/&gt;times maximum element error&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;2&lt;/b&gt;&lt;/td&gt;&lt;td&gt;refine all elements&lt;br/&gt;whose error is larger than &lt;b&gt;threshold&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;0&lt;/b&gt;&lt;/td&gt;&lt;td&gt;уточнить элементы, если ошибка меньше квадратичное отклонение от(&lt;b&gt;порога &lt;/b&gt;)&lt;br/&gt;умноженный на общую ошибку.&lt;br/&gt; Если несколько элементов ту же ошибку, все производителя&lt;br/&gt;уточнения для поддержания симметрии сеть&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;уточнить все элементы, которые производителя&lt;br/&gt;ошибка превышает пороговое значение&lt;b&gt;&lt;/b&gt;&lt;br/&gt;умноженное на максимальную ошибку в элементе&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;2 &lt;/b&gt;&lt;/td&gt;&lt;td&gt;производителя совершенствовать все элементы&lt;br/&gt;с точностью большей, чем&lt;b&gt;порог&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="433"/>
         <source>arbitrary level hang. nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Промзвольный уровень висящих узлов</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="434"/>
         <source>at most one-level hang. nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>не более одного уровня висящих узлов</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="435"/>
         <source>at most two-level hang. nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>не более двух уровней висящих узлов</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="436"/>
         <source>at most three-level hang. nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>не более трёх уровней висящих узлов</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="437"/>
         <source>at most four-level hang. nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>не более четырёх уровней висящих узлов</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="438"/>
         <source>at most five-level hang. nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>не более пяти уровней висящих узлов</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="446"/>
         <location filename="../src/configdialog.cpp" line="479"/>
         <location filename="../src/configdialog.cpp" line="551"/>
         <source>Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Дефолт</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="452"/>
         <source>Conv. exp.:</source>
-        <translation type="unfinished"></translation>
+        <translation>Конвертировать эксп.:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="455"/>
         <source>Strategy:</source>
-        <translation type="unfinished"></translation>
+        <translation>Страгедия:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="458"/>
         <source>Threshold:</source>
-        <translation type="unfinished"></translation>
+        <translation>Порог:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="461"/>
         <source>Mesh regularity:</source>
-        <translation type="unfinished"></translation>
+        <translation>Регулярность сети:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="463"/>
         <source>Norm:</source>
-        <translation type="unfinished"></translation>
+        <translation>Норма:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="483"/>
         <source>Triangle</source>
-        <translation type="unfinished"></translation>
+        <translation>Треугольник</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="485"/>
         <source>FFmpeg</source>
-        <translation type="unfinished"></translation>
+        <translation>FFmpeg</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="495"/>
         <source>Adaptivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивность</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="496"/>
         <source>Commands</source>
-        <translation type="unfinished"></translation>
+        <translation>Команды</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="524"/>
         <source>Background:</source>
-        <translation type="unfinished"></translation>
+        <translation>Задний план:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="525"/>
         <source>Grid:</source>
-        <translation type="unfinished"></translation>
+        <translation>Сетка координат:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="526"/>
         <source>Cross:</source>
-        <translation type="unfinished"></translation>
+        <translation>Пересечение:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="527"/>
         <source>Nodes:</source>
-        <translation type="unfinished"></translation>
+        <translation>Узлы:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="528"/>
         <source>Edges:</source>
-        <translation type="unfinished"></translation>
+        <translation>Края:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="529"/>
         <source>Labels:</source>
-        <translation type="unfinished"></translation>
+        <translation>Метки:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="530"/>
         <source>Contours:</source>
-        <translation type="unfinished"></translation>
+        <translation>Контуры:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="531"/>
         <source>Vectors:</source>
-        <translation type="unfinished"></translation>
+        <translation>Векторы:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="532"/>
         <source>Initial mesh:</source>
-        <translation type="unfinished"></translation>
+        <translation>Начальная сеть:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="533"/>
         <source>Solution mesh:</source>
-        <translation type="unfinished"></translation>
+        <translation>Решение сети:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="534"/>
         <source>Highlighted elements:</source>
-        <translation type="unfinished"></translation>
+        <translation>Выделенные элементы:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="535"/>
         <source>Selected elements:</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбранные элементы:</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="610"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Вымазать</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="610"/>
         <source>Are you sure that you want to permanently delete the application logfile?</source>
-        <translation type="unfinished"></translation>
+        <translation>Вы действительно хотите удалить запись приложения?</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="610"/>
         <source>&amp;Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Да</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="610"/>
         <source>&amp;No</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Нет</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="615"/>
         <source>Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Информация</translation>
     </message>
     <message>
         <location filename="../src/configdialog.cpp" line="615"/>
         <source>Application log was cleared successfully.</source>
-        <translation type="unfinished"></translation>
+        <translation>Запись приложения  была успешно удалена.</translation>
     </message>
 </context>
 <context>
@@ -589,37 +589,37 @@
     <message>
         <location filename="../src/scenefunction.cpp" line="155"/>
         <source>Function</source>
-        <translation type="unfinished"></translation>
+        <translation>Функция</translation>
     </message>
     <message>
         <location filename="../src/scenefunction.cpp" line="205"/>
         <source>Plot</source>
-        <translation type="unfinished"></translation>
+        <translation>Чертить, наносить</translation>
     </message>
     <message>
         <location filename="../src/scenefunction.cpp" line="209"/>
         <source>Save image</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить изображение</translation>
     </message>
     <message>
         <location filename="../src/scenefunction.cpp" line="213"/>
         <source>Start:</source>
-        <translation type="unfinished"></translation>
+        <translation>Начало:</translation>
     </message>
     <message>
         <location filename="../src/scenefunction.cpp" line="215"/>
         <source>End:</source>
-        <translation type="unfinished"></translation>
+        <translation>Конец:</translation>
     </message>
     <message>
         <location filename="../src/scenefunction.cpp" line="217"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Название:</translation>
     </message>
     <message>
         <location filename="../src/scenefunction.cpp" line="219"/>
         <source>Function:</source>
-        <translation type="unfinished"></translation>
+        <translation>Функция:</translation>
     </message>
 </context>
 <context>
@@ -628,22 +628,22 @@
         <location filename="../src/scenebasic.cpp" line="267"/>
         <location filename="../src/scenebasic.cpp" line="339"/>
         <source>Node</source>
-        <translation type="unfinished"></translation>
+        <translation>Узел</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="305"/>
         <source>Distance:</source>
-        <translation type="unfinished"></translation>
+        <translation>Pасстояние:</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="306"/>
         <source>Angle:</source>
-        <translation type="unfinished"></translation>
+        <translation>Угол:</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="339"/>
         <source>Node already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Узел уже существует.</translation>
     </message>
 </context>
 <context>
@@ -651,67 +651,67 @@
     <message>
         <location filename="../src/gui.cpp" line="269"/>
         <source>&amp;Create directory</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Создать справочник</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="272"/>
         <source>Create &amp;file</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать &amp;файл</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="275"/>
         <source>&amp;Rename</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Переименовать</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="278"/>
         <source>&amp;Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Вымазать</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="396"/>
         <source>Create directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать справочник</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="396"/>
         <location filename="../src/gui.cpp" line="479"/>
         <source>Enter directory name</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите название справочника</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="412"/>
         <location filename="../src/gui.cpp" line="424"/>
         <source>Create file</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать файл</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="412"/>
         <location filename="../src/gui.cpp" line="494"/>
         <source>Enter file name</source>
-        <translation type="unfinished"></translation>
+        <translation>Название файла</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="479"/>
         <location filename="../src/gui.cpp" line="485"/>
         <source>Rename directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Переименовать справочнить</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="485"/>
         <source>Directory could not be renamed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Справочник не может быть переименован.</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="494"/>
         <location filename="../src/gui.cpp" line="504"/>
         <source>Rename file</source>
-        <translation type="unfinished"></translation>
+        <translation>Переименовать файл</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="504"/>
         <source>File could not be renamed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл нельзя переименовать.</translation>
     </message>
 </context>
 <context>
@@ -720,95 +720,95 @@
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="388"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="413"/>
         <source>Boundary type &apos;%1&apos; doesn&apos;t exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие &apos;%1&apos; не существует.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="472"/>
         <source>new boundary</source>
-        <translation type="unfinished"></translation>
+        <translation>новое условие</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="533"/>
         <source>new material</source>
-        <translation type="unfinished"></translation>
+        <translation>новый материал</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="622"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="683"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="702"/>
         <source>Acoustic field</source>
-        <translation type="unfinished"></translation>
+        <translation>Акустическое поле</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="626"/>
         <source>Density:</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="627"/>
         <source>Speed of sound:</source>
-        <translation type="unfinished"></translation>
+        <translation>Скорость звука:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="633"/>
         <source>Acoustic pressure</source>
-        <translation type="unfinished"></translation>
+        <translation>Акустическое давление</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="636"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="691"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="710"/>
         <source>real:</source>
-        <translation type="unfinished"></translation>
+        <translation>реальный:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="637"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="692"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="711"/>
         <source>imag:</source>
-        <translation type="unfinished"></translation>
+        <translation>исходный:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="638"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="693"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="712"/>
         <source>magnitude:</source>
-        <translation type="unfinished"></translation>
+        <translation>модуль:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="640"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="674"/>
         <source>Sound pressure level:</source>
-        <translation type="unfinished"></translation>
+        <translation>Уровень звукового давления:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="644"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="716"/>
         <source>Sound energy</source>
-        <translation type="unfinished"></translation>
+        <translation>Звук энергии</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="647"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="719"/>
         <source>Energy:</source>
-        <translation type="unfinished"></translation>
+        <translation>Энергия:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="648"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="720"/>
         <source>Energy level:</source>
-        <translation type="unfinished"></translation>
+        <translation>Уровень энергии:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="673"/>
         <source>Acoustic pressure:</source>
-        <translation type="unfinished"></translation>
+        <translation>Акустическое давление:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="688"/>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="707"/>
         <source>Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation>Давление</translation>
     </message>
 </context>
 <context>
@@ -816,78 +816,78 @@
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="80"/>
         <source>Boundary type &apos;%1&apos; doesn&apos;t exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие &apos;%1&apos; не существует.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="144"/>
         <source>new boundary condition</source>
-        <translation type="unfinished"></translation>
+        <translation>Новое граничное условие</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="196"/>
         <source>new material</source>
-        <translation type="unfinished"></translation>
+        <translation>новый материал</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="243"/>
         <location filename="../src/hermes2d/hermes_current.cpp" line="292"/>
         <source>Current field</source>
-        <translation type="unfinished"></translation>
+        <translation>Поле электрического тока</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="247"/>
         <source>Conductivity:</source>
-        <translation type="unfinished"></translation>
+        <translation>Проводимость:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="250"/>
         <source>Power losses dens.:</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность потерь:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="250"/>
         <source>W/m3</source>
-        <translation type="unfinished"></translation>
+        <translation>W/m3</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="253"/>
         <source>Potential:</source>
-        <translation type="unfinished"></translation>
+        <translation>Потенциал:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="257"/>
         <source>Electric field</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность эл. поля</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="266"/>
         <source>Current density</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="280"/>
         <source>Current Field</source>
-        <translation type="unfinished"></translation>
+        <translation>Поле электрического тока</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="283"/>
         <source>Current:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ток:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="283"/>
         <source>A</source>
-        <translation type="unfinished"></translation>
+        <translation>А</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="295"/>
         <source>Power Losses:</source>
-        <translation type="unfinished"></translation>
+        <translation>Потери:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="295"/>
         <source>W</source>
-        <translation type="unfinished"></translation>
+        <translation>W</translation>
     </message>
 </context>
 <context>
@@ -896,67 +896,67 @@
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="242"/>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="254"/>
         <source>Boundary type &apos;%1&apos; doesn&apos;t exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие &apos;%1&apos; не существует.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="342"/>
         <source>new boundary condition</source>
-        <translation type="unfinished"></translation>
+        <translation>новое граничное условие</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="409"/>
         <source>new material</source>
-        <translation type="unfinished"></translation>
+        <translation>новый материал</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="474"/>
         <source>Elasticity</source>
-        <translation type="unfinished"></translation>
+        <translation>эластичность</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="478"/>
         <source>Young modulus:</source>
-        <translation type="unfinished"></translation>
+        <translation>Модуль упругости:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="481"/>
         <source>Poisson ratio:</source>
-        <translation type="unfinished"></translation>
+        <translation>Коэффициент Пуассона:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="485"/>
         <source>Volumetric force</source>
-        <translation type="unfinished"></translation>
+        <translation>Массовая мощность</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="493"/>
         <source>Thermal expansion</source>
-        <translation type="unfinished"></translation>
+        <translation>Тепловое расширение</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="501"/>
         <source>Von Mises stress:</source>
-        <translation type="unfinished"></translation>
+        <translation>Von Misses напряжение:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="502"/>
         <source>Tresca stress:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tresca напряжение:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="506"/>
         <source>Displacement</source>
-        <translation type="unfinished"></translation>
+        <translation>Электрическая индукция</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="515"/>
         <source>Stresses</source>
-        <translation type="unfinished"></translation>
+        <translation>Напряжения</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="525"/>
         <source>Strains</source>
-        <translation type="unfinished"></translation>
+        <translation>Деформация</translation>
     </message>
 </context>
 <context>
@@ -964,78 +964,78 @@
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="85"/>
         <source>Boundary type &apos;%1&apos; doesn&apos;t exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие &apos;%1&apos; не существует.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="151"/>
         <source>new boundary</source>
-        <translation type="unfinished"></translation>
+        <translation>Новое условие</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="205"/>
         <source>new material</source>
-        <translation type="unfinished"></translation>
+        <translation>новый материал</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="255"/>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="307"/>
         <source>Electrostatic field</source>
-        <translation type="unfinished"></translation>
+        <translation>Электростатическое поле</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="259"/>
         <source>Permittivity:</source>
-        <translation type="unfinished"></translation>
+        <translation>Диэлектрическая проницаемость:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="262"/>
         <source>Charge density:</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность заряда:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="265"/>
         <source>Energy density:</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность энергии:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="268"/>
         <source>Potential:</source>
-        <translation type="unfinished"></translation>
+        <translation>Потенциал:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="272"/>
         <source>Electric field</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность эл. поля</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="281"/>
         <source>Electric displacement</source>
-        <translation type="unfinished"></translation>
+        <translation>Электрическая индукция</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="295"/>
         <source>Electrostatic Field</source>
-        <translation type="unfinished"></translation>
+        <translation>Электростатическое поле</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="298"/>
         <source>Charge:</source>
-        <translation type="unfinished"></translation>
+        <translation>Заряд:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="298"/>
         <source>C</source>
-        <translation type="unfinished"></translation>
+        <translation>C</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="310"/>
         <source>Energy:</source>
-        <translation type="unfinished"></translation>
+        <translation>Энергия:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="310"/>
         <source>J</source>
-        <translation type="unfinished"></translation>
+        <translation>J</translation>
     </message>
 </context>
 <context>
@@ -1043,42 +1043,42 @@
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="86"/>
         <source>Boundary type &apos;%1&apos; doesn&apos;t exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие &apos;%1&apos; не существует.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="152"/>
         <source>new boundary</source>
-        <translation type="unfinished"></translation>
+        <translation>новое условие</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="206"/>
         <source>new material</source>
-        <translation type="unfinished"></translation>
+        <translation>новый материал</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="256"/>
         <source>General field</source>
-        <translation type="unfinished"></translation>
+        <translation>Общее поле</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="260"/>
         <source>Constant:</source>
-        <translation type="unfinished"></translation>
+        <translation>Постоянная:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="263"/>
         <source>Right side:</source>
-        <translation type="unfinished"></translation>
+        <translation>Правая сторона:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="266"/>
         <source>Value:</source>
-        <translation type="unfinished"></translation>
+        <translation>Значение:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="270"/>
         <source>Gradient</source>
-        <translation type="unfinished"></translation>
+        <translation>Градиент</translation>
     </message>
 </context>
 <context>
@@ -1086,48 +1086,48 @@
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="127"/>
         <source>Boundary type &apos;%1&apos; doesn&apos;t exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие &apos;%1&apos; не существует.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="207"/>
         <source>new boundary</source>
-        <translation type="unfinished"></translation>
+        <translation>новое условие</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="278"/>
         <source>new material</source>
-        <translation type="unfinished"></translation>
+        <translation>новый материал</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="334"/>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="385"/>
         <source>Heat transfer</source>
-        <translation type="unfinished"></translation>
+        <translation>Теплопередача</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="338"/>
         <source>Thermal conductivity:</source>
-        <translation type="unfinished"></translation>
+        <translation>Теплопроводность:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="338"/>
         <source>W/m.K</source>
-        <translation type="unfinished"></translation>
+        <translation>W/m.K</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="341"/>
         <source>Volume heat:</source>
-        <translation type="unfinished"></translation>
+        <translation>Объемное тепло:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="341"/>
         <source>W/m3</source>
-        <translation type="unfinished"></translation>
+        <translation>W/m3</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="344"/>
         <source>Temperature:</source>
-        <translation type="unfinished"></translation>
+        <translation>Температура:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="344"/>
@@ -1135,55 +1135,55 @@
         <location filename="../src/hermes2d/hermes_heat.cpp" line="375"/>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="388"/>
         <source>K</source>
-        <translation type="unfinished"></translation>
+        <translation>K</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="348"/>
         <source>Heat flux</source>
-        <translation type="unfinished"></translation>
+        <translation>Тепловой поток</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="351"/>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="352"/>
         <source>W/m2</source>
-        <translation type="unfinished"></translation>
+        <translation>W/m2</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="357"/>
         <source>Temperature gradient</source>
-        <translation type="unfinished"></translation>
+        <translation>Градиент температуры</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="360"/>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="361"/>
         <source>K/m</source>
-        <translation type="unfinished"></translation>
+        <translation>K/m</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="371"/>
         <source>Heat Transfer</source>
-        <translation type="unfinished"></translation>
+        <translation>Теплопередача</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="374"/>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="388"/>
         <source>Temperature avg.:</source>
-        <translation type="unfinished"></translation>
+        <translation>Средняя температура:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="375"/>
         <source>Temperature dif.:</source>
-        <translation type="unfinished"></translation>
+        <translation>Разность температур:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="376"/>
         <source>Heat flux:</source>
-        <translation type="unfinished"></translation>
+        <translation>Тепловой поток:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="376"/>
         <source>W</source>
-        <translation type="unfinished"></translation>
+        <translation>W</translation>
     </message>
 </context>
 <context>
@@ -1191,17 +1191,17 @@
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="204"/>
         <source>Boundary type &apos;%1&apos; doesn&apos;t exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие &apos;%1&apos; не существует.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="293"/>
         <source>new boundary</source>
-        <translation type="unfinished"></translation>
+        <translation>новое условие</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="351"/>
         <source>new material</source>
-        <translation type="unfinished"></translation>
+        <translation>новый материал</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="503"/>
@@ -1209,18 +1209,18 @@
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="689"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="710"/>
         <source>Magnetic field</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность маг. поля</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="509"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="628"/>
         <source>Permeability:</source>
-        <translation type="unfinished"></translation>
+        <translation>Проницаемость:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="513"/>
         <source>Vector potential</source>
-        <translation type="unfinished"></translation>
+        <translation>Векторный маг. потенциал</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="516"/>
@@ -1233,7 +1233,7 @@
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="738"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="747"/>
         <source>real:</source>
-        <translation type="unfinished"></translation>
+        <translation>реальный:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="517"/>
@@ -1246,7 +1246,7 @@
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="739"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="748"/>
         <source>imag:</source>
-        <translation type="unfinished"></translation>
+        <translation>исходный:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="518"/>
@@ -1259,196 +1259,196 @@
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="740"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="749"/>
         <source>magnitude:</source>
-        <translation type="unfinished"></translation>
+        <translation>модуль:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="525"/>
         <source>Flux density - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Маг. индукция - реальный компонент</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="534"/>
         <source>Flux density - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Маг. индукция - исходный компонент</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="546"/>
         <source>Magnetic field - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность маг. поля - реальная</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="555"/>
         <source>Magnetic field - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность маг. поля - исходная</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="564"/>
         <source>Currrent dens. - external</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - внешняя</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="573"/>
         <source>Current density - avg. transform</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - среднеарифметическая трасформация</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="582"/>
         <source>Current density - velocity</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - движения</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="591"/>
         <source>Current density - total</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - общая</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="603"/>
         <source>Lorentz force - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Сила Лоренца - реальная</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="612"/>
         <source>Lorentz force - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Сила Лоренца - исходная</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="620"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="677"/>
         <source>Losses density:</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность потерь:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="623"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="680"/>
         <source>Energy density:</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность энергии:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="631"/>
         <source>Conductivity:</source>
-        <translation type="unfinished"></translation>
+        <translation>Проводимость:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="634"/>
         <source>Rem. flux dens.:</source>
-        <translation type="unfinished"></translation>
+        <translation>Рем. маг. индукции:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="635"/>
         <source>Direction of rem.:</source>
-        <translation type="unfinished"></translation>
+        <translation>Направление остаточной намагниченности:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="639"/>
         <source>Velocity</source>
-        <translation type="unfinished"></translation>
+        <translation>Скорость</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="646"/>
         <source>Vector potential:</source>
-        <translation type="unfinished"></translation>
+        <translation>Векторный маг. потенциал:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="650"/>
         <source>Flux density</source>
-        <translation type="unfinished"></translation>
+        <translation>Магнитная индукция</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="668"/>
         <source>Current density</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="671"/>
         <source>external:</source>
-        <translation type="unfinished"></translation>
+        <translation>внешний:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="672"/>
         <source>transform:</source>
-        <translation type="unfinished"></translation>
+        <translation>трасформация:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="673"/>
         <source>velocity:</source>
-        <translation type="unfinished"></translation>
+        <translation>скорость:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="674"/>
         <source>total:</source>
-        <translation type="unfinished"></translation>
+        <translation>суммарный:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="694"/>
         <source>Maxwell force</source>
-        <translation type="unfinished"></translation>
+        <translation>Maxwell сила</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="701"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="762"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="780"/>
         <source>Torque:</source>
-        <translation type="unfinished"></translation>
+        <translation>Крутящий момент:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="701"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="762"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="780"/>
         <source>Nm</source>
-        <translation type="unfinished"></translation>
+        <translation>Nm</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="717"/>
         <source>External current</source>
-        <translation type="unfinished"></translation>
+        <translation>Внешний ток</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="726"/>
         <source>Transform induced current</source>
-        <translation type="unfinished"></translation>
+        <translation>Преобразованный индуцированный ток</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="735"/>
         <source>Velocity induced current</source>
-        <translation type="unfinished"></translation>
+        <translation>Движение индуцированного тока</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="744"/>
         <source>Total current</source>
-        <translation type="unfinished"></translation>
+        <translation>Суммарный ток</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="751"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="770"/>
         <source>Power Losses:</source>
-        <translation type="unfinished"></translation>
+        <translation>Потери:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="751"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="770"/>
         <source>W</source>
-        <translation type="unfinished"></translation>
+        <translation>W</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="752"/>
         <source>Energy avg.:</source>
-        <translation type="unfinished"></translation>
+        <translation>Средняя энергия:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="752"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="771"/>
         <source>J</source>
-        <translation type="unfinished"></translation>
+        <translation>J</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="756"/>
         <source>Lorentz force avg.</source>
-        <translation type="unfinished"></translation>
+        <translation>Средняя cила Лоренца.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="766"/>
         <source>External current:</source>
-        <translation type="unfinished"></translation>
+        <translation>Внешний ток:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="766"/>
@@ -1456,38 +1456,38 @@
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="768"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="769"/>
         <source>A</source>
-        <translation type="unfinished"></translation>
+        <translation>A</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="767"/>
         <source>Transform current:</source>
-        <translation type="unfinished"></translation>
+        <translation>Преобразованный ток:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="768"/>
         <source>Velocity current:</source>
-        <translation type="unfinished"></translation>
+        <translation>Движение тока:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="769"/>
         <source>Total current:</source>
-        <translation type="unfinished"></translation>
+        <translation>Суммарный ток:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="771"/>
         <source>Energy:</source>
-        <translation type="unfinished"></translation>
+        <translation>Энергия:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="774"/>
         <source>Force</source>
-        <translation type="unfinished"></translation>
+        <translation>Сила</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="777"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="778"/>
         <source>N</source>
-        <translation type="unfinished"></translation>
+        <translation>N</translation>
     </message>
 </context>
 <context>
@@ -1496,113 +1496,113 @@
         <location filename="../src/hermes2d/hermes_rf.cpp" line="455"/>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="481"/>
         <source>Boundary type &apos;%1&apos; doesn&apos;t exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие &apos;%1&apos; не существует.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="551"/>
         <source>new boundary</source>
-        <translation type="unfinished"></translation>
+        <translation>новое условие</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="628"/>
         <source>new material</source>
-        <translation type="unfinished"></translation>
+        <translation>новый материал</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="720"/>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="809"/>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="819"/>
         <source>RF field</source>
-        <translation type="unfinished"></translation>
+        <translation>RF поле</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="724"/>
         <source>Permittivity:</source>
-        <translation type="unfinished"></translation>
+        <translation>Диэлектрическая проницаемость:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="725"/>
         <source>Permeability:</source>
-        <translation type="unfinished"></translation>
+        <translation>Проницаемость:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="726"/>
         <source>Conductivity:</source>
-        <translation type="unfinished"></translation>
+        <translation>Проводимость:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="730"/>
         <source>Electric field</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность эл. поля</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="733"/>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="799"/>
         <source>real:</source>
-        <translation type="unfinished"></translation>
+        <translation>реальный:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="734"/>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="800"/>
         <source>imag:</source>
-        <translation type="unfinished"></translation>
+        <translation>исходный:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="735"/>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="801"/>
         <source>magnitude:</source>
-        <translation type="unfinished"></translation>
+        <translation>модуль:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="745"/>
         <source>Flux density - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Маг. индукция - реальный компонент</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="754"/>
         <source>Flux density - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Маг. индукция - исходный компонент</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="769"/>
         <source>Magnetic field - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность маг. поля - реальная</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="778"/>
         <source>Magnetic field - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность маг. поля - исходная</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="787"/>
         <source>Poynting vector</source>
-        <translation type="unfinished"></translation>
+        <translation>Вектор Пойнтинга</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="790"/>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="791"/>
         <source>P</source>
-        <translation type="unfinished"></translation>
+        <translation>P</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="792"/>
         <source>P:</source>
-        <translation type="unfinished"></translation>
+        <translation>P:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="796"/>
         <source>Current density</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="822"/>
         <source>Energy avg.:</source>
-        <translation type="unfinished"></translation>
+        <translation>Средняя энергия:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="822"/>
         <source>J</source>
-        <translation type="unfinished"></translation>
+        <translation>J</translation>
     </message>
 </context>
 <context>
@@ -1610,42 +1610,42 @@
     <message>
         <location filename="../src/gui.cpp" line="533"/>
         <source>Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Изображение</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="576"/>
         <source>Filename:</source>
-        <translation type="unfinished"></translation>
+        <translation>Название файла:</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="587"/>
         <source>X:</source>
-        <translation type="unfinished"></translation>
+        <translation>X:</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="589"/>
         <source>Y:</source>
-        <translation type="unfinished"></translation>
+        <translation>Y:</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="591"/>
         <source>Width:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ширина:</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="593"/>
         <source>Height:</source>
-        <translation type="unfinished"></translation>
+        <translation>Высота:</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="623"/>
         <source>Open file</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть файл</translation>
     </message>
     <message>
         <location filename="../src/gui.cpp" line="623"/>
         <source>Images (*.png *.bmp *.jpg)</source>
-        <translation type="unfinished"></translation>
+        <translation>Изображение (*.png *.bmp *.jpg)</translation>
     </message>
 </context>
 <context>
@@ -1653,7 +1653,7 @@
     <message>
         <location filename="../src/localvalueview.cpp" line="229"/>
         <source>Local point value</source>
-        <translation type="unfinished"></translation>
+        <translation>Местное значение</translation>
     </message>
 </context>
 <context>
@@ -1661,43 +1661,43 @@
     <message>
         <location filename="../src/localvalueview.cpp" line="76"/>
         <source>Local Values</source>
-        <translation type="unfinished"></translation>
+        <translation>Местное значения</translation>
     </message>
     <message>
         <location filename="../src/localvalueview.cpp" line="98"/>
         <source>Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Метка</translation>
     </message>
     <message>
         <location filename="../src/localvalueview.cpp" line="98"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Значение</translation>
     </message>
     <message>
         <location filename="../src/localvalueview.cpp" line="98"/>
         <source>Unit</source>
-        <translation type="unfinished"></translation>
+        <translation>Единица</translation>
     </message>
     <message>
         <location filename="../src/localvalueview.cpp" line="135"/>
         <source>Local point value</source>
-        <translation type="unfinished"></translation>
+        <translation>Местное значение</translation>
     </message>
     <message>
         <location filename="../src/localvalueview.cpp" line="139"/>
         <source>Copy value</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать значение</translation>
     </message>
     <message>
         <location filename="../src/localvalueview.cpp" line="206"/>
         <source>Point</source>
-        <translation type="unfinished"></translation>
+        <translation>Точка</translation>
     </message>
     <message>
         <location filename="../src/localvalueview.cpp" line="209"/>
         <location filename="../src/localvalueview.cpp" line="210"/>
         <source>m</source>
-        <translation type="unfinished"></translation>
+        <translation>m</translation>
     </message>
 </context>
 <context>
@@ -1705,108 +1705,108 @@
     <message>
         <location filename="../src/logdialog.cpp" line="27"/>
         <source>Log dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Окно записи</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="55"/>
         <location filename="../src/logdialog.cpp" line="195"/>
         <source>Save log</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить запись</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="58"/>
         <location filename="../src/logdialog.cpp" line="217"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Вымазать</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="61"/>
         <location filename="../src/logdialog.cpp" line="247"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="65"/>
         <source>Adapt. error</source>
-        <translation type="unfinished"></translation>
+        <translation>Адапт. ошибка</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="68"/>
         <source>Adapt. DOFs</source>
-        <translation type="unfinished"></translation>
+        <translation>Адапт. DOFs</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="71"/>
         <source>Adapt. conv.</source>
-        <translation type="unfinished"></translation>
+        <translation>Адапт. усл.</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="131"/>
         <location filename="../src/logdialog.cpp" line="171"/>
         <source>No messages...</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет сообщений ...</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="195"/>
         <source>Log files (*.log)</source>
-        <translation type="unfinished"></translation>
+        <translation>Log.файлы (*.log)</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="217"/>
         <source>Are you sure that you want to permanently delete the application logfile?</source>
-        <translation type="unfinished"></translation>
+        <translation>Вы действительно хотите удалить запись приложения?</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="217"/>
         <source>&amp;Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Да</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="217"/>
         <source>&amp;No</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Нет</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="241"/>
         <source>Save data</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранение даты</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="244"/>
         <source>Save image</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить изображение</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="280"/>
         <source>Export data to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт данных в файл</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="280"/>
         <source>CSV files (*.csv)</source>
-        <translation type="unfinished"></translation>
+        <translation>CSV файлы (*.csv)</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="292"/>
         <location filename="../src/logdialog.cpp" line="318"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="292"/>
         <location filename="../src/logdialog.cpp" line="318"/>
         <source>File &apos;%1&apos; could not be copied..</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл &apos;%1&apos; не может быть скопирован.</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="306"/>
         <source>Save image to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить изображение в файле</translation>
     </message>
     <message>
         <location filename="../src/logdialog.cpp" line="306"/>
         <source>PNG files (*.png)</source>
-        <translation type="unfinished"></translation>
+        <translation>Файлы PNG (*.png)</translation>
     </message>
 </context>
 <context>
@@ -1814,726 +1814,726 @@
     <message>
         <location filename="../src/mainwindow.cpp" line="170"/>
         <source>&amp;New...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Новый ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="172"/>
         <source>Create a new file</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать новый файл</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="175"/>
         <source>&amp;Open...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Oткрыть ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="177"/>
         <source>Open an existing file</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть существующий файл</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="180"/>
         <source>&amp;Download from server...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Скачать с сервера ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="181"/>
         <source>Ctrl+Shift+O</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+Shift+O</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="182"/>
         <source>Download from server...</source>
-        <translation type="unfinished"></translation>
+        <translation>Скачать с сервера ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="185"/>
         <source>&amp;Save</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Сохранить</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="187"/>
         <source>Save the file to disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохраните файл на диске</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="190"/>
         <source>Save with solution</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить с решением</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="191"/>
         <source>Save the file to disk with solution</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохраните файл на диске с решением</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="194"/>
         <source>Save &amp;As...</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить &amp;как ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="196"/>
         <source>Save the file under a new name</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить файл - новое название</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="199"/>
         <location filename="../src/mainwindow.cpp" line="200"/>
         <source>Upload to server...</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузка на сервер ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="203"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Закрыть</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="205"/>
         <source>Close the file</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть файл</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="208"/>
         <source>Import DXF...</source>
-        <translation type="unfinished"></translation>
+        <translation>Импорт DXF ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="209"/>
         <source>Import AutoCAD DXF</source>
-        <translation type="unfinished"></translation>
+        <translation>Импорт AutoCAD.DXF</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="212"/>
         <source>Export DXF...</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт DXF ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="213"/>
         <source>Export AutoCAD DXF</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт AutoCAD DXF</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="216"/>
         <source>Export mesh file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт файлов в сети ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="217"/>
         <source>Export Hermes2D mesh file</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт файлов в сети Hermes2D</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="220"/>
         <source>Export VTK scalar...</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт VTK скалярное ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="221"/>
         <source>Export scalar view as VTK file</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт расположение скаляра в виде файла VTK</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="224"/>
         <source>Export VTK order...</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт VTK порядка ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="225"/>
         <source>Export order view as VTK file</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт порядок распределения виде файла VTK</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="228"/>
         <source>Export image...</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт изображения ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="229"/>
         <location filename="../src/mainwindow.cpp" line="1056"/>
         <source>Export image to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт изображения в файл</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="232"/>
         <source>Create &amp;video...</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать &amp;видео ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="233"/>
         <source>Create video</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать видео</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="236"/>
         <source>Load background...</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузить фон ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="237"/>
         <source>Load background image</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузка фонового изображения</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="240"/>
         <source>E&amp;xit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Конец</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="241"/>
         <source>Ctrl+Q</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+Q</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="242"/>
         <source>Exit the application</source>
-        <translation type="unfinished"></translation>
+        <translation>Завершить</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="249"/>
         <source>&amp;Undo</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Назад</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="251"/>
         <source>Undo operation</source>
-        <translation type="unfinished"></translation>
+        <translation>Принять обратно последнюю операцию</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="255"/>
         <source>&amp;Redo</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Повтор</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="257"/>
         <source>Redo operation</source>
-        <translation type="unfinished"></translation>
+        <translation>Повторить операцию</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="259"/>
         <source>Copy image to clipboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Скопируйте изображения в буфер обмена</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="261"/>
         <source>Copy image from workspace to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>Скопируйте изображения с рабочего пространства в буфер обмена.</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="264"/>
         <location filename="../src/mainwindow.cpp" line="509"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Помощь</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="265"/>
         <source>Show help</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать помощь</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="269"/>
         <source>&amp;Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Клавишные ссылки</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="270"/>
         <source>Shortcuts</source>
-        <translation type="unfinished"></translation>
+        <translation>Клавишные ссылки</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="273"/>
         <source>Collaboration server</source>
-        <translation type="unfinished"></translation>
+        <translation>Сервер для совместной работы</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="274"/>
         <source>Collaboration server...</source>
-        <translation type="unfinished"></translation>
+        <translation>Сервер для совместной работы...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="277"/>
         <source>&amp;Online help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Справка в Интернете</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="278"/>
         <source>Online help</source>
-        <translation type="unfinished"></translation>
+        <translation>Справка в Интернете</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="281"/>
         <location filename="../src/mainwindow.cpp" line="282"/>
         <source>Check version</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверить версию</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="285"/>
         <source>About &amp;Agros2D</source>
-        <translation type="unfinished"></translation>
+        <translation>O &amp;Agros2D</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="286"/>
         <source>Show the application&apos;s About box</source>
-        <translation type="unfinished"></translation>
+        <translation>Просмотр сведений об Аgros2D</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="290"/>
         <source>About &amp;Qt</source>
-        <translation type="unfinished"></translation>
+        <translation>O &amp;Qt</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="291"/>
         <source>Show the Qt library&apos;s About box</source>
-        <translation type="unfinished"></translation>
+        <translation>Просмотр информации о Qt инструментарий</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="295"/>
         <source>&amp;Options</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Настройка</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="296"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройка</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="300"/>
         <source>&amp;Mesh area</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Дискретизация</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="301"/>
         <source>Alt+W</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt+W</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="302"/>
         <source>Mesh area</source>
-        <translation type="unfinished"></translation>
+        <translation>Дискретизация</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="305"/>
         <source>&amp;Solve problem</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Решить проблемы</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="306"/>
         <source>Alt+S</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt+S</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="307"/>
         <source>Solve problem</source>
-        <translation type="unfinished"></translation>
+        <translation>Решить проблемы</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="310"/>
         <source>&amp;Chart</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;График</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="311"/>
         <source>Chart</source>
-        <translation type="unfinished"></translation>
+        <translation>График</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="314"/>
         <source>Fullscreen mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Целый экран</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="315"/>
         <source>F11</source>
-        <translation type="unfinished"></translation>
+        <translation>F11</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="321"/>
         <source>Script &amp;editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Редактор &amp;скриптов</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="322"/>
         <source>Script editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Редактор скриптов</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="326"/>
         <source>Run &amp;script...</source>
-        <translation type="unfinished"></translation>
+        <translation>Запустите &amp;скрипт ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="327"/>
         <source>Run script...</source>
-        <translation type="unfinished"></translation>
+        <translation>Запустите скрипт ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="330"/>
         <source>Run &amp;command...</source>
-        <translation type="unfinished"></translation>
+        <translation>Запустить &amp;команду ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="331"/>
         <source>Alt+C</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt+C</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="332"/>
         <source>Run command...</source>
-        <translation type="unfinished"></translation>
+        <translation>Запустить команду ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="335"/>
         <source>&amp;Report...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Сообщение ...</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="336"/>
         <source>Problem html report</source>
-        <translation type="unfinished"></translation>
+        <translation>Проблема HTML сообщить</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="339"/>
         <source>Progress &amp;log</source>
-        <translation type="unfinished"></translation>
+        <translation>Прогресс &amp;логотип</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="340"/>
         <source>Show progress log</source>
-        <translation type="unfinished"></translation>
+        <translation>Просмотр процесса записи решения</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="343"/>
         <source>Application &amp;log</source>
-        <translation type="unfinished"></translation>
+        <translation>Приложения &amp;логотипы</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="344"/>
         <source>Show application log</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать записи приложений</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="347"/>
         <source>2D: None</source>
-        <translation type="unfinished"></translation>
+        <translation>2D: Нет изображения</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="348"/>
         <source>Ctrl+1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+1</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="351"/>
         <source>2D: Polynomial order</source>
-        <translation type="unfinished"></translation>
+        <translation>2D: Порядок полинома</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="352"/>
         <source>Ctrl+2</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+2</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="355"/>
         <source>2D: Scalar view</source>
-        <translation type="unfinished"></translation>
+        <translation>2D: Скалярное изображение</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="356"/>
         <source>Ctrl+3</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+3</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="359"/>
         <source>3D: Scalar view</source>
-        <translation type="unfinished"></translation>
+        <translation>3D: Скалярное изображение</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="360"/>
         <source>Ctrl+4</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+4</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="363"/>
         <source>3D: Scalar view - solid</source>
-        <translation type="unfinished"></translation>
+        <translation>3D: Скалярное изображение - coлид</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="364"/>
         <source>Ctrl+5</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+5</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="367"/>
         <source>3D: Particle tracing</source>
-        <translation type="unfinished"></translation>
+        <translation>3D: отслеживание частиц</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="368"/>
         <source>Ctrl+6</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+6</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="371"/>
         <source>3D: Model</source>
-        <translation type="unfinished"></translation>
+        <translation>3D: Модель</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="372"/>
         <source>Ctrl+7</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+7</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="380"/>
         <source>&amp;Recent files</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Недавно открытые файлы</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="381"/>
         <source>Import/Export</source>
-        <translation type="unfinished"></translation>
+        <translation>Импорт/Экспорт</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="391"/>
         <source>Colaboration</source>
-        <translation type="unfinished"></translation>
+        <translation>Сотрудничество</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="396"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Файл</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="415"/>
         <source>E&amp;dit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Редактировать</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="425"/>
         <source>Projection</source>
-        <translation type="unfinished"></translation>
+        <translation>Проектирование</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="430"/>
         <source>Panels</source>
-        <translation type="unfinished"></translation>
+        <translation>Панели</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="439"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Изображение</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="446"/>
         <source>Quick view</source>
-        <translation type="unfinished"></translation>
+        <translation>Быстрый просмотр</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="463"/>
         <source>&amp;Problem</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Проблема</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="469"/>
         <source>&amp;Add</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Добавить</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="492"/>
         <source>&amp;Tools</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Инструменты</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="535"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="545"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Редактировать</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="559"/>
         <source>View</source>
-        <translation type="unfinished"></translation>
+        <translation>Изображение</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="570"/>
         <source>Problem</source>
-        <translation type="unfinished"></translation>
+        <translation>Проблема</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="592"/>
         <source>Tools</source>
-        <translation type="unfinished"></translation>
+        <translation>Инструменты</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="601"/>
         <source>Transient</source>
-        <translation type="unfinished"></translation>
+        <translation>Переходной процесс</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="607"/>
         <source>Time step:</source>
-        <translation type="unfinished"></translation>
+        <translation>Часовой этап:</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="632"/>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>Готово</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="704"/>
         <source>Position: [%1; %2]</source>
-        <translation type="unfinished"></translation>
+        <translation>Позиция: [%1;%2]</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="718"/>
         <source>Mode: Add node</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим: Добавить узлы</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="721"/>
         <source>Mode: Add edge</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим: Добавить края</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="724"/>
         <source>Mode: Add label</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим: Добавить метки</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="732"/>
         <source>Mode: Pan</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим: Панорама</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="735"/>
         <source>Mode: Rotate</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим: Вращение</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="742"/>
         <source>Mode: Move node</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим: Перемещение узла</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="745"/>
         <source>Mode: Move edge</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим: Перемещение края</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="748"/>
         <source>Mode: Move label</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим: Переместить метку</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="848"/>
         <source>Open file</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть файл</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="848"/>
         <source>Agros2D files (*.a2d *.py);;Agros2D data files (*.a2d);;Python script (*.py)</source>
-        <translation type="unfinished"></translation>
+        <translation>Agros2D файлы (*.а2d *.ру);;Agros2D данные файлов (*.а2d);;Python скрипт (*.ру)</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="885"/>
         <location filename="../src/mainwindow.cpp" line="889"/>
         <location filename="../src/mainwindow.cpp" line="1211"/>
         <source>File open</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть файл</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="885"/>
         <source>Unknown suffix.</source>
-        <translation type="unfinished"></translation>
+        <translation>Неизвестный суффикс.</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="889"/>
         <source>File &apos;%1&apos; is not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл &apos;%1&apos; не найден.</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="958"/>
         <source>Save file</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить файл</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="958"/>
         <source>Agros2D files (*.a2d)</source>
-        <translation type="unfinished"></translation>
+        <translation>Agros2D Файлы (*.a2d)</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1018"/>
         <source>Import file</source>
-        <translation type="unfinished"></translation>
+        <translation>Импорт файлов</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1018"/>
         <location filename="../src/mainwindow.cpp" line="1037"/>
         <source>DXF files (*.dxf)</source>
-        <translation type="unfinished"></translation>
+        <translation>DXF Файлы (*.dxf)</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1037"/>
         <source>Export file</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт файлов</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1056"/>
         <source>PNG files (*.png)</source>
-        <translation type="unfinished"></translation>
+        <translation>PNG файлы (*.png)</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1184"/>
         <source>Open File</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть Файл</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1184"/>
         <source>Python script (*.py)</source>
-        <translation type="unfinished"></translation>
+        <translation>Python скрипт(*.рy)</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1211"/>
         <source>File &apos;%1&apos; doesn&apos;t exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл &apos;%1&apos; не существует.</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1275"/>
         <source>Problem Type: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип Проблемы: %1</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1276"/>
         <source>Physic Field: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Физикальное поле: %1</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1277"/>
         <source>Analysis type: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип анализа: %1</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1382"/>
         <source>Export mesh file</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт файлов в сети</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1382"/>
         <source>Mesh files (*.mesh)</source>
-        <translation type="unfinished"></translation>
+        <translation>Файлы с сетью (*.мesh)</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1429"/>
         <location filename="../src/mainwindow.cpp" line="1461"/>
         <source>Export vtk file</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт VTK файла</translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="1429"/>
         <location filename="../src/mainwindow.cpp" line="1461"/>
         <source>VTK files (*.vtk)</source>
-        <translation type="unfinished"></translation>
+        <translation>VTK файлы (*.vtk)</translation>
     </message>
 </context>
 <context>
@@ -2541,324 +2541,324 @@
     <message>
         <location filename="../src/postprocessorview.cpp" line="27"/>
         <source>View Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Просмотр свойств</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="121"/>
         <source>Width and height of bounding box over vector count.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ширина и высота ограничительной рамки на количество векторов.</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="304"/>
         <source>Basic</source>
-        <translation type="unfinished"></translation>
+        <translation>Базисный</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="305"/>
         <source>Postprocessor</source>
-        <translation type="unfinished"></translation>
+        <translation>Постпроцессор</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="306"/>
         <location filename="../src/postprocessorview.cpp" line="940"/>
         <source>Workspace</source>
-        <translation type="unfinished"></translation>
+        <translation>Рабочая поверхность</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="309"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Подтвердить</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="335"/>
         <location filename="../src/postprocessorview.cpp" line="857"/>
         <source>Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Геометрия</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="336"/>
         <source>Initial mesh</source>
-        <translation type="unfinished"></translation>
+        <translation>Начальная сеть</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="337"/>
         <location filename="../src/postprocessorview.cpp" line="589"/>
         <location filename="../src/postprocessorview.cpp" line="915"/>
         <source>Contours</source>
-        <translation type="unfinished"></translation>
+        <translation>Контуры</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="338"/>
         <location filename="../src/postprocessorview.cpp" line="600"/>
         <source>Vectors</source>
-        <translation type="unfinished"></translation>
+        <translation>Векторы</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="339"/>
         <location filename="../src/postprocessorview.cpp" line="349"/>
         <location filename="../src/postprocessorview.cpp" line="792"/>
         <source>Particle tracing</source>
-        <translation type="unfinished"></translation>
+        <translation>Слежение движения частиц</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="341"/>
         <source>Solution mesh</source>
-        <translation type="unfinished"></translation>
+        <translation>Решение сети</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="344"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Без изображения</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="345"/>
         <location filename="../src/postprocessorview.cpp" line="791"/>
         <source>Polynomial order</source>
-        <translation type="unfinished"></translation>
+        <translation>Порядок полинома</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="346"/>
         <location filename="../src/postprocessorview.cpp" line="347"/>
         <location filename="../src/postprocessorview.cpp" line="789"/>
         <source>Scalar view</source>
-        <translation type="unfinished"></translation>
+        <translation>Скалярное изображение</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="348"/>
         <source>Scalar view solid</source>
-        <translation type="unfinished"></translation>
+        <translation>Скалярное изображение coлид</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="369"/>
         <source>2D:</source>
-        <translation type="unfinished"></translation>
+        <translation>2D:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="373"/>
         <source>3D:</source>
-        <translation type="unfinished"></translation>
+        <translation>3D:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="383"/>
         <source>Show</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="392"/>
         <source>Auto range</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоматический выбор</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="410"/>
         <location filename="../src/postprocessorview.cpp" line="435"/>
         <source>Variable:</source>
-        <translation type="unfinished"></translation>
+        <translation>Величина:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="413"/>
         <source>Component:</source>
-        <translation type="unfinished"></translation>
+        <translation>Компонент:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="417"/>
         <source>Minimum:</source>
-        <translation type="unfinished"></translation>
+        <translation>Mинимум:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="421"/>
         <source>Maximum:</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимум:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="426"/>
         <location filename="../src/postprocessorview.cpp" line="914"/>
         <source>Scalar field</source>
-        <translation type="unfinished"></translation>
+        <translation>Скалярное поле</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="438"/>
         <location filename="../src/postprocessorview.cpp" line="916"/>
         <source>Vector field</source>
-        <translation type="unfinished"></translation>
+        <translation>Векторовое поле</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="447"/>
         <source>Time step:</source>
-        <translation type="unfinished"></translation>
+        <translation>Часовой этап:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="450"/>
         <source>Transient analysis</source>
-        <translation type="unfinished"></translation>
+        <translation>Переходные процессы</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="475"/>
         <location filename="../src/postprocessorview.cpp" line="616"/>
         <source>Jet</source>
-        <translation type="unfinished"></translation>
+        <translation>Jet</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="476"/>
         <location filename="../src/postprocessorview.cpp" line="618"/>
         <source>Hot</source>
-        <translation type="unfinished"></translation>
+        <translation>Горячий</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="477"/>
         <location filename="../src/postprocessorview.cpp" line="617"/>
         <source>Copper</source>
-        <translation type="unfinished"></translation>
+        <translation>Медь</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="478"/>
         <location filename="../src/postprocessorview.cpp" line="619"/>
         <source>Cool</source>
-        <translation type="unfinished"></translation>
+        <translation>Холодно</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="479"/>
         <location filename="../src/postprocessorview.cpp" line="620"/>
         <source>Bone</source>
-        <translation type="unfinished"></translation>
+        <translation>Кость</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="480"/>
         <location filename="../src/postprocessorview.cpp" line="621"/>
         <source>Pink</source>
-        <translation type="unfinished"></translation>
+        <translation>Розовый</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="481"/>
         <location filename="../src/postprocessorview.cpp" line="622"/>
         <source>Spring</source>
-        <translation type="unfinished"></translation>
+        <translation>Весна</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="482"/>
         <location filename="../src/postprocessorview.cpp" line="623"/>
         <source>Summer</source>
-        <translation type="unfinished"></translation>
+        <translation>Лето</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="483"/>
         <location filename="../src/postprocessorview.cpp" line="624"/>
         <source>Autumn</source>
-        <translation type="unfinished"></translation>
+        <translation>Осень</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="484"/>
         <location filename="../src/postprocessorview.cpp" line="625"/>
         <source>Winter</source>
-        <translation type="unfinished"></translation>
+        <translation>Зима</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="485"/>
         <location filename="../src/postprocessorview.cpp" line="626"/>
         <source>HSV</source>
-        <translation type="unfinished"></translation>
+        <translation>HSV</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="486"/>
         <location filename="../src/postprocessorview.cpp" line="627"/>
         <source>B/W ascending</source>
-        <translation type="unfinished"></translation>
+        <translation>Ч/Б возрастания</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="487"/>
         <location filename="../src/postprocessorview.cpp" line="628"/>
         <source>B/W descending</source>
-        <translation type="unfinished"></translation>
+        <translation>Ч/Б убывания</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="491"/>
         <source>Extremely coarse</source>
-        <translation type="unfinished"></translation>
+        <translation>Предельно грубый</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="492"/>
         <source>Extra coarse</source>
-        <translation type="unfinished"></translation>
+        <translation>Экстра рыхлая</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="493"/>
         <source>Coarser</source>
-        <translation type="unfinished"></translation>
+        <translation>Рыхлее</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="494"/>
         <source>Coarse</source>
-        <translation type="unfinished"></translation>
+        <translation>Рыхлая</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="495"/>
         <source>Normal</source>
-        <translation type="unfinished"></translation>
+        <translation>Нормальный</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="496"/>
         <source>Fine</source>
-        <translation type="unfinished"></translation>
+        <translation>Мелкий</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="497"/>
         <source>Finer</source>
-        <translation type="unfinished"></translation>
+        <translation>Мельче</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="498"/>
         <source>Extra fine</source>
-        <translation type="unfinished"></translation>
+        <translation>Сверхточный</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="500"/>
         <source>Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Фильтр</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="509"/>
         <source>Log. scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Вход. спектр</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="514"/>
         <location filename="../src/postprocessorview.cpp" line="640"/>
         <source>Palette:</source>
-        <translation type="unfinished"></translation>
+        <translation>Палитра:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="516"/>
         <source>Quality:</source>
-        <translation type="unfinished"></translation>
+        <translation>Качество:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="518"/>
         <source>Steps:</source>
-        <translation type="unfinished"></translation>
+        <translation>Этапы:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="521"/>
         <source>Base:</source>
-        <translation type="unfinished"></translation>
+        <translation>База:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="525"/>
         <source>Palette</source>
-        <translation type="unfinished"></translation>
+        <translation>Палитра</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="534"/>
         <source>Show colorbar</source>
-        <translation type="unfinished"></translation>
+        <translation>Изобразить панель цветов</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="537"/>
         <source>Decimal places:</source>
-        <translation type="unfinished"></translation>
+        <translation>Количество десятичных знаков:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="541"/>
         <source>Colorbar</source>
-        <translation type="unfinished"></translation>
+        <translation>Панель цветов</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="544"/>
@@ -2868,289 +2868,289 @@
         <location filename="../src/postprocessorview.cpp" line="873"/>
         <location filename="../src/postprocessorview.cpp" line="926"/>
         <source>Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Дефолт</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="567"/>
         <source>Proportional</source>
-        <translation type="unfinished"></translation>
+        <translation>Пропорционально</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="568"/>
         <source>Color (b/w)</source>
-        <translation type="unfinished"></translation>
+        <translation>Цвет (ч/б)</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="584"/>
         <source>Contours count:</source>
-        <translation type="unfinished"></translation>
+        <translation>Количество контуров:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="586"/>
         <source>Contour width:</source>
-        <translation type="unfinished"></translation>
+        <translation>Контур ширина:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="593"/>
         <source>Vectors:</source>
-        <translation type="unfinished"></translation>
+        <translation>Векторы:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="596"/>
         <source>Scale:</source>
-        <translation type="unfinished"></translation>
+        <translation>Шкала:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="615"/>
         <source>Hermes</source>
-        <translation type="unfinished"></translation>
+        <translation>Hermes</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="631"/>
         <source>Show scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать спектр</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="632"/>
         <source>Show order labels</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать порядок многочлена численно</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="654"/>
         <source>Include gravitation</source>
-        <translation type="unfinished"></translation>
+        <translation>Включите гравитацию</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="667"/>
         <source>Reflect on different material</source>
-        <translation type="unfinished"></translation>
+        <translation>Отражение на различных материалах</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="668"/>
         <source>Reflect on boundary</source>
-        <translation type="unfinished"></translation>
+        <translation>Отражение на границе области</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="676"/>
         <source>Line color is controlled by velocity</source>
-        <translation type="unfinished"></translation>
+        <translation>Цвет линии контролирует скорость</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="677"/>
         <source>Show points</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать точки</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="692"/>
         <location filename="../src/postprocessorview.cpp" line="704"/>
         <source>Equation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Уравнение:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="694"/>
         <source>Charge (C):</source>
-        <translation type="unfinished"></translation>
+        <translation>Заряд (С):</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="697"/>
         <source>Lorentz Force</source>
-        <translation type="unfinished"></translation>
+        <translation>Сила Лоренца</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="706"/>
         <source>Density (kg/m&lt;sup&gt;3&lt;/sup&gt;):</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность (kg/m&lt;sup&gt;3&lt;/sup&gt;):</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="708"/>
         <source>Reference area (m&lt;sup&gt;2&lt;/sup&gt;):</source>
-        <translation type="unfinished"></translation>
+        <translation>Ссылка области (m&lt;sup&gt;2&lt;/sup&gt;):</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="710"/>
         <source>Coefficient (-):</source>
-        <translation type="unfinished"></translation>
+        <translation>Коэффициент (-):</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="713"/>
         <source>Drag force</source>
-        <translation type="unfinished"></translation>
+        <translation>Сила сопротивления</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="722"/>
         <source>Coefficient of restitution (-):</source>
-        <translation type="unfinished"></translation>
+        <translation>Коэффициент восстановления (-):</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="725"/>
         <source>Reflection</source>
-        <translation type="unfinished"></translation>
+        <translation>Отражение</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="735"/>
         <source>Initial particle position</source>
-        <translation type="unfinished"></translation>
+        <translation>Начальные положение частицы</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="745"/>
         <source>Initial particle velocity</source>
-        <translation type="unfinished"></translation>
+        <translation>Начальные скорости частицы</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="754"/>
         <source>Maximum relative error (%):</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальная относительная погрешность (%):</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="756"/>
         <source>Minimum step (m):</source>
-        <translation type="unfinished"></translation>
+        <translation>Минимальный шаг (m):</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="758"/>
         <source>Maximum number of steps:</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное количество шагов:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="761"/>
         <location filename="../src/postprocessorview.cpp" line="941"/>
         <source>Advanced</source>
-        <translation type="unfinished"></translation>
+        <translation>Расширенный</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="765"/>
         <source>Equations:</source>
-        <translation type="unfinished"></translation>
+        <translation>Уравнения:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="767"/>
         <source>Number of particles:</source>
-        <translation type="unfinished"></translation>
+        <translation>Количество частиц:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="769"/>
         <source>Particles dispersion (m):</source>
-        <translation type="unfinished"></translation>
+        <translation>Рассеяние частиц (m):</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="771"/>
         <source>Mass (kg):</source>
-        <translation type="unfinished"></translation>
+        <translation>Масса (кг):</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="790"/>
         <source>Contours and vectors</source>
-        <translation type="unfinished"></translation>
+        <translation>Контуры и векторы</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="811"/>
         <source>Show grid</source>
-        <translation type="unfinished"></translation>
+        <translation>Изобразить сетку</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="813"/>
         <source>Snap to grid</source>
-        <translation type="unfinished"></translation>
+        <translation>Прикрепить к сетке</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="814"/>
         <source>Zoom to mouse pointer</source>
-        <translation type="unfinished"></translation>
+        <translation>Увеличить указатели мыши</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="817"/>
         <source>Grid step:</source>
-        <translation type="unfinished"></translation>
+        <translation>Этапы сетки координат:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="823"/>
         <source>Grid</source>
-        <translation type="unfinished"></translation>
+        <translation>Сетка координат</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="828"/>
         <source>Set font</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбор шрифта</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="835"/>
         <source>Scene font</source>
-        <translation type="unfinished"></translation>
+        <translation>Сцена шрифта</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="850"/>
         <source>Node size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Размер узла:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="852"/>
         <source>Edge width:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ширина ребра:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="854"/>
         <source>Label size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Размер метки:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="861"/>
         <source>Show rulers</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать линейки</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="862"/>
         <source>Show axes</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать оси</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="863"/>
         <source>Show label</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать метку</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="870"/>
         <source>Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Другое</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="889"/>
         <source>Ligthing</source>
-        <translation type="unfinished"></translation>
+        <translation>Освещение</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="895"/>
         <source>Gradient background</source>
-        <translation type="unfinished"></translation>
+        <translation>Градиент фон</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="903"/>
         <source>Angle:</source>
-        <translation type="unfinished"></translation>
+        <translation>Угол:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="906"/>
         <source>Height:</source>
-        <translation type="unfinished"></translation>
+        <translation>Высота:</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="910"/>
         <source>3D view</source>
-        <translation type="unfinished"></translation>
+        <translation>3D изображение</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="923"/>
         <source>Deform shape</source>
-        <translation type="unfinished"></translation>
+        <translation>Форма деформации</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="963"/>
         <source>Scalar</source>
-        <translation type="unfinished"></translation>
+        <translation>Скаляр</translation>
     </message>
     <message>
         <location filename="../src/postprocessorview.cpp" line="967"/>
         <source>Magnitude</source>
-        <translation type="unfinished"></translation>
+        <translation>Модуль</translation>
     </message>
 </context>
 <context>
@@ -3158,177 +3158,177 @@
     <message>
         <location filename="../src/problemdialog.cpp" line="33"/>
         <source>Problem properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Установка проблемы</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="83"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Генеральный</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="84"/>
         <source>Startup script</source>
-        <translation type="unfinished"></translation>
+        <translation>Запуск скриптов</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="85"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Описание</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="164"/>
         <source>Date:</source>
-        <translation type="unfinished"></translation>
+        <translation>Дата:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="166"/>
         <source>Physic field:</source>
-        <translation type="unfinished"></translation>
+        <translation>Физикальное поле:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="168"/>
         <source>Problem type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип проблемы:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="170"/>
         <source>Type of analysis:</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип анализа:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="172"/>
         <source>Adaptivity:</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивность:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="174"/>
         <source>Linearity:</source>
-        <translation type="unfinished"></translation>
+        <translation>Линеаризация:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="176"/>
         <source>Linear solver:</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск решения:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="182"/>
         <source>Frequency (Hz):</source>
-        <translation type="unfinished"></translation>
+        <translation>Частота (Hz):</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="185"/>
         <source>Harmonic analysis</source>
-        <translation type="unfinished"></translation>
+        <translation>Гармонический анализ</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="192"/>
         <source>Time step (s):</source>
-        <translation type="unfinished"></translation>
+        <translation>Часовые этапы (s):</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="194"/>
         <source>Total time (s):</source>
-        <translation type="unfinished"></translation>
+        <translation>Общее время (s):</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="196"/>
         <source>Initial condition:</source>
-        <translation type="unfinished"></translation>
+        <translation>Начальное условие:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="198"/>
         <source>Steps:</source>
-        <translation type="unfinished"></translation>
+        <translation>Этапы:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="201"/>
         <source>Transient analysis</source>
-        <translation type="unfinished"></translation>
+        <translation>Переходные процессы</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="208"/>
         <source>Mesh type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип сети:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="210"/>
         <source>Number of refinements:</source>
-        <translation type="unfinished"></translation>
+        <translation>Число уточнений:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="212"/>
         <source>Polynomial order:</source>
-        <translation type="unfinished"></translation>
+        <translation>Порядок полинома:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="215"/>
         <source>Mesh parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Параметры сети</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="222"/>
         <source>Adaptivity steps:</source>
-        <translation type="unfinished"></translation>
+        <translation>Шаги адаптивности:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="224"/>
         <source>Adaptivity tolerance (%):</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивный допуск (%):</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="227"/>
         <source>Adaptivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивность</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="234"/>
         <source>Nonlin. tolerance (%):</source>
-        <translation type="unfinished"></translation>
+        <translation>Нелинейный допуск (%):</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="236"/>
         <source>Nonlin. steps:</source>
-        <translation type="unfinished"></translation>
+        <translation>Нелинейный ряд шагов:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="239"/>
         <source>Linearity</source>
-        <translation type="unfinished"></translation>
+        <translation>Линеаризация</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="269"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Название:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="276"/>
         <source>Equation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Уравнение:</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="405"/>
         <source>Change physical field type</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменение физикального поля</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="405"/>
         <source>Are you sure change physical field type?</source>
-        <translation type="unfinished"></translation>
+        <translation>Вы уверены, что хотите изменить тип физикального поля?</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="405"/>
         <source>&amp;Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Да</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="405"/>
         <source>&amp;No</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Нет</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="437"/>
         <source>Some nodes are placed outside the permitted area (coordinate x must be positive).</source>
-        <translation type="unfinished"></translation>
+        <translation>Некоторые узлы находятся за пределами разрешенной зоны (координаты х должно быть положительным).</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="446"/>
@@ -3336,27 +3336,27 @@
         <location filename="../src/problemdialog.cpp" line="461"/>
         <location filename="../src/problemdialog.cpp" line="467"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="446"/>
         <source>Frequency cannot be negative.</source>
-        <translation type="unfinished"></translation>
+        <translation>Частота не должна быть отрицательной.</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="455"/>
         <source>Time step must be positive.</source>
-        <translation type="unfinished"></translation>
+        <translation>Часовой этап должен быть положительный.</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="461"/>
         <source>Total time must be positive.</source>
-        <translation type="unfinished"></translation>
+        <translation>Общее время должно быть положительным.</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="467"/>
         <source>Time step is greater then total time.</source>
-        <translation type="unfinished"></translation>
+        <translation>Часовый этап г больше, чем общее время.</translation>
     </message>
 </context>
 <context>
@@ -3364,92 +3364,92 @@
     <message>
         <location filename="../src/progressdialog.cpp" line="1120"/>
         <source>Progress...</source>
-        <translation type="unfinished"></translation>
+        <translation>Процесс ...</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1167"/>
         <source>Progress</source>
-        <translation type="unfinished"></translation>
+        <translation>Процесс</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1168"/>
         <source>Adapt. error</source>
-        <translation type="unfinished"></translation>
+        <translation>Адапт. ошибка</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1169"/>
         <source>Adapt. DOFs</source>
-        <translation type="unfinished"></translation>
+        <translation>Адапт. DOFs</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1170"/>
         <source>Adapt. conv.</source>
-        <translation type="unfinished"></translation>
+        <translation>Адапт. усл.</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1173"/>
         <source>Cance&amp;l</source>
-        <translation type="unfinished"></translation>
+        <translation>Отменит&amp;ь</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1177"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Закрыть</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1181"/>
         <source>&amp;Save image</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Сохранить изображение</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1185"/>
         <source>Save data</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранение даты</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1234"/>
         <location filename="../src/progressdialog.cpp" line="1283"/>
         <source>current error</source>
-        <translation type="unfinished"></translation>
+        <translation>В целом ошибка</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1243"/>
         <location filename="../src/progressdialog.cpp" line="1327"/>
         <source>max. error</source>
-        <translation type="unfinished"></translation>
+        <translation>макс.ошибка</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1247"/>
         <location filename="../src/progressdialog.cpp" line="1331"/>
         <source>Error (%)</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка (%)</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1251"/>
         <location filename="../src/progressdialog.cpp" line="1291"/>
         <source>Steps (-)</source>
-        <translation type="unfinished"></translation>
+        <translation>Этапы (-)</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1287"/>
         <location filename="../src/progressdialog.cpp" line="1335"/>
         <source>DOFs (-)</source>
-        <translation type="unfinished"></translation>
+        <translation>DOFs (-)</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1318"/>
         <source>conv. chart</source>
-        <translation type="unfinished"></translation>
+        <translation>кoнв. график</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1693"/>
         <source>Export data to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспорт данных в файл</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1693"/>
         <source>CSV files (*.csv)</source>
-        <translation type="unfinished"></translation>
+        <translation>CSV файлы (*.csv)</translation>
     </message>
 </context>
 <context>
@@ -3457,122 +3457,122 @@
     <message>
         <location filename="../src/progressdialog.cpp" line="147"/>
         <source>Mesh</source>
-        <translation type="unfinished"></translation>
+        <translation>Сеть</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="175"/>
         <source>Poly file was created</source>
-        <translation type="unfinished"></translation>
+        <translation>Должно быть указано по крайней мере одно граничное условие</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="195"/>
         <source>Could not start Triangle</source>
-        <translation type="unfinished"></translation>
+        <translation>Программа с треугольником не запускается</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="227"/>
         <source>Mesh files were created</source>
-        <translation type="unfinished"></translation>
+        <translation>Файлы сети были созданы</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="232"/>
         <source>Mesh was converted to Hermes2D mesh file</source>
-        <translation type="unfinished"></translation>
+        <translation>Сеть была преобразована в формат Hermes2D</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="250"/>
         <source>Mesh files were deleted</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл сети были смазаны</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="279"/>
         <source>Boundary edges &apos;%1&apos; does not have a boundary marker</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничные ребра &apos;%1&apos; не имеет границ маркера</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="312"/>
         <source>Invalid number of nodes (%1 &lt; 3)</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверное количаство узлов (%1 &lt; 3)</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="317"/>
         <source>Invalid number of edges (%1 &lt; 3)</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверное количество края (%1 &lt; 3)</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="330"/>
         <source>At least one boundary condition has to be assigned</source>
-        <translation type="unfinished"></translation>
+        <translation>Должно быть указано по крайней мере одно граничное условие</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="336"/>
         <source>Invalid number of labels (%1 &lt; 1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверное число меток (%1 &lt; 1)</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="349"/>
         <source>At least one material has to be assigned</source>
-        <translation type="unfinished"></translation>
+        <translation>Должен быть указан по крайней мере один материал</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="355"/>
         <source>Invalid number of boundary conditions (%1 &lt; 1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверное количество граничных условий (%1 &lt; 1)</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="360"/>
         <source>Invalid number of materials (%1 &lt; 1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверный число материалов (%1 &lt; 1)</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="374"/>
         <source>Could not create Triangle poly mesh file (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать треугольник poly в сети файла (%1)</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="524"/>
         <source>Could not create Hermes2D mesh file</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось создать Hermes2D в сети файла</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="532"/>
         <source>Could not read Triangle node file</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удается прочитать файл с узлами</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="540"/>
         <source>Could not read Triangle edge file</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удается прочитать файл края треугольника</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="548"/>
         <source>Could not read Triangle ele file</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удается прочитать файл еле треугольника</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="556"/>
         <source>Could not read Triangle neigh file</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удается прочитать файл с соседними элементами</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="604"/>
         <source>Invalid number of edge markers</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверное количество краев брендов</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="640"/>
         <source>Some areas have no label marker</source>
-        <translation type="unfinished"></translation>
+        <translation>Некоторые области не имеют метку маркером</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="655"/>
         <source>Label marker &apos;%1&apos; is not present in mesh file (multiple label markers in one area).</source>
-        <translation type="unfinished"></translation>
+        <translation>Метки маркера&apos;%1&apos; нет в сети файла (несколько маркеров метки в одной области).</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="666"/>
         <source>Invalid number of label markers</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверный номер метки маркеров</translation>
     </message>
 </context>
 <context>
@@ -3580,27 +3580,27 @@
     <message>
         <location filename="../src/progressdialog.cpp" line="1049"/>
         <source>View</source>
-        <translation type="unfinished"></translation>
+        <translation>Изображение</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1085"/>
         <source>Processing solution mesh cache</source>
-        <translation type="unfinished"></translation>
+        <translation>Обработка данных для сети</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1091"/>
         <source>Processing countour view cache</source>
-        <translation type="unfinished"></translation>
+        <translation>Обработка данных для контура</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1099"/>
         <source>Processing scalar view cache</source>
-        <translation type="unfinished"></translation>
+        <translation>Обработка данных для скалярных просмотров</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1105"/>
         <source>Processing vector view cache</source>
-        <translation type="unfinished"></translation>
+        <translation>Обработка данных для отображения векторов</translation>
     </message>
 </context>
 <context>
@@ -3608,27 +3608,27 @@
     <message>
         <location filename="../src/progressdialog.cpp" line="980"/>
         <source>Solver</source>
-        <translation type="unfinished"></translation>
+        <translation>Решающее устройство</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1020"/>
         <source>Problem analysis: %1 (%2, %3)</source>
-        <translation type="unfinished"></translation>
+        <translation>Анализ проблемы: %1 (%2, %3)</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1025"/>
         <source>Solver was started: %1 </source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск решения начался: %1 </translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1031"/>
         <source>Problem was solved</source>
-        <translation type="unfinished"></translation>
+        <translation>Проблема была решена</translation>
     </message>
     <message>
         <location filename="../src/progressdialog.cpp" line="1036"/>
         <source>Problem was not solved</source>
-        <translation type="unfinished"></translation>
+        <translation>Проблема не была решена</translation>
     </message>
 </context>
 <context>
@@ -3636,57 +3636,57 @@
     <message>
         <location filename="../src/pythonlab/pythonbrowser.cpp" line="22"/>
         <source>Browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Браузер</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythonbrowser.cpp" line="38"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Название</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythonbrowser.cpp" line="38"/>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythonbrowser.cpp" line="38"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Значение</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythonbrowser.cpp" line="57"/>
         <source>Copy name</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать название</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythonbrowser.cpp" line="60"/>
         <source>Copy value</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать значение</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythonbrowser.cpp" line="63"/>
         <source>&amp;Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Вымазать</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythonbrowser.cpp" line="103"/>
         <source>Variables</source>
-        <translation type="unfinished"></translation>
+        <translation>Переменные</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythonbrowser.cpp" line="107"/>
         <source>Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Другое</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythonbrowser.cpp" line="111"/>
         <source>Functions</source>
-        <translation type="unfinished"></translation>
+        <translation>Функции</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythonbrowser.cpp" line="115"/>
         <source>Classes</source>
-        <translation type="unfinished"></translation>
+        <translation>Классы</translation>
     </message>
 </context>
 <context>
@@ -3694,269 +3694,269 @@
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="355"/>
         <source>&amp;New</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Новый</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="359"/>
         <source>&amp;Open...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Открыть ...</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="363"/>
         <source>&amp;Save</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Сохранить</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="367"/>
         <source>Save &amp;as...</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить &amp;как ...</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="371"/>
         <source>Save console output as...</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить консольный вывод как ...</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="377"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Закрыть</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="381"/>
         <source>&amp;Print</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Распечатать</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="385"/>
         <source>&amp;Undo</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Назад</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="388"/>
         <source>&amp;Redo</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Повтор</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="391"/>
         <source>Cu&amp;t</source>
-        <translation type="unfinished"></translation>
+        <translation>Отстранит&amp;ь</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="395"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Копировать</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="399"/>
         <source>&amp;Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Вставить</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="402"/>
         <source>&amp;Find</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Найти</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="406"/>
         <source>Find &amp;next</source>
-        <translation type="unfinished"></translation>
+        <translation>Найти &amp;другие</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="410"/>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="414"/>
         <source>Replace</source>
-        <translation type="unfinished"></translation>
+        <translation>Заменить</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="418"/>
         <source>Indent</source>
-        <translation type="unfinished"></translation>
+        <translation>Увеличить отступ</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="419"/>
         <source>Unindent</source>
-        <translation type="unfinished"></translation>
+        <translation>Отмена отступа</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="421"/>
         <source>Comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Комментарий</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="423"/>
         <source>Uncomment</source>
-        <translation type="unfinished"></translation>
+        <translation>Отмена комментария</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="424"/>
         <source>Ctrl+U</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+U</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="426"/>
         <source>Goto line</source>
-        <translation type="unfinished"></translation>
+        <translation>Перейти на линию</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="427"/>
         <source>Alt+G</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt+G</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="429"/>
         <source>&amp;Run Python script</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Спустить Python скрипты</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="430"/>
         <source>Ctrl+R</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+R</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="432"/>
         <source>Replace tabs with spaces</source>
-        <translation type="unfinished"></translation>
+        <translation>Заменить вкладки с пробелами</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="435"/>
         <source>&amp;Check Python script (PyLint)</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Проверить Python скрипт (PyLint)</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="439"/>
         <source>PyFlakes enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешить PyFlakes</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="446"/>
         <source>PyLint enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешить PyLint</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="453"/>
         <source>Print stacktrace</source>
-        <translation type="unfinished"></translation>
+        <translation>Распечатать stacktrace</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="459"/>
         <source>User module deleter</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить пользователя модуля</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="464"/>
         <source>E&amp;xit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Конец</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="465"/>
         <source>Ctrl+Q</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+Q</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="466"/>
         <source>Exit editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Закончить эдитор</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="469"/>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="541"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Помощь</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="473"/>
         <source>&amp;Keyword List</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Клавишные ссылки</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="477"/>
         <source>About &amp;PythonLab</source>
-        <translation type="unfinished"></translation>
+        <translation>О &amp;PythonLab</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="478"/>
         <source>Show the application&apos;s About box</source>
-        <translation type="unfinished"></translation>
+        <translation>Просмотр сведений об Аgros2D</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="482"/>
         <source>About &amp;Qt</source>
-        <translation type="unfinished"></translation>
+        <translation>О &amp;Qt</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="483"/>
         <source>Show the Qt library&apos;s About box</source>
-        <translation type="unfinished"></translation>
+        <translation>Просмотр информации о Qt инструментарий</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="490"/>
         <source>&amp;Recent files</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Недавно открытые файлы</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="492"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Файл</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="506"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Редактировать</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="526"/>
         <source>&amp;Tools</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Инструменты</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="532"/>
         <source>&amp;Options</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Настройка</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="551"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="561"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Редактировать</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="574"/>
         <source>Tools</source>
-        <translation type="unfinished"></translation>
+        <translation>Инструменты</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="594"/>
         <source>Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Путь</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="600"/>
         <source>Working directory: </source>
-        <translation type="unfinished"></translation>
+        <translation>Рабочий справочник: </translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="611"/>
         <source>Add new document</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить новый документ</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="655"/>
         <source>File browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл браузера</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="678"/>
         <source>Ready</source>
-        <translation type="unfinished"></translation>
+        <translation>Готово</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="812"/>
         <source>Select directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите справочник</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="819"/>
@@ -3964,72 +3964,73 @@
         <location filename="../src/pythonlab/pythoneditor.cpp" line="1118"/>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="1139"/>
         <source>Untitled</source>
-        <translation type="unfinished"></translation>
+        <translation>Неназванный</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="832"/>
         <source>Open File</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть файл</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="832"/>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="893"/>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="929"/>
         <source>Python files (*.py)</source>
-        <translation type="unfinished"></translation>
+        <translation>Python файлы (*.py)</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="849"/>
         <source>Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Информация</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="849"/>
         <source>Script is already opened.</source>
-        <translation type="unfinished"></translation>
+        <translation>Скрипты уже открыты.</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="893"/>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="929"/>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="946"/>
         <source>Save file</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить файл</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="915"/>
         <source>File &apos;%1&apos; cannot be saved.</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл &apos;%1&apos; не может быть сохранен.</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="946"/>
         <source>Html files (*.html)</source>
-        <translation type="unfinished"></translation>
+        <translation>Html файлы (*.html)</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="975"/>
         <source>Print Document</source>
-        <translation type="unfinished"></translation>
+        <translation>Распечатать документ</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="1051"/>
         <source>Application</source>
-        <translation type="unfinished"></translation>
+        <translation>Апликация</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="1051"/>
         <source>File &apos;%1&apos; has been modified.
 Do you want to save your changes?</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл &apos;%1&apos; был изменен.
+Вы хотите, чтобы сохранились изменения?</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="1124"/>
         <source>Python Lab - %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Python Lab - %1</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="1132"/>
         <source>Line: %1, Col: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Линия: %1, Колонка: %2</translation>
     </message>
 </context>
 <context>
@@ -4038,24 +4039,24 @@ Do you want to save your changes?</source>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="144"/>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="189"/>
         <source>Convention</source>
-        <translation type="unfinished"></translation>
+        <translation>Конвенция</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="147"/>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="194"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Предупреждение</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="151"/>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="199"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="158"/>
         <source>Could not read PyLint output.</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно прочитать PyLint выход.</translation>
     </message>
 </context>
 <context>
@@ -4063,12 +4064,12 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="1427"/>
         <source>&amp;Create script from model</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Создать скрипт из модели</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="1428"/>
         <source>Ctrl+M</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+M</translation>
     </message>
 </context>
 <context>
@@ -4076,7 +4077,7 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/pythonlab/pythonconsole.cpp" line="682"/>
         <source>Console</source>
-        <translation type="unfinished"></translation>
+        <translation>Консоль</translation>
     </message>
 </context>
 <context>
@@ -4084,7 +4085,7 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/pythonlab/pythonconsole.cpp" line="713"/>
         <source>History</source>
-        <translation type="unfinished"></translation>
+        <translation>История</translation>
     </message>
 </context>
 <context>
@@ -4098,7 +4099,7 @@ Do you want to save your changes?</source>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="335"/>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="603"/>
         <source>Boundary type &apos;%1&apos; is not supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие &apos;%1&apos; не поддерживается.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="523"/>
@@ -4110,7 +4111,7 @@ Do you want to save your changes?</source>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="341"/>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="618"/>
         <source>Boundary marker with name &apos;%1&apos; doesn&apos;t exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие с названием &apos;%1&apos; не существуют.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="569"/>
@@ -4122,44 +4123,44 @@ Do you want to save your changes?</source>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="408"/>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="673"/>
         <source>Label marker with name &apos;%1&apos; doesn&apos;t exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Метка изготовителя &apos;%1&apos; не существует.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="393"/>
         <source>Boundary type &apos;%1&apos; or &apos;%2&apos; is not supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие &apos;%1&apos; или &apos;%2&apos; не поддерживается.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_field.cpp" line="262"/>
         <source>DOF is zero</source>
-        <translation type="unfinished"></translation>
+        <translation>DOF равна нулю</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_field.cpp" line="295"/>
         <source>Adaptivity type: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивность типа: %1</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_field.cpp" line="335"/>
         <source>Adaptivity rel. error (step: %2/%3, DOFs: %4/%5): %1%</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивная отн. ошибка (шаг: %2/%3, DOFs: %4/%5): %1%</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_field.cpp" line="435"/>
         <source>Transient time step (%1/%2): %3 s</source>
-        <translation type="unfinished"></translation>
+        <translation>Временной шаг (%1/%2): %3 s</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_field.cpp" line="496"/>
         <source>Matrix solver failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка решающего устройства матрицы.</translation>
     </message>
     <message>
         <location filename="../src/problemdialog.cpp" line="437"/>
         <location filename="../src/problemdialog.cpp" line="478"/>
         <location filename="../src/value.cpp" line="48"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="261"/>
@@ -4172,261 +4173,261 @@ Do you want to save your changes?</source>
         <location filename="../src/pythonlabagros.cpp" line="1226"/>
         <location filename="../src/pythonlabagros.cpp" line="1350"/>
         <source>Problem is not solved.</source>
-        <translation type="unfinished"></translation>
+        <translation>Проблема не была решена.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="324"/>
         <source>x coordinate is out of range.</source>
-        <translation type="unfinished"></translation>
+        <translation>X координат находится вне диапазона.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="326"/>
         <source>y coordinate is out of range.</source>
-        <translation type="unfinished"></translation>
+        <translation>Y координат находится вне диапазона.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="341"/>
         <source>Mass must be positive.</source>
-        <translation type="unfinished"></translation>
+        <translation>Вес частицы должны быть положительным.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="356"/>
         <source>Density cannot be negative.</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность среды не должна быть отрицательной.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="365"/>
         <source>Area cannot be negative.</source>
-        <translation type="unfinished"></translation>
+        <translation>Эффективная площадь не должна быть отрицательной.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="374"/>
         <source>Coefficient cannot be negative.</source>
-        <translation type="unfinished"></translation>
+        <translation>Коэфициент не должен быть отрицательный.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="401"/>
         <source>Coefficient of restitution must be between 0 (collide inelastically) and 1 (collide elastically).</source>
-        <translation type="unfinished"></translation>
+        <translation>Коэффициент восстановления должна быть в диапазоне от 0 (неупругое столкновение) и 1 (упругое столкновение).</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="410"/>
         <source>Tolerance cannot be negative.</source>
-        <translation type="unfinished"></translation>
+        <translation>Толерантность не должна быть отрицательной.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="419"/>
         <source>Maximum number of steps cannot be negative.</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное количество шагов не должно быть отрицательным.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="428"/>
         <source>Minimum step cannot be negative.</source>
-        <translation type="unfinished"></translation>
+        <translation>Минимальный шаг не должен быть отрицательным.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="447"/>
         <source>Script message</source>
-        <translation type="unfinished"></translation>
+        <translation>Сообщение скриптов</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="455"/>
         <source>Script input</source>
-        <translation type="unfinished"></translation>
+        <translation>Вход скрипт</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="467"/>
         <source>Problem is not meshed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Проблема не в зацеплении.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="521"/>
         <source>Problem type &apos;%1&apos; is not implemented.</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип проблемы &apos;%1&apos; не был реализован.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="528"/>
         <source>Physic field &apos;%1&apos; is not implemented.</source>
-        <translation type="unfinished"></translation>
+        <translation>Физическое поле &apos;%1&apos; не реализовано.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="534"/>
         <source>Number of refinements &apos;%1&apos; is out of range.</source>
-        <translation type="unfinished"></translation>
+        <translation>Количество уточнений &apos;%1&apos; вне диапазона.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="540"/>
         <source>Polynomial order &apos;%1&apos; is out of range.</source>
-        <translation type="unfinished"></translation>
+        <translation>Порядок полинома &apos;%1&apos; вне диапазона.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="545"/>
         <source>Adaptivity type &apos;%1&apos; is not implemented.</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивность типа &apos;%1&apos; не реализована.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="551"/>
         <source>Adaptivity step &apos;%1&apos; is out of range.</source>
-        <translation type="unfinished"></translation>
+        <translation>Число адаптивных шагов &apos;%1&apos; находится за пределами диапазона.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="557"/>
         <source>Adaptivity tolerance &apos;%1&apos; is out of range.</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивность допуска.&apos;%1&apos; вне диапазона.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="565"/>
         <source>The frequency can not be used for this problem.</source>
-        <translation type="unfinished"></translation>
+        <translation>Для такого рода проблемы не могут быть определены частоты.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="571"/>
         <location filename="../src/pythonlabagros.cpp" line="576"/>
         <source>Analysis type &apos;%1&apos; is not implemented</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип анализа &apos;%1&apos; не реализован</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="582"/>
         <source>Time step must be positive.</source>
-        <translation type="unfinished"></translation>
+        <translation>Шаг по времени должен быть положительным.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="588"/>
         <source>Total time must be positive.</source>
-        <translation type="unfinished"></translation>
+        <translation>Общее время должно быть положительным.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="644"/>
         <location filename="../src/pythonlabagros.cpp" line="708"/>
         <location filename="../src/pythonlabagros.cpp" line="736"/>
         <source>Index &apos;%1&apos; is out of range.</source>
-        <translation type="unfinished"></translation>
+        <translation>Индекс &apos;%1&apos; находится за пределами диапазона.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="661"/>
         <location filename="../src/pythonlabagros.cpp" line="681"/>
         <source>Angle &apos;%1&apos; is out of range.</source>
-        <translation type="unfinished"></translation>
+        <translation>Угол &apos;%1&apos; вне диапазона.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="665"/>
         <location filename="../src/pythonlabagros.cpp" line="685"/>
         <source>Boundary &apos;%1&apos; is not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие &apos;%1&apos; не поддерживается.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="688"/>
         <source>Geometry does not contain nodes.</source>
-        <translation type="unfinished"></translation>
+        <translation>Геометрия не содержит никакие узлы.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="691"/>
         <location filename="../src/pythonlabagros.cpp" line="693"/>
         <source>Node with index &apos;%1&apos; does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation>Узел с &apos;%1&apos; индексом не определен.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="726"/>
         <source>Material &apos;%1&apos; is not defined.</source>
-        <translation type="unfinished"></translation>
+        <translation>Материал &apos;%1&apos; не определен.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="760"/>
         <source>Boundary marker already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие уже существует.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="789"/>
         <source>Label marker already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Метка уже существует.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="855"/>
         <source>Node index must be between 0 and &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Индекс узлов должны быть в диапазоне от 0 до &apos;%1&apos;.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="898"/>
         <location filename="../src/pythonlabagros.cpp" line="1155"/>
         <source>Edge index must be between 0 and &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Индекс края должна быть в диапазоне от 0 до &apos;%1&apos;.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="941"/>
         <location filename="../src/pythonlabagros.cpp" line="1205"/>
         <source>Label index must be between 0 and &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Указатель меток должен быть между 0 и &apos;%1&apos;.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="1070"/>
         <source>Mode &apos;%1&apos; is not implemented.</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим &apos;%1&apos; не реализован.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="1092"/>
         <source>Postprocessor mode &apos;%1&apos; is not implemented.</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим постпроцессора &apos;%1&apos; не реализован.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="1241"/>
         <source>View type &apos;%1&apos; is not implemented.</source>
-        <translation type="unfinished"></translation>
+        <translation>Просмотр типа &apos;%1&apos; не реализован.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="1246"/>
         <source>Physic field variable &apos;%1&apos; is not implemented.</source>
-        <translation type="unfinished"></translation>
+        <translation>Величина физикального поля &apos;%1&apos; не реализовано.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="1248"/>
         <source>Physic field variable &apos;%1&apos; cannot be used with this field.</source>
-        <translation type="unfinished"></translation>
+        <translation>Переменная &apos;%1&apos; не может быть использована в этом типе поля.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="1253"/>
         <source>Physic field variable component &apos;%1&apos; is not implemented.</source>
-        <translation type="unfinished"></translation>
+        <translation>Переменная &apos;%1&apos; не реализованы.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="1256"/>
         <source>Physic field variable is scalar variable.</source>
-        <translation type="unfinished"></translation>
+        <translation>Переменная является скаляром.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="1353"/>
         <source>Solved problem is not transient.</source>
-        <translation type="unfinished"></translation>
+        <translation>Решёная проблема не является переходным процессом.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="1356"/>
         <source>Time step must be between 0 and %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Шаг по времени должен быть в диапазоне от 0 и %1.</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="65"/>
         <source>unnamed</source>
-        <translation type="unfinished"></translation>
+        <translation>неназванный</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="280"/>
         <source>Variable</source>
-        <translation type="unfinished"></translation>
+        <translation>Величина</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="282"/>
         <source>Gradient</source>
-        <translation type="unfinished"></translation>
+        <translation>Градиент</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="284"/>
         <source>Constant</source>
-        <translation type="unfinished"></translation>
+        <translation>Постоянная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="287"/>
         <location filename="../src/util.cpp" line="355"/>
         <source>Scalar potential</source>
-        <translation type="unfinished"></translation>
+        <translation>Скалярный потенциал</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="289"/>
@@ -4434,151 +4435,151 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="405"/>
         <location filename="../src/util.cpp" line="976"/>
         <source>Electric field</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность эл. поля</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="291"/>
         <source>Electric displacement</source>
-        <translation type="unfinished"></translation>
+        <translation>Электрическая индукция</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="293"/>
         <location filename="../src/util.cpp" line="344"/>
         <source>Energy density</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность энергии</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="295"/>
         <location filename="../src/util.cpp" line="439"/>
         <source>Permittivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Диэлектрическая проницаемость</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="298"/>
         <source>Vector potential - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Векторный маг. потенциал - реальный</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="300"/>
         <source>Vector potential - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Векторный маг. потенциал - imag</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="302"/>
         <location filename="../src/util.cpp" line="952"/>
         <source>Vector potential</source>
-        <translation type="unfinished"></translation>
+        <translation>Векторный маг. потенциал</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="304"/>
         <source>Flux density - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Маг. индукция - реальный компонент</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="306"/>
         <source>Flux density - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Маг. индукция - исходный компонент</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="308"/>
         <location filename="../src/util.cpp" line="421"/>
         <source>Flux density</source>
-        <translation type="unfinished"></translation>
+        <translation>Магнитная индукция</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="310"/>
         <source>Magnetic field - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность маг. поля - реальная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="312"/>
         <source>Magnetic field - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность маг. поля - исходная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="314"/>
         <location filename="../src/util.cpp" line="411"/>
         <location filename="../src/util.cpp" line="879"/>
         <source>Magnetic field</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность маг. поля</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="316"/>
         <source>Current density - external - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - внешняя - реальная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="318"/>
         <source>Current density - external - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - внешняя - исходная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="320"/>
         <source>Current density - external</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - внешняя</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="322"/>
         <source>Current density - total - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - общая - реальная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="324"/>
         <source>Current density - total - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - обшая - исходная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="326"/>
         <source>Current density - total</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - общая</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="328"/>
         <source>Current density - induced transform - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - индуцированное преобразование - реальное</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="330"/>
         <source>Current density - induced transform - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - индуцированное преобразование - исходное</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="332"/>
         <source>Current density - induced transform</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - индуцированное преобразование</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="334"/>
         <source>Current density - induced velocity - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - индуцированная движением - реальная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="336"/>
         <source>Current density - induced velocity - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - индуцированная движением - исходная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="338"/>
         <source>Current density - induced velocity</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - индуцированная движением</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="340"/>
         <location filename="../src/util.cpp" line="361"/>
         <location filename="../src/util.cpp" line="437"/>
         <source>Power losses</source>
-        <translation type="unfinished"></translation>
+        <translation>Потери</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="342"/>
         <source>Lorentz force</source>
-        <translation type="unfinished"></translation>
+        <translation>Сила Лоренца</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="346"/>
         <location filename="../src/util.cpp" line="441"/>
         <source>Permeability</source>
-        <translation type="unfinished"></translation>
+        <translation>Проницаемость</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="348"/>
@@ -4586,193 +4587,193 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="372"/>
         <location filename="../src/util.cpp" line="443"/>
         <source>Conductivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Проводимость</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="350"/>
         <source>Remanent flux density</source>
-        <translation type="unfinished"></translation>
+        <translation>Остаточная величина индукция</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="352"/>
         <location filename="../src/util.cpp" line="396"/>
         <location filename="../src/util.cpp" line="972"/>
         <source>Velocity</source>
-        <translation type="unfinished"></translation>
+        <translation>Скорость</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="359"/>
         <source>Current density</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="366"/>
         <location filename="../src/util.cpp" line="956"/>
         <source>Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>Температура</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="368"/>
         <source>Temperature gradient</source>
-        <translation type="unfinished"></translation>
+        <translation>Градиент температуры</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="370"/>
         <location filename="../src/util.cpp" line="958"/>
         <source>Heat flux</source>
-        <translation type="unfinished"></translation>
+        <translation>Тепловой поток</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="375"/>
         <source>Von Mises stress</source>
-        <translation type="unfinished"></translation>
+        <translation>Von Мизеса напряжение</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="377"/>
         <source>Displacement</source>
-        <translation type="unfinished"></translation>
+        <translation>Электрическая индукция</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="379"/>
         <location filename="../src/util.cpp" line="381"/>
         <location filename="../src/util.cpp" line="383"/>
         <source>Normal strain </source>
-        <translation type="unfinished"></translation>
+        <translation>Нормальная деформация </translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="385"/>
         <source>Shear strain </source>
-        <translation type="unfinished"></translation>
+        <translation>Деформация сдвига </translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="387"/>
         <location filename="../src/util.cpp" line="389"/>
         <location filename="../src/util.cpp" line="391"/>
         <source>Normal stress </source>
-        <translation type="unfinished"></translation>
+        <translation>Нормальное напряжение </translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="393"/>
         <source>Shear stress </source>
-        <translation type="unfinished"></translation>
+        <translation>Напряжение сдвига </translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="398"/>
         <location filename="../src/util.cpp" line="400"/>
         <source>Velocity </source>
-        <translation type="unfinished"></translation>
+        <translation>Скорость </translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="402"/>
         <location filename="../src/util.cpp" line="974"/>
         <source>Pressure</source>
-        <translation type="unfinished"></translation>
+        <translation>Давление</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="407"/>
         <source>Electric field - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность эл. поля - реальная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="409"/>
         <source>Electric field - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность эл. поля - исходная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="413"/>
         <location filename="../src/util.cpp" line="417"/>
         <source>Magnetic field %1 - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность маг. поля %1 - реальная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="415"/>
         <location filename="../src/util.cpp" line="419"/>
         <source>Magnetic field %1 - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Интенсивность маг. поля %1 - исходная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="423"/>
         <location filename="../src/util.cpp" line="427"/>
         <source>Flux density %1 - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Маг. индукция %1 - реальная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="425"/>
         <location filename="../src/util.cpp" line="429"/>
         <source>Flux density %1 - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Маг. индукция %1 - исходная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="431"/>
         <source>Poynting vector</source>
-        <translation type="unfinished"></translation>
+        <translation>Вектор Пойнтинга</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="433"/>
         <location filename="../src/util.cpp" line="435"/>
         <source>Poynting vector %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Вектор Пойнтинга %1</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="445"/>
         <source>Current density - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - реальная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="447"/>
         <source>Current density - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока - исходная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="449"/>
         <location filename="../src/util.cpp" line="986"/>
         <source>Acoustic pressure</source>
-        <translation type="unfinished"></translation>
+        <translation>Акустическое давление</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="451"/>
         <source>Acoustic pressure - real</source>
-        <translation type="unfinished"></translation>
+        <translation>Звуковое давление - реальный компонент</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="453"/>
         <source>Acoustic pressure - imag</source>
-        <translation type="unfinished"></translation>
+        <translation>Звуковое давление - исходный компонент</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="455"/>
         <source>Sound pressure level</source>
-        <translation type="unfinished"></translation>
+        <translation>Уровень звукового давления</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="457"/>
         <source>Local velocity</source>
-        <translation type="unfinished"></translation>
+        <translation>Местная скорость частиц</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="459"/>
         <source>Local acceleration</source>
-        <translation type="unfinished"></translation>
+        <translation>Местное ускорение частиц</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="461"/>
         <source>Density</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="463"/>
         <source>Speed of sound</source>
-        <translation type="unfinished"></translation>
+        <translation>Скорость звука</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="465"/>
         <source>Sound energy</source>
-        <translation type="unfinished"></translation>
+        <translation>Звук энергии</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="467"/>
         <source>Sound energy level</source>
-        <translation type="unfinished"></translation>
+        <translation>Уровень звука энергии</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="480"/>
@@ -4781,18 +4782,18 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="685"/>
         <location filename="../src/util.cpp" line="751"/>
         <source>V</source>
-        <translation type="unfinished"></translation>
+        <translation>V</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="482"/>
         <location filename="../src/util.cpp" line="568"/>
         <source>G</source>
-        <translation type="unfinished"></translation>
+        <translation>G</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="484"/>
         <source>C</source>
-        <translation type="unfinished"></translation>
+        <translation>C</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="489"/>
@@ -4800,165 +4801,165 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="575"/>
         <location filename="../src/util.cpp" line="605"/>
         <source>E</source>
-        <translation type="unfinished"></translation>
+        <translation>E</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="491"/>
         <source>D</source>
-        <translation type="unfinished"></translation>
+        <translation>D</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="493"/>
         <source>we</source>
-        <translation type="unfinished"></translation>
+        <translation>we</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="495"/>
         <location filename="../src/util.cpp" line="639"/>
         <source>epsr</source>
-        <translation type="unfinished"></translation>
+        <translation>epsr</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="498"/>
         <source>Are</source>
-        <translation type="unfinished"></translation>
+        <translation>Are</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="500"/>
         <source>Aim</source>
-        <translation type="unfinished"></translation>
+        <translation>Цель</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="502"/>
         <source>A</source>
-        <translation type="unfinished"></translation>
+        <translation>A</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="504"/>
         <source>Bre</source>
-        <translation type="unfinished"></translation>
+        <translation>Bre</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="506"/>
         <source>Bim</source>
-        <translation type="unfinished"></translation>
+        <translation>Bim</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="508"/>
         <location filename="../src/util.cpp" line="621"/>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>B</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="510"/>
         <source>Hre</source>
-        <translation type="unfinished"></translation>
+        <translation>Hre</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="512"/>
         <source>Him</source>
-        <translation type="unfinished"></translation>
+        <translation>Him</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="514"/>
         <location filename="../src/util.cpp" line="611"/>
         <source>H</source>
-        <translation type="unfinished"></translation>
+        <translation>H</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="516"/>
         <source>Jere</source>
-        <translation type="unfinished"></translation>
+        <translation>Jere</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="518"/>
         <source>Jeim</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeim</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="520"/>
         <source>Je</source>
-        <translation type="unfinished"></translation>
+        <translation>Je</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="522"/>
         <source>Jtre</source>
-        <translation type="unfinished"></translation>
+        <translation>Jtre</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="524"/>
         <source>Jtim</source>
-        <translation type="unfinished"></translation>
+        <translation>Jtim</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="526"/>
         <source>Jt</source>
-        <translation type="unfinished"></translation>
+        <translation>Jt</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="528"/>
         <source>Jitre</source>
-        <translation type="unfinished"></translation>
+        <translation>Jitre</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="530"/>
         <source>Jitim</source>
-        <translation type="unfinished"></translation>
+        <translation>Jitim</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="532"/>
         <source>Jit</source>
-        <translation type="unfinished"></translation>
+        <translation>Jit</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="534"/>
         <source>Jivre</source>
-        <translation type="unfinished"></translation>
+        <translation>Jivre</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="536"/>
         <source>Jivim</source>
-        <translation type="unfinished"></translation>
+        <translation>Jivim</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="538"/>
         <source>Jiv</source>
-        <translation type="unfinished"></translation>
+        <translation>Jiv</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="540"/>
         <location filename="../src/util.cpp" line="561"/>
         <location filename="../src/util.cpp" line="637"/>
         <source>pj</source>
-        <translation type="unfinished"></translation>
+        <translation>pj</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="542"/>
         <source>FL</source>
-        <translation type="unfinished"></translation>
+        <translation>FL</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="544"/>
         <source>wm</source>
-        <translation type="unfinished"></translation>
+        <translation>wm</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="546"/>
         <location filename="../src/util.cpp" line="641"/>
         <source>mur</source>
-        <translation type="unfinished"></translation>
+        <translation>mur</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="548"/>
         <location filename="../src/util.cpp" line="563"/>
         <location filename="../src/util.cpp" line="643"/>
         <source>g</source>
-        <translation type="unfinished"></translation>
+        <translation>g</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="550"/>
         <source>Br</source>
-        <translation type="unfinished"></translation>
+        <translation>Br</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="552"/>
@@ -4968,13 +4969,13 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="657"/>
         <location filename="../src/util.cpp" line="663"/>
         <source>v</source>
-        <translation type="unfinished"></translation>
+        <translation>v</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="559"/>
         <location filename="../src/util.cpp" line="859"/>
         <source>J</source>
-        <translation type="unfinished"></translation>
+        <translation>J</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="566"/>
@@ -4988,22 +4989,22 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="820"/>
         <location filename="../src/util.cpp" line="822"/>
         <source>T</source>
-        <translation type="unfinished"></translation>
+        <translation>T</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="570"/>
         <source>F</source>
-        <translation type="unfinished"></translation>
+        <translation>F</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="572"/>
         <source>k</source>
-        <translation type="unfinished"></translation>
+        <translation>k</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="577"/>
         <source>d</source>
-        <translation type="unfinished"></translation>
+        <translation>d</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="579"/>
@@ -5011,7 +5012,7 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="583"/>
         <location filename="../src/util.cpp" line="585"/>
         <source>e</source>
-        <translation type="unfinished"></translation>
+        <translation>e</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="587"/>
@@ -5019,7 +5020,7 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="591"/>
         <location filename="../src/util.cpp" line="593"/>
         <source>s</source>
-        <translation type="unfinished"></translation>
+        <translation>s</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="602"/>
@@ -5027,87 +5028,87 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="651"/>
         <location filename="../src/util.cpp" line="653"/>
         <source>p</source>
-        <translation type="unfinished"></translation>
+        <translation>P</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="607"/>
         <source>E_re</source>
-        <translation type="unfinished"></translation>
+        <translation>E_re</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="609"/>
         <source>E_im</source>
-        <translation type="unfinished"></translation>
+        <translation>E_im</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="613"/>
         <location filename="../src/util.cpp" line="617"/>
         <source>H%1re</source>
-        <translation type="unfinished"></translation>
+        <translation>H%1re</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="615"/>
         <location filename="../src/util.cpp" line="619"/>
         <source>H%1im</source>
-        <translation type="unfinished"></translation>
+        <translation>H%1im</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="623"/>
         <location filename="../src/util.cpp" line="627"/>
         <source>B%1re</source>
-        <translation type="unfinished"></translation>
+        <translation>B%1re</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="625"/>
         <location filename="../src/util.cpp" line="629"/>
         <source>B%1im</source>
-        <translation type="unfinished"></translation>
+        <translation>B%1im</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="631"/>
         <source>N</source>
-        <translation type="unfinished"></translation>
+        <translation>N</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="633"/>
         <location filename="../src/util.cpp" line="635"/>
         <source>N%1</source>
-        <translation type="unfinished"></translation>
+        <translation>N%1</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="645"/>
         <source>J_re</source>
-        <translation type="unfinished"></translation>
+        <translation>J_re</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="647"/>
         <source>J_im</source>
-        <translation type="unfinished"></translation>
+        <translation>J_im</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="655"/>
         <source>Lp</source>
-        <translation type="unfinished"></translation>
+        <translation>Lp</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="659"/>
         <source>a</source>
-        <translation type="unfinished"></translation>
+        <translation>a</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="661"/>
         <source>rho</source>
-        <translation type="unfinished"></translation>
+        <translation>rho</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="665"/>
         <source>W</source>
-        <translation type="unfinished"></translation>
+        <translation>W</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="667"/>
         <source>Lw</source>
-        <translation type="unfinished"></translation>
+        <translation>Lw</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="687"/>
@@ -5116,19 +5117,19 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="800"/>
         <location filename="../src/util.cpp" line="802"/>
         <source>V/m</source>
-        <translation type="unfinished"></translation>
+        <translation>V/m</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="689"/>
         <source>C/m2</source>
-        <translation type="unfinished"></translation>
+        <translation>C/m2</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="691"/>
         <location filename="../src/util.cpp" line="741"/>
         <location filename="../src/util.cpp" line="830"/>
         <source>J/m3</source>
-        <translation type="unfinished"></translation>
+        <translation>J/m3</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="693"/>
@@ -5138,14 +5139,14 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="777"/>
         <location filename="../src/util.cpp" line="779"/>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="695"/>
         <location filename="../src/util.cpp" line="697"/>
         <location filename="../src/util.cpp" line="699"/>
         <source>Wb/m</source>
-        <translation type="unfinished"></translation>
+        <translation>Wb/m</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="707"/>
@@ -5160,7 +5161,7 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="810"/>
         <location filename="../src/util.cpp" line="812"/>
         <source>A/m</source>
-        <translation type="unfinished"></translation>
+        <translation>A/m</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="719"/>
@@ -5176,25 +5177,25 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="838"/>
         <location filename="../src/util.cpp" line="840"/>
         <source>A/m2</source>
-        <translation type="unfinished"></translation>
+        <translation>A/m2</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="737"/>
         <location filename="../src/util.cpp" line="757"/>
         <source>W/m3</source>
-        <translation type="unfinished"></translation>
+        <translation>W/m3</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="739"/>
         <source>N/m3</source>
-        <translation type="unfinished"></translation>
+        <translation>N/m3</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="745"/>
         <location filename="../src/util.cpp" line="759"/>
         <location filename="../src/util.cpp" line="836"/>
         <source>S/m</source>
-        <translation type="unfinished"></translation>
+        <translation>S/m</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="749"/>
@@ -5204,17 +5205,17 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="851"/>
         <location filename="../src/util.cpp" line="857"/>
         <source>m/s</source>
-        <translation type="unfinished"></translation>
+        <translation>m/s</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="761"/>
         <source>deg.</source>
-        <translation type="unfinished"></translation>
+        <translation>deg.</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="763"/>
         <source>K/m</source>
-        <translation type="unfinished"></translation>
+        <translation>K/m</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="765"/>
@@ -5222,12 +5223,12 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="826"/>
         <location filename="../src/util.cpp" line="828"/>
         <source>W/m2</source>
-        <translation type="unfinished"></translation>
+        <translation>W/m2</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="767"/>
         <source>W/m.K</source>
-        <translation type="unfinished"></translation>
+        <translation>W/m.K</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="769"/>
@@ -5240,349 +5241,349 @@ Do you want to save your changes?</source>
         <location filename="../src/util.cpp" line="845"/>
         <location filename="../src/util.cpp" line="847"/>
         <source>Pa</source>
-        <translation type="unfinished"></translation>
+        <translation>Pa</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="771"/>
         <source>m</source>
-        <translation type="unfinished"></translation>
+        <translation>m</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="832"/>
         <source>F/m</source>
-        <translation type="unfinished"></translation>
+        <translation>F/m</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="834"/>
         <source>H/m</source>
-        <translation type="unfinished"></translation>
+        <translation>H/m</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="849"/>
         <location filename="../src/util.cpp" line="861"/>
         <source>dB</source>
-        <translation type="unfinished"></translation>
+        <translation>dB</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="853"/>
         <source>m/s2</source>
-        <translation type="unfinished"></translation>
+        <translation>m/s2</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="855"/>
         <source>kg/m3</source>
-        <translation type="unfinished"></translation>
+        <translation>kg/m3</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="875"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Генеральный</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="877"/>
         <source>Electrostatic field</source>
-        <translation type="unfinished"></translation>
+        <translation>Электростатическое поле</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="881"/>
         <source>Current field</source>
-        <translation type="unfinished"></translation>
+        <translation>Поле электрического тока</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="883"/>
         <source>Heat transfer</source>
-        <translation type="unfinished"></translation>
+        <translation>Теплопередача</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="885"/>
         <source>Structural mechanics</source>
-        <translation type="unfinished"></translation>
+        <translation>Строительная механика</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="887"/>
         <source>Incompressible flow</source>
-        <translation type="unfinished"></translation>
+        <translation>Несжимаемые потоки</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="889"/>
         <source>TE Waves</source>
-        <translation type="unfinished"></translation>
+        <translation>TE волны</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="891"/>
         <source>Acoustics</source>
-        <translation type="unfinished"></translation>
+        <translation>Акустическое поле</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="905"/>
         <source>Steady state</source>
-        <translation type="unfinished"></translation>
+        <translation>Устойчивое состояние</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="907"/>
         <source>Transient</source>
-        <translation type="unfinished"></translation>
+        <translation>Переходные процессы</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="909"/>
         <source>Harmonic</source>
-        <translation type="unfinished"></translation>
+        <translation>Гармонический анализ</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="923"/>
         <source>TE Mode 0</source>
-        <translation type="unfinished"></translation>
+        <translation>TE Mode 0</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="925"/>
         <source>TE Mode 01</source>
-        <translation type="unfinished"></translation>
+        <translation>TE Mode 01</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="927"/>
         <source>TE Mode 02</source>
-        <translation type="unfinished"></translation>
+        <translation>TE Mode 02</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="942"/>
         <source>none</source>
-        <translation type="unfinished"></translation>
+        <translation>Без изображения</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="944"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Значение</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="946"/>
         <source>Derivative</source>
-        <translation type="unfinished"></translation>
+        <translation>Производная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="948"/>
         <source>Fixed voltage</source>
-        <translation type="unfinished"></translation>
+        <translation>Фиксированные напряжение</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="950"/>
         <source>Surface charge density</source>
-        <translation type="unfinished"></translation>
+        <translation>Поверхностная плотность заряда</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="954"/>
         <source>Surface current density</source>
-        <translation type="unfinished"></translation>
+        <translation>Поверхность плотности тока</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="960"/>
         <source>Potential</source>
-        <translation type="unfinished"></translation>
+        <translation>Потенциал</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="962"/>
         <source>Inward current flow</source>
-        <translation type="unfinished"></translation>
+        <translation>Входная плотность тока</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="964"/>
         <source>Fixed</source>
-        <translation type="unfinished"></translation>
+        <translation>Зафиксированный</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="966"/>
         <source>Free</source>
-        <translation type="unfinished"></translation>
+        <translation>Свободный</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="968"/>
         <source>Outlet</source>
-        <translation type="unfinished"></translation>
+        <translation>Выпуск</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="970"/>
         <source>Wall</source>
-        <translation type="unfinished"></translation>
+        <translation>Стена</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="978"/>
         <source>Surface current</source>
-        <translation type="unfinished"></translation>
+        <translation>Поверхностное течение</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="980"/>
         <source>Scattering boundary</source>
-        <translation type="unfinished"></translation>
+        <translation>Рассеянные границы</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="982"/>
         <location filename="../src/util.cpp" line="992"/>
         <source>Matched boundary</source>
-        <translation type="unfinished"></translation>
+        <translation>Индивидуальные границы</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="984"/>
         <source>Port</source>
-        <translation type="unfinished"></translation>
+        <translation>Порт</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="988"/>
         <source>Normal acceleration</source>
-        <translation type="unfinished"></translation>
+        <translation>Нормальное ускорение</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="990"/>
         <source>Impedance boundary condition</source>
-        <translation type="unfinished"></translation>
+        <translation>Импеданса граничное условие</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1006"/>
         <source>Scalar</source>
-        <translation type="unfinished"></translation>
+        <translation>Скаляр</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1008"/>
         <source>Magnitude</source>
-        <translation type="unfinished"></translation>
+        <translation>Модуль</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1014"/>
         <source>Undefined</source>
-        <translation type="unfinished"></translation>
+        <translation>Неопределенная</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1022"/>
         <source>Planar</source>
-        <translation type="unfinished"></translation>
+        <translation>Плоские</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1022"/>
         <source>Axisymmetric</source>
-        <translation type="unfinished"></translation>
+        <translation>Ааксиально-симметричный</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1032"/>
         <source>Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Выключено</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1034"/>
         <source>h-adaptivity</source>
-        <translation type="unfinished"></translation>
+        <translation>h-адаптивность</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1036"/>
         <source>p-adaptivity</source>
-        <translation type="unfinished"></translation>
+        <translation>p-адаптивность</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1038"/>
         <source>hp-adaptivity</source>
-        <translation type="unfinished"></translation>
+        <translation>hp-адаптивность</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1052"/>
         <source>Triangle</source>
-        <translation type="unfinished"></translation>
+        <translation>Треугольниковая</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1054"/>
         <source>Quad fine div.</source>
-        <translation type="unfinished"></translation>
+        <translation>Четырёхугольная-работает нормально.</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1056"/>
         <source>Quad rough div.</source>
-        <translation type="unfinished"></translation>
+        <translation>Четырехъядерный грубо дел.</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1058"/>
         <source>Quad join</source>
-        <translation type="unfinished"></translation>
+        <translation>Четырехъядерные соединения</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1072"/>
         <source>Linear</source>
-        <translation type="unfinished"></translation>
+        <translation>Линейный</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1074"/>
         <source>Picardâs method</source>
-        <translation type="unfinished"></translation>
+        <translation>Метод Пикарда</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1076"/>
         <source>Newtonâs method</source>
-        <translation type="unfinished"></translation>
+        <translation>Метод Ньютона</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1090"/>
         <source>UMFPACK</source>
-        <translation type="unfinished"></translation>
+        <translation>UMFPACK</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1092"/>
         <source>PETSc</source>
-        <translation type="unfinished"></translation>
+        <translation>PETSc</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1094"/>
         <source>MUMPS</source>
-        <translation type="unfinished"></translation>
+        <translation>MUMPS</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1096"/>
         <source>SuperLU</source>
-        <translation type="unfinished"></translation>
+        <translation>SuperLU</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1098"/>
         <source>Trilinos/Amesos</source>
-        <translation type="unfinished"></translation>
+        <translation>Trilinos/Amesos</translation>
     </message>
     <message>
         <location filename="../src/util.cpp" line="1100"/>
         <source>Trilinos/AztecOO</source>
-        <translation type="unfinished"></translation>
+        <translation>Trilinos/AztecOO</translation>
     </message>
     <message>
         <location filename="../src/util.h" line="333"/>
         <source>Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Информация</translation>
     </message>
     <message>
         <location filename="../src/util.h" line="336"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Предупреждение</translation>
     </message>
     <message>
         <location filename="../src/util.h" line="339"/>
         <source>Critical</source>
-        <translation type="unfinished"></translation>
+        <translation>Критический</translation>
     </message>
     <message>
         <location filename="../src/util.h" line="744"/>
         <source>H1 norm</source>
-        <translation type="unfinished"></translation>
+        <translation>H1 норма</translation>
     </message>
     <message>
         <location filename="../src/util.h" line="746"/>
         <source>L2 norm</source>
-        <translation type="unfinished"></translation>
+        <translation>L2 норма</translation>
     </message>
     <message>
         <location filename="../src/util.h" line="748"/>
         <source>H1 seminorm</source>
-        <translation type="unfinished"></translation>
+        <translation>H1 полунорма</translation>
     </message>
     <message>
         <location filename="../src/util.h" line="750"/>
         <source>Hdiv norm</source>
-        <translation type="unfinished"></translation>
+        <translation>Hdiv норма</translation>
     </message>
     <message>
         <location filename="../src/util.h" line="752"/>
         <source>Hcurl norm</source>
-        <translation type="unfinished"></translation>
+        <translation>Hcurl норма</translation>
     </message>
 </context>
 <context>
@@ -5590,28 +5591,28 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/reportdialog.cpp" line="35"/>
         <source>Report</source>
-        <translation type="unfinished"></translation>
+        <translation>Сообщение</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="61"/>
         <location filename="../src/reportdialog.cpp" line="352"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Описание</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="62"/>
         <source>Problem information</source>
-        <translation type="unfinished"></translation>
+        <translation>Информация о задаче</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="63"/>
         <source>Startup script</source>
-        <translation type="unfinished"></translation>
+        <translation>Определение переменных</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="64"/>
         <source>Physical properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Определение физических свойств</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="65"/>
@@ -5619,165 +5620,165 @@ Do you want to save your changes?</source>
         <location filename="../src/reportdialog.cpp" line="467"/>
         <location filename="../src/reportdialog.cpp" line="550"/>
         <source>Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Геометрия</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="67"/>
         <source>Mesh and solution</source>
-        <translation type="unfinished"></translation>
+        <translation>Сеть и решение</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="69"/>
         <location filename="../src/reportdialog.cpp" line="536"/>
         <source>Script</source>
-        <translation type="unfinished"></translation>
+        <translation>Скрипты</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="72"/>
         <location filename="../src/reportdialog.cpp" line="555"/>
         <source>Mesh</source>
-        <translation type="unfinished"></translation>
+        <translation>Сеть</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="73"/>
         <source>Order</source>
-        <translation type="unfinished"></translation>
+        <translation>Порядок</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="74"/>
         <source>Scalar view</source>
-        <translation type="unfinished"></translation>
+        <translation>Скалярное изображение</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="75"/>
         <source>Contour view</source>
-        <translation type="unfinished"></translation>
+        <translation>Изображение контуров</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="76"/>
         <source>Vector view</source>
-        <translation type="unfinished"></translation>
+        <translation>Векторовое изображение</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="77"/>
         <source>Show grid</source>
-        <translation type="unfinished"></translation>
+        <translation>Изобразить сетку</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="78"/>
         <source>Show rulers</source>
-        <translation type="unfinished"></translation>
+        <translation>Изобразить линейку</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="92"/>
         <source>Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Дефолт</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="95"/>
         <source>Show report</source>
-        <translation type="unfinished"></translation>
+        <translation>Изобразить сообщение</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="98"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="126"/>
         <source>Template</source>
-        <translation type="unfinished"></translation>
+        <translation>Шаблон</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="128"/>
         <source>Style sheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл в стиле</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="132"/>
         <source>Width</source>
-        <translation type="unfinished"></translation>
+        <translation>Ширина</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="134"/>
         <source>Height</source>
-        <translation type="unfinished"></translation>
+        <translation>Высота</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="149"/>
         <source>Sections</source>
-        <translation type="unfinished"></translation>
+        <translation>Секции</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="152"/>
         <source>Figures properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Особенности изображения</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="155"/>
         <source>Additional properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Дополнительные настройки</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="285"/>
         <location filename="../src/reportdialog.cpp" line="287"/>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="285"/>
         <source>Report template could not be copied.</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно скопировать шаблон сообщения.</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="287"/>
         <source>Template style could not be copied.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удается скопировать файл стиля.</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="364"/>
         <source>Problem Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Информация о задаче</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="365"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Название:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="366"/>
         <source>Date:</source>
-        <translation type="unfinished"></translation>
+        <translation>Дата:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="367"/>
         <source>Filename:</source>
-        <translation type="unfinished"></translation>
+        <translation>Название файла:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="368"/>
         <source>Problem type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип проблемы:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="369"/>
         <source>Physic field:</source>
-        <translation type="unfinished"></translation>
+        <translation>Физикальное поле:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="370"/>
         <source>Analysis type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип анализа:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="371"/>
         <source>Number of refinements:</source>
-        <translation type="unfinished"></translation>
+        <translation>Количество уточнений:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="372"/>
         <source>Polynomial order:</source>
-        <translation type="unfinished"></translation>
+        <translation>Порядок полинома:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="376"/>
@@ -5786,153 +5787,153 @@ Do you want to save your changes?</source>
         <location filename="../src/reportdialog.cpp" line="397"/>
         <location filename="../src/reportdialog.cpp" line="398"/>
         <source>Adaptivity type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип адаптивности:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="377"/>
         <source>Adaptivity steps:</source>
-        <translation type="unfinished"></translation>
+        <translation>Количество адаптивных шагов:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="378"/>
         <source>Adaptivity tolerance:</source>
-        <translation type="unfinished"></translation>
+        <translation>Допуск адаптивности:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="379"/>
         <source>Maximum DOFs:</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимум DOFs:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="434"/>
         <source>Startup Script</source>
-        <translation type="unfinished"></translation>
+        <translation>Определение Переменных</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="446"/>
         <source>Physical Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Определение физических свойств</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="447"/>
         <source>Materials</source>
-        <translation type="unfinished"></translation>
+        <translation>Материал</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="449"/>
         <source>Boundary conditions</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничные условия</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="468"/>
         <source>Nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Узлы</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="470"/>
         <source>Edges</source>
-        <translation type="unfinished"></translation>
+        <translation>Края</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="472"/>
         <source>Labels</source>
-        <translation type="unfinished"></translation>
+        <translation>Метки</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="494"/>
         <source>Mesh and Solution</source>
-        <translation type="unfinished"></translation>
+        <translation>Сеть и Решение</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="495"/>
         <source>Solver information</source>
-        <translation type="unfinished"></translation>
+        <translation>Информация о решении</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="496"/>
         <source>Nodes:</source>
-        <translation type="unfinished"></translation>
+        <translation>Узлы:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="497"/>
         <source>Elements:</source>
-        <translation type="unfinished"></translation>
+        <translation>Количество элементов:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="498"/>
         <source>DOFs:</source>
-        <translation type="unfinished"></translation>
+        <translation>DOFs:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="499"/>
         <source>Elapsed time:</source>
-        <translation type="unfinished"></translation>
+        <translation>Время расчета:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="503"/>
         <source>Adaptive error:</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивная ошибка:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="504"/>
         <source>Adaptive steps:</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивные шаги:</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="546"/>
         <source>Computed by Agros2D (&lt;a href=&quot;http://agros2d.org/&quot;&gt;http://agros2d.org/&lt;/a&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>Расчитано в Agros2D (&lt;a href=&quot;http://agros2d.org/&quot;&gt;http://agros2d.org/&lt;/a&gt;)</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="560"/>
         <source>Polynomial order</source>
-        <translation type="unfinished"></translation>
+        <translation>Порядок полинома</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="565"/>
         <source>ScalarView: </source>
-        <translation type="unfinished"></translation>
+        <translation>Скалярное изображение: </translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="570"/>
         <source>ContourView: </source>
-        <translation type="unfinished"></translation>
+        <translation>Изображение контуров: </translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="575"/>
         <source>VectorView: </source>
-        <translation type="unfinished"></translation>
+        <translation>Векторовое Изображение: </translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="663"/>
         <source>Start node</source>
-        <translation type="unfinished"></translation>
+        <translation>Начальный узел</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="664"/>
         <source>End node</source>
-        <translation type="unfinished"></translation>
+        <translation>Концовый узел</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="665"/>
         <source>Angle (deg.)</source>
-        <translation type="unfinished"></translation>
+        <translation>Угол (deg.)</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="666"/>
         <location filename="../src/reportdialog.cpp" line="693"/>
         <source>Marker</source>
-        <translation type="unfinished"></translation>
+        <translation>Марка</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="692"/>
         <source>Array (m)</source>
-        <translation type="unfinished"></translation>
+        <translation>Поле (m)</translation>
     </message>
     <message>
         <location filename="../src/reportdialog.cpp" line="716"/>
         <source>Figure: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Рисунок: %2</translation>
     </message>
 </context>
 <context>
@@ -5940,189 +5941,189 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/scene.cpp" line="225"/>
         <source>New &amp;node...</source>
-        <translation type="unfinished"></translation>
+        <translation>Новый &amp;узел ...</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="226"/>
         <source>Alt+N</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt+N</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="227"/>
         <source>New node</source>
-        <translation type="unfinished"></translation>
+        <translation>Новый узел</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="230"/>
         <source>New &amp;edge...</source>
-        <translation type="unfinished"></translation>
+        <translation>Новый &amp;край ...</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="231"/>
         <source>Alt+E</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt+E</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="232"/>
         <source>New edge</source>
-        <translation type="unfinished"></translation>
+        <translation>Новый край</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="235"/>
         <source>New &amp;label...</source>
-        <translation type="unfinished"></translation>
+        <translation>Новая &amp;метка ...</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="236"/>
         <source>Alt+L</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt+L</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="237"/>
         <source>New label</source>
-        <translation type="unfinished"></translation>
+        <translation>Новая метка</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="240"/>
         <location filename="../src/scene.cpp" line="241"/>
         <source>Delete selected objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить выбранные объекты</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="244"/>
         <source>New &amp;boundary condition...</source>
-        <translation type="unfinished"></translation>
+        <translation>Новое &amp;граничное условие ...</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="245"/>
         <source>Alt+B</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt+B</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="246"/>
         <source>New boundary condition</source>
-        <translation type="unfinished"></translation>
+        <translation>Новое граничное условие</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="249"/>
         <source>New &amp;material...</source>
-        <translation type="unfinished"></translation>
+        <translation>Новый &amp;материал ...</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="250"/>
         <source>Alt+M</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt+M</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="251"/>
         <source>New material</source>
-        <translation type="unfinished"></translation>
+        <translation>Новый материал</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="254"/>
         <source>&amp;Transform</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Трасформация</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="255"/>
         <source>Transform</source>
-        <translation type="unfinished"></translation>
+        <translation>Трансформировать</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="257"/>
         <location filename="../src/scene.cpp" line="258"/>
         <source>Clear solution</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить решение</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="261"/>
         <source>&amp;Problem properties</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Установка проблемы</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="262"/>
         <source>F12</source>
-        <translation type="unfinished"></translation>
+        <translation>F12</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="263"/>
         <source>Problem properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Установка проблемы</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="705"/>
         <source>unnamed</source>
-        <translation type="unfinished"></translation>
+        <translation>неназванный</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="775"/>
         <source>Delete selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить выбранное</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="781"/>
         <source>Remove node</source>
-        <translation type="unfinished"></translation>
+        <translation>Устранить узел</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="1095"/>
         <source>Translation</source>
-        <translation type="unfinished"></translation>
+        <translation>Смещение</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="1109"/>
         <source>Rotation</source>
-        <translation type="unfinished"></translation>
+        <translation>Ротация</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="1123"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Шкала</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="1443"/>
         <source>File &apos;%1&apos; cannot be opened (%2).</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл &apos;%1&apos; не может быть открыт (%2).</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="1459"/>
         <source>File &apos;%1&apos; is not valid Agros2D file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл &apos;%1&apos; не является действительным файлом Agros2D.</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="1473"/>
         <source>For opening file &apos;%1&apos; is required Agros2D version 2.0 or higher.</source>
-        <translation type="unfinished"></translation>
+        <translation>Чтобы открыть &apos;%1&apos; требуется файл Agros2D версии 2.0 или выше.</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="1491"/>
         <source>This problem uses functionality under development. You must first enable experimental features in application options.</source>
-        <translation type="unfinished"></translation>
+        <translation>Проблема требует функциональность в развитии. Для доступа необходимо включить поддержку в настройках приложения.</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="1856"/>
         <source>File &apos;%1&apos; cannot be saved (%2).</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл &apos;%1&apos; не может быть сохранен (%2).</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="2024"/>
         <source>There are nodes &apos;%1&apos; with negative radial component.</source>
-        <translation type="unfinished"></translation>
+        <translation>Радиальной координаты узла &apos;%1&apos; имеет отрицательное значение.</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="2035"/>
         <source>There are crossings in the geometry (red highlighted). Remove the crossings first.</source>
-        <translation type="unfinished"></translation>
+        <translation>Есть пересечения в геометрии (подчеркнуто красным). Удалить пересечения в первую очередь.</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="2043"/>
         <source>There are nodes which are not connected to any edge (red highlighted). All nodes should be connected.</source>
-        <translation type="unfinished"></translation>
+        <translation>В геометрии отмечены красным узлы, которые не связаны с краем. Необходимо  эти точки устранить.</translation>
     </message>
     <message>
         <location filename="../src/scene.cpp" line="2048"/>
         <source>There are nodes which lie on the edge but they are not connected to the edge. Remove these nodes first.</source>
-        <translation type="unfinished"></translation>
+        <translation>В геометрии есть узлы, отмеченные красным цветом, лежащие на некоторых краях, но не связаны с ними. Необходимо их удалить.</translation>
     </message>
 </context>
 <context>
@@ -6130,7 +6131,7 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/scenebasicselectdialog.cpp" line="33"/>
         <source>Select edge</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите края</translation>
     </message>
 </context>
 <context>
@@ -6138,22 +6139,22 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="1299"/>
         <source>BC type:</source>
-        <translation type="unfinished"></translation>
+        <translation>ВС тип:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="1343"/>
         <source>&lt;i&gt;p&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (Pa)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;p&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (Pa)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="1350"/>
         <source>&lt;i&gt;a&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (m/s&lt;sup&gt;2&lt;/sup&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;a&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (m/s&lt;sup&gt;2&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="1357"/>
         <source>&lt;i&gt;Z&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (PaÂ·s/m)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;Z&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (PaÂ·s/m)</translation>
     </message>
 </context>
 <context>
@@ -6161,17 +6162,17 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="714"/>
         <source>BC type:</source>
-        <translation type="unfinished"></translation>
+        <translation>ВС тип:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="758"/>
         <source>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (V)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (V)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="765"/>
         <source>&lt;i&gt;J&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (A/m&lt;sup&gt;2&lt;/sup&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;J&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (A/m&lt;sup&gt;2&lt;/sup&gt;)</translation>
     </message>
 </context>
 <context>
@@ -6179,27 +6180,27 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/scenemarker.cpp" line="119"/>
         <source>Boundary condition</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие</translation>
     </message>
     <message>
         <location filename="../src/scenemarker.cpp" line="123"/>
         <source>Equation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Уравнение:</translation>
     </message>
     <message>
         <location filename="../src/scenemarker.cpp" line="136"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Название:</translation>
     </message>
     <message>
         <location filename="../src/scenemarker.cpp" line="171"/>
         <source>Boundary marker</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное состояние</translation>
     </message>
     <message>
         <location filename="../src/scenemarker.cpp" line="171"/>
         <source>Boundary marker name already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Название граничного состояния уже существует.</translation>
     </message>
 </context>
 <context>
@@ -6208,43 +6209,43 @@ Do you want to save your changes?</source>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1134"/>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1136"/>
         <source>Equation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Уравнение:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1159"/>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1175"/>
         <source>BC Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>ВС тип:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1163"/>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1179"/>
         <source>&lt;i&gt;f&lt;/i&gt;&lt;sub&gt;%1&lt;/sub&gt; (N/m&lt;sup&gt;2&lt;/sup&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;f&lt;/i&gt;&lt;sub&gt;%1&lt;/sub&gt; (N/m&lt;sup&gt;2&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1164"/>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1180"/>
         <source>Force</source>
-        <translation type="unfinished"></translation>
+        <translation>Сила</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1166"/>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1182"/>
         <source>&lt;i&gt;u&lt;/i&gt;&lt;sub&gt;%1&lt;/sub&gt; (m)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;u&lt;/i&gt;&lt;sub&gt;%1&lt;/sub&gt; (m)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1167"/>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1183"/>
         <source>Displacement</source>
-        <translation type="unfinished"></translation>
+        <translation>Электрическая индукция</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1170"/>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1186"/>
         <source>Direction %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Направление %1</translation>
     </message>
 </context>
 <context>
@@ -6252,17 +6253,17 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="734"/>
         <source>BC type:</source>
-        <translation type="unfinished"></translation>
+        <translation>ВС тип:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="778"/>
         <source>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (V)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (V)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="785"/>
         <source>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (C/m&lt;sup&gt;2&lt;/sup&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (C/m&lt;sup&gt;2&lt;/sup&gt;)</translation>
     </message>
 </context>
 <context>
@@ -6270,17 +6271,17 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="614"/>
         <source>BC type:</source>
-        <translation type="unfinished"></translation>
+        <translation>ВС тип:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="658"/>
         <source>&lt;i&gt;u&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (-)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;u&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (-)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="665"/>
         <source>&lt;i&gt;g&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (-)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;g&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (-)</translation>
     </message>
 </context>
 <context>
@@ -6288,47 +6289,47 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="966"/>
         <source>BC type:</source>
-        <translation type="unfinished"></translation>
+        <translation>ВС тип:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="968"/>
         <source>&lt;i&gt;T&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (K)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;T&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (K)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="969"/>
         <source>Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>Температура</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="971"/>
         <source>&lt;i&gt;f&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (W/m&lt;sup&gt;2&lt;/sup&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;f&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (W/m&lt;sup&gt;2&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="972"/>
         <source>Heat flux</source>
-        <translation type="unfinished"></translation>
+        <translation>Тепловой поток</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="974"/>
         <source>&lt;i&gt;%1&lt;/i&gt; (W/m&lt;sup&gt;2&lt;/sup&gt;Â·K)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt; (W/m&lt;sup&gt;2&lt;/sup&gt;Â·K)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="975"/>
         <source>Heat transfer coef.</source>
-        <translation type="unfinished"></translation>
+        <translation>Коэффициент теплообмена.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="977"/>
         <source>&lt;i&gt;T&lt;/i&gt;&lt;sub&gt;ext&lt;/sub&gt; (K)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;T&lt;/i&gt;&lt;sub&gt;ext&lt;/sub&gt; (K)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="978"/>
         <source>External temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>Экстримальная температура</translation>
     </message>
 </context>
 <context>
@@ -6336,48 +6337,48 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1623"/>
         <source>BC type:</source>
-        <translation type="unfinished"></translation>
+        <translation>ВС тип:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1627"/>
         <source>Mode:</source>
-        <translation type="unfinished"></translation>
+        <translation>Режим:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1719"/>
         <source>&lt;i&gt;E&lt;/i&gt;&lt;sub&gt;%1&lt;/sub&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;E&lt;/i&gt;&lt;sub&gt;%1&lt;/sub&gt;</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1722"/>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1733"/>
         <source> + j </source>
-        <translation type="unfinished"></translation>
+        <translation> + j </translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1730"/>
         <source>&lt;i&gt;J&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;J&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt;</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1748"/>
         <source>&lt;i&gt;P&lt;/i&gt; (W):</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;P&lt;/i&gt; (W):</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1749"/>
         <source>Power</source>
-        <translation type="unfinished"></translation>
+        <translation>Мощность</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1751"/>
         <source>&lt;i&gt;%1&lt;/i&gt; (Â°):</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt; (Â°):</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1752"/>
         <source>Phase</source>
-        <translation type="unfinished"></translation>
+        <translation>Фаза</translation>
     </message>
 </context>
 <context>
@@ -6385,12 +6386,12 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/scenemarker.cpp" line="334"/>
         <source>Boundary condition</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие</translation>
     </message>
     <message>
         <location filename="../src/scenemarker.cpp" line="372"/>
         <source>Boundary:</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие:</translation>
     </message>
 </context>
 <context>
@@ -6398,47 +6399,47 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/scenebasic.cpp" line="377"/>
         <source>Edge</source>
-        <translation type="unfinished"></translation>
+        <translation>Край</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="411"/>
         <source>Start point:</source>
-        <translation type="unfinished"></translation>
+        <translation>Начальная точка:</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="412"/>
         <source>End point:</source>
-        <translation type="unfinished"></translation>
+        <translation>Конечная точка:</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="413"/>
         <source>Angle (deg.):</source>
-        <translation type="unfinished"></translation>
+        <translation>Угол (deg.):</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="415"/>
         <source>Coordinates</source>
-        <translation type="unfinished"></translation>
+        <translation>Координаты</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="434"/>
         <source>Refine towards edge:</source>
-        <translation type="unfinished"></translation>
+        <translation>Уточнить по отношению к краю:</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="436"/>
         <source>Mesh parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Параметры сети</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="441"/>
         <source>Boundary condition:</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничное условие:</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="444"/>
         <source>Length:</source>
-        <translation type="unfinished"></translation>
+        <translation>Длина:</translation>
     </message>
 </context>
 <context>
@@ -6446,17 +6447,17 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1047"/>
         <source>BC type:</source>
-        <translation type="unfinished"></translation>
+        <translation>ВС тип:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1099"/>
         <source>&lt;i&gt;A&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (Wb/m)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;A&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (Wb/m)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1107"/>
         <source>&lt;i&gt;K&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (A/m)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;K&lt;/i&gt;&lt;sub&gt;0&lt;/sub&gt; (A/m)</translation>
     </message>
 </context>
 <context>
@@ -6465,144 +6466,144 @@ Do you want to save your changes?</source>
         <location filename="../src/sceneinfoview.cpp" line="26"/>
         <location filename="../src/sceneinfoview.cpp" line="106"/>
         <source>Problem</source>
-        <translation type="unfinished"></translation>
+        <translation>Проблема</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="64"/>
         <source>&amp;Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Свойства</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="65"/>
         <source>Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Свойства</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="68"/>
         <source>&amp;Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Удалить</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="69"/>
         <source>Delete item</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить запись</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="110"/>
         <source>General</source>
-        <translation type="unfinished"></translation>
+        <translation>Генеральный</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="115"/>
         <source>Solver</source>
-        <translation type="unfinished"></translation>
+        <translation>Решающее устройство</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="121"/>
         <source>Boundary conditions</source>
-        <translation type="unfinished"></translation>
+        <translation>Граничные условия</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="127"/>
         <source>Materials</source>
-        <translation type="unfinished"></translation>
+        <translation>Материал</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="133"/>
         <source>Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Геометрия</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="138"/>
         <source>Nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Узлы</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="143"/>
         <source>Edges</source>
-        <translation type="unfinished"></translation>
+        <translation>Края</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="148"/>
         <source>Labels</source>
-        <translation type="unfinished"></translation>
+        <translation>Метки</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="179"/>
         <source>Name: </source>
-        <translation type="unfinished"></translation>
+        <translation>Название: </translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="182"/>
         <source>Type: </source>
-        <translation type="unfinished"></translation>
+        <translation>Тип: </translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="185"/>
         <source>Field: </source>
-        <translation type="unfinished"></translation>
+        <translation>Поле: </translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="188"/>
         <source>Analysis: </source>
-        <translation type="unfinished"></translation>
+        <translation>Анализ: </translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="191"/>
         <source>Adaptivity: </source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивность: </translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="194"/>
         <source>Solver: </source>
-        <translation type="unfinished"></translation>
+        <translation>Решающее устройство: </translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="200"/>
         <source>Initial mesh</source>
-        <translation type="unfinished"></translation>
+        <translation>Начальная сеть</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="204"/>
         <location filename="../src/sceneinfoview.cpp" line="216"/>
         <source>Nodes: </source>
-        <translation type="unfinished"></translation>
+        <translation>Узлы: </translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="207"/>
         <location filename="../src/sceneinfoview.cpp" line="219"/>
         <source>Elements: </source>
-        <translation type="unfinished"></translation>
+        <translation>Количество элементов: </translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="212"/>
         <source>Solved mesh</source>
-        <translation type="unfinished"></translation>
+        <translation>Решенные сети</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="224"/>
         <source>Adaptivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивность</translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="228"/>
         <source>Error: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка: </translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="231"/>
         <source>Steps: </source>
-        <translation type="unfinished"></translation>
+        <translation>Этапы: </translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="237"/>
         <source>DOFs: </source>
-        <translation type="unfinished"></translation>
+        <translation>DOFs: </translation>
     </message>
     <message>
         <location filename="../src/sceneinfoview.cpp" line="242"/>
         <source>Time elapsed: </source>
-        <translation type="unfinished"></translation>
+        <translation>Время расчета: </translation>
     </message>
 </context>
 <context>
@@ -6610,37 +6611,37 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/scenebasic.cpp" line="605"/>
         <source>Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Метка</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="644"/>
         <source>Coordinates</source>
-        <translation type="unfinished"></translation>
+        <translation>Координаты</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="659"/>
         <source>Global order is %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Глобальный порядок является %1.</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="671"/>
         <source>Triangle area (m):</source>
-        <translation type="unfinished"></translation>
+        <translation>Площадь треугольника (m2):</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="672"/>
         <source>Polynomial order (-):</source>
-        <translation type="unfinished"></translation>
+        <translation>Порядок полинома (-):</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="674"/>
         <source>Mesh parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Параметры сети</translation>
     </message>
     <message>
         <location filename="../src/scenebasic.cpp" line="678"/>
         <source>Material:</source>
-        <translation type="unfinished"></translation>
+        <translation>Материал:</translation>
     </message>
 </context>
 <context>
@@ -6648,17 +6649,17 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/scenemarkerselectdialog.cpp" line="33"/>
         <source>Select by marker</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать на основании метки</translation>
     </message>
     <message>
         <location filename="../src/scenemarkerselectdialog.cpp" line="84"/>
         <source>Surface</source>
-        <translation type="unfinished"></translation>
+        <translation>Поверхность</translation>
     </message>
     <message>
         <location filename="../src/scenemarkerselectdialog.cpp" line="85"/>
         <source>Volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Объём</translation>
     </message>
 </context>
 <context>
@@ -6666,22 +6667,22 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="1392"/>
         <source>&lt;i&gt;%1&lt;/i&gt; (kg/m&lt;sup&gt;3&lt;/sup&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt; (kg/m&lt;sup&gt;3&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="1393"/>
         <source>Mass density</source>
-        <translation type="unfinished"></translation>
+        <translation>Mассовая плотность</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="1395"/>
         <source>&lt;i&gt;c&lt;/i&gt; (m/s)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;c&lt;/i&gt; (m/s)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_acoustic.cpp" line="1396"/>
         <source>Speed of sound</source>
-        <translation type="unfinished"></translation>
+        <translation>Скорость звука</translation>
     </message>
 </context>
 <context>
@@ -6689,12 +6690,12 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="792"/>
         <source>&lt;i&gt;%1&lt;/i&gt; (S/m)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt; (S/m)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_current.cpp" line="793"/>
         <source>Conductivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Проводимость</translation>
     </message>
 </context>
 <context>
@@ -6702,27 +6703,27 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/scenemarker.cpp" line="232"/>
         <source>Material</source>
-        <translation type="unfinished"></translation>
+        <translation>Материал</translation>
     </message>
     <message>
         <location filename="../src/scenemarker.cpp" line="236"/>
         <source>Equation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Уравнение:</translation>
     </message>
     <message>
         <location filename="../src/scenemarker.cpp" line="250"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Название:</translation>
     </message>
     <message>
         <location filename="../src/scenemarker.cpp" line="298"/>
         <source>Material marker</source>
-        <translation type="unfinished"></translation>
+        <translation>Материал метки </translation>
     </message>
     <message>
         <location filename="../src/scenemarker.cpp" line="298"/>
         <source>Material marker name already exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Название материала метки уже существует.</translation>
     </message>
 </context>
 <context>
@@ -6731,78 +6732,78 @@ Do you want to save your changes?</source>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1310"/>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1313"/>
         <source>&lt;i&gt;f&lt;/i&gt;&lt;sub&gt;%1&lt;/sub&gt; (N/m&lt;sup&gt;3&lt;/sup&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;f&lt;/i&gt;&lt;sub&gt;%1&lt;/sub&gt; (N/m&lt;sup&gt;3&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1311"/>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1314"/>
         <source>Force</source>
-        <translation type="unfinished"></translation>
+        <translation>Сила</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1317"/>
         <source>Volumetric forces</source>
-        <translation type="unfinished"></translation>
+        <translation>Сила объёма</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1322"/>
         <source>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;T&lt;/sub&gt; (1/K)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;T&lt;/sub&gt; (1/K)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1323"/>
         <source>Thermal exp. coef.</source>
-        <translation type="unfinished"></translation>
+        <translation>Коэффициент тепл. расширения.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1325"/>
         <source>&lt;i&gt;T&lt;/i&gt; (K)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;T&lt;/i&gt; (K)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1326"/>
         <source>Temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>Температура</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1328"/>
         <source>&lt;i&gt;T&lt;/i&gt;&lt;sub&gt;ref&lt;/sub&gt; (K)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;T&lt;/i&gt;&lt;sub&gt;ref&lt;/sub&gt; (K)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1329"/>
         <source>Ref. temperature</source>
-        <translation type="unfinished"></translation>
+        <translation>Рабочая температура</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1332"/>
         <source>Thermal expansion</source>
-        <translation type="unfinished"></translation>
+        <translation>Тепловое расширение</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1336"/>
         <source>Lame&apos;s coefficients:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ламе коэффициенты:</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1343"/>
         <source>&lt;i&gt;E&lt;/i&gt; (Pa)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;E&lt;/i&gt; (Pa)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1344"/>
         <source>Young modulus</source>
-        <translation type="unfinished"></translation>
+        <translation>Модуль упругости</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1346"/>
         <source>&lt;i&gt;%1&lt;/i&gt; (-)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt; (-)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_elasticity.cpp" line="1347"/>
         <source>Poisson number</source>
-        <translation type="unfinished"></translation>
+        <translation>Пуассона число</translation>
     </message>
 </context>
 <context>
@@ -6810,22 +6811,22 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="814"/>
         <source>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;r&lt;/sub&gt; (-)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;r&lt;/sub&gt; (-)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="815"/>
         <source>Permittivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Диэлектрическая проницаемость</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="817"/>
         <source>&lt;i&gt;%1&lt;/i&gt; (C/m&lt;sup&gt;3&lt;/sup&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt; (C/m&lt;sup&gt;3&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_electrostatic.cpp" line="818"/>
         <source>Charge density</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность заряда</translation>
     </message>
 </context>
 <context>
@@ -6833,22 +6834,22 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="699"/>
         <source>&lt;i&gt;c&lt;/i&gt; (-)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;c&lt;/i&gt; (-)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="700"/>
         <source>Constant</source>
-        <translation type="unfinished"></translation>
+        <translation>Постоянная</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="702"/>
         <source>&lt;i&gt;r&lt;/i&gt; (-)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;r&lt;/i&gt; (-)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_general.cpp" line="703"/>
         <source>Rightside</source>
-        <translation type="unfinished"></translation>
+        <translation>Правая сторона</translation>
     </message>
 </context>
 <context>
@@ -6856,42 +6857,42 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="1100"/>
         <source>&lt;i&gt;%1&lt;/i&gt; (W/mÂ·K)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt; (W/mÂ·K)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="1101"/>
         <source>Thermal conductivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Теплопроводность</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="1103"/>
         <source>&lt;i&gt;Q&lt;/i&gt; (W/m&lt;sup&gt;3&lt;/sup&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;Q&lt;/i&gt; (W/m&lt;sup&gt;3&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="1104"/>
         <source>Volume heat</source>
-        <translation type="unfinished"></translation>
+        <translation>Объемное тепло</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="1106"/>
         <source>&lt;i&gt;%1&lt;/i&gt; (kg/m&lt;sup&gt;3&lt;/sup&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt; (kg/m&lt;sup&gt;3&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="1107"/>
         <source>Mass density</source>
-        <translation type="unfinished"></translation>
+        <translation>Mассовая плотность</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="1109"/>
         <source>&lt;i&gt;c&lt;/i&gt;&lt;sub&gt;p&lt;/sub&gt; (J/kgÂ·K)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;c&lt;/i&gt;&lt;sub&gt;p&lt;/sub&gt; (J/kgÂ·K)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_heat.cpp" line="1110"/>
         <source>Specific heat</source>
-        <translation type="unfinished"></translation>
+        <translation>Удельная теплоемкость</translation>
     </message>
 </context>
 <context>
@@ -6899,80 +6900,80 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1160"/>
         <source>&lt;i&gt;B&lt;/i&gt;&lt;sub&gt;r&lt;/sub&gt; (T)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;B&lt;/i&gt;&lt;sub&gt;r&lt;/sub&gt; (T)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1161"/>
         <source>Rem. flux dens.</source>
-        <translation type="unfinished"></translation>
+        <translation>Рем. маг. индукции.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1163"/>
         <source>&lt;i&gt;%1&lt;/i&gt; (deg.)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt; (deg.)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1164"/>
         <source>Direction of rem.</source>
-        <translation type="unfinished"></translation>
+        <translation>Направление остаточной намагниченности.</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1167"/>
         <source>Permanent magnet</source>
-        <translation type="unfinished"></translation>
+        <translation>Постоянный магнит</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1172"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1175"/>
         <source>&lt;i&gt;v&lt;/i&gt;&lt;sub&gt;%1&lt;/sub&gt; (m/s)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;v&lt;/i&gt;&lt;sub&gt;%1&lt;/sub&gt; (m/s)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1173"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1176"/>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1182"/>
         <source>Velocity</source>
-        <translation type="unfinished"></translation>
+        <translation>Скорость</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1178"/>
         <source>&lt;i&gt;%1&lt;/i&gt; (rad/s)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt; (rad/s)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1179"/>
         <source>Velocity angular</source>
-        <translation type="unfinished"></translation>
+        <translation>Угловая скорость</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1185"/>
         <source>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;r&lt;/sub&gt; (-)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;r&lt;/sub&gt; (-)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1186"/>
         <source>Permeability</source>
-        <translation type="unfinished"></translation>
+        <translation>Проницаемость</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1188"/>
         <source>&lt;i&gt;%1&lt;/i&gt; (S/m)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt; (S/m)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1189"/>
         <source>Conductivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Проводимость</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1191"/>
         <source>&lt;i&gt;J&lt;/i&gt;&lt;sub&gt;ext&lt;/sub&gt; (A/m&lt;sup&gt;2&lt;/sup&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;J&lt;/i&gt;&lt;sub&gt;ext&lt;/sub&gt; (A/m&lt;sup&gt;2&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_magnetic.cpp" line="1192"/>
         <source>Current density</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока</translation>
     </message>
 </context>
 <context>
@@ -6981,37 +6982,37 @@ Do you want to save your changes?</source>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1791"/>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1794"/>
         <source>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;r&lt;/sub&gt; (-)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt;&lt;sub&gt;r&lt;/sub&gt; (-)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1792"/>
         <source>Permittivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Диэлектрическая проницаемость</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1795"/>
         <source>Permeability</source>
-        <translation type="unfinished"></translation>
+        <translation>Проницаемость</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1797"/>
         <source>&lt;i&gt;%1&lt;/i&gt; (S/m)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;%1&lt;/i&gt; (S/m)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1798"/>
         <source>Conductivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Проводимость</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1801"/>
         <source>&lt;i&gt;J&lt;/i&gt;&lt;sub&gt;ext&lt;/sub&gt; (A/m&lt;sup&gt;2&lt;/sup&gt;)</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;i&gt;J&lt;/i&gt;&lt;sub&gt;ext&lt;/sub&gt; (A/m&lt;sup&gt;2&lt;/sup&gt;)</translation>
     </message>
     <message>
         <location filename="../src/hermes2d/hermes_rf.cpp" line="1802"/>
         <source>Current density</source>
-        <translation type="unfinished"></translation>
+        <translation>Плотность тока</translation>
     </message>
 </context>
 <context>
@@ -7019,12 +7020,12 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/scenemarker.cpp" line="406"/>
         <source>Material</source>
-        <translation type="unfinished"></translation>
+        <translation>Материал</translation>
     </message>
     <message>
         <location filename="../src/scenemarker.cpp" line="444"/>
         <source>Material:</source>
-        <translation type="unfinished"></translation>
+        <translation>Материал:</translation>
     </message>
 </context>
 <context>
@@ -7032,57 +7033,57 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/scenetransformdialog.cpp" line="30"/>
         <source>Transform</source>
-        <translation type="unfinished"></translation>
+        <translation>Трасформация</translation>
     </message>
     <message>
         <location filename="../src/scenetransformdialog.cpp" line="93"/>
         <source>Angle:</source>
-        <translation type="unfinished"></translation>
+        <translation>Угол:</translation>
     </message>
     <message>
         <location filename="../src/scenetransformdialog.cpp" line="112"/>
         <source>Scaling factor:</source>
-        <translation type="unfinished"></translation>
+        <translation>Коэффициент масштабирования:</translation>
     </message>
     <message>
         <location filename="../src/scenetransformdialog.cpp" line="119"/>
         <source>Copy objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать копию</translation>
     </message>
     <message>
         <location filename="../src/scenetransformdialog.cpp" line="122"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Подтвердить</translation>
     </message>
     <message>
         <location filename="../src/scenetransformdialog.cpp" line="125"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть</translation>
     </message>
     <message>
         <location filename="../src/scenetransformdialog.cpp" line="135"/>
         <source>Translate</source>
-        <translation type="unfinished"></translation>
+        <translation>Перемещение</translation>
     </message>
     <message>
         <location filename="../src/scenetransformdialog.cpp" line="136"/>
         <source>Rotate</source>
-        <translation type="unfinished"></translation>
+        <translation>Вращение</translation>
     </message>
     <message>
         <location filename="../src/scenetransformdialog.cpp" line="137"/>
         <source>Scale</source>
-        <translation type="unfinished"></translation>
+        <translation>Шкала</translation>
     </message>
     <message>
         <location filename="../src/scenetransformdialog.cpp" line="181"/>
         <source>Scale factor</source>
-        <translation type="unfinished"></translation>
+        <translation>Масштабный коэффициент</translation>
     </message>
     <message>
         <location filename="../src/scenetransformdialog.cpp" line="181"/>
         <source>Scale factor should not be zero.</source>
-        <translation type="unfinished"></translation>
+        <translation>Масштабный коэффициент не должен быть равен нулю.</translation>
     </message>
 </context>
 <context>
@@ -7091,224 +7092,224 @@ Do you want to save your changes?</source>
         <location filename="../src/sceneview.cpp" line="152"/>
         <location filename="../src/sceneview.cpp" line="154"/>
         <source>Zoom in</source>
-        <translation type="unfinished"></translation>
+        <translation>Увеличить</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="157"/>
         <location filename="../src/sceneview.cpp" line="159"/>
         <source>Zoom out</source>
-        <translation type="unfinished"></translation>
+        <translation>Уменьшить</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="162"/>
         <source>Zoom best fit</source>
-        <translation type="unfinished"></translation>
+        <translation>Установите в видимой области</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="163"/>
         <source>Ctrl+0</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+0</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="164"/>
         <source>Best fit</source>
-        <translation type="unfinished"></translation>
+        <translation>Установить в видимом диапазоне</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="167"/>
         <location filename="../src/sceneview.cpp" line="168"/>
         <source>Zoom region</source>
-        <translation type="unfinished"></translation>
+        <translation>Увеличить область</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="172"/>
         <location filename="../src/sceneview.cpp" line="173"/>
         <source>Show grid</source>
-        <translation type="unfinished"></translation>
+        <translation>Изобразить сетку</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="178"/>
         <location filename="../src/sceneview.cpp" line="179"/>
         <source>Snap to grid</source>
-        <translation type="unfinished"></translation>
+        <translation>Прикрепить к сетке</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="184"/>
         <location filename="../src/sceneview.cpp" line="185"/>
         <source>Show rulers</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать линейки</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="191"/>
         <source>Operate on &amp;nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Работа с &amp;узлами</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="193"/>
         <location filename="../src/sceneview.cpp" line="3119"/>
         <source>Operate on nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Работа с узлами</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="196"/>
         <source>Operate on &amp;edges</source>
-        <translation type="unfinished"></translation>
+        <translation>Работа с &amp;краями</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="198"/>
         <location filename="../src/sceneview.cpp" line="3122"/>
         <source>Operate on edges</source>
-        <translation type="unfinished"></translation>
+        <translation>Работа с краями</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="201"/>
         <source>Operate on &amp;labels</source>
-        <translation type="unfinished"></translation>
+        <translation>Работа с &amp;метками</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="203"/>
         <location filename="../src/sceneview.cpp" line="3125"/>
         <source>Operate on labels</source>
-        <translation type="unfinished"></translation>
+        <translation>Работа с метками</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="206"/>
         <source>&amp;Postprocessor</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Постпроцессор</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="208"/>
         <location filename="../src/sceneview.cpp" line="3144"/>
         <source>Postprocessor</source>
-        <translation type="unfinished"></translation>
+        <translation>Постпроцессор</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="219"/>
         <location filename="../src/sceneview.cpp" line="223"/>
         <location filename="../src/sceneview.cpp" line="227"/>
         <source>Projection to %1%2</source>
-        <translation type="unfinished"></translation>
+        <translation>Проекция до %1%2</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="220"/>
         <location filename="../src/sceneview.cpp" line="224"/>
         <location filename="../src/sceneview.cpp" line="228"/>
         <source>Projection to %1%2 plane.</source>
-        <translation type="unfinished"></translation>
+        <translation>Проекция в плоскости %1%2.</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="240"/>
         <source>Solution mesh</source>
-        <translation type="unfinished"></translation>
+        <translation>Решение сети</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="243"/>
         <source>Contours</source>
-        <translation type="unfinished"></translation>
+        <translation>Контуры</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="246"/>
         <source>Vectors</source>
-        <translation type="unfinished"></translation>
+        <translation>Векторы</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="249"/>
         <source>Particle tracing</source>
-        <translation type="unfinished"></translation>
+        <translation>Слежение движения частиц</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="261"/>
         <source>Local Values</source>
-        <translation type="unfinished"></translation>
+        <translation>Местное значение</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="264"/>
         <source>Surface Integrals</source>
-        <translation type="unfinished"></translation>
+        <translation>Поверхностные интегралы</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="267"/>
         <source>Volume Integrals</source>
-        <translation type="unfinished"></translation>
+        <translation>Объем интегралы</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="277"/>
         <source>Object properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Свойства объектов</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="282"/>
         <source>&amp;Select region</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Выбрать область</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="283"/>
         <source>Select region</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать область</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="286"/>
         <location filename="../src/sceneview.cpp" line="287"/>
         <source>Select by marker</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать на основании метки</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="934"/>
         <source>%1, %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1, %2</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="3096"/>
         <source>Vel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Быстро.</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="3138"/>
         <source>Model</source>
-        <translation type="unfinished"></translation>
+        <translation>Модель</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="3141"/>
         <source>Polynomial order</source>
-        <translation type="unfinished"></translation>
+        <translation>Порядок полинома</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="3444"/>
         <location filename="../src/sceneview.cpp" line="3484"/>
         <source>Undefined: %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Неопределенный: %1.</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="3840"/>
         <location filename="../src/sceneview.cpp" line="3890"/>
         <source>Node</source>
-        <translation type="unfinished"></translation>
+        <translation>Узел</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="3840"/>
         <location filename="../src/sceneview.cpp" line="3890"/>
         <source>Radial component must be greater then or equal to zero.</source>
-        <translation type="unfinished"></translation>
+        <translation>Радиальная составляющая должна быть больше или равна нулю.</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="4150"/>
         <source>&lt;h3&gt;Node&lt;/h3&gt;Point: [%1; %2]&lt;br/&gt;Index: %3</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Узел&lt;/h3&gt;Tочка: [%1; %2]&lt;br/&gt;Индекс: %3</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="4165"/>
         <source>&lt;h3&gt;Edge&lt;/h3&gt;Point: [%1; %2] - [%3; %4]&lt;br/&gt;Boundary Condition: %5&lt;br/&gt;Angle: %6 deg.&lt;br/&gt;Index: %7 %8</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Край&lt;/h3&gt;Tочка: [%1; %2] - [%3; %4]&lt;br/&gt;Граничное условие: %5&lt;br/&gt;Угол: %6 deg.&lt;br/&gt;Индекс: %7 %8</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="4185"/>
         <source>&lt;h3&gt;Label&lt;/h3&gt;Point: [%1; %2]&lt;br/&gt;Material: %3&lt;br/&gt;Triangle area: %4 m&lt;sup&gt;2&lt;/sup&gt;&lt;br/&gt;Polynomial order: %5&lt;br/&gt;Index: %6 %7</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;Mетка&lt;/h3&gt;Tочка: [%1; %2]&lt;br/&gt;Материал: %3&lt;br/&gt;Треугольник области: %4 m&lt;sup&gt;2&lt;/sup&gt;&lt;br/&gt;Полиномиальная порядке: %5&lt;br/&gt;Индекс: %6 %7</translation>
     </message>
     <message>
         <location filename="../src/sceneview.cpp" line="5146"/>
         <source>Image cannot be saved to the file &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Изображение не может быть сохранена в файл с названием &apos;%1&apos;.</translation>
     </message>
 </context>
 <context>
@@ -7316,12 +7317,12 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="1419"/>
         <source>Goto line</source>
-        <translation type="unfinished"></translation>
+        <translation>Перейти на линию</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="1419"/>
         <source>Line number:</source>
-        <translation type="unfinished"></translation>
+        <translation>Номер линии:</translation>
     </message>
 </context>
 <context>
@@ -7329,22 +7330,22 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="153"/>
         <source>Error: Unable to start the server (agros2d-server): %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка: Не удается запустить сервер (agros2d-сервер): %1.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="224"/>
         <source>Server error: The host was not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка сервера: Принимающий не был не найден.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="227"/>
         <source>Server error: The connection was refused by the peer. Make sure the agros2d-client server is running.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка сервера: соединение было разорвано другим узлом. Убедитесь, что работает agros2d клиент сервер.</translation>
     </message>
     <message>
         <location filename="../src/pythonlabagros.cpp" line="230"/>
         <source>Server error: The following error occurred: %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка сервера: Произошла следующая ошибка: %1.</translation>
     </message>
 </context>
 <context>
@@ -7352,27 +7353,27 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="1671"/>
         <source>Search for:</source>
-        <translation type="unfinished"></translation>
+        <translation>Искать:</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="1672"/>
         <source>Replace with:</source>
-        <translation type="unfinished"></translation>
+        <translation>Заменить на:</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="1679"/>
         <source>Find</source>
-        <translation type="unfinished"></translation>
+        <translation>Найти</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="1683"/>
         <source>Replace all</source>
-        <translation type="unfinished"></translation>
+        <translation>Заменить все</translation>
     </message>
     <message>
         <location filename="../src/pythonlab/pythoneditor.cpp" line="1686"/>
         <source>Hide</source>
-        <translation type="unfinished"></translation>
+        <translation>Спрятать</translation>
     </message>
 </context>
 <context>
@@ -7380,17 +7381,17 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/collaboration.cpp" line="169"/>
         <source>Download from server</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузить с сервера</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="214"/>
         <source>Login</source>
-        <translation type="unfinished"></translation>
+        <translation>Вход</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="216"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть</translation>
     </message>
 </context>
 <context>
@@ -7398,27 +7399,27 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/collaboration.cpp" line="34"/>
         <source>Login</source>
-        <translation type="unfinished"></translation>
+        <translation>Вход</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="75"/>
         <source>Remember password</source>
-        <translation type="unfinished"></translation>
+        <translation>Помнить пароль</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="78"/>
         <source>Username:</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя пользователя:</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="79"/>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Пароль:</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="98"/>
         <source>Anonymous user</source>
-        <translation type="unfinished"></translation>
+        <translation>Аноним</translation>
     </message>
 </context>
 <context>
@@ -7426,57 +7427,57 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/collaboration.cpp" line="298"/>
         <source>Upload to the server</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузить на этот сервер</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="341"/>
         <source>New</source>
-        <translation type="unfinished"></translation>
+        <translation>Новое</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="343"/>
         <source>Existing</source>
-        <translation type="unfinished"></translation>
+        <translation>Существующий</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="348"/>
         <source>Document:</source>
-        <translation type="unfinished"></translation>
+        <translation>Документ:</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="351"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Название:</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="354"/>
         <source>Physic field:</source>
-        <translation type="unfinished"></translation>
+        <translation>Физикальное поле:</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="359"/>
         <source>Upload</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузить</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="361"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="429"/>
         <source>Colaboration server could not be connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось подключиться к серверу</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="494"/>
         <source>Upload to server</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузка на сервер</translation>
     </message>
     <message>
         <location filename="../src/collaboration.cpp" line="494"/>
         <source>Problem &apos;%1&apos; was uploaded to the server.</source>
-        <translation type="unfinished"></translation>
+        <translation>Проблема &apos;%1&apos; был загружена на сервер.</translation>
     </message>
 </context>
 <context>
@@ -7484,58 +7485,58 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/surfaceintegralview.cpp" line="152"/>
         <source>Surface Integral</source>
-        <translation type="unfinished"></translation>
+        <translation>Поверхностные интегралы</translation>
     </message>
     <message>
         <location filename="../src/surfaceintegralview.cpp" line="176"/>
         <source>Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Метка</translation>
     </message>
     <message>
         <location filename="../src/surfaceintegralview.cpp" line="176"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Значение</translation>
     </message>
     <message>
         <location filename="../src/surfaceintegralview.cpp" line="176"/>
         <source>Unit</source>
-        <translation type="unfinished"></translation>
+        <translation>Единица</translation>
     </message>
     <message>
         <location filename="../src/surfaceintegralview.cpp" line="196"/>
         <source>Copy value</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать значение</translation>
     </message>
     <message>
         <location filename="../src/surfaceintegralview.cpp" line="239"/>
         <source>Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Геометрия</translation>
     </message>
     <message>
         <location filename="../src/surfaceintegralview.cpp" line="242"/>
         <source>Length:</source>
-        <translation type="unfinished"></translation>
+        <translation>Длина:</translation>
     </message>
     <message>
         <location filename="../src/surfaceintegralview.cpp" line="242"/>
         <location filename="../src/surfaceintegralview.cpp" line="243"/>
         <source>%1</source>
-        <translation type="unfinished"></translation>
+        <translation>%1</translation>
     </message>
     <message>
         <location filename="../src/surfaceintegralview.cpp" line="242"/>
         <source>m</source>
-        <translation type="unfinished"></translation>
+        <translation>m</translation>
     </message>
     <message>
         <location filename="../src/surfaceintegralview.cpp" line="243"/>
         <source>Surface:</source>
-        <translation type="unfinished"></translation>
+        <translation>Поверхность:</translation>
     </message>
     <message>
         <location filename="../src/surfaceintegralview.cpp" line="243"/>
         <source>m2</source>
-        <translation type="unfinished"></translation>
+        <translation>m2</translation>
     </message>
 </context>
 <context>
@@ -7543,27 +7544,169 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/tooltipview.cpp" line="22"/>
         <source>Hints</source>
-        <translation type="unfinished"></translation>
+        <translation>Подсказка</translation>
     </message>
     <message>
         <location filename="../src/tooltipview.cpp" line="49"/>
         <source>Tooltip_OperateOnNodes</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en-US&quot;&gt;
+&lt;head&gt;
+		&lt;meta http-equiv=&quot;content-type&quot; content=&quot;application/xhtml+xml; charset=UTF-8&quot; /&gt;
+		&lt;title&gt;Agros2D - типы&lt;/title&gt;
+&lt;/head&gt;
+&lt;body style=&quot;font-size: 11px;&quot;&gt;
+&lt;table&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Ctrl + левая кнопка мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Добавить узел непосредственно с помощью мыши&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Alt + N&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Добавить узел, используя координаты (откроется диалог))&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Ctrl+Shift+N&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Добавить узел с помощью координат (в диалоге с текущим использованием координаты курсора мыши)&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Ctrl + Shift + левая кнопка мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Перемешения узлов с помощью мышы&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Shift + левая кнопка мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Движение над рабочей поверхностью (вы также можете использовать среднюю кнопку мыши или клавиш со стрелками)&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Колесо мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Увеличение и уменьшение рабочего поверхности&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Двойное нажатие на колесо мыши или Shift + двойное нажатие левой кнопки мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Установите в видимой области&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;</translation>
     </message>
     <message>
         <location filename="../src/tooltipview.cpp" line="52"/>
         <source>Tooltip_OperateOnEdges</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en-US&quot;&gt;
+&lt;head&gt;
+	&lt;meta http-equiv=&quot;content-type&quot; content=&quot;application/xhtml+xml; charset=UTF-8&quot; /&gt;
+	&lt;title&gt;Agros2D - типы&lt;/title&gt;
+&lt;/head&gt;
+&lt;body style=&quot;font-size: 11px;&quot;&gt;
+&lt;table&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Ctrl + левая кнопка мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Добавить край правой кнопкой мыши&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Пробел на клавиатуре&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Откройте диалоговое окно для установки свойств выбранного края&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Ctrl + Shift + левая кнопка мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Перемещение краёв с помощью мыши&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Shift + левая кнопка мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Движение над рабочей поверхностью (вы также можете использовать среднюю кнопку мыши или клавиш со стрелками)&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Колесо мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Увеличение и уменьшение рабочего поверхности&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Двойное нажатие на колесо мыши или Shift + двойное нажатие левой кнопки мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Установите в видимой области&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;</translation>
     </message>
     <message>
         <location filename="../src/tooltipview.cpp" line="55"/>
         <source>Tooltip_OperateOnLabels</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en-US&quot;&gt;
+&lt;head&gt;
+	&lt;meta http-equiv=&quot;content-type&quot; content=&quot;application/xhtml+xml; charset=UTF-8&quot; /&gt;
+	&lt;title&gt;Agros2D - типы&lt;/title&gt;
+&lt;/head&gt;
+&lt;body style=&quot;font-size: 11px;&quot;&gt;
+&lt;table&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Ctrl + левая кнопка мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Добавить метку непосредственно с помощью мыши&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Alt + L&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Добавить меткуг поля, используя координаты (откроется диалог)&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Ctrl + Shift + L&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Добавить метку с помощью координат (в диалоге с текущим использованием координаты курсора мыши)&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Пробел на клавиатуре&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Откройте диалоговое окно для установки свойств выбранных меток&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Shift + левая кнопка мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Движение над рабочей поверхностью (вы также можете использовать среднюю кнопку мыши или клавиш со стрелками)&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Ctrl + Shift + левая кнопка мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Перемещение меток области с помощью мыши&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Колесо мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Увеличение и уменьшение рабочего поверхности&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;Двойное нажатие на колесо мыши или Shift + двойное нажатие левой кнопки мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Установите в видимой области&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;</translation>
     </message>
     <message>
         <location filename="../src/tooltipview.cpp" line="58"/>
         <source>Tooltip_Postprocessor</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en-US&quot;&gt;
+&lt;head&gt;
+	&lt;meta http-equiv=&quot;content-type&quot; content=&quot;application/xhtml+xml; charset=UTF-8&quot; /&gt;
+	&lt;title&gt;Agros2D - типы&lt;/title&gt;
+&lt;/head&gt;
+&lt;body style=&quot;font-size: 11px;&quot;&gt;
+&lt;table&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;F12&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Откройте диалоговое окно для установки сцены&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;2D + 3D: Shift + левая кнопка мыши или колесо мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Движение над рабочей поверхностью (вы также можете использовать среднюю кнопку мыши или клавиш со стрелками)&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;2D + 3D: Колесо мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Увеличение и уменьшение рабочего поверхности&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;3D: левая кнопка мышиi&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Вращение объекта в плоскости&lt;it&gt;xy&lt;/it&gt;&lt;/td&gt;
+	&lt;/tr&gt;
+	&lt;tr&gt;
+		&lt;td&gt;&lt;b&gt;3D: Ctrl + левая кнопка мыши&lt;/b&gt;&lt;/td&gt;
+		&lt;td&gt;Вращение объекта в оси&lt;it&gt;z&lt;/it&gt;&lt;/td&gt;
+	&lt;/tr&gt;
+&lt;/table&gt;
+
+Вы также можете рассчитать величину в одной точке, кривые и объёмные интегралы.Вы всегда можете выбрать правильный инструмент для обозначениямлм  из &quot;Проблемы&quot;, или на панели инструментов.
+
+&lt;/body&gt;</translation>
     </message>
 </context>
 <context>
@@ -7571,12 +7714,12 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/value.cpp" line="75"/>
         <source>This textedit allows using variables.</source>
-        <translation type="unfinished"></translation>
+        <translation>Этот текстовый редактор позволяет использовать переменные.</translation>
     </message>
     <message>
         <location filename="../src/value.cpp" line="173"/>
         <source>error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка</translation>
     </message>
 </context>
 <context>
@@ -7584,67 +7727,67 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/value.cpp" line="232"/>
         <source>Time function</source>
-        <translation type="unfinished"></translation>
+        <translation>Время использования</translation>
     </message>
     <message>
         <location filename="../src/value.cpp" line="274"/>
         <source>select a preset...</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите заданный ...</translation>
     </message>
     <message>
         <location filename="../src/value.cpp" line="275"/>
         <source>constant</source>
-        <translation type="unfinished"></translation>
+        <translation>Постоянная</translation>
     </message>
     <message>
         <location filename="../src/value.cpp" line="276"/>
         <source>step</source>
-        <translation type="unfinished"></translation>
+        <translation>Этап</translation>
     </message>
     <message>
         <location filename="../src/value.cpp" line="277"/>
         <source>sine wave</source>
-        <translation type="unfinished"></translation>
+        <translation>синусоида</translation>
     </message>
     <message>
         <location filename="../src/value.cpp" line="278"/>
         <source>exp. step</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспонен. этап</translation>
     </message>
     <message>
         <location filename="../src/value.cpp" line="287"/>
         <source>time</source>
-        <translation type="unfinished"></translation>
+        <translation>время</translation>
     </message>
     <message>
         <location filename="../src/value.cpp" line="289"/>
         <source>value</source>
-        <translation type="unfinished"></translation>
+        <translation>Значение</translation>
     </message>
     <message>
         <location filename="../src/value.cpp" line="314"/>
         <source>Function:</source>
-        <translation type="unfinished"></translation>
+        <translation>Функция:</translation>
     </message>
     <message>
         <location filename="../src/value.cpp" line="318"/>
         <source>Total time:</source>
-        <translation type="unfinished"></translation>
+        <translation>Общее время:</translation>
     </message>
     <message>
         <location filename="../src/value.cpp" line="320"/>
         <source>Error:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка:</translation>
     </message>
     <message>
         <location filename="../src/value.cpp" line="326"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>ОК</translation>
     </message>
     <message>
         <location filename="../src/value.cpp" line="329"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть</translation>
     </message>
 </context>
 <context>
@@ -7652,108 +7795,108 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/videodialog.cpp" line="34"/>
         <source>Video</source>
-        <translation type="unfinished"></translation>
+        <translation>Видео</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="85"/>
         <source>Viewport</source>
-        <translation type="unfinished"></translation>
+        <translation>Окна просмотра</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="86"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="88"/>
         <source>Close</source>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="142"/>
         <source>Codec:</source>
-        <translation type="unfinished"></translation>
+        <translation>Кодек:</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="143"/>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>Формат:</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="144"/>
         <source>FPS:</source>
-        <translation type="unfinished"></translation>
+        <translation>FPS:</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="145"/>
         <source>Progress:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ход работы:</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="148"/>
         <source>Create images</source>
-        <translation type="unfinished"></translation>
+        <translation>Создание изображений</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="151"/>
         <source>Encode</source>
-        <translation type="unfinished"></translation>
+        <translation>Закодировать</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="155"/>
         <source>Save ...</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить ...</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="159"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="202"/>
         <source>From:</source>
-        <translation type="unfinished"></translation>
+        <translation>Из:</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="204"/>
         <source>To:</source>
-        <translation type="unfinished"></translation>
+        <translation>К:</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="206"/>
         <source>Delay:</source>
-        <translation type="unfinished"></translation>
+        <translation>Задержка:</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="208"/>
         <source>Time:</source>
-        <translation type="unfinished"></translation>
+        <translation>Время:</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="210"/>
         <source>Time step:</source>
-        <translation type="unfinished"></translation>
+        <translation>Часовой этап:</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="213"/>
         <location filename="../src/videodialog.cpp" line="241"/>
         <source>Animate</source>
-        <translation type="unfinished"></translation>
+        <translation>Оживлять (анимация)</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="247"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Стоп</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="346"/>
         <source>Save video to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить видео на файле</translation>
     </message>
     <message>
         <location filename="../src/videodialog.cpp" line="399"/>
         <source>FFmpeg error</source>
-        <translation type="unfinished"></translation>
+        <translation>FFmpeg ошибка</translation>
     </message>
 </context>
 <context>
@@ -7761,58 +7904,58 @@ Do you want to save your changes?</source>
     <message>
         <location filename="../src/volumeintegralview.cpp" line="121"/>
         <source>Volume Integral</source>
-        <translation type="unfinished"></translation>
+        <translation>Интеграл объёма</translation>
     </message>
     <message>
         <location filename="../src/volumeintegralview.cpp" line="145"/>
         <source>Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Метка</translation>
     </message>
     <message>
         <location filename="../src/volumeintegralview.cpp" line="145"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Значение</translation>
     </message>
     <message>
         <location filename="../src/volumeintegralview.cpp" line="145"/>
         <source>Unit</source>
-        <translation type="unfinished"></translation>
+        <translation>Единица</translation>
     </message>
     <message>
         <location filename="../src/volumeintegralview.cpp" line="165"/>
         <source>Copy value</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать значение</translation>
     </message>
     <message>
         <location filename="../src/volumeintegralview.cpp" line="209"/>
         <source>Geometry</source>
-        <translation type="unfinished"></translation>
+        <translation>Геометрия</translation>
     </message>
     <message>
         <location filename="../src/volumeintegralview.cpp" line="212"/>
         <source>Volume:</source>
-        <translation type="unfinished"></translation>
+        <translation>Объём:</translation>
     </message>
     <message>
         <location filename="../src/volumeintegralview.cpp" line="212"/>
         <location filename="../src/volumeintegralview.cpp" line="213"/>
         <source>%1</source>
-        <translation type="unfinished"></translation>
+        <translation>%1</translation>
     </message>
     <message>
         <location filename="../src/volumeintegralview.cpp" line="212"/>
         <source>m3</source>
-        <translation type="unfinished"></translation>
+        <translation>m3</translation>
     </message>
     <message>
         <location filename="../src/volumeintegralview.cpp" line="213"/>
         <source>Cross section:</source>
-        <translation type="unfinished"></translation>
+        <translation>Поперечное сечение:</translation>
     </message>
     <message>
         <location filename="../src/volumeintegralview.cpp" line="213"/>
         <source>m2</source>
-        <translation type="unfinished"></translation>
+        <translation>m2</translation>
     </message>
 </context>
 </TS>
