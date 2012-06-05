@@ -87,11 +87,11 @@ public:
                 {
                     add_matrix_form_surf(new CustomMatrixFormSurfMatchedBoundary(0, 1,
                                                                                  QString::number(i + 1).toStdString(),
-                                                                                 1.0,
+                                                                                 2 * M_PI * Util::scene()->problemInfo()->frequency,
                                                                                  2 * M_PI * Util::scene()->problemInfo()->frequency));
                     add_matrix_form_surf(new CustomMatrixFormSurfMatchedBoundary(1, 0,
                                                                                  QString::number(i + 1).toStdString(),
-                                                                                 - 1.0,
+                                                                                 - 2 * M_PI * Util::scene()->problemInfo()->frequency,
                                                                                  2 * M_PI * Util::scene()->problemInfo()->frequency));
                 }
 
@@ -239,9 +239,10 @@ public:
 
             double mu = material->permeability.number * MU0;
             double eps = material->permittivity.number * EPS0;
-            double conductivity = material->conductivity.number;
+            // double conductivity = material->conductivity.number;
 
-            return coeff * sqrt((eps - conductivity / frequency) / mu) * int_u_v<double, scalar>(n, wt, u, v);
+            // return coeff * sqrt((eps - conductivity / frequency) / mu) * int_u_v<double, scalar>(n, wt, u, v);
+            return coeff * sqrt(eps / mu) * int_u_v<double, scalar>(n, wt, u, v);
         }
 
         virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u,

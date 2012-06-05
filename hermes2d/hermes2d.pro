@@ -3,7 +3,7 @@ TARGET = lib/hermes2d
 TEMPLATE = lib
 OBJECTS_DIR = build
 CONFIG = += staticlib
-# CONFIG = += debug
+CONFIG = += debug
 DEFINES += NOGLUT
 DEFINES += WITH_UMFPACK
 
@@ -18,7 +18,7 @@ SOURCES +=  ../hermes_common/compat/fmemopen.cpp \
             ../hermes_common/common_time_period.cpp \
             ../hermes_common/error.cpp \
             ../hermes_common/hermes_logging.cpp \
-            ../hermes_common/logging.cpp \
+            # ../hermes_common/logging.cpp \
             ../hermes_common/matrix.cpp \
             ../hermes_common/trace.cpp \
             ../hermes_common/utils.cpp \
@@ -51,14 +51,14 @@ SOURCES +=  ../hermes_common/compat/fmemopen.cpp \
             src/function/norm.cpp \
             src/function/forms.cpp \
             src/function/solution.cpp \
-            src/gen/gen_hc_gradeigen.cpp \
-            src/gen/gen_hc_gradleg.cpp \
-            src/gen/gen_hc_gradleg_triang.cpp \
-            src/gen/gen_hc_leg.cpp \
-            src/gen/gen_hdiv_leg.cpp \
+            # src/gen/gen_hc_gradeigen.cpp \
+            # src/gen/gen_hc_gradleg.cpp \
+            # src/gen/gen_hc_gradleg_triang.cpp \
+            # src/gen/gen_hc_leg.cpp \
+            # src/gen/gen_hdiv_leg.cpp \
             src/gen/gen_h1_simple_quad.cpp \
-            src/gen/gen_l2_leg_quad.cpp \
-            src/gen/gen_l2_leg_tri.cpp \
+            # src/gen/gen_l2_leg_quad.cpp \
+            # src/gen/gen_l2_leg_tri.cpp \
             src/linearizer/linear_data.cpp \
             src/linearizer/linear1.cpp \
             src/linearizer/linear2.cpp \
@@ -92,8 +92,8 @@ SOURCES +=  ../hermes_common/compat/fmemopen.cpp \
             # src/shapeset/shapeset_hc_legendre.cpp \
             # src/shapeset/shapeset_hd_legendre.cpp \
             src/space/space.cpp \
-            src/space/space_hcurl.cpp \
-            src/space/space_hdiv.cpp \
+            # src/space/space_hcurl.cpp \
+            # src/space/space_hdiv.cpp \
             src/space/space_h1.cpp \
             src/space/space_l2.cpp \
             src/ref_selectors/hcurl_proj_based_selector.cpp \
