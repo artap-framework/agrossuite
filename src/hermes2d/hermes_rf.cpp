@@ -242,7 +242,8 @@ public:
             // double conductivity = material->conductivity.number;
 
             // return coeff * sqrt((eps - conductivity / frequency) / mu) * int_u_v<double, scalar>(n, wt, u, v);
-            return coeff * sqrt(eps / mu) * int_u_v<double, scalar>(n, wt, u, v);
+            // qDebug() << sqrt(mu / eps) << coeff / sqrt(mu / eps);
+            return coeff / sqrt(mu / eps) * int_u_v<double, scalar>(n, wt, u, v);
         }
 
         virtual Ord ord(int n, double *wt, Func<Ord> *u_ext[], Func<Ord> *u,

@@ -225,13 +225,13 @@ public:
 
                 add_matrix_form(new WeakFormsH1::VolumetricMatrixForms::DefaultLinearMass(1, 0,
                                                                                           QString::number(i).toStdString(),
-                                                                                          - 1.0 / Util::scene()->problemInfo()->timeStep.number,
+                                                                                          1.0 / Util::scene()->problemInfo()->timeStep.number,
                                                                                           HERMES_NONSYM,
                                                                                           convertProblemType(Util::scene()->problemInfo()->problemType)));
 
                 add_matrix_form(new WeakFormsH1::VolumetricMatrixForms::DefaultLinearMass(1, 1,
                                                                                           QString::number(i).toStdString(),
-                                                                                          1.0,
+                                                                                          - 1.0,
                                                                                           HERMES_NONSYM,
                                                                                           convertProblemType(Util::scene()->problemInfo()->problemType)));
 
