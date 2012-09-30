@@ -1,3 +1,10 @@
+agros2d (2.0-ubuntu96) precise; urgency=low
+
+  * russian translation
+  * fixes
+
+ -- Pavel Karban <pkarban@gmail.com>  Sun, 30 Oct 2012 12:40:00 +0200
+
 agros2d (2.0-ubuntu95) precise; urgency=low
 
   * pythonlab integration

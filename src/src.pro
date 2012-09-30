@@ -7,11 +7,11 @@ QT += opengl \
 
 DEFINES += VERSION_MAJOR=2
 DEFINES += VERSION_MINOR=0
-DEFINES += VERSION_SUB=0
-DEFINES += VERSION_GIT=1167
+DEFINES += VERSION_SUB=1
+DEFINES += VERSION_GIT=1172
 DEFINES += VERSION_YEAR=2012
-DEFINES += VERSION_MONTH=5
-DEFINES += VERSION_DAY=27
+DEFINES += VERSION_MONTH=9
+DEFINES += VERSION_DAY=30
 
 # backup
 # VERSION_GIT=$$system(git log --pretty=format:%h | wc -l)
@@ -21,7 +21,7 @@ linux-g++|linux-g++-64|linux-g++-32:CONFIG(release) system(lrelease ../lang/*.ts
 TRANSLATIONS = lang/cs_CZ.ts \
     lang/pl_PL.ts \
     lang/de_DE.ts \
-	lang/ru_RU.ts
+    lang/ru_RU.ts
 CODECFORTR = UTF-8
 RC_FILE = src.rc
 RESOURCES = src.qrc
@@ -218,6 +218,8 @@ win32-msvc2010 {
     INCLUDEPATH += c:/Python27/include
     INCLUDEPATH += ../hermes2d/src
     INCLUDEPATH += ../../qwt-5.2.1/src
+    INCLUDEPATH += c:/hpfem\hermes/dependencies/include
+    LIBS += -Lc:/hpfem\hermes/dependencies/lib
     LIBS += -Lc:/Python27/libs
     LIBS += -L../hermes2d/lib
     LIBS += -L../../qwt-5.2.1/lib
@@ -226,5 +228,5 @@ win32-msvc2010 {
     LIBS += -lpython27
     LIBS += -llibumfpack
     LIBS += -llibamd
-    LIBS += -llibpthreadVCE2
+    LIBS += -lpthreadVCE2
 }

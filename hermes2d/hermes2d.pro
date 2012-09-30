@@ -2,8 +2,7 @@ QT -= GUI
 TARGET = lib/hermes2d
 TEMPLATE = lib
 OBJECTS_DIR = build
-CONFIG = += staticlib
-CONFIG = += debug
+CONFIG += staticlib
 DEFINES += NOGLUT
 DEFINES += WITH_UMFPACK
 
@@ -144,11 +143,12 @@ win32-msvc2010 {
 
     INCLUDEPATH += c:/Python27/include
     INCLUDEPATH += C:/Python27/Lib/site-packages/numpy/core/include
-    LIBS += -Lc:/Python27
-    LIBS += -lumfpack
-    LIBS += -lamd
-    LIBS += -lblas
-    LIBS += -lpthread
+    INCLUDEPATH += c:/hpfem\hermes/dependencies/include
+    LIBS += -Lc:/Python27/libs
+    LIBS += -Lc:/hpfem\hermes/dependencies/lib
+    LIBS += -llibumfpack
+    LIBS += -llibamd
+    LIBS += -lpthreadVCE2
     LIBS += -lpython27
 }
 
