@@ -45,9 +45,6 @@ void Config::loadWorkspace()
 {
     QSettings settings;
 
-    // experimental features
-    showExperimentalFeatures = settings.value("SceneViewSettings/ExperimentalFeatures", false).toBool();
-
     // general
     guiStyle = settings.value("General/GUIStyle").toString();
     language = settings.value("General/Language", QLocale::system().name()).toString();
@@ -61,10 +58,6 @@ void Config::loadWorkspace()
     enabledApplicationLog = settings.value("General/EnabledApplicationLog", true).toBool();
     enabledProgressLog = settings.value("General/EnabledProgressLog", true).toBool();
     lineEditValueShowResult = settings.value("General/LineEditValueShowResult", false).toBool();
-    if (showExperimentalFeatures)
-        saveProblemWithSolution = settings.value("Solver/SaveProblemWithSolution", false).toBool();
-    else
-        saveProblemWithSolution = false;
 
     // zoom
     zoomToMouse = settings.value("Geometry/ZoomToMouse", true).toBool();
@@ -219,9 +212,6 @@ void Config::saveWorkspace()
 {
     QSettings settings;
 
-    // experimental features
-    settings.setValue("SceneViewSettings/ExperimentalFeatures", showExperimentalFeatures);
-
     // general
     settings.setValue("General/GUIStyle", guiStyle);
     settings.setValue("General/Language", language);
@@ -234,10 +224,6 @@ void Config::saveWorkspace()
     settings.setValue("General/EnabledApplicationLog", enabledApplicationLog);
     settings.setValue("General/EnabledProgressLog", enabledProgressLog);
     settings.setValue("General/LineEditValueShowResult", lineEditValueShowResult);
-    if (showExperimentalFeatures)
-        settings.setValue("General/SaveProblemWithSolution", saveProblemWithSolution);
-    else
-        saveProblemWithSolution = false;
 
     // zoom
     settings.setValue("General/ZoomToMouse", zoomToMouse);

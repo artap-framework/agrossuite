@@ -1188,7 +1188,7 @@ bool PythonEditorDialog::isScriptModified()
 // ******************************************************************************************************
 
 ScriptEditor::ScriptEditor(PythonEngine *pythonEngine, QWidget *parent)
-    : QPlainTextEdit(parent), pythonEngine(pythonEngine)
+    : QPlainTextEdit(parent), pythonEngine(pythonEngine), completer(NULL)
 {
     lineNumberArea = new ScriptEditorLineNumberArea(this);
 
@@ -1245,60 +1245,57 @@ void ScriptEditor::keyPressEvent(QKeyEvent *event)
         }
     }
 
-    switch (event->key())
+    if (event->key() == Qt::Key_Tab)
     {
-    case Qt::Key_Tab:
         if (textCursor().hasSelection())
         {
-            // indent selection
             indentSelection();
             return;
         }
-        else
-        {
-            QTextCursor cursor = textCursor();
-            cursor.insertText(TABS);
-            return;
-        }
-        break;
+    }
 
-    case Qt::Key_Backtab:
+    if (event->key() == Qt::Key_Backtab)
+    {
         if (textCursor().hasSelection())
         {
-            // unindent selection
             unindentSelection();
             return;
         }
-        break;
+    }
 
-    case Qt::Key_Return:
-    case Qt::Key_Enter:
+    QPlainTextEdit::keyPressEvent(event);
+
+    if ((event->key() == Qt::Key_Space && event->modifiers() & Qt::ControlModifier)
+            || completer->popup()->isVisible())
     {
-        QTextCursor cursor = textCursor();
-        QString current_line = cursor.block().text();
+        QTextCursor tc = textCursor();
+        tc.select(QTextCursor::WordUnderCursor);
+        QString textToComplete = tc.selectedText();
 
-        QString leadingNonwhite;
-        for (int i = 0; i < current_line.length(); i++)
+        QString fn = tempProblemFileName() + ".rope_str.py";
+        QString str = toPlainText();
+        writeStringContent(fn, &str);
+
+        QStringList found = pythonEngine->codeCompletion("", tc.position(), fn);
+
+        if (!found.isEmpty())
         {
-            if (current_line.mid(i, 1) == " ")
-                leadingNonwhite += " ";
-            else if (current_line.mid(i, 1) == "\t")
-                leadingNonwhite += "\t";
-            else
-                break;
+            completer->setCompletionPrefix(textToComplete);
+            completer->setModel(new QStringListModel(found, completer));
+            QTextCursor c = textCursor();
+            c.movePosition(QTextCursor::StartOfWord);
+            QRect cr = cursorRect(c);
+            cr.setWidth(completer->popup()->sizeHintForColumn(0)
+                        + completer->popup()->verticalScrollBar()->sizeHint().width() + 30);
+            cr.translate(lineNumberAreaWidth(), 4);
+            completer->complete(cr);
+        }
+        else
+        {
+            completer->popup()->hide();
         }
 
-        QPlainTextEdit::keyPressEvent(event);
-        cursor = textCursor();
-        cursor.insertText(leadingNonwhite);
-        // cursor.movePosition(QTextCursor::EndOfWord);
-
-        return;
-    }
-        break;
-
-    default:
-        break;
+        QFile::remove(fn);
     }
 }
 

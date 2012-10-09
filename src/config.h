@@ -168,8 +168,6 @@ public:
     // global script
     QString globalScript;
 
-    bool showExperimentalFeatures;
-
     void load();
     void loadWorkspace();
     void loadPostprocessor(QDomElement *config);

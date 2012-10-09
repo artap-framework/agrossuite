@@ -59,7 +59,6 @@ private slots:
     void doDocumentDownloadFromServer();
     void doDocumentOpenRecent(QAction *action);
     void doDocumentSave();
-    void doDocumentSaveWithSolution();
     void doDocumentSaveAs();
     void doDocumentUploadToServer();
     void doDocumentClose();
@@ -143,7 +142,6 @@ private:
     QAction *actDocumentOpen;
     QAction *actDocumentDownloadFromServer;
     QAction *actDocumentSave;
-    QAction *actDocumentSaveWithSolution;
     QAction *actDocumentSaveAs;
     QAction *actDocumentUploadToServer;
     QAction *actDocumentClose;

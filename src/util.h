@@ -411,7 +411,6 @@ enum PhysicField
     PhysicField_Heat,
     PhysicField_Elasticity,
     PhysicField_Flow,
-    PhysicField_RF,
     PhysicField_Acoustic
 };
 
@@ -474,33 +473,7 @@ enum PhysicFieldVariable
     PhysicFieldVariable_Elasticity_StressXX,
     PhysicFieldVariable_Elasticity_StressYY,
     PhysicFieldVariable_Elasticity_StressZZ,
-    PhysicFieldVariable_Elasticity_StressXY,
-    PhysicFieldVariable_Flow_Velocity,
-    PhysicFieldVariable_Flow_VelocityX,
-    PhysicFieldVariable_Flow_VelocityY,
-    PhysicFieldVariable_Flow_Pressure,
-    PhysicFieldVariable_RF_ElectricField,
-    PhysicFieldVariable_RF_ElectricFieldReal,
-    PhysicFieldVariable_RF_ElectricFieldImag,
-    PhysicFieldVariable_RF_MagneticField,
-    PhysicFieldVariable_RF_MagneticFieldXReal,
-    PhysicFieldVariable_RF_MagneticFieldXImag,
-    PhysicFieldVariable_RF_MagneticFieldYReal,
-    PhysicFieldVariable_RF_MagneticFieldYImag,
-    PhysicFieldVariable_RF_MagneticFluxDensity,
-    PhysicFieldVariable_RF_MagneticFluxDensityXReal,
-    PhysicFieldVariable_RF_MagneticFluxDensityXImag,
-    PhysicFieldVariable_RF_MagneticFluxDensityYReal,
-    PhysicFieldVariable_RF_MagneticFluxDensityYImag,
-    PhysicFieldVariable_RF_PoyntingVector,
-    PhysicFieldVariable_RF_PoyntingVectorX,
-    PhysicFieldVariable_RF_PoyntingVectorY,
-    PhysicFieldVariable_RF_PowerLosses,
-    PhysicFieldVariable_RF_Permittivity,
-    PhysicFieldVariable_RF_Permeability,
-    PhysicFieldVariable_RF_Conductivity,
-    PhysicFieldVariable_RF_CurrentDensityReal,
-    PhysicFieldVariable_RF_CurrentDensityImag,
+    PhysicFieldVariable_Elasticity_StressXY,    
     PhysicFieldVariable_Acoustic_Pressure,
     PhysicFieldVariable_Acoustic_PressureReal,
     PhysicFieldVariable_Acoustic_PressureImag,
@@ -601,31 +574,6 @@ inline bool isPhysicFieldVariableScalar(PhysicFieldVariable physicFieldVariable)
     case PhysicFieldVariable_Elasticity_StressYY:
     case PhysicFieldVariable_Elasticity_StressZZ:
     case PhysicFieldVariable_Elasticity_StressXY:
-
-    case PhysicFieldVariable_Flow_Pressure:
-
-    case PhysicFieldVariable_RF_ElectricField:
-    case PhysicFieldVariable_RF_ElectricFieldReal:
-    case PhysicFieldVariable_RF_ElectricFieldImag:
-    case PhysicFieldVariable_RF_MagneticField:
-    case PhysicFieldVariable_RF_MagneticFieldXReal:
-    case PhysicFieldVariable_RF_MagneticFieldXImag:
-    case PhysicFieldVariable_RF_MagneticFieldYReal:
-    case PhysicFieldVariable_RF_MagneticFieldYImag:
-    case PhysicFieldVariable_RF_MagneticFluxDensity:
-    case PhysicFieldVariable_RF_MagneticFluxDensityXReal:
-    case PhysicFieldVariable_RF_MagneticFluxDensityXImag:
-    case PhysicFieldVariable_RF_MagneticFluxDensityYReal:
-    case PhysicFieldVariable_RF_MagneticFluxDensityYImag:
-    case PhysicFieldVariable_RF_PoyntingVector:
-    case PhysicFieldVariable_RF_PoyntingVectorX:
-    case PhysicFieldVariable_RF_PoyntingVectorY:
-    case PhysicFieldVariable_RF_PowerLosses:
-    case PhysicFieldVariable_RF_Permittivity:
-    case PhysicFieldVariable_RF_Permeability:
-    case PhysicFieldVariable_RF_Conductivity:
-    case PhysicFieldVariable_RF_CurrentDensityReal:
-    case PhysicFieldVariable_RF_CurrentDensityImag:
 
     case PhysicFieldVariable_Acoustic_Pressure:
     case PhysicFieldVariable_Acoustic_PressureReal:

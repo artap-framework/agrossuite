@@ -187,10 +187,6 @@ void MainWindow::createActions()
     actDocumentSave->setStatusTip(tr("Save the file to disk"));
     connect(actDocumentSave, SIGNAL(triggered()), this, SLOT(doDocumentSave()));
 
-    actDocumentSaveWithSolution = new QAction(icon(""), tr("Save with solution"), this);
-    actDocumentSaveWithSolution->setStatusTip(tr("Save the file to disk with solution"));
-    connect(actDocumentSaveWithSolution, SIGNAL(triggered()), this, SLOT(doDocumentSaveWithSolution()));
-
     actDocumentSaveAs = new QAction(icon("document-save-as"), tr("Save &As..."), this);
     actDocumentSaveAs->setShortcuts(QKeySequence::SaveAs);
     actDocumentSaveAs->setStatusTip(tr("Save the file under a new name"));
@@ -399,8 +395,6 @@ void MainWindow::createMenus()
     mnuFile->addMenu(mnuRecentFiles);
     mnuFile->addSeparator();
     mnuFile->addAction(actDocumentSave);
-    if (Util::config()->showExperimentalFeatures)
-        mnuFile->addAction(actDocumentSaveWithSolution);
     mnuFile->addAction(actDocumentSaveAs);
     mnuFile->addSeparator();
     mnuFile->addMenu(mnuFileImportExport);
@@ -933,21 +927,6 @@ void MainWindow::doDocumentSave()
         doDocumentSaveAs();
 }
 
-void MainWindow::doDocumentSaveWithSolution()
-{
-    logMessage("MainWindow::doDocumentSaveWithSolution()");
-
-    QSettings settings;
-
-    // save state
-    bool state = settings.value("Solver/SaveProblemWithSolution", false).value<bool>();
-    settings.setValue("Solver/SaveProblemWithSolution", true);
-
-    doDocumentSave();
-
-    settings.setValue("Solver/SaveProblemWithSolution", state);
-}
-
 void MainWindow::doDocumentSaveAs()
 {
     logMessage("MainWindow::doDocumentSaveAs()");
@@ -1253,9 +1232,6 @@ void MainWindow::doTimeStepChanged(int index)
 void MainWindow::doInvalidated()
 {
     logMessage("MainWindow::doInvalidated()");
-
-    if (Util::config()->showExperimentalFeatures)
-        actDocumentSaveWithSolution->setEnabled(Util::scene()->sceneSolution()->isSolved());
 
     actViewQuick2DNone->setEnabled(Util::scene()->sceneSolution()->isSolved());
     actViewQuick2DOrder->setEnabled(Util::scene()->sceneSolution()->isSolved());

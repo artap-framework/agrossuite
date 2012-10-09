@@ -590,22 +590,6 @@ void HermesAcoustic::fillComboBoxScalarVariable(QComboBox *cmbFieldVariable)
         cmbFieldVariable->addItem(physicFieldVariableString(PhysicFieldVariable_Acoustic_Energy), PhysicFieldVariable_Acoustic_Energy);
         cmbFieldVariable->addItem(physicFieldVariableString(PhysicFieldVariable_Acoustic_EnergyLevel), PhysicFieldVariable_Acoustic_EnergyLevel);
     }
-    // transient
-    if (Util::scene()->problemInfo()->analysisType == AnalysisType_Transient)
-    {
-        // cmbFieldVariable->addItem(physicFieldVariableString(PhysicFieldVariable_Acoustic_Pressure), PhysicFieldVariable_Acoustic_PressureReal);
-
-        cmbFieldVariable->addItem(physicFieldVariableString(PhysicFieldVariable_Acoustic_PressureReal), PhysicFieldVariable_Acoustic_PressureReal);
-        cmbFieldVariable->addItem(physicFieldVariableString(PhysicFieldVariable_Acoustic_PressureImag), PhysicFieldVariable_Acoustic_PressureImag);
-
-        cmbFieldVariable->addItem(physicFieldVariableString(PhysicFieldVariable_Acoustic_PressureLevel), PhysicFieldVariable_Acoustic_PressureLevel);
-        // cmbFieldVariable->addItem(physicFieldVariableString(PhysicFieldVariable_Acoustic_LocalVelocity), PhysicFieldVariable_Acoustic_LocalVelocity);
-        // cmbFieldVariable->addItem(physicFieldVariableString(PhysicFieldVariable_Acoustic_LocalAcceleration), PhysicFieldVariable_Acoustic_LocalAcceleration);
-        cmbFieldVariable->addItem(physicFieldVariableString(PhysicFieldVariable_Acoustic_Density), PhysicFieldVariable_Acoustic_Density);
-        cmbFieldVariable->addItem(physicFieldVariableString(PhysicFieldVariable_Acoustic_Speed), PhysicFieldVariable_Acoustic_Speed);
-        cmbFieldVariable->addItem(physicFieldVariableString(PhysicFieldVariable_Acoustic_Energy), PhysicFieldVariable_Acoustic_Energy);
-        cmbFieldVariable->addItem(physicFieldVariableString(PhysicFieldVariable_Acoustic_EnergyLevel), PhysicFieldVariable_Acoustic_EnergyLevel);
-    }
 }
 
 void HermesAcoustic::fillComboBoxVectorVariable(QComboBox *cmbFieldVariable)
@@ -667,12 +651,6 @@ void HermesAcoustic::showLocalValue(QTreeWidget *trvWidget, LocalPointValue *loc
         addTreeWidgetItemValue(itemLocalAcceleration, "a:", QString("%1").arg(localPointValueAcoustic->localAccelaration.magnitude(), 0, 'f', 5), "m/s2");
         */
     }
-    if (Util::scene()->problemInfo()->analysisType == AnalysisType_Transient)
-    {
-        // Pressure
-        addTreeWidgetItemValue(acousticNode, tr("Acoustic pressure:"), QString("%1").arg(localPointValueAcoustic->pressure_real, 0, 'e', 3), "Pa");
-        addTreeWidgetItemValue(acousticNode, tr("Sound pressure level:"), QString("%1").arg(localPointValueAcoustic->pressureLevel, 0, 'f', 2), "dB");
-    }
 }
 
 void HermesAcoustic::showSurfaceIntegralValue(QTreeWidget *trvWidget, SurfaceIntegralValue *surfaceIntegralValue)
@@ -732,14 +710,6 @@ ViewScalarFilter *HermesAcoustic::viewScalarFilter(PhysicFieldVariable physicFie
 
 QList<SolutionArray *> HermesAcoustic::solve(ProgressItemSolve *progressItemSolve)
 {
-    // transient
-    if (Util::scene()->problemInfo()->analysisType == AnalysisType_Transient)
-    {
-        if (!Util::scene()->problemInfo()->timeStep.evaluate()) return QList<SolutionArray *>();
-        if (!Util::scene()->problemInfo()->timeTotal.evaluate()) return QList<SolutionArray *>();
-        if (!Util::scene()->problemInfo()->initialCondition.evaluate()) return QList<SolutionArray *>();
-    }
-
     // edge markers
     for (int i = 1; i<Util::scene()->boundaries.count(); i++)
     {
@@ -859,14 +829,6 @@ LocalPointValueAcoustic::LocalPointValueAcoustic(const Point &point) : LocalPoin
                 energy = (sqr(valueReal.value) + sqr(valueImag.value)) / ( 2 * density * sqr(speed));
                 energyLevel = ((sqr(valueReal.value) + sqr(valueImag.value)) > SOUND_ENERGY_DENSITY_REF) ?
                             10.0 * log10(((sqr(valueReal.value) + sqr(valueImag.value)) / ( 2 * density * sqr(speed))) / SOUND_ENERGY_DENSITY_REF) : 0.0;
-            }
-            if (Util::scene()->problemInfo()->analysisType == AnalysisType_Transient)
-            {
-                Point derReal = valueReal.derivative;
-
-                pressure_real = valueReal.value;
-
-                pressureLevel = (valueReal.value > PRESSURE_AIR_REF) ? 20.0 * log10(valueReal.value / PRESSURE_AIR_REF) : 0.0;
             }
         }
     }
@@ -1094,9 +1056,6 @@ void ViewScalarFilterAcoustic::calculateVariable(int i)
         if (Util::scene()->problemInfo()->analysisType == AnalysisType_Harmonic)
             node->values[0][0][i] = (sqrt(sqr(value1[i]) + sqr(value2[i])) > PRESSURE_AIR_REF) ?
                         20.0 * log10(sqrt(sqr(value1[i]) + sqr(value2[i])) / sqrt(2.0) / PRESSURE_AIR_REF) : 0.0;
-        else if (Util::scene()->problemInfo()->analysisType == AnalysisType_Transient)
-            node->values[0][0][i] = (value1[i] > PRESSURE_AIR_REF) ?
-                        20.0 * log10(value1[i] / PRESSURE_AIR_REF) : 0.0;
     }
         break;
     case PhysicFieldVariable_Acoustic_LocalVelocity:
@@ -1172,11 +1131,7 @@ void ViewScalarFilterAcoustic::calculateVariable(int i)
 
         if (Util::scene()->problemInfo()->analysisType == AnalysisType_Harmonic)
             node->values[0][0][i] = ((sqr(value1[i]) + sqr(value2[i])) > SOUND_ENERGY_DENSITY_REF) ?
-                        10.0 * log10(((sqr(value1[i]) + sqr(value2[i])) / ( 2 * marker->density.number * sqr(marker->speed.number))) / SOUND_ENERGY_DENSITY_REF) : 0.0;
-
-        else if (Util::scene()->problemInfo()->analysisType == AnalysisType_Transient)
-            node->values[0][0][i] = (value1[i] > SOUND_ENERGY_DENSITY_REF) ?
-                        10.0 * log10((value1[i] / ( 2 * marker->density.number * sqr(marker->speed.number))) / SOUND_ENERGY_DENSITY_REF) : 0.0;
+                        10.0 * log10(((sqr(value1[i]) + sqr(value2[i])) / ( 2 * marker->density.number * sqr(marker->speed.number))) / SOUND_ENERGY_DENSITY_REF) : 0.0;        
     }
         break;
     default:
@@ -1281,12 +1236,8 @@ void SceneBoundaryAcousticDialog::createContent()
     cmbType = new QComboBox(this);
     cmbType->addItem(physicFieldBCString(PhysicFieldBC_Acoustic_Pressure), PhysicFieldBC_Acoustic_Pressure);
     cmbType->addItem(physicFieldBCString(PhysicFieldBC_Acoustic_NormalAcceleration), PhysicFieldBC_Acoustic_NormalAcceleration);
-    // FIX impedance boundary for transient
-    // if (Util::scene()->problemInfo()->analysisType == AnalysisType_Harmonic)
-    {
-        cmbType->addItem(physicFieldBCString(PhysicFieldBC_Acoustic_MatchedBoundary), PhysicFieldBC_Acoustic_MatchedBoundary);
-        cmbType->addItem(physicFieldBCString(PhysicFieldBC_Acoustic_Impedance), PhysicFieldBC_Acoustic_Impedance);
-    }
+    cmbType->addItem(physicFieldBCString(PhysicFieldBC_Acoustic_MatchedBoundary), PhysicFieldBC_Acoustic_MatchedBoundary);
+    cmbType->addItem(physicFieldBCString(PhysicFieldBC_Acoustic_Impedance), PhysicFieldBC_Acoustic_Impedance);
     connect(cmbType, SIGNAL(currentIndexChanged(int)), this, SLOT(doTypeChanged(int)));
 
     txtValue = new ValueLineEdit(this, true);

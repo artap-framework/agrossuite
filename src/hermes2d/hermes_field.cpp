@@ -475,11 +475,7 @@ bool SolutionAgros::solveLinear(DiscreteProblem *dp,
                                 Hermes::vector<Solution *> solution,
                                 Solver *solver, SparseMatrix *matrix, Vector *rhs)
 {
-    // QTime time;
-    // time.start();
     dp->assemble(matrix, rhs);
-    // qDebug() << "assemble: " << time.elapsed();
-
     if(solver->solve())
     {
         Solution::vector_to_solutions(solver->get_solution(), space, solution);
@@ -505,9 +501,9 @@ bool SolutionAgros::solve(Hermes::vector<Space *> space,
                                solver, matrix, rhs);
 
         // dump matrix
-        FILE *f = fopen(QString(tempProblemDir() + "/matrix.m").toStdString().c_str(), "w");
-        matrix->dump(f, QString("mat").toStdString().c_str(), DF_MATRIX_MARKET);
-        fclose(f);
+        // FILE *f = fopen(QString(tempProblemDir() + "/matrix.m").toStdString().c_str(), "w");
+        // matrix->dump(f, QString("mat").toStdString().c_str(), DF_MATRIX_MARKET);
+        // fclose(f);
 
         return !isError;
     }

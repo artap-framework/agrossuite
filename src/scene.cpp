@@ -1487,9 +1487,6 @@ ErrorResult Scene::readFromFile(const QString &fileName)
                                                                                              analysisTypeToStringKey(AnalysisType_SteadyState)));
     // physic field
     PhysicField field = physicFieldFromStringKey(eleProblem.toElement().attribute("type"));
-    if (!Util::config()->showExperimentalFeatures && (field == physicFieldFromStringKey("rf") || field == physicFieldFromStringKey("flow")))
-        return ErrorResult(ErrorResultType_Critical, tr("This problem uses functionality under development. You must first enable experimental features in application options."));
-
     m_problemInfo->setHermes(hermesFieldFactory(field));
 
     // number of refinements

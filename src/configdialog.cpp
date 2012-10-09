@@ -79,10 +79,6 @@ void ConfigDialog::load()
     chkDeleteTriangleMeshFiles->setChecked(Util::config()->deleteTriangleMeshFiles);
     chkDeleteHermes2DMeshFile->setChecked(Util::config()->deleteHermes2DMeshFile);
 
-    // save problem with solution
-    if (Util::config()->showExperimentalFeatures)
-        chkSaveWithSolution->setChecked(Util::config()->saveProblemWithSolution);
-
     // colors
     colorBackground->setColor(Util::config()->colorBackground);
     colorGrid->setColor(Util::config()->colorGrid);
@@ -109,9 +105,6 @@ void ConfigDialog::load()
     // command argument
     txtArgumentTriangle->setText(Util::config()->commandTriangle);
     txtArgumentFFmpeg->setText(Util::config()->commandFFmpeg);
-
-    // experimental features
-    chkExperimentalFeatures->setChecked(Util::config()->showExperimentalFeatures);
 
     // global script
     txtGlobalScript->setPlainText(Util::config()->globalScript);
@@ -166,10 +159,6 @@ void ConfigDialog::save()
     Util::config()->deleteTriangleMeshFiles = chkDeleteTriangleMeshFiles->isChecked();
     Util::config()->deleteHermes2DMeshFile = chkDeleteHermes2DMeshFile->isChecked();
 
-    // save problem with solution
-    if (Util::config()->showExperimentalFeatures)
-        Util::config()->saveProblemWithSolution = chkSaveWithSolution->isChecked();
-
     // color
     Util::config()->colorBackground = colorBackground->color();
     Util::config()->colorGrid = colorGrid->color();
@@ -196,9 +185,6 @@ void ConfigDialog::save()
     // command argument
     Util::config()->commandTriangle = txtArgumentTriangle->text();
     Util::config()->commandFFmpeg = txtArgumentFFmpeg->text();
-
-    // experimental features
-    Util::config()->showExperimentalFeatures = chkExperimentalFeatures->isChecked();
 
     // global script
     Util::config()->globalScript = txtGlobalScript->toPlainText();
@@ -368,15 +354,11 @@ QWidget *ConfigDialog::createSolverWidget()
     // general
     chkDeleteTriangleMeshFiles = new QCheckBox(tr("Delete files with initial mesh (Triangle)"));
     chkDeleteHermes2DMeshFile = new QCheckBox(tr("Delete files with solution mesh (Hermes2D)"));
-    if (Util::config()->showExperimentalFeatures)
-        chkSaveWithSolution = new QCheckBox(tr("Save problem with solution"));
     chkShowConvergenceChart = new QCheckBox(tr("Show convergence chart after solving"));
 
     QVBoxLayout *layoutSolver = new QVBoxLayout();
     layoutSolver->addWidget(chkDeleteTriangleMeshFiles);
     layoutSolver->addWidget(chkDeleteHermes2DMeshFile);
-    if (Util::config()->showExperimentalFeatures)
-        layoutSolver->addWidget(chkSaveWithSolution);
     layoutSolver->addWidget(chkShowConvergenceChart);
 
     QGroupBox *grpSolver = new QGroupBox(tr("Solver"));

@@ -227,25 +227,11 @@ QWidget *ProblemDialog::createControlsGeneral()
     QGroupBox *grpAdaptivity = new QGroupBox(tr("Adaptivity"));
     grpAdaptivity->setLayout(layoutAdaptivity);
 
-    // linearity
-    QGridLayout *layoutLinearity = new QGridLayout();
-    layoutLinearity->setColumnMinimumWidth(0, minWidth);
-    layoutLinearity->setColumnStretch(1, 1);
-    layoutLinearity->addWidget(new QLabel(tr("Nonlin. tolerance (%):")), 0, 0);
-    layoutLinearity->addWidget(txtLinearityNonlinearityTolerance, 0, 1);
-    layoutLinearity->addWidget(new QLabel(tr("Nonlin. steps:")), 1, 0);
-    layoutLinearity->addWidget(txtLinearityNonlinearitySteps, 1, 1);
-
-    QGroupBox *grpLinearity = new QGroupBox(tr("Linearity"));
-    grpLinearity->setLayout(layoutLinearity);
-    grpLinearity->setVisible(Util::config()->showExperimentalFeatures);
-
     // left
     QVBoxLayout *layoutLeft = new QVBoxLayout();
     layoutLeft->addLayout(layoutTable);
     // layoutLeft->addWidget(grpAdaptivity);
     layoutLeft->addStretch();
-    // layoutLeft->addWidget(grpLinearity);
     layoutLeft->addWidget(grpMesh);
 
     // right
@@ -254,7 +240,6 @@ QWidget *ProblemDialog::createControlsGeneral()
     layoutRight->addWidget(grpTransientAnalysis);
     // layoutRight->addWidget(grpMesh);
     layoutRight->addWidget(grpAdaptivity);
-    layoutRight->addWidget(grpLinearity);
     layoutRight->addStretch();
 
     // both
