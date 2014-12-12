@@ -239,8 +239,7 @@ void initLists()
     // MatrixSolverType
     matrixSolverTypeList.insert(SOLVER_EMPTY, "empty");
     matrixSolverTypeList.insert(SOLVER_UMFPACK, "umfpack");
-    matrixSolverTypeList.insert(SOLVER_PARALUTION_ITERATIVE, "paralution_iterative");
-    matrixSolverTypeList.insert(SOLVER_PARALUTION_AMG, "paralution_amg");
+    matrixSolverTypeList.insert(SOLVER_DEALII, "dealii");
 #ifdef WITH_MUMPS
     matrixSolverTypeList.insert(SOLVER_MUMPS, "mumps");
 #endif
@@ -256,7 +255,7 @@ void initLists()
 #ifdef HAVE_AZTECOO
     matrixSolverTypeList.insert(SOLVER_AZTECOO, "trilinos_aztecoo");
 #endif
-    matrixSolverTypeList.insert(SOLVER_EXTERNAL, "external");
+    // matrixSolverTypeList.insert(SOLVER_EXTERNAL, "external");
 
     // dump format
     dumpFormatList.insert(EXPORT_FORMAT_PLAIN_ASCII, "plain_ascii");
@@ -332,17 +331,21 @@ void initLists()
     iterLinearSolverMethodList.insert(IterSolverType_CG, "cg");
     iterLinearSolverMethodList.insert(IterSolverType_GMRES, "gmres");
     iterLinearSolverMethodList.insert(IterSolverType_BiCGStab, "bicgstab");
-    iterLinearSolverMethodList.insert(IterSolverType_CR, "cr");
-    // iterLinearSolverMethodList.insert(IDR, "idr");
+    //iterLinearSolverMethodList.insert(IterSolverType_Richardson, "richardson");
+    //iterLinearSolverMethodList.insert(IterSolverType_MinRes, "minres");
+    //iterLinearSolverMethodList.insert(IterSolverType_GMRS, "gmrs");
+    //iterLinearSolverMethodList.insert(IterSolverType_Relaxation, "relaxation");
 
-    iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_Jacobi, "jacobi");
-    iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_ILU, "ilu");
-    iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_MultiColoredSGS, "multicoloredsgs");
-    iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_MultiColoredILU, "multicoloredilu");
-    iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_SaddlePoint, "saddlepoint");
-    // iterLinearSolverPreconditionerTypeList.insert(AIChebyshev, "aichebyshev");
-    iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_IC, "ic");
-    iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_MultiElimination, "multielimination");
+    // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_Identity, "identity");
+    // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_Richardson, "richardson");
+    // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_UseMatrix, "usematrix");
+    // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_Relaxation, "relaxation");
+    // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_Jacobi, "jacobi");
+    // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_SOR, "sor");
+    iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_SSOR, "ssor");
+    // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_PSOR, "psor");
+    // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_LACSolver, "lacsolver");
+    // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_Chebyshev, "chebyshev");
 }
 
 QString errorNormString(NormType projNormType)
@@ -625,22 +628,12 @@ QString matrixSolverTypeString(MatrixSolverType matrixSolverType)
         return QObject::tr("EMPTY");
     case SOLVER_UMFPACK:
         return QObject::tr("UMFPACK");
-    case SOLVER_PETSC:
-        return QObject::tr("PETSc");
+    case SOLVER_DEALII:
+        return QObject::tr("deal.II");
     case SOLVER_MUMPS:
         return QObject::tr("MUMPS");
-    case SOLVER_SUPERLU:
-        return QObject::tr("SuperLU");
-    case SOLVER_PARALUTION_ITERATIVE:
-        return QObject::tr("PARALUTION iter. (exp.)");
-    case SOLVER_PARALUTION_AMG:
-        return QObject::tr("PARALUTION AMG (exp.)");
-    case SOLVER_AMESOS:
-        return QObject::tr("Trilinos/Amesos");
-    case SOLVER_AZTECOO:
-        return QObject::tr("Trilinos/AztecOO");
     case SOLVER_EXTERNAL:
-        return QObject::tr("MUMPS (out of core)");
+        return QObject::tr("UMFPACK (out of core)");
     default:
         std::cerr << "Matrix solver type '" + QString::number(matrixSolverType).toStdString() + "' is not implemented. matrixSolverTypeString(MatrixSolverType matrixSolverType)" << endl;
         throw;
@@ -665,7 +658,7 @@ QString dumpFormatString(MatrixExportFormat format)
 
 bool isMatrixSolverIterative(MatrixSolverType type)
 {
-    return ((type == SOLVER_PARALUTION_ITERATIVE) || (type == SOLVER_PARALUTION_AMG));
+    return ((type == SOLVER_DEALII));
 }
 
 QString linearityTypeString(LinearityType linearityType)
@@ -760,10 +753,14 @@ QString iterLinearSolverMethodString(IterSolverType type)
         return QObject::tr("GMRES");
     case IterSolverType_BiCGStab:
         return QObject::tr("BiCGStab");
-    case IterSolverType_IDR:
-        return QObject::tr("IDR");
-    case IterSolverType_CR:
-        return QObject::tr("CR");
+    case IterSolverType_Richardson:
+        return QObject::tr("Richardson");
+    case IterSolverType_MinRes:
+        return QObject::tr("MinRes");
+    case IterSolverType_GMRS:
+        return QObject::tr("GMRS");
+    case IterSolverType_Relaxation:
+        return QObject::tr("Relaxation");
     default:
         std::cerr << "Iterative solver method '" + QString::number(type).toStdString() + "' is not implemented. iterLinearSolverTypeString(ParalutionSolverType type)" << endl;
         throw;
@@ -774,22 +771,26 @@ QString iterLinearSolverPreconditionerTypeString(PreconditionerType type)
 {
     switch (type)
     {
+    case PreconditionerType_Identity:
+        return QObject::tr("Identity");
+    case PreconditionerType_Richardson:
+        return QObject::tr("Richardson");
+    case PreconditionerType_UseMatrix:
+        return QObject::tr("UseMatrix");
+    case PreconditionerType_Relaxation:
+        return QObject::tr("Relaxation");
     case PreconditionerType_Jacobi:
         return QObject::tr("Jacobi");
-    case PreconditionerType_ILU:
-        return QObject::tr("ILU");
-    case PreconditionerType_MultiColoredSGS:
-        return QObject::tr("MultiColoredSGS");
-    case PreconditionerType_MultiColoredILU:
-        return QObject::tr("MultiColoredILU");
-    case PreconditionerType_IC:
-        return QObject::tr("IC");
-    case PreconditionerType_AIChebyshev:
-        return QObject::tr("AIChebyshev");
-    case PreconditionerType_MultiElimination:
-        return QObject::tr("MultiElimination");
-    case PreconditionerType_SaddlePoint:
-        return QObject::tr("SaddlePoint");
+    case PreconditionerType_SOR:
+        return QObject::tr("SOR");
+    case PreconditionerType_SSOR:
+        return QObject::tr("SSOR");
+    case PreconditionerType_PSOR:
+        return QObject::tr("PSOR");
+    case PreconditionerType_LACSolver:
+        return QObject::tr("LACSolver");
+    case PreconditionerType_Chebyshev:
+        return QObject::tr("Chebyshev");
     default:
         std::cerr << "Iterative solver preconditioner '" + QString::number(type).toStdString() + "' is not implemented. iterLinearSolverPreconditionerTypeString(PreconditionerType type)" << endl;
         throw;

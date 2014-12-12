@@ -339,12 +339,8 @@ void InfoWidget::showInfo()
             }
 
             QString matrixSolver = matrixSolverTypeString(fieldInfo->matrixSolver());
-            if ((fieldInfo->matrixSolver() == SOLVER_PARALUTION_ITERATIVE))
+            if ((fieldInfo->matrixSolver() == SOLVER_DEALII))
                 matrixSolver += tr(" (%1, %2) - iterative").
-                        arg(iterLinearSolverMethodString((IterSolverType) fieldInfo->value(FieldInfo::LinearSolverIterMethod).toInt())).
-                        arg(iterLinearSolverPreconditionerTypeString((PreconditionerType) fieldInfo->value(FieldInfo::LinearSolverIterPreconditioner).toInt()));
-            else if ((fieldInfo->matrixSolver() == SOLVER_PARALUTION_AMG))
-                matrixSolver += tr(" (%1, %2) - AMG").
                         arg(iterLinearSolverMethodString((IterSolverType) fieldInfo->value(FieldInfo::LinearSolverIterMethod).toInt())).
                         arg(iterLinearSolverPreconditionerTypeString((PreconditionerType) fieldInfo->value(FieldInfo::LinearSolverIterPreconditioner).toInt()));
             else

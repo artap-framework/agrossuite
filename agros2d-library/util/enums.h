@@ -249,14 +249,9 @@ enum SpecialFunctionType
 enum MatrixSolverType
 {
     SOLVER_UMFPACK = 0,
-    SOLVER_PARALUTION_ITERATIVE = 1,
-    SOLVER_PARALUTION_AMG = 2,
-    SOLVER_PETSC = 3,
     SOLVER_MUMPS = 4,
-    SOLVER_SUPERLU = 5,
-    SOLVER_AMESOS = 6,
-    SOLVER_AZTECOO = 7,
     SOLVER_EXTERNAL = 8,
+    SOLVER_DEALII,
     SOLVER_EMPTY = 100
 };
 
@@ -268,6 +263,31 @@ enum DirectMatrixSolverType
     DIRECT_SOLVER_AMESOS = 6,
     // Solver external is here, because direct solvers are used in projections.
     DIRECT_SOLVER_EXTERNAL = 8
+};
+
+enum IterSolverType
+{
+    IterSolverType_CG = 0,
+    IterSolverType_GMRES = 1,
+    IterSolverType_BiCGStab = 2,
+    IterSolverType_Richardson = 3,
+    IterSolverType_MinRes = 4,
+    IterSolverType_GMRS = 5,
+    IterSolverType_Relaxation = 6
+};
+
+enum PreconditionerType
+{
+    PreconditionerType_Identity = 0,
+    PreconditionerType_Richardson = 1,
+    PreconditionerType_UseMatrix = 2,
+    PreconditionerType_Relaxation = 3,
+    PreconditionerType_Jacobi = 4,
+    PreconditionerType_SOR = 5,
+    PreconditionerType_SSOR = 6,
+    PreconditionerType_PSOR = 7,
+    PreconditionerType_LACSolver = 8,
+    PreconditionerType_Chebyshev = 9
 };
 
 enum MatrixExportFormat
@@ -296,27 +316,6 @@ enum SymFlag
     SymFlag_ANTISYM = -1,
     SymFlag_NONSYM = 0,
     SymFlag_SYM = 1
-};
-
-enum IterSolverType
-{
-    IterSolverType_CG = 0,
-    IterSolverType_GMRES = 1,
-    IterSolverType_BiCGStab = 2,
-    IterSolverType_CR = 3,
-    IterSolverType_IDR = 4
-};
-
-enum PreconditionerType
-{
-    PreconditionerType_Jacobi = 0,
-    PreconditionerType_MultiColoredSGS = 1,
-    PreconditionerType_ILU = 2,
-    PreconditionerType_MultiColoredILU = 3,
-    PreconditionerType_IC = 4,
-    PreconditionerType_AIChebyshev = 5,
-    PreconditionerType_MultiElimination = 6,
-    PreconditionerType_SaddlePoint = 7
 };
 
 // keys

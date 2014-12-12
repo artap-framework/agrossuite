@@ -512,6 +512,7 @@ void FieldWidget::fillComboBox()
     }
 
     cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_UMFPACK), SOLVER_UMFPACK);
+    cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_DEALII), SOLVER_DEALII);
 #ifdef WITH_MUMPS
     cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_MUMPS), SOLVER_MUMPS);
 #endif
@@ -527,8 +528,6 @@ void FieldWidget::fillComboBox()
 #ifdef HAVE_AZTECOO
     cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_AZTECOO), SOLVER_AZTECOO);
 #endif
-    cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_PARALUTION_ITERATIVE), SOLVER_PARALUTION_ITERATIVE);
-    cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_PARALUTION_AMG), SOLVER_PARALUTION_AMG);
     cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_EXTERNAL), SOLVER_EXTERNAL);
 
     foreach(Module::ErrorCalculator calc, m_fieldInfo->errorCalculators())
@@ -738,7 +737,7 @@ void FieldWidget::doLinearityTypeChanged(int index)
 void FieldWidget::doLinearSolverChanged(int index)
 {
     MatrixSolverType solverType = (MatrixSolverType) cmbLinearSolver->itemData(cmbLinearSolver->currentIndex()).toInt();
-    bool isIterative = ((solverType == SOLVER_PARALUTION_ITERATIVE) || (solverType == SOLVER_PARALUTION_AMG));
+    bool isIterative = isMatrixSolverIterative(solverType);
 
     cmbIterLinearSolverMethod->setEnabled(isIterative);
     cmbIterLinearSolverPreconditioner->setEnabled(isIterative);
