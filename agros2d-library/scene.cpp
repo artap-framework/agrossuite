@@ -1809,8 +1809,8 @@ void Scene::readFromFile31(const QString &fileName)
             {
                 XMLProblem::refinement_edge edge = field.refinement_edges().refinement_edge().at(j);
 
-				if (edge.refinement_edge_id() != -1)
-                	fieldInfo->setEdgeRefinement(edges->items().at(edge.refinement_edge_id()), edge.refinement_edge_number());
+                if (edge.refinement_edge_id() != -1)
+                    fieldInfo->setEdgeRefinement(edges->items().at(edge.refinement_edge_id()), edge.refinement_edge_number());
             }
 
             // label refinement
@@ -1818,8 +1818,8 @@ void Scene::readFromFile31(const QString &fileName)
             {
                 XMLProblem::refinement_label label = field.refinement_labels().refinement_label().at(j);
 
-				if (label.refinement_label_id() != -1)	
-                	fieldInfo->setLabelRefinement(labels->items().at(label.refinement_label_id()), label.refinement_label_number());
+                if (label.refinement_label_id() != -1)
+                    fieldInfo->setLabelRefinement(labels->items().at(label.refinement_label_id()), label.refinement_label_number());
             }
 
             // polynomial order
@@ -2510,17 +2510,14 @@ void Scene::readSolutionFromFile(const QString &fileName)
         JlCompress::extractDir(solutionFile, cacheProblemDir());
 
         // read mesh file
-        if (QFile::exists(QString("%1/initial.msh").arg(cacheProblemDir())))
+        try
         {
-            try
-            {
-                Agros2D::problem()->readInitialMeshesFromFile(true);
-            }
-            catch (AgrosException& e)
-            {
-                Agros2D::problem()->clearSolution();
-                Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
-            }
+            Agros2D::problem()->readInitialMeshesFromFile(true);
+        }
+        catch (AgrosException& e)
+        {
+            Agros2D::problem()->clearSolution();
+            Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
         }
 
         if (Agros2D::problem()->isMeshed())
