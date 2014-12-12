@@ -237,7 +237,7 @@ void initLists()
     //solutionTypeList.insert(SolutionMode_Finer, "finer");
 
     // MatrixSolverType
-    matrixSolverTypeList.insert(SOLVER_EMPTY, "empty");
+    // matrixSolverTypeList.insert(SOLVER_EMPTY, "empty");
     matrixSolverTypeList.insert(SOLVER_UMFPACK, "umfpack");
     matrixSolverTypeList.insert(SOLVER_DEALII, "dealii");
 #ifdef WITH_MUMPS

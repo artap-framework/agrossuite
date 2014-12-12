@@ -511,25 +511,11 @@ void FieldWidget::fillComboBox()
         cmbAnalysisType->addItem(it.value(), it.key());
     }
 
-    cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_UMFPACK), SOLVER_UMFPACK);
-    cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_DEALII), SOLVER_DEALII);
-#ifdef WITH_MUMPS
-    cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_MUMPS), SOLVER_MUMPS);
-#endif
-#ifdef WITH_SUPERLU
-    cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_SUPERLU), SOLVER_SUPERLU);
-#endif
-#ifdef WITH_PETSC
-    cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_PETSC), SOLVER_PETSC);
-#endif
-#ifdef HAVE_AMESOS
-    cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_AMESOS), SOLVER_AMESOS);
-#endif
-#ifdef HAVE_AZTECOO
-    cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_AZTECOO), SOLVER_AZTECOO);
-#endif
-    cmbLinearSolver->addItem(matrixSolverTypeString(SOLVER_EXTERNAL), SOLVER_EXTERNAL);
+    cmbLinearSolver->clear();
+    foreach (QString solver, matrixSolverTypeStringKeys())
+        cmbLinearSolver->addItem(matrixSolverTypeString(matrixSolverTypeFromStringKey(solver)), matrixSolverTypeFromStringKey(solver));
 
+    cmbAdaptivityErrorCalculator->clear();
     foreach(Module::ErrorCalculator calc, m_fieldInfo->errorCalculators())
         cmbAdaptivityErrorCalculator->addItem(calc.name(), calc.id());
 
