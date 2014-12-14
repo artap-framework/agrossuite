@@ -59,7 +59,7 @@ foreach(XSD_FILE ${xsd_files})
   # message("\txsdcxx ${basefile}")
 
   ADD_CUSTOM_COMMAND(
-        COMMAND  ${XSD_BIN} ARGS cxx-tree --generate-ostream --hxx-suffix .h --cxx-suffix .cpp --root-element-first --generate-polymorphic --output-dir ${CMAKE_HOME_DIRECTORY}/resources_source/classes --generate-serialization ${XSD_FILE}
+        COMMAND  ${XSD_BIN} ARGS cxx-tree --std c++11 --generate-ostream --hxx-suffix .h --cxx-suffix .cpp --root-element-first --generate-polymorphic --output-dir ${CMAKE_HOME_DIRECTORY}/resources_source/classes --generate-serialization ${XSD_FILE}
         DEPENDS ${CMAKE_HOME_DIRECTORY}/resources/xsd/${basefile}.xsd
         OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.cpp ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.h)
 endforeach()

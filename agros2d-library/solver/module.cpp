@@ -68,7 +68,7 @@ QMap<QString, QString> Module::availableModules()
                     parsing_flags = 0;
                     qDebug() << "Warning: Validating all XML files. This is time-consuming and should be switched off in module.cpp for release. Set validateAtTheBeginning = false.";
                 }
-                std::auto_ptr<XMLModule::module> module_xsd(XMLModule::module_(compatibleFilename(datadir() + MODULEROOT + "/" + filename).toStdString(), parsing_flags));
+                std::unique_ptr<XMLModule::module> module_xsd(XMLModule::module_(compatibleFilename(datadir() + MODULEROOT + "/" + filename).toStdString(), parsing_flags));
 
                 XMLModule::module *mod = module_xsd.get();
                 assert(mod->field().present());
@@ -806,6 +806,9 @@ XMLModule::linearity_option findLinearityOption(XMLModule::volume *volume, Analy
             }
         }
     }
+
+    assert(0);
+    return XMLModule::linearity_option("");
 }
 
 XMLModule::linearity_option findLinearityOption(XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType)
@@ -818,6 +821,9 @@ XMLModule::linearity_option findLinearityOption(XMLModule::boundary *boundary, A
             return lo;
         }
     }
+
+    assert(0);
+    return XMLModule::linearity_option("");
 }
 
 template <typename SectionWithElements>

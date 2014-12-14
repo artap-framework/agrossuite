@@ -47,13 +47,13 @@ private:
 
     void generateWeakForms(ctemplate::TemplateDictionary &output);
 
-    std::auto_ptr<XMLModule::module> coupling_xsd;
+    std::unique_ptr<XMLModule::module> coupling_xsd;
     XMLModule::coupling *m_coupling;
 
-    std::auto_ptr<XMLModule::module> m_source_module_xsd;
+    std::unique_ptr<XMLModule::module> m_source_module_xsd;
     XMLModule::field *m_sourceModule;
 
-    std::auto_ptr<XMLModule::module> m_target_module_xsd;
+    std::unique_ptr<XMLModule::module> m_target_module_xsd;
     XMLModule::field *m_targetModule;
 
     // dictionary for variables used in weakforms

@@ -399,6 +399,9 @@ double SolutionStore::timeLevel(const FieldInfo *fieldInfo, int timeLevelIndex)
     QList<double> levels = timeLevels(fieldInfo);
     if (timeLevelIndex >= 0 && timeLevelIndex < levels.count())
         return levels.at(timeLevelIndex);
+
+    assert(0);
+    return 0.0;
 }
 
 void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, MultiArray multiSolution)
@@ -466,7 +469,7 @@ void SolutionStore::loadRunTimeDetails()
 
     try
     {
-        std::auto_ptr<XMLStructure::structure> structure_xsd = XMLStructure::structure_(compatibleFilename(fn).toStdString(), xml_schema::flags::dont_validate);
+        std::unique_ptr<XMLStructure::structure> structure_xsd = XMLStructure::structure_(compatibleFilename(fn).toStdString(), xml_schema::flags::dont_validate);
         XMLStructure::structure *structure = structure_xsd.get();
 
         int time_step = 0;

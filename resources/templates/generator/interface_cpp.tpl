@@ -46,7 +46,7 @@ static XMLModule::module *module_module = NULL;
     {
         try
         {
-            std::auto_ptr<XMLModule::module> module_xsd = XMLModule::module_((datadir() + MODULEROOT + QDir::separator() + "{{ID}}.xml").toStdString(),
+            std::unique_ptr<XMLModule::module> module_xsd = XMLModule::module_((datadir() + MODULEROOT + QDir::separator() + "{{ID}}.xml").toStdString(),
                                                                              xml_schema::flags::dont_validate & xml_schema::flags::dont_initialize);
             module_module = module_xsd.release();
         }

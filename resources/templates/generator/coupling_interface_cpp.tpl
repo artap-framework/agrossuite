@@ -33,7 +33,7 @@ static XMLModule::module *module_coupling = NULL;
     // xml coupling description
     if (!module_coupling)
     {
-        std::auto_ptr<XMLModule::module> coupling_xsd = XMLModule::module_((datadir() + COUPLINGROOT + QDir::separator() + "{{ID}}.xml").toStdString(),
+        std::unique_ptr<XMLModule::module> coupling_xsd = XMLModule::module_((datadir() + COUPLINGROOT + QDir::separator() + "{{ID}}.xml").toStdString(),
                                                                                    xml_schema::flags::dont_validate & xml_schema::flags::dont_initialize);
         module_coupling = coupling_xsd.release();
     }

@@ -427,7 +427,7 @@ void UnitTestsWidget::showInfoTests(const QString &testID)
 
                 try
                 {
-                    std::auto_ptr<XMLTest::test> testlocal_xsd = XMLTest::test_(compatibleFilename(fileInfo.absoluteFilePath()).toStdString(), xml_schema::flags::dont_validate);
+                    std::unique_ptr<XMLTest::test> testlocal_xsd = XMLTest::test_(compatibleFilename(fileInfo.absoluteFilePath()).toStdString(), xml_schema::flags::dont_validate);
                     XMLTest::test *testlocal = testlocal_xsd.get();
 
                     for (unsigned int j = 0; j < testlocal->tests().item().size(); j++)
@@ -500,7 +500,7 @@ void UnitTestsWidget::readTestFromDisk(const QString& fileName)
 
     try
     {
-        std::auto_ptr<XMLTest::test> test_xsd = XMLTest::test_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
+        std::unique_ptr<XMLTest::test> test_xsd = XMLTest::test_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
         m_test = *test_xsd.get();
 
         showInfoTests();

@@ -204,7 +204,7 @@ int ExamplesDialog::readProblems(QDir dir, QTreeWidgetItem *parentItem)
             // expand group
             if (m_expandedGroup.isEmpty()
                     || (parentItem != lstProblems->invisibleRootItem())
-                    || (m_expandedGroup == fileInfo.fileName()) && parentItem == lstProblems->invisibleRootItem())
+                    || ((m_expandedGroup == fileInfo.fileName()) && parentItem == lstProblems->invisibleRootItem()))
                 dirItem->setExpanded(true);
 
             // recursive read
@@ -294,7 +294,7 @@ void ExamplesDialog::problemInfo(const QString &fileName)
 
             try
             {
-                std::auto_ptr<XMLProblem::document> document_xsd = XMLProblem::document_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
+                std::unique_ptr<XMLProblem::document> document_xsd = XMLProblem::document_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
                 XMLProblem::document *doc = document_xsd.get();
 
                 problemInfo.SetValue("COORDINATE_TYPE_LABEL", tr("Coordinate type:").toStdString());

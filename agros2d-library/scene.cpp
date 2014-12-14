@@ -1669,7 +1669,7 @@ void Scene::readFromFile31(const QString &fileName)
         blockSignals(true);
         stopInvalidating(true);
 
-        std::auto_ptr<XMLProblem::document> document_xsd = XMLProblem::document_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
+        std::unique_ptr<XMLProblem::document> document_xsd = XMLProblem::document_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
         XMLProblem::document *doc = document_xsd.get();
 
         // coordinate type

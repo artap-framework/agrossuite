@@ -68,7 +68,7 @@ CouplingList::CouplingList()
                 qDebug() << "Warning: Validating all XML coupling files. This is time-consuming and should be switched off in coupling.cpp for release. Set validateAtTheBeginning = false.";
             }
 
-            std::auto_ptr<XMLModule::module> module_xsd = XMLModule::module_(compatibleFilename(datadir() + COUPLINGROOT + "/" + filename).toStdString(),
+            std::unique_ptr<XMLModule::module> module_xsd = XMLModule::module_(compatibleFilename(datadir() + COUPLINGROOT + "/" + filename).toStdString(),
                                                                                    xml_schema::flags::dont_validate & xml_schema::flags::dont_initialize);
             XMLModule::module *mod = module_xsd.get();
             assert(mod->coupling().present());

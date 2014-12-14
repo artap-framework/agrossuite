@@ -73,6 +73,9 @@ virtual double value (const dealii::Point<dim> &p,
     // {{EXPRESSION_ID}}
     if (component == {{ROW_INDEX}})
         return {{EXPRESSION}}; {{/FORM_EXPRESSION}}
+
+    assert(0);
+    return 0.0;
 }
 
 virtual void vector_value (const dealii::Point<dim> &p,

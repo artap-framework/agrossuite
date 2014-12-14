@@ -493,7 +493,7 @@ void FormScript::loadFromFile(const QString &fileName)
         QSettings settings;
         settings.setValue("FormScript/LastProblemDir", QFileInfo(fn).absolutePath());
 
-        std::auto_ptr<XMLForm::form> form_xsd = XMLForm::form_(compatibleFilename(fn).toStdString(), xml_schema::flags::dont_validate);
+        std::unique_ptr<XMLForm::form> form_xsd = XMLForm::form_(compatibleFilename(fn).toStdString(), xml_schema::flags::dont_validate);
         XMLForm::form *doc = form_xsd.get();
 
         foreach (QWidget *object, mainWidget->findChildren<QWidget *>())

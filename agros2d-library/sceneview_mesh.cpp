@@ -364,43 +364,7 @@ void SceneViewMesh::paintOrder()
             m_arrayOrderMeshColor.append(colorVector);
             m_arrayOrderMesh.append(QVector2D(point2[0], point2[1]));
             m_arrayOrderMeshColor.append(colorVector);
-        }
-
-        /*
-
-        // order scalar view
-        double3* vert = m_postDeal->ordView()->get_vertices();
-        int3* tris = m_postDeal->ordView()->get_triangles();
-
-        // draw mesh
-        int min = 11;
-        int max = 1;
-        for (int i = 0; i < m_postDeal->ordView()->get_num_triangles(); i++)
-        {
-            if (vert[tris[i][0]][2] < min) min = vert[tris[i][0]][2];
-            if (vert[tris[i][0]][2] > max) max = vert[tris[i][0]][2];
-        }
-
-        // triangles
-        m_arrayOrderMesh.reserve(3 * m_postDeal->ordView()->get_num_triangles());
-        m_arrayOrderMeshColor.reserve(3 * m_postDeal->ordView()->get_num_triangles());
-        for (int i = 0; i < m_postDeal->ordView()->get_num_triangles(); i++)
-        {
-            int color = vert[tris[i][0]][2];
-            QVector3D colorVector = QVector3D(paletteColorOrder(color)[0],
-                    paletteColorOrder(color)[1],
-                    paletteColorOrder(color)[2]);
-
-            m_arrayOrderMesh.append(QVector2D(vert[tris[i][0]][0], vert[tris[i][0]][1]));
-            m_arrayOrderMeshColor.append(colorVector);
-
-            m_arrayOrderMesh.append(QVector2D(vert[tris[i][1]][0], vert[tris[i][1]][1]));
-            m_arrayOrderMeshColor.append(colorVector);
-
-            m_arrayOrderMesh.append(QVector2D(vert[tris[i][2]][0], vert[tris[i][2]][1]));
-            m_arrayOrderMeshColor.append(colorVector);
-        }
-        */
+        }       
     }
     else
     {

@@ -248,8 +248,7 @@ void MaterialEditDialog::readMaterial()
 {
     if (QFile::exists(m_fileName))
     {
-        std::auto_ptr<XMLMaterial::material> material_xsd;
-        material_xsd = XMLMaterial::material_(compatibleFilename(m_fileName).toStdString(), xml_schema::flags::dont_validate);
+        std::unique_ptr<XMLMaterial::material> material_xsd = XMLMaterial::material_(compatibleFilename(m_fileName).toStdString(), xml_schema::flags::dont_validate);
         XMLMaterial::material *material = material_xsd.get();
 
         txtName->setText(QString::fromStdString(material->general().name()));
@@ -782,8 +781,7 @@ void MaterialBrowserDialog::materialInfo(const QString &fileName)
     {
         try
         {
-            std::auto_ptr<XMLMaterial::material> material_xsd;
-            material_xsd = XMLMaterial::material_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
+            std::unique_ptr<XMLMaterial::material> material_xsd = XMLMaterial::material_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
             XMLMaterial::material *material = material_xsd.get();
 
             materialInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());

@@ -47,7 +47,7 @@ public:
 
 
 private:
-    std::auto_ptr<XMLModule::module> module_xsd;
+    std::unique_ptr<XMLModule::module> module_xsd;
     XMLModule::field *m_module;
     QString m_docString;
     QStringList m_names;
