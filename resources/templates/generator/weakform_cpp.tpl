@@ -147,22 +147,22 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
     std::vector<dealii::types::global_dof_index> local_dof_indices (dofs_per_cell);
 
+    // value and grad cache
+    std::vector<dealii::Point<2> > shape_face_point(n_face_q_points);
+    std::vector<double> shape_face_JxW(n_face_q_points);
+    std::vector<dealii::Vector<double> > shape_value(dofs_per_cell, dealii::Vector<double>(n_q_points));
+    std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
+    std::vector<dealii::Vector<double> > shape_face_value(dofs_per_cell, dealii::Vector<double>(n_face_q_points));
+    // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_face_q_points));
+
+    // previous values and grads
+    std::vector<dealii::Vector<double> > solution_value_previous(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+    std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
     dealii::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
     for (; cell != endc; ++cell)
     {
         fe_values.reinit(cell);
-
-        // value and grad cache
-        std::vector<dealii::Point<2> > shape_face_point(n_face_q_points);
-        std::vector<double> shape_face_JxW(n_face_q_points);
-        std::vector<dealii::Vector<double> > shape_value(dofs_per_cell, dealii::Vector<double>(n_q_points));
-        std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
-        std::vector<dealii::Vector<double> > shape_face_value(dofs_per_cell, dealii::Vector<double>(n_face_q_points));
-        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_face_q_points));
-
-        // previous values and grads
-        std::vector<dealii::Vector<double> > solution_value_previous(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-        std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
 
         // cache volume
         if (m_solution_previous)

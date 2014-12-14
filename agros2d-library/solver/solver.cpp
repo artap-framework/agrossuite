@@ -168,7 +168,7 @@ void SolverDeal::assembleDirichlet()
 
 void SolverDeal::solve()
 {
-    qDebug() << "residual" << system_rhs.l2_norm();
+    // qDebug() << "residual" << system_rhs.l2_norm();
 
     QTime time;
     time.start();

@@ -291,20 +291,24 @@ void SceneViewMesh::paintSolutionMesh()
         // activeMultiSolutionArray().spaces().at(comp)
         // int comp = Agros2D::problem()->setting()->value(ProblemSetting::View_OrderComponent).toInt() - 1;
 
-        int level = m_postDeal->activeAdaptivityStep();
-        typename dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(0), endc_int = ma.doFHandler()->end_active(level);
-        for (; cell_int != endc_int; ++cell_int)
+        // int level = m_postDeal->activeAdaptivityStep();
+        // qDebug() << m_postDeal->activeAdaptivityStep();
+        for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
         {
-            // coordinates
-            dealii::Point<2> point0 = cell_int->vertex(0);
-            dealii::Point<2> point1 = cell_int->vertex(1);
-            dealii::Point<2> point2 = cell_int->vertex(2);
-            dealii::Point<2> point3 = cell_int->vertex(3);
+            typename dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
+            for (; cell_int != endc_int; ++cell_int)
+            {
+                // coordinates
+                dealii::Point<2> point0 = cell_int->vertex(0);
+                dealii::Point<2> point1 = cell_int->vertex(1);
+                dealii::Point<2> point2 = cell_int->vertex(2);
+                dealii::Point<2> point3 = cell_int->vertex(3);
 
-            m_arraySolutionMesh.append(QVector2D(point0[0], point0[1]));
-            m_arraySolutionMesh.append(QVector2D(point1[0], point1[1]));
-            m_arraySolutionMesh.append(QVector2D(point3[0], point3[1]));
-            m_arraySolutionMesh.append(QVector2D(point2[0], point2[1]));
+                m_arraySolutionMesh.append(QVector2D(point0[0], point0[1]));
+                m_arraySolutionMesh.append(QVector2D(point1[0], point1[1]));
+                m_arraySolutionMesh.append(QVector2D(point3[0], point3[1]));
+                m_arraySolutionMesh.append(QVector2D(point2[0], point2[1]));
+            }
         }
     }
     else
@@ -336,35 +340,39 @@ void SceneViewMesh::paintOrder()
         // activeMultiSolutionArray().spaces().at(comp)
         // int comp = Agros2D::problem()->setting()->value(ProblemSetting::View_OrderComponent).toInt() - 1;
 
-        int level = m_postDeal->activeAdaptivityStep();
-        typename dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(0), endc_int = ma.doFHandler()->end_active(level);
-        for (; cell_int != endc_int; ++cell_int)
+        // int level = m_postDeal->activeAdaptivityStep();
+        // qDebug() << m_postDeal->activeAdaptivityStep();
+        for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
         {
-            // coordinates
-            dealii::Point<2> point0 = cell_int->vertex(0);
-            dealii::Point<2> point1 = cell_int->vertex(1);
-            dealii::Point<2> point2 = cell_int->vertex(2);
-            dealii::Point<2> point3 = cell_int->vertex(3);
+            typename dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
+            for (; cell_int != endc_int; ++cell_int)
+            {
+                // coordinates
+                dealii::Point<2> point0 = cell_int->vertex(0);
+                dealii::Point<2> point1 = cell_int->vertex(1);
+                dealii::Point<2> point2 = cell_int->vertex(2);
+                dealii::Point<2> point3 = cell_int->vertex(3);
 
-            // polynomial degree
-            int degree = cell_int->get_fe().degree;
+                // polynomial degree
+                int degree = cell_int->get_fe().degree;
 
-            QVector3D colorVector = QVector3D(paletteColorOrder(degree)[0], paletteColorOrder(degree)[1], paletteColorOrder(degree)[2]);
+                QVector3D colorVector = QVector3D(paletteColorOrder(degree)[0], paletteColorOrder(degree)[1], paletteColorOrder(degree)[2]);
 
-            m_arrayOrderMesh.append(QVector2D(point0[0], point0[1]));
-            m_arrayOrderMeshColor.append(colorVector);
-            m_arrayOrderMesh.append(QVector2D(point1[0], point1[1]));
-            m_arrayOrderMeshColor.append(colorVector);
-            m_arrayOrderMesh.append(QVector2D(point2[0], point2[1]));
-            m_arrayOrderMeshColor.append(colorVector);
+                m_arrayOrderMesh.append(QVector2D(point0[0], point0[1]));
+                m_arrayOrderMeshColor.append(colorVector);
+                m_arrayOrderMesh.append(QVector2D(point1[0], point1[1]));
+                m_arrayOrderMeshColor.append(colorVector);
+                m_arrayOrderMesh.append(QVector2D(point2[0], point2[1]));
+                m_arrayOrderMeshColor.append(colorVector);
 
-            m_arrayOrderMesh.append(QVector2D(point1[0], point1[1]));
-            m_arrayOrderMeshColor.append(colorVector);
-            m_arrayOrderMesh.append(QVector2D(point3[0], point3[1]));
-            m_arrayOrderMeshColor.append(colorVector);
-            m_arrayOrderMesh.append(QVector2D(point2[0], point2[1]));
-            m_arrayOrderMeshColor.append(colorVector);
-        }       
+                m_arrayOrderMesh.append(QVector2D(point1[0], point1[1]));
+                m_arrayOrderMeshColor.append(colorVector);
+                m_arrayOrderMesh.append(QVector2D(point3[0], point3[1]));
+                m_arrayOrderMeshColor.append(colorVector);
+                m_arrayOrderMesh.append(QVector2D(point2[0], point2[1]));
+                m_arrayOrderMeshColor.append(colorVector);
+            }
+        }
     }
     else
     {
