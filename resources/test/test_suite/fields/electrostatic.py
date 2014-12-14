@@ -80,7 +80,7 @@ class TestElectrostaticPlanar(Agros2DTestCase):
         
         # surface integral
         surface_integrals = self.electrostatic.surface_integrals([0, 1, 2, 3])
-        self.value_test("Electric charge", surface_integrals["Q"], 1.048981e-7)
+        self.value_test("Electric charge", surface_integrals["Q"], 1.0961E-7)
             
 class TestElectrostaticAxisymmetric(Agros2DTestCase):
     def setUp(self):       
