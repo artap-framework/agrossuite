@@ -329,7 +329,7 @@ bool MeshGeneratorGMSH::readFromGmshInternal()
 
     GmshFinalize();
 
-    writeToHermes();
+    writeTodealii();
 
     nodeList.clear();
     edgeList.clear();
@@ -484,18 +484,9 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
         }
     }
 
-    //    outLoops.append(QString("Physical Surface(1) = {"));
-    //    for(int i = 0; i < surfaceCount; i++)
-    //    {
-    //        outLoops.append(QString("%1").arg(i+1));
-    //        if(i < surfaceCount - 1)
-    //            outLoops.append(",");
-    //    }
-    //    outLoops.append(QString("};\n"));
-
     // quad mesh
-    if (Agros2D::problem()->config()->meshType() == MeshType_GMSH_Quad ||
-            Agros2D::problem()->config()->meshType() == MeshType_GMSH_QuadDelaunay_Experimental)
+    // Agros2D::problem()->config()->meshType() == MeshType_GMSH_Quad ||
+    if (Agros2D::problem()->config()->meshType() == MeshType_GMSH_QuadDelaunay_Experimental)
     {
         outLoops.append(QString("Recombine Surface {"));
         for(int i = 0; i <  surfaces.count(); i++)
@@ -506,35 +497,21 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
         }
         outLoops.append(QString("};\n"));
     }
-    //    QString outLoops;
-    //    outLoops.append(QString("Line Loop(1) = {0, 1, 2, 3};\n"));
-    //    outLoops.append(QString("Plane Surface(1) = {1};\n"));
-    //    outLoops.append(QString("Line Loop(2) = {4, 5, 6, -1};\n"));
-    //    outLoops.append(QString("Plane Surface(2) = {2};\n"));
-    //    outLoops.append("\n");
-
-    //    // quad mesh
-    //    if (Agros2D::problem()->config()->meshType() == MeshType_GMSH_Quad)
-    //        outLoops.append(QString("Recombine Surface {1, 2};\n"));
 
     // Mesh.Algorithm - 1=MeshAdapt, 2=Automatic, 5=Delaunay, 6=Frontal, 7=bamg, 8=delquad
     outCommands.append(QString("Mesh.CharacteristicLengthFromPoints = 1;\n"));
     outCommands.append(QString("Mesh.CharacteristicLengthFromCurvature = 1;\n"));
     outCommands.append(QString("Mesh.CharacteristicLengthFactor = 2;\n"));
-        // outCommands.append(QString("Mesh.CharacteristicLengthMin = 0.1;\n"));
+    // outCommands.append(QString("Mesh.CharacteristicLengthMin = 0.1;\n"));
     // outCommands.append(QString("Mesh.CharacteristicLengthMax = %1;\n").arg(qMin(rect.width(), rect.height()) / 10));
     outCommands.append(QString("Mesh.MinimumCirclePoints = 10;\n"));
-    outCommands.append(QString("Mesh.Optimize = 1;\n"));
-    if (Agros2D::problem()->config()->meshType() == MeshType_GMSH_Triangle)
-    {
-        outCommands.append(QString("Mesh.Algorithm = 5;\n"));
-    }
-    else if (Agros2D::problem()->config()->meshType() == MeshType_GMSH_Quad)
-    {
-        outCommands.append(QString("Mesh.Algorithm = 1;\n"));
-        outCommands.append(QString("Mesh.SubdivisionAlgorithm = 1;\n"));
-    }
-    else if (Agros2D::problem()->config()->meshType() == MeshType_GMSH_QuadDelaunay_Experimental)
+    // outCommands.append(QString("Mesh.Optimize = 1;\n"));
+    // if (Agros2D::problem()->config()->meshType() == MeshType_GMSH_Quad)
+    // {
+    //     outCommands.append(QString("Mesh.Algorithm = 1;\n"));
+    //     outCommands.append(QString("Mesh.SubdivisionAlgorithm = 1;\n"));
+    // }
+    if (Agros2D::problem()->config()->meshType() == MeshType_GMSH_QuadDelaunay_Experimental)
     {
         outCommands.append(QString("Mesh.Algorithm = 8;\n"));
         outCommands.append(QString("Mesh.SubdivisionAlgorithm = 1;\n"));
@@ -634,13 +611,22 @@ bool MeshGeneratorGMSH::readFromGmshMeshFile()
         {
             // edge
             if (type == 1)
+            {
                 edgeList.append(MeshEdge(quad[0] - 1, quad[1] - 1, marker - 1)); // marker conversion from gmsh, where it starts from 1
+            }
+
             // triangle
             if (type == 2)
+            {
+                assert(0);
                 elementList.append(MeshElement(quad[0] - 1, quad[1] - 1, quad[2] - 1, marker - 1)); // marker conversion from gmsh, where it starts from 1
+            }
+
             // quad
             if (type == 3)
+            {
                 elementList.append(MeshElement(quad[0] - 1, quad[1] - 1, quad[2] - 1, quad[3] - 1, marker - 1)); // marker conversion from gmsh, where it starts from 1
+            }
         }
         /*
 
@@ -651,13 +637,13 @@ bool MeshGeneratorGMSH::readFromGmshMeshFile()
         }
         */
         labelMarkersCheck.insert(marker - 1);
-    }
+    }    
 
     fileGMSH.close();
 
-    writeToHermes();
     writeTodealii();
 
+    qDebug() << "gmsh 3";
     nodeList.clear();
     edgeList.clear();
     elementList.clear();

@@ -28,7 +28,7 @@
 #include "scenebasic.h"
 #include "scenemarker.h"
 #include "scenemarkerdialog.h"
-#include "meshgenerator.h"
+#include "mesh/meshgenerator.h"
 
 
 #include "solver/field.h"

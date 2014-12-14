@@ -45,9 +45,10 @@
 
 #include "pythonlab/pythonengine.h"
 
-#include "meshgenerator_triangle.h"
-#include "meshgenerator_gmsh.h"
-#include "meshgenerator_netgen.h"
+#include "mesh/meshgenerator_triangle.h"
+#include "mesh/meshgenerator_cubit.h"
+#include "mesh/meshgenerator_gmsh.h"
+// #include "mesh/meshgenerator_netgen.h"
 
 CalculationThread::CalculationThread() : QThread()
 {
@@ -392,6 +393,12 @@ bool Problem::mesh(bool emitMeshed)
         Agros2D::log()->printWarning(tr("Mesh"), e.what());
         return false;
     }
+    catch (dealii::ExceptionBase &e)
+    {
+        m_isMeshing = false;
+        Agros2D::log()->printWarning(tr("Mesh (deal.II)"), e.what());
+        return false;
+    }
     catch (...)
     {
         // todo: dangerous
@@ -431,14 +438,17 @@ bool Problem::meshAction(bool emitMeshed)
 #endif
         break;
         // case MeshType_GMSH_Triangle:
-        // case MeshType_GMSH_Quad:
-        // case MeshType_GMSH_QuadDelaunay_Experimental:
-        //     meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorGMSH());
-        //     break;
+    // case MeshType_GMSH_Quad:
+    // case MeshType_GMSH_QuadDelaunay_Experimental:
+        // meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorGMSH());
+        // break;
         // case MeshType_NETGEN_Triangle:
         // case MeshType_NETGEN_QuadDominated:
         //     meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorNetgen());
         //     break;
+    case MeshType_CUBIT:
+        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorCubitExternal());
+        break;
     default:
         QMessageBox::critical(QApplication::activeWindow(), "Mesh generator error", QString("Mesh generator '%1' is not supported.").arg(meshTypeString(config()->meshType())));
         break;
@@ -528,6 +538,7 @@ bool Problem::skipThisTimeStep() // Block *block
 
     return lastTime + timeSkip > actualTime();
     */
+    return false;
 }
 
 void Problem::refuseLastTimeStepLength()
@@ -564,11 +575,11 @@ void Problem::solveInit(bool reCreateStructure)
     // check problem settings
     if (Agros2D::problem()->isTransient())
     {
-        if (!Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() > 0.0)
+        if (!(Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() > 0.0))
             throw AgrosSolverException(tr("Total time is zero"));
-        if (!Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble() > 0.0)
+        if (!(Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble() > 0.0))
             throw AgrosSolverException(tr("Time method tolerance is zero"));
-        if (Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() < 0.0)
+        if (!(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() < 0.0))
             throw AgrosSolverException(tr("Initial step size is negative"));
     }
 

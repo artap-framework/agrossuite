@@ -101,6 +101,7 @@ enum MeshType
     // MeshType_GMSH_QuadDelaunay_Experimental = 6,
     // MeshType_NETGEN_Triangle = 10,
     // MeshType_NETGEN_QuadDominated = 11
+    MeshType_CUBIT = 12
 };
 
 enum PhysicFieldVariableComp

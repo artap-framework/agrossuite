@@ -398,9 +398,10 @@ bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
         */
         // if (Agros2D::problem()->config()->meshType() == MeshType_Triangle_QuadFineDivision)
         {
-            // add additional node
-            nodeList.append(Point((nodeList[nodeA].x + nodeList[nodeB].x + nodeList[nodeC].x) / 3.0,
-                                  (nodeList[nodeA].y + nodeList[nodeB].y + nodeList[nodeC].y) / 3.0));
+            // add additional node - centroid
+             nodeList.append(Point((nodeList[nodeA].x + nodeList[nodeB].x + nodeList[nodeC].x) / 3.0,
+                                   (nodeList[nodeA].y + nodeList[nodeB].y + nodeList[nodeC].y) / 3.0));
+
             // add three quad elements
             elementList.append(MeshElement(nodeNB, nodeA, nodeNC, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
             elementList.append(MeshElement(nodeNC, nodeB, nodeNA, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
@@ -409,7 +410,6 @@ bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
 
         labelMarkersCheck.insert(marker - 1);
     }
-    int elementCountLinear = elementList.count();
 
     // triangle neigh
     QString lineNeigh = inNeigh.readLine().trimmed();
@@ -783,8 +783,18 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
         // if (Agros2D::problem()->config()->meshType() == MeshType_Triangle_QuadFineDivision)
         {
             // add additional node
+            /*
             nodeList.append(Point((nodeList[nodeA].x + nodeList[nodeB].x + nodeList[nodeC].x) / 3.0,
                                   (nodeList[nodeA].y + nodeList[nodeB].y + nodeList[nodeC].y) / 3.0));
+            */
+            // add additional node - incenter
+
+            double a = (nodeList[nodeB] - nodeList[nodeC]).magnitude();
+            double b = (nodeList[nodeC] - nodeList[nodeA]).magnitude();
+            double c = (nodeList[nodeA] - nodeList[nodeB]).magnitude();
+            nodeList.append(Point((a * nodeList[nodeA].x + b * nodeList[nodeB].x + c * nodeList[nodeC].x) / (a + b + c),
+                                  (a * nodeList[nodeA].y + b * nodeList[nodeB].y + c * nodeList[nodeC].y) / (a + b + c)));
+
             // add three quad elements
             elementList.append(MeshElement(nodeNB, nodeA, nodeNC, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
             elementList.append(MeshElement(nodeNC, nodeB, nodeNA, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
@@ -822,7 +832,7 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
                 }
             }
         }
-    }
+    }  
 
     free(triOut.pointlist);
     free(triOut.pointmarkerlist);

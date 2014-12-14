@@ -19,7 +19,7 @@
 
 #include "loops.h"
 
-#include "meshgenerator.h"
+#include "mesh/meshgenerator.h"
 
 #include "scene.h"
 #include "scenenode.h"

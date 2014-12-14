@@ -5,7 +5,7 @@
 #include "value.h"
 #include "solutiontypes.h"
 
-#include "meshgenerator.h"
+#include "mesh/meshgenerator.h"
 
 class ProblemSolverDeal;
 

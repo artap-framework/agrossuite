@@ -34,8 +34,7 @@
 #include "module.h"
 #include "coupling.h"
 #include "solver.h"
-#include "meshgenerator_triangle.h"
-#include "meshgenerator_gmsh.h"
+#include "mesh/meshgenerator.h"
 #include "logview.h"
 
 #include "../resources_source/classes/problem_a2d_31_xml.h"

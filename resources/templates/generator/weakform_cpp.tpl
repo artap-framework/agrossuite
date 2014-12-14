@@ -126,42 +126,6 @@ private:
 
 // *************************************************************************************************************************************************
 
-/*
-void SolverDeal{{CLASS}}::setup()
-{
-
-}
-*/
-
-/*
-struct MassCache
-{
-    MassCache() {}
-    MassCache(dealii::FullMatrix<double> &matrix, dealii::Vector<double> &rhs)
-        : matrix(matrix), rhs(rhs) {}
-
-    dealii::FullMatrix<double> matrix;
-    dealii::Vector<double> rhs;
-};
-
-QMap<typename dealii::Triangulation<2>::cell_iterator, MassCache> cache;
-
-if (!cache.keys().contains(cell)) // TODO: only linear case
-{
-    //
-
-    cache[cell] = MassCache(cell_matrix, cell_rhs);
-}
-else
-{
-    //
-    MassCache mass = cache[cell];
-
-    cell_matrix = mass.matrix;
-    cell_rhs = mass.rhs;
-}
-*/
-
 void SolverDeal{{CLASS}}::assembleSystem()
 {
     // assemble

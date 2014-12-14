@@ -134,7 +134,7 @@ void SolverDeal::setup()
 
     std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
 
-    hanging_node_constraints.clear ();
+    hanging_node_constraints.clear();
     dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler,
                                                     hanging_node_constraints);
     hanging_node_constraints.close();
@@ -144,18 +144,16 @@ void SolverDeal::setup()
                             m_doFHandler->n_dofs(),
                             m_doFHandler->max_couplings_between_dofs());
 
-    dealii::DoFTools::make_sparsity_pattern(*m_doFHandler,
-                                            sparsity_pattern);
+    dealii::DoFTools::make_sparsity_pattern(*m_doFHandler, sparsity_pattern, hanging_node_constraints, true);
 
     // sparsity_pattern.copy_from(c_sparsity);
 
     hanging_node_constraints.condense(sparsity_pattern);
-    sparsity_pattern.compress();
-
     // sparsity_pattern.compress();
+
     system_matrix.reinit(sparsity_pattern);
 
-    qDebug() << "setup (" << time.elapsed() << "ms )";
+    // qDebug() << "setup (" << time.elapsed() << "ms )";
 }
 
 void SolverDeal::assembleSystem()
@@ -191,7 +189,7 @@ void SolverDeal::solve()
     hanging_node_constraints.distribute(*m_solution);
 
     // copy solution
-    if ((m_fieldInfo->analysisType() == AnalysisType_Transient) || (m_fieldInfo->linearityType() == LinearityType_Linear))
+    if ((m_fieldInfo->analysisType() == AnalysisType_Transient) || (m_fieldInfo->linearityType() != LinearityType_Linear))
     {
         if (m_solution_previous)
             delete m_solution_previous;
@@ -1093,8 +1091,8 @@ void ProblemSolverDeal::solveLinear(FieldInfo *fieldInfo, int timeStep, int adap
     solverDeal->setup();
     QTime time;
     time.start();
-    solverDeal->assembleSystem();
     solverDeal->assembleDirichlet();
+    solverDeal->assembleSystem();
     qDebug() << "assemble (" << time.elapsed() << "ms )";
     solverDeal->solve();
 
@@ -1120,8 +1118,8 @@ void ProblemSolverDeal::solveNonlinear(FieldInfo *fieldInfo, int timeStep, int a
     for (int iteration = 0; iteration < 6; iteration++)
     {
         qDebug() << "step: " << iteration;
-        solverDeal->assembleSystem();
         solverDeal->assembleDirichlet();
+        solverDeal->assembleSystem();
         solverDeal->solve();
 
         // update
@@ -1167,19 +1165,6 @@ void ProblemSolverDeal::solveAdaptive(FieldInfo *fieldInfo, int timeStep)
                                                                     0.03);
 
             solverDeal->triangulation()->execute_coarsening_and_refinement();
-
-            // print info
-            /*
-                    // TODO: store previous solution
-                    dealii::Vector<float> difference_per_cell (m_solverDeal->triangulation()->n_active_cells());
-                    dealii::VectorTools::integrate_difference(*m_solverDeal->doFHandler(),
-                                                               *m_solverDeal->solution(),
-                                                               dealii::Solution<2>(),
-                                                               difference_per_cell,
-                                                               dealii::QGauss<dim>(3),
-                                                               dealii::VectorTools::H1_norm);
-                    error = difference_per_cell.l2_norm();
-                    */
 
             Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2, DOFs: %3)").
                                          arg(i).

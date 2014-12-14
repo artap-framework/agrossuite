@@ -82,8 +82,7 @@ ELSE()
 ENDIF()
 
 SET(SOURCES value.cpp
-    scene.cpp
-    meshgenerator.cpp
+    scene.cpp    
     confdialog.cpp
     util/conf.cpp
     util/global.cpp
@@ -127,10 +126,11 @@ SET(SOURCES value.cpp
     sceneview_post3d.cpp
     sceneview_particle.cpp
     # sceneview_vtk2d.cpp
-    # meshgenerator.cpp
-    meshgenerator_triangle.cpp
-    # meshgenerator_gmsh.cpp
-    # meshgenerator_netgen.cpp
+    mesh/meshgenerator.cpp
+    mesh/meshgenerator_triangle.cpp
+    mesh/meshgenerator_cubit.cpp
+    # mesh/meshgenerator_gmsh.cpp
+    # mesh/meshgenerator_netgen.cpp
     chartdialog.cpp
     problemdialog.cpp
     scenetransformdialog.cpp
@@ -211,16 +211,17 @@ SET(SOURCES value.cpp
     sceneview_common3d.h
     sceneview_geometry.h
     sceneview_geometry_chart.h
-    sceneview_mesh.h
     sceneview_post.h
     sceneview_post2d.h
     sceneview_post3d.h
     sceneview_particle.h
     # sceneview_vtk2d.h
-    meshgenerator.h
-    meshgenerator_triangle.h
-    # meshgenerator_gmsh.h
-    # meshgenerator_netgen.h
+    sceneview_mesh.h
+    mesh/meshgenerator.h
+    mesh/meshgenerator_triangle.h
+    mesh/meshgenerator_cubit.h
+    # mesh/meshgenerator_gmsh.h
+    # mesh/meshgenerator_netgen.h
     chartdialog.h
     problemdialog.h
     scenetransformdialog.h

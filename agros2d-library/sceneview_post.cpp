@@ -454,7 +454,7 @@ PostDataOut *PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariabl
     }
     data_out->build_patches(2);
 
-    qDebug() << "process - build patches (" << time.elapsed() << "ms )";
+    // qDebug() << "process - build patches (" << time.elapsed() << "ms )";
 
     return data_out;
 }

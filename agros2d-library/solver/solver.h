@@ -48,7 +48,7 @@ class SolverDeal
 {
 public:
     SolverDeal(const FieldInfo *fieldInfo, int initialOrder = 2);
-    ~SolverDeal();
+    virtual ~SolverDeal();
 
     inline dealii::Vector<double> *solution() { return m_solution; }
     inline dealii::DoFHandler<2> *doFHandler() { return m_doFHandler; }

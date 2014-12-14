@@ -83,14 +83,19 @@ bool AgrosApplication::notify(QObject *receiver, QEvent *event)
 
         return QApplication::notify(receiver, event);
     }
+    catch (dealii::ExceptionBase &e)
+    {
+        qCritical() << "deal.II exception thrown: " << e.what();
+        throw;
+    }
     catch (std::exception &e)
     {
-        qCritical() << "Exception thrown: " << e.what();
+        qCritical() << "Standard exception thrown: " << e.what();
         throw;
     }
     catch (AgrosException &e)
     {
-        qCritical() << "Exception thrown: " << e.what();
+        qCritical() << "Agros exception thrown: " << e.what();
         throw;
     }
     catch (...)

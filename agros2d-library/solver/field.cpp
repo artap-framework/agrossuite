@@ -315,8 +315,8 @@ void FieldInfo::clear()
     m_analysisType = AnalysisType_Undefined;
     m_linearityType = LinearityType_Linear;
     m_adaptivityType = AdaptivityMethod_None;
-    // m_matrixSolver = SOLVER_UMFPACK;
-    m_matrixSolver = SOLVER_MUMPS;
+    // m_matrixSolver = SOLVER_MUMPS;
+    m_matrixSolver = SOLVER_UMFPACK;
 }
 
 void FieldInfo::refineMesh(dealii::Triangulation<2> *mesh)

@@ -383,11 +383,11 @@ void MeshGenerator::writeTodealii()
             subcelldata.boundary_lines.push_back(cell_data);
         }
 
-        dealii::GridTools::delete_unused_vertices (vertices, cells, subcelldata);
-        dealii::GridReordering<2>::invert_all_cells_of_negative_grid (vertices, cells);
-        dealii::GridReordering<2>::reorder_cells (cells);
+        dealii::GridTools::delete_unused_vertices(vertices, cells, subcelldata);
+        dealii::GridReordering<2>::invert_all_cells_of_negative_grid(vertices, cells);
+        dealii::GridReordering<2>::reorder_cells(cells);
 
-        triangulation->create_triangulation_compatibility (vertices, cells, subcelldata);
+        triangulation->create_triangulation_compatibility(vertices, cells, subcelldata);
 
         m_triangulations[fieldInfo] = triangulation;
 

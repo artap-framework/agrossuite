@@ -412,13 +412,14 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, Multi
     boost::archive::binary_oarchive sboDoF(fsDoF);
     multiSolution.doFHandler()->save(sboDoF, 0);
 
-    std::stringstream fsSol(std::ios::out | std::ios::in | std::ios::binary);
-    boost::archive::binary_oarchive sboSol(fsSol);
-    multiSolution.solution()->save(sboSol, 0);
+    // std::stringstream fsSol(std::ios::out | std::ios::in | std::ios::binary);
+    // boost::archive::binary_oarchive sboSol(fsSol);
+    // multiSolution.solution()->save(sboSol, 0);
 
     // load from stream
     // triangulation
-    dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>;
+    //dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>(multiSolution.doFHandler()->get_tria());
+    dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>();
     boost::archive::binary_iarchive sbiMesh(fsMesh);
     triangulation->load(sbiMesh, 0);
 
