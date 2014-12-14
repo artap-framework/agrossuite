@@ -86,6 +86,7 @@ tcl
 .project
 resources_source/doc/source/modules/rf_te/
 resources_source/doc/source/modules/rf_tm/
+resources_source/resources.rc
 *.depend
 *.stamp
 *.cache
@@ -105,3 +106,14 @@ agros2d-library/__/
 pythonlab-library/__/
 CMake.vars
 *.ts
+3rdparty/netgen/agros2d_3dparty_netgen
+3rdparty/gmsh/Common/GmshConfig.h
+3rdparty/gmsh/Common/GmshConfig.h
+3rdparty/gmsh/Common/GmshVersion.h
+3rdparty/gmsh/DartConfiguration.tcl
+3rdparty/matio/matioConfig.h
+3rdparty/netgen/config_netgen.h
+*.opt
+data/
+cmake_options.texi
+resources/python/jedi/evaluate/compiled/
