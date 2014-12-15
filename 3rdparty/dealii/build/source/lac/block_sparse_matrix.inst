@@ -1,6 +1,0 @@
-template class BlockSparseMatrix< double >;
- 
-template class BlockSparseMatrix< float >;
- 
-template class BlockSparseMatrix< long double >;
- 

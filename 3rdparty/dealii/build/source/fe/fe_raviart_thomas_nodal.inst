@@ -1,6 +1,0 @@
-template class FE_RaviartThomasNodal< 1 >;
- 
-template class FE_RaviartThomasNodal< 2 >;
- 
-template class FE_RaviartThomasNodal< 3 >;
- 

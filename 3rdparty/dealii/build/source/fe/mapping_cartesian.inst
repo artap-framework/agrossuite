@@ -1,6 +1,0 @@
-template class MappingCartesian< 1 >;
- 
-template class MappingCartesian< 2 >;
- 
-template class MappingCartesian< 3 >;
- 

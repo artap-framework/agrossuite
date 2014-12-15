@@ -1,6 +1,0 @@
-template class FE_Q_Hierarchical< 1 >;
- 
-template class FE_Q_Hierarchical< 2 >;
- 
-template class FE_Q_Hierarchical< 3 >;
- 
