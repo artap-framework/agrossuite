@@ -1,0 +1,36 @@
+
+DEAL::FE_DGQ<2>(0)
+DEAL::Prolongate 0 0 0
+DEAL::Select     0 0 0
+DEAL::Restrict 0 0
+DEAL::Select   0 0
+DEAL::copy to mg 0 0 0 0 0 0
+DEAL::copy from mg 0
+DEAL::FE_Q<2>(1)
+DEAL::Prolongate 0 0 0
+DEAL::Select     0 0 0
+DEAL::Restrict 0 0
+DEAL::Select   0 0
+DEAL::copy to mg 0 0 0 0 0 0
+DEAL::copy from mg 0
+DEAL::FE_RaviartThomasNodal<2>(1)
+DEAL::Prolongate 0 0 0
+DEAL::Select     0 0 0
+DEAL::Restrict 0 0
+DEAL::Select   0 0
+DEAL::copy to mg 0 0 0 0 0 0
+DEAL::copy from mg 0
+DEAL::FESystem<2>[FE_RaviartThomasNodal<2>(1)-FE_DGQ<2>(1)]
+DEAL::Prolongate 0 0 0
+DEAL::Select     0 0 0
+DEAL::Restrict 0 0
+DEAL::Select   0 0
+DEAL::copy to mg 0 0 0 0 0 0
+DEAL::copy from mg 0
+DEAL::FESystem<2>[FE_RaviartThomasNodal<2>(0)^2-FE_DGQ<2>(0)^2]
+DEAL::Prolongate 0 0 0
+DEAL::Select     0 0 0
+DEAL::Restrict 0 0
+DEAL::Select   0 0
+DEAL::copy to mg 0 0 0 0 0 0
+DEAL::copy from mg 0

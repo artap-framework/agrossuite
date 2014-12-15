@@ -1,0 +1,213 @@
+namespace hp
+ {
+ template class DoFHandler< 1 >;
+
+#if  1  != 3
+ template class DoFHandler< 1 ,  1 +1>;
+ 
+ template
+ types::global_dof_index
+ DoFHandler< 1 ,  1 +1>::get_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+ 
+ template
+ void
+ DoFHandler< 1 ,  1 +1>::set_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+ 
+ #if  1  >= 2
+ template
+ types::global_dof_index
+ DoFHandler< 1 ,  1 +1>::get_dof_index<2> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+ 
+ template
+ void
+ DoFHandler< 1 ,  1 +1>::set_dof_index<2> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+ #endif
+#endif
+
+#if  1  == 3
+ template class DoFHandler<1, 3>;
+
+template
+types::global_dof_index
+DoFHandler<1,3>::get_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+
+template
+void
+DoFHandler<1,3>::set_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+#endif
+
+template
+types::global_dof_index
+DoFHandler< 1 >::get_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+
+#if  1  >= 2
+template
+types::global_dof_index
+DoFHandler< 1 >::get_dof_index<2> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+
+#if  1  >= 3
+template
+types::global_dof_index
+DoFHandler< 1 >::get_dof_index<3> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+#endif
+#endif
+
+template
+void
+DoFHandler< 1 >::set_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+
+#if  1  >= 2
+template
+void
+DoFHandler< 1 >::set_dof_index<2> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+
+#if  1  >= 3
+template
+void
+DoFHandler< 1 >::set_dof_index<3> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+#endif
+#endif
+ }
+
+namespace hp
+ {
+ template class DoFHandler< 2 >;
+
+#if  2  != 3
+ template class DoFHandler< 2 ,  2 +1>;
+ 
+ template
+ types::global_dof_index
+ DoFHandler< 2 ,  2 +1>::get_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+ 
+ template
+ void
+ DoFHandler< 2 ,  2 +1>::set_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+ 
+ #if  2  >= 2
+ template
+ types::global_dof_index
+ DoFHandler< 2 ,  2 +1>::get_dof_index<2> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+ 
+ template
+ void
+ DoFHandler< 2 ,  2 +1>::set_dof_index<2> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+ #endif
+#endif
+
+#if  2  == 3
+ template class DoFHandler<1, 3>;
+
+template
+types::global_dof_index
+DoFHandler<1,3>::get_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+
+template
+void
+DoFHandler<1,3>::set_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+#endif
+
+template
+types::global_dof_index
+DoFHandler< 2 >::get_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+
+#if  2  >= 2
+template
+types::global_dof_index
+DoFHandler< 2 >::get_dof_index<2> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+
+#if  2  >= 3
+template
+types::global_dof_index
+DoFHandler< 2 >::get_dof_index<3> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+#endif
+#endif
+
+template
+void
+DoFHandler< 2 >::set_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+
+#if  2  >= 2
+template
+void
+DoFHandler< 2 >::set_dof_index<2> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+
+#if  2  >= 3
+template
+void
+DoFHandler< 2 >::set_dof_index<3> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+#endif
+#endif
+ }
+
+namespace hp
+ {
+ template class DoFHandler< 3 >;
+
+#if  3  != 3
+ template class DoFHandler< 3 ,  3 +1>;
+ 
+ template
+ types::global_dof_index
+ DoFHandler< 3 ,  3 +1>::get_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+ 
+ template
+ void
+ DoFHandler< 3 ,  3 +1>::set_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+ 
+ #if  3  >= 2
+ template
+ types::global_dof_index
+ DoFHandler< 3 ,  3 +1>::get_dof_index<2> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+ 
+ template
+ void
+ DoFHandler< 3 ,  3 +1>::set_dof_index<2> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+ #endif
+#endif
+
+#if  3  == 3
+ template class DoFHandler<1, 3>;
+
+template
+types::global_dof_index
+DoFHandler<1,3>::get_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+
+template
+void
+DoFHandler<1,3>::set_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+#endif
+
+template
+types::global_dof_index
+DoFHandler< 3 >::get_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+
+#if  3  >= 2
+template
+types::global_dof_index
+DoFHandler< 3 >::get_dof_index<2> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+
+#if  3  >= 3
+template
+types::global_dof_index
+DoFHandler< 3 >::get_dof_index<3> (const unsigned int, const unsigned int, const unsigned int, const unsigned int) const;
+#endif
+#endif
+
+template
+void
+DoFHandler< 3 >::set_dof_index<1> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+
+#if  3  >= 2
+template
+void
+DoFHandler< 3 >::set_dof_index<2> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+
+#if  3  >= 3
+template
+void
+DoFHandler< 3 >::set_dof_index<3> (const unsigned int, const unsigned int, const unsigned int, const unsigned int, const types::global_dof_index) const;
+#endif
+#endif
+ }
+

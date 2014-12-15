@@ -1,0 +1,1312 @@
+<br>
+
+<i>This program was contributed by Martin Kronbichler, Wolfgang
+Bangerth, and Timo Heister.
+
+This material is based upon work partly supported by the National
+Science Foundation under Award No. EAR-0426271 and The California Institute of
+Technology; and in a continuation by the National Science
+Foundation under Award No. EAR-0949446 and The University of California
+&ndash; Davis. Any opinions, findings, and conclusions or recommendations
+expressed in this publication are those of the author and do not
+necessarily reflect the views of the National Science Foundation, The
+California Institute of Technology, or of The University of California
+&ndash; Davis.
+
+The work discussed here is also presented in the following publication:
+<b>
+  M. Kronbichler, T. Heister, W. Bangerth:
+  <i>High Accuracy Mantle Convection Simulation through Modern Numerical
+  Methods</i>, Geophysical Journal International, 2012, 191, 12-29.
+  <a href="http://dx.doi.org/10.1111/j.1365-246X.2012.05609.x">[DOI]</a>
+</b>
+
+The continuation of development of this program has led to the much larger
+open source code Aspect (see http://aspect.dealii.org/ ) which is much more
+flexible in solving many kinds of related problems.
+</i>
+
+
+<a name="Intro"></a>
+<h1>Introduction</h1>
+
+This program does pretty much exactly what step-31 already does: it
+solves the Boussinesq equations that describe the motion of a fluid
+whose temperature is not in equilibrium. As such, all the equations we
+have described in step-31 still hold: we solve the same general
+partial differential equation (with only minor modifications to adjust
+for more realism in the problem setting), using the same finite
+element scheme, the same time stepping algorithm, and more or less the
+same stabilization method for the temperature advection-diffusion
+equation. As a consequence, you may first want to understand that
+program &mdash; and its implementation &mdash; before you work on the
+current one.
+
+The difference between step-31 and the current program is that
+here we want to do things in %parallel, using both the availability of many
+machines in a cluster (with parallelization based on MPI) as well as many
+processor cores within a single machine (with parallelization based on
+threads). This program's main job is therefore to introduce the changes that are
+necessary to utilize the availability of these %parallel compute
+resources. In this regard, it builds on the step-40 program that first
+introduces the necessary classes for much of the %parallel functionality.
+
+In addition to these changes, we also use a slightly different
+preconditioner, and we will have to make a number of changes that have
+to do with the fact that we want to solve a <i>realistic</i> problem
+here, not a model problem. The latter, in particular, will require
+that we think about scaling issues as well as what all those
+parameters and coefficients in the equations under consideration
+actually mean. We will discuss first the issues that affect changes in
+the mathematical formulation and solver structure, then how to
+parallelize things, and finally the actual testcase we will consider.
+
+
+<h3> Using the "right" pressure </h3>
+
+In step-31, we used the following Stokes model for the
+velocity and pressure field:
+@f{eqnarray*}
+  -\nabla \cdot (2 \eta \varepsilon ({\mathbf u})) + \nabla p &=&
+  -\rho \; \beta \; T \mathbf{g},
+  \\
+  \nabla \cdot {\mathbf u} &=& 0.
+@f}
+The right hand side of the first equation appears a wee bit
+unmotivated. Here's how things should really be. We
+need the external forces that act on the fluid, which we assume are
+given by gravity only. In the current case, we assume that the fluid
+does expand slightly for the purposes of this gravity force, but not
+enough that we need to modify the incompressibility condition (the
+second equation). What this means is that for the purpose of the right
+hand side, we can assume that $\rho=\rho(T)$. An assumption that may
+not be entirely justified is that we can assume that the changes of
+density as a function of temperature are small, leading to an
+expression of the form $\rho(T) = \rho_{\text{ref}}
+[1-\beta(T-T_{\text{ref}})]$, i.e. the density equals
+$\rho_{\text{ref}}$ at reference temperature and decreases linearly as
+the temperature increases (as the material expands). The force balance
+equation then looks properly written like this:
+@f{eqnarray*}
+  -\nabla \cdot (2 \eta \varepsilon ({\mathbf u})) + \nabla p &=&
+  \rho_{\text{ref}} [1-\beta(T-T_{\text{ref}})] \mathbf{g}.
+@f}
+Now note that the gravity force results from a gravity potential as
+$\mathbf g=-\nabla \varphi$, so that we can re-write this as follows:
+@f{eqnarray*}
+  -\nabla \cdot (2 \eta \varepsilon ({\mathbf u})) + \nabla p &=&
+  -\rho_{\text{ref}} \; \beta\; T\; \mathbf{g}
+  -\rho_{\text{ref}} [1+\beta T_{\text{ref}}] \nabla\varphi.
+@f}
+The second term on the right is time independent, and so we could
+introduce a new "dynamic" pressure $p_{\text{dyn}}=p+\rho_{\text{ref}}
+[1+\beta T_{\text{ref}}] \varphi=p_{\text{total}}-p_{\text{static}}$
+with which the Stokes equations would read:
+@f{eqnarray*}
+  -\nabla \cdot (2 \eta \varepsilon ({\mathbf u})) + \nabla p_{\text{dyn}} &=&
+  -\rho_{\text{ref}} \; \beta \; T \; \mathbf{g},
+  \\
+  \nabla \cdot {\mathbf u} &=& 0.
+@f}
+This is exactly the form we used in step-31, and it was
+appropriate to do so because all changes in the fluid flow are only
+driven by the dynamic pressure that results from temperature
+differences. (In other words: Any contribution to the right hand side
+that results from taking the gradient of a scalar field have no effect
+on the velocity field.)
+
+On the other hand, we will here use the form of the Stokes equations
+that considers the total pressure instead:
+@f{eqnarray*}
+  -\nabla \cdot (2 \eta \varepsilon ({\mathbf u})) + \nabla p &=&
+  \rho(T)\; \mathbf{g},
+  \\
+  \nabla \cdot {\mathbf u} &=& 0.
+@f}
+There are several advantages to this:
+
+- This way we can plot the pressure in our program in such a way that it
+  actually shows the total pressure that includes the effects of
+  temperature differences as well as the static pressure of the
+  overlying rocks. Since the pressure does not appear any further in any
+  of the other equations, whether to use one or the other is more a
+  matter of taste than of correctness. The flow field is exactly the
+  same, but we get a pressure that we can now compare with values that
+  are given in geophysical books as those that hold at the bottom of the
+  earth mantle, for example.
+
+- If we wanted to make the model even more realistic, we would have to take
+  into account that many of the material parameters (e.g. the viscosity, the
+  density, etc) not only depend on the temperature but also the
+  <i>total</i> pressure.
+
+- The model above assumed a linear dependence $\rho(T) = \rho_{\text{ref}}
+  [1-\beta(T-T_{\text{ref}})]$ and assumed that $\beta$ is small. In
+  practice, this may not be so. In fact, realistic models are
+  certainly not linear, and $\beta$ may also not be small for at least
+  part of the temperature range because the density's behavior is
+  substantially dependent not only on thermal expansion but by phase
+  changes.
+
+- A final reason to do this is discussed in the results section and
+  concerns possible extensions to the model we use here. It has to do
+  with the fact that the temperature equation (see below) we use here does not
+  include a term that contains the pressure. It should, however:
+  rock, like gas, heats up as you compress it. Consequently,
+  material that rises up cools adiabatically, and cold material that
+  sinks down heats adiabatically. We discuss this further below.
+
+@note There is, however, a downside to this procedure. In the earth,
+the dynamic pressure is several orders of magnitude smaller than the
+total pressure. If we use the equations above and solve all variables
+to, say, 4 digits of accuracy, then we may be able to get the velocity
+and the total pressure right, but we will have no accuracy at all if
+we compute the dynamic pressure by subtracting from the total pressure
+the static part $p_\text{static}=\rho_{\text{ref}}
+[1+\beta T_{\text{ref}}] \varphi$. If, for example, the dynamic
+pressure is six orders of magnitude smaller than the static pressure,
+then we need to solve the overall pressure to at least seven digits of
+accuracy to get anything remotely accurate. That said, in practice
+this turns out not to be a limiting factor.
+
+
+
+<h3> The scaling of discretized equations </h3>
+
+Remember that we want to solve the following set of equations:
+@f{eqnarray*}
+  -\nabla \cdot (2 \eta \varepsilon ({\mathbf u})) + \nabla p &=&
+  \rho(T) \mathbf{g},
+  \\
+  \nabla \cdot {\mathbf u} &=& 0,
+  \\
+  \frac{\partial T}{\partial t}
+  +
+  {\mathbf u} \cdot \nabla T
+  -
+  \nabla \cdot \kappa \nabla T &=& \gamma,
+@f}
+augmented by appropriate boundary and initial conditions. As discussed
+in step-31, we will solve this set of equations by
+solving for a Stokes problem first in each time step, and then moving
+the temperature equation forward by one time interval.
+
+The problem under consideration in this current section is with the
+Stokes problem: if we discretize it as usual, we get a linear system
+@f{eqnarray*}
+  M \; X
+  =
+  \left(\begin{array}{cc}
+    A & B^T \\ B & 0
+  \end{array}\right)
+  \left(\begin{array}{c}
+    U \\ P
+  \end{array}\right)
+  =
+  \left(\begin{array}{c}
+    F_U \\ 0
+  \end{array}\right)
+  =
+  F
+@f}
+which in this program we will solve with a FGMRES solver. This solver
+iterates until the residual of these linear equations is below a
+certain tolerance, i.e. until
+@f[
+  \left\|
+  \left(\begin{array}{c}
+    F_U - A U^{(k)} - B P^{(k)}
+    \\
+    B^T U^{(k)}
+  \end{array}\right)
+  \right\|
+  < \text{Tol}.
+@f]
+This does not make any sense from the viewpoint of physical units: the
+quantities involved here have physical units so that the first part of
+the residual has units $\frac{\text{Pa}}{\text{m}}
+\text{m}^{\text{dim}}$ (most easily established by considering the
+term $(\nabla \cdot \mathbf v, p)_{\Omega}$ and considering that the
+pressure has units $\text{Pa}=\frac{\text{kg}}{\text{m\; s}^2}$ and
+the integration yields a factor of $\text{m}^{\text{dim}}$), whereas
+the second part of the residual has units
+$\frac{\text{m}^{\text{dim}}}{\text{s}}$. Taking the norm
+of this residual vector would yield a quantity with units
+$\text{m}^{\text{dim}-1} \sqrt{\left(\text{Pa}\right)^2 +
+       \left(\frac{\text{m}}{\text{s}}\right)^2}$. This,
+quite obviously, does not make sense, and we should not be surprised
+that doing so is eventually going to come back hurting us.
+
+So why is this an issue here, but not in step-31? The
+reason back there is that everything was nicely balanced: velocities
+were on the order of one, the pressure likewise, the viscosity was
+one, and the domain had a diameter of $\sqrt{2}$. As a result, while
+nonsensical, nothing bad happened. On the other hand, as we will explain
+below, things here will not be that simply scaled: $\eta$ will be around
+$10^{21}$, velocities on the order of $10^{-8}$, pressure around $10^8$, and
+the diameter of the domain is $10^7$. In other words, the order of magnitude
+for the first equation is going to be
+$\eta\text{div}\varepsilon(\mathbf u) \approx 10^{21} \frac{10^{-8}}{(10^7)^2}
+\approx 10^{-1}$, whereas the second equation will be around
+$\text{div}{\mathbf u}\approx \frac{10^{-8}}{10^7} \approx 10^{-15}$. Well, so
+what this will lead to is this: if the solver wants to make the residual small,
+it will almost entirely focus on the first set of equations because they are
+so much bigger, and ignore the divergence equation that describes mass
+conservation. That's exactly what happens: unless we set the tolerance to
+extremely small values, the resulting flow field is definitely not divergence
+free. As an auxiliary problem, it turns out that it is difficult to find a
+tolerance that always works; in practice, one often ends up with a tolerance
+that requires 30 or 40 iterations for most time steps, and 10,000 for some
+others.
+
+So what's a numerical analyst to do in a case like this? The answer is to
+start at the root and first make sure that everything is mathematically
+consistent first. In our case, this means that if we want to solve the system
+of Stokes equations jointly, we have to scale them so that they all have the
+same physical dimensions. In our case, this means multiplying the second
+equation by something that has units $\frac{\text{Pa\; s}}{\text{m}}$; one
+choice is to multiply with $\frac{\eta}{L}$ where $L$ is a typical lengthscale
+in our domain (which experiments show is best chosen to be the diameter of
+plumes &mdash; around 10 km &mdash; rather than the diameter of the
+domain). Using these %numbers for $\eta$ and $L$, this factor is around
+$10^{17}$. So, we now get this for the Stokes system:
+@f{eqnarray*}
+  -\nabla \cdot (2 \eta \varepsilon ({\mathbf u})) + \nabla p &=&
+  \rho(T) \; \mathbf{g},
+  \\
+  \frac{\eta}{L} \nabla \cdot {\mathbf u} &=& 0.
+@f}
+The trouble with this is that the result is not symmetric any more (we have
+$\frac{\eta}{L} \nabla \cdot$ at the bottom left, but not its transpose
+operator at the top right). This, however, can be cured by introducing a
+scaled pressure $\hat p = \frac{L}{\eta}p$, and we get the scaled equations
+@f{eqnarray*}
+  -\nabla \cdot (2 \eta \varepsilon ({\mathbf u})) +
+  \nabla \left(\frac{\eta}{L} \hat p\right) &=&
+  \rho(T) \; \mathbf{g},
+  \\
+  \frac{\eta}{L} \nabla \cdot {\mathbf u} &=& 0.
+@f}
+This is now symmetric. Obviously, we can easily recover the original pressure
+$p$ from the scaled pressure $\hat p$ that we compute as a result of this
+procedure.
+
+In the program below, we will introduce a factor
+<code>EquationData::pressure_scaling</code> that corresponds to
+$\frac{\eta}{L}$, and we will use this factor in the assembly of the system
+matrix and preconditioner. Because it is annoying and error prone, we will
+recover the unscaled pressure immediately following the solution of the linear
+system, i.e., the solution vector's pressure component will immediately be
+unscaled to retrieve the physical pressure. Since the solver uses the fact that
+we can use a good initial guess by extrapolating the previous solutions, we
+also have to scale the pressure immediately <i>before</i> solving.
+
+
+
+<h3> Changes to the Stokes preconditioner and solver </h3>
+
+In this tutorial program, we apply a variant of the preconditioner used in
+step-31. That preconditioner was built to operate on the
+system matrix <i>M</i> in block form such that the product matrix
+@f{eqnarray*}
+  P^{-1} M
+  =
+  \left(\begin{array}{cc}
+    A^{-1} & 0 \\ S^{-1} B A^{-1} & -S^{-1}
+  \end{array}\right)
+  \left(\begin{array}{cc}
+    A & B^T \\ B & 0
+  \end{array}\right)
+@f}
+is of a form that Krylov-based iterative solvers like GMRES can solve in a
+few iterations. We then replaced the exact inverse of <i>A</i> by the action
+of an AMG preconditioner $\tilde{A}$ based on a vector Laplace matrix,
+approximated the Schur complement $S = B A^{-1} B^T$ by a mass matrix $M_p$
+on the pressure space and wrote an <tt>InverseMatrix</tt> class for
+implementing the action of $M_p^{-1}\approx S^{-1}$ on vectors. In the
+InverseMatrix class, we used a CG solve with an incomplete Cholesky (IC)
+preconditioner for performing the inner solves.
+
+An observation one can make is that we use just the action of a
+preconditioner for approximating the velocity inverse $A^{-1}$ (and the
+outer GMRES iteration takes care of the approximate character of the
+inverse), whereas we use a more or less <i>exact</i> inverse for $M_p^{-1}$,
+realized by a fully converged CG solve. This appears unbalanced, but there's
+system to this madness: almost all the effort goes into the upper left block
+to which we apply the AMG preconditioner, whereas even an exact inversion of
+the pressure mass matrix costs basically nothing. Consequently, if it helps us
+reduce the overall number of iterations somewhat, then this effort is well
+spent.
+
+That said, even though the solver worked well for step-31, we have a problem
+here that is a bit more complicated (cells are deformed, the pressure varies
+by orders of magnitude, and we want to plan ahead for more complicated
+physics), and so we'll change a few things slightly:
+
+- For more complex problems, it turns out that using just a single AMG V-cycle
+  as preconditioner is not always sufficient. The outer solver converges just
+  fine most of the time in a reasonable number of iterations (say, less than
+  50) but there are the occasional time step where it suddenly takes 700 or
+  so. What exactly is going on there is hard to determine, but the problem can
+  be avoided by using a more accurate solver for the top left
+  block. Consequently, we'll want to use a CG iteration to invert the top left
+  block of the preconditioner matrix, and use the AMG as a preconditioner for
+  the CG solver.
+
+- The downside of this is that, of course, the Stokes preconditioner becomes
+  much more expensive (approximately 10 times more expensive than when we just
+  use a single V-cycle). Our strategy then is this: let's do up to 30 GMRES
+  iterations with just the V-cycle as a preconditioner and if that doesn't
+  yield convergence, then take the best approximation of the Stokes solution
+  obtained after this first round of iterations and use that as the starting
+  guess for iterations where we use the full inner solver with a rather
+  lenient tolerance as preconditioner. In all our experiments this leads to
+  convergence in only a few additional iterations.
+
+- One thing we need to pay attention to is that when using a CG with a lenient
+  tolerance in the preconditioner, then $y = \tilde A^{-1} r$ is no longer a
+  linear function of $r$ (it is, of course, if we have a very stringent
+  tolerance in our solver, or if we only apply a single V-cycle). This is a
+  problem since now our preconditioner is no longer a linear operator; in
+  other words, every time GMRES uses it the preconditioner looks
+  different. The standard GMRES solver can't deal with this, leading to slow
+  convergence or even breakdown, but the F-GMRES variant is designed to deal
+  with exactly this kind of situation and we consequently use it.
+
+- On the other hand, once we have settled on using F-GMRES we can relax the
+  tolerance used in inverting the preconditioner for $S$. In step-31, we ran a
+  preconditioned CG method on $\tilde S$ until the residual had been reduced
+  by 7 orders of magnitude. Here, we can again be more lenient because we know
+  that the outer preconditioner doesn't suffer.
+
+- In step-31, we used a left preconditioner in which we first invert the top
+  left block of the preconditioner matrix, then apply the bottom left
+  (divergence) one, and then invert the bottom right. In other words, the
+  application of the preconditioner acts as a lower left block triangular
+  matrix. Another option is to use a right preconditioner that here would be
+  upper right block triangulation, i.e., we first invert the bottom right
+  Schur complement, apply the top right (gradient) operator and then invert
+  the elliptic top left block. To a degree, which one to choose is a matter of
+  taste. That said, there is one significant advantage to a right
+  preconditioner in GMRES-type solvers: the residual with which we determine
+  whether we should stop the iteration is the true residual, not the norm of
+  the preconditioned equations. Consequently, it is much simpler to compare it
+  to the stopping criterion we typically use, namely the norm of the right
+  hand side vector. In writing this code we found that the scaling issues we
+  discussed above also made it difficult to determine suitable stopping
+  criteria for left-preconditioned linear systems, and consequently this
+  program uses a right preconditioner.
+
+- In step-31, we used an IC (incomplete Cholesky) preconditioner for the
+  pressure mass matrix in the Schur complement preconditioner and for the
+  solution of the temperature system. Here, we could in principle do the same,
+  but we do choose an even simpler preconditioner, namely a Jacobi
+  preconditioner for both systems. This is because here we target at massively
+  %parallel computations, where the decompositions for IC/ILU would have to be
+  performed block-wise for the locally owned degrees of freedom on each
+  processor. This means, that the preconditioner gets more like a Jacobi
+  preconditioner anyway, so we rather start from that variant straight
+  away. Note that we only use the Jacobi preconditioners for CG solvers with
+  mass matrices, where they give optimal (<i>h</i>-independent) convergence
+  anyway, even though they usually require about twice as many iterations as
+  an IC preconditioner.
+
+As a final note, let us remark that in step-31 we computed the
+Schur complement $S=B A^{-1} B^T$ by approximating
+$-\text{div}(-\eta\Delta)^{-1}\nabla \approx \frac 1{\eta} \mathbf{1}$. Now,
+however, we have re-scaled the $B$ and $B^T$ operators. So $S$ should now
+approximate
+$-\frac{\eta}{L}\text{div}(-\eta\Delta)^{-1}\nabla \frac{\eta}{L} \approx
+\left(\frac{\eta}{L}\right)^2 \frac 1{\eta} \mathbf{1}$.
+We use the discrete form of the right hand side of this as our approximation
+$\tilde S$ to $S$.
+
+
+<h3> Changes to the artificial viscosity stabilization </h3>
+
+Similarly to step-31, we will use an artificial viscosity for stabilization
+based on a residual of the equation.  As a difference to step-31, we will
+provide two slightly different definitions of the stabilization parameter. For
+$\alpha=1$, we use the same definition as in step-31:
+@f{eqnarray*}
+  \nu_\alpha(T)|_K
+  =
+  \nu_1(T)|_K
+  =
+  \beta
+  \|\mathbf{u}\|_{L^\infty(K)}
+  h_K
+  \min\left\{
+    1,
+    \frac{\|R_1(T)\|_{L^\infty(K)}}{c(\mathbf{u},T)}
+  \right\}
+@f}
+where we compute the viscosity from a residual $\|R_1(T)\|_{L^\infty(K)}$ of
+the equation, limited by a diffusion proportional to the mesh size $h_K$ in
+regions where the residual is large (around steep gradients). This definition
+has been shown to work well for the given case, $\alpha = 1$ in step-31, but
+it is usually less effective as the diffusion for $\alpha=2$. For that case, we
+choose a slightly more readable definition of the viscosity,
+@f{eqnarray*}
+  \nu_2(T)|_K = \min (\nu_h^\mathrm{max}|_K,\nu_h^\mathrm{E}|_K)
+@f}
+where the first term gives again the maximum dissipation (similarly to a first
+order upwind scheme),
+@f{eqnarray*}
+  \nu^\mathrm{max}_h|_K = \beta h_K \|\mathbf {u}\|_{L^\infty(K)}
+@f}
+and the entropy viscosity is defined as
+@f{eqnarray*}
+  \nu^\mathrm{E}_h|_K = c_R \frac{h_K^2 \|R_\mathrm{2,E}(T)\|_{L^\infty(K)}}
+  {\|E(T) - \bar{E}(T)\|_{L^\infty(\Omega)} }.
+@f}
+
+This formula is described in the article <i>J.-L. Guermond, R. Pasquetti, \&
+B. Popov, 2011.  Entropy viscosity method for nonlinear conservation laws, J.
+Comput. Phys., 230, 4248--4267.</i> Compared to the case $\alpha = 1$, the
+residual is computed from the temperature entropy, $E(T) = \frac12 (T-T_m)^2$
+with $T_m$ an average temperature (we choose the mean between the maximum and
+minimum temperature in the computation), which gives the following formula
+@f{eqnarray*}
+ R_\mathrm{E}(T) = \frac{\partial E(T)}{\partial t} +
+    (T-T_\mathrm{m}) \left(\mathbf{u} \cdot \nabla T -  \kappa \nabla^2 T - \gamma\right).
+@f}
+The denominator in the formula for $\nu^\mathrm{E}_h|_K$ is computed as the
+global deviation of the entropy from the space-averaged entropy $\bar{E}(T) =
+\int_\Omega E(T) d\mathbf{x}/\int_\Omega d\mathbf{x}$. As in step-31, we
+evaluate the artificial viscosity from the temperature and velocity at two
+previous time levels, in order to avoid a nonlinearity in its definition.
+
+The above definitions of the viscosity are simple, but depend on two
+parameters, namely $\beta$ and $c_R$.  For the current program, we want to go
+about this issue a bit more systematically for both parameters in the case
+$\alpha =1$, using the same line of reasoning with which we chose two other
+parameters in our discretization, $c_k$ and $\beta$, in the results section of
+step-31. In particular, remember that we would like to make the artificial
+viscosity as small as possible while keeping it as large as necessary. In the
+following, let us describe the general strategy one may follow. The
+computations shown here were done with an earlier version of the program and
+so the actual numerical values you get when running the program may no longer
+match those shown here; that said, the general approach remains valid and has
+been used to find the values of the parameters actually used in the program.
+
+To see what is happening, note that below we will impose
+boundary conditions for the temperature between 973 and 4273 Kelvin,
+and initial conditions are also chosen in this range; for these
+considerations, we run the program without %internal heat sources or sinks,
+and consequently the temperature should
+always be in this range, barring any %internal
+oscillations. If the minimal temperature drops below 973 Kelvin, then
+we need to add stabilization by either increasing $\beta$ or
+decreasing $c_R$.
+
+As we did in step-31, we first determine an optimal value of $\beta$
+by using the "traditional" formula
+@f{eqnarray*}
+  \nu_\alpha(T)|_K
+  =
+  \beta
+  \|\mathbf{u}\|_{L^\infty(K)}
+    h_K,
+@f}
+which we know to be stable if only $\beta$ is large enough. Doing a
+couple hundred time steps (on a coarser mesh than the one shown in the
+program, and with a different viscosity that affects transport
+velocities and therefore time step sizes) in 2d will produce the
+following graph:
+
+<img src="http://www.dealii.org/images/steps/developer/step-32.beta.2d.png" alt="">
+
+As can be seen, values $\beta \le 0.05$ are too small whereas
+$\beta=0.052$ appears to work, at least to the time horizon shown
+here. As a remark on the side, there are at least two questions one
+may wonder here: First, what happens at the time when the solution
+becomes unstable? Looking at the graphical output, we can see that
+with the unreasonably coarse mesh chosen for these experiments, around
+time $t=10^{15}$ seconds the plumes of hot material that have been
+rising towards the cold outer boundary and have then spread sideways
+are starting to get close to each other, squeezing out the cold
+material in-between. This creates a layer of cells into which fluids
+flows from two opposite sides and flows out toward a third, apparently
+a scenario that then produce these instabilities without sufficient
+stabilization. Second: In step-31, we used
+$\beta=0.015\cdot\text{dim}$; why does this not work here? The answer
+to this is not entirely clear -- stabilization parameters are
+certainly known to depend on things like the shape of cells, for which
+we had squares in step-31 but have trapezoids in the current
+program. Whatever the exact cause, we at least have a value of
+$\beta$, namely 0.052 for 2d, that works for the current program.
+A similar set of experiments can be made in 3d where we find that
+$\beta=0.078$ is a good choice &mdash; neatly leading to the formula
+$\beta=0.026 \cdot \textrm{dim}$.
+
+With this value fixed, we can go back to the original formula for the
+viscosity $\nu$ and play with the constant $c_R$, making it as large
+as possible in order to make $\nu$ as small as possible. This gives us
+a picture like this:
+
+<img src="http://www.dealii.org/images/steps/developer/step-32.beta_cr.2d.png" alt="">
+
+Consequently, $c_R=0.1$ would appear to be the right value here. While this
+graph has been obtained for an exponent $\alpha=1$, in the program we use
+$\alpha=2$ instead, and in that case one has to re-tune the parameter (and
+observe that $c_R$ appears in the numerator and not in the denominator). It
+turns out that $c_R=1$ works with $\alpha=2$.
+
+
+<h3> Locally conservative Stokes discretization </h3>
+
+The standard Taylor-Hood discretization for Stokes, using the $Q_{k+1}^d
+\times Q_k$ element, is globally conservative, i.e. $\int_{\partial\Omega}
+\mathbf n \cdot \mathbf u_h = 0$. This can easily be seen: the weak form of
+the divergence equation reads $(q_h, \textrm{div}\; \mathbf u_h)=0, \forall
+q_h\in Q_h$. Because the pressure space does contain the function $q_h=1$, we
+get
+@f{align*}
+  0 = (1, \textrm{div}\; \mathbf u_h)_\Omega
+  = \int_\Omega \textrm{div}\; \mathbf u_h
+  = \int_{\partial\Omega} \mathbf n \cdot \mathbf u_h
+@f}
+by the divergence theorem. This property is important: if we want to use the
+velocity field $u_h$ to transport along other quantities (such as the
+temperature in the current equations, but it could also be concentrations of
+chemical substances or entirely artificial tracer quantities) then the
+conservation property guarantees that the amount of the quantity advected
+remains constant.
+
+That said, there are applications where this <i>global</i> property is not
+enough. Rather, we would like that it holds <i>locally</i>, on every
+cell. This can be achieved by using the space
+$Q_{k+1}^d \times DGP_k$ for discretization, where we have replaced the
+<i>continuous</i> space of tensor product polynomials of degree $k$ for the
+pressure by the <i>discontinuous</i> space of the complete polynomials of the
+same degree. (Note that tensor product polynomials in 2d contain the functions
+$1, x, y, xy$, whereas the complete polynomials only have the functions $1,x,y$.)
+This space turns out to be stable for the Stokes equation.
+
+Because the space is discontinuous, we can now in particular choose the test
+function $q_h(\mathbf x)=\chi_K(\mathbf x)$, i.e. the characteristic function
+of cell $K$. We then get in a similar fashion as above
+@f{align*}
+  0
+  = (q_h, \textrm{div}\; \mathbf u_h)_\Omega
+  = (1, \textrm{div}\; \mathbf u_h)_K
+  = \int_K \textrm{div}\; \mathbf u_h
+  = \int_{\partial K} \mathbf n \cdot \mathbf u_h,
+@f}
+showing the conservation property for cell $K$. This clearly holds for each
+cell individually.
+
+There are good reasons to use this discretization. As mentioned above, this
+element guarantees conservation of advected quantities on each cell
+individually. A second advantage is that the pressure mass matrix we use as a
+preconditioner in place of the Schur complement becomes block diagonal and
+consequently very easy to invert. However, there are also downsides. For one,
+there are now more pressure variables, increasing the overall size of the
+problem, although this doesn't seem to cause much harm in practice. More
+importantly, though, the fact that now the divergence integrated over each
+cell is zero when it wasn't before does not guarantee that the divergence is
+pointwise smaller. In fact, as one can easily verify, the $L_2$ norm of the
+divergence is <i>larger</i> for this than for the standard Taylor-Hood
+discretization. (However, both converge at the same rate to zero, since it is
+easy to see that
+$\|\textrm{div}\; u_h\|=
+\|\textrm{div}\; (u-u_h)\|=
+\|\textrm{trace}\; \nabla (u-u_h)\|\le
+\|\nabla (u-u_h)\|={\cal O}(h^{k+2})$.) It is therefore not a priori clear
+that the error is indeed smaller just because we now have more degrees of
+freedom.
+
+Given these considerations, it remains unclear which discretization one should
+prefer. Consequently, we leave that up to the user and make it a parameter in
+the input file which one to use.
+
+
+<h3> Higher order mappings for curved boundaries </h3>
+
+In the program, we will use a spherical shell as domain. This means
+that the inner and outer boundary of the domain are no longer
+"straight" (by which we usually mean that they are bilinear surfaces
+that can be represented by the StraightBoundary class). Rather, they
+are curved and it seems prudent to use a curved approximation in the
+program if we are already using higher order finite elements for the
+velocity. Consequently, we will introduce a member variable of type
+MappingQ that
+denotes such a mapping (step-10 and step-11 introduce such mappings
+for the first time) and that we will use in all computations on cells
+that are adjacent to the boundary. Since this only affects a
+relatively small fraction of cells, the additional effort is not very
+large and we will take the luxury of using a quartic mapping for these
+cells.
+
+
+<h3> Parallelization on clusters </h3>
+
+Running convection codes in 3d with significant Rayleigh numbers requires a lot
+of computations &mdash; in the case of whole earth simulations on the order of
+one or several hundred million unknowns. This can obviously not be done with a
+single machine any more (at least not in 2010 when we started writing this
+code). Consequently, we need to parallelize it.
+Parallelization of scientific codes across multiple machines in a cluster of
+computers is almost always done using the Message Passing Interface
+(MPI). This program is no exception to that, and it follows the general spirit
+of step-17 and step-18 programs in this though in practice it borrows more
+from step-40 in which we first introduced the classes and strategies we use
+when we want to <i>completely</i> distribute all computations: including, for
+example, splitting the mesh up into a number of parts so that each processor
+only stores its own share plus some ghost cells, and using strategies where no
+processor potentially has enough memory to hold the entries of the combined
+solution vector locally. The goal is to run this code on hundreds or maybe
+even thousands of processors, at reasonable scalability.
+
+@note Even though it has a larger number, step-40 comes logically before the
+current program. You will probably want to look at step-40 before you try to
+understand the what we do here.
+
+MPI is a rather awkward interface to program with. It is a semi-object
+oriented set of functions, and while one uses it to send data around a
+network, one needs to explicitly describe the data types because the MPI
+functions insist on getting the address of the data as <code>void*</code>
+objects rather than deducing the data type automatically through overloading
+or templates. We've already seen in step-17 and step-18 how to avoid almost
+all of MPI by putting all the communication necessary into either the deal.II
+library or, in those programs, into PETSc. We'll do something similar here:
+like in step-40, deal.II and the underlying p4est library are responsible for
+all the communication necessary for distributing the mesh, and we will let the
+Trilinos library (along with the wrappers in namespace TrilinosWrappers) deal
+with parallelizing the linear algebra components. We have already used
+Trilinos in step-31, and will do so again here, with the difference that we
+will use its %parallel capabilities.
+
+Trilinos consists of a significant number of packages, implementing basic
+%parallel linear algebra operations (the Epetra package), different solver and
+preconditioner packages, and on to things that are of less importance to
+deal.II (e.g., optimization, uncertainty quantification, etc).
+deal.II's Trilinos interfaces encapsulate many of the things Trilinos offers
+that are of relevance to PDE solvers, and
+provides wrapper classes (in namespace TrilinosWrappers) that make the
+Trilinos matrix, vector, solver and preconditioner classes look very much the
+same as deal.II's own implementations of this functionality. However, as
+opposed to deal.II's classes, they can be used in %parallel if we give them the
+necessary information. As a consequence, there are two Trilinos classes that
+we have to deal with directly (rather than through wrappers), both of which
+are part of Trilinos' Epetra library of basic linear algebra and tool classes:
+<ul>
+<li> The Epetra_Comm class is an abstraction of an MPI "communicator", i.e.
+  it describes how many and which machines can communicate with each other.
+  Each distributed object, such as a sparse matrix or a vector for which we
+  may want to store parts on different machines, needs to have a communicator
+  object to know how many parts there are, where they can be found, and how
+  they can be accessed.
+
+  In this program, we only really use one communicator object -- based on the
+  MPI variable <code>MPI_COMM_WORLD</code> -- that encompasses <i>all</i>
+  processes that work together. It would be perfectly legitimate to start a
+  process on $N$ machines but only store vectors on a subset of these by
+  producing a communicator object that only encompasses this subset of
+  machines; there is really no compelling reason to do so here, however.
+
+<li> The IndexSet class is used to describe which elements of a vector or which
+  rows of a matrix should reside on the current machine that is part of a
+  communicator. To create such an object, you need to know (i) the total
+  number of elements or rows, (ii) the indices of the elements you want to
+  store locally. We will set up
+  these <code>partitioners</code> in the
+  <code>BoussinesqFlowProblem::setup_dofs</code> function below and then hand
+  it to every %parallel object we create.
+
+  Unlike PETSc, Trilinos makes no assumption that the elements of a vector
+  need to be partitioned into contiguous chunks. At least in principle, we
+  could store all elements with even indices on one processor and all odd ones
+  on another. That's not very efficient, of course, but it's
+  possible. Furthermore, the elements of these partitionings do not
+  necessarily be mutually exclusive. This is important because when
+  postprocessing solutions, we need access to all locally relevant or at least
+  the locally active degrees of freedom (see the module on @ref distributed
+  for a definition, as well as the discussion in step-40). Which elements the
+  Trilinos vector considers as locally owned is not important to us then. All
+  we care about is that it stores those elements locally that we need.
+</ul>
+
+There are a number of other concepts relevant to distributing the mesh
+to a number of processors; you may want to take a look at the @ref
+distributed module and step-40 before trying to understand this
+program.  The rest of the program is almost completely agnostic about
+the fact that we don't store all objects completely locally. There
+will be a few points where we have to limit loops over all cells to
+those that are locally owned, or where we need to distinguish between
+vectors that store only locally owned elements and those that store
+everything that is locally relevant (see @ref GlossLocallyRelevantDof
+"this glossary entry"), but by and large the amount of heavy lifting
+necessary to make the program run in %parallel is well hidden in the
+libraries upon which this program builds. In any case, we will comment
+on these locations as we get to them in the program code.
+
+
+<h3> Parallelization within individual nodes of a cluster </h3>
+
+The second strategy to parallelize a program is to make use of the fact that
+most computers today have more than one processor that all have access to the
+same memory. In other words, in this model, we don't explicitly have to say
+which pieces of data reside where -- all of the data we need is directly
+accessible and all we have to do is split <i>processing</i> this data between
+the available processors. We will then couple this with the MPI
+parallelization outlined above, i.e. we will have all the processors on a
+machine work together to, for example, assemble the local contributions to the
+global matrix for the cells that this machine actually "owns" but not for
+those cells that are owned by other machines. We will use this strategy for
+four kinds of operations we frequently do in this program: assembly of the
+Stokes and temperature matrices, assembly of the matrix that forms the Stokes
+preconditioner, and assembly of the right hand side of the temperature system.
+
+All of these operations essentially look as follows: we need to loop over all
+cells for which <code>cell-@>subdomain_id()</code> equals the index our
+machine has within the communicator object used for all communication
+(i.e. <code>MPI_COMM_WORLD</code>, as explained above). The test we are
+actually going to use for this, and which describes in a concise way why we
+test this condition, is <code>cell-@>is_locally_owned()</code>. On each
+such cell we need to assemble the local contributions to the global matrix or
+vector, and then we have to copy each cell's contribution into the global
+matrix or vector. Note that the first part of this (the loop) defines a range
+of iterators on which something has to happen. The second part, assembly of
+local contributions is something that takes the majority of CPU time in this
+sequence of steps, and is a typical example of things that can be done in
+%parallel: each cell's contribution is entirely independent of all other cells'
+contributions. The third part, copying into the global matrix, must not happen
+in %parallel since we are modifying one object and so several threads can not
+at the same time read an existing matrix element, add their contribution, and
+write the sum back into memory without danger of producing a <a
+href="http://en.wikipedia.org/wiki/Race_condition">race condition</a>.
+
+deal.II has a class that is made for exactly this workflow: WorkStream, first
+discussed in step-9 and step-13. Its
+use is also extensively documented in the module on @ref threads (in the section
+on @ref MTWorkStream "the WorkStream class") and we won't repeat here the
+rationale and detailed instructions laid out there, though you will want to
+read through this module to understand the distinction between scratch space
+and per-cell data. Suffice it to mention that we need the following:
+
+- An iterator range for those cells on which we are supposed to work. This is
+  provided by the FilteredIterator class which acts just like every other cell
+  iterator in deal.II with the exception that it skips all cells that do not
+  satisfy a particular predicate (i.e. a criterion that evaluates to true or
+  false). In our case, the predicate is whether a cell has the correct
+  subdomain id.
+
+- A function that does the work on each cell for each of the tasks identified
+  above, i.e. functions that assemble the local contributions to Stokes matrix
+  and preconditioner, temperature matrix, and temperature right hand
+  side. These are the
+  <code>BoussinesqFlowProblem::local_assemble_stokes_system</code>,
+  <code>BoussinesqFlowProblem::local_assemble_stokes_preconditioner</code>,
+  <code>BoussinesqFlowProblem::local_assemble_temperature_matrix</code>, and
+  <code>BoussinesqFlowProblem::local_assemble_temperature_rhs</code> functions in
+  the code below. These four functions can all have several instances
+  running in %parallel at the same time.
+
+- %Functions that copy the result of the previous ones into the global object
+  and that run sequentially to avoid race conditions. These are the
+  <code>BoussinesqFlowProblem::copy_local_to_global_stokes_system</code>,
+  <code>BoussinesqFlowProblem::copy_local_to_global_stokes_preconditioner</code>,
+  <code>BoussinesqFlowProblem::copy_local_to_global_temperature_matrix</code>, and
+  <code>BoussinesqFlowProblem::copy_local_to_global_temperature_rhs</code>
+  functions.
+
+We will comment on a few more points in the actual code, but in general
+their structure should be clear from the discussion in @ref threads.
+
+The underlying technology for WorkStream identifies "tasks" that need to be
+worked on (e.g. assembling local contributions on a cell) and schedules
+these tasks automatically to available processors. WorkStream creates these
+tasks automatically, by splitting the iterator range into suitable chunks.
+
+@note Using multiple threads within each MPI process only makes sense if you
+have fewer MPI processes running on each node of your cluster than there are
+processor cores on this machine. Otherwise, MPI will already keep your
+processors busy and you won't get any additional speedup from using
+threads. For example, if your cluster nodes have 8 cores as they often have at
+the time of writing this, and if your batch scheduler puts 8 MPI processes on
+each node, then using threads doesn't make the program any
+faster. Consequently, you probably want to use the
+<code>--disable-threads</code> flag when configuring your deal.II installation
+for this machine. On the other hand, if you want to run this program on a
+single multicore machine, then it may make sense to use threads. That said, at
+the time of writing this, we only use the WorkStream class for assembling
+(parts of) linear systems, while 75% or more of the run time of the program is
+spent in the linear solvers that are not parallelized &mdash; in other words,
+the best we could hope is to parallelize the remaining 25%.
+
+
+<h3> The testcase </h3>
+
+The setup for this program is mildly reminiscent of the problem we wanted to
+solve in the first place (see the introduction of step-31):
+convection in the earth mantle. As a consequence, we choose the following
+data, all of which appears in the program in units of meters and seconds (the
+SI system) even if we list them here in other units. We do note,
+however, that these choices are essentially still only exemplary, and
+not meant to result in a completely realistic description of
+convection in the earth mantle: for that, more and more difficult
+physics would have to be implemented, and several other aspects are
+currently missing from this program as well. We will come back to this
+issue in the results section again, but state for now that providing a
+realistic description is a goal of the <i>Aspect</i> code in
+development at the time of writing this.
+
+As a reminder, let us again state the equations we want to solve are these:
+@f{eqnarray*}
+  -\nabla \cdot (2 \eta \varepsilon ({\mathbf u})) +
+  \nabla \left( \frac{\eta}{L} \hat p\right) &=&
+  \rho(T) \mathbf{g},
+  \\
+  \frac{\eta}{L} \nabla \cdot {\mathbf u} &=& 0,
+  \\
+  \frac{\partial T}{\partial t}
+  +
+  {\mathbf u} \cdot \nabla T
+  -
+  \nabla \cdot \kappa \nabla T &=& \gamma,
+@f}
+augmented by boundary and initial conditions. We then have to choose data for
+the following quantities:
+<ul>
+  <li>The domain is an annulus (in 2d) or a spherical shell (in 3d) with inner
+  and outer radii that match that of the earth: the total radius of the earth
+  is 6371km, with the mantle starting at a depth of around 35km (just under
+  the solid earth <a target="_top"
+  href="http://en.wikipedia.org/wiki/Crust_(geology)">crust</a> composed of
+  <a target="_top"
+  href="http://en.wikipedia.org/wiki/Continental_crust">continental</a> and <a
+  target="_top" href="http://en.wikipedia.org/wiki/Oceanic_crust">oceanic
+  plates</a>) to a depth of 2890km (where the
+  <a target="_top" href="http://en.wikipedia.org/wiki/Outer_core">outer earth
+  core</a> starts). The radii are therefore $R_0=(6371-2890)\text{km},
+  R_1=(6371-35)\text{km}$. This domain is conveniently generated using the
+  GridGenerator::hyper_shell() function, and we use a HyperShellBoundary
+  objects for the inner and outer boundary.
+
+  <li>At the interface between crust and mantle, the temperature is between
+  500 and 900 degrees Celsius, whereas at its bottom it is around 4000 degrees
+  Celsius (see, for example, <a target="_top"
+  href="http://en.wikipedia.org/wiki/Mantle_(geology)">this Wikipedia
+  entry</a>). In Kelvin, we therefore choose $T_0=(4000+273)\text{K}$,
+  $T_1=(500+273)\text{K}$ as boundary conditions at the inner and outer edge.
+
+  In addition to this, we also have to specify some initial conditions for
+  the temperature field. The real temperature field of the earth is quite
+  complicated as a consequence of the convection that has been going on for
+  more than four billion years -- in fact, it is the properties of this
+  temperature distribution that we want to explore with programs like
+  this. As a consequence, we
+  don't really have anything useful to offer here, but we can hope that if we
+  start with something and let things run for a while that the exact initial
+  conditions don't matter that much any more &mdash; as is in fact suggested
+  by looking at the pictures shown in the <a href="#Results">results section
+  below</a>. The initial temperature field we use here is given in terms of
+  the radius by
+  @f{align*}
+    s &= \frac{\|\mathbf x\|-R_0}{R_1-R_0}, \\
+    \varphi &= \arctan \frac{y}{x}, \\
+    \tau &= s + \frac 15 s(1-s) \sin(6\varphi) q(z), \\
+    T(\mathbf x) &= T_0(1-\tau) + T_1\tau,
+  @f}
+  where
+  @f{align*}
+    q(z) = \left\{
+    \begin{array}{ll}
+      1 & \text{in 2d} \\
+      \max\{0, \cos(\pi |z/R_1|)\} & \text{in 3d}
+    \end{array}
+    \right. .
+  @f}
+  This complicated function is essentially a perturbation of a linear profile
+  between the inner and outer temperatures. In 2d, the function
+  $\tau=\tau(\mathbf x)$ looks like this (I got the picture from
+  <a
+  href="http://www.wolframalpha.com/input/?i=plot+%28sqrt%28x^2%2By^2%29%2B0.2*%28sqrt%28x^2%2By^2%29*%281-sqrt%28x^2%2By^2%29%29*sin%286*atan2%28x%2Cy%29%29%29%2C+x%3D-1+to+1%2C+y%3D-1+to+1">this
+  page</a>):
+
+  <img src="http://www.dealii.org/images/steps/developer/step-32.2d-initial.png" alt="">
+
+  The point of this profile is that if we had used $s$ instead of $\tau$ in
+  the definition of $T(\mathbf x)$ then it would simply be a linear
+  interpolation. $\tau$ has the same function values as $s$ on the inner and
+  outer boundaries (zero and one, respectively), but it stretches the
+  temperature profile a bit depending on the angle and the $z$ value in 3d,
+  producing an angle-dependent perturbation of the linearly interpolating
+  field. We will see in the results section that this is an
+  entirely unphysical temperature field (though it will make for
+  interesting images) as the equilibrium state for the temperature
+  will be an almost constant temperature with boundary layers at the
+  inner and outer boundary.
+
+  <li>The right hand side of the temperature equation contains the rate of
+  %internal heating $\gamma$. The earth does heat naturally through several mechanisms:
+  radioactive decay, chemical separation (heavier elements sink to the bottom,
+  lighter ones rise to the top; the countercurrents dissipate energy equal to
+  the loss of potential energy by this separation process); heat release
+  by crystallization of liquid metal as the solid inner core of the earth
+  grows; and heat dissipation from viscous friction as the fluid moves.
+
+  Chemical separation is difficult to model since it requires modeling mantle
+  material as multiple phases; it is also a relatively small
+  effect. Crystallization heat is even more difficult since it is confined to
+  areas where temperature and pressure allow for phase changes, i.e. a
+  discontinuous process. Given the difficulties in modeling these two
+  phenomena, we will neglect them.
+
+  The other two are readily handled and, given the way we scaled the
+  temperature equation, lead to the equation
+  @f[
+    \gamma(\mathbf x)
+     =
+     \frac{\rho q+2\eta \varepsilon(\mathbf u):\varepsilon(\mathbf u)}
+     {\rho c_p},
+  @f]
+  where $q$ is the radiogenic heating in $\frac{W}{kg}$, and the second
+  term in the enumerator is viscous friction heating. $\rho$ is the density
+  and $c_p$ is the specific heat. The literature provides the following
+  approximate values: $c_p=1250 \frac{J}{kg\; K}, q=7.4\cdot 10^{-12}\frac{W}{kg}$.
+  The other parameters are discussed elsewhere in this section.
+
+  We neglect one internal heat source, namely adiabatic heating here,
+  which will lead to a surprising temperature field. This point is
+  commented on in detail in the results section below.
+
+  <li>For the velocity we choose as boundary conditions $\mathbf{v}=0$ at the
+  inner radius (i.e. the fluid sticks to the earth core) and
+  $\mathbf{n}\cdot\mathbf{v}=0$ at the outer radius (i.e. the fluid flows
+  tangentially along the bottom of the earth crust). Neither of these is
+  physically overly correct: certainly, on both boundaries, fluids can flow
+  tangentially, but they will incur a shear stress through friction against
+  the medium at the other side of the interface (the metallic core and the
+  crust, respectively). Such a situation could be modeled by a Robin-type
+  boundary condition for the tangential velocity; in either case, the normal (vertical)
+  velocity would be zero, although even that is not entirely correct since
+  continental plates also have vertical motion (see, for example, the
+  phenomenon of <a
+  href="http://en.wikipedia.org/wiki/Postglacial_rebound">post-glacial
+  rebound</a>). But to already make things worse for the tangential velocity,
+  the medium on the other side is in motion as well, so the shear stress
+  would, in the simplest case, be proportional to the <i>velocity
+  difference</i>, leading to a boundary condition of the form
+  @f{align*}
+    \mathbf{n}\cdot [2\eta \varepsilon(\mathbf v)]
+    &=
+    s \mathbf{n} \times [\mathbf v - \mathbf v_0],
+    \\
+    \mathbf{n} \cdot \mathbf v &= 0,
+  @f}
+  with a proportionality constant $s$. Rather than going down this route,
+  however, we go with the choice of zero (stick) and tangential
+  flow boundary conditions.
+
+  As a side note of interest, we may also have chosen tangential flow
+  conditions on both inner and outer boundary. That has a significant
+  drawback, however: it leaves the velocity not uniquely defined. The reason
+  is that all velocity fields $\hat{\mathbf v}$ that correspond to a solid
+  body rotation around the center of the domain satisfy $\mathrm{div}\;
+  \varepsilon(\hat{\mathbf v})=0, \mathrm{div} \;\hat{\mathbf v} = 0$, and
+  $\mathbf{n} \cdot \hat{\mathbf v} = 0$. As a consequence, if $\mathbf v$
+  satisfies equations and boundary conditions, then so does $\mathbf v +
+  \hat{\mathbf v}$. That's certainly not a good situation that we would like
+  to avoid. The traditional way to work around this is to pick an arbitrary
+  point on the boundary and call this your fixed point by choosing the
+  velocity to be zero in all components there. (In 3d one has to choose two
+  points.) Since this program isn't meant to be too realistic to begin with,
+  we avoid this complication by simply fixing the velocity along the entire
+  interior boundary.
+
+  <li>To first order, the gravity vector always points downward. The question for
+  a body as big as the earth is just: where is "up". The naive answer of course is
+  "radially inward, towards the center of the earth". So at the surface of the
+  earth, we have
+  @f[
+    \mathbf g
+    =
+    -9.81 \frac{\text{m}}{\text{s}^2} \frac{\mathbf x}{\|\mathbf x\|},
+  @f]
+  where $9.81 \frac{\text{m}}{\text{s}^2}$ happens to be the average gravity
+  acceleration at the earth surface. But in the earth interior, the question
+  becomes a bit more complicated: at the (bary-)center of the earth, for
+  example, you have matter pulling equally hard in all directions, and so
+  $\mathbf g=0$. In between, the net force is described as follows: let us
+  define the <a target="_top"
+  href="http://en.wikipedia.org/wiki/Potential_energy#Gravitational_potential_energy">gravity
+  potential</a> by
+  @f[
+    \varphi(\mathbf x)
+    =
+    \int_{\text{earth}}
+    -G \frac{\rho(\mathbf y)}{\|\mathbf x-\mathbf y\|}
+    \ \text{d}y,
+  @f]
+  then $\mathbf g(\mathbf x) = -\nabla \varphi(\mathbf x)$. If we assume that
+  the density $\rho$ is constant throughout the earth, we can produce an
+  analytical expression for the gravity vector (don't try to integrate above
+  equation somehow -- it leads to elliptic integrals; a simpler way is to
+  notice that $-\Delta\varphi(\mathbf x) = -4\pi G \rho
+  \chi_{\text{earth}}(\mathbf x)$ and solving this
+  partial differential equation in all of ${\mathbb R}^3$ exploiting the
+  radial symmetry):
+  @f[
+    \mathbf g(\mathbf x) =
+    \left\{
+      \begin{array}{ll}
+        -\frac{4}{3}\pi G \rho \|\mathbf x\| \frac{\mathbf x}{\|\mathbf x\|}
+	& \text{for} \ \|\mathbf x\|<R_1, \\
+        -\frac{4}{3}\pi G \rho R^3 \frac{1}{\|\mathbf x\|^2}
+        \frac{\mathbf x}{\|\mathbf x\|}
+	& \text{for} \ \|\mathbf x\|\ge R_1.
+      \end{array}
+    \right.
+  @f]
+  The factor $-\frac{\mathbf x}{\|\mathbf x\|}$ is the unit vector pointing
+  radially inward. Of course, within this problem, we are only interested in
+  the branch that pertains to within the earth, i.e. $\|\mathbf
+  x\|<R_1$. We would therefore only consider the expression
+  @f[
+    \mathbf g(\mathbf x) =
+        -\frac{4}{3}\pi G \rho \|\mathbf x\| \frac{\mathbf x}{\|\mathbf x\|}
+        =
+        -\frac{4}{3}\pi G \rho \mathbf x
+	=
+	- 9.81 \frac{\mathbf x}{R_1} \frac{\text{m}}{\text{s}^2},
+  @f]
+  where we can infer the last expression because we know Earth's gravity at
+  the surface (where $\|x\|=R_1$).
+
+  One can derive a more general expression by integrating the
+  differential equation for $\varphi(r)$ in the case that the density
+  distribution is radially symmetric, i.e. $\rho(\mathbf
+  x)=\rho(\|\mathbf x\|)=\rho(r)$. In that case, one would get
+  @f[
+    \varphi(r)
+    = 4\pi G \int_0^r \frac 1{s^2} \int_0^s t^2 \rho(t) \; dt \; ds.
+  @f]
+
+
+  There are two problems with this, however: (i) The Earth is not homogeneous,
+  i.e. the density $\rho$ depends on $\mathbf x$; in fact it is not even a
+  function that only depends on the radius $r=\|\mathbf x\|$. In reality, gravity therefore
+  does not always decrease as we get deeper: because the earth core is so much
+  denser than the mantle, gravity actually peaks at around $10.7
+  \frac{\text{m}}{\text{s}^2}$ at the core mantle boundary (see <a
+  target="_top" href="http://en.wikipedia.org/wiki/Earth's_gravity">this
+  article</a>). (ii) The density, and by
+  consequence the gravity vector, is not even constant in time: after all, the
+  problem we want to solve is the time dependent upwelling of hot, less dense
+  material and the downwelling of cold dense material. This leads to a gravity
+  vector that varies with space and time, and does not always point straight
+  down.
+
+  In order to not make the situation more complicated than necessary, we could
+  use the approximation that at the inner boundary of the mantle,
+  gravity is $10.7 \frac{\text{m}}{\text{s}^2}$ and at the outer
+  boundary it is $9.81 \frac{\text{m}}{\text{s}^2}$, in each case
+  pointing radially inward, and that in between gravity varies
+  linearly with the radial distance from the earth center. That said, it isn't
+  that hard to actually be slightly more realistic and assume (as we do below)
+  that the earth mantle has constant density. In that case, the equation above
+  can be integrated and we get an expression for $\|\mathbf{g}\|$ where we
+  can fit constants to match the gravity at the top and bottom of the earth
+  mantle to obtain
+  @f[
+    \|\mathbf{g}\|
+    = 1.245\cdot 10^{-6} \frac{1}{\textrm{s}^2} r + 7.714\cdot 10^{13} \frac{\textrm{m}^3}{\textrm{s}^2}\frac{1}{r^2}.
+  @f]
+
+  <li>The density of the earth mantle varies spatially, but not by very
+  much. $\rho_{\text{ref}}=3300 \frac{\text{kg}}{\text{m}^3}$ is a relatively good average
+  value for the density at reference temperature $T_{\text{ref}}=293$ Kelvin.
+
+  <li>The thermal expansion coefficient $\beta$ also varies with depth
+  (through its dependence on temperature and pressure). Close to the surface,
+  it appears to be on the order of $\beta=45\cdot 10^{-6} \frac 1{\text{K}}$,
+  whereas at the core mantle boundary, it may be closer to $\beta=10\cdot
+  10^{-6} \frac 1{\text{K}}$. As a reasonable value, let us choose
+  $\beta=2\cdot 10^{-5} \frac 1{\text{K}}$. The density as a function
+  of temperature is then
+  $\rho(T)=[1-\beta(T-T_{\text{ref}})]\rho_{\text{ref}}$.
+
+  <li>The second to last parameter we need to specify is the viscosity
+  $\eta$. This is a tough one, because rocks at the temperatures and pressure
+  typical for the earth mantle flow so slowly that the viscosity can not be
+  determined accurately in the laboratory. So how do we know about the
+  viscosity of the mantle? The most commonly used route is to consider that
+  during and after ice ages, ice shields form and disappear on time scales
+  that are shorter than the time scale of flow in the mantle. As a
+  consequence, continents slowly sink into the earth mantle under the added
+  weight of an ice shield, and they rise up again slowly after the ice shield
+  has disappeared again (this is called <a target="_top"
+  href="http://en.wikipedia.org/wiki/Postglacial_rebound"><i>postglacial
+  rebound</i></a>). By measuring the speed of this rebound, we can infer the
+  viscosity of the material that flows into the area vacated under the
+  rebounding continental plates.
+
+  Using this technique, values around $\eta=10^{21} \text{Pa\; s}
+  = 10^{21} \frac{\text{N\; s}}{\text{m}^2}
+  = 10^{21} \frac{\text{kg}}{\text{m\; s}}$ have been found as the most
+  likely, though the error bar on this is at least one order of magnitude.
+
+  While we will use this value, we again have to caution that there are many
+  physical reasons to assume that this is not the correct value. First, it
+  should really be made dependent on temperature: hotter material is most
+  likely to be less viscous than colder material. In reality, however, the
+  situation is even more complex. Most rocks in the mantle undergo phase
+  changes as temperature and pressure change: depending on temperature and
+  pressure, different crystal configurations are thermodynamically favored
+  over others, even if the chemical composition of the mantle were
+  homogeneous. For example, the common mantle material MgSiO<sub>3</sub> exists
+  in its <a target="_top"
+  href="http://en.wikipedia.org/wiki/Perovskite_(structure)">perovskite
+  structure</a> throughout most of the mantle, but in the lower mantle the
+  same substance is stable only as <a targe="_top"
+  href="http://en.wikipedia.org/wiki/Postperovskite">post-perovskite</a>. Clearly,
+  to compute realistic viscosities, we would not only need to know the exact
+  chemical composition of the mantle and the viscosities of all materials, but
+  we would also have to compute the thermodynamically most stable
+  configurations for all materials at each quadrature point. This is at the
+  time of writing this program not a feasible suggestion.
+
+  <li>Our last material parameter is the thermal diffusivity $\kappa$, which
+  is defined as $\kappa=\frac{k}{\rho c_p}$ where $k$ is the thermal
+  conductivity, $\rho$ the density, and $c_p$ the specific heat. For
+  this, the literature indicates that it increases from around $0.7$ in the
+  upper mantle to around $1.7 \frac{\text{mm}^2}{\text{s}}$ in the lower
+  mantle, though the exact value
+  is not really all that important: heat transport through convection is
+  several orders of magnitude more important than through thermal
+  conduction. It may be of interest to know that perovskite, the most abundant
+  material in the earth mantle, appears to become transparent at pressures
+  above around 120 GPa (see, for example, J. Badro et al., Science 305,
+  383-386 (2004)); in the lower mantle, it may therefore be that heat
+  transport through radiative transfer is more efficient than through thermal
+  conduction.
+
+  In view of these considerations, let us choose
+  $\kappa=1 \frac{\text{mm}^2}{\text{s}} =10^{-6} \frac{\text{m}^2}{\text{s}}$
+  for the purpose of this program.
+</ul>
+
+All of these pieces of equation data are defined in the program in the
+<code>EquationData</code> namespace. When run, the program produces
+long-term maximal velocities around 10-40 centimeters per year (see
+the results section below), approximately the physically correct order
+of magnitude. We will set the end time to 1 billion years.
+
+@note The choice of the constants and material parameters above follows in
+large part the comprehensive book "Mantle Convection in the Earth and Planets,
+Part 1" by G. Schubert and D. L. Turcotte and P. Olson (Cambridge, 2001). It
+contains extensive discussion of ways to make the program more realistic.
+
+
+<h3> Implementation details </h3>
+
+Compared to step-31, this program has a number of noteworthy differences:
+
+- The <code>EquationData</code> namespace is significantly larger, reflecting
+  the fact that we now have much more physics to deal with. That said, most of
+  this additional physical detail is rather self-contained in functions in
+  this one namespace, and does not proliferate throughout the rest of the
+  program.
+
+- Of more obvious visibility is the fact that we have put a good number of
+  parameters into an input file handled by the ParameterHandler class (see,
+  for example, step-29, for ways to set up run-time parameter files with this
+  class). This often makes sense when one wants to avoid re-compiling the
+  program just because one wants to play with a single parameter (think, for
+  example, of parameter studies determining the best values of the
+  stabilization constants discussed above), in particular given that it takes
+  a nontrivial amount of time to re-compile programs of the current size. To
+  just give an overview of the kinds of parameters we have moved from fixed
+  values into the input file, here is a listing of a typical
+  <code>\step-32.prm</code> file:
+  @code
+# Listing of Parameters
+# ---------------------
+# The end time of the simulation in years.
+set End time                            = 1e8
+
+# Whether graphical output is to be generated or not. You may not want to get
+# graphical output if the number of processors is large.
+set Generate graphical output           = false
+
+# The number of adaptive refinement steps performed after initial global
+# refinement.
+set Initial adaptive refinement         = 1
+
+# The number of global refinement steps performed on the initial coarse mesh,
+# before the problem is first solved there.
+set Initial global refinement           = 1
+
+# The number of time steps between each generation of graphical output files.
+set Time steps between graphical output = 50
+
+# The number of time steps after which the mesh is to be adapted based on
+# computed error indicators.
+set Time steps between mesh refinement  = 10
+
+
+subsection Discretization
+  # The polynomial degree to use for the velocity variables in the Stokes
+  # system.
+  set Stokes velocity polynomial degree       = 2
+
+  # The polynomial degree to use for the temperature variable.
+  set Temperature polynomial degree           = 2
+
+  # Whether to use a Stokes discretization that is locally conservative at the
+  # expense of a larger number of degrees of freedom, or to go with a cheaper
+  # discretization that does not locally conserve mass (although it is
+  # globally conservative.
+  set Use locally conservative discretization = true
+end
+
+
+subsection Stabilization parameters
+  # The exponent in the entropy viscosity stabilization.
+  set alpha = 2
+
+  # The beta factor in the artificial viscosity stabilization. An appropriate
+  # value for 2d is 0.052 and 0.078 for 3d.
+  set beta  = 0.078
+
+  # The c_R factor in the entropy viscosity stabilization.
+  set c_R   = 0.5
+end
+  @endcode
+
+- There are, obviously, a good number of changes that have to do with the fact
+  that we want to run our program on a possibly very large number of
+  machines. Although one may suspect that this requires us to completely
+  re-structure our code, that isn't in fact the case (although the classes
+  that implement much of this functionality in deal.II certainly look very
+  different from an implementation viewpoint, but this doesn't reflect in
+  their public interface). Rather, the changes are mostly subtle, and the
+  overall structure of the main class is pretty much unchanged. That said, the
+  devil is in the detail: getting %parallel computing right, without
+  deadlocks, ensuring that the right data is available at the right place
+  (see, for example, the discussion on fully distributed vectors vs. vectors
+  with ghost elements), and avoiding bottlenecks is difficult and discussions
+  on this topic will appear in a good number of places in this program.
+
+
+<h3> Outlook </h3>
+
+This is a tutorial program. That means that at least most of its focus needs
+to lie on demonstrating ways of using deal.II and associated libraries, and
+not diluting this teaching lesson by focusing overly much on physical
+details. Despite the lengthy section above on the choice of physical
+parameters, the part of the program devoted to this is actually quite short
+and self contained.
+
+That said, both step-31 and the current step-32 have not come about by chance
+but are certainly meant as wayposts along the path to a more comprehensive
+program that will simulate convection in the earth mantle. We call this code
+<i>Aspect</i> (short for <i>Advanced %Solver for Problems in Earth's
+ConvecTion</i>); its development is funded by the <a
+href="http://www.geodynamics.org">Computational Infrastructure in
+Geodynamics</a> initiative with support from the National Science
+Foundation. We hope to release this code not long after this tutorial program
+will officially be released as part of deal.II 7.1.

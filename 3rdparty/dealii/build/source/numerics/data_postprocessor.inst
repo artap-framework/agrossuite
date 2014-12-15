@@ -1,0 +1,12 @@
+template class DataPostprocessor< 1 >;
+ template class DataPostprocessorScalar< 1 >;
+ template class DataPostprocessorVector< 1 >;
+
+template class DataPostprocessor< 2 >;
+ template class DataPostprocessorScalar< 2 >;
+ template class DataPostprocessorVector< 2 >;
+
+template class DataPostprocessor< 3 >;
+ template class DataPostprocessorScalar< 3 >;
+ template class DataPostprocessorVector< 3 >;
+

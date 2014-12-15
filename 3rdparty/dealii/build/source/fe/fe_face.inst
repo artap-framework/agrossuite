@@ -1,0 +1,24 @@
+#if  1  > 1
+ template class FE_PolyFace<TensorProductPolynomials< 1 -1> >;
+ template class FE_PolyFace<PolynomialSpace< 1 -1>,  1 >;
+ 
+ template class FE_FaceQ< 1 >;
+ template class FE_FaceP< 1 >;
+#endif
+ 
+#if  2  > 1
+ template class FE_PolyFace<TensorProductPolynomials< 2 -1> >;
+ template class FE_PolyFace<PolynomialSpace< 2 -1>,  2 >;
+ 
+ template class FE_FaceQ< 2 >;
+ template class FE_FaceP< 2 >;
+#endif
+ 
+#if  3  > 1
+ template class FE_PolyFace<TensorProductPolynomials< 3 -1> >;
+ template class FE_PolyFace<PolynomialSpace< 3 -1>,  3 >;
+ 
+ template class FE_FaceQ< 3 >;
+ template class FE_FaceP< 3 >;
+#endif
+ 

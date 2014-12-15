@@ -1,0 +1,364 @@
+// ---------------------------------------------------------------------
+// $Id$
+//
+// Copyright (C) 2001 - 2013 by the deal.II authors
+//
+// This file is part of the deal.II library.
+//
+// The deal.II library is free software; you can use it, redistribute
+// it, and/or modify it under the terms of the GNU Lesser General
+// Public License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// The full text of the license can be found in the file LICENSE at
+// the top level of the deal.II distribution.
+//
+// ---------------------------------------------------------------------
+
+
+
+for (deal_II_dimension : DIMENSIONS)
+  {
+  namespace GridTools \{
+  template
+    std::list<std::pair<MGDoFHandler<deal_II_dimension>::cell_iterator, MGDoFHandler<deal_II_dimension>::cell_iterator> >
+    get_finest_common_cells (const MGDoFHandler<deal_II_dimension> &mesh_1,
+  			     const MGDoFHandler<deal_II_dimension> &mesh_2);
+  \}
+  }
+
+for (X : TRIANGULATION_AND_DOFHANDLERS; deal_II_dimension : DIMENSIONS ; deal_II_space_dimension : SPACE_DIMENSIONS)
+{
+
+#if deal_II_dimension <= deal_II_space_dimension
+  namespace GridTools \{
+
+  template
+    unsigned int
+    find_closest_vertex (const X &,
+			 const Point<deal_II_space_dimension> &);
+
+  template
+    std::vector<X::active_cell_iterator>
+    find_cells_adjacent_to_vertex(const X &,
+				  const unsigned int);
+  template
+    X::active_cell_iterator
+    find_active_cell_around_point (const X &,
+				   const Point<deal_II_space_dimension> &p);
+
+  template
+    std::pair<X::active_cell_iterator, Point<deal_II_dimension> >
+    find_active_cell_around_point (const Mapping<deal_II_dimension, deal_II_space_dimension> &,
+				   const X &,
+				   const Point<deal_II_space_dimension> &);
+
+  template
+    std::list<std::pair<X::cell_iterator, X::cell_iterator> >
+    get_finest_common_cells (const X &mesh_1,
+  			     const X &mesh_2);
+
+
+  template
+    bool
+    have_same_coarse_mesh (const X &mesh_1,
+			   const X &mesh_2);
+
+  \}
+
+  #endif
+}
+
+
+// now also instantiate these functions for parallel::distributed::Triangulation
+for (deal_II_dimension : DIMENSIONS ; deal_II_space_dimension : SPACE_DIMENSIONS)
+{
+
+#if deal_II_dimension <= deal_II_space_dimension
+  namespace GridTools \{
+
+  template
+    unsigned int
+    find_closest_vertex (const parallel::distributed::Triangulation<deal_II_dimension,deal_II_space_dimension> &,
+			 const Point<deal_II_space_dimension> &);
+
+  template
+    std::vector<parallel::distributed::Triangulation<deal_II_dimension,deal_II_space_dimension>::active_cell_iterator>
+    find_cells_adjacent_to_vertex(const parallel::distributed::Triangulation<deal_II_dimension,deal_II_space_dimension> &,
+				  const unsigned int);
+  template
+    parallel::distributed::Triangulation<deal_II_dimension,deal_II_space_dimension>::active_cell_iterator
+    find_active_cell_around_point (const parallel::distributed::Triangulation<deal_II_dimension,deal_II_space_dimension> &,
+				   const Point<deal_II_space_dimension> &p);
+
+  template
+    std::pair<parallel::distributed::Triangulation<deal_II_dimension,deal_II_space_dimension>::active_cell_iterator, Point<deal_II_dimension> >
+    find_active_cell_around_point (const Mapping<deal_II_dimension, deal_II_space_dimension> &,
+				   const parallel::distributed::Triangulation<deal_II_dimension,deal_II_space_dimension> &,
+				   const Point<deal_II_space_dimension> &);
+
+  template
+    std::list<std::pair<parallel::distributed::Triangulation<deal_II_dimension,deal_II_space_dimension>::cell_iterator, parallel::distributed::Triangulation<deal_II_dimension,deal_II_space_dimension>::cell_iterator> >
+    get_finest_common_cells (const parallel::distributed::Triangulation<deal_II_dimension,deal_II_space_dimension> &mesh_1,
+  			     const parallel::distributed::Triangulation<deal_II_dimension,deal_II_space_dimension> &mesh_2);
+
+
+  template
+    bool
+    have_same_coarse_mesh (const parallel::distributed::Triangulation<deal_II_dimension,deal_II_space_dimension> &mesh_1,
+			   const parallel::distributed::Triangulation<deal_II_dimension,deal_II_space_dimension> &mesh_2);
+
+  \}
+
+  #endif
+}
+
+
+
+for (deal_II_space_dimension : SPACE_DIMENSIONS)
+{
+  
+    parallel::distributed::Triangulation<deal_II_space_dimension>::active_cell_iterator
+    find_active_cell_around_point (const parallel::distributed::Triangulation<deal_II_space_dimension> &,
+				   const Point<deal_II_space_dimension> &p);
+
+  
+    std::pair<parallel::distributed::Triangulation<deal_II_space_dimension>::active_cell_iterator, Point<deal_II_space_dimension> >
+    find_active_cell_around_point (const Mapping<deal_II_space_dimension> &,
+				   const parallel::distributed::Triangulation<deal_II_space_dimension> &,
+				   const Point<deal_II_space_dimension> &);
+}
+
+
+for (deal_II_dimension : DIMENSIONS ; deal_II_space_dimension : SPACE_DIMENSIONS)
+{
+
+#if deal_II_dimension <= deal_II_space_dimension
+  namespace GridTools \{
+  template
+    bool
+    have_same_coarse_mesh (const MGDoFHandler<deal_II_dimension,deal_II_space_dimension> &mesh_1,
+			   const MGDoFHandler<deal_II_dimension,deal_II_space_dimension> &mesh_2);
+
+  \}
+
+  #endif
+}
+
+
+for (deal_II_dimension : DIMENSIONS; deal_II_space_dimension :  SPACE_DIMENSIONS)
+  {
+#if deal_II_dimension <= deal_II_space_dimension
+    namespace GridTools \{
+
+    template
+      double
+      diameter
+      (const Triangulation<deal_II_dimension, deal_II_space_dimension> &);
+
+    template
+      double
+      volume
+      (const Triangulation<deal_II_dimension, deal_II_space_dimension> &,
+       const Mapping<deal_II_dimension, deal_II_space_dimension> &);
+
+    template
+      void delete_unused_vertices (std::vector<Point<deal_II_space_dimension> > &,
+				   std::vector<CellData<deal_II_dimension> > &,
+				   SubCellData &);
+
+    template
+      void delete_duplicated_vertices (std::vector<Point<deal_II_space_dimension> > &,
+				       std::vector<CellData<deal_II_dimension> > &,
+				       SubCellData &,
+				       std::vector<unsigned int> &,
+				       double);
+
+    template
+      void shift<deal_II_dimension> (const Point<deal_II_space_dimension> &,
+						Triangulation<deal_II_dimension, deal_II_space_dimension> &);
+
+    template
+      void scale<deal_II_dimension> (const double,
+				     Triangulation<deal_II_dimension, deal_II_space_dimension> &);
+
+    template
+      void distort_random<deal_II_dimension> (const double,
+				     Triangulation<deal_II_dimension, deal_II_space_dimension> &,
+				     const bool);
+
+    template
+      void get_face_connectivity_of_cells
+      (const Triangulation<deal_II_dimension, deal_II_space_dimension> &triangulation,
+       SparsityPattern          &cell_connectivity);
+
+
+    template
+      void partition_triangulation (const unsigned int,
+			       Triangulation<deal_II_dimension, deal_II_space_dimension> &);
+
+    template
+      void partition_triangulation (const unsigned int,
+				    const SparsityPattern &,
+				    Triangulation<deal_II_dimension, deal_II_space_dimension> &);
+
+    template
+      std::pair<hp::DoFHandler<deal_II_dimension, deal_II_space_dimension>::active_cell_iterator,
+		Point<deal_II_dimension> >
+      find_active_cell_around_point
+      (const hp::MappingCollection<deal_II_dimension, deal_II_space_dimension> &,
+       const hp::DoFHandler<deal_II_dimension, deal_II_space_dimension> &,
+       const Point<deal_II_space_dimension> &);
+
+
+
+    template
+      void get_subdomain_association (const Triangulation<deal_II_dimension, deal_II_space_dimension>  &,
+				      std::vector<types::subdomain_id> &);
+
+    template
+    unsigned int count_cells_with_subdomain_association(
+      const Triangulation<deal_II_dimension, deal_II_space_dimension> &,
+      const types::subdomain_id);
+
+    template
+      double
+      minimal_cell_diameter (const Triangulation<deal_II_dimension, deal_II_space_dimension> &triangulation);
+
+    template
+      double
+      maximal_cell_diameter (const Triangulation<deal_II_dimension, deal_II_space_dimension> &triangulation);
+
+    template
+      void
+      create_union_triangulation (
+	const Triangulation<deal_II_dimension, deal_II_space_dimension> &triangulation_1,
+	const Triangulation<deal_II_dimension, deal_II_space_dimension> &triangulation_2,
+	Triangulation<deal_II_dimension, deal_II_space_dimension>       &result);
+#if deal_II_dimension == deal_II_space_dimension
+    template
+    void
+    laplace_transform (const std::map<unsigned int,Point<deal_II_dimension> > &new_points,
+                       Triangulation<deal_II_dimension> &triangulation);
+
+    template
+      Triangulation<deal_II_dimension,deal_II_space_dimension>::DistortedCellList
+      fix_up_distorted_child_cells
+      (const Triangulation<deal_II_dimension,deal_II_space_dimension>::DistortedCellList &distorted_cells,
+       Triangulation<deal_II_dimension,deal_II_space_dimension> &triangulation);
+
+#endif
+
+    \}
+#endif
+
+
+
+  }
+
+
+
+
+for (deal_II_dimension : DIMENSIONS; deal_II_space_dimension :  SPACE_DIMENSIONS; Container : TRIANGULATION_AND_DOFHANDLER_TEMPLATES)
+  {
+#if deal_II_dimension <= deal_II_space_dimension
+#if deal_II_dimension != 1
+    namespace GridTools \{
+
+      template
+	std::map<  Container<deal_II_dimension-1,deal_II_space_dimension>::cell_iterator,
+		   Container<deal_II_dimension,deal_II_space_dimension>::face_iterator>
+      extract_boundary_mesh (const Container<deal_II_dimension, deal_II_space_dimension> &mesh,
+			     Container<deal_II_dimension-1,deal_II_space_dimension>  &boundary_mesh,
+			     const std::set<types::boundary_id> &boundary_ids);
+      \}
+#endif
+#endif
+
+  }
+
+
+for (X : TRIANGULATION_AND_DOFHANDLERS; deal_II_dimension : DIMENSIONS ; deal_II_space_dimension : SPACE_DIMENSIONS)
+{
+#if deal_II_dimension <= deal_II_space_dimension
+  namespace GridTools \{
+
+    template
+    bool orthogonal_equality<X::active_face_iterator> (std::bitset<3> &,
+                                                       const X::active_face_iterator&,
+                                                       const X::active_face_iterator&,
+                                                       const int,
+                                                       const Tensor<1,deal_II_space_dimension> &);
+
+    template
+    bool orthogonal_equality<X::face_iterator> (std::bitset<3> &,
+                                                const X::face_iterator&,
+                                                const X::face_iterator&,
+                                                const int,
+                                                const Tensor<1,deal_II_space_dimension> &);
+
+    template
+    bool orthogonal_equality<X::active_face_iterator> (const X::active_face_iterator&,
+                                                       const X::active_face_iterator&,
+                                                       const int,
+                                                       const Tensor<1,deal_II_space_dimension> &);
+
+    template
+    bool orthogonal_equality<X::face_iterator> (const X::face_iterator&,
+                                                const X::face_iterator&,
+                                                const int,
+                                                const Tensor<1,deal_II_space_dimension> &);
+
+    #if deal_II_dimension >= 2
+
+      template
+      void collect_periodic_faces<X> (const X &,
+                                      const types::boundary_id,
+                                      const types::boundary_id,
+                                      const int,
+                                      std::vector<PeriodicFacePair<X::cell_iterator> > &,
+                                      const Tensor<1,X::space_dimension> &);
+
+      template
+      void collect_periodic_faces<X> (const X &,
+                                      const types::boundary_id,
+                                      const int,
+                                      std::vector<PeriodicFacePair<X::cell_iterator> > &,
+                                      const Tensor<1,X::space_dimension> &);
+
+    #endif
+
+  \}
+#endif
+}
+
+for (deal_II_dimension : DIMENSIONS ; deal_II_space_dimension : SPACE_DIMENSIONS)
+{
+#if deal_II_dimension <= deal_II_space_dimension
+   #if deal_II_dimension >= 2
+
+     namespace GridTools \{
+
+      template
+      void
+      collect_periodic_faces<parallel::distributed::Triangulation<deal_II_dimension, deal_II_space_dimension> >
+                                 (const parallel::distributed::Triangulation<deal_II_dimension, deal_II_space_dimension> &,
+                                  const types::boundary_id,
+                                  const types::boundary_id,
+                                  const int,
+                                  std::vector<PeriodicFacePair<parallel::distributed::Triangulation<deal_II_dimension, deal_II_space_dimension>::cell_iterator> > &,
+                                  const Tensor<1,parallel::distributed::Triangulation<deal_II_dimension, deal_II_space_dimension>::space_dimension> &);
+
+      template
+      void
+      collect_periodic_faces<parallel::distributed::Triangulation<deal_II_dimension, deal_II_space_dimension> >
+                                 (const parallel::distributed::Triangulation<deal_II_dimension, deal_II_space_dimension> &,
+                                  const types::boundary_id,
+                                  const int,
+                                  std::vector<PeriodicFacePair<parallel::distributed::Triangulation<deal_II_dimension, deal_II_space_dimension>::cell_iterator> > &,
+                                  const Tensor<1,parallel::distributed::Triangulation<deal_II_dimension, deal_II_space_dimension>::space_dimension> &);
+
+     \}
+   #endif
+#endif
+}
+

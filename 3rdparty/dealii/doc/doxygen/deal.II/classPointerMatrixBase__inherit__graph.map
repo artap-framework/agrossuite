@@ -1,0 +1,11 @@
+<map id="PointerMatrixBase&lt; VECTOR &gt;" name="PointerMatrixBase&lt; VECTOR &gt;">
+<area shape="rect" id="node5" href="$classPointerMatrix.html" title="PointerMatrix\&lt; VECTOR \&gt;" alt="" coords="521,5,700,35"/>
+<area shape="rect" id="node7" href="$classPointerMatrixAux.html" title="PointerMatrixAux\&lt; VECTOR \&gt;" alt="" coords="509,59,712,88"/>
+<area shape="rect" id="node9" href="$classProductMatrix.html" title="ProductMatrix\&lt; VECTOR \&gt;" alt="" coords="520,112,701,141"/>
+<area shape="rect" id="node11" href="$classTransposeMatrix.html" title="TransposeMatrix\&lt; VECTOR \&gt;" alt="" coords="512,165,709,195"/>
+<area shape="rect" id="node13" href="$classPointerMatrixBase.html" title="PointerMatrixBase\&lt;\l Vector\&lt; vector_number \&gt; \&gt;" alt="" coords="517,218,704,265"/>
+<area shape="rect" id="node17" href="$classPointerMatrixBase.html" title="PointerMatrixBase\&lt;\l Vector\&lt; number \&gt; \&gt;" alt="" coords="540,287,681,334"/>
+<area shape="rect" id="node2" href="$classSubscriptor.html" title="Subscriptor" alt="" coords="5,139,93,168"/>
+<area shape="rect" id="node15" href="$classProductSparseMatrix.html" title="ProductSparseMatrix\l\&lt; number, vector_number \&gt;" alt="" coords="764,218,945,265"/>
+<area shape="rect" id="node19" href="$classPointerMatrixVector.html" title="PointerMatrixVector\l\&lt; number \&gt;" alt="" coords="787,287,923,334"/>
+</map>

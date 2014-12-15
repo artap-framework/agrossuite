@@ -1,0 +1,423 @@
+<br>
+
+<i>This program was contributed by Jörg Frohne (University of Siegen,
+Germany) while on a long-term visit to Texas A&amp;M University, with significant
+contributions by Timo Heister and Wolfgang Bangerth.
+<br>
+<br>
+The code described here provides the basis for the numerical experiments shown
+in the following paper:
+<br>
+  J. Frohne, T. Heister, W. Bangerth: <b>Efficient numerical methods for the large-scale, parallel
+                  solution of elastoplastic contact problems</b>. Submitted, 2013.
+</em>
+</i>
+
+
+
+<a name="Intro"></a>
+<h3>Introduction</h3>
+
+This example is an extension of step-41, considering a 3d contact problem with an
+elasto-plastic material behavior with isotropic hardening in three dimensions.
+In other words, it considers how a three-dimensional body deforms if one pushes
+into it a rigid obstacle (the contact problem) where deformation is governed
+by an elasto-plastic material law (a material that can only accommodate a certain
+maximal stress) that hardens as deformation accumulates. To show what we intend to
+do before going into too many details, let us just show a picture of what the
+solution will look like (the deformable body is a cube - only half of
+which is actually shown -, the obstacle corresponds
+to a Chinese character that is discussed below):
+
+<img src="http://www.dealii.org/images/steps/developer/step-42.CellConstitutionLi2.png" alt="">
+
+
+This problem description implies that we have to take care of an additional
+nonlinearity compared to step-41: the
+material behavior. Since we consider a three dimensional problem here, we also
+have to account for the fact that the contact area is at the boundary of
+the deformable body now, rather than in the interior. Finally, compared to
+step-41, we also have to deal with hanging nodes in both the handling of the linear
+system as well as of the inequality constraints as we would like to use an
+adaptive mesh; in the latter case, we will
+have to deal with prioritizing whether the constraints from the hanging nodes
+or from the inequalities are more important.
+
+Since you can very easily reach a few million degrees of freedom in three
+dimensions, even with adaptive mesh refinement, we decided to use Trilinos and
+p4est to run our code in parallel, building on the framework of step-40 for
+the parallelization. Additional pointers for parallelization can be found in
+step-32.
+
+
+<h3>Classical formulation</h3>
+
+The classical formulation of the problem possesses the following form:
+@f{align*}
+ \varepsilon(\mathbf u) &= A\sigma + \varepsilon^p & &\quad\text{in } \Omega,\\
+  -\textrm{div}\ \sigma &= \mathbf f & &\quad\text{in } \Omega,\\
+  \varepsilon^p:(\tau - \sigma) &\geq 0\quad\forall\tau\text{ with
+  }\mathcal{F}(\tau)\leq 0 & &\quad\text{in } \Omega,\\
+  \mathbf u &= 0 & &\quad\text{on }\Gamma_D,\\
+  \sigma \cdot \mathbf n - [\mathbf n \cdot(\sigma \cdot \mathbf n)]\mathbf n &= 0,
+  \quad \mathbf n \cdot (\sigma \cdot
+  \mathbf n) \leq 0 & &\quad\text{on }\Gamma_C,\\
+  (\mathbf n \cdot (\sigma \cdot
+  \mathbf n))(\mathbf n \cdot \mathbf u - g) &= 0,\quad \mathbf n
+  \cdot \mathbf u - g \leq 0 & &\quad\text{on } \Gamma_C.
+@f}
+Here, the first of these equations defines the
+relationship between strain $\varepsilon(\mathbf u)=\frac{1}{2}\left(\nabla \mathbf u
+  + \nabla \mathbf u^T\right)$ and stress $\sigma$ via
+the fourth-order compliance tensor $A$; $\varepsilon^p$ provides the plastic
+component of the strain to ensure that the stress does not exceed the yield
+stress. We will only consider isotropic
+materials for which $A$ can be expressed in terms of the Lam\'e moduli
+$\lambda$ and $\mu$ or alternatively in terms of the bulk modulus
+$\kappa$ and $\mu$.
+The second equation is the force balance; we will here
+not consider any body forces and henceforth assume that $\mathbf f=0$. The
+complementarity condition in the third line implies that $\varepsilon^p=0$ if
+$\mathcal{F}(\sigma)< 0$ but that $\varepsilon^p$ may be a nonzero tensor if and
+only if $\mathcal{F}(\sigma) = 0$, and in particular that in this case
+$\varepsilon^p$ must point in the direction $\partial
+\mathcal{F}(\sigma)/\partial \sigma$. The inequality $\mathcal{F}(\sigma)\le 0$ is
+a statement of the fact that plastic materials can only support a finite amount
+of stress; in other words, they react with plastic deformations $\varepsilon^p$
+if external forces would result in a stress $\sigma$ for which $\mathcal{F}(\sigma)> 0$
+would result. A typical form for this <i>yield function</i> is
+$\mathcal{F}(\sigma)=|\sigma^D|-\sigma_{\text{yield}}$ where $\tau^D
+= \tau - \dfrac{1}{3}tr(\tau)I$ is the deviatoric part of a tensor
+and $|\cdot|$ denotes the Frobenius norm.
+
+Further equations describe a
+fixed, zero displacement on $\Gamma_D$ and
+that on the surface $\Gamma_C=\partial\Omega\backslash\Gamma_D$ where contact may appear, the normal
+force $\sigma_n=\mathbf n \cdot (\sigma(\mathbf u) \cdot
+  \mathbf n)$ exerted by the obstacle is inward (no "pull" by the obstacle on our
+body) and with zero tangential component $\mathbf \sigma_t= \sigma \cdot \mathbf n - \mathbf \sigma_n \mathbf n
+= \sigma \cdot \mathbf n - [\mathbf n \cdot(\sigma \cdot \mathbf n)]\mathbf n$.
+The last condition is again a complementarity condition that
+implies that on $\Gamma_C$, the normal
+force can only be nonzero if the body is in contact with the obstacle; the
+second part describes the impenetrability of the obstacle and the body.
+The last two equations are commonly referred to as the Signorini contact
+conditions.
+
+Most materials - especially metals - have the property that they show some hardening as a result of
+deformation. In other words, $\sigma_{\text{yield}}$ increases with deformation.
+In practice, it is not the elastic deformation that results in hardening,
+but the plastic component.
+There are different constitutive laws to describe those material behaviors. The
+simplest one is called linear isotropic hardening described by the flow function
+$\mathcal{F}(\sigma,\varepsilon^p) = \vert\sigma^D\vert - (\sigma_0 +
+\gamma^{\text{iso}}|\varepsilon^p|)$.
+
+
+<h3>Reformulation as a variational inequality</h3>
+
+It is generally rather awkward to deal with inequalities. Here, we have to deal with
+two: plasticity and the contact problem.
+As described in more detail in the paper mentioned at the top of this page, one
+can at least reformulate the plasticity in a way that makes it look like a
+nonlinearity that we can then treat with Newton's method. This is slightly
+tricky mathematically since the nonlinearity is not just some smooth
+function but instead has kinks where the stress reaches the yield stress;
+however, it can be shown for such <i>semismooth</i> functions that Newton's
+method still converges.
+
+Without going into details, we will also get rid of the stress as an independent
+variable and instead work exclusively with the displacements $\mathbf u$. Ultimately,
+the goal of this reformulation is that we will want to end up with a symmetric,
+positive definite problem - such as a linearized elasticity problem with spatially
+variable coefficients resulting from the plastic behavior - that needs to be solved
+in each Newton step. We want this because there are efficient and scalable methods
+for the solution of such linear systems, such as CG preconditioned with an
+algebraic multigrid. This is opposed to the saddle point problem akin to the mixed
+Laplace (see step-20) we would get were we to continue with the mixed formulation
+containing both displacements and stresses, and for which step-20 already gives a
+hint at how difficult it is to construct good solvers and preconditioners.
+
+With this said, let us simply state the problem we obtain after reformulation
+(again, details can be found in the paper): Find a displacement $\mathbf u \in
+V^+$ so that
+@f{align*}
+\left(P_{\Pi}(C\varepsilon(\mathbf u)),\varepsilon(\varphi) - \varepsilon(\mathbf u)\right) \geq 0,\quad \forall \varphi\in V^+.
+@f}
+where the projector $P_\Pi$ is defined as
+@f{align*}
+ P_{\Pi}(\tau):=\begin{cases}
+    \tau, & \text{if }\vert\tau^D\vert \leq \sigma_0,\\
+    \left[
+      \dfrac{\gamma^{\text{iso}}}{2\mu + \gamma^{\text{iso}}} +
+      \left(1-\dfrac{\gamma^{\text{iso}}}{2\mu + \gamma^{\text{iso}}}\right)\dfrac{\sigma_0}{\vert\tau^D\vert}
+    \right]\tau^D
+    + \dfrac{1}{3}\text{trace}(\tau) I, & \text{if }\vert\tau^D\vert >
+    \sigma_0,
+  \end{cases}
+@f}
+and the space $V^+$ is the space of all displacements that satisfy the contact
+condition:
+@f{align*}
+  V
+  &=
+  \left\{ \mathbf u\in \left[H^1(\Omega)\right]^{d}:
+    \mathbf u = 0 \text{ on } \Gamma_D\right\},
+  \\
+  V^+
+  &=
+  \left\{ \mathbf u\in V: \mathbf n \cdot \mathbf u\leq g \text{ on } \Gamma_C \right\}.
+@f}
+
+Given this formulation, we will apply two techniques:
+- Run a Newton method to iterate out the nonlinearity in the projector.
+- Run an active set method for the contact condition, in much the same
+  way as we did in step-41.
+
+A strict approach would keep the active set fixed while we iterate
+the Newton method to convergence (or maybe the other way around: find the
+final active set before moving on to the next Newton iteration).
+In practice, it turns out that it is sufficient to do only a single
+Newton step per active set iteration, and so we will iterate over them
+concurrently. We will also, every once in a while, refine the mesh.
+
+
+<h3>A Newton method for the plastic nonlinearity</h3>
+
+As mentioned, we will treat the nonlinearity of the operator $P_\Pi$ by
+applying a Newton method, despite the fact that the operator is not differentiable
+in the strict sense. However, it satisfies the conditions of <i>slant</i>
+differentiability and this turns out to be enough for Newton's method to work.
+The resulting method then goes by the name <i>semi-smooth Newton method</i>,
+which sounds impressive but is, in reality, just a Newton method applied to
+a semi-smooth function with an appropriately chosen "derivative".
+
+In the current case, we will run our iteration by solving in each iteration $i$
+the following equation (still an inequality, but linearized):
+@f{align*}
+  \label{eq:linearization}
+  \left(I_{\Pi}\varepsilon(\tilde {\mathbf u}^{i}),
+    \varepsilon(\varphi) - \varepsilon(\tilde {\mathbf u}^{i})\right) \geq
+  \left(\left(I_{\Pi}\varepsilon({\mathbf u}^{i-1}),
+    \varepsilon(\varphi) - \varepsilon(\tilde {\mathbf u}^{i})\right) -
+  \left(P_{\Pi}(C\varepsilon({\mathbf u}^{i-1})),
+    \varepsilon(\varphi) - \varepsilon(\tilde {\mathbf u}^{i})\right)\right),
+  \quad \forall \varphi\in V^+,
+@f}
+where the rank-4 tensor $I_\Pi=I_\Pi(\varepsilon^D(\mathbf u^{i-1}))$ given by
+@f{align}
+  I_\Pi = \begin{cases}
+    C_{\mu} + C_{\kappa}, & \hspace{-8em} \text{if } \vert C\varepsilon^D(\mathbf u^{i-1}) \vert \leq \sigma_0,
+    \\
+    \frac{\gamma^{\text{iso}}}{2\mu + \gamma^{\text{iso}}} C_{\mu} + \frac{\left(1-\frac{\gamma^{\text{iso}}}{2\mu + \gamma^{\text{iso}}}\right)\sigma_0}{\vert C\varepsilon^D(\mathbf u^{i-1}) \vert}\left(C_{\mu} -
+      2\mu\dfrac{C\varepsilon^D(\mathbf u^{i-1})\otimes C\varepsilon^D(\mathbf
+        u^{i-1})}{\vert C\varepsilon^D(\mathbf u^{i-1})\vert^2}\right) + C_{\kappa}, & \text{ else.}
+\end{cases}
+@f}
+This tensor is the (formal) linearization of $P_\Pi(C\cdot)$ around $\varepsilon^D(\mathbf u^{i-1})$.
+For the linear isotropic material we consider here,
+the bulk and shear components of the projector are given by
+@f{gather*}
+  C_{\kappa} = \kappa I\otimes I,
+  \qquad\qquad\qquad\qquad
+  C_{\mu} = 2\mu\left(\mathbb{I}  - \dfrac{1}{3} I\otimes
+    I\right),
+@f}
+where $I$
+and $\mathbb{I}$ are the identity tensors of rank 2 and 4, respectively.
+
+Note that this problem corresponds to a linear elastic contact problem
+where $I_\Pi$ plays the role of the elasticity tensor $C=A^{-1}$. Indeed,
+if the material is not plastic at a point, then $I_\Pi=C$. However, at
+places where the material is plastic, $I_\Pi$ is a spatially varying
+function. In any case, the system we have to solve for the Newton iterate
+$\tilde {\mathbf u}^{i}$ gets us closer to the goal of rewriting our problem in
+a way that allows us to use well-known solvers and preconditioners for
+elliptic systems.
+
+As a final note about the Newton method let us mention that as is common with
+Newton methods we need to globalize it by controlling the step length. In
+other words, while the system above solves for $\tilde {\mathbf u}^{i}$, the final
+iterate will rather be
+@f{align*}
+  {\mathbf u}^{i} = {\mathbf u}^{i-1} + \alpha_i (\tilde {\mathbf u}^{i} - {\mathbf u}^{i-1})
+@f}
+where the difference in parentheses on the right takes the role of the
+traditional Newton direction, $\delta {\mathbf u}^{i}$. We will determine
+$\alpha^i$ using a standard line search.
+
+
+<h3>Active Set methods to solve the saddle point problem</h3>
+
+This linearized problem to be solved in each Newton step is essentially like
+in step-41. The only difference consists in the fact that the contact area
+is at the boundary instead of in the domain. But this has no further consequence
+so that we refer to the documentation of step-41 with the only hint that
+$\mathcal{S}$ contains all the vertices at the contact boundary $\Gamma_C$ this
+time. As there, what we need to do is keep a subset of degrees of freedom fixed,
+leading to additional constraints that one can write as a saddle point problem.
+However, as discussed in the paper, by writing these constraints in an
+appropriate way that removes the coupling between degrees of freedom,
+we end up with a set of nodes that essentially just have Dirichlet values
+attached to them.
+
+
+<h3>Overall algorithm</h3>
+
+The algorithm outlined above combines the damped semismooth Newton-method,
+which we use for the nonlinear constitutive law, with the semismooth Newton
+method for the contact. It works as follows:
+<ol>
+ <li> Initialize the active and inactive sets $\mathcal{A}_i$ and $\mathcal{F}_i$
+ such that $\mathcal{S} = \mathcal{A}_i \cup \mathcal{F}_i$ and $\mathcal{A}_i \cap
+ \mathcal{F}_i = \emptyset$ and set $i = 1$. Here, $\mathcal{S}$ is the set of
+ all degrees of freedom located at the surface of the domain where contact
+ may happen.
+ The start value $\hat U^0 :=
+ P_{\mathcal{A}_k}(0)$ fulfills our obstacle condition, i.e., we project an
+ initial zero displacement onto the set of feasible displacements.
+
+ <li> Assemble the Newton matrix $A_{pq} := a'(
+ U^{i-1};\varphi_p,\varphi_q)$ and the right-hand-side $F(\hat U^{i-1})$.
+ These correspond to the linearized Newton step, ignoring for the moment
+ the contact inequality.
+
+ <li> Find the primal-dual pair $(\tilde U^i,\Lambda^i)$ that satisfies
+ @f{align*}
+ A\tilde U^i + B\Lambda^i & = F, &\\
+ \left[B^T\tilde U^i\right]_p & = G_p & \forall p\in\mathcal{A}_i,\\
+ \Lambda^i_p & = 0 & \forall p\in\mathcal{F}_i.
+ @f}
+ As in step-41, we can obtain the solution to this problem by eliminating
+ those degrees of freedom in ${\cal A}_i$ from the first equation and
+ obtain a linear system $\hat {\hat A}(U^{i-1}) \tilde U^i = \hat {\hat H}(U^{i-1})$.
+
+
+
+ <li> Damp the Newton iteration for $i>2$ by applying a line search and
+ calculating a linear combination of $U^{i-1}$ and $\tilde U^i$. This
+ requires finding an
+ $\alpha^i_l:=2^{-l},(l=0,\ldots,10)$ so that
+ @f{gather*}U^i := \alpha^i_l\bar U^i +
+ (1-\alpha^i_l)U^{i-1}@f}
+ satisfies
+ @f{gather*}
+   \vert {\hat R}\left({\mathbf u}^{i}\right) \vert < \vert {\hat R}\left({\mathbf u}^{i-1}\right) \vert.
+ \f}
+ with ${\hat R}\left({\mathbf u}\right)=\left(P_{Pi}(C\varepsilon(u)),\varepsilon(\varphi^{i}_p\right)$ with
+ the exceptions of (i) elements $p\in\mathcal{A}_i$ where we set ${\hat R}\left({\mathbf u}\right)=0$,
+ and (ii) elements that correpond to hanging nodes, which we eliminate in the usual manner.
+
+ <li> Define the new active and inactive sets by
+ @f{gather*}\mathcal{A}_{i+1}:=\lbrace p\in\mathcal{S}:\Lambda^i_p +
+ c\left(\left[B^TU^i\right]_p - G_p\right) > 0\rbrace,@f}
+ @f{gather*}\mathcal{F}_{i+1}:=\lbrace p\in\mathcal{S}:\Lambda^i_p +
+ c\left(\left[B^TU^i\right]_p - G_p\right) \leq 0\rbrace.@f}
+
+ <li>Project $U^i$ so that it satisfies the contact inequality,
+ @f{gather*}\hat U^i := P_{\mathcal{A}_{i+1}}(U^i).@f}
+ Here,
+ $P_{\mathcal{A}}(U)$ is the projection of the active
+ components in $\mathcal{A}$ to the gap
+ @f{gather*}P_{\mathcal{A}}(U)_p:=\begin{cases}
+ U_p, & \textrm{if}\quad p\notin\mathcal{A}\\
+ g_{h,p}, & \textrm{if}\quad
+ p\in\mathcal{A},
+ \end{cases}@f}
+ where $g_{h,p}$ is the <i>gap</i> denoting the distance of the obstacle
+ from the undisplaced configuration of the body.
+
+ <li> If $\mathcal{A}_{i+1} = \mathcal{A}_k$ and $\left\|
+ {\hat R}\left({\mathbf u}^{i}\right) \right\|_{\ell_2} < \delta$ then stop, else set $i=i+1$ and go to
+ step (1). This step ensures that we only stop iterations if both the correct
+ active set has been found and the plasticity has been iterated to sufficient
+ accuracy.
+</ol>
+
+In step 3 of this algorithm,
+the matrix $B\in\mathbb{R}^{n\times m}$, $n>m$ describes the coupling of the
+bases for the displacements and Lagrange multiplier (contact forces)
+and it is not quadratic in our situation since $\Lambda^k$ is only defined on
+$\Gamma_C$, i.e., the surface where contact may happen. As shown in the paper,
+we can choose $B$ to be a matrix that has only one entry per row,
+(see also H&uuml;eber, Wohlmuth: A primal-dual active
+set strategy for non-linear multibody contact problems, Comput. Methods Appl. Mech. Engrg.
+194, 2005, pp. 3147-3166).
+The vector $G$ is defined by a suitable approximation $g_h$ of the gap $g$
+@f{gather*}G_p = \begin{cases}
+g_{h,p}, & \text{if}\quad p\in\mathcal{S}\\
+0, & \text{if}\quad p\notin\mathcal{S}.
+\end{cases}@f}
+
+
+<h3>Adaptive mesh refinement</h3>
+
+Since we run our program in 3d, the computations the program performs are
+expensive. Consequently using adaptive mesh refinement is an important step towards
+staying within acceptable run-times. To make our lives easier we simply choose the
+KellyErrorEstimator that is already implemented in deal.II. We hand the
+solution vector to it which contains the displacement $u$. As we will see in the
+results it yields a quite reasonable adaptive mesh for the contact zone as well
+as for plasticity.
+
+
+<h3>Implementation</h3>
+
+This tutorial is essentially a mixture of step-40 and step-41 but instead of
+PETSc we let the Trilinos library deal with parallelizing the linear algebra
+(like in step-32). Since we are trying to solve a similar problem like in
+step-41 we will use the same methods but now in parallel.
+
+A difficulty is handling of the constraints from
+the Dirichlet conditions, hanging nodes and the inequality condition that
+arises from the contact. For this purpose we create three objects of type
+ConstraintMatrix that describe the various constraints and that we will
+combine as appropriate in each iteration.
+
+Compared to step-41, the programs has a few new classes:
+
+<ul>
+<li> <code>ConstitutiveLaw</code> describes the plastic behavior of the
+  material
+
+<li> <code>SphereObstacle</code> describes a sphere that serves as the
+  obstacle that is pushed into the deformable, elastoplastic body.
+  Whether this or the next class is used to describe the obstacle is
+  determined from the input parameter file.
+
+<li> <code>ChineseObstacle</code> (and a helper class) is a class that
+  allows us to read in an obstacle from a file. In the example we
+  will show in the results section, this file will be
+  <code>'obstacle_file.dat'</code> and will correspond to data that shows the
+  Chinese, Japanese or
+  Korean symbol for force or power (see http://www.orientaloutpost.com/ :
+  "This word can be used for motivation - it
+  can also mean power/motion/propulsion/force. It can be anything
+  internal or external that keeps you going. This is the safest way to express
+  motivation in Chinese. If your audience is Japanese, please see the other entry
+  for motivation. This is a word in Japanese and Korean, but it means "motive
+  power" or "kinetic energy" (without the motivation meaning that you are
+  probably looking for)"). In essence, we will pretend that we have a stamp
+  (i.e., a mask that corresponds to a flat bottomed obstacle with no pieces
+  of intermediate height) that we press into the body. The symbol in question
+  looks as follows (see also the picture at
+  the top of this section on how the end result looks like):
+
+  <img src="http://www.dealii.org/images/steps/developer/step-42.character.png" alt="" width="25%">
+</ul>
+
+Other than that, let us comment only on the following aspects:
+<ul>
+<li> The program allows you to select from two different coarse meshes
+  through the parameter file. These are eiter a cube $[0,1]^3$ or
+  a half sphere with the open side facing the positive $z$ direction.
+  
+<li>In either case, we will assume the convention that the part of the
+  boundary that may be in contact with the obstacle has boundary
+  indicator one. For both kinds of meshes, we assume that this is a free
+  surface, i.e., the body is either in contact there or there is no force
+  acting on it. For the half sphere, the curved part has boundary
+  indicator zero and we impose zero displacement there. For the box,
+  we impose zero displacement along the bottom but allow vertical
+  displacement along the sides (though no horizontal displacement).
+</ul>

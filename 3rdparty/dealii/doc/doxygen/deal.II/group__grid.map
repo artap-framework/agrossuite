@@ -1,0 +1,8 @@
+<map id="Grid classes" name="Grid classes">
+<area shape="rect" id="node1" href="$group__boundary.html" title="Boundary description\l for triangulations" alt="" coords="264,5,408,51"/>
+<area shape="rect" id="node2" href="$group__output.html" title="Graphical output" alt="" coords="277,75,395,104"/>
+<area shape="rect" id="node3" href="$group__Accessors.html" title="Accessor classes of\l the mesh iterators" alt="" coords="265,130,407,177"/>
+<area shape="rect" id="node4" href="$group__geomprimitives.html" title="Geometric and other\l primitives" alt="" coords="267,199,405,246"/>
+<area shape="rect" id="node5" href="$group__Iterators.html" title="Iterators on mesh&#45;like\l containers" alt="" coords="263,291,409,338"/>
+<area shape="rect" id="node7" href="$group__input.html" title="Input" alt="" coords="311,387,361,416"/>
+</map>

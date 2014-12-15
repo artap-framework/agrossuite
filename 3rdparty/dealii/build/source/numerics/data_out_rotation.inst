@@ -1,0 +1,12 @@
+#if  1  < 3
+ template class DataOutRotation< 1 , DoFHandler< 1 > >;
+#endif
+
+#if  2  < 3
+ template class DataOutRotation< 2 , DoFHandler< 2 > >;
+#endif
+
+#if  3  < 3
+ template class DataOutRotation< 3 , DoFHandler< 3 > >;
+#endif
+

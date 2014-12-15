@@ -1,0 +1,470 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                 "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <title>Writing documentation</title>
+  <link href="../screen.css" rel="StyleSheet">
+  <meta name="copyright" content="Copyright (C) 1998, 1999, 2000, 2002, 2003, 2004, 2005, 2006, 2010, 2012 by the deal.II Authors">
+  <meta name="date" content="$Date: 2013-12-16 15:41:13 -0500 (Mon, 16 Dec 2013) $">
+  <meta name="svn_id" content="$Id: writing-documentation.html 32033 2013-12-16 20:41:13Z heister $">
+  <meta name="keywords" content="deal dealii finite elements fem triangulation">
+  <meta http-equiv="content-language" content="en">
+</head>
+<body>
+
+    <h1>Writing Documentation</h1>
+
+    <p>
+    It is our firm belief that software can only be successful if it
+    is properly documented. Too many academic software projects die
+    prematurely once their creators leave the university or the
+    workgroup in which the software was developed, since with their
+    creators also knowledge of internal structures, interfaces, and
+    the valuable bag of tricks leaves, a gap that can not be closed by
+    reading sources, trial-and-error, and guessing.
+    </p>
+
+    <p>
+    The <acronym>deal.II</acronym> project has therefore from its
+    infancy adopted a policy that every aspect of the interface
+    needs to be well-documented before its inclusion into the
+    source tree. Since we have found that it is impossible to keep
+    documentation up-to-date if it is not written directly into the
+    program code, we write the documentation directly at the place of
+    declaration of a function or class and use automatic tools to
+    extract this information from the files and process it into HTML
+    for our web-pages, or LaTeX for printing.
+    </p>
+
+    <p>
+    In addition to the API documentation, we maintain a series of
+    <a href="../doxygen/deal.II/Tutorial.html" target="_top">
+    well-documented example programs</a>, which also follow a certain
+    ``literate programming'' style in that the explanations of what
+    is happening are integrated into the program source by means of
+    comments, and are extracted by small scripts.
+    </p>
+
+    <p>
+    This document first explains the basics of
+    <a href="#API" target="body">documenting the API</a> and then of
+    <a href="#examples" target="body">writing example programs</a>.
+    </p>
+
+
+    <a name="API"></a>
+    <h2>Writing API documentation</h2>
+
+    <p>
+    In order to extract documentation from the header files of the
+    project, we use
+    <a href="http://www.doxygen.org/" target="_top">doxygen</a>.
+    It requires that documentation is written in a form which
+    closely follows the
+    <a href="http://java.sun.com/products/jdk/javadoc/index.html" target="_top">
+    JavaDoc</a> standard.
+    </p>
+
+
+    <h3>Basic layout of documentation</h3>
+
+    <p>
+    Basically, every declaration, whether class or member
+    function/variable declaration, global function or namespace, may
+    be preceded by a comment of the following form:
+    </p>
+<pre>
+/**
+ * This is an example documentation.
+ *
+ * @author Wolfgang Bangerth, 2000
+ */
+class TestClass
+{
+  public:
+           /**
+            * Constructor
+            */
+    TestClass ();
+
+           /**
+            * Example function
+            */
+    virtual void test () const = 0;
+
+           /**
+            * Member variable
+            */
+    const unsigned int abc;
+};
+</pre>
+    <p>
+    <acronym>doxygen</acronym> will then generate a page for the class
+    <code>TestClass</code> and document each of the member functions
+    and variables. The content of the <code>@author</code> tag will be
+    included into the online documentation of the class.
+    </p>
+
+
+    <h3>Extended Layout</h3>
+
+    <p>
+    In order to allow better structured output for long comments,
+    doxygen supports a great number of tags for enumerations,
+    sectioning, markup, and other fields. We encourage you to take a
+    look at the <a href="http://www.doxygen.org/"
+    target="_top">doxygen webpage</a> to get an overview. However,
+    here is a brief summary of the most often used features:
+    </p>
+    <ul>
+    <li> <em>Virtual functions:</em>
+        Do not document virtual functions in derived classes, if there
+        is nothing different from the base class. If a virtual
+        function is documented in a base class, doxygen will
+        automatically copy this documentation to the derived
+        classes. This mechanism is interrupted, if a documentation
+        block is found in the derived class.
+
+    <li> <em>Itemized lists:</em>
+         By writing comments like the following,
+<pre>
+/**
+ * &lt;ul&gt;
+ *   &lt;li&gt; foo
+ *   &lt;li&gt; bar
+ * &lt;/ul&gt;
+ */
+</pre>
+         you can get itemized lists both in the online and printed
+         documentation:
+         <ul>
+         <li> foo
+         <li> bar
+         </ul>
+
+         <p>
+         In other words, one can use standard HTML tags for this
+         task. Likewise, you can get numbered lists by using the
+         respective HTML tags <code>&lt;ol&gt;</code>.
+         </p>
+
+    <li> <em>Verbatim output:</em>
+         <p>
+         If you write comments like this,
+         </p>
+<pre>
+/**
+ * @verbatim
+ *   void foobar ()
+ *   {
+ *     i = 0;
+ *   }
+ * @endverbatim
+ */
+</pre>
+         you will get the lines between the verbatim environment with
+         the same formatting and in typewriter font:
+<pre>
+void foobar ()
+{
+  i = 0;
+}
+</pre>
+         This is useful if you want to include small sample code snippets
+         into your documentation. In particular, it is important that
+         the formatting is preserved, which is not the case for all
+         other text.
+
+    <li> <em>Typewriter font:</em>
+         <p>In order to use typewriter font for instance for function
+         arguments or variables, use the <code>&lt;code&gt;</code> HTML
+         tag. For a single word, you can also use the form <code>@p
+         one_word_without_spaces</code>. The <code>&lt;tt&gt;</code> is obsolete in HTML5</p>
+
+         <p>
+         If you refer to member variables and member functions
+         <acronym>doxygen</acronym> has better options than this: use
+         <tt>function_name()</tt> to reference member functions and
+         <tt>#variable_name</tt> for member variables to create links
+         automatically. Refer to the documentation of <a
+         href="http:www.doxygen.org"><acronym>doxygen</acronym></a> to
+         get even more options for global variables.
+         </p>
+
+    <li> <em>Emphasis:</em>
+         <p>
+         To generate output in italics, use the <code>@em
+         one_word_without_spaces</code> tag or the <tt>&lt;em&gt;</tt>
+         HTML tag. To generate boldface, use <tt>&lt;b&gt;</tt>
+         </p>
+
+    <li> <em>Formul&aelig;:</em>
+         <p>
+         For simple and short formul&aelig; use the <tt>&lt;i&gt;</tt>
+         HTML tag. Note that you can use <tt>&lt;sub&gt;</tt> and
+         <tt>&lt;sup&gt;</tt> to get subscripts an superscripts,
+         respectively. Only for longer formul&aelig; use
+         <tt>$formula$</tt> to generate a LaTeX formula which will then be
+         included as a graphical image.
+         </p>
+
+    <li> <em>Sections:</em>
+         <p>
+         Sections in class and function documentations can be
+         generated using the <tt>&lt;hN&gt;</tt> HTML headline
+         tags. Headlines inside class documentation should start at
+         level 3 (<tt>&lt;h3&gt;</tt>) to stay consistent with the
+         structure of the <acronym>doxygen</acronym> output.
+         </p>
+
+         <p>
+         Sections cannot be referenced, unless you add a <tt>&lt;A
+         NAME="..."&gt;</tt> name anchor to them. If you really have
+         to do this, please make sure the name does not interfere with
+         <acronym>doxygen</acronym> generated anchors.
+         </p>
+
+    <li> <em>Exclusion from documentation:</em>
+         <p> <acronym>doxygen</acronym> sometimes has problems with inlined
+         functions of template classes. For these cases (and other cases of
+         parts of the code to be excluded from documentation), we define a
+         preprocessor symbol <tt>DOXYGEN</tt> when running
+         <acronym>doxygen</acronym>. Therefore, the following template can be
+         used to avoid documentation:</p>
+<pre>
+/* documented code here */
+
+#ifndef DOXYGEN
+
+/* code here is compiled, but ignored by doxygen */
+
+#endif // DOXYGEN
+</pre>
+    </ul>
+
+    <h3>Code examples for the usage of single classes</h3>
+    <p>
+    Writing example files for classes is supported by
+    <acronym>doxygen</acronym>. These example files go into
+    <tt>deal.II/examples/doxygen</tt>. If they are short,
+    documentation should be inside and they are included into the
+    documentation with <code>@include filename</code>. Take a look how
+    the class <code>BlockMatrixArray</code> does this.
+    </p>
+
+    <p>
+    Larger example files should be documented using the
+    <acronym>doxygen</acronym> command <code>@dotinclude</code> and
+    related commands. However, if these programs do something
+    reasonable and do not only demonstrate a single topic, you should
+    consider converting them to a complete example program in the
+    <code>step-XX</code> series.
+    </p>
+
+
+
+    <a name="examples"></a>
+    <h2>Writing example programs for the tutorial</h2>
+
+    <p>
+    Tutorial programs consist of an introduction, a well documented
+    code, and a section that shows the output and numerical results
+    of running the program. These three parts are written in separate
+    files: for the <code>step-xx</code> program, for example, they
+    would be in the
+    files <code>examples/doc/step-xx/doc/intro.dox</code>,
+    <code>examples/doc/step-xx/step-xx.cc</code> and
+    <code>examples/doc/step-xx/doc/results.dox</code>. There are a
+    number of scripts that then process and concatenate these three
+    different files and send them through doxygen for generation of
+    HTML output. In general, if you want to see how certain markup
+    features can be used, it is worthwhile looking at the existing
+    tutorial program pages and the files they are generated from.
+    </p>
+
+    <h3>The introduction</h3>
+    <p>
+      The introduction, as well as the results section, will be
+      processed as if they were doxygen comments. In other words, all
+      the usual doxygen markup will work in these sections, including
+      latex formulas, though the format for the formula environment is
+      a bit awkward. Since it takes much longer to run doxygen for all
+      of deal.II than to run latex, most of the lengthier
+      introductions are just written in latex (with a minimal amount
+      of markup) and later converted into doxygen format. One thing to
+      be aware of is that you can reference formulas in doxygen, so
+      you have to work around that using text rather than formula
+      numbers.
+    </p>
+
+    <p>
+      More important is what goes into the introduction. Typically,
+      this would first be a statement of the problem that we want to
+      solve. Take a look, for example, at
+      the <a href="../doxygen/deal.II/step_22.html"
+      target="_top">step-22</a>
+      or <a href="../doxygen/deal.II/step_31.html"
+      target="_top">step-31</a> tutorial programs. Then come a few
+      sections in which we would discuss in mathematical terms the
+      algorithms that we want to use; this could, for example, include
+      the time stepping, discretization, or solver
+      approaches. <a href="../doxygen/deal.II/step_22.html"
+      target="_top">step-22</a>
+      and <a href="../doxygen/deal.II/step_31.html"
+      target="_top">step-31</a> are again good, if lengthy, examples
+      for this.
+    </p>
+
+    <p>
+      On the other hand, if a program is an extension of a previous
+      program, these things need not be repeated: you would just
+      reference the previous program. For
+      example, <a href="../doxygen/deal.II/step_16.html"
+      target="_top">step-16</a> does not talk about adaptive meshes
+      any more &mdash; it
+      extends <a href="../doxygen/deal.II/step_6.html"
+      target="_top">step-6</a> and simply refers there for
+      details. Likewise, <a href="../doxygen/deal.II/step_32.html"
+      target="_top">step-32</a> simply refers
+      to <a href="../doxygen/deal.II/step_31.html"
+      target="_top">step-31</a> for the problem statement and basic
+      algorithm and simply focuses on those parts that are new
+      compared to
+      <a href="../doxygen/deal.II/step_31.html" target="_top">step-31</a>.
+    </p>
+
+    <p>
+      The purpose of the introduction is to explain what the program
+      is doing. It should set the mindset so that when you read
+      through the code you already know <i>why</i> we are doing
+      something. You may not yet know <i>how</i> this done, but this
+      is what the documentation within the code is doing. At least you
+      don't have to wonder any more why we are building up this
+      complicated preconditioner &mdash; we've already discussed this
+      in the introduction.
+    </p>
+
+    <p>
+      If it helps the understanding, the introduction can refer to
+      particular pieces of code (but doesn't have to). For example,
+      the introduction to <a href="../doxygen/deal.II/step_20.html"
+      target="_top">step-20</a> has pretty lengthy code snippets that
+      explain how to implement a general interface of operators that
+      may or may not be matrices. This would be awkward to do within
+      the code since in the code the view is somewhat smaller (you
+      have to have complete parameter lists, follow the syntax of the
+      programming language, etc, all of which obscures the things one
+      wants to discuss when giving a broad overview related to
+      particular C++ constructs). On the other hand, showing code
+      snippets in the introduction risks duplicating code in two
+      places, which will eventually get out of synch. Consequently,
+      this intrstrument should only be used sparingly.
+    </p>
+
+
+    <h3>The actual code</h3>
+    <p>
+      At present, the tools that extract information from the actual example
+      programs code are rather dumb. They are, to be precise, three Perl
+      scripts located in the directory of the
+      <code>deal.II/doc/doxygen/tutorial</code> tree, where
+      the <code>.cc</code> files of the tutorial programs are converted
+      into doxygen input files. In essence, what these scripts do is to
+      create doxygen input that contains the comments of the program as
+      text, and the actual code of the programs as code snippets. You
+      can see this when you look at the pages for each of the tutorials
+      where the code is indendet relative to the text.
+    </p>
+
+    <p>
+      The whole thing being interpreted by doxygen means that you can
+      put anything doxygen understands into comments. This includes,
+      for example references to classes or members in the library (in
+      fact, you just need to write their name out and doxygen will
+      automatically link them), formulas, lists, etc. It all will come
+      out as if you had written comments for doxygen in the first
+      place.
+    </p>
+
+    <p>
+      The bigger question is <i>how</i> to write the comments that
+      explain what's going on in individual code blocks. Many years
+      back we wrote them so that every line or every two lines had
+      their own comment. You can still see this in some of the older
+      tutorial programs, though many of them have in the meantime been
+      converted to a newer style: it turns out that if you have
+      comments so frequently, it becomes hard to follow the flow of an
+      algorithm. In essence, you know exactly what each line does, but
+      you can't get an overview of what the function as a whole
+      does. But that's exactly the point of the tutorial programs, of
+      course!
+    </p>
+
+    <p>
+      So the way we now believe tutorial programs should be written is
+      to have comments for each logical block. For example,
+      the <code>solve()</code> function in many of the programs is
+      relatively straightforward and has at most a dozen lines of
+      code. So put a comment in front of the function that explains
+      all the things that are going on in the function, and then show
+      the function without comments in it &mdash; this way, a reader
+      will read through the half or full page of documentation
+      understanding the big picture, and can then see the whole
+      function all at once on a single screen without having to scroll
+      up and down. In the old way, the code would be spread out over a
+      couple pages, with comments between almost any two lines, making
+      it hard to see how it all fits together.
+    </p>
+
+    <p>
+      It is somewhat subjective how much code you should leave in each
+      block that you document separately. It might be a single line if
+      something really important and difficult happens there, but most
+      of the time it's probably more along the lines of 6 to 12 lines
+      &mdash; a small enough part of the code so that it's easy enough
+      to grasp by looking at it all at once, but large enough that it
+      contributes a significant part or all of an algorithm.
+    </p>
+
+
+    <h3>The results section</h3>
+
+    <p>
+      The results section should show (some of) the output of a
+      program, such as the console output and/or a visualization of
+      graphical output. It should also contain a brief discussion of
+      this output. It is intended to demonstrate what the program
+      does, so that a reader can see what happens if the program were
+      executed without actually running it. It helps to show a few
+      nice graphics there.
+    </p>
+
+    <p>
+      This section needs not be overly comprehensive. If the program
+      is the implementation of a method that's discussed in an
+      accompanying paper, it's entirely ok to say "for further
+      numerical results, see ...".
+    </p>
+
+    <p>
+      Like the introduction, the results section file is copied
+      verbatim into input for doxygen, so all doxygen markup is
+      possible there.
+    </p>
+
+
+    <hr />
+    <address>
+      <a href="../authors.html" target="body">The deal.II Authors</a>
+      $Date: 2013-12-16 15:41:13 -0500 (Mon, 16 Dec 2013) $
+    </address>
+    <div class="right">
+      <a href="http://validator.w3.org/check?uri=referer" target="_top">
+        <img style="border:0" src="http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01!"></a>
+      <a href="http://jigsaw.w3.org/css-validator/check/referer" target="_top">
+        <img style="border:0;width:88px;height:31px" src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!"></a>
+    </div>
+
+  </body>
+</html>

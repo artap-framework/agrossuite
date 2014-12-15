@@ -1,0 +1,233 @@
+<br>
+
+<i>This program was contributed by Andrea Bonito and M. Sebastian Pauletti,
+with editing and writing by Wolfgang Bangerth.
+<br>
+This material is based upon work supported by the National Science
+Foundation under Grant No. DMS-0914977. Any opinions, findings and conclusions
+or recommendations expressed in this material are those of the author(s) and
+do not necessarily reflect the views of the National Science Foundation
+(NSF).
+</i>
+
+<a name="Intro"></a>
+
+<h1>Introduction</h1>
+
+In this example, we show how to solve a partial differential equation (PDE)
+on a codimension one surface $\Gamma \subset \mathbb R^3$
+made of quadrilaterals, i.e. on a surface in 3d or a line in 2d.
+We focus on the following elliptic second order PDE
+@f{align*}
+-\Delta_\Gamma u &= f \qquad \text{on } \qquad \Gamma,\\
+u  &= g \qquad \text{on} \qquad \partial \Gamma,
+@f}
+which generalized the Laplace equation we have previously solved in several of
+the early tutorial programs. Our implementation is based on step-4. step-34
+also solves problems on lower dimensional surfaces; however, there we only
+consider integral equations that do not involve derivatives on the solution
+variable, while here we actually have to investigate what it means to take
+derivatives of a function only defined on a (possibly curved) surface.
+
+In order to define the above operator, we start by introducing some notations.
+Let $\mathbf x_S:\hat S \rightarrow S$ be a parametrization of
+a surface $S$ from a reference element $\hat S \subset \mathbb R^2$,
+i.e. each point $\hat{\mathbf x}\in\hat S$ induces a point ${\mathbf
+  x}_S(\hat{\mathbf x}) \in S$. Then let
+@f[
+G_S:= (D \mathbf{x}_S)^T \ D \mathbf{x}_S
+@f]
+denotes the corresponding first fundamental form, where $D
+\mathbf{x}_S=\left(\frac{\partial x_{S,i}(\hat{\mathbf x})}{\partial \hat x_j}\right)_{ij}$ is the 
+derivative (Jacobian) of the mapping.
+In the following, $S$ will be either the entire surface $\Gamma$ or,
+more convenient for the finite element method, any face $S \in
+{\mathbb T}$, where ${\mathbb T}$ is a partition (triangulation) of $\Gamma$
+constituted of quadrilaterals. 
+We are now in position to define the tangential gradient of a function $v : S \rightarrow \mathbb
+R$ by
+@f[
+(\nabla_S v)\circ \mathbf x_S :=  D \mathbf x_S \ G_S^{-1} \ \nabla (v \circ \mathbf x_S).
+@f]
+The surface Laplacian (also called the Laplace-Beltrami operator) is then
+defined as  $\Delta_S:= \nabla_S \cdot \nabla_S$.
+Note that an alternate way to compute the surface gradient on smooth surfaces $\Gamma$ is 
+@f[
+\nabla_S v = \nabla \tilde v - \mathbf n (\mathbf n \cdot \nabla \tilde v),
+@f]
+where $\tilde v$ is a "smooth" extension of $v$ in a tubular neighborhood of $\Gamma$ and
+$\mathbf n$ is the normal of $\Gamma$. 
+Since $\Delta_S = \nabla_S \cdot \nabla_S$, we deduce
+@f[
+\Delta_S v = \Delta \tilde v - \mathbf n^T \ D^2 \tilde v \ \mathbf n - (\mathbf n \cdot \nabla \tilde v) (\nabla \cdot \mathbf n - \mathbf n^T \ D \mathbf n \ \mathbf n ).
+@f]
+Worth mentioning, the term $\nabla \cdot \mathbf n - \mathbf n \ D \mathbf n \ \mathbf n$ appearing in the above expression is the total curvature of the surface (sum of principal curvatures).
+
+As usual, we are only interested in weak solutions for which we can use $C^0$
+finite elements (rather than requiring $C^1$ continuity as for strong
+solutions). We therefore resort to the weak formulation
+@f[
+\int_\Gamma \nabla_\Gamma u \cdot
+\nabla_\Gamma v = \int_\Gamma f \ v  \qquad \forall v \in H^1_0(\Gamma)
+@f]
+and take advantage of the partition ${\mathbb T}$ to further write
+@f[
+\sum_{K\in  {\mathbb T}}\int_K \nabla_{K} u \cdot \nabla_{K} v = \sum_{K\in
+  {\mathbb T}} \int_K f \ v  \qquad \forall v \in H^1_0(\Gamma).
+@f]
+Moreover, each integral in the above expression is computed in the reference
+element $\hat K:= [0,1]^2$ 
+so that
+@f{align*}
+\int_{K} \nabla_{K} u \cdot \nabla_{K} v 
+&= 
+\int_{\hat K} \nabla (u \circ \mathbf x_K)^T G_K^{-1} (D \mathbf
+  x_K)^T D \mathbf x_K G_K^{-1} \nabla (v \circ \mathbf x_K) \sqrt{\det
+    (G_K)}
+\\
+&= 
+\int_{\hat K} \nabla (u \circ \mathbf x_K)^T G_K^{-1} \nabla (v \circ \mathbf x_K) \sqrt{\det
+    (G_K)}
+@f}
+and
+@f[
+\int_{K} f \ v = \int_{\hat K} (f \circ \mathbf x_K) (v \circ \mathbf
+x_K)  \sqrt{\det
+    (G_K)}.
+@f]
+Finally, we use a quadrature formula defined by points $\{p_l\}_{l=1}^N\subset
+\hat K$ and weights $\{w_l\}_{l=1}^N \subset \mathbb R^+_*$ to
+evaluate the above integrals and
+obtain
+@f[\int_{K} \nabla_{K} u \cdot \nabla_{K} v \approx \sum_{l=1}^N
+ (\nabla (u \circ \mathbf x_K)(p_l))^T G^{-1}(p_l)  \nabla (v \circ \mathbf x_K)
+(p_l) \sqrt{\det (G(p_l))} \ w_l
+@f]
+and
+@f[
+\int_{K} f \ v \approx \sum_{l=1}^N (f \circ \mathbf x_K)(p_l) \ (v \circ \mathbf x_K)(p_l) \sqrt{\det (G(p_l))} \ w_l.
+@f]
+
+
+Fortunately, deal.II has already all the tools to compute the above
+expressions.
+In fact, they barely differ from the ways in which we solve the usual
+Laplacian, only requiring the surface coordinate mapping to be provided in the
+constructor of the FEValues class.
+This surface description given, in the codimension one surface case, the two
+routines FEValues::shape_grad and FEValues::JxW
+return
+@f{align*}
+\text{FEValues::shape\_grad}(i,l)&=D \mathbf x_K(p_l) G^{-1}(p_l)D(\varphi_i \circ \mathbf x_K)
+  (p_l)
+\\
+\text{FEValues::JxW}(l) &=  \sqrt{\det (G(p_l))} \ w_l.
+@f}
+This provides exactly the terms we need for our computations.
+
+On a more general note, details for the finite element approximation on
+surfaces can be found for instance in 
+[Dziuk, in Partial differential equations and calculus of
+variations 1357, Lecture Notes in Math., 1988],
+[Demlow, SIAM J. Numer. Anal.  47(2), 2009]
+and
+[Bonito, Nochetto, and Pauletti, SIAM J. Numer. Anal. 48(5), 2010].
+
+
+
+<h3>Testcase</h3>
+
+In general when you want to test numerically the accuracy and/or order of
+convergence of an algorithm you need to provide an exact solution. The usual
+trick is to pick a function that we want to be the solution, then apply the
+differential operator to it that defines a forcing term for the right hand
+side. This is what we do in this example. In the current case, the form of the
+domain is obviously also essential.
+
+We produce one test case for a 2d problem and another one for 3d:
+
+<ul>
+<li>
+  In 2d, let's choose as domain a half circle. On this domain, we choose the
+  function $u(\mathbf x)=-2x_1x_2$ as the solution. To compute the right hand
+  side, we have to compute the surface Laplacian of the
+  solution function. There are (at least) two ways to do that. The first one
+  is to project away the normal derivative as described above using the natural extension of $u(\mathbf x)$ (still denoted by $u$) over $\mathbb R^d$, i.e. to compute
+  @f[
+    -\Delta_\Gamma u =  \Delta u - \mathbf n^T \ D^2 u \ \mathbf n - (\mathbf n \cdot \nabla u)\ \kappa,
+  @f]	
+  where $\kappa$ is the total curvature of $\Gamma$.
+  Since we are on the unit circle, $\mathbf n=\mathbf x$ and $\kappa = 1$ so that
+  @f[
+    -\Delta_\Gamma u = -8 x_1x_2.
+  @f]	
+
+  A somewhat simpler way, at least for the current case of a curve in
+  two-dimensional space, is to note that we can map the interval $t \in
+  [0,\pi]$ onto the domain $\Omega$ using the transformation
+  $\mathbf x(t)= \left(\begin{array}{c} \cos t \\ \sin t \end{array}\right)$.
+  At position $\mathbf x=\mathbf x(t)$, the value of the solution is then
+  $u(\mathbf x(t)) = -2\cos t \sin t$.
+  Taking into account that the transformation is length preserving, i.e. a
+  segment of length $dt$ is mapped onto a piece of curve of exactly the same
+  length, the tangential Laplacian then satisfies
+  @f{align*}
+    \Delta_\Gamma u 
+    &= \frac{d^2}{dt^2}(-2\cos t \sin t)
+    = -2 \frac{d}{dt}(-\sin^2 t + \cos^2 t)
+    = -2 (-2 \sin t \cos t - 2 \cos t \sin t)
+    \\
+    &= 8 \sin t \cos t
+    \\
+    &= 8 x_1x_2,
+  @f}
+  which is of course the same result as we had above.
+</li>
+<li>
+  In 3d, the domain is again half of the surface of the unit ball, i.e. a half
+  sphere or dome. We choose $u(\mathbf x)=-2\sin(\pi x_1)\cos(\pi x_2)e^z$ as
+  the solution. We can compute the right hand side of the
+  equation, $f=-\Delta_\Gamma u$, in the same way as the method above (with $\kappa = 2$), yielding an
+  awkward and lengthy expression. You can find the full expression in the
+  source code.
+</li>
+</ul> 
+
+In the program, we will also compute the $H^1$ seminorm error of the
+solution. Since the solution function and its numerical approximation are only
+defined on the manifold, the obvious definition of this error functional is
+$| e |_{H^1(\Gamma)} 
+  = | \nabla_\Gamma e |_{L_2(\Gamma)} 
+  = \left( \int_\Gamma | \nabla_\Gamma (u-u_h) |^2 \right)^{1/2}$. This requires us to provide the
+<i>tangential</i> gradient $\nabla_\Gamma u$ to the function VectorTools::integrate_difference
+(first introduced in step-7), which we
+will do by implementing the function <code>Solution::gradient</code> in the
+program below.
+
+
+<h3>Implementation</h3>
+
+If you've read through step-4 and understand the discussion above of how
+solution and right hand side correspond to each other, you will be immediately
+familiar with this program as well. In fact, there are only two things that
+are of significance:
+
+- The way we generate the mesh that triangulates the computational domain.
+
+- The way we use Mapping objects to describe that the domain on which we solve
+  the partial differential equation is not planar but in fact curved.
+
+Mapping objects were already introduced in step-10 and step-11 and as
+explained there, there is usually not a whole lot you have to know about how
+they work as long as you have a working description of how the boundary
+looks. In essence, we will simply declare an appropriate object of type
+MappingQ that will automatically obtain the boundary description from the
+Triangulation. The mapping object will then be passed to the appropriate
+functions, and we will get a boundary description for half circles or half
+spheres that is predefined in the library.
+
+The rest of the program follows closely step-4 and, as far as computing the
+error, step-7. Some aspects of this program, in particular the use of two
+template arguments on the classes Triangulation, DoFHandler, and similar, are
+already described in detail in step-34; you may wish to read through this
+tutorial program as well.

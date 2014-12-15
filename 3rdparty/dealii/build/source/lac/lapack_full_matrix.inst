@@ -1,0 +1,36 @@
+template class LAPACKFullMatrix< double >;
+ template class PreconditionLU< double >;
+ 
+template class LAPACKFullMatrix< float >;
+ template class PreconditionLU< float >;
+ 
+template class LAPACKFullMatrix< long double >;
+ template class PreconditionLU< long double >;
+ 
+template LAPACKFullMatrix< double > &
+ LAPACKFullMatrix< double >::operator = (const FullMatrix< double > &M);
+ 
+template LAPACKFullMatrix< double > &
+ LAPACKFullMatrix< double >::operator = (const FullMatrix< float > &M);
+ 
+template LAPACKFullMatrix< double > &
+ LAPACKFullMatrix< double >::operator = (const FullMatrix< long double > &M);
+ 
+template LAPACKFullMatrix< float > &
+ LAPACKFullMatrix< float >::operator = (const FullMatrix< double > &M);
+ 
+template LAPACKFullMatrix< float > &
+ LAPACKFullMatrix< float >::operator = (const FullMatrix< float > &M);
+ 
+template LAPACKFullMatrix< float > &
+ LAPACKFullMatrix< float >::operator = (const FullMatrix< long double > &M);
+ 
+template LAPACKFullMatrix< long double > &
+ LAPACKFullMatrix< long double >::operator = (const FullMatrix< double > &M);
+ 
+template LAPACKFullMatrix< long double > &
+ LAPACKFullMatrix< long double >::operator = (const FullMatrix< float > &M);
+ 
+template LAPACKFullMatrix< long double > &
+ LAPACKFullMatrix< long double >::operator = (const FullMatrix< long double > &M);
+ 

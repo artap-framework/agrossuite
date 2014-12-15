@@ -1,0 +1,72 @@
+<br>
+
+<i>This program was contributed by Markus B&uuml;rg.</i>
+<br>
+
+<a name="Intro"></a>
+<h1>Introduction</h1>
+
+In this example we consider how to use periodic boundary conditions in
+deal.II. Periodic boundary conditions are a typical approach when one wants to
+solve some equation on a representative piece of a larger domain that repeats
+in one or more direction; an example is the simulation of the electronic
+structure of photonic
+crystals, because they have a lattice-like structure and, thus, it often
+suffices to do the actual computation on only one cell of the lattice. To be
+able to proceed this way one has to assume that the computation can be periodically
+extended to the other cells. This requires the solution to be periodic with respect
+to the cells. Hence the solution has to obtain the same nodal values on opposite
+parts of the boundary. In the figure below we show this
+concept in two space-dimensions. There, all dashed faces with the same color should
+have the same boundary values:
+
+<img src="http://www.dealii.org/images/steps/developer/step-45.periodic_cells.png" alt="">
+
+To keep things simple, in this tutorial we will consider an academic,
+simplified problem that allows us to focus on only that part that we are
+interested in here, namely how to set up periodic boundary
+conditions. Specifically, we solve the Poisson problem on a domain, where the
+left and right parts of the boundary are identified. Let $\Omega=(0,1)^2$ and
+consider the problem
+@f{align*}
+   -\Delta u &=
+   \cos(2\pi x)e^{-2x}\cos(2\pi y)e^{-2y}  \qquad &&\text{in }\Omega
+  \\ 
+   u(x,0) &= 0 \qquad &&\text{for }x\in(0,1)\qquad &&\text{(bottom boundary)}
+  \\
+   u(x,1) &= 0 \qquad &&\text{for }x\in(0,1)\qquad &&\text{(top boundary)}
+  \\
+   u(0,y) &= u(1,y) \qquad &&\text{for }y\in(0,1) 
+   \qquad && \text{(left and right boundaries)}
+@f}
+Note that the source term is not symmetric and so the solution would not be
+periodic unless this is explicitly enforced.
+
+The way one has to see these periodic boundary conditions $u(x,0) = u(x,1)$ is
+as follows: Assume for a moment (as we do in this program) that we have a
+uniformly refined mesh. Then, after discretization there are a number of nodes
+(degrees of freedom) with indices $i \in {\cal I}_l$ on the left boundary of
+the domain, and  a second set of nodes at the right boundary $j \in {\cal
+I}_r$. Since we have assumed that the mesh is uniformly refined, there is
+exactly one node $j \in {\cal I}_r$ for each $i \in {\cal I}_l$ so that
+${\mathrm x}_j = {\mathrm x}_i + (1,0)^T$, i.e. the two of them match with
+respect to the periodicity. We will then write that $j=\text{periodic}(i)$
+(and, if you want, $i=\text{periodic}(j)$).
+If now $U_k, k=0,\ldots,N-1,$ are the unknowns of our discretized problem, then
+the periodic boundary condition boils down to the following set of
+constraints:
+@f{align*}
+  U_{\text{periodic}(i)} = U_i, \qquad \forall i \in {\cal I}_l. 
+@f}
+Now, this is exactly the sort of constraint that the ConstraintMatrix class,
+first introduced in step-6,
+handles and can enforce in a linear system. Consequently, the main point of this
+program is how we fill the ConstraintMatrix object that stores these
+constraints, and how this is applied to the resulting linear system.
+
+The code for solving this problem is simple and based on step-3 since we want
+to focus on the implementation of the periodic boundary conditions. The code
+could be much more sophisticated, of course. For example, we could want to
+enforce periodic boundary conditions for adaptively refined meshes in which
+there is no longer a one-to-one relationship between degrees of freedom. We
+will discuss this at the end of the results section of this program.

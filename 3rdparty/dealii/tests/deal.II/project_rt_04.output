@@ -1,0 +1,16 @@
+
+DEAL::n_dofs=9
+DEAL::FE_RaviartThomas<2>(0), P_0, rel. error=0
+DEAL::FE_RaviartThomas<2>(0), P_1, rel. error=0.0581
+DEAL::FE_RaviartThomas<2>(0), P_2, rel. error=0.108
+DEAL::n_dofs=30
+DEAL::FE_RaviartThomas<2>(1), P_0, rel. error=0
+DEAL::FE_RaviartThomas<2>(1), P_1, rel. error=0
+DEAL::FE_RaviartThomas<2>(1), P_2, rel. error=0.00846
+DEAL::FE_RaviartThomas<2>(1), P_3, rel. error=0.0199
+DEAL::n_dofs=63
+DEAL::FE_RaviartThomas<2>(2), P_0, rel. error=0
+DEAL::FE_RaviartThomas<2>(2), P_1, rel. error=0
+DEAL::FE_RaviartThomas<2>(2), P_2, rel. error=0
+DEAL::FE_RaviartThomas<2>(2), P_3, rel. error=0.00163
+DEAL::FE_RaviartThomas<2>(2), P_4, rel. error=0.00469

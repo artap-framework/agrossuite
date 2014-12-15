@@ -1,0 +1,12 @@
+template class VectorView< double >;
+ 
+template class VectorView< float >;
+ 
+template class VectorView< long double >;
+ 
+template class VectorView< std::complex<double> >;
+ 
+template class VectorView< std::complex<float> >;
+ 
+template class VectorView< std::complex<long double> >;
+ 

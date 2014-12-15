@@ -1,0 +1,416 @@
+<a name="Intro"></a>
+<h1>Introduction</h1>
+
+This is the first of a number of tutorial programs that will finally
+cover "real" time-dependent problems, not the slightly odd form of time
+dependence found in step-18 or the DAE model of step-21. In particular, this program introduces
+the wave equation in a bounded domain. Later, step-24
+will consider an example of absorbing boundary conditions, and @ref
+step_25 "step-25" a kind of nonlinear wave equation producing
+solutions called solitons.
+
+The wave equation in its prototypical form reads as follows: find
+$u(x,t), x\in\Omega, t\in[0,T]$ that satisfies
+@f{eqnarray*}
+	\frac{\partial^2 u}{\partial t^2}
+	-
+	\Delta u &=& f
+	\qquad
+	\textrm{in}\ \Omega\times [0,T],
+\\
+	u(x,t) &=& g
+	\qquad
+	\textrm{on}\ \partial\Omega\times [0,T],
+\\
+	u(x,0) &=& u_0(x)
+	\qquad
+	\textrm{in}\ \Omega,
+\\
+	\frac{\partial u(x,0)}{\partial t} &=& u_1(x)
+	\qquad
+	\textrm{in}\ \Omega.
+@f}
+Note that since this is an equation with second-order time
+derivatives, we need to pose two initial conditions, one for the value
+and one for the time derivative of the solution.
+
+Physically, the equation describes the motion of an elastic medium. In
+2-d, one can think of how a membrane moves if subjected to a
+force. The Dirichlet boundary conditions above indicate that the
+membrane is clamped at the boundary at a height $g(x,t)$ (this height
+might be moving as well &mdash; think of people holding a blanket and
+shaking it up and down). The first initial condition equals the
+initial deflection of the membrane, whereas the second one gives its
+velocity. For example, one could think of pushing the membrane down
+with a finger and then letting it go at $t=0$ (nonzero deflection but
+zero initial velocity), or hitting it with a hammer at $t=0$ (zero
+deflection but nonzero velocity). Both cases would induce motion in
+the membrane.
+
+
+<h3>Time discretization</h3>
+
+<h4>Method of lines or Rothe's method?</h4>
+There is a long-standing debate in the numerical analysis community
+over whether a discretization of time dependent equations should
+involve first discretizing the time variable leading to a stationary
+PDE at each time step that is then solved using standard finite
+element techniques (this is called the Rothe method), or whether
+one should first discretize the spatial variables, leading to a large
+system of ordinary differential equations that can then be handled by
+one of the usual ODE solvers (this is called the method of lines).
+
+Both of these methods have advantages and disadvantages.
+Traditionally, people have preferred the method of lines, since it
+allows to use the very well developed machinery of high-order ODE
+solvers available for the rather stiff ODEs resulting from this
+approach, including step length control and estimation of the temporal
+error.
+
+On the other hand, Rothe's method becomes awkward when using
+higher-order time stepping method, since one then has to write down a
+PDE that couples the solution of the present time step not only with
+that at the previous time step, but possibly also even earlier
+solutions, leading to a significant number of terms.
+
+For these reasons, the method of lines was the method of choice for a
+long time. However, it has one big drawback: if we discretize the
+spatial variable first, leading to a large ODE system, we have to
+choose a mesh once and for all. If we are willing to do this, then
+this is a legitimate and probably superior approach.
+
+If, on the other hand, we are looking at the wave equation and many
+other time dependent problems, we find that the character of a
+solution changes as time progresses. For example, for the wave
+equation, we may have a single wave travelling through the domain,
+where the solution is smooth or even constant in front of and behind
+the wave &mdash; adaptivity would be really useful for such cases, but the
+key is that the area where we need to refine the mesh changes from
+time step to time step!
+
+If we intend to go that way, i.e. choose a different mesh for each
+time step (or set of time steps), then the method of lines is not
+appropriate any more: instead of getting one ODE system with a number
+of variables equal to the number of unknowns in the finite element
+mesh, our number of unknowns now changes all the time, a fact that
+standard ODE solvers are certainly not prepared to deal with at
+all. On the other hand, for the Rothe method, we just get a PDE for
+each time step that we may choose to discretize independently of the
+mesh used for the previous time step; this approach is not without
+perils and difficulties, but at least is a sensible and well-defined
+procedure.
+
+For all these reasons, for the present program, we choose to use the
+Rothe method for discretization, i.e. we first discretize in time and
+then in space. We will not actually use adaptive meshes at all, since
+this involves a large amount of additional code, but we will comment
+on this some more in the <a href="#Results">results section below</a>.
+
+
+<h4>Rothe's method!</h4>
+
+Given these considerations, here is how we will proceed: let us first
+define a simple time stepping method for this second order problem,
+and then in a second step do the spatial discretization, i.e. we will
+follow Rothe's approach.
+
+For the first step, let us take a little detour first: in order to
+discretize a second time derivative, we can either discretize it
+directly, or we can introduce an additional variable and transform the
+system into a first order system. In many cases, this turns out to be
+equivalent, but dealing with first order systems is often simpler. To
+this end, let us introduce
+@f[
+	v = \frac{\partial u}{\partial t},
+@f]
+and call this variable the <i>velocity</i> for obvious reasons. We can
+then reformulate the original wave equation as follows:
+@f{eqnarray*}
+	\frac{\partial u}{\partial t}
+	-
+	v
+	&=& 0
+	\qquad
+	\textrm{in}\ \Omega\times [0,T],
+\\
+	\frac{\partial v}{\partial t}
+	-
+	\Delta u &=& f
+	\qquad
+	\textrm{in}\ \Omega\times [0,T],
+\\
+	u(x,t) &=& g
+	\qquad
+	\textrm{on}\ \partial\Omega\times [0,T],
+\\
+	u(x,0) &=& u_0(x)
+	\qquad
+	\textrm{in}\ \Omega,
+\\
+	v(x,0) &=& u_1(x)
+	\qquad
+	\textrm{in}\ \Omega.
+@f}
+The advantage of this formulation is that it now only contains first
+time derivatives for both variables, for which it is simple to write
+down time stepping schemes. Note that we do not have boundary
+conditions for $v$ at first. However, we could enforce $v=\frac{\partial
+g}{\partial t}$ on the boundary. It turns out in numerical examples that this
+is actually necessary: without doing so the solution doesn't look particularly
+wrong, but the Crank-Nicolson scheme does not conserve energy if one doesn't
+enforce these boundary conditions.
+
+With this formulation, let us introduce the following time
+discretization where a superscript $n$ indicates the number of a time
+step and $k=t_n-t_{n-1}$ is the length of the present time step:
+\f{eqnarray*}
+  \frac{u^n - u^{n-1}}{k}
+  - \left[\theta v^n + (1-\theta) v^{n-1}\right] &=& 0,
+  \\
+  \frac{v^n - v^{n-1}}{k}
+  - \Delta\left[\theta u^n + (1-\theta) u^{n-1}\right]
+  &=& \theta f^n + (1-\theta) f^{n-1}.
+\f}
+Note how we introduced a parameter $\theta$ here. If we chose
+$\theta=0$, for example, the first equation would reduce to
+$\frac{u^n - u^{n-1}}{k}  - v^{n-1} = 0$, which is well-known as the
+forward or explicit Euler method. On the other hand, if we set
+$\theta=1$, then we would get
+$\frac{u^n - u^{n-1}}{k}  - v^n = 0$, which corresponds to the
+backward or implicit Euler method. Both these methods are first order
+accurate methods. They are simple to implement, but they are not
+really very accurate.
+
+The third case would be to choose $\theta=\frac 12$. The first of the
+equations above would then read $\frac{u^n - u^{n-1}}{k}
+- \frac 12 \left[v^n + v^{n-1}\right] = 0$. This method is known as
+the Crank-Nicolson method and has the advantage that it is second
+order accurate. In addition, it has the nice property that it
+preserves the energy in the solution (physically, the energy is the
+sum of the kinetic energy of the particles in the membrane plus the
+potential energy present due to the fact that it is locally stretched;
+this quantity is a conserved one in the continuous equation, but most
+time stepping schemes do not conserve it after time
+discretization). Since $v^n$ also appears in the equation for $u^n$,
+the Crank-Nicolson scheme is also implicit.
+
+In the program, we will leave $\theta$ as a parameter, so that it will
+be easy to play with it. The results section will show some numerical
+evidence comparing the different schemes.
+
+The equations above (called the <i>semidiscretized</i> equations
+because we have only discretized the time, but not space), can be
+simplified a bit by eliminating $v^n$ from the first equation and
+rearranging terms. We then get
+\f{eqnarray*}
+  \left[ 1-k^2\theta^2\Delta \right] u^n &=&
+  	 \left[ 1+k^2\theta(1-\theta)\Delta\right] u^{n-1} + k v^{n-1}
+   	 + k^2\theta\left[\theta f^n + (1-\theta) f^{n-1}\right],\\
+   v^n &=& v^{n-1} + k\Delta\left[ \theta u^n + (1-\theta) u^{n-1}\right]
+   + k\left[\theta f^n + (1-\theta) f^{n-1}\right].
+\f}
+In this form, we see that if we are given the solution
+$u^{n-1},v^{n-1}$ of the previous timestep, that we can then solve for
+the variables $u^n,v^n$ separately, i.e. one at a time. This is
+convenient. In addition, we recognize that the operator in the first
+equation is positive definite, and the second equation looks
+particularly simple.
+
+
+<h3>Space discretization</h3>
+
+We have now derived equations that relate the approximate
+(semi-discrete) solution $u^n(x)$ and its time derivative $v^n(x)$ at
+time $t_n$ with the solutions $u^{n-1}(x),v^{n-1}(x)$ of the previous
+time step at $t_{n-1}$. The next step is to also discretize the
+spatial variable using the usual finite element methodology. To this
+end, we multiply each equation with a test function, integrate over
+the entire domain, and integrate by parts where necessary. This leads
+to
+\f{eqnarray*}
+  (u^n,\varphi) + k^2\theta^2(\nabla u^n,\nabla \varphi) &=&
+  (u^{n-1},\varphi) - k^2\theta(1-\theta)(\nabla u^{n-1},\nabla \varphi)
+  +
+  k(v^{n-1},\varphi)
+  + k^2\theta
+  \left[
+  \theta (f^n,\varphi) + (1-\theta) (f^{n-1},\varphi)
+  \right],
+  \\
+  (v^n,\varphi)
+   &=&
+   (v^{n-1},\varphi)
+    -
+    k\left[ \theta (\nabla u^n,\nabla\varphi) +
+    (1-\theta) (\nabla u^{n-1},\nabla \varphi)\right]
+  + k
+  \left[
+  \theta (f^n,\varphi) + (1-\theta) (f^{n-1},\varphi)
+  \right].
+\f}
+
+It is then customary to approximate $u^n(x) \approx u^n_h(x) = \sum_i
+U_i^n\phi_i^n(x)$, where $\phi_i^n(x)$ are the shape functions used
+for the discretization of the $n$-th time step and $U_i^n$ are the
+unknown nodal values of the solution. Similarly, $v^n(x) \approx
+v^n_h(x) = \sum_i V_i^n\phi_i^n(x)$. Finally, we have the solutions of
+the previous time step, $u^{n-1}(x) \approx u^{n-1}_h(x) = \sum_i
+U_i^{n-1}\phi_i^{n-1}(x)$ and $v^{n-1}(x) \approx v^{n-1}_h(x) = \sum_i
+V_i^{n-1}\phi_i^{n-1}(x)$. Note that since the solution of the previous
+time step has already been computed by the time we get to time step
+$n$, $U^{n-1},V^{n-1}$ are known. Furthermore, note that the solutions
+of the previous step may have been computed on a different mesh, so
+we have to use shape functions $\phi^{n-1}_i(x)$.
+
+If we plug these expansions into above equations and test with the
+test functions from the present mesh, we get the following linear
+system:
+\f{eqnarray*}
+  (M^n + k^2\theta^2 A^n)U^n &=&
+  M^{n,n-1}U^{n-1} - k^2\theta(1-\theta) A^{n,n-1}U^{n-1}
+  +
+  kM^{n,n-1}V^{n-1}
+  + k^2\theta
+  \left[
+  \theta F^n + (1-\theta) F^{n-1}
+  \right],
+  \\
+  M^nV^n
+   &=&
+   M^{n,n-1}V^{n-1}
+    -
+    k\left[ \theta A^n U^n +
+    (1-\theta) A^{n,n-1} U^{n-1}\right]
+   + k
+  \left[
+  \theta F^n + (1-\theta) F^{n-1}
+  \right],
+\f}
+where
+@f{eqnarray*}
+	M^n_{ij} &=& (\phi_i^n, \phi_j^n),
+	\\
+	A^n_{ij} &=& (\nabla\phi_i^n, \nabla\phi_j^n),
+	\\
+	M^{n,n-1}_{ij} &=& (\phi_i^n, \phi_j^{n-1}),
+	\\
+	A^{n,n-1}_{ij} &=& (\nabla\phi_i^n, \nabla\phi_j^{n-1}),
+	\\
+	F^n_{i} &=& (f^n,\phi_i^n),
+	\\
+	F^{n-1}_{i} &=& (f^{n-1},\phi_i^n).
+@f}
+
+If we solve these two equations, we can move the solution one step
+forward and go on to the next time step.
+
+It is worth noting that if we choose the same mesh on each time step
+(as we will in fact do in the program below), then we have the same
+shape functions on time step $n$ and $n-1$,
+i.e. $\phi^n_i=\phi_i^{n-1}=\phi_i$. Consequently, we get
+$M^n=M^{n,n-1}=M$ and $A^n=A^{n,n-1}=A$. On the other hand, if we had
+used different shape functions, then we would have to compute
+integrals that contain shape functions defined on two meshes. This is a
+somewhat messy process that we omit here, but that is treated in some
+detail in step-28.
+
+Under these conditions (i.e. a mesh that doesn't change), one can optimize the
+solution procedure a bit by basically eliminating the solution of the second
+linear system. We will discuss this in the introduction of the @ref step_25
+"step-25" program.
+
+<h3>Energy conservation</h3>
+
+One way to compare the quality of a time stepping scheme is to see whether the
+numerical approximation preserves conservation properties of the continuous
+equation. For the wave equation, the natural quantity to look at is the
+energy. By multiplying the wave equation by $u_t$, integrating over $\Omega$,
+and integrating by parts where necessary, we find that
+@f[
+	\frac{d}{d t}
+	\left[\frac 12 \int_\Omega \left(\frac{\partial u}{\partial
+	t}\right)^2 + (\nabla u)^2 \; dx\right]
+	=
+	\int_\Omega f \frac{\partial u}{\partial t} \; dx
+	+
+	\int_{\partial\Omega} n\cdot\nabla u
+	\frac{\partial g}{\partial t} \; dx.
+@f]
+By consequence, in absence of body forces and constant boundary values, we get
+that
+@f[
+	E(t) = \frac 12 \int_\Omega \left(\frac{\partial u}{\partial
+	t}\right)^2 + (\nabla u)^2 \; dx
+@f]
+is a conserved quantity, i.e. one that doesn't change with time. We
+will compute this quantity after each time
+step. It is straightforward to see that if we replace $u$ by its finite
+element approximation, and $\frac{\partial u}{\partial t}$ by the finite
+element approximation of the velocity $v$, then
+@f[
+	E(t_n) = \frac 12 \left<V^n, M^n V^n\right>
+	+
+	\frac 12 \left<U^n, A^n U^n\right>.
+@f]
+As we will see in the results section, the Crank-Nicolson scheme does indeed
+conserve the energy, whereas neither the forward nor the backward Euler scheme
+do.
+
+
+<h3>Who are Courant, Friedrichs, and Lewy?</h3>
+
+One of the reasons why the wave equation is nasty to solve numerically is that
+explicit time discretizations are only stable if the time step is small
+enough. In particular, it is coupled to the spatial mesh width $h$. For the
+lowest order discretization we use here, the relationship reads
+@f[
+	k\le \frac hc
+@f]
+where $c$ is the wave speed, which in our formulation of the wave equation has
+been normalized to one. Consequently, unless we use the implicit schemes with
+$\theta>0$, our solutions will not be numerically stable if we violate this
+restriction. Implicit schemes do not have this restriction for stability, but
+they become inaccurate if the time step is too large.
+
+This condition was first recognized by Courant, Friedrichs, and Lewy &mdash;
+in 1928, long before computers become available for numerical
+computations! (This result appeared in the German language article
+R. Courant, K. Friedrichs and H. Lewy: <i>&Uuml;ber die partiellen
+Differenzengleichungen der mathematischen Physik</i>, Mathematische
+Annalen, vol. 100, no. 1, pages 32-74, 1928.)
+This condition on the time step is most frequently just referred
+to as the <i>CFL</i> condition. Intuitively, the CFL condition says
+that the time step must not be larger than the time it takes a wave to
+cross a single cell.
+
+In the program, we will refine the square
+$[-1,1]^2$ seven times uniformly, giving a mesh size of $h=\frac 1{64}$, which
+is what we set the time step to. The fact that we set the time step and mesh
+size individually in two different places is error prone: it is too easy to
+refine the mesh once more but forget to also adjust the time step. @ref
+step_24 "step-24" shows a better way how to keep these things in sync.
+
+
+<h3>The test case</h3>
+
+Although the program has all the hooks to deal with nonzero initial and
+boundary conditions and body forces, we take a simple case where the domain is
+a square $[-1,1]^2$ and
+@f{eqnarray*}
+	f &=& 0,
+	\\
+	u_0 &=& 0,
+	\\
+	u_1 &=& 0,
+	\\
+	g &=& \left\{\begin{matrix}\sin (4\pi t)
+	&\qquad& \text{for }\ t\le \frac 12, x=-1, -\frac 13<y<\frac 13
+	\\
+	 0
+	&&\text{otherwise}
+	\end{matrix}
+	\right.
+@f}
+This corresponds to a membrane initially at rest and clamped all around, where
+someone is waving a part of the clamped boundary once up and down, thereby
+shooting a wave into the domain.

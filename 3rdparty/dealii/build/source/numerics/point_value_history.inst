@@ -1,0 +1,870 @@
+template class PointValueHistory< 1 >;
+
+template class PointValueHistory< 2 >;
+
+template class PointValueHistory< 3 >;
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  Vector<double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  Vector<double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  Vector<double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  Vector<float>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  Vector<float>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  Vector<float>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  Vector<long double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  Vector<long double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  Vector<long double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<float>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<float>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<float>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<long double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<long double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<long double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<float>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<float>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<float>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<long double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<long double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<long double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<float>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<float>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<float>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<long double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<long double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<long double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  Vector<double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  Vector<double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  Vector<double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  Vector<float>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  Vector<float>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  Vector<float>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  Vector<long double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  Vector<long double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  Vector<long double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  BlockVector<double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  BlockVector<double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  BlockVector<double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  BlockVector<float>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  BlockVector<float>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  BlockVector<float>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  BlockVector<long double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  BlockVector<long double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  BlockVector<long double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::Vector<double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::Vector<double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::Vector<double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::Vector<float>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::Vector<float>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::Vector<float>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::Vector<long double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::Vector<long double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::Vector<long double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<float>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<float>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<float>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<long double>  &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<long double>  &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field_at_requested_location 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<long double>  &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  Vector<double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  Vector<double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  Vector<double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  Vector<float>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  Vector<float>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  Vector<float>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  Vector<long double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  Vector<long double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  Vector<long double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  BlockVector<double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  BlockVector<double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  BlockVector<double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  BlockVector<float>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  BlockVector<float>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  BlockVector<float>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  BlockVector<long double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  BlockVector<long double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  BlockVector<long double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::Vector<double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::Vector<double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::Vector<double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::Vector<float>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::Vector<float>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::Vector<float>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::Vector<long double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::Vector<long double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::Vector<long double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::BlockVector<double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::BlockVector<double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::BlockVector<double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::BlockVector<float>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::BlockVector<float>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::BlockVector<float>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::BlockVector<long double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::BlockVector<long double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::vector <std::string> &,
+ const  parallel::distributed::BlockVector<long double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  Vector<double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  Vector<double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  Vector<double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  Vector<float>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  Vector<float>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  Vector<float>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  Vector<long double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  Vector<long double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  Vector<long double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<float>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<float>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<float>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<long double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<long double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  BlockVector<long double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<float>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<float>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<float>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<long double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<long double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::Vector<long double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<float>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<float>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<float>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+
+template
+ void PointValueHistory< 1 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<long double>  &,
+ const DataPostprocessor< 1 > &,
+ const Quadrature< 1 > &);
+
+template
+ void PointValueHistory< 2 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<long double>  &,
+ const DataPostprocessor< 2 > &,
+ const Quadrature< 2 > &);
+
+template
+ void PointValueHistory< 3 >::evaluate_field 
+ (const std::string &,
+ const  parallel::distributed::BlockVector<long double>  &,
+ const DataPostprocessor< 3 > &,
+ const Quadrature< 3 > &);
+

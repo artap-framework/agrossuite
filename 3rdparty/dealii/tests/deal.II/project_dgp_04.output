@@ -1,0 +1,19 @@
+
+DEAL::n_dofs=3
+DEAL::FE_DGP<2>(0), P_0, rel. error=0
+DEAL::FE_DGP<2>(0), P_1, rel. error=0.0833
+DEAL::FE_DGP<2>(0), P_2, rel. error=0.136
+DEAL::n_dofs=9
+DEAL::FE_DGP<2>(1), P_0, rel. error=0
+DEAL::FE_DGP<2>(1), P_1, rel. error=0.0118
+DEAL::FE_DGP<2>(1), P_2, rel. error=0.0191
+DEAL::n_dofs=18
+DEAL::FE_DGP<2>(2), P_0, rel. error=0
+DEAL::FE_DGP<2>(2), P_1, rel. error=0
+DEAL::FE_DGP<2>(2), P_2, rel. error=0.00428
+DEAL::FE_DGP<2>(2), P_3, rel. error=0.00841
+DEAL::n_dofs=30
+DEAL::FE_DGP<2>(3), P_0, rel. error=0
+DEAL::FE_DGP<2>(3), P_1, rel. error=0
+DEAL::FE_DGP<2>(3), P_2, rel. error=0.000364
+DEAL::FE_DGP<2>(3), P_3, rel. error=0.00115

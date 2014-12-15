@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Porting deal.II</title>
+    <link href="../screen.css" rel="StyleSheet" media="screen">
+    <meta name="copyright" content="Copyright (C) 2000, 2001, 2002, 2005, 2010, 2012, 2013 by the deal.II Authors">
+    <meta name="date" content="$Date: 2013-12-16 15:41:13 -0500 (Mon, 16 Dec 2013) $">
+    <meta name="svn_id" content="$Id: porting.html 32033 2013-12-16 20:41:13Z heister $">
+    <meta name="keywords" content="deal.II porting">
+  </head>
+
+  <body>
+
+
+    <h1>Porting <acronym>deal.II</acronym> to new systems</h1>
+
+    <p>
+      <acronym>deal.II</acronym> uses very few
+      <a href="http://www.opengroup.org/austin/">POSIX</a> specific system
+      features and is otherwise fairly ISO (1998) C++ Standard compliant.
+
+      Consequently, there is a good chance that <acronym>deal.II</acronym>
+      will run on a reasonably well behaved system besides the ones listed
+      in the <a href="../readme.html" target="body">ReadMe</a>. Nevertheless,
+      there are cases where some adjustments are necessary.
+    </p>
+
+    <h2>Unknown compiler</h2>
+
+    <p>
+      Currently, the <acronym>deal.II</acronym> CMake Buildsystem
+      recognizes
+      <a href="http://gcc.gnu.org/">gcc</a>,
+      <a href="http://clang.llvm.org/">clang</a>, as well as
+      <a href="http://software.intel.com/en-us/intel-compilers">icc</a>, and
+      sets up reasonable default compiler flags.
+      <ul>
+        <li>
+          To start porting for an unkown compiler, specify
+          <code>-DDEAL_II_SETUP_DEFAULT_COMPILER_FLAGS=OFF</code> and set all
+          necessary compiler flags by hand via
+<pre>
+CMAKE_CXX_FLAGS           - used during all builds
+DEAL_II_CXX_FLAGS_DEBUG   - additional flags for the debug library
+DEAL_II_CXX_FLAGS_RELEASE - additional flags for the release library
+</pre>
+          After that try to compile the library with minimal external
+          dependencies (<code>-DDEAL_II_ALLOW_AUTODETECTION=OFF</code>, for
+          further information see the <a href="../users/cmake.html">deal.II CMake
+            documentation</a>).
+        <li>
+          For adding permanent support for the unknown compiler to the
+          build system, have a look at
+<pre>
+cmake/setup_compiler_flags.cmake
+cmake/setup_compiler_flags_gnu.cmake
+cmake/setup_compiler_flags_icc.cmake
+</pre>
+          Patches are highly welcome! See <a href="../mail.html">here</a>
+          for information on how to get in contact with us.
+        <li>
+          You might want to have a look at
+<pre>
+cmake/checks/check_01_for_compiler_features.cmake
+cmake/checks/check_01_for_cxx_features.cmake
+cmake/checks/check_03_for_compiler_bugs.cmake
+include/deal.II/base/config.h.in
+</pre>
+          to see how compiler specific checks are done.
+      </ul>
+    </p>
+
+    <h2>Porting to a new platform</h2>
+
+    <p>
+      <acronym>deal.II</acronym> should support almost all reasonably
+      <a href="http://www.opengroup.org/austin/">POSIX</a> compliant
+      platforms out of the box. Nevertheless, the following bits of
+      information might help:
+      <ul>
+        <li>
+          The buildsystem of <acronym>deal.II</acronym> uses <a
+          href="http://www.cmake.org/" target="_top">CMake</a>.  So,
+          in order to port <acronym>deal.II</acronym> to a new platform,
+          it is obviously necessary that <a href="http://www.cmake.org/"
+          target="_top">CMake</a> supports the platform in question
+          with at least one generator for a native build tool, see <a
+          href="http://www.cmake.org/cmake/help/documentation.html">here</a>.
+        <li>
+          <acronym>deal.II</acronym> is mainly developed with <a
+          href="http://gcc.gnu.org/">gcc</a> on GNU/Linux, so it is
+          best to begin porting to a new platform with the help of <a
+          href="http://gcc.gnu.org/">gcc</a>.
+          After that a platform specific compiler might be tried.
+        <li>
+          Almost all <a href="http://www.opengroup.org/austin/">POSIX</a>
+          specific code is well guarded with fall-back code in case the
+          specific POSIX function is not available. There is (currently)
+          one exception, though: Certain routines in
+          <code>source/base/timer.cc</code> have implementations for POSIX
+          and Windows and throw a compile time error on other platforms.
+        <li>
+          Have a look at
+<pre>
+cmake/checks/check_for_compiler_bugs.cmake
+cmake/checks/check_for_compiler_features.cmake
+cmake/checks/check_for_cxx_features.cmake
+cmake/checks/check_for_system_features.cmake
+include/deal.II/base/config.h.in
+</pre>
+          to see how platform and compiler specific checks are done.
+	<li>
+          Of course, we would be happy to hear about the changes you made
+          for your system, so that we can include them into the next version
+          of the library!
+      </ul>
+    </p>
+
+    <h2>Cross compiling</h2>
+
+    <p>
+      It is possible to use <a href="http://www.cmake.org/"
+      target="_top">CMake</a> to cross compile
+      <acronym>deal.II</acronym> for a foreign platform.
+      Further information on that topic can be found at the <a
+      href="http://www.cmake.org/Wiki/CMake_Cross_Compiling">CMake
+      wiki</a>.
+    </p>
+
+    <p>
+      You have to set up a native deal.II build directory first and run
+      <code>make expand_instantiations</code> in it. The executable is
+      needed for the build system (and obviously the cross compiled version
+      cannot be used). Locate the <code>expand_instantions</code>
+      executable and export its location in the <code>PATH</code>
+      environment variable.
+    </p>
+
+    <p>
+      Assuming you have a working cross compilation toolchain, the next
+      step is to set up a
+      <a href="Toolchain.sample"><i>toolchain file</i></a>
+      (or for for
+      <a href="Toolchain-x86_64-w64-mingw32.sample">Windows64 using MinGW</a>).
+      After that invoke <code>cmake</code> with something like:
+<pre>
+$ cmake -DCMAKE_TOOLCHAIN_FILE=&lt;...&gt;/Toolchain.sample \
+        -DDEAL_II_FORCE_BUNDLED_BOOST=ON \
+        -DDEAL_II_ALLOW_AUTODETECTION=OFF \
+        ../deal.II
+</pre>
+      where <code>CMAKE_TOOLCHAIN_FILE</code> points to the toolchain file.
+      The remaining configuration can be adjusted at will, see <a
+      href="cmake.html">the documentation</a>.
+    </p>
+
+    <hr />
+    <address>
+      <a href="../authors.html" target="body">The deal.II Authors</a>
+      $Date: 2013-12-16 15:41:13 -0500 (Mon, 16 Dec 2013) $
+    </address>
+    <div class="right">
+      <a href="http://validator.w3.org/check?uri=referer" target="_top">
+        <img style="border:0" src="http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01!"></a>
+      <a href="http://jigsaw.w3.org/css-validator/check/referer" target="_top">
+        <img style="border:0;width:88px;height:31px" src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!"></a>
+    </div>
+
+  </body>
+</html>

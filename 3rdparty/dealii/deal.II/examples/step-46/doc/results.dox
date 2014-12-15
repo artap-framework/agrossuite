@@ -1,0 +1,322 @@
+<a name="Results"></a>
+<h1>Results</h1>
+
+<h3>2d results</h3>
+
+
+When running the program, you should get output like the following:
+@code
+Refinement cycle 0
+   Number of active cells: 64
+   Number of degrees of freedom: 531
+   Assembling...
+   Solving...
+   Writing output...
+
+Refinement cycle 1
+   Number of active cells: 136
+   Number of degrees of freedom: 1260
+   Assembling...
+   Solving...
+   Writing output...
+
+Refinement cycle 2
+   Number of active cells: 412
+   Number of degrees of freedom: 3667
+   Assembling...
+   Solving...
+   Writing output...
+
+Refinement cycle 3
+   Number of active cells: 1216
+   Number of degrees of freedom: 9999
+   Assembling...
+   Solving...
+   Writing output...
+
+Refinement cycle 4
+   Number of active cells: 2788
+   Number of degrees of freedom: 18537
+   Assembling...
+   Solving...
+   Writing output...
+
+Refinement cycle 5
+   Number of active cells: 6496
+   Number of degrees of freedom: 35985
+   Assembling...
+   Solving...
+   Writing output...
+@endcode
+
+The results are easily visualized:
+
+<TABLE WIDTH="60%" ALIGN="center">
+  <tr valign="top">
+    <td valign="top" align="center">
+      <img src="http://www.dealii.org/images/steps/developer/step-46.velocity-magnitude.png" alt="">
+
+      <p align="center">
+        Magnitude of the fluid velocity.
+      </p>
+    </td>
+
+    <td valign="top" align="center">
+      <img src="http://www.dealii.org/images/steps/developer/step-46.pressure.png" alt="">
+
+      <p align="center">
+        Fluid pressure. The dynamic range has been truncated to cut off the
+        pressure singularities at the top left and right corners of the domain
+        as well as the top corners of the solid that forms re-entrant corners
+        into the fluid domain.
+      </p>
+    </td>
+  </tr>
+  <tr valign="top">
+    <td valign="top" align="center">
+      <img src="http://www.dealii.org/images/steps/developer/step-46.velocity.png" alt="">
+
+      <p align="center">
+        Fluid velocity.
+      </p>
+    </td>
+
+    <td valign="top" align="center">
+      <img src="http://www.dealii.org/images/steps/developer/step-46.displacement.png" alt="">
+
+      <p align="center">
+        Solid displacement.
+      </p>
+    </td>
+  </tr>
+</table>
+
+In all figures, we have applied a mask to only show the original field, not
+the one extended by zero: for example, to plot the pressure, we have selected
+that part of the domain where the magnitude of the velocity is greater than
+$10^{-7}$.
+
+The plots are easily interpreted: as the flow drives down on the left side and
+up on the right side of the upright part of the solid, it produces a shear
+force that pulls the left side down and the right side up. An additional part
+force comes from the pressure, which bears down on the left side of the top
+and pulls up on the right side. Both forces yield a net torque on the solid
+that bends it to the left, as confirmed by the plot of the displacement
+vectors.
+
+
+<h3>3d results</h3>
+
+By changing the dimension of the <code>FluidStructureProblem</code>
+class in <code>main()</code> to 3, we can also run the same problem
+3d. You'd get output along the following lines:
+@code
+Refinement cycle 0
+   Number of active cells: 512
+   Number of degrees of freedom: 11631
+   Assembling...
+   Solving...
+   Writing output...
+
+Refinement cycle 1
+   Number of active cells: 1716
+   Number of degrees of freedom: 48984
+   Assembling...
+   Solving...
+
+Refinement cycle 2
+   Number of active cells: 8534
+   Number of degrees of freedom: 245647
+   Assembling...
+   Solving...
+@endcode
+You'll notice that the big bottleneck is the solver: SparseDirectUmfpack needs
+approximately 8 hours and some 42 GB of memory to solve the last iteration of
+this problem on a 2010 workstation (the second to last iteration took only 6
+minutes). Clearly a better solver is needed here, a topic discussed below.
+
+The results can also be visualized and yield some good pictures:
+
+<TABLE WIDTH="60%" ALIGN="center">
+  <tr valign="top">
+    <td valign="top" align="center">
+      <img src="http://www.dealii.org/images/steps/developer/step-46.3d.velocity.png" alt="">
+
+      <p align="center">
+        Vectors of the fluid velocity and magnitude of the
+        displacement of the solid part.
+      </p>
+    </td>
+
+    <td valign="top" align="center">
+      <img src="http://www.dealii.org/images/steps/developer/step-46.3d.streamlines.png" alt="">
+
+      <p align="center">
+        Streamlines of the velocity, with the mesh superimposed.
+      </p>
+    </td>
+  </tr>
+  <tr valign="top">
+    <td valign="top" align="center" colspan="2">
+      <img src="http://www.dealii.org/images/steps/developer/step-46.3d.displacement.png" alt="">
+
+      <p align="center">
+        Solid displacement.
+      </p>
+    </td>
+  </tr>
+</table>
+
+In addition to the lack of a good solver, the mesh is a bit
+unbalanced: mesh refinement heavily favors the fluid subdomain (in 2d,
+it was the other way around, prompting us to weigh the fluid error
+indicators higher). Clearly, some tweaking of the relative importance
+of error indicators in the two subdomains is important if one wanted
+to go on doing more 3d computations.
+
+
+<a name="extensions"></a>
+<h3>Possibilities for extensions</h3>
+
+<h4>Linear solvers and preconditioners</h4>
+
+An obvious place to improve the program would be to use a more
+sophisticated solver &mdash; in particular one that scales well and
+will also work for realistic 3d problems. This shouldn't actually be
+too hard to achieve here, because of the one-way coupling from fluid
+into solid. To this end, assume we had re-ordered degrees of freedom
+in such a way that we first have all velocity and pressure degrees of
+freedom, and then all displacements (this is easily possible using
+DoFRenumbering::component_wise). Then the system matrix could be split
+into the following block form:
+@f[
+  A_\text{global}
+  =
+  \begin{pmatrix}
+    A_{\text{fluid}} & 0 \\
+    B & A_{\text{solid}}
+  \end{pmatrix}
+@f]
+where $A_{\text{fluid}}$ is the Stokes matrix for velocity and pressure (it
+could be further subdivided into a $2\times 2$ matrix as in step-22, though
+this is immaterial for the current purpose),
+$A_{\text{solid}}$ results from the elasticity equations for the
+displacements, and $B$ is the matrix that comes from the interface
+conditions. Now notice that the matrix
+@f[
+  A_\text{global}^{-1}
+  =
+  \begin{pmatrix}
+    A_{\text{fluid}}^{-1} & 0 \\
+    -A_\text{solid}^{-1} B
+      A_\text{fluid}^{-1} & A_{\text{solid}}^{-1}
+  \end{pmatrix}
+@f]
+is the inverse of $A_\text{global}$. Applying this matrix requires
+only one solve with $A_\text{fluid}$ and $A_\text{solid}$ each since
+@f[
+  \begin{pmatrix}
+    p_x \\ p_y
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    A_{\text{fluid}}^{-1} & 0 \\
+    -A_\text{solid}^{-1} B
+      A_\text{fluid}^{-1} & A_{\text{solid}}^{-1}
+  \end{pmatrix}
+  \begin{pmatrix}
+    x \\ y
+  \end{pmatrix}
+@f]
+can be computed as $p_x = A_{\text{fluid}}^{-1} x$ followed by
+$p_y = A_{\text{solid}}^{-1} (y-Bp_x)$.
+
+One can therefore expect that
+@f[
+  \widetilde{A_\text{global}^{-1}}
+  =
+  \begin{pmatrix}
+    \widetilde{A_{\text{fluid}}^{-1}} & 0 \\
+    -\widetilde{A_\text{solid}^{-1}} B
+      \widetilde{A_\text{fluid}^{-1}} & \widetilde{A_{\text{solid}}^{-1}}
+  \end{pmatrix}
+@f]
+would be a good preconditioner if $\widetilde{A_{\text{fluid}}^{-1}}
+\approx A_{\text{fluid}}^{-1}, \widetilde{A_{\text{solid}}^{-1}}
+\approx A_{\text{solid}}^{-1}$.
+
+That means, we only need good preconditioners for Stokes and the
+elasticity equations separately. These are well known: for
+Stokes, we can use the preconditioner discussed in the results section
+of step-22; for elasticity, a good preconditioner would be a single
+V-cycle of a geometric or algebraic multigrid. There are more open
+questions, however: For an "optimized" solver block-triangular
+preconditioner built from two sub-preconditioners, one point that
+often comes up is that, when choosing parameters for the
+sub-preconditioners, values that work well when solving the two
+problems separately may not be optimal when combined into a
+multiphysics preconditioner.  In particular, when solving just a solid
+or fluid mechanics problem separately, the balancing act between the
+number of iterations to convergence and the cost of applying the
+preconditioner on a per iteration basis may lead one to choose an
+expensive preconditioner for the Stokes problem and a cheap
+preconditioner for the elasticity problem (or vice versa).  When
+combined, however, there is the additional constraint that you want
+the two sub-preconditioners to converge at roughly the same rate, or
+else the cheap one may drive up the global number of iterations while
+the expensive one drives up the cost-per-iteration. For example, while a single AMG
+V-cycle is a good approach for elasticity by itself, when combined
+into a multiphysics problem there may be an incentive to using a full
+W-cycle or multiple cycles to help drive down the total solve time.
+
+
+<h4>Refinement indicators</h4>
+
+As mentioned in the introduction, the refinement indicator we use for this
+program is rather ad hoc. A better one would understand that the jump in the
+gradient of the solution across the interface is not indicative of the error
+but to be expected and ignore the interface when integrating the jump
+terms. Nevertheless, this is not what the KellyErrorEstimator class
+does. Another, bigger question, is whether this kind of estimator is a good
+strategy in the first place: for example, if we want to have maximal accuracy
+in one particular aspect of the displacement (e.g. the displacement at the top
+right corner of the solid), then is it appropriate to scale the error
+indicators for fluid and solid to the same magnitude? Maybe it is necessary to
+solve the fluid problem with more accuracy than the solid because the fluid
+solution directly affects the solids solution? Maybe the other way around?
+
+Consequently, an obvious possibility for improving the program would be to
+implement a better refinement criterion. There is some literature on this
+topic; one of a variety of possible starting points would be the paper by
+Thomas Wick on "Adaptive finite elements for monolithic fluid-structure
+interaction on a prolongated domain: Applied to an heart valve simulation",
+Proceedings of the Computer Methods in Mechanics Conference 2011 (CMM-2011),
+9-12 May 2011, Warszaw, Poland.
+
+
+<h4>Verification</h4>
+
+The results above are purely qualitative as there is no evidence that our
+scheme in fact converges. An obvious thing to do would therefore be to add
+some quantitative measures to check that the scheme at least converges to
+<i>something</i>. For example, we could output for each refinement cycle the
+deflection of the top right corner of the part of the solid that protrudes
+into the fluid subdomain. Or we could compute the net force vector or torque
+the fluid exerts on the solid.
+
+
+<h4>Better models</h4>
+
+In reality, most fluid structure interaction problems are so that the movement
+of the solid does affect the flow of the fluid. For example, the forces of the
+air around an air foil cause it to flex and to change its shape. Likewise, a
+flag flaps in the wind, completely changing its shape.
+
+Such problems where the coupling goes both ways are typically handled in an
+Arbitrary Lagrangian Eulerian (ALE) framework, in which the displacement of
+the solid is extended into the fluid domain in some smooth way, rather than by
+zero as we do here. The extended displacement field is then used to deform the
+mesh on which we compute the fluid flow. Furthermore, the boundary conditions
+for the fluid on the interface are no longer that the velocity is zero;
+rather, in a time dependent program, the fluid velocity must be equal to the
+time derivative of the displacement along the interface.

@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+          "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>The deal.II Online Documentation</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <link href="../screen.css" rel="StyleSheet" type="text/css">
+    <meta name="author" content="the deal.II authors <authors@dealii.org>">
+    <meta name="copyright" content="Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 by the deal.II authors">
+    <meta name="date" content="2006/02/07 22:49:01">
+    <meta name="keywords" content="deal.II">
+    <meta name="svn_id" content="$Id: index.html 31827 2013-11-28 23:35:00Z maier $">
+  </head>
+<body>
+
+<h1>Reports</h1>
+
+<p>
+  There are a number of papers that describe the overall design or
+  individual aspects of <acronym>deal.II</acronym>. Please refer to the
+  papers listed at the top of the <a href="../publications/index.html"
+				     target="body">publications page</a> for full references. In addition,
+  there are the following reports:
+  <ul>
+    <li>
+      A brief report about the classes involved in the
+      <a href="http://www.dealii.org/reports/class-hierarchies/index.html"
+         target="body">iterators and accessors</a>
+      used to access cells in the triangulations and the data
+      thereon, such as their geometry, the number of the
+      degrees of freedom, data values, etc. You may want to
+      read this object or parts of it if you want to know what
+      information is available from iterators (by Wolfgang
+      Bangerth).
+    </li>
+
+    <li>
+      A brief report on <a href="http://www.dealii.org/reports/mapping_q/index.html"
+			   target="body">mapping</a> functions of higher polynomial
+      degrees (by Ralf Hartmann). These allow the realisation
+      of higher order boundary approximations. This report
+      gives the theoretical background of the
+      <code>MappingQ</code> class.
+    </li>
+
+    <li>
+      A report on
+      <a href="http://www.dealii.org/reports/assemble/assemble.pdf"
+         target="body">assembling matrices</a> (by Wolfgang
+      Bangerth). This report looks in particular at how
+      matrices are assembled for vector-valued problems, and
+      how things change if vector-valued finite elements are
+      used for which the shape functions have more than one
+      non-zero vector component, such as Nedelec or
+      Raviart-Thomas elements.
+    </li>
+
+    <li>
+      A very detailed report on
+      <a href="http://www.dealii.org/reports/nedelec/nedelec.pdf"
+         target="body">Nedelec elements</a> (by Anna
+      Schneebeli, University of Basel, Switzerland). It
+      explains the construction and application of Nedelec
+      edge elements for H-curl spaces, as used, for example,
+      in the numerical solution of the Maxwell equations. It
+      also gives numerical results obtained with deal.II.
+    </li>
+
+    <li>
+      A report on the
+      <a href="http://www.dealii.org/reports/codimension-one/desimone-heltai-manigrasso.pdf"
+         target="body">codimension one</a> capabilities of the library
+         (by Antonio DeSimone, Luca Heltai and Cataldo Manigrasso,
+         SISSA, Trieste, Italy). It explains in detail how to use the
+         library for the solution of problems defined on codimension
+         one manifolds, such as, for example, Boundary Element
+         Methods.
+      </li>
+  </ul>
+
+<hr />
+<address>
+  <a href="../authors.html" target="body">The deal.II Authors</a>
+  $Date: 2013-11-28 18:35:00 -0500 (Thu, 28 Nov 2013) $
+</address>
+<div class="right">
+  <a href="http://validator.w3.org/check?uri=referer" target="_top">
+    <img style="border:0" src="http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01!"></a>
+  <a href="http://jigsaw.w3.org/css-validator/check/referer" target="_top">
+    <img style="border:0;width:88px;height:31px" src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!"></a>
+</div>
+
+</body>
+</html>

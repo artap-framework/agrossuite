@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Frameset//EN"
+   "http://www.w3.org/TR/REC-html40/frameset.dtd">
+<html>
+  <head>
+    <link href="../../screen.css" rel="StyleSheet" media="screen">
+    <title>The deal.II news page</title>
+    <meta name="author" content="the deal.II authors <authors@dealii.org>">
+    <meta name="keywords" content="deal.II"></head>
+
+<body>
+
+
+<h2>Changes between versions 3.0 and 3.0.1</h2>
+
+<ol>
+  <li> <p>
+       Fix: in three space dimensions, the triangulation class
+       over-estimated the necessary amount of memory needed upon
+       refinement and allocated too much.
+       <br>
+       (WB 2000/04/19)
+       </p>
+
+  <li> <p>
+       Fix: getting the support points from system finite elements
+       (class <code class="class">FESystem</code>) resulted in an
+       exception. 
+       <br>
+       (WB 2000/05/10)
+       </p>
+
+  <li> <p>
+       Fix: <code class="member">FullMatrix::Tmmult</code> and
+       <code class="member">FullMatrix::Tvmult</code> were broken.
+       <br>
+       (WB 2000/05/08 and 2000/05/26)
+       </p>
+
+  <li> <p>
+       Fix: slight bug in 
+       <code class="member">DataOut::build_patches</code>
+       in multithreaded mode fixed.
+       <br>
+       (Ralf Hartmann, 2000/05/29)
+       </p>
+
+  <li> <p>
+       Fix: 
+       <code class="member">SparsityPattern::print_gnuplot</code>
+       wrote rows and columns exchanged. Since most matrices have
+       symmetric sparsity patterns, this has gone unnoticed by now.
+       <br>
+       (WB 2000/05/30)
+       </p>
+
+  <li> <p>
+       Fixed: the 
+       <code class="program">common/scripts/make_dependencies.pl</code> 
+       script that sets up the dependencies for the make files had a
+       problem when the path to the library included special characters
+       such as `+'. This is now fixed.
+       <br>
+       (WB 2000/06/15)
+       </p>
+</ol>
+
+
+<hr>
+Last update $Date: 2006-07-13 09:12:08 -0400 (Thu, 13 Jul 2006) $
+
+</body>
+</html>
+

@@ -1,0 +1,6 @@
+template class FE_BDM< 1 >;
+ 
+template class FE_BDM< 2 >;
+ 
+template class FE_BDM< 3 >;
+ 

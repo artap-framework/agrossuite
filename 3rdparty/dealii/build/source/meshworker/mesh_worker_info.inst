@@ -1,0 +1,120 @@
+namespace MeshWorker
+{
+ template class IntegrationInfo< 1 ,  1 >;
+ template class IntegrationInfoBox< 1 ,  1 >;
+
+ template class DoFInfo< 1 , 1 ,float>;
+ template class DoFInfoBox< 1 ,
+ DoFInfo< 1 , 1 ,float> >;
+
+ template void IntegrationInfo< 1 >::fill_local_data(
+ const DoFInfo< 1 ,  1 , float>&, bool);
+
+ template class DoFInfo< 1 , 1 ,double>;
+ template class DoFInfoBox< 1 ,
+ DoFInfo< 1 , 1 ,double> >;
+
+ template void IntegrationInfo< 1 >::fill_local_data(
+ const DoFInfo< 1 ,  1 , double>&, bool);
+
+ template class DoFInfo< 1 , 1 ,long double>;
+ template class DoFInfoBox< 1 ,
+ DoFInfo< 1 , 1 ,long double> >;
+
+ template void IntegrationInfo< 1 >::fill_local_data(
+ const DoFInfo< 1 ,  1 , long double>&, bool);
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+namespace MeshWorker
+{
+ template class IntegrationInfo< 2 ,  2 >;
+ template class IntegrationInfoBox< 2 ,  2 >;
+
+ template class DoFInfo< 2 , 2 ,float>;
+ template class DoFInfoBox< 2 ,
+ DoFInfo< 2 , 2 ,float> >;
+
+ template void IntegrationInfo< 2 >::fill_local_data(
+ const DoFInfo< 2 ,  2 , float>&, bool);
+
+ template class DoFInfo< 2 , 2 ,double>;
+ template class DoFInfoBox< 2 ,
+ DoFInfo< 2 , 2 ,double> >;
+
+ template void IntegrationInfo< 2 >::fill_local_data(
+ const DoFInfo< 2 ,  2 , double>&, bool);
+
+ template class DoFInfo< 2 , 2 ,long double>;
+ template class DoFInfoBox< 2 ,
+ DoFInfo< 2 , 2 ,long double> >;
+
+ template void IntegrationInfo< 2 >::fill_local_data(
+ const DoFInfo< 2 ,  2 , long double>&, bool);
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+namespace MeshWorker
+{
+ template class IntegrationInfo< 3 ,  3 >;
+ template class IntegrationInfoBox< 3 ,  3 >;
+
+ template class DoFInfo< 3 , 3 ,float>;
+ template class DoFInfoBox< 3 ,
+ DoFInfo< 3 , 3 ,float> >;
+
+ template void IntegrationInfo< 3 >::fill_local_data(
+ const DoFInfo< 3 ,  3 , float>&, bool);
+
+ template class DoFInfo< 3 , 3 ,double>;
+ template class DoFInfoBox< 3 ,
+ DoFInfo< 3 , 3 ,double> >;
+
+ template void IntegrationInfo< 3 >::fill_local_data(
+ const DoFInfo< 3 ,  3 , double>&, bool);
+
+ template class DoFInfo< 3 , 3 ,long double>;
+ template class DoFInfoBox< 3 ,
+ DoFInfo< 3 , 3 ,long double> >;
+
+ template void IntegrationInfo< 3 >::fill_local_data(
+ const DoFInfo< 3 ,  3 , long double>&, bool);
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+

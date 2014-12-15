@@ -1,0 +1,482 @@
+<h1>Results</h1>
+
+When run, the program simulates convection in 3d in much the same way
+as step-31 did, though with an entirely different testcase.
+
+
+<h3>Comparison of results with \step-31</h3>
+
+Before we go to this testcase, however, let us show a few results from a
+slightly earlier version of this program that was solving exactly the
+testcase we used in step-31, just that we now solve it in parallel and with
+much higher resolution. We show these results mainly for comparison.
+
+Here are two images that show this higher resolution if we choose a 3d
+computation in <code>main()</code> and if we set
+<code>initial_refinement=3</code> and
+<code>n_pre_refinement_steps=4</code>. At the time steps shown, the
+meshes had around 72,000 and 236,000 cells, for a total of 2,680,000
+and 8,250,000 degrees of freedom, respectively, more than an order of
+magnitude more than we had available in step-31:
+
+<table align="center" border="1" cellspacing="3" cellpadding="3">
+  <tr>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-32.3d.cube.0.png" alt="">
+    </td>
+  </tr>
+  <tr>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-32.3d.cube.1.png" alt="">
+    </td>
+  </tr>
+</table>
+
+The computation was done on a subset of 50 processors of the Brazos
+cluster at Texas A&amp;M University.
+
+
+<h3>Results for a 2d circular shell testcase</h3>
+
+
+If we run the program as shown above (with the parameter file in the
+directory), the output will look roughly
+like this when run on 50 processors:
+
+<code>
+<pre>
+Number of active cells: 12,288 (on 6 levels)
+Number of degrees of freedom: 186,624 (99,840+36,864+49,920)
+
+Timestep 0:  t=0 years
+
+   Rebuilding Stokes preconditioner...
+   Solving Stokes system... 41 iterations.
+   Maximal velocity: 60.672 cm/year
+   Time step: 17661 years
+   17 CG iterations for temperature
+   Temperature range: 973 4273.16
+
+Number of active cells: 16,803 (on 7 levels)
+Number of degrees of freedom: 266,589 (144,120+50,409+72,060)
+
+Timestep 0:  t=0 years
+
+   Rebuilding Stokes preconditioner...
+   Solving Stokes system... 33 iterations.
+   Maximal velocity: 60.6718 cm/year
+   Time step: 11032.2 years
+   19 CG iterations for temperature
+   Temperature range: 973 4273.16
+
+Number of active cells: 21,024 (on 8 levels)
+Number of degrees of freedom: 339,999 (184,618+63,072+92,309)
+
+Timestep 0:  t=0 years
+
+   Rebuilding Stokes preconditioner...
+   Solving Stokes system... 33 iterations.
+   Maximal velocity: 60.6835 cm/year
+   Time step: 5520.09 years
+   18 CG iterations for temperature
+   Temperature range: 973 4273.44
+
+Timestep 1:  t=5520.09 years
+
+   Solving Stokes system... 34 iterations.
+   Maximal velocity: 61.9054 cm/year
+   Time step: 5410.41 years
+   18 CG iterations for temperature
+   Temperature range: 973 4273.44
+
+Timestep 2:  t=10930.5 years
+
+   Solving Stokes system... 24 iterations.
+   Maximal velocity: 63.1348 cm/year
+   Time step: 5304.37 years
+   18 CG iterations for temperature
+   Temperature range: 973 4273.44
+
+[...]
+
+Timestep 100:  t=283833 years
+
+   Solving Stokes system... 23 iterations.
+   Maximal velocity: 168.248 cm/year
+   Time step: 1732.43 years
+   18 CG iterations for temperature
+   Temperature range: 973 4285.06
+
+Number of active cells: 42,681 (on 8 levels)
+Number of degrees of freedom: 694,359 (377,544+128,043+188,772)
+
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |       140s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Assemble Stokes system          |       103 |      7.08s |       5.1% |
+| Assemble temperature matrices   |        12 |     0.702s |       0.5% |
+| Assemble temperature rhs        |       103 |      10.3s |       7.3% |
+| Build Stokes preconditioner     |        12 |       3.6s |       2.6% |
+| Solve Stokes system             |       103 |       103s |        74% |
+| Solve temperature system        |       103 |      8.13s |       5.8% |
+| Postprocessing                  |         3 |     0.417s |       0.3% |
+| Refine mesh structure, part 1   |        12 |     0.859s |      0.61% |
+| Refine mesh structure, part 2   |        12 |      1.15s |      0.82% |
+| Setup dof systems               |        13 |      4.13s |       2.9% |
++---------------------------------+-----------+------------+------------+
+
+[...]
+
+Timestep 7092:  t=1.00027e+08 years
+
+   Solving Stokes system... 26 iterations.
+   Maximal velocity: 8.08888 cm/year
+   Time step: 35734.5 years
+   18 CG iterations for temperature
+   Temperature range: 973 4273.04
+
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |  8.36e+03s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Assemble Stokes system          |      7095 |       482s |       5.8% |
+| Assemble temperature matrices   |       712 |      40.6s |      0.49% |
+| Assemble temperature rhs        |      7095 |       671s |         8% |
+| Build Stokes preconditioner     |       712 |       231s |       2.8% |
+| Solve Stokes system             |      7095 |  5.99e+03s |        72% |
+| Solve temperature system        |      7095 |       578s |       6.9% |
+| Postprocessing                  |       143 |      19.3s |      0.23% |
+| Refine mesh structure, part 1   |       711 |      48.7s |      0.58% |
+| Refine mesh structure, part 2   |       711 |      68.6s |      0.82% |
+| Setup dof systems               |       712 |       223s |       2.7% |
++---------------------------------+-----------+------------+------------+
+
+</pre>
+</code>
+
+The simulation terminates when the time reaches the 100 million years
+selected in the input file.  You can extrapolate from this how long a
+simulation would take for a different final time (the time step size
+ultimately settles on somewhere around 20,000 years, so computing for
+one billion years will take 50,000 time steps, give or take 20%).  As
+can be seen here, we spend most of the compute time in assembling
+linear systems and &mdash; above all &mdash; in solving Stokes
+systems.
+
+We can clearly not show all output files produced by this program when
+run for a longer period of time, so let us
+only show the output from every 2500th time step here:
+<table>
+  <tr>
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.0000.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.0100.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.0200.png" alt="">
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.0300.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.0400.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.0500.png" alt="">
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.0600.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.0700.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.0800.png" alt="">
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.0900.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.1000.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.1100.png" alt="">
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.1200.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.1300.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.1400.png" alt="">
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.1500.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.1600.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.1700.png" alt="">
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.1800.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.1900.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.2000.png" alt="">
+    </td>
+  </tr>
+
+
+  <tr>
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.temperature.2100.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.grid.2100.png" alt="">
+    </td>
+
+    <td>
+      <img src="http://www.dealii.org/images/steps/developer/step-32.2d.partition.2100.png" alt="">
+    </td>
+  </tr>
+</table>
+
+The last two images show the grid as well as the partitioning of the
+mesh for a computation with 10 subdomains on 10 processors. The full dynamics
+of this simulation are really only visible by looking at
+an animation, for example the one <a
+href="http://www.math.tamu.edu/~bangerth/images/pictures/convection-outward/\step-32.2d.convection.gif">shown on
+this site</a>. Beware that this animation is
+about 20MB large, though it is well worth watching due to its almost
+artistic quality.
+
+If you watch the movie, you'll see that the convection pattern goes
+through several stages: First, it gets rid of the instable temperature
+layering with the hot material overlain by the dense cold
+material. After this great driver is removed and we have a sort of
+stable situation, a few blobs start to separate from the hot boundary
+layer at the inner ring and rise up, with a few cold fingers also
+dropping down from the outer boundary layer. During this phase, the solution
+remains mostly symmetric, reflecting the 12-fold symmetry of the
+original mesh. In a final phase, the fluid enters vigorous chaotic
+stirring in which all symmetries are lost. This is a pattern that then
+continues to dominate flow.
+
+These different phases can also be identified if we look at the
+maximal velocity as a function of time in the simulation:
+
+<img src="http://www.dealii.org/images/steps/developer/step-32.2d.t_vs_vmax.png" alt="">
+
+Here, the velocity (shown in centimeters per year) becomes very large,
+to the order of several meters per year) at the beginning when the
+temperature layering is instable. It then calms down to relatively
+small values before picking up again in the chaotic stirring
+regime. There, it remains in the range of 10-40 centimeters per year,
+quite within the physically expected region.
+
+
+<h3>Results for a 3d spherical shell testcase</h3>
+
+3d computations are very expensive computationally. Furthermore, as
+seen above, interesting behavior only starts after quite a long time
+requiring more CPU hours than is available on a typical
+cluster. Consequently, rather than showing a complete simulation here,
+let us simply show a couple of pictures we have obtained using the
+successor to this program, called <i>Aspect</i> (short for <i>Advanced
+%Solver for Problems in Earth's ConvecTion</i>), that is being
+developed independently of deal.II and that already incorporates some
+of the extensions discussed below. The following two pictures show
+isocontours of the temperature and the partition of the domain (along
+with the mesh) onto 512 processors:
+
+<p align="center">
+<img src="http://www.dealii.org/images/steps/developer/step-32.3d-sphere.solution.png" alt="">
+
+<img src="http://www.dealii.org/images/steps/developer/step-32.3d-sphere.partition.png" alt="">
+</p>
+
+
+<a name="extensions"></a>
+<h3>Possibilities for extensions</h3>
+
+There are many directions in which this program could be extended. As
+mentioned at the end of the introduction, most of these are under active
+development in the <i>Aspect</i> (short for <i>Advanced %Solver for Problems
+in Earth's ConvecTion</i>) code at the time this tutorial program is being
+finished. Specifically, the following are certainly topics that one should
+address to make the program more useful:
+
+<ul>
+  <li> <b>Adiabatic heating/cooling:</b>
+  The temperature field we get in our simulations after a while
+  is mostly constant with boundary layers at the inner and outer
+  boundary, and streamers of cold and hot material mixing
+  everything. Yet, this doesn't match our expectation that things
+  closer to the earth core should be hotter than closer to the
+  surface. The reason is that the energy equation we have used does
+  not include a term that describes adiabatic cooling and heating:
+  rock, like gas, heats up as you compress it. Consequently, material
+  that rises up cools adiabatically, and cold material that sinks down
+  heats adiabatically. The correct temperature equation would
+  therefore look somewhat like this:
+  @f{eqnarray*}
+    \frac{D T}{Dt}
+    -
+    \nabla \cdot \kappa \nabla T &=& \gamma + \tau\frac{Dp}{Dt},
+  @f}
+  or, expanding the advected derivative $\frac{D}{Dt} =
+  \frac{\partial}{\partial t} + \mathbf u \cdot \nabla$:
+  @f{eqnarray*}
+    \frac{\partial T}{\partial t}
+    +
+    {\mathbf u} \cdot \nabla T
+    -
+    \nabla \cdot \kappa \nabla T &=& \gamma +
+    \tau\left\{\frac{\partial
+    p}{\partial t} + \mathbf u \cdot \nabla p \right\}.
+  @f}
+  In other words, as pressure increases in a rock volume
+  ($\frac{Dp}{Dt}>0$) we get an additional heat source, and vice
+  versa.
+
+  The time derivative of the pressure is a bit awkward to
+  implement. If necessary, one could approximate using the fact
+  outlined in the introduction that the pressure can be decomposed
+  into a dynamic component due to temperature differences and the
+  resulting flow, and a static component that results solely from the
+  static pressure of the overlying rock. Since the latter is much
+  bigger, one may approximate $p\approx p_{\text{static}}=-\rho_{\text{ref}}
+  [1+\beta T_{\text{ref}}] \varphi$, and consequently
+  $\frac{Dp}{Dt} \approx \left\{- \mathbf u \cdot \nabla \rho_{\text{ref}}
+  [1+\beta T_{\text{ref}}]\varphi\right\} = \rho_{\text{ref}}
+  [1+\beta T_{\text{ref}}] \mathbf u \cdot \mathbf g$.
+  In other words, if the fluid is moving in the direction of gravity
+  (downward) it will be compressed and because in that case $\mathbf u
+  \cdot \mathbf g > 0$ we get a positive heat source. Conversely, the
+  fluid will cool down if it moves against the direction of gravity.
+
+<li> <b>Compressibility:</b>
+  As already hinted at in the temperature model above,
+  mantle rocks are not incompressible. Rather, given the enormous pressures in
+  the earth mantle (at the core-mantle boundary, the pressure is approximately
+  140 GPa, equivalent to 1,400,000 times atmospheric pressure), rock actually
+  does compress to something around 1.5 times the density it would have
+  at surface pressure. Modeling this presents any number of
+  difficulties. Primarily, the mass conservation equation is no longer
+  $\textrm{div}\;\mathbf u=0$ but should read
+  $\textrm{div}(\rho\mathbf u)=0$ where the density $\rho$ is now no longer
+  spatially constant but depends on temperature and pressure. A consequence is
+  that the model is now no longer linear; a linearized version of the Stokes
+  equation is also no longer symmetric requiring us to rethink preconditioners
+  and, possibly, even the discretization. We won't go into detail here as to
+  how this can be resolved.
+
+<li> <b>Nonlinear material models:</b> As already hinted at in various places,
+  material parameters such as the density, the viscosity, and the various
+  thermal parameters are not constant throughout the earth mantle. Rather,
+  they nonlinearly depend on the pressure and temperature, and in the case of
+  the viscosity on the strain rate $\varepsilon(\mathbf u)$. For complicated
+  models, the only way to solve such models accurately may be to actually
+  iterate this dependence out in each time step, rather than simply freezing
+  coefficients at values extrapolated from the previous time step(s).
+
+<li> <b>Checkpoint/restart:</b> Running this program in 2d on a number of
+  processors allows solving realistic models in a day or two. However, in 3d,
+  compute times are so large that one runs into two typical problems: (i) On
+  most compute clusters, the queuing system limits run times for individual
+  jobs are to 2 or 3 days; (ii) losing the results of a computation due to
+  hardware failures, misconfigurations, or power outages is a shame when
+  running on hundreds of processors for a couple of days. Both of these
+  problems can be addressed by periodically saving the state of the program
+  and, if necessary, restarting the program at this point. This technique is
+  commonly called <i>checkpoint/restart</i> and it requires that the entire
+  state of the program is written to a permanent storage location (e.g. a hard
+  drive). Given the complexity of the data structures of this program, this is
+  not entirely trivial (it may also involve writing gigabytes or more of
+  data), but it can be made easier by realizing that one can save the state
+  between two time steps where it essentially only consists of the mesh and
+  solution vectors; during restart one would then first re-enumerate degrees
+  of freedom in the same way as done before and then re-assemble
+  matrices. Nevertheless, given the distributed nature of the data structures
+  involved here, saving and restoring the state of a program is not
+  trivial. An additional complexity is introduced by the fact that one may
+  want to change the number of processors between runs, for example because
+  one may wish to continue computing on a mesh that is finer than the one used
+  to precompute a starting temperature field at an intermediate time.
+
+<li> <b>Predictive postprocessing:</b> The point of computations like this is
+  not simply to solve the equations. Rather, it is typically the exploration
+  of different physical models and their comparison with things that we can
+  measure at the earth surface, in order to find which models are realistic
+  and which are contradicted by reality. To this end, we need to compute
+  quantities from our solution vectors that are related to what we can
+  observe. Among these are, for example, heatfluxes at the surface of the
+  earth, as well as seismic velocities throughout the mantle as these affect
+  earthquake waves that are recorded by seismographs.
+
+<li> <b>Better refinement criteria:</b> As can be seen above for the
+3d case, the mesh in 3d is primarily refined along the inner
+boundary. This is because the boundary layer there is stronger than
+any other transition in the domain, leading us to refine there almost
+exclusively and basically not at all following the plumes. One
+certainly needs better refinement criteria to track the parts of the
+solution we are really interested in better than the criterion used
+here, namely the KellyErrorEstimator applied to the temperature, is
+able to.
+</ul>
+
+
+<h3> Possible extensions </h3>
+
+There are many ways to extend the current program. However, rather than
+discussing them here, let us point to the much larger open
+source code Aspect (see http://aspect.dealii.org/ ) that constitutes the
+further development of step-32 and that already includes many such possible
+extensions.

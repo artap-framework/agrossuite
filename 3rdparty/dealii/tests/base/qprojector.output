@@ -1,0 +1,2287 @@
+
+DEAL::
+DEAL:line::length: 0
+DEAL:line::length: 0
+DEAL:line::length: 0
+DEAL:face::Checking dim 1 1d-points 0
+DEAL:face::Face 0
+DEAL:face::0.0
+DEAL:face::Face 1
+DEAL:face::1.0
+DEAL:face::Face 0 subface 0
+DEAL:face::0.0
+DEAL:face::Face 1 subface 0
+DEAL:face::1.0
+DEAL:face::Checking dim 2 1d-points 0
+DEAL:face::Face 0
+DEAL:face::Face 1
+DEAL:face::Face 2
+DEAL:face::Face 3
+DEAL:face::Face 0 subface 0
+DEAL:face::Face 0 subface 1
+DEAL:face::Face 1 subface 0
+DEAL:face::Face 1 subface 1
+DEAL:face::Face 2 subface 0
+DEAL:face::Face 2 subface 1
+DEAL:face::Face 3 subface 0
+DEAL:face::Face 3 subface 1
+DEAL:face::Checking dim 3 1d-points 0
+DEAL:face::Face 0
+DEAL:face::Face 1
+DEAL:face::Face 2
+DEAL:face::Face 3
+DEAL:face::Face 4
+DEAL:face::Face 5
+DEAL:face::Face 0 subface 0
+DEAL:face::Face 0 subface 1
+DEAL:face::Face 0 subface 2
+DEAL:face::Face 0 subface 3
+DEAL:face::Face 1 subface 0
+DEAL:face::Face 1 subface 1
+DEAL:face::Face 1 subface 2
+DEAL:face::Face 1 subface 3
+DEAL:face::Face 2 subface 0
+DEAL:face::Face 2 subface 1
+DEAL:face::Face 2 subface 2
+DEAL:face::Face 2 subface 3
+DEAL:face::Face 3 subface 0
+DEAL:face::Face 3 subface 1
+DEAL:face::Face 3 subface 2
+DEAL:face::Face 3 subface 3
+DEAL:face::Face 4 subface 0
+DEAL:face::Face 4 subface 1
+DEAL:face::Face 4 subface 2
+DEAL:face::Face 4 subface 3
+DEAL:face::Face 5 subface 0
+DEAL:face::Face 5 subface 1
+DEAL:face::Face 5 subface 2
+DEAL:face::Face 5 subface 3
+DEAL:all::Checking dim 2 1d-points 0
+DEAL:all::Face 0 orientation false
+DEAL:all::Face 0 orientation true
+DEAL:all::Face 1 orientation false
+DEAL:all::Face 1 orientation true
+DEAL:all::Face 2 orientation false
+DEAL:all::Face 2 orientation true
+DEAL:all::Face 3 orientation false
+DEAL:all::Face 3 orientation true
+DEAL:all::Checking dim 3 1d-points 0
+DEAL:all::Face 0 orientation false
+DEAL:all::Face 0 orientation true
+DEAL:all::Face 1 orientation false
+DEAL:all::Face 1 orientation true
+DEAL:all::Face 2 orientation false
+DEAL:all::Face 2 orientation true
+DEAL:all::Face 3 orientation false
+DEAL:all::Face 3 orientation true
+DEAL:all::Face 4 orientation false
+DEAL:all::Face 4 orientation true
+DEAL:all::Face 5 orientation false
+DEAL:all::Face 5 orientation true
+DEAL::
+DEAL:line::0	4.0
+DEAL:line::length: 6.0
+DEAL:line::0	4.0 -1.0
+DEAL:line::length: 10.
+DEAL:line::0	4.0 -1.0 5.0
+DEAL:line::length: 14.
+DEAL:face::Checking dim 1 1d-points 1
+DEAL:face::Face 0
+DEAL:face::0.0
+DEAL:face::Face 1
+DEAL:face::1.0
+DEAL:face::Face 0 subface 0
+DEAL:face::0.0
+DEAL:face::Face 1 subface 0
+DEAL:face::1.0
+DEAL:face::Checking dim 2 1d-points 1
+DEAL:face::Face 0
+DEAL:face::0.0 0.50
+DEAL:face::Face 1
+DEAL:face::1.0 0.50
+DEAL:face::Face 2
+DEAL:face::0.50 0.0
+DEAL:face::Face 3
+DEAL:face::0.50 1.0
+DEAL:face::Face 0 subface 0
+DEAL:face::0.0 0.50
+DEAL:face::Face 0 subface 1
+DEAL:face::0.0 0.50
+DEAL:face::Face 1 subface 0
+DEAL:face::1.0 0.50
+DEAL:face::Face 1 subface 1
+DEAL:face::1.0 0.50
+DEAL:face::Face 2 subface 0
+DEAL:face::0.50 0.0
+DEAL:face::Face 2 subface 1
+DEAL:face::0.50 0.0
+DEAL:face::Face 3 subface 0
+DEAL:face::0.50 1.0
+DEAL:face::Face 3 subface 1
+DEAL:face::0.50 1.0
+DEAL:face::Checking dim 3 1d-points 1
+DEAL:face::Face 0
+DEAL:face::0.0 0.50 0.50
+DEAL:face::Face 1
+DEAL:face::1.0 0.50 0.50
+DEAL:face::Face 2
+DEAL:face::0.50 0.0 0.50
+DEAL:face::Face 3
+DEAL:face::0.50 1.0 0.50
+DEAL:face::Face 4
+DEAL:face::0.50 0.50 0.0
+DEAL:face::Face 5
+DEAL:face::0.50 0.50 1.0
+DEAL:face::Face 0 subface 0
+DEAL:face::0.0 0.50 0.50
+DEAL:face::Face 0 subface 1
+DEAL:face::0.0 0.50 0.50
+DEAL:face::Face 0 subface 2
+DEAL:face::0.0 0.50 0.50
+DEAL:face::Face 0 subface 3
+DEAL:face::0.0 0.50 0.50
+DEAL:face::Face 1 subface 0
+DEAL:face::1.0 0.50 0.50
+DEAL:face::Face 1 subface 1
+DEAL:face::1.0 0.50 0.50
+DEAL:face::Face 1 subface 2
+DEAL:face::1.0 0.50 0.50
+DEAL:face::Face 1 subface 3
+DEAL:face::1.0 0.50 0.50
+DEAL:face::Face 2 subface 0
+DEAL:face::0.50 0.0 0.50
+DEAL:face::Face 2 subface 1
+DEAL:face::0.50 0.0 0.50
+DEAL:face::Face 2 subface 2
+DEAL:face::0.50 0.0 0.50
+DEAL:face::Face 2 subface 3
+DEAL:face::0.50 0.0 0.50
+DEAL:face::Face 3 subface 0
+DEAL:face::0.50 1.0 0.50
+DEAL:face::Face 3 subface 1
+DEAL:face::0.50 1.0 0.50
+DEAL:face::Face 3 subface 2
+DEAL:face::0.50 1.0 0.50
+DEAL:face::Face 3 subface 3
+DEAL:face::0.50 1.0 0.50
+DEAL:face::Face 4 subface 0
+DEAL:face::0.50 0.50 0.0
+DEAL:face::Face 4 subface 1
+DEAL:face::0.50 0.50 0.0
+DEAL:face::Face 4 subface 2
+DEAL:face::0.50 0.50 0.0
+DEAL:face::Face 4 subface 3
+DEAL:face::0.50 0.50 0.0
+DEAL:face::Face 5 subface 0
+DEAL:face::0.50 0.50 1.0
+DEAL:face::Face 5 subface 1
+DEAL:face::0.50 0.50 1.0
+DEAL:face::Face 5 subface 2
+DEAL:face::0.50 0.50 1.0
+DEAL:face::Face 5 subface 3
+DEAL:face::0.50 0.50 1.0
+DEAL:all::Checking dim 2 1d-points 1
+DEAL:all::Face 0 orientation false
+DEAL:all::0.0 0.50
+DEAL:all::Face 0 orientation true
+DEAL:all::0.0 0.50
+DEAL:all::Face 1 orientation false
+DEAL:all::1.0 0.50
+DEAL:all::Face 1 orientation true
+DEAL:all::1.0 0.50
+DEAL:all::Face 2 orientation false
+DEAL:all::0.50 0.0
+DEAL:all::Face 2 orientation true
+DEAL:all::0.50 0.0
+DEAL:all::Face 3 orientation false
+DEAL:all::0.50 1.0
+DEAL:all::Face 3 orientation true
+DEAL:all::0.50 1.0
+DEAL:all::Checking dim 3 1d-points 1
+DEAL:all::Face 0 orientation false
+DEAL:all::0.0 0.50 0.50
+DEAL:all::Face 0 orientation true
+DEAL:all::0.0 0.50 0.50
+DEAL:all::Face 1 orientation false
+DEAL:all::1.0 0.50 0.50
+DEAL:all::Face 1 orientation true
+DEAL:all::1.0 0.50 0.50
+DEAL:all::Face 2 orientation false
+DEAL:all::0.50 0.0 0.50
+DEAL:all::Face 2 orientation true
+DEAL:all::0.50 0.0 0.50
+DEAL:all::Face 3 orientation false
+DEAL:all::0.50 1.0 0.50
+DEAL:all::Face 3 orientation true
+DEAL:all::0.50 1.0 0.50
+DEAL:all::Face 4 orientation false
+DEAL:all::0.50 0.50 0.0
+DEAL:all::Face 4 orientation true
+DEAL:all::0.50 0.50 0.0
+DEAL:all::Face 5 orientation false
+DEAL:all::0.50 0.50 1.0
+DEAL:all::Face 5 orientation true
+DEAL:all::0.50 0.50 1.0
+DEAL::
+DEAL:line::0	1.0
+DEAL:line::1	7.0
+DEAL:line::length: 6.0
+DEAL:line::0	1.0 3.0
+DEAL:line::1	7.0 -5.0
+DEAL:line::length: 10.
+DEAL:line::0	1.0 3.0 0.0
+DEAL:line::1	7.0 -5.0 10.
+DEAL:line::length: 14.
+DEAL:face::Checking dim 1 1d-points 2
+DEAL:face::Face 0
+DEAL:face::0.0
+DEAL:face::Face 1
+DEAL:face::1.0
+DEAL:face::Face 0 subface 0
+DEAL:face::0.0
+DEAL:face::Face 1 subface 0
+DEAL:face::1.0
+DEAL:face::Checking dim 2 1d-points 2
+DEAL:face::Face 0
+DEAL:face::0.0 0.0
+DEAL:face::0.0 1.0
+DEAL:face::Face 1
+DEAL:face::1.0 0.0
+DEAL:face::1.0 1.0
+DEAL:face::Face 2
+DEAL:face::0.0 0.0
+DEAL:face::1.0 0.0
+DEAL:face::Face 3
+DEAL:face::0.0 1.0
+DEAL:face::1.0 1.0
+DEAL:face::Face 0 subface 0
+DEAL:face::0.0 0.0
+DEAL:face::0.0 1.0
+DEAL:face::Face 0 subface 1
+DEAL:face::0.0 0.0
+DEAL:face::0.0 1.0
+DEAL:face::Face 1 subface 0
+DEAL:face::1.0 0.0
+DEAL:face::1.0 1.0
+DEAL:face::Face 1 subface 1
+DEAL:face::1.0 0.0
+DEAL:face::1.0 1.0
+DEAL:face::Face 2 subface 0
+DEAL:face::0.0 0.0
+DEAL:face::1.0 0.0
+DEAL:face::Face 2 subface 1
+DEAL:face::0.0 0.0
+DEAL:face::1.0 0.0
+DEAL:face::Face 3 subface 0
+DEAL:face::0.0 1.0
+DEAL:face::1.0 1.0
+DEAL:face::Face 3 subface 1
+DEAL:face::0.0 1.0
+DEAL:face::1.0 1.0
+DEAL:face::Checking dim 3 1d-points 2
+DEAL:face::Face 0
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 1
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 2
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 3
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 4
+DEAL:face::0.0 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 5
+DEAL:face::0.0 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 0 subface 0
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 0 subface 1
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 0 subface 2
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 0 subface 3
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 1 subface 0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 1 subface 1
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 1 subface 2
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 1 subface 3
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 2 subface 0
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 2 subface 1
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 2 subface 2
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 2 subface 3
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 3 subface 0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 3 subface 1
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 3 subface 2
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 3 subface 3
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 4 subface 0
+DEAL:face::0.0 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 4 subface 1
+DEAL:face::0.0 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 4 subface 2
+DEAL:face::0.0 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 4 subface 3
+DEAL:face::0.0 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 5 subface 0
+DEAL:face::0.0 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 5 subface 1
+DEAL:face::0.0 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 5 subface 2
+DEAL:face::0.0 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 5 subface 3
+DEAL:face::0.0 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:all::Checking dim 2 1d-points 2
+DEAL:all::Face 0 orientation false
+DEAL:all::0.0 0.0
+DEAL:all::0.0 1.0
+DEAL:all::Face 0 orientation true
+DEAL:all::0.0 0.0
+DEAL:all::0.0 1.0
+DEAL:all::Face 1 orientation false
+DEAL:all::1.0 0.0
+DEAL:all::1.0 1.0
+DEAL:all::Face 1 orientation true
+DEAL:all::1.0 0.0
+DEAL:all::1.0 1.0
+DEAL:all::Face 2 orientation false
+DEAL:all::0.0 0.0
+DEAL:all::1.0 0.0
+DEAL:all::Face 2 orientation true
+DEAL:all::0.0 0.0
+DEAL:all::1.0 0.0
+DEAL:all::Face 3 orientation false
+DEAL:all::0.0 1.0
+DEAL:all::1.0 1.0
+DEAL:all::Face 3 orientation true
+DEAL:all::0.0 1.0
+DEAL:all::1.0 1.0
+DEAL:all::Checking dim 3 1d-points 2
+DEAL:all::Face 0 orientation false
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.0 1.0 1.0
+DEAL:all::Face 0 orientation true
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.0 1.0 1.0
+DEAL:all::Face 1 orientation false
+DEAL:all::1.0 0.0 0.0
+DEAL:all::1.0 0.0 1.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 1 orientation true
+DEAL:all::1.0 0.0 0.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::1.0 0.0 1.0
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 2 orientation false
+DEAL:all::0.0 0.0 0.0
+DEAL:all::1.0 0.0 0.0
+DEAL:all::0.0 0.0 1.0
+DEAL:all::1.0 0.0 1.0
+DEAL:all::Face 2 orientation true
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.0 0.0 1.0
+DEAL:all::1.0 0.0 0.0
+DEAL:all::1.0 0.0 1.0
+DEAL:all::Face 3 orientation false
+DEAL:all::0.0 1.0 0.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::0.0 1.0 1.0
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 3 orientation true
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.0 1.0 1.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 4 orientation false
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.0 1.0 0.0
+DEAL:all::1.0 0.0 0.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::Face 4 orientation true
+DEAL:all::0.0 0.0 0.0
+DEAL:all::1.0 0.0 0.0
+DEAL:all::0.0 1.0 0.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::Face 5 orientation false
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.0 1.0 1.0
+DEAL:all::1.0 0.0 1.0
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 5 orientation true
+DEAL:all::0.0 0.0 1.0
+DEAL:all::1.0 0.0 1.0
+DEAL:all::0.0 1.0 1.0
+DEAL:all::1.0 1.0 1.0
+DEAL::
+DEAL:line::0	1.0
+DEAL:line::1	4.0
+DEAL:line::2	7.0
+DEAL:line::length: 6.0
+DEAL:line::0	1.0 3.0
+DEAL:line::1	4.0 -1.0
+DEAL:line::2	7.0 -5.0
+DEAL:line::length: 10.
+DEAL:line::0	1.0 3.0 0.0
+DEAL:line::1	4.0 -1.0 5.0
+DEAL:line::2	7.0 -5.0 10.
+DEAL:line::length: 14.
+DEAL:face::Checking dim 1 1d-points 3
+DEAL:face::Face 0
+DEAL:face::0.0
+DEAL:face::Face 1
+DEAL:face::1.0
+DEAL:face::Face 0 subface 0
+DEAL:face::0.0
+DEAL:face::Face 1 subface 0
+DEAL:face::1.0
+DEAL:face::Checking dim 2 1d-points 3
+DEAL:face::Face 0
+DEAL:face::0.0 0.0
+DEAL:face::0.0 0.50
+DEAL:face::0.0 1.0
+DEAL:face::Face 1
+DEAL:face::1.0 0.0
+DEAL:face::1.0 0.50
+DEAL:face::1.0 1.0
+DEAL:face::Face 2
+DEAL:face::0.0 0.0
+DEAL:face::0.50 0.0
+DEAL:face::1.0 0.0
+DEAL:face::Face 3
+DEAL:face::0.0 1.0
+DEAL:face::0.50 1.0
+DEAL:face::1.0 1.0
+DEAL:face::Face 0 subface 0
+DEAL:face::0.0 0.0
+DEAL:face::0.0 0.50
+DEAL:face::0.0 1.0
+DEAL:face::Face 0 subface 1
+DEAL:face::0.0 0.0
+DEAL:face::0.0 0.50
+DEAL:face::0.0 1.0
+DEAL:face::Face 1 subface 0
+DEAL:face::1.0 0.0
+DEAL:face::1.0 0.50
+DEAL:face::1.0 1.0
+DEAL:face::Face 1 subface 1
+DEAL:face::1.0 0.0
+DEAL:face::1.0 0.50
+DEAL:face::1.0 1.0
+DEAL:face::Face 2 subface 0
+DEAL:face::0.0 0.0
+DEAL:face::0.50 0.0
+DEAL:face::1.0 0.0
+DEAL:face::Face 2 subface 1
+DEAL:face::0.0 0.0
+DEAL:face::0.50 0.0
+DEAL:face::1.0 0.0
+DEAL:face::Face 3 subface 0
+DEAL:face::0.0 1.0
+DEAL:face::0.50 1.0
+DEAL:face::1.0 1.0
+DEAL:face::Face 3 subface 1
+DEAL:face::0.0 1.0
+DEAL:face::0.50 1.0
+DEAL:face::1.0 1.0
+DEAL:face::Checking dim 3 1d-points 3
+DEAL:face::Face 0
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.50 0.50
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 1
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.50 0.50
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 2
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.50 0.0 0.50
+DEAL:face::0.50 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 3
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.50 1.0 0.50
+DEAL:face::0.50 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 4
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.50 0.50 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 5
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.50 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.50 0.50 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.50 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 0 subface 0
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.50 0.50
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 0 subface 1
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.50 0.50
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 0 subface 2
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.50 0.50
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 0 subface 3
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.50 0.50
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 1 subface 0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.50 0.50
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 1 subface 1
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.50 0.50
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 1 subface 2
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.50 0.50
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 1 subface 3
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.50 0.50
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 2 subface 0
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.50 0.0 0.50
+DEAL:face::0.50 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 2 subface 1
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.50 0.0 0.50
+DEAL:face::0.50 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 2 subface 2
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.50 0.0 0.50
+DEAL:face::0.50 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 2 subface 3
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.50 0.0 0.50
+DEAL:face::0.50 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 3 subface 0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.50 1.0 0.50
+DEAL:face::0.50 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 3 subface 1
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.50 1.0 0.50
+DEAL:face::0.50 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 3 subface 2
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.50 1.0 0.50
+DEAL:face::0.50 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 3 subface 3
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.50 1.0 0.50
+DEAL:face::0.50 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 4 subface 0
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.50 0.50 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 4 subface 1
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.50 0.50 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 4 subface 2
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.50 0.50 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 4 subface 3
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.50 0.50 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 5 subface 0
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.50 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.50 0.50 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.50 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 5 subface 1
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.50 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.50 0.50 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.50 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 5 subface 2
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.50 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.50 0.50 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.50 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 5 subface 3
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.50 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.50 0.50 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.50 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:all::Checking dim 2 1d-points 3
+DEAL:all::Face 0 orientation false
+DEAL:all::0.0 0.0
+DEAL:all::0.0 0.50
+DEAL:all::0.0 1.0
+DEAL:all::Face 0 orientation true
+DEAL:all::0.0 0.0
+DEAL:all::0.0 0.50
+DEAL:all::0.0 1.0
+DEAL:all::Face 1 orientation false
+DEAL:all::1.0 0.0
+DEAL:all::1.0 0.50
+DEAL:all::1.0 1.0
+DEAL:all::Face 1 orientation true
+DEAL:all::1.0 0.0
+DEAL:all::1.0 0.50
+DEAL:all::1.0 1.0
+DEAL:all::Face 2 orientation false
+DEAL:all::0.0 0.0
+DEAL:all::0.50 0.0
+DEAL:all::1.0 0.0
+DEAL:all::Face 2 orientation true
+DEAL:all::0.0 0.0
+DEAL:all::0.50 0.0
+DEAL:all::1.0 0.0
+DEAL:all::Face 3 orientation false
+DEAL:all::0.0 1.0
+DEAL:all::0.50 1.0
+DEAL:all::1.0 1.0
+DEAL:all::Face 3 orientation true
+DEAL:all::0.0 1.0
+DEAL:all::0.50 1.0
+DEAL:all::1.0 1.0
+DEAL:all::Checking dim 3 1d-points 3
+DEAL:all::Face 0 orientation false
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.0 0.0 0.50
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.0 0.50 0.0
+DEAL:all::0.0 0.50 0.50
+DEAL:all::0.0 0.50 1.0
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.0 1.0 0.50
+DEAL:all::0.0 1.0 1.0
+DEAL:all::Face 0 orientation true
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.0 0.50 0.0
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.0 0.0 0.50
+DEAL:all::0.0 0.50 0.50
+DEAL:all::0.0 1.0 0.50
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.0 0.50 1.0
+DEAL:all::0.0 1.0 1.0
+DEAL:all::Face 1 orientation false
+DEAL:all::1.0 0.0 0.0
+DEAL:all::1.0 0.0 0.50
+DEAL:all::1.0 0.0 1.0
+DEAL:all::1.0 0.50 0.0
+DEAL:all::1.0 0.50 0.50
+DEAL:all::1.0 0.50 1.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::1.0 1.0 0.50
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 1 orientation true
+DEAL:all::1.0 0.0 0.0
+DEAL:all::1.0 0.50 0.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::1.0 0.0 0.50
+DEAL:all::1.0 0.50 0.50
+DEAL:all::1.0 1.0 0.50
+DEAL:all::1.0 0.0 1.0
+DEAL:all::1.0 0.50 1.0
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 2 orientation false
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.50 0.0 0.0
+DEAL:all::1.0 0.0 0.0
+DEAL:all::0.0 0.0 0.50
+DEAL:all::0.50 0.0 0.50
+DEAL:all::1.0 0.0 0.50
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.50 0.0 1.0
+DEAL:all::1.0 0.0 1.0
+DEAL:all::Face 2 orientation true
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.0 0.0 0.50
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.50 0.0 0.0
+DEAL:all::0.50 0.0 0.50
+DEAL:all::0.50 0.0 1.0
+DEAL:all::1.0 0.0 0.0
+DEAL:all::1.0 0.0 0.50
+DEAL:all::1.0 0.0 1.0
+DEAL:all::Face 3 orientation false
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.50 1.0 0.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::0.0 1.0 0.50
+DEAL:all::0.50 1.0 0.50
+DEAL:all::1.0 1.0 0.50
+DEAL:all::0.0 1.0 1.0
+DEAL:all::0.50 1.0 1.0
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 3 orientation true
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.0 1.0 0.50
+DEAL:all::0.0 1.0 1.0
+DEAL:all::0.50 1.0 0.0
+DEAL:all::0.50 1.0 0.50
+DEAL:all::0.50 1.0 1.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::1.0 1.0 0.50
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 4 orientation false
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.0 0.50 0.0
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.50 0.0 0.0
+DEAL:all::0.50 0.50 0.0
+DEAL:all::0.50 1.0 0.0
+DEAL:all::1.0 0.0 0.0
+DEAL:all::1.0 0.50 0.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::Face 4 orientation true
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.50 0.0 0.0
+DEAL:all::1.0 0.0 0.0
+DEAL:all::0.0 0.50 0.0
+DEAL:all::0.50 0.50 0.0
+DEAL:all::1.0 0.50 0.0
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.50 1.0 0.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::Face 5 orientation false
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.0 0.50 1.0
+DEAL:all::0.0 1.0 1.0
+DEAL:all::0.50 0.0 1.0
+DEAL:all::0.50 0.50 1.0
+DEAL:all::0.50 1.0 1.0
+DEAL:all::1.0 0.0 1.0
+DEAL:all::1.0 0.50 1.0
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 5 orientation true
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.50 0.0 1.0
+DEAL:all::1.0 0.0 1.0
+DEAL:all::0.0 0.50 1.0
+DEAL:all::0.50 0.50 1.0
+DEAL:all::1.0 0.50 1.0
+DEAL:all::0.0 1.0 1.0
+DEAL:all::0.50 1.0 1.0
+DEAL:all::1.0 1.0 1.0
+DEAL::
+DEAL:line::0	1.0
+DEAL:line::1	2.5
+DEAL:line::2	4.0
+DEAL:line::3	5.5
+DEAL:line::4	7.0
+DEAL:line::length: 6.0
+DEAL:line::0	1.0 3.0
+DEAL:line::1	2.5 1.0
+DEAL:line::2	4.0 -1.0
+DEAL:line::3	5.5 -3.0
+DEAL:line::4	7.0 -5.0
+DEAL:line::length: 10.
+DEAL:line::0	1.0 3.0 0.0
+DEAL:line::1	2.5 1.0 2.5
+DEAL:line::2	4.0 -1.0 5.0
+DEAL:line::3	5.5 -3.0 7.5
+DEAL:line::4	7.0 -5.0 10.
+DEAL:line::length: 14.
+DEAL:face::Checking dim 1 1d-points 5
+DEAL:face::Face 0
+DEAL:face::0.0
+DEAL:face::Face 1
+DEAL:face::1.0
+DEAL:face::Face 0 subface 0
+DEAL:face::0.0
+DEAL:face::Face 1 subface 0
+DEAL:face::1.0
+DEAL:face::Checking dim 2 1d-points 5
+DEAL:face::Face 0
+DEAL:face::0.0 0.0
+DEAL:face::0.0 0.25
+DEAL:face::0.0 0.50
+DEAL:face::0.0 0.75
+DEAL:face::0.0 1.0
+DEAL:face::Face 1
+DEAL:face::1.0 0.0
+DEAL:face::1.0 0.25
+DEAL:face::1.0 0.50
+DEAL:face::1.0 0.75
+DEAL:face::1.0 1.0
+DEAL:face::Face 2
+DEAL:face::0.0 0.0
+DEAL:face::0.25 0.0
+DEAL:face::0.50 0.0
+DEAL:face::0.75 0.0
+DEAL:face::1.0 0.0
+DEAL:face::Face 3
+DEAL:face::0.0 1.0
+DEAL:face::0.25 1.0
+DEAL:face::0.50 1.0
+DEAL:face::0.75 1.0
+DEAL:face::1.0 1.0
+DEAL:face::Face 0 subface 0
+DEAL:face::0.0 0.0
+DEAL:face::0.0 0.25
+DEAL:face::0.0 0.50
+DEAL:face::0.0 0.75
+DEAL:face::0.0 1.0
+DEAL:face::Face 0 subface 1
+DEAL:face::0.0 0.0
+DEAL:face::0.0 0.25
+DEAL:face::0.0 0.50
+DEAL:face::0.0 0.75
+DEAL:face::0.0 1.0
+DEAL:face::Face 1 subface 0
+DEAL:face::1.0 0.0
+DEAL:face::1.0 0.25
+DEAL:face::1.0 0.50
+DEAL:face::1.0 0.75
+DEAL:face::1.0 1.0
+DEAL:face::Face 1 subface 1
+DEAL:face::1.0 0.0
+DEAL:face::1.0 0.25
+DEAL:face::1.0 0.50
+DEAL:face::1.0 0.75
+DEAL:face::1.0 1.0
+DEAL:face::Face 2 subface 0
+DEAL:face::0.0 0.0
+DEAL:face::0.25 0.0
+DEAL:face::0.50 0.0
+DEAL:face::0.75 0.0
+DEAL:face::1.0 0.0
+DEAL:face::Face 2 subface 1
+DEAL:face::0.0 0.0
+DEAL:face::0.25 0.0
+DEAL:face::0.50 0.0
+DEAL:face::0.75 0.0
+DEAL:face::1.0 0.0
+DEAL:face::Face 3 subface 0
+DEAL:face::0.0 1.0
+DEAL:face::0.25 1.0
+DEAL:face::0.50 1.0
+DEAL:face::0.75 1.0
+DEAL:face::1.0 1.0
+DEAL:face::Face 3 subface 1
+DEAL:face::0.0 1.0
+DEAL:face::0.25 1.0
+DEAL:face::0.50 1.0
+DEAL:face::0.75 1.0
+DEAL:face::1.0 1.0
+DEAL:face::Checking dim 3 1d-points 5
+DEAL:face::Face 0
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.25 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.0 0.75 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 0.25
+DEAL:face::0.0 0.25 0.25
+DEAL:face::0.0 0.50 0.25
+DEAL:face::0.0 0.75 0.25
+DEAL:face::0.0 1.0 0.25
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.25 0.50
+DEAL:face::0.0 0.50 0.50
+DEAL:face::0.0 0.75 0.50
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 0.0 0.75
+DEAL:face::0.0 0.25 0.75
+DEAL:face::0.0 0.50 0.75
+DEAL:face::0.0 0.75 0.75
+DEAL:face::0.0 1.0 0.75
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 0.25 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.0 0.75 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 1
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.25 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::1.0 0.75 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 0.25
+DEAL:face::1.0 0.25 0.25
+DEAL:face::1.0 0.50 0.25
+DEAL:face::1.0 0.75 0.25
+DEAL:face::1.0 1.0 0.25
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.25 0.50
+DEAL:face::1.0 0.50 0.50
+DEAL:face::1.0 0.75 0.50
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 0.0 0.75
+DEAL:face::1.0 0.25 0.75
+DEAL:face::1.0 0.50 0.75
+DEAL:face::1.0 0.75 0.75
+DEAL:face::1.0 1.0 0.75
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 0.25 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::1.0 0.75 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 2
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 0.25
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.0 0.75
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.25 0.0 0.0
+DEAL:face::0.25 0.0 0.25
+DEAL:face::0.25 0.0 0.50
+DEAL:face::0.25 0.0 0.75
+DEAL:face::0.25 0.0 1.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.50 0.0 0.25
+DEAL:face::0.50 0.0 0.50
+DEAL:face::0.50 0.0 0.75
+DEAL:face::0.50 0.0 1.0
+DEAL:face::0.75 0.0 0.0
+DEAL:face::0.75 0.0 0.25
+DEAL:face::0.75 0.0 0.50
+DEAL:face::0.75 0.0 0.75
+DEAL:face::0.75 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 0.25
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.0 0.75
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 3
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 0.25
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 1.0 0.75
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.25 1.0 0.0
+DEAL:face::0.25 1.0 0.25
+DEAL:face::0.25 1.0 0.50
+DEAL:face::0.25 1.0 0.75
+DEAL:face::0.25 1.0 1.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.50 1.0 0.25
+DEAL:face::0.50 1.0 0.50
+DEAL:face::0.50 1.0 0.75
+DEAL:face::0.50 1.0 1.0
+DEAL:face::0.75 1.0 0.0
+DEAL:face::0.75 1.0 0.25
+DEAL:face::0.75 1.0 0.50
+DEAL:face::0.75 1.0 0.75
+DEAL:face::0.75 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 0.25
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 1.0 0.75
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 4
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.25 0.0 0.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.75 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 0.25 0.0
+DEAL:face::0.25 0.25 0.0
+DEAL:face::0.50 0.25 0.0
+DEAL:face::0.75 0.25 0.0
+DEAL:face::1.0 0.25 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.25 0.50 0.0
+DEAL:face::0.50 0.50 0.0
+DEAL:face::0.75 0.50 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::0.0 0.75 0.0
+DEAL:face::0.25 0.75 0.0
+DEAL:face::0.50 0.75 0.0
+DEAL:face::0.75 0.75 0.0
+DEAL:face::1.0 0.75 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.25 1.0 0.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.75 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 5
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.25 0.0 1.0
+DEAL:face::0.50 0.0 1.0
+DEAL:face::0.75 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 0.25 1.0
+DEAL:face::0.25 0.25 1.0
+DEAL:face::0.50 0.25 1.0
+DEAL:face::0.75 0.25 1.0
+DEAL:face::1.0 0.25 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.25 0.50 1.0
+DEAL:face::0.50 0.50 1.0
+DEAL:face::0.75 0.50 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::0.0 0.75 1.0
+DEAL:face::0.25 0.75 1.0
+DEAL:face::0.50 0.75 1.0
+DEAL:face::0.75 0.75 1.0
+DEAL:face::1.0 0.75 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.25 1.0 1.0
+DEAL:face::0.50 1.0 1.0
+DEAL:face::0.75 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 0 subface 0
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.25 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.0 0.75 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 0.25
+DEAL:face::0.0 0.25 0.25
+DEAL:face::0.0 0.50 0.25
+DEAL:face::0.0 0.75 0.25
+DEAL:face::0.0 1.0 0.25
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.25 0.50
+DEAL:face::0.0 0.50 0.50
+DEAL:face::0.0 0.75 0.50
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 0.0 0.75
+DEAL:face::0.0 0.25 0.75
+DEAL:face::0.0 0.50 0.75
+DEAL:face::0.0 0.75 0.75
+DEAL:face::0.0 1.0 0.75
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 0.25 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.0 0.75 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 0 subface 1
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.25 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.0 0.75 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 0.25
+DEAL:face::0.0 0.25 0.25
+DEAL:face::0.0 0.50 0.25
+DEAL:face::0.0 0.75 0.25
+DEAL:face::0.0 1.0 0.25
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.25 0.50
+DEAL:face::0.0 0.50 0.50
+DEAL:face::0.0 0.75 0.50
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 0.0 0.75
+DEAL:face::0.0 0.25 0.75
+DEAL:face::0.0 0.50 0.75
+DEAL:face::0.0 0.75 0.75
+DEAL:face::0.0 1.0 0.75
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 0.25 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.0 0.75 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 0 subface 2
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.25 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.0 0.75 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 0.25
+DEAL:face::0.0 0.25 0.25
+DEAL:face::0.0 0.50 0.25
+DEAL:face::0.0 0.75 0.25
+DEAL:face::0.0 1.0 0.25
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.25 0.50
+DEAL:face::0.0 0.50 0.50
+DEAL:face::0.0 0.75 0.50
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 0.0 0.75
+DEAL:face::0.0 0.25 0.75
+DEAL:face::0.0 0.50 0.75
+DEAL:face::0.0 0.75 0.75
+DEAL:face::0.0 1.0 0.75
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 0.25 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.0 0.75 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 0 subface 3
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.25 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.0 0.75 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 0.0 0.25
+DEAL:face::0.0 0.25 0.25
+DEAL:face::0.0 0.50 0.25
+DEAL:face::0.0 0.75 0.25
+DEAL:face::0.0 1.0 0.25
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.25 0.50
+DEAL:face::0.0 0.50 0.50
+DEAL:face::0.0 0.75 0.50
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 0.0 0.75
+DEAL:face::0.0 0.25 0.75
+DEAL:face::0.0 0.50 0.75
+DEAL:face::0.0 0.75 0.75
+DEAL:face::0.0 1.0 0.75
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.0 0.25 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.0 0.75 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::Face 1 subface 0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.25 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::1.0 0.75 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 0.25
+DEAL:face::1.0 0.25 0.25
+DEAL:face::1.0 0.50 0.25
+DEAL:face::1.0 0.75 0.25
+DEAL:face::1.0 1.0 0.25
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.25 0.50
+DEAL:face::1.0 0.50 0.50
+DEAL:face::1.0 0.75 0.50
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 0.0 0.75
+DEAL:face::1.0 0.25 0.75
+DEAL:face::1.0 0.50 0.75
+DEAL:face::1.0 0.75 0.75
+DEAL:face::1.0 1.0 0.75
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 0.25 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::1.0 0.75 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 1 subface 1
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.25 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::1.0 0.75 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 0.25
+DEAL:face::1.0 0.25 0.25
+DEAL:face::1.0 0.50 0.25
+DEAL:face::1.0 0.75 0.25
+DEAL:face::1.0 1.0 0.25
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.25 0.50
+DEAL:face::1.0 0.50 0.50
+DEAL:face::1.0 0.75 0.50
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 0.0 0.75
+DEAL:face::1.0 0.25 0.75
+DEAL:face::1.0 0.50 0.75
+DEAL:face::1.0 0.75 0.75
+DEAL:face::1.0 1.0 0.75
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 0.25 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::1.0 0.75 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 1 subface 2
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.25 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::1.0 0.75 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 0.25
+DEAL:face::1.0 0.25 0.25
+DEAL:face::1.0 0.50 0.25
+DEAL:face::1.0 0.75 0.25
+DEAL:face::1.0 1.0 0.25
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.25 0.50
+DEAL:face::1.0 0.50 0.50
+DEAL:face::1.0 0.75 0.50
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 0.0 0.75
+DEAL:face::1.0 0.25 0.75
+DEAL:face::1.0 0.50 0.75
+DEAL:face::1.0 0.75 0.75
+DEAL:face::1.0 1.0 0.75
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 0.25 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::1.0 0.75 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 1 subface 3
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.25 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::1.0 0.75 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 0.0 0.25
+DEAL:face::1.0 0.25 0.25
+DEAL:face::1.0 0.50 0.25
+DEAL:face::1.0 0.75 0.25
+DEAL:face::1.0 1.0 0.25
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.25 0.50
+DEAL:face::1.0 0.50 0.50
+DEAL:face::1.0 0.75 0.50
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 0.0 0.75
+DEAL:face::1.0 0.25 0.75
+DEAL:face::1.0 0.50 0.75
+DEAL:face::1.0 0.75 0.75
+DEAL:face::1.0 1.0 0.75
+DEAL:face::1.0 0.0 1.0
+DEAL:face::1.0 0.25 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::1.0 0.75 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 2 subface 0
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 0.25
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.0 0.75
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.25 0.0 0.0
+DEAL:face::0.25 0.0 0.25
+DEAL:face::0.25 0.0 0.50
+DEAL:face::0.25 0.0 0.75
+DEAL:face::0.25 0.0 1.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.50 0.0 0.25
+DEAL:face::0.50 0.0 0.50
+DEAL:face::0.50 0.0 0.75
+DEAL:face::0.50 0.0 1.0
+DEAL:face::0.75 0.0 0.0
+DEAL:face::0.75 0.0 0.25
+DEAL:face::0.75 0.0 0.50
+DEAL:face::0.75 0.0 0.75
+DEAL:face::0.75 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 0.25
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.0 0.75
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 2 subface 1
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 0.25
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.0 0.75
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.25 0.0 0.0
+DEAL:face::0.25 0.0 0.25
+DEAL:face::0.25 0.0 0.50
+DEAL:face::0.25 0.0 0.75
+DEAL:face::0.25 0.0 1.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.50 0.0 0.25
+DEAL:face::0.50 0.0 0.50
+DEAL:face::0.50 0.0 0.75
+DEAL:face::0.50 0.0 1.0
+DEAL:face::0.75 0.0 0.0
+DEAL:face::0.75 0.0 0.25
+DEAL:face::0.75 0.0 0.50
+DEAL:face::0.75 0.0 0.75
+DEAL:face::0.75 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 0.25
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.0 0.75
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 2 subface 2
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 0.25
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.0 0.75
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.25 0.0 0.0
+DEAL:face::0.25 0.0 0.25
+DEAL:face::0.25 0.0 0.50
+DEAL:face::0.25 0.0 0.75
+DEAL:face::0.25 0.0 1.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.50 0.0 0.25
+DEAL:face::0.50 0.0 0.50
+DEAL:face::0.50 0.0 0.75
+DEAL:face::0.50 0.0 1.0
+DEAL:face::0.75 0.0 0.0
+DEAL:face::0.75 0.0 0.25
+DEAL:face::0.75 0.0 0.50
+DEAL:face::0.75 0.0 0.75
+DEAL:face::0.75 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 0.25
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.0 0.75
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 2 subface 3
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.0 0.0 0.25
+DEAL:face::0.0 0.0 0.50
+DEAL:face::0.0 0.0 0.75
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.25 0.0 0.0
+DEAL:face::0.25 0.0 0.25
+DEAL:face::0.25 0.0 0.50
+DEAL:face::0.25 0.0 0.75
+DEAL:face::0.25 0.0 1.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.50 0.0 0.25
+DEAL:face::0.50 0.0 0.50
+DEAL:face::0.50 0.0 0.75
+DEAL:face::0.50 0.0 1.0
+DEAL:face::0.75 0.0 0.0
+DEAL:face::0.75 0.0 0.25
+DEAL:face::0.75 0.0 0.50
+DEAL:face::0.75 0.0 0.75
+DEAL:face::0.75 0.0 1.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::1.0 0.0 0.25
+DEAL:face::1.0 0.0 0.50
+DEAL:face::1.0 0.0 0.75
+DEAL:face::1.0 0.0 1.0
+DEAL:face::Face 3 subface 0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 0.25
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 1.0 0.75
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.25 1.0 0.0
+DEAL:face::0.25 1.0 0.25
+DEAL:face::0.25 1.0 0.50
+DEAL:face::0.25 1.0 0.75
+DEAL:face::0.25 1.0 1.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.50 1.0 0.25
+DEAL:face::0.50 1.0 0.50
+DEAL:face::0.50 1.0 0.75
+DEAL:face::0.50 1.0 1.0
+DEAL:face::0.75 1.0 0.0
+DEAL:face::0.75 1.0 0.25
+DEAL:face::0.75 1.0 0.50
+DEAL:face::0.75 1.0 0.75
+DEAL:face::0.75 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 0.25
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 1.0 0.75
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 3 subface 1
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 0.25
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 1.0 0.75
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.25 1.0 0.0
+DEAL:face::0.25 1.0 0.25
+DEAL:face::0.25 1.0 0.50
+DEAL:face::0.25 1.0 0.75
+DEAL:face::0.25 1.0 1.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.50 1.0 0.25
+DEAL:face::0.50 1.0 0.50
+DEAL:face::0.50 1.0 0.75
+DEAL:face::0.50 1.0 1.0
+DEAL:face::0.75 1.0 0.0
+DEAL:face::0.75 1.0 0.25
+DEAL:face::0.75 1.0 0.50
+DEAL:face::0.75 1.0 0.75
+DEAL:face::0.75 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 0.25
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 1.0 0.75
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 3 subface 2
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 0.25
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 1.0 0.75
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.25 1.0 0.0
+DEAL:face::0.25 1.0 0.25
+DEAL:face::0.25 1.0 0.50
+DEAL:face::0.25 1.0 0.75
+DEAL:face::0.25 1.0 1.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.50 1.0 0.25
+DEAL:face::0.50 1.0 0.50
+DEAL:face::0.50 1.0 0.75
+DEAL:face::0.50 1.0 1.0
+DEAL:face::0.75 1.0 0.0
+DEAL:face::0.75 1.0 0.25
+DEAL:face::0.75 1.0 0.50
+DEAL:face::0.75 1.0 0.75
+DEAL:face::0.75 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 0.25
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 1.0 0.75
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 3 subface 3
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.0 1.0 0.25
+DEAL:face::0.0 1.0 0.50
+DEAL:face::0.0 1.0 0.75
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.25 1.0 0.0
+DEAL:face::0.25 1.0 0.25
+DEAL:face::0.25 1.0 0.50
+DEAL:face::0.25 1.0 0.75
+DEAL:face::0.25 1.0 1.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.50 1.0 0.25
+DEAL:face::0.50 1.0 0.50
+DEAL:face::0.50 1.0 0.75
+DEAL:face::0.50 1.0 1.0
+DEAL:face::0.75 1.0 0.0
+DEAL:face::0.75 1.0 0.25
+DEAL:face::0.75 1.0 0.50
+DEAL:face::0.75 1.0 0.75
+DEAL:face::0.75 1.0 1.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::1.0 1.0 0.25
+DEAL:face::1.0 1.0 0.50
+DEAL:face::1.0 1.0 0.75
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 4 subface 0
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.25 0.0 0.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.75 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 0.25 0.0
+DEAL:face::0.25 0.25 0.0
+DEAL:face::0.50 0.25 0.0
+DEAL:face::0.75 0.25 0.0
+DEAL:face::1.0 0.25 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.25 0.50 0.0
+DEAL:face::0.50 0.50 0.0
+DEAL:face::0.75 0.50 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::0.0 0.75 0.0
+DEAL:face::0.25 0.75 0.0
+DEAL:face::0.50 0.75 0.0
+DEAL:face::0.75 0.75 0.0
+DEAL:face::1.0 0.75 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.25 1.0 0.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.75 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 4 subface 1
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.25 0.0 0.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.75 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 0.25 0.0
+DEAL:face::0.25 0.25 0.0
+DEAL:face::0.50 0.25 0.0
+DEAL:face::0.75 0.25 0.0
+DEAL:face::1.0 0.25 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.25 0.50 0.0
+DEAL:face::0.50 0.50 0.0
+DEAL:face::0.75 0.50 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::0.0 0.75 0.0
+DEAL:face::0.25 0.75 0.0
+DEAL:face::0.50 0.75 0.0
+DEAL:face::0.75 0.75 0.0
+DEAL:face::1.0 0.75 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.25 1.0 0.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.75 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 4 subface 2
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.25 0.0 0.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.75 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 0.25 0.0
+DEAL:face::0.25 0.25 0.0
+DEAL:face::0.50 0.25 0.0
+DEAL:face::0.75 0.25 0.0
+DEAL:face::1.0 0.25 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.25 0.50 0.0
+DEAL:face::0.50 0.50 0.0
+DEAL:face::0.75 0.50 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::0.0 0.75 0.0
+DEAL:face::0.25 0.75 0.0
+DEAL:face::0.50 0.75 0.0
+DEAL:face::0.75 0.75 0.0
+DEAL:face::1.0 0.75 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.25 1.0 0.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.75 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 4 subface 3
+DEAL:face::0.0 0.0 0.0
+DEAL:face::0.25 0.0 0.0
+DEAL:face::0.50 0.0 0.0
+DEAL:face::0.75 0.0 0.0
+DEAL:face::1.0 0.0 0.0
+DEAL:face::0.0 0.25 0.0
+DEAL:face::0.25 0.25 0.0
+DEAL:face::0.50 0.25 0.0
+DEAL:face::0.75 0.25 0.0
+DEAL:face::1.0 0.25 0.0
+DEAL:face::0.0 0.50 0.0
+DEAL:face::0.25 0.50 0.0
+DEAL:face::0.50 0.50 0.0
+DEAL:face::0.75 0.50 0.0
+DEAL:face::1.0 0.50 0.0
+DEAL:face::0.0 0.75 0.0
+DEAL:face::0.25 0.75 0.0
+DEAL:face::0.50 0.75 0.0
+DEAL:face::0.75 0.75 0.0
+DEAL:face::1.0 0.75 0.0
+DEAL:face::0.0 1.0 0.0
+DEAL:face::0.25 1.0 0.0
+DEAL:face::0.50 1.0 0.0
+DEAL:face::0.75 1.0 0.0
+DEAL:face::1.0 1.0 0.0
+DEAL:face::Face 5 subface 0
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.25 0.0 1.0
+DEAL:face::0.50 0.0 1.0
+DEAL:face::0.75 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 0.25 1.0
+DEAL:face::0.25 0.25 1.0
+DEAL:face::0.50 0.25 1.0
+DEAL:face::0.75 0.25 1.0
+DEAL:face::1.0 0.25 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.25 0.50 1.0
+DEAL:face::0.50 0.50 1.0
+DEAL:face::0.75 0.50 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::0.0 0.75 1.0
+DEAL:face::0.25 0.75 1.0
+DEAL:face::0.50 0.75 1.0
+DEAL:face::0.75 0.75 1.0
+DEAL:face::1.0 0.75 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.25 1.0 1.0
+DEAL:face::0.50 1.0 1.0
+DEAL:face::0.75 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 5 subface 1
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.25 0.0 1.0
+DEAL:face::0.50 0.0 1.0
+DEAL:face::0.75 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 0.25 1.0
+DEAL:face::0.25 0.25 1.0
+DEAL:face::0.50 0.25 1.0
+DEAL:face::0.75 0.25 1.0
+DEAL:face::1.0 0.25 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.25 0.50 1.0
+DEAL:face::0.50 0.50 1.0
+DEAL:face::0.75 0.50 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::0.0 0.75 1.0
+DEAL:face::0.25 0.75 1.0
+DEAL:face::0.50 0.75 1.0
+DEAL:face::0.75 0.75 1.0
+DEAL:face::1.0 0.75 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.25 1.0 1.0
+DEAL:face::0.50 1.0 1.0
+DEAL:face::0.75 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 5 subface 2
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.25 0.0 1.0
+DEAL:face::0.50 0.0 1.0
+DEAL:face::0.75 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 0.25 1.0
+DEAL:face::0.25 0.25 1.0
+DEAL:face::0.50 0.25 1.0
+DEAL:face::0.75 0.25 1.0
+DEAL:face::1.0 0.25 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.25 0.50 1.0
+DEAL:face::0.50 0.50 1.0
+DEAL:face::0.75 0.50 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::0.0 0.75 1.0
+DEAL:face::0.25 0.75 1.0
+DEAL:face::0.50 0.75 1.0
+DEAL:face::0.75 0.75 1.0
+DEAL:face::1.0 0.75 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.25 1.0 1.0
+DEAL:face::0.50 1.0 1.0
+DEAL:face::0.75 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:face::Face 5 subface 3
+DEAL:face::0.0 0.0 1.0
+DEAL:face::0.25 0.0 1.0
+DEAL:face::0.50 0.0 1.0
+DEAL:face::0.75 0.0 1.0
+DEAL:face::1.0 0.0 1.0
+DEAL:face::0.0 0.25 1.0
+DEAL:face::0.25 0.25 1.0
+DEAL:face::0.50 0.25 1.0
+DEAL:face::0.75 0.25 1.0
+DEAL:face::1.0 0.25 1.0
+DEAL:face::0.0 0.50 1.0
+DEAL:face::0.25 0.50 1.0
+DEAL:face::0.50 0.50 1.0
+DEAL:face::0.75 0.50 1.0
+DEAL:face::1.0 0.50 1.0
+DEAL:face::0.0 0.75 1.0
+DEAL:face::0.25 0.75 1.0
+DEAL:face::0.50 0.75 1.0
+DEAL:face::0.75 0.75 1.0
+DEAL:face::1.0 0.75 1.0
+DEAL:face::0.0 1.0 1.0
+DEAL:face::0.25 1.0 1.0
+DEAL:face::0.50 1.0 1.0
+DEAL:face::0.75 1.0 1.0
+DEAL:face::1.0 1.0 1.0
+DEAL:all::Checking dim 2 1d-points 5
+DEAL:all::Face 0 orientation false
+DEAL:all::0.0 0.0
+DEAL:all::0.0 0.25
+DEAL:all::0.0 0.50
+DEAL:all::0.0 0.75
+DEAL:all::0.0 1.0
+DEAL:all::Face 0 orientation true
+DEAL:all::0.0 0.0
+DEAL:all::0.0 0.25
+DEAL:all::0.0 0.50
+DEAL:all::0.0 0.75
+DEAL:all::0.0 1.0
+DEAL:all::Face 1 orientation false
+DEAL:all::1.0 0.0
+DEAL:all::1.0 0.25
+DEAL:all::1.0 0.50
+DEAL:all::1.0 0.75
+DEAL:all::1.0 1.0
+DEAL:all::Face 1 orientation true
+DEAL:all::1.0 0.0
+DEAL:all::1.0 0.25
+DEAL:all::1.0 0.50
+DEAL:all::1.0 0.75
+DEAL:all::1.0 1.0
+DEAL:all::Face 2 orientation false
+DEAL:all::0.0 0.0
+DEAL:all::0.25 0.0
+DEAL:all::0.50 0.0
+DEAL:all::0.75 0.0
+DEAL:all::1.0 0.0
+DEAL:all::Face 2 orientation true
+DEAL:all::0.0 0.0
+DEAL:all::0.25 0.0
+DEAL:all::0.50 0.0
+DEAL:all::0.75 0.0
+DEAL:all::1.0 0.0
+DEAL:all::Face 3 orientation false
+DEAL:all::0.0 1.0
+DEAL:all::0.25 1.0
+DEAL:all::0.50 1.0
+DEAL:all::0.75 1.0
+DEAL:all::1.0 1.0
+DEAL:all::Face 3 orientation true
+DEAL:all::0.0 1.0
+DEAL:all::0.25 1.0
+DEAL:all::0.50 1.0
+DEAL:all::0.75 1.0
+DEAL:all::1.0 1.0
+DEAL:all::Checking dim 3 1d-points 5
+DEAL:all::Face 0 orientation false
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.0 0.0 0.25
+DEAL:all::0.0 0.0 0.50
+DEAL:all::0.0 0.0 0.75
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.0 0.25 0.0
+DEAL:all::0.0 0.25 0.25
+DEAL:all::0.0 0.25 0.50
+DEAL:all::0.0 0.25 0.75
+DEAL:all::0.0 0.25 1.0
+DEAL:all::0.0 0.50 0.0
+DEAL:all::0.0 0.50 0.25
+DEAL:all::0.0 0.50 0.50
+DEAL:all::0.0 0.50 0.75
+DEAL:all::0.0 0.50 1.0
+DEAL:all::0.0 0.75 0.0
+DEAL:all::0.0 0.75 0.25
+DEAL:all::0.0 0.75 0.50
+DEAL:all::0.0 0.75 0.75
+DEAL:all::0.0 0.75 1.0
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.0 1.0 0.25
+DEAL:all::0.0 1.0 0.50
+DEAL:all::0.0 1.0 0.75
+DEAL:all::0.0 1.0 1.0
+DEAL:all::Face 0 orientation true
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.0 0.25 0.0
+DEAL:all::0.0 0.50 0.0
+DEAL:all::0.0 0.75 0.0
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.0 0.0 0.25
+DEAL:all::0.0 0.25 0.25
+DEAL:all::0.0 0.50 0.25
+DEAL:all::0.0 0.75 0.25
+DEAL:all::0.0 1.0 0.25
+DEAL:all::0.0 0.0 0.50
+DEAL:all::0.0 0.25 0.50
+DEAL:all::0.0 0.50 0.50
+DEAL:all::0.0 0.75 0.50
+DEAL:all::0.0 1.0 0.50
+DEAL:all::0.0 0.0 0.75
+DEAL:all::0.0 0.25 0.75
+DEAL:all::0.0 0.50 0.75
+DEAL:all::0.0 0.75 0.75
+DEAL:all::0.0 1.0 0.75
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.0 0.25 1.0
+DEAL:all::0.0 0.50 1.0
+DEAL:all::0.0 0.75 1.0
+DEAL:all::0.0 1.0 1.0
+DEAL:all::Face 1 orientation false
+DEAL:all::1.0 0.0 0.0
+DEAL:all::1.0 0.0 0.25
+DEAL:all::1.0 0.0 0.50
+DEAL:all::1.0 0.0 0.75
+DEAL:all::1.0 0.0 1.0
+DEAL:all::1.0 0.25 0.0
+DEAL:all::1.0 0.25 0.25
+DEAL:all::1.0 0.25 0.50
+DEAL:all::1.0 0.25 0.75
+DEAL:all::1.0 0.25 1.0
+DEAL:all::1.0 0.50 0.0
+DEAL:all::1.0 0.50 0.25
+DEAL:all::1.0 0.50 0.50
+DEAL:all::1.0 0.50 0.75
+DEAL:all::1.0 0.50 1.0
+DEAL:all::1.0 0.75 0.0
+DEAL:all::1.0 0.75 0.25
+DEAL:all::1.0 0.75 0.50
+DEAL:all::1.0 0.75 0.75
+DEAL:all::1.0 0.75 1.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::1.0 1.0 0.25
+DEAL:all::1.0 1.0 0.50
+DEAL:all::1.0 1.0 0.75
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 1 orientation true
+DEAL:all::1.0 0.0 0.0
+DEAL:all::1.0 0.25 0.0
+DEAL:all::1.0 0.50 0.0
+DEAL:all::1.0 0.75 0.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::1.0 0.0 0.25
+DEAL:all::1.0 0.25 0.25
+DEAL:all::1.0 0.50 0.25
+DEAL:all::1.0 0.75 0.25
+DEAL:all::1.0 1.0 0.25
+DEAL:all::1.0 0.0 0.50
+DEAL:all::1.0 0.25 0.50
+DEAL:all::1.0 0.50 0.50
+DEAL:all::1.0 0.75 0.50
+DEAL:all::1.0 1.0 0.50
+DEAL:all::1.0 0.0 0.75
+DEAL:all::1.0 0.25 0.75
+DEAL:all::1.0 0.50 0.75
+DEAL:all::1.0 0.75 0.75
+DEAL:all::1.0 1.0 0.75
+DEAL:all::1.0 0.0 1.0
+DEAL:all::1.0 0.25 1.0
+DEAL:all::1.0 0.50 1.0
+DEAL:all::1.0 0.75 1.0
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 2 orientation false
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.25 0.0 0.0
+DEAL:all::0.50 0.0 0.0
+DEAL:all::0.75 0.0 0.0
+DEAL:all::1.0 0.0 0.0
+DEAL:all::0.0 0.0 0.25
+DEAL:all::0.25 0.0 0.25
+DEAL:all::0.50 0.0 0.25
+DEAL:all::0.75 0.0 0.25
+DEAL:all::1.0 0.0 0.25
+DEAL:all::0.0 0.0 0.50
+DEAL:all::0.25 0.0 0.50
+DEAL:all::0.50 0.0 0.50
+DEAL:all::0.75 0.0 0.50
+DEAL:all::1.0 0.0 0.50
+DEAL:all::0.0 0.0 0.75
+DEAL:all::0.25 0.0 0.75
+DEAL:all::0.50 0.0 0.75
+DEAL:all::0.75 0.0 0.75
+DEAL:all::1.0 0.0 0.75
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.25 0.0 1.0
+DEAL:all::0.50 0.0 1.0
+DEAL:all::0.75 0.0 1.0
+DEAL:all::1.0 0.0 1.0
+DEAL:all::Face 2 orientation true
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.0 0.0 0.25
+DEAL:all::0.0 0.0 0.50
+DEAL:all::0.0 0.0 0.75
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.25 0.0 0.0
+DEAL:all::0.25 0.0 0.25
+DEAL:all::0.25 0.0 0.50
+DEAL:all::0.25 0.0 0.75
+DEAL:all::0.25 0.0 1.0
+DEAL:all::0.50 0.0 0.0
+DEAL:all::0.50 0.0 0.25
+DEAL:all::0.50 0.0 0.50
+DEAL:all::0.50 0.0 0.75
+DEAL:all::0.50 0.0 1.0
+DEAL:all::0.75 0.0 0.0
+DEAL:all::0.75 0.0 0.25
+DEAL:all::0.75 0.0 0.50
+DEAL:all::0.75 0.0 0.75
+DEAL:all::0.75 0.0 1.0
+DEAL:all::1.0 0.0 0.0
+DEAL:all::1.0 0.0 0.25
+DEAL:all::1.0 0.0 0.50
+DEAL:all::1.0 0.0 0.75
+DEAL:all::1.0 0.0 1.0
+DEAL:all::Face 3 orientation false
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.25 1.0 0.0
+DEAL:all::0.50 1.0 0.0
+DEAL:all::0.75 1.0 0.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::0.0 1.0 0.25
+DEAL:all::0.25 1.0 0.25
+DEAL:all::0.50 1.0 0.25
+DEAL:all::0.75 1.0 0.25
+DEAL:all::1.0 1.0 0.25
+DEAL:all::0.0 1.0 0.50
+DEAL:all::0.25 1.0 0.50
+DEAL:all::0.50 1.0 0.50
+DEAL:all::0.75 1.0 0.50
+DEAL:all::1.0 1.0 0.50
+DEAL:all::0.0 1.0 0.75
+DEAL:all::0.25 1.0 0.75
+DEAL:all::0.50 1.0 0.75
+DEAL:all::0.75 1.0 0.75
+DEAL:all::1.0 1.0 0.75
+DEAL:all::0.0 1.0 1.0
+DEAL:all::0.25 1.0 1.0
+DEAL:all::0.50 1.0 1.0
+DEAL:all::0.75 1.0 1.0
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 3 orientation true
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.0 1.0 0.25
+DEAL:all::0.0 1.0 0.50
+DEAL:all::0.0 1.0 0.75
+DEAL:all::0.0 1.0 1.0
+DEAL:all::0.25 1.0 0.0
+DEAL:all::0.25 1.0 0.25
+DEAL:all::0.25 1.0 0.50
+DEAL:all::0.25 1.0 0.75
+DEAL:all::0.25 1.0 1.0
+DEAL:all::0.50 1.0 0.0
+DEAL:all::0.50 1.0 0.25
+DEAL:all::0.50 1.0 0.50
+DEAL:all::0.50 1.0 0.75
+DEAL:all::0.50 1.0 1.0
+DEAL:all::0.75 1.0 0.0
+DEAL:all::0.75 1.0 0.25
+DEAL:all::0.75 1.0 0.50
+DEAL:all::0.75 1.0 0.75
+DEAL:all::0.75 1.0 1.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::1.0 1.0 0.25
+DEAL:all::1.0 1.0 0.50
+DEAL:all::1.0 1.0 0.75
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 4 orientation false
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.0 0.25 0.0
+DEAL:all::0.0 0.50 0.0
+DEAL:all::0.0 0.75 0.0
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.25 0.0 0.0
+DEAL:all::0.25 0.25 0.0
+DEAL:all::0.25 0.50 0.0
+DEAL:all::0.25 0.75 0.0
+DEAL:all::0.25 1.0 0.0
+DEAL:all::0.50 0.0 0.0
+DEAL:all::0.50 0.25 0.0
+DEAL:all::0.50 0.50 0.0
+DEAL:all::0.50 0.75 0.0
+DEAL:all::0.50 1.0 0.0
+DEAL:all::0.75 0.0 0.0
+DEAL:all::0.75 0.25 0.0
+DEAL:all::0.75 0.50 0.0
+DEAL:all::0.75 0.75 0.0
+DEAL:all::0.75 1.0 0.0
+DEAL:all::1.0 0.0 0.0
+DEAL:all::1.0 0.25 0.0
+DEAL:all::1.0 0.50 0.0
+DEAL:all::1.0 0.75 0.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::Face 4 orientation true
+DEAL:all::0.0 0.0 0.0
+DEAL:all::0.25 0.0 0.0
+DEAL:all::0.50 0.0 0.0
+DEAL:all::0.75 0.0 0.0
+DEAL:all::1.0 0.0 0.0
+DEAL:all::0.0 0.25 0.0
+DEAL:all::0.25 0.25 0.0
+DEAL:all::0.50 0.25 0.0
+DEAL:all::0.75 0.25 0.0
+DEAL:all::1.0 0.25 0.0
+DEAL:all::0.0 0.50 0.0
+DEAL:all::0.25 0.50 0.0
+DEAL:all::0.50 0.50 0.0
+DEAL:all::0.75 0.50 0.0
+DEAL:all::1.0 0.50 0.0
+DEAL:all::0.0 0.75 0.0
+DEAL:all::0.25 0.75 0.0
+DEAL:all::0.50 0.75 0.0
+DEAL:all::0.75 0.75 0.0
+DEAL:all::1.0 0.75 0.0
+DEAL:all::0.0 1.0 0.0
+DEAL:all::0.25 1.0 0.0
+DEAL:all::0.50 1.0 0.0
+DEAL:all::0.75 1.0 0.0
+DEAL:all::1.0 1.0 0.0
+DEAL:all::Face 5 orientation false
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.0 0.25 1.0
+DEAL:all::0.0 0.50 1.0
+DEAL:all::0.0 0.75 1.0
+DEAL:all::0.0 1.0 1.0
+DEAL:all::0.25 0.0 1.0
+DEAL:all::0.25 0.25 1.0
+DEAL:all::0.25 0.50 1.0
+DEAL:all::0.25 0.75 1.0
+DEAL:all::0.25 1.0 1.0
+DEAL:all::0.50 0.0 1.0
+DEAL:all::0.50 0.25 1.0
+DEAL:all::0.50 0.50 1.0
+DEAL:all::0.50 0.75 1.0
+DEAL:all::0.50 1.0 1.0
+DEAL:all::0.75 0.0 1.0
+DEAL:all::0.75 0.25 1.0
+DEAL:all::0.75 0.50 1.0
+DEAL:all::0.75 0.75 1.0
+DEAL:all::0.75 1.0 1.0
+DEAL:all::1.0 0.0 1.0
+DEAL:all::1.0 0.25 1.0
+DEAL:all::1.0 0.50 1.0
+DEAL:all::1.0 0.75 1.0
+DEAL:all::1.0 1.0 1.0
+DEAL:all::Face 5 orientation true
+DEAL:all::0.0 0.0 1.0
+DEAL:all::0.25 0.0 1.0
+DEAL:all::0.50 0.0 1.0
+DEAL:all::0.75 0.0 1.0
+DEAL:all::1.0 0.0 1.0
+DEAL:all::0.0 0.25 1.0
+DEAL:all::0.25 0.25 1.0
+DEAL:all::0.50 0.25 1.0
+DEAL:all::0.75 0.25 1.0
+DEAL:all::1.0 0.25 1.0
+DEAL:all::0.0 0.50 1.0
+DEAL:all::0.25 0.50 1.0
+DEAL:all::0.50 0.50 1.0
+DEAL:all::0.75 0.50 1.0
+DEAL:all::1.0 0.50 1.0
+DEAL:all::0.0 0.75 1.0
+DEAL:all::0.25 0.75 1.0
+DEAL:all::0.50 0.75 1.0
+DEAL:all::0.75 0.75 1.0
+DEAL:all::1.0 0.75 1.0
+DEAL:all::0.0 1.0 1.0
+DEAL:all::0.25 1.0 1.0
+DEAL:all::0.50 1.0 1.0
+DEAL:all::0.75 1.0 1.0
+DEAL:all::1.0 1.0 1.0

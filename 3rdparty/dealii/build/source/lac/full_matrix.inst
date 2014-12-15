@@ -1,0 +1,1797 @@
+template class FullMatrix< double >;
+
+ template void FullMatrix< double >::print(
+ LogStream&, const unsigned int, const unsigned int) const;
+ template void FullMatrix< double >::print(
+ std::ostream&, const unsigned int, const unsigned int) const; 
+
+ template void FullMatrix< double >::copy_from<1>(
+ const Tensor<2,1>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type);
+
+ template void FullMatrix< double >::copy_from<2>(
+ const Tensor<2,2>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type);
+
+ template void FullMatrix< double >::copy_from<3>(
+ const Tensor<2,3>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type);
+
+ template void FullMatrix< double >::copy_to<1>(
+ Tensor<2,1>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type) const;
+
+ template void FullMatrix< double >::copy_to<2>(
+ Tensor<2,2>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type) const;
+
+ template void FullMatrix< double >::copy_to<3>(
+ Tensor<2,3>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type) const;
+ 
+template class FullMatrix< float >;
+
+ template void FullMatrix< float >::print(
+ LogStream&, const unsigned int, const unsigned int) const;
+ template void FullMatrix< float >::print(
+ std::ostream&, const unsigned int, const unsigned int) const; 
+
+ template void FullMatrix< float >::copy_from<1>(
+ const Tensor<2,1>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type);
+
+ template void FullMatrix< float >::copy_from<2>(
+ const Tensor<2,2>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type);
+
+ template void FullMatrix< float >::copy_from<3>(
+ const Tensor<2,3>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type);
+
+ template void FullMatrix< float >::copy_to<1>(
+ Tensor<2,1>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type) const;
+
+ template void FullMatrix< float >::copy_to<2>(
+ Tensor<2,2>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type) const;
+
+ template void FullMatrix< float >::copy_to<3>(
+ Tensor<2,3>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type) const;
+ 
+template class FullMatrix< long double >;
+
+ template void FullMatrix< long double >::print(
+ LogStream&, const unsigned int, const unsigned int) const;
+ template void FullMatrix< long double >::print(
+ std::ostream&, const unsigned int, const unsigned int) const; 
+
+ template void FullMatrix< long double >::copy_from<1>(
+ const Tensor<2,1>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type);
+
+ template void FullMatrix< long double >::copy_from<2>(
+ const Tensor<2,2>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type);
+
+ template void FullMatrix< long double >::copy_from<3>(
+ const Tensor<2,3>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type);
+
+ template void FullMatrix< long double >::copy_to<1>(
+ Tensor<2,1>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type) const;
+
+ template void FullMatrix< long double >::copy_to<2>(
+ Tensor<2,2>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type) const;
+
+ template void FullMatrix< long double >::copy_to<3>(
+ Tensor<2,3>&, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type) const;
+ 
+template
+ FullMatrix< double >& FullMatrix< double >::operator = (const LAPACKFullMatrix< double >&);
+
+ template
+ void FullMatrix< double >::fill< double > (
+ const FullMatrix< double >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< double >::add< double > (const  double , const FullMatrix< double >&);
+ template
+ void FullMatrix< double >::add< double > (const  double , const FullMatrix< double >&,
+ const  double , const FullMatrix< double >&);
+ template
+ void FullMatrix< double >::add< double > (const  double , const FullMatrix< double >&,
+ const  double , const FullMatrix< double >&,
+ const  double , const FullMatrix< double >&);
+ template
+ void FullMatrix< double >::add< double > (
+ const FullMatrix< double >&,  double , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< double >::Tadd< double > (const  double , const FullMatrix< double >&);
+ template
+ void FullMatrix< double >::Tadd< double > (
+ const FullMatrix< double >&,  double , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< double >::equ< double > (const  double , const FullMatrix< double >&);
+ template
+ void FullMatrix< double >::equ< double > (const  double , const FullMatrix< double >&,
+ const  double , const FullMatrix< double >&);
+ template
+ void FullMatrix< double >::equ< double > (const  double , const FullMatrix< double >&,
+ const  double , const FullMatrix< double >&,
+ const  double , const FullMatrix< double >&);
+ template
+ void FullMatrix< double >::mmult< double > (FullMatrix< double >&, const FullMatrix< double >&, const bool) const;
+ template
+ void FullMatrix< double >::Tmmult< double > (FullMatrix< double >&, const FullMatrix< double >&, const bool) const;
+ template
+ void FullMatrix< double >::mTmult< double > (FullMatrix< double >&, const FullMatrix< double >&, const bool) const;
+ template
+ void FullMatrix< double >::TmTmult< double > (FullMatrix< double >&, const FullMatrix< double >&, const bool) const;
+ template
+ void FullMatrix< double >::invert< double > (const FullMatrix< double >&);
+ 
+ template 
+ void FullMatrix< double >::left_invert< double > (const FullMatrix< double > &);
+ template 
+ void FullMatrix< double >::right_invert< double > (const FullMatrix< double > &);
+
+ template
+ void FullMatrix< double >::fill_permutation< double > (
+ const FullMatrix< double >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< double >::vmult< double >(
+ Vector< double >&, const Vector< double >&, bool) const;
+ template
+ void FullMatrix< double >::Tvmult< double >(
+ Vector< double >&, const Vector< double >&, bool) const;
+ template
+  double  FullMatrix< double >::matrix_norm_square< double > (
+ const Vector< double > &) const;
+ template
+  double  FullMatrix< double >::matrix_scalar_product< double >(
+ const Vector< double >&, const Vector< double >&) const;
+ template
+ void FullMatrix< double >::forward< double >(
+ Vector< double >&, const Vector< double >&) const;
+ template
+ void FullMatrix< double >::backward< double >(
+ Vector< double >&, const Vector< double >&) const;
+
+ template
+ void FullMatrix< double >::precondition_Jacobi< double > (
+ Vector< double > &, const Vector< double > &, const  double ) const;
+
+ template
+ void FullMatrix< double >::cholesky< double > (const FullMatrix< double >&);
+
+ template
+ void FullMatrix< double >::outer_product< double > (const Vector< double >&,
+ const Vector< double >&);
+ 
+template
+ FullMatrix< double >& FullMatrix< double >::operator = (const LAPACKFullMatrix< float >&);
+
+ template
+ void FullMatrix< double >::fill< float > (
+ const FullMatrix< float >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< double >::add< float > (const  double , const FullMatrix< float >&);
+ template
+ void FullMatrix< double >::add< float > (const  double , const FullMatrix< float >&,
+ const  double , const FullMatrix< float >&);
+ template
+ void FullMatrix< double >::add< float > (const  double , const FullMatrix< float >&,
+ const  double , const FullMatrix< float >&,
+ const  double , const FullMatrix< float >&);
+ template
+ void FullMatrix< double >::add< float > (
+ const FullMatrix< float >&,  double , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< double >::Tadd< float > (const  double , const FullMatrix< float >&);
+ template
+ void FullMatrix< double >::Tadd< float > (
+ const FullMatrix< float >&,  double , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< double >::equ< float > (const  double , const FullMatrix< float >&);
+ template
+ void FullMatrix< double >::equ< float > (const  double , const FullMatrix< float >&,
+ const  double , const FullMatrix< float >&);
+ template
+ void FullMatrix< double >::equ< float > (const  double , const FullMatrix< float >&,
+ const  double , const FullMatrix< float >&,
+ const  double , const FullMatrix< float >&);
+ template
+ void FullMatrix< double >::mmult< float > (FullMatrix< float >&, const FullMatrix< float >&, const bool) const;
+ template
+ void FullMatrix< double >::Tmmult< float > (FullMatrix< float >&, const FullMatrix< float >&, const bool) const;
+ template
+ void FullMatrix< double >::mTmult< float > (FullMatrix< float >&, const FullMatrix< float >&, const bool) const;
+ template
+ void FullMatrix< double >::TmTmult< float > (FullMatrix< float >&, const FullMatrix< float >&, const bool) const;
+ template
+ void FullMatrix< double >::invert< float > (const FullMatrix< float >&);
+ 
+ template 
+ void FullMatrix< double >::left_invert< float > (const FullMatrix< float > &);
+ template 
+ void FullMatrix< double >::right_invert< float > (const FullMatrix< float > &);
+
+ template
+ void FullMatrix< double >::fill_permutation< float > (
+ const FullMatrix< float >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< double >::vmult< float >(
+ Vector< float >&, const Vector< float >&, bool) const;
+ template
+ void FullMatrix< double >::Tvmult< float >(
+ Vector< float >&, const Vector< float >&, bool) const;
+ template
+  float  FullMatrix< double >::matrix_norm_square< float > (
+ const Vector< float > &) const;
+ template
+  float  FullMatrix< double >::matrix_scalar_product< float >(
+ const Vector< float >&, const Vector< float >&) const;
+ template
+ void FullMatrix< double >::forward< float >(
+ Vector< float >&, const Vector< float >&) const;
+ template
+ void FullMatrix< double >::backward< float >(
+ Vector< float >&, const Vector< float >&) const;
+
+ template
+ void FullMatrix< double >::precondition_Jacobi< float > (
+ Vector< float > &, const Vector< float > &, const  double ) const;
+
+ template
+ void FullMatrix< double >::cholesky< float > (const FullMatrix< float >&);
+
+ template
+ void FullMatrix< double >::outer_product< float > (const Vector< float >&,
+ const Vector< float >&);
+ 
+template
+ FullMatrix< double >& FullMatrix< double >::operator = (const LAPACKFullMatrix< long double >&);
+
+ template
+ void FullMatrix< double >::fill< long double > (
+ const FullMatrix< long double >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< double >::add< long double > (const  double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< double >::add< long double > (const  double , const FullMatrix< long double >&,
+ const  double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< double >::add< long double > (const  double , const FullMatrix< long double >&,
+ const  double , const FullMatrix< long double >&,
+ const  double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< double >::add< long double > (
+ const FullMatrix< long double >&,  double , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< double >::Tadd< long double > (const  double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< double >::Tadd< long double > (
+ const FullMatrix< long double >&,  double , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< double >::equ< long double > (const  double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< double >::equ< long double > (const  double , const FullMatrix< long double >&,
+ const  double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< double >::equ< long double > (const  double , const FullMatrix< long double >&,
+ const  double , const FullMatrix< long double >&,
+ const  double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< double >::mmult< long double > (FullMatrix< long double >&, const FullMatrix< long double >&, const bool) const;
+ template
+ void FullMatrix< double >::Tmmult< long double > (FullMatrix< long double >&, const FullMatrix< long double >&, const bool) const;
+ template
+ void FullMatrix< double >::mTmult< long double > (FullMatrix< long double >&, const FullMatrix< long double >&, const bool) const;
+ template
+ void FullMatrix< double >::TmTmult< long double > (FullMatrix< long double >&, const FullMatrix< long double >&, const bool) const;
+ template
+ void FullMatrix< double >::invert< long double > (const FullMatrix< long double >&);
+ 
+ template 
+ void FullMatrix< double >::left_invert< long double > (const FullMatrix< long double > &);
+ template 
+ void FullMatrix< double >::right_invert< long double > (const FullMatrix< long double > &);
+
+ template
+ void FullMatrix< double >::fill_permutation< long double > (
+ const FullMatrix< long double >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< double >::vmult< long double >(
+ Vector< long double >&, const Vector< long double >&, bool) const;
+ template
+ void FullMatrix< double >::Tvmult< long double >(
+ Vector< long double >&, const Vector< long double >&, bool) const;
+ template
+  long double  FullMatrix< double >::matrix_norm_square< long double > (
+ const Vector< long double > &) const;
+ template
+  long double  FullMatrix< double >::matrix_scalar_product< long double >(
+ const Vector< long double >&, const Vector< long double >&) const;
+ template
+ void FullMatrix< double >::forward< long double >(
+ Vector< long double >&, const Vector< long double >&) const;
+ template
+ void FullMatrix< double >::backward< long double >(
+ Vector< long double >&, const Vector< long double >&) const;
+
+ template
+ void FullMatrix< double >::precondition_Jacobi< long double > (
+ Vector< long double > &, const Vector< long double > &, const  double ) const;
+
+ template
+ void FullMatrix< double >::cholesky< long double > (const FullMatrix< long double >&);
+
+ template
+ void FullMatrix< double >::outer_product< long double > (const Vector< long double >&,
+ const Vector< long double >&);
+ 
+template
+ FullMatrix< float >& FullMatrix< float >::operator = (const LAPACKFullMatrix< double >&);
+
+ template
+ void FullMatrix< float >::fill< double > (
+ const FullMatrix< double >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< float >::add< double > (const  float , const FullMatrix< double >&);
+ template
+ void FullMatrix< float >::add< double > (const  float , const FullMatrix< double >&,
+ const  float , const FullMatrix< double >&);
+ template
+ void FullMatrix< float >::add< double > (const  float , const FullMatrix< double >&,
+ const  float , const FullMatrix< double >&,
+ const  float , const FullMatrix< double >&);
+ template
+ void FullMatrix< float >::add< double > (
+ const FullMatrix< double >&,  float , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< float >::Tadd< double > (const  float , const FullMatrix< double >&);
+ template
+ void FullMatrix< float >::Tadd< double > (
+ const FullMatrix< double >&,  float , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< float >::equ< double > (const  float , const FullMatrix< double >&);
+ template
+ void FullMatrix< float >::equ< double > (const  float , const FullMatrix< double >&,
+ const  float , const FullMatrix< double >&);
+ template
+ void FullMatrix< float >::equ< double > (const  float , const FullMatrix< double >&,
+ const  float , const FullMatrix< double >&,
+ const  float , const FullMatrix< double >&);
+ template
+ void FullMatrix< float >::mmult< double > (FullMatrix< double >&, const FullMatrix< double >&, const bool) const;
+ template
+ void FullMatrix< float >::Tmmult< double > (FullMatrix< double >&, const FullMatrix< double >&, const bool) const;
+ template
+ void FullMatrix< float >::mTmult< double > (FullMatrix< double >&, const FullMatrix< double >&, const bool) const;
+ template
+ void FullMatrix< float >::TmTmult< double > (FullMatrix< double >&, const FullMatrix< double >&, const bool) const;
+ template
+ void FullMatrix< float >::invert< double > (const FullMatrix< double >&);
+ 
+ template 
+ void FullMatrix< float >::left_invert< double > (const FullMatrix< double > &);
+ template 
+ void FullMatrix< float >::right_invert< double > (const FullMatrix< double > &);
+
+ template
+ void FullMatrix< float >::fill_permutation< double > (
+ const FullMatrix< double >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< float >::vmult< double >(
+ Vector< double >&, const Vector< double >&, bool) const;
+ template
+ void FullMatrix< float >::Tvmult< double >(
+ Vector< double >&, const Vector< double >&, bool) const;
+ template
+  double  FullMatrix< float >::matrix_norm_square< double > (
+ const Vector< double > &) const;
+ template
+  double  FullMatrix< float >::matrix_scalar_product< double >(
+ const Vector< double >&, const Vector< double >&) const;
+ template
+ void FullMatrix< float >::forward< double >(
+ Vector< double >&, const Vector< double >&) const;
+ template
+ void FullMatrix< float >::backward< double >(
+ Vector< double >&, const Vector< double >&) const;
+
+ template
+ void FullMatrix< float >::precondition_Jacobi< double > (
+ Vector< double > &, const Vector< double > &, const  float ) const;
+
+ template
+ void FullMatrix< float >::cholesky< double > (const FullMatrix< double >&);
+
+ template
+ void FullMatrix< float >::outer_product< double > (const Vector< double >&,
+ const Vector< double >&);
+ 
+template
+ FullMatrix< float >& FullMatrix< float >::operator = (const LAPACKFullMatrix< float >&);
+
+ template
+ void FullMatrix< float >::fill< float > (
+ const FullMatrix< float >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< float >::add< float > (const  float , const FullMatrix< float >&);
+ template
+ void FullMatrix< float >::add< float > (const  float , const FullMatrix< float >&,
+ const  float , const FullMatrix< float >&);
+ template
+ void FullMatrix< float >::add< float > (const  float , const FullMatrix< float >&,
+ const  float , const FullMatrix< float >&,
+ const  float , const FullMatrix< float >&);
+ template
+ void FullMatrix< float >::add< float > (
+ const FullMatrix< float >&,  float , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< float >::Tadd< float > (const  float , const FullMatrix< float >&);
+ template
+ void FullMatrix< float >::Tadd< float > (
+ const FullMatrix< float >&,  float , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< float >::equ< float > (const  float , const FullMatrix< float >&);
+ template
+ void FullMatrix< float >::equ< float > (const  float , const FullMatrix< float >&,
+ const  float , const FullMatrix< float >&);
+ template
+ void FullMatrix< float >::equ< float > (const  float , const FullMatrix< float >&,
+ const  float , const FullMatrix< float >&,
+ const  float , const FullMatrix< float >&);
+ template
+ void FullMatrix< float >::mmult< float > (FullMatrix< float >&, const FullMatrix< float >&, const bool) const;
+ template
+ void FullMatrix< float >::Tmmult< float > (FullMatrix< float >&, const FullMatrix< float >&, const bool) const;
+ template
+ void FullMatrix< float >::mTmult< float > (FullMatrix< float >&, const FullMatrix< float >&, const bool) const;
+ template
+ void FullMatrix< float >::TmTmult< float > (FullMatrix< float >&, const FullMatrix< float >&, const bool) const;
+ template
+ void FullMatrix< float >::invert< float > (const FullMatrix< float >&);
+ 
+ template 
+ void FullMatrix< float >::left_invert< float > (const FullMatrix< float > &);
+ template 
+ void FullMatrix< float >::right_invert< float > (const FullMatrix< float > &);
+
+ template
+ void FullMatrix< float >::fill_permutation< float > (
+ const FullMatrix< float >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< float >::vmult< float >(
+ Vector< float >&, const Vector< float >&, bool) const;
+ template
+ void FullMatrix< float >::Tvmult< float >(
+ Vector< float >&, const Vector< float >&, bool) const;
+ template
+  float  FullMatrix< float >::matrix_norm_square< float > (
+ const Vector< float > &) const;
+ template
+  float  FullMatrix< float >::matrix_scalar_product< float >(
+ const Vector< float >&, const Vector< float >&) const;
+ template
+ void FullMatrix< float >::forward< float >(
+ Vector< float >&, const Vector< float >&) const;
+ template
+ void FullMatrix< float >::backward< float >(
+ Vector< float >&, const Vector< float >&) const;
+
+ template
+ void FullMatrix< float >::precondition_Jacobi< float > (
+ Vector< float > &, const Vector< float > &, const  float ) const;
+
+ template
+ void FullMatrix< float >::cholesky< float > (const FullMatrix< float >&);
+
+ template
+ void FullMatrix< float >::outer_product< float > (const Vector< float >&,
+ const Vector< float >&);
+ 
+template
+ FullMatrix< float >& FullMatrix< float >::operator = (const LAPACKFullMatrix< long double >&);
+
+ template
+ void FullMatrix< float >::fill< long double > (
+ const FullMatrix< long double >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< float >::add< long double > (const  float , const FullMatrix< long double >&);
+ template
+ void FullMatrix< float >::add< long double > (const  float , const FullMatrix< long double >&,
+ const  float , const FullMatrix< long double >&);
+ template
+ void FullMatrix< float >::add< long double > (const  float , const FullMatrix< long double >&,
+ const  float , const FullMatrix< long double >&,
+ const  float , const FullMatrix< long double >&);
+ template
+ void FullMatrix< float >::add< long double > (
+ const FullMatrix< long double >&,  float , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< float >::Tadd< long double > (const  float , const FullMatrix< long double >&);
+ template
+ void FullMatrix< float >::Tadd< long double > (
+ const FullMatrix< long double >&,  float , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< float >::equ< long double > (const  float , const FullMatrix< long double >&);
+ template
+ void FullMatrix< float >::equ< long double > (const  float , const FullMatrix< long double >&,
+ const  float , const FullMatrix< long double >&);
+ template
+ void FullMatrix< float >::equ< long double > (const  float , const FullMatrix< long double >&,
+ const  float , const FullMatrix< long double >&,
+ const  float , const FullMatrix< long double >&);
+ template
+ void FullMatrix< float >::mmult< long double > (FullMatrix< long double >&, const FullMatrix< long double >&, const bool) const;
+ template
+ void FullMatrix< float >::Tmmult< long double > (FullMatrix< long double >&, const FullMatrix< long double >&, const bool) const;
+ template
+ void FullMatrix< float >::mTmult< long double > (FullMatrix< long double >&, const FullMatrix< long double >&, const bool) const;
+ template
+ void FullMatrix< float >::TmTmult< long double > (FullMatrix< long double >&, const FullMatrix< long double >&, const bool) const;
+ template
+ void FullMatrix< float >::invert< long double > (const FullMatrix< long double >&);
+ 
+ template 
+ void FullMatrix< float >::left_invert< long double > (const FullMatrix< long double > &);
+ template 
+ void FullMatrix< float >::right_invert< long double > (const FullMatrix< long double > &);
+
+ template
+ void FullMatrix< float >::fill_permutation< long double > (
+ const FullMatrix< long double >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< float >::vmult< long double >(
+ Vector< long double >&, const Vector< long double >&, bool) const;
+ template
+ void FullMatrix< float >::Tvmult< long double >(
+ Vector< long double >&, const Vector< long double >&, bool) const;
+ template
+  long double  FullMatrix< float >::matrix_norm_square< long double > (
+ const Vector< long double > &) const;
+ template
+  long double  FullMatrix< float >::matrix_scalar_product< long double >(
+ const Vector< long double >&, const Vector< long double >&) const;
+ template
+ void FullMatrix< float >::forward< long double >(
+ Vector< long double >&, const Vector< long double >&) const;
+ template
+ void FullMatrix< float >::backward< long double >(
+ Vector< long double >&, const Vector< long double >&) const;
+
+ template
+ void FullMatrix< float >::precondition_Jacobi< long double > (
+ Vector< long double > &, const Vector< long double > &, const  float ) const;
+
+ template
+ void FullMatrix< float >::cholesky< long double > (const FullMatrix< long double >&);
+
+ template
+ void FullMatrix< float >::outer_product< long double > (const Vector< long double >&,
+ const Vector< long double >&);
+ 
+template
+ FullMatrix< long double >& FullMatrix< long double >::operator = (const LAPACKFullMatrix< double >&);
+
+ template
+ void FullMatrix< long double >::fill< double > (
+ const FullMatrix< double >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< long double >::add< double > (const  long double , const FullMatrix< double >&);
+ template
+ void FullMatrix< long double >::add< double > (const  long double , const FullMatrix< double >&,
+ const  long double , const FullMatrix< double >&);
+ template
+ void FullMatrix< long double >::add< double > (const  long double , const FullMatrix< double >&,
+ const  long double , const FullMatrix< double >&,
+ const  long double , const FullMatrix< double >&);
+ template
+ void FullMatrix< long double >::add< double > (
+ const FullMatrix< double >&,  long double , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< long double >::Tadd< double > (const  long double , const FullMatrix< double >&);
+ template
+ void FullMatrix< long double >::Tadd< double > (
+ const FullMatrix< double >&,  long double , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< long double >::equ< double > (const  long double , const FullMatrix< double >&);
+ template
+ void FullMatrix< long double >::equ< double > (const  long double , const FullMatrix< double >&,
+ const  long double , const FullMatrix< double >&);
+ template
+ void FullMatrix< long double >::equ< double > (const  long double , const FullMatrix< double >&,
+ const  long double , const FullMatrix< double >&,
+ const  long double , const FullMatrix< double >&);
+ template
+ void FullMatrix< long double >::mmult< double > (FullMatrix< double >&, const FullMatrix< double >&, const bool) const;
+ template
+ void FullMatrix< long double >::Tmmult< double > (FullMatrix< double >&, const FullMatrix< double >&, const bool) const;
+ template
+ void FullMatrix< long double >::mTmult< double > (FullMatrix< double >&, const FullMatrix< double >&, const bool) const;
+ template
+ void FullMatrix< long double >::TmTmult< double > (FullMatrix< double >&, const FullMatrix< double >&, const bool) const;
+ template
+ void FullMatrix< long double >::invert< double > (const FullMatrix< double >&);
+ 
+ template 
+ void FullMatrix< long double >::left_invert< double > (const FullMatrix< double > &);
+ template 
+ void FullMatrix< long double >::right_invert< double > (const FullMatrix< double > &);
+
+ template
+ void FullMatrix< long double >::fill_permutation< double > (
+ const FullMatrix< double >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< long double >::vmult< double >(
+ Vector< double >&, const Vector< double >&, bool) const;
+ template
+ void FullMatrix< long double >::Tvmult< double >(
+ Vector< double >&, const Vector< double >&, bool) const;
+ template
+  double  FullMatrix< long double >::matrix_norm_square< double > (
+ const Vector< double > &) const;
+ template
+  double  FullMatrix< long double >::matrix_scalar_product< double >(
+ const Vector< double >&, const Vector< double >&) const;
+ template
+ void FullMatrix< long double >::forward< double >(
+ Vector< double >&, const Vector< double >&) const;
+ template
+ void FullMatrix< long double >::backward< double >(
+ Vector< double >&, const Vector< double >&) const;
+
+ template
+ void FullMatrix< long double >::precondition_Jacobi< double > (
+ Vector< double > &, const Vector< double > &, const  long double ) const;
+
+ template
+ void FullMatrix< long double >::cholesky< double > (const FullMatrix< double >&);
+
+ template
+ void FullMatrix< long double >::outer_product< double > (const Vector< double >&,
+ const Vector< double >&);
+ 
+template
+ FullMatrix< long double >& FullMatrix< long double >::operator = (const LAPACKFullMatrix< float >&);
+
+ template
+ void FullMatrix< long double >::fill< float > (
+ const FullMatrix< float >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< long double >::add< float > (const  long double , const FullMatrix< float >&);
+ template
+ void FullMatrix< long double >::add< float > (const  long double , const FullMatrix< float >&,
+ const  long double , const FullMatrix< float >&);
+ template
+ void FullMatrix< long double >::add< float > (const  long double , const FullMatrix< float >&,
+ const  long double , const FullMatrix< float >&,
+ const  long double , const FullMatrix< float >&);
+ template
+ void FullMatrix< long double >::add< float > (
+ const FullMatrix< float >&,  long double , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< long double >::Tadd< float > (const  long double , const FullMatrix< float >&);
+ template
+ void FullMatrix< long double >::Tadd< float > (
+ const FullMatrix< float >&,  long double , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< long double >::equ< float > (const  long double , const FullMatrix< float >&);
+ template
+ void FullMatrix< long double >::equ< float > (const  long double , const FullMatrix< float >&,
+ const  long double , const FullMatrix< float >&);
+ template
+ void FullMatrix< long double >::equ< float > (const  long double , const FullMatrix< float >&,
+ const  long double , const FullMatrix< float >&,
+ const  long double , const FullMatrix< float >&);
+ template
+ void FullMatrix< long double >::mmult< float > (FullMatrix< float >&, const FullMatrix< float >&, const bool) const;
+ template
+ void FullMatrix< long double >::Tmmult< float > (FullMatrix< float >&, const FullMatrix< float >&, const bool) const;
+ template
+ void FullMatrix< long double >::mTmult< float > (FullMatrix< float >&, const FullMatrix< float >&, const bool) const;
+ template
+ void FullMatrix< long double >::TmTmult< float > (FullMatrix< float >&, const FullMatrix< float >&, const bool) const;
+ template
+ void FullMatrix< long double >::invert< float > (const FullMatrix< float >&);
+ 
+ template 
+ void FullMatrix< long double >::left_invert< float > (const FullMatrix< float > &);
+ template 
+ void FullMatrix< long double >::right_invert< float > (const FullMatrix< float > &);
+
+ template
+ void FullMatrix< long double >::fill_permutation< float > (
+ const FullMatrix< float >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< long double >::vmult< float >(
+ Vector< float >&, const Vector< float >&, bool) const;
+ template
+ void FullMatrix< long double >::Tvmult< float >(
+ Vector< float >&, const Vector< float >&, bool) const;
+ template
+  float  FullMatrix< long double >::matrix_norm_square< float > (
+ const Vector< float > &) const;
+ template
+  float  FullMatrix< long double >::matrix_scalar_product< float >(
+ const Vector< float >&, const Vector< float >&) const;
+ template
+ void FullMatrix< long double >::forward< float >(
+ Vector< float >&, const Vector< float >&) const;
+ template
+ void FullMatrix< long double >::backward< float >(
+ Vector< float >&, const Vector< float >&) const;
+
+ template
+ void FullMatrix< long double >::precondition_Jacobi< float > (
+ Vector< float > &, const Vector< float > &, const  long double ) const;
+
+ template
+ void FullMatrix< long double >::cholesky< float > (const FullMatrix< float >&);
+
+ template
+ void FullMatrix< long double >::outer_product< float > (const Vector< float >&,
+ const Vector< float >&);
+ 
+template
+ FullMatrix< long double >& FullMatrix< long double >::operator = (const LAPACKFullMatrix< long double >&);
+
+ template
+ void FullMatrix< long double >::fill< long double > (
+ const FullMatrix< long double >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< long double >::add< long double > (const  long double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< long double >::add< long double > (const  long double , const FullMatrix< long double >&,
+ const  long double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< long double >::add< long double > (const  long double , const FullMatrix< long double >&,
+ const  long double , const FullMatrix< long double >&,
+ const  long double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< long double >::add< long double > (
+ const FullMatrix< long double >&,  long double , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< long double >::Tadd< long double > (const  long double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< long double >::Tadd< long double > (
+ const FullMatrix< long double >&,  long double , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< long double >::equ< long double > (const  long double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< long double >::equ< long double > (const  long double , const FullMatrix< long double >&,
+ const  long double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< long double >::equ< long double > (const  long double , const FullMatrix< long double >&,
+ const  long double , const FullMatrix< long double >&,
+ const  long double , const FullMatrix< long double >&);
+ template
+ void FullMatrix< long double >::mmult< long double > (FullMatrix< long double >&, const FullMatrix< long double >&, const bool) const;
+ template
+ void FullMatrix< long double >::Tmmult< long double > (FullMatrix< long double >&, const FullMatrix< long double >&, const bool) const;
+ template
+ void FullMatrix< long double >::mTmult< long double > (FullMatrix< long double >&, const FullMatrix< long double >&, const bool) const;
+ template
+ void FullMatrix< long double >::TmTmult< long double > (FullMatrix< long double >&, const FullMatrix< long double >&, const bool) const;
+ template
+ void FullMatrix< long double >::invert< long double > (const FullMatrix< long double >&);
+ 
+ template 
+ void FullMatrix< long double >::left_invert< long double > (const FullMatrix< long double > &);
+ template 
+ void FullMatrix< long double >::right_invert< long double > (const FullMatrix< long double > &);
+
+ template
+ void FullMatrix< long double >::fill_permutation< long double > (
+ const FullMatrix< long double >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< long double >::vmult< long double >(
+ Vector< long double >&, const Vector< long double >&, bool) const;
+ template
+ void FullMatrix< long double >::Tvmult< long double >(
+ Vector< long double >&, const Vector< long double >&, bool) const;
+ template
+  long double  FullMatrix< long double >::matrix_norm_square< long double > (
+ const Vector< long double > &) const;
+ template
+  long double  FullMatrix< long double >::matrix_scalar_product< long double >(
+ const Vector< long double >&, const Vector< long double >&) const;
+ template
+ void FullMatrix< long double >::forward< long double >(
+ Vector< long double >&, const Vector< long double >&) const;
+ template
+ void FullMatrix< long double >::backward< long double >(
+ Vector< long double >&, const Vector< long double >&) const;
+
+ template
+ void FullMatrix< long double >::precondition_Jacobi< long double > (
+ Vector< long double > &, const Vector< long double > &, const  long double ) const;
+
+ template
+ void FullMatrix< long double >::cholesky< long double > (const FullMatrix< long double >&);
+
+ template
+ void FullMatrix< long double >::outer_product< long double > (const Vector< long double >&,
+ const Vector< long double >&);
+ 
+template
+  double 
+ FullMatrix< double >::residual< double , double >(Vector< double >&,
+ const Vector< double >&,
+ const Vector< double >&) const;
+ 
+template
+  double 
+ FullMatrix< double >::residual< double , float >(Vector< double >&,
+ const Vector< double >&,
+ const Vector< float >&) const;
+ 
+template
+  double 
+ FullMatrix< double >::residual< double , long double >(Vector< double >&,
+ const Vector< double >&,
+ const Vector< long double >&) const;
+ 
+template
+  double 
+ FullMatrix< double >::residual< float , double >(Vector< float >&,
+ const Vector< float >&,
+ const Vector< double >&) const;
+ 
+template
+  double 
+ FullMatrix< double >::residual< float , float >(Vector< float >&,
+ const Vector< float >&,
+ const Vector< float >&) const;
+ 
+template
+  double 
+ FullMatrix< double >::residual< float , long double >(Vector< float >&,
+ const Vector< float >&,
+ const Vector< long double >&) const;
+ 
+template
+  double 
+ FullMatrix< double >::residual< long double , double >(Vector< long double >&,
+ const Vector< long double >&,
+ const Vector< double >&) const;
+ 
+template
+  double 
+ FullMatrix< double >::residual< long double , float >(Vector< long double >&,
+ const Vector< long double >&,
+ const Vector< float >&) const;
+ 
+template
+  double 
+ FullMatrix< double >::residual< long double , long double >(Vector< long double >&,
+ const Vector< long double >&,
+ const Vector< long double >&) const;
+ 
+template
+  float 
+ FullMatrix< float >::residual< double , double >(Vector< double >&,
+ const Vector< double >&,
+ const Vector< double >&) const;
+ 
+template
+  float 
+ FullMatrix< float >::residual< double , float >(Vector< double >&,
+ const Vector< double >&,
+ const Vector< float >&) const;
+ 
+template
+  float 
+ FullMatrix< float >::residual< double , long double >(Vector< double >&,
+ const Vector< double >&,
+ const Vector< long double >&) const;
+ 
+template
+  float 
+ FullMatrix< float >::residual< float , double >(Vector< float >&,
+ const Vector< float >&,
+ const Vector< double >&) const;
+ 
+template
+  float 
+ FullMatrix< float >::residual< float , float >(Vector< float >&,
+ const Vector< float >&,
+ const Vector< float >&) const;
+ 
+template
+  float 
+ FullMatrix< float >::residual< float , long double >(Vector< float >&,
+ const Vector< float >&,
+ const Vector< long double >&) const;
+ 
+template
+  float 
+ FullMatrix< float >::residual< long double , double >(Vector< long double >&,
+ const Vector< long double >&,
+ const Vector< double >&) const;
+ 
+template
+  float 
+ FullMatrix< float >::residual< long double , float >(Vector< long double >&,
+ const Vector< long double >&,
+ const Vector< float >&) const;
+ 
+template
+  float 
+ FullMatrix< float >::residual< long double , long double >(Vector< long double >&,
+ const Vector< long double >&,
+ const Vector< long double >&) const;
+ 
+template
+  long double 
+ FullMatrix< long double >::residual< double , double >(Vector< double >&,
+ const Vector< double >&,
+ const Vector< double >&) const;
+ 
+template
+  long double 
+ FullMatrix< long double >::residual< double , float >(Vector< double >&,
+ const Vector< double >&,
+ const Vector< float >&) const;
+ 
+template
+  long double 
+ FullMatrix< long double >::residual< double , long double >(Vector< double >&,
+ const Vector< double >&,
+ const Vector< long double >&) const;
+ 
+template
+  long double 
+ FullMatrix< long double >::residual< float , double >(Vector< float >&,
+ const Vector< float >&,
+ const Vector< double >&) const;
+ 
+template
+  long double 
+ FullMatrix< long double >::residual< float , float >(Vector< float >&,
+ const Vector< float >&,
+ const Vector< float >&) const;
+ 
+template
+  long double 
+ FullMatrix< long double >::residual< float , long double >(Vector< float >&,
+ const Vector< float >&,
+ const Vector< long double >&) const;
+ 
+template
+  long double 
+ FullMatrix< long double >::residual< long double , double >(Vector< long double >&,
+ const Vector< long double >&,
+ const Vector< double >&) const;
+ 
+template
+  long double 
+ FullMatrix< long double >::residual< long double , float >(Vector< long double >&,
+ const Vector< long double >&,
+ const Vector< float >&) const;
+ 
+template
+  long double 
+ FullMatrix< long double >::residual< long double , long double >(Vector< long double >&,
+ const Vector< long double >&,
+ const Vector< long double >&) const;
+ 
+template class FullMatrix< std::complex<double> >;
+
+ template void FullMatrix< std::complex<double> >::print(
+ LogStream&, const unsigned int, const unsigned int) const;
+ template void FullMatrix< std::complex<double> >::print(
+ std::ostream&, const unsigned int, const unsigned int) const;
+ 
+template class FullMatrix< std::complex<float> >;
+
+ template void FullMatrix< std::complex<float> >::print(
+ LogStream&, const unsigned int, const unsigned int) const;
+ template void FullMatrix< std::complex<float> >::print(
+ std::ostream&, const unsigned int, const unsigned int) const;
+ 
+template class FullMatrix< std::complex<long double> >;
+
+ template void FullMatrix< std::complex<long double> >::print(
+ LogStream&, const unsigned int, const unsigned int) const;
+ template void FullMatrix< std::complex<long double> >::print(
+ std::ostream&, const unsigned int, const unsigned int) const;
+ 
+template
+ void FullMatrix< std::complex<double> >::fill< std::complex<double> > (
+ const FullMatrix< std::complex<double> >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<double> >::add< std::complex<double> > (const  std::complex<double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<double> >::add< std::complex<double> > (const  std::complex<double> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<double> >::add< std::complex<double> > (const  std::complex<double> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<double> >::add< std::complex<double> > (
+ const FullMatrix< std::complex<double> >&,  std::complex<double> , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<double> >::Tadd< std::complex<double> > (const  std::complex<double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<double> >::Tadd< std::complex<double> > (
+ const FullMatrix< std::complex<double> >&,  std::complex<double> , size_type, size_type,
+ size_type, size_type);
+ template
+ void FullMatrix< std::complex<double> >::equ< std::complex<double> > (const  std::complex<double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<double> >::equ< std::complex<double> > (const  std::complex<double> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<double> >::equ< std::complex<double> > (const  std::complex<double> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<double> >::mmult< std::complex<double> > (FullMatrix< std::complex<double> >&, const FullMatrix< std::complex<double> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<double> >::Tmmult< std::complex<double> > (FullMatrix< std::complex<double> >&, const FullMatrix< std::complex<double> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<double> >::invert< std::complex<double> > (const FullMatrix< std::complex<double> >&);
+
+ template 
+ void FullMatrix< std::complex<double> >::left_invert< std::complex<double> > (const FullMatrix< std::complex<double> > &);
+ template 
+ void FullMatrix< std::complex<double> >::right_invert< std::complex<double> > (const FullMatrix< std::complex<double> > &);
+
+ template
+ void FullMatrix< std::complex<double> >::fill_permutation< std::complex<double> > (
+ const FullMatrix< std::complex<double> >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< std::complex<double> >::vmult< std::complex<double> >(
+ Vector< std::complex<double> >&, const Vector< std::complex<double> >&, bool) const;
+ template
+ void FullMatrix< std::complex<double> >::Tvmult< std::complex<double> >(
+ Vector< std::complex<double> >&, const Vector< std::complex<double> >&, bool) const;
+ template
+  std::complex<double>  FullMatrix< std::complex<double> >::matrix_norm_square< std::complex<double> > (
+ const Vector< std::complex<double> > &) const;
+ template
+  std::complex<double>  FullMatrix< std::complex<double> >::matrix_scalar_product< std::complex<double> >(
+ const Vector< std::complex<double> >&, const Vector< std::complex<double> >&) const;
+ template
+ void FullMatrix< std::complex<double> >::forward< std::complex<double> >(
+ Vector< std::complex<double> >&, const Vector< std::complex<double> >&) const;
+ template
+ void FullMatrix< std::complex<double> >::backward< std::complex<double> >(
+ Vector< std::complex<double> >&, const Vector< std::complex<double> >&) const;
+
+ template
+ void FullMatrix< std::complex<double> >::precondition_Jacobi< std::complex<double> > (
+ Vector< std::complex<double> > &, const Vector< std::complex<double> > &, const  std::complex<double> ) const;
+ 
+template
+ void FullMatrix< std::complex<double> >::fill< std::complex<float> > (
+ const FullMatrix< std::complex<float> >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<double> >::add< std::complex<float> > (const  std::complex<double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<double> >::add< std::complex<float> > (const  std::complex<double> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<double> >::add< std::complex<float> > (const  std::complex<double> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<double> >::add< std::complex<float> > (
+ const FullMatrix< std::complex<float> >&,  std::complex<double> , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<double> >::Tadd< std::complex<float> > (const  std::complex<double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<double> >::Tadd< std::complex<float> > (
+ const FullMatrix< std::complex<float> >&,  std::complex<double> , size_type, size_type,
+ size_type, size_type);
+ template
+ void FullMatrix< std::complex<double> >::equ< std::complex<float> > (const  std::complex<double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<double> >::equ< std::complex<float> > (const  std::complex<double> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<double> >::equ< std::complex<float> > (const  std::complex<double> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<double> >::mmult< std::complex<float> > (FullMatrix< std::complex<float> >&, const FullMatrix< std::complex<float> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<double> >::Tmmult< std::complex<float> > (FullMatrix< std::complex<float> >&, const FullMatrix< std::complex<float> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<double> >::invert< std::complex<float> > (const FullMatrix< std::complex<float> >&);
+
+ template 
+ void FullMatrix< std::complex<double> >::left_invert< std::complex<float> > (const FullMatrix< std::complex<float> > &);
+ template 
+ void FullMatrix< std::complex<double> >::right_invert< std::complex<float> > (const FullMatrix< std::complex<float> > &);
+
+ template
+ void FullMatrix< std::complex<double> >::fill_permutation< std::complex<float> > (
+ const FullMatrix< std::complex<float> >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< std::complex<double> >::vmult< std::complex<float> >(
+ Vector< std::complex<float> >&, const Vector< std::complex<float> >&, bool) const;
+ template
+ void FullMatrix< std::complex<double> >::Tvmult< std::complex<float> >(
+ Vector< std::complex<float> >&, const Vector< std::complex<float> >&, bool) const;
+ template
+  std::complex<float>  FullMatrix< std::complex<double> >::matrix_norm_square< std::complex<float> > (
+ const Vector< std::complex<float> > &) const;
+ template
+  std::complex<float>  FullMatrix< std::complex<double> >::matrix_scalar_product< std::complex<float> >(
+ const Vector< std::complex<float> >&, const Vector< std::complex<float> >&) const;
+ template
+ void FullMatrix< std::complex<double> >::forward< std::complex<float> >(
+ Vector< std::complex<float> >&, const Vector< std::complex<float> >&) const;
+ template
+ void FullMatrix< std::complex<double> >::backward< std::complex<float> >(
+ Vector< std::complex<float> >&, const Vector< std::complex<float> >&) const;
+
+ template
+ void FullMatrix< std::complex<double> >::precondition_Jacobi< std::complex<float> > (
+ Vector< std::complex<float> > &, const Vector< std::complex<float> > &, const  std::complex<double> ) const;
+ 
+template
+ void FullMatrix< std::complex<double> >::fill< std::complex<long double> > (
+ const FullMatrix< std::complex<long double> >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<double> >::add< std::complex<long double> > (const  std::complex<double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<double> >::add< std::complex<long double> > (const  std::complex<double> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<double> >::add< std::complex<long double> > (const  std::complex<double> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<double> >::add< std::complex<long double> > (
+ const FullMatrix< std::complex<long double> >&,  std::complex<double> , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<double> >::Tadd< std::complex<long double> > (const  std::complex<double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<double> >::Tadd< std::complex<long double> > (
+ const FullMatrix< std::complex<long double> >&,  std::complex<double> , size_type, size_type,
+ size_type, size_type);
+ template
+ void FullMatrix< std::complex<double> >::equ< std::complex<long double> > (const  std::complex<double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<double> >::equ< std::complex<long double> > (const  std::complex<double> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<double> >::equ< std::complex<long double> > (const  std::complex<double> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<double> >::mmult< std::complex<long double> > (FullMatrix< std::complex<long double> >&, const FullMatrix< std::complex<long double> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<double> >::Tmmult< std::complex<long double> > (FullMatrix< std::complex<long double> >&, const FullMatrix< std::complex<long double> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<double> >::invert< std::complex<long double> > (const FullMatrix< std::complex<long double> >&);
+
+ template 
+ void FullMatrix< std::complex<double> >::left_invert< std::complex<long double> > (const FullMatrix< std::complex<long double> > &);
+ template 
+ void FullMatrix< std::complex<double> >::right_invert< std::complex<long double> > (const FullMatrix< std::complex<long double> > &);
+
+ template
+ void FullMatrix< std::complex<double> >::fill_permutation< std::complex<long double> > (
+ const FullMatrix< std::complex<long double> >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< std::complex<double> >::vmult< std::complex<long double> >(
+ Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&, bool) const;
+ template
+ void FullMatrix< std::complex<double> >::Tvmult< std::complex<long double> >(
+ Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&, bool) const;
+ template
+  std::complex<long double>  FullMatrix< std::complex<double> >::matrix_norm_square< std::complex<long double> > (
+ const Vector< std::complex<long double> > &) const;
+ template
+  std::complex<long double>  FullMatrix< std::complex<double> >::matrix_scalar_product< std::complex<long double> >(
+ const Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&) const;
+ template
+ void FullMatrix< std::complex<double> >::forward< std::complex<long double> >(
+ Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&) const;
+ template
+ void FullMatrix< std::complex<double> >::backward< std::complex<long double> >(
+ Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&) const;
+
+ template
+ void FullMatrix< std::complex<double> >::precondition_Jacobi< std::complex<long double> > (
+ Vector< std::complex<long double> > &, const Vector< std::complex<long double> > &, const  std::complex<double> ) const;
+ 
+template
+ void FullMatrix< std::complex<float> >::fill< std::complex<double> > (
+ const FullMatrix< std::complex<double> >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<float> >::add< std::complex<double> > (const  std::complex<float> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<float> >::add< std::complex<double> > (const  std::complex<float> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<float> >::add< std::complex<double> > (const  std::complex<float> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<float> >::add< std::complex<double> > (
+ const FullMatrix< std::complex<double> >&,  std::complex<float> , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<float> >::Tadd< std::complex<double> > (const  std::complex<float> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<float> >::Tadd< std::complex<double> > (
+ const FullMatrix< std::complex<double> >&,  std::complex<float> , size_type, size_type,
+ size_type, size_type);
+ template
+ void FullMatrix< std::complex<float> >::equ< std::complex<double> > (const  std::complex<float> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<float> >::equ< std::complex<double> > (const  std::complex<float> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<float> >::equ< std::complex<double> > (const  std::complex<float> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<float> >::mmult< std::complex<double> > (FullMatrix< std::complex<double> >&, const FullMatrix< std::complex<double> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<float> >::Tmmult< std::complex<double> > (FullMatrix< std::complex<double> >&, const FullMatrix< std::complex<double> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<float> >::invert< std::complex<double> > (const FullMatrix< std::complex<double> >&);
+
+ template 
+ void FullMatrix< std::complex<float> >::left_invert< std::complex<double> > (const FullMatrix< std::complex<double> > &);
+ template 
+ void FullMatrix< std::complex<float> >::right_invert< std::complex<double> > (const FullMatrix< std::complex<double> > &);
+
+ template
+ void FullMatrix< std::complex<float> >::fill_permutation< std::complex<double> > (
+ const FullMatrix< std::complex<double> >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< std::complex<float> >::vmult< std::complex<double> >(
+ Vector< std::complex<double> >&, const Vector< std::complex<double> >&, bool) const;
+ template
+ void FullMatrix< std::complex<float> >::Tvmult< std::complex<double> >(
+ Vector< std::complex<double> >&, const Vector< std::complex<double> >&, bool) const;
+ template
+  std::complex<double>  FullMatrix< std::complex<float> >::matrix_norm_square< std::complex<double> > (
+ const Vector< std::complex<double> > &) const;
+ template
+  std::complex<double>  FullMatrix< std::complex<float> >::matrix_scalar_product< std::complex<double> >(
+ const Vector< std::complex<double> >&, const Vector< std::complex<double> >&) const;
+ template
+ void FullMatrix< std::complex<float> >::forward< std::complex<double> >(
+ Vector< std::complex<double> >&, const Vector< std::complex<double> >&) const;
+ template
+ void FullMatrix< std::complex<float> >::backward< std::complex<double> >(
+ Vector< std::complex<double> >&, const Vector< std::complex<double> >&) const;
+
+ template
+ void FullMatrix< std::complex<float> >::precondition_Jacobi< std::complex<double> > (
+ Vector< std::complex<double> > &, const Vector< std::complex<double> > &, const  std::complex<float> ) const;
+ 
+template
+ void FullMatrix< std::complex<float> >::fill< std::complex<float> > (
+ const FullMatrix< std::complex<float> >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<float> >::add< std::complex<float> > (const  std::complex<float> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<float> >::add< std::complex<float> > (const  std::complex<float> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<float> >::add< std::complex<float> > (const  std::complex<float> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<float> >::add< std::complex<float> > (
+ const FullMatrix< std::complex<float> >&,  std::complex<float> , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<float> >::Tadd< std::complex<float> > (const  std::complex<float> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<float> >::Tadd< std::complex<float> > (
+ const FullMatrix< std::complex<float> >&,  std::complex<float> , size_type, size_type,
+ size_type, size_type);
+ template
+ void FullMatrix< std::complex<float> >::equ< std::complex<float> > (const  std::complex<float> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<float> >::equ< std::complex<float> > (const  std::complex<float> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<float> >::equ< std::complex<float> > (const  std::complex<float> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<float> >::mmult< std::complex<float> > (FullMatrix< std::complex<float> >&, const FullMatrix< std::complex<float> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<float> >::Tmmult< std::complex<float> > (FullMatrix< std::complex<float> >&, const FullMatrix< std::complex<float> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<float> >::invert< std::complex<float> > (const FullMatrix< std::complex<float> >&);
+
+ template 
+ void FullMatrix< std::complex<float> >::left_invert< std::complex<float> > (const FullMatrix< std::complex<float> > &);
+ template 
+ void FullMatrix< std::complex<float> >::right_invert< std::complex<float> > (const FullMatrix< std::complex<float> > &);
+
+ template
+ void FullMatrix< std::complex<float> >::fill_permutation< std::complex<float> > (
+ const FullMatrix< std::complex<float> >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< std::complex<float> >::vmult< std::complex<float> >(
+ Vector< std::complex<float> >&, const Vector< std::complex<float> >&, bool) const;
+ template
+ void FullMatrix< std::complex<float> >::Tvmult< std::complex<float> >(
+ Vector< std::complex<float> >&, const Vector< std::complex<float> >&, bool) const;
+ template
+  std::complex<float>  FullMatrix< std::complex<float> >::matrix_norm_square< std::complex<float> > (
+ const Vector< std::complex<float> > &) const;
+ template
+  std::complex<float>  FullMatrix< std::complex<float> >::matrix_scalar_product< std::complex<float> >(
+ const Vector< std::complex<float> >&, const Vector< std::complex<float> >&) const;
+ template
+ void FullMatrix< std::complex<float> >::forward< std::complex<float> >(
+ Vector< std::complex<float> >&, const Vector< std::complex<float> >&) const;
+ template
+ void FullMatrix< std::complex<float> >::backward< std::complex<float> >(
+ Vector< std::complex<float> >&, const Vector< std::complex<float> >&) const;
+
+ template
+ void FullMatrix< std::complex<float> >::precondition_Jacobi< std::complex<float> > (
+ Vector< std::complex<float> > &, const Vector< std::complex<float> > &, const  std::complex<float> ) const;
+ 
+template
+ void FullMatrix< std::complex<float> >::fill< std::complex<long double> > (
+ const FullMatrix< std::complex<long double> >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<float> >::add< std::complex<long double> > (const  std::complex<float> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<float> >::add< std::complex<long double> > (const  std::complex<float> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<float> >::add< std::complex<long double> > (const  std::complex<float> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<float> >::add< std::complex<long double> > (
+ const FullMatrix< std::complex<long double> >&,  std::complex<float> , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<float> >::Tadd< std::complex<long double> > (const  std::complex<float> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<float> >::Tadd< std::complex<long double> > (
+ const FullMatrix< std::complex<long double> >&,  std::complex<float> , size_type, size_type,
+ size_type, size_type);
+ template
+ void FullMatrix< std::complex<float> >::equ< std::complex<long double> > (const  std::complex<float> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<float> >::equ< std::complex<long double> > (const  std::complex<float> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<float> >::equ< std::complex<long double> > (const  std::complex<float> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<float> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<float> >::mmult< std::complex<long double> > (FullMatrix< std::complex<long double> >&, const FullMatrix< std::complex<long double> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<float> >::Tmmult< std::complex<long double> > (FullMatrix< std::complex<long double> >&, const FullMatrix< std::complex<long double> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<float> >::invert< std::complex<long double> > (const FullMatrix< std::complex<long double> >&);
+
+ template 
+ void FullMatrix< std::complex<float> >::left_invert< std::complex<long double> > (const FullMatrix< std::complex<long double> > &);
+ template 
+ void FullMatrix< std::complex<float> >::right_invert< std::complex<long double> > (const FullMatrix< std::complex<long double> > &);
+
+ template
+ void FullMatrix< std::complex<float> >::fill_permutation< std::complex<long double> > (
+ const FullMatrix< std::complex<long double> >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< std::complex<float> >::vmult< std::complex<long double> >(
+ Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&, bool) const;
+ template
+ void FullMatrix< std::complex<float> >::Tvmult< std::complex<long double> >(
+ Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&, bool) const;
+ template
+  std::complex<long double>  FullMatrix< std::complex<float> >::matrix_norm_square< std::complex<long double> > (
+ const Vector< std::complex<long double> > &) const;
+ template
+  std::complex<long double>  FullMatrix< std::complex<float> >::matrix_scalar_product< std::complex<long double> >(
+ const Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&) const;
+ template
+ void FullMatrix< std::complex<float> >::forward< std::complex<long double> >(
+ Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&) const;
+ template
+ void FullMatrix< std::complex<float> >::backward< std::complex<long double> >(
+ Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&) const;
+
+ template
+ void FullMatrix< std::complex<float> >::precondition_Jacobi< std::complex<long double> > (
+ Vector< std::complex<long double> > &, const Vector< std::complex<long double> > &, const  std::complex<float> ) const;
+ 
+template
+ void FullMatrix< std::complex<long double> >::fill< std::complex<double> > (
+ const FullMatrix< std::complex<double> >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<long double> >::add< std::complex<double> > (const  std::complex<long double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::add< std::complex<double> > (const  std::complex<long double> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::add< std::complex<double> > (const  std::complex<long double> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::add< std::complex<double> > (
+ const FullMatrix< std::complex<double> >&,  std::complex<long double> , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<long double> >::Tadd< std::complex<double> > (const  std::complex<long double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::Tadd< std::complex<double> > (
+ const FullMatrix< std::complex<double> >&,  std::complex<long double> , size_type, size_type,
+ size_type, size_type);
+ template
+ void FullMatrix< std::complex<long double> >::equ< std::complex<double> > (const  std::complex<long double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::equ< std::complex<double> > (const  std::complex<long double> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::equ< std::complex<double> > (const  std::complex<long double> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<double> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::mmult< std::complex<double> > (FullMatrix< std::complex<double> >&, const FullMatrix< std::complex<double> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<long double> >::Tmmult< std::complex<double> > (FullMatrix< std::complex<double> >&, const FullMatrix< std::complex<double> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<long double> >::invert< std::complex<double> > (const FullMatrix< std::complex<double> >&);
+
+ template 
+ void FullMatrix< std::complex<long double> >::left_invert< std::complex<double> > (const FullMatrix< std::complex<double> > &);
+ template 
+ void FullMatrix< std::complex<long double> >::right_invert< std::complex<double> > (const FullMatrix< std::complex<double> > &);
+
+ template
+ void FullMatrix< std::complex<long double> >::fill_permutation< std::complex<double> > (
+ const FullMatrix< std::complex<double> >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< std::complex<long double> >::vmult< std::complex<double> >(
+ Vector< std::complex<double> >&, const Vector< std::complex<double> >&, bool) const;
+ template
+ void FullMatrix< std::complex<long double> >::Tvmult< std::complex<double> >(
+ Vector< std::complex<double> >&, const Vector< std::complex<double> >&, bool) const;
+ template
+  std::complex<double>  FullMatrix< std::complex<long double> >::matrix_norm_square< std::complex<double> > (
+ const Vector< std::complex<double> > &) const;
+ template
+  std::complex<double>  FullMatrix< std::complex<long double> >::matrix_scalar_product< std::complex<double> >(
+ const Vector< std::complex<double> >&, const Vector< std::complex<double> >&) const;
+ template
+ void FullMatrix< std::complex<long double> >::forward< std::complex<double> >(
+ Vector< std::complex<double> >&, const Vector< std::complex<double> >&) const;
+ template
+ void FullMatrix< std::complex<long double> >::backward< std::complex<double> >(
+ Vector< std::complex<double> >&, const Vector< std::complex<double> >&) const;
+
+ template
+ void FullMatrix< std::complex<long double> >::precondition_Jacobi< std::complex<double> > (
+ Vector< std::complex<double> > &, const Vector< std::complex<double> > &, const  std::complex<long double> ) const;
+ 
+template
+ void FullMatrix< std::complex<long double> >::fill< std::complex<float> > (
+ const FullMatrix< std::complex<float> >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<long double> >::add< std::complex<float> > (const  std::complex<long double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<long double> >::add< std::complex<float> > (const  std::complex<long double> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<long double> >::add< std::complex<float> > (const  std::complex<long double> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<long double> >::add< std::complex<float> > (
+ const FullMatrix< std::complex<float> >&,  std::complex<long double> , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<long double> >::Tadd< std::complex<float> > (const  std::complex<long double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<long double> >::Tadd< std::complex<float> > (
+ const FullMatrix< std::complex<float> >&,  std::complex<long double> , size_type, size_type,
+ size_type, size_type);
+ template
+ void FullMatrix< std::complex<long double> >::equ< std::complex<float> > (const  std::complex<long double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<long double> >::equ< std::complex<float> > (const  std::complex<long double> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<long double> >::equ< std::complex<float> > (const  std::complex<long double> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<float> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<float> >&);
+ template
+ void FullMatrix< std::complex<long double> >::mmult< std::complex<float> > (FullMatrix< std::complex<float> >&, const FullMatrix< std::complex<float> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<long double> >::Tmmult< std::complex<float> > (FullMatrix< std::complex<float> >&, const FullMatrix< std::complex<float> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<long double> >::invert< std::complex<float> > (const FullMatrix< std::complex<float> >&);
+
+ template 
+ void FullMatrix< std::complex<long double> >::left_invert< std::complex<float> > (const FullMatrix< std::complex<float> > &);
+ template 
+ void FullMatrix< std::complex<long double> >::right_invert< std::complex<float> > (const FullMatrix< std::complex<float> > &);
+
+ template
+ void FullMatrix< std::complex<long double> >::fill_permutation< std::complex<float> > (
+ const FullMatrix< std::complex<float> >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< std::complex<long double> >::vmult< std::complex<float> >(
+ Vector< std::complex<float> >&, const Vector< std::complex<float> >&, bool) const;
+ template
+ void FullMatrix< std::complex<long double> >::Tvmult< std::complex<float> >(
+ Vector< std::complex<float> >&, const Vector< std::complex<float> >&, bool) const;
+ template
+  std::complex<float>  FullMatrix< std::complex<long double> >::matrix_norm_square< std::complex<float> > (
+ const Vector< std::complex<float> > &) const;
+ template
+  std::complex<float>  FullMatrix< std::complex<long double> >::matrix_scalar_product< std::complex<float> >(
+ const Vector< std::complex<float> >&, const Vector< std::complex<float> >&) const;
+ template
+ void FullMatrix< std::complex<long double> >::forward< std::complex<float> >(
+ Vector< std::complex<float> >&, const Vector< std::complex<float> >&) const;
+ template
+ void FullMatrix< std::complex<long double> >::backward< std::complex<float> >(
+ Vector< std::complex<float> >&, const Vector< std::complex<float> >&) const;
+
+ template
+ void FullMatrix< std::complex<long double> >::precondition_Jacobi< std::complex<float> > (
+ Vector< std::complex<float> > &, const Vector< std::complex<float> > &, const  std::complex<long double> ) const;
+ 
+template
+ void FullMatrix< std::complex<long double> >::fill< std::complex<long double> > (
+ const FullMatrix< std::complex<long double> >&, size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<long double> >::add< std::complex<long double> > (const  std::complex<long double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::add< std::complex<long double> > (const  std::complex<long double> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::add< std::complex<long double> > (const  std::complex<long double> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::add< std::complex<long double> > (
+ const FullMatrix< std::complex<long double> >&,  std::complex<long double> , size_type, size_type, size_type, size_type);
+ template
+ void FullMatrix< std::complex<long double> >::Tadd< std::complex<long double> > (const  std::complex<long double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::Tadd< std::complex<long double> > (
+ const FullMatrix< std::complex<long double> >&,  std::complex<long double> , size_type, size_type,
+ size_type, size_type);
+ template
+ void FullMatrix< std::complex<long double> >::equ< std::complex<long double> > (const  std::complex<long double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::equ< std::complex<long double> > (const  std::complex<long double> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::equ< std::complex<long double> > (const  std::complex<long double> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<long double> >&,
+ const  std::complex<long double> , const FullMatrix< std::complex<long double> >&);
+ template
+ void FullMatrix< std::complex<long double> >::mmult< std::complex<long double> > (FullMatrix< std::complex<long double> >&, const FullMatrix< std::complex<long double> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<long double> >::Tmmult< std::complex<long double> > (FullMatrix< std::complex<long double> >&, const FullMatrix< std::complex<long double> >&, const bool) const;
+ template
+ void FullMatrix< std::complex<long double> >::invert< std::complex<long double> > (const FullMatrix< std::complex<long double> >&);
+
+ template 
+ void FullMatrix< std::complex<long double> >::left_invert< std::complex<long double> > (const FullMatrix< std::complex<long double> > &);
+ template 
+ void FullMatrix< std::complex<long double> >::right_invert< std::complex<long double> > (const FullMatrix< std::complex<long double> > &);
+
+ template
+ void FullMatrix< std::complex<long double> >::fill_permutation< std::complex<long double> > (
+ const FullMatrix< std::complex<long double> >&,
+ const std::vector<size_type>&,
+ const std::vector<size_type>&);
+ template
+ void FullMatrix< std::complex<long double> >::vmult< std::complex<long double> >(
+ Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&, bool) const;
+ template
+ void FullMatrix< std::complex<long double> >::Tvmult< std::complex<long double> >(
+ Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&, bool) const;
+ template
+  std::complex<long double>  FullMatrix< std::complex<long double> >::matrix_norm_square< std::complex<long double> > (
+ const Vector< std::complex<long double> > &) const;
+ template
+  std::complex<long double>  FullMatrix< std::complex<long double> >::matrix_scalar_product< std::complex<long double> >(
+ const Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&) const;
+ template
+ void FullMatrix< std::complex<long double> >::forward< std::complex<long double> >(
+ Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&) const;
+ template
+ void FullMatrix< std::complex<long double> >::backward< std::complex<long double> >(
+ Vector< std::complex<long double> >&, const Vector< std::complex<long double> >&) const;
+
+ template
+ void FullMatrix< std::complex<long double> >::precondition_Jacobi< std::complex<long double> > (
+ Vector< std::complex<long double> > &, const Vector< std::complex<long double> > &, const  std::complex<long double> ) const;
+ 
+template
+  std::complex<double> 
+ FullMatrix< std::complex<double> >::residual< std::complex<double> , std::complex<double> >(Vector< std::complex<double> >&,
+ const Vector< std::complex<double> >&,
+ const Vector< std::complex<double> >&) const;
+ 
+template
+  std::complex<double> 
+ FullMatrix< std::complex<double> >::residual< std::complex<double> , std::complex<float> >(Vector< std::complex<double> >&,
+ const Vector< std::complex<double> >&,
+ const Vector< std::complex<float> >&) const;
+ 
+template
+  std::complex<double> 
+ FullMatrix< std::complex<double> >::residual< std::complex<double> , std::complex<long double> >(Vector< std::complex<double> >&,
+ const Vector< std::complex<double> >&,
+ const Vector< std::complex<long double> >&) const;
+ 
+template
+  std::complex<double> 
+ FullMatrix< std::complex<double> >::residual< std::complex<float> , std::complex<double> >(Vector< std::complex<float> >&,
+ const Vector< std::complex<float> >&,
+ const Vector< std::complex<double> >&) const;
+ 
+template
+  std::complex<double> 
+ FullMatrix< std::complex<double> >::residual< std::complex<float> , std::complex<float> >(Vector< std::complex<float> >&,
+ const Vector< std::complex<float> >&,
+ const Vector< std::complex<float> >&) const;
+ 
+template
+  std::complex<double> 
+ FullMatrix< std::complex<double> >::residual< std::complex<float> , std::complex<long double> >(Vector< std::complex<float> >&,
+ const Vector< std::complex<float> >&,
+ const Vector< std::complex<long double> >&) const;
+ 
+template
+  std::complex<double> 
+ FullMatrix< std::complex<double> >::residual< std::complex<long double> , std::complex<double> >(Vector< std::complex<long double> >&,
+ const Vector< std::complex<long double> >&,
+ const Vector< std::complex<double> >&) const;
+ 
+template
+  std::complex<double> 
+ FullMatrix< std::complex<double> >::residual< std::complex<long double> , std::complex<float> >(Vector< std::complex<long double> >&,
+ const Vector< std::complex<long double> >&,
+ const Vector< std::complex<float> >&) const;
+ 
+template
+  std::complex<double> 
+ FullMatrix< std::complex<double> >::residual< std::complex<long double> , std::complex<long double> >(Vector< std::complex<long double> >&,
+ const Vector< std::complex<long double> >&,
+ const Vector< std::complex<long double> >&) const;
+ 
+template
+  std::complex<float> 
+ FullMatrix< std::complex<float> >::residual< std::complex<double> , std::complex<double> >(Vector< std::complex<double> >&,
+ const Vector< std::complex<double> >&,
+ const Vector< std::complex<double> >&) const;
+ 
+template
+  std::complex<float> 
+ FullMatrix< std::complex<float> >::residual< std::complex<double> , std::complex<float> >(Vector< std::complex<double> >&,
+ const Vector< std::complex<double> >&,
+ const Vector< std::complex<float> >&) const;
+ 
+template
+  std::complex<float> 
+ FullMatrix< std::complex<float> >::residual< std::complex<double> , std::complex<long double> >(Vector< std::complex<double> >&,
+ const Vector< std::complex<double> >&,
+ const Vector< std::complex<long double> >&) const;
+ 
+template
+  std::complex<float> 
+ FullMatrix< std::complex<float> >::residual< std::complex<float> , std::complex<double> >(Vector< std::complex<float> >&,
+ const Vector< std::complex<float> >&,
+ const Vector< std::complex<double> >&) const;
+ 
+template
+  std::complex<float> 
+ FullMatrix< std::complex<float> >::residual< std::complex<float> , std::complex<float> >(Vector< std::complex<float> >&,
+ const Vector< std::complex<float> >&,
+ const Vector< std::complex<float> >&) const;
+ 
+template
+  std::complex<float> 
+ FullMatrix< std::complex<float> >::residual< std::complex<float> , std::complex<long double> >(Vector< std::complex<float> >&,
+ const Vector< std::complex<float> >&,
+ const Vector< std::complex<long double> >&) const;
+ 
+template
+  std::complex<float> 
+ FullMatrix< std::complex<float> >::residual< std::complex<long double> , std::complex<double> >(Vector< std::complex<long double> >&,
+ const Vector< std::complex<long double> >&,
+ const Vector< std::complex<double> >&) const;
+ 
+template
+  std::complex<float> 
+ FullMatrix< std::complex<float> >::residual< std::complex<long double> , std::complex<float> >(Vector< std::complex<long double> >&,
+ const Vector< std::complex<long double> >&,
+ const Vector< std::complex<float> >&) const;
+ 
+template
+  std::complex<float> 
+ FullMatrix< std::complex<float> >::residual< std::complex<long double> , std::complex<long double> >(Vector< std::complex<long double> >&,
+ const Vector< std::complex<long double> >&,
+ const Vector< std::complex<long double> >&) const;
+ 
+template
+  std::complex<long double> 
+ FullMatrix< std::complex<long double> >::residual< std::complex<double> , std::complex<double> >(Vector< std::complex<double> >&,
+ const Vector< std::complex<double> >&,
+ const Vector< std::complex<double> >&) const;
+ 
+template
+  std::complex<long double> 
+ FullMatrix< std::complex<long double> >::residual< std::complex<double> , std::complex<float> >(Vector< std::complex<double> >&,
+ const Vector< std::complex<double> >&,
+ const Vector< std::complex<float> >&) const;
+ 
+template
+  std::complex<long double> 
+ FullMatrix< std::complex<long double> >::residual< std::complex<double> , std::complex<long double> >(Vector< std::complex<double> >&,
+ const Vector< std::complex<double> >&,
+ const Vector< std::complex<long double> >&) const;
+ 
+template
+  std::complex<long double> 
+ FullMatrix< std::complex<long double> >::residual< std::complex<float> , std::complex<double> >(Vector< std::complex<float> >&,
+ const Vector< std::complex<float> >&,
+ const Vector< std::complex<double> >&) const;
+ 
+template
+  std::complex<long double> 
+ FullMatrix< std::complex<long double> >::residual< std::complex<float> , std::complex<float> >(Vector< std::complex<float> >&,
+ const Vector< std::complex<float> >&,
+ const Vector< std::complex<float> >&) const;
+ 
+template
+  std::complex<long double> 
+ FullMatrix< std::complex<long double> >::residual< std::complex<float> , std::complex<long double> >(Vector< std::complex<float> >&,
+ const Vector< std::complex<float> >&,
+ const Vector< std::complex<long double> >&) const;
+ 
+template
+  std::complex<long double> 
+ FullMatrix< std::complex<long double> >::residual< std::complex<long double> , std::complex<double> >(Vector< std::complex<long double> >&,
+ const Vector< std::complex<long double> >&,
+ const Vector< std::complex<double> >&) const;
+ 
+template
+  std::complex<long double> 
+ FullMatrix< std::complex<long double> >::residual< std::complex<long double> , std::complex<float> >(Vector< std::complex<long double> >&,
+ const Vector< std::complex<long double> >&,
+ const Vector< std::complex<float> >&) const;
+ 
+template
+  std::complex<long double> 
+ FullMatrix< std::complex<long double> >::residual< std::complex<long double> , std::complex<long double> >(Vector< std::complex<long double> >&,
+ const Vector< std::complex<long double> >&,
+ const Vector< std::complex<long double> >&) const;
+ 

@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>The deal.II Readme on interfacing to SLEPc</title>
+    <link href="../screen.css" rel="StyleSheet">
+    <meta name="copyright" content="Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013 by the deal.II authors">
+    <meta name="date" content="$Date: 2013-10-31 10:29:06 -0400 (Thu, 31 Oct 2013) $">
+    <meta name="svn_id" content="$Id: slepc.html 31496 2013-10-31 14:29:06Z maier $">
+    <meta name="keywords" content="deal.II">
+  </head>
+
+  <body>
+
+    <h1>Interfacing <acronym>deal.II</acronym> to SLEPc</h1>
+
+    <p>
+      <a href="http://www.grycap.upv.es/slepc/"
+      target="_top">SLEPc</a> is a software package that provides
+      functionality for solving a variety of eigenspectrum problems,
+      both standard and generalised. It relies on various different
+      sparse and dense matrix and vector formats that are defined in
+      the PETSc package.  Naturally, this means PETSc must be
+      correctly installed before a working copy of SLEPc can be
+      installed as described <a href="petsc.html">here</a>.
+    </p>
+
+    <p>
+      <acronym>deal.II</acronym> has wrapper classes to the solver and
+      spectral transformation parts of SLEPc that loosely provide
+      almost the same interfaces as the wrapper classes to the PETSc
+      functionality. They are used in a simple case in step-36.
+    </p>
+
+    <h4>Installing <acronym>deal.II</acronym> with SLEPc</h4>
+
+    <p>
+      SLEPc requires the environment variables <code>PETSC_DIR</code>
+      and <code>PETSC_ARCH</code> to be set already and usually
+      requires you to set the environment
+      variable <code>SLEPC_DIR</code> as well. If the environment
+      variable is set, then
+      <acronym>deal.II</acronym> will pick up on this during
+      configuration; just as before with PETSc.
+    </p>
+
+    <p>
+      Alternatively, the <code>-DSLEPC_DIR=DIR</code> option
+      for <code>cmake</code> can be used to override the values
+      of <code>SLEPc_DIR</code> if, for example, these environment
+      variables are not set at all. You can also
+      specify <code>-DDEAL_II_WITH_SLEPC=OFF</code> as a flag during
+      configuration to have <acronym>deal.II</acronym> completely
+      ignore a SLEPc installation.
+    </p>
+
+    <h4>Installing SLEPc</h4>
+
+    <p>
+      <b>Note:</b> The version numbers (x,y,z) of your SLEPc
+      installation must be identical to the same version numbers of
+      your PETSc installation.
+    </p>
+
+    <p>
+      Installing SLEPc is not much of a challenge once PETSc has been
+      correctly installed (check this first!). What is happening here,
+      is that SLEPc scans your PETSc installation and figures out how
+      that was configured; its location, the
+      given <code>PETSC_ARCH</code>, MPI settings, debug
+      mode, and so on.
+    </p>
+
+    <p>
+      This builds a simple SLEPc installation:
+      <pre>
+
+	tar xvzf slepc-x-y-z.tar.gz
+        cd slepc-x-y-z
+	export SLEPC_DIR=`pwd`
+	export LD_LIBRARY_PATH=$SLEPC_DIR/$PETSC_ARCH/lib:$LD_LIBRARY_PATH
+	./configure
+	make
+      </pre>
+      Now let SLEPc check his own sanity:
+      <pre>
+
+	make test
+      </pre>
+      will self-check the serial (and MPI) implementation of SLEPc.
+    </p>
+
+    <p>
+      Finally, you may want to put the two <code>export</code>
+      commands above into your <code>~/.bashrc</code>
+      or <code>~/.cshrc</code> files, with the first one replaced by
+      <pre>
+
+	export SLEPC_DIR=/path/to/slepc-x-y-z
+      </pre>
+      The <code>cmake</code> installation should then be able to pick
+      up where you installed SLEPc and include it automatically in the
+      deal.II build without any further need for instructions. You
+      will see at the bottom of the <code>cmake</code> output if that
+      is what actually happened.
+    </p>
+
+
+
+    <hr />
+    <address>
+      <a href="../authors.html" target="body">The deal.II Authors</a>
+      $Date: 2013-10-31 10:29:06 -0400 (Thu, 31 Oct 2013) $
+    </address>
+    <div class="right">
+      <a href="http://validator.w3.org/check?uri=referer" target="_top">
+        <img style="border:0" src="http://www.w3.org/Icons/valid-html401" alt="Valid HTML 4.01!"></a>
+      <a href="http://jigsaw.w3.org/css-validator/check/referer" target="_top">
+        <img style="border:0;width:88px;height:31px" src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!"></a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,60 @@
+template class Operator< Vector<double> >;
+ template class OutputOperator< Vector<double> >;
+ template class Newton< Vector<double> >;
+ template class ThetaTimestepping< Vector<double> >;
+
+template class Operator< Vector<float> >;
+ template class OutputOperator< Vector<float> >;
+ template class Newton< Vector<float> >;
+ template class ThetaTimestepping< Vector<float> >;
+
+template class Operator< Vector<long double> >;
+ template class OutputOperator< Vector<long double> >;
+ template class Newton< Vector<long double> >;
+ template class ThetaTimestepping< Vector<long double> >;
+
+template class Operator< BlockVector<double> >;
+ template class OutputOperator< BlockVector<double> >;
+ template class Newton< BlockVector<double> >;
+ template class ThetaTimestepping< BlockVector<double> >;
+
+template class Operator< BlockVector<float> >;
+ template class OutputOperator< BlockVector<float> >;
+ template class Newton< BlockVector<float> >;
+ template class ThetaTimestepping< BlockVector<float> >;
+
+template class Operator< BlockVector<long double> >;
+ template class OutputOperator< BlockVector<long double> >;
+ template class Newton< BlockVector<long double> >;
+ template class ThetaTimestepping< BlockVector<long double> >;
+
+template class Operator< parallel::distributed::Vector<double> >;
+ template class OutputOperator< parallel::distributed::Vector<double> >;
+ template class Newton< parallel::distributed::Vector<double> >;
+ template class ThetaTimestepping< parallel::distributed::Vector<double> >;
+
+template class Operator< parallel::distributed::Vector<float> >;
+ template class OutputOperator< parallel::distributed::Vector<float> >;
+ template class Newton< parallel::distributed::Vector<float> >;
+ template class ThetaTimestepping< parallel::distributed::Vector<float> >;
+
+template class Operator< parallel::distributed::Vector<long double> >;
+ template class OutputOperator< parallel::distributed::Vector<long double> >;
+ template class Newton< parallel::distributed::Vector<long double> >;
+ template class ThetaTimestepping< parallel::distributed::Vector<long double> >;
+
+template class Operator< parallel::distributed::BlockVector<double> >;
+ template class OutputOperator< parallel::distributed::BlockVector<double> >;
+ template class Newton< parallel::distributed::BlockVector<double> >;
+ template class ThetaTimestepping< parallel::distributed::BlockVector<double> >;
+
+template class Operator< parallel::distributed::BlockVector<float> >;
+ template class OutputOperator< parallel::distributed::BlockVector<float> >;
+ template class Newton< parallel::distributed::BlockVector<float> >;
+ template class ThetaTimestepping< parallel::distributed::BlockVector<float> >;
+
+template class Operator< parallel::distributed::BlockVector<long double> >;
+ template class OutputOperator< parallel::distributed::BlockVector<long double> >;
+ template class Newton< parallel::distributed::BlockVector<long double> >;
+ template class ThetaTimestepping< parallel::distributed::BlockVector<long double> >;
+

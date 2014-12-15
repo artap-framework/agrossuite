@@ -1,0 +1,673 @@
+<br>
+
+<i>This program was contributed by Luca Heltai (thanks to Michael
+Gratton for pointing out what the exact solution should have been in
+the three dimensional case).  </i>
+
+<a name="Intro"></a>
+
+<h1>Introduction</h1>
+
+<h3> Irrotational flow </h3>
+The incompressible motion of an inviscid fluid past a body (for
+example air past an airplane wing, or air or water past a propeller) is
+usually modeled by the Euler equations of fluid dynamics:
+
+\f{align*}
+  \frac{\partial }{\partial t}\mathbf{v} + (\mathbf{v}\cdot\nabla)\mathbf{v}
+  &=
+  -\frac{1}{\rho}\nabla p + \mathbf{g}
+  \qquad &\text{in } \mathbb{R}^n \backslash \Omega
+  \\
+  \nabla \cdot \mathbf{v}&=0
+  &\text{in } \mathbb{R}^n\backslash\Omega
+\f}
+where the fluid density $\rho$ and the acceleration $\mathbf{g}$ due
+to external forces are given and the velocity $\mathbf{v}$ and the
+pressure $p$ are the unknowns. Here $\Omega$ is a closed bounded
+region representing the body around which the fluid moves.
+
+The above equations can be derived from Navier-Stokes equations
+assuming that the effects due to viscosity are negligible compared to
+those due to the pressure gradient, inertial forces and the external
+forces. This is the opposite case of the Stokes equations discussed in
+step-22 which are the limit case of dominant viscosity,
+i.e. where the velocity is so small that inertia forces can be
+neglected. On the other hand, owing to the assumed incompressibility,
+the equations are not suited for very high speed gas flows where
+compressibility and the equation of state of the gas have to be taken
+into account, leading to the Euler equations of gas dynamics, a
+hyperbolic system.
+
+For the purpose of this tutorial program, we will consider only stationary
+flow without external forces:
+\f{align*}
+  (\mathbf{v}\cdot\nabla)\mathbf{v}
+  &=
+  -\frac{1}{\rho}\nabla p
+  \qquad &\text{in } \mathbb{R}^n \backslash \Omega
+  \\
+  \nabla \cdot \mathbf{v}&=0
+  &\text{in } \mathbb{R}^n\backslash\Omega
+\f}
+
+
+Uniqueness of the solution of the Euler equations is ensured by adding the
+boundary conditions
+\f[
+  \label{eq:boundary-conditions}
+  \begin{aligned}
+    \mathbf{n}\cdot\mathbf{v}& = 0 \qquad && \text{ on } \partial\Omega \\
+    \mathbf{v}& = \mathbf{v}_\infty && \text{ when } |\mathbf{x}| \to \infty,
+  \end{aligned}
+\f]
+
+which is to say that the body is at rest in our coordinate systems and
+is not permeable, and that the fluid has (constant) velocity
+$\mathbf{v}_\infty$ at infinity. An alternative viewpoint is that our
+coordinate system moves along with the body whereas the background
+fluid is at rest at infinity. Notice that we define the normal
+$\mathbf{n}$ as the <i>outer</i> normal to the domain $\Omega$, which
+is the opposite of the outer normal to the integration domain.
+
+For both stationary and non stationary flow, the solution process
+starts by solving for the velocity in the second equation and
+substituting in the first equation in order to find the pressure.
+The solution of the stationary Euler equations is typically performed
+in order to understand the behavior of the given (possibly complex)
+geometry when a prescribed motion is enforced on the system.
+
+The first step in this process is to change the frame of reference from a
+coordinate system moving along with the body to one in which the body moves
+through a fluid that is at rest at infinity. This can be expressed by
+introducing a new velocity $\mathbf{\tilde{v}}=\mathbf{v}-\mathbf{v}_\infty$ for
+which we find that the same equations hold (because $\nabla\cdot
+\mathbf{v}_\infty=0$) and we have boundary conditions
+\f[
+  \label{eq:boundary-conditions-tilde}
+  \begin{aligned}
+    \mathbf{n}\cdot\mathbf{\tilde{v}}& = -\mathbf{n}\cdot\mathbf{v}_\infty \qquad && \text{ on } \partial\Omega \\
+    \mathbf{\tilde{v}}& = 0 && \text{ when } |\mathbf{x}| \to \infty,
+  \end{aligned}
+\f]
+
+If we assume that the fluid is irrotational, i.e., $\nabla \times
+\mathbf{v}=0$ in $\mathbb{R}^n\backslash\Omega$, we can represent the
+velocity, and consequently also the perturbation velocity, as the
+gradient of a scalar function:
+\f[
+  \mathbf{\tilde{v}}=\nabla\phi,
+\f]
+and so the second part of Euler equations above can be rewritten
+as the homogeneous Laplace equation for the unknown $\phi$:
+\f{align*}
+\label{laplace}
+\Delta\phi &= 0 \qquad &&\text{in}\ \mathbb{R}^n\backslash\Omega,
+	   \\
+	   \mathbf{n}\cdot\nabla\phi &= -\mathbf{n}\cdot\mathbf{v}_\infty
+	   && \text{on}\ \partial\Omega
+\f}
+while the momentum equation reduces to Bernoulli's equation that expresses the
+pressure $p$ as a function of the potential $\phi$:
+\f[
+\frac{p}{\rho} +\frac{1}{2} | \nabla \phi |^2 = 0 \in \Omega.
+\f]
+
+So we can solve the problem by solving the Laplace equation for the
+potential.  We recall that the following functions, called fundamental
+solutions of the Laplace equation,
+
+\f[ \begin{aligned}
+\label{eq:3} G(\mathbf{y}-\mathbf{x}) = &
+-\frac{1}{2\pi}\ln|\mathbf{y}-\mathbf{x}| \qquad && \text{for } n=2 \\
+G(\mathbf{y}-\mathbf{x}) = &
+\frac{1}{4\pi}\frac{1}{|\mathbf{y}-\mathbf{x}|}&& \text{for } n=3,
+\end{aligned}
+\f]
+
+satisfy in a distributional sense the equation:
+
+\f[
+-\Delta_y G(\mathbf{y}-\mathbf{x}) = \delta(\mathbf{y}-\mathbf{x}),
+\f]
+
+where the derivative is done in the variable $\mathbf{y}$. By using
+the usual Green identities, our problem can be written on the boundary
+$\partial\Omega = \Gamma$ only. We recall the general definition of
+the second Green %identity:
+
+\f[\label{green}
+  \int_{\omega}
+  (-\Delta u)v\,dx + \int_{\partial\omega} \frac{\partial u}{\partial \mathbf{n} }v \,ds
+  =
+  \int_{\omega}
+  (-\Delta v)u\,dx + \int_{\partial\omega} u\frac{\partial v}{\partial \mathbf{n}} \,ds,
+\f]
+
+where $\mathbf{n}$ is the normal to the surface of $\omega$ pointing
+outwards from the domain of integration $\omega$.
+
+In our case the domain of integration is the domain
+$\mathbb{R}^n\backslash\Omega$, whose boundary is $ \Gamma_\infty \cup
+\Gamma$, where the "boundary" at infinity is defined as
+
+\f[
+\Gamma_\infty := \lim_{r\to\infty} \partial B_r(0).
+\f]
+
+In our program the normals are defined as <i>outer</i> to the domain
+$\Omega$, that is, they are in fact <i>inner</i> to the integration
+domain, and some care is required in defining the various integrals
+with the correct signs for the normals.
+
+If we substitute $u$ and $v$ in the Green %identity with the solution
+$\phi$ and with the fundamental solution of the Laplace equation
+respectively, as long as $\mathbf{x}$ is chosen in the region
+$\mathbb{R}^n\backslash\Omega$, we obtain:
+\f[
+  \phi(\mathbf{x}) -
+  \int_{\Gamma\cup\Gamma_\infty}\frac{\partial G(\mathbf{y}-\mathbf{x})}{\partial \mathbf{n}_y}\phi(\mathbf{y})\,ds_y
+  =
+  -\int_{\Gamma\cup\Gamma_\infty}G(\mathbf{y}-\mathbf{x})\frac{\partial \phi}{\partial \mathbf{n}_y}(\mathbf{y})\,ds_y
+  \qquad \forall\mathbf{x}\in \mathbb{R}^n\backslash\Omega
+\f]
+
+where the normals are now pointing <i>inward</i> the domain of
+integration.
+
+Notice that in the above equation, we also have the integrals on the
+portion of the boundary at $\Gamma_\infty$. Using the boundary
+conditions of our problem, we have that $\nabla \phi$ is zero at
+infinity (which simplifies the integral on $\Gamma_\infty$ on the
+right hand side).
+
+The integral on $\Gamma_\infty$ that appears on the left hand side can
+be treated by observing that $\nabla\phi=0$ implies that $\phi$ at
+infinity is necessarily constant. We define its value to be
+$\phi_\infty$.  It is an easy exercise to prove that
+
+\f[
+-\int_{\Gamma_\infty} \frac{\partial G(\mathbf{y}-\mathbf{x})}
+{\partial \mathbf{n}_y}\phi_\infty \,ds_y =
+\lim_{r\to\infty} \int_{\partial B_r(0)} \frac{\mathbf{r}}{r} \cdot \nabla G(\mathbf{y}-\mathbf{x})
+\phi_\infty \,ds_y = -\phi_\infty.
+\f]
+
+Using this result, we can reduce the above equation only on the
+boundary $\Gamma$ using the so-called Single and Double Layer
+Potential operators:
+
+\f[\label{integral}
+  \phi(\mathbf{x}) - (D\phi)(\mathbf{x}) = \phi_\infty
+  -\left(S \frac{\partial \phi}{\partial n_y}\right)(\mathbf{x})
+  \qquad \forall\mathbf{x}\in \mathbb{R}^n\backslash\Omega.
+\f]
+
+(The name of these operators comes from the fact that they describe the
+electric potential in $\mathbb{R}^n$ due to a single thin sheet of charges
+along a surface, and due to a double sheet of charges and anti-charges along
+the surface, respectively.)
+
+In our case, we know the Neumann values of $\phi$ on the boundary:
+$\mathbf{n}\cdot\nabla\phi = -\mathbf{n}\cdot\mathbf{v}_\infty$.
+Consequently,
+\f[
+  \phi(\mathbf{x}) - (D\phi)(\mathbf{x}) = \phi_\infty +
+   \left(S[\mathbf{n}\cdot\mathbf{v}_\infty]\right)(\mathbf{x})
+   \qquad \forall\mathbf{x} \in \mathbb{R}^n\backslash\Omega.
+\f]
+If we take the limit for $\mathbf{x}$ tending to $\Gamma$ of
+the above equation, using well known properties of the single and double layer
+operators, we obtain an equation for $\phi$ just on the boundary $\Gamma$ of
+$\Omega$:
+
+\f[\label{SD}
+  \alpha(\mathbf{x})\phi(\mathbf{x}) - (D\phi)(\mathbf{x}) = \phi_\infty +
+  \left(S [\mathbf{n}\cdot\mathbf{v}_\infty]\right)(\mathbf{x})
+  \quad \mathbf{x}\in \partial\Omega,
+\f]
+
+which is the %Boundary Integral Equation (BIE) we were looking for,
+where the quantity $\alpha(\mathbf{x})$ is the fraction of angle or
+solid angle by which the point $\mathbf{x}$ sees the domain of
+integration $\mathbb{R}^n\backslash\Omega$.
+
+In particular, at points $\mathbf{x}$ where the boundary
+$\partial\Omega$ is differentiable (i.e. smooth) we have
+$\alpha(\mathbf{x})=\frac 12$, but the value may be smaller or larger
+at points where the boundary has a corner or an edge.
+
+Substituting the single and double layer operators we get:
+\f[
+  \alpha(\mathbf{x}) \phi(\mathbf{x})
+  + \frac{1}{2\pi}\int_{\partial \Omega}  \frac{
+  (\mathbf{y}-\mathbf{x})\cdot\mathbf{n}_y  }{ |\mathbf{y}-\mathbf{x}|^2 }
+  \phi(\mathbf{y}) \,ds_y
+  = \phi_\infty
+    -\frac{1}{2\pi}\int_{\partial \Omega}  \ln|\mathbf{y}-\mathbf{x}| \, \mathbf{n}\cdot\mathbf{v_\infty}\,ds_y
+\f]
+for two dimensional flows and
+\f[
+  \alpha(\mathbf{x}) \phi(\mathbf{x})
+   + \frac{1}{4\pi}\int_{\partial \Omega} \frac{ (\mathbf{y}-\mathbf{x})\cdot\mathbf{n}_y  }{ |\mathbf{y}-\mathbf{x}|^3 }\phi(\mathbf{y})\,ds_y
+  = \phi_\infty +
+  \frac{1}{4\pi}\int_{\partial \Omega} \frac{1}{|\mathbf{y}-\mathbf{x}|} \, \mathbf{n}\cdot\mathbf{v_\infty}\,ds_y
+\f]
+for three dimensional flows, where the normal derivatives of the fundamental
+solutions have been written in a form that makes computation easier. In either
+case, $\phi$ is the solution of an integral equation posed entirely on the
+boundary since both $\mathbf{x},\mathbf{y}\in\partial\Omega$.
+
+Notice that the fraction of angle (in 2d) or solid angle (in 3d)
+$\alpha(\mathbf{x})$ by which the point $\mathbf{x}$ sees the domain
+$\Omega$ can be defined using the double layer potential itself:
+\f[
+\alpha(\mathbf{x}) := 1 -
+\frac{1}{2(n-1)\pi}\int_{\partial \Omega} \frac{ (\mathbf{y}-\mathbf{x})\cdot\mathbf{n}_y  }
+{ |\mathbf{y}-\mathbf{x}|^{n} }\phi(\mathbf{y})\,ds_y = 1+
+\int_{\partial \Omega} \frac{ \partial G(\mathbf{y}-\mathbf{x}) }{\partial \mathbf{n}_y} \, ds_y.
+\f]
+
+The reason why this is possible can be understood if we consider the
+fact that the solution of a pure Neumann problem is known up to an
+arbitrary constant $c$, which means that, if we set the Neumann data
+to be zero, then any constant $\phi = \phi_\infty$ will be a solution,
+giving us an the explicit expression above for $\alpha(\mathbf{x})$.
+
+While this example program is really only focused on the solution of the
+boundary integral equation, in a realistic setup one would still need to solve
+for the velocities. To this end, note that we have just computed
+$\phi(\mathbf{x})$ for all $\mathbf{x}\in\partial\Omega$. In the next step, we
+can compute (analytically, if we want) the solution $\phi(\mathbf{x})$ in all
+of $\mathbb{R}^n\backslash\Omega$. To this end, recall that we had
+\f[
+  \phi(\mathbf{x})
+  =
+  \phi_\infty +
+  (D\phi)(\mathbf{x})
+  +
+  \left(S[\mathbf{n}\cdot\mathbf{v}_\infty]\right)(\mathbf{x})
+  \qquad \forall\mathbf{x}\in \mathbb{R}^n\backslash\Omega.
+\f]
+where now we have everything that is on the right hand side ($S$ and $D$ are
+integrals we can evaluate, the normal velocity on the boundary is given, and
+$\phi$ on the boundary we have just computed). Finally, we can then recover
+the velocity as $\mathbf{\tilde v}=\nabla \phi$.
+
+Notice that the evaluation of the above formula for $\mathbf{x} \in
+\Omega$ should yield zero as a result, since the integration of the
+the Dirac delta $\delta(\mathbf{x})$ in the domain
+$\mathbb{R}^n\backslash\Omega$ is always zero by definition.
+
+As a final test, let us verify that this velocity indeed satisfies the
+momentum balance equation for a stationary flow field, i.e., whether
+$\mathbf{v}\cdot\nabla\mathbf{v} = -\frac 1\rho \nabla p$ where
+$\mathbf{v}=\mathbf{\tilde
+v}+\mathbf{v}_\infty=\nabla\phi+\mathbf{v}_\infty$ for some (unknown) pressure
+$p$ and a given constant $\rho$. In other words, we would like to verify that
+Bernoulli's law as stated above indeed holds. To show this, we use that
+the left hand side of this equation equates to
+@f{align*}
+  \mathbf{v}\cdot\nabla\mathbf{v}
+  &=
+  [(\nabla\phi+\mathbf{v}_\infty)\cdot\nabla] (\nabla\phi+\mathbf{v}_\infty)
+  \\
+  &=
+  [(\nabla\phi+\mathbf{v}_\infty)\cdot\nabla] (\nabla\phi)
+@f}
+where we have used that $\mathbf{v}_\infty$ is constant. We would like to
+write this expression as the gradient of something (remember that $\rho$ is a
+constant). The next step is more
+convenient if we consider the components of the equation individually
+(summation over indices that appear twice is implied):
+@f{align*}
+  [\mathbf{v}\cdot\nabla\mathbf{v}]_i
+  &=
+  (\partial_j\phi+v_{\infty,j}) \partial_j \partial_i\phi
+  \\
+  &=
+  \partial_j [(\partial_j\phi+v_{\infty,j}) \partial_i\phi]
+  -
+  \partial_j [(\partial_j\phi+v_{\infty,j})] \partial_i\phi
+  \\
+  &=
+  \partial_j [(\partial_j\phi+v_{\infty,j}) \partial_i\phi]
+@f}
+because $\partial_j \partial_j\phi = \Delta \phi = 0$ and $\textrm{div}
+\ \mathbf{v}_\infty=0$. Next,
+@f{align*}
+  [\mathbf{v}\cdot\nabla\mathbf{v}]_i
+  &=
+  \partial_j [(\partial_j\phi+v_{\infty,j}) \partial_i\phi]
+  \\
+  &=
+  \partial_j [(\partial_j\phi) (\partial_i\phi)]
+  +
+  \partial_j [v_{\infty,j} \partial_i\phi]
+  \\
+  &=
+  \partial_j [(\partial_j\phi) (\partial_i\phi)]
+  +
+  \partial_j [v_{\infty,j}] \partial_i\phi
+  +
+  v_{\infty,j} \partial_j \partial_i\phi
+  \\
+  &=
+  \partial_j [(\partial_j\phi) (\partial_i\phi)]
+  +
+  v_{\infty,j} \partial_j \partial_i\phi
+  \\
+  &=
+  \partial_i \partial_j [(\partial_j\phi) \phi]
+  -
+  \partial_j [\partial_i (\partial_j\phi) \phi]
+  +
+  \partial_i [v_{\infty,j} \partial_j \phi]
+  -
+  \partial_i [v_{\infty,j}] \partial_j \phi
+@f}
+Again, the last term disappears because $\mathbf{v}_\infty$ is constant and we
+can merge the first and third term into one:
+@f{align*}
+  [\mathbf{v}\cdot\nabla\mathbf{v}]_i
+  &=
+  \partial_i (\partial_j [(\partial_j\phi) \phi + v_{\infty,j} \partial_j \phi])
+  -
+  \partial_j [\partial_i (\partial_j\phi) \phi]
+  \\
+  &=
+  \partial_i [(\partial_j\phi)(\partial_j \phi) + v_{\infty,j} \partial_j \phi]
+  -
+  \partial_j [\partial_i (\partial_j\phi) \phi]
+@f}
+
+We now only need to massage that last term a bit more. Using the product rule,
+we get
+@f{align*}
+  \partial_j [\partial_i (\partial_j\phi) \phi]
+  &=
+  \partial_i [\partial_j \partial_j\phi] \phi
+  +
+  \partial_i [\partial_j \phi] (\partial_j \phi).
+@f}
+The first of these terms is zero (because, again, the summation over $j$ gives
+$\Delta\phi$, which is zero). The last term can be written as $\frac 12
+\partial_i [(\partial_j\phi)(\partial_j\phi)]$ which is in the desired gradient
+form. As a consequence, we can now finally state that
+@f{align*}
+  [\mathbf{v}\cdot\nabla\mathbf{v}]_i
+  &=
+  \partial_i (\partial_j [(\partial_j\phi) \phi + v_{\infty,j} \partial_j \phi])
+  -
+  \partial_j [\partial_i (\partial_j\phi) \phi]
+  \\
+  &=
+  \partial_i
+  \left[
+    (\partial_j\phi)(\partial_j \phi) + v_{\infty,j} \partial_j \phi
+    -
+    \frac 12 (\partial_j\phi)(\partial_j\phi)
+  \right],
+  \\
+  &=
+  \partial_i
+  \left[
+    \frac 12 (\partial_j\phi)(\partial_j \phi) + v_{\infty,j} \partial_j \phi
+  \right],
+@f}
+or in vector form:
+@f[
+  \mathbf{v}\cdot\nabla\mathbf{v}
+  =
+  \nabla
+  \left[
+    \frac 12 \mathbf{\tilde v}^2
+    + \mathbf{v}_{\infty} \cdot \mathbf{\tilde v}
+  \right],
+@f]
+or in other words:
+@f[
+  p
+  =
+  -\rho
+  \left[
+    \frac 12 \mathbf{\tilde v}^2
+    + \mathbf{v}_{\infty} \cdot \mathbf{\tilde v}
+  \right]
+  =
+  -\rho
+  \left[
+    \frac 12 \mathbf{v}^2
+    -
+    \frac 12 \mathbf{v}_{\infty}^2
+  \right]
+  .
+@f]
+Because the pressure is only determined up to a constant (it appears only with
+a gradient in the equations), an equally valid definition is
+@f[
+  p
+  =
+  -\frac 12 \rho \mathbf{v}^2
+  .
+@f]
+This is exactly Bernoulli's law mentioned above.
+
+
+<h3>The numerical approximation</h3>
+
+Numerical approximations of %Boundary Integral Equations (BIE) are commonly
+referred to as the boundary element method or panel method (the latter
+expression being used mostly in the computational fluid dynamics community).
+The goal of the following test problem is to solve the integral
+formulation of the Laplace equation with Neumann boundary conditions,
+using a circle and a sphere respectively in two and three space
+dimensions, illustrating along the way the features that allow one to
+treat boundary element problems almost as easily as finite element
+problems using the deal.II library.
+
+To this end, let $\mathcal{T}_h = \bigcup_i K_i$ be a subdivision of the
+manifold $\Gamma = \partial \Omega$ into $M$ line segments if $n=2$, or $M$
+quadrilaterals if $n=3$. We will call each individual segment or
+quadrilateral an <i>element</i> or <i>cell</i>, independently of the
+dimension $n$ of the surrounding space $\mathbb{R}^n$.
+We define the finite dimensional space $V_h$ as
+\f[
+  \label{eq:definition-Vh}
+  V_h := \{ v \in C^0(\Gamma) \text{ s.t. } v|_{K_i} \in \mathcal{Q}^1(K_i),
+  \forall i\},
+\f]
+with basis functions $\psi_i(\mathbf{x})$ for which we will use the usual FE_Q
+finite element, with the catch that this time it is defined on a manifold of
+codimension one (which we do by using the second template argument that is
+usually defaulted to equal the first; here, we will create objects
+<code>FE_Q@<dim-1,dim@></code> to indicate that we have <code>dim-1</code>
+dimensional cells in a <code>dim</code> dimensional space).
+An element $\phi_h$ of $V_h$ is uniquely
+identified by the vector $\boldsymbol{\phi}$ of its coefficients
+$\phi_i$, that is:
+\f[
+  \label{eq:definition-of-element}
+  \phi_h(\mathbf{x}) := \phi_i \psi_i(\mathbf{x}), \qquad
+  \boldsymbol{\phi} := \{ \phi_i \},
+\f]
+where summation  is implied over repeated indexes. Note that we could use
+discontinuous elements here &mdash; in fact, there is no real reason to use
+continuous ones since the integral formulation does not
+imply any derivatives on our trial functions so continuity is unnecessary,
+and often in the literature only piecewise constant elements are used.
+
+<h3> Collocation boundary element method </h3>
+
+By far, the most common approximation of boundary integral equations
+is by use of the collocation based boundary element method.
+
+This method requires the evaluation of the boundary integral equation
+at a number of collocation points which is equal to the number of
+unknowns of the system. The choice of these points is a delicate
+matter, that requires a careful study. Assume that these points are
+known for the moment, and call them $\mathbf x_i$ with $i=0...n\_dofs$.
+
+The problem then becomes:
+Given the datum $\mathbf{v}_\infty$, find a function $\phi_h$ in $V_h$
+such that the following $n\_dofs$ equations are satisfied:
+
+\f{align*}
+    \alpha(\mathbf{x}_i) \phi_h(\mathbf{x}_i)
+    - \int_{\Gamma_y} \frac{ \partial G(\mathbf{y}-\mathbf{x}_i)}{\partial\mathbf{n}_y }
+    \phi_h(\mathbf{y}) \,ds_y =
+    \int_{\Gamma_y} G(\mathbf{y}-\mathbf{x}_i) \,
+    \mathbf{n}_y\cdot\mathbf{v_\infty} \,ds_y
+    ,
+\f}
+
+where the quantity $\alpha(\mathbf{x}_i)$ is the fraction of (solid)
+angle by which the point $\mathbf{x}_i$ sees the domain $\Omega$, as
+explained above, and we set $\phi_\infty$ to be zero.  If the support
+points $\mathbf{x}_i$ are chosen appropriately, then the problem can
+be written as the following linear system:
+
+\f[
+\label{eq:linear-system}
+(\mathbf{A}+\mathbf{N})\boldsymbol\phi = \mathbf{b},
+\f]
+
+where
+
+\f[
+\begin{aligned}
+\mathbf{A}_{ij}&=
+\alpha(\mathbf{x}_i) \psi_j(\mathbf{x}_i)
+= 1+\int_\Gamma
+\frac{\partial G(\mathbf{y}-\mathbf{x}_i)}{\partial \mathbf{n}_y}\,ds_y
+\psi_j(\mathbf{x}_i)
+\\
+\mathbf{N}_{ij}&= - \int_\Gamma
+  \frac{\partial G(\mathbf{y}-\mathbf{x}_i)}{\partial \mathbf{n}_y}
+  \psi_j(\mathbf{y}) \,ds_y
+\\
+\mathbf{b}_i&= \int_\Gamma
+   G(\mathbf{y}-\mathbf{x}_i)  \, \mathbf{n}_y\cdot\mathbf{v_\infty}
+   ds_y.
+\end{aligned}
+\f]
+
+From a linear algebra point of view, the best possible choice of the
+collocation points is the one that renders the matrix
+$\mathbf{A}+\mathbf{N}$ the most diagonally dominant. A natural choice
+is then to select the $\mathbf{x}_i$ collocation points to be the
+support points of the nodal basis functions $\psi_i(\mathbf{x})$. In that
+case, $\psi_j(\mathbf{x}_i)=\delta_{ij}$, and as a consequence the matrix
+$\mathbf{A}$ is diagonal with entries
+\f[
+  \mathbf{A}_{ii}
+  =
+  1+\int_\Gamma
+  \frac{\partial G(\mathbf{y}-\mathbf{x}_i)}{\partial \mathbf{n}_y}\,ds_y
+  =
+  1-\sum_j N_{ij},
+\f]
+where we have used that $\sum_j \psi_j(\mathbf{y})=1$ for the usual Lagrange
+elements.
+With this choice of collocation points, the computation of the entries
+of the matrices $\mathbf{A}$, $\mathbf{N}$ and of the right hand side
+$\mathbf{b}$ requires the evaluation of singular integrals on the
+elements $K_i$ of the triangulation $\mathcal{T}_h$.
+As usual in these cases, all integrations are performed on a reference
+simple domain, i.e., we assume that each element $K_i$ of
+$\mathcal{T}_h$ can be expressed as a linear (in two dimensions) or
+bi-linear (in three dimensions) transformation of the reference
+boundary element $\hat K := [0,1]^{n-1}$, and we perform the integrations after a
+change of variables from the real element $K_i$ to the reference
+element $\hat K$.
+
+<h3> Treating the singular integrals. </h3>
+
+In two dimensions it is not necessary to compute the diagonal elements
+$\mathbf{N}_{ii}$ of the system matrix, since, even if the denominator
+goes to zero when $\mathbf{x}=\mathbf{y}$, the numerator is always
+zero because $\mathbf{n}_y$ and $(\mathbf{y}-\mathbf{x})$ are
+orthogonal (on our polygonal approximation of the boundary of $\Omega$), and
+the only singular integral arises in the computation
+of $\mathbf{b}_i$ on the i-th element of $\mathcal{T}_h$:
+\f[
+  \frac{1}{\pi}
+  \int_{K_i}
+  \ln|\mathbf{y}-\mathbf{x}_i| \, \mathbf{n}_y\cdot\mathbf{v_\infty} \,ds_y.
+\f]
+
+This can be easily treated by the QGaussLogR quadrature
+formula.
+
+Similarly, it is possible to use the QGaussOneOverR quadrature formula
+to perform the singular integrations in three dimensions. The
+interested reader will find detailed explanations on how these
+quadrature rules work in their documentation.
+
+The resulting matrix $\mathbf{A}+\mathbf{N}$ is full. Depending on its
+size, it might be convenient to use a direct solver or an iterative
+one. For the purpose of this example code, we chose to use only an
+iterative solver, without providing any preconditioner.
+
+If this were a production code rather than a demonstration of principles,
+there are techniques that are available to not store full matrices but instead
+store only those entries that are large and/or relevant. In the literature on
+boundary element methods, a plethora of methods is available that allows to
+determine which elements are important and which are not, leading to a
+significantly sparser representation of these matrices that also facilitates
+rapid evaluations of the scalar product between vectors and matrices. This not
+being the goal of this program, we leave this for more sophisticated
+implementations.
+
+
+<h3>Implementation</h3>
+
+The implementation is rather straight forward. The main point that hasn't been
+used in any of the previous tutorial programs is that most classes in deal.II
+are not only templated on the dimension, but in fact on the dimension of the
+manifold on which we pose the differential equation as well as the dimension
+of the space into which this manifold is embedded. By default, the second
+template argument equals the first, meaning for example that we want to solve
+on a two-dimensional region of two-dimensional space. The triangulation class
+to use in this case would be <code>Triangulation@<2@></code>, which is an
+equivalent way of writing <code>Triangulation@<2,2@></code>.
+
+However, this doesn't have to be so: in the current example, we will for
+example want to solve on the surface of a sphere, which is a two-dimensional
+manifold embedded in a three-dimensional space. Consequently, the right class
+will be <code>Triangulation@<2,3@></code>, and correspondingly we will use
+<code>DoFHandler@<2,3@></code> as the DoF handler class and
+<code>FE_Q@<2,3@></code> for finite elements.
+
+Some further details on what one can do with things that live on
+curved manifolds can be found in the report
+<a target="_top"
+href="http://www.dealii.org/reports/codimension-one/desimone-heltai-manigrasso.pdf"><i>Tools
+for the Solution of PDEs Defined on Curved Manifolds with the deal.II
+Library</i> by A. DeSimone, L. Heltai, C. Manigrasso</a>. In addition, the
+step-38 tutorial program extends what we show here to cases where the equation
+posed on the manifold is not an integral operator but in fact involves
+derivatives.
+
+
+<h3>Testcase</h3>
+
+The testcase we will be solving is for a circular (in 2d) or spherical
+(in 3d) obstacle. Meshes for these geometries will be read in from
+files in the current directory and an object of type HyperBallBoundary
+will then be attached to the triangulation to allow mesh refinement
+that respects the continuous geometry behind the discrete initial
+mesh.
+
+For a sphere of radius $a$ translating at a velocity of $U$ in the $x$ direction, the potential reads
+@f{align*}
+\phi = -\frac{1}{2}U \left(\frac{a}{r}\right)3 r \cos\theta
+@f}
+see, e.g. J. N. Newman, <i>Marine Hydrodynamics</i>, 1977,
+pp. 127. For unit speed and radius, and restricting $(x,y,z)$ to lie
+on the surface of the sphere,
+$\phi = -x/2$. In the test problem,
+the flow is $(1,1,1)$, so the appropriate exact solution on the
+surface of the sphere is the superposition of the above solution with
+the analogous solution along the $y$ and $z$ axes, or $\phi =
+\frac{1}{2}(x + y + z)$.

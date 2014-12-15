@@ -1,0 +1,6 @@
+template class MappingC1< 1 >;
+ 
+template class MappingC1< 2 >;
+ 
+template class MappingC1< 3 >;
+ 

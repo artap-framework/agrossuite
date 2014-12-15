@@ -1,0 +1,366 @@
+namespace GridGenerator 
+{
+#if  1  <=  1 
+ template void
+ hyper_rectangle< 1 ,  1 > (
+ Triangulation< 1 ,  1 > &,
+ const Point< 1 >&, const Point< 1 >&,
+ const bool);
+ 
+ template void
+ hyper_cube< 1 ,  1 > (
+ Triangulation< 1 ,  1 > &, const double, const double);
+ 
+ template
+ void
+ merge_triangulations
+ (const Triangulation< 1 , 1 > &triangulation_1,
+ const Triangulation< 1 , 1 > &triangulation_2,
+ Triangulation< 1 , 1 > &result);
+ 
+#endif
+} 
+ 
+namespace GridGenerator 
+{
+#if  1  <=  2 
+ template void
+ hyper_rectangle< 1 ,  2 > (
+ Triangulation< 1 ,  2 > &,
+ const Point< 2 >&, const Point< 2 >&,
+ const bool);
+ 
+ template void
+ hyper_cube< 1 ,  2 > (
+ Triangulation< 1 ,  2 > &, const double, const double);
+ 
+ template
+ void
+ merge_triangulations
+ (const Triangulation< 1 , 2 > &triangulation_1,
+ const Triangulation< 1 , 2 > &triangulation_2,
+ Triangulation< 1 , 2 > &result);
+ 
+#endif
+} 
+ 
+namespace GridGenerator 
+{
+#if  1  <=  3 
+ template void
+ hyper_rectangle< 1 ,  3 > (
+ Triangulation< 1 ,  3 > &,
+ const Point< 3 >&, const Point< 3 >&,
+ const bool);
+ 
+ template void
+ hyper_cube< 1 ,  3 > (
+ Triangulation< 1 ,  3 > &, const double, const double);
+ 
+ template
+ void
+ merge_triangulations
+ (const Triangulation< 1 , 3 > &triangulation_1,
+ const Triangulation< 1 , 3 > &triangulation_2,
+ Triangulation< 1 , 3 > &result);
+ 
+#endif
+} 
+ 
+namespace GridGenerator 
+{
+#if  2  <=  1 
+ template void
+ hyper_rectangle< 2 ,  1 > (
+ Triangulation< 2 ,  1 > &,
+ const Point< 1 >&, const Point< 1 >&,
+ const bool);
+ 
+ template void
+ hyper_cube< 2 ,  1 > (
+ Triangulation< 2 ,  1 > &, const double, const double);
+ 
+ template
+ void
+ merge_triangulations
+ (const Triangulation< 2 , 1 > &triangulation_1,
+ const Triangulation< 2 , 1 > &triangulation_2,
+ Triangulation< 2 , 1 > &result);
+ 
+#endif
+} 
+ 
+namespace GridGenerator 
+{
+#if  2  <=  2 
+ template void
+ hyper_rectangle< 2 ,  2 > (
+ Triangulation< 2 ,  2 > &,
+ const Point< 2 >&, const Point< 2 >&,
+ const bool);
+ 
+ template void
+ hyper_cube< 2 ,  2 > (
+ Triangulation< 2 ,  2 > &, const double, const double);
+ 
+ template
+ void
+ merge_triangulations
+ (const Triangulation< 2 , 2 > &triangulation_1,
+ const Triangulation< 2 , 2 > &triangulation_2,
+ Triangulation< 2 , 2 > &result);
+ 
+#endif
+} 
+ 
+namespace GridGenerator 
+{
+#if  2  <=  3 
+ template void
+ hyper_rectangle< 2 ,  3 > (
+ Triangulation< 2 ,  3 > &,
+ const Point< 3 >&, const Point< 3 >&,
+ const bool);
+ 
+ template void
+ hyper_cube< 2 ,  3 > (
+ Triangulation< 2 ,  3 > &, const double, const double);
+ 
+ template
+ void
+ merge_triangulations
+ (const Triangulation< 2 , 3 > &triangulation_1,
+ const Triangulation< 2 , 3 > &triangulation_2,
+ Triangulation< 2 , 3 > &result);
+ 
+#endif
+} 
+ 
+namespace GridGenerator 
+{
+#if  3  <=  1 
+ template void
+ hyper_rectangle< 3 ,  1 > (
+ Triangulation< 3 ,  1 > &,
+ const Point< 1 >&, const Point< 1 >&,
+ const bool);
+ 
+ template void
+ hyper_cube< 3 ,  1 > (
+ Triangulation< 3 ,  1 > &, const double, const double);
+ 
+ template
+ void
+ merge_triangulations
+ (const Triangulation< 3 , 1 > &triangulation_1,
+ const Triangulation< 3 , 1 > &triangulation_2,
+ Triangulation< 3 , 1 > &result);
+ 
+#endif
+} 
+ 
+namespace GridGenerator 
+{
+#if  3  <=  2 
+ template void
+ hyper_rectangle< 3 ,  2 > (
+ Triangulation< 3 ,  2 > &,
+ const Point< 2 >&, const Point< 2 >&,
+ const bool);
+ 
+ template void
+ hyper_cube< 3 ,  2 > (
+ Triangulation< 3 ,  2 > &, const double, const double);
+ 
+ template
+ void
+ merge_triangulations
+ (const Triangulation< 3 , 2 > &triangulation_1,
+ const Triangulation< 3 , 2 > &triangulation_2,
+ Triangulation< 3 , 2 > &result);
+ 
+#endif
+} 
+ 
+namespace GridGenerator 
+{
+#if  3  <=  3 
+ template void
+ hyper_rectangle< 3 ,  3 > (
+ Triangulation< 3 ,  3 > &,
+ const Point< 3 >&, const Point< 3 >&,
+ const bool);
+ 
+ template void
+ hyper_cube< 3 ,  3 > (
+ Triangulation< 3 ,  3 > &, const double, const double);
+ 
+ template
+ void
+ merge_triangulations
+ (const Triangulation< 3 , 3 > &triangulation_1,
+ const Triangulation< 3 , 3 > &triangulation_2,
+ Triangulation< 3 , 3 > &result);
+ 
+#endif
+} 
+ 
+namespace GridGenerator { 
+ template void
+ subdivided_hyper_cube< 1 > (
+ Triangulation< 1 > &,
+ const unsigned int, const double, const double);
+ 
+
+
+ template void
+ subdivided_hyper_rectangle< 1 >
+ (Triangulation< 1 > &,
+ const std::vector<unsigned int>&,
+ const Point< 1 >&,
+ const Point< 1 >&,
+ bool);
+ 
+ template
+ void
+ subdivided_hyper_rectangle(
+ Triangulation< 1 > &,
+ const std::vector<std::vector<double> > &,
+ const Point< 1 > &,
+ const Point< 1 > &,
+ const bool );
+ 
+ template void
+ parallelepiped< 1 > (
+ Triangulation< 1 >&,
+ const Point< 1 > (&) [ 1 ], 
+ const bool); 
+ 
+ template void
+ subdivided_parallelepiped< 1 > (
+ Triangulation< 1 >&,
+ const unsigned int,
+ const Point< 1 > (&) [ 1 ], 
+ const bool); 
+
+ template void
+ subdivided_parallelepiped< 1 > (
+ Triangulation< 1 >&,
+ const unsigned int [ 1 ], 
+ const Point< 1 > (&) [ 1 ], 
+ const bool); 
+ 
+#if  1  > 1
+ template void
+ laplace_transformation< 1 > (Triangulation< 1 > &,
+ const std::map<unsigned int,Point< 1 > > &);
+#endif
+ 
+} 
+ 
+namespace GridGenerator { 
+ template void
+ subdivided_hyper_cube< 2 > (
+ Triangulation< 2 > &,
+ const unsigned int, const double, const double);
+ 
+
+
+ template void
+ subdivided_hyper_rectangle< 2 >
+ (Triangulation< 2 > &,
+ const std::vector<unsigned int>&,
+ const Point< 2 >&,
+ const Point< 2 >&,
+ bool);
+ 
+ template
+ void
+ subdivided_hyper_rectangle(
+ Triangulation< 2 > &,
+ const std::vector<std::vector<double> > &,
+ const Point< 2 > &,
+ const Point< 2 > &,
+ const bool );
+ 
+ template void
+ parallelepiped< 2 > (
+ Triangulation< 2 >&,
+ const Point< 2 > (&) [ 2 ], 
+ const bool); 
+ 
+ template void
+ subdivided_parallelepiped< 2 > (
+ Triangulation< 2 >&,
+ const unsigned int,
+ const Point< 2 > (&) [ 2 ], 
+ const bool); 
+
+ template void
+ subdivided_parallelepiped< 2 > (
+ Triangulation< 2 >&,
+ const unsigned int [ 2 ], 
+ const Point< 2 > (&) [ 2 ], 
+ const bool); 
+ 
+#if  2  > 1
+ template void
+ laplace_transformation< 2 > (Triangulation< 2 > &,
+ const std::map<unsigned int,Point< 2 > > &);
+#endif
+ 
+} 
+ 
+namespace GridGenerator { 
+ template void
+ subdivided_hyper_cube< 3 > (
+ Triangulation< 3 > &,
+ const unsigned int, const double, const double);
+ 
+
+
+ template void
+ subdivided_hyper_rectangle< 3 >
+ (Triangulation< 3 > &,
+ const std::vector<unsigned int>&,
+ const Point< 3 >&,
+ const Point< 3 >&,
+ bool);
+ 
+ template
+ void
+ subdivided_hyper_rectangle(
+ Triangulation< 3 > &,
+ const std::vector<std::vector<double> > &,
+ const Point< 3 > &,
+ const Point< 3 > &,
+ const bool );
+ 
+ template void
+ parallelepiped< 3 > (
+ Triangulation< 3 >&,
+ const Point< 3 > (&) [ 3 ], 
+ const bool); 
+ 
+ template void
+ subdivided_parallelepiped< 3 > (
+ Triangulation< 3 >&,
+ const unsigned int,
+ const Point< 3 > (&) [ 3 ], 
+ const bool); 
+
+ template void
+ subdivided_parallelepiped< 3 > (
+ Triangulation< 3 >&,
+ const unsigned int [ 3 ], 
+ const Point< 3 > (&) [ 3 ], 
+ const bool); 
+ 
+#if  3  > 1
+ template void
+ laplace_transformation< 3 > (Triangulation< 3 > &,
+ const std::map<unsigned int,Point< 3 > > &);
+#endif
+ 
+} 
+ 

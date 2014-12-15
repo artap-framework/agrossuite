@@ -1,0 +1,6 @@
+set polynomial degree             = 1
+set number of initial refinements = 3
+set number of cycles              = 7
+set refinement strategy           = global
+set obstacle                      = sphere
+set output directory              = p1_global

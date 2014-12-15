@@ -1,0 +1,23 @@
+
+DEAL::n_dofs=3
+DEAL::FE_DGQ<2>(0), P_0, rel. error=0
+DEAL::FE_DGQ<2>(0), P_1, rel. error=0.0833
+DEAL::FE_DGQ<2>(0), P_2, rel. error=0.136
+DEAL::n_dofs=12
+DEAL::FE_DGQ<2>(1), P_0, rel. error=0
+DEAL::FE_DGQ<2>(1), P_1, rel. error=0
+DEAL::FE_DGQ<2>(1), P_2, rel. error=0.00653
+DEAL::FE_DGQ<2>(1), P_3, rel. error=0.0142
+DEAL::n_dofs=27
+DEAL::FE_DGQ<2>(2), P_0, rel. error=0
+DEAL::FE_DGQ<2>(2), P_1, rel. error=0
+DEAL::FE_DGQ<2>(2), P_2, rel. error=0
+DEAL::FE_DGQ<2>(2), P_3, rel. error=0.000791
+DEAL::FE_DGQ<2>(2), P_4, rel. error=0.00215
+DEAL::n_dofs=48
+DEAL::FE_DGQ<2>(3), P_0, rel. error=0
+DEAL::FE_DGQ<2>(3), P_1, rel. error=0
+DEAL::FE_DGQ<2>(3), P_2, rel. error=0
+DEAL::FE_DGQ<2>(3), P_3, rel. error=0
+DEAL::FE_DGQ<2>(3), P_4, rel. error=0.000122
+DEAL::FE_DGQ<2>(3), P_5, rel. error=0.000400

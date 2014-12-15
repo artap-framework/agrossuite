@@ -1,0 +1,1203 @@
+template class MGTransferPrebuilt<  Vector<double>  >;
+ 
+template class MGTransferPrebuilt<  Vector<float>  >;
+ 
+template class MGTransferPrebuilt<  Vector<long double>  >;
+ 
+template class MGTransferPrebuilt<  BlockVector<double>  >;
+ 
+template class MGTransferPrebuilt<  BlockVector<float>  >;
+ 
+template class MGTransferPrebuilt<  BlockVector<long double>  >;
+ 
+template
+ void MGTransferPrebuilt<  Vector<double>  >::build_matrices< 1 >(
+ const DoFHandler< 1 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  Vector<float>  >::build_matrices< 1 >(
+ const DoFHandler< 1 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  Vector<long double>  >::build_matrices< 1 >(
+ const DoFHandler< 1 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  BlockVector<double>  >::build_matrices< 1 >(
+ const DoFHandler< 1 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  BlockVector<float>  >::build_matrices< 1 >(
+ const DoFHandler< 1 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  BlockVector<long double>  >::build_matrices< 1 >(
+ const DoFHandler< 1 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  Vector<double>  >::build_matrices< 2 >(
+ const DoFHandler< 2 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  Vector<float>  >::build_matrices< 2 >(
+ const DoFHandler< 2 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  Vector<long double>  >::build_matrices< 2 >(
+ const DoFHandler< 2 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  BlockVector<double>  >::build_matrices< 2 >(
+ const DoFHandler< 2 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  BlockVector<float>  >::build_matrices< 2 >(
+ const DoFHandler< 2 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  BlockVector<long double>  >::build_matrices< 2 >(
+ const DoFHandler< 2 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  Vector<double>  >::build_matrices< 3 >(
+ const DoFHandler< 3 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  Vector<float>  >::build_matrices< 3 >(
+ const DoFHandler< 3 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  Vector<long double>  >::build_matrices< 3 >(
+ const DoFHandler< 3 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  BlockVector<double>  >::build_matrices< 3 >(
+ const DoFHandler< 3 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  BlockVector<float>  >::build_matrices< 3 >(
+ const DoFHandler< 3 > &mg_dof);
+ 
+template
+ void MGTransferPrebuilt<  BlockVector<long double>  >::build_matrices< 3 >(
+ const DoFHandler< 3 > &mg_dof);
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < double > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < double > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < float >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < float >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < double > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < float > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < float > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < float >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < float >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < float > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < long double > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < long double > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < float >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < float >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < long double > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < double > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < double > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < double > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < float > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < float > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < float > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < long double > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < long double > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< Vector < long double > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < double > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < double > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < double > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < float > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < float > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < float > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < long double > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < long double > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < long double > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 1 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 1 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < double > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < double > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < double > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < float > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < float > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < float > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < long double > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < long double > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject< BlockVector < long double > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 1 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 1 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < double > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < double > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < float >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < float >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < double > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < float > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < float > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < float >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < float >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < float > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < long double > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < long double > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < float >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < float >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < long double > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < double > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < double > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < double > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < float > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < float > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < float > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < long double > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < long double > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< Vector < long double > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < double > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < double > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < double > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < float > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < float > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < float > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < long double > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < long double > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < long double > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 2 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 2 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < double > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < double > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < double > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < float > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < float > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < float > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < long double > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < long double > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject< BlockVector < long double > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 2 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 2 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < double > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < double > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < float >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < float >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < double > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < float > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < float > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < float >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < float >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < float > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < long double > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < long double > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < float >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < float >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < long double > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < long double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < double > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < double > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < double > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < double > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < float > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < float > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < float > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < float > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < float > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < long double > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < long double > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < float >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< Vector < long double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< Vector < long double > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< Vector < long double > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < long double >&,
+ const MGLevelObject< Vector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < double > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < double > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < double > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < float > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < float > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < float > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < long double > >&, const  Vector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < long double > >&, const  Vector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < float >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < long double > >&, const  Vector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 3 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 3 >&,  Vector < long double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < double > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < double > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < double > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < double > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < float > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < float > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < float > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < float > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < float > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < long double > >&, const  BlockVector < double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < long double > >&, const  BlockVector < float >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < float >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject< BlockVector < long double > >&, const  BlockVector < long double >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg (const DoFHandler< 3 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ template void
+ MGTransferPrebuilt< BlockVector < long double > >::copy_from_mg_add (const DoFHandler< 3 >&,  BlockVector < long double >&,
+ const MGLevelObject< BlockVector < long double > >&) const;
+ 
+#ifdef DEAL_II_WITH_TRILINOS
+
+ template void
+ MGTransferPrebuilt<TrilinosWrappers::MPI::Vector>::copy_to_mg (
+ const DoFHandler< 1 >&, MGLevelObject<TrilinosWrappers::MPI::Vector>&, const TrilinosWrappers::MPI::Vector&) const;
+ template void
+ MGTransferPrebuilt<TrilinosWrappers::MPI::Vector>::copy_from_mg (const DoFHandler< 1 >&, TrilinosWrappers::MPI::Vector&,
+ const MGLevelObject<TrilinosWrappers::MPI::Vector>&) const;
+ template void
+ MGTransferPrebuilt<TrilinosWrappers::MPI::Vector>::copy_from_mg_add (const DoFHandler< 1 >&, TrilinosWrappers::MPI::Vector&,
+ const MGLevelObject<TrilinosWrappers::MPI::Vector>&) const;
+#endif
+ 
+#ifdef DEAL_II_WITH_TRILINOS
+
+ template void
+ MGTransferPrebuilt<TrilinosWrappers::MPI::Vector>::copy_to_mg (
+ const DoFHandler< 2 >&, MGLevelObject<TrilinosWrappers::MPI::Vector>&, const TrilinosWrappers::MPI::Vector&) const;
+ template void
+ MGTransferPrebuilt<TrilinosWrappers::MPI::Vector>::copy_from_mg (const DoFHandler< 2 >&, TrilinosWrappers::MPI::Vector&,
+ const MGLevelObject<TrilinosWrappers::MPI::Vector>&) const;
+ template void
+ MGTransferPrebuilt<TrilinosWrappers::MPI::Vector>::copy_from_mg_add (const DoFHandler< 2 >&, TrilinosWrappers::MPI::Vector&,
+ const MGLevelObject<TrilinosWrappers::MPI::Vector>&) const;
+#endif
+ 
+#ifdef DEAL_II_WITH_TRILINOS
+
+ template void
+ MGTransferPrebuilt<TrilinosWrappers::MPI::Vector>::copy_to_mg (
+ const DoFHandler< 3 >&, MGLevelObject<TrilinosWrappers::MPI::Vector>&, const TrilinosWrappers::MPI::Vector&) const;
+ template void
+ MGTransferPrebuilt<TrilinosWrappers::MPI::Vector>::copy_from_mg (const DoFHandler< 3 >&, TrilinosWrappers::MPI::Vector&,
+ const MGLevelObject<TrilinosWrappers::MPI::Vector>&) const;
+ template void
+ MGTransferPrebuilt<TrilinosWrappers::MPI::Vector>::copy_from_mg_add (const DoFHandler< 3 >&, TrilinosWrappers::MPI::Vector&,
+ const MGLevelObject<TrilinosWrappers::MPI::Vector>&) const;
+#endif
+ 

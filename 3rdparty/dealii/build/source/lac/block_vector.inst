@@ -1,0 +1,66 @@
+template class BlockVector< double >;
+ 
+template class BlockVector< float >;
+ 
+template class BlockVector< long double >;
+ 
+template void BlockVector< double >::reinit< double >(const BlockVector< double >&,
+ const bool);
+ 
+template void BlockVector< double >::reinit< float >(const BlockVector< float >&,
+ const bool);
+ 
+template void BlockVector< double >::reinit< long double >(const BlockVector< long double >&,
+ const bool);
+ 
+template void BlockVector< float >::reinit< double >(const BlockVector< double >&,
+ const bool);
+ 
+template void BlockVector< float >::reinit< float >(const BlockVector< float >&,
+ const bool);
+ 
+template void BlockVector< float >::reinit< long double >(const BlockVector< long double >&,
+ const bool);
+ 
+template void BlockVector< long double >::reinit< double >(const BlockVector< double >&,
+ const bool);
+ 
+template void BlockVector< long double >::reinit< float >(const BlockVector< float >&,
+ const bool);
+ 
+template void BlockVector< long double >::reinit< long double >(const BlockVector< long double >&,
+ const bool);
+ 
+template class BlockVector< std::complex<double> >;
+ 
+template class BlockVector< std::complex<float> >;
+ 
+template class BlockVector< std::complex<long double> >;
+ 
+template void BlockVector< std::complex<double> >::reinit< std::complex<double> >(const BlockVector< std::complex<double> >&,
+ const bool);
+ 
+template void BlockVector< std::complex<double> >::reinit< std::complex<float> >(const BlockVector< std::complex<float> >&,
+ const bool);
+ 
+template void BlockVector< std::complex<double> >::reinit< std::complex<long double> >(const BlockVector< std::complex<long double> >&,
+ const bool);
+ 
+template void BlockVector< std::complex<float> >::reinit< std::complex<double> >(const BlockVector< std::complex<double> >&,
+ const bool);
+ 
+template void BlockVector< std::complex<float> >::reinit< std::complex<float> >(const BlockVector< std::complex<float> >&,
+ const bool);
+ 
+template void BlockVector< std::complex<float> >::reinit< std::complex<long double> >(const BlockVector< std::complex<long double> >&,
+ const bool);
+ 
+template void BlockVector< std::complex<long double> >::reinit< std::complex<double> >(const BlockVector< std::complex<double> >&,
+ const bool);
+ 
+template void BlockVector< std::complex<long double> >::reinit< std::complex<float> >(const BlockVector< std::complex<float> >&,
+ const bool);
+ 
+template void BlockVector< std::complex<long double> >::reinit< std::complex<long double> >(const BlockVector< std::complex<long double> >&,
+ const bool);
+ 

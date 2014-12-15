@@ -1,0 +1,221 @@
+<h1>Results</h1>
+
+The directory that contains this program also contains a number of input
+parameter files that can be used to create various different
+simulations. For example, running the program with the
+<code>p1_adaptive.prm</code> parameter file (using a ball as obstacle and the
+box as domain) on 16 cores produces output like this:
+@code
+    Using output directory 'p1adaptive/'
+    FE degree 1
+    transfer solution false
+
+Cycle 0:
+   Number of active cells: 512
+   Number of degrees of freedom: 2187
+ 
+   Newton iteration 1
+      Updating active set...
+         Size of active set: 1
+      Assembling system... 
+      Solving system... 
+         Error: 173.076 -> 3.06875e-07 in 8 Bicgstab iterations.
+      Accepting Newton solution with residual: 3.06875e-07
+      Active set did not change!
+ 
+   Newton iteration 2
+      Updating active set...
+         Size of active set: 1
+      Assembling system... 
+      Solving system... 
+         Error: 57.3622 -> 2.46266e-07 in 8 Bicgstab iterations.
+      Accepting Newton solution with residual: 24.9028
+      Active set did not change!
+ 
+   Newton iteration 3
+      Updating active set...
+         Size of active set: 1
+      Assembling system... 
+      Solving system... 
+         Error: 24.9028 -> 1.83021e-07 in 7 Bicgstab iterations.
+      Residual of the non-contact part of the system: 1.63333
+         with a damping parameter alpha = 1
+      Active set did not change!
+
+...
+
+  Newton iteration 6
+      Updating active set...
+         Size of active set: 1
+      Assembling system... 
+      Solving system... 
+         Error: 1.43188e-07 -> 4.61326e-16 in 8 Bicgstab iterations.
+      Residual of the non-contact part of the system: 5.67016e-14
+         with a damping parameter alpha = 1
+      Active set did not change!
+      Writing graphical output... p1adaptive/solution-00.pvtu
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |      1.13s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Assembling                      |         6 |     0.463s |        41% |
+| Graphical output                |         1 |    0.0257s |       2.3% |
+| Residual and lambda             |         4 |    0.0754s |       6.7% |
+| Setup                           |         1 |     0.227s |        20% |
+| Setup: constraints              |         1 |    0.0347s |       3.1% |
+| Setup: distribute DoFs          |         1 |    0.0441s |       3.9% |
+| Setup: matrix                   |         1 |    0.0119s |       1.1% |
+| Setup: vectors                  |         1 |   0.00155s |      0.14% |
+| Solve                           |         6 |     0.246s |        22% |
+| Solve: iterate                  |         6 |    0.0631s |       5.6% |
+| Solve: setup preconditioner     |         6 |     0.167s |        15% |
+| update active set               |         6 |    0.0401s |       3.6% |
++---------------------------------+-----------+------------+------------+
+
+Peak virtual memory used, resident in kB: 541884 77464
+Contact force = 37.3058
+
+...
+
+Cycle 3:
+   Number of active cells: 14652
+   Number of degrees of freedom: 52497
+ 
+   Newton iteration 1
+      Updating active set...
+         Size of active set: 145
+      Assembling system... 
+      Solving system... 
+         Error: 296.309 -> 2.45532e-06 in 9 Bicgstab iterations.
+      Accepting Newton solution with residual: 2.45532e-06
+      Active set did not change!
+ 
+...
+
+  Newton iteration 10
+      Updating active set...
+         Size of active set: 145
+      Assembling system... 
+      Solving system... 
+         Error: 2.71542e-07 -> 2.69366e-15 in 21 Bicgstab iterations.
+      Residual of the non-contact part of the system: 1.73713e-13
+         with a damping parameter alpha = 1
+      Active set did not change!
+      Writing graphical output... p1adaptive/solution-03.pvtu
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |      38.4s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Assembling                      |        10 |      22.5s |        58% |
+| Graphical output                |         1 |     0.327s |      0.85% |
+| Residual and lambda             |         9 |      3.75s |       9.8% |
+| Setup                           |         1 |      4.83s |        13% |
+| Setup: constraints              |         1 |     0.578s |       1.5% |
+| Setup: distribute DoFs          |         1 |      0.71s |       1.8% |
+| Setup: matrix                   |         1 |     0.111s |      0.29% |
+| Setup: refine mesh              |         1 |      4.83s |        13% |
+| Setup: vectors                  |         1 |   0.00548s |     0.014% |
+| Solve                           |        10 |      5.49s |        14% |
+| Solve: iterate                  |        10 |       3.5s |       9.1% |
+| Solve: setup preconditioner     |        10 |      1.84s |       4.8% |
+| update active set               |        10 |     0.662s |       1.7% |
++---------------------------------+-----------+------------+------------+
+
+Peak virtual memory used, resident in kB: 566052 105788
+Contact force = 56.794
+
+...
+@endcode
+
+The tables at the end of each cycle show information about computing time
+and the number of calls of different parts of the program like assembly or
+calculating the residual, for the most recent mesh refinement cycle. Some of
+the numbers above can be improved by transfering the solution from one mesh to
+the next, an option we have not exercised here. Of course, you can also make
+the program run faster, especially on the later refinement cycles, by just
+using more processors: the accompanying paper shows good scaling to at least
+1000 cores.
+
+In a typical run, you can observe that for every refinement step, the active
+set - the contact points - are iterated out at first. After that the Newton
+method has only to resolve the plasticity. For the finer meshes,
+quadratic convergence can be observed for the last 4 or 5 Newton iterations.
+
+We will not discuss here in all detail what happens with each of the input
+files. Rather, let us just show pictures of the solution (the left half of the
+domain is omitted if cells have zero quadrature points at which the plastic
+inequality is active):
+
+<table align="center">
+  <tr>
+    <td>
+    <img src="http://www.dealii.org/images/steps/developer/step-42.CellConstitutionColorbar.png">
+    </td>
+    <td>
+    <img src="http://www.dealii.org/images/steps/developer/step-42.CellConstitutionBall2.png" alt="" width="70%">
+    </td>
+    <td valign="top">
+      &nbsp;
+    </td>
+    <td>
+    <img src="http://www.dealii.org/images/steps/developer/step-42.CellConstitutionLi2.png" alt="" alt="" width="70%">
+    </td>
+  </tr>
+</table>
+
+The picture shows the adaptive refinement and as well how much a cell is
+plastified during the contact with the ball. Remember that we consider the
+norm of the deviator part of the stress in each quadrature point to
+see if there is elastic or plastic behavior. 
+The blue
+color means that this cell contains only elastic quadrature points in
+contrast to the red cells in which all quadrature points are plastified.
+In the middle of the top surface - 
+where the mesh is finest - a very close look shows the dimple caused by the
+obstacle. This is the result of the <code>move_mesh()</code>
+function. However, because the indentation of the obstacles we consider here
+is so small, it is hard to discern this effect; one could play with displacing
+vertices of the mesh by a multiple of the computed displacement.
+
+Further discussion of results that can be obtained using this program is
+provided in the publication mentioned at the very top of this page.
+
+
+<a name="extensions"></a>
+<h1>Possibilities for extensions</h1>
+
+There are, as always, multiple possibilities for extending this program. From
+an algorithmic perspective, this program goes about as far as one can at the
+time of writing, using the best available algorithms for the contact
+inequality, the plastic nonlinearity, and the linear solvers. However, there
+are things one would like to do with this program as far as more realistic
+situations are concerned:
+<ul>
+<li> Extend the program from a static to a quasi-static situation, perhaps by
+choosing a backward-Euler-scheme for the time discretization. Some theoretical
+results can be found in the PhD thesis by Jörg Frohne, <i>FEM-Simulation
+der Umformtechnik metallischer Oberfl&auml;chen im Mikrokosmos</i>, University
+of Siegen, Germany, 2011.
+
+<li> It would also be an interesting advance to consider a contact problem
+with friction. In almost every mechanical process friction has a big
+influence.  To model this situation, we have to take into account tangential
+stresses at the contact surface. Friction also adds another inequality to
+our problem since body and obstacle will typically stick together as long as
+the tangential stress does not exceed a certain limit, beyond which the two
+bodies slide past each other.
+
+<li> If we already simulate a frictional contact, the next step to consider
+is heat generation over the contact zone. The heat that is
+caused by friction between two bodies raises the temperature in the
+deformable body and entails an change of some material parameters.
+
+<li> It might be of interest to implement more accurate, problem-adapted error
+estimators for contact as well as for the plasticity.
+</ul>

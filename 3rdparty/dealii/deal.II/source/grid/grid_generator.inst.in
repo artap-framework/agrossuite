@@ -1,0 +1,100 @@
+// ---------------------------------------------------------------------
+// $Id$
+//
+// Copyright (C) 1999 - 2013 by the deal.II authors
+//
+// This file is part of the deal.II library.
+//
+// The deal.II library is free software; you can use it, redistribute
+// it, and/or modify it under the terms of the GNU Lesser General
+// Public License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// The full text of the license can be found in the file LICENSE at
+// the top level of the deal.II distribution.
+//
+// ---------------------------------------------------------------------
+
+
+for (deal_II_dimension : DIMENSIONS; deal_II_space_dimension :  SPACE_DIMENSIONS)
+  {
+namespace GridGenerator 
+\{
+#if deal_II_dimension <= deal_II_space_dimension
+    template void
+      hyper_rectangle<deal_II_dimension, deal_II_space_dimension> (
+	Triangulation<deal_II_dimension, deal_II_space_dimension> &,
+	const Point<deal_II_space_dimension>&, const Point<deal_II_space_dimension>&,
+	const bool);
+    
+    template void
+      hyper_cube<deal_II_dimension, deal_II_space_dimension> (
+	Triangulation<deal_II_dimension, deal_II_space_dimension> &, const double, const double);
+    
+    template
+      void
+      merge_triangulations
+      (const Triangulation<deal_II_dimension,deal_II_space_dimension> &triangulation_1,
+       const Triangulation<deal_II_dimension,deal_II_space_dimension> &triangulation_2,
+       Triangulation<deal_II_dimension,deal_II_space_dimension>       &result);
+      
+#endif
+\}  
+  }
+
+
+for (deal_II_dimension : DIMENSIONS)
+{
+namespace GridGenerator \{  
+  template void
+    subdivided_hyper_cube<deal_II_dimension> (
+      Triangulation<deal_II_dimension> &,
+      const unsigned int, const double, const double);
+  
+
+
+  template void
+    subdivided_hyper_rectangle<deal_II_dimension>
+    (Triangulation<deal_II_dimension> &,
+     const std::vector<unsigned int>&,
+     const Point<deal_II_dimension>&,
+     const Point<deal_II_dimension>&,
+     bool);
+  
+  template
+    void
+    subdivided_hyper_rectangle(
+      Triangulation<deal_II_dimension>              &,
+      const std::vector<std::vector<double> > &,
+      const Point<deal_II_dimension>                &,
+      const Point<deal_II_dimension>                &,
+      const bool                       );
+  
+    template void
+      parallelepiped<deal_II_dimension> (
+	Triangulation<deal_II_dimension>&,
+	const Point<deal_II_dimension> (&) [deal_II_dimension], 
+	const bool);  
+  
+    template void
+      subdivided_parallelepiped<deal_II_dimension> (
+	Triangulation<deal_II_dimension>&,
+	const unsigned int,
+	const Point<deal_II_dimension> (&) [deal_II_dimension], 
+	const bool);  
+
+    template void
+      subdivided_parallelepiped<deal_II_dimension> (
+	Triangulation<deal_II_dimension>&,
+	const unsigned int [deal_II_dimension], 
+	const Point<deal_II_dimension> (&) [deal_II_dimension], 
+	const bool);  
+  
+#if deal_II_dimension > 1
+  template void
+    laplace_transformation<deal_II_dimension> (Triangulation<deal_II_dimension> &,
+					       const std::map<unsigned int,Point<deal_II_dimension> > &);
+#endif
+  
+\}  
+ }
+

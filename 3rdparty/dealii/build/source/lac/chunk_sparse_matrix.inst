@@ -1,0 +1,1653 @@
+template class ChunkSparseMatrix< double >;
+ 
+template class ChunkSparseMatrix< float >;
+ 
+template class ChunkSparseMatrix< long double >;
+ 
+template ChunkSparseMatrix< double > &
+ ChunkSparseMatrix< double >::copy_from< double > (const ChunkSparseMatrix< double > &);
+
+ template 
+ void ChunkSparseMatrix< double >::copy_from< double > (const FullMatrix< double > &);
+
+ template void ChunkSparseMatrix< double >::add< double > (const  double ,
+ const ChunkSparseMatrix< double > &);
+ 
+template ChunkSparseMatrix< double > &
+ ChunkSparseMatrix< double >::copy_from< float > (const ChunkSparseMatrix< float > &);
+
+ template 
+ void ChunkSparseMatrix< double >::copy_from< float > (const FullMatrix< float > &);
+
+ template void ChunkSparseMatrix< double >::add< float > (const  double ,
+ const ChunkSparseMatrix< float > &);
+ 
+template ChunkSparseMatrix< double > &
+ ChunkSparseMatrix< double >::copy_from< long double > (const ChunkSparseMatrix< long double > &);
+
+ template 
+ void ChunkSparseMatrix< double >::copy_from< long double > (const FullMatrix< long double > &);
+
+ template void ChunkSparseMatrix< double >::add< long double > (const  double ,
+ const ChunkSparseMatrix< long double > &);
+ 
+template ChunkSparseMatrix< float > &
+ ChunkSparseMatrix< float >::copy_from< double > (const ChunkSparseMatrix< double > &);
+
+ template 
+ void ChunkSparseMatrix< float >::copy_from< double > (const FullMatrix< double > &);
+
+ template void ChunkSparseMatrix< float >::add< double > (const  float ,
+ const ChunkSparseMatrix< double > &);
+ 
+template ChunkSparseMatrix< float > &
+ ChunkSparseMatrix< float >::copy_from< float > (const ChunkSparseMatrix< float > &);
+
+ template 
+ void ChunkSparseMatrix< float >::copy_from< float > (const FullMatrix< float > &);
+
+ template void ChunkSparseMatrix< float >::add< float > (const  float ,
+ const ChunkSparseMatrix< float > &);
+ 
+template ChunkSparseMatrix< float > &
+ ChunkSparseMatrix< float >::copy_from< long double > (const ChunkSparseMatrix< long double > &);
+
+ template 
+ void ChunkSparseMatrix< float >::copy_from< long double > (const FullMatrix< long double > &);
+
+ template void ChunkSparseMatrix< float >::add< long double > (const  float ,
+ const ChunkSparseMatrix< long double > &);
+ 
+template ChunkSparseMatrix< long double > &
+ ChunkSparseMatrix< long double >::copy_from< double > (const ChunkSparseMatrix< double > &);
+
+ template 
+ void ChunkSparseMatrix< long double >::copy_from< double > (const FullMatrix< double > &);
+
+ template void ChunkSparseMatrix< long double >::add< double > (const  long double ,
+ const ChunkSparseMatrix< double > &);
+ 
+template ChunkSparseMatrix< long double > &
+ ChunkSparseMatrix< long double >::copy_from< float > (const ChunkSparseMatrix< float > &);
+
+ template 
+ void ChunkSparseMatrix< long double >::copy_from< float > (const FullMatrix< float > &);
+
+ template void ChunkSparseMatrix< long double >::add< float > (const  long double ,
+ const ChunkSparseMatrix< float > &);
+ 
+template ChunkSparseMatrix< long double > &
+ ChunkSparseMatrix< long double >::copy_from< long double > (const ChunkSparseMatrix< long double > &);
+
+ template 
+ void ChunkSparseMatrix< long double >::copy_from< long double > (const FullMatrix< long double > &);
+
+ template void ChunkSparseMatrix< long double >::add< long double > (const  long double ,
+ const ChunkSparseMatrix< long double > &);
+ 
+template  double 
+ ChunkSparseMatrix< double >::
+ matrix_norm_square< double > (const Vector< double > &) const;
+
+ template  double 
+ ChunkSparseMatrix< double >::
+ matrix_scalar_product< double > (const Vector< double > &,
+ const Vector< double > &) const;
+
+ template  double  ChunkSparseMatrix< double >::
+ residual< double > (Vector< double > &,
+ const Vector< double > &,
+ const Vector< double > &) const;
+
+ template void ChunkSparseMatrix< double >::
+ precondition_SSOR< double > (Vector< double > &,
+ const Vector< double > &,
+ const  double ) const;
+
+ template void ChunkSparseMatrix< double >::
+ precondition_SOR< double > (Vector< double > &,
+ const Vector< double > &,
+ const  double ) const;
+
+ template void ChunkSparseMatrix< double >::
+ precondition_TSOR< double > (Vector< double > &,
+ const Vector< double > &,
+ const  double ) const;
+
+ template void ChunkSparseMatrix< double >::
+ precondition_Jacobi< double > (Vector< double > &,
+ const Vector< double > &,
+ const  double ) const;
+
+ template void ChunkSparseMatrix< double >::
+ SOR< double > (Vector< double > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ TSOR< double > (Vector< double > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ SSOR< double > (Vector< double > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ PSOR< double > (Vector< double > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ TPSOR< double > (Vector< double > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ SOR_step< double > (Vector< double > &,
+ const Vector< double > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ TSOR_step< double > (Vector< double > &,
+ const Vector< double > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ SSOR_step< double > (Vector< double > &,
+ const Vector< double > &, 
+ const  double ) const;
+ 
+template  float 
+ ChunkSparseMatrix< double >::
+ matrix_norm_square< float > (const Vector< float > &) const;
+
+ template  float 
+ ChunkSparseMatrix< double >::
+ matrix_scalar_product< float > (const Vector< float > &,
+ const Vector< float > &) const;
+
+ template  float  ChunkSparseMatrix< double >::
+ residual< float > (Vector< float > &,
+ const Vector< float > &,
+ const Vector< float > &) const;
+
+ template void ChunkSparseMatrix< double >::
+ precondition_SSOR< float > (Vector< float > &,
+ const Vector< float > &,
+ const  double ) const;
+
+ template void ChunkSparseMatrix< double >::
+ precondition_SOR< float > (Vector< float > &,
+ const Vector< float > &,
+ const  double ) const;
+
+ template void ChunkSparseMatrix< double >::
+ precondition_TSOR< float > (Vector< float > &,
+ const Vector< float > &,
+ const  double ) const;
+
+ template void ChunkSparseMatrix< double >::
+ precondition_Jacobi< float > (Vector< float > &,
+ const Vector< float > &,
+ const  double ) const;
+
+ template void ChunkSparseMatrix< double >::
+ SOR< float > (Vector< float > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ TSOR< float > (Vector< float > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ SSOR< float > (Vector< float > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ PSOR< float > (Vector< float > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ TPSOR< float > (Vector< float > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ SOR_step< float > (Vector< float > &,
+ const Vector< float > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ TSOR_step< float > (Vector< float > &,
+ const Vector< float > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ SSOR_step< float > (Vector< float > &,
+ const Vector< float > &, 
+ const  double ) const;
+ 
+template  long double 
+ ChunkSparseMatrix< double >::
+ matrix_norm_square< long double > (const Vector< long double > &) const;
+
+ template  long double 
+ ChunkSparseMatrix< double >::
+ matrix_scalar_product< long double > (const Vector< long double > &,
+ const Vector< long double > &) const;
+
+ template  long double  ChunkSparseMatrix< double >::
+ residual< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const Vector< long double > &) const;
+
+ template void ChunkSparseMatrix< double >::
+ precondition_SSOR< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  double ) const;
+
+ template void ChunkSparseMatrix< double >::
+ precondition_SOR< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  double ) const;
+
+ template void ChunkSparseMatrix< double >::
+ precondition_TSOR< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  double ) const;
+
+ template void ChunkSparseMatrix< double >::
+ precondition_Jacobi< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  double ) const;
+
+ template void ChunkSparseMatrix< double >::
+ SOR< long double > (Vector< long double > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ TSOR< long double > (Vector< long double > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ SSOR< long double > (Vector< long double > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ PSOR< long double > (Vector< long double > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ TPSOR< long double > (Vector< long double > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ SOR_step< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ TSOR_step< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  double ) const;
+ template void ChunkSparseMatrix< double >::
+ SSOR_step< long double > (Vector< long double > &,
+ const Vector< long double > &, 
+ const  double ) const;
+ 
+template  double 
+ ChunkSparseMatrix< float >::
+ matrix_norm_square< double > (const Vector< double > &) const;
+
+ template  double 
+ ChunkSparseMatrix< float >::
+ matrix_scalar_product< double > (const Vector< double > &,
+ const Vector< double > &) const;
+
+ template  double  ChunkSparseMatrix< float >::
+ residual< double > (Vector< double > &,
+ const Vector< double > &,
+ const Vector< double > &) const;
+
+ template void ChunkSparseMatrix< float >::
+ precondition_SSOR< double > (Vector< double > &,
+ const Vector< double > &,
+ const  float ) const;
+
+ template void ChunkSparseMatrix< float >::
+ precondition_SOR< double > (Vector< double > &,
+ const Vector< double > &,
+ const  float ) const;
+
+ template void ChunkSparseMatrix< float >::
+ precondition_TSOR< double > (Vector< double > &,
+ const Vector< double > &,
+ const  float ) const;
+
+ template void ChunkSparseMatrix< float >::
+ precondition_Jacobi< double > (Vector< double > &,
+ const Vector< double > &,
+ const  float ) const;
+
+ template void ChunkSparseMatrix< float >::
+ SOR< double > (Vector< double > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ TSOR< double > (Vector< double > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ SSOR< double > (Vector< double > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ PSOR< double > (Vector< double > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ TPSOR< double > (Vector< double > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ SOR_step< double > (Vector< double > &,
+ const Vector< double > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ TSOR_step< double > (Vector< double > &,
+ const Vector< double > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ SSOR_step< double > (Vector< double > &,
+ const Vector< double > &, 
+ const  float ) const;
+ 
+template  float 
+ ChunkSparseMatrix< float >::
+ matrix_norm_square< float > (const Vector< float > &) const;
+
+ template  float 
+ ChunkSparseMatrix< float >::
+ matrix_scalar_product< float > (const Vector< float > &,
+ const Vector< float > &) const;
+
+ template  float  ChunkSparseMatrix< float >::
+ residual< float > (Vector< float > &,
+ const Vector< float > &,
+ const Vector< float > &) const;
+
+ template void ChunkSparseMatrix< float >::
+ precondition_SSOR< float > (Vector< float > &,
+ const Vector< float > &,
+ const  float ) const;
+
+ template void ChunkSparseMatrix< float >::
+ precondition_SOR< float > (Vector< float > &,
+ const Vector< float > &,
+ const  float ) const;
+
+ template void ChunkSparseMatrix< float >::
+ precondition_TSOR< float > (Vector< float > &,
+ const Vector< float > &,
+ const  float ) const;
+
+ template void ChunkSparseMatrix< float >::
+ precondition_Jacobi< float > (Vector< float > &,
+ const Vector< float > &,
+ const  float ) const;
+
+ template void ChunkSparseMatrix< float >::
+ SOR< float > (Vector< float > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ TSOR< float > (Vector< float > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ SSOR< float > (Vector< float > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ PSOR< float > (Vector< float > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ TPSOR< float > (Vector< float > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ SOR_step< float > (Vector< float > &,
+ const Vector< float > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ TSOR_step< float > (Vector< float > &,
+ const Vector< float > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ SSOR_step< float > (Vector< float > &,
+ const Vector< float > &, 
+ const  float ) const;
+ 
+template  long double 
+ ChunkSparseMatrix< float >::
+ matrix_norm_square< long double > (const Vector< long double > &) const;
+
+ template  long double 
+ ChunkSparseMatrix< float >::
+ matrix_scalar_product< long double > (const Vector< long double > &,
+ const Vector< long double > &) const;
+
+ template  long double  ChunkSparseMatrix< float >::
+ residual< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const Vector< long double > &) const;
+
+ template void ChunkSparseMatrix< float >::
+ precondition_SSOR< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  float ) const;
+
+ template void ChunkSparseMatrix< float >::
+ precondition_SOR< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  float ) const;
+
+ template void ChunkSparseMatrix< float >::
+ precondition_TSOR< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  float ) const;
+
+ template void ChunkSparseMatrix< float >::
+ precondition_Jacobi< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  float ) const;
+
+ template void ChunkSparseMatrix< float >::
+ SOR< long double > (Vector< long double > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ TSOR< long double > (Vector< long double > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ SSOR< long double > (Vector< long double > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ PSOR< long double > (Vector< long double > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ TPSOR< long double > (Vector< long double > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ SOR_step< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ TSOR_step< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  float ) const;
+ template void ChunkSparseMatrix< float >::
+ SSOR_step< long double > (Vector< long double > &,
+ const Vector< long double > &, 
+ const  float ) const;
+ 
+template  double 
+ ChunkSparseMatrix< long double >::
+ matrix_norm_square< double > (const Vector< double > &) const;
+
+ template  double 
+ ChunkSparseMatrix< long double >::
+ matrix_scalar_product< double > (const Vector< double > &,
+ const Vector< double > &) const;
+
+ template  double  ChunkSparseMatrix< long double >::
+ residual< double > (Vector< double > &,
+ const Vector< double > &,
+ const Vector< double > &) const;
+
+ template void ChunkSparseMatrix< long double >::
+ precondition_SSOR< double > (Vector< double > &,
+ const Vector< double > &,
+ const  long double ) const;
+
+ template void ChunkSparseMatrix< long double >::
+ precondition_SOR< double > (Vector< double > &,
+ const Vector< double > &,
+ const  long double ) const;
+
+ template void ChunkSparseMatrix< long double >::
+ precondition_TSOR< double > (Vector< double > &,
+ const Vector< double > &,
+ const  long double ) const;
+
+ template void ChunkSparseMatrix< long double >::
+ precondition_Jacobi< double > (Vector< double > &,
+ const Vector< double > &,
+ const  long double ) const;
+
+ template void ChunkSparseMatrix< long double >::
+ SOR< double > (Vector< double > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ TSOR< double > (Vector< double > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ SSOR< double > (Vector< double > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ PSOR< double > (Vector< double > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ TPSOR< double > (Vector< double > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ SOR_step< double > (Vector< double > &,
+ const Vector< double > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ TSOR_step< double > (Vector< double > &,
+ const Vector< double > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ SSOR_step< double > (Vector< double > &,
+ const Vector< double > &, 
+ const  long double ) const;
+ 
+template  float 
+ ChunkSparseMatrix< long double >::
+ matrix_norm_square< float > (const Vector< float > &) const;
+
+ template  float 
+ ChunkSparseMatrix< long double >::
+ matrix_scalar_product< float > (const Vector< float > &,
+ const Vector< float > &) const;
+
+ template  float  ChunkSparseMatrix< long double >::
+ residual< float > (Vector< float > &,
+ const Vector< float > &,
+ const Vector< float > &) const;
+
+ template void ChunkSparseMatrix< long double >::
+ precondition_SSOR< float > (Vector< float > &,
+ const Vector< float > &,
+ const  long double ) const;
+
+ template void ChunkSparseMatrix< long double >::
+ precondition_SOR< float > (Vector< float > &,
+ const Vector< float > &,
+ const  long double ) const;
+
+ template void ChunkSparseMatrix< long double >::
+ precondition_TSOR< float > (Vector< float > &,
+ const Vector< float > &,
+ const  long double ) const;
+
+ template void ChunkSparseMatrix< long double >::
+ precondition_Jacobi< float > (Vector< float > &,
+ const Vector< float > &,
+ const  long double ) const;
+
+ template void ChunkSparseMatrix< long double >::
+ SOR< float > (Vector< float > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ TSOR< float > (Vector< float > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ SSOR< float > (Vector< float > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ PSOR< float > (Vector< float > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ TPSOR< float > (Vector< float > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ SOR_step< float > (Vector< float > &,
+ const Vector< float > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ TSOR_step< float > (Vector< float > &,
+ const Vector< float > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ SSOR_step< float > (Vector< float > &,
+ const Vector< float > &, 
+ const  long double ) const;
+ 
+template  long double 
+ ChunkSparseMatrix< long double >::
+ matrix_norm_square< long double > (const Vector< long double > &) const;
+
+ template  long double 
+ ChunkSparseMatrix< long double >::
+ matrix_scalar_product< long double > (const Vector< long double > &,
+ const Vector< long double > &) const;
+
+ template  long double  ChunkSparseMatrix< long double >::
+ residual< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const Vector< long double > &) const;
+
+ template void ChunkSparseMatrix< long double >::
+ precondition_SSOR< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  long double ) const;
+
+ template void ChunkSparseMatrix< long double >::
+ precondition_SOR< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  long double ) const;
+
+ template void ChunkSparseMatrix< long double >::
+ precondition_TSOR< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  long double ) const;
+
+ template void ChunkSparseMatrix< long double >::
+ precondition_Jacobi< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  long double ) const;
+
+ template void ChunkSparseMatrix< long double >::
+ SOR< long double > (Vector< long double > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ TSOR< long double > (Vector< long double > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ SSOR< long double > (Vector< long double > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ PSOR< long double > (Vector< long double > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ TPSOR< long double > (Vector< long double > &,
+ const std::vector<types::global_dof_index>&,
+ const std::vector<types::global_dof_index>&,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ SOR_step< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ TSOR_step< long double > (Vector< long double > &,
+ const Vector< long double > &,
+ const  long double ) const;
+ template void ChunkSparseMatrix< long double >::
+ SSOR_step< long double > (Vector< long double > &,
+ const Vector< long double > &, 
+ const  long double ) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < double > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < double > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < double > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < double > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < double > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < double > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < double > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < double > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < double > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < double > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < double > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < double > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < float > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < float > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < float > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < float > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < float > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < float > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < float > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < float > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < float > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < float > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < float > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < float > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < long double > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < long double > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < long double > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < long double > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < long double > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < long double > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < long double > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < long double > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < long double > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( Vector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( Vector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( Vector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( Vector < long double > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < long double > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< double >::
+ vmult ( BlockVector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult ( BlockVector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ vmult_add ( BlockVector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< double >::
+ Tvmult_add ( BlockVector < long double > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < double > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < double > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < double > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < double > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < double > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < double > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < double > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < double > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < double > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < double > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < double > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < double > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < float > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < float > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < float > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < float > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < float > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < float > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < float > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < float > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < float > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < float > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < float > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < float > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < long double > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < long double > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < long double > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < long double > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < long double > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < long double > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < long double > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < long double > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < long double > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( Vector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( Vector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( Vector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( Vector < long double > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < long double > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< float >::
+ vmult ( BlockVector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult ( BlockVector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ vmult_add ( BlockVector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< float >::
+ Tvmult_add ( BlockVector < long double > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < double > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < double > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < double > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < double > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < double > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < double > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < double > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < double > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < double > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < double > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < double > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < double > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < float > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < float > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < float > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < float > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < float > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < float > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < float > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < float > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < float > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < float > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < float > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < float > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < float > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < float > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < float > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < float > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < float > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < float > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < long double > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < long double > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < long double > &, const  Vector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < long double > &, const  Vector < double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < long double > &, const  BlockVector < double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < long double > &, const  BlockVector < double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < long double > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < long double > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < long double > &, const  Vector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < long double > &, const  Vector < float > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < long double > &, const  BlockVector < float > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < long double > &, const  BlockVector < float > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < long double > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( Vector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( Vector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( Vector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( Vector < long double > &, const  BlockVector < long double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < long double > &, const  Vector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < long double > &, const  Vector < long double > &) const;
+ 
+template void ChunkSparseMatrix< long double >::
+ vmult ( BlockVector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult ( BlockVector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ vmult_add ( BlockVector < long double > &, const  BlockVector < long double > &) const;
+ template void ChunkSparseMatrix< long double >::
+ Tvmult_add ( BlockVector < long double > &, const  BlockVector < long double > &) const;
+ 

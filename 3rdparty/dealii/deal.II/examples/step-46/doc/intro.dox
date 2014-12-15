@@ -1,0 +1,685 @@
+<br>
+
+<i>This program was contributed by Wolfgang Bangerth.
+<br>
+This material is based upon work partly supported by the National Science
+Foundation under Award No. EAR-0949446 and The University of California
+&ndash; Davis. Any opinions, findings, and conclusions or recommendations
+expressed in this publication are those of the author and do not necessarily
+reflect the views of the National Science Foundation or of The University of
+California &ndash; Davis.  </i>
+
+
+<a name="Intro"></a>
+<h1>Introduction</h1>
+
+This program deals with the problem of coupling different physics in different
+parts of the domain. Specifically, let us consider the following
+situation that couples a Stokes fluid with an elastic solid (these two
+problems were previously discussed separately in step-22 and step-8,
+where you may want to read up on the individual equations):
+
+- In a part $\Omega_f$ of $\Omega$, we have a fluid flowing that satisfies the
+  time independent Stokes equations (in the form that involves the strain
+  tensor):
+  @f{align*}
+    -2\eta\nabla \cdot \varepsilon(\mathbf v) + \nabla p &= 0,
+          \qquad \qquad && \text{in}\ \Omega_f\\
+    -\nabla \cdot \mathbf v &= 0  && \text{in}\ \Omega_f.
+  @f}
+  Here, $\mathbf v, p$ are the fluid velocity and pressure, respectively.
+  We prescribe the velocity on part of the external boundary,
+  @f{align*}
+    \mathbf v = \mathbf v_0 \qquad\qquad
+     \text{on}\ \Gamma_{f,1} \subset \partial\Omega \cap \partial\Omega_f
+  @f}
+  while we assume free-flow conditions on the remainder of the external
+  boundary,
+  @f{align*}
+    (2\eta \varepsilon(\mathbf v) + p \mathbf 1) \cdot \mathbf n = 0
+     \qquad\qquad
+     \text{on}\ \Gamma_{f,2} = \partial\Omega \cap \partial\Omega_f \backslash
+     \Gamma_{f,1}.
+  @f}
+- The remainder of the domain, $\Omega_s = \Omega \backslash \Omega_f$ is
+  occupied by a solid whose deformation field $\mathbf u$ satisfies the
+  elasticity equation,
+  @f{align*}
+    -\nabla \cdot C \varepsilon(\mathbf u) = 0 \qquad\qquad
+    & \text{in}\ \Omega_s,
+  @f}
+  where $C$ is the rank-4 elasticity tensor (for which we will use a
+  particularly simple form by assuming that the solid is isotropic).
+  It deforms in reaction to the forces exerted by the
+  fluid flowing along the boundary of the solid. We assume this deformation to
+  be so small that it has no feedback effect on the fluid, i.e. the coupling
+  is only in one direction. For simplicity, we will assume that the
+  solid's external boundary is clamped, i.e.
+  @f{align*}
+    \mathbf u = \mathbf 0 \qquad\qquad
+     \text{on}\ \Gamma_{s,1} = \partial\Omega \cap \partial\Omega_s
+  @f}
+- As a consequence of the small displacement assumption, we will pose the
+  following boundary conditions on the interface between the fluid and solid:
+  first, we have no slip boundary conditions for the fluid,
+  @f{align*}
+    \mathbf v = \mathbf 0 \qquad\qquad
+     \text{on}\ \Gamma_{i} = \partial\Omega_s \cap \partial\Omega_f.
+  @f}
+  Secondly, the forces (traction) on the solid equal the normal stress from the fluid,
+  @f{align*}
+    (C \varepsilon(\mathbf u)) \mathbf n =
+    (2 \eta \varepsilon(\mathbf v) + p \mathbf 1) \mathbf n \qquad\qquad
+     \text{on}\ \Gamma_{i} = \partial\Omega_s \cap \partial\Omega_f.
+  @f}
+
+We get a weak formulation of this problem by following our usual rule of
+multiplying from the left by a test function and integrating over the
+domain. It then looks like this: Find $y = \{\mathbf v, p,
+\mathbf u\} \in Y \subset H^1(\Omega_f)^d \times L_2(\Omega_f) \times
+H^1(\Omega_s)^d$ such that
+@f{multline*}
+	2 \eta (\varepsilon(\mathbf a), \varepsilon(\mathbf v))_{\Omega_f}
+	- (\nabla \cdot \mathbf a, p)_{\Omega_f}
+	- (q, \nabla \cdot \mathbf v)_{\Omega_f}
+	\\
+	+ (\varepsilon(\mathbf b), C \varepsilon(\mathbf u))_{\Omega_s}
+	\\
+	- (\mathbf b,
+           (2 \eta \varepsilon(\mathbf v) + p \mathbf 1) \mathbf n)_{\Gamma_i}
+	=
+	0,
+@f}
+for all test functions $\mathbf a, q, \mathbf b$.
+Note that $Y$ is only a subspace of the spaces listed above to accommodate for
+the various Dirichlet boundary conditions.
+
+This sort of coupling is of course possible by simply having two Triangulation
+and two DoFHandler objects, one each for each of the two subdomains. On the
+other hand, deal.II is much simpler to use if there is a single DoFHandler
+object that knows about the discretization of the entire problem.
+
+This program is about how this can be achieved. Note that the goal is not to
+present a particularly useful physical model (a realistic fluid-structure
+interaction model would have to take into account the finite deformation of
+the solid and the effect this has on the fluid): this is, after all, just a
+tutorial program intended to demonstrate techniques, not to solve actual
+problems. Furthermore, we will make the assumption that the interface between
+the subdomains is aligned with coarse mesh cell faces.
+
+
+<h3>The general idea</h3>
+
+Before going into more details let us state the obvious: this is a
+problem with multiple solution variables; for this, you will probably
+want to read the @ref vector_valued documentation module first, which
+presents the basic philosophical framework in which we address
+problems with more than one solution variable. But back to the problem
+at hand:
+
+The fundamental idea to implement these sort of problems in deal.II goes as
+follows: in the problem formulation, the velocity and pressure variables
+$\mathbf v, p$ only live in the fluid subdomain $\Omega_f$. But let's assume
+that we extend them by zero to the entire domain $\Omega$ (in the general case
+this means that they will be discontinuous along $\Gamma_i$). So what is the
+appropriate function space for these variables? We know that on $\Omega_f$ we
+should require $\mathbf v \in H^1(\Omega_f)^d, p \in L_2(\Omega_f)$, so for
+the extensions $\tilde{\mathbf v}, \tilde p$ to the whole domain the following
+appears a useful set of function spaces:
+@f{align*}
+  \tilde {\mathbf v} &\in V
+   = \{\tilde {\mathbf v}|_{\Omega_f} \in H^1(\Omega_f)^d, \quad
+       \tilde {\mathbf v}|_{\Omega_s} = 0 \}
+  \\
+  \tilde p &\in P
+  = \{\tilde p|_{\Omega_f} \in L_2(\Omega_f), \quad
+       \tilde p|_{\Omega_s} = 0 \}.
+@f}
+(Since this is not important for the current discussion, we have omitted the
+question of boundary values from the choice of function spaces; this question
+also affects whether we can choose $L_2$ for the pressure or whether we have
+to choose the space $L_{2,0}(\Omega_f)=\{q\in L_2(\Omega_f): \int_{\Omega_f} q
+= 0\}$ for the pressure. None of these questions are relevant to the following
+discussion, however.)
+
+Note that these are indeed a linear function spaces with obvious norm. Since no
+confusion is possible in practice, we will henceforth omit the tilde again to
+denote the extension of a function to the whole domain and simply refer by
+$\mathbf v, p$ to both the original and the extended function.
+
+For discretization, we need finite dimensional subspaces $V_h,P_h$ of
+$V, P$. For Stokes, we know from step-22 that an appropriate choice is
+$Q_{p+1}^d\times Q_P$ but this only holds for that part of the domain
+occupied by the fluid. For the extended field, let's use the following
+subspaces defined on the triangulation $\mathbb T$:
+@f{align*}
+  V_h
+   &= \{{\mathbf v}_h \quad | \quad
+       \forall K \in {\mathbb T}:
+       {\mathbf v}_h|_K \in Q_{p+1}^d\  \text{if}\ K\subset {\Omega_f}, \quad
+       {\mathbf v}_h|_{\Omega_f}\ \text{is continuous}, \quad
+       {\mathbf v}_h|_K = 0\ \text{if}\ K\subset {\Omega_s}\}
+   && \subset V
+  \\
+  P_h
+  &= \{ p_h \quad | \quad
+       \forall K \in {\mathbb T}:
+       p_h|_K \in Q_p\  \text{if}\ K\subset {\Omega_f}, \quad
+       p_h|_{\Omega_f}\ \text{is continuous}, \quad
+       p_h|_K = 0\ \text{if}\ K\subset {\Omega_s}\ \}
+   && \subset P.
+@f}
+In other words, on $\Omega_f$ we choose the usual discrete spaces but
+we keep the (discontinuous) extension by zero. The point to make is
+that we now need a description of a finite element space for functions
+that are zero on a cell &mdash; and this is where the FE_Nothing class
+comes in: it describes a finite dimensional function space of
+functions that are constant zero. A particular property of this
+peculiar linear vector space is that it has no degrees of freedom: it
+isn't just finite dimensional, it is in fact zero dimensional, and
+consequently for objects of this type, FiniteElement::dofs_per_cell
+will return zero. For discussion below, let us give this space a
+proper symbol:
+@f[
+  Z = \{ \varphi: \varphi(x)=0 \}.
+@f]
+The symbol $Z$ reminds of the fact that functions in this space are
+zero. Obviously, we choose $Z_h=Z$.
+
+This entire discussion above can be repeated for the variables we use to
+describe the elasticity equation. Here, for the extended variables, we
+have
+@f{align*}
+  \tilde {\mathbf u} &\in U
+   = \{\tilde {\mathbf u}|_{\Omega_s} \in H^1(\Omega_f)^d, \quad
+       \tilde {\mathbf u}|_{\Omega_f} \in Z(\Omega_s)^d \},
+@f}
+and we will typically use a finite element space of the kind
+@f{align*}
+  U_h
+   &= \{{\mathbf u}_h \quad | \quad
+       \forall K \in {\mathbb T}:
+       {\mathbf u}_h|_K \in Q_r^d\  \text{if}\ K\subset {\Omega_s}, \quad
+       {\mathbf u}_h|_{\Omega_f}\ \text{is continuous}, \quad
+       {\mathbf u}_h|_K \in Z^d\ \text{if}\ K\subset {\Omega_f}\}
+   && \subset U
+@f}
+of polynomial degree $r$.
+
+So to sum up, we are going to look for a discrete vector-valued
+solution $y_h = \{\mathbf v_h, p_h, \mathbf u_h\}$ in the following
+space:
+@f{align*}
+  Y_h = \{
+      & y_h = \{\mathbf v_h, p_h, \mathbf u_h\} : \\
+      & y_h|_{\Omega_f} \in Q_{p+1}^d \times Q_p \times Z^d, \\
+      & y_h|_{\Omega_s} \in Z^d \times Z \times Q_r^d \}.
+@f}
+
+
+
+<h3>Implementation</h3>
+
+So how do we implement this sort of thing? First, we realize that the discrete
+space $Y_h$ essentially calls for two different finite elements: First, on the
+fluid subdomain, we need the element $Q_{p+1}^d \times Q_p \times Z^d$ which
+in deal.II is readily implemented by
+@code
+  FESystem<dim> (FE_Q<dim>(p+1), dim,
+		 FE_Q<dim>(p), 1,
+		 FE_Nothing<dim>(), dim),
+@endcode
+where <code>FE_Nothing</code> implements the space of functions that are
+always zero. Second, on the solid subdomain, we need the element
+$\in Z^d \times Z \times Q_r^d$, which we get using
+@code
+  FESystem<dim> (FE_Nothing<dim>(), dim,
+		 FE_Nothing<dim>(), 1,
+		 FE_Q<dim>(r), dim),
+@endcode
+
+The next step is that we associate each of these two elements with the cells
+that occupy each of the two subdomains. For this we realize that in a sense
+the two elements are just variations of each other in that they have the same
+number of vector components but have different polynomial degrees &mdash; this
+smells very much like what one would do in $hp$ finite element methods, and it
+is exactly what we are going to do here: we are going to (ab)use the classes
+and facilities of the hp namespace to assign different elements to different
+cells. In other words, we will use collect the two finite elements in an
+hp::FECollection, will integrate with an appropriate hp::QCollection using an
+hp::FEValues object, and our DoF handler will be of type hp::DoFHandler. You
+may wish to take a look at step-27 for an overview of all of these concepts.
+
+Before going on describing the testcase, let us clarify a bit <i>why</i> this
+approach of extending the functions by zero to the entire domain and then
+mapping the problem on to the hp framework makes sense:
+
+- It makes things uniform: On all cells, the number of vector components is
+  the same (here, <code>2*dim+1</code>). This makes all sorts of
+  things possible since a uniform description allows for code
+  re-use. For example, counting degrees of freedom per vector
+  component (DoFTools::count_dofs_per_component), sorting degrees of
+  freedom by component (DoFRenumbering::component_wise), subsequent
+  partitioning of matrices and vectors into blocks and many other
+  functions work as they always did without the need to add special
+  logic to them that describes cases where some of the variables only
+  live on parts of the domain. Consequently, you have all sorts of
+  tools already available to you in programs like the current one that
+  weren't originally written for the multiphysics case but work just
+  fine in the current context.
+
+- It allows for easy graphical output: All graphical output formats we support
+  require that each field in the output is defined on all nodes of the
+  mesh. But given that now all solution components live everywhere,
+  our existing DataOut routines work as they always did, and produce
+  graphical output suitable for visualization -- the fields will
+  simply be extended by zero, a value that can easily be filtered out
+  by visualization programs if not desired.
+
+- There is essentially no cost: The trick with the FE_Nothing does not add any
+  degrees of freedom to the overall problem, nor do we ever have to handle a
+  shape function that belongs to these components &mdash; the FE_Nothing has
+  no degrees of freedom, not does it have shape functions, all it does is take
+  up vector components.
+
+
+<h3> Specifics of the implementation </h3>
+
+More specifically, in the program we have to address the following
+points:
+- Implementing the bilinear form, and in particular dealing with the
+  interface term, both in the matrix and the sparsity pattern.
+- Implementing Dirichlet boundary conditions on the external and
+  internal parts of the boundaries
+  $\partial\Omega_f,\partial\Omega_s$.
+
+
+<h4>Dealing with the interface terms</h4>
+
+Let us first discuss implementing the bilinear form, which at the
+discrete level we recall to be
+@f{multline*}
+	2 \eta (\varepsilon(\mathbf a_h), \varepsilon(\mathbf v_h))_{\Omega_f}
+	- (\nabla \cdot \mathbf a_h, p_h)_{\Omega_f}
+	- (q_h, \nabla \cdot \mathbf v_h)_{\Omega_f}
+	\\
+	+ (\varepsilon(\mathbf b_h), C \varepsilon(\mathbf u_h))_{\Omega_s}
+	\\
+	- (\mathbf b_h,
+           (2 \eta \varepsilon(\mathbf v_h) + p \mathbf 1) \mathbf n)_{\Gamma_i}
+	=
+	0,
+@f}
+Given that we have extended the fields by zero, we could in principle
+write the integrals over subdomains to the entire domain $\Omega$,
+though it is little additional effort to first ask whether a cell is
+part of the elastic or fluid region before deciding which terms to
+integrate. Actually integrating these terms is not very difficult; for
+the Stokes equations, the relevant steps have been shown in step-22,
+whereas for the elasticity equation we take essentially the form shown
+in the @ref vector_valued module (rather than the one from step-8).
+
+The term that is of more interest is the interface term,
+@f[
+	(\mathbf b_h,
+           (2 \eta \varepsilon(\mathbf v_h) + p \mathbf 1) \mathbf n)_{\Gamma_i}.
+@f]
+Based on our assumption that the interface $\Gamma_i$ coincides with
+cell boundaries, this can in fact be written as a set of face
+integrals. If we denote the velocity, pressure and displacement
+components of shape function $\psi_i\in Y_h$ using the extractor
+notation $\psi_i[\mathbf v],\psi_i[p], \psi_i[\mathbf u]$, then the
+term above yields the following contribution to the global matrix
+entry $i,j$:
+@f[
+	\sum_K (\psi_i[\mathbf u],
+           (2 \eta \varepsilon(\psi_j[\mathbf v]) + \psi_j[p] \mathbf 1)
+	   \mathbf n)_{\partial K \cap \Gamma_i}.
+@f]
+Although it isn't immediately obvious, this term presents a slight
+complication: while $\psi_i[\mathbf u]$ and $\mathbf n$ are evaluated
+on the solid side of the interface (they are test functions for the
+displacement and the normal vector to $\Omega_s$, respectively, we
+need to evaluate $\psi_j[\mathbf v],\psi_j[p]$ on the fluid
+side of the interface since they correspond to the stress/force
+exerted by the fluid. In other words, in our implementation, we will
+need FEFaceValue objects for both sides of the interface. To make
+things slightly worse, we may also have to deal with the fact that one
+side or the other may be refined, leaving us with the need to
+integrate over parts of a face. Take a look at the implementation
+below on how to deal with this.
+
+As an additional complication, the matrix entries that result from this term
+need to be added to the sparsity pattern of the matrix somehow. This is the
+realm of various functions in the DoFTools namespace like
+DoFTools::make_sparsity_pattern and
+DoFTools::make_flux_sparsity_pattern. Essentially, what these functions do is
+simulate what happens during assembly of the system matrix: whenever assembly
+would write a nonzero entry into the global matrix, the functions in DoFTools
+would add an entry to the sparsity pattern. We could therefore do the
+following: let DoFTools::make_sparsity_pattern add all those entries to the
+sparsity pattern that arise from the regular cell-by-cell integration, and
+then do the same by hand that arise from the interface terms. If you look at
+the implementation of the interface integrals in the program below, it should
+be obvious how to do that and would require no more than maybe 100 lines of
+code at most.
+
+But we're lazy people: the interface term couples degrees of freedom from two
+adjacent cells along a face, which is exactly the kind of thing one would do
+in discontinuous Galerkin schemes for which the function
+DoFTools::make_flux_sparsity_pattern was written. This is a superset of matrix
+entries compared to the usual DoFTools::make_sparsity_pattern: it will also
+add all entries that result from computing terms coupling the degrees of
+freedom from both sides of all faces. Unfortunately, for the simplest version
+of this function, this is a pretty big superset. Consider for example the
+following mesh with two cells and a $Q_1$ finite element:
+@code
+  2---3---5
+  |   |   |
+  0---1---4
+@endcode
+Here, the sparsity pattern produced by DoFTools::make_sparsity_pattern will
+only have entries for degrees of freedom that couple on a cell. However, it
+will not have sparsity pattern entries $(0,4),(0,5),(2,4),(2,5)$. The sparsity
+pattern generated by DoFTools::make_flux_sparsity_pattern will have these
+entries, however: it assumes that you want to build a sparsity pattern for a
+bilinear form that couples <i>all</i> degrees of freedom from adjacent
+cells. This is not what we want: our interface term acts only on a small
+subset of cells, and we certainly don't need all the extra couplings between
+two adjacent fluid cells, or two adjacent solid cells. Furthermore, the fact that we
+use higher order elements means that we would really generate many many more
+entries than we actually need: on the coarsest mesh, in 2d, 44,207 nonzero
+entries instead of 16,635 for DoFTools::make_sparsity_pattern, leading to
+plenty of zeros in the matrix we later build (of course, the 16,635 are not
+enough since they don't include the interface entries). This ratio would be
+even worse in 3d.
+
+So being extremely lazy comes with a cost: too many entries in the matrix. But
+we can get away with being moderately lazy: there is a variant of
+DoFTools::make_flux_sparsity_pattern that allows us
+to specify which vector components of the finite element couple with which
+other components, both in cell terms as well as in face terms. For cells that
+are in the solid subdomain, we couple all displacements with each other; for
+fluid cells, all velocities with all velocities and the pressure, but not the
+pressure with itself. Since no cell has both sets of
+variables, there is no need to distinguish between the two kinds of cells, so
+we can write the mask like this:
+@code
+    Table<2,DoFTools::Coupling> cell_coupling (fe_collection.n_components(),
+					       fe_collection.n_components());
+
+    for (unsigned int c=0; c<fe_collection.n_components(); ++c)
+      for (unsigned int d=0; d<fe_collection.n_components(); ++d)
+	if (((c<dim+1) && (d<dim+1)
+	     && !((c==dim) && (d==dim)))
+	    ||
+	    ((c>=dim+1) && (d>=dim+1)))
+	  cell_coupling[c][d] = DoFTools::Coupling::always;
+@endcode
+Here, we have used the fact that the first <code>dim</code> components of the
+finite element are the velocities, then the pressure, and then the
+<code>dim</code> displacements. (We could as well have stated that the
+velocities/pressure also couple with the displacements since no cell ever has
+both sets of variables.) On the other hand, the interface terms require a mask
+like this:
+@code
+    Table<2,DoFTools::Coupling> face_coupling (fe_collection.n_components(),
+					       fe_collection.n_components());
+
+    for (unsigned int c=0; c<fe_collection.n_components(); ++c)
+      for (unsigned int d=0; d<fe_collection.n_components(); ++d)
+	if ((c>=dim+1) && (d<dim+1))
+	  face_coupling[c][d] = DoFTools::Coupling::always;
+@endcode
+In other words, all displacement test functions (components
+<code>c@>=dim+1</code>) couple with all velocity and pressure shape functions
+on the other side of an interface. This is not entirely true, though close: in
+fact, the exact form of the interface term only those pressure displacement
+shape functions that are indeed nonzero on the common interface, which is not
+true for all shape functions; on the other hand, it really couples all
+velocities (since the integral involves gradients of the velocity shape
+functions, which are all nonzero on all faces of the cell). However, the mask we
+build above, is not capable of these subtleties. Nevertheless, through these
+masks we manage to get the number of sparsity pattern entries down to 21,028
+&mdash; good enough for now.
+
+
+
+<h4>Velocity boundary conditions on the interface</h4>
+
+The second difficulty is that while we know how to enforce a zero
+velocity or stress on the external boundary (using
+VectorTools::interpolate_boundary_values, called with an appropriate
+component mask and setting different boundary indicators for solid and
+fluid external boundaries), we now also needed the velocity to be zero
+on the interior interface, i.e. $\mathbf v|_{\Gamma_i}=0$. At the time
+of writing this, there is no function in deal.II that handles this
+part, but it isn't particularly difficult to implement by hand:
+essentially, we just have to loop over all cells, and if it is a fluid
+cell and its neighbor is a solid cell, then add constraints that
+ensure that the velocity degrees of freedom on this face are
+zero. Some care is necessary to deal with the case that the adjacent
+solid cell is refined, yielding the following code:
+@code
+    std::vector<unsigned int> local_face_dof_indices (stokes_fe.dofs_per_face);
+    for (typename hp::DoFHandler<dim>::active_cell_iterator
+	   cell = dof_handler.begin_active();
+	 cell != dof_handler.end(); ++cell)
+      if (cell_is_in_fluid_domain (cell))
+	for (unsigned int f=0; f<GeometryInfo<dim>::faces_per_cell; ++f)
+	  if (!cell->at_boundary(f))
+	    {
+	      bool face_is_on_interface = false;
+
+	      if ((cell->neighbor(f)->has_children() == false)
+		  &&
+		  (cell_is_in_solid_domain (cell->neighbor(f))))
+		face_is_on_interface = true;
+	      else if (cell->neighbor(f)->has_children() == true)
+		{
+						   // The neighbor does
+						   // have
+						   // children. See if
+						   // any of the cells
+						   // on the other
+						   // side are elastic
+		  for (unsigned int sf=0; sf<cell->face(f)->n_children(); ++sf)
+		    if (cell_is_in_solid_domain (cell->neighbor_child_on_subface(f, sf)))
+		      {
+			face_is_on_interface = true;
+			break;
+		      }
+		}
+
+	      if (face_is_on_interface)
+		{
+		  cell->face(f)->get_dof_indices (local_face_dof_indices, 0);
+		  for (unsigned int i=0; i<local_face_dof_indices.size(); ++i)
+		    if (stokes_fe.face_system_to_component_index(i).first < dim)
+ 		      constraints.add_line (local_face_dof_indices[i]);
+		}
+	    }
+@endcode
+
+The call <code>constraints.add_line(t)</code> tells the
+ConstraintMatrix to start a new constraint for degree of freedom
+<code>t</code> of the form $x_t=\sum_{l=0}^{N-1} c_{tl} x_l +
+b_t$. Typically, one would then proceed to set individual coefficients
+$c_{tl}$ to nonzero values (using ConstraintMatrix::add_entry) or set
+$b_t$ to something nonzero (using
+ConstraintMatrix::set_inhomogeneity); doing nothing as above, funny as
+it looks, simply leaves the constraint to be $x_t=0$, which is exactly
+what we need in the current context. The call to
+FiniteElement::face_system_to_component_index makes sure that we only set
+boundary values to zero for velocity but not pressure components.
+
+Note that there are cases where this may yield incorrect results:
+notably, once we find a solid neighbor child to a current fluid cell,
+we assume that all neighbor children on the common face are in the
+solid subdomain. But that need not be so; consider, for example, the
+following mesh:
+@code
++---------+----+----+
+|         | f  |    |
+|    f    +----+----+
+|         | s  |    |
++---------+----+----+
+@endcode
+
+In this case, we would set all velocity degrees of freedom on the
+right face of the left cell to zero, which is incorrect for the top
+degree of freedom on that face. That said, that can only happen if the
+fluid and solid subdomains do not coincide with a set of complete
+coarse mesh cells &mdash; but this is a contradiction to the
+assumption stated at the end of the first section of this
+introduction.
+
+
+
+<h3>The testcase</h3>
+
+We will consider the following situation as a testcase:
+
+<img src="http://www.dealii.org/images/steps/developer/step-46.layout.png" alt="">
+
+As discussed at the top of this document, we need to assume in a few places
+that a cell is either entirely in the fluid or solid part of the domain and,
+furthermore, that all children of an inactive cell also belong to the same
+subdomain. This can definitely be ensured if the coarse mesh already
+subdivides the mesh into solid and fluid coarse mesh cells; given the geometry
+outlined above, we can do that by using an $8\times 8$ coarse mesh,
+conveniently provided by the GridGenerator::subdivided_hyper_rectangle
+function.
+
+The fixed boundary at the bottom implies $\mathbf u=0$, and we also
+prescribe Dirichlet conditions for the flow at the top so that we get
+inflow at the left and outflow at the right. At the left and right
+boundaries, no boundary conditions are imposed explicitly for the
+flow, yielding the implicit no-stress condition $(2\eta
+\varepsilon(\mathbf v) + p \mathbf 1) \cdot \mathbf n = 0$.
+The conditions on the interface between the two domains has already been
+discussed above.
+
+For simplicity, we choose the material parameters to be
+$\eta=\lambda=\mu=1$. In the results section below, we will also show
+a 3d simulation that can be obtained from the same program. The
+boundary conditions and geometry are defined nearly analogously to the
+2d situation above.
+
+
+<h4>Identifying which subdomain a cell is in</h4>
+
+In the program, we need a way to identify which part of the domain a cell is
+in. There are many different ways of doing this. A typical way would be to use
+the @ref GlossSubdomainId "subdomain_id" tag available with each cell, though
+this field has a special meaning in %parallel computations. An alternative
+is the @ref GlossMaterialId "material_id" field also available with
+every cell. It has the additional advantage that it is inherited from the
+mother to the child cell upon mesh refinement; in other words, we would set
+the material id once upon creating the mesh and it will be correct for all
+active cells even after several refinement cycles. We therefore go with this
+alternative: we define an <code>enum</code> with symbolic names for
+material_id numbers and will use them to identify which part of the domain a
+cell is on.
+
+Secondly, we use an object of type hp::DoFHandler. This class needs to know
+which cells will use the Stokes and which the elasticity finite element. At
+the beginning of each refinement cycle we will therefore have to walk over
+all cells and set the (in hp parlance) active FE index to whatever is
+appropriate in the current situation. While we can use symbolic names for the
+material id, the active FE index is in fact a number that will frequently be
+used to index into collections of objects (e.g. of type hp::FECollection and
+hp::QCollection); that means that the active FE index actually has to have
+value zero for the fluid and one for the elastic part of the domain.
+
+
+<h4>Linear solvers</h4>
+
+This program is primarily intended to show how to deal with different
+physics in different parts of the domain, and how to implement such
+models in deal.II. As a consequence, we won't bother coming up with a
+good solver: we'll just use the SparseDirectUMFPACK class which always
+works, even if not with optimal complexity. We will, however, comment
+on possible other solvers in the <a href="#Results">results</a> section.
+
+
+<h4>Mesh refinement</h4>
+
+One of the trickier aspects of this program is how to estimate the
+error. Because it works on almost any program, we'd like to use the
+KellyErrorEstimator, and we can relatively easily do that here as well using
+code like the following:
+@code
+  Vector<float> stokes_estimated_error_per_cell (triangulation.n_active_cells());
+  Vector<float> elasticity_estimated_error_per_cell (triangulation.n_active_cells());
+
+  std::vector<bool> stokes_component_mask (dim+1+dim, false);
+  for (unsigned int d=0; d<dim; ++d)
+    stokes_component_mask[d] = true;
+  KellyErrorEstimator<dim>::estimate (dof_handler,
+                                      face_q_collection,
+                                      typename FunctionMap<dim>::type(),
+                                      solution,
+                                      stokes_estimated_error_per_cell,
+                                      stokes_component_mask);
+
+  std::vector<bool> elasticity_component_mask (dim+1+dim, false);
+  for (unsigned int d=0; d<dim; ++d)
+    elasticity_component_mask[dim+1+d] = true;
+  KellyErrorEstimator<dim>::estimate (dof_handler,
+                                      face_q_collection,
+                                      typename FunctionMap<dim>::type(),
+                                      solution,
+                                      elasticity_estimated_error_per_cell,
+                                      elasticity_component_mask);
+@endcode
+This gives us two sets of error indicators for each cell. We would then
+somehow combine them into one for mesh refinement, for example using something
+like the following (note that we normalize the squared error indicator in the
+two vectors because error quantities have physical units that do not match in
+the current situation, leading to error indicators that may differ by orders
+of magnitude between the two subdomains):
+@code
+  stokes_estimated_error_per_cell /= stokes_estimated_error_per_cell.l2_norm();
+  elasticity_estimated_error_per_cell /= elasticity_estimated_error_per_cell.l2_norm();
+
+  Vector<float> estimated_error_per_cell (triangulation.n_active_cells());
+  estimated_error_per_cell += stokes_estimated_error_per_cell;
+  estimated_error_per_cell += elasticity_estimated_error_per_cell;
+@endcode
+(In the code, we actually weigh the error indicators 4:1 in favor of the ones
+computed on the Stokes subdomain since refinement is otherwise heavily biased
+towards the elastic subdomain, but this is just a technicality. The factor 4
+has been determined heuristically to work reasonably well.)
+
+While this principle is sound, it doesn't quite work as expected. The reason
+is that the KellyErrorEstimator class computes error indicators by integrating
+the jump in the solution's gradient around the faces of each cell. This jump
+is likely to be very large at the locations where the solution is
+discontinuous and extended by zero; it also doesn't become smaller as the mesh
+is refined. The KellyErrorEstimator class can't just ignore the interface
+because it essentially only sees an hp::DoFHandler where the element type
+changes from one cell to another &mdash; precisely the thing that the
+hp::DoFHandler was designed for, the interface in the current program looks no
+different than the interfaces in step-27, for example, and certainly no less
+legitimate. Be that as it may, the end results is that there is a layer of
+cells on both sides of the interface between the two subdomains where error
+indicators are irrationally large. Consequently, most of the mesh refinement
+is focused on the interface.
+
+This clearly wouldn't happen if we had a refinement indicator that actually
+understood something about the problem and simply ignore the interface between
+subdomains when integrating jump terms.
+On the other hand, this program is
+about showing how to represent problems where we have different physics in
+different subdomains, not about the peculiarities of the KellyErrorEstimator,
+and so we resort to the big hammer called "heuristics": we simply set the
+error indicators of cells at the interface to zero. This cuts off the spikes
+in the error indicators. At first sight one would also think that it prevents
+the mesh from being refined at the interface, but the requirement that
+neighboring cells may only differ by one level of refinement will still lead
+to a reasonably refined mesh.
+
+While this is clearly a suboptimal solution, it works for now and leaves room
+for future improvement.
+

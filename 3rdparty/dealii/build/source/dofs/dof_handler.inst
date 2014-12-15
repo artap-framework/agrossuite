@@ -1,0 +1,432 @@
+namespace internal
+ {
+ template const types::global_dof_index * dummy< 1 , 1 > ();
+ template std::string policy_to_string(const dealii::internal::DoFHandler::Policy::
+ PolicyBase< 1 , 1 > &);
+ 
+#if  1  < 3
+ template const types::global_dof_index * dummy< 1 , 1 +1> ();
+ template std::string policy_to_string(const dealii::internal::DoFHandler::Policy::
+ PolicyBase< 1 , 1 +1> &);
+#endif
+ }
+
+
+ template class DoFHandler< 1 >;
+
+#if  1  < 3
+ template class DoFHandler< 1 , 1 +1>;
+#endif
+
+#if  1  == 3
+ template class DoFHandler<1, 1 >;
+ 
+ template
+ types::global_dof_index
+ DoFHandler<1,3>::
+ get_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+#endif
+
+template
+types::global_dof_index
+DoFHandler< 1 , 1 >::
+get_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+
+#if  1  < 3
+template
+types::global_dof_index
+DoFHandler< 1 , 1 +1>::
+get_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+#endif
+
+#if  1  >= 2
+template
+types::global_dof_index
+DoFHandler< 1 , 1 >::
+get_dof_index<2> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+
+#if  1  < 3
+template
+types::global_dof_index
+DoFHandler< 1 , 1 +1>::
+get_dof_index<2> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+#endif
+
+#if  1  >= 3
+template
+types::global_dof_index
+DoFHandler< 1 , 1 >::
+get_dof_index<3> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+#endif
+#endif
+
+template
+void
+DoFHandler< 1 , 1 >::
+set_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+
+#if  1  < 3
+template
+void
+DoFHandler< 1 , 1 +1>::
+set_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+#endif
+
+#if  1  < 2
+template
+void
+DoFHandler< 1 , 1 +2>::
+set_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+#endif
+
+#if  1  >= 2
+template
+void
+DoFHandler< 1 , 1 >::
+set_dof_index<2> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+
+#if  1  < 3
+template
+void
+DoFHandler< 1 , 1 +1>::
+set_dof_index<2> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+#endif
+
+#if  1  >= 3
+template
+void
+DoFHandler< 1 , 1 >::
+set_dof_index<3> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+#endif
+#endif
+ 
+namespace internal
+ {
+ template const types::global_dof_index * dummy< 2 , 2 > ();
+ template std::string policy_to_string(const dealii::internal::DoFHandler::Policy::
+ PolicyBase< 2 , 2 > &);
+ 
+#if  2  < 3
+ template const types::global_dof_index * dummy< 2 , 2 +1> ();
+ template std::string policy_to_string(const dealii::internal::DoFHandler::Policy::
+ PolicyBase< 2 , 2 +1> &);
+#endif
+ }
+
+
+ template class DoFHandler< 2 >;
+
+#if  2  < 3
+ template class DoFHandler< 2 , 2 +1>;
+#endif
+
+#if  2  == 3
+ template class DoFHandler<1, 2 >;
+ 
+ template
+ types::global_dof_index
+ DoFHandler<1,3>::
+ get_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+#endif
+
+template
+types::global_dof_index
+DoFHandler< 2 , 2 >::
+get_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+
+#if  2  < 3
+template
+types::global_dof_index
+DoFHandler< 2 , 2 +1>::
+get_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+#endif
+
+#if  2  >= 2
+template
+types::global_dof_index
+DoFHandler< 2 , 2 >::
+get_dof_index<2> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+
+#if  2  < 3
+template
+types::global_dof_index
+DoFHandler< 2 , 2 +1>::
+get_dof_index<2> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+#endif
+
+#if  2  >= 3
+template
+types::global_dof_index
+DoFHandler< 2 , 2 >::
+get_dof_index<3> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+#endif
+#endif
+
+template
+void
+DoFHandler< 2 , 2 >::
+set_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+
+#if  2  < 3
+template
+void
+DoFHandler< 2 , 2 +1>::
+set_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+#endif
+
+#if  2  < 2
+template
+void
+DoFHandler< 2 , 2 +2>::
+set_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+#endif
+
+#if  2  >= 2
+template
+void
+DoFHandler< 2 , 2 >::
+set_dof_index<2> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+
+#if  2  < 3
+template
+void
+DoFHandler< 2 , 2 +1>::
+set_dof_index<2> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+#endif
+
+#if  2  >= 3
+template
+void
+DoFHandler< 2 , 2 >::
+set_dof_index<3> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+#endif
+#endif
+ 
+namespace internal
+ {
+ template const types::global_dof_index * dummy< 3 , 3 > ();
+ template std::string policy_to_string(const dealii::internal::DoFHandler::Policy::
+ PolicyBase< 3 , 3 > &);
+ 
+#if  3  < 3
+ template const types::global_dof_index * dummy< 3 , 3 +1> ();
+ template std::string policy_to_string(const dealii::internal::DoFHandler::Policy::
+ PolicyBase< 3 , 3 +1> &);
+#endif
+ }
+
+
+ template class DoFHandler< 3 >;
+
+#if  3  < 3
+ template class DoFHandler< 3 , 3 +1>;
+#endif
+
+#if  3  == 3
+ template class DoFHandler<1, 3 >;
+ 
+ template
+ types::global_dof_index
+ DoFHandler<1,3>::
+ get_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+#endif
+
+template
+types::global_dof_index
+DoFHandler< 3 , 3 >::
+get_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+
+#if  3  < 3
+template
+types::global_dof_index
+DoFHandler< 3 , 3 +1>::
+get_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+#endif
+
+#if  3  >= 2
+template
+types::global_dof_index
+DoFHandler< 3 , 3 >::
+get_dof_index<2> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+
+#if  3  < 3
+template
+types::global_dof_index
+DoFHandler< 3 , 3 +1>::
+get_dof_index<2> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+#endif
+
+#if  3  >= 3
+template
+types::global_dof_index
+DoFHandler< 3 , 3 >::
+get_dof_index<3> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index) const;
+#endif
+#endif
+
+template
+void
+DoFHandler< 3 , 3 >::
+set_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+
+#if  3  < 3
+template
+void
+DoFHandler< 3 , 3 +1>::
+set_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+#endif
+
+#if  3  < 2
+template
+void
+DoFHandler< 3 , 3 +2>::
+set_dof_index<1> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+#endif
+
+#if  3  >= 2
+template
+void
+DoFHandler< 3 , 3 >::
+set_dof_index<2> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+
+#if  3  < 3
+template
+void
+DoFHandler< 3 , 3 +1>::
+set_dof_index<2> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+#endif
+
+#if  3  >= 3
+template
+void
+DoFHandler< 3 , 3 >::
+set_dof_index<3> (const unsigned int obj_level,
+ const unsigned int obj_index,
+ const unsigned int fe_index,
+ const unsigned int local_index,
+ const types::global_dof_index global_index) const;
+#endif
+#endif
+ 

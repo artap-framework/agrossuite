@@ -1,0 +1,666 @@
+template class RelaxationBlock<SparseMatrix< double >,  double >;
+ template class RelaxationBlockJacobi<SparseMatrix< double >,  double >;
+ template class RelaxationBlockSOR<SparseMatrix< double >,  double >;
+ template class RelaxationBlockSSOR<SparseMatrix< double >,  double >;
+ 
+template class RelaxationBlock<SparseMatrix< double >,  float >;
+ template class RelaxationBlockJacobi<SparseMatrix< double >,  float >;
+ template class RelaxationBlockSOR<SparseMatrix< double >,  float >;
+ template class RelaxationBlockSSOR<SparseMatrix< double >,  float >;
+ 
+template class RelaxationBlock<SparseMatrix< double >,  long double >;
+ template class RelaxationBlockJacobi<SparseMatrix< double >,  long double >;
+ template class RelaxationBlockSOR<SparseMatrix< double >,  long double >;
+ template class RelaxationBlockSSOR<SparseMatrix< double >,  long double >;
+ 
+template class RelaxationBlock<SparseMatrix< float >,  double >;
+ template class RelaxationBlockJacobi<SparseMatrix< float >,  double >;
+ template class RelaxationBlockSOR<SparseMatrix< float >,  double >;
+ template class RelaxationBlockSSOR<SparseMatrix< float >,  double >;
+ 
+template class RelaxationBlock<SparseMatrix< float >,  float >;
+ template class RelaxationBlockJacobi<SparseMatrix< float >,  float >;
+ template class RelaxationBlockSOR<SparseMatrix< float >,  float >;
+ template class RelaxationBlockSSOR<SparseMatrix< float >,  float >;
+ 
+template class RelaxationBlock<SparseMatrix< float >,  long double >;
+ template class RelaxationBlockJacobi<SparseMatrix< float >,  long double >;
+ template class RelaxationBlockSOR<SparseMatrix< float >,  long double >;
+ template class RelaxationBlockSSOR<SparseMatrix< float >,  long double >;
+ 
+template class RelaxationBlock<SparseMatrix< long double >,  double >;
+ template class RelaxationBlockJacobi<SparseMatrix< long double >,  double >;
+ template class RelaxationBlockSOR<SparseMatrix< long double >,  double >;
+ template class RelaxationBlockSSOR<SparseMatrix< long double >,  double >;
+ 
+template class RelaxationBlock<SparseMatrix< long double >,  float >;
+ template class RelaxationBlockJacobi<SparseMatrix< long double >,  float >;
+ template class RelaxationBlockSOR<SparseMatrix< long double >,  float >;
+ template class RelaxationBlockSSOR<SparseMatrix< long double >,  float >;
+ 
+template class RelaxationBlock<SparseMatrix< long double >,  long double >;
+ template class RelaxationBlockJacobi<SparseMatrix< long double >,  long double >;
+ template class RelaxationBlockSOR<SparseMatrix< long double >,  long double >;
+ template class RelaxationBlockSSOR<SparseMatrix< long double >,  long double >;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< double >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< double >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< double >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< float >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< float >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< float >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockJacobi<SparseMatrix< long double >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSOR<SparseMatrix< long double >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void RelaxationBlockSSOR<SparseMatrix< long double >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 

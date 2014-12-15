@@ -1,0 +1,24 @@
+template class Solver< Vector<double> >;
+ 
+template class Solver< Vector<float> >;
+ 
+template class Solver< Vector<long double> >;
+ 
+template class Solver< BlockVector<double> >;
+ 
+template class Solver< BlockVector<float> >;
+ 
+template class Solver< BlockVector<long double> >;
+ 
+template class Solver< parallel::distributed::Vector<double> >;
+ 
+template class Solver< parallel::distributed::Vector<float> >;
+ 
+template class Solver< parallel::distributed::Vector<long double> >;
+ 
+template class Solver< parallel::distributed::BlockVector<double> >;
+ 
+template class Solver< parallel::distributed::BlockVector<float> >;
+ 
+template class Solver< parallel::distributed::BlockVector<long double> >;
+ 

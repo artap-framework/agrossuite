@@ -1,0 +1,6 @@
+template class FE_DGPNonparametric< 1 >;
+ 
+template class FE_DGPNonparametric< 2 >;
+ 
+template class FE_DGPNonparametric< 3 >;
+ 

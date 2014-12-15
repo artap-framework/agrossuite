@@ -1,0 +1,6 @@
+template class FE_ABF< 1 >;
+ 
+template class FE_ABF< 2 >;
+ 
+template class FE_ABF< 3 >;
+ 

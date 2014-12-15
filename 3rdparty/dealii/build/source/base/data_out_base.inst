@@ -1,0 +1,1017 @@
+#if  1  <=  1 
+ template class DataOutInterface< 1 ,  1 >;
+ template class DataOutReader< 1 ,  1 >;
+ template struct DataOutBase::Patch< 1 ,  1 >;
+
+ template
+ std::ostream &
+ operator << (std::ostream &out,
+ const DataOutBase::Patch< 1 ,  1 > &patch);
+
+ template
+ std::istream &
+ operator >> (std::istream &in,
+ DataOutBase::Patch< 1 ,  1 > &patch);
+
+ template
+ void
+ DataOutBase::write_vtk (const std::vector<Patch< 1 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_vtu (const std::vector<Patch< 1 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_ucd (const std::vector<Patch< 1 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const UcdFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_dx (const std::vector<Patch< 1 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const DXFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gnuplot (const std::vector<Patch< 1 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GnuplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_povray (const std::vector<Patch< 1 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const PovrayFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_eps (const std::vector<Patch< 1 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const EpsFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gmv (const std::vector<Patch< 1 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GmvFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot (const std::vector<Patch< 1 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot_binary (const std::vector<Patch< 1 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+#if  1  >1
+ template
+ void
+ DataOutBase::write_svg (const std::vector<Patch< 1 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const SvgFlags &flags,
+ std::ostream &out);
+#endif
+ template
+ void
+ DataOutBase::write_deal_II_intermediate (const std::vector<Patch< 1 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const Deal_II_IntermediateFlags &flags,
+ std::ostream &out);
+#endif
+
+#if  1  <=  2 
+ template class DataOutInterface< 1 ,  2 >;
+ template class DataOutReader< 1 ,  2 >;
+ template struct DataOutBase::Patch< 1 ,  2 >;
+
+ template
+ std::ostream &
+ operator << (std::ostream &out,
+ const DataOutBase::Patch< 1 ,  2 > &patch);
+
+ template
+ std::istream &
+ operator >> (std::istream &in,
+ DataOutBase::Patch< 1 ,  2 > &patch);
+
+ template
+ void
+ DataOutBase::write_vtk (const std::vector<Patch< 1 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_vtu (const std::vector<Patch< 1 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_ucd (const std::vector<Patch< 1 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const UcdFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_dx (const std::vector<Patch< 1 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const DXFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gnuplot (const std::vector<Patch< 1 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GnuplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_povray (const std::vector<Patch< 1 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const PovrayFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_eps (const std::vector<Patch< 1 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const EpsFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gmv (const std::vector<Patch< 1 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GmvFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot (const std::vector<Patch< 1 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot_binary (const std::vector<Patch< 1 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+#if  2  >1
+ template
+ void
+ DataOutBase::write_svg (const std::vector<Patch< 1 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const SvgFlags &flags,
+ std::ostream &out);
+#endif
+ template
+ void
+ DataOutBase::write_deal_II_intermediate (const std::vector<Patch< 1 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const Deal_II_IntermediateFlags &flags,
+ std::ostream &out);
+#endif
+
+#if  1  <=  3 
+ template class DataOutInterface< 1 ,  3 >;
+ template class DataOutReader< 1 ,  3 >;
+ template struct DataOutBase::Patch< 1 ,  3 >;
+
+ template
+ std::ostream &
+ operator << (std::ostream &out,
+ const DataOutBase::Patch< 1 ,  3 > &patch);
+
+ template
+ std::istream &
+ operator >> (std::istream &in,
+ DataOutBase::Patch< 1 ,  3 > &patch);
+
+ template
+ void
+ DataOutBase::write_vtk (const std::vector<Patch< 1 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_vtu (const std::vector<Patch< 1 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_ucd (const std::vector<Patch< 1 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const UcdFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_dx (const std::vector<Patch< 1 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const DXFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gnuplot (const std::vector<Patch< 1 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GnuplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_povray (const std::vector<Patch< 1 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const PovrayFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_eps (const std::vector<Patch< 1 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const EpsFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gmv (const std::vector<Patch< 1 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GmvFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot (const std::vector<Patch< 1 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot_binary (const std::vector<Patch< 1 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+#if  3  >1
+ template
+ void
+ DataOutBase::write_svg (const std::vector<Patch< 1 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const SvgFlags &flags,
+ std::ostream &out);
+#endif
+ template
+ void
+ DataOutBase::write_deal_II_intermediate (const std::vector<Patch< 1 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const Deal_II_IntermediateFlags &flags,
+ std::ostream &out);
+#endif
+
+#if  2  <=  1 
+ template class DataOutInterface< 2 ,  1 >;
+ template class DataOutReader< 2 ,  1 >;
+ template struct DataOutBase::Patch< 2 ,  1 >;
+
+ template
+ std::ostream &
+ operator << (std::ostream &out,
+ const DataOutBase::Patch< 2 ,  1 > &patch);
+
+ template
+ std::istream &
+ operator >> (std::istream &in,
+ DataOutBase::Patch< 2 ,  1 > &patch);
+
+ template
+ void
+ DataOutBase::write_vtk (const std::vector<Patch< 2 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_vtu (const std::vector<Patch< 2 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_ucd (const std::vector<Patch< 2 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const UcdFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_dx (const std::vector<Patch< 2 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const DXFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gnuplot (const std::vector<Patch< 2 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GnuplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_povray (const std::vector<Patch< 2 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const PovrayFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_eps (const std::vector<Patch< 2 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const EpsFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gmv (const std::vector<Patch< 2 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GmvFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot (const std::vector<Patch< 2 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot_binary (const std::vector<Patch< 2 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+#if  1  >1
+ template
+ void
+ DataOutBase::write_svg (const std::vector<Patch< 2 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const SvgFlags &flags,
+ std::ostream &out);
+#endif
+ template
+ void
+ DataOutBase::write_deal_II_intermediate (const std::vector<Patch< 2 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const Deal_II_IntermediateFlags &flags,
+ std::ostream &out);
+#endif
+
+#if  2  <=  2 
+ template class DataOutInterface< 2 ,  2 >;
+ template class DataOutReader< 2 ,  2 >;
+ template struct DataOutBase::Patch< 2 ,  2 >;
+
+ template
+ std::ostream &
+ operator << (std::ostream &out,
+ const DataOutBase::Patch< 2 ,  2 > &patch);
+
+ template
+ std::istream &
+ operator >> (std::istream &in,
+ DataOutBase::Patch< 2 ,  2 > &patch);
+
+ template
+ void
+ DataOutBase::write_vtk (const std::vector<Patch< 2 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_vtu (const std::vector<Patch< 2 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_ucd (const std::vector<Patch< 2 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const UcdFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_dx (const std::vector<Patch< 2 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const DXFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gnuplot (const std::vector<Patch< 2 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GnuplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_povray (const std::vector<Patch< 2 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const PovrayFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_eps (const std::vector<Patch< 2 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const EpsFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gmv (const std::vector<Patch< 2 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GmvFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot (const std::vector<Patch< 2 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot_binary (const std::vector<Patch< 2 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+#if  2  >1
+ template
+ void
+ DataOutBase::write_svg (const std::vector<Patch< 2 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const SvgFlags &flags,
+ std::ostream &out);
+#endif
+ template
+ void
+ DataOutBase::write_deal_II_intermediate (const std::vector<Patch< 2 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const Deal_II_IntermediateFlags &flags,
+ std::ostream &out);
+#endif
+
+#if  2  <=  3 
+ template class DataOutInterface< 2 ,  3 >;
+ template class DataOutReader< 2 ,  3 >;
+ template struct DataOutBase::Patch< 2 ,  3 >;
+
+ template
+ std::ostream &
+ operator << (std::ostream &out,
+ const DataOutBase::Patch< 2 ,  3 > &patch);
+
+ template
+ std::istream &
+ operator >> (std::istream &in,
+ DataOutBase::Patch< 2 ,  3 > &patch);
+
+ template
+ void
+ DataOutBase::write_vtk (const std::vector<Patch< 2 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_vtu (const std::vector<Patch< 2 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_ucd (const std::vector<Patch< 2 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const UcdFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_dx (const std::vector<Patch< 2 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const DXFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gnuplot (const std::vector<Patch< 2 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GnuplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_povray (const std::vector<Patch< 2 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const PovrayFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_eps (const std::vector<Patch< 2 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const EpsFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gmv (const std::vector<Patch< 2 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GmvFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot (const std::vector<Patch< 2 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot_binary (const std::vector<Patch< 2 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+#if  3  >1
+ template
+ void
+ DataOutBase::write_svg (const std::vector<Patch< 2 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const SvgFlags &flags,
+ std::ostream &out);
+#endif
+ template
+ void
+ DataOutBase::write_deal_II_intermediate (const std::vector<Patch< 2 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const Deal_II_IntermediateFlags &flags,
+ std::ostream &out);
+#endif
+
+#if  3  <=  1 
+ template class DataOutInterface< 3 ,  1 >;
+ template class DataOutReader< 3 ,  1 >;
+ template struct DataOutBase::Patch< 3 ,  1 >;
+
+ template
+ std::ostream &
+ operator << (std::ostream &out,
+ const DataOutBase::Patch< 3 ,  1 > &patch);
+
+ template
+ std::istream &
+ operator >> (std::istream &in,
+ DataOutBase::Patch< 3 ,  1 > &patch);
+
+ template
+ void
+ DataOutBase::write_vtk (const std::vector<Patch< 3 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_vtu (const std::vector<Patch< 3 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_ucd (const std::vector<Patch< 3 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const UcdFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_dx (const std::vector<Patch< 3 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const DXFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gnuplot (const std::vector<Patch< 3 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GnuplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_povray (const std::vector<Patch< 3 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const PovrayFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_eps (const std::vector<Patch< 3 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const EpsFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gmv (const std::vector<Patch< 3 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GmvFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot (const std::vector<Patch< 3 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot_binary (const std::vector<Patch< 3 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+#if  1  >1
+ template
+ void
+ DataOutBase::write_svg (const std::vector<Patch< 3 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const SvgFlags &flags,
+ std::ostream &out);
+#endif
+ template
+ void
+ DataOutBase::write_deal_II_intermediate (const std::vector<Patch< 3 , 1 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const Deal_II_IntermediateFlags &flags,
+ std::ostream &out);
+#endif
+
+#if  3  <=  2 
+ template class DataOutInterface< 3 ,  2 >;
+ template class DataOutReader< 3 ,  2 >;
+ template struct DataOutBase::Patch< 3 ,  2 >;
+
+ template
+ std::ostream &
+ operator << (std::ostream &out,
+ const DataOutBase::Patch< 3 ,  2 > &patch);
+
+ template
+ std::istream &
+ operator >> (std::istream &in,
+ DataOutBase::Patch< 3 ,  2 > &patch);
+
+ template
+ void
+ DataOutBase::write_vtk (const std::vector<Patch< 3 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_vtu (const std::vector<Patch< 3 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_ucd (const std::vector<Patch< 3 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const UcdFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_dx (const std::vector<Patch< 3 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const DXFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gnuplot (const std::vector<Patch< 3 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GnuplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_povray (const std::vector<Patch< 3 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const PovrayFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_eps (const std::vector<Patch< 3 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const EpsFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gmv (const std::vector<Patch< 3 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GmvFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot (const std::vector<Patch< 3 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot_binary (const std::vector<Patch< 3 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+#if  2  >1
+ template
+ void
+ DataOutBase::write_svg (const std::vector<Patch< 3 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const SvgFlags &flags,
+ std::ostream &out);
+#endif
+ template
+ void
+ DataOutBase::write_deal_II_intermediate (const std::vector<Patch< 3 , 2 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const Deal_II_IntermediateFlags &flags,
+ std::ostream &out);
+#endif
+
+#if  3  <=  3 
+ template class DataOutInterface< 3 ,  3 >;
+ template class DataOutReader< 3 ,  3 >;
+ template struct DataOutBase::Patch< 3 ,  3 >;
+
+ template
+ std::ostream &
+ operator << (std::ostream &out,
+ const DataOutBase::Patch< 3 ,  3 > &patch);
+
+ template
+ std::istream &
+ operator >> (std::istream &in,
+ DataOutBase::Patch< 3 ,  3 > &patch);
+
+ template
+ void
+ DataOutBase::write_vtk (const std::vector<Patch< 3 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_vtu (const std::vector<Patch< 3 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const VtkFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_ucd (const std::vector<Patch< 3 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const UcdFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_dx (const std::vector<Patch< 3 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const DXFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gnuplot (const std::vector<Patch< 3 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GnuplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_povray (const std::vector<Patch< 3 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const PovrayFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_eps (const std::vector<Patch< 3 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const EpsFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_gmv (const std::vector<Patch< 3 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const GmvFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot (const std::vector<Patch< 3 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+ template
+ void
+ DataOutBase::write_tecplot_binary (const std::vector<Patch< 3 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const TecplotFlags &flags,
+ std::ostream &out);
+
+#if  3  >1
+ template
+ void
+ DataOutBase::write_svg (const std::vector<Patch< 3 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const SvgFlags &flags,
+ std::ostream &out);
+#endif
+ template
+ void
+ DataOutBase::write_deal_II_intermediate (const std::vector<Patch< 3 , 3 > > &patches,
+ const std::vector<std::string> &data_names,
+ const std::vector<std_cxx1x::tuple<unsigned int, unsigned int, std::string> > &vector_data_ranges,
+ const Deal_II_IntermediateFlags &flags,
+ std::ostream &out);
+#endif
+

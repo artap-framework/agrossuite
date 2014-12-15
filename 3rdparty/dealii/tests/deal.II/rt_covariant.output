@@ -1,0 +1,5 @@
+
+DEAL::FE=FE_RaviartThomas<2>(1)
+DEAL::OK
+DEAL::FE=FE_RaviartThomas<3>(1)
+DEAL::OK

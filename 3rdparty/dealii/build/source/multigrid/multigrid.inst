@@ -1,0 +1,24 @@
+template class Multigrid<  Vector<double>  >;
+
+template class Multigrid<  Vector<float>  >;
+
+template class Multigrid<  Vector<long double>  >;
+
+template class Multigrid<  BlockVector<double>  >;
+
+template class Multigrid<  BlockVector<float>  >;
+
+template class Multigrid<  BlockVector<long double>  >;
+
+template class Multigrid<  parallel::distributed::Vector<double>  >;
+
+template class Multigrid<  parallel::distributed::Vector<float>  >;
+
+template class Multigrid<  parallel::distributed::Vector<long double>  >;
+
+template class Multigrid<  parallel::distributed::BlockVector<double>  >;
+
+template class Multigrid<  parallel::distributed::BlockVector<float>  >;
+
+template class Multigrid<  parallel::distributed::BlockVector<long double>  >;
+

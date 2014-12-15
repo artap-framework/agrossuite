@@ -1,0 +1,2538 @@
+#if  1  <=  1 
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 1 >
+ (const Mapping< 1 , 1 > &mapping,
+ const DoFHandler< 1 , 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 1 >
+ (const DoFHandler< 1 , 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 1 >
+ (const Mapping< 1 , 1 > &mapping,
+ const DoFHandler< 1 , 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 1 >
+ (const DoFHandler< 1 , 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,float, 1 >
+ (const Mapping< 1 , 1 > &mapping,
+ const DoFHandler< 1 , 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,float, 1 >
+ (const DoFHandler< 1 , 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,float, 1 >
+ (const Mapping< 1 , 1 > &mapping,
+ const DoFHandler< 1 , 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,float, 1 >
+ (const DoFHandler< 1 , 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 1 , 1 >
+ (const DoFHandler< 1 , 1 > &dof,
+ const Quadrature< 1 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 1 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 1 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 1 , 1 >
+ (const Mapping< 1 , 1 > &,
+ const DoFHandler< 1 , 1 > &dof,
+ const Quadrature< 1 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 1 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 1 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void
+ MatrixCreator::create_boundary_mass_matrix< 1 , 1 >
+ (const hp::MappingCollection< 1 , 1 >&,
+ const hp::DoFHandler< 1 , 1 >&,
+ const hp::QCollection< 1 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 1 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 1 > * const,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 1 , 1 >
+ (const hp::DoFHandler< 1 , 1 >&,
+ const hp::QCollection< 1 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 1 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 1 > * const,
+ std::vector<unsigned int>);
+
+#endif
+ 
+#if  1  <=  2 
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 2 >
+ (const Mapping< 1 , 2 > &mapping,
+ const DoFHandler< 1 , 2 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 2 >
+ (const DoFHandler< 1 , 2 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 2 >
+ (const Mapping< 1 , 2 > &mapping,
+ const DoFHandler< 1 , 2 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 2 >
+ (const DoFHandler< 1 , 2 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,float, 2 >
+ (const Mapping< 1 , 2 > &mapping,
+ const DoFHandler< 1 , 2 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,float, 2 >
+ (const DoFHandler< 1 , 2 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,float, 2 >
+ (const Mapping< 1 , 2 > &mapping,
+ const DoFHandler< 1 , 2 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,float, 2 >
+ (const DoFHandler< 1 , 2 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 1 , 2 >
+ (const DoFHandler< 1 , 2 > &dof,
+ const Quadrature< 1 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 2 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 2 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 1 , 2 >
+ (const Mapping< 1 , 2 > &,
+ const DoFHandler< 1 , 2 > &dof,
+ const Quadrature< 1 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 2 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 2 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void
+ MatrixCreator::create_boundary_mass_matrix< 1 , 2 >
+ (const hp::MappingCollection< 1 , 2 >&,
+ const hp::DoFHandler< 1 , 2 >&,
+ const hp::QCollection< 1 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 2 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 2 > * const,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 1 , 2 >
+ (const hp::DoFHandler< 1 , 2 >&,
+ const hp::QCollection< 1 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 2 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 2 > * const,
+ std::vector<unsigned int>);
+
+#endif
+ 
+#if  1  <=  3 
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 3 >
+ (const Mapping< 1 , 3 > &mapping,
+ const DoFHandler< 1 , 3 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 3 >
+ (const DoFHandler< 1 , 3 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 3 >
+ (const Mapping< 1 , 3 > &mapping,
+ const DoFHandler< 1 , 3 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 3 >
+ (const DoFHandler< 1 , 3 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,float, 3 >
+ (const Mapping< 1 , 3 > &mapping,
+ const DoFHandler< 1 , 3 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,float, 3 >
+ (const DoFHandler< 1 , 3 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,float, 3 >
+ (const Mapping< 1 , 3 > &mapping,
+ const DoFHandler< 1 , 3 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,float, 3 >
+ (const DoFHandler< 1 , 3 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 1 , 3 >
+ (const DoFHandler< 1 , 3 > &dof,
+ const Quadrature< 1 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 3 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 3 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 1 , 3 >
+ (const Mapping< 1 , 3 > &,
+ const DoFHandler< 1 , 3 > &dof,
+ const Quadrature< 1 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 3 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 3 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void
+ MatrixCreator::create_boundary_mass_matrix< 1 , 3 >
+ (const hp::MappingCollection< 1 , 3 >&,
+ const hp::DoFHandler< 1 , 3 >&,
+ const hp::QCollection< 1 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 3 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 3 > * const,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 1 , 3 >
+ (const hp::DoFHandler< 1 , 3 >&,
+ const hp::QCollection< 1 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 3 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 3 > * const,
+ std::vector<unsigned int>);
+
+#endif
+ 
+#if  2  <=  1 
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 1 >
+ (const Mapping< 2 , 1 > &mapping,
+ const DoFHandler< 2 , 1 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 1 >
+ (const DoFHandler< 2 , 1 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 1 >
+ (const Mapping< 2 , 1 > &mapping,
+ const DoFHandler< 2 , 1 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 1 >
+ (const DoFHandler< 2 , 1 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,float, 1 >
+ (const Mapping< 2 , 1 > &mapping,
+ const DoFHandler< 2 , 1 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,float, 1 >
+ (const DoFHandler< 2 , 1 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,float, 1 >
+ (const Mapping< 2 , 1 > &mapping,
+ const DoFHandler< 2 , 1 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,float, 1 >
+ (const DoFHandler< 2 , 1 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 2 , 1 >
+ (const DoFHandler< 2 , 1 > &dof,
+ const Quadrature< 2 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 1 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 1 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 2 , 1 >
+ (const Mapping< 2 , 1 > &,
+ const DoFHandler< 2 , 1 > &dof,
+ const Quadrature< 2 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 1 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 1 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void
+ MatrixCreator::create_boundary_mass_matrix< 2 , 1 >
+ (const hp::MappingCollection< 2 , 1 >&,
+ const hp::DoFHandler< 2 , 1 >&,
+ const hp::QCollection< 2 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 1 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 1 > * const,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 2 , 1 >
+ (const hp::DoFHandler< 2 , 1 >&,
+ const hp::QCollection< 2 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 1 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 1 > * const,
+ std::vector<unsigned int>);
+
+#endif
+ 
+#if  2  <=  2 
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 2 >
+ (const Mapping< 2 , 2 > &mapping,
+ const DoFHandler< 2 , 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 2 >
+ (const DoFHandler< 2 , 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 2 >
+ (const Mapping< 2 , 2 > &mapping,
+ const DoFHandler< 2 , 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 2 >
+ (const DoFHandler< 2 , 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,float, 2 >
+ (const Mapping< 2 , 2 > &mapping,
+ const DoFHandler< 2 , 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,float, 2 >
+ (const DoFHandler< 2 , 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,float, 2 >
+ (const Mapping< 2 , 2 > &mapping,
+ const DoFHandler< 2 , 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,float, 2 >
+ (const DoFHandler< 2 , 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 2 , 2 >
+ (const DoFHandler< 2 , 2 > &dof,
+ const Quadrature< 2 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 2 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 2 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 2 , 2 >
+ (const Mapping< 2 , 2 > &,
+ const DoFHandler< 2 , 2 > &dof,
+ const Quadrature< 2 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 2 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 2 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void
+ MatrixCreator::create_boundary_mass_matrix< 2 , 2 >
+ (const hp::MappingCollection< 2 , 2 >&,
+ const hp::DoFHandler< 2 , 2 >&,
+ const hp::QCollection< 2 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 2 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 2 > * const,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 2 , 2 >
+ (const hp::DoFHandler< 2 , 2 >&,
+ const hp::QCollection< 2 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 2 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 2 > * const,
+ std::vector<unsigned int>);
+
+#endif
+ 
+#if  2  <=  3 
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 3 >
+ (const Mapping< 2 , 3 > &mapping,
+ const DoFHandler< 2 , 3 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 3 >
+ (const DoFHandler< 2 , 3 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 3 >
+ (const Mapping< 2 , 3 > &mapping,
+ const DoFHandler< 2 , 3 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 3 >
+ (const DoFHandler< 2 , 3 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,float, 3 >
+ (const Mapping< 2 , 3 > &mapping,
+ const DoFHandler< 2 , 3 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,float, 3 >
+ (const DoFHandler< 2 , 3 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,float, 3 >
+ (const Mapping< 2 , 3 > &mapping,
+ const DoFHandler< 2 , 3 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,float, 3 >
+ (const DoFHandler< 2 , 3 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 2 , 3 >
+ (const DoFHandler< 2 , 3 > &dof,
+ const Quadrature< 2 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 3 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 3 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 2 , 3 >
+ (const Mapping< 2 , 3 > &,
+ const DoFHandler< 2 , 3 > &dof,
+ const Quadrature< 2 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 3 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 3 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void
+ MatrixCreator::create_boundary_mass_matrix< 2 , 3 >
+ (const hp::MappingCollection< 2 , 3 >&,
+ const hp::DoFHandler< 2 , 3 >&,
+ const hp::QCollection< 2 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 3 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 3 > * const,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 2 , 3 >
+ (const hp::DoFHandler< 2 , 3 >&,
+ const hp::QCollection< 2 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 3 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 3 > * const,
+ std::vector<unsigned int>);
+
+#endif
+ 
+#if  3  <=  1 
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 1 >
+ (const Mapping< 3 , 1 > &mapping,
+ const DoFHandler< 3 , 1 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 1 >
+ (const DoFHandler< 3 , 1 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 1 >
+ (const Mapping< 3 , 1 > &mapping,
+ const DoFHandler< 3 , 1 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 1 >
+ (const DoFHandler< 3 , 1 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,float, 1 >
+ (const Mapping< 3 , 1 > &mapping,
+ const DoFHandler< 3 , 1 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,float, 1 >
+ (const DoFHandler< 3 , 1 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,float, 1 >
+ (const Mapping< 3 , 1 > &mapping,
+ const DoFHandler< 3 , 1 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,float, 1 >
+ (const DoFHandler< 3 , 1 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 3 , 1 >
+ (const DoFHandler< 3 , 1 > &dof,
+ const Quadrature< 3 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 1 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 1 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 3 , 1 >
+ (const Mapping< 3 , 1 > &,
+ const DoFHandler< 3 , 1 > &dof,
+ const Quadrature< 3 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 1 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 1 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void
+ MatrixCreator::create_boundary_mass_matrix< 3 , 1 >
+ (const hp::MappingCollection< 3 , 1 >&,
+ const hp::DoFHandler< 3 , 1 >&,
+ const hp::QCollection< 3 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 1 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 1 > * const,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 3 , 1 >
+ (const hp::DoFHandler< 3 , 1 >&,
+ const hp::QCollection< 3 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 1 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 1 > * const,
+ std::vector<unsigned int>);
+
+#endif
+ 
+#if  3  <=  2 
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 2 >
+ (const Mapping< 3 , 2 > &mapping,
+ const DoFHandler< 3 , 2 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 2 >
+ (const DoFHandler< 3 , 2 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 2 >
+ (const Mapping< 3 , 2 > &mapping,
+ const DoFHandler< 3 , 2 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 2 >
+ (const DoFHandler< 3 , 2 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,float, 2 >
+ (const Mapping< 3 , 2 > &mapping,
+ const DoFHandler< 3 , 2 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,float, 2 >
+ (const DoFHandler< 3 , 2 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,float, 2 >
+ (const Mapping< 3 , 2 > &mapping,
+ const DoFHandler< 3 , 2 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,float, 2 >
+ (const DoFHandler< 3 , 2 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 3 , 2 >
+ (const DoFHandler< 3 , 2 > &dof,
+ const Quadrature< 3 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 2 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 2 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 3 , 2 >
+ (const Mapping< 3 , 2 > &,
+ const DoFHandler< 3 , 2 > &dof,
+ const Quadrature< 3 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 2 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 2 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void
+ MatrixCreator::create_boundary_mass_matrix< 3 , 2 >
+ (const hp::MappingCollection< 3 , 2 >&,
+ const hp::DoFHandler< 3 , 2 >&,
+ const hp::QCollection< 3 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 2 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 2 > * const,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 3 , 2 >
+ (const hp::DoFHandler< 3 , 2 >&,
+ const hp::QCollection< 3 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 2 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 2 > * const,
+ std::vector<unsigned int>);
+
+#endif
+ 
+#if  3  <=  3 
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 3 >
+ (const Mapping< 3 , 3 > &mapping,
+ const DoFHandler< 3 , 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 3 >
+ (const DoFHandler< 3 , 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 3 >
+ (const Mapping< 3 , 3 > &mapping,
+ const DoFHandler< 3 , 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 3 >
+ (const DoFHandler< 3 , 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,float, 3 >
+ (const Mapping< 3 , 3 > &mapping,
+ const DoFHandler< 3 , 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,float, 3 >
+ (const DoFHandler< 3 , 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,float, 3 >
+ (const Mapping< 3 , 3 > &mapping,
+ const DoFHandler< 3 , 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,float, 3 >
+ (const DoFHandler< 3 , 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 3 , 3 >
+ (const DoFHandler< 3 , 3 > &dof,
+ const Quadrature< 3 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 3 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 3 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 3 , 3 >
+ (const Mapping< 3 , 3 > &,
+ const DoFHandler< 3 , 3 > &dof,
+ const Quadrature< 3 -1> &q,
+ SparseMatrix<double> &matrix,
+ const FunctionMap< 3 >::type &rhs,
+ Vector<double> &rhs_vector,
+ std::vector<types::global_dof_index> &dof_to_boundary_mapping,
+ const Function< 3 > * const a,
+ std::vector<unsigned int>);
+
+ template
+ void
+ MatrixCreator::create_boundary_mass_matrix< 3 , 3 >
+ (const hp::MappingCollection< 3 , 3 >&,
+ const hp::DoFHandler< 3 , 3 >&,
+ const hp::QCollection< 3 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 3 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 3 > * const,
+ std::vector<unsigned int>);
+
+ template
+ void MatrixCreator::create_boundary_mass_matrix< 3 , 3 >
+ (const hp::DoFHandler< 3 , 3 >&,
+ const hp::QCollection< 3 -1>&,
+ SparseMatrix<double>&,
+ const FunctionMap< 3 >::type&,
+ Vector<double>&,
+ std::vector<types::global_dof_index>&,
+ const Function< 3 > * const,
+ std::vector<unsigned int>);
+
+#endif
+ 
+#if  1  <=  1 
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 1 >
+ (const hp::MappingCollection< 1 , 1 > &mapping,
+ const hp::DoFHandler< 1 , 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 1 >
+ (const hp::MappingCollection< 1 , 1 > &mapping,
+ const hp::DoFHandler< 1 , 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::MappingCollection< 1 , 1 > &mapping,
+ const hp::DoFHandler< 1 , 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::DoFHandler< 1 , 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+#endif
+
+#if  1  ==  1 
+
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::DoFHandler< 1 , 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::DoFHandler< 1 , 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::MappingCollection< 1 , 1 > &mapping,
+ const hp::DoFHandler< 1 , 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::DoFHandler< 1 , 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints); 
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const DoFHandler< 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const Mapping< 1 > &mapping,
+ const DoFHandler< 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const Mapping< 1 > &mapping,
+ const DoFHandler< 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const DoFHandler< 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const hp::DoFHandler< 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const hp::MappingCollection< 1 > &mapping,
+ const hp::DoFHandler< 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const hp::MappingCollection< 1 > &mapping,
+ const hp::DoFHandler< 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const hp::DoFHandler< 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+
+#endif
+ 
+#if  1  <=  2 
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 2 >
+ (const hp::MappingCollection< 1 , 2 > &mapping,
+ const hp::DoFHandler< 1 , 2 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 2 >
+ (const hp::MappingCollection< 1 , 2 > &mapping,
+ const hp::DoFHandler< 1 , 2 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::MappingCollection< 1 , 2 > &mapping,
+ const hp::DoFHandler< 1 , 2 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::DoFHandler< 1 , 2 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+#endif
+
+#if  1  ==  2 
+
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::DoFHandler< 1 , 2 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::DoFHandler< 1 , 2 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::MappingCollection< 1 , 2 > &mapping,
+ const hp::DoFHandler< 1 , 2 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::DoFHandler< 1 , 2 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints); 
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const DoFHandler< 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const Mapping< 1 > &mapping,
+ const DoFHandler< 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const Mapping< 1 > &mapping,
+ const DoFHandler< 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const DoFHandler< 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const hp::DoFHandler< 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const hp::MappingCollection< 1 > &mapping,
+ const hp::DoFHandler< 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const hp::MappingCollection< 1 > &mapping,
+ const hp::DoFHandler< 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const hp::DoFHandler< 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+
+#endif
+ 
+#if  1  <=  3 
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 3 >
+ (const hp::MappingCollection< 1 , 3 > &mapping,
+ const hp::DoFHandler< 1 , 3 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 ,double, 3 >
+ (const hp::MappingCollection< 1 , 3 > &mapping,
+ const hp::DoFHandler< 1 , 3 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::MappingCollection< 1 , 3 > &mapping,
+ const hp::DoFHandler< 1 , 3 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::DoFHandler< 1 , 3 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+#endif
+
+#if  1  ==  3 
+
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::DoFHandler< 1 , 3 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::DoFHandler< 1 , 3 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::MappingCollection< 1 , 3 > &mapping,
+ const hp::DoFHandler< 1 , 3 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 1 >
+ (const hp::DoFHandler< 1 , 3 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints); 
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const DoFHandler< 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const Mapping< 1 > &mapping,
+ const DoFHandler< 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const Mapping< 1 > &mapping,
+ const DoFHandler< 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const DoFHandler< 1 > &dof,
+ const Quadrature< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const hp::DoFHandler< 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const hp::MappingCollection< 1 > &mapping,
+ const hp::DoFHandler< 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const hp::MappingCollection< 1 > &mapping,
+ const hp::DoFHandler< 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 1 >
+ (const hp::DoFHandler< 1 > &dof,
+ const hp::QCollection< 1 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+
+#endif
+ 
+#if  2  <=  1 
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 1 >
+ (const hp::MappingCollection< 2 , 1 > &mapping,
+ const hp::DoFHandler< 2 , 1 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 1 >
+ (const hp::MappingCollection< 2 , 1 > &mapping,
+ const hp::DoFHandler< 2 , 1 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::MappingCollection< 2 , 1 > &mapping,
+ const hp::DoFHandler< 2 , 1 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::DoFHandler< 2 , 1 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+#endif
+
+#if  2  ==  1 
+
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::DoFHandler< 2 , 1 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::DoFHandler< 2 , 1 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::MappingCollection< 2 , 1 > &mapping,
+ const hp::DoFHandler< 2 , 1 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::DoFHandler< 2 , 1 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints); 
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const DoFHandler< 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const Mapping< 2 > &mapping,
+ const DoFHandler< 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const Mapping< 2 > &mapping,
+ const DoFHandler< 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const DoFHandler< 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const hp::DoFHandler< 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const hp::MappingCollection< 2 > &mapping,
+ const hp::DoFHandler< 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const hp::MappingCollection< 2 > &mapping,
+ const hp::DoFHandler< 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const hp::DoFHandler< 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+
+#endif
+ 
+#if  2  <=  2 
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 2 >
+ (const hp::MappingCollection< 2 , 2 > &mapping,
+ const hp::DoFHandler< 2 , 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 2 >
+ (const hp::MappingCollection< 2 , 2 > &mapping,
+ const hp::DoFHandler< 2 , 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::MappingCollection< 2 , 2 > &mapping,
+ const hp::DoFHandler< 2 , 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::DoFHandler< 2 , 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+#endif
+
+#if  2  ==  2 
+
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::DoFHandler< 2 , 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::DoFHandler< 2 , 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::MappingCollection< 2 , 2 > &mapping,
+ const hp::DoFHandler< 2 , 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::DoFHandler< 2 , 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints); 
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const DoFHandler< 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const Mapping< 2 > &mapping,
+ const DoFHandler< 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const Mapping< 2 > &mapping,
+ const DoFHandler< 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const DoFHandler< 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const hp::DoFHandler< 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const hp::MappingCollection< 2 > &mapping,
+ const hp::DoFHandler< 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const hp::MappingCollection< 2 > &mapping,
+ const hp::DoFHandler< 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const hp::DoFHandler< 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+
+#endif
+ 
+#if  2  <=  3 
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 3 >
+ (const hp::MappingCollection< 2 , 3 > &mapping,
+ const hp::DoFHandler< 2 , 3 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 ,double, 3 >
+ (const hp::MappingCollection< 2 , 3 > &mapping,
+ const hp::DoFHandler< 2 , 3 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::MappingCollection< 2 , 3 > &mapping,
+ const hp::DoFHandler< 2 , 3 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::DoFHandler< 2 , 3 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+#endif
+
+#if  2  ==  3 
+
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::DoFHandler< 2 , 3 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::DoFHandler< 2 , 3 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::MappingCollection< 2 , 3 > &mapping,
+ const hp::DoFHandler< 2 , 3 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 2 >
+ (const hp::DoFHandler< 2 , 3 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints); 
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const DoFHandler< 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const Mapping< 2 > &mapping,
+ const DoFHandler< 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const Mapping< 2 > &mapping,
+ const DoFHandler< 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const DoFHandler< 2 > &dof,
+ const Quadrature< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const hp::DoFHandler< 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const hp::MappingCollection< 2 > &mapping,
+ const hp::DoFHandler< 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const hp::MappingCollection< 2 > &mapping,
+ const hp::DoFHandler< 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 2 >
+ (const hp::DoFHandler< 2 > &dof,
+ const hp::QCollection< 2 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+
+#endif
+ 
+#if  3  <=  1 
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 1 >
+ (const hp::MappingCollection< 3 , 1 > &mapping,
+ const hp::DoFHandler< 3 , 1 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 1 >
+ (const hp::MappingCollection< 3 , 1 > &mapping,
+ const hp::DoFHandler< 3 , 1 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::MappingCollection< 3 , 1 > &mapping,
+ const hp::DoFHandler< 3 , 1 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::DoFHandler< 3 , 1 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+#endif
+
+#if  3  ==  1 
+
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::DoFHandler< 3 , 1 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::DoFHandler< 3 , 1 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 1 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::MappingCollection< 3 , 1 > &mapping,
+ const hp::DoFHandler< 3 , 1 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::DoFHandler< 3 , 1 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 1 > * const coefficient,
+ const ConstraintMatrix &constraints); 
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const DoFHandler< 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const Mapping< 3 > &mapping,
+ const DoFHandler< 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const Mapping< 3 > &mapping,
+ const DoFHandler< 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const DoFHandler< 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const hp::DoFHandler< 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const hp::MappingCollection< 3 > &mapping,
+ const hp::DoFHandler< 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const hp::MappingCollection< 3 > &mapping,
+ const hp::DoFHandler< 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const hp::DoFHandler< 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+
+#endif
+ 
+#if  3  <=  2 
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 2 >
+ (const hp::MappingCollection< 3 , 2 > &mapping,
+ const hp::DoFHandler< 3 , 2 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 2 >
+ (const hp::MappingCollection< 3 , 2 > &mapping,
+ const hp::DoFHandler< 3 , 2 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::MappingCollection< 3 , 2 > &mapping,
+ const hp::DoFHandler< 3 , 2 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::DoFHandler< 3 , 2 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+#endif
+
+#if  3  ==  2 
+
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::DoFHandler< 3 , 2 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::DoFHandler< 3 , 2 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 2 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::MappingCollection< 3 , 2 > &mapping,
+ const hp::DoFHandler< 3 , 2 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::DoFHandler< 3 , 2 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 2 > * const coefficient,
+ const ConstraintMatrix &constraints); 
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const DoFHandler< 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const Mapping< 3 > &mapping,
+ const DoFHandler< 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const Mapping< 3 > &mapping,
+ const DoFHandler< 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const DoFHandler< 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const hp::DoFHandler< 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const hp::MappingCollection< 3 > &mapping,
+ const hp::DoFHandler< 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const hp::MappingCollection< 3 > &mapping,
+ const hp::DoFHandler< 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const hp::DoFHandler< 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+
+#endif
+ 
+#if  3  <=  3 
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 3 >
+ (const hp::MappingCollection< 3 , 3 > &mapping,
+ const hp::DoFHandler< 3 , 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 ,double, 3 >
+ (const hp::MappingCollection< 3 , 3 > &mapping,
+ const hp::DoFHandler< 3 , 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::MappingCollection< 3 , 3 > &mapping,
+ const hp::DoFHandler< 3 , 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::DoFHandler< 3 , 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+#endif
+
+#if  3  ==  3 
+
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::DoFHandler< 3 , 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::DoFHandler< 3 , 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::MappingCollection< 3 , 3 > &mapping,
+ const hp::DoFHandler< 3 , 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ 
+ template
+ void MatrixCreator::create_mass_matrix< 3 >
+ (const hp::DoFHandler< 3 , 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<float> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints); 
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const DoFHandler< 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const Mapping< 3 > &mapping,
+ const DoFHandler< 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const Mapping< 3 > &mapping,
+ const DoFHandler< 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const DoFHandler< 3 > &dof,
+ const Quadrature< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const hp::DoFHandler< 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const hp::MappingCollection< 3 > &mapping,
+ const hp::DoFHandler< 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const hp::MappingCollection< 3 > &mapping,
+ const hp::DoFHandler< 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+ template
+ void MatrixCreator::create_laplace_matrix< 3 >
+ (const hp::DoFHandler< 3 > &dof,
+ const hp::QCollection< 3 > &q,
+ SparseMatrix<double> &matrix,
+ const Function< 3 > &rhs,
+ Vector<double> &rhs_vector,
+ const Function< 3 > * const coefficient,
+ const ConstraintMatrix &constraints);
+
+
+
+#endif
+ 

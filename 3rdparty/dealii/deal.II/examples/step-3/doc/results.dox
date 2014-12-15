@@ -1,0 +1,219 @@
+<h1>Results</h1>
+
+The output of the program looks as follows:
+@code
+Number of active cells: 1024
+Total number of cells: 1365
+Number of degrees of freedom: 1089
+DEAL:cg::Starting value 0.121094
+DEAL:cg::Convergence step 48 value 5.33692e-13
+@endcode
+
+The first three lines is what we wrote to <code>cout</code>. The last
+two lines were generated without our intervention by the CG
+solver. The first two lines state the residual at the start of the
+iteration, while the last line tells us that the solver needed 47
+iterations to bring the norm of the residual to 5.3e-13, i.e. below
+the threshold 1e-12 which we have set in the `solve' function. We will
+show in the next program how to suppress this output, which is
+sometimes useful for debugging purposes, but often clutters up the
+screen display.
+
+Apart from the output shown above, the program generated the file
+<code>solution.gpl</code>, which is in GNUPLOT format. It can be
+viewed as follows: invoke GNUPLOT and enter the following sequence of
+commands at its prompt:
+@code
+examples/\step-3> gnuplot
+
+        G N U P L O T
+        Version 3.7 patchlevel 3
+        last modified Thu Dec 12 13:00:00 GMT 2002
+        System: Linux 2.6.11.4-21.10-default
+
+        Copyright(C) 1986 - 1993, 1998 - 2002
+        Thomas Williams, Colin Kelley and many others
+
+        Type `help` to access the on-line reference manual
+        The gnuplot FAQ is available from
+        http://www.gnuplot.info/gnuplot-faq.html
+
+        Send comments and requests for help to <info-gnuplot@dartmouth.edu>
+        Send bugs, suggestions and mods to <bug-gnuplot@dartmouth.edu>
+
+
+Terminal type set to 'x11'
+gnuplot> set style data lines
+gnuplot> splot "solution.gpl"
+@endcode
+This produces the picture of the solution below left. Alternatively,
+you can order GNUPLOT to do some hidden line removal by the command
+@code
+gnuplot> set hidden3d
+@endcode
+to get the result at the right:
+
+<TABLE WIDTH="60%" ALIGN="center">
+  <tr>
+    <td ALIGN="center">
+      <img src="http://www.dealii.org/images/steps/developer/step-3.solution-1.png" alt="">
+    </td>
+
+    <td ALIGN="center">
+      <img src="http://www.dealii.org/images/steps/developer/step-3.solution-2.png" alt="">
+    </td>
+  </tr>
+</table>
+
+
+
+<a name="extensions"></a>
+<h3>Possibilities for extensions</h3>
+
+If you want to play around a little bit with this program, here are a few
+suggestions:
+</p>
+
+<ul>
+  <li>
+  Change the geometry and mesh: In the program, we have generated a square
+  domain and mesh by using the <code>GridGenerator::hyper_cube</code>
+  function. However, the <code>GridGenerator</code> has a good number of other
+  functions as well. Try an L-shaped domain, a ring, or other domains you find
+  there.
+  </li>
+
+  <li>
+  Change the boundary condition: The code uses the <code>ZeroFunction</code>
+  function to generate zero boundary conditions. However, you may want to try
+  non-zero constant boundary values using <code>ConstantFunction&lt;2&gt;
+  (1)</code> instead of <code>ZeroFunction&lt;2&gt; ()</code> to have unit
+  Dirichlet boundary values. More exotic functions are described in the
+  documentation of the <code>Functions</code> namespace, and you may pick one
+  to describe your particular boundary values.
+  </li>
+
+  <li> Modify the type of boundary condition: Presently, what happens
+  is that we use Dirichlet boundary values all around, since the
+  default is that all boundary parts have boundary indicator zero, and
+  then we tell the
+  <code>VectorTools::interpolate_boundary_values</code> function to
+  interpolate boundary values to zero on all boundary components with
+  indicator zero.  <p> We can change this behavior if we assign parts
+  of the boundary different indicators. For example, try this
+  immediately after calling <code>GridGenerator::hyper_cube</code>:
+  @code
+  triangulation.begin_active()->face(0)->set_boundary_indicator(1);
+  @endcode
+  What this does is it first asks the triangulation to
+  return an iterator that points to the first active cell. Of course,
+  this being the coarse mesh for the triangulation of a square, the
+  triangulation has only a single cell at this moment, and it is
+  active. Next, we ask the cell to return an iterator to its first
+  face, and then we ask the face to reset the boundary indicator of
+  that face to 1. What then follows is this: When the mesh is refined,
+  faces of child cells inherit the boundary indicator of their
+  parents, i.e. even on the finest mesh, the faces on one side of the
+  square have boundary indicator 1. Later, when we get to
+  interpolating boundary conditions, the
+  <code>interpolate_boundary_values</code> will only produce boundary
+  values for those faces that have zero boundary indicator, and leave
+  those faces alone that have a different boundary indicator. What
+  this then does is to impose Dirichlet boundary conditions on the
+  former, and homogeneous Neumann conditions on the latter (i.e. zero
+  normal derivative of the solution, unless one adds additional terms
+  to the right hand side of the variational equality that deal with
+  potentially non-zero Neumann conditions). You will see this if you
+  run the program.
+
+  <li>
+  A slight variation of the last point would be to set different boundary
+  values as above, but then use a different boundary value function for
+  boundary indicator one. In practice, what you have to do is to add a second
+  call to <code>interpolate_boundary_values</code> for boundary indicator one:
+  @code
+  VectorTools::interpolate_boundary_values (dof_handler,
+					    1,
+					    ConstantFunction<2>(1.),
+					    boundary_values);
+  @endcode
+  If you have this call immediately after the first one to this function, then
+  it will interpolate boundary values on faces with boundary indicator 1 to the
+  unit value, and merge these interpolated values with those previously
+  computed for boundary indicator 0. The result will be that we will get
+  discontinuous boundary values, zero on three sides of the square, and one on
+  the fourth.
+
+  <li>
+  Observe convergence: We will only discuss computing errors in norms in
+  step-7, but it is easy to check that computations converge
+  already here. For example, we could evaluate the value of the solution in a
+  single point and compare the value for different %numbers of global
+  refinement (the number of global refinement steps is set in
+  <code>LaplaceProblem::make_grid_and_dofs</code> above). To evaluate the
+  solution at a point, say at $(\frac 13, \frac 13)$, we could add the
+  following code to the <code>LaplaceProblem::output_results</code> function:
+  @code
+    std::cout << "Solution at (1/3,1/3): "
+              << VectorTools::point_value (dof_handler, solution,
+                                           Point<2>(1./3, 1./3))
+              << std::endl;
+  @endcode
+  For 1 through 9 global refinement steps, we then get the following sequence
+  of point values:
+  <table align="center">
+    <tr> <td># of refinements</td> <td>$u_h(\frac 13,\frac13)$</td> </tr>
+    <tr> <td>1</td> <td>0.166667</td> </tr>
+    <tr> <td>2</td> <td>0.227381</td> </tr>
+    <tr> <td>3</td> <td>0.237375</td> </tr>
+    <tr> <td>4</td> <td>0.240435</td> </tr>
+    <tr> <td>5</td> <td>0.241140</td> </tr>
+    <tr> <td>6</td> <td>0.241324</td> </tr>
+    <tr> <td>7</td> <td>0.241369</td> </tr>
+    <tr> <td>8</td> <td>0.241380</td> </tr>
+    <tr> <td>9</td> <td>0.241383</td> </tr>
+  </table>
+  By noticing that the difference between each two consecutive values reduces
+  by about a factor of 4, we can conjecture that the "correct" value may be
+  $u(\frac 13, \frac 13)\approx 0.241384$. In fact, if we assumed this to be
+  the correct value, we could show that the sequence above indeed shows ${\cal
+  O}(h^2)$ convergence &mdash; theoretically, the convergence order should be
+  ${\cal O}(h^2 |\log h|)$ but the symmetry of the domain and the mesh may lead
+  to the better convergence order observed.
+
+  A slight variant of this would be to repeat the test with quadratic
+  elements. All you need to do is to set the polynomial degree of the finite
+  element to two in the constructor
+  <code>LaplaceProblem::LaplaceProblem</code>.
+
+  <li>Convergence of the mean: A different way to see that the solution
+  actually converges (to something &mdash; we can't tell whether it's really
+  the correct value!) is to compute the mean of the solution. To this end, add
+  the following code to <code>LaplaceProblem::output_results</code>:
+  @code
+    std::cout << "Mean value: "
+              << VectorTools::compute_mean_value (dof_handler,
+						  QGauss<2>(3),
+						  solution,
+						  0)
+              << std::endl;
+  @endcode
+  The documentation of the function explains what the second and fourth
+  parameters mean, while the first and third should be obvious. Doing the same
+  study again where we change the number of global refinement steps, we get
+  the following result:
+  <table align="center">
+    <tr> <td># of refinements</td> <td>$\int_\Omega u_h(x)\; dx$</td> </tr>
+    <tr> <td>1</td> <td>0.093750</td> </tr>
+    <tr> <td>2</td> <td>0.127902</td> </tr>
+    <tr> <td>3</td> <td>0.139761</td> </tr>
+    <tr> <td>4</td> <td>0.139761</td> </tr>
+    <tr> <td>5</td> <td>0.140373</td> </tr>
+    <tr> <td>6</td> <td>0.140526</td> </tr>
+    <tr> <td>7</td> <td>0.140564</td> </tr>
+    <tr> <td>8</td> <td>0.140574</td> </tr>
+    <tr> <td>9</td> <td>0.140576</td> </tr>
+  </table>
+  Again, the difference between two adjacent values goes down by about a
+  factor of four, indicating convergence as ${\cal O}(h^2)$.
+</ul>

@@ -1,0 +1,196 @@
+<h1>Results</h1>
+
+When the program is run, it produces the following output:
+@code
+Number of active cells: 16384
+Number of degrees of freedom: 16641
+
+Time step 1 at t=0.015625
+   u-equation: 8 CG iterations.
+   v-equation: 22 CG iterations.
+   Total energy: 1.17887
+Time step 2 at t=0.03125
+   u-equation: 8 CG iterations.
+   v-equation: 20 CG iterations.
+   Total energy: 2.9655
+Time step 3 at t=0.046875
+   u-equation: 8 CG iterations.
+   v-equation: 21 CG iterations.
+   Total energy: 4.33761
+Time step 4 at t=0.0625
+   u-equation: 7 CG iterations.
+   v-equation: 21 CG iterations.
+   Total energy: 5.35499
+Time step 5 at t=0.078125
+   u-equation: 7 CG iterations.
+   v-equation: 21 CG iterations.
+   Total energy: 6.18652
+Time step 6 at t=0.09375
+   u-equation: 7 CG iterations.
+   v-equation: 20 CG iterations.
+   Total energy: 6.6799
+
+...
+
+Time step 31 at t=0.484375
+   u-equation: 7 CG iterations.
+   v-equation: 20 CG iterations.
+   Total energy: 21.9068
+Time step 32 at t=0.5
+   u-equation: 7 CG iterations.
+   v-equation: 20 CG iterations.
+   Total energy: 23.3394
+Time step 33 at t=0.515625
+   u-equation: 7 CG iterations.
+   v-equation: 20 CG iterations.
+   Total energy: 23.1019
+
+...
+
+Time step 319 at t=4.98438
+   u-equation: 7 CG iterations.
+   v-equation: 20 CG iterations.
+   Total energy: 23.1019
+Time step 320 at t=5
+   u-equation: 7 CG iterations.
+   v-equation: 20 CG iterations.
+   Total energy: 23.1019
+@endcode
+
+What we see immediately is that the energy is a constant at least after
+$t=\frac 12$ (until which the boundary source term $g$ is nonzero, injecting
+energy into the system).
+
+In addition to the screen output, the program writes the solution of each time
+step to an output file. If we process them adequately and paste them into a
+movie, we get the following:
+
+<img
+src="http://www.dealii.org/images/steps/developer/step-23.movie.gif"
+alt="Animation of the solution of step 23.">
+
+The movie shows the generated wave nice traveling through the domain and back,
+being reflected at the clamped boundary. Some numerical noise is trailing the
+wave, an artifact of a too-large mesh size that can be reduced by reducing the
+mesh width and the time step.
+
+
+<a name="extensions"></a>
+<h3>Possibilities for extensions</h3>
+
+If you want to explore a bit, try out some of the following things:
+<ul>
+  <li>Varying $\theta$. This gives different time stepping schemes, some of
+  which are stable while others are not. Take a look at how the energy
+  evolves.
+
+  <li>Different initial and boundary conditions, right hand sides.
+
+  <li>More complicated domains or more refined meshes. Remember that the time
+  step needs to be bounded by the mesh width, so changing the mesh should
+  always involve also changing the time step. We will come back to this issue
+  in step-24.
+
+  <li>Variable coefficients: In real media, the wave speed is often
+  variable. In particular, the "real" wave equation in realistic media would
+  read
+  @f[
+     \rho(x) \frac{\partial^2 u}{\partial t^2}
+     -
+     \nabla \cdot
+     a(x) \nabla u = f,
+  @f]
+  where $\rho(x)$ is the density of the material, and $a(x)$ is related to the
+  stiffness coefficient. The wave speed is then $c=\sqrt{a/\rho}$.
+
+  To make such a change, we would have to compute the mass and Laplace
+  matrices with a variable coefficient. Fortunately, this isn't too hard: the
+  functions MatrixCreator::create_laplace_matrix and
+  MatrixCreator::create_mass_matrix have additional default parameters that can
+  be used to pass non-constant coefficient functions to them. The required
+  changes are therefore relatively small. On the other hand, care must be
+  taken again to make sure the time step is within the allowed range.
+
+  <li>In the in-code comments, we discussed the fact that the matrices for
+  solving for $U^n$ and $V^n$ need to be reset in every time because of
+  boundary conditions, even though the actual content does not change. It is
+  possible to avoid copying by not eliminating columns in the linear systems,
+  which is implemented by appending a @p false argument to the call:
+  @code
+    MatrixTools::apply_boundary_values (boundary_values,
+    					matrix_u,
+					solution_u,
+					system_rhs,
+					false);
+  @endcode
+
+  <li>deal.II being a library that supports adaptive meshes it would of course be
+  nice if this program supported change the mesh every few time steps. Given the
+  structure of the solution &mdash; a wave that travels through the domain &mdash;
+  it would seem appropriate if we only refined the mesh where the wave currently is,
+  and not simply everywhere. It is intuitively clear that we should be able to
+  save a significant amount of cells this way. (Though upon further thought one
+  realizes that this is really only the case in the initial stages of the simulation.
+  After some time, for wave phenomena, the domain is filled with reflections of
+  the initial wave going in every direction and filling every corner of the domain.
+  At this point, there is in general little one can gain using local mesh
+  refinement.)
+
+  To make adaptively changing meshes possible, there are basically two routes.
+  The "correct" way would be to go back to the weak form we get using Rothe's
+  method. For example, the first of the two equations to be solved in each time
+  step looked like this:
+  \f{eqnarray*}
+  (u^n,\varphi) + k^2\theta^2(\nabla u^n,\nabla \varphi) &=&
+  (u^{n-1},\varphi) - k^2\theta(1-\theta)(\nabla u^{n-1},\nabla \varphi)
+  +
+  k(v^{n-1},\varphi)
+  + k^2\theta
+  \left[
+  \theta (f^n,\varphi) + (1-\theta) (f^{n-1},\varphi)
+  \right].
+  \f}
+  Now, note that we solve for $u^n$ on mesh ${\mathbb T}^n$, and
+  consequently the test functions $\varphi$ have to be from the space
+  $V_h^n$ as well. As discussed in the introduction, terms like
+  $(u^{n-1},\varphi)$ then require us to integrate the solution of the
+  previous step (which may have been computed on a different mesh
+  ${\mathbb T}^{n-1}$) against the test functions of the current mesh,
+  leading to a matrix $M^{n,n-1}$. This process of integrating shape
+  functions from different meshes is, at best, awkward. It can be done
+  but because it is difficult to ensure that ${\mathbb T}^{n-1}$ and
+  ${\mathbb T}^{n}$ differ by at most one level of refinement, one
+  has to recursively match cells from both meshes. It is feasible to
+  do this, but it leads to lengthy and not entirely obvious code.
+
+  The second approach is the following: whenever we change the mesh,
+  we simply interpolate the solution from the last time step on the old
+  mesh to the new mesh, using the SolutionTransfer class. In other words,
+  instead of the equation above, we would solve
+  \f{eqnarray*}
+  (u^n,\varphi) + k^2\theta^2(\nabla u^n,\nabla \varphi) &=&
+  (I^n u^{n-1},\varphi) - k^2\theta(1-\theta)(\nabla I^n u^{n-1},\nabla \varphi)
+  +
+  k(I^n v^{n-1},\varphi)
+  + k^2\theta
+  \left[
+  \theta (f^n,\varphi) + (1-\theta) (f^{n-1},\varphi)
+  \right],
+  \f}
+  where $I^n$ interpolates a given function onto mesh ${\mathbb T}^n$.
+  This is a much simpler approach because, in each time step, we no
+  longer have to worry whether $u^{n-1},v^{n-1}$ were computed on the
+  same mesh as we are using now or on a different mesh. Consequently,
+  the only changes to the code necessary are the addition of a function
+  that computes the error, marks cells for refinement, sets up a
+  SolutionTransfer object, transfers the solution to the new mesh, and
+  rebuilds matrices and right hand side vectors on the new mesh. Neither
+  the functions building the matrices and right hand sides, nor the
+  solvers need to be changed.
+
+  While this second approach is, strictly speaking,
+  not quite correct in the Rothe framework (it introduces an addition source
+  of error, namely the interpolation), it is nevertheless what
+  almost everyone solving time dependent equations does. We will use this
+  method in step-31, for example.
+</ul>

@@ -1,0 +1,60 @@
+virtual
+ void
+ get_interpolated_dof_values (const  Vector<double>  &in,
+ Vector<double> &out) const = 0;
+ 
+virtual
+ void
+ get_interpolated_dof_values (const  Vector<float>  &in,
+ Vector<double> &out) const = 0;
+ 
+virtual
+ void
+ get_interpolated_dof_values (const  Vector<long double>  &in,
+ Vector<double> &out) const = 0;
+ 
+virtual
+ void
+ get_interpolated_dof_values (const  BlockVector<double>  &in,
+ Vector<double> &out) const = 0;
+ 
+virtual
+ void
+ get_interpolated_dof_values (const  BlockVector<float>  &in,
+ Vector<double> &out) const = 0;
+ 
+virtual
+ void
+ get_interpolated_dof_values (const  BlockVector<long double>  &in,
+ Vector<double> &out) const = 0;
+ 
+virtual
+ void
+ get_interpolated_dof_values (const  parallel::distributed::Vector<double>  &in,
+ Vector<double> &out) const = 0;
+ 
+virtual
+ void
+ get_interpolated_dof_values (const  parallel::distributed::Vector<float>  &in,
+ Vector<double> &out) const = 0;
+ 
+virtual
+ void
+ get_interpolated_dof_values (const  parallel::distributed::Vector<long double>  &in,
+ Vector<double> &out) const = 0;
+ 
+virtual
+ void
+ get_interpolated_dof_values (const  parallel::distributed::BlockVector<double>  &in,
+ Vector<double> &out) const = 0;
+ 
+virtual
+ void
+ get_interpolated_dof_values (const  parallel::distributed::BlockVector<float>  &in,
+ Vector<double> &out) const = 0;
+ 
+virtual
+ void
+ get_interpolated_dof_values (const  parallel::distributed::BlockVector<long double>  &in,
+ Vector<double> &out) const = 0;
+ 

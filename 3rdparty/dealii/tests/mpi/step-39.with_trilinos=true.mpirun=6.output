@@ -1,0 +1,62 @@
+
+DEAL::Element: FE_DGQ<2>(2)
+DEAL::Step 0
+DEAL::Triangulation 12 cells, 2 levels
+DEAL::DoFHandler 108 dofs, level dofs 27 108
+DEAL::Assemble matrix
+DEAL::Assemble multilevel matrix
+DEAL::Assemble right hand side
+DEAL::Solve
+DEAL:cg::Starting value 20.6576
+DEAL:cg::Convergence step 15 value 8.11943e-13
+DEAL::Estimate 0.709520
+DEAL::Step 1
+DEAL::Triangulation 18 cells, 3 levels
+DEAL::DoFHandler 189 dofs, level dofs 27 108 108
+DEAL::Assemble matrix
+DEAL::Assemble multilevel matrix
+DEAL::Assemble right hand side
+DEAL::Solve
+DEAL:cg::Starting value 21.1045
+DEAL:cg::Convergence step 16 value 4.50442e-13
+DEAL::Estimate 0.277942
+DEAL::Step 2
+DEAL::Triangulation 21 cells, 3 levels
+DEAL::DoFHandler 297 dofs, level dofs 27 108 144
+DEAL::Assemble matrix
+DEAL::Assemble multilevel matrix
+DEAL::Assemble right hand side
+DEAL::Solve
+DEAL:cg::Starting value 21.3494
+DEAL:cg::Convergence step 17 value 4.76110e-13
+DEAL::Estimate 0.153391
+DEAL::Step 3
+DEAL::Triangulation 30 cells, 4 levels
+DEAL::DoFHandler 378 dofs, level dofs 27 108 144 108
+DEAL::Assemble matrix
+DEAL::Assemble multilevel matrix
+DEAL::Assemble right hand side
+DEAL::Solve
+DEAL:cg::Starting value 21.4584
+DEAL:cg::Convergence step 17 value 3.20961e-13
+DEAL::Estimate 0.159169
+DEAL::Step 4
+DEAL::Triangulation 36 cells, 4 levels
+DEAL::DoFHandler 540 dofs, level dofs 27 108 216 144
+DEAL::Assemble matrix
+DEAL::Assemble multilevel matrix
+DEAL::Assemble right hand side
+DEAL::Solve
+DEAL:cg::Starting value 21.9802
+DEAL:cg::Convergence step 16 value 6.52149e-13
+DEAL::Estimate 0.101209
+DEAL::Step 5
+DEAL::Triangulation 51 cells, 5 levels
+DEAL::DoFHandler 837 dofs, level dofs 27 108 360 252 144
+DEAL::Assemble matrix
+DEAL::Assemble multilevel matrix
+DEAL::Assemble right hand side
+DEAL::Solve
+DEAL:cg::Starting value 26.2654
+DEAL:cg::Convergence step 15 value 5.00033e-13
+DEAL::Estimate 0.0607483

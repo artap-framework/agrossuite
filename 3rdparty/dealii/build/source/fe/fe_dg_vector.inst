@@ -1,0 +1,27 @@
+template class FE_DGVector<PolynomialsABF< 1 >,  1 >;
+ template class FE_DGVector<PolynomialsBDM< 1 >,  1 >;
+ template class FE_DGVector<PolynomialsNedelec< 1 >,  1 >;
+ template class FE_DGVector<PolynomialsRaviartThomas< 1 >,  1 >;
+ 
+ template class FE_DGNedelec< 1 >;
+ template class FE_DGRaviartThomas< 1 >;
+ template class FE_DGBDM< 1 >;
+ 
+template class FE_DGVector<PolynomialsABF< 2 >,  2 >;
+ template class FE_DGVector<PolynomialsBDM< 2 >,  2 >;
+ template class FE_DGVector<PolynomialsNedelec< 2 >,  2 >;
+ template class FE_DGVector<PolynomialsRaviartThomas< 2 >,  2 >;
+ 
+ template class FE_DGNedelec< 2 >;
+ template class FE_DGRaviartThomas< 2 >;
+ template class FE_DGBDM< 2 >;
+ 
+template class FE_DGVector<PolynomialsABF< 3 >,  3 >;
+ template class FE_DGVector<PolynomialsBDM< 3 >,  3 >;
+ template class FE_DGVector<PolynomialsNedelec< 3 >,  3 >;
+ template class FE_DGVector<PolynomialsRaviartThomas< 3 >,  3 >;
+ 
+ template class FE_DGNedelec< 3 >;
+ template class FE_DGRaviartThomas< 3 >;
+ template class FE_DGBDM< 3 >;
+ 

@@ -1,0 +1,9 @@
+<map id="FE_DGNedelec&lt; dim, spacedim &gt;" name="FE_DGNedelec&lt; dim, spacedim &gt;">
+<area shape="rect" id="node2" href="$classFE__DGVector.html" title="FE_DGVector\&lt; Polynomials\lNedelec\&lt; dim \&gt;, dim, spacedim \&gt;" alt="" coords="1169,73,1388,119"/>
+<area shape="rect" id="node4" href="$classFE__PolyTensor.html" title="FE_PolyTensor\&lt; Polynomials\lNedelec\&lt; dim \&gt;, dim, spacedim \&gt;" alt="" coords="748,39,967,86"/>
+<area shape="rect" id="node6" href="$classFiniteElement.html" title="FiniteElement\&lt; dim,\l spacedim \&gt;" alt="" coords="195,27,333,74"/>
+<area shape="rect" id="node12" href="$classFE__PolyTensor.html" title="FE_PolyTensor\&lt; POLY,\l dim, spacedim \&gt;" alt="" coords="384,70,547,117"/>
+<area shape="rect" id="node8" href="$classSubscriptor.html" title="Subscriptor" alt="" coords="31,5,119,35"/>
+<area shape="rect" id="node10" href="$classFiniteElementData.html" title="FiniteElementData\&lt;\l dim \&gt;" alt="" coords="5,58,144,105"/>
+<area shape="rect" id="node15" href="$classFE__DGVector.html" title="FE_DGVector\&lt; POLY,\l dim, spacedim \&gt;" alt="" coords="780,109,935,155"/>
+</map>

@@ -1,0 +1,219 @@
+<h1>Results</h1>
+
+We ran the program using the following <code>parameters.prm</code> file (which
+can also be found in the directory in which all the other source files are):
+@verbatim
+# Listing of Parameters
+# ---------------------
+set Extend solution on the -2,2 box = true
+set External refinement             = 5
+set Number of cycles                = 4
+set Run 2d simulation               = true
+set Run 3d simulation               = true
+
+
+subsection Exact solution 2d
+  # Any constant used inside the function which is not a variable name.
+  set Function constants  = 
+
+  # Separate vector valued expressions by ';' as ',' is used internally by the
+  # function parser.
+  set Function expression = x+y   # default: 0
+
+  # The name of the variables as they will be used in the function, separated
+  # by ','.
+  set Variable names      = x,y,t
+end
+
+
+subsection Exact solution 3d
+  # Any constant used inside the function which is not a variable name.
+  set Function constants  = 
+
+  # Separate vector valued expressions by ';' as ',' is used internally by the
+  # function parser.
+  set Function expression = .5*(x+y+z)   # default: 0
+
+  # The name of the variables as they will be used in the function, separated
+  # by ','.
+  set Variable names      = x,y,z,t
+end
+
+
+subsection Quadrature rules
+  set Quadrature order          = 4
+  set Quadrature type           = gauss
+  set Singular quadrature order = 5
+end
+
+
+subsection Solver
+  set Log frequency = 1
+  set Log history   = false
+  set Log result    = true
+  set Max steps     = 100
+  set Tolerance     = 1.e-10
+end
+
+
+subsection Wind function 2d
+  # Any constant used inside the function which is not a variable name.
+  set Function constants  = 
+
+  # Separate vector valued expressions by ';' as ',' is used internally by the
+  # function parser.
+  set Function expression = 1; 1  # default: 0; 0
+
+  # The name of the variables as they will be used in the function, separated
+  # by ','.
+  set Variable names      = x,y,t
+end
+
+
+subsection Wind function 3d
+  # Any constant used inside the function which is not a variable name.
+  set Function constants  = 
+
+  # Separate vector valued expressions by ';' as ',' is used internally by the
+  # function parser.
+  set Function expression = 1; 1; 1 # default: 0; 0; 0
+
+  # The name of the variables as they will be used in the function, separated
+  # by ','.
+  set Variable names      = x,y,z,t
+end
+@endverbatim
+
+When we run the program, the following is printed on screen:
+@verbatim
+DEAL::
+DEAL::Parsing parameter file parameters.prm
+DEAL::for a 2 dimensional simulation. 
+DEAL:GMRES::Starting value 2.21576
+DEAL:GMRES::Convergence step 1 value 2.37635e-13
+DEAL::Cycle 0:
+DEAL::   Number of active cells:       20
+DEAL::   Number of degrees of freedom: 20
+DEAL:GMRES::Starting value 3.15543
+DEAL:GMRES::Convergence step 1 value 2.89310e-13
+DEAL::Cycle 1:
+DEAL::   Number of active cells:       40
+DEAL::   Number of degrees of freedom: 40
+DEAL:GMRES::Starting value 4.46977
+DEAL:GMRES::Convergence step 1 value 3.11815e-13
+DEAL::Cycle 2:
+DEAL::   Number of active cells:       80
+DEAL::   Number of degrees of freedom: 80
+DEAL:GMRES::Starting value 6.32373
+DEAL:GMRES::Convergence step 1 value 3.22474e-13
+DEAL::Cycle 3:
+DEAL::   Number of active cells:       160
+DEAL::   Number of degrees of freedom: 160
+DEAL::
+cycle cells dofs  L2(phi)  Linfty(alpha) 
+    0    20   20 4.465e-02             - 5.000e-02    - 
+    1    40   40 1.081e-02          2.05 2.500e-02 1.00 
+    2    80   80 2.644e-03          2.03 1.250e-02 1.00 
+    3   160  160 6.529e-04          2.02 6.250e-03 1.00 
+DEAL::
+DEAL::Parsing parameter file parameters.prm
+DEAL::for a 3 dimensional simulation. 
+DEAL:GMRES::Starting value 2.84666
+DEAL:GMRES::Convergence step 3 value 8.68638e-18
+DEAL::Cycle 0:
+DEAL::   Number of active cells:       24
+DEAL::   Number of degrees of freedom: 26
+DEAL:GMRES::Starting value 6.34288
+DEAL:GMRES::Convergence step 5 value 1.38740e-11
+DEAL::Cycle 1:
+DEAL::   Number of active cells:       96
+DEAL::   Number of degrees of freedom: 98
+DEAL:GMRES::Starting value 12.9780
+DEAL:GMRES::Convergence step 5 value 3.29225e-11
+DEAL::Cycle 2:
+DEAL::   Number of active cells:       384
+DEAL::   Number of degrees of freedom: 386
+DEAL:GMRES::Starting value 26.0874
+DEAL:GMRES::Convergence step 6 value 1.47271e-12
+DEAL::Cycle 3:
+DEAL::   Number of active cells:       1536
+DEAL::   Number of degrees of freedom: 1538
+DEAL::
+cycle cells dofs  L2(phi)  Linfty(alpha) 
+    0    24   26 6.873e-01             - 2.327e-01    - 
+    1    96   98 1.960e-01          1.81 1.239e-01 0.91 
+    2   384  386 4.837e-02          2.02 6.319e-02 0.97 
+    3  1536 1538 1.176e-02          2.04 3.176e-02 0.99 
+@endverbatim
+
+As we can see from the convergence table in 2d, if we choose
+quadrature formulas which are accurate enough, then the error we
+obtain for $\alpha(\mathbf{x})$ should be exactly the inverse of the
+number of elements. The approximation of the circle with N segments of
+equal size generates a regular polygon with N faces, whose angles are
+exactly $\pi-\frac {2\pi}{N}$, therefore the error we commit should be
+exactly $\frac 12 - (\frac 12 -\frac 1N) = \frac 1N$. In fact this is
+a very good indicator that we are performing the singular integrals in
+an appropriate manner. 
+
+The error in the approximation of the potential $\phi$ is largely due
+to approximation of the domain. A much better approximation could be
+obtained by using higher order mappings. 
+
+If we modify the main() function, setting fe_degree and mapping_degree
+to two, and raise the order of the quadrature formulas  in
+the parameter file, we obtain the following convergence table for the
+two dimensional simulation
+
+@verbatim
+cycle cells dofs  L2(phi)  Linfty(alpha) 
+    0    20   40 5.404e-05             - 2.306e-04    - 
+    1    40   80 3.578e-06          3.92 1.738e-05 3.73 
+    2    80  160 2.479e-07          3.85 1.253e-05 0.47 
+    3   160  320 1.856e-08          3.74 7.670e-06 0.71 
+@endverbatim
+
+and
+
+@verbatim
+cycle cells dofs  L2(phi)  Linfty(alpha) 
+    0    24   98 9.187e-03             - 8.956e-03    - 
+    1    96  386 3.991e-04          4.52 1.182e-03 2.92 
+    2   384 1538 2.113e-05          4.24 1.499e-04 2.98 
+    3  1536 6146 1.247e-06          4.08 1.896e-05 2.98 
+@endverbatim
+
+for the three dimensional case. As we can see, convergence results are
+much better with higher order mapping, mainly due to a better
+resolution of the curved geometry. Notice that, given the same number
+of degrees of freedom, for example in step 3 of the Q1 case and step 2
+of Q2 case in the three dimensional simulation, the error is roughly
+three orders of magnitude lower.
+
+The result of running these computations is a bunch of output files that we
+can pass to our visualization program of choice. 
+The output files are of two kind: the potential on the boundary
+element surface, and the potential extended to the outer and inner
+domain. The combination of the two for the two dimensional case looks
+like
+
+<img src="http://www.dealii.org/images/steps/developer/step-34_2d.png" alt="">
+
+while in three dimensions we show first the potential on the surface,
+together with a contour plot,
+
+<img src="http://www.dealii.org/images/steps/developer/step-34_3d.png" alt="">
+
+and then the external contour plot of the potential, with opacity set to 25%:
+
+<img src="http://www.dealii.org/images/steps/developer/step-34_3d-2.png" alt="">
+
+
+<a name="extensions"></a>
+<h3>Possibilities for extensions</h3>
+
+This is the first tutorial program that considers solving equations defined on
+surfaces embedded in higher dimensional spaces. But the equation discussed
+here was relatively simple because it only involved an integral operator, not
+derivatives which are more difficult to define on the surface. The step-38
+tutorial program considers such problems and provides the necessary tools.

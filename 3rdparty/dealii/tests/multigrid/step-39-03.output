@@ -1,0 +1,86 @@
+
+DEAL::Element: FESystem<2>[FE_DGQ<2>(2)-FE_Q<2>(2)]
+DEAL::Step 0
+DEAL::Triangulation 16 cells, 2 levels
+DEAL::DoFHandler 229 dofs, level dofs 63 229
+DEAL::Assemble matrix
+DEAL::Assemble multilevel matrix
+DEAL::Assemble right hand side
+DEAL::Solve
+DEAL:GMRES::Starting value 9.41508
+DEAL:GMRES::Convergence step 10 value 7.45877e-13
+DEAL::energy-error: 0.439211
+DEAL::L2-error:     0.0109342
+DEAL::Estimate 0.979555
+DEAL::Writing solution to <sol-00.gnuplot>...
+DEAL::
+DEAL::Step 1
+DEAL::Triangulation 25 cells, 3 levels
+DEAL::DoFHandler 364 dofs, level dofs 63 229 177
+DEAL::Assemble matrix
+DEAL::Assemble multilevel matrix
+DEAL::Assemble right hand side
+DEAL::Solve
+DEAL:GMRES::Starting value 9.98895
+DEAL:GMRES::Convergence step 21 value 1.04294e-13
+DEAL::energy-error: 0.332582
+DEAL::L2-error:     0.00548996
+DEAL::Estimate 0.838060
+DEAL::Writing solution to <sol-01.gnuplot>...
+DEAL::
+DEAL::Step 2
+DEAL::Triangulation 37 cells, 4 levels
+DEAL::DoFHandler 538 dofs, level dofs 63 229 229 177
+DEAL::Assemble matrix
+DEAL::Assemble multilevel matrix
+DEAL::Assemble right hand side
+DEAL::Solve
+DEAL:GMRES::Starting value 10.7902
+DEAL:GMRES::Convergence step 28 value 4.34099e-13
+DEAL::energy-error: 0.237705
+DEAL::L2-error:     0.00250869
+DEAL::Estimate 0.611449
+DEAL::Writing solution to <sol-02.gnuplot>...
+DEAL::
+DEAL::Step 3
+DEAL::Triangulation 58 cells, 5 levels
+DEAL::DoFHandler 840 dofs, level dofs 63 229 285 285 233
+DEAL::Assemble matrix
+DEAL::Assemble multilevel matrix
+DEAL::Assemble right hand side
+DEAL::Solve
+DEAL:GMRES::Starting value 12.1830
+DEAL:GMRES::Convergence step 33 value 5.33786e-13
+DEAL::energy-error: 0.170860
+DEAL::L2-error:     0.00120805
+DEAL::Estimate 0.452418
+DEAL::Writing solution to <sol-03.gnuplot>...
+DEAL::
+DEAL::Step 4
+DEAL::Triangulation 85 cells, 6 levels
+DEAL::DoFHandler 1218 dofs, level dofs 63 229 561 285 285 177
+DEAL::Assemble matrix
+DEAL::Assemble multilevel matrix
+DEAL::Assemble right hand side
+DEAL::Solve
+DEAL:GMRES::Starting value 15.5674
+DEAL:GMRES::Convergence step 34 value 3.96471e-13
+DEAL::energy-error: 0.122755
+DEAL::L2-error:     0.000602816
+DEAL::Estimate 0.332525
+DEAL::Writing solution to <sol-04.gnuplot>...
+DEAL::
+DEAL::Step 5
+DEAL::Triangulation 130 cells, 7 levels
+DEAL::DoFHandler 1841 dofs, level dofs 63 229 665 665 285 285 233
+DEAL::Assemble matrix
+DEAL::Assemble multilevel matrix
+DEAL::Assemble right hand side
+DEAL::Solve
+DEAL:GMRES::Starting value 18.7536
+DEAL:GMRES::Convergence step 33 value 6.84534e-13
+DEAL::energy-error: 0.0869445
+DEAL::L2-error:     0.000292783
+DEAL::Estimate 0.236647
+DEAL::Writing solution to <sol-05.gnuplot>...
+DEAL::

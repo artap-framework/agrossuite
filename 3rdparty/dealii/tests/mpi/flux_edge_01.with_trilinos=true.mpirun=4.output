@@ -1,0 +1,62 @@
+
+DEAL::Element: FE_DGQ<2>(0)
+DEAL::Step 0
+DEAL::Triangulation 16 cells, 2 levels
+DEAL::DoFHandler 16 dofs, level dofs 4 16
+DEAL::Step 1
+DEAL::Triangulation 10 cells, 3 levels
+DEAL::DoFHandler 19 dofs, level dofs 4 16 4
+DEAL::Step 2
+DEAL::Triangulation 13 cells, 4 levels
+DEAL::DoFHandler 22 dofs, level dofs 4 16 4 4
+DEAL::Step 3
+DEAL::Triangulation 16 cells, 5 levels
+DEAL::DoFHandler 25 dofs, level dofs 4 16 4 4 4
+DEAL::Step 4
+DEAL::Triangulation 19 cells, 6 levels
+DEAL::DoFHandler 28 dofs, level dofs 4 16 4 4 4 4
+DEAL::Step 5
+DEAL::Triangulation 22 cells, 7 levels
+DEAL::DoFHandler 31 dofs, level dofs 4 16 4 4 4 4 4
+DEAL::Step 6
+DEAL::Triangulation 25 cells, 8 levels
+DEAL::DoFHandler 34 dofs, level dofs 4 16 4 4 4 4 4 4
+DEAL::Step 7
+DEAL::Triangulation 28 cells, 9 levels
+DEAL::DoFHandler 37 dofs, level dofs 4 16 4 4 4 4 4 4 4
+DEAL::Step 8
+DEAL::Triangulation 31 cells, 10 levels
+DEAL::DoFHandler 40 dofs, level dofs 4 16 4 4 4 4 4 4 4 4
+DEAL::Step 9
+DEAL::Triangulation 34 cells, 11 levels
+DEAL::DoFHandler 43 dofs, level dofs 4 16 4 4 4 4 4 4 4 4 4
+DEAL::Step 10
+DEAL::Triangulation 37 cells, 12 levels
+DEAL::DoFHandler 46 dofs, level dofs 4 16 4 4 4 4 4 4 4 4 4 4
+DEAL::Step 11
+DEAL::Triangulation 40 cells, 13 levels
+DEAL::DoFHandler 49 dofs, level dofs 4 16 4 4 4 4 4 4 4 4 4 4 4
+DEAL::Step 12
+DEAL::Triangulation 43 cells, 14 levels
+DEAL::DoFHandler 52 dofs, level dofs 4 16 4 4 4 4 4 4 4 4 4 4 4 4
+DEAL::Step 13
+DEAL::Triangulation 46 cells, 15 levels
+DEAL::DoFHandler 55 dofs, level dofs 4 16 4 4 4 4 4 4 4 4 4 4 4 4 4
+DEAL::Step 14
+DEAL::Triangulation 49 cells, 16 levels
+DEAL::DoFHandler 58 dofs, level dofs 4 16 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+DEAL::Step 15
+DEAL::Triangulation 52 cells, 17 levels
+DEAL::DoFHandler 61 dofs, level dofs 4 16 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+DEAL::Step 16
+DEAL::Triangulation 55 cells, 18 levels
+DEAL::DoFHandler 64 dofs, level dofs 4 16 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+DEAL::Step 17
+DEAL::Triangulation 58 cells, 19 levels
+DEAL::DoFHandler 67 dofs, level dofs 4 16 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+DEAL::Step 18
+DEAL::Triangulation 61 cells, 20 levels
+DEAL::DoFHandler 70 dofs, level dofs 4 16 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+DEAL::Step 19
+DEAL::Triangulation 64 cells, 21 levels
+DEAL::DoFHandler 73 dofs, level dofs 4 16 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4

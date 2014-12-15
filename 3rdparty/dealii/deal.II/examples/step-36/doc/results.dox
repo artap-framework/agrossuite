@@ -1,0 +1,283 @@
+<h1>Results</h1>
+
+<h2>Running the problem</h2>
+
+The problem's input is parameterized by an input file <code>\step-36.prm</code>
+which could, for example, contain the following text:
+
+@code
+set Global mesh refinement steps         = 5
+set Number of eigenvalues/eigenfunctions = 5
+set Potential                            = 0
+@endcode
+
+Here, the potential is zero inside the domain, and we know that the
+eigenvalues are given by $\lambda_{(mn)}=\frac{\pi}{4}(m^2+n^2)$ where
+$m,n\in{\mathbb N^+}$. Eigenfunctions are sines and cosines with $m$ and $n$
+periods in $x$ and $y$ directions. This matches the output our program
+generates:
+@code
+examples/\step-36> make run
+============================ Running \step-36
+   Number of active cells:       1024
+   Number of degrees of freedom: 1089
+   Solver converged in 67 iterations.
+
+      Eigenvalue 0 : 4.93877
+      Eigenvalue 1 : 12.3707
+      Eigenvalue 2 : 12.3707
+      Eigenvalue 3 : 19.8027
+      Eigenvalue 4 : 24.837
+
+   Job done.  @endcode These eigenvalues are exactly the ones that
+correspond to pairs $(m,n)=(1,1)$, $(1,2)$ and $(2,1)$, $(2,2)$, and
+$(3,1)$. A visualization of the corresponding eigenfunctions would
+look like this:
+
+<TABLE WIDTH="100%">
+<tr>
+<td>
+  <img src="http://www.dealii.org/images/steps/developer/step-36.default.eigenfunction.0.png" alt="">
+</td>
+<td>
+  <img src="http://www.dealii.org/images/steps/developer/step-36.default.eigenfunction.1.png" alt="">
+</td>
+</tr>
+
+<tr>
+<td>
+  <img src="http://www.dealii.org/images/steps/developer/step-36.default.eigenfunction.2.png" alt="">
+</td>
+<td>
+  <img src="http://www.dealii.org/images/steps/developer/step-36.default.eigenfunction.3.png" alt="">
+</td>
+</tr>
+
+<tr>
+<td>
+  <img src="http://www.dealii.org/images/steps/developer/step-36.default.eigenfunction.4.png" alt="">
+</td>
+<td>
+</td>
+</tr>
+</table>
+
+<h2>Possibilities for extensions</h2>
+
+It is always worth playing a few games in the playground! So here goes
+with a few suggestions:
+
+<ul>
+
+<li> The potential used above (called the <i>infinite well</i> because
+it is a flat potential surrounded by infinitely high walls) is
+interesting because it allows for analytically known solutions. Apart
+from that, it is rather boring, however. That said, it is trivial to
+play around with the potential by just setting it to something
+different in the input file. For example, let us assume that we wanted
+to work with the following potential in
+2d:
+@f[
+  V(x,y) = \left\{
+       \begin{array}{ll}
+         -100 & \text{if}\ \sqrt{x^2+y^2}<\frac 34 \ \text{and}
+                         \ xy>0
+         \\
+         -5 & \text{if}\ \sqrt{x^2+y^2}<\frac 34 \ \text{and}
+                         \ xy\le 0
+         \\
+         0 & \text{otherwise}
+      \end{array} \right.\quad.
+@f]
+In other words, the potential is -100 in two sectors of a circle of radius
+0.75, -5 in the other two sectors, and zero outside the circle. We can achieve
+this by using the following in the input file:
+@code
+set Potential = if (x^2 + y^2 < 0.75^2, if (x*y > 0, -100, -5), 0)
+@endcode
+If in addition we also increase the mesh refinement by one level, we get the
+following results:
+@code
+examples/\step-36> make run
+============================ Running \step-36
+   Number of active cells:       4096
+   Number of degrees of freedom: 4225
+
+   Eigenvalue 0 : -74.2562
+   Eigenvalue 1 : -72.7322
+   Eigenvalue 2 : -42.7406
+   Eigenvalue 3 : -42.2232
+   Eigenvalue 4 : -37.0744
+@endcode
+
+The output file also contains an interpolated version of the potential, which
+looks like this (note that as expected the lowest few eigenmodes have
+probability densities $|\Psi(\mathbf x)|^2$ that are significant only where the
+potential is the lowest, i.e. in the top right and bottom left sector of inner
+circle of the potential):
+
+<img src="http://www.dealii.org/images/steps/developer/step-36.mod.potential.png" alt="">
+
+The first five eigenfunctions are now like this:
+
+<TABLE WIDTH="100%">
+<tr>
+<td>
+  <img src="http://www.dealii.org/images/steps/developer/step-36.mod.eigenfunction.0.png" alt="">
+</td>
+<td>
+  <img src="http://www.dealii.org/images/steps/developer/step-36.mod.eigenfunction.1.png" alt="">
+</td>
+</tr>
+
+<tr>
+<td>
+  <img src="http://www.dealii.org/images/steps/developer/step-36.mod.eigenfunction.2.png" alt="">
+</td>
+<td>
+  <img src="http://www.dealii.org/images/steps/developer/step-36.mod.eigenfunction.3.png" alt="">
+</td>
+</tr>
+
+<tr>
+<td>
+  <img src="http://www.dealii.org/images/steps/developer/step-36.mod.eigenfunction.4.png" alt="">
+</td>
+<td>
+</td>
+</tr>
+</table>
+
+<li> In our derivation of the problem we have assumed that the
+particle is confined to a domain $\Omega$ and that at the boundary of
+this domain its probability $|\Psi|^2$ of being is zero. This is
+equivalent to solving the eigenvalue problem on all of ${\mathbb R}^d$
+and assuming that the energy potential is finite only inside a region
+$\Omega$ and infinite outside. It is relatively easy to show that
+$|\Psi(\mathbf x)|^2$ at all locations $\mathbf x$ where $V(\mathbf
+x)=\infty$. So the question is what happens if our potential is not of
+this form, i.e. there is no bounded domain outside of which the
+potential is infinite? In that case, it may be worth to just consider
+a very large domain at the boundary of which $V(\mathbf x)$ is at
+least very large, if not infinite. Play around with a few cases like
+this and explore how the spectrum and eigenfunctions change as we make
+the computational region larger and larger.
+
+<li> What happens if we investigate the simple harmonic oscillator
+problem $V(\mathbf x)=c|\mathbf x|^2$? This potential is exactly of
+the form discussed in the previous paragraph and has hyper spherical
+symmetry. One may want to use a large spherical domain with a large
+outer radius, to approximate the whole-space problem (say, by invoking
+GridGenerator::hyper_ball).
+
+<li> The plots above show the wave function $\Psi(\mathbf x)$, but the
+physical quantity of interest is actually the probability density
+$|\Psi(\mathbf x)|^2$ for the particle to be at location $\mathbf x$.
+Some visualization programs can compute derived quantities from the data in
+an input file, but we can also do so right away when creating the output
+file. The facility to do that is the DataPostprocessor class that can
+be used in conjunction with the DataOut class. Examples of how this
+can be done can be found in step-29 and
+step-33.
+
+<li> What happens if the particle in the box has %internal degrees of
+freedom? For example, if the particle were a spin-$1/2$ particle? In
+that case, we may want to start solving a vector-valued problem
+instead.
+
+<li> Our implementation of the deal.II library here uses the
+PETScWrappers and SLEPcWrappers and is suitable for running on serial
+machine architecture. However, for larger grids and with a larger
+number of degrees-of-freedom, we may want to run our application on
+parallel architectures. A parallel implementation of the above code
+can be particularly useful here since the generalized eigenspectrum
+problem is somewhat more expensive to solve than the standard problems
+considered in most of the earlier tutorials. Fortunately, modifying the above
+program to be MPI compliant is a relatively straightforward
+procedure. A sketch of how this can be done can be found in @ref
+step_17 "step-17".
+
+<li> Finally, there are alternatives to using the SLEPc eigenvalue
+solvers. deal.II has interfaces to one of them, ARPACK (see
+http://www.dealii.org/developer/external-libs/arpack.html), implemented in the
+ArpackSolver class. Here is a short and quick overview of what one would need
+to change to use it, provided you have a working installation of ARPACK and
+deal.II has been configured properly for it (see the deal.II ReadMe file
+at http://www.dealii.org/readme.html):
+
+First, in order to use the ARPACK interfaces, we can go back to using standard
+deal.II matrices and vectors, so we start by replacing the PETSc and SLEPc
+headers
+@code
+#include <deal.II/lac/petsc_sparse_matrix.h>
+#include <deal.II/lac/petsc_vector.h>
+#include <deal.II/lac/slepc_solver.h>
+@endcode
+with these:
+@code
+#include <deal.II/lac/arpack_solver.h>
+#include <deal.II/lac/sparse_direct.h>
+#include <deal.II/lac/sparse_matrix.h>
+#include <deal.II/lac/compressed_sparsity_pattern.h>
+@endcode
+ARPACK allows complex eigenvalues, so we will also need
+@code
+#include <complex>
+@endcode
+
+Secondly, we switch back to the deal.II matrix and vector definitions in the
+main class:
+@code
+    SparsityPattern                     sparsity_pattern;
+    SparseMatrix<double>                stiffness_matrix, mass_matrix;
+    std::vector<Vector<double> >        eigenfunctions;
+    std::vector<complex<double>>      eigenvalues;
+@endcode
+and initialize them as usual in <code>make_grid_and_dofs()</code>:
+@code
+    sparsity_pattern.reinit (dof_handler.n_dofs(),
+                             dof_handler.n_dofs(),
+                             dof_handler.max_couplings_between_dofs());
+
+    DoFTools::make_sparsity_pattern (dof_handler, sparsity_pattern);
+    constraints.condense (sparsity_pattern);
+    sparsity_pattern.compress();
+
+    stiffness_matrix.reinit (sparsity_pattern);
+    mass_matrix.reinit (sparsity_pattern);
+@endcode
+
+For solving the eigenvalue problem with ARPACK, we finally need to modify
+<code>solve()</code>:
+@code
+  template <int dim>
+  unsigned int EigenvalueProblem<dim>::solve ()
+  {
+    const unsigned int num_eigs =
+      parameters.get_integer ("Number of eigenvalues/eigenfunctions");
+
+    SolverControl solver_control (dof_handler.n_dofs(), 1e-9);
+
+    SparseDirectUMFPACK inverse;
+    inverse.initialize (stiffness_matrix);
+
+    const unsigned int num_arnoldi_vectors = 2*num_eigs + 2
+    ArpackSolver::AdditionalData additional_data(num_arnoldi_vectors);
+
+    ArpackSolver eigensolver (solver_control, additional_data);
+    eigensolver.solve (stiffness_matrix,
+                       mass_matrix,
+                       preconditioner,
+                       eigenvalues,
+                       eigenfunctions,
+                       num_eigs);
+
+    for (unsigned int i=0; i<eigenfunctions.size(); ++i)
+      eigenfunctions[i] /= eigenfunctions[i].linfty_norm ();
+
+    return solver_control.last_step ();
+  }
+@endcode
+Note how we have used an exact decomposition (using SparseDirectUMFPACK) as a
+preconditioner to ARPACK.
+</ul>

@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['nameddata',['NamedData',['../classNamedData.html',1,'']]],
+  ['nameddata_3c_20blockvector_3c_20number_20_3e_20_2a_20_3e',['NamedData&lt; BlockVector&lt; number &gt; * &gt;',['../classNamedData.html',1,'']]],
+  ['nameddata_3c_20mglevelobject_3c_20matrixblock_3c_20matrix_20_3e_20_3e_20_3e',['NamedData&lt; MGLevelObject&lt; MatrixBlock&lt; MATRIX &gt; &gt; &gt;',['../classNamedData.html',1,'']]],
+  ['nameddata_3c_20smartpointer_3c_20const_20mglevelobject_3c_20vector_20_3e_2c_20meshworker_3a_3amgvectordata_3c_20vector_2c_20dim_2c_20spacedim_20_3e_20_3e_20_3e',['NamedData&lt; SmartPointer&lt; const MGLevelObject&lt; VECTOR &gt;, MeshWorker::MGVectorData&lt; VECTOR, dim, spacedim &gt; &gt; &gt;',['../classNamedData.html',1,'']]],
+  ['nameddata_3c_20smartpointer_3c_20const_20vector_2c_20meshworker_3a_3avectordata_3c_20vector_2c_20dim_2c_20spacedim_20_3e_20_3e_20_3e',['NamedData&lt; SmartPointer&lt; const VECTOR, MeshWorker::VectorData&lt; VECTOR, dim, spacedim &gt; &gt; &gt;',['../classNamedData.html',1,'']]],
+  ['nameddata_3c_20smartpointer_3c_20vector_2c_20meshworker_3a_3aassembler_3a_3aresiduallocalblockstoglobalblocks_3c_20vector_20_3e_20_3e_20_3e',['NamedData&lt; SmartPointer&lt; VECTOR, MeshWorker::Assembler::ResidualLocalBlocksToGlobalBlocks&lt; VECTOR &gt; &gt; &gt;',['../classNamedData.html',1,'']]],
+  ['nameddata_3c_20smartpointer_3c_20vector_2c_20meshworker_3a_3aassembler_3a_3aresidualsimple_3c_20vector_20_3e_20_3e_20_3e',['NamedData&lt; SmartPointer&lt; VECTOR, MeshWorker::Assembler::ResidualSimple&lt; VECTOR &gt; &gt; &gt;',['../classNamedData.html',1,'']]],
+  ['nameddata_3c_20std_5fcxx1x_3a_3ashared_5fptr_3c_20matrixblock_3c_20matrix_20_3e_20_3e_20_3e',['NamedData&lt; std_cxx1x::shared_ptr&lt; MatrixBlock&lt; MATRIX &gt; &gt; &gt;',['../classNamedData.html',1,'']]],
+  ['namedselection',['NamedSelection',['../classNamedSelection.html',1,'']]],
+  ['newton',['Newton',['../classAlgorithms_1_1Newton.html',1,'Algorithms']]],
+  ['no_5ftype',['no_type',['../structIsBlockMatrix_1_1no__type.html',1,'IsBlockMatrix']]],
+  ['no_5ftype',['no_type',['../structIsBlockVector_1_1no__type.html',1,'IsBlockVector']]],
+  ['noconvergence',['NoConvergence',['../classSolverControl_1_1NoConvergence.html',1,'SolverControl']]],
+  ['norm1',['Norm1',['../structinternal_1_1Vector_1_1Norm1.html',1,'internal::Vector']]],
+  ['norm2',['Norm2',['../structinternal_1_1Vector_1_1Norm2.html',1,'internal::Vector']]],
+  ['normp',['NormP',['../structinternal_1_1Vector_1_1NormP.html',1,'internal::Vector']]],
+  ['numbercache',['NumberCache',['../structinternal_1_1Triangulation_1_1NumberCache.html',1,'internal::Triangulation']]],
+  ['numbercache',['NumberCache',['../structinternal_1_1DoFHandler_1_1NumberCache.html',1,'internal::DoFHandler']]],
+  ['numbercache',['NumberCache',['../structparallel_1_1distributed_1_1Triangulation_1_1NumberCache.html',1,'parallel::distributed::Triangulation']]],
+  ['numbercache_3c_201_20_3e',['NumberCache&lt; 1 &gt;',['../structinternal_1_1Triangulation_1_1NumberCache_3_011_01_4.html',1,'internal::Triangulation']]],
+  ['numbercache_3c_202_20_3e',['NumberCache&lt; 2 &gt;',['../structinternal_1_1Triangulation_1_1NumberCache_3_012_01_4.html',1,'internal::Triangulation']]],
+  ['numbercache_3c_203_20_3e',['NumberCache&lt; 3 &gt;',['../structinternal_1_1Triangulation_1_1NumberCache_3_013_01_4.html',1,'internal::Triangulation']]],
+  ['numbertraits',['NumberTraits',['../structnumbers_1_1NumberTraits.html',1,'numbers']]],
+  ['numbertraits_3c_20std_3a_3acomplex_3c_20number_20_3e_20_3e',['NumberTraits&lt; std::complex&lt; number &gt; &gt;',['../structnumbers_1_1NumberTraits_3_01std_1_1complex_3_01number_01_4_01_4.html',1,'numbers']]]
+];

@@ -1,0 +1,6 @@
+template class FE_DGPMonomial< 1 >;
+ 
+template class FE_DGPMonomial< 2 >;
+ 
+template class FE_DGPMonomial< 3 >;
+ 

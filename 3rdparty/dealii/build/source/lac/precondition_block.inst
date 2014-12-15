@@ -1,0 +1,1482 @@
+template class PreconditionBlockBase< double >;
+ 
+template class PreconditionBlockBase< float >;
+ 
+template class PreconditionBlockBase< long double >;
+ 
+template class PreconditionBlock<SparseMatrix< double >,  double >;
+ template class PreconditionBlockJacobi<SparseMatrix< double >,  double >;
+ template class PreconditionBlockSOR<SparseMatrix< double >,  double >;
+ template class PreconditionBlockSSOR<SparseMatrix< double >,  double >;
+ 
+template class PreconditionBlock<SparseMatrix< double >,  float >;
+ template class PreconditionBlockJacobi<SparseMatrix< double >,  float >;
+ template class PreconditionBlockSOR<SparseMatrix< double >,  float >;
+ template class PreconditionBlockSSOR<SparseMatrix< double >,  float >;
+ 
+template class PreconditionBlock<SparseMatrix< double >,  long double >;
+ template class PreconditionBlockJacobi<SparseMatrix< double >,  long double >;
+ template class PreconditionBlockSOR<SparseMatrix< double >,  long double >;
+ template class PreconditionBlockSSOR<SparseMatrix< double >,  long double >;
+ 
+template class PreconditionBlock<SparseMatrix< float >,  double >;
+ template class PreconditionBlockJacobi<SparseMatrix< float >,  double >;
+ template class PreconditionBlockSOR<SparseMatrix< float >,  double >;
+ template class PreconditionBlockSSOR<SparseMatrix< float >,  double >;
+ 
+template class PreconditionBlock<SparseMatrix< float >,  float >;
+ template class PreconditionBlockJacobi<SparseMatrix< float >,  float >;
+ template class PreconditionBlockSOR<SparseMatrix< float >,  float >;
+ template class PreconditionBlockSSOR<SparseMatrix< float >,  float >;
+ 
+template class PreconditionBlock<SparseMatrix< float >,  long double >;
+ template class PreconditionBlockJacobi<SparseMatrix< float >,  long double >;
+ template class PreconditionBlockSOR<SparseMatrix< float >,  long double >;
+ template class PreconditionBlockSSOR<SparseMatrix< float >,  long double >;
+ 
+template class PreconditionBlock<SparseMatrix< long double >,  double >;
+ template class PreconditionBlockJacobi<SparseMatrix< long double >,  double >;
+ template class PreconditionBlockSOR<SparseMatrix< long double >,  double >;
+ template class PreconditionBlockSSOR<SparseMatrix< long double >,  double >;
+ 
+template class PreconditionBlock<SparseMatrix< long double >,  float >;
+ template class PreconditionBlockJacobi<SparseMatrix< long double >,  float >;
+ template class PreconditionBlockSOR<SparseMatrix< long double >,  float >;
+ template class PreconditionBlockSSOR<SparseMatrix< long double >,  float >;
+ 
+template class PreconditionBlock<SparseMatrix< long double >,  long double >;
+ template class PreconditionBlockJacobi<SparseMatrix< long double >,  long double >;
+ template class PreconditionBlockSOR<SparseMatrix< long double >,  long double >;
+ template class PreconditionBlockSSOR<SparseMatrix< long double >,  long double >;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  float >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  float >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  float >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  float >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  float >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  float >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  long double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  long double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  long double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  long double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< double >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< double >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  long double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  long double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< double >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  float >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  float >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  float >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  float >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  float >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  float >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  long double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  long double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  long double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  long double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< float >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< float >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  long double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  long double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< float >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  float >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  float >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  float >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  float >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  float >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  float >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  float >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  float >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  float >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  float >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  float >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  float >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::vmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::Tvmult_add< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  long double >::vmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  long double >::Tvmult< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  long double >::step< double >
+ (Vector< double > &, const Vector< double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  long double >::Tstep< double >
+ (Vector< double > &, const Vector< double > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::vmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::Tvmult_add< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  long double >::vmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  long double >::Tvmult< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  long double >::step< float >
+ (Vector< float > &, const Vector< float > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  long double >::Tstep< float >
+ (Vector< float > &, const Vector< float > &) const;
+ 
+template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockJacobi<SparseMatrix< long double >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::vmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::Tvmult_add< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSOR<SparseMatrix< long double >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+
+
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  long double >::vmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  long double >::Tvmult< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  long double >::step< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ template
+ void PreconditionBlockSSOR<SparseMatrix< long double >,  long double >::Tstep< long double >
+ (Vector< long double > &, const Vector< long double > &) const;
+ 

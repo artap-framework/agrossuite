@@ -1,0 +1,17 @@
+
+DEAL::nan   -->   0 0
+DEAL::nan   -->   0 0
+DEAL::inf   -->   0 0
+DEAL::-inf   -->   0 0
+DEAL::0   -->   1 1
+DEAL::1.80e+308   -->   1 1
+DEAL::1.00   -->   1 1
+DEAL::-1.00   -->   1 1
+DEAL::nan   -->   0 0
+DEAL::nan   -->   0 0
+DEAL::inf   -->   0 0
+DEAL::-inf   -->   0 0
+DEAL::3.36e-4932   -->   1 1
+DEAL::1.19e+4932   -->   0 0
+DEAL::1.00   -->   1 1
+DEAL::-1.00   -->   1 1

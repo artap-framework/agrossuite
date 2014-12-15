@@ -1,0 +1,19 @@
+
+DEAL::n_dofs=7
+DEAL::FE_Q_Hierarchical<2>(1), P_0, rel. error=0
+DEAL::FE_Q_Hierarchical<2>(1), P_1, rel. error=0
+DEAL::FE_Q_Hierarchical<2>(1), P_2, rel. error=0.00849
+DEAL::FE_Q_Hierarchical<2>(1), P_3, rel. error=0.0178
+DEAL::n_dofs=19
+DEAL::FE_Q_Hierarchical<2>(2), P_0, rel. error=0
+DEAL::FE_Q_Hierarchical<2>(2), P_1, rel. error=0
+DEAL::FE_Q_Hierarchical<2>(2), P_2, rel. error=0
+DEAL::FE_Q_Hierarchical<2>(2), P_3, rel. error=0.00140
+DEAL::FE_Q_Hierarchical<2>(2), P_4, rel. error=0.00358
+DEAL::n_dofs=37
+DEAL::FE_Q_Hierarchical<2>(3), P_0, rel. error=0
+DEAL::FE_Q_Hierarchical<2>(3), P_1, rel. error=0
+DEAL::FE_Q_Hierarchical<2>(3), P_2, rel. error=0
+DEAL::FE_Q_Hierarchical<2>(3), P_3, rel. error=0
+DEAL::FE_Q_Hierarchical<2>(3), P_4, rel. error=0.000251
+DEAL::FE_Q_Hierarchical<2>(3), P_5, rel. error=0.000774

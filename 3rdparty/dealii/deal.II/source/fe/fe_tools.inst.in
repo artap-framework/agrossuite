@@ -1,0 +1,180 @@
+// ---------------------------------------------------------------------
+// $Id$
+//
+// Copyright (C) 1998 - 2013 by the deal.II authors
+//
+// This file is part of the deal.II library.
+//
+// The deal.II library is free software; you can use it, redistribute
+// it, and/or modify it under the terms of the GNU Lesser General
+// Public License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+// The full text of the license can be found in the file LICENSE at
+// the top level of the deal.II distribution.
+//
+// ---------------------------------------------------------------------
+
+
+for (deal_II_dimension : DIMENSIONS; deal_II_space_dimension :  SPACE_DIMENSIONS)
+  {
+    namespace FETools
+      \{
+#if deal_II_dimension <= deal_II_space_dimension
+      template
+	void compute_block_renumbering (
+	  const FiniteElement<deal_II_dimension,deal_II_space_dimension>& ,
+	  std::vector<types::global_dof_index>&, std::vector<types::global_dof_index>&, bool);
+
+      template
+	void compute_projection_matrices<deal_II_dimension, double, deal_II_space_dimension>
+	(const FiniteElement<deal_II_dimension,deal_II_space_dimension> &,
+	 std::vector<std::vector<FullMatrix<double> > >&, bool);
+
+      template
+	void compute_embedding_matrices<deal_II_dimension, double, deal_II_space_dimension>
+	(const FiniteElement<deal_II_dimension,deal_II_space_dimension> &,
+	 std::vector<std::vector<FullMatrix<double> > >&,bool);      
+#endif
+      \}
+  }
+
+
+
+//TODO[SP]: replace <deal_II_dimension> by <deal_II_dimension, deal_II_space_dimension>
+// where applicable and move to codimension cases above also when applicable
+
+for (deal_II_dimension : DIMENSIONS; deal_II_space_dimension :  SPACE_DIMENSIONS)
+  {
+    namespace FETools
+      \{
+  
+#if deal_II_dimension <= deal_II_space_dimension
+      template
+	void get_interpolation_matrix<deal_II_dimension,double,deal_II_space_dimension>
+	(const FiniteElement<deal_II_dimension,deal_II_space_dimension> &,
+	 const FiniteElement<deal_II_dimension,deal_II_space_dimension> &,
+	 FullMatrix<double> &);
+#endif
+
+#if deal_II_dimension == deal_II_space_dimension
+
+      template class FEFactoryBase<deal_II_dimension>;
+
+      template
+	void compute_node_matrix(
+	  FullMatrix<double>&,
+	  const FiniteElement<deal_II_dimension>&);
+
+      template
+	void compute_component_wise(
+	  const FiniteElement<deal_II_dimension>& ,
+	  std::vector<unsigned int>&, std::vector<std::vector<unsigned int> >&);
+
+      template
+	void get_back_interpolation_matrix<deal_II_dimension>
+	(const FiniteElement<deal_II_dimension> &,
+	 const FiniteElement<deal_II_dimension> &,
+	 FullMatrix<double> &);
+      template
+	void get_interpolation_difference_matrix<deal_II_dimension>
+	(const FiniteElement<deal_II_dimension> &,
+	 const FiniteElement<deal_II_dimension> &,
+	 FullMatrix<double> &);
+      template
+	void get_interpolation_matrix<deal_II_dimension>
+	(const FiniteElement<deal_II_dimension> &,
+	 const FiniteElement<deal_II_dimension> &,
+	 FullMatrix<float> &);
+      template
+	void get_back_interpolation_matrix<deal_II_dimension>
+	(const FiniteElement<deal_II_dimension> &,
+	 const FiniteElement<deal_II_dimension> &,
+	 FullMatrix<float> &);
+      template
+	void get_interpolation_difference_matrix<deal_II_dimension>
+	(const FiniteElement<deal_II_dimension> &,
+	 const FiniteElement<deal_II_dimension> &,
+	 FullMatrix<float> &);
+
+      template
+	void get_projection_matrix<deal_II_dimension>
+	(const FiniteElement<deal_II_dimension> &,
+	 const FiniteElement<deal_II_dimension> &,
+	 FullMatrix<double> &);
+
+      
+
+      template
+	void compute_face_embedding_matrices<deal_II_dimension,double>
+	(const FiniteElement<deal_II_dimension> &, FullMatrix<double> (&)[GeometryInfo<deal_II_dimension>::max_children_per_face],
+	 unsigned int, unsigned int);
+
+
+      template FiniteElement<deal_II_dimension,deal_II_dimension> *
+	get_fe_from_name<deal_II_dimension> (const std::string &);
+
+
+      template
+	void
+	compute_projection_from_quadrature_points_matrix (const FiniteElement<deal_II_dimension> &,
+							  const Quadrature<deal_II_dimension>    &,
+							  const Quadrature<deal_II_dimension>    &,
+							  FullMatrix<double>       &);
+
+      template
+	void
+	compute_projection_from_quadrature_points(
+	  const FullMatrix<double>                &,
+	  const std::vector< Tensor<1, deal_II_dimension > >    &,
+	  std::vector< Tensor<1, deal_II_dimension > >          &);
+
+      template
+	void
+	compute_projection_from_quadrature_points(
+	  const FullMatrix<double>                      &,
+	  const std::vector<SymmetricTensor<2, deal_II_dimension> > &,
+	  std::vector<SymmetricTensor<2, deal_II_dimension> >       &);
+
+
+      template
+	void
+	compute_interpolation_to_quadrature_points_matrix (const FiniteElement<deal_II_dimension> &,
+							   const Quadrature<deal_II_dimension>    &,
+							   FullMatrix<double>       &);
+
+#if deal_II_dimension != 1
+      template
+	void
+	compute_projection_from_face_quadrature_points_matrix (const FiniteElement<deal_II_dimension> &,
+							       const Quadrature<deal_II_dimension-1>    &,
+							       const Quadrature<deal_II_dimension-1>    &,
+							       const DoFHandler<deal_II_dimension>::active_cell_iterator & ,
+							       unsigned int,
+							       FullMatrix<double>       &);
+#endif
+
+      template
+	void
+	hierarchic_to_lexicographic_numbering<deal_II_dimension>
+	(const FiniteElementData<deal_II_dimension> &,
+	 std::vector<unsigned int> &);
+
+      template
+	void
+	lexicographic_to_hierarchic_numbering<deal_II_dimension>
+	(const FiniteElementData<deal_II_dimension> &,
+	 std::vector<unsigned int> &);
+
+      template
+	std::vector<unsigned int>
+	hierarchic_to_lexicographic_numbering<deal_II_dimension>
+	(const FiniteElementData<deal_II_dimension> &);
+
+      template
+	std::vector<unsigned int>
+	lexicographic_to_hierarchic_numbering<deal_II_dimension>
+	(const FiniteElementData<deal_II_dimension> &);
+  
+#endif
+      \}
+  }

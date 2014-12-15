@@ -1,0 +1,97 @@
+<a name="Intro"></a>
+<h1>Introduction</h1>
+
+After we have created a grid in the previous example, we now show how
+to define degrees of freedom on this mesh. For this example, we
+will use the lowest order ($Q_1$) finite elements, for which the degrees
+of freedom are associated with the vertices of the mesh. Later
+examples will demonstrate higher order elements where degrees of freedom are
+not necessarily associated with vertices any more, but can be associated
+with edges, faces, or cells.
+
+The term "degree of freedom" is commonly used in the finite element community
+to indicate two slightly different, but related things. The first is that we'd
+like to represent the finite element solution as a linear combination of shape
+function, in the form $u_h(\mathbf x) = \sum_{j=0}^{N-1} U_j \varphi_j(\mathbf
+x)$. Here, $U_j$ is a vector of expansion coefficients. Because we don't know
+their values yet (we will compute them as the solution of a linear or
+nonlinear system), they are called "unknowns" or "degrees of freedom". The
+second meaning of the term con be explained as follows: A mathematical
+description of finite element problem is often to say that we are looking for
+a finite dimensional function $u_h \in V_h$ that satisfies some set of equations
+(e.g. $a(u_h,\varphi_h)=(f,\varphi_h)$ for all test functions $\varphi_h\in
+V_h$). In other words, all we say here that the solution needs to lie in some
+space $V_h$. However, to actually solve this problem on a computer we need to
+choose a basis of this space; this is the set of shape functions
+$\varphi_j(\mathbf x)$ we have used above in the expansion of $u_h(\mathbf x)$
+with coefficients $U_j$. There are of course many bases of the space $V_h$,
+but we will specifically choose the one that is described by the finite
+element functions that are traditionally defined locally on the cells of the
+mesh. Describing "degrees of freedom" in this context requires us to simply
+<i>enumerate</i> the basis functions of the space $V_h$. For $Q_1$ elements
+this means simply enumerating the vertices of the mesh in some way, but for
+higher elements one also has to enumerate the shape functions that are
+associated with edges, faces, or cell interiors of the mesh. The class that
+provides this enumeration of the basis functions of $V_h$ is called DoFHandler.
+
+Defining degrees of freedom ("DoF"s in short) on a mesh is a rather
+simple task, since the library does all the work for you. Essentially,
+all you have to do is create a finite element object (from one of the
+many finite element classes deal.II already has, see for example the
+@ref fe documentation) and give it to a DoFHandler object through the
+DoFHandler::distribute_dofs function ("distributing DoFs" is the term we use
+to describe the process of enumerating the basis functions as discussed
+above). The DoFHandler is a class that
+manages which degrees of freedom live where, i.e., it can answer
+questions like "how many degrees of freedom are there globally" and
+"on this cell, give me the global indices of the shape functions that
+live here". This is the sort of information you need when determining
+how big your system matrix should be, and when copying the
+contributions of a single cell into the global matrix.
+
+The next step would then be to compute a matrix and right hand side
+corresponding to a particular differential equation using this finite element
+and mesh. We will keep this step for the step-3 program and rather talk about
+one practical aspect of a finite element program, namely that finite element
+matrices are almost always very sparse, i.e. almost all entries in these
+matrices are zero. (To be more precise, we say a discretization leads to a
+sparse matrix if the number of nonzero entries <i>per row</i> in the matrix is
+bounded by a number that is independent of the overall number of degrees of
+freedom. For example, the simple 5-point stencil of a finite difference
+approximation of the Laplace equation leads to a sparse matrix since the
+number of nonzero entries per row is five, and therefore independent of the
+total size of the matrix.)  Sparsity is one of the distinguishing feature of
+the finite element method compared to, say, approximating the solution of a
+partial differential equation using a Taylor expansion and matching
+coefficients, or using a Fourier basis.
+
+In practical terms, it is the sparsity of matrices that enables us to solve
+problems with millions or billions of unknowns. To understand this, note that
+a matrix with $N$ rows, each with a fixed upper bound for the number of
+nonzero entries, requires ${\cal O}(N)$ memory locations for storage, and a
+matrix-vector multiplication also requires only ${\cal O}(N)$
+operations. Consequently, if we had a linear solver that requires only a fixed
+number of matrix-vector multiplications to come up with the solution of a
+linear system with this matrix, then we would have a solver that can find the
+values of all $N$ unknowns with optimal complexity, i.e., with a total of
+${\cal O}(N)$ operations. It is clear that this wouldn't be possible if the
+matrix were not sparse, but it also requires very specialized solvers such as
+multigrid methods to satisfy the requirement that the solution requires only a
+fixed number of matrix-vector multiplications. We will frequently look at the
+question of what solver to use in the remaining programs of this tutorial.
+
+The sparsity is generated by the fact that finite element shape
+functions are defined locally on individual cells, rather than
+globally, and that the local differential operators in the bilinear
+form only couple shape functions that have some overlap. By default,
+the DoFHandler class enumerates degrees of freedom on a mesh in a
+rather random way; consequently, the sparsity pattern is also not
+optimized for any particular purpose. However, for
+some algorithms, especially for some linear solvers and preconditioners, it is
+advantageous to have the degrees of freedom numbered in a certain
+order, and we will use the algorithm of Cuthill and McKee to do
+so. This can be thought of as choosing a different, permuted basis of the
+finite element space.
+The results are written to a file and visualized using a simple
+visualization program; you get to
+see the outcome in the <a href="#Results">results section below</a>.

@@ -1,0 +1,614 @@
+<h1>Results</h1>
+
+<h3> Results in 2d </h3>
+
+When you run the program in 2d, the output will look something like
+this:
+<code>
+<pre>
+Number of active cells: 256 (on 5 levels)
+Number of degrees of freedom: 3556 (2178+289+1089)
+
+Timestep 0:  t=0
+   Assembling...
+   Rebuilding Stokes preconditioner...
+   Solving...
+   0 GMRES iterations for Stokes subsystem.
+   Time step: 0.976562
+   19 CG iterations for temperature.
+   Temperature range: -0.17714 1.38103
+
+Number of active cells: 280 (on 6 levels)
+Number of degrees of freedom: 4062 (2490+327+1245)
+
+Timestep 0:  t=0
+   Assembling...
+   Rebuilding Stokes preconditioner...
+   Solving...
+   0 GMRES iterations for Stokes subsystem.
+   Time step: 0.488281
+   19 CG iterations for temperature.
+   Temperature range: -0.10423 0.635684
+
+Number of active cells: 520 (on 7 levels)
+Number of degrees of freedom: 7432 (4562+589+2281)
+
+Timestep 0:  t=0
+   Assembling...
+   Rebuilding Stokes preconditioner...
+   Solving...
+   0 GMRES iterations for Stokes subsystem.
+   Time step: 0.244141
+   18 CG iterations for temperature.
+   Temperature range: -0.0583624 0.312553
+
+Number of active cells: 1072 (on 8 levels)
+Number of degrees of freedom: 15294 (9398+1197+4699)
+
+Timestep 0:  t=0
+   Assembling...
+   Rebuilding Stokes preconditioner...
+   Solving...
+   0 GMRES iterations for Stokes subsystem.
+   Time step: 0.12207
+   17 CG iterations for temperature.
+   Temperature range: -0.0288897 0.166335
+
+Number of active cells: 2128 (on 9 levels)
+Number of degrees of freedom: 30270 (18614+2349+9307)
+
+Timestep 0:  t=0
+   Assembling...
+   Rebuilding Stokes preconditioner...
+   Solving...
+   0 GMRES iterations for Stokes subsystem.
+   Time step: 0.0610352
+   17 CG iterations for temperature.
+   Temperature range: -0.0156055 0.0781987
+
+Timestep 1:  t=0.0610352
+   Assembling...
+   Solving...
+   33 GMRES iterations for Stokes subsystem.
+   Time step: 0.0610352
+   16 CG iterations for temperature.
+   Temperature range: -0.0285735 0.153308
+
+...
+</pre>
+</code>
+
+In the beginning we refine the mesh several times adaptively and
+always return to time step zero to restart on the newly refined
+mesh. Only then do we start the actual time iteration.
+
+The program runs for a while. The temperature field for time steps 0,
+500, 1000, 1500, 2000, 3000, 4000, and 5000 looks like this (note that
+the color scale used for the temperature is not always the same):
+
+<table align="center" border="1" cellspacing="3" cellpadding="3">
+  <tr>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.solution.00.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.solution.01.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.solution.02.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.solution.03.png" alt="">
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.solution.04.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.solution.05.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.solution.06.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.solution.07.png" alt="">
+    </td>
+  </tr>
+</table>
+
+As can be seen, we have three heat sources that heat fluid and
+therefore produce a buoyancy effect that lets hots pockets of fluid
+rise up and swirl around. By a chimney effect, the three streams are
+pressed together by fluid that comes from the outside and wants to
+join the updraft party. Note that because the fluid is initially at
+rest, those parts of the fluid that were initially over the sources
+receive a longer heating time than that fluid that is later dragged
+over the source by the fully developed flow field. It is therefore
+hotter, a fact that can be seen in the red tips of the three
+plumes. Note also the relatively fine features of the flow field, a
+result of the sophisticated transport stabilization of the temperature
+equation we have chosen.
+
+In addition to the pictures above, the following ones show the
+adaptive mesh and the flow field at the same time steps:
+
+<table align="center" border="1" cellspacing="3" cellpadding="3">
+  <tr>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.grid.00.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.grid.01.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.grid.02.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.grid.03.png" alt="">
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.grid.04.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.grid.05.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.grid.06.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.2d.grid.07.png" alt="">
+    </td>
+  </tr>
+</table>
+
+
+<h3> Results in 3d </h3>
+
+The same thing can of course be done in 3d by changing the template
+parameter to the BoussinesqFlowProblem object in <code>main()</code>
+from 2 to 3, so that the output now looks like follows:
+
+<code>
+<pre>
+Number of active cells: 64 (on 3 levels)
+Number of degrees of freedom: 3041 (2187+125+729)
+
+Timestep 0:  t=0
+   Assembling...
+   Rebuilding Stokes preconditioner...
+   Solving...
+   0 GMRES iterations for Stokes subsystem.
+   Time step: 2.60417
+   22 CG iterations for temperature.
+   Temperature range: -0.717838 5.25595
+
+Number of active cells: 288 (on 4 levels)
+Number of degrees of freedom: 12379 (8943+455+2981)
+
+Timestep 0:  t=0
+   Assembling...
+   Rebuilding Stokes preconditioner...
+   Solving...
+   0 GMRES iterations for Stokes subsystem.
+   Time step: 1.30208
+   27 CG iterations for temperature.
+   Temperature range: -0.560342 2.39811
+
+Number of active cells: 1296 (on 5 levels)
+Number of degrees of freedom: 51497 (37305+1757+12435)
+
+Timestep 0:  t=0
+   Assembling...
+   Rebuilding Stokes preconditioner...
+   Solving...
+   0 GMRES iterations for Stokes subsystem.
+   Time step: 0.651042
+   28 CG iterations for temperature.
+   Temperature range: -0.527408 0.900169
+
+Number of active cells: 5104 (on 6 levels)
+Number of degrees of freedom: 194273 (140913+6389+46971)
+
+Timestep 0:  t=0
+   Assembling...
+   Rebuilding Stokes preconditioner...
+   Solving...
+   0 GMRES iterations for Stokes subsystem.
+   Time step: 0.325521
+   28 CG iterations for temperature.
+   Temperature range: -0.283877 0.528447
+
+Timestep 1:  t=0.325521
+   Assembling...
+   Solving...
+   55 GMRES iterations for Stokes subsystem.
+   Time step: 0.325521
+   26 CG iterations for temperature.
+   Temperature range: -0.488053 1.02071
+
+...
+</pre>
+</code>
+
+Visualizing the temperature isocontours at time steps 0,
+50, 100, 150, 200, 300, 400, 500, 600, 700, and 800 yields the
+following plots:
+
+<table align="center" border="1" cellspacing="3" cellpadding="3">
+  <tr>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.3d.solution.00.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.3d.solution.01.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.3d.solution.02.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.3d.solution.03.png" alt="">
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.3d.solution.04.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.3d.solution.05.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.3d.solution.06.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.3d.solution.07.png" alt="">
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.3d.solution.08.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.3d.solution.09.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.3d.solution.10.png" alt="">
+    </td>
+    <td>
+    </td>
+  </tr>
+</table>
+
+That the first picture looks like three hedgehogs stems from
+the fact that our scheme essentially projects the source times the
+first time step size onto the mesh to obtain the temperature field in
+the first time step. Since the source function is discontinuous, we
+need to expect over- and undershoots from this project. This is in
+fact what happens (it's easier to check this in 2d) and leads to the
+crumpled appearance of the isosurfaces.
+
+
+
+<h3> Numerical experiments to determine optimal parameters </h3>
+
+The program as is has three parameters that we don't have much of a
+theoretical handle on how to choose in an optimal way. These are:
+<ul>
+  <li>The time step must satisfy a CFL condition
+      $k\le \min_K \frac{c_kh_K}{\|\mathbf{u}\|_{L^\infty(K)}}$. Here, $c_k$ is
+      dimensionless, but what is the right value?
+  <li>In the computation of the artificial viscosity,
+@f{eqnarray*}
+  \nu_\alpha(T)|_K
+  =
+  \beta
+  \|\mathbf{u}\|_{L^\infty(K)}
+  \min\left\{
+    h_K,
+    h_K^\alpha
+    \frac{\|R_\alpha(T)\|_{L^\infty(K)}}{c(\mathbf{u},T)}
+  \right\},
+@f}
+      with $c(\mathbf{u},T) =
+      c_R\ \|\mathbf{u}\|_{L^\infty(\Omega)} \ \mathrm{var}(T)
+      \ |\mathrm{diam}(\Omega)|^{\alpha-2}$.
+      Here, the choice of the dimensionless %numbers $\beta,c_R$ is of
+      interest.
+</ul>
+In all of these cases, we will have to expect that the correct choice of each
+value depends on that of the others, and most likely also on the space
+dimension and polynomial degree of the finite element used for the
+temperature. Below we'll discuss a few numerical experiments to choose
+constants $c_k$ and $\beta$.
+
+Below, we will not discuss the choice of $c_R$. In the program, we set
+it to $c_R=2^{\frac{4-2\alpha}{d}}$. The reason for this value is a
+bit complicated and has more to do with the history of the program
+than reasoning: while the correct formula for the global scaling
+parameter $c(\mathbf{u},T)$ is shown above, the program (including the
+version shipped with deal.II 6.2) initially had a bug in that we
+computed
+$c(\mathbf{u},T) =
+      \|\mathbf{u}\|_{L^\infty(\Omega)} \ \mathrm{var}(T)
+      \ \frac{1}{|\mathrm{diam}(\Omega)|^{\alpha-2}}$ instead, where
+we had set the scaling parameter to one. Since we only computed on the
+unit square/cube where $\mathrm{diam}(\Omega)=2^{1/d}$, this was
+entirely equivalent to using the correct formula with
+$c_R=\left(2^{1/d}\right)^{4-2\alpha}=2^{\frac{4-2\alpha}{d}}$. Since
+this value for $c_R$ appears to work just fine for the current
+program, we corrected the formula in the program and set $c_R$ to a
+value that reproduces exactly the results we had before. We will,
+however, revisit this issue again in step-32.
+
+Now, however, back to the discussion of what values of $c_k$ and
+$\beta$ to choose:
+
+
+<h4> Choosing <i>c<sub>k</sub></i> and beta </h4>
+
+These two constants are definitely linked in some way. The reason is easy to
+see: In the case of a pure advection problem,
+$\frac{\partial T}{\partial t} + \mathbf{u}\cdot\nabla T = \gamma$, any
+explicit scheme has to satisfy a CFL condition of the form
+$k\le \min_K \frac{c_k^a h_K}{\|\mathbf{u}\|_{L^\infty(K)}}$. On the other hand,
+for a pure diffusion problem,
+$\frac{\partial T}{\partial t} + \nu \Delta T = \gamma$,
+explicit schemes need to satisfy a condition
+$k\le \min_K \frac{c_k^d h_K^2}{\nu}$. So given the form of $\nu$ above, an
+advection diffusion problem like the one we have to solve here will result in
+a condition of the form
+$
+k\le \min_K \min \left\{
+  \frac{c_k^a h_K}{\|\mathbf{u}\|_{L^\infty(K)}},
+  \frac{c_k^d h_K^2}{\beta \|\mathbf{u}\|_{L^\infty(K)} h_K}\right\}
+  =
+  \min_K \left( \min \left\{
+  c_k^a,
+  \frac{c_k^d}{\beta}\right\}
+  \frac{h_K}{\|\mathbf{u}\|_{L^\infty(K)}} \right)
+$.
+It follows that we have to face the fact that we might want to choose $\beta$
+larger to improve the stability of the numerical scheme (by increasing the
+amount of artificial diffusion), but we have to pay a price in the form of
+smaller, and consequently more time steps. In practice, one would therefore
+like to choose $\beta$ as small as possible to keep the transport problem
+sufficiently stabilized while at the same time trying to choose the time step
+as large as possible to reduce the overall amount of work.
+
+The find the right balance, the only way is to do a few computational
+experiments. Here's what we did: We modified the program slightly to allow
+less mesh refinement (so we don't always have to wait that long) and to choose
+$
+  \nu(T)|_K
+  =
+  \beta
+  \|\mathbf{u}\|_{L^\infty(K)} h_K
+$ to eliminate the effect of of the constant $c_R$ (we know that
+solutions are stable by using this version of $\nu(T)$ as an artificial
+viscosity, but that we can improve things -- i.e. make the solution
+sharper -- by using the more complicated formula for this artificial
+viscosity). We then run the program
+for different values $c_k,\beta$ and observe maximal and minimal temperatures
+in the domain. What we expect to see is this: If we choose the time step too
+big (i.e. choose a $c_k$ bigger than theoretically allowed) then we will get
+exponential growth of the temperature. If we choose $\beta$ too small, then
+the transport stabilization becomes insufficient and the solution will show
+significant oscillations but not exponential growth.
+
+
+<h5>Results for Q<sub>1</sub> elements</h5>
+
+Here is what we get for
+$\beta=0.01, \beta=0.1$, and $\beta=0.5$, different choices of $c_k$, and
+bilinear elements (<code>temperature_degree=1</code>) in 2d:
+
+<table align="center" border="1" cellspacing="3" cellpadding="3">
+  <tr>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.timestep.q1.beta=0.01.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.timestep.q1.beta=0.03.png" alt="">
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.timestep.q1.beta=0.1.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.timestep.q1.beta=0.5.png" alt="">
+    </td>
+  </tr>
+</table>
+
+The way to interpret these graphs goes like this: for $\beta=0.01$ and
+$c_k=\frac 12,\frac 14$, we see exponential growth or at least large
+variations, but if we choose
+$k=\frac 18\frac{h_K}{\|\mathbf{u}\|_{L^\infty(K)}}$
+or smaller, then the scheme is
+stable though a bit wobbly. For more artificial diffusion, we can choose
+$k=\frac 14\frac{h_K}{\|\mathbf{u}\|_{L^\infty(K)}}$
+or smaller for $\beta=0.03$,
+$k=\frac 13\frac{h_K}{\|\mathbf{u}\|_{L^\infty(K)}}$
+or smaller for $\beta=0.1$, and again need
+$k=\frac 1{15}\frac{h_K}{\|\mathbf{u}\|_{L^\infty(K)}}$
+for $\beta=0.5$ (this time because much diffusion requires a small time
+step).
+
+So how to choose? If we were simply interested in a large time step, then we
+would go with $\beta=0.1$ and
+$k=\frac 13\frac{h_K}{\|\mathbf{u}\|_{L^\infty(K)}}$.
+On the other hand, we're also interested in accuracy and here it may be of
+interest to actually investigate what these curves show. To this end note that
+we start with a zero temperature and that our sources are positive &mdash; so
+we would intuitively expect that the temperature can never drop below
+zero. But it does, a consequence of Gibb's phenomenon when using continuous
+elements to approximate a discontinuous solution. We can therefore see that
+choosing $\beta$ too small is bad: too little artificial diffusion leads to
+over- and undershoots that aren't diffused away. On the other hand, for large
+$\beta$, the minimum temperature drops below zero at the beginning but then
+quickly diffuses back to zero.
+
+On the other hand, let's also look at the maximum temperature. Watching the
+movie of the solution, we see that initially the fluid is at rest. The source
+keeps heating the same volume of fluid whose temperature increases linearly at
+the beginning until its buoyancy is able to move it upwards. The hottest part
+of the fluid is therefore transported away from the solution and fluid taking
+its place is heated for only a short time before being moved out of the source
+region, therefore remaining cooler than the initial bubble. If $\kappa=0$
+(in the program it is nonzero but very small) then the hottest part of the
+fluid should be advected along with the flow with its temperature
+constant. That's what we can see in the graphs with the smallest $\beta$: Once
+the maximum temperature is reached, it hardly changes any more. On the other
+hand, the larger the artificial diffusion, the more the hot spot is
+diffused. Note that for this criterion, the time step size does not play a
+significant role.
+
+So to sum up, likely the best choice would appear to be $\beta=0.03$
+and $k=\frac 14\frac{h_K}{\|\mathbf{u}\|_{L^\infty(K)}}$. The curve is
+a bit wobbly, but overall pictures looks pretty reasonable with the
+exception of some over and undershoots close to the start time due to
+Gibb's phenomenon.
+
+
+<h5>Results for Q<sub>2</sub> elements</h5>
+
+One can repeat the same sequence of experiments for higher order
+elements as well. Here are the graphs for bi-quadratic shape functions
+(<code>temperature_degree=2</code>) for the temperature, while we
+retain the $Q_2/Q_1$ stable Taylor-Hood element for the Stokes system:
+
+<table align="center" border="1" cellspacing="3" cellpadding="3">
+  <tr>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.timestep.q2.beta=0.01.png" alt="">
+    </td>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.timestep.q2.beta=0.03.png" alt="">
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+        <img src="http://www.dealii.org/images/steps/developer/step-31.timestep.q2.beta=0.1.png" alt="">
+    </td>
+  </tr>
+</table>
+
+Again, small values of $\beta$ lead to less diffusion but we have to
+choose the time step very small to keep things under control. Too
+large values of $\beta$ make for more diffusion, but again require
+small time steps. The best value would appear to be $\beta=0.03$, as
+for the $Q_1$ element, and then we have to choose
+$k=\frac 18\frac{h_K}{\|\mathbf{u}\|_{L^\infty(K)}}$ &mdash; exactly
+half the size for the $Q_1$ element, a fact that may not be surprising
+if we state the CFL condition as the requirement that the time step be
+small enough so that the distance transport advects in each time step
+is no longer than one <i>grid point</i> away (which for $Q_1$ elements
+is $h_K$, but for $Q_2$ elements is $h_K/2$). It turns out that $\beta$
+needs to be slightly larger for obtaining stable results also late in
+the simulation at times larger than 60, so we actually choose it as
+$\beta = 0.034$ in the code.
+
+
+<h5>Results for 3d</h5>
+
+One can repeat these experiments in 3d and find the optimal time step
+for each value of $\beta$ and find the best value of $\beta$. What one
+finds is that for the same $\beta$ already used in 2d, the time steps
+needs to be a bit smaller, by around a factor of 1.2 or so. This is
+easily explained: the time step restriction is
+$k=\min_K \frac{ch_K}{\|\mathbf{u}\|_{L^\infty(K)}}$ where $h_K$ is
+the <i>diameter</i> of the cell. However, what is really needed is the
+distance between mesh points, which is $\frac{h_K}{\sqrt{d}}$. So a
+more appropriate form would be
+$k=\min_K \frac{ch_K}{\|\mathbf{u}\|_{L^\infty(K)}\sqrt{d}}$.
+
+The second find is that one needs to choose $\beta$ slightly bigger
+(about $\beta=0.05$ or so). This then again reduces the time step we
+can take.
+
+
+
+
+<h5>Conclusions</h5>
+
+Concluding, from the simple computations above, $\beta=0.034$ appears to be a
+good choice for the stabilization parameter in 2d, and $\beta=0.05$ in 3d. In
+a dimension independent way, we can model this as $\beta=0.017d$. If one does
+longer computations (several thousand time steps) on finer meshes, one
+realizes that the time step size is not quite small enough and that for
+stability one will have to reduce the above values a bit more (by about a
+factor of $\frac 78$).
+
+As a consequence, a formula that reconciles 2d, 3d, and variable polynomial
+degree and takes all factors in account reads as follows:
+@f{eqnarray*}
+  k =
+  \frac 1{2 \cdot 1.7} \frac 1{\sqrt{d}}
+  \frac 2d
+  \frac 1{q_T}
+  \frac{h_K}{\|\mathbf{u}\|_{L^\infty(K)}}
+  =
+  \frac 1{1.7 d\sqrt{d}}
+  \frac 1{q_T}
+  \frac{h_K}{\|\mathbf{u}\|_{L^\infty(K)}}.
+@f}
+In the first form (in the center of the equation), $\frac
+1{2 \cdot 1.7}$ is a universal constant, $\frac 1{\sqrt{d}}$
+is the factor that accounts for the difference between cell diameter
+and grid point separation,
+$\frac 2d$ accounts for the increase in $\beta$ with space dimension,
+$\frac 1{q_T}$ accounts for the distance between grid points for
+higher order elements, and $\frac{h_K}{\|\mathbf{u}\|_{L^\infty(K)}}$
+for the local speed of transport relative to the cell size. This is
+the formula that we use in the program.
+
+As for the question of whether to use $Q_1$ or $Q_2$ elements for the
+temperature, the following considerations may be useful: First,
+solving the temperature equation is hardly a factor in the overall
+scheme since almost the entire compute time goes into solving the
+Stokes system in each time step. Higher order elements for the
+temperature equation are therefore not a significant drawback. On the
+other hand, if one compares the size of the over- and undershoots the
+solution produces due to the discontinuous source description, one
+notices that for the choice of $\beta$ and $k$ as above, the $Q_1$
+solution dips down to around $-0.47$, whereas the $Q_2$ solution only
+goes to $-0.13$ (remember that the exact solution should never become
+negative at all. This means that the $Q_2$ solution is significantly
+more accurate; the program therefore uses these higher order elements,
+despite the penalty we pay in terms of smaller time steps.
+
+
+<h3> Possible extensions </h3>
+
+There are various ways to extend the current program. Of particular interest
+is, of course, to make it faster and/or increase the resolution of the
+program, in particular in 3d. This is the topic of the step-32
+tutorial program which will implement strategies to solve this problem in
+%parallel on a cluster. It is also the basis of the much larger open
+source code Aspect (see http://aspect.dealii.org/ ) that can solve realistic
+problems and that constitutes the further development of step-32.
+
+Another direction would be to make the fluid flow more realistic. The program
+was initially written to simulate various cases simulating the convection of
+material in the earth's mantle, i.e. the zone between the outer earth core and
+the solid earth crust: there, material is heated from below and cooled from
+above, leading to thermal convection. The physics of this fluid are much more
+complicated than shown in this program, however: The viscosity of mantle
+material is strongly dependent on the temperature, i.e. $\eta=\eta(T)$, with
+the dependency frequently modeled as a viscosity that is reduced exponentially
+with rising temperature. Secondly, much of the dynamics of the mantle is
+determined by chemical reactions, primarily phase changes of the various
+crystals that make up the mantle; the buoyancy term on the right hand side of
+the Stokes equations then depends not only on the temperature, but also on the
+chemical composition at a given location which is advected by the flow field
+but also changes as a function of pressure and temperature. We will
+investigate some of these effects in later tutorial programs as well.

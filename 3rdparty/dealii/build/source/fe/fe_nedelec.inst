@@ -1,0 +1,6 @@
+template class FE_Nedelec< 1 >;
+ 
+template class FE_Nedelec< 2 >;
+ 
+template class FE_Nedelec< 3 >;
+ 

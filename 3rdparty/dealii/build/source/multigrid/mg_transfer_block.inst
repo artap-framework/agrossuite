@@ -1,0 +1,342 @@
+template
+void MGTransferBlock<float>::build_matrices< 1 >
+(const DoFHandler< 1 >&, const DoFHandler< 1 >&,
+ const std::vector<bool>&);
+
+template
+void MGTransferBlock<double>::build_matrices< 1 >
+(const DoFHandler< 1 >&, const DoFHandler< 1 >&,
+ const std::vector<bool>&);
+
+template
+void MGTransferBlockSelect<float>::build_matrices< 1 >
+(const DoFHandler< 1 >&, const DoFHandler< 1 >&,
+ const unsigned int);
+
+template
+void MGTransferBlockSelect<double>::build_matrices< 1 >
+(const DoFHandler< 1 >&, const DoFHandler< 1 >&,
+ const unsigned int);
+
+template void
+MGTransferBlock<float>::copy_to_mg (
+ const DoFHandler< 1 >&,
+ MGLevelObject<BlockVector<float> >&,
+ const BlockVector<double>&) const;
+template void
+MGTransferBlock<float>::copy_from_mg (
+ const DoFHandler< 1 >&,
+ BlockVector<double>&,
+ const MGLevelObject<BlockVector<float> >&) const;
+template void
+MGTransferBlock<float>::copy_from_mg_add (
+ const DoFHandler< 1 >&,
+ BlockVector<double>&,
+ const MGLevelObject<BlockVector<float> >&) const;
+
+template void
+MGTransferBlock<double>::copy_to_mg (
+ const DoFHandler< 1 >&,
+ MGLevelObject<BlockVector<double> >&,
+ const BlockVector<double>&) const;
+template void
+MGTransferBlock<double>::copy_from_mg (
+ const DoFHandler< 1 >&,
+ BlockVector<double>&,
+ const MGLevelObject<BlockVector<double> >&) const;
+template void
+MGTransferBlock<double>::copy_from_mg_add (
+ const DoFHandler< 1 >&,
+ BlockVector<double>&,
+ const MGLevelObject<BlockVector<double> >&) const;
+
+template void
+MGTransferBlockSelect<float>::copy_to_mg (
+ const DoFHandler< 1 >&,
+ MGLevelObject<Vector<float> >&,
+ const Vector<double>&) const;
+template void
+MGTransferBlockSelect<float>::copy_to_mg (
+ const DoFHandler< 1 >&,
+ MGLevelObject<Vector<float> >&,
+ const BlockVector<double>&) const;
+template void
+MGTransferBlockSelect<float>::copy_from_mg (
+ const DoFHandler< 1 >&,
+ Vector<double>&,
+ const MGLevelObject<Vector<float> >&) const;
+template void
+MGTransferBlockSelect<float>::copy_from_mg (
+ const DoFHandler< 1 >&,
+ BlockVector<double>&,
+ const MGLevelObject<Vector<float> >&) const;
+template void
+MGTransferBlockSelect<float>::copy_from_mg_add (
+ const DoFHandler< 1 >&,
+ Vector<double>&,
+ const MGLevelObject<Vector<float> >&) const;
+template void
+MGTransferBlockSelect<float>::copy_from_mg_add (
+ const DoFHandler< 1 >&,
+ BlockVector<double>&,
+ const MGLevelObject<Vector<float> >&) const;
+
+template void
+MGTransferBlockSelect<double>::copy_to_mg (
+ const DoFHandler< 1 >&,
+ MGLevelObject<Vector<double> >&,
+ const Vector<double>&) const;
+template void
+MGTransferBlockSelect<double>::copy_to_mg (
+ const DoFHandler< 1 >&,
+ MGLevelObject<Vector<double> >&,
+ const BlockVector<double>&) const;
+template void
+MGTransferBlockSelect<double>::copy_from_mg (
+ const DoFHandler< 1 >&,
+ Vector<double>&,
+ const MGLevelObject<Vector<double> >&) const;
+template void
+MGTransferBlockSelect<double>::copy_from_mg (
+ const DoFHandler< 1 >&,
+ BlockVector<double>&,
+ const MGLevelObject<Vector<double> >&) const;
+template void
+MGTransferBlockSelect<double>::copy_from_mg_add (
+ const DoFHandler< 1 >&,
+ Vector<double>&,
+ const MGLevelObject<Vector<double> >&) const;
+template void
+MGTransferBlockSelect<double>::copy_from_mg_add (
+ const DoFHandler< 1 >&,
+ BlockVector<double>&,
+ const MGLevelObject<Vector<double> >&) const;
+ 
+template
+void MGTransferBlock<float>::build_matrices< 2 >
+(const DoFHandler< 2 >&, const DoFHandler< 2 >&,
+ const std::vector<bool>&);
+
+template
+void MGTransferBlock<double>::build_matrices< 2 >
+(const DoFHandler< 2 >&, const DoFHandler< 2 >&,
+ const std::vector<bool>&);
+
+template
+void MGTransferBlockSelect<float>::build_matrices< 2 >
+(const DoFHandler< 2 >&, const DoFHandler< 2 >&,
+ const unsigned int);
+
+template
+void MGTransferBlockSelect<double>::build_matrices< 2 >
+(const DoFHandler< 2 >&, const DoFHandler< 2 >&,
+ const unsigned int);
+
+template void
+MGTransferBlock<float>::copy_to_mg (
+ const DoFHandler< 2 >&,
+ MGLevelObject<BlockVector<float> >&,
+ const BlockVector<double>&) const;
+template void
+MGTransferBlock<float>::copy_from_mg (
+ const DoFHandler< 2 >&,
+ BlockVector<double>&,
+ const MGLevelObject<BlockVector<float> >&) const;
+template void
+MGTransferBlock<float>::copy_from_mg_add (
+ const DoFHandler< 2 >&,
+ BlockVector<double>&,
+ const MGLevelObject<BlockVector<float> >&) const;
+
+template void
+MGTransferBlock<double>::copy_to_mg (
+ const DoFHandler< 2 >&,
+ MGLevelObject<BlockVector<double> >&,
+ const BlockVector<double>&) const;
+template void
+MGTransferBlock<double>::copy_from_mg (
+ const DoFHandler< 2 >&,
+ BlockVector<double>&,
+ const MGLevelObject<BlockVector<double> >&) const;
+template void
+MGTransferBlock<double>::copy_from_mg_add (
+ const DoFHandler< 2 >&,
+ BlockVector<double>&,
+ const MGLevelObject<BlockVector<double> >&) const;
+
+template void
+MGTransferBlockSelect<float>::copy_to_mg (
+ const DoFHandler< 2 >&,
+ MGLevelObject<Vector<float> >&,
+ const Vector<double>&) const;
+template void
+MGTransferBlockSelect<float>::copy_to_mg (
+ const DoFHandler< 2 >&,
+ MGLevelObject<Vector<float> >&,
+ const BlockVector<double>&) const;
+template void
+MGTransferBlockSelect<float>::copy_from_mg (
+ const DoFHandler< 2 >&,
+ Vector<double>&,
+ const MGLevelObject<Vector<float> >&) const;
+template void
+MGTransferBlockSelect<float>::copy_from_mg (
+ const DoFHandler< 2 >&,
+ BlockVector<double>&,
+ const MGLevelObject<Vector<float> >&) const;
+template void
+MGTransferBlockSelect<float>::copy_from_mg_add (
+ const DoFHandler< 2 >&,
+ Vector<double>&,
+ const MGLevelObject<Vector<float> >&) const;
+template void
+MGTransferBlockSelect<float>::copy_from_mg_add (
+ const DoFHandler< 2 >&,
+ BlockVector<double>&,
+ const MGLevelObject<Vector<float> >&) const;
+
+template void
+MGTransferBlockSelect<double>::copy_to_mg (
+ const DoFHandler< 2 >&,
+ MGLevelObject<Vector<double> >&,
+ const Vector<double>&) const;
+template void
+MGTransferBlockSelect<double>::copy_to_mg (
+ const DoFHandler< 2 >&,
+ MGLevelObject<Vector<double> >&,
+ const BlockVector<double>&) const;
+template void
+MGTransferBlockSelect<double>::copy_from_mg (
+ const DoFHandler< 2 >&,
+ Vector<double>&,
+ const MGLevelObject<Vector<double> >&) const;
+template void
+MGTransferBlockSelect<double>::copy_from_mg (
+ const DoFHandler< 2 >&,
+ BlockVector<double>&,
+ const MGLevelObject<Vector<double> >&) const;
+template void
+MGTransferBlockSelect<double>::copy_from_mg_add (
+ const DoFHandler< 2 >&,
+ Vector<double>&,
+ const MGLevelObject<Vector<double> >&) const;
+template void
+MGTransferBlockSelect<double>::copy_from_mg_add (
+ const DoFHandler< 2 >&,
+ BlockVector<double>&,
+ const MGLevelObject<Vector<double> >&) const;
+ 
+template
+void MGTransferBlock<float>::build_matrices< 3 >
+(const DoFHandler< 3 >&, const DoFHandler< 3 >&,
+ const std::vector<bool>&);
+
+template
+void MGTransferBlock<double>::build_matrices< 3 >
+(const DoFHandler< 3 >&, const DoFHandler< 3 >&,
+ const std::vector<bool>&);
+
+template
+void MGTransferBlockSelect<float>::build_matrices< 3 >
+(const DoFHandler< 3 >&, const DoFHandler< 3 >&,
+ const unsigned int);
+
+template
+void MGTransferBlockSelect<double>::build_matrices< 3 >
+(const DoFHandler< 3 >&, const DoFHandler< 3 >&,
+ const unsigned int);
+
+template void
+MGTransferBlock<float>::copy_to_mg (
+ const DoFHandler< 3 >&,
+ MGLevelObject<BlockVector<float> >&,
+ const BlockVector<double>&) const;
+template void
+MGTransferBlock<float>::copy_from_mg (
+ const DoFHandler< 3 >&,
+ BlockVector<double>&,
+ const MGLevelObject<BlockVector<float> >&) const;
+template void
+MGTransferBlock<float>::copy_from_mg_add (
+ const DoFHandler< 3 >&,
+ BlockVector<double>&,
+ const MGLevelObject<BlockVector<float> >&) const;
+
+template void
+MGTransferBlock<double>::copy_to_mg (
+ const DoFHandler< 3 >&,
+ MGLevelObject<BlockVector<double> >&,
+ const BlockVector<double>&) const;
+template void
+MGTransferBlock<double>::copy_from_mg (
+ const DoFHandler< 3 >&,
+ BlockVector<double>&,
+ const MGLevelObject<BlockVector<double> >&) const;
+template void
+MGTransferBlock<double>::copy_from_mg_add (
+ const DoFHandler< 3 >&,
+ BlockVector<double>&,
+ const MGLevelObject<BlockVector<double> >&) const;
+
+template void
+MGTransferBlockSelect<float>::copy_to_mg (
+ const DoFHandler< 3 >&,
+ MGLevelObject<Vector<float> >&,
+ const Vector<double>&) const;
+template void
+MGTransferBlockSelect<float>::copy_to_mg (
+ const DoFHandler< 3 >&,
+ MGLevelObject<Vector<float> >&,
+ const BlockVector<double>&) const;
+template void
+MGTransferBlockSelect<float>::copy_from_mg (
+ const DoFHandler< 3 >&,
+ Vector<double>&,
+ const MGLevelObject<Vector<float> >&) const;
+template void
+MGTransferBlockSelect<float>::copy_from_mg (
+ const DoFHandler< 3 >&,
+ BlockVector<double>&,
+ const MGLevelObject<Vector<float> >&) const;
+template void
+MGTransferBlockSelect<float>::copy_from_mg_add (
+ const DoFHandler< 3 >&,
+ Vector<double>&,
+ const MGLevelObject<Vector<float> >&) const;
+template void
+MGTransferBlockSelect<float>::copy_from_mg_add (
+ const DoFHandler< 3 >&,
+ BlockVector<double>&,
+ const MGLevelObject<Vector<float> >&) const;
+
+template void
+MGTransferBlockSelect<double>::copy_to_mg (
+ const DoFHandler< 3 >&,
+ MGLevelObject<Vector<double> >&,
+ const Vector<double>&) const;
+template void
+MGTransferBlockSelect<double>::copy_to_mg (
+ const DoFHandler< 3 >&,
+ MGLevelObject<Vector<double> >&,
+ const BlockVector<double>&) const;
+template void
+MGTransferBlockSelect<double>::copy_from_mg (
+ const DoFHandler< 3 >&,
+ Vector<double>&,
+ const MGLevelObject<Vector<double> >&) const;
+template void
+MGTransferBlockSelect<double>::copy_from_mg (
+ const DoFHandler< 3 >&,
+ BlockVector<double>&,
+ const MGLevelObject<Vector<double> >&) const;
+template void
+MGTransferBlockSelect<double>::copy_from_mg_add (
+ const DoFHandler< 3 >&,
+ Vector<double>&,
+ const MGLevelObject<Vector<double> >&) const;
+template void
+MGTransferBlockSelect<double>::copy_from_mg_add (
+ const DoFHandler< 3 >&,
+ BlockVector<double>&,
+ const MGLevelObject<Vector<double> >&) const;
+ 
