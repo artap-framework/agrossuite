@@ -44,6 +44,7 @@ public:
     QList<SceneNode *> lyingNodes() const;
 
     bool isLyingOnNode(const SceneNode *node) const;
+    bool isLyingOnPoint(const Point &point) const;
     bool hasLyingNode() const;
     bool isOutsideArea() const;
     bool isError() const;

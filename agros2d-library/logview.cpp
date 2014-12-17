@@ -346,11 +346,11 @@ void LogDialog::createControls()
     {
         QPen pen;
         pen.setColor(Qt::darkGray);
-        pen.setWidth(1.5);
+        pen.setWidth(2);
 
         QPen penError;
         penError.setColor(Qt::darkRed);
-        penError.setWidth(2.0);
+        penError.setWidth(2);
 
         QFont fontTitle(font());
         fontTitle.setBold(true);

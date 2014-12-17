@@ -71,7 +71,6 @@ bool MeshGeneratorCubitExternal::mesh()
                 arg(cubitBinary).
                 arg(tempProblemFileName());
 
-        qDebug() << cubitCommand;
         m_process.data()->start(cubitCommand, QIODevice::ReadOnly);
 
         // execute an event loop to process the request (nearly-synchronous)
@@ -203,7 +202,9 @@ bool MeshGeneratorCubitExternal::writeToCubit()
 
             // arg(nodesCount - 1).
         }
-        // outEdges += QString("Nodeset %1 Curve %1\n").arg(edgesCount + 1);
+
+        outEdges += QString("Nodeset %1 Curve %1\n").arg(edgesCount + 1);
+
         edgesCount++;
     }
 
@@ -218,71 +219,58 @@ bool MeshGeneratorCubitExternal::writeToCubit()
         return false;
     }
 
-    QString outLoops;
-    QString outMesh;
+    // loops
+    QMap<int, QString> outLoopsLines;
 
-    int loopsCount = 1;
-    for (int i = 0; i < Agros2D::scene()->loopsInfo()->loops().size(); i++)
+    for(int i = 0; i < Agros2D::scene()->loopsInfo()->loops().size(); i++)
     {
         if (!Agros2D::scene()->loopsInfo()->outsideLoops().contains(i))
         {
-            outLoops.append(QString("Create Surface Curve "));
-            for(int j = 0; j < Agros2D::scene()->loopsInfo()->loops().at(i).size(); j++)
+            for (int j = 0; j < Agros2D::scene()->loopsInfo()->loops().at(i).size(); j++)
             {
-                outLoops.append(QString("%1").arg(Agros2D::scene()->loopsInfo()->loops().at(i)[j].edge + 1));
-                if (j < Agros2D::scene()->loopsInfo()->loops().at(i).size() - 1)
-                    outLoops.append(" ");
+                // if (Agros2D::scene()->loopsInfo()->loops().at(i)[j].reverse)
+                //     outLoops.append("-");
+                outLoopsLines[i+1] += QString("%1 ").arg(Agros2D::scene()->loopsInfo()->loops().at(i)[j].edge + 1);
+            }
+        }
+    }
+
+    // faces
+    QString outLoops;
+    QList<int> surfaces;
+    int surfaceCount = 0;
+    for (int i = 0; i < Agros2D::scene()->labels->count(); i++)
+    {
+        SceneLabel* label = Agros2D::scene()->labels->at(i);
+        if (!label->isHole())
+        {
+            surfaces.push_back(surfaceCount);
+            outLoops.append(QString("Create Surface Curve "));
+            for (int j = 0; j < Agros2D::scene()->loopsInfo()->labelLoops()[label].count(); j++)
+            {
+                // outLoops.append(QString("%1 ").arg(Agros2D::scene()->loopsInfo()->labelLoops()[label][j] + 1));
+                outLoops.append(QString("%1 ").arg(outLoopsLines[Agros2D::scene()->loopsInfo()->labelLoops()[label][j] + 1]));
             }
             outLoops.append(QString("\n"));
-            // mesh surface
-            // outMesh.append(QString("Mesh Surface %1\n").arg(loopsCount));
-            loopsCount++;
         }
     }
     outLoops.append("\n");
 
-    int lastSurface = loopsCount;
-    for (int i = 0; i < Agros2D::scene()->labels->count(); i++)
-    {
-        SceneLabel* label = Agros2D::scene()->labels->at(i);
-
-        if(!label->isHole())
-        {
-            // subtract holes from first loop (main loop)
-            if (Agros2D::scene()->loopsInfo()->labelLoops()[label].count() > 1)
-            {
-                QString holes;
-                for (int j = 1; j < Agros2D::scene()->loopsInfo()->labelLoops()[label].count(); j++)
-                {
-                    holes.append(QString("%1").arg(Agros2D::scene()->loopsInfo()->labelLoops()[label][j]));
-                    if (j < Agros2D::scene()->loopsInfo()->labelLoops()[label].count() - 1)
-                        holes.append(" ");
-                }
-                outCommands.append(QString("Subtract Body %2 From Body %1 Imprint\n").
-                                   arg(Agros2D::scene()->loopsInfo()->labelLoops()[label][0]).
-                                   arg(holes));
-                // outCommands.append(QString("Surface %1 Id %2\n").arg(lastSurface).arg(Agros2D::scene()->loopsInfo()->labelLoops()[label][0]));
-                // outCommands.append(QString("Compress Surface\n"));
-                lastSurface++;
-            }
-        }
-    }
-
     // output
     out << "Reset\n";
 
-    outNodes.insert(0, QString("\n# nodes\n"));
+    out << QString("\n# nodes\n");
     out << outNodes;
-    outEdges.insert(0, QString("\n# edges\n"));
+    out << QString("\n# edges\n");
     out << outEdges;
-    outLoops.insert(0, QString("\n# loops\n"));
+    out << QString("\n# loops\n");
     out << outLoops;
-    outCommands.insert(0, QString("\n# commands\n"));
+    out << QString("\n# commands\n");
     out << outCommands;
-    outMesh.insert(0, QString("\n# mesh\n"));
-    out << outMesh;
-
-    out << QString("\nExport lsdyna \"%1.k\" overwrite\n").arg(tempProblemFileName());
+    out << QString("\n# mesh\n");
+    out << QString("Merge All\n"); // All
+    out << QString("Mesh Surface All\n\n");
+    out << QString("Export lsdyna \"%1.k\" overwrite\n").arg(tempProblemFileName());
 
     file.waitForBytesWritten(0);
     file.close();
@@ -298,47 +286,134 @@ bool MeshGeneratorCubitExternal::readLSDynaMeshFormat()
         Agros2D::log()->printError(tr("Mesh generator"), tr("Could not read LSDyna node file"));
         return false;
     }
-    QTextStream inNode(&fileInput);
-
-    QFile fileEdge(tempProblemFileName() + ".edge");
-    if (!fileEdge.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Could not read Triangle edge file"));
-        return false;
-    }
-    QTextStream inEdge(&fileEdge);
-
-    QFile fileEle(tempProblemFileName() + ".ele");
-    if (!fileEle.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Could not read Triangle elements file"));
-        return false;
-    }
-    QTextStream inEle(&fileEle);
-
-    QFile fileNeigh(tempProblemFileName() + ".neigh");
-    if (!fileNeigh.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Could not read Triangle neighbors elements file"));
-        return false;
-    }
-    QTextStream inNeigh(&fileNeigh);
+    QTextStream inLSDyna(&fileInput);
 
     // white chars
     QRegExp whiteChar("\\s+");
 
-    // triangle nodes
-    QString lineNode = inNode.readLine().trimmed();
-    int numberOfNodes = lineNode.split(whiteChar).at(0).toInt();
-    for (int i = 0; i < numberOfNodes; i++)
+    QString line = "";
+    while (!inLSDyna.atEnd())
     {
-        // suspisious code, causes the "Concave element ...." exception
-        QStringList parsedLine = inNode.readLine().trimmed().split(whiteChar);
+        // nodes
+        if (line == "*NODE")
+        {
+            // read header
+            inLSDyna.readLine();
 
-        nodeList.append(Point(parsedLine.at(1).toDouble(),
-                              parsedLine.at(2).toDouble()));
+            while (true)
+            {
+                line = inLSDyna.readLine().trimmed();
+                if (line == "$")
+                    break;
+
+                QStringList parsedLine = line.split(whiteChar);
+
+                int index = parsedLine.at(0).toInt() - 1;
+                Point point(parsedLine.at(1).toDouble(), parsedLine.at(2).toDouble());
+
+                // resize
+                if (nodeList.count() < index + 1)
+                {
+                    for (int i = nodeList.size(); i < index + 1; i++)
+                    {
+                        nodeList.append(Point());
+                    }
+                }
+
+                nodeList[index] = point;
+            }
+        }
+
+        // elements
+        if (line == "*ELEMENT_SHELL")
+        {
+            int marker = -1;
+
+            while (true)
+            {
+                line = inLSDyna.readLine();
+
+                if (line.startsWith(" "))
+                {
+                    QStringList parsedLine = line.trimmed().split(whiteChar);
+
+                    int i1 = parsedLine.at(2).toInt() - 1;
+                    int i2 = parsedLine.at(3).toInt() - 1;
+                    int i3 = parsedLine.at(4).toInt() - 1;
+                    int i4 = parsedLine.at(5).toInt() - 1;
+
+                    if (marker == -1)
+                    {
+                        // find real marker
+                        Point center = nodeList[i1] + nodeList[i2] + nodeList[i3] + nodeList[i4];
+                        SceneLabel *label = SceneLabel::findClosestLabel(Point(center.x / 4, center.y / 4));
+                        assert(label);
+
+                        marker = Agros2D::scene()->labels->items().indexOf(label);
+                    }
+
+                    // fix orientation
+                    double area = ((nodeList[i1].x*nodeList[i2].y - nodeList[i2].x*nodeList[i1].y)
+                                   + (nodeList[i2].x*nodeList[i3].y - nodeList[i3].x*nodeList[i2].y)
+                                   + (nodeList[i3].x*nodeList[i4].y - nodeList[i4].x*nodeList[i3].y)
+                                   + (nodeList[i4].x*nodeList[i1].y - nodeList[i1].x*nodeList[i4].y)) / 2.0;
+
+                    if (area > 0)
+                        elementList.append(MeshElement(i1, i2, i3, i4, marker));
+                    else
+                        elementList.append(MeshElement(i4, i3, i2, i1, marker));
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            continue;
+        }
+
+        // edges
+        if (line == "*SET_NODE_LIST")
+        {
+            line = inLSDyna.readLine().trimmed();
+            int marker = line.toInt() - 1;
+            QList<int> nodes;
+
+            while (true)
+            {
+                line = inLSDyna.readLine();
+
+                if (line.startsWith(" "))
+                {
+                    QStringList parsedLine = line.trimmed().split(whiteChar);
+
+                    foreach (QString num, parsedLine)
+                        nodes.append(num.toInt() - 1);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            for (int i = 0; i < nodes.count() - 1; i++)
+                edgeList.append(MeshEdge(nodes[i], nodes[i+1], marker));
+
+            continue;
+        }
+
+        if (line == "*END")
+        {
+            break;
+        }
+
+        line = inLSDyna.readLine().trimmed();
     }
 
+    qDebug() << nodeList.size() << edgeList.size() << elementList.size() << "ok";
+
+
+    /*
     // triangle edges
     QString lineEdge = inEdge.readLine().trimmed();
     int numberOfEdges = lineEdge.split(whiteChar).at(0).toInt();
@@ -352,100 +427,9 @@ bool MeshGeneratorCubitExternal::readLSDynaMeshFormat()
                                  parsedLine.at(3).toInt() - 1));
     }
     int edgeCountLinear = edgeList.count();
+    */
 
-    // triangle elements
-    QString lineElement = inEle.readLine().trimmed();
-    int numberOfElements = lineElement.split(whiteChar).at(0).toInt();
-    QSet<int> labelMarkersCheck;
-    for (int i = 0; i < numberOfElements; i++)
-    {
-        QStringList parsedLine = inEle.readLine().trimmed().split(whiteChar);
-        if (parsedLine.count() == 7)
-        {
-            Agros2D::log()->printError(tr("Mesh generator"), tr("Some areas do not have a marker"));
-            return false;
-        }
-        int marker = parsedLine.at(7).toInt();
-
-        if (marker == 0)
-        {
-            Agros2D::log()->printError(tr("Mesh generator"), tr("Some areas do not have a marker"));
-            return false;
-        }
-
-        // vertices
-        int nodeA = parsedLine.at(1).toInt();
-        int nodeB = parsedLine.at(2).toInt();
-        int nodeC = parsedLine.at(3).toInt();
-        // 2nd order nodes (in the middle of edges)
-        int nodeNA = parsedLine.at(4).toInt();
-        int nodeNB = parsedLine.at(5).toInt();
-        int nodeNC = parsedLine.at(6).toInt();
-
-        /*
-        if (Agros2D::problem()->config()->meshType() == MeshType_Triangle ||
-                Agros2D::problem()->config()->meshType() == MeshType_Triangle_QuadJoin ||
-                Agros2D::problem()->config()->meshType() == MeshType_Triangle_QuadRoughDivision)
-        {
-            elementList.append(MeshElement(nodeA, nodeB, nodeC, marker - 1)); // marker conversion from triangle, where it starts from 1
-        }
-        */
-        // if (Agros2D::problem()->config()->meshType() == MeshType_Triangle_QuadFineDivision)
-        {
-            // add additional node
-            nodeList.append(Point((nodeList[nodeA].x + nodeList[nodeB].x + nodeList[nodeC].x) / 3.0,
-                                  (nodeList[nodeA].y + nodeList[nodeB].y + nodeList[nodeC].y) / 3.0));
-            // add three quad elements
-            elementList.append(MeshElement(nodeNB, nodeA, nodeNC, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
-            elementList.append(MeshElement(nodeNC, nodeB, nodeNA, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
-            elementList.append(MeshElement(nodeNA, nodeC, nodeNB, nodeList.count() - 1, marker - 1)); // marker conversion from triangle, where it starts from 1
-        }
-
-        labelMarkersCheck.insert(marker - 1);
-    }
-    int elementCountLinear = elementList.count();
-
-    // triangle neigh
-    QString lineNeigh = inNeigh.readLine().trimmed();
-    int numberOfNeigh = lineNeigh.split(whiteChar).at(0).toInt();
-    for (int i = 0; i < numberOfNeigh; i++)
-    {
-        QStringList parsedLine = inNeigh.readLine().trimmed().split(whiteChar);
-
-        elementList[i].neigh[0] = parsedLine.at(1).toInt();
-        elementList[i].neigh[1] = parsedLine.at(2).toInt();
-        elementList[i].neigh[2] = parsedLine.at(3).toInt();
-    }
-
-    fileInput.close();
-    fileEdge.close();
-    fileEle.close();
-    fileNeigh.close();
-
-    // heterogeneous mesh
-    // element division
-    // if (Agros2D::problem()->config()->meshType() == MeshType_Triangle_QuadFineDivision)
-    {
-        for (int i = 0; i < edgeCountLinear; i++)
-        {
-            if (edgeList[i].marker != -1)
-            {
-                for (int j = 0; j < elementList.count() / 3; j++)
-                {
-                    for (int k = 0; k < 3; k++)
-                    {
-                        if (edgeList[i].node[0] == elementList[3*j + k].node[1] && edgeList[i].node[1] == elementList[3*j + (k + 1) % 3].node[1])
-                        {
-                            edgeList.append(MeshEdge(edgeList[i].node[0], elementList[3*j + (k + 1) % 3].node[0], edgeList[i].marker));
-                            edgeList[i].node[0] = elementList[3*j + (k + 1) % 3].node[0];
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    fillNeighborStructures();
+    // fillNeighborStructures();
     // moveNodesOnCurvedEdges();
 
     writeTodealii();
@@ -456,4 +440,3 @@ bool MeshGeneratorCubitExternal::readLSDynaMeshFormat()
 
     return true;
 }
-

@@ -67,8 +67,11 @@ bool SceneEdge::isLyingOnNode(const SceneNode *node) const
         return false;
 
     // general node
-    Point point = node->point();
+    return isLyingOnPoint(node->point());
+}
 
+bool SceneEdge::isLyingOnPoint(const Point &point) const
+{
     if (isStraight())
     {
         double dx = m_vectorCache.x;
@@ -403,10 +406,10 @@ SceneEdge* SceneEdgeContainer::get(SceneEdge* edge) const
 {
     foreach (SceneEdge *edgeCheck, m_data)
     {
-        if (((((edgeCheck->nodeStart() == edge->nodeStart()) && (edgeCheck->nodeEnd() == edge->nodeEnd())) &&
-              (fabs(edgeCheck->angle() - edge->angle()) < EPS_ZERO)) ||
-             (((edgeCheck->nodeStart() == edge->nodeEnd()) && (edgeCheck->nodeEnd() == edge->nodeStart()))) &&
-             (fabs(edgeCheck->angle() + edge->angle()) < EPS_ZERO)))
+        if ((((edgeCheck->nodeStart() == edge->nodeStart()) && (edgeCheck->nodeEnd() == edge->nodeEnd())) &&
+             (fabs(edgeCheck->angle() - edge->angle()) < EPS_ZERO)) ||
+                (((edgeCheck->nodeStart() == edge->nodeEnd()) && (edgeCheck->nodeEnd() == edge->nodeStart())) &&
+                 (fabs(edgeCheck->angle() + edge->angle()) < EPS_ZERO)))
         {
             return edgeCheck;
         }

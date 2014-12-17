@@ -530,7 +530,7 @@ QString meshTypeString(MeshType meshType)
     switch (meshType)
     {
     case MeshType_Triangle:
-        return QObject::tr("Triangle -> quad");
+        return QObject::tr("Triangle (quad)");
     // case MeshType_Triangle_QuadFineDivision:
     //     return QObject::tr("Triangle - quad fine div.");
     // case MeshType_Triangle_QuadRoughDivision:

@@ -993,6 +993,7 @@ bool ProblemSolver<Scalar>::createAdaptedSpace(int timeStep, int adaptivityStep)
 
     return adapt;
     */
+    return false;
 }
 
 template <typename Scalar>
