@@ -98,9 +98,6 @@ SET(TRIANGLE_LIBRARY agros2d_3dparty_triangle)
 find_package(XSD REQUIRED)
 find_package(XERCES REQUIRED)
 
-# deal.ii
-add_subdirectory(dealii)
-
 # Output paths.
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_AGROS_DIRECTORY})
 SET(LIBRARY_OUTPUT_PATH ${CMAKE_AGROS_DIRECTORY}/libs)
@@ -193,6 +190,10 @@ INCLUDE(IncludeSubdirs.cmake)
 # Subdirectories.
 ADD_SUBDIRECTORY(3rdparty)
 # Also looks for Xerces, UMFPACK, etc.
+
+# deal.ii
+add_subdirectory(dealii)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/dealii/include/)
 
 # Include external directories.
 INCLUDE_DIRECTORIES(${UMFPACK_INCLUDE_DIR})
