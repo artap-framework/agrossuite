@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: shape_info.templates.h 31495 2013-10-31 12:58:57Z kronbichler $
 //
 // Copyright (C) 2011 - 2013 by the deal.II authors
 //

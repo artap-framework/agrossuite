@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: relaxation_block.templates.h 30040 2013-07-18 17:06:48Z maier $
 //
 // Copyright (C) 1999 - 2013 by the deal.II authors
 //

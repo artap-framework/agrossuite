@@ -1,8 +1,0 @@
-<map id="PreconditionBlock&lt; MATRIX, inverse_type &gt;" name="PreconditionBlock&lt; MATRIX, inverse_type &gt;">
-<area shape="rect" id="node9" href="$classPreconditionBlockJacobi.html" title="PreconditionBlockJacobi\l\&lt; MATRIX, inverse_type \&gt;" alt="" coords="744,5,923,51"/>
-<area shape="rect" id="node11" href="$classPreconditionBlockSOR.html" title="PreconditionBlockSOR\l\&lt; MATRIX, inverse_type \&gt;" alt="" coords="744,74,923,121"/>
-<area shape="rect" id="node2" href="$classSubscriptor.html" title="Subscriptor" alt="" coords="349,7,437,36"/>
-<area shape="rect" id="node4" href="$classPreconditionBlockBase.html" title="PreconditionBlockBase\l\&lt; inverse_type \&gt;" alt="" coords="315,59,472,106"/>
-<area shape="rect" id="node6" href="$classPreconditionBlockBase.html" title="PreconditionBlockBase\l\&lt; number \&gt;" alt="" coords="5,59,163,106"/>
-<area shape="rect" id="node13" href="$classPreconditionBlockSSOR.html" title="PreconditionBlockSSOR\l\&lt; MATRIX, inverse_type \&gt;" alt="" coords="973,74,1152,121"/>
-</map>

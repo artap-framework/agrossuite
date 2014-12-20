@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: expand_instantiations.cc 30049 2013-07-18 19:42:40Z maier $
 //
 // Copyright (C) 2007 - 2013 by the deal.II authors
 //

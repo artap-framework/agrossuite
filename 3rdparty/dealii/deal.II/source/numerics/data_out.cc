@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: data_out.cc 31932 2013-12-08 02:15:54Z heister $
 //
 // Copyright (C) 1999 - 2013 by the deal.II authors
 //
@@ -161,6 +161,7 @@ build_one_patch (const std::pair<cell_iterator, unsigned int> *cell_and_index,
                   if (update_flags & update_quadrature_points)
                     data.patch_evaluation_points = fe_patch_values.get_quadrature_points();
 
+
                   std::vector<Point<DH::space_dimension> > dummy_normals;
                   postprocessor->
                   compute_derived_quantities_scalar(data.patch_values,
@@ -168,7 +169,6 @@ build_one_patch (const std::pair<cell_iterator, unsigned int> *cell_and_index,
                                                     data.patch_hessians,
                                                     dummy_normals,
                                                     data.patch_evaluation_points,
-                                                    cell_and_index->first->material_id(),
                                                     data.postprocessed_values[dataset]);
                 }
               else
@@ -198,7 +198,6 @@ build_one_patch (const std::pair<cell_iterator, unsigned int> *cell_and_index,
                                                     data.patch_hessians_system,
                                                     dummy_normals,
                                                     data.patch_evaluation_points,
-                                                    cell_and_index->first->material_id(),
                                                     data.postprocessed_values[dataset]);
                 }
 

@@ -1,5 +1,0 @@
-<map id="Input/Output" name="Input/Output">
-<area shape="rect" id="node2" href="$group__output.html" title="Graphical output" alt="" coords="149,5,267,35"/>
-<area shape="rect" id="node3" href="$group__input.html" title="Input" alt="" coords="183,59,233,88"/>
-<area shape="rect" id="node4" href="$group__textoutput.html" title="Textual output" alt="" coords="156,112,260,141"/>
-</map>

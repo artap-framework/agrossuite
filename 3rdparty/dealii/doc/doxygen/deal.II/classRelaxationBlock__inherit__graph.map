@@ -1,7 +1,0 @@
-<map id="RelaxationBlock&lt; MATRIX, inverse_type &gt;" name="RelaxationBlock&lt; MATRIX, inverse_type &gt;">
-<area shape="rect" id="node7" href="$classRelaxationBlockJacobi.html" title="RelaxationBlockJacobi\l\&lt; MATRIX, inverse_type \&gt;" alt="" coords="757,5,936,51"/>
-<area shape="rect" id="node9" href="$classRelaxationBlockSOR.html" title="RelaxationBlockSOR\l\&lt; MATRIX, inverse_type \&gt;" alt="" coords="757,74,936,121"/>
-<area shape="rect" id="node11" href="$classRelaxationBlockSSOR.html" title="RelaxationBlockSSOR\l\&lt; MATRIX, inverse_type \&gt;" alt="" coords="757,143,936,190"/>
-<area shape="rect" id="node2" href="$classPreconditionBlockBase.html" title="PreconditionBlockBase\l\&lt; inverse_type \&gt;" alt="" coords="315,74,472,121"/>
-<area shape="rect" id="node4" href="$classPreconditionBlockBase.html" title="PreconditionBlockBase\l\&lt; number \&gt;" alt="" coords="5,74,163,121"/>
-</map>

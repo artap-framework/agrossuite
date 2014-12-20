@@ -1,9 +1,0 @@
-<map id="FE_Q_DG0&lt; dim, spacedim &gt;" name="FE_Q_DG0&lt; dim, spacedim &gt;">
-<area shape="rect" id="node2" href="$classFE__Q__Base.html" title="FE_Q_Base\&lt; TensorProduct\lPolynomialsConst\&lt; dim\l \&gt;, dim, spacedim \&gt;" alt="" coords="1247,64,1436,128"/>
-<area shape="rect" id="node4" href="$classFE__Poly.html" title="FE_Poly\&lt; TensorProductPolynomials\lConst\&lt; dim \&gt;, dim, spacedim \&gt;" alt="" coords="771,39,1011,86"/>
-<area shape="rect" id="node6" href="$classFiniteElement.html" title="FiniteElement\&lt; dim,\l spacedim \&gt;" alt="" coords="195,27,333,74"/>
-<area shape="rect" id="node12" href="$classFE__Poly.html" title="FE_Poly\&lt; POLY, dim,\l spacedim \&gt;" alt="" coords="384,70,536,117"/>
-<area shape="rect" id="node8" href="$classSubscriptor.html" title="Subscriptor" alt="" coords="31,5,119,35"/>
-<area shape="rect" id="node10" href="$classFiniteElementData.html" title="FiniteElementData\&lt;\l dim \&gt;" alt="" coords="5,58,144,105"/>
-<area shape="rect" id="node15" href="$classFE__Q__Base.html" title="FE_Q_Base\&lt; POLY, dim,\l spacedim \&gt;" alt="" coords="804,109,977,155"/>
-</map>

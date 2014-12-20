@@ -1,5 +1,5 @@
 ## ---------------------------------------------------------------------
-## $Id$
+## $Id: setup_testsubproject.cmake 31922 2013-12-07 21:50:41Z maier $
 ##
 ## Copyright (C) 2013 by the deal.II authors
 ##

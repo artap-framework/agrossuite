@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: petsc_parallel_block_sparse_matrix.cc 30040 2013-07-18 17:06:48Z maier $
 //
 // Copyright (C) 2004 - 2013 by the deal.II authors
 //

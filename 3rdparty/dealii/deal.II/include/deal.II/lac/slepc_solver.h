@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: slepc_solver.h 31932 2013-12-08 02:15:54Z heister $
 //
 // Copyright (C) 2009 - 2013 by the deal.II authors
 //
@@ -174,7 +174,7 @@ namespace SLEPcWrappers
     /**
      * Same as above, but here a composite method for solving the
      * system $A x=\lambda B x$ with real matrices $A, B$ and
-     * imaginary eigenpairs $x, \lambda$.
+     * imaginary eigenpairs $x, \lamda$.
      */
     template <typename OutputVector>
     void

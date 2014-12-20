@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: sparse_decomposition.templates.h 30040 2013-07-18 17:06:48Z maier $
 //
 // Copyright (C) 2002 - 2013 by the deal.II authors
 //

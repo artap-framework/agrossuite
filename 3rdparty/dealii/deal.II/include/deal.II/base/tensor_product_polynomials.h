@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: tensor_product_polynomials.h 31772 2013-11-23 08:02:51Z kanschat $
 //
 // Copyright (C) 2000 - 2013 by the deal.II authors
 //

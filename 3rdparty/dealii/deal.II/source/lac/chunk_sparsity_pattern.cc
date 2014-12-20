@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: chunk_sparsity_pattern.cc 31701 2013-11-18 16:07:44Z heister $
 //
 // Copyright (C) 2008 - 2013 by the deal.II authors
 //

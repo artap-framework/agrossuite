@@ -1,5 +1,5 @@
 ## ---------------------------------------------------------------------
-## $Id$
+## $Id: macro_clear_cmake_required.cmake 31527 2013-11-03 09:58:45Z maier $
 ##
 ## Copyright (C) 2013 by the deal.II authors
 ##

@@ -1,7 +1,0 @@
-<map id="FE_FaceP&lt; dim, spacedim &gt;" name="FE_FaceP&lt; dim, spacedim &gt;">
-<area shape="rect" id="node2" href="$classFE__PolyFace.html" title="FE_PolyFace\&lt; PolynomialSpace\l\&lt; dim&#45;1 \&gt;, dim, spacedim \&gt;" alt="" coords="33,334,247,381"/>
-<area shape="rect" id="node4" href="$classFiniteElement.html" title="FiniteElement\&lt; dim,\l spacedim \&gt;" alt="" coords="48,105,187,151"/>
-<area shape="rect" id="node10" href="$classFE__PolyFace.html" title="FE_PolyFace\&lt; POLY,\l dim, spacedim \&gt;" alt="" coords="139,203,291,250"/>
-<area shape="rect" id="node6" href="$classSubscriptor.html" title="Subscriptor" alt="" coords="5,15,93,44"/>
-<area shape="rect" id="node8" href="$classFiniteElementData.html" title="FiniteElementData\&lt;\l dim \&gt;" alt="" coords="117,6,256,53"/>
-</map>

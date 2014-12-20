@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: tensor_product_polynomials.cc 30040 2013-07-18 17:06:48Z maier $
 //
 // Copyright (C) 2000 - 2013 by the deal.II authors
 //

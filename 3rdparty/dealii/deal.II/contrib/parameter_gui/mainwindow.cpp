@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: mainwindow.cpp 31557 2013-11-05 23:50:14Z maier $
 //
 // Copyright (C) 2010 - 2013 by Martin Steigemann and Wolfgang Bangerth
 //

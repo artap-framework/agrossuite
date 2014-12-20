@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: integration_info.templates.h 30036 2013-07-18 16:55:32Z maier $
 //
 // Copyright (C) 2009 - 2013 by the deal.II authors
 //

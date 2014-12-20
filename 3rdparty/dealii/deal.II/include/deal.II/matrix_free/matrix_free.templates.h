@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: matrix_free.templates.h 31932 2013-12-08 02:15:54Z heister $
 //
 // Copyright (C) 2011 - 2013 by the deal.II authors
 //

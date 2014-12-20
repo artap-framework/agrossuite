@@ -1,5 +1,0 @@
-#Listing of Parameters
-#---------------------
-subsection Testing
-  set Function = a, b, c
-end

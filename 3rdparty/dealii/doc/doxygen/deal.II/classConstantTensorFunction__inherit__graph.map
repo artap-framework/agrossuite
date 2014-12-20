@@ -1,6 +1,0 @@
-<map id="ConstantTensorFunction&lt; rank, dim &gt;" name="ConstantTensorFunction&lt; rank, dim &gt;">
-<area shape="rect" id="node9" href="$classZeroTensorFunction.html" title="ZeroTensorFunction\l\&lt; rank, dim \&gt;" alt="" coords="45,275,184,322"/>
-<area shape="rect" id="node2" href="$classTensorFunction.html" title="TensorFunction\&lt; rank,\l dim \&gt;" alt="" coords="39,83,191,130"/>
-<area shape="rect" id="node4" href="$classFunctionTime.html" title="FunctionTime" alt="" coords="5,5,107,35"/>
-<area shape="rect" id="node6" href="$classSubscriptor.html" title="Subscriptor" alt="" coords="131,5,219,35"/>
-</map>

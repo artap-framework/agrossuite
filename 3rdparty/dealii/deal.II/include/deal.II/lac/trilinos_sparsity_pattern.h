@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: trilinos_sparsity_pattern.h 31019 2013-09-29 23:18:26Z bangerth $
 //
 // Copyright (C) 2008 - 2013 by the deal.II authors
 //

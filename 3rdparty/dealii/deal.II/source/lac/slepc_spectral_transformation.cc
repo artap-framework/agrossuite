@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: slepc_spectral_transformation.cc 30135 2013-07-23 16:32:21Z bangerth $
 //
 // Copyright (C) 2009 - 2013 by the deal.II authors
 //

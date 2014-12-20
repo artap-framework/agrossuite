@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: petsc_parallel_vector.h 30231 2013-08-05 22:07:43Z heister $
 //
 // Copyright (C) 2004 - 2013 by the deal.II authors
 //

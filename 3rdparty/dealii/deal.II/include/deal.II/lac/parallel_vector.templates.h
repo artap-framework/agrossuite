@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: parallel_vector.templates.h 31301 2013-10-18 12:19:18Z kronbichler $
 //
 // Copyright (C) 2011 - 2013 by the deal.II authors
 //

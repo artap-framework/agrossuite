@@ -1,7 +1,0 @@
-<map id="Matrix classes" name="Matrix classes">
-<area shape="rect" id="node1" href="$group__LAC.html" title="Linear algebra classes" alt="" coords="5,101,157,131"/>
-<area shape="rect" id="node2" href="$group__Preconditioners.html" title="Preconditioners and\l Relaxation Operators" alt="" coords="360,5,509,51"/>
-<area shape="rect" id="node3" href="$group__Sparsity.html" title="Sparsity patterns" alt="" coords="375,75,495,104"/>
-<area shape="rect" id="node4" href="$group__Matrix1.html" title="Basic matrices" alt="" coords="380,128,489,157"/>
-<area shape="rect" id="node5" href="$group__Matrix2.html" title="Derived matrices" alt="" coords="375,181,495,211"/>
-</map>

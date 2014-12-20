@@ -1,5 +1,5 @@
 ## ---------------------------------------------------------------------
-## $Id$
+## $Id: FindDEALII_LAPACK.cmake 32022 2013-12-15 16:51:57Z maier $
 ##
 ## Copyright (C) 2013 by the deal.II authors
 ##

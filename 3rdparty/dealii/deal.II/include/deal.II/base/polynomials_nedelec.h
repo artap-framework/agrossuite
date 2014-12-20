@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: polynomials_nedelec.h 31791 2013-11-25 10:36:38Z felix.gruber $
 //
 // Copyright (C) 2010 - 2013 by the deal.II authors
 //

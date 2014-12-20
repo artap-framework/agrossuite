@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: polynomial_space.h 30766 2013-09-17 14:38:55Z kronbichler $
 //
 // Copyright (C) 2002 - 2013 by the deal.II authors
 //

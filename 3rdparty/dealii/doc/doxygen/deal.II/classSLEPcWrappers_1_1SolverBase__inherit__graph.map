@@ -1,9 +1,0 @@
-<map id="SLEPcWrappers::SolverBase" name="SLEPcWrappers::SolverBase">
-<area shape="rect" id="node3" href="$classSLEPcWrappers_1_1SolverArnoldi.html" title="SLEPcWrappers::SolverArnoldi" alt="" coords="264,5,467,35"/>
-<area shape="rect" id="node5" href="$classSLEPcWrappers_1_1SolverGeneralizedDavidson.html" title="SLEPcWrappers::SolverGeneralized\lDavidson" alt="" coords="249,58,481,105"/>
-<area shape="rect" id="node7" href="$classSLEPcWrappers_1_1SolverJacobiDavidson.html" title="SLEPcWrappers::SolverJacobi\lDavidson" alt="" coords="264,127,467,174"/>
-<area shape="rect" id="node9" href="$classSLEPcWrappers_1_1SolverKrylovSchur.html" title="SLEPcWrappers::SolverKrylov\lSchur" alt="" coords="265,197,465,243"/>
-<area shape="rect" id="node11" href="$classSLEPcWrappers_1_1SolverLanczos.html" title="SLEPcWrappers::SolverLanczos" alt="" coords="259,267,472,296"/>
-<area shape="rect" id="node13" href="$classSLEPcWrappers_1_1SolverLAPACK.html" title="SLEPcWrappers::SolverLAPACK" alt="" coords="257,320,473,349"/>
-<area shape="rect" id="node15" href="$classSLEPcWrappers_1_1SolverPower.html" title="SLEPcWrappers::SolverPower" alt="" coords="265,373,465,403"/>
-</map>

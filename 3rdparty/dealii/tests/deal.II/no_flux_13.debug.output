@@ -1,2 +1,0 @@
-
-DEAL::ExcMessage("Error: the finite element does not have enough components " "to define a normal direction.")

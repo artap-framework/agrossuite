@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: dof_tools_sparsity.cc 30407 2013-08-22 04:19:24Z kronbichler $
 //
 // Copyright (C) 1999 - 2013 by the deal.II authors
 //

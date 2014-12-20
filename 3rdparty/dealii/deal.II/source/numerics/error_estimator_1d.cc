@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: error_estimator_1d.cc 30400 2013-08-22 02:05:32Z kronbichler $
 //
 // Copyright (C) 1998 - 2013 by the deal.II authors
 //

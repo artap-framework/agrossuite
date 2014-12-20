@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: grid_reordering_internal.h 30036 2013-07-18 16:55:32Z maier $
 //
 // Copyright (C) 2003 - 2013 by the deal.II authors
 //

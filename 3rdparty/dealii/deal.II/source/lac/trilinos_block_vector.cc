@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: trilinos_block_vector.cc 31932 2013-12-08 02:15:54Z heister $
 //
 // Copyright (C) 2008 - 2013 by the deal.II authors
 //

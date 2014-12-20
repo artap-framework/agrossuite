@@ -1,5 +1,5 @@
 ## ---------------------------------------------------------------------
-## $Id$
+## $Id: macro_deal_ii_invoke_autopilot.cmake 31854 2013-12-03 14:27:48Z maier $
 ##
 ## Copyright (C) 2012 - 2013 by the deal.II authors
 ##

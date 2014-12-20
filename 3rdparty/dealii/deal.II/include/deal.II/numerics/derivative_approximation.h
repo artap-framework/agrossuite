@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: derivative_approximation.h 32050 2013-12-18 17:34:49Z heister $
 //
 // Copyright (C) 2000 - 2013 by the deal.II authors
 //

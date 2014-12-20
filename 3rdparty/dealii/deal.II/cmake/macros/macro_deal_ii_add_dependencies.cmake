@@ -1,5 +1,5 @@
 ## ---------------------------------------------------------------------
-## $Id$
+## $Id: macro_deal_ii_add_dependencies.cmake 31527 2013-11-03 09:58:45Z maier $
 ##
 ## Copyright (C) 2012 - 2013 by the deal.II authors
 ##

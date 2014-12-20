@@ -1,5 +1,5 @@
 ## ---------------------------------------------------------------------
-## $Id$
+## $Id: setup_custom_targets.cmake 31860 2013-12-03 17:03:41Z maier $
 ##
 ## Copyright (C) 2013 by the deal.II authors
 ##

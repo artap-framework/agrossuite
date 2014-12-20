@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: data_postprocessor.cc 30039 2013-07-18 17:00:05Z maier $
 //
 // Copyright (C) 2007 - 2013 by the deal.II authors
 //
@@ -50,7 +50,6 @@ compute_derived_quantities_scalar (const std::vector<double>         &uh,
                                    const std::vector<Tensor<2,dim> > &dduh,
                                    const std::vector<Point<dim> >    &normals,
                                    const std::vector<Point<dim> >    &/*evaluation_points*/,
-                                   const types::material_id mat_id,
                                    std::vector<Vector<double> >      &computed_quantities) const
 {
   compute_derived_quantities_scalar(uh, duh, dduh, normals, computed_quantities);
@@ -81,7 +80,6 @@ compute_derived_quantities_vector (const std::vector<Vector<double> > &uh,
                                    const std::vector<std::vector<Tensor<2,dim> > > &dduh,
                                    const std::vector<Point<dim> >                  &normals,
                                    const std::vector<Point<dim> >                  &/*evaluation_points*/,
-                                   const types::material_id mat_id,
                                    std::vector<Vector<double> >                    &computed_quantities) const
 {
   compute_derived_quantities_vector(uh, duh, dduh, normals, computed_quantities);

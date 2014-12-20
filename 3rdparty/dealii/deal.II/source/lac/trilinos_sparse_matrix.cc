@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: trilinos_sparse_matrix.cc 31567 2013-11-06 18:01:36Z turcksin $
 //
 // Copyright (C) 2008 - 2013 by the deal.II authors
 //

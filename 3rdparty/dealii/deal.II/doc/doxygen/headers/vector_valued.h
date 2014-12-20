@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: vector_valued.h 30154 2013-07-25 10:53:32Z bangerth $
 //
 // Copyright (C) 2008 - 2013 by the deal.II authors
 //
@@ -126,6 +126,7 @@
  * <b>v</b>=(0,0,<i>v</i><sub>3</sub>)<sup>T</sup>. writing the outcomes below
  * each other, we obtain the system
  * @f[
+ * \arraycolsep1pt
  * \begin{matrix}
  * (\nabla u_1,\nabla v_1) &&& = (f_1, v_1)
  * \\
@@ -143,6 +144,7 @@
  * exhibit this system structure. Let us close by writing the full
  * system of the elastic equation with symmetric gradient <b>D</b>:
  * @f[
+ * \arraycolsep1pt
  * \begin{matrix}
  * (\nabla u_1,\nabla v_1) + (\partial_1 u_1,\partial_1 v_1)
  * & (\partial_1 u_2,\partial_2 v_1)

@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: template_constraints.h 30154 2013-07-25 10:53:32Z bangerth $
 //
 // Copyright (C) 2003 - 2013 by the deal.II authors
 //

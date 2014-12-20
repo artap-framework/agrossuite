@@ -1,5 +1,5 @@
 ## ---------------------------------------------------------------------
-## $Id$
+## $Id: setup_compiler_flags.cmake 31850 2013-12-03 13:24:34Z maier $
 ##
 ## Copyright (C) 2012 - 2013 by the deal.II authors
 ##

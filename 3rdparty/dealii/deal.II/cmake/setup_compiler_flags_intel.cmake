@@ -1,5 +1,5 @@
 ## ---------------------------------------------------------------------
-## $Id$
+## $Id: setup_compiler_flags_intel.cmake 31765 2013-11-22 15:58:22Z maier $
 ##
 ## Copyright (C) 2012 - 2013 by the deal.II authors
 ##

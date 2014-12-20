@@ -1,5 +1,5 @@
 ## ---------------------------------------------------------------------
-## $Id$
+## $Id: lapack_templates.pl 31500 2013-10-31 23:40:00Z maier $
 ##
 ## Copyright (C) 2005 - 2013 by the deal.II authors
 ##
@@ -41,7 +41,7 @@ my $double;
 
 print << 'EOT'
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: lapack_templates.pl 31500 2013-10-31 23:40:00Z maier $
 //
 // Copyright (C) 2005 - 2013 by the deal.II authors
 //

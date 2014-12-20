@@ -1,4 +1,0 @@
-var searchData=
-[
-  ['number',['number',['../classPreconditionBlock.html#af7193813118af6b2eec432c4d218206a',1,'PreconditionBlock::number()'],['../classPreconditionBlockJacobi.html#a551167db500179320f43e993bd01d0af',1,'PreconditionBlockJacobi::number()'],['../classPreconditionBlockSOR.html#a2e87faefdf4202758299feb7b61a8e66',1,'PreconditionBlockSOR::number()'],['../classPreconditionBlockSSOR.html#a4ec7d4b9f51d71da083ef38c08dabfba',1,'PreconditionBlockSSOR::number()'],['../classRelaxationBlock.html#aae07ad28b4e9c17a4615ac7e7f527cb9',1,'RelaxationBlock::number()'],['../classRelaxationBlockJacobi.html#a842be86d3ed46fb5be8fd0480acd6d97',1,'RelaxationBlockJacobi::number()'],['../classRelaxationBlockSOR.html#afb61cc349c48db2efd61dc1fe9b46f9b',1,'RelaxationBlockSOR::number()'],['../classRelaxationBlockSSOR.html#a7375342f11a7d16dd46634a1d4cf9b48',1,'RelaxationBlockSSOR::number()']]]
-];

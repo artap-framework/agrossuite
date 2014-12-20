@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: block_sparse_matrix_ez.templates.h 30036 2013-07-18 16:55:32Z maier $
 //
 // Copyright (C) 2002 - 2013 by the deal.II authors
 //

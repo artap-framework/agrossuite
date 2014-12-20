@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: mapping_q1.cc 31932 2013-12-08 02:15:54Z heister $
 //
 // Copyright (C) 2000 - 2013 by the deal.II authors
 //
@@ -783,11 +783,10 @@ MappingQ1<dim,spacedim>::fill_fe_values (
                 // TODO: this allows for anisotropies of up to 1e6 in 3D and
                 // 1e12 in 2D. might want to find a finer
                 // (dimension-independent) criterion
-                /*
                 Assert (det > 1e-12*Utilities::fixed_power<dim>(cell->diameter()/
                                                                 std::sqrt(double(dim))),
                         (typename Mapping<dim,spacedim>::ExcDistortedMappedCell(cell->center(), det, point)));
-                */
+
                 JxW_values[point] = weights[point] * det;
               }
             // if dim==spacedim, then there is no cell normal to
@@ -1704,8 +1703,7 @@ transform_real_to_unit_cell_internal
   Point<spacedim> f = p_real-p;
 
   // early out if we already have our point
-  double diam = cell->diameter();
-  if (f.square() < 1e-24 * diam * diam )
+  if (f.square() < 1e-24 * cell->diameter() * cell->diameter())
     return p_unit;
 
   // we need to compare the position of the computed p(x) against the given

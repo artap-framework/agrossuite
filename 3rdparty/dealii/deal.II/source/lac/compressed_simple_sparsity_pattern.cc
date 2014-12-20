@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: compressed_simple_sparsity_pattern.cc 30040 2013-07-18 17:06:48Z maier $
 //
 // Copyright (C) 2008 - 2013 by the deal.II authors
 //

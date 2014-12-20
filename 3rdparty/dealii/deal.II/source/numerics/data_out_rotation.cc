@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: data_out_rotation.cc 31932 2013-12-08 02:15:54Z heister $
 //
 // Copyright (C) 2000 - 2013 by the deal.II authors
 //
@@ -224,7 +224,6 @@ build_one_patch (const cell_iterator *cell,
                                                         data.patch_hessians,
                                                         dummy_normals,
                                                         data.patch_evaluation_points,
-                                                        (*cell)->material_id(),
                                                         data.postprocessed_values[dataset]);
                     }
                   else
@@ -253,7 +252,6 @@ build_one_patch (const cell_iterator *cell,
                                                         data.patch_hessians_system,
                                                         dummy_normals,
                                                         data.patch_evaluation_points,
-                                                        (*cell)->material_id(),
                                                         data.postprocessed_values[dataset]);
                     }
 

@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: data_out_faces.cc 31484 2013-10-29 17:14:34Z kronbichler $
 //
 // Copyright (C) 2000 - 2013 by the deal.II authors
 //
@@ -176,7 +176,6 @@ build_one_patch (const FaceDescriptor *cell_and_face,
                                                     data.patch_hessians,
                                                     data.patch_normals,
                                                     data.patch_evaluation_points,
-                                                    cell_and_face->first->material_id(),
                                                     data.postprocessed_values[dataset]);
                 }
               else
@@ -203,7 +202,6 @@ build_one_patch (const FaceDescriptor *cell_and_face,
                                                     data.patch_hessians_system,
                                                     data.patch_normals,
                                                     data.patch_evaluation_points,
-                                                    cell_and_face->first->material_id(),
                                                     data.postprocessed_values[dataset]);
                 }
 

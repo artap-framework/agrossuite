@@ -1,5 +1,5 @@
 ## ---------------------------------------------------------------------
-## $Id$
+## $Id: macro_pickup_tests.cmake 31885 2013-12-04 18:14:21Z maier $
 ##
 ## Copyright (C) 2013 by the deal.II authors
 ##

@@ -1,5 +1,0 @@
-
-DEAL::FE_DGQ<1>(1)
-DEAL::FE_DGQ<2>(1)
-DEAL::FE_DGQ<3>(1)
-DEAL::OK

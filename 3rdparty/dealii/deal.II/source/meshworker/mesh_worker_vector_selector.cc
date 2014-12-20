@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: mesh_worker_vector_selector.cc 30037 2013-07-18 16:55:40Z maier $
 //
 // Copyright (C) 2009 - 2013 by the deal.II authors
 //

@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: function.cc 30037 2013-07-18 16:55:40Z maier $
 //
 // Copyright (C) 1998 - 2013 by the deal.II authors
 //
@@ -403,7 +403,7 @@ void ConstantFunction<dim>::value_list (const std::vector<Point<dim> > &points,
   Assert (values.size() == points.size(),
           ExcDimensionMismatch(values.size(), points.size()));
 
-  std::fill(values.begin(), values.end(), function_value);
+  std::fill (values.begin(), values.end(), function_value);
 }
 
 

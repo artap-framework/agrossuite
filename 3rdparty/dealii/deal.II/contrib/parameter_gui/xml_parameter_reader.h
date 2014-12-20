@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: xml_parameter_reader.h 31527 2013-11-03 09:58:45Z maier $
 //
 // Copyright (C) 2010 - 2013 by Martin Steigemann and Wolfgang Bangerth
 //

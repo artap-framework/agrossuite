@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: data_postprocessor.h 30162 2013-07-26 16:31:42Z bangerth $
 //
 // Copyright (C) 2007 - 2013 by the deal.II authors
 //
@@ -165,7 +165,6 @@ public:
                                      const std::vector<Tensor<2,dim> > &dduh,
                                      const std::vector<Point<dim> >    &normals,
                                      const std::vector<Point<dim> >    &evaluation_points,
-                                     const types::material_id mat_id,
                                      std::vector<Vector<double> >      &computed_quantities) const;
 
   /**
@@ -206,7 +205,6 @@ public:
                                      const std::vector<std::vector<Tensor<2,dim> > > &dduh,
                                      const std::vector<Point<dim> >                  &normals,
                                      const std::vector<Point<dim> >                  &evaluation_points,
-                                     const types::material_id mat_id,
                                      std::vector<Vector<double> >                    &computed_quantities) const;
 
   /**

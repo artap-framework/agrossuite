@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: mg_transfer_component.h 30253 2013-08-07 21:06:29Z bangerth $
 //
 // Copyright (C) 2001 - 2013 by the deal.II authors
 //

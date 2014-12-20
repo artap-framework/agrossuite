@@ -1,5 +1,5 @@
 ## ---------------------------------------------------------------------
-## $Id$
+## $Id: macro_register_feature.cmake 31681 2013-11-16 08:04:28Z maier $
 ##
 ## Copyright (C) 2013 by the deal.II authors
 ##

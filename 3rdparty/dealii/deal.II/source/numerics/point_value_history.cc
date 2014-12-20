@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: point_value_history.cc 30037 2013-07-18 16:55:40Z maier $
 //
 // Copyright (C) 2009 - 2013 by the deal.II authors
 //
@@ -697,7 +697,6 @@ void PointValueHistory<dim>
                                             std::vector< Tensor< 2, dim > > (1, dduh[selected_point]),
                                             dummy_normals,
                                             std::vector<Point<dim> > (1, evaluation_points[selected_point]),
-                                            cell->material_id(),
                                             computed_quantities);
 
         }
@@ -744,7 +743,6 @@ void PointValueHistory<dim>
                                             std::vector< std::vector< Tensor< 2, dim > > > (1, dduh[selected_point]),
                                             dummy_normals,
                                             std::vector<Point<dim> > (1, evaluation_points[selected_point]),
-                                            cell->material_id(),
                                             computed_quantities);
         }
 

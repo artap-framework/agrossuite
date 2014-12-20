@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: data_component_interpretation.h 30036 2013-07-18 16:55:32Z maier $
 //
 // Copyright (C) 2007 - 2013 by the deal.II authors
 //

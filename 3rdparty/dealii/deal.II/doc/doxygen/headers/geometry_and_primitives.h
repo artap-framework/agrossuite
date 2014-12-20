@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: geometry_and_primitives.h 30049 2013-07-18 19:42:40Z maier $
 //
 // Copyright (C) 2006 - 2013 by the deal.II authors
 //

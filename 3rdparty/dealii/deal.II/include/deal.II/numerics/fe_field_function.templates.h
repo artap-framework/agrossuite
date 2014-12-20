@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// $Id$
+// $Id: fe_field_function.templates.h 30040 2013-07-18 17:06:48Z maier $
 //
 // Copyright (C) 2007 - 2013 by the deal.II authors
 //
