@@ -35,8 +35,8 @@ FIND_PACKAGE(OpenGLCustom REQUIRED)
 include(QtHandling.cmake)
 
 # versions
-SET(VERSION_MAJOR 3)
-SET(VERSION_MINOR 2)
+SET(VERSION_MAJOR 4)
+SET(VERSION_MINOR 0)
 SET(VERSION_SUB 0)
 
 # git revision
