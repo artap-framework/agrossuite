@@ -22,7 +22,6 @@ endif()
 
 # Debug yes / no.
 SET(AGROS_DEBUG NO)
-SET(WITH_QT5 NO)
 SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
 
 # Allow to override the default values in CMake.vars:
@@ -88,6 +87,7 @@ SET(STB_TRUETYPE_LIBRARY agros2d_3dparty_stb_truetype)
 SET(QTSINGLEAPPLICATION_LIBRARY agros2d_3dparty_qtsingleapplication)
 SET(MATIO_LIBRARY agros2d_3dparty_matio)
 SET(TRIANGLE_LIBRARY agros2d_3dparty_triangle)
+SET(SSH_LIBRARY agros_3dparty_ssh)
 SET(AGROS_GRID agros_grid)
 
 # SET(GMSH_LIBRARY agros2d_3dparty_gmsh)
@@ -240,15 +240,6 @@ IF(AGROS_DEBUG)
 ELSE(AGROS_DEBUG)
     message(" Build version: Release")
 ENDIF(AGROS_DEBUG)
-message("---------Qt---------")
-IF(WITH_QT5)
-  message(" Build with Qt5")
-ELSE(WITH_QT5)
-  message(" Build with Qt4")
-  message("  Qt use file: ${QT_USE_FILE}")
-  message("  Qt definitions: ${QT_DEFINITIONS}")
-  message("  Qt libraries: ${QT_LIBRARIES}")
-ENDIF(WITH_QT5)
 message("---------------------")
 message("\n")
 

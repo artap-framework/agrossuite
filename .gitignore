@@ -117,3 +117,4 @@ CMake.vars
 data/
 cmake_options.texi
 resources/python/jedi/evaluate/compiled/
+agros_grid
