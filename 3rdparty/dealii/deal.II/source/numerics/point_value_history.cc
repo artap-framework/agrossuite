@@ -697,6 +697,7 @@ void PointValueHistory<dim>
                                             std::vector< Tensor< 2, dim > > (1, dduh[selected_point]),
                                             dummy_normals,
                                             std::vector<Point<dim> > (1, evaluation_points[selected_point]),
+                                            cell->material_id(),
                                             computed_quantities);
 
         }
@@ -743,6 +744,7 @@ void PointValueHistory<dim>
                                             std::vector< std::vector< Tensor< 2, dim > > > (1, dduh[selected_point]),
                                             dummy_normals,
                                             std::vector<Point<dim> > (1, evaluation_points[selected_point]),
+                                            cell->material_id(),
                                             computed_quantities);
         }
 

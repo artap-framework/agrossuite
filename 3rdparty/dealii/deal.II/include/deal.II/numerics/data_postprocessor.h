@@ -129,6 +129,7 @@ public:
                                      const std::vector<Tensor<1,dim> > &duh,
                                      const std::vector<Tensor<2,dim> > &dduh,
                                      const std::vector<Point<dim> >    &normals,
+                                     const dealii::types::material_id mat_id,
                                      std::vector<Vector<double> >      &computed_quantities) const DEAL_II_DEPRECATED;
 
   /**
@@ -165,6 +166,7 @@ public:
                                      const std::vector<Tensor<2,dim> > &dduh,
                                      const std::vector<Point<dim> >    &normals,
                                      const std::vector<Point<dim> >    &evaluation_points,
+                                     const dealii::types::material_id mat_id,
                                      std::vector<Vector<double> >      &computed_quantities) const;
 
   /**
@@ -187,6 +189,7 @@ public:
                                      const std::vector<std::vector<Tensor<1,dim> > > &duh,
                                      const std::vector<std::vector<Tensor<2,dim> > > &dduh,
                                      const std::vector<Point<dim> >                  &normals,
+                                     const dealii::types::material_id mat_id,
                                      std::vector<Vector<double> >                    &computed_quantities) const DEAL_II_DEPRECATED;
 
   /**
@@ -205,6 +208,7 @@ public:
                                      const std::vector<std::vector<Tensor<2,dim> > > &dduh,
                                      const std::vector<Point<dim> >                  &normals,
                                      const std::vector<Point<dim> >                  &evaluation_points,
+                                     const dealii::types::material_id mat_id,
                                      std::vector<Vector<double> >                    &computed_quantities) const;
 
   /**

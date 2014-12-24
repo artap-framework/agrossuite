@@ -35,6 +35,7 @@ compute_derived_quantities_scalar (const std::vector<double>         &/*uh*/,
                                    const std::vector<Tensor<1,dim> > &/*duh*/,
                                    const std::vector<Tensor<2,dim> > &/*dduh*/,
                                    const std::vector<Point<dim> >    &/*normals*/,
+                                   const dealii::types::material_id mat_id,
                                    std::vector<Vector<double> >      &computed_quantities) const
 {
   computed_quantities.clear();
@@ -50,9 +51,10 @@ compute_derived_quantities_scalar (const std::vector<double>         &uh,
                                    const std::vector<Tensor<2,dim> > &dduh,
                                    const std::vector<Point<dim> >    &normals,
                                    const std::vector<Point<dim> >    &/*evaluation_points*/,
+                                   const types::material_id mat_id,
                                    std::vector<Vector<double> >      &computed_quantities) const
 {
-  compute_derived_quantities_scalar(uh, duh, dduh, normals, computed_quantities);
+  compute_derived_quantities_scalar(uh, duh, dduh, normals, mat_id, computed_quantities);
 }
 
 
@@ -64,6 +66,7 @@ compute_derived_quantities_vector (const std::vector<Vector<double> > &/*uh*/,
                                    const std::vector<std::vector<Tensor<1,dim> > > &/*duh*/,
                                    const std::vector<std::vector<Tensor<2,dim> > > &/*dduh*/,
                                    const std::vector<Point<dim> >                  &/*normals*/,
+                                   const dealii::types::material_id mat_id,
                                    std::vector<Vector<double> >                    &computed_quantities) const
 {
   computed_quantities.clear();
@@ -80,9 +83,10 @@ compute_derived_quantities_vector (const std::vector<Vector<double> > &uh,
                                    const std::vector<std::vector<Tensor<2,dim> > > &dduh,
                                    const std::vector<Point<dim> >                  &normals,
                                    const std::vector<Point<dim> >                  &/*evaluation_points*/,
+                                   const dealii::types::material_id mat_id,
                                    std::vector<Vector<double> >                    &computed_quantities) const
 {
-  compute_derived_quantities_vector(uh, duh, dduh, normals, computed_quantities);
+  compute_derived_quantities_vector(uh, duh, dduh, normals, mat_id, computed_quantities);
 }
 
 

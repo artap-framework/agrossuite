@@ -169,6 +169,7 @@ build_one_patch (const std::pair<cell_iterator, unsigned int> *cell_and_index,
                                                     data.patch_hessians,
                                                     dummy_normals,
                                                     data.patch_evaluation_points,
+                                                    cell_and_index->first->material_id(),
                                                     data.postprocessed_values[dataset]);
                 }
               else
@@ -198,6 +199,7 @@ build_one_patch (const std::pair<cell_iterator, unsigned int> *cell_and_index,
                                                     data.patch_hessians_system,
                                                     dummy_normals,
                                                     data.patch_evaluation_points,
+                                                    cell_and_index->first->material_id(),
                                                     data.postprocessed_values[dataset]);
                 }
 

@@ -176,6 +176,7 @@ build_one_patch (const FaceDescriptor *cell_and_face,
                                                     data.patch_hessians,
                                                     data.patch_normals,
                                                     data.patch_evaluation_points,
+                                                    cell_and_face->first->material_id(),
                                                     data.postprocessed_values[dataset]);
                 }
               else
@@ -202,6 +203,7 @@ build_one_patch (const FaceDescriptor *cell_and_face,
                                                     data.patch_hessians_system,
                                                     data.patch_normals,
                                                     data.patch_evaluation_points,
+                                                    cell_and_face->first->material_id(),
                                                     data.postprocessed_values[dataset]);
                 }
 

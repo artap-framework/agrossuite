@@ -224,6 +224,7 @@ build_one_patch (const cell_iterator *cell,
                                                         data.patch_hessians,
                                                         dummy_normals,
                                                         data.patch_evaluation_points,
+                                                        (*cell)->material_id(),
                                                         data.postprocessed_values[dataset]);
                     }
                   else
@@ -252,6 +253,7 @@ build_one_patch (const cell_iterator *cell,
                                                         data.patch_hessians_system,
                                                         dummy_normals,
                                                         data.patch_evaluation_points,
+                                                        (*cell)->material_id(),
                                                         data.postprocessed_values[dataset]);
                     }
 

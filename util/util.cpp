@@ -324,8 +324,17 @@ QString tempProblemDir()
 QString cacheProblemDir()
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    // fast fix for ht condor
+    QString cch = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);    
+    QDir dirc(cch);
+    if (!dirc.exists())
+        dirc.mkpath(cch);
+    // ro system
+    if (!dirc.exists())
+        cch = tempProblemDir();
+
     static QString str = QString("%1/cache/%2").
-            arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).
+            arg(cch).
             arg(QString::number(QCoreApplication::applicationPid()));
 #else
 #ifdef Q_WS_WIN
@@ -333,8 +342,17 @@ QString cacheProblemDir()
             arg(QDir::temp().absolutePath()).
             arg(QString::number(QCoreApplication::applicationPid()));
 #else
+    // fast fix for ht condor
+    QString cch = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
+    QDir dirc(cch);
+    if (!dirc.exists())
+        dirc.mkpath(cch);
+    // ro system
+    if (!dirc.exists())
+        cch = tempProblemDir();
+
     static QString str = QString("%1/cache/%2").
-            arg(QDesktopServices::storageLocation(QDesktopServices::CacheLocation)).
+            arg(cch).
             arg(QString::number(QCoreApplication::applicationPid()));
 #endif
 #endif
