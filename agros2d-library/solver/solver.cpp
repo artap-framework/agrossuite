@@ -685,6 +685,8 @@ TimeStepInfo ProblemSolver<Scalar>::estimateTimeStepLength(int timeStep, int ada
 
     return TimeStepInfo(nextTimeStepLength, refuseThisStep);
     */
+
+	return TimeStepInfo(0., false);
 }
 
 template <typename Scalar>
@@ -1156,7 +1158,7 @@ void ProblemSolverDeal::solveAdaptive(FieldInfo *fieldInfo, int timeStep)
             dealii::Vector<float> estimated_error_per_cell(solverDeal->triangulation()->n_active_cells());
             dealii::KellyErrorEstimator<2>::estimate(*solverDeal->doFHandler(),
                                                      dealii::QGauss<2-1>(2),
-                                                     typename dealii::FunctionMap<2>::type(),
+                                                     dealii::FunctionMap<2>::type(),
                                                      *solverDeal->solution(),
                                                      estimated_error_per_cell);
 

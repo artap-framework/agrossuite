@@ -264,7 +264,7 @@ void SceneViewPost3D::paintScalarField3D()
 
         // triangles
         glBegin(GL_TRIANGLES); // GL_QUADS are not optimized in OpenGL
-        typename dealii::Triangulation<2>::active_cell_iterator cell_int = m_postDeal->activeViewField()->initialMesh()->begin_active(),
+        dealii::Triangulation<2>::active_cell_iterator cell_int = m_postDeal->activeViewField()->initialMesh()->begin_active(),
                 endc_int = m_postDeal->activeViewField()->initialMesh()->end();
         for (; cell_int != endc_int; ++cell_int)
         {

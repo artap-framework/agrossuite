@@ -253,7 +253,7 @@ void SceneViewMesh::paintInitialMesh()
         const std::vector<dealii::Point<2> >& vertices = m_postDeal->activeViewField()->initialMesh()->get_vertices();
 
         // faces
-        typename dealii::Triangulation<2>::active_face_iterator ti = m_postDeal->activeViewField()->initialMesh()->begin_face();
+        dealii::Triangulation<2>::active_face_iterator ti = m_postDeal->activeViewField()->initialMesh()->begin_face();
         while (ti != m_postDeal->activeViewField()->initialMesh()->end_face())
         {
             m_arrayInitialMesh.append(QVector2D(vertices[ti->vertex_index(0)][0], vertices[ti->vertex_index(0)][1]));
@@ -295,7 +295,7 @@ void SceneViewMesh::paintSolutionMesh()
         // qDebug() << m_postDeal->activeAdaptivityStep();
         for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
         {
-            typename dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
+            dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
                 // coordinates
@@ -344,7 +344,7 @@ void SceneViewMesh::paintOrder()
         // qDebug() << m_postDeal->activeAdaptivityStep();
         for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
         {
-            typename dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
+            dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
                 // coordinates
@@ -434,7 +434,7 @@ void SceneViewMesh::paintOrderColorBar()
     MultiArray ma = m_postDeal->activeMultiSolutionArray();
 
     int level = 0;
-    typename dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end();
+    dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end();
     for (; cell_int != endc_int; ++cell_int)
     {
         // polynomial degree

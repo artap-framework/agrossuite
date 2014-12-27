@@ -70,7 +70,7 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
     double minDeform =  numeric_limits<double>::max();
     double maxDeform = -numeric_limits<double>::max();
 
-    for (typename std::vector<dealii::DataOutBase::Patch<2> >::const_iterator patch = patches.begin(); patch != patches.end(); ++patch)
+    for (std::vector<dealii::DataOutBase::Patch<2> >::const_iterator patch = patches.begin(); patch != patches.end(); ++patch)
     {
         for (unsigned int i = 0; i < (patch->n_subdivisions + 1) * (patch->n_subdivisions + 1); i++)
         {
@@ -101,7 +101,7 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
     dealii::Point<2> node0, node1, node2, node3;
 
     // loop over all patches
-    for (typename std::vector<dealii::DataOutBase::Patch<2> >::const_iterator patch = patches.begin(); patch != patches.end(); ++patch)
+    for (std::vector<dealii::DataOutBase::Patch<2> >::const_iterator patch = patches.begin(); patch != patches.end(); ++patch)
     {
         const unsigned int n_subdivisions = patch->n_subdivisions;
         const unsigned int n = n_subdivisions + 1;
@@ -168,12 +168,12 @@ void PostDataOut::compute_node(dealii::Point<2> &node, const dealii::DataOutBase
 }
 
 
-typename dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
+dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
 {
     if (m_subdomains.size() == 0)
         return this->dofs->begin_active();
 
-    typename DataOut<2>::active_cell_iterator
+    DataOut<2>::active_cell_iterator
             cell = this->dofs->begin_active();
     while ((cell != this->dofs->end()) &&
            (cell->subdomain_id() != m_subdomains[0])) // TODO !!!
@@ -182,7 +182,7 @@ typename dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
     return cell;
 }
 
-typename dealii::DataOut<2>::cell_iterator PostDataOut::next_cell (const typename DataOut<2>::cell_iterator &old_cell)
+dealii::DataOut<2>::cell_iterator PostDataOut::next_cell (const DataOut<2>::cell_iterator &old_cell)
 {
     if (m_subdomains.size() == 0)
         return dealii::DataOut<2>::next_cell(old_cell);
