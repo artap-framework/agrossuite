@@ -82,7 +82,7 @@ enum ButcherTableType
 };
 
 /// \brief General square table of real numbers.
-class AGROS_LIBRARY_API Table
+class AGROS_UTIL_API Table
 {
 public:
     Table();
@@ -98,7 +98,7 @@ protected:
 };
 
 /// \brief Butcher's tables for Runge-Kutta methods.
-class AGROS_LIBRARY_API ButcherTable : public Table
+class AGROS_UTIL_API ButcherTable : public Table
 {
 public:
     ButcherTable();

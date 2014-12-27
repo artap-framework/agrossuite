@@ -3,3 +3,6 @@
 	url = git@github.com:hpfem/hermes.git
 	branch = master
 	ignore = dirty
+[submodule "dealii"]
+	path = dealii
+	url = git@github.com:dealii/dealii.git
