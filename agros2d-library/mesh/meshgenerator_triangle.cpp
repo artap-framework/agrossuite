@@ -454,7 +454,7 @@ bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
     fillNeighborStructures();
     // moveNodesOnCurvedEdges();
 
-    writeTodealii();
+    writeTodealii();    
 
     nodeList.clear();
     edgeList.clear();

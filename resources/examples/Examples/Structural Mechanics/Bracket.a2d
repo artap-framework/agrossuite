@@ -22,12 +22,12 @@
       <edge angle="90" end="1" id="3" is_curvilinear="1" segments="3" start="2" valueangle="90"/>
       <edge angle="0" end="6" id="4" is_curvilinear="1" segments="3" start="3" valueangle="0"/>
       <edge angle="0" end="7" id="5" is_curvilinear="1" segments="3" start="3" valueangle="0"/>
-      <edge angle="90" end="5" id="6" is_curvilinear="1" segments="3" start="2" valueangle="90"/>
+      <edge angle="90" end="5" id="6" is_curvilinear="1" segments="7" start="2" valueangle="90"/>
       <edge angle="90" end="9" id="7" is_curvilinear="1" segments="3" start="6" valueangle="90"/>
       <edge angle="30" end="8" id="8" is_curvilinear="1" segments="3" start="9" valueangle="30"/>
       <edge angle="90" end="7" id="9" is_curvilinear="1" segments="3" start="10" valueangle="90"/>
       <edge angle="30" end="10" id="10" is_curvilinear="1" segments="3" start="11" valueangle="30"/>
-      <edge angle="45" end="8" id="11" is_curvilinear="1" segments="3" start="11" valueangle="45"/>
+      <edge angle="45" end="8" id="11" is_curvilinear="1" segments="5" start="11" valueangle="45"/>
     </edges>
     <labels>
       <label area="0" id="0" valuex="0.19805" valuey="-0.0157016" x="0.19805" y="-0.0157016"/>
@@ -36,7 +36,7 @@
   </geometry>
   <problem coordinate_type="planar" mesh_type="triangle">
     <fields>
-      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="elasticity" linearity_type="linear" matrix_solver="mumps">
+      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="elasticity" linearity_type="linear" matrix_solver="umfpack">
         <refinement_edges/>
         <refinement_labels/>
         <polynomial_orders/>
@@ -90,13 +90,13 @@
               <material_label id="0"/>
             </material_labels>
             <material_types>
-              <material_type key="elasticity_young_modulus" value="2e11"/>
+              <material_type key="elasticity_alpha" value="0"/>
               <material_type key="elasticity_poisson_ratio" value="0.33"/>
               <material_type key="elasticity_temperature_difference" value="0"/>
-              <material_type key="elasticity_alpha" value="0"/>
+              <material_type key="elasticity_temperature_reference" value="0"/>
               <material_type key="elasticity_volume_force_x" value="0"/>
               <material_type key="elasticity_volume_force_y" value="-9.81*7800"/>
-              <material_type key="elasticity_temperature_reference" value="0"/>
+              <material_type key="elasticity_young_modulus" value="2e11"/>
             </material_types>
           </material>
         </materials>
@@ -117,15 +117,11 @@
           <field_item field_key="SpacePolynomialOrder" field_value="2"/>
           <field_item field_key="AdaptivitySteps" field_value="8"/>
           <field_item field_key="AdaptivityTolerance" field_value="0"/>
+          <field_item field_key="AdaptivityEstimator" field_value="0"/>
+          <field_item field_key="AdaptivityFinePercentage" field_value="30"/>
+          <field_item field_key="AdaptivityCoarsePercentage" field_value="3"/>
           <field_item field_key="AdaptivityTransientBackSteps" field_value="3"/>
           <field_item field_key="AdaptivityTransientRedoneEach" field_value="5"/>
-          <field_item field_key="AdaptivityStoppingCriterion" field_value="1"/>
-          <field_item field_key="AdaptivityThreshold" field_value="0.5"/>
-          <field_item field_key="AdaptivityErrorCalculator" field_value="l2"/>
-          <field_item field_key="AdaptivityUseAniso" field_value="1"/>
-          <field_item field_key="AdaptivityFinerReference" field_value="0"/>
-          <field_item field_key="AdaptivityOrderIncrease" field_value="1"/>
-          <field_item field_key="AdaptivitySpaceRefinement" field_value="1"/>
           <field_item field_key="TransientTimeSkip" field_value="0"/>
           <field_item field_key="TransientInitialCondition" field_value="0"/>
           <field_item field_key="LinearSolverIterMethod" field_value="2"/>
@@ -178,8 +174,8 @@
     <item key="View_ScalarRangeBase" value="10"/>
     <item key="View_ScalarDecimalPlace" value="4"/>
     <item key="View_ScalarRangeAuto" value="1"/>
-    <item key="View_ScalarRangeMin" value="0"/>
-    <item key="View_ScalarRangeMax" value="1.89063143807289e-07"/>
+    <item key="View_ScalarRangeMin" value="32.6715660095215"/>
+    <item key="View_ScalarRangeMax" value="163.504821777344"/>
     <item key="View_ShowVectorView" value="0"/>
     <item key="View_VectorVariable" value="elasticity_displacement"/>
     <item key="View_VectorProportional" value="1"/>

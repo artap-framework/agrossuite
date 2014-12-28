@@ -31,6 +31,8 @@
 #include "../../resources_source/classes/module_xml.h"
 #include "../../resources_source/classes/problem_a2d_31_xml.h"
 
+#include "deal.II/grid/grid_tools.h"
+
 FieldBlock::FieldBlock(FieldInfo *fieldInfo) : m_fieldInfo(fieldInfo)
 {
 
@@ -321,6 +323,8 @@ void FieldInfo::clear()
 
 void FieldInfo::refineMesh(dealii::Triangulation<2> *mesh)
 {
+    // distort random
+    // dealii::GridTools::distort_random<2>(0.2, *mesh);
     mesh->refine_global(value(FieldInfo::SpaceNumberOfRefinements).toInt());
 
     /*

@@ -140,18 +140,15 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
     std::vector<dealii::types::global_dof_index> local_dof_indices;
 
-    // previous values and grads
-    // std::vector<dealii::Vector<double> > solution_value_previous(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-    // std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
-
     dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
     for (; cell != endc; ++cell)
     {
         const unsigned int dofs_per_cell = cell->get_fe().dofs_per_cell;
 
-        cell_matrix.reinit (dofs_per_cell, dofs_per_cell);
+        // local matrix
+        cell_matrix.reinit(dofs_per_cell, dofs_per_cell);
         cell_matrix = 0;
-        cell_rhs.reinit (dofs_per_cell);
+        cell_rhs.reinit(dofs_per_cell);
         cell_rhs = 0;
 
         hp_fe_values.reinit(cell);
@@ -160,21 +157,26 @@ void SolverDeal{{CLASS}}::assembleSystem()
         const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
         const unsigned int n_q_points = fe_values.n_quadrature_points;
 
-        // value and grad cache
-        std::vector<dealii::Point<2> > shape_face_point;
-        std::vector<double> shape_face_JxW;
+        // volume value and grad cache
         std::vector<dealii::Vector<double> > shape_value(dofs_per_cell, dealii::Vector<double>(n_q_points));
         std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
+        // surface cache
+        std::vector<dealii::Point<2> > shape_face_point;
         std::vector<dealii::Vector<double> > shape_face_value(dofs_per_cell);
-        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_face_q_points));
+        std::vector<double> shape_face_JxW;
+        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(dofs_per_cell);
 
-        // cache volume
+        // previous values and grads
+        std::vector<dealii::Vector<double> > solution_value_previous(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+        std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
         if (m_solution_previous)
         {
-            // fe_values.get_function_values(*m_solution_previous, solution_value_previous);
-            // fe_values.get_function_gradients(*m_solution_previous, solution_grad_previous);
+            fe_values.get_function_values(*m_solution_previous, solution_value_previous);
+            fe_values.get_function_gradients(*m_solution_previous, solution_grad_previous);
         }
 
+        // cache volume
         for (unsigned int i = 0; i < dofs_per_cell; ++i)
         {
             for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
@@ -211,10 +213,6 @@ void SolverDeal{{CLASS}}::assembleSystem()
                 }
             }
         }
-
-        // local matrix
-        cell_matrix = 0;
-        cell_rhs = 0;
 
         // materials
         SceneMaterial *material = Agros2D::scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo);
@@ -405,9 +403,6 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
 void SolverDeal{{CLASS}}::assembleDirichlet()
 {
-    hanging_node_constraints.condense(system_matrix);
-    hanging_node_constraints.condense(system_rhs);
-
     for (int i = 0; i < Agros2D::scene()->edges->count(); i++)
     {
         SceneEdge *edge = Agros2D::scene()->edges->at(i);
@@ -426,12 +421,12 @@ void SolverDeal{{CLASS}}::assembleDirichlet()
                 mask.push_back({{MASK}});{{/FORM_EXPRESSION_MASK}}
                 dealii::ComponentMask component_mask(mask);
 
-                std::map<dealii::types::global_dof_index,double> boundary_values;
+                // std::map<dealii::types::global_dof_index,double> boundary_values;
                 dealii::VectorTools::interpolate_boundary_values (*m_doFHandler, i+1,
                                                                   Essential_{{COORDINATE_TYPE}}_{{ANALYSIS_TYPE}}_{{LINEARITY_TYPE}}_{{BOUNDARY_ID}}<2>(boundary),
-                                                                  boundary_values,
+                                                                  hanging_node_constraints, // boundary_values,
                                                                   component_mask);
-                dealii::MatrixTools::apply_boundary_values (boundary_values, system_matrix, *m_solution, system_rhs);
+                // dealii::MatrixTools::apply_boundary_values (boundary_values, system_matrix, *m_solution, system_rhs);
             }
             {{/EXACT_SOURCE}}
         }

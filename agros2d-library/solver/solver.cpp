@@ -113,7 +113,7 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     // create solution vector
     m_solution = new dealii::Vector<double>();
 
-    // Gauss quadrature
+    // Gauss quadrature and fe collection
     for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
     {
         m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Q<2>(degree), fieldInfo->numberOfSolutions()));
@@ -143,22 +143,17 @@ void SolverDeal::setup()
     hanging_node_constraints.clear();
     dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler,
                                                     hanging_node_constraints);
+
+    // assemble Dirichlet
+    assembleDirichlet();
+
     hanging_node_constraints.close();
 
-    // dealii::CompressedSparsityPattern c_sparsity(m_doFHandler->n_dofs());
-    sparsity_pattern.reinit(m_doFHandler->n_dofs(),
-                            m_doFHandler->n_dofs(),
-                            m_doFHandler->max_couplings_between_dofs());
-
-    dealii::DoFTools::make_sparsity_pattern(*m_doFHandler, sparsity_pattern, hanging_node_constraints, true);
-
-    // sparsity_pattern.copy_from(c_sparsity);
-
-    hanging_node_constraints.condense(sparsity_pattern);
-    // sparsity_pattern.compress();
+    dealii::CompressedSetSparsityPattern csp(m_doFHandler->n_dofs(), m_doFHandler->n_dofs());
+    dealii::DoFTools::make_sparsity_pattern(*m_doFHandler, csp, hanging_node_constraints, false);
+    sparsity_pattern.copy_from(csp);
 
     system_matrix.reinit(sparsity_pattern);
-
     // qDebug() << "setup (" << time.elapsed() << "ms )";
 }
 
@@ -1156,8 +1151,7 @@ void ProblemSolverDeal::solveLinear(FieldInfo *fieldInfo, int timeStep, int adap
     solverDeal->setup();
     QTime time;
     time.start();
-    solverDeal->assembleDirichlet();
-    solverDeal->assembleSystem();
+    solverDeal->assembleSystem();   
     qDebug() << "assemble (" << time.elapsed() << "ms )";
     solverDeal->solve();
 
@@ -1183,7 +1177,6 @@ void ProblemSolverDeal::solveNonlinear(FieldInfo *fieldInfo, int timeStep, int a
     for (int iteration = 0; iteration < 6; iteration++)
     {
         qDebug() << "step: " << iteration;
-        solverDeal->assembleDirichlet();
         solverDeal->assembleSystem();
         solverDeal->solve();
 
