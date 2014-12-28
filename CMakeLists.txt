@@ -66,8 +66,6 @@ SET(VERSION_YEAR 20${YEAR})
 SET(VERSION_MONTH ${MONTH})
 SET(VERSION_DAY ${DAY})
 
-
-
 # Naming of projects built.
 SET(AGROS_UTIL agros2d_util)
 SET(PYTHONLAB_LIBRARY agros2d_pythonlab_library)
@@ -195,8 +193,24 @@ ADD_SUBDIRECTORY(3rdparty)
 # Also looks for Xerces, UMFPACK, etc.
 
 # deal.ii
+ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
+IF(AGROS_DEBUG)
+SET(DEAL_II_BUILD_TYPE "Debug")
+SET(CMAKE_BUILD_TYPE "Debug")
+ELSE()
+SET(DEAL_II_BUILD_TYPE "Release")
+SET(CMAKE_BUILD_TYPE "Release")
+ENDIF()
 add_subdirectory(dealii)
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/dealii/include/)
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.56.0/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/tbb41_20130401oss/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/umfpack/UMFPACK/Include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/umfpack/AMD/Include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/muparser_v2_2_3/include/")
+
+FIND_PACKAGE(deal.II REQUIRED HINTS dealii)
+DEAL_II_INITIALIZE_CACHED_VARIABLES()
 
 # Include external directories.
 INCLUDE_DIRECTORIES(${UMFPACK_INCLUDE_DIR})
