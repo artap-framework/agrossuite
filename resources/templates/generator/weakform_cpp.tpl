@@ -216,10 +216,11 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
         // materials
         SceneMaterial *material = Agros2D::scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo);
-        const QMap<QString, QSharedPointer<Value> > materialValues = material->values();
 
         if (material != Agros2D::scene()->materials->getNone(m_fieldInfo))
         {
+            const QMap<QString, QSharedPointer<Value> > materialValues = material->values();
+
             // MATRIX VOLUME
             {{#VOLUME_MATRIX_SOURCE}}
             if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}}))
