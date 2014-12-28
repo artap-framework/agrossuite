@@ -189,7 +189,7 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
                 updateGL();
                 emit mousePressed();
             }
-            catch (const typename dealii::GridTools::ExcPointNotFound<2> &e)
+            catch (const dealii::GridTools::ExcPointNotFound<2> &e)
             {
                 // do nothing
             }
@@ -573,7 +573,7 @@ void SceneViewPost2D::paintVectors()
                     if (grad.norm() > rangeMax) rangeMax = grad.norm();
                     if (grad.norm() < rangeMin) rangeMin = grad.norm();
                 }
-                catch (const typename dealii::GridTools::ExcPointNotFound<2> &e)
+                catch (const dealii::GridTools::ExcPointNotFound<2> &e)
                 {
                     continue;
                 }

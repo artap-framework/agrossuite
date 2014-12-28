@@ -462,7 +462,6 @@ void AgrosExternalSolverExternal::solve(double* initial_guess)
 
 ProblemSolver::ProblemSolver()
 {
-
 }
 
 

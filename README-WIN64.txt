@@ -9,6 +9,8 @@
 
 1.1) Xerces & XSD - http://www.codesynthesis.com/products/xsd/download.xhtml
 
+  - version 4.0+ necessary (for C++11 support)
+
 1.2) UMFPACK - tricky, one has to get MinGW & compile it in 64-bits
     - MinGW used for compiling AMD and UMFPACK: `Download 64 bit version of MinGW <http://sourceforge.net/projects/mingw/>`_.
     - after installing MinGW, add 'your-minGW-installation-directory'/bin to system PATH.
