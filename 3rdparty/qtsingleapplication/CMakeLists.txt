@@ -8,7 +8,7 @@ ENDIF(WIN32)
 
 SET(SOURCES qtlocalpeer.cpp
     # qtlockedfile_${PLATFORM}.cpp
-    qtlockedfile.cpp
+    # qtlockedfile.cpp
     qtsingleapplication.cpp
     qtsinglecoreapplication.cpp
 )
