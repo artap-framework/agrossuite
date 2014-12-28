@@ -95,7 +95,7 @@ Problem::Problem()
 
     m_isNonlinear = false;
 
-    m_solverDeal = new ProblemSolverDeal();
+    m_solverDeal = new ProblemSolver();
 
     actMesh = new QAction(icon("scene-meshgen"), tr("&Mesh area"), this);
     actMesh->setShortcut(QKeySequence(tr("Alt+W")));

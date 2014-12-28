@@ -59,11 +59,11 @@
     </edges>
     <labels>
       <label area="0" id="0" valuex="0.076268" valuey="0.119048" x="0.076268" y="0.119048"/>
-      <label area="1e-05" id="1" valuex="-0.0115251" valuey="0.0451226" x="-0.0115251" y="0.0451226"/>
-      <label area="1e-05" id="2" valuex="0.0131013" valuey="-0.0100926" x="0.0131013" y="-0.0100926"/>
-      <label area="1e-05" id="3" valuex="0.0407545" valuey="0.011874" x="0.0407545" y="0.011874"/>
-      <label area="1e-05" id="4" valuex="-0.0408437" valuey="0.0140328" x="-0.0408437" y="0.0140328"/>
-      <label area="7e-06" id="5" valuex="-0.0176017" valuey="0.0214307" x="-0.0176017" y="0.0214307"/>
+      <label area="0" id="1" valuex="-0.0115251" valuey="0.0451226" x="-0.0115251" y="0.0451226"/>
+      <label area="0" id="2" valuex="0.0131013" valuey="-0.0100926" x="0.0131013" y="-0.0100926"/>
+      <label area="0" id="3" valuex="0.0407545" valuey="0.011874" x="0.0407545" y="0.011874"/>
+      <label area="0" id="4" valuex="-0.0408437" valuey="0.0140328" x="-0.0408437" y="0.0140328"/>
+      <label area="0" id="5" valuex="-0.0176017" valuey="0.0214307" x="-0.0176017" y="0.0214307"/>
     </labels>
   </geometry>
   <problem coordinate_type="planar" mesh_type="triangle">
@@ -180,22 +180,18 @@
           <field_item field_key="PicardAndersonBeta" field_value="0.2"/>
           <field_item field_key="PicardAndersonNumberOfLastVectors" field_value="3"/>
           <field_item field_key="SpaceNumberOfRefinements" field_value="0"/>
-          <field_item field_key="SpacePolynomialOrder" field_value="3"/>
-          <field_item field_key="AdaptivitySteps" field_value="1"/>
+          <field_item field_key="SpacePolynomialOrder" field_value="2"/>
+          <field_item field_key="AdaptivitySteps" field_value="4"/>
           <field_item field_key="AdaptivityTolerance" field_value="1"/>
+          <field_item field_key="AdaptivityEstimator" field_value="0"/>
+          <field_item field_key="AdaptivityFinePercentage" field_value="30"/>
+          <field_item field_key="AdaptivityCoarsePercentage" field_value="3"/>
           <field_item field_key="AdaptivityTransientBackSteps" field_value="0"/>
           <field_item field_key="AdaptivityTransientRedoneEach" field_value="1"/>
-          <field_item field_key="AdaptivityStoppingCriterion" field_value="1"/>
-          <field_item field_key="AdaptivityThreshold" field_value="0.6"/>
-          <field_item field_key="AdaptivityErrorCalculator" field_value="h1"/>
-          <field_item field_key="AdaptivityUseAniso" field_value="1"/>
-          <field_item field_key="AdaptivityFinerReference" field_value="0"/>
-          <field_item field_key="AdaptivityOrderIncrease" field_value="1"/>
-          <field_item field_key="AdaptivitySpaceRefinement" field_value="1"/>
           <field_item field_key="TransientTimeSkip" field_value="0"/>
           <field_item field_key="TransientInitialCondition" field_value="0"/>
           <field_item field_key="LinearSolverIterMethod" field_value="2"/>
-          <field_item field_key="LinearSolverIterPreconditioner" field_value="2"/>
+          <field_item field_key="LinearSolverIterPreconditioner" field_value="6"/>
           <field_item field_key="LinearSolverIterToleranceAbsolute" field_value="1e-16"/>
           <field_item field_key="LinearSolverIterIters" field_value="1000"/>
           <field_item field_key="TimeUnit" field_value="s"/>
@@ -235,8 +231,8 @@
     <item key="View_ContoursWidth" value="1"/>
     <item key="View_ShowScalarView" value="1"/>
     <item key="View_ShowScalarColorBar" value="1"/>
-    <item key="View_ScalarVariable" value="magnetic_permeability"/>
-    <item key="View_ScalarVariableComp" value="0"/>
+    <item key="View_ScalarVariable" value="magnetic_flux_density_real"/>
+    <item key="View_ScalarVariableComp" value="1"/>
     <item key="View_PaletteType" value="0"/>
     <item key="View_PaletteFilter" value="0"/>
     <item key="View_PaletteSteps" value="30"/>
@@ -244,8 +240,8 @@
     <item key="View_ScalarRangeBase" value="10"/>
     <item key="View_ScalarDecimalPlace" value="2"/>
     <item key="View_ScalarRangeAuto" value="1"/>
-    <item key="View_ScalarRangeMin" value="1"/>
-    <item key="View_ScalarRangeMax" value="996.312316894531"/>
+    <item key="View_ScalarRangeMin" value="7.58568532432946e-08"/>
+    <item key="View_ScalarRangeMax" value="1.59096884727478"/>
     <item key="View_ShowVectorView" value="0"/>
     <item key="View_VectorVariable" value="magnetic_flux_density_real"/>
     <item key="View_VectorProportional" value="1"/>

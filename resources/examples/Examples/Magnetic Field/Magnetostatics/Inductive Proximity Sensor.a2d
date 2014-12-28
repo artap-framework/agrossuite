@@ -72,7 +72,7 @@
   </geometry>
   <problem coordinate_type="axisymmetric" mesh_type="triangle">
     <fields>
-      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="magnetic" linearity_type="picard" matrix_solver="umfpack">
+      <field adaptivity_type="p-adaptivity" analysis_type="steadystate" field_id="magnetic" linearity_type="picard" matrix_solver="umfpack">
         <refinement_edges/>
         <refinement_labels/>
         <polynomial_orders/>
@@ -186,22 +186,18 @@
           <field_item field_key="PicardAndersonBeta" field_value="0.2"/>
           <field_item field_key="PicardAndersonNumberOfLastVectors" field_value="3"/>
           <field_item field_key="SpaceNumberOfRefinements" field_value="0"/>
-          <field_item field_key="SpacePolynomialOrder" field_value="2"/>
-          <field_item field_key="AdaptivitySteps" field_value="1"/>
+          <field_item field_key="SpacePolynomialOrder" field_value="1"/>
+          <field_item field_key="AdaptivitySteps" field_value="5"/>
           <field_item field_key="AdaptivityTolerance" field_value="1"/>
+          <field_item field_key="AdaptivityEstimator" field_value="0"/>
+          <field_item field_key="AdaptivityFinePercentage" field_value="30"/>
+          <field_item field_key="AdaptivityCoarsePercentage" field_value="3"/>
           <field_item field_key="AdaptivityTransientBackSteps" field_value="96"/>
           <field_item field_key="AdaptivityTransientRedoneEach" field_value="1"/>
-          <field_item field_key="AdaptivityStoppingCriterion" field_value="1"/>
-          <field_item field_key="AdaptivityThreshold" field_value="0.6"/>
-          <field_item field_key="AdaptivityErrorCalculator" field_value="h1"/>
-          <field_item field_key="AdaptivityUseAniso" field_value="1"/>
-          <field_item field_key="AdaptivityFinerReference" field_value="0"/>
-          <field_item field_key="AdaptivityOrderIncrease" field_value="1"/>
-          <field_item field_key="AdaptivitySpaceRefinement" field_value="1"/>
           <field_item field_key="TransientTimeSkip" field_value="0"/>
           <field_item field_key="TransientInitialCondition" field_value="0"/>
           <field_item field_key="LinearSolverIterMethod" field_value="2"/>
-          <field_item field_key="LinearSolverIterPreconditioner" field_value="2"/>
+          <field_item field_key="LinearSolverIterPreconditioner" field_value="0"/>
           <field_item field_key="LinearSolverIterToleranceAbsolute" field_value="1e-16"/>
           <field_item field_key="LinearSolverIterIters" field_value="1000"/>
           <field_item field_key="TimeUnit" field_value="s"/>
@@ -251,7 +247,7 @@
     <item key="View_ScalarDecimalPlace" value="4"/>
     <item key="View_ScalarRangeAuto" value="1"/>
     <item key="View_ScalarRangeMin" value="0"/>
-    <item key="View_ScalarRangeMax" value="0.780762612819672"/>
+    <item key="View_ScalarRangeMax" value="0.700436294078827"/>
     <item key="View_ShowVectorView" value="0"/>
     <item key="View_VectorVariable" value="magnetic_flux_density_real"/>
     <item key="View_VectorProportional" value="1"/>

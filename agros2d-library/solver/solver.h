@@ -70,6 +70,7 @@ public:
     virtual void solve();
 
     void estimateSmoothness(dealii::Vector<float> &smoothness_indicators) const;
+    double computeNorm();
 
 protected:
     const FieldInfo *m_fieldInfo;
@@ -197,62 +198,21 @@ struct TimeStepInfo
 };
 
 // solve
-class ProblemSolverDeal
+class ProblemSolver
 {
 public:
-    ProblemSolverDeal();
+    ProblemSolver();
 
     void init();
 
     void solve(int timeStep);
+    void solveSimple(FieldInfo *fieldInfo, int timeStep = 0);
     void solveAdaptive(FieldInfo *fieldInfo, int timeStep = 0);
     void solveLinear(FieldInfo *fieldInfo, int timeStep = 0, int adaptiveStep = 0);
     void solveNonlinear(FieldInfo *fieldInfo, int timeStep = 0, int adaptiveStep = 0);
 
 private:
     QMap<FieldInfo *, SolverDeal *> m_solverDeal;
-};
-
-// solve
-template <typename Scalar>
-class ProblemSolver
-{
-public:
-    ProblemSolver() {}
-    ~ProblemSolver();
-
-    // void init(Block* block);
-
-    void createInitialSpace();
-    void solveInitialTimeStep();
-
-    // returns the value of the next time step lenght (for transient problems), using BDF2 approximation
-    TimeStepInfo estimateTimeStepLength(int timeStep, int adaptivityStep);
-
-    void solveSimple(int timeStep, int adaptivityStep);
-    void solveReferenceAndProject(int timeStep, int adaptivityStep);
-    bool createAdaptedSpace(int timeStep, int adaptivityStep);
-
-    // to be used in solveAdaptivityStep
-    void resumeAdaptivityProcess(int adaptivityStep);
-
-private:   
-    // std::vector<SpaceSharedPtr<Scalar> > m_actualSpaces;
-
-    QString m_solverID;
-    QString m_solverName;
-    QString m_solverCode;
-
-    // elapsed time
-    double m_elapsedTime;
-
-    // to be used in advanced time step adaptivity
-    double m_averageErrorToLenghtRatio;
-
-    // Scalar *solveOneProblem(std::vector<SpaceSharedPtr<Scalar> > spaces, int adaptivityStep, std::vector<MeshFunctionSharedPtr<Scalar> > previousSolution = std::vector<MeshFunctionSharedPtr<Scalar> >());
-
-    // std::vector<SpaceSharedPtr<Scalar> > actualSpaces() { return m_actualSpaces;}
-    // std::vector<SpaceSharedPtr<Scalar> > deepMeshAndSpaceCopy(std::vector<SpaceSharedPtr<Scalar> > spaces, bool createReference);
 };
 
 #endif // SOLVER_H
