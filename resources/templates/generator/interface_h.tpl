@@ -44,7 +44,7 @@ virtual ~{{CLASS}}Interface();
 inline virtual QString fieldId() { return "{{ID}}"; }
 
 // solver deal
-virtual SolverDeal *solverDeal(const FieldInfo *fieldInfo, int initialOrder);
+virtual SolverDeal *solverDeal(const FieldInfo *fieldInfo);
 
 // postprocessor
 // filter

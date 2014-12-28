@@ -85,15 +85,11 @@ public:
         SpacePolynomialOrder,
         AdaptivitySteps,
         AdaptivityTolerance,
+        AdaptivityEstimator,
+        AdaptivityFinePercentage,
+        AdaptivityCoarsePercentage,
         AdaptivityTransientBackSteps,
         AdaptivityTransientRedoneEach,
-        AdaptivityStoppingCriterion,
-        AdaptivityThreshold,
-        AdaptivityErrorCalculator,
-        AdaptivityUseAniso,
-        AdaptivityFinerReference,
-        AdaptivityOrderIncrease,
-        AdaptivitySpaceRefinement,
         TransientTimeSkip,
         TransientInitialCondition,
         LinearSolverIterMethod,
@@ -203,9 +199,6 @@ public:
 
     // force
     Module::Force force() const;
-
-    // error calculators
-    QList<Module::ErrorCalculator> errorCalculators() const;
 
     // material and boundary user interface
     Module::DialogUI materialUI() const;

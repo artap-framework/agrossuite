@@ -49,6 +49,8 @@
 
 #include <deal.II/numerics/fe_field_function.h>
 #include <deal.II/grid/grid_tools.h>
+#include <deal.II/hp/dof_handler.h>
+
 
 SceneViewPost2D::SceneViewPost2D(PostDeal *postDeal, QWidget *parent)
     : SceneViewCommon2D(postDeal, parent),
@@ -545,7 +547,7 @@ void SceneViewPost2D::paintVectors()
         double gs = (rect.width() + rect.height()) / Agros2D::problem()->setting()->value(ProblemSetting::View_VectorCount).toInt();
 
         MultiArray ma = m_postDeal->activeMultiSolutionArray();
-        dealii::Functions::FEFieldFunction<2> localvalues(*ma.doFHandler(), *ma.solution());
+        dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > localvalues(*ma.doFHandler(), *ma.solution());
 
         // min max
         double rangeMin =  numeric_limits<double>::max();

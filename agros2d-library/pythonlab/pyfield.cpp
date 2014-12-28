@@ -161,28 +161,12 @@ void PyField::setLinearSolverPreconditioner(const std::string &linearSolverPreco
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(iterLinearSolverPreconditionerTypeStringKeys())).toStdString());
 }
 
-void PyField::setAdaptivityStoppingCriterion(const std::string &adaptivityStoppingCriterion)
+void PyField::setAdaptivityEstimator(const std::string &adaptivityEstimator)
 {
-    if (adaptivityStoppingCriterionTypeStringKeys().contains(QString::fromStdString(adaptivityStoppingCriterion)))
-        m_fieldInfo->setValue(FieldInfo::AdaptivityStoppingCriterion, (AdaptivityStoppingCriterionType) adaptivityStoppingCriterionFromStringKey(QString::fromStdString(adaptivityStoppingCriterion)));
+    if (adaptivityEstimatorStringKeys().contains(QString::fromStdString(adaptivityEstimator)))
+        m_fieldInfo->setValue(FieldInfo::AdaptivityEstimator, (AdaptivityEstimator) adaptivityEstimatorFromStringKey(QString::fromStdString(adaptivityEstimator)));
     else
-        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(adaptivityStoppingCriterionTypeStringKeys())).toStdString());
-}
-
-void PyField::setAdaptivityErrorCalculator(const std::string &calculator)
-{
-    QStringList calculators;
-    foreach (Module::ErrorCalculator calc, m_fieldInfo->errorCalculators())
-    {
-        if (calc.id() == QString::fromStdString(calculator))
-        {
-            m_fieldInfo->setValue(FieldInfo::AdaptivityErrorCalculator, calc.id());
-            return;
-        }
-        calculators.append(calc.id());
-    }
-
-    throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(calculators)).toStdString());
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(adaptivityEstimatorStringKeys())).toStdString());
 }
 
 void PyField::setInitialCondition(double initialCondition)

@@ -352,33 +352,17 @@ QString createPythonFromModel()
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::AdaptivityTolerance).toDouble());
 
-            str += QString("%1.adaptivity_parameters['threshold'] = %2\n").
+            str += QString("%1.adaptivity_parameters['fine_percentage'] = %2\n").
                     arg(fieldInfo->fieldId()).
-                    arg(fieldInfo->value(FieldInfo::AdaptivityThreshold).toDouble());
+                    arg(fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt());
 
-            str += QString("%1.adaptivity_parameters['stopping_criterion'] = \"%2\"\n").
+            str += QString("%1.adaptivity_parameters['coarse_percentage'] = %2\n").
                     arg(fieldInfo->fieldId()).
-                    arg(adaptivityStoppingCriterionTypeToStringKey((AdaptivityStoppingCriterionType) fieldInfo->value(FieldInfo::AdaptivityStoppingCriterion).toInt()));
+                    arg(fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt());
 
-            str += QString("%1.adaptivity_parameters['error_calculator'] = \"%2\"\n").
+            str += QString("%1.adaptivity_parameters['estimator'] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
-                    arg(fieldInfo->value(FieldInfo::AdaptivityErrorCalculator).toString());
-
-            str += QString("%1.adaptivity_parameters['anisotropic_refinement'] = %2\n").
-                    arg(fieldInfo->fieldId()).
-                    arg((fieldInfo->value(FieldInfo::AdaptivityUseAniso).toBool()) ? "True" : "False");
-
-            str += QString("%1.adaptivity_parameters['finer_reference_solution'] = %2\n").
-                    arg(fieldInfo->fieldId()).
-                    arg((fieldInfo->value(FieldInfo::AdaptivityFinerReference).toBool()) ? "True" : "False");
-
-            str += QString("%1.adaptivity_parameters['space_refinement'] = %2\n").
-                    arg(fieldInfo->fieldId()).
-                    arg((fieldInfo->value(FieldInfo::AdaptivitySpaceRefinement).toBool()) ? "True" : "False");
-
-            str += QString("%1.adaptivity_parameters['order_increase'] = %2\n").
-                    arg(fieldInfo->fieldId()).
-                    arg(fieldInfo->value(FieldInfo::AdaptivityOrderIncrease).toInt());
+                    arg(adaptivityEstimatorToStringKey((AdaptivityEstimator) fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt()));
 
             if (Agros2D::problem()->isTransient())
             {

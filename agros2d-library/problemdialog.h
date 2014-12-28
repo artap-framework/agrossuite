@@ -110,13 +110,9 @@ private:
     QSpinBox *txtAdaptivitySteps;
     QCheckBox *chkAdaptivityTolerance;
     LineEditDouble *txtAdaptivityTolerance;
-    LineEditDouble *txtAdaptivityThreshold;
-    QComboBox *cmbAdaptivityErrorCalculator;
-    QComboBox *cmbAdaptivityStoppingCriterionType;
-    QCheckBox *chkAdaptivityUseAniso;
-    QCheckBox *chkAdaptivityFinerReference;
-    QSpinBox *txtAdaptivityOrderIncrease;
-    QCheckBox *chkAdaptivitySpaceRefinement;
+    QSpinBox *txtAdaptivityFineFraction;
+    QSpinBox *txtAdaptivityCoarseFraction;
+    QComboBox *cmbAdaptivityEstimator;
     QSpinBox *txtAdaptivityBackSteps;
     QSpinBox *txtAdaptivityRedoneEach;
 

@@ -355,20 +355,19 @@ QWidget *FieldWidget::createAdaptivityWidget()
     connect(chkAdaptivityTolerance, SIGNAL(stateChanged(int)), this, SLOT(doAdaptivityTolerance(int)));
     txtAdaptivityTolerance = new LineEditDouble(1.0);
     txtAdaptivityTolerance->setBottom(0.0);
-    cmbAdaptivityStoppingCriterionType = new QComboBox();
-    foreach (QString type, adaptivityStoppingCriterionTypeStringKeys())
-        if (adaptivityStoppingCriterionFromStringKey(type) != AdaptivityStoppingCriterionType_Undefined)
-            cmbAdaptivityStoppingCriterionType->addItem(adaptivityStoppingCriterionTypeString(adaptivityStoppingCriterionFromStringKey(type)),
-                                                        adaptivityStoppingCriterionFromStringKey(type));
-    txtAdaptivityThreshold = new LineEditDouble(0.60);
-    txtAdaptivityThreshold->setValue(m_fieldInfo->defaultValue(FieldInfo::AdaptivityThreshold).toDouble());
-    cmbAdaptivityErrorCalculator = new QComboBox();
-    chkAdaptivityUseAniso = new QCheckBox(tr("Use anisotropic refinements"));
-    chkAdaptivityFinerReference = new QCheckBox(tr("Use hp reference solution for h and p adaptivity"));
-    txtAdaptivityOrderIncrease = new QSpinBox(this);
-    txtAdaptivityOrderIncrease->setMinimum(1);
-    txtAdaptivityOrderIncrease->setMaximum(10);
-    chkAdaptivitySpaceRefinement = new QCheckBox(tr("Use space refinement for error estimation"));
+    cmbAdaptivityEstimator = new QComboBox();
+    foreach (QString type, adaptivityEstimatorStringKeys())
+        if (adaptivityEstimatorFromStringKey(type) != AdaptivityEstimator_Undefined)
+            cmbAdaptivityEstimator->addItem(adaptivityEstimatorString(adaptivityEstimatorFromStringKey(type)),
+                                                        adaptivityEstimatorFromStringKey(type));
+    txtAdaptivityFineFraction = new QSpinBox(this);
+    txtAdaptivityFineFraction->setMinimum(1);
+    txtAdaptivityFineFraction->setMaximum(100);
+    txtAdaptivityFineFraction->setValue(m_fieldInfo->defaultValue(FieldInfo::AdaptivityFinePercentage).toInt());
+    txtAdaptivityCoarseFraction = new QSpinBox(this);
+    txtAdaptivityCoarseFraction->setMinimum(1);
+    txtAdaptivityCoarseFraction->setMaximum(100);
+    txtAdaptivityCoarseFraction->setValue(m_fieldInfo->defaultValue(FieldInfo::AdaptivityCoarsePercentage).toInt());
     txtAdaptivityBackSteps = new QSpinBox(this);
     txtAdaptivityBackSteps->setMinimum(0);
     txtAdaptivityBackSteps->setMaximum(100);
@@ -384,28 +383,16 @@ QWidget *FieldWidget::createAdaptivityWidget()
     layoutAdaptivityControl->addWidget(new QLabel(tr("Tolerance (%):")), 1, 0);
     layoutAdaptivityControl->addWidget(chkAdaptivityTolerance, 1, 1, 1, 1, Qt::AlignRight);
     layoutAdaptivityControl->addWidget(txtAdaptivityTolerance, 1, 2);
-    layoutAdaptivityControl->addWidget(new QLabel(tr("Stopping criterion:")), 0, 3);
-    layoutAdaptivityControl->addWidget(cmbAdaptivityStoppingCriterionType, 0, 4);
-    layoutAdaptivityControl->addWidget(new QLabel(tr("Threshold:")), 1, 3);
-    layoutAdaptivityControl->addWidget(txtAdaptivityThreshold, 1, 4);
+    layoutAdaptivityControl->addWidget(new QLabel(tr("Error estimator:")), 0, 3);
+    layoutAdaptivityControl->addWidget(cmbAdaptivityEstimator, 0, 4);
+    layoutAdaptivityControl->addWidget(new QLabel(tr("Percentage of cells to be refined:")), 1, 3);
+    layoutAdaptivityControl->addWidget(txtAdaptivityFineFraction, 1, 4);
+    layoutAdaptivityControl->addWidget(new QLabel(tr("Percentage of cells to be coarsened:")), 2, 3);
+    layoutAdaptivityControl->addWidget(txtAdaptivityCoarseFraction, 2, 4);
     layoutAdaptivityControl->setRowStretch(50, 1);
 
     QGroupBox *grpControl = new QGroupBox(tr("Control"), this);
     grpControl->setLayout(layoutAdaptivityControl);
-
-    // reference solution
-    QGridLayout *layoutAdaptivityReferenceSolution = new QGridLayout();
-    layoutAdaptivityReferenceSolution->addWidget(new QLabel(tr("Order increase:")), 0, 0);
-    layoutAdaptivityReferenceSolution->addWidget(txtAdaptivityOrderIncrease, 0, 1);
-    layoutAdaptivityReferenceSolution->addWidget(new QLabel(tr("Error calculator:")), 1, 0);
-    layoutAdaptivityReferenceSolution->addWidget(cmbAdaptivityErrorCalculator, 1, 1);
-    layoutAdaptivityReferenceSolution->addWidget(chkAdaptivitySpaceRefinement, 0, 2);
-    layoutAdaptivityReferenceSolution->addWidget(chkAdaptivityUseAniso, 1, 2);
-    layoutAdaptivityReferenceSolution->addWidget(chkAdaptivityFinerReference, 2, 2);
-    layoutAdaptivityReferenceSolution->setRowStretch(50, 1);
-
-    QGroupBox *grpReferenceSolution = new QGroupBox(tr("Reference solution"), this);
-    grpReferenceSolution->setLayout(layoutAdaptivityReferenceSolution);
 
     // transient
     QGridLayout *layoutAdaptivityTransient = new QGridLayout();
@@ -420,7 +407,6 @@ QWidget *FieldWidget::createAdaptivityWidget()
 
     QVBoxLayout *layoutAdaptivity = new QVBoxLayout();
     layoutAdaptivity->addWidget(grpControl);
-    layoutAdaptivity->addWidget(grpReferenceSolution);
     layoutAdaptivity->addWidget(grpTransient);
     layoutAdaptivity->addStretch(1);
 
@@ -515,10 +501,6 @@ void FieldWidget::fillComboBox()
     foreach (QString solver, matrixSolverTypeStringKeys())
         cmbLinearSolver->addItem(matrixSolverTypeString(matrixSolverTypeFromStringKey(solver)), matrixSolverTypeFromStringKey(solver));
 
-    cmbAdaptivityErrorCalculator->clear();
-    foreach(Module::ErrorCalculator calc, m_fieldInfo->errorCalculators())
-        cmbAdaptivityErrorCalculator->addItem(calc.name(), calc.id());
-
     cmbIterLinearSolverMethod->clear();
     foreach (QString method, iterLinearSolverMethodStringKeys())
         cmbIterLinearSolverMethod->addItem(iterLinearSolverMethodString(iterLinearSolverMethodFromStringKey(method)), iterLinearSolverMethodFromStringKey(method));
@@ -539,13 +521,9 @@ void FieldWidget::load()
     txtAdaptivitySteps->setValue(m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt());
     chkAdaptivityTolerance->setChecked(m_fieldInfo->value(FieldInfo::AdaptivityTolerance).toDouble() > 0);
     txtAdaptivityTolerance->setValue(m_fieldInfo->value(FieldInfo::AdaptivityTolerance).toDouble());
-    txtAdaptivityThreshold->setValue(m_fieldInfo->value(FieldInfo::AdaptivityThreshold).toDouble());
-    cmbAdaptivityStoppingCriterionType->setCurrentIndex(cmbAdaptivityStoppingCriterionType->findData((AdaptivityStoppingCriterionType) m_fieldInfo->value(FieldInfo::AdaptivityStoppingCriterion).toInt()));
-    cmbAdaptivityErrorCalculator->setCurrentIndex(cmbAdaptivityErrorCalculator->findData(m_fieldInfo->value(FieldInfo::AdaptivityErrorCalculator).toString()));
-    chkAdaptivityUseAniso->setChecked(m_fieldInfo->value(FieldInfo::AdaptivityUseAniso).toBool());
-    chkAdaptivityFinerReference->setChecked(m_fieldInfo->value(FieldInfo::AdaptivityFinerReference).toBool());
-    txtAdaptivityOrderIncrease->setValue(m_fieldInfo->value(FieldInfo::AdaptivityOrderIncrease).toInt());
-    chkAdaptivitySpaceRefinement->setChecked(m_fieldInfo->value(FieldInfo::AdaptivitySpaceRefinement).toBool());
+    txtAdaptivityFineFraction->setValue(m_fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt());
+    txtAdaptivityCoarseFraction->setValue(m_fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt());
+    cmbAdaptivityEstimator->setCurrentIndex(cmbAdaptivityEstimator->findData((AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt()));    
     txtAdaptivityBackSteps->setValue(m_fieldInfo->value(FieldInfo::AdaptivityTransientBackSteps).toInt());
     txtAdaptivityRedoneEach->setValue(m_fieldInfo->value(FieldInfo::AdaptivityTransientRedoneEach).toInt());
     // matrix solver
@@ -589,13 +567,9 @@ bool FieldWidget::save()
     m_fieldInfo->setAdaptivityType((AdaptivityMethod) cmbAdaptivityType->itemData(cmbAdaptivityType->currentIndex()).toInt());
     m_fieldInfo->setValue(FieldInfo::AdaptivitySteps, txtAdaptivitySteps->value());
     m_fieldInfo->setValue(FieldInfo::AdaptivityTolerance, chkAdaptivityTolerance->isChecked() ? txtAdaptivityTolerance->value() : 0.0);
-    m_fieldInfo->setValue(FieldInfo::AdaptivityThreshold, txtAdaptivityThreshold->value());
-    m_fieldInfo->setValue(FieldInfo::AdaptivityStoppingCriterion, (AdaptivityStoppingCriterionType) cmbAdaptivityStoppingCriterionType->itemData(cmbAdaptivityStoppingCriterionType->currentIndex()).toInt());
-    m_fieldInfo->setValue(FieldInfo::AdaptivityErrorCalculator, cmbAdaptivityErrorCalculator->itemData(cmbAdaptivityErrorCalculator->currentIndex()).toString());
-    m_fieldInfo->setValue(FieldInfo::AdaptivityUseAniso, chkAdaptivityUseAniso->isChecked());
-    m_fieldInfo->setValue(FieldInfo::AdaptivityFinerReference, chkAdaptivityFinerReference->isChecked());
-    m_fieldInfo->setValue(FieldInfo::AdaptivityOrderIncrease, txtAdaptivityOrderIncrease->value());
-    m_fieldInfo->setValue(FieldInfo::AdaptivitySpaceRefinement, chkAdaptivitySpaceRefinement->isChecked());
+    m_fieldInfo->setValue(FieldInfo::AdaptivityFinePercentage, txtAdaptivityFineFraction->value());
+    m_fieldInfo->setValue(FieldInfo::AdaptivityCoarsePercentage, txtAdaptivityCoarseFraction->value());
+    m_fieldInfo->setValue(FieldInfo::AdaptivityEstimator, (AdaptivityEstimator) cmbAdaptivityEstimator->itemData(cmbAdaptivityEstimator->currentIndex()).toInt());    
     m_fieldInfo->setValue(FieldInfo::AdaptivityTransientBackSteps, txtAdaptivityBackSteps->value());
     m_fieldInfo->setValue(FieldInfo::AdaptivityTransientRedoneEach, txtAdaptivityRedoneEach->value());
     // matrix solver
@@ -686,13 +660,8 @@ void FieldWidget::doAdaptivityChanged(int index)
     txtAdaptivitySteps->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
     chkAdaptivityTolerance->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
     txtAdaptivityTolerance->setEnabled(((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None) && chkAdaptivityTolerance->isChecked());
-    txtAdaptivityThreshold->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
-    cmbAdaptivityStoppingCriterionType->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
-    cmbAdaptivityErrorCalculator->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
-    chkAdaptivityUseAniso->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
-    chkAdaptivitySpaceRefinement->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
-    txtAdaptivityOrderIncrease->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
-    chkAdaptivityFinerReference->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
+    txtAdaptivityFineFraction->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
+    cmbAdaptivityEstimator->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);    
 
     AnalysisType analysisType = (AnalysisType) cmbAnalysisType->itemData(cmbAnalysisType->currentIndex()).toInt();
     txtAdaptivityBackSteps->setEnabled(Agros2D::problem()->isTransient() && analysisType != AnalysisType_Transient && (AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);

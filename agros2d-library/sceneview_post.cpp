@@ -26,6 +26,7 @@
 #include <deal.II/numerics/data_out.h>
 #include <deal.II/numerics/data_postprocessor.h>
 #include <deal.II/grid/filtered_iterator.h>
+#include <deal.II/hp/dof_handler.h>
 
 #include "sceneview_post.h"
 
@@ -56,7 +57,7 @@
 
 #include "pythonlab/pythonengine.h"
 
-PostDataOut::PostDataOut() : dealii::DataOut<2>()
+PostDataOut::PostDataOut() : dealii::DataOut<2, dealii::hp::DoFHandler<2> >()
 {
 }
 
@@ -173,7 +174,7 @@ typename dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
     if (m_subdomains.size() == 0)
         return this->dofs->begin_active();
 
-    typename DataOut<2>::active_cell_iterator
+    typename DataOut<2, dealii::hp::DoFHandler<2> >::active_cell_iterator
             cell = this->dofs->begin_active();
     while ((cell != this->dofs->end()) &&
            (cell->subdomain_id() != m_subdomains[0])) // TODO !!!
@@ -185,7 +186,7 @@ typename dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
 typename dealii::DataOut<2>::cell_iterator PostDataOut::next_cell (const typename DataOut<2>::cell_iterator &old_cell)
 {
     if (m_subdomains.size() == 0)
-        return dealii::DataOut<2>::next_cell(old_cell);
+        return dealii::DataOut<2, dealii::hp::DoFHandler<2> >::next_cell(old_cell);
 
     if (old_cell != this->dofs->end())
     {

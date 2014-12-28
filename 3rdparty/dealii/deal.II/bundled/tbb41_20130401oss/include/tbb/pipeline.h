@@ -342,7 +342,7 @@ template<> struct tbb_trivially_copyable <unsigned long> { enum { value = !tbb_l
 template<> struct tbb_trivially_copyable <float> { enum { value = !tbb_large_object<float>::value }; };
 template<> struct tbb_trivially_copyable <double> { enum { value = !tbb_large_object<double>::value }; };
 #else
-#if __GNUC__==4 && __GNUC_MINOR__>=4 && __GXX_EXPERIMENTAL_CXX0X__
+#if (__GNUC__==4 && __GNUC_MINOR__>=4 && __GXX_EXPERIMENTAL_CXX0X__) || __clang_major__ >= 3
 template<typename T> struct tbb_trivially_copyable { enum { value = std::has_trivial_copy_constructor<T>::value }; };
 #else
 template<typename T> struct tbb_trivially_copyable { enum { value = std::is_trivially_copyable<T>::value }; };

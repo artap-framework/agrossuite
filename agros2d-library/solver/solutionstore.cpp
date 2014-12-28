@@ -91,6 +91,8 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
 
     if (!m_multiSolutionDealCache.contains(solutionID))
     {
+        assert(0);
+
         // load from stream
         QString baseFN = baseStoreFileName(solutionID);
 
@@ -101,16 +103,17 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
         boost::archive::binary_iarchive sbiMesh(ifsMesh);
         triangulation->load(sbiMesh, 0);
 
-        dealii::DoFHandler<2> *doFHandler = new dealii::DoFHandler<2>(*triangulation);
+        dealii::hp::DoFHandler<2> *doFHandler = new dealii::hp::DoFHandler<2>(*triangulation);
+        // dealii::DoFHandler<2> *doFHandler2;
 
-        // fe system
+        // fe collection
         dealii::FESystem<2> *fe = new dealii::FESystem<2>(dealii::FE_Q<2>(solutionID.group->value(FieldInfo::SpacePolynomialOrder).toInt()), solutionID.group->numberOfSolutions());
-        doFHandler->distribute_dofs(*fe);
+        //! doFHandler->distribute_dofs(*fe);
 
         QString fnDoF = QString("%1.dof").arg(baseFN);
         std::ifstream ifsDoF(fnDoF.toStdString());
         boost::archive::binary_iarchive sbiDoF(ifsDoF);
-        doFHandler->load(sbiDoF, 0);
+        //!doFHandler->load(sbiDoF, 0);
 
         // solution vector
         dealii::Vector<double> *solution = new dealii::Vector<double>();
@@ -160,7 +163,7 @@ void SolutionStore::addSolution(FieldSolutionID solutionID, MultiArray multiSolu
     fileNames.setDoFFileName(QFileInfo(fnDoF).fileName());
     std::ofstream ofsDoF(fnDoF.toStdString());
     boost::archive::binary_oarchive sbDoF(ofsDoF);
-    multiSolution.doFHandler()->save(sbDoF, 0);
+    //! multiSolution.doFHandler()->save(sbDoF, 0);
 
     QString fnSol = QString("%1.sol").arg(baseFN);
     fileNames.setSolutionFileName(QFileInfo(fnSol).fileName());
@@ -406,42 +409,27 @@ double SolutionStore::timeLevel(const FieldInfo *fieldInfo, int timeLevelIndex)
 
 void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, MultiArray multiSolution)
 {
-    // save to stream
-    std::stringstream fsMesh(std::ios::out | std::ios::in | std::ios::binary);
-    boost::archive::binary_oarchive sboMesh(fsMesh);
-    multiSolution.doFHandler()->get_tria().save(sboMesh, 0);
+    // TODO: IMPLEMENT load and save in hp::DoFHandler
 
-    std::stringstream fsDoF(std::ios::out | std::ios::in | std::ios::binary);
-    boost::archive::binary_oarchive sboDoF(fsDoF);
-    multiSolution.doFHandler()->save(sboDoF, 0);
-
-    // std::stringstream fsSol(std::ios::out | std::ios::in | std::ios::binary);
-    // boost::archive::binary_oarchive sboSol(fsSol);
-    // multiSolution.solution()->save(sboSol, 0);
-
-    // load from stream
     // triangulation
-    //dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>(multiSolution.doFHandler()->get_tria());
-    dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>();
-    boost::archive::binary_iarchive sbiMesh(fsMesh);
-    triangulation->load(sbiMesh, 0);
+    // dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>();
+    // triangulation->copy_triangulation(multiSolution.doFHandler()->get_tria());
 
-    dealii::DoFHandler<2> *doFHandler = new dealii::DoFHandler<2>(*triangulation);
+    // fe collection
+    // dealii::hp::FECollection<2> *feCollection = new dealii::hp::FECollection<2>();
+    // for (unsigned int degree = solutionID.group->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+    //     feCollection->push_back(dealii::FESystem<2>(dealii::FE_Q<2>(degree), solutionID.group->numberOfSolutions()));
 
-    // fe system
-    dealii::FESystem<2> *fe = new dealii::FESystem<2>(dealii::FE_Q<2>(solutionID.group->value(FieldInfo::SpacePolynomialOrder).toInt()), solutionID.group->numberOfSolutions());
-    doFHandler->distribute_dofs(*fe);
-    boost::archive::binary_iarchive sbiDoF(fsDoF);
-    doFHandler->load(sbiDoF, 0);
+    // dof handler    
+    // dealii::hp::DoFHandler<2> *doFHandler = new dealii::hp::DoFHandler<2>(multiSolution.doFHandler()->get_tria());
+    // doFHandler->distribute_dofs(multiSolution.doFHandler()->get_fe());
 
     // solution vector
     dealii::Vector<double> *solution = new dealii::Vector<double>(*multiSolution.solution());
-    //dealii::Vector<double> *solution = new dealii::Vector<double>();
-    //boost::archive::binary_iarchive sbiSol(fsSol);
-    //solution->load(sbiSol, 0);
 
     // new multisolution
-    MultiArray multiSolutionCopy(doFHandler, solution);
+    // MultiArray multiSolutionCopy(doFHandler, solution);
+    MultiArray multiSolutionCopy(multiSolution.doFHandler(), solution);
 
     if (!m_multiSolutionDealCache.contains(solutionID))
     {

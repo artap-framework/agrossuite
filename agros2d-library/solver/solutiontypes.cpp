@@ -50,13 +50,13 @@ MultiArray::~MultiArray()
 
 void MultiArray::clear()
 {
-    if (m_doFHandler)
-        delete m_doFHandler;
+    // if (m_doFHandler)
+    //     delete m_doFHandler;
     if (m_solution)
         delete m_solution;
 }
 
-void MultiArray::append(dealii::DoFHandler<2> *doFHandler, dealii::Vector<double> *solution)
+void MultiArray::append(dealii::hp::DoFHandler<2> *doFHandler, dealii::Vector<double> *solution)
 {
     m_doFHandler = doFHandler;
     m_solution = solution;

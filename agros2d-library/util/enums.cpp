@@ -32,7 +32,7 @@ static QMap<SceneViewPost3DMode, QString> sceneViewPost3DModeList;
 static QMap<WeakFormKind, QString> weakFormList;
 static QMap<WeakFormVariant, QString> weakFormVariantList;
 static QMap<AdaptivityMethod, QString> adaptivityTypeList;
-static QMap<AdaptivityStoppingCriterionType, QString> adaptivityStoppingCriterionTypeList;
+static QMap<AdaptivityEstimator, QString> adaptivityEstimatorList;
 static QMap<NormType, QString> adaptivityNormTypeList;
 static QMap<TimeStepMethod, QString> timeStepMethodList;
 static QMap<SolutionMode, QString> solutionTypeList;
@@ -85,9 +85,9 @@ QStringList adaptivityTypeStringKeys() { return adaptivityTypeList.values(); }
 QString adaptivityTypeToStringKey(AdaptivityMethod adaptivityType) { return adaptivityTypeList[adaptivityType]; }
 AdaptivityMethod adaptivityTypeFromStringKey(const QString &adaptivityType) { return adaptivityTypeList.key(adaptivityType); }
 
-QStringList adaptivityStoppingCriterionTypeStringKeys() { return adaptivityStoppingCriterionTypeList.values(); }
-QString adaptivityStoppingCriterionTypeToStringKey(AdaptivityStoppingCriterionType adaptivityStoppingCriterionType) { return adaptivityStoppingCriterionTypeList[adaptivityStoppingCriterionType]; }
-AdaptivityStoppingCriterionType adaptivityStoppingCriterionFromStringKey(const QString &adaptivityStoppingCriterionType) { return adaptivityStoppingCriterionTypeList.key(adaptivityStoppingCriterionType); }
+QStringList adaptivityEstimatorStringKeys() { return adaptivityEstimatorList.values(); }
+QString adaptivityEstimatorToStringKey(AdaptivityEstimator adaptivityEstimator) { return adaptivityEstimatorList[adaptivityEstimator]; }
+AdaptivityEstimator adaptivityEstimatorFromStringKey(const QString &adaptivityEstimator) { return adaptivityEstimatorList.key(adaptivityEstimator); }
 
 QStringList adaptivityNormTypeStringKeys() { return adaptivityNormTypeList.values(); }
 QString adaptivityNormTypeToStringKey(NormType adaptivityNormType) { return adaptivityNormTypeList[adaptivityNormType]; }
@@ -222,10 +222,9 @@ void initLists()
     adaptivityTypeList.insert(AdaptivityMethod_P, "p-adaptivity");
     adaptivityTypeList.insert(AdaptivityMethod_HP, "hp-adaptivity");
 
-    // AdaptivityStoppingCriterionType
-    adaptivityStoppingCriterionTypeList.insert(AdaptivityStoppingCriterionType_Cumulative, "cumulative");
-    adaptivityStoppingCriterionTypeList.insert(AdaptivityStoppingCriterionType_SingleElement, "singleelement");
-    adaptivityStoppingCriterionTypeList.insert(AdaptivityStoppingCriterionType_Levels, "levels");
+    // AdaptivityEstimator
+    adaptivityEstimatorList.insert(AdaptivityEstimator_Kelly, "kelly");
+    adaptivityEstimatorList.insert(AdaptivityEstimator_Gradient, "gradient");
 
     // ADAPTIVITYNORMTYPE
     adaptivityNormTypeList.insert(NormType_H1_NORM, "h1_norm");
@@ -459,18 +458,16 @@ QString adaptivityTypeString(AdaptivityMethod adaptivityType)
     }
 }
 
-QString adaptivityStoppingCriterionTypeString(AdaptivityStoppingCriterionType adaptivityStoppingCriterionType)
+QString adaptivityEstimatorString(AdaptivityEstimator adaptivityEstimator)
 {
-    switch (adaptivityStoppingCriterionType)
+    switch (adaptivityEstimator)
     {
-    case AdaptivityStoppingCriterionType_Cumulative:
-        return QObject::tr("Cumulative");
-    case AdaptivityStoppingCriterionType_SingleElement:
-        return QObject::tr("Single element");
-    case AdaptivityStoppingCriterionType_Levels:
-        return QObject::tr("Levels");
+    case AdaptivityEstimator_Kelly:
+        return QObject::tr("Kelly");
+    case AdaptivityEstimator_Gradient:
+        return QObject::tr("Gradient");
     default:
-        std::cerr << "Adaptivity stopping criterion type '" + QString::number(adaptivityStoppingCriterionType).toStdString() + "' is not implemented. adaptivityStoppingCriterionTypeString(AdaptivityStoppingCriterionType adaptivityStoppingCriterionType)" << endl;
+        std::cerr << "Adaptivity estimator '" + QString::number(adaptivityEstimator).toStdString() + "' is not implemented. adaptivityEstimatorString(AdaptivityEstimator adaptivityEstimator)" << endl;
         throw;
     }
 }

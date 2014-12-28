@@ -39,6 +39,7 @@
 // deal.ii
 #include <deal.II/grid/tria.h>
 #include <deal.II/dofs/dof_handler.h>
+#include <deal.II/hp/dof_handler.h>
 
 SceneViewMesh::SceneViewMesh(PostDeal *postDeal, QWidget *parent)
     : SceneViewCommon2D(postDeal, parent)
@@ -295,7 +296,7 @@ void SceneViewMesh::paintSolutionMesh()
         // qDebug() << m_postDeal->activeAdaptivityStep();
         for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
         {
-            typename dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
+            typename dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
                 // coordinates
@@ -344,7 +345,7 @@ void SceneViewMesh::paintOrder()
         // qDebug() << m_postDeal->activeAdaptivityStep();
         for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
         {
-            typename dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
+            typename dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
                 // coordinates
@@ -434,7 +435,7 @@ void SceneViewMesh::paintOrderColorBar()
     MultiArray ma = m_postDeal->activeMultiSolutionArray();
 
     int level = 0;
-    typename dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end();
+    typename dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end();
     for (; cell_int != endc_int; ++cell_int)
     {
         // polynomial degree

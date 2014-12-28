@@ -95,13 +95,9 @@ class PyField
         inline int getPolynomialOrder() const { return m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); }
         void setPolynomialOrder(int polynomialOrder);
 
-        // adaptivity stopping criterion
-        inline std::string getAdaptivityStoppingCriterion() const { return adaptivityStoppingCriterionTypeToStringKey((AdaptivityStoppingCriterionType) m_fieldInfo->value(FieldInfo::AdaptivityStoppingCriterion).toInt()).toStdString(); }
-        void setAdaptivityStoppingCriterion(const std::string &adaptivityStoppingCriterion);
-
-        // adaptivity norm
-        inline std::string getAdaptivityErrorCalculator() const { return m_fieldInfo->value(FieldInfo::AdaptivityErrorCalculator).toString().toStdString(); }
-        void setAdaptivityErrorCalculator(const std::string &calculator);
+        // adaptivity estimator
+        inline std::string getAdaptivityEstimator() const { return adaptivityEstimatorToStringKey((AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt()).toStdString(); }
+        void setAdaptivityEstimator(const std::string &adaptivityEstimator);
 
         // initial condition
         inline double getInitialCondition() const { return m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble(); }

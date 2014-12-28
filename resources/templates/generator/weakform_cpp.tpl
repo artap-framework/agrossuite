@@ -132,43 +132,47 @@ private:
 void SolverDeal{{CLASS}}::assembleSystem()
 {
     // assemble
-    dealii::QGauss<2> quadrature_formula(m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt() + 5);
-    dealii::QGauss<2-1> face_quadrature_formula(m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt() + 5);
+    dealii::hp::FEValues<2> hp_fe_values(*m_feCollection, m_quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
+    dealii::hp::FEFaceValues<2> hp_fe_face_values(*m_feCollection, m_face_quadrature_formulas, dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values);
 
-    dealii::FEValues<2> fe_values (*m_fe, quadrature_formula, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
-    dealii::FEFaceValues<2> fe_face_values (*m_fe, face_quadrature_formula, dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values);
+    dealii::FullMatrix<double> cell_matrix;
+    dealii::Vector<double> cell_rhs;
 
-    const unsigned int dofs_per_cell = m_fe->dofs_per_cell;
-    const unsigned int n_q_points = quadrature_formula.size();
-    const unsigned int n_face_q_points = face_quadrature_formula.size();
-
-    dealii::FullMatrix<double> cell_matrix (dofs_per_cell, dofs_per_cell);
-    dealii::Vector<double> cell_rhs (dofs_per_cell);
-
-    std::vector<dealii::types::global_dof_index> local_dof_indices (dofs_per_cell);
-
-    // value and grad cache
-    std::vector<dealii::Point<2> > shape_face_point(n_face_q_points);
-    std::vector<double> shape_face_JxW(n_face_q_points);
-    std::vector<dealii::Vector<double> > shape_value(dofs_per_cell, dealii::Vector<double>(n_q_points));
-    std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
-    std::vector<dealii::Vector<double> > shape_face_value(dofs_per_cell, dealii::Vector<double>(n_face_q_points));
-    // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_face_q_points));
+    std::vector<dealii::types::global_dof_index> local_dof_indices;
 
     // previous values and grads
-    std::vector<dealii::Vector<double> > solution_value_previous(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-    std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+    // std::vector<dealii::Vector<double> > solution_value_previous(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+    // std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
 
-    dealii::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
     for (; cell != endc; ++cell)
     {
-        fe_values.reinit(cell);
+        const unsigned int dofs_per_cell = cell->get_fe().dofs_per_cell;
+
+        cell_matrix.reinit (dofs_per_cell, dofs_per_cell);
+        cell_matrix = 0;
+        cell_rhs.reinit (dofs_per_cell);
+        cell_rhs = 0;
+
+        hp_fe_values.reinit(cell);
+
+        // qDebug() << dofs_per_cell;
+        const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
+        const unsigned int n_q_points = fe_values.n_quadrature_points;
+
+        // value and grad cache
+        std::vector<dealii::Point<2> > shape_face_point;
+        std::vector<double> shape_face_JxW;
+        std::vector<dealii::Vector<double> > shape_value(dofs_per_cell, dealii::Vector<double>(n_q_points));
+        std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
+        std::vector<dealii::Vector<double> > shape_face_value(dofs_per_cell);
+        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_face_q_points));
 
         // cache volume
         if (m_solution_previous)
         {
-            fe_values.get_function_values(*m_solution_previous, solution_value_previous);
-            fe_values.get_function_gradients(*m_solution_previous, solution_grad_previous);
+            // fe_values.get_function_values(*m_solution_previous, solution_value_previous);
+            // fe_values.get_function_gradients(*m_solution_previous, solution_grad_previous);
         }
 
         for (unsigned int i = 0; i < dofs_per_cell; ++i)
@@ -185,7 +189,13 @@ void SolverDeal{{CLASS}}::assembleSystem()
         {
             if (cell->face(face)->at_boundary())
             {
-                fe_face_values.reinit(cell, face);
+                hp_fe_face_values.reinit(cell, face);
+
+                const dealii::FEFaceValues<2> &fe_face_values = hp_fe_face_values.get_present_fe_values();
+                const unsigned int n_face_q_points = fe_face_values.n_quadrature_points;
+
+                shape_face_point.resize(n_face_q_points);
+                shape_face_JxW.resize(n_face_q_points);
 
                 for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
                 {
@@ -194,6 +204,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
                     for (unsigned int i = 0; i < dofs_per_cell; ++i)
                     {
+                        shape_face_value[i].reinit(n_face_q_points);
                         shape_face_value[i][q_point] = fe_face_values.shape_value(i, q_point);
                         // shape_face_grad[i][q_point] = fe_face_values.shape_grad(i, q_point);
                     }
@@ -229,11 +240,11 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
                     for (unsigned int i = 0; i < dofs_per_cell; ++i)
                     {
-                        const unsigned int component_i = m_fe->system_to_component_index(i).first;
+                        const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
 
                         for (unsigned int j = 0; j < dofs_per_cell; ++j)
                         {
-                            const unsigned int component_j = m_fe->system_to_component_index(j).first;
+                            const unsigned int component_j = cell->get_fe().system_to_component_index(j).first;
 
                             {{#FORM_EXPRESSION}}
                             // {{EXPRESSION_ID}}
@@ -265,7 +276,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
                     for (unsigned int i = 0; i < dofs_per_cell; ++i)
                     {
-                        const unsigned int component_i = m_fe->system_to_component_index(i).first;
+                        const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
 
                         {{#FORM_EXPRESSION}}
                         // {{EXPRESSION_ID}}
@@ -303,7 +314,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
                         std::vector<dealii::Vector<double> > shape_value = shape_face_value;
                         // std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad = shape_face_grad;
 
-                        for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
+                        const dealii::FEFaceValues<2> &fe_face_values = hp_fe_face_values.get_present_fe_values();
+                        for (unsigned int q_point = 0; q_point < fe_face_values.n_quadrature_points; ++q_point)
                         {
                             const dealii::Point<2> p = shape_face_point[q_point];
 
@@ -312,11 +324,11 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
                             for (unsigned int i = 0; i < dofs_per_cell; ++i)
                             {
-                                const unsigned int component_i = m_fe->system_to_component_index(i).first;
+                                const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
 
                                 for (unsigned int j = 0; j < dofs_per_cell; ++j)
                                 {
-                                    const unsigned int component_j = m_fe->system_to_component_index(j).first;
+                                    const unsigned int component_j = cell->get_fe().system_to_component_index(j).first;
 
                                     {{#FORM_EXPRESSION}}
                                     // {{EXPRESSION_ID}}
@@ -342,7 +354,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
                         std::vector<dealii::Vector<double> > shape_value = shape_face_value;
                         // std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad = shape_face_grad;
 
-                        for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
+                        const dealii::FEFaceValues<2> &fe_face_values = hp_fe_face_values.get_present_fe_values();
+                        for (unsigned int q_point = 0; q_point < fe_face_values.n_quadrature_points; ++q_point)
                         {
                             const dealii::Point<2> p = shape_face_point[q_point];
 
@@ -351,7 +364,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
                             for (unsigned int i = 0; i < dofs_per_cell; ++i)
                             {
-                                const unsigned int component_i = m_fe->system_to_component_index(i).first;
+                                const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
 
                                 {{#FORM_EXPRESSION}}
                                 // {{EXPRESSION_ID}}
@@ -368,6 +381,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
         }
 
         // distribute local to global matrix
+        local_dof_indices.resize(dofs_per_cell);
         cell->get_dof_indices(local_dof_indices);
 
         // distribute local to global system

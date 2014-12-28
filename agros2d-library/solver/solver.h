@@ -27,6 +27,10 @@
 #include <deal.II/grid/tria.h>
 #include <deal.II/dofs/dof_handler.h>
 
+#include <deal.II/hp/dof_handler.h>
+#include <deal.II/hp/fe_collection.h>
+#include <deal.II/hp/q_collection.h>
+
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_system.h>
 #include <deal.II/dofs/dof_tools.h>
@@ -47,26 +51,36 @@ class SceneBoundary;
 class SolverDeal
 {
 public:
-    SolverDeal(const FieldInfo *fieldInfo, int initialOrder = 2);
+    SolverDeal(const FieldInfo *fieldInfo);
     virtual ~SolverDeal();
 
     inline dealii::Vector<double> *solution() { return m_solution; }
-    inline dealii::DoFHandler<2> *doFHandler() { return m_doFHandler; }
     inline dealii::Triangulation<2> *triangulation() { return m_triangulation; }
+    inline dealii::hp::DoFHandler<2> *doFHandler() { return m_doFHandler; }
+    dealii::hp::FECollection<2> *feCollection() { return m_feCollection; }
+
+    inline dealii::hp::QCollection<2> quadrature_formulas() const { return m_quadrature_formulas; }
+    inline dealii::hp::QCollection<2-1> face_quadrature_formulas() const { return m_face_quadrature_formulas; }
 
     virtual void setup();
 
-    virtual void assembleSystem();
+    virtual void assembleSystem() = 0;
     virtual void assembleDirichlet() = 0;
 
     virtual void solve();
 
+    void estimateSmoothness(dealii::Vector<float> &smoothness_indicators) const;
+
 protected:
     const FieldInfo *m_fieldInfo;
 
-    dealii::Triangulation<2> *m_triangulation;
-    dealii::DoFHandler<2> *m_doFHandler;
-    dealii::FESystem<2> *m_fe;
+    dealii::Triangulation<2> *m_triangulation;    
+    dealii::hp::DoFHandler<2> *m_doFHandler;
+    dealii::hp::FECollection<2> *m_feCollection;
+
+    // quadrature cache
+    dealii::hp::QCollection<2> m_quadrature_formulas;
+    dealii::hp::QCollection<2-1> m_face_quadrature_formulas;
 
     // current solution
     dealii::Vector<double> *m_solution;
@@ -82,8 +96,7 @@ protected:
     dealii::Vector<double> system_rhs;
 
     void solveUMFPACK();
-
-    void solvedealii();
+    void solvedealii();    
 };
 
 namespace Module {

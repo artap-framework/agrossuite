@@ -98,9 +98,9 @@ static XMLModule::module *module_module = NULL;
 {
 }
 
-SolverDeal *{{CLASS}}Interface::solverDeal(const FieldInfo *fieldInfo, int initialOrder)
+SolverDeal *{{CLASS}}Interface::solverDeal(const FieldInfo *fieldInfo)
 {
-    return new SolverDeal{{CLASS}}(fieldInfo, initialOrder);
+    return new SolverDeal{{CLASS}}(fieldInfo);
 }
 
 /*

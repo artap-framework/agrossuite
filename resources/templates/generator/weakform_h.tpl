@@ -28,8 +28,8 @@
 class SolverDeal{{CLASS}} : public SolverDeal
 {
 public:
-    SolverDeal{{CLASS}}(const FieldInfo *fieldInfo, int initialOrder = 2)
-        : SolverDeal(fieldInfo, initialOrder) {}
+    SolverDeal{{CLASS}}(const FieldInfo *fieldInfo)
+        : SolverDeal(fieldInfo) {}
 
     // virtual void setup();
 

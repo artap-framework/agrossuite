@@ -49,12 +49,11 @@ enum AdaptivityMethod
     AdaptivityMethod_HP = 0
 };
 
-enum AdaptivityStoppingCriterionType
+enum AdaptivityEstimator
 {
-    AdaptivityStoppingCriterionType_Undefined = -1,
-    AdaptivityStoppingCriterionType_Cumulative = 0,
-    AdaptivityStoppingCriterionType_SingleElement = 1,
-    AdaptivityStoppingCriterionType_Levels = 2
+    AdaptivityEstimator_Undefined = -1,
+    AdaptivityEstimator_Kelly = 0,
+    AdaptivityEstimator_Gradient = 1
 };
 
 enum TimeStepMethod
@@ -370,11 +369,11 @@ AGROS_LIBRARY_API QStringList adaptivityTypeStringKeys();
 AGROS_LIBRARY_API QString adaptivityTypeToStringKey(AdaptivityMethod adaptivityType);
 AGROS_LIBRARY_API AdaptivityMethod adaptivityTypeFromStringKey(const QString &adaptivityType);
 
-// adaptivity stopping criterion type
-AGROS_LIBRARY_API QString adaptivityStoppingCriterionTypeString(AdaptivityStoppingCriterionType adaptivityStoppingCriterionType);
-AGROS_LIBRARY_API QStringList adaptivityStoppingCriterionTypeStringKeys();
-AGROS_LIBRARY_API QString adaptivityStoppingCriterionTypeToStringKey(AdaptivityStoppingCriterionType adaptivityStoppingCriterionType);
-AGROS_LIBRARY_API AdaptivityStoppingCriterionType adaptivityStoppingCriterionFromStringKey(const QString &adaptivityStoppingCriterionType);
+// adaptivity estimator
+AGROS_LIBRARY_API QString adaptivityEstimatorString(AdaptivityEstimator adaptivityEstimator);
+AGROS_LIBRARY_API QStringList adaptivityEstimatorStringKeys();
+AGROS_LIBRARY_API QString adaptivityEstimatorToStringKey(AdaptivityEstimator adaptivityEstimator);
+AGROS_LIBRARY_API AdaptivityEstimator adaptivityEstimatorFromStringKey(const QString &adaptivityEstimator);
 
 // adaptivity norm type
 AGROS_LIBRARY_API QString errorNormString(NormType projNormType);

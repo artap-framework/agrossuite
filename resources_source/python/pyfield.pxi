@@ -39,11 +39,8 @@ cdef extern from "../../agros2d-library/pythonlab/pyfield.h":
         string getAdaptivityType()
         void setAdaptivityType(string &adaptivityType) except +
 
-        string getAdaptivityStoppingCriterion()
-        void setAdaptivityStoppingCriterion(string &adaptivityStoppingCriterion) except +
-
-        string getAdaptivityErrorCalculator()
-        void setAdaptivityErrorCalculator(string &calculator) except +
+        string getAdaptivityEstimator()
+        void setAdaptivityEstimator(string &adaptivityEstimator) except +
 
         double getInitialCondition()
         void setInitialCondition(double initialCondition) except +
@@ -353,13 +350,9 @@ cdef class __Field__:
     def __get_adaptivity_parameters__(self):
         return {'tolerance' : self.thisptr.getDoubleParameter(b'AdaptivityTolerance'),
                 'steps' : self.thisptr.getIntParameter(b'AdaptivitySteps'),
-                'stopping_criterion' : self.thisptr.getAdaptivityStoppingCriterion().decode(),
-                'threshold' : self.thisptr.getDoubleParameter(b'AdaptivityThreshold'),
-                'error_calculator' : self.thisptr.getAdaptivityErrorCalculator().decode(),
-                'anisotropic_refinement' : self.thisptr.getBoolParameter(b'AdaptivityUseAniso'),
-                'order_increase' : self.thisptr.getIntParameter(b'AdaptivityOrderIncrease'),
-                'space_refinement' : self.thisptr.getBoolParameter(b'AdaptivitySpaceRefinement'),
-                'finer_reference_solution' : self.thisptr.getBoolParameter(b'AdaptivityFinerReference'),
+                'estimator' : self.thisptr.getAdaptivityEstimator().decode(),
+                'fine_percentage' : self.thisptr.getIntParameter(b'AdaptivityFinePercentage'),
+                'coarse_percentage' : self.thisptr.getIntParameter(b'AdaptivityCoarsePercentage'),
                 'transient_back_steps' : self.thisptr.getIntParameter(b'AdaptivityTransientBackSteps'),
                 'transient_redone_steps' : self.thisptr.getIntParameter(b'AdaptivityTransientRedoneEach')}
 
@@ -372,23 +365,17 @@ cdef class __Field__:
         value_in_range(parameters['steps'], 1, 100, 'steps')
         self.thisptr.setParameter(string(b'AdaptivitySteps'), <int>parameters['steps'])
 
-        # stoping criterion, norm
-        self.thisptr.setAdaptivityStoppingCriterion(parameters['stopping_criterion'].encode())
-        self.thisptr.setAdaptivityErrorCalculator(parameters['error_calculator'].encode())
+        # estimator
+        self.thisptr.setAdaptivityEstimator(parameters['estimator'].encode())
+       
+        # coarse percentage
+        value_in_range(parameters['coarse_percentage'], 0, 100, 'threshold')
+        self.thisptr.setParameter(string(b'AdaptivityCoarsePercentage'), <int>parameters['coarse_percentage'])
 
-        # threshold
-        value_in_range(parameters['threshold'], 0.01, 1.0, 'threshold')
-        self.thisptr.setParameter(string(b'AdaptivityThreshold'), <double>parameters['threshold'])
-
-        # aniso, finer reference
-        self.thisptr.setParameter(string(b'AdaptivityUseAniso'), <bool>parameters['anisotropic_refinement'])
-        self.thisptr.setParameter(string(b'AdaptivityFinerReference'), <bool>parameters['finer_reference_solution'])
-
-        # space refinement, order increase
-        self.thisptr.setParameter(string(b'AdaptivitySpaceRefinement'), <bool>parameters['space_refinement'])
-        value_in_range(parameters['order_increase'], 1, 10, 'order_increase')
-        self.thisptr.setParameter(string(b'AdaptivityOrderIncrease'), <int>parameters['order_increase'])
-
+        # fine percentage
+        value_in_range(parameters['fine_percentage'], 0, 100, 'threshold')
+        self.thisptr.setParameter(string(b'AdaptivityFinePercentage'), <int>parameters['fine_percentage'])
+        
         # back steps
         value_in_range(parameters['transient_back_steps'], 0, 100, 'transient_back_steps')
         self.thisptr.setParameter(string(b'AdaptivityTransientBackSteps'), <int>parameters['transient_back_steps'])

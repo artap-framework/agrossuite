@@ -54,7 +54,7 @@ struct PostTriangle
     double values[3];
 };
 
-class PostDataOut : public dealii::DataOut<2>
+class PostDataOut : public dealii::DataOut<2, dealii::hp::DoFHandler<2> >
 {
 public:
     PostDataOut();

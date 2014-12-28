@@ -26,6 +26,8 @@
 
 const double SPEEDOFLIGHT = 299792458;
 
+const int DEALII_MAX_ORDER = 10;
+
 // constants
 const QString IMAGEROOT = QString("..%1resources_source%1images").arg(QDir::separator());
 const QString XSDROOT = QString("%1resources%1xsd").arg(QDir::separator());

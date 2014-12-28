@@ -22,7 +22,7 @@
 
 #include "util.h"
 #include "util/global.h"
-
+#include "util/constants.h"
 
 #include "solver/problem.h"
 #include "solver/problem_config.h"
@@ -137,8 +137,6 @@ private:
 
 void {{CLASS}}SurfaceIntegral::calculate()
 {
-    int numberOfSolutions = m_fieldInfo->numberOfSolutions();
-
     m_values.clear();
 
     if (Agros2D::problem()->isSolved())
@@ -156,16 +154,15 @@ void {{CLASS}}SurfaceIntegral::calculate()
             Module::updateTimeFunctions(Agros2D::problem()->timeStepToTotalTime(m_timeStep));
         }
 
-        dealii::QGauss<2-1> face_quadrature_formula_int(5);
-        const unsigned int n_face_q_points = face_quadrature_formula_int.size();
+        // Gauss quadrature
+        dealii::hp::QCollection<2-1> face_quadrature_formulas;
+        for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+            face_quadrature_formulas.push_back(dealii::QGauss<2-1>(degree + 1));
 
-        dealii::FEFaceValues<2> fe_values(ma.doFHandler()->get_fe(), face_quadrature_formula_int, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values);
+        dealii::hp::FEFaceValues<2> hp_fe_face_values(ma.doFHandler()->get_fe(), face_quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values);
 
-        std::vector<dealii::Vector<double> > solution_values(n_face_q_points, dealii::Vector<double>(1));
-        std::vector<std::vector<dealii::Tensor<1,2> > > solution_grads(n_face_q_points, std::vector<dealii::Tensor<1,2> > (1));
-
-        double *x = new double[n_face_q_points];
-        double *y = new double[n_face_q_points];
+        std::vector<double> x;
+        std::vector<double> y;
 
         for (int iFace = 0; iFace < Agros2D::scene()->edges->count(); iFace++)
         {
@@ -174,7 +171,7 @@ void {{CLASS}}SurfaceIntegral::calculate()
                 continue;
 
             // Then start the loop over all cells, and select those cells which are close enough to the evaluation point:
-            dealii::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(), endc_int = ma.doFHandler()->end();
+            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(), endc_int = ma.doFHandler()->end();
             for (; cell_int != endc_int; ++cell_int)
             {
                 SceneLabel *label = Agros2D::scene()->labels->at(cell_int->material_id() - 1);
@@ -188,9 +185,19 @@ void {{CLASS}}SurfaceIntegral::calculate()
                 {
                     if (cell_int->face(face)->at_boundary() && cell_int->face(face)->boundary_indicator() - 1 == iFace)
                     {
-                        fe_values.reinit (cell_int, face);
+                        hp_fe_face_values.reinit(cell_int, face);
+
+                        const dealii::FEFaceValues<2> &fe_values = hp_fe_face_values.get_present_fe_values();
+                        const unsigned int n_face_q_points = fe_values.n_quadrature_points;
+
+                        std::vector<dealii::Vector<double> > solution_values(n_face_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+                        std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_face_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
                         fe_values.get_function_values(*ma.solution(), solution_values);
                         fe_values.get_function_gradients(*ma.solution(), solution_grads);
+
+                        x.resize(n_face_q_points);
+                        y.resize(n_face_q_points);
 
                         {{#VARIABLE_SOURCE}}
                         if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))

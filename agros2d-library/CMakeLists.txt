@@ -104,6 +104,7 @@ SET(SOURCES value.cpp
     solver/weak_form.cpp
     solver/module.cpp
     solver/solver.cpp
+    solver/estimators.cpp
     #solver/solver_linear.cpp
     #solver/solver_newton.cpp
     #solver/solver_picard.cpp
@@ -236,6 +237,7 @@ SET(SOURCES value.cpp
     materialbrowserdialog.h
     confdialog.h
     solver/solver.h
+    solver/estimators.h
     #solver/solver_linear.h
     #solver/solver_newton.h
     #solver/solver_picard.h

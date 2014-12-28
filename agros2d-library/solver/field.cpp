@@ -635,30 +635,6 @@ Module::Force FieldInfo::force() const
     }
 }
 
-// error calculators
-QList<Module::ErrorCalculator> FieldInfo::errorCalculators() const
-{
-    QList<Module::ErrorCalculator> calculators;
-    for (unsigned int i = 0; i < m_plugin->module()->error_calculator().calculator().size(); i++)
-    {
-        XMLModule::calculator calc = m_plugin->module()->error_calculator().calculator().at(i);
-
-        for (unsigned int i = 0; i < calc.expression().size(); i++)
-        {
-            XMLModule::expression expr = calc.expression().at(i);
-            if (expr.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
-            {
-                if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar)
-                    calculators.append(Module::ErrorCalculator(QString::fromStdString(calc.id()), QString::fromStdString(calc.name()), QString::fromStdString(expr.planar().get()).trimmed()));
-                else
-                    calculators.append(Module::ErrorCalculator(QString::fromStdString(calc.id()), QString::fromStdString(calc.name()), QString::fromStdString(expr.axi().get()).trimmed()));
-            }
-        }
-    }
-
-    return calculators;
-}
-
 // material and boundary user interface
 Module::DialogUI FieldInfo::materialUI() const
 {
@@ -924,13 +900,9 @@ void FieldInfo::setStringKeys()
     m_settingKey[AdaptivityTolerance] = "AdaptivityTolerance";
     m_settingKey[AdaptivityTransientBackSteps] = "AdaptivityTransientBackSteps";
     m_settingKey[AdaptivityTransientRedoneEach] = "AdaptivityTransientRedoneEach";
-    m_settingKey[AdaptivityThreshold] = "AdaptivityThreshold";
-    m_settingKey[AdaptivityStoppingCriterion] = "AdaptivityStoppingCriterion";
-    m_settingKey[AdaptivityErrorCalculator] = "AdaptivityErrorCalculator";
-    m_settingKey[AdaptivityUseAniso] = "AdaptivityUseAniso";
-    m_settingKey[AdaptivityFinerReference] = "AdaptivityFinerReference";
-    m_settingKey[AdaptivityOrderIncrease] = "AdaptivityOrderIncrease";
-    m_settingKey[AdaptivitySpaceRefinement] = "AdaptivitySpaceRefinement";
+    m_settingKey[AdaptivityFinePercentage] = "AdaptivityFinePercentage";
+    m_settingKey[AdaptivityCoarsePercentage] = "AdaptivityCoarsePercentage";
+    m_settingKey[AdaptivityEstimator] = "AdaptivityEstimator";    
     m_settingKey[TransientTimeSkip] = "TransientTimeSkip";
     m_settingKey[TransientInitialCondition] = "TransientInitialCondition";
     m_settingKey[LinearSolverIterMethod] = "LinearSolverIterMethod";
@@ -961,15 +933,11 @@ void FieldInfo::setDefaultValues()
     m_settingDefault[SpacePolynomialOrder] = 2;
     m_settingDefault[AdaptivitySteps] = 10;
     m_settingDefault[AdaptivityTolerance] = 1.0;
+    m_settingDefault[AdaptivityEstimator] = AdaptivityEstimator_Kelly;
+    m_settingDefault[AdaptivityFinePercentage] = 30;
+    m_settingDefault[AdaptivityCoarsePercentage] = 3;
     m_settingDefault[AdaptivityTransientBackSteps] = 3;
     m_settingDefault[AdaptivityTransientRedoneEach] = 5;
-    m_settingDefault[AdaptivityStoppingCriterion] = AdaptivityStoppingCriterionType_SingleElement;
-    m_settingDefault[AdaptivityThreshold] = 0.6;
-    m_settingDefault[AdaptivityErrorCalculator] = "h1";
-    m_settingDefault[AdaptivityUseAniso] = true;
-    m_settingDefault[AdaptivityFinerReference] = false;
-    m_settingDefault[AdaptivityOrderIncrease] = 1;
-    m_settingDefault[AdaptivitySpaceRefinement] = true;
     m_settingDefault[TransientTimeSkip] = 0.0;
     m_settingDefault[TransientInitialCondition] = 0.0;
     m_settingDefault[LinearSolverIterMethod] = IterSolverType_BiCGStab;

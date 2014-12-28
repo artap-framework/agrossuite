@@ -129,7 +129,7 @@ public:
     inline XMLModule::coupling *coupling() const { assert(m_coupling); return m_coupling; }
 
     // weak forms
-    virtual SolverDeal *solverDeal(const FieldInfo *fieldInfo, int initialOrder) = 0;
+    virtual SolverDeal *solverDeal(const FieldInfo *fieldInfo) = 0;
 
     // error calculators
     // virtual ErrorCalculator<double> *errorCalculator(const FieldInfo *fieldInfo,
