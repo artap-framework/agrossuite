@@ -792,128 +792,11 @@ void Problem::solveAction()
     clearSolution();
 
     solveInit();
-
     assert(isMeshed());
 
-    // Agros2D::log()->printMessage(QObject::tr("Problem"), QObject::tr("Solving problem"));
-
-    TimeStepInfo nextTimeStep(config()->initialTimeStepLength());
-    bool doNextTimeStep = true;
-    do
-    {
-        // dealii
-        m_solverDeal->solve(actualTimeStep());
-
-        // hermes
-        /*
-        foreach (Block* block, m_blocks)
-        {
-            // qDebug() << "solving " << block->fields().at(0)->fieldInfo()->fieldId();
-            if (block->isTransient() && (actualTimeStep() == 0))
-            {
-                solvers[block]->solveInitialTimeStep();
-            }
-            else if(!skipThisTimeStep(block))
-            {
-                stepMessage(block);
-                if (block->adaptivityType() == AdaptivityMethod_None)
-                {
-                    // no adaptivity
-                    solvers[block]->solveSimple(actualTimeStep(), 0);
-                }
-                else
-                {
-                    // adaptivity
-                    int adaptStep = 1;
-                    bool doContinueAdaptivity = true;
-                    while (doContinueAdaptivity && (adaptStep <= block->adaptivitySteps()) && !m_abort)
-                    {
-                        // solve problem
-                        solvers[block]->solveReferenceAndProject(actualTimeStep(), adaptStep - 1);
-                        // create adapted space
-                        doContinueAdaptivity = solvers[block]->createAdaptedSpace(actualTimeStep(), adaptStep);
-
-                        // Python callback
-                        foreach (FieldBlock *field, block->fields())
-                        {
-                            QString command = QString("(agros2d.field(\"%1\").adaptivity_callback(%2) if (agros2d.field(\"%1\").adaptivity_callback is not None and hasattr(agros2d.field(\"%1\").adaptivity_callback, '__call__')) else True)").
-                                arg(field->fieldInfo()->fieldId()).
-                                arg(adaptStep - 1);
-
-                            double cont = 1.0;
-                            bool successfulRun = currentPythonEngine()->runExpression(command, &cont);
-                            if (!successfulRun)
-                            {
-                                ErrorResult result = currentPythonEngine()->parseError();
-                                Agros2D::log()->printError(QObject::tr("Adaptivity callback"), result.error());
-                            }
-
-                            if (!cont)
-                                doContinueAdaptivity = false;
-                            break;
-                        }
-
-                        adaptStep++;
-                    }
-                }
-
-                // TODO: it should be estimated in the first step as well
-                // TODO: what if more blocks are transient? (take minimum? )
-
-                // TODO: space + time adaptivity
-                if (block->isTransient() && (actualTimeStep() >= 1))
-                {
-                    nextTimeStep = solvers[block]->estimateTimeStepLength(actualTimeStep(), 0);
-
-                    //save actual time and indicator, whether calculation on this time was refused
-                    m_timeHistory.push_back(QPair<double, bool>(actualTime(), nextTimeStep.refuse));
-                    //qDebug() << nextTimeStep.length << ", " << actualTime() << ", " << nextTimeStep.refuse;
-                }
-            }
-        }
-
-        */
-        doNextTimeStep = false;
-        if (isTransient())
-        {
-            if (nextTimeStep.refuse)
-            {
-                cout << "removing solutions on time step " << actualTimeStep() << endl;
-                Agros2D::solutionStore()->removeTimeStep(actualTimeStep());
-                refuseLastTimeStepLength();
-            }
-            else
-            {
-                // Python callback
-                if (actualTimeStep() > 0)
-                {
-                    QString command = QString("(agros2d.problem().time_callback(%1) if (agros2d.problem().time_callback is not None and hasattr(agros2d.problem().time_callback, '__call__')) else True)").
-                            arg(actualTimeStep());
-
-                    double cont = 1.0;
-                    bool successfulRun = currentPythonEngine()->runExpression(command, &cont);
-                    if (!successfulRun)
-                    {
-                        ErrorResult result = currentPythonEngine()->parseError();
-                        Agros2D::log()->printError(QObject::tr("Transient callback"), result.error());
-                    }
-
-                    if (!cont)
-                    {
-                        doNextTimeStep = false;
-                        break;
-                    }
-                }
-            }
-
-            if (!doNextTimeStep)
-                doNextTimeStep = defineActualTimeStepLength(nextTimeStep.length);
-        }
-    } while (doNextTimeStep && !m_abort);
+    m_solverDeal->solveProblem();
 }
 
-void Problem::stepMessage() // Block* block)
-{
     /*
     // log analysis
     QString fields;
@@ -958,8 +841,6 @@ void Problem::stepMessage() // Block* block)
             Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(fields), QObject::tr("Fields solving (coupled analysis)"));
     }
     */
-}
-
 
 void Problem::readInitialMeshesFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator)
 {

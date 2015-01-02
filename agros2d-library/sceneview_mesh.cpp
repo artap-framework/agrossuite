@@ -292,9 +292,8 @@ void SceneViewMesh::paintSolutionMesh()
         // activeMultiSolutionArray().spaces().at(comp)
         // int comp = Agros2D::problem()->setting()->value(ProblemSetting::View_OrderComponent).toInt() - 1;
 
-        // int level = m_postDeal->activeAdaptivityStep();
-        // qDebug() << m_postDeal->activeAdaptivityStep();
-        for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
+        // for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
+        for (int level = 0; level <= ma.doFHandler()->get_tria().n_levels() - 1; level++)
         {
             dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
             for (; cell_int != endc_int; ++cell_int)
@@ -343,7 +342,8 @@ void SceneViewMesh::paintOrder()
 
         // int level = m_postDeal->activeAdaptivityStep();
         // qDebug() << m_postDeal->activeAdaptivityStep();
-        for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
+        // for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
+        for (int level = 0; level <= ma.doFHandler()->get_tria().n_levels() - 1; level++)
         {
             dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
             for (; cell_int != endc_int; ++cell_int)

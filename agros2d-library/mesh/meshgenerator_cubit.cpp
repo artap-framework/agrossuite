@@ -176,6 +176,7 @@ bool MeshGeneratorCubitExternal::writeToCubit()
     // edges
     QString outEdges;
     int edgesCount = 0;
+    double minEdge = numeric_limits<double>::max();
     for (int i = 0; i<Agros2D::scene()->edges->length(); i++)
     {
         if (Agros2D::scene()->edges->at(i)->isStraight())
@@ -202,6 +203,9 @@ bool MeshGeneratorCubitExternal::writeToCubit()
 
             // arg(nodesCount - 1).
         }
+
+        if (Agros2D::scene()->edges->at(i)->length() < minEdge)
+            minEdge = Agros2D::scene()->edges->at(i)->length();
 
         outEdges += QString("Nodeset %1 Curve %1\n").arg(edgesCount + 1);
 
@@ -237,14 +241,12 @@ bool MeshGeneratorCubitExternal::writeToCubit()
 
     // faces
     QString outLoops;
-    QList<int> surfaces;
     int surfaceCount = 0;
     for (int i = 0; i < Agros2D::scene()->labels->count(); i++)
     {
         SceneLabel* label = Agros2D::scene()->labels->at(i);
         if (!label->isHole())
         {
-            surfaces.push_back(surfaceCount);
             outLoops.append(QString("Create Surface Curve "));
             for (int j = 0; j < Agros2D::scene()->loopsInfo()->labelLoops()[label].count(); j++)
             {
@@ -252,9 +254,12 @@ bool MeshGeneratorCubitExternal::writeToCubit()
                 outLoops.append(QString("%1 ").arg(outLoopsLines[Agros2D::scene()->loopsInfo()->labelLoops()[label][j] + 1]));
             }
             outLoops.append(QString("\n"));
+
+            surfaceCount++;
+            outLoops.append(QString("Volume %1 Size %2\n").arg(surfaceCount).arg(minEdge * 2));
         }
     }
-    outLoops.append("\n");
+    outLoops.append("\n");   
 
     // output
     out << "Reset\n";

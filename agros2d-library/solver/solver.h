@@ -39,6 +39,10 @@
 #include <deal.II/lac/vector.h>
 #include <deal.II/lac/full_matrix.h>
 #include <deal.II/lac/sparse_matrix.h>
+#include <deal.II/lac/sparse_direct.h>
+
+#include <deal.II/base/time_stepping.h>
+
 #define signals public
 
 class FieldInfo;
@@ -67,15 +71,24 @@ public:
     virtual void assembleSystem() = 0;
     virtual void assembleDirichlet() = 0;
 
-    virtual void solve();
+    // problem
+    void solve();
+    void solveTransientStep();
 
-    void estimateSmoothness(dealii::Vector<float> &smoothness_indicators) const;
     double computeNorm();
+
+    // transient - Runge Kutta - future step!
+    void assembleMassMatrix();
+    /*
+    void explicitMethod(const dealii::TimeStepping::runge_kutta_method method, const unsigned int n_time_steps, const double initial_time, const double final_time);
+    void implicitMethod(const dealii::TimeStepping::runge_kutta_method method, const unsigned int n_time_steps, const double initial_time, const double final_time);
+    unsigned int explicitEmbeddedMethod(const dealii::TimeStepping::runge_kutta_method method, const unsigned int n_time_steps, const double initial_time, const double final_time);
+    */
 
 protected:
     const FieldInfo *m_fieldInfo;
 
-    dealii::Triangulation<2> *m_triangulation;    
+    dealii::Triangulation<2> *m_triangulation;
     dealii::hp::DoFHandler<2> *m_doFHandler;
     dealii::hp::FECollection<2> *m_feCollection;
 
@@ -96,12 +109,37 @@ protected:
     dealii::SparseMatrix<double> system_matrix;
     dealii::Vector<double> system_rhs;
 
+    // transient steady and mass matrix
+    dealii::SparseMatrix<double> steady_matrix;
+    dealii::SparseMatrix<double> mass_matrix;
+
+    // linear system
+    void solveLinearSystem();
     void solveUMFPACK();
-    void solvedealii();    
+    void solvedealii();
+
+    //  linearity
+    void solveLinearity();
+    void solveLinearityLinear();
+    void solveLinearityNonLinear();
+    void solveLinearityNonLinearPicard();
+    void solveLinearityNonLinearNewton();
+
+    // adaptivity
+    void solveAdaptivity();
+    void solveAdaptivitySimple();
+    void solveAdaptivityAdaptive();
+
+    void estimateSmoothness(dealii::Vector<float> &smoothness_indicators) const;
+
+    // transient
+    void solveTransient();
+
+
 };
 
 namespace Module {
-    class ErrorCalculator;
+class ErrorCalculator;
 }
 
 class SolverAgros
@@ -190,13 +228,6 @@ public:
 };
 */
 
-struct TimeStepInfo
-{
-    TimeStepInfo(double len, bool ref = false) : length(len), refuse(ref) {}
-    double length;
-    bool refuse;
-};
-
 // solve
 class ProblemSolver
 {
@@ -204,12 +235,7 @@ public:
     ProblemSolver();
 
     void init();
-
-    void solve(int timeStep);
-    void solveSimple(FieldInfo *fieldInfo, int timeStep = 0);
-    void solveAdaptive(FieldInfo *fieldInfo, int timeStep = 0);
-    void solveLinear(FieldInfo *fieldInfo, int timeStep = 0, int adaptiveStep = 0);
-    void solveNonlinear(FieldInfo *fieldInfo, int timeStep = 0, int adaptiveStep = 0);
+    void solveProblem();
 
 private:
     QMap<FieldInfo *, SolverDeal *> m_solverDeal;
