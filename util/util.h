@@ -97,6 +97,13 @@
 // zero
 #define EPS_ZERO 1e-10
 
+// typename keyword handling
+#ifdef _MSC_VER
+#define TYPENAME
+#else
+#define TYPENAME typename
+#endif
+
 // physical constants
 #define EPS0 8.854e-12
 #define MU0 4*M_PI*1e-7

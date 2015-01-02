@@ -286,7 +286,7 @@ void SolverDeal::estimateSmoothness(dealii::Vector<float> &smoothness_indicators
     }
     std::vector<std::complex<double> > fourier_coefficients (n_fourier_modes);
     dealii::Vector<double> local_dof_values;
-    typename dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+	TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
     for (unsigned int index=0; cell!=endc; ++cell, ++index)
     {
         local_dof_values.reinit (cell->get_fe().dofs_per_cell);
@@ -572,7 +572,7 @@ void ProblemSolver::solveAdaptive(FieldInfo *fieldInfo, int timeStep)
             case AdaptivityEstimator_Kelly:
                 dealii::KellyErrorEstimator<2>::estimate(*solverDeal->doFHandler(),
                                                          solverDeal->face_quadrature_formulas(),
-                                                         typename dealii::FunctionMap<2>::type(),
+														 TYPENAME dealii::FunctionMap<2>::type(),
                                                          *solverDeal->solution(),
                                                          estimated_error_per_cell);
                 break;
@@ -602,7 +602,7 @@ void ProblemSolver::solveAdaptive(FieldInfo *fieldInfo, int timeStep)
 
                 min_smoothness = *std::max_element (smoothness_indicators.begin(), smoothness_indicators.end());
                 max_smoothness = *std::min_element(smoothness_indicators.begin(), smoothness_indicators.end());
-                typename dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = solverDeal->doFHandler()->begin_active(), endcmm = solverDeal->doFHandler()->end();
+				TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = solverDeal->doFHandler()->begin_active(), endcmm = solverDeal->doFHandler()->end();
                 for (unsigned int index = 0; cellmm != endcmm; ++cellmm, ++index)
                 {
                     if (cellmm->refine_flag_set())
@@ -617,7 +617,7 @@ void ProblemSolver::solveAdaptive(FieldInfo *fieldInfo, int timeStep)
             {
                 const float threshold_smoothness = (max_smoothness + min_smoothness) / 2;
 
-                typename dealii::hp::DoFHandler<2>::active_cell_iterator cell = solverDeal->doFHandler()->begin_active(), endc = solverDeal->doFHandler()->end();
+				TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = solverDeal->doFHandler()->begin_active(), endc = solverDeal->doFHandler()->end();
                 for (unsigned int index = 0; cell != endc; ++cell, ++index)
                 {
                     if (fieldInfo->adaptivityType() == AdaptivityMethod_P)

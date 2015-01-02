@@ -296,7 +296,7 @@ void SceneViewMesh::paintSolutionMesh()
         // qDebug() << m_postDeal->activeAdaptivityStep();
         for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
         {
-            typename dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
+			TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
                 // coordinates
@@ -345,7 +345,7 @@ void SceneViewMesh::paintOrder()
         // qDebug() << m_postDeal->activeAdaptivityStep();
         for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
         {
-            typename dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
+			TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
                 // coordinates
@@ -435,7 +435,7 @@ void SceneViewMesh::paintOrderColorBar()
     MultiArray ma = m_postDeal->activeMultiSolutionArray();
 
     int level = 0;
-    typename dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end();
+	TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end();
     for (; cell_int != endc_int; ++cell_int)
     {
         // polynomial degree
