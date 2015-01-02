@@ -44,6 +44,7 @@
 #include <deal.II/numerics/error_estimator.h>
 #include <deal.II/numerics/fe_field_function.h>
 #include <deal.II/numerics/data_out.h>
+#include <deal.II/numerics/solution_transfer.h>
 
 #include <deal.II/lac/vector.h>
 #include <deal.II/lac/full_matrix.h>
@@ -89,6 +90,43 @@
 #include "weak_form.h"
 
 #include "pythonlab/pythonengine.h"
+
+#include <functional>
+
+
+template<int dim>
+class RightHandSide : public dealii::Function<dim>
+{
+public:
+    RightHandSide ()
+        :
+          dealii::Function<dim>()
+    {}
+    virtual double value (const dealii::Point<dim> &p,
+                          const unsigned int component = 0) const;
+};
+
+template<int dim>
+double RightHandSide<dim>::value (const dealii::Point<dim> &p,
+                                  const unsigned int component) const
+{
+    Assert (component == 0, ExcInternalError());
+    Assert (dim == 2, ExcNotImplemented());
+
+    const double time = this->get_time();
+
+    if ((time >= 0.0) && (time <= 10))
+    {
+        if ((p[0] >= 0.013) && (p[0] <= 0.028) && (p[1] >= 0.041) && (p[1] <= 0.17))
+        {
+            return 2e6;
+        }
+    }
+
+    return 0;
+}
+
+// *******************************************************************************************
 
 SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     : m_fieldInfo(fieldInfo), m_solution_previous(NULL)
@@ -141,26 +179,39 @@ void SolverDeal::setup()
     m_solution->reinit(m_doFHandler->n_dofs());
 
     hanging_node_constraints.clear();
-    dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler,
-                                                    hanging_node_constraints);
+    dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler, hanging_node_constraints);
 
     // assemble Dirichlet
     assembleDirichlet();
 
     hanging_node_constraints.close();
 
+    // create sparsity pattern
     dealii::CompressedSetSparsityPattern csp(m_doFHandler->n_dofs(), m_doFHandler->n_dofs());
     dealii::DoFTools::make_sparsity_pattern(*m_doFHandler, csp, hanging_node_constraints, false);
     sparsity_pattern.copy_from(csp);
 
+    // reinit system matrix
     system_matrix.reinit(sparsity_pattern);
+
+    // mass matrix (transient)
+    // if (m_fieldInfo->analysisType() == AnalysisType_Transient)
+    {
+        // mass_matrix.reinit(sparsity_pattern);
+        // assembleMassMatrix();
+        // qDebug() << "transient - mass_matrix";
+    }
     // qDebug() << "setup (" << time.elapsed() << "ms )";
 }
 
 void SolverDeal::solve()
 {
-    // qDebug() << "residual" << system_rhs.l2_norm();
+    // solveTransientStep();
+    solveAdaptivity();
+}
 
+void SolverDeal::solveLinearSystem()
+{
     QTime time;
     time.start();
 
@@ -180,7 +231,7 @@ void SolverDeal::solve()
     hanging_node_constraints.distribute(*m_solution);
 
     // copy solution
-    if ((m_fieldInfo->analysisType() == AnalysisType_Transient) || (m_fieldInfo->linearityType() != LinearityType_Linear))
+    if (m_fieldInfo->linearityType() != LinearityType_Linear)
     {
         if (m_solution_previous)
             delete m_solution_previous;
@@ -188,6 +239,428 @@ void SolverDeal::solve()
     }
 
     qDebug() << "solved (" << time.elapsed() << "ms )";
+}
+
+void SolverDeal::solveLinearity()
+{
+    if (m_fieldInfo->linearityType() == LinearityType_Linear)
+        solveLinearityLinear();
+    else
+        solveLinearityNonLinear();
+}
+
+void SolverDeal::solveLinearityLinear()
+{
+    setup();
+
+    QTime time;
+    time.start();
+
+    assembleSystem();
+    qDebug() << "assemble (" << time.elapsed() << "ms )";
+
+    solveLinearSystem();
+
+    qDebug() << "solve linear total (" << time.elapsed() << "ms )";
+
+}
+
+void SolverDeal::solveLinearityNonLinear()
+{
+    if (m_fieldInfo->linearityType() == LinearityType_Picard)
+        solveLinearityNonLinearPicard();
+    else if (m_fieldInfo->linearityType() == LinearityType_Newton)
+        solveLinearityNonLinearNewton();
+    else
+        assert(0);
+}
+
+void SolverDeal::solveLinearityNonLinearPicard()
+{
+    QTime time;
+    time.start();
+
+    QVector<double> steps;
+    QVector<double> relativeChangeOfSolutions;
+
+    setup();
+    for (int iteration = 0; iteration < 6; iteration++)
+    {
+        qDebug() << "step: " << iteration;
+        assembleSystem();
+        solveLinearSystem();
+
+        // update
+        steps.append(iteration);
+        relativeChangeOfSolutions.append(1.0);
+
+        // damping: %2
+        Agros2D::log()->printMessage(QObject::tr("Solver (Picard)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %)")
+                                     .arg(iteration)
+                                     .arg(QString::number(relativeChangeOfSolutions.last(), 'f', 5)));
+
+        Agros2D::log()->updateNonlinearChartInfo(SolverAgros::Phase_Finished, steps, relativeChangeOfSolutions);
+    }
+    qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
+}
+
+void SolverDeal::solveLinearityNonLinearNewton()
+{
+    assert(0);
+}
+
+void SolverDeal::solveAdaptivity()
+{
+    if (m_fieldInfo->adaptivityType() == AdaptivityMethod_None)
+        solveAdaptivitySimple();
+    else
+        solveAdaptivityAdaptive();
+}
+
+void SolverDeal::solveAdaptivitySimple()
+{
+    solveLinearity();
+
+    FieldSolutionID solutionID(m_fieldInfo, 0, 0, SolutionMode_Normal);
+    SolutionStore::SolutionRunTimeDetails runTime(Agros2D::problem()->actualTimeStepLength(), 0.0, m_doFHandler->n_dofs());
+    Agros2D::solutionStore()->addSolution(solutionID, MultiArray(m_doFHandler, m_solution), runTime);
+}
+
+void SolverDeal::solveAdaptivityAdaptive()
+{
+    double previousNorm = 0.0;
+    for (int i = 0; i < m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt(); i++)
+    {
+        if (i > 0)
+        {
+            // estimated error per cell
+            dealii::Vector<float> estimated_error_per_cell(m_triangulation->n_active_cells());
+
+            // estimator
+            switch ((AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt())
+            {
+            case AdaptivityEstimator_Kelly:
+                dealii::KellyErrorEstimator<2>::estimate(*m_doFHandler,
+                                                         m_face_quadrature_formulas,
+                                                         typename dealii::FunctionMap<2>::type(),
+                                                         *m_solution,
+                                                         estimated_error_per_cell);
+                break;
+            case AdaptivityEstimator_Gradient:
+                GradientErrorEstimator::estimate(*m_doFHandler,
+                                                 *m_solution,
+                                                 estimated_error_per_cell);
+                break;
+            default:
+                assert(0);
+            }
+
+            dealii::GridRefinement::refine_and_coarsen_fixed_number(*m_triangulation,
+                                                                    estimated_error_per_cell,
+                                                                    m_fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt() / 100.0,
+                                                                    m_fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt() / 100.0);
+
+            // additional informations for p and hp adaptivity
+            float min_smoothness = 0.0;
+            float max_smoothness = 0.0;
+            dealii::Vector<float> smoothness_indicators;
+
+            if (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP)
+            {
+                smoothness_indicators.reinit(m_triangulation->n_active_cells());
+                estimateSmoothness(smoothness_indicators);
+
+                min_smoothness = *std::max_element(smoothness_indicators.begin(), smoothness_indicators.end());
+                max_smoothness = *std::min_element(smoothness_indicators.begin(), smoothness_indicators.end());
+                dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = m_doFHandler->begin_active(), endcmm = m_doFHandler->end();
+                for (unsigned int index = 0; cellmm != endcmm; ++cellmm, ++index)
+                {
+                    if (cellmm->refine_flag_set())
+                    {
+                        max_smoothness = std::max(max_smoothness, smoothness_indicators(index));
+                        min_smoothness = std::min(min_smoothness, smoothness_indicators(index));
+                    }
+                }
+            }
+
+            if ((m_fieldInfo->adaptivityType() == AdaptivityMethod_P) || (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP))
+            {
+                const float threshold_smoothness = (max_smoothness + min_smoothness) / 2;
+
+                dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+                for (unsigned int index = 0; cell != endc; ++cell, ++index)
+                {
+                    if (m_fieldInfo->adaptivityType() == AdaptivityMethod_P)
+                    {
+                        if (cell->refine_flag_set())
+                        {
+                            // remove h adaptivity flag
+                            cell->clear_refine_flag();
+
+                            if (cell->active_fe_index() + 1 < m_doFHandler->get_fe().size())
+                            {
+                                // increase order
+                                cell->set_active_fe_index(cell->active_fe_index() + 1);
+                            }
+                        }
+                    }
+
+                    if (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP)
+                    {
+                        if (cell->refine_flag_set() && (smoothness_indicators(index) > threshold_smoothness)
+                                && (cell->active_fe_index() + 1 < m_doFHandler->get_fe().size()))
+                        {
+                            // remove h adaptivity flag
+                            cell->clear_refine_flag();
+                            // increase order
+                            cell->set_active_fe_index(cell->active_fe_index() + 1);
+                        }
+                    }
+                }
+            }
+
+            m_triangulation->execute_coarsening_and_refinement();
+        }
+
+        solveLinearity();
+
+        // *********************************************************************************
+
+
+        double energy = 0.0;
+
+        dealii::hp::QCollection<2> quadrature_formulas;
+        for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+            quadrature_formulas.push_back(dealii::QGauss<2>(degree + 1));
+
+        dealii::hp::FEValues<2> hp_fe_values(m_doFHandler->get_fe(), quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
+
+        for (int iLabel = 0; iLabel < Agros2D::scene()->labels->count(); iLabel++)
+        {
+            SceneLabel *label = Agros2D::scene()->labels->at(iLabel);
+
+            SceneMaterial *material = label->marker(m_fieldInfo);
+
+            const Value *material_electrostatic_permittivity = material->valueNakedPtr(QLatin1String("electrostatic_permittivity"));
+            const Value *material_electrostatic_charge_density = material->valueNakedPtr(QLatin1String("electrostatic_charge_density"));
+
+            // Then start the loop over all cells, and select those cells which are close enough to the evaluation point:
+            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = m_doFHandler->begin_active(), endc_int = m_doFHandler->end();
+            for (; cell_int != endc_int; ++cell_int)
+            {
+                // volume integration
+                if (cell_int->material_id() - 1 == iLabel)
+                {
+                    hp_fe_values.reinit(cell_int);
+
+                    const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
+                    const unsigned int n_q_points = fe_values.n_quadrature_points;
+
+                    std::vector<dealii::Vector<double> > solution_values(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+                    std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
+                    fe_values.get_function_values(*m_solution, solution_values);
+                    fe_values.get_function_gradients(*m_solution, solution_grads);
+
+                    // expressions
+
+                    for (unsigned int k = 0; k < n_q_points; ++k)
+                    {
+                        const dealii::Point<2> p = fe_values.quadrature_point(k);
+
+                        energy += fe_values.JxW(k) * (2.0*M_PI*p[0]*0.5*material_electrostatic_permittivity->number()*8.854e-12*(solution_grads[k][0][0]*solution_grads[k][0][0]+solution_grads[k][0][1]*solution_grads[k][0][1]));
+                    }
+
+                }
+            }
+        }
+
+        qDebug() << energy;
+
+        // ********************************************************************************
+
+        double norm = computeNorm();
+        double error = std::fabs(previousNorm - norm) / norm * 100.0;
+        previousNorm = norm;
+
+        FieldSolutionID solutionID(m_fieldInfo, 0, i, SolutionMode_Normal);
+        SolutionStore::SolutionRunTimeDetails runTime(Agros2D::problem()->actualTimeStepLength(), error, m_doFHandler->n_dofs());
+        Agros2D::solutionStore()->addSolution(solutionID, MultiArray(m_doFHandler, m_solution), runTime);
+
+        if (i > 0)
+            Agros2D::log()->updateAdaptivityChartInfo(m_fieldInfo, 0, i);
+
+        Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2, DOFs: %3)").
+                                     arg(i + 1).
+                                     arg(error).
+                                     arg(m_doFHandler->n_dofs()));
+    }
+}
+
+void SolverDeal::solveTransientStep()
+{
+    setup();
+    assembleSystem();
+
+    dealii::Vector<double> tmp;
+    dealii::Vector<double> forcing_terms;
+
+    tmp.reinit(m_solution->size());
+    forcing_terms.reinit(m_solution->size());
+
+    // initial condition
+    m_solution_previous = new dealii::Vector<double>(m_solution->size());
+    dealii::VectorTools::interpolate(*m_doFHandler, dealii::ConstantFunction<2>(293.15), *m_solution_previous);
+
+    const unsigned int initial_global_refinement = m_fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt();
+    const unsigned int n_adaptive_pre_refinement_steps = 2;
+
+    double timestep_number = 0;
+    double time = 0;
+    double theta = 0.5;
+    double total_time = 15;
+    double time_step = total_time / 150;
+    // output_results();
+
+    // copy system matrix to steady part
+    steady_matrix.reinit(sparsity_pattern);
+    steady_matrix.copy_from(system_matrix);
+    system_matrix = 0;
+
+    RightHandSide<2> rhs_function;
+
+    while (time <= total_time)
+    {
+        time += time_step;
+        ++timestep_number;
+
+        std::cout << "Time step " << timestep_number << " at t=" << time << std::endl;
+
+        mass_matrix.vmult(system_rhs, *m_solution_previous);
+        steady_matrix.vmult(tmp, *m_solution_previous);
+        system_rhs.add(- (1 - theta) * time_step, tmp);
+
+        rhs_function.set_time(time);
+        dealii::VectorTools::create_right_hand_side(*m_doFHandler, m_quadrature_formulas, rhs_function, tmp);
+        forcing_terms = tmp;
+        forcing_terms *= time_step * theta;
+
+        rhs_function.set_time(time - time_step);
+        dealii::VectorTools::create_right_hand_side(*m_doFHandler, m_quadrature_formulas, rhs_function, tmp);
+        forcing_terms.add(time_step * (1 - theta), tmp);
+
+        system_rhs += forcing_terms;
+
+        system_matrix.copy_from(mass_matrix);
+        system_matrix.add(theta * time_step, steady_matrix);
+
+        solveLinearSystem();
+        // output_results();
+
+        // adapt mesh
+        if (true) // adapt
+        {
+            dealii::Vector<float> estimated_error_per_cell(m_triangulation->n_active_cells());
+            dealii::KellyErrorEstimator<2>::estimate(*m_doFHandler,
+                                                     m_face_quadrature_formulas,
+                                                     typename dealii::FunctionMap<2>::type(),
+                                                     *m_solution,
+                                                     estimated_error_per_cell);
+
+            dealii::GridRefinement::refine_and_coarsen_fixed_fraction(*m_triangulation, estimated_error_per_cell, 0.6, 0.4);
+            // dealii::GridRefinement::refine_and_coarsen_fixed_number(*m_triangulation, estimated_error_per_cell, 0.6, 0.3);
+
+            // hp
+            if (false)
+            {
+                dealii::Vector<float> smoothness_indicators;
+
+                smoothness_indicators.reinit(m_triangulation->n_active_cells());
+                estimateSmoothness(smoothness_indicators);
+
+                float min_smoothness = *std::max_element(smoothness_indicators.begin(), smoothness_indicators.end());
+                float max_smoothness = *std::min_element(smoothness_indicators.begin(), smoothness_indicators.end());
+                typename dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = m_doFHandler->begin_active(), endcmm = m_doFHandler->end();
+                for (unsigned int index = 0; cellmm != endcmm; ++cellmm, ++index)
+                {
+                    if (cellmm->refine_flag_set())
+                    {
+                        max_smoothness = std::max(max_smoothness, smoothness_indicators(index));
+                        min_smoothness = std::min(min_smoothness, smoothness_indicators(index));
+                    }
+                }
+
+                const float threshold_smoothness = (max_smoothness + min_smoothness) / 2;
+
+                dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+                for (unsigned int index = 0; cell != endc; ++cell, ++index)
+                {
+                    if (m_fieldInfo->adaptivityType() == AdaptivityMethod_P)
+                    {
+                        if (cell->refine_flag_set() && (cell->active_fe_index() + 1 < m_doFHandler->get_fe().size()))
+                        {
+                            // remove h adaptivity flag
+                            cell->clear_refine_flag();
+                            // increase order
+                            cell->set_active_fe_index(cell->active_fe_index() + 1);
+                        }
+                    }
+
+                    if (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP)
+                    {
+                        if (cell->refine_flag_set() && (smoothness_indicators(index) > threshold_smoothness)
+                                && (cell->active_fe_index() + 1 < m_doFHandler->get_fe().size()))
+                        {
+                            // remove h adaptivity flag
+                            cell->clear_refine_flag();
+                            // increase order
+                            cell->set_active_fe_index(cell->active_fe_index() + 1);
+                        }
+                    }
+                }
+            }
+
+            int min_grid_level = initial_global_refinement;
+            int max_grid_level = initial_global_refinement + n_adaptive_pre_refinement_steps;
+
+            if (m_triangulation->n_levels() > max_grid_level)
+                for (dealii::Triangulation<2>::active_cell_iterator cell = m_triangulation->begin_active(max_grid_level); cell != m_triangulation->end(); ++cell)
+                    cell->clear_refine_flag();
+            // for (dealii::Triangulation<2>::active_cell_iterator cell = m_triangulation->begin_active(min_grid_level); cell != m_triangulation->end_active(min_grid_level); ++cell)
+            //     cell->clear_coarsen_flag();
+
+            hanging_node_constraints.distribute(*m_solution);
+
+            dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solution_trans(*m_doFHandler);
+            dealii::Vector<double> previous_solution = *m_solution;
+
+            m_triangulation->prepare_coarsening_and_refinement();
+            solution_trans.prepare_for_coarsening_and_refinement(previous_solution);
+            m_triangulation->execute_coarsening_and_refinement();
+
+            // reinit
+            setup();
+            assembleSystem();
+            tmp.reinit(m_solution->size());
+            forcing_terms.reinit(m_solution->size());
+            // transfer solution
+            solution_trans.interpolate(previous_solution, *m_solution);
+
+            // copy system matrix to steady part
+            steady_matrix.reinit(sparsity_pattern);
+            steady_matrix.copy_from(system_matrix);
+            system_matrix = 0;
+        }
+
+        // copy solution
+        m_solution_previous = new dealii::Vector<double>(*m_solution);
+    }
+
+    hanging_node_constraints.distribute(*m_solution);
+
+    FieldSolutionID solutionID(m_fieldInfo, 0, 0, SolutionMode_Normal);
+    SolutionStore::SolutionRunTimeDetails runTime(Agros2D::problem()->actualTimeStepLength(), 0.0, m_doFHandler->n_dofs());
+    Agros2D::solutionStore()->addSolution(solutionID, MultiArray(m_doFHandler, m_solution), runTime);
 }
 
 void SolverDeal::solveUMFPACK()
@@ -244,7 +717,6 @@ void SolverDeal::solvedealii()
         return;
     }
 }
-
 
 void SolverDeal::estimateSmoothness(dealii::Vector<float> &smoothness_indicators) const
 {
@@ -327,7 +799,6 @@ void SolverDeal::estimateSmoothness(dealii::Vector<float> &smoothness_indicators
     }
 }
 
-
 double SolverDeal::computeNorm()
 {
     double h1Norm = 0.0;
@@ -359,6 +830,231 @@ double SolverDeal::computeNorm()
 
     return h1Norm;
 }
+
+// TODO: move to module
+void SolverDeal::assembleMassMatrix()
+{
+    // assemble
+    dealii::hp::FEValues<2> hp_fe_values(*m_feCollection, m_quadrature_formulas, dealii::update_values | dealii::update_quadrature_points | dealii::update_JxW_values);
+
+    dealii::FullMatrix<double> cell_matrix;
+
+    std::vector<dealii::types::global_dof_index> local_dof_indices;
+
+    double sourceAir = 1000 * 1.2;
+    double sourceCopper = 8700 * 385;
+    double sourceIron = 7800 * 460;
+
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+    for (; cell != endc; ++cell)
+    {
+        double source = 0;
+        if ((cell->material_id() == 1) || (cell->material_id() == 2))
+            source = sourceIron;
+        else if (cell->material_id() == 3)
+            source = sourceCopper;
+        else if (cell->material_id() == 4)
+            source = sourceAir;
+
+        assert(source > 0);
+
+        const unsigned int dofs_per_cell = cell->get_fe().dofs_per_cell;
+
+        // local matrix
+        cell_matrix.reinit(dofs_per_cell, dofs_per_cell);
+        cell_matrix = 0;
+
+        hp_fe_values.reinit(cell);
+
+        const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
+        const unsigned int n_q_points = fe_values.n_quadrature_points;
+
+        for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
+        {
+            const dealii::Point<2> p = fe_values.quadrature_point(q_point);
+
+            for (unsigned int i = 0; i < dofs_per_cell; ++i)
+            {
+                // const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
+                for (unsigned int j = 0; j < dofs_per_cell; ++j)
+                {
+                    // const unsigned int component_j = cell->get_fe().system_to_component_index(j).first;
+
+                    cell_matrix(i,j) += source * p[0] * fe_values.shape_value(i,q_point) *
+                            fe_values.shape_value(j,q_point) *
+                            fe_values.JxW(q_point);
+                }
+            }
+        }
+
+        local_dof_indices.resize(dofs_per_cell);
+        cell->get_dof_indices(local_dof_indices);
+
+        // distribute local to global system
+        hanging_node_constraints.distribute_local_to_global(cell_matrix,
+                                                            local_dof_indices,
+                                                            mass_matrix);
+    }
+
+    // inverse_mass_matrix.initialize(mass_matrix);
+}
+//
+//dealii::Vector<double> SolverDeal::evaluateDiffusion(const double time, const dealii::Vector<double> &y) const
+//{
+//    dealii::Vector<double> tmp(m_doFHandler->n_dofs());
+//    tmp = 0.0;
+
+//    system_matrix.vmult(tmp, y);
+
+//    dealii::hp::FEValues<2> hp_fe_values(*m_feCollection, m_quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
+
+//    dealii::Vector<double> cell_rhs;
+
+//    std::vector<dealii::types::global_dof_index> local_dof_indices;
+
+//    dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+//    for (; cell != endc; ++cell)
+//    {
+//        const unsigned int dofs_per_cell = cell->get_fe().dofs_per_cell;
+
+//        // local matrix
+//        cell_rhs.reinit(dofs_per_cell);
+//        cell_rhs = 0;
+
+//        hp_fe_values.reinit(cell);
+
+//        const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
+//        const unsigned int n_q_points = fe_values.n_quadrature_points;
+
+//        for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
+//        {
+//            double source = 0.0; //(8700*380);
+//            if (cell->material_id() == 1)
+//                source = -1e6; // * time; // get_source(time, fe_values.quadrature_point(q_point));
+
+//            for (unsigned int i = 0; i < dofs_per_cell; ++i)
+//                cell_rhs(i) += source * fe_values.shape_value(i,q_point) * fe_values.JxW(q_point);
+
+//            // qDebug() << cell->material_id() << source;
+//        }
+
+//        local_dof_indices.resize(dofs_per_cell);
+//        cell->get_dof_indices(local_dof_indices);
+
+//        // distribute local to global system
+//        hanging_node_constraints.distribute_local_to_global(cell_rhs,
+//                                                            local_dof_indices,
+//                                                            tmp);
+//    }
+
+//    dealii::Vector<double> value(m_doFHandler->n_dofs());
+//    inverse_mass_matrix.vmult(value, tmp);
+
+//    return value;
+//}
+
+//dealii::Vector<double> SolverDeal::id_minus_tau_J_inverse(const double time, const double tau, const dealii::Vector<double> &y)
+//{
+//    dealii::SparseDirectUMFPACK inverse_mass_minus_tau_Jacobian;
+
+//    mass_minus_tau_Jacobian.copy_from(mass_matrix);
+//    mass_minus_tau_Jacobian.add(-tau, system_matrix);
+
+//    inverse_mass_minus_tau_Jacobian.initialize(mass_minus_tau_Jacobian);
+
+//    dealii::Vector<double> tmp(m_doFHandler->n_dofs());
+//    mass_matrix.vmult(tmp, y);
+
+//    dealii::Vector<double> result(y);
+//    inverse_mass_minus_tau_Jacobian.vmult(result, tmp);
+
+//    return result;
+//}
+
+//void SolverDeal::explicitMethod(const dealii::TimeStepping::runge_kutta_method method,
+//                                const unsigned int n_time_steps, const double initial_time, const double final_time)
+//{
+//    const double time_step = (final_time - initial_time) / static_cast<double> (n_time_steps);
+//    double time = initial_time;
+//    *m_solution = 0;
+
+//    dealii::TimeStepping::ExplicitRungeKutta<dealii::Vector<double> > explicit_runge_kutta(method);
+//    // output_results(0, method);
+
+//    for (unsigned int i = 0; i < n_time_steps; ++i)
+//    {
+//        time = explicit_runge_kutta.evolve_one_time_step(std::bind(&SolverDeal::evaluateDiffusion,
+//                                                                   this, std::placeholders::_1, std::placeholders::_2),
+//                                                         time, time_step, *m_solution);
+//        qDebug() << time;
+
+//        // if ((i+1) %10 == 0)
+//        //     output_results(i+1,method);
+//    }
+
+//    hanging_node_constraints.distribute(*m_solution);
+//}
+
+//void SolverDeal::implicitMethod(const dealii::TimeStepping::runge_kutta_method method,
+//                                const unsigned int n_time_steps, const double initial_time, const double final_time)
+//{
+//    const double time_step = (final_time - initial_time) / static_cast<double> (n_time_steps);
+//    double time = initial_time;
+//    *m_solution = 0;
+
+//    dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> > implicit_runge_kutta(method);
+//    // output_results(0, method);
+
+//    for (unsigned int i = 0; i < n_time_steps; ++i)
+//    {
+//        time = implicit_runge_kutta.evolve_one_time_step(std::bind(&SolverDeal::evaluateDiffusion,
+//                                                                   this, std::placeholders::_1, std::placeholders::_2),
+//                                                         std::bind(&SolverDeal::id_minus_tau_J_inverse,
+//                                                                   this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
+//                                                         time, time_step, *m_solution);
+//        // qDebug() << time;
+//        // if ((i+1) %10 == 0)
+//        //     output_results(i+1,method);
+//    }
+//}
+
+//unsigned int SolverDeal::explicitEmbeddedMethod(const dealii::TimeStepping::runge_kutta_method method,
+//                                                const unsigned int n_time_steps, const double initial_time, const double final_time)
+//{
+//    double time_step = (final_time - initial_time) / static_cast<double> (n_time_steps);
+//    double time = initial_time;
+//    *m_solution = 0;
+
+//    const double coarsen_param = 1.2;
+//    const double refine_param = 0.8;
+//    const double min_delta = 1e-8;
+//    const double max_delta = 10 * time_step;
+//    const double refine_tol = 1e-1;
+//    const double coarsen_tol = 1e-5;
+
+//    dealii::TimeStepping::EmbeddedExplicitRungeKutta<dealii::Vector<double> > embedded_explicit_runge_kutta(method,
+//                                                                                                            coarsen_param, refine_param, min_delta, max_delta,
+//                                                                                                            refine_tol, coarsen_tol);
+//    // output_results (0, method);
+
+//    unsigned int n_steps = 0;
+//    while (time < final_time)
+//    {
+//        if (time + time_step > final_time)
+//            time_step = final_time - time;
+//        time = embedded_explicit_runge_kutta.evolve_one_time_step(std::bind(&SolverDeal::evaluateDiffusion,
+//                                                                            this, std::placeholders::_1, std::placeholders::_2),
+//                                                                  time, time_step, *m_solution);
+//        // qDebug() << time;
+//        // if ((i+1) %10 == 0)
+//        //     output_results(n_steps + 1,method);
+
+//        time_step = embedded_explicit_runge_kutta.get_status().delta_t_guess;
+//        ++n_steps;
+//    }
+
+//    return n_steps;
+//}
 
 void SolverAgros::clearSteps()
 {
@@ -464,7 +1160,6 @@ ProblemSolver::ProblemSolver()
 {
 }
 
-
 void ProblemSolver::init()
 {
     foreach (FieldInfo *fieldInfo, m_solverDeal.keys())
@@ -478,198 +1173,12 @@ void ProblemSolver::init()
     }
 }
 
-void ProblemSolver::solve(int timeStep)
+void ProblemSolver::solveProblem()
 {
     foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
     {
-        if (fieldInfo->adaptivityType() == AdaptivityMethod_None)
-            solveSimple(fieldInfo, timeStep);
-        else
-            solveAdaptive(fieldInfo, timeStep);
-    }
-}
-
-void ProblemSolver::solveLinear(FieldInfo *fieldInfo, int timeStep, int adaptiveStep)
-{
-    SolverDeal *solverDeal = m_solverDeal[fieldInfo];
-
-    solverDeal->setup();
-    QTime time;
-    time.start();
-    solverDeal->assembleSystem();
-    qDebug() << "assemble (" << time.elapsed() << "ms )";
-    solverDeal->solve();
-
-    qDebug() << "solve linear total (" << time.elapsed() << "ms )";
-}
-
-void ProblemSolver::solveNonlinear(FieldInfo *fieldInfo, int timeStep, int adaptiveStep)
-{
-    SolverDeal *solverDeal = m_solverDeal[fieldInfo];
-
-    QTime time;
-    time.start();
-
-    QVector<double> steps;
-    QVector<double> relativeChangeOfSolutions;
-
-    solverDeal->setup();
-    for (int iteration = 0; iteration < 6; iteration++)
-    {
-        qDebug() << "step: " << iteration;
-        solverDeal->assembleSystem();
+        SolverDeal *solverDeal = m_solverDeal[fieldInfo];
         solverDeal->solve();
-
-        // update
-        steps.append(iteration);
-        relativeChangeOfSolutions.append(1.0);
-
-        // damping: %2
-        Agros2D::log()->printMessage(QObject::tr("Solver (Picard)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %)")
-                                     .arg(iteration)
-                                     .arg(QString::number(relativeChangeOfSolutions.last(), 'f', 5)));
-
-        Agros2D::log()->updateNonlinearChartInfo(SolverAgros::Phase_Finished, steps, relativeChangeOfSolutions);
-    }
-    qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
-}
-
-void ProblemSolver::solveSimple(FieldInfo *fieldInfo, int timeStep)
-{
-    SolverDeal *solverDeal = m_solverDeal[fieldInfo];
-
-    qDebug() << "simple solution";
-
-    if (fieldInfo->linearityType() == LinearityType_Linear)
-        solveLinear(fieldInfo, timeStep);
-    else
-        solveNonlinear(fieldInfo, timeStep);
-
-    FieldSolutionID solutionID(fieldInfo, timeStep, 0, SolutionMode_Normal);
-    SolutionStore::SolutionRunTimeDetails runTime(Agros2D::problem()->actualTimeStepLength(), 0.0, solverDeal->doFHandler()->n_dofs());
-
-    Agros2D::solutionStore()->addSolution(solutionID, MultiArray(solverDeal->doFHandler(), solverDeal->solution()), runTime);
-
-}
-
-void ProblemSolver::solveAdaptive(FieldInfo *fieldInfo, int timeStep)
-{
-    SolverDeal *solverDeal = m_solverDeal[fieldInfo];
-
-    qDebug() << "adaptive solution";
-
-    double previousNorm = 0.0;
-    for (int i = 0; i < fieldInfo->value(FieldInfo::AdaptivitySteps).toInt(); i++)
-    {
-        if (i > 0)
-        {
-            // estimated error per cell
-            dealii::Vector<float> estimated_error_per_cell(solverDeal->triangulation()->n_active_cells());
-
-            // estimator
-            switch ((AdaptivityEstimator) fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt())
-            {
-            case AdaptivityEstimator_Kelly:
-                dealii::KellyErrorEstimator<2>::estimate(*solverDeal->doFHandler(),
-                                                         solverDeal->face_quadrature_formulas(),
-														 TYPENAME dealii::FunctionMap<2>::type(),
-                                                         *solverDeal->solution(),
-                                                         estimated_error_per_cell);
-                break;
-            case AdaptivityEstimator_Gradient:
-                GradientErrorEstimator::estimate(*solverDeal->doFHandler(),
-                                                 *solverDeal->solution(),
-                                                 estimated_error_per_cell);
-                break;
-            default:
-                assert(0);
-            }
-
-            dealii::GridRefinement::refine_and_coarsen_fixed_number(*solverDeal->triangulation(),
-                                                                    estimated_error_per_cell,
-                                                                    fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt() / 100.0,
-                                                                    fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt() / 100.0);
-
-            // additional informations for p and hp adaptivity
-            float min_smoothness = 0.0;
-            float max_smoothness = 0.0;
-            dealii::Vector<float> smoothness_indicators;
-
-            if (fieldInfo->adaptivityType() == AdaptivityMethod_HP)
-            {
-                smoothness_indicators.reinit(solverDeal->triangulation()->n_active_cells());
-                solverDeal->estimateSmoothness(smoothness_indicators);
-
-                min_smoothness = *std::max_element (smoothness_indicators.begin(), smoothness_indicators.end());
-                max_smoothness = *std::min_element(smoothness_indicators.begin(), smoothness_indicators.end());
-				TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = solverDeal->doFHandler()->begin_active(), endcmm = solverDeal->doFHandler()->end();
-                for (unsigned int index = 0; cellmm != endcmm; ++cellmm, ++index)
-                {
-                    if (cellmm->refine_flag_set())
-                    {
-                        max_smoothness = std::max(max_smoothness, smoothness_indicators(index));
-                        min_smoothness = std::min(min_smoothness, smoothness_indicators(index));
-                    }
-                }
-            }
-
-            if ((fieldInfo->adaptivityType() == AdaptivityMethod_P) || (fieldInfo->adaptivityType() == AdaptivityMethod_HP))
-            {
-                const float threshold_smoothness = (max_smoothness + min_smoothness) / 2;
-
-				TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = solverDeal->doFHandler()->begin_active(), endc = solverDeal->doFHandler()->end();
-                for (unsigned int index = 0; cell != endc; ++cell, ++index)
-                {
-                    if (fieldInfo->adaptivityType() == AdaptivityMethod_P)
-                    {
-                        if (cell->refine_flag_set() && (cell->active_fe_index() + 1 < solverDeal->doFHandler()->get_fe().size()))
-                        {
-                            // remove h adaptivity flag
-                            cell->clear_refine_flag();
-                            // increase order
-                            cell->set_active_fe_index(cell->active_fe_index() + 1);
-                        }
-                    }
-
-                    if (fieldInfo->adaptivityType() == AdaptivityMethod_HP)
-                    {
-                        if (cell->refine_flag_set() && (smoothness_indicators(index) > threshold_smoothness)
-                                && (cell->active_fe_index() + 1 < solverDeal->doFHandler()->get_fe().size()))
-                        {
-                            // remove h adaptivity flag
-                            cell->clear_refine_flag();
-                            // increase order
-                            cell->set_active_fe_index(cell->active_fe_index() + 1);
-                        }
-                    }
-                }
-            }
-
-            solverDeal->triangulation()->execute_coarsening_and_refinement();
-        }
-
-        if (fieldInfo->linearityType() == LinearityType_Linear)
-            solveLinear(fieldInfo, timeStep, i);
-        else
-            solveNonlinear(fieldInfo, timeStep, i);
-
-        double norm = solverDeal->computeNorm();
-        double error = std::fabs(previousNorm - norm) / norm * 100.0;
-        previousNorm = norm;
-
-        FieldSolutionID solutionID(fieldInfo, timeStep, i, SolutionMode_Normal);
-        SolutionStore::SolutionRunTimeDetails runTime(Agros2D::problem()->actualTimeStepLength(),
-                                                      error,
-                                                      solverDeal->doFHandler()->n_dofs());
-
-        Agros2D::solutionStore()->addSolution(solutionID, MultiArray(solverDeal->doFHandler(), solverDeal->solution()), runTime);
-
-        if (i > 0)
-            Agros2D::log()->updateAdaptivityChartInfo(fieldInfo, 0, i);
-
-        Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2, DOFs: %3)").
-                                     arg(i + 1).
-                                     arg(error).
-                                     arg(solverDeal->doFHandler()->n_dofs()));
     }
 }
+

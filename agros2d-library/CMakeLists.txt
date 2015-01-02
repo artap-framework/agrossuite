@@ -18,7 +18,7 @@ ENDIF(WIN32)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/libdxfrw)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/poly2tri)
 # paralution
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/paralution/src)
+# INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/paralution/src)
 # gmsh
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Common)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Geo)
@@ -26,9 +26,9 @@ INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Graphics)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Mesh)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Numeric)
 # netgen
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/netgen/libsrc/include)
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/netgen/libsrc/meshing)
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/netgen/agros2d_3dparty_netgen)
+# INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/netgen/libsrc/include)
+# INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/netgen/libsrc/meshing)
+# INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/netgen/agros2d_3dparty_netgen)
 
 # languages
 # message("Translations")

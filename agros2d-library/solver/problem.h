@@ -201,8 +201,6 @@ private:
     void solve(bool commandLine);
     void solveAction(); // called by solve, can throw SolverException
 
-    void stepMessage(); // Block* block)
-
     friend class CalculationThread;
     friend class PyProblem;
     friend class AgrosSolver;
