@@ -101,7 +101,7 @@ Point3 force{{CLASS}}(const FieldInfo *fieldInfo, int timeStep, int adaptivitySt
                     solution_grads[k][i] = localvalues.gradient(p, i);
                 }
             }
-            catch (const typename dealii::GridTools::ExcPointNotFound<2> &e)
+            catch (const TYPENAME dealii::GridTools::ExcPointNotFound<2> &e)
             {
                 throw AgrosException(QObject::tr("Point [%1, %2] does not lie in any element").arg(x).arg(y));
 

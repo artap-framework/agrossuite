@@ -48,7 +48,7 @@ class ExactSolutionScalarAgros;
 
 class SceneBoundary;
 
-class SolverDeal
+class AGROS_LIBRARY_API SolverDeal
 {
 public:
     SolverDeal(const FieldInfo *fieldInfo);

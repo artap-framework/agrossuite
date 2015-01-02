@@ -28,7 +28,7 @@ class Marker;
 class FieldInfo;
 
 template <typename MarkerType>
-class MarkerContainer
+class AGROS_LIBRARY_API MarkerContainer
 {
 public:
     MarkerContainer() : data(QList<MarkerType* >()) {}

@@ -68,7 +68,7 @@ void {{CLASS}}LocalValue::calculate()
             }
 
             dealii::Point<2> p(m_point.x, m_point.y);
-            std::pair<typename dealii::Triangulation<2>::active_cell_iterator, dealii::Point<2> > current_cell =
+            std::pair<TYPENAME dealii::Triangulation<2>::active_cell_iterator, dealii::Point<2> > current_cell =
                     dealii::GridTools::find_active_cell_around_point(dealii::MappingQ1<2>(), *m_fieldInfo->initialMesh(), p);
 
             // find marker
@@ -109,7 +109,7 @@ void {{CLASS}}LocalValue::calculate()
                 m_values[QLatin1String("{{VARIABLE}}")] = LocalPointValue({{EXPRESSION_SCALAR}}, Point({{EXPRESSION_VECTORX}}, {{EXPRESSION_VECTORY}}), material);
             {{/VARIABLE_SOURCE}}
         }
-        catch (const typename dealii::GridTools::ExcPointNotFound<2> &e)
+        catch (const TYPENAME dealii::GridTools::ExcPointNotFound<2> &e)
         {
             // qDebug() << e.what();
         }
