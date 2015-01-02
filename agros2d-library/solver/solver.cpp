@@ -342,7 +342,7 @@ void SolverDeal::solveAdaptivityAdaptive()
             case AdaptivityEstimator_Kelly:
                 dealii::KellyErrorEstimator<2>::estimate(*m_doFHandler,
                                                          m_face_quadrature_formulas,
-                                                         typename dealii::FunctionMap<2>::type(),
+                                                         TYPENAME dealii::FunctionMap<2>::type(),
                                                          *m_solution,
                                                          estimated_error_per_cell);
                 break;
@@ -563,7 +563,7 @@ void SolverDeal::solveTransientStep()
             dealii::Vector<float> estimated_error_per_cell(m_triangulation->n_active_cells());
             dealii::KellyErrorEstimator<2>::estimate(*m_doFHandler,
                                                      m_face_quadrature_formulas,
-                                                     typename dealii::FunctionMap<2>::type(),
+													 TYPENAME dealii::FunctionMap<2>::type(),
                                                      *m_solution,
                                                      estimated_error_per_cell);
 
@@ -580,7 +580,7 @@ void SolverDeal::solveTransientStep()
 
                 float min_smoothness = *std::max_element(smoothness_indicators.begin(), smoothness_indicators.end());
                 float max_smoothness = *std::min_element(smoothness_indicators.begin(), smoothness_indicators.end());
-                typename dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = m_doFHandler->begin_active(), endcmm = m_doFHandler->end();
+				TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = m_doFHandler->begin_active(), endcmm = m_doFHandler->end();
                 for (unsigned int index = 0; cellmm != endcmm; ++cellmm, ++index)
                 {
                     if (cellmm->refine_flag_set())
