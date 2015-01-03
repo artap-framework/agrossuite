@@ -23,6 +23,7 @@
 
   - 3.4.0 installation (x86 / x64)
   - debug x86 library: https://github.com/deadVertex/archiver_project/raw/master/lib/win32/python34_d.lib
+  - debug x86 DLL: https://github.com/deadVertex/archiver_project/tree/master/bin/win32
   - debug x64 library has to be built from source
 
 1.6) OpenGL
