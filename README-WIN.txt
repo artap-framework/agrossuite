@@ -22,9 +22,18 @@
 1.5) Python
 
   - 3.4.0 installation (x86 / x64)
-  - debug x86 library: https://github.com/deadVertex/archiver_project/raw/master/lib/win32/python34_d.lib
-  - debug x86 DLL: https://github.com/deadVertex/archiver_project/tree/master/bin/win32
-  - debug x64 library has to be built from source
+  - debug libraries can be built from the source
+  - Known bug (only in Debug): http://bugs.python.org/issue17797
+  -> Workaround: pythonrun.c: replace
+  
+    - this: if (!is_valid_fd(fd)) {
+    - with:
+  
+	  - #ifdef MS_WINDOWS
+      - if (!is_valid_fd(fd) || GetStdHandle(STD_INPUT_HANDLE) == NULL) {
+      - #else
+      - if (!is_valid_fd(fd)) {
+      - #endif
 
 1.6) OpenGL
   
