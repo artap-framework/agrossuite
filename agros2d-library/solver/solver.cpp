@@ -172,7 +172,7 @@ void SolverDeal::setup()
     time.start();
 
     m_doFHandler->distribute_dofs(*m_feCollection);
-    std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
+    // std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
 
     // reinit sln and rhs
     system_rhs.reinit(m_doFHandler->n_dofs());
@@ -426,56 +426,56 @@ void SolverDeal::solveAdaptivityAdaptive()
 
         // *********************************************************************************
 
+        // TODO: remove (only for paper)
+        //        double energy = 0.0;
 
-        double energy = 0.0;
+        //        dealii::hp::QCollection<2> quadrature_formulas;
+        //        for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+        //            quadrature_formulas.push_back(dealii::QGauss<2>(degree + 1));
 
-        dealii::hp::QCollection<2> quadrature_formulas;
-        for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
-            quadrature_formulas.push_back(dealii::QGauss<2>(degree + 1));
+        //        dealii::hp::FEValues<2> hp_fe_values(m_doFHandler->get_fe(), quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
 
-        dealii::hp::FEValues<2> hp_fe_values(m_doFHandler->get_fe(), quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
+        //        for (int iLabel = 0; iLabel < Agros2D::scene()->labels->count(); iLabel++)
+        //        {
+        //            SceneLabel *label = Agros2D::scene()->labels->at(iLabel);
 
-        for (int iLabel = 0; iLabel < Agros2D::scene()->labels->count(); iLabel++)
-        {
-            SceneLabel *label = Agros2D::scene()->labels->at(iLabel);
+        //            SceneMaterial *material = label->marker(m_fieldInfo);
 
-            SceneMaterial *material = label->marker(m_fieldInfo);
+        //            const Value *material_electrostatic_permittivity = material->valueNakedPtr(QLatin1String("electrostatic_permittivity"));
+        //            const Value *material_electrostatic_charge_density = material->valueNakedPtr(QLatin1String("electrostatic_charge_density"));
 
-            const Value *material_electrostatic_permittivity = material->valueNakedPtr(QLatin1String("electrostatic_permittivity"));
-            const Value *material_electrostatic_charge_density = material->valueNakedPtr(QLatin1String("electrostatic_charge_density"));
+        //            // Then start the loop over all cells, and select those cells which are close enough to the evaluation point:
+        //            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = m_doFHandler->begin_active(), endc_int = m_doFHandler->end();
+        //            for (; cell_int != endc_int; ++cell_int)
+        //            {
+        //                // volume integration
+        //                if (cell_int->material_id() - 1 == iLabel)
+        //                {
+        //                    hp_fe_values.reinit(cell_int);
 
-            // Then start the loop over all cells, and select those cells which are close enough to the evaluation point:
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = m_doFHandler->begin_active(), endc_int = m_doFHandler->end();
-            for (; cell_int != endc_int; ++cell_int)
-            {
-                // volume integration
-                if (cell_int->material_id() - 1 == iLabel)
-                {
-                    hp_fe_values.reinit(cell_int);
+        //                    const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
+        //                    const unsigned int n_q_points = fe_values.n_quadrature_points;
 
-                    const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
-                    const unsigned int n_q_points = fe_values.n_quadrature_points;
+        //                    std::vector<dealii::Vector<double> > solution_values(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+        //                    std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
 
-                    std::vector<dealii::Vector<double> > solution_values(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-                    std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+        //                    fe_values.get_function_values(*m_solution, solution_values);
+        //                    fe_values.get_function_gradients(*m_solution, solution_grads);
 
-                    fe_values.get_function_values(*m_solution, solution_values);
-                    fe_values.get_function_gradients(*m_solution, solution_grads);
+        //                    // expressions
 
-                    // expressions
+        //                    for (unsigned int k = 0; k < n_q_points; ++k)
+        //                    {
+        //                        const dealii::Point<2> p = fe_values.quadrature_point(k);
 
-                    for (unsigned int k = 0; k < n_q_points; ++k)
-                    {
-                        const dealii::Point<2> p = fe_values.quadrature_point(k);
+        //                        energy += fe_values.JxW(k) * (2.0*M_PI*p[0]*0.5*material_electrostatic_permittivity->number()*8.854e-12*(solution_grads[k][0][0]*solution_grads[k][0][0]+solution_grads[k][0][1]*solution_grads[k][0][1]));
+        //                    }
 
-                        energy += fe_values.JxW(k) * (2.0*M_PI*p[0]*0.5*material_electrostatic_permittivity->number()*8.854e-12*(solution_grads[k][0][0]*solution_grads[k][0][0]+solution_grads[k][0][1]*solution_grads[k][0][1]));
-                    }
+        //                }
+        //            }
+        //        }
 
-                }
-            }
-        }
-
-        qDebug() << energy;
+        //        std::cout << energy << std::endl;
 
         // ********************************************************************************
 
