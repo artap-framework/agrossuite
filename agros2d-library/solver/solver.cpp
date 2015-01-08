@@ -93,6 +93,10 @@
 
 #include <functional>
 
+// todo: find better place
+// todo: what for curved elements?
+const int QUADRATURE_ORDER_INCREASE = 1;
+
 
 template<int dim>
 class RightHandSide : public dealii::Function<dim>
@@ -155,8 +159,8 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
     {
         m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Q<2>(degree), fieldInfo->numberOfSolutions()));
-        m_quadrature_formulas.push_back(dealii::QGauss<2>(degree + 1));
-        m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(degree + 1));
+        m_quadrature_formulas.push_back(dealii::QGauss<2>(degree +  QUADRATURE_ORDER_INCREASE));
+        m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(degree + QUADRATURE_ORDER_INCREASE));
     }
 }
 
