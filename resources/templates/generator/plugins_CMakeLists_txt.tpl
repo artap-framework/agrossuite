@@ -37,6 +37,16 @@ FIND_PACKAGE(OpenGLCustom REQUIRED)
 # Handle Qt.
 include(../QtHandling.cmake)
 
+# Build type.
+ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
+IF(AGROS_DEBUG)
+SET(DEAL_II_BUILD_TYPE "Debug")
+SET(CMAKE_BUILD_TYPE "Debug")
+ELSE()
+SET(DEAL_II_BUILD_TYPE "Release")
+SET(CMAKE_BUILD_TYPE "Release")
+ENDIF()
+
 IF(WIN32)
   # Naming of libraries to link to.
   FIND_LIBRARY(PLUGINS_PARALUTION_LIBRARY agros2d_3dparty_paralution PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
@@ -55,34 +65,6 @@ INCLUDE_DIRECTORIES(${XERCES_INCLUDE_DIR})
 FIND_LIBRARY(PLUGINS_AGROS_LIBRARY agros2d_library PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
 FIND_LIBRARY(PLUGINS_PYTHONLAB_LIBRARY agros2d_pythonlab_library PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
 FIND_LIBRARY(PLUGINS_AGROS_UTIL agros2d_util PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
-
-ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
-IF(AGROS_DEBUG)
-SET(DEAL_II_BUILD_TYPE "Debug")
-SET(CMAKE_BUILD_TYPE "Debug")
-ELSE()
-SET(DEAL_II_BUILD_TYPE "Release")
-SET(CMAKE_BUILD_TYPE "Release")
-ENDIF()
-
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/boost-1.56.0/include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/tbb41_20130401oss/include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/UMFPACK/Include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/AMD/Include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/muparser_v2_2_3/include/")
-
-FIND_PACKAGE(deal.II REQUIRED HINTS ../dealii)
-DEAL_II_INITIALIZE_CACHED_VARIABLES()
-
-# DealII linking name & location.
-IF(MSVC)
-IF(AGROS_DEBUG)
-SET(DEAL_II_LIBRARIES ${CMAKE_HOME_DIRECTORY}/../libs/deal_II.g.lib)
-ELSE()
-SET(DEAL_II_LIBRARIES ${CMAKE_HOME_DIRECTORY}/../libs/deal_II.lib)
-ENDIF()
-ENDIF()
 
 # Output paths.
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_AGROS_DIRECTORY}/libs)
@@ -112,8 +94,12 @@ IF(MSVC)
 ENDIF(MSVC)
 
 # Python
-FIND_PACKAGE(PythonLibs 3.2 REQUIRED)
-INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIR})
+set(Python_ADDITIONAL_VERSIONS 3.4)
+FIND_PACKAGE(PythonLibs 3.4 REQUIRED)
+IF(MSVC)
+	get_filename_component(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} PATH)
+ENDIF()
+INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
 
 # Include current dir
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -151,49 +137,38 @@ ENDIF(MSVC)
 
 # Include OUR header files location
 include(${CMAKE_AGROS_DIRECTORY}/IncludeSubdirs.cmake)
+FIND_PACKAGE(LAPACK REQUIRED)
+# The searching using dealII modules is at the end so we do not mess up anything before.
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../dealii/cmake
+${PROJECT_SOURCE_DIR}/../dealii/cmake/modules)
 
-# Look for UMFPACK, AND MUMPS
-IF(WITH_UMFPACK)
-  FIND_PACKAGE(UMFPACK REQUIRED)
-  INCLUDE_DIRECTORIES(${UMFPACK_INCLUDE_DIRS})
+FILE(GLOB _macro_files "${PROJECT_SOURCE_DIR}/../dealii/cmake/macros/*.cmake")
+INCLUDE(${PROJECT_SOURCE_DIR}/../dealii/cmake/setup_external_macros.cmake)
+FOREACH(_file ${_macro_files})
+  INCLUDE(${_file})
+ENDFOREACH()
+
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/boost-1.56.0/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/tbb41_20130401oss/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/UMFPACK/Include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/AMD/Include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/muparser_v2_2_3/include/")
+
+FIND_PACKAGE(deal.II REQUIRED HINTS ../dealii)
+DEAL_II_INITIALIZE_CACHED_VARIABLES()
+
+
+FIND_PACKAGE(UMFPACK REQUIRED)
+
+# DealII linking name & location.
+IF(MSVC)
+IF(AGROS_DEBUG)
+SET(DEAL_II_LIBRARIES ${CMAKE_HOME_DIRECTORY}/../libs/deal_II.g.lib)
+ELSE()
+SET(DEAL_II_LIBRARIES ${CMAKE_HOME_DIRECTORY}/../libs/deal_II.lib)
 ENDIF()
-
-if(WITH_TRILINOS)
-    find_package(TRILINOS REQUIRED)
-    include_directories(${TRILINOS_INCLUDE_DIR})
-  endif(WITH_TRILINOS)
-
-if(WITH_MPI)
-  find_package(MPI REQUIRED)
-  include_directories(${MPI_INCLUDE_PATH})
-endif(WITH_MPI)
-
-
-IF(WITH_MUMPS)
-  FIND_PACKAGE(MUMPS REQUIRED)
-  
-  IF(MSVC)
-    FIND_PACKAGE(WINBLAS REQUIRED)
-  ELSE(MSVC)
-    IF (NOT LAPACK_FOUND)
-      ENABLE_LANGUAGE(Fortran)
-      FIND_PACKAGE(LAPACK REQUIRED)
-      
-      # If no error occured, LAPACK library has been found. Save the path to
-      # it to cache, so that it will not be searched for during next 'cmake .'
-      SET(LAPACK_LIBRARIES  ${LAPACK_LIBRARIES}
-              CACHE STRING  "Path to LAPACK/BLAS libraries.")
-      SET(LAPACK_FOUND      YES
-              CACHE STRING  "Have LAPACK/BLAS libraries been found?")
-    ENDIF (NOT LAPACK_FOUND)
-    
-    ADD_DEFINITIONS(-DWITH_BLAS)
-  ENDIF(MSVC)
 ENDIF()
-
-SET(MUMPS_LIBRARIES ${MUMPS_CPLX_LIBRARIES})
-LIST(APPEND MUMPS_LIBRARIES ${MUMPS_REAL_LIBRARIES})
-INCLUDE_DIRECTORIES(${MUMPS_INCLUDE_DIR})
 
 # modules
 {{#SOURCE}}

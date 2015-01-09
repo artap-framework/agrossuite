@@ -19,6 +19,11 @@ if(POLICY CMP0020)
   cmake_policy(PUSH)
   cmake_policy(SET CMP0020 OLD)
 endif()
+# Policy handling
+if(POLICY CMP0043)
+  cmake_policy(PUSH)
+  cmake_policy(SET CMP0020 OLD)
+endif()
 
 # Debug yes / no.
 SET(AGROS_DEBUG NO)
@@ -128,6 +133,9 @@ ENDIF(MSVC)
 # Python
 set(Python_ADDITIONAL_VERSIONS 3.4)
 FIND_PACKAGE(PythonLibs 3.4 REQUIRED)
+IF(MSVC)
+	get_filename_component(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} PATH)
+ENDIF()
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
 
 # VTK
@@ -344,5 +352,8 @@ add_custom_target(other SOURCES ${info})
 
 # Policy handling
 if(POLICY CMP0020)
+  cmake_policy(POP)
+endif()
+if(POLICY CMP0043)
   cmake_policy(POP)
 endif()
