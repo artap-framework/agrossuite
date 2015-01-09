@@ -43,14 +43,14 @@ GradientErrorEstimator::EstimateScratchData::EstimateScratchData(const EstimateS
 {
 }
 
-void GradientErrorEstimator::estimate(const dealii::hp::HpDoFHandler<2> &dof_handler,
+void GradientErrorEstimator::estimate(const dealii::hp::DoFHandler<2> &dof_handler,
                                       const dealii::Vector<double> &solution,
                                       dealii::Vector<float> &error_per_cell)
 {
     Assert (error_per_cell.size() == dof_handler.get_tria().n_active_cells(),
             ExcInvalidVectorLength (error_per_cell.size(),
                                     dof_handler.get_tria().n_active_cells()));
-    typedef std::tuple<typename dealii::hp::HpDoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
+    typedef std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
 
     dealii::SynchronousIterators<IteratorTuple>
             begin_sync_it (IteratorTuple (dof_handler.begin_active(), error_per_cell.begin())),
@@ -64,15 +64,15 @@ void GradientErrorEstimator::estimate(const dealii::hp::HpDoFHandler<2> &dof_han
                             EstimateCopyData());
 }
 
-void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<std::tuple<typename dealii::hp::HpDoFHandler<2>::active_cell_iterator,
+void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator,
                                            dealii::Vector<float>::iterator> > &cell,
                                            EstimateScratchData &scratch_data,
                                            const EstimateCopyData &)
 {
     dealii::Tensor<2,2> Y;
-    std::vector<typename dealii::hp::HpDoFHandler<2>::active_cell_iterator> active_neighbors;
+    std::vector<typename dealii::hp::DoFHandler<2>::active_cell_iterator> active_neighbors;
     active_neighbors.reserve(dealii::GeometryInfo<2>::faces_per_cell * dealii::GeometryInfo<2>::max_children_per_face);
-	TYPENAME dealii::hp::HpDoFHandler<2>::active_cell_iterator cell_it(std::get<0>(cell.iterators));
+	TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_it(std::get<0>(cell.iterators));
     scratch_data.fe_midpoint_value.reinit(cell_it);
 
     dealii::Tensor<1,2> projected_gradient;
@@ -81,8 +81,8 @@ void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<st
     {
         if (!std::get<0>(cell.iterators)->at_boundary(face_no))
         {
-			const TYPENAME dealii::hp::HpDoFHandler<2>::face_iterator face = std::get<0>(cell.iterators)->face(face_no);
-			const TYPENAME dealii::hp::HpDoFHandler<2>::cell_iterator neighbor = std::get<0>(cell.iterators)->neighbor(face_no);
+			const TYPENAME dealii::hp::DoFHandler<2>::face_iterator face = std::get<0>(cell.iterators)->face(face_no);
+			const TYPENAME dealii::hp::DoFHandler<2>::cell_iterator neighbor = std::get<0>(cell.iterators)->neighbor(face_no);
             if (neighbor->active())
             {
                 active_neighbors.push_back(neighbor);
@@ -99,10 +99,10 @@ void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<st
     std::vector<double> this_midpoint_value(1);
     scratch_data.fe_midpoint_value.get_present_fe_values().get_function_values(scratch_data.solution, this_midpoint_value);
     std::vector<double> neighbor_midpoint_value(1);
-	TYPENAME std::vector<TYPENAME dealii::hp::HpDoFHandler<2>::active_cell_iterator>::const_iterator neighbor_ptr = active_neighbors.begin();
+	TYPENAME std::vector<TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator>::const_iterator neighbor_ptr = active_neighbors.begin();
     for (; neighbor_ptr!=active_neighbors.end(); ++neighbor_ptr)
     {
-		const TYPENAME dealii::hp::HpDoFHandler<2>::active_cell_iterator neighbor = *neighbor_ptr;
+		const TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator neighbor = *neighbor_ptr;
         scratch_data.fe_midpoint_value.reinit (neighbor);
         const dealii::Point<2> neighbor_center = scratch_data.fe_midpoint_value.get_present_fe_values().quadrature_point(0);
         scratch_data.fe_midpoint_value.get_present_fe_values().get_function_values (scratch_data.solution, neighbor_midpoint_value);

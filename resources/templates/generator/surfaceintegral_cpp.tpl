@@ -171,7 +171,7 @@ void {{CLASS}}SurfaceIntegral::calculate()
                 continue;
 
             // Then start the loop over all cells, and select those cells which are close enough to the evaluation point:
-            dealii::hp::HpDoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(), endc_int = ma.doFHandler()->end();
+            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(), endc_int = ma.doFHandler()->end();
             for (; cell_int != endc_int; ++cell_int)
             {
                 SceneLabel *label = Agros2D::scene()->labels->at(cell_int->material_id() - 1);

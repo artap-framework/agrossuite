@@ -41,7 +41,7 @@
 class GradientErrorEstimator
 {
 public:
-    static void estimate (const dealii::hp::HpDoFHandler<2> &dof,
+    static void estimate (const dealii::hp::DoFHandler<2> &dof,
                           const dealii::Vector<double> &solution,
                           dealii::Vector<float> &error_per_cell);
     DeclException2 (ExcInvalidVectorLength,
@@ -62,7 +62,7 @@ private:
     };
     struct EstimateCopyData {};
 
-    static void estimate_cell(const dealii::SynchronousIterators<std::tuple<typename dealii::hp::HpDoFHandler<2>::active_cell_iterator,
+    static void estimate_cell(const dealii::SynchronousIterators<std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator,
                               dealii::Vector<float>::iterator> > &cell,
                               EstimateScratchData &scratch_data,
                               const EstimateCopyData &copy_data);
