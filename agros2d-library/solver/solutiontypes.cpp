@@ -56,7 +56,7 @@ void MultiArray::clear()
         delete m_solution;
 }
 
-void MultiArray::append(dealii::hp::DoFHandler<2> *doFHandler, dealii::Vector<double> *solution)
+void MultiArray::append(dealii::hp::HpDoFHandler<2> *doFHandler, dealii::Vector<double> *solution)
 {
     m_doFHandler = doFHandler;
     m_solution = solution;

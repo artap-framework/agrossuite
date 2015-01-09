@@ -140,7 +140,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
     std::vector<dealii::types::global_dof_index> local_dof_indices;
 
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+    dealii::hp::HpDoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
     for (; cell != endc; ++cell)
     {
         const unsigned int dofs_per_cell = cell->get_fe().dofs_per_cell;

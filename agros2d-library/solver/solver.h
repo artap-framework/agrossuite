@@ -60,7 +60,7 @@ public:
 
     inline dealii::Vector<double> *solution() { return m_solution; }
     inline dealii::Triangulation<2> *triangulation() { return m_triangulation; }
-    inline dealii::hp::DoFHandler<2> *doFHandler() { return m_doFHandler; }
+    inline dealii::hp::HpDoFHandler<2> *doFHandler() { return m_doFHandler; }
     dealii::hp::FECollection<2> *feCollection() { return m_feCollection; }
 
     inline dealii::hp::QCollection<2> quadrature_formulas() const { return m_quadrature_formulas; }
@@ -89,7 +89,7 @@ protected:
     const FieldInfo *m_fieldInfo;
 
     dealii::Triangulation<2> *m_triangulation;
-    dealii::hp::DoFHandler<2> *m_doFHandler;
+    dealii::hp::HpDoFHandler<2> *m_doFHandler;
     dealii::hp::FECollection<2> *m_feCollection;
 
     // quadrature cache

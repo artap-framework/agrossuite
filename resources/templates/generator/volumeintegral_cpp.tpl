@@ -226,7 +226,7 @@ void {{CLASS}}VolumeIntegral::calculate()
             {{/VARIABLE_MATERIAL}}
 
             // Then start the loop over all cells, and select those cells which are close enough to the evaluation point:
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(), endc_int = ma.doFHandler()->end();
+            dealii::hp::HpDoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(), endc_int = ma.doFHandler()->end();
             for (; cell_int != endc_int; ++cell_int)
             {
                 // volume integration
