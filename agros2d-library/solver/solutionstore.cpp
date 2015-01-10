@@ -103,7 +103,7 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
         boost::archive::binary_iarchive sbiMesh(ifsMesh);
         triangulation->load(sbiMesh, 0);
 
-        dealii::hp::DoFHandler<2> *doFHandler = new dealii::hp::DoFHandler<2>(*triangulation);
+        dealii::hp::HpDoFHandler<2> *doFHandler = new dealii::hp::HpDoFHandler<2>(*triangulation);
         // dealii::DoFHandler<2> *doFHandler2;
 
         // fe collection
@@ -409,7 +409,7 @@ double SolutionStore::timeLevel(const FieldInfo *fieldInfo, int timeLevelIndex)
 
 void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, MultiArray multiSolution)
 {
-    // TODO: IMPLEMENT load and save in hp::DoFHandler
+    // TODO: IMPLEMENT load and save in hp::HpDoFHandler
 
     // triangulation
     // dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>();
@@ -421,7 +421,7 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, Multi
     //     feCollection->push_back(dealii::FESystem<2>(dealii::FE_Q<2>(degree), solutionID.group->numberOfSolutions()));
 
     // dof handler    
-    // dealii::hp::DoFHandler<2> *doFHandler = new dealii::hp::DoFHandler<2>(multiSolution.doFHandler()->get_tria());
+    // dealii::hp::HpDoFHandler<2> *doFHandler = new dealii::hp::HpDoFHandler<2>(multiSolution.doFHandler()->get_tria());
     // doFHandler->distribute_dofs(multiSolution.doFHandler()->get_fe());
 
     // solution vector

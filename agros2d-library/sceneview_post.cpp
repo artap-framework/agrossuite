@@ -57,7 +57,7 @@
 
 #include "pythonlab/pythonengine.h"
 
-PostDataOut::PostDataOut() : dealii::DataOut<2, dealii::hp::DoFHandler<2> >()
+PostDataOut::PostDataOut() : dealii::DataOut<2, dealii::hp::HpDoFHandler<2> >()
 {
 }
 
@@ -174,7 +174,7 @@ dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
     if (m_subdomains.size() == 0)
         return this->dofs->begin_active();
 
-    DataOut<2, dealii::hp::DoFHandler<2> >::active_cell_iterator cell = this->dofs->begin_active();
+    DataOut<2, dealii::hp::HpDoFHandler<2> >::active_cell_iterator cell = this->dofs->begin_active();
     while ((cell != this->dofs->end()) &&
            (cell->subdomain_id() != m_subdomains[0])) // TODO !!!
         ++cell;
@@ -185,7 +185,7 @@ dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
 dealii::DataOut<2>::cell_iterator PostDataOut::next_cell (const DataOut<2>::cell_iterator &old_cell)
 {
     if (m_subdomains.size() == 0)
-        return dealii::DataOut<2, dealii::hp::DoFHandler<2> >::next_cell(old_cell);
+        return dealii::DataOut<2, dealii::hp::HpDoFHandler<2> >::next_cell(old_cell);
 
     if (old_cell != this->dofs->end())
     {
