@@ -66,10 +66,15 @@ public:
     inline dealii::hp::QCollection<2> quadrature_formulas() const { return m_quadrature_formulas; }
     inline dealii::hp::QCollection<2-1> face_quadrature_formulas() const { return m_face_quadrature_formulas; }
 
-    virtual void setup();
+    // if use_dirichlet_lift == false, zero dirichlet boundary condition is used
+    // this is used for later iterations of the Newton method
+    // this function, however, has to be called to ensure zero dirichlet boundary
+    virtual void setup(bool use_dirichlet_lift);
+    virtual void setupNewtonInitial();
 
     virtual void assembleSystem() = 0;
-    virtual void assembleDirichlet() = 0;
+
+    virtual void assembleDirichlet(bool use_dirichlet_lift) = 0;
 
     // problem
     void solve();

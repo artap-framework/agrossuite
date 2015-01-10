@@ -402,7 +402,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
     }
 }
 
-void SolverDeal{{CLASS}}::assembleDirichlet()
+void SolverDeal{{CLASS}}::assembleDirichlet(bool use_dirichlet_lift)
 {
     for (int i = 0; i < Agros2D::scene()->edges->count(); i++)
     {
@@ -422,11 +422,17 @@ void SolverDeal{{CLASS}}::assembleDirichlet()
                 mask.push_back({{MASK}});{{/FORM_EXPRESSION_MASK}}
                 dealii::ComponentMask component_mask(mask);
 
-                // std::map<dealii::types::global_dof_index,double> boundary_values;
-                dealii::VectorTools::interpolate_boundary_values (*m_doFHandler, i+1,
-                                                                  Essential_{{COORDINATE_TYPE}}_{{ANALYSIS_TYPE}}_{{LINEARITY_TYPE}}_{{BOUNDARY_ID}}<2>(boundary),
-                                                                  hanging_node_constraints, // boundary_values,
-                                                                  component_mask);
+                if(use_dirichlet_lift)
+                    dealii::VectorTools::interpolate_boundary_values (*m_doFHandler, i+1,
+                                                                      Essential_{{COORDINATE_TYPE}}_{{ANALYSIS_TYPE}}_{{LINEARITY_TYPE}}_{{BOUNDARY_ID}}<2>(boundary),
+                                                                      hanging_node_constraints, // boundary_values,
+                                                                      component_mask);
+                else
+                    dealii::VectorTools::interpolate_boundary_values (*m_doFHandler, i+1,
+                                                                      dealii::ZeroFunction<2>(), // for the Newton method
+                                                                      hanging_node_constraints, // boundary_values,
+                                                                      component_mask);
+
                 // dealii::MatrixTools::apply_boundary_values (boundary_values, system_matrix, *m_solution, system_rhs);
             }
             {{/EXACT_SOURCE}}
