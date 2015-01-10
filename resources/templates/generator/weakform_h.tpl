@@ -34,7 +34,7 @@ public:
     // virtual void setup();
 
     virtual void assembleSystem();
-    virtual void assembleDirichlet();
+    virtual void assembleDirichlet(bool use_dirichlet_lift);
 };
 
 #endif // {{CLASS}}_INTERFACE_H

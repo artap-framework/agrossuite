@@ -170,7 +170,7 @@ SolverDeal::~SolverDeal()
     // delete m_fe;
 }
 
-void SolverDeal::setup()
+void SolverDeal::setup(bool use_dirichlet_lift)
 {
     QTime time;
     time.start();
@@ -186,7 +186,7 @@ void SolverDeal::setup()
     dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler, hanging_node_constraints);
 
     // assemble Dirichlet
-    assembleDirichlet();
+    assembleDirichlet(use_dirichlet_lift);
 
     hanging_node_constraints.close();
 
@@ -206,6 +206,60 @@ void SolverDeal::setup()
         // qDebug() << "transient - mass_matrix";
     }
     // qDebug() << "setup (" << time.elapsed() << "ms )";
+}
+
+void SolverDeal::setupNewtonInitial()
+{
+//    QTime time;
+//    time.start();
+
+    m_doFHandler->distribute_dofs(*m_feCollection);
+    // std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
+
+    // reinit sln
+
+    if(!m_solution_previous)
+        m_solution_previous = new dealii::Vector<double>();
+
+    m_solution_previous->reinit(m_doFHandler->n_dofs());
+
+    hanging_node_constraints.clear();
+    dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler, hanging_node_constraints);
+
+    // assemble Dirichlet
+    assembleDirichlet(true);
+
+    hanging_node_constraints.close();
+
+    // todo: this has to be verified
+    // I hope, that it will construct dirichlet lift, taking into account hanging nodes close to the boundary,
+    // since to the hanging_node_constraints, first are applied hanging nodes and than the Dirichlet BC
+    // todo: is that correct?
+    for(dealii::types::global_dof_index dof = 0; dof < m_doFHandler->n_dofs(); dof++)
+    {
+        if(hanging_node_constraints.is_constrained(dof))
+        {
+            // first consider only BC, not hanging nodes
+            // todo: extend
+            assert(hanging_node_constraints.get_constraint_entries(dof)->size() == 0);
+//            const std::vector<std::pair<dealii::types::global_dof_index,double> > * constraints = hanging_node_constraints.get_constraint_entries(dof);
+//            if(constraints != nullptr)
+//            {
+//                for(int i = 0; i < constraints->size(); i++)
+//                {
+//                    std::cout << "(" << (*constraints)[i].first << ", " << (*constraints)[i].second << "), ";
+//                }
+//                std::cout << std::endl;
+//            }
+
+//            std::cout << "inhomogenity " << hanging_node_constraints.get_inhomogeneity(dof) << std::endl;
+
+            (*m_solution_previous)(dof) = hanging_node_constraints.get_inhomogeneity(dof);
+        }
+    }
+
+//    for (std::map<dealii::types::global_dof_index, double>::const_iterator p = hanging_node_constraints.begin(); p != hanging_node_constraints.end(); ++p)
+//        m_solution_previous(p->first) = p->second;
 }
 
 void SolverDeal::solve()
@@ -234,14 +288,6 @@ void SolverDeal::solveLinearSystem()
 
     hanging_node_constraints.distribute(*m_solution);
 
-    // copy solution
-    if (m_fieldInfo->linearityType() != LinearityType_Linear)
-    {
-        if (m_solution_previous)
-            delete m_solution_previous;
-        m_solution_previous = new dealii::Vector<double>(*m_solution);
-    }
-
     qDebug() << "solved (" << time.elapsed() << "ms )";
 }
 
@@ -255,7 +301,7 @@ void SolverDeal::solveLinearity()
 
 void SolverDeal::solveLinearityLinear()
 {
-    setup();
+    setup(true);
 
     QTime time;
     time.start();
@@ -287,12 +333,18 @@ void SolverDeal::solveLinearityNonLinearPicard()
     QVector<double> steps;
     QVector<double> relativeChangeOfSolutions;
 
-    setup();
-    for (int iteration = 0; iteration < 6; iteration++)
+    setup(true);
+    for (int iteration = 0; iteration < 21; iteration++)
     {
         qDebug() << "step: " << iteration;
         assembleSystem();
         solveLinearSystem();
+
+        // copy solution
+        if (m_solution_previous)
+            delete m_solution_previous;
+        m_solution_previous = new dealii::Vector<double>(*m_solution);
+
 
         // update
         steps.append(iteration);
@@ -310,7 +362,52 @@ void SolverDeal::solveLinearityNonLinearPicard()
 
 void SolverDeal::solveLinearityNonLinearNewton()
 {
-    assert(0);
+  QTime time;
+  time.start();
+
+  QVector<double> steps;
+  QVector<double> relativeChangeOfSolutions;
+
+  // todo: some work is duplicated
+  // decide, how the adaptivity, nonlinear (and time ) steps will be organized
+  setupNewtonInitial();
+  setup(false);
+
+  for (int iteration = 0; iteration < 6; iteration++)
+  {
+      qDebug() << "step: " << iteration;
+      system_rhs = 0.0;
+      system_matrix = 0.0;
+      assembleSystem();
+      system_rhs *= -1.0;
+      solveLinearSystem();
+
+      assert(m_solution_previous);
+      std::cout << "solution norm " << m_solution->l2_norm() << "sol[0] " << (*m_solution)[0] << ", residual norm " << system_rhs.l2_norm() << "res[0] " << system_rhs[0] << std::endl;
+      const double damping_factor = 1.0;
+      m_solution_previous->add(damping_factor, *m_solution);
+
+      // update
+      steps.append(iteration);
+      relativeChangeOfSolutions.append(damping_factor * (*m_solution).l2_norm()/ m_solution_previous->l2_norm() * 100);
+
+      // damping: %2
+      Agros2D::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, residual %3)")
+                                   .arg(iteration)
+                                   .arg(QString::number(relativeChangeOfSolutions.last(), 'f', 5))
+                                   .arg(QString::number(system_rhs.l2_norm(), 'f', 5)));
+
+      Agros2D::log()->updateNonlinearChartInfo(SolverAgros::Phase_Finished, steps, relativeChangeOfSolutions);
+  }
+
+  // put the final solution into the solution
+  assert(m_solution);
+  delete(m_solution);
+  m_solution = new dealii::Vector<double>(*m_solution_previous);
+  delete m_solution_previous;
+  m_solution_previous = nullptr;
+
+  qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
 
 void SolverDeal::solveAdaptivity()
@@ -503,7 +600,7 @@ void SolverDeal::solveAdaptivityAdaptive()
 
 void SolverDeal::solveTransientStep()
 {
-    setup();
+    setup(true);
     assembleSystem();
 
     dealii::Vector<double> tmp;
@@ -643,7 +740,7 @@ void SolverDeal::solveTransientStep()
             m_triangulation->execute_coarsening_and_refinement();
 
             // reinit
-            setup();
+            setup(true);
             assembleSystem();
             tmp.reinit(m_solution->size());
             forcing_terms.reinit(m_solution->size());
