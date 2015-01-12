@@ -32,7 +32,8 @@ __tests__["coupled"] = __get_tests__(test_suite.coupled_problems)
 
 # nonlin
 __tests__["nonlin"] = [
-test_suite.fields.heat.TestHeatNonlinPlanar,
+test_suite.fields.heat.TestHeatNonlinPlanarNewton,
+test_suite.fields.heat.TestHeatNonlinPlanarPicard,
 test_suite.fields.magnetic_steady.TestMagneticNonlinPlanar,
 test_suite.fields.magnetic_harmonic.TestMagneticHarmonicNonlinPlanar,
 test_suite.fields.magnetic_harmonic.TestMagneticHarmonicNonlinAxisymmetric,
@@ -86,7 +87,8 @@ test_suite.fields.acoustic.TestAcousticHarmonicAxisymmetric,
 # heat transfer
 test_suite.fields.heat.TestHeatPlanar,
 test_suite.fields.heat.TestHeatAxisymmetric,
-test_suite.fields.heat.TestHeatNonlinPlanar,
+test_suite.fields.heat.TestHeatNonlinPlanarNewton,
+test_suite.fields.heat.TestHeatNonlinPlanarPicard,
 test_suite.fields.heat.TestHeatTransientAxisymmetric,
 # magnetic field
 test_suite.fields.magnetic_steady.TestMagneticPlanar,
@@ -157,7 +159,8 @@ test_suite.fields.electrostatic.TestElectrostaticAxisymmetric,
 # heat transfer
 #test_suite.fields.heat.TestHeatPlanar,
 #test_suite.fields.heat.TestHeatAxisymmetric,
-#test_suite.fields.heat.TestHeatNonlinPlanar,
+test_suite.fields.heat.TestHeatNonlinPlanarNewton,
+#test_suite.fields.heat.TestHeatNonlinPlanarPicard,
 #test_suite.fields.heat.TestHeatTransientAxisymmetric,
 # magnetic field
 #test_suite.fields.magnetic_steady.TestMagneticPlanar,

@@ -131,7 +131,79 @@ class TestHeatAxisymmetric(Agros2DTestCase):
         surface = self.heat.surface_integrals([1])
         self.value_test("Heat flux", surface["f"], 199.0004)
         
-class TestHeatNonlinPlanar(Agros2DTestCase):
+class TestHeatNonlinPlanarNewton(Agros2DTestCase):
+    def setUp(self):  
+        # model
+        problem = agros2d.problem(clear = True)
+        problem.coordinate_type = "planar"
+        problem.mesh_type = "triangle"
+
+        # disable view
+        agros2d.view.mesh.disable()
+        agros2d.view.post2d.disable()
+
+        # fields
+        self.heat = agros2d.field("heat")
+        self.heat.analysis_type = "steadystate"
+        self.heat.number_of_refinements = 2
+        self.heat.polynomial_order = 2
+
+        self.heat.solver = "newton"
+        self.heat.solver_parameters['residual'] = 0.0001
+        self.heat.solver_parameters['damping'] = 'fixed'
+        self.heat.solver_parameters['damping_factor'] = 0.9
+        self.heat.solver_parameters['jacobian_reuse'] = False
+        self.heat.solver_parameters['jacobian_reuse_ratio'] = 0.3
+        self.heat.solver_parameters['jacobian_reuse_steps'] = 20
+
+        self.heat.add_boundary("Left", "heat_temperature", {"heat_temperature" : 10})
+        self.heat.add_boundary("Radiace", "heat_heat_flux", {"heat_convection_external_temperature" : 0, "heat_convection_heat_transfer_coefficient" : 0, "heat_heat_flux" : 0, "heat_radiation_ambient_temperature" : 20, "heat_radiation_emissivity" : 0.9})
+        self.heat.add_boundary("Neumann", "heat_heat_flux", {"heat_convection_external_temperature" : 0, "heat_convection_heat_transfer_coefficient" : 0, "heat_heat_flux" : 0, "heat_radiation_ambient_temperature" : 0, "heat_radiation_emissivity" : 0})
+        self.heat.add_boundary("Convection", "heat_heat_flux", {"heat_convection_external_temperature" : 20, "heat_convection_heat_transfer_coefficient" : 50, "heat_heat_flux" : 0, "heat_radiation_ambient_temperature" : 0, "heat_radiation_emissivity" : 0})
+
+        self.heat.add_material("Material - nonlin", {"heat_conductivity" : { "x" : [0,100,200,290,500,1000], "y" : [210,280,380,430,310,190], "interpolation" : "cubic_spline", "extrapolation" : "constant", "derivative_at_endpoints" : "first"}, "heat_volume_heat" : 2e6})
+        self.heat.add_material("Material", {"heat_conductivity" : 230, "heat_volume_heat" : 0})
+
+        # geometry
+        geometry = agros2d.geometry
+
+        # edges
+        geometry.add_edge(-0.25, 0.25, -0.1, 0.1, boundaries = {"heat" : "Convection"})
+        geometry.add_edge(-0.1, 0.1, 0.05, 0.2, boundaries = {"heat" : "Convection"})
+        geometry.add_edge(0.05, 0.2, 0.25, 0.25, boundaries = {"heat" : "Neumann"})
+        geometry.add_edge(0.25, 0.25, 0.1, 0.1, boundaries = {"heat" : "Radiace"})
+        geometry.add_edge(0.1, 0.1, 0.25, -0.25, boundaries = {"heat" : "Radiace"})
+        geometry.add_edge(0.25, -0.25, 0.05, -0.05, boundaries = {"heat" : "Neumann"})
+        geometry.add_edge(0.05, -0.05, -0.25, -0.25, boundaries = {"heat" : "Neumann"}, angle = 90)
+        geometry.add_edge(-0.25, -0.05, 0.1, 0.1, boundaries = {})
+        geometry.add_edge(-0.25, 0.25, -0.25, -0.05, boundaries = {"heat" : "Left"})
+        geometry.add_edge(-0.25, -0.05, -0.25, -0.25, boundaries = {"heat" : "Left"})
+
+        # labels
+        geometry.add_label(-0.0150215, 0.018161, materials = {"heat" : "Material"})
+        geometry.add_label(-0.183934, 0.0732177, materials = {"heat" : "Material - nonlin"})
+
+        agros2d.view.zoom_best_fit()
+
+        # solve problem
+        problem.solve()
+
+    def test_values(self):   
+        # point value
+        point = self.heat.local_values(8.620e-02, 1.620e-01)
+        self.value_test("Temperature", point["T"], 357.17654)
+        self.value_test("Gradient", point["G"], 444.435957)
+        self.value_test("Heat flux", point["F"], 1.805517e5)
+
+        # volume integral
+        volume = self.heat.volume_integrals([1])
+        self.value_test("Temperature", volume["T"], 12.221687)
+
+        # surface integral
+        surface = self.heat.surface_integrals([8])
+        self.value_test("Heat flux", surface["f"], 96464.56418)
+        
+class TestHeatNonlinPlanarPicard(Agros2DTestCase):
     def setUp(self):  
         # model
         problem = agros2d.problem(clear = True)
@@ -360,7 +432,8 @@ if __name__ == '__main__':
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatAxisymmetric))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanar))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarNewton))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarPicard))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatTransientAxisymmetric))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(BenchmarkHeatTransientAxisymmetric))
     suite.run(result)
