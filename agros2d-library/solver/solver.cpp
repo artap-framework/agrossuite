@@ -325,6 +325,9 @@ void SolverDeal::solveLinearityNonLinear()
         assert(0);
 }
 
+// todo: is it defined somewhere?
+const int MAX_NUM_NONLIN_ITERS = 100;
+
 void SolverDeal::solveLinearityNonLinearPicard()
 {
     QTime time;
@@ -334,21 +337,43 @@ void SolverDeal::solveLinearityNonLinearPicard()
     QVector<double> relativeChangeOfSolutions;
 
     setup(true);
-    for (int iteration = 0; iteration < 21; iteration++)
+
+    int iteration = 0;
+    bool criteria_reached = false;
+    while((iteration < MAX_NUM_NONLIN_ITERS) && !criteria_reached)
     {
+        iteration += 1;
         qDebug() << "step: " << iteration;
         assembleSystem();
         solveLinearSystem();
 
         // copy solution
+        double rel_change_sol = 100;
         if (m_solution_previous)
+        {
+            m_solution_previous->add(-1, *m_solution);
+            rel_change_sol = m_solution_previous->l2_norm()/ m_solution->l2_norm() * 100;
             delete m_solution_previous;
+        }
+
         m_solution_previous = new dealii::Vector<double>(*m_solution);
 
 
         // update
         steps.append(iteration);
-        relativeChangeOfSolutions.append(1.0);
+        relativeChangeOfSolutions.append(rel_change_sol);
+
+        criteria_reached = true;
+
+        // todo: there is residual for Picard in GUI, what does it mean?
+//        if((m_fieldInfo->value(FieldInfo::NonlinearResidualNorm).toDouble() > 0) &&
+//           (m_fieldInfo->value(FieldInfo::NonlinearResidualNorm).toDouble() < residual_norm))
+//            criteria_reached = false;
+
+        if((m_fieldInfo->value(FieldInfo::NonlinearRelativeChangeOfSolutions).toDouble() > 0) &&
+           (m_fieldInfo->value(FieldInfo::NonlinearRelativeChangeOfSolutions).toDouble() < rel_change_sol))
+            criteria_reached = false;
+
 
         // damping: %2
         Agros2D::log()->printMessage(QObject::tr("Solver (Picard)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %)")
@@ -359,9 +384,6 @@ void SolverDeal::solveLinearityNonLinearPicard()
     }
     qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
-
-// todo: is it defined somewhere?
-const int MAX_NUM_NEWTON_ITERS = 100;
 
 void SolverDeal::solveLinearityNonLinearNewton()
 {
@@ -378,11 +400,10 @@ void SolverDeal::solveLinearityNonLinearNewton()
 
   int iteration = 0;
   bool criteria_reached = false;
-  while((iteration < MAX_NUM_NEWTON_ITERS) && !criteria_reached)
+  while((iteration < MAX_NUM_NONLIN_ITERS) && !criteria_reached)
   {
+      iteration += 1;
       qDebug() << "step: " << iteration;
-      system_rhs = 0.0;
-      system_matrix = 0.0;
       assembleSystem();
       system_rhs *= -1.0;
       solveLinearSystem();
