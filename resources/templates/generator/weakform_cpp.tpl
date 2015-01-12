@@ -203,10 +203,13 @@ void SolverDeal{{CLASS}}::assembleSystem()
                 {
                     shape_face_point[face][q_point] = fe_face_values.quadrature_point(q_point);
                     shape_face_JxW[face][q_point] = fe_face_values.JxW(q_point);
+                }
 
-                    for (unsigned int i = 0; i < dofs_per_cell; ++i)
+                for (unsigned int i = 0; i < dofs_per_cell; ++i)
+                {
+                    shape_face_value[face][i].reinit(n_face_q_points);
+                    for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
                     {
-                        shape_face_value[face][i].reinit(n_face_q_points);
                         shape_face_value[face][i][q_point] = fe_face_values.shape_value(i, q_point);
                         // shape_face_grad[i][q_point] = fe_face_values.shape_grad(i, q_point);
                     }
