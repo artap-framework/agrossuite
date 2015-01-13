@@ -57,19 +57,19 @@
     <module:quantity id="magnetic_total_current_real" shortname="ma_Itr"/>
     <module:quantity id="magnetic_total_current_imag" shortname="ma_Iti"/>
 
-    <module:function id="magnetic_func_current_density_external_real_complete" shortname="ma_Jer_compl" type="constant" postprocessor_linearity="linear" postprocessor_analysis="steadystate">
+<!--    <module:function id="magnetic_func_current_density_external_real_complete" shortname="ma_Jer_compl" type="constant" postprocessor_linearity="linear" postprocessor_analysis="steadystate">
       <module:quantity id="magnetic_current_density_external_real"/>
       <module:quantity id="magnetic_total_current_prescribed"/>
       <module:quantity id="magnetic_total_current_real"/>
       <module:function_variant expr="(1-ma_IPrescribed) * ma_Jer + ma_IPrescribed * ma_Itr / area"/>
-    </module:function>
+    </module:function>-->
 
-    <module:function id="magnetic_func_current_density_external_imag_complete" shortname="ma_Jei_compl" type="constant" postprocessor_linearity="linear" postprocessor_analysis="harmonic" >
+<!--    <module:function id="magnetic_func_current_density_external_imag_complete" shortname="ma_Jei_compl" type="constant" postprocessor_linearity="linear" postprocessor_analysis="harmonic" >
       <module:quantity id="magnetic_current_density_external_imag"/>
       <module:quantity id="magnetic_total_current_prescribed"/>
       <module:quantity id="magnetic_total_current_imag"/>
       <module:function_variant expr="(1-ma_IPrescribed) * ma_Jei + ma_IPrescribed * ma_Iti / area"/>
-    </module:function>
+    </module:function>-->
 
     <module:function id="magnetic_func_current_density_is_variable" shortname="ma_JVariable" type="constant" postprocessor_linearity="linear" postprocessor_analysis="harmonic">
       <module:quantity id="magnetic_conductivity"/>

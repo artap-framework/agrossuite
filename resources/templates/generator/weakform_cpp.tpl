@@ -235,6 +235,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
                 // matrix
                 {{#VARIABLE_SOURCE_LINEAR}}
                 const double {{VARIABLE_SHORT}}_val = materialValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
+                {{#FUNCTION_SOURCE_CONSTANT}}
+                const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_CONSTANT}}
 
                 for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
                 {
@@ -271,6 +273,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
                 // rhs
                 {{#VARIABLE_SOURCE_LINEAR}}
                 const double {{VARIABLE_SHORT}}_val = materialValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
+                {{#FUNCTION_SOURCE_CONSTANT}}
+                const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_CONSTANT}}
 
                 for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
                 {

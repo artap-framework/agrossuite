@@ -61,7 +61,7 @@ private:
 
     void generateWeakForms(ctemplate::TemplateDictionary &output);
     void generateExtFunctions(ctemplate::TemplateDictionary &output);
-    void generateSpecialFunctionsPostprocessor(ctemplate::TemplateDictionary &output);
+//    void generateSpecialFunctionsPostprocessor(ctemplate::TemplateDictionary &output);
 
     //ToDo: make up better names
     template <typename WeakForm>

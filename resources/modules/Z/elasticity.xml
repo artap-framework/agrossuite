@@ -27,7 +27,6 @@
     <module:quantity id="elasticity_temperature_difference" shortname="st_dT"/>
     <module:quantity id="elasticity_temperature_reference" shortname="st_Tr"/>
 
-    <!--
     <module:function id="elasticity_func_lambda" shortname="st_lambda" type="constant" postprocessor_linearity="linear" postprocessor_analysis="steadystate">
       <module:quantity id="elasticity_young_modulus" />
       <module:quantity id="elasticity_poisson_ratio" />
@@ -48,9 +47,8 @@
     <module:vector_form id="rhs_temperature_1_1" i="1" j="1" planar="((3*st_lambda + 2*st_mu) * st_alpha * st_dT) * vdx" axi="r * ((3*st_lambda + 2*st_mu) * st_alpha * st_dT) * (vdr + vval / r)"/>
     <module:vector_form id="rhs_load_2_2" i="2" j="2" planar="st_fvy * vval" axi="r * st_fvy * vval"/>
     <module:vector_form id="rhs_temperature_2_2" i="2" j="2" planar="((3*st_lambda + 2*st_mu) * st_alpha * st_dT) * vdy" axi="r * ((3*st_lambda + 2*st_mu) * st_alpha * st_dT) * vdz"/>
-    -->
 
-    <module:matrix_form id="form_1_1" i="1" j="1" planar="((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) + 2*st_E / (2.0*(1.0 + st_nu))) * (udx * vdx) + st_E / (2.0*(1.0 + st_nu)) * (udy * vdy)" axi="(st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (r * udr * vdr + uval * vdr + udr * vval + uval * vval / (r + 1e-12)) + st_E / (2.0*(1.0 + st_nu)) * (2 * r * udr * vdr + 2 * uval * vval / (r + 1e-12) + r * udz * vdz)" symmetric="1" />
+<!--    <module:matrix_form id="form_1_1" i="1" j="1" planar="((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) + 2*st_E / (2.0*(1.0 + st_nu))) * (udx * vdx) + st_E / (2.0*(1.0 + st_nu)) * (udy * vdy)" axi="(st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (r * udr * vdr + uval * vdr + udr * vval + uval * vval / (r + 1e-12)) + st_E / (2.0*(1.0 + st_nu)) * (2 * r * udr * vdr + 2 * uval * vval / (r + 1e-12) + r * udz * vdz)" symmetric="1" />
     <module:matrix_form id="form_1_2" i="1" j="2" planar="(st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (udy * vdx) + st_E / (2.0*(1.0 + st_nu)) * (udx * vdy)" axi="(st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (r * udz * vdr + udz * vval) + st_E / (2.0*(1.0 + st_nu)) * r * udr * vdz" />
     <module:matrix_form id="form_2_1" i="2" j="1" planar="st_E / (2.0*(1.0 + st_nu)) * (udy * vdx) + (st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (udx * vdy)" axi="(st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * (r * udr * vdz + uval * vdz) + st_E / (2.0*(1.0 + st_nu)) * r * udz * vdr" />
     <module:matrix_form id="form_2_2" i="2" j="2" planar="st_E / (2.0*(1.0 + st_nu)) * (udx * vdx) + ((st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) + 2*st_E / (2.0*(1.0 + st_nu))) * (udy * vdy)" axi="r * (st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) * udz * vdz + r * st_E / (2.0*(1.0 + st_nu)) * (udr * vdr + 2 * udz * vdz)" symmetric="1" />
@@ -58,7 +56,7 @@
     <module:vector_form id="rhs_load_1_1" i="1" j="1" planar="st_fvx * vval" axi="r * st_fvx * vval"/>
     <module:vector_form id="rhs_temperature_1_1" i="1" j="1" planar="((3*(st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) + 2*st_E / (2.0*(1.0 + st_nu))) * st_alpha * st_dT) * vdx" axi="r * ((3*(st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) + 2*st_E / (2.0*(1.0 + st_nu))) * st_alpha * st_dT) * (vdr + vval / r)"/>
     <module:vector_form id="rhs_load_2_2" i="2" j="2" planar="st_fvy * vval" axi="r * st_fvy * vval"/>
-    <module:vector_form id="rhs_temperature_2_2" i="2" j="2" planar="((3*(st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) + 2*st_E / (2.0*(1.0 + st_nu))) * st_alpha * st_dT) * vdy" axi="r * ((3*(st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) + 2*st_E / (2.0*(1.0 + st_nu))) * st_alpha * st_dT) * vdz"/>
+    <module:vector_form id="rhs_temperature_2_2" i="2" j="2" planar="((3*(st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) + 2*st_E / (2.0*(1.0 + st_nu))) * st_alpha * st_dT) * vdy" axi="r * ((3*(st_E * st_nu) / ((1.0 + st_nu) * (1.0 - 2.0*st_nu)) + 2*st_E / (2.0*(1.0 + st_nu))) * st_alpha * st_dT) * vdz"/>-->
 
     <module:weakforms_volume>
       <module:weakform_volume analysistype="steadystate" equation="-\, (\lambda + \mu)~\grad \div \vec{u} -\, \mu \triangle \vec{u} - \alpha_\mathrm{T} \left( 3 \lambda + 2 \mu \right) \grad T = \vec{f},\,\,\, \lambda = \frac{\nu E}{(1 + \nu) (1 - 2 \nu)},\,\, \mu = \frac{E}{2(1 + \nu)}">

@@ -568,12 +568,12 @@
                         <attribute name="id" use="required" type="string" />
                         <attribute name="shortname" use="required" type="string" />
                         <attribute name="type" use="required" type="string" />
-                        <attribute name="switch_combo" type="string" />
-                        <attribute name="bound_low" type="string" />
-                        <attribute name="bound_hi" type="string" />
-                        <attribute name="extrapolate_low" type="string" />
-                        <attribute name="extrapolate_hi" type="string" />
-                        <attribute name="interpolation_count" type="string" />
+<!--                        <attribute name="switch_combo" type="string" />-->
+<!--                        <attribute name="bound_low" type="string" />-->
+<!--                        <attribute name="bound_hi" type="string" />-->
+<!--                        <attribute name="extrapolate_low" type="string" />-->
+<!--                        <attribute name="extrapolate_hi" type="string" />-->
+<!--                        <attribute name="interpolation_count" type="string" />-->
                         <attribute name="postprocessor_analysis" type="string" />
                         <attribute name="postprocessor_linearity" type="string" />
 
