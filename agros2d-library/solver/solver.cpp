@@ -150,7 +150,7 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     // std::cout << "Total number of cells: " << m_triangulation->n_cells() << std::endl;
 
     // create dof handler
-    m_doFHandler = new dealii::hp::HpDoFHandler<2>(*m_triangulation);
+    m_doFHandler = new dealii::hp::DoFHandler<2>(*m_triangulation);
 
     // create solution vector
     m_solution = new dealii::Vector<double>();
@@ -509,7 +509,7 @@ void SolverDeal::solveAdaptivityAdaptive()
 
                 min_smoothness = *std::max_element(smoothness_indicators.begin(), smoothness_indicators.end());
                 max_smoothness = *std::min_element(smoothness_indicators.begin(), smoothness_indicators.end());
-                dealii::hp::HpDoFHandler<2>::active_cell_iterator cellmm = m_doFHandler->begin_active(), endcmm = m_doFHandler->end();
+                dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = m_doFHandler->begin_active(), endcmm = m_doFHandler->end();
                 for (unsigned int index = 0; cellmm != endcmm; ++cellmm, ++index)
                 {
                     if (cellmm->refine_flag_set())
@@ -524,7 +524,7 @@ void SolverDeal::solveAdaptivityAdaptive()
             {
                 const float threshold_smoothness = (max_smoothness + min_smoothness) / 2;
 
-                dealii::hp::HpDoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+                dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
                 for (unsigned int index = 0; cell != endc; ++cell, ++index)
                 {
                     if (m_fieldInfo->adaptivityType() == AdaptivityMethod_P)
@@ -582,7 +582,7 @@ void SolverDeal::solveAdaptivityAdaptive()
         //            const Value *material_electrostatic_charge_density = material->valueNakedPtr(QLatin1String("electrostatic_charge_density"));
 
         //            // Then start the loop over all cells, and select those cells which are close enough to the evaluation point:
-        //            dealii::hp::HpDoFHandler<2>::active_cell_iterator cell_int = m_doFHandler->begin_active(), endc_int = m_doFHandler->end();
+        //            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = m_doFHandler->begin_active(), endc_int = m_doFHandler->end();
         //            for (; cell_int != endc_int; ++cell_int)
         //            {
         //                // volume integration
@@ -717,7 +717,7 @@ void SolverDeal::solveTransientStep()
 
                 float min_smoothness = *std::max_element(smoothness_indicators.begin(), smoothness_indicators.end());
                 float max_smoothness = *std::min_element(smoothness_indicators.begin(), smoothness_indicators.end());
-				TYPENAME dealii::hp::HpDoFHandler<2>::active_cell_iterator cellmm = m_doFHandler->begin_active(), endcmm = m_doFHandler->end();
+				TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = m_doFHandler->begin_active(), endcmm = m_doFHandler->end();
                 for (unsigned int index = 0; cellmm != endcmm; ++cellmm, ++index)
                 {
                     if (cellmm->refine_flag_set())
@@ -729,7 +729,7 @@ void SolverDeal::solveTransientStep()
 
                 const float threshold_smoothness = (max_smoothness + min_smoothness) / 2;
 
-                dealii::hp::HpDoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+                dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
                 for (unsigned int index = 0; cell != endc; ++cell, ++index)
                 {
                     if (m_fieldInfo->adaptivityType() == AdaptivityMethod_P)
@@ -768,7 +768,7 @@ void SolverDeal::solveTransientStep()
 
             hanging_node_constraints.distribute(*m_solution);
 
-            dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::HpDoFHandler<2> > solution_trans(*m_doFHandler);
+            dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solution_trans(*m_doFHandler);
             dealii::Vector<double> previous_solution = *m_solution;
 
             m_triangulation->prepare_coarsening_and_refinement();
@@ -895,7 +895,7 @@ void SolverDeal::estimateSmoothness(dealii::Vector<float> &smoothness_indicators
     }
     std::vector<std::complex<double> > fourier_coefficients (n_fourier_modes);
     dealii::Vector<double> local_dof_values;
-	TYPENAME dealii::hp::HpDoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+	TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
     for (unsigned int index=0; cell!=endc; ++cell, ++index)
     {
         local_dof_values.reinit (cell->get_fe().dofs_per_cell);
@@ -942,7 +942,7 @@ double SolverDeal::computeNorm()
 
     dealii::hp::FEValues<2> hp_fe_values(*m_feCollection, m_quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_JxW_values);
 
-    dealii::hp::HpDoFHandler<2>::active_cell_iterator cell_int = m_doFHandler->begin_active(), endc_int = m_doFHandler->end();
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = m_doFHandler->begin_active(), endc_int = m_doFHandler->end();
     for (; cell_int != endc_int; ++cell_int)
     {
         // volume integration
@@ -982,7 +982,7 @@ void SolverDeal::assembleMassMatrix()
     double sourceCopper = 8700 * 385;
     double sourceIron = 7800 * 460;
 
-    dealii::hp::HpDoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
     for (; cell != endc; ++cell)
     {
         double source = 0;
@@ -1049,7 +1049,7 @@ void SolverDeal::assembleMassMatrix()
 
 //    std::vector<dealii::types::global_dof_index> local_dof_indices;
 
-//    dealii::hp::HpDoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+//    dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
 //    for (; cell != endc; ++cell)
 //    {
 //        const unsigned int dofs_per_cell = cell->get_fe().dofs_per_cell;

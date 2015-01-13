@@ -38,22 +38,22 @@ class AGROS_LIBRARY_API MultiArray
 {
 public:
     MultiArray();
-    MultiArray(dealii::hp::HpDoFHandler<2> *doFHandler, dealii::Vector<double> *solution)
+    MultiArray(dealii::hp::DoFHandler<2> *doFHandler, dealii::Vector<double> *solution)
         : m_doFHandler(doFHandler), m_solution(solution) {}
     ~MultiArray();
 
     void clear();
 
     // add next component
-    void append(dealii::hp::HpDoFHandler<2> *doFHandler, dealii::Vector<double> *solution);
+    void append(dealii::hp::DoFHandler<2> *doFHandler, dealii::Vector<double> *solution);
 
-    dealii::hp::HpDoFHandler<2> *doFHandler() { return m_doFHandler; }
+    dealii::hp::DoFHandler<2> *doFHandler() { return m_doFHandler; }
     dealii::Vector<double> *solution() { return m_solution; }
 
     void createEmpty(int numComp);
 
 private:
-    dealii::hp::HpDoFHandler<2> *m_doFHandler;
+    dealii::hp::DoFHandler<2> *m_doFHandler;
     dealii::Vector<double> *m_solution;
 };
 
