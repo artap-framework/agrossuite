@@ -57,19 +57,21 @@
     <module:quantity id="magnetic_total_current_real" shortname="ma_Itr"/>
     <module:quantity id="magnetic_total_current_imag" shortname="ma_Iti"/>
 
-<!--    <module:function id="magnetic_func_current_density_external_real_complete" shortname="ma_Jer_compl" type="constant" postprocessor_linearity="linear" postprocessor_analysis="steadystate">
+    <module:function id="magnetic_func_current_density_external_real_complete" shortname="ma_Jer_compl" type="constant" postprocessor_linearity="linear" postprocessor_analysis="steadystate">
       <module:quantity id="magnetic_current_density_external_real"/>
       <module:quantity id="magnetic_total_current_prescribed"/>
       <module:quantity id="magnetic_total_current_real"/>
-      <module:function_variant expr="(1-ma_IPrescribed) * ma_Jer + ma_IPrescribed * ma_Itr / area"/>
-    </module:function>-->
+<!--      <module:function_variant expr="(1-ma_IPrescribed) * ma_Jer + ma_IPrescribed * ma_Itr / area"/>-->
+      <module:function_variant expr="ma_Jer"/>
+    </module:function>
 
-<!--    <module:function id="magnetic_func_current_density_external_imag_complete" shortname="ma_Jei_compl" type="constant" postprocessor_linearity="linear" postprocessor_analysis="harmonic" >
+    <module:function id="magnetic_func_current_density_external_imag_complete" shortname="ma_Jei_compl" type="constant" postprocessor_linearity="linear" postprocessor_analysis="harmonic" >
       <module:quantity id="magnetic_current_density_external_imag"/>
       <module:quantity id="magnetic_total_current_prescribed"/>
       <module:quantity id="magnetic_total_current_imag"/>
-      <module:function_variant expr="(1-ma_IPrescribed) * ma_Jei + ma_IPrescribed * ma_Iti / area"/>
-    </module:function>-->
+<!--      <module:function_variant expr="(1-ma_IPrescribed) * ma_Jei + ma_IPrescribed * ma_Iti / area"/>-->
+      <module:function_variant expr="ma_Jei"/>
+    </module:function>
 
     <module:function id="magnetic_func_current_density_is_variable" shortname="ma_JVariable" type="constant" postprocessor_linearity="linear" postprocessor_analysis="harmonic">
       <module:quantity id="magnetic_conductivity"/>
@@ -77,32 +79,33 @@
       <module:function_variant expr="((ma_gamma > 0) * (ma_IPrescribed > 0))"/>
     </module:function>
 
-    <module:function id="magnetic_func_one_over_mu" shortname="ma_one_over_mu" type="function_1d" >
+    <module:function id="magnetic_func_one_over_mu" shortname="ma_one_over_mu" type="constant" >
       <module:quantity id="magnetic_permeability"/>
-      <module:function_variant expr="(((1 / (ma_mur * MU0))))"/> <!-- TODO: revert (((expr))) -->
+      <module:function_variant expr="1 / (ma_mur * MU0)"/>
     </module:function>
 
-    <module:function id="magnetic_func_one_over_norm_a" shortname="ma_one_over_norm_a" type="function_1d" >
-      <module:function_variant expr="(((((h > 0) ? 1/h : 0))))"/> <!-- TODO: revert (((expr))) -->
+    <module:function id="magnetic_func_one_over_norm_a" shortname="ma_one_over_norm_a" type="nonlinear" >
+      <module:function_variant expr_axi="((sqrt(dz1*dz1 + (dr1 + value1 / r)*(dr1 + value1 / r)) > 0) ? 1/sqrt(dz1*dz1 + (dr1 + value1 / r)*(dr1 + value1 / r)) : 0)"
+                               expr    = "((sqrt(dx1*dx1 + dy1*dy1)> 0) ? 1/(sqrt(dx1*dx1 + dy1*dy1)) : 0)"/>
     </module:function>
 
     <module:function id="magnetic_func_sin_Bra" shortname="ma_sin_Bra" type="constant" >
       <module:quantity id="magnetic_remanence_angle"/>
-      <module:function_variant expr="(((sin((ma_Bra / 180 * M_PI)))))"/> <!-- TODO: revert (((expr))) -->
+      <module:function_variant expr="sin((ma_Bra / 180 * M_PI))"/>
     </module:function>
 
-    <module:function id="magnetic_func_cos_Bra" shortname="ma_cos_xBra" type="constant" >
+    <module:function id="magnetic_func_cos_Bra" shortname="ma_cos_Bra" type="constant" >
       <module:quantity id="magnetic_remanence_angle"/>
-      <module:function_variant expr="(((cos((ma_Bra / 180 * M_PI)))))"/> <!-- TODO: revert (((expr))) -->
+      <module:function_variant expr="cos((ma_Bra / 180 * M_PI))"/>
     </module:function>
 
-    <module:matrix_form id="steady_laplace" i="1" j="1" planar="(((1 / (ma_mur * MU0)))) * (udx * vdx + udy * vdy)" symmetric_planar="1" axi="(((1 / (ma_mur * MU0)))) * ((udr * vdr + udz * vdz) + uval * vdr / r) "/>
+    <module:matrix_form id="steady_laplace" i="1" j="1" planar="ma_one_over_mu * (udx * vdx + udy * vdy)" symmetric_planar="1" axi="ma_one_over_mu * ((udr * vdr + udz * vdz) + uval * vdr / r) "/>
     <module:matrix_form id="steady_velocity" i="1" j="1" planar="- ma_gamma * uval * ((ma_vx - y * ma_va) * vdx + (ma_vy + x * ma_va) * vdy)" axi="- ma_gamma * uval * ma_vy * vdz" condition="(fabs(ma_gamma) > 0.0) &amp;&amp; ((fabs(ma_vx) > 0.0) || (fabs(ma_vy) > 0.0) || (fabs(ma_va) > 0.0))"/>
-    <!-- <module:matrix_form id="steady_jac_laplace" i="1" j="1" planar="- dma_mur * MU0 * (((1 / (ma_mur * MU0)))) * (((1 / (ma_mur * MU0)))) * (updx * udx + updy * udy) * (((((h > 0) ? 1/h : 0)))) * (updx * vdx + updy * vdy)" symmetric_planar="1" axi="- dma_mur / (MU0 * ma_mur * ma_mur) * ((updr + upval / r) * (udr + uval / r) + updz * udz) * (((((h > 0) ? 1/h : 0)))) * (updr * vdr + updz * vdz + upval * vdr / r)"/> -->
+    <module:matrix_form id="steady_jac_laplace" i="1" j="1" planar="- dma_mur * MU0 * ma_one_over_mu * ma_one_over_mu * (updx * udx + updy * udy) * ma_one_over_norm_a * (updx * vdx + updy * vdy)" symmetric_planar="1" axi="- dma_mur / (MU0 * ma_mur * ma_mur) * ((updr + upval / r) * (udr + uval / r) + updz * udz) * ma_one_over_norm_a * (updr * vdr + updz * vdz + upval * vdr / r)"/>
 
-    <module:vector_form id="steady_rhs_remanence" i="1" j="1" planar="mu_Brm * (((1 / (ma_mur * MU0)))) * (- (((sin((ma_Bra / 180 * M_PI))))) * vdx + (((cos((ma_Bra / 180 * M_PI))))) * vdy)" axi="- mu_Brm * (((1 / (ma_mur * MU0)))) * (- (((sin((ma_Bra / 180 * M_PI))))) * vdr + (((cos((ma_Bra / 180 * M_PI))))) * vdz)" condition="fabs(mu_Brm) > 0.0"/>
-    <module:vector_form id="steady_rhs_current" i="1" j="1" planar="ma_Jer * vval " axi="ma_Jer * vval" />
-    <module:vector_form id="transient_rhs_current" i="1" j="1" planar="ma_Jer * vval " axi="ma_Jer * vval"/>
+    <module:vector_form  id="steady_rhs_remanence" i="1" j="1" planar="mu_Brm * ma_one_over_mu * (- ma_sin_Bra * vdx + ma_cos_Bra * vdy)" axi="- mu_Brm * ma_one_over_mu * (- ma_sin_Bra * vdr + ma_cos_Bra * vdz)" condition="fabs(mu_Brm) > 0.0"/>
+    <module:vector_form  id="steady_rhs_current" i="1" j="1" planar="ma_Jer_compl * vval " axi="ma_Jer_compl * vval" />
+    <module:vector_form  id="transient_rhs_current" i="1" j="1" planar="ma_Jer * vval " axi="ma_Jer * vval"/>
 
     <module:matrix_form id="transient_mat_1_2" i="1" j="2" planar="ma_gamma * uval * vval" axi="ma_gamma * uval * vval" condition="fabs(ma_gamma) > 0.0" />
     <module:matrix_form id="transient_mat_2_2" i="2" j="2" planar="- uval * vval" axi="- uval * vval" symmetric="1"/>
@@ -110,10 +113,10 @@
     <module:vector_form id="transient_vec_2_1" i="2" j="1" planar="timedervec * vval" axi="timedervec * vval"/>
 
     <!-- TODO: replace value1 with value1+value3 in nonlinear form?????-->
-    <module:matrix_form id="harmonic_laplace_1_1" i="1" j="1" planar="(((1 / (ma_mur * MU0)))) * (udx * vdx + udy * vdy)" symmetric_planar="1" axi="(((1 / (ma_mur * MU0)))) * (udr * vdr + udz * vdz + uval * vdr / r)"/>
-    <!-- <module:matrix_form id="harmonic_jac_laplace_1_1" i="1" j="1" planar="- dma_mur * MU0 * (((1 / (ma_mur * MU0)))) * (((1 / (ma_mur * MU0)))) * (updx * udx + updy * udy) * (((((h > 0) ? 1/h : 0)))) * (updx * vdx + updy * vdy)" symmetric_planar="1" axi="- dma_mur * MU0 * (((1 / (ma_mur * MU0)))) * (((1 / (ma_mur * MU0)))) * ((updr + upval / r) * (udr + uval / r) + updz * udz) * (((((h > 0) ? 1/h : 0)))) * (updr * vdr + updz * vdz + upval * vdr / r)" /> -->
-    <module:matrix_form id="harmonic_laplace_2_2" i="2" j="2" planar="(((1 / (ma_mur * MU0)))) * (udx * vdx + udy * vdy)" symmetric_planar="1" axi="(((1 / (ma_mur * MU0)))) * (udr * vdr + udz * vdz + uval * vdr / r)" />
-    <!-- <module:matrix_form id="harmonic_jac_laplace_2_2" i="2" j="2" planar="- dma_mur * MU0 * (((1 / (ma_mur * MU0)))) * (((1 / (ma_mur * MU0)))) * (updx * udx + updy * udy) * (((((h > 0) ? 1/h : 0)))) * (updx * vdx + updy * vdy)" symmetric_planar="1" axi="- dma_mur * MU0 * (((1 / (ma_mur * MU0)))) * (((1 / (ma_mur * MU0)))) * ((updr + upval / r) * (udr + uval / r) + updz * udz) * (((((h > 0) ? 1/h : 0)))) * (updr * vdr + updz * vdz + upval * vdr / r)"/> -->
+    <module:matrix_form  id="harmonic_laplace_1_1" i="1" j="1" planar="ma_one_over_mu * (udx * vdx + udy * vdy)" symmetric_planar="1" axi="ma_one_over_mu * (udr * vdr + udz * vdz + uval * vdr / r)"/>
+    <module:matrix_form id="harmonic_jac_laplace_1_1" i="1" j="1" planar="- dma_mur * MU0 * ma_one_over_mu * ma_one_over_mu * (updx * udx + updy * udy) * ma_one_over_norm_a * (updx * vdx + updy * vdy)" symmetric_planar="1" axi="- dma_mur * MU0 * ma_one_over_mu * ma_one_over_mu * ((updr + upval / r) * (udr + uval / r) + updz * udz) * ma_one_over_norm_a * (updr * vdr + updz * vdz + upval * vdr / r)" />
+    <module:matrix_form id="harmonic_laplace_2_2" i="2" j="2" planar="ma_one_over_mu * (udx * vdx + udy * vdy)" symmetric_planar="1" axi="ma_one_over_mu * (udr * vdr + udz * vdz + uval * vdr / r)" />
+    <module:matrix_form id="harmonic_jac_laplace_2_2" i="2" j="2" planar="- dma_mur * MU0 * ma_one_over_mu * ma_one_over_mu * (updx * udx + updy * udy) * ma_one_over_norm_a * (updx * vdx + updy * vdy)" symmetric_planar="1" axi="- dma_mur * MU0 * ma_one_over_mu * ma_one_over_mu * ((updr + upval / r) * (udr + uval / r) + updz * udz) * ma_one_over_norm_a * (updr * vdr + updz * vdz + upval * vdr / r)"/>
 
     <module:matrix_form id="harmonic_velocity_1_1" i="1" j="1" planar="- ma_gamma * uval * ((ma_vx - y * ma_va) * vdx + (ma_vy + x * ma_va) * vdy)" axi="- ma_gamma * uval * ma_vy * vdz" condition="(fabs(ma_gamma) > 0.0) || (fabs(ma_vx) > 0.0) || (fabs(ma_vy) > 0.0) || (fabs(ma_va) > 0.0)"/>
     <module:matrix_form id="harmonic_velocity_2_2" i="2" j="2" planar="- ma_gamma * uval * ((ma_vx - y * ma_va) * vdx + (ma_vy + x * ma_va) * vdy)" axi="- ma_gamma * uval * ma_vy * vdz" condition="(fabs(ma_gamma) > 0.0) || (fabs(ma_vx) > 0.0) || (fabs(ma_vy) > 0.0) || (fabs(ma_va) > 0.0)"/>
@@ -127,10 +130,11 @@
     <module:matrix_form id="harmonic_current_3_3" i="3" j="3" planar="tern(ma_JVariable > 0, -2 * PI * f * ma_gamma * uval, 1)" axi="tern(ma_JVariable > 0, -2 * PI * f * ma_gamma * uval/(2*PI*(r+1e-12)), 1)"/>
     <module:matrix_form id="harmonic_current_4_4" i="4" j="4" planar="tern(ma_JVariable > 0, 2 * PI * f * ma_gamma * uval, 1)" axi="tern(ma_JVariable > 0, 2 * PI * f * ma_gamma * uval/(2*PI*(r+1e-12)), 1)"/>
     -->
-    <module:vector_form id="harmonic_rhs_1_1_remanence" i="1" j="1" planar="mu_Brm * (((1 / (ma_mur * MU0)))) * (- (((sin((ma_Bra / 180 * M_PI))))) * vdx + (((cos((ma_Bra / 180 * M_PI))))) * vdy)" axi="- mu_Brm * (((1 / (ma_mur * MU0)))) * (- (((sin((ma_Bra / 180 * M_PI))))) * vdr + (((cos((ma_Bra / 180 * M_PI))))) * vdz)" condition="fabs(mu_Brm) > 0.0"/>
 
-    <module:vector_form id="harmonic_rhs_1_1_current" i="1" j="1" planar="ma_Jer * vval" axi="ma_Jer * vval"/>
-    <module:vector_form id="harmonic_rhs_2_2_current" i="2" j="2" planar="ma_Jei * vval" axi="ma_Jei * vval"/>
+    <module:vector_form id="harmonic_rhs_1_1_remanence" i="1" j="1" planar="mu_Brm * ma_one_over_mu * (- ma_sin_Bra * vdx + ma_cos_Bra * vdy)" axi="- mu_Brm * ma_one_over_mu * (- ma_sin_Bra * vdr + ma_cos_Bra * vdz)" condition="fabs(mu_Brm) > 0.0"/>
+    <module:vector_form id="harmonic_rhs_1_1_current" i="1" j="1" planar="(ma_JVariable * ma_Jer + (1-ma_JVariable)*ma_Jer_compl) * vval" axi="(ma_JVariable * ma_Jer + (1-ma_JVariable)*ma_Jer_compl) * vval"/>
+    <module:vector_form id="harmonic_rhs_2_2_current" i="2" j="2" planar="(ma_JVariable * ma_Jei + (1-ma_JVariable)*ma_Jei_compl) * vval" axi="(ma_JVariable * ma_Jei + (1-ma_JVariable)*ma_Jei_compl) * vval"/>
+
     <!--
     <module:vector_form id="harmonic_vec_current_3_3" i="3" j="3" planar="ma_JVariable * (ma_Iti / area - ma_Jei)" axi="ma_JVariable * (ma_Iti / area - ma_Jei)" />
     <module:vector_form id="harmonic_vec_current_4_4" i="4" j="4" planar="ma_JVariable * (ma_Itr / area - ma_Jer)" axi="ma_JVariable * (ma_Itr / area - ma_Jer)" />
@@ -150,8 +154,8 @@
         <module:quantity id="magnetic_total_current_real"/>
 
         <module:function_use id="magnetic_func_current_density_external_real_complete"/>
-        <module:function_use id="magnetic_func_one_over_mu" nonlinearity_axi="sqrt(dz1*dz1 + (dr1 + value1 / r)*(dr1 + value1 / r))" nonlinearity_planar="sqrt(dx1*dx1 + dy1*dy1)"/>
-        <module:function_use id="magnetic_func_one_over_norm_a" nonlinearity_axi="sqrt(dz1*dz1 + (dr1 + value1 / r)*(dr1 + value1 / r))" nonlinearity_planar="sqrt(dx1*dx1 + dy1*dy1)"/>
+        <module:function_use id="magnetic_func_one_over_mu"/>
+        <module:function_use id="magnetic_func_one_over_norm_a"/>
         <module:function_use id="magnetic_func_sin_Bra" />
         <module:function_use id="magnetic_func_cos_Bra" />
 
@@ -168,7 +172,7 @@
           <module:vector_form  id="steady_rhs_remanence"/>
           <module:vector_form  id="steady_rhs_current"/>
         </module:linearity_option>
-        <!--
+
         <module:linearity_option type="newton">
           <module:matrix_form id="steady_laplace"/>
           <module:matrix_form id="steady_velocity"/>
@@ -178,7 +182,7 @@
           <module:vector_form id="steady_laplace" variant="residual"/>
           <module:vector_form id="steady_velocity" variant="residual"/>
         </module:linearity_option>
-        -->
+
 
       </module:weakform_volume>
       <!--
@@ -238,8 +242,8 @@
         <module:function_use id="magnetic_func_current_density_external_real_complete"/>
         <module:function_use id="magnetic_func_current_density_external_imag_complete"/>
         <module:function_use id="magnetic_func_current_density_is_variable"/>
-        <module:function_use id="magnetic_func_one_over_mu" nonlinearity_axi="sqrt((dr1+value1/r)*(dr1+value1/r) + dz1*dz1 + (dr2+value2/r)*(dr2+value2/r) + dz2*dz2)" nonlinearity_planar="sqrt(dx1*dx1 + dy1*dy1 + dx2*dx2 + dy2*dy2)"/>
-        <module:function_use id="magnetic_func_one_over_norm_a" nonlinearity_axi="sqrt((dr1+value1/r)*(dr1+value1/r) + dz1*dz1 + (dr2+value2/r)*(dr2+value2/r) + dz2*dz2)" nonlinearity_planar="sqrt(dx1*dx1 + dy1*dy1 + dx2*dx2 + dy2*dy2)"/>
+        <module:function_use id="magnetic_func_one_over_mu"/>
+        <module:function_use id="magnetic_func_one_over_norm_a"/>
         <module:function_use id="magnetic_func_sin_Bra" />
         <module:function_use id="magnetic_func_cos_Bra" />
 
@@ -294,8 +298,8 @@
           <module:vector_form id="harmonic_vec_current_4_4"/>
           -->
         </module:linearity_option>
-          <!--
-          <module:linearity_option type="newton">
+
+        <module:linearity_option type="newton">
           <module:matrix_form id="harmonic_laplace_1_1"/>
           <module:matrix_form id="harmonic_jac_laplace_1_1"/>
           <module:matrix_form id="harmonic_laplace_2_2"/>
@@ -306,19 +310,19 @@
           <module:matrix_form id="harmonic_gamma_1_2"/>
           <module:matrix_form id="harmonic_gamma_2_1"/>
 
-          <module:matrix_form id="harmonic_current_1_4"/>
+<!--          <module:matrix_form id="harmonic_current_1_4"/>
           <module:matrix_form id="harmonic_current_2_3"/>
           <module:matrix_form id="harmonic_current_3_1"/>
           <module:matrix_form id="harmonic_current_4_2"/>
           <module:matrix_form id="harmonic_current_3_3"/>
-          <module:matrix_form id="harmonic_current_4_4"/>
+          <module:matrix_form id="harmonic_current_4_4"/>-->
 
           <module:vector_form id="harmonic_rhs_1_1_remanence" coefficient ="-1"/>
 
           <module:vector_form id="harmonic_rhs_1_1_current" coefficient ="-1"/>
           <module:vector_form id="harmonic_rhs_2_2_current" coefficient ="-1"/>
-          <module:vector_form id="harmonic_vec_current_3_3" coefficient ="-1"/>
-          <module:vector_form id="harmonic_vec_current_4_4" coefficient ="-1"/>
+<!--          <module:vector_form id="harmonic_vec_current_3_3" coefficient ="-1"/>
+          <module:vector_form id="harmonic_vec_current_4_4" coefficient ="-1"/>-->
 
           <module:vector_form id="harmonic_laplace_1_1" variant="residual"/>
           <module:vector_form id="harmonic_laplace_2_2" variant="residual"/>
@@ -327,15 +331,14 @@
           <module:vector_form id="harmonic_gamma_1_2" variant="residual"/>
           <module:vector_form id="harmonic_gamma_2_1" variant="residual"/>
 
-          <module:matrix_form id="harmonic_current_1_4" variant="residual"/>
+<!--          <module:matrix_form id="harmonic_current_1_4" variant="residual"/>
           <module:matrix_form id="harmonic_current_2_3" variant="residual"/>
           <module:matrix_form id="harmonic_current_3_1" variant="residual"/>
           <module:matrix_form id="harmonic_current_4_2" variant="residual"/>
           <module:matrix_form id="harmonic_current_3_3" variant="residual"/>
-          <module:matrix_form id="harmonic_current_4_4" variant="residual"/>
+          <module:matrix_form id="harmonic_current_4_4" variant="residual"/>-->
 
         </module:linearity_option>
-        -->
 
       </module:weakform_volume>
     </module:weakforms_volume>
@@ -366,11 +369,10 @@
           <module:linearity_option type="picard">
             <module:essential_form id="steady_essential"/>
           </module:linearity_option>
-          <!--
+
           <module:linearity_option type="newton">
             <module:essential_form id="steady_essential"/>
           </module:linearity_option>
-          -->
         </module:boundary>
 
         <module:boundary equation="K = - \frac{1}{\mu} \frac{\partial A}{\partial n_0} = K_0" id="magnetic_surface_current" name="Surface current">
@@ -384,11 +386,9 @@
             <module:vector_form id="steady_current"/>
           </module:linearity_option>
 
-          <!--
           <module:linearity_option type="newton">
             <module:vector_form id="steady_current" coefficient="-1"/>
           </module:linearity_option>
-          -->
         </module:boundary>
       </module:weakform_surface>
       <!--
@@ -440,12 +440,11 @@
             <module:essential_form id="harmonic_essential_1"/>
             <module:essential_form id="harmonic_essential_2"/>
           </module:linearity_option>
-          <!--
+
           <module:linearity_option type="newton">
-          <module:essential_form id="harmonic_essential_1"/>
-          <module:essential_form id="harmonic_essential_2"/>
+            <module:essential_form id="harmonic_essential_1"/>
+            <module:essential_form id="harmonic_essential_2"/>
           </module:linearity_option>
-          -->
         </module:boundary>
 
         <module:boundary equation="\faz{K} = - \frac{1}{\mu} \frac{\partial \vecfaz{A}}{\partial n_0} = \faz{K}_0" id="magnetic_surface_current" name="Surface current">
@@ -461,12 +460,11 @@
             <module:vector_form id="harmonic_current_1"/>
             <module:vector_form id="harmonic_current_2"/>
           </module:linearity_option>
-          <!--
+
           <module:linearity_option type="newton">
             <module:vector_form id="harmonic_current_1" coefficient="-1"/>
             <module:vector_form id="harmonic_current_2" coefficient="-1"/>
-          </module:linearity_option>
-          -->
+          </module:linearity_option>          
         </module:boundary>
       </module:weakform_surface>
     </module:weakforms_surface>

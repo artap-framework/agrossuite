@@ -316,7 +316,7 @@ class TestMagneticHarmonicNonlinAxisymmetric(Agros2DTestCase):
         self.magnetic = agros2d.field("magnetic")
         self.magnetic.analysis_type = "harmonic"
         self.magnetic.matrix_solver = "mumps"
-        self.magnetic.number_of_refinements = 3
+        self.magnetic.number_of_refinements = 2
         self.magnetic.polynomial_order = 3
         self.magnetic.adaptivity_type = "disabled"
         self.magnetic.solver = "newton"

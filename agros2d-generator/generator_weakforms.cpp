@@ -455,12 +455,40 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateVolumeVariables(L
             {
                 if(function.id() == function_use.id())
                 {
-                    if(function.type() == "constant")
-                    {
-                        ctemplate::TemplateDictionary *subFieldLinear = field->AddSectionDictionary("FUNCTION_SOURCE_CONSTANT");
-                        subFieldLinear->SetValue("FUNCTION_SHORT", m_volumeVariables.value(QString::fromStdString(function_use.id().c_str())).toStdString());
+                    bool is_constant = (function.type() == "constant");
 
-                        subFieldLinear->SetValue("FUNCTION_EXPRESSION", Parser::parseWeakFormExpression(pmi, QString::fromStdString(function.function_variant()[0].expr())).toStdString());
+                    if(linearityType != LinearityType_Linear)
+                    {
+                        // find out if it does depend on some quantity, which is not constant on element
+                        foreach(XMLModule::quantity quantity, function.quantity())
+                        {
+                            if(quantityIsNonlinear[QString::fromStdString(quantity.id())])
+                            {
+                                is_constant = false;
+                            }
+                        }
+                    }
+
+                    if((function.type() == "nonlinear") && linearityType == LinearityType_Linear)
+                    {
+
+                    }
+                    else
+                    {
+                        ctemplate::TemplateDictionary *subFieldLinear;
+                        if(is_constant)
+                            subFieldLinear= field->AddSectionDictionary("FUNCTION_SOURCE_CONSTANT");
+                        else
+                            subFieldLinear= field->AddSectionDictionary("FUNCTION_SOURCE_NONCONSTANT");
+
+                        QString expression;
+                        if((coordinateType == CoordinateType_Axisymmetric) && function.function_variant()[0].expr_axi().present())
+                            expression = QString::fromStdString(function.function_variant()[0].expr_axi().get());
+                        else
+                            expression = QString::fromStdString(function.function_variant()[0].expr());
+
+                        subFieldLinear->SetValue("FUNCTION_SHORT", m_volumeVariables.value(QString::fromStdString(function_use.id().c_str())).toStdString());
+                        subFieldLinear->SetValue("FUNCTION_EXPRESSION", Parser::parseWeakFormExpression(pmi, expression).toStdString());
                     }
                 }
             }

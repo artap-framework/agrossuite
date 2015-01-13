@@ -233,7 +233,7 @@ class TestMagneticNonlinPlanar(Agros2DTestCase):
         # fields
         self.magnetic = agros2d.field("magnetic")
         self.magnetic.analysis_type = "steadystate"
-        self.magnetic.number_of_refinements = 1
+        self.magnetic.number_of_refinements = 0
         self.magnetic.polynomial_order = 3
         
         self.magnetic.solver = "newton"
@@ -318,7 +318,7 @@ class TestMagneticNonlinAxisymmetric(Agros2DTestCase):
         self.magnetic.analysis_type = "steadystate"
         self.magnetic.matrix_solver = "mumps"
         self.magnetic.number_of_refinements = 0
-        self.magnetic.polynomial_order = 7
+        self.magnetic.polynomial_order = 6
         self.magnetic.adaptivity_type = "disabled"
         self.magnetic.solver = "newton"
         self.magnetic.solver_parameters['residual'] = 1e-06

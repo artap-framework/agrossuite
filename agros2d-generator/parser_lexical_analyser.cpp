@@ -117,21 +117,22 @@ void ParserInstance::addPreviousSolWeakform(int numSolutions)
 {
     for (int i = 1; i < numSolutions + 1; i++)
     {
-        m_dict[QString("value%1").arg(i)] = QString("u_ext[%1 + offset.forms]->val[i]").arg(i-1);
+        m_dict[QString("value%1").arg(i)] = QString("solution_value_previous[q_point][%1]").arg(i-1); //QString("u_ext[%1 + offset.forms]->val[i]").arg(i-1);
         m_dict[QString("timedervec%1").arg(i)] = QString("(*this->m_table)->vectorFormCoefficient(ext, %1, this->m_markerTarget->fieldInfo()->numberOfSolutions(), offset.prevSol, i)").arg(i-1);
 
         if (m_parserModuleInfo.coordinateType == CoordinateType_Planar)
         {
-            m_dict[QString("dx%1").arg(i)] = QString("u_ext[%1 + offset.forms]->dx[i]").arg(i-1);
-            m_dict[QString("dy%1").arg(i)] = QString("u_ext[%1 + offset.forms]->dy[i]").arg(i-1);
+            m_dict[QString("dx%1").arg(i)] = QString("solution_grad_previous[q_point][%1][0]").arg(i-1); //QString("u_ext[%1 + offset.forms]->dx[i]").arg(i-1);
+            m_dict[QString("dy%1").arg(i)] = QString("solution_grad_previous[q_point][%1][1]").arg(i-1); //QString("u_ext[%1 + offset.forms]->dy[i]").arg(i-1);
         }
         else
         {
-            m_dict[QString("dr%1").arg(i)] = QString("u_ext[%1 + offset.forms]->dx[i]").arg(i-1);
-            m_dict[QString("dz%1").arg(i)] = QString("u_ext[%1 + offset.forms]->dy[i]").arg(i-1);
+            m_dict[QString("dr%1").arg(i)] = QString("solution_grad_previous[q_point][%1][0]").arg(i-1); //QString("u_ext[%1 + offset.forms]->dx[i]").arg(i-1);
+            m_dict[QString("dz%1").arg(i)] = QString("solution_grad_previous[q_point][%1][1]").arg(i-1); //QString("u_ext[%1 + offset.forms]->dy[i]").arg(i-1);
         }
     }
 }
+
 
 void ParserInstance::addPreviousSolErrorCalculation()
 {
