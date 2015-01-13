@@ -584,14 +584,13 @@
                 <complexType>
                         <attribute name="switch_value" type="string" />
                         <attribute name="expr" use="required" type="string" />
+                        <attribute name="expr_axi" type="string" />
                 </complexType>
         </element>
 
         <element name="function_use">
                 <complexType>
                         <attribute name="id" use="required" type="string" />
-                        <attribute name="nonlinearity_planar" type="string" />
-                        <attribute name="nonlinearity_axi" type="string" />
                 </complexType>
         </element>
 
