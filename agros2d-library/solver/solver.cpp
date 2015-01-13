@@ -1314,6 +1314,10 @@ void ProblemSolver::solveProblem()
 {
     foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
     {
+        // frequency
+        // todo: find some better place, where some values are initialized
+        fieldInfo->setFrequency(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toDouble());
+
         SolverDeal *solverDeal = m_solverDeal[fieldInfo];
         solverDeal->solve();
     }
