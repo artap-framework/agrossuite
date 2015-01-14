@@ -77,35 +77,35 @@ QString ParserModuleInfo::nonlinearExpressionSurface(const QString &variable) co
     return "";
 }
 
-QString ParserModuleInfo::specialFunctionNonlinearExpression(const QString &variable) const
-{
-    std::string analysisString = analysisTypeToStringKey(analysisType).toStdString();
-    std::string variableString = variable.toStdString();
-    foreach (XMLModule::weakform_volume wf, volume.weakforms_volume().weakform_volume())
-    {
-        if (wf.analysistype() == analysisString)
-        {
-            foreach (XMLModule::function_use functionUse, wf.function_use())
-            {
-                if (functionUse.id() == variableString)
-                {
-                    if (coordinateType == CoordinateType_Planar)
-                    {
-                        if (functionUse.nonlinearity_planar().present())
-                            return QString::fromStdString(functionUse.nonlinearity_planar().get());
-                    }
-                    else
-                    {
-                        if (functionUse.nonlinearity_axi().present())
-                            return QString::fromStdString(functionUse.nonlinearity_axi().get());
-                    }
-                }
-            }
-        }
-    }
+//QString ParserModuleInfo::specialFunctionNonlinearExpression(const QString &variable) const
+//{
+//    std::string analysisString = analysisTypeToStringKey(analysisType).toStdString();
+//    std::string variableString = variable.toStdString();
+//    foreach (XMLModule::weakform_volume wf, volume.weakforms_volume().weakform_volume())
+//    {
+//        if (wf.analysistype() == analysisString)
+//        {
+//            foreach (XMLModule::function_use functionUse, wf.function_use())
+//            {
+//                if (functionUse.id() == variableString)
+//                {
+//                    if (coordinateType == CoordinateType_Planar)
+//                    {
+//                        if (functionUse.nonlinearity_planar().present())
+//                            return QString::fromStdString(functionUse.nonlinearity_planar().get());
+//                    }
+//                    else
+//                    {
+//                        if (functionUse.nonlinearity_axi().present())
+//                            return QString::fromStdString(functionUse.nonlinearity_axi().get());
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-    return "0";
-}
+//    return "0";
+//}
 
 QString ParserModuleInfo::dependenceVolume(const QString &variable) const
 {

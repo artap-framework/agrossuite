@@ -51,6 +51,15 @@ Agros2DGeneratorModule::Agros2DGeneratorModule(const QString &moduleId) : m_outp
         m_volumeVariables.insert(iD, shortName);
     }
 
+    // functions
+    foreach (XMLModule::function function, m_module->volume().function())
+    {
+        QString shortName = QString::fromStdString(function.shortname()).replace(" ", "");
+        QString iD = QString::fromStdString(function.id().c_str()).replace(" ", "");
+        m_volumeVariables.insert(iD, shortName);
+    }
+
+    // surface variables
     foreach (XMLModule::quantity quantity, m_module->surface().quantity())
     {
         QString shortName = QString::fromStdString(quantity.shortname().get()).replace(" ", "");

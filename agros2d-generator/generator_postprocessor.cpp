@@ -2,20 +2,20 @@
 #include "generator_module.h"
 #include "parser.h"
 
-void Agros2DGeneratorModule::generateSpecialFunctionsPostprocessor(ctemplate::TemplateDictionary &output)
-{
-    foreach(XMLModule::function function, m_module->volume().function())
-    {
-        if(function.postprocessor_linearity().present())
-        {
-            assert(function.postprocessor_analysis().present());
-            LinearityType linearityType = linearityTypeFromStringKey(QString::fromStdString(function.postprocessor_linearity().get()));
-            AnalysisType analysisType = analysisTypeFromStringKey(QString::fromStdString(function.postprocessor_analysis().get()));
+//void Agros2DGeneratorModule::generateSpecialFunctionsPostprocessor(ctemplate::TemplateDictionary &output)
+//{
+//    foreach(XMLModule::function function, m_module->volume().function())
+//    {
+//        if(function.postprocessor_linearity().present())
+//        {
+//            assert(function.postprocessor_analysis().present());
+//            LinearityType linearityType = linearityTypeFromStringKey(QString::fromStdString(function.postprocessor_linearity().get()));
+//            AnalysisType analysisType = analysisTypeFromStringKey(QString::fromStdString(function.postprocessor_analysis().get()));
 
-            generateSpecialFunction(function, analysisType, linearityType, CoordinateType_Planar, output);
-        }
-    }
-}
+//            generateSpecialFunction(function, analysisType, linearityType, CoordinateType_Planar, output);
+//        }
+//    }
+//}
 
 void Agros2DGeneratorModule::generatePluginFilterFiles()
 {
@@ -111,7 +111,7 @@ void Agros2DGeneratorModule::generatePluginFilterFiles()
         }
     }
 
-    generateSpecialFunctionsPostprocessor(output);
+    //generateSpecialFunctionsPostprocessor(output);
 
 
     // header - expand template
@@ -275,7 +275,7 @@ void Agros2DGeneratorModule::generatePluginLocalPointFiles()
         }
     }
 
-    generateSpecialFunctionsPostprocessor(output);
+    //generateSpecialFunctionsPostprocessor(output);
 
     // header - save to file
     writeStringContent(QString("%1/%2/%3/%3_localvalue.h").
@@ -405,7 +405,7 @@ void Agros2DGeneratorModule::generatePluginVolumeIntegralFiles()
         }
     }
 
-    generateSpecialFunctionsPostprocessor(output);
+    //generateSpecialFunctionsPostprocessor(output);
 
     // normal volume integral
     int counter = 0;

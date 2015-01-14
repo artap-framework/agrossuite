@@ -235,6 +235,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
                 // matrix
                 {{#VARIABLE_SOURCE_LINEAR}}
                 const double {{VARIABLE_SHORT}}_val = materialValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
+                {{#FUNCTION_SOURCE_CONSTANT}}
+                const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_CONSTANT}}
 
                 for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
                 {
@@ -243,6 +245,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
                     {{#VARIABLE_SOURCE_NONLINEAR}}
                     const double {{VARIABLE_SHORT}}_val = materialValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}};
                     const double {{VARIABLE_SHORT}}_der = materialValues["{{VARIABLE}}"]->{{VARIABLE_DERIVATIVE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
+                    {{#FUNCTION_SOURCE_NONCONSTANT}}
+                    const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_NONCONSTANT}}
 
                     for (unsigned int i = 0; i < dofs_per_cell; ++i)
                     {
@@ -271,6 +275,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
                 // rhs
                 {{#VARIABLE_SOURCE_LINEAR}}
                 const double {{VARIABLE_SHORT}}_val = materialValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
+                {{#FUNCTION_SOURCE_CONSTANT}}
+                const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_CONSTANT}}
 
                 for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
                 {
@@ -279,6 +285,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
                     {{#VARIABLE_SOURCE_NONLINEAR}}
                     const double {{VARIABLE_SHORT}}_val = materialValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}};
                     const double {{VARIABLE_SHORT}}_der = materialValues["{{VARIABLE}}"]->{{VARIABLE_DERIVATIVE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
+                    {{#FUNCTION_SOURCE_NONCONSTANT}}
+                    const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_NONCONSTANT}}
 
                     for (unsigned int i = 0; i < dofs_per_cell; ++i)
                     {

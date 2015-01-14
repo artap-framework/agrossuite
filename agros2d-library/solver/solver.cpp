@@ -410,7 +410,9 @@ void SolverDeal::solveLinearityNonLinearNewton()
 
       assert(m_solution_previous);
       // todo: not implemented yet
-      assert((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() != DampingType_Automatic);
+      if((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() == DampingType_Automatic)
+          std::cout << "automatic damping not implemented yet" << std::endl;
+
       const double damping_factor = m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble();
       m_solution_previous->add(damping_factor, *m_solution);
 
@@ -1314,6 +1316,10 @@ void ProblemSolver::solveProblem()
 {
     foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
     {
+        // frequency
+        // todo: find some better place, where some values are initialized
+        fieldInfo->setFrequency(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toDouble());
+
         SolverDeal *solverDeal = m_solverDeal[fieldInfo];
         solverDeal->solve();
     }

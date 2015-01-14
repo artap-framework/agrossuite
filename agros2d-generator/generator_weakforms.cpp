@@ -117,13 +117,13 @@ void Agros2DGeneratorModule::generateExtFunctions(ctemplate::TemplateDictionary 
                     {
                         if(function.id() == functionUse.id())
                         {
-                            if(function.interpolation_count().present())
-                                generateSpecialFunction(function, analysisType, linearityType, coordinateType, *section);
-                            else
-                            {
+//                            if(function.interpolation_count().present())
+//                                generateSpecialFunction(function, analysisType, linearityType, coordinateType, *section);
+//                            else
+//                            {
                                 generateValueExtFunction(function, analysisType, linearityType, coordinateType, false, *section);
                                 generateValueExtFunction(function, analysisType, linearityType, coordinateType, true, *section);
-                            }
+//                            }
                         }
                     }
                 }
@@ -361,16 +361,16 @@ void Agros2DGeneratorModule::generateFormExpression(FormInfo formInfo,
             expr->SetValue("COLUMN_INDEX", "0");
         }
 
-        foreach(XMLModule::function_use functionUse, weakform.function_use())
-        {
-            foreach(XMLModule::function functionDefinition, m_module->volume().function())
-            {
-                if (functionUse.id() == functionDefinition.id())
-                {
-                    generateSpecialFunction(functionDefinition, analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype())), linearityType, coordinateType, *expr);
-                }
-            }
-        }
+//        foreach(XMLModule::function_use functionUse, weakform.function_use())
+//        {
+//            foreach(XMLModule::function functionDefinition, m_module->volume().function())
+//            {
+//                if (functionUse.id() == functionDefinition.id())
+//                {
+//                    generateSpecialFunction(functionDefinition, analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype())), linearityType, coordinateType, *expr);
+//                }
+//            }
+//        }
 
         expr->SetValue("ROW_INDEX", QString::number(formInfo.i - 1).toStdString());
 
@@ -427,6 +427,72 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateVolumeVariables(L
             subFieldLinear->SetValue("VARIABLE_SHORT", m_volumeVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
 
             subFieldLinear->SetValue("VARIABLE_VALUE", QString("number()").toStdString());
+        }
+    }
+
+    // new generation of functions. It is much simpler than whe using Hermes, where external functions had to be created
+    foreach(XMLModule::function_use function_use, weakform.function_use())
+    {
+//        QString nonlinearExpr = pmi.nonlinearExpressionVolume(QString::fromStdString(quantity.id()));
+
+//        if (linearityType != LinearityType_Linear && quantityIsNonlinear[QString::fromStdString(quantity.id())])
+//        {
+//            ctemplate::TemplateDictionary *subFieldNonlinear = field->AddSectionDictionary("VARIABLE_SOURCE_NONLINEAR");
+//            subFieldNonlinear->SetValue("VARIABLE", quantity.id().c_str());
+//            subFieldNonlinear->SetValue("VARIABLE_SHORT", m_volumeVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
+
+//            // nonlinear value and derivative
+//            subFieldNonlinear->SetValue("VARIABLE_VALUE", QString("numberFromTable(%1)").
+//                                        arg(Parser::parseErrorExpression(pmi, nonlinearExpr)).toStdString());
+//            subFieldNonlinear->SetValue("VARIABLE_DERIVATIVE", QString("derivativeFromTable(%1)").
+//                                        arg(Parser::parseErrorExpression(pmi, nonlinearExpr)).toStdString());
+//        }
+//        else
+        {
+            // linear only value
+
+            foreach(XMLModule::function function, pmi.volume.function())
+            {
+                if(function.id() == function_use.id())
+                {
+                    bool is_constant = (function.type() == "constant");
+
+                    if(linearityType != LinearityType_Linear)
+                    {
+                        // find out if it does depend on some quantity, which is not constant on element
+                        foreach(XMLModule::quantity quantity, function.quantity())
+                        {
+                            if(quantityIsNonlinear[QString::fromStdString(quantity.id())])
+                            {
+                                is_constant = false;
+                            }
+                        }
+                    }
+
+                    if((function.type() == "nonlinear") && linearityType == LinearityType_Linear)
+                    {
+
+                    }
+                    else
+                    {
+                        ctemplate::TemplateDictionary *subFieldLinear;
+                        if(is_constant)
+                            subFieldLinear= field->AddSectionDictionary("FUNCTION_SOURCE_CONSTANT");
+                        else
+                            subFieldLinear= field->AddSectionDictionary("FUNCTION_SOURCE_NONCONSTANT");
+
+                        QString expression;
+                        if((coordinateType == CoordinateType_Axisymmetric) && function.function_variant()[0].expr_axi().present())
+                            expression = QString::fromStdString(function.function_variant()[0].expr_axi().get());
+                        else
+                            expression = QString::fromStdString(function.function_variant()[0].expr());
+
+                        subFieldLinear->SetValue("FUNCTION_SHORT", m_volumeVariables.value(QString::fromStdString(function_use.id().c_str())).toStdString());
+                        subFieldLinear->SetValue("FUNCTION_EXPRESSION", Parser::parseWeakFormExpression(pmi, expression).toStdString());
+                    }
+                }
+            }
+
         }
     }
 
@@ -528,8 +594,8 @@ void Agros2DGeneratorModule::generateValueExtFunction(XMLModule::function functi
 
     ParserModuleInfo pmi(*m_module, analysisType, coordinateType, linearityType);
     QString dependence("0");
-    if (linearityType != LinearityType_Linear)
-        dependence = pmi.specialFunctionNonlinearExpression(QString::fromStdString(function.id()));
+//    if (linearityType != LinearityType_Linear)
+//        dependence = pmi.specialFunctionNonlinearExpression(QString::fromStdString(function.id()));
 
     // if linearized, we use dependence on allready calculated values form previous time level or weakly coupled source field
     if(linearize)
@@ -589,100 +655,100 @@ void Agros2DGeneratorModule::generateValueExtFunction(XMLModule::function functi
 
 }
 
-void Agros2DGeneratorModule::generateSpecialFunction(XMLModule::function function, AnalysisType analysisType, LinearityType linearityType, CoordinateType coordinateType, ctemplate::TemplateDictionary &output)
-{
-    ctemplate::TemplateDictionary *functionTemplate = output.AddSectionDictionary("SPECIAL_FUNCTION_SOURCE");
-    functionTemplate->SetValue("SPECIAL_FUNCTION_NAME", function.shortname());
-    functionTemplate->SetValue("SPECIAL_FUNCTION_ID", function.id());
-    functionTemplate->SetValue("COORDINATE_TYPE", Agros2DGenerator::coordinateTypeStringEnum(coordinateType).toStdString());
-    functionTemplate->SetValue("LINEARITY_TYPE", Agros2DGenerator::linearityTypeStringEnum(linearityType).toStdString());
-    functionTemplate->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisType).toStdString());
+//void Agros2DGeneratorModule::generateSpecialFunction(XMLModule::function function, AnalysisType analysisType, LinearityType linearityType, CoordinateType coordinateType, ctemplate::TemplateDictionary &output)
+//{
+//    ctemplate::TemplateDictionary *functionTemplate = output.AddSectionDictionary("SPECIAL_FUNCTION_SOURCE");
+//    functionTemplate->SetValue("SPECIAL_FUNCTION_NAME", function.shortname());
+//    functionTemplate->SetValue("SPECIAL_FUNCTION_ID", function.id());
+//    functionTemplate->SetValue("COORDINATE_TYPE", Agros2DGenerator::coordinateTypeStringEnum(coordinateType).toStdString());
+//    functionTemplate->SetValue("LINEARITY_TYPE", Agros2DGenerator::linearityTypeStringEnum(linearityType).toStdString());
+//    functionTemplate->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisType).toStdString());
 
-    QString fullName = QString("%1_ext_function_%2_%3_%4_%5").
-            arg(QString::fromStdString(m_module->general_field().id())).
-            arg(analysisTypeToStringKey(analysisType)).
-            arg(coordinateTypeToStringKey(coordinateType)).
-            arg(linearityTypeToStringKey(linearityType)).
-            arg(QString::fromStdString(function.shortname()));
+//    QString fullName = QString("%1_ext_function_%2_%3_%4_%5").
+//            arg(QString::fromStdString(m_module->general_field().id())).
+//            arg(analysisTypeToStringKey(analysisType)).
+//            arg(coordinateTypeToStringKey(coordinateType)).
+//            arg(linearityTypeToStringKey(linearityType)).
+//            arg(QString::fromStdString(function.shortname()));
 
-    functionTemplate->SetValue("SPECIAL_EXT_FUNCTION_FULL_NAME", fullName.toStdString());
-    functionTemplate->SetValue("FROM", function.bound_low().present() ? function.bound_low().get() : "-1");
-    functionTemplate->SetValue("TO", function.bound_hi().present() ? function.bound_hi().get() : "1");
-    functionTemplate->SetValue("TYPE", function.type());
+//    functionTemplate->SetValue("SPECIAL_EXT_FUNCTION_FULL_NAME", fullName.toStdString());
+//    functionTemplate->SetValue("FROM", function.bound_low().present() ? function.bound_low().get() : "-1");
+//    functionTemplate->SetValue("TO", function.bound_hi().present() ? function.bound_hi().get() : "1");
+//    functionTemplate->SetValue("TYPE", function.type());
 
-    ParserModuleInfo pmi(*m_module, analysisType, coordinateType, linearityType);
-    QString dependence("0");
-    if(linearityType != LinearityType_Linear)
-        dependence = pmi.specialFunctionNonlinearExpression(QString::fromStdString(function.id()));
+//    ParserModuleInfo pmi(*m_module, analysisType, coordinateType, linearityType);
+//    QString dependence("0");
+//    if(linearityType != LinearityType_Linear)
+//        dependence = pmi.specialFunctionNonlinearExpression(QString::fromStdString(function.id()));
 
-    dependence = Parser::parseWeakFormExpression(pmi, dependence);
+//    dependence = Parser::parseWeakFormExpression(pmi, dependence);
 
-    functionTemplate->SetValue("DEPENDENCE", dependence.toStdString());
-    functionTemplate->SetValue("INTERPOLATION_COUNT", function.interpolation_count().present() ? function.interpolation_count().get() : "0");
-    if(function.extrapolate_low().present())
-    {
-        functionTemplate->SetValue("EXTRAPOLATE_LOW_PRESENT", "true");
-        functionTemplate->SetValue("EXTRAPOLATE_LOW", function.extrapolate_low().get());
-    }
-    else
-    {
-        functionTemplate->SetValue("EXTRAPOLATE_LOW_PRESENT", "false");
-        functionTemplate->SetValue("EXTRAPOLATE_LOW", "-123456");
-    }
-    if(function.extrapolate_hi().present())
-    {
-        functionTemplate->SetValue("EXTRAPOLATE_HI_PRESENT", "true");
-        functionTemplate->SetValue("EXTRAPOLATE_HI", function.extrapolate_hi().get());
-    }
-    else
-    {
-        functionTemplate->SetValue("EXTRAPOLATE_HI_PRESENT", "false");
-        functionTemplate->SetValue("EXTRAPOLATE_HI", "-123456");
-    }
-    QString selectedVariant("no_variant");
-    if(function.switch_combo().present())
-    {
-        foreach(XMLModule::gui gui, m_module->preprocessor().gui())
-        {
-            if(gui.type() == "volume")
-            {
-                foreach(XMLModule::group group, gui.group())
-                {
-                    foreach(XMLModule::switch_combo switch_combo, group.switch_combo())
-                    {
-                        if(switch_combo.id() == function.switch_combo().get())
-                        {
-                            selectedVariant = QString::fromStdString(switch_combo.implicit_option());
-                        }
-                    }
-                }
-            }
-        }
-    }
-    functionTemplate->SetValue("SELECTED_VARIANT", selectedVariant.toStdString().c_str());
+//    functionTemplate->SetValue("DEPENDENCE", dependence.toStdString());
+//    functionTemplate->SetValue("INTERPOLATION_COUNT", function.interpolation_count().present() ? function.interpolation_count().get() : "0");
+//    if(function.extrapolate_low().present())
+//    {
+//        functionTemplate->SetValue("EXTRAPOLATE_LOW_PRESENT", "true");
+//        functionTemplate->SetValue("EXTRAPOLATE_LOW", function.extrapolate_low().get());
+//    }
+//    else
+//    {
+//        functionTemplate->SetValue("EXTRAPOLATE_LOW_PRESENT", "false");
+//        functionTemplate->SetValue("EXTRAPOLATE_LOW", "-123456");
+//    }
+//    if(function.extrapolate_hi().present())
+//    {
+//        functionTemplate->SetValue("EXTRAPOLATE_HI_PRESENT", "true");
+//        functionTemplate->SetValue("EXTRAPOLATE_HI", function.extrapolate_hi().get());
+//    }
+//    else
+//    {
+//        functionTemplate->SetValue("EXTRAPOLATE_HI_PRESENT", "false");
+//        functionTemplate->SetValue("EXTRAPOLATE_HI", "-123456");
+//    }
+//    QString selectedVariant("no_variant");
+//    if(function.switch_combo().present())
+//    {
+//        foreach(XMLModule::gui gui, m_module->preprocessor().gui())
+//        {
+//            if(gui.type() == "volume")
+//            {
+//                foreach(XMLModule::group group, gui.group())
+//                {
+//                    foreach(XMLModule::switch_combo switch_combo, group.switch_combo())
+//                    {
+//                        if(switch_combo.id() == function.switch_combo().get())
+//                        {
+//                            selectedVariant = QString::fromStdString(switch_combo.implicit_option());
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    functionTemplate->SetValue("SELECTED_VARIANT", selectedVariant.toStdString().c_str());
 
-    foreach(XMLModule::quantity quantity, function.quantity())
-    {
-        ctemplate::TemplateDictionary *functionParameters = functionTemplate->AddSectionDictionary("PARAMETERS");
-        for(int i = 0; i < m_module->volume().quantity().size(); i++)
-        {
-            if(m_module->volume().quantity().at(i).id() == quantity.id())
-            {
-                functionParameters->SetValue("PARAMETER_NAME", m_module->volume().quantity().at(i).shortname().get().c_str());
-                functionParameters->SetValue("PARAMETER_ID", m_module->volume().quantity().at(i).id().c_str());
-                functionParameters->SetValue("PARAMETER_FULL_NAME", m_module->volume().quantity().at(i).id().c_str());
-                break;
-            }
-        }
-    }
-    foreach(XMLModule::function_variant variant, function.function_variant())
-    {
-        ctemplate::TemplateDictionary *functionVariant = functionTemplate->AddSectionDictionary("VARIANT");
-        functionVariant->SetValue("ID", variant.switch_value().present() ? variant.switch_value().get().c_str() : "no_variant");
-        QString expression = QString::fromStdString(variant.expr());
+//    foreach(XMLModule::quantity quantity, function.quantity())
+//    {
+//        ctemplate::TemplateDictionary *functionParameters = functionTemplate->AddSectionDictionary("PARAMETERS");
+//        for(int i = 0; i < m_module->volume().quantity().size(); i++)
+//        {
+//            if(m_module->volume().quantity().at(i).id() == quantity.id())
+//            {
+//                functionParameters->SetValue("PARAMETER_NAME", m_module->volume().quantity().at(i).shortname().get().c_str());
+//                functionParameters->SetValue("PARAMETER_ID", m_module->volume().quantity().at(i).id().c_str());
+//                functionParameters->SetValue("PARAMETER_FULL_NAME", m_module->volume().quantity().at(i).id().c_str());
+//                break;
+//            }
+//        }
+//    }
+//    foreach(XMLModule::function_variant variant, function.function_variant())
+//    {
+//        ctemplate::TemplateDictionary *functionVariant = functionTemplate->AddSectionDictionary("VARIANT");
+//        functionVariant->SetValue("ID", variant.switch_value().present() ? variant.switch_value().get().c_str() : "no_variant");
+//        QString expression = QString::fromStdString(variant.expr());
 
-        // todo:
-        //expression = parseWeakFormExpression(analysisType, coordinateType, linearityType, expression, false, false);
-        functionVariant->SetValue("EXPR", expression.toStdString());
-    }
-}
+//        // todo:
+//        //expression = parseWeakFormExpression(analysisType, coordinateType, linearityType, expression, false, false);
+//        functionVariant->SetValue("EXPR", expression.toStdString());
+//    }
+//}
