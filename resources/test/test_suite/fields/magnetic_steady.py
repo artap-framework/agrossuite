@@ -316,12 +316,12 @@ class TestMagneticNonlinAxisymmetric(Agros2DTestCase):
         # magnetic
         self.magnetic = agros2d.field("magnetic")
         self.magnetic.analysis_type = "steadystate"
-        self.magnetic.matrix_solver = "mumps"
+        self.magnetic.matrix_solver = "umfpack"
         self.magnetic.number_of_refinements = 0
-        self.magnetic.polynomial_order = 6
+        self.magnetic.polynomial_order = 3
         self.magnetic.adaptivity_type = "disabled"
         self.magnetic.solver = "newton"
-        self.magnetic.solver_parameters['residual'] = 1e-06
+        self.magnetic.solver_parameters['residual'] = 1e-04
         self.magnetic.solver_parameters['relative_change_of_solutions'] = 0.01
         self.magnetic.solver_parameters['damping'] = "automatic"
         self.magnetic.solver_parameters['damping_factor'] = 0.8
@@ -408,12 +408,12 @@ class TestMagneticNonlinAxisymmetric(Agros2DTestCase):
         self.value_test("Integral Lorentz force - r", volume["Flx"], -8.101651950576503) 
         self.value_test("Integral Lorentz force - z", volume["Fly"], -5.501189057498289) 
 
-        volume = self.magnetic.volume_integrals([1])        
-        self.value_test("Volume Maxwell force - z", volume["Fty"], 0.4922392956664127, 0.1)
-        
+#        volume = self.magnetic.volume_integrals([1])        
+#        self.value_test("Volume Maxwell force - z", volume["Fty"], 0.4922392956664127, 0.1)
+#        
         # surface integral
-        surface = self.magnetic.surface_integrals([12, 13, 14, 15])
-        self.value_test("Surface Maxwell force - z", surface["Fty"], 0.4922392956664127, 0.1)
+#        surface = self.magnetic.surface_integrals([12, 13, 14, 15])
+#        self.value_test("Surface Maxwell force - z", surface["Fty"], 0.4922392956664127, 0.1)
                                                                                                                                                                                                                                            
 if __name__ == '__main__':        
     import unittest as ut
@@ -422,6 +422,6 @@ if __name__ == '__main__':
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticAxisymmetric))
-#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticNonlinPlanar))
-#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticNonlinAxisymmetric)) 
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticNonlinPlanar))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticNonlinAxisymmetric)) 
     suite.run(result)

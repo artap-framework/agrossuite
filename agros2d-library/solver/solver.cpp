@@ -402,9 +402,14 @@ void SolverDeal::solveLinearityNonLinearNewton()
   bool criteria_reached = false;
   while((iteration < MAX_NUM_NONLIN_ITERS) && !criteria_reached)
   {
+      QTime time;
+      time.start();
+
       iteration += 1;
       qDebug() << "step: " << iteration;
       assembleSystem();
+      qDebug() << "assemble (" << time.elapsed() << "ms )";
+
       system_rhs *= -1.0;
       solveLinearSystem();
 
