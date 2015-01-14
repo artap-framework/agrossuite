@@ -34,6 +34,7 @@
       - #else
       - if (!is_valid_fd(fd)) {
       - #endif
+  - 64bit: for some reason, CMake unable to find the library, necessary to add PATHS ${PYTHON_LIB_DIR} to the find_library(PYTHON_LIBRARY ...) command in FindPythonLibs.cmake in CMake modules directory
 
 1.6) OpenGL
   
