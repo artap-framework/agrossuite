@@ -84,9 +84,14 @@
       <module:function_variant expr="1 / (ma_mur * MU0)"/>
     </module:function>
 
-    <module:function id="magnetic_func_one_over_norm_a" shortname="ma_one_over_norm_a" type="nonlinear" >
-      <module:function_variant expr_axi="((sqrt(dz1*dz1 + (dr1 + value1 / r)*(dr1 + value1 / r)) > 0) ? 1/sqrt(dz1*dz1 + (dr1 + value1 / r)*(dr1 + value1 / r)) : 0)"
-                               expr    = "((sqrt(dx1*dx1 + dy1*dy1)> 0) ? 1/(sqrt(dx1*dx1 + dy1*dy1)) : 0)"/>
+    <module:function id="magnetic_func_one_over_norm_a_steady" shortname="ma_one_over_norm_a" type="nonlinear" >
+      <module:function_variant expr_axi="((dz1*dz1 + (dr1 + value1 / r)*(dr1 + value1 / r) > 0) ? 1/sqrt(dz1*dz1 + (dr1 + value1 / r)*(dr1 + value1 / r)) : 0)"
+                               expr    = "((dx1*dx1 + dy1*dy1> 0) ? 1/(sqrt(dx1*dx1 + dy1*dy1)) : 0)"/>
+    </module:function>
+
+    <module:function id="magnetic_func_one_over_norm_a_harmonic" shortname="ma_one_over_norm_a" type="nonlinear" >
+      <module:function_variant expr_axi="(((dr1+value1/(r+1e-12))*(dr1+value1/(r+1e-12)) + dz1*dz1 + (dr2+value2/(r+1e-12))*(dr2+value2/(r+1e-12)) + dz2*dz2 > 0) ? 1/sqrt((dr1+value1/(r+1e-12))*(dr1+value1/(r+1e-12)) + dz1*dz1 + (dr2+value2/(r+1e-12))*(dr2+value2/(r+1e-12)) + dz2*dz2) : 0)"
+                               expr    = "((dx1*dx1 + dy1*dy1 + dx2*dx2 + dy2*dy2 > 0) ? 1/(sqrt(dx1*dx1 + dy1*dy1 + dx2*dx2 + dy2*dy2)) : 0)"/>
     </module:function>
 
     <module:function id="magnetic_func_sin_Bra" shortname="ma_sin_Bra" type="constant" >
@@ -155,7 +160,7 @@
 
         <module:function_use id="magnetic_func_current_density_external_real_complete"/>
         <module:function_use id="magnetic_func_one_over_mu"/>
-        <module:function_use id="magnetic_func_one_over_norm_a"/>
+        <module:function_use id="magnetic_func_one_over_norm_a_steady"/>
         <module:function_use id="magnetic_func_sin_Bra" />
         <module:function_use id="magnetic_func_cos_Bra" />
 
@@ -197,7 +202,7 @@
         <module:quantity dependence="time" id="magnetic_current_density_external_real"/>
 
         <module:function_use id="magnetic_func_one_over_mu" nonlinearity_axi="sqrt(dz1*dz1 + (dr1 + value1 / r)*(dr1 + value1 / r))" nonlinearity_planar="sqrt(dx1*dx1 + dy1*dy1)"/>
-        <module:function_use id="magnetic_func_one_over_norm_a" nonlinearity_axi="sqrt(dz1*dz1 + (dr1 + value1 / r)*(dr1 + value1 / r))" nonlinearity_planar="sqrt(dx1*dx1 + dy1*dy1)"/>
+        <module:function_use id="magnetic_func_one_over_norm_a_steady" nonlinearity_axi="sqrt(dz1*dz1 + (dr1 + value1 / r)*(dr1 + value1 / r))" nonlinearity_planar="sqrt(dx1*dx1 + dy1*dy1)"/>
         <module:function_use id="magnetic_func_sin_Bra" />
         <module:function_use id="magnetic_func_cos_Bra" />
 
@@ -243,7 +248,7 @@
         <module:function_use id="magnetic_func_current_density_external_imag_complete"/>
         <module:function_use id="magnetic_func_current_density_is_variable"/>
         <module:function_use id="magnetic_func_one_over_mu"/>
-        <module:function_use id="magnetic_func_one_over_norm_a"/>
+        <module:function_use id="magnetic_func_one_over_norm_a_harmonic"/>
         <module:function_use id="magnetic_func_sin_Bra" />
         <module:function_use id="magnetic_func_cos_Bra" />
 

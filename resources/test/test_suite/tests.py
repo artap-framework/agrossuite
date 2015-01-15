@@ -170,7 +170,7 @@ test_suite.fields.magnetic_harmonic.TestMagneticHarmonicAxisymmetric,
 #test_suite.fields.magnetic_harmonic.TestMagneticHarmonicPlanarTotalCurrent,
 #test_suite.fields.magnetic_harmonic.TestMagneticHarmonicAxisymmetricTotalCurrent,
 test_suite.fields.magnetic_steady.TestMagneticNonlinPlanar,
-#test_suite.fields.magnetic_steady.TestMagneticNonlinAxisymmetric,
+test_suite.fields.magnetic_steady.TestMagneticNonlinAxisymmetric,
 #test_suite.fields.magnetic_harmonic.TestMagneticHarmonicNonlinPlanar,
 #test_suite.fields.magnetic_harmonic.TestMagneticHarmonicNonlinAxisymmetric,
 # rf te

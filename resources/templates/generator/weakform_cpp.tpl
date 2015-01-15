@@ -444,7 +444,7 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool use_dirichlet_lift)
                                                                       component_mask);
                 else
                     dealii::VectorTools::interpolate_boundary_values (*m_doFHandler, i+1,
-                                                                      dealii::ZeroFunction<2>(), // for the Newton method
+                                                                      dealii::ZeroFunction<2>({{NUM_SOLUTIONS}}), // for the Newton method
                                                                       hanging_node_constraints, // boundary_values,
                                                                       component_mask);
 
