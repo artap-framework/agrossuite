@@ -18,7 +18,7 @@
 
   - x86: http://gnuwin32.sourceforge.net/packages/zlib.htm
   - x64: https://code.google.com/p/zlib-win64/downloads/list
-
+	
 1.5) Python
 
   - 3.4.0 installation (x86 / x64)
@@ -34,7 +34,7 @@
       - #else
       - if (!is_valid_fd(fd)) {
       - #endif
-  - 64bit: for some reason, CMake unable to find the library, necessary to add PATHS ${PYTHON_LIB_DIR} to the find_library(PYTHON_LIBRARY ...) command in FindPythonLibs.cmake in CMake modules directory
+  - 64bit: for some reason, CMake is unable to find the library, necessary to add PATHS ${PYTHON_LIB_DIR} to the find_library(PYTHON_LIBRARY ...) command in FindPythonLibs.cmake in CMake modules directory
 
 1.6) OpenGL
   
