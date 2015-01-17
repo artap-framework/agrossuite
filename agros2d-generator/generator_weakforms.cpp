@@ -172,41 +172,32 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
             {
                 LinearityType linearityType = linearityTypeFromStringKey(QString::fromStdString(option.type().c_str()));
 
+                ctemplate::TemplateDictionary *fieldVolume = generateVolumeVariables(linearityType, coordinateType, output, weakform, "VOLUME");
                 QList<FormInfo> matrixForms = Module::wfMatrixVolumeSeparated(m_module, analysisType, linearityType);
-                if (!matrixForms.isEmpty())
+                foreach(FormInfo formInfo, matrixForms)
                 {
-                    ctemplate::TemplateDictionary *fieldVolume = generateVolumeVariables(linearityType, coordinateType, output, weakform, "VOLUME_MATRIX");
-                    foreach(FormInfo formInfo, matrixForms)
-                    {
-                        generateFormExpression(formInfo, linearityType, coordinateType, *fieldVolume, weakform);
-                    }
+                    generateFormExpression(formInfo, linearityType, coordinateType, *fieldVolume, "MATRIX", weakform);
                 }
 
                 QList<FormInfo> vectorForms = Module::wfVectorVolumeSeparated(m_module, analysisType, linearityType);
-                if (!vectorForms.isEmpty())
+                foreach(FormInfo formInfo, vectorForms)
                 {
-                    ctemplate::TemplateDictionary *fieldVector = generateVolumeVariables(linearityType, coordinateType, output, weakform, "VOLUME_VECTOR");
-                    foreach(FormInfo formInfo, vectorForms)
-                    {
-                        generateFormExpression(formInfo, linearityType, coordinateType, *fieldVector, weakform);
-                    }
-                    foreach(QString sourceField, xml_couplings.keys())
-                    {
-                        ctemplate::TemplateDictionary *coupling = fieldVector->AddSectionDictionary("COUPLING_SOURCE");
-                        coupling->SetValue("COUPLING_SOURCE_ID", sourceField.toStdString());
+                    generateFormExpression(formInfo, linearityType, coordinateType, *fieldVolume, "VECTOR", weakform);
+                }
+                foreach(QString sourceField, xml_couplings.keys())
+                {
+                    ctemplate::TemplateDictionary *coupling = fieldVolume->AddSectionDictionary("COUPLING_SOURCE");
+                    coupling->SetValue("COUPLING_SOURCE_ID", sourceField.toStdString());
 
-                        // todo: loop over source analysis types
-                        QList<FormInfo> vectorForms = CouplingInfo::wfVectorVolumeSeparated(&(xml_couplings[sourceField]->volume()), analysisType, analysisType, CouplingType_Weak, linearityType);
-                        if (!vectorForms.isEmpty())
+                    // todo: loop over source analysis types
+                    QList<FormInfo> vectorForms = CouplingInfo::wfVectorVolumeSeparated(&(xml_couplings[sourceField]->volume()), analysisType, analysisType, CouplingType_Weak, linearityType);
+                    if (!vectorForms.isEmpty())
+                    {
+                        foreach(FormInfo formInfo, vectorForms)
                         {
-                            foreach(FormInfo formInfo, vectorForms)
-                            {
-                                generateFormExpression(formInfo, linearityType, coordinateType, *coupling, weakform);
-                            }
+                            generateFormExpression(formInfo, linearityType, coordinateType, *coupling, "VECTOR", weakform);
                         }
-
                     }
-
                 }
 
                 // find if there are any possible coupling sources
@@ -230,24 +221,17 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
                 {
                     LinearityType linearityType = linearityTypeFromStringKey(QString::fromStdString(option.type().c_str()));
 
+                    ctemplate::TemplateDictionary *fieldSurface = generateSurfaceVariables(linearityType, coordinateType, output, weakform, "SURFACE", &boundary);
                     QList<FormInfo> matrixForms = Module::wfMatrixSurface(&m_module->surface(), &boundary, analysisType, linearityType);
-                    if (!matrixForms.isEmpty())
+                    foreach(FormInfo formInfo, matrixForms)
                     {
-                        ctemplate::TemplateDictionary *fieldMatrix = generateSurfaceVariables(linearityType, coordinateType, output, weakform, "SURFACE_MATRIX", &boundary);
-                        foreach(FormInfo formInfo, matrixForms)
-                        {
-                            generateFormExpression(formInfo, linearityType, coordinateType, *fieldMatrix, weakform);
-                        }
+                        generateFormExpression(formInfo, linearityType, coordinateType, *fieldSurface, "MATRIX", weakform);
                     }
 
                     QList<FormInfo> vectorForms = Module::wfVectorSurface(&m_module->surface(), &boundary, analysisType, linearityType);
-                    if (!vectorForms.isEmpty())
+                    foreach(FormInfo formInfo, vectorForms)
                     {
-                        ctemplate::TemplateDictionary *fieldVector = generateSurfaceVariables(linearityType, coordinateType, output, weakform, "SURFACE_VECTOR", &boundary);
-                        foreach(FormInfo formInfo, vectorForms)
-                        {
-                            generateFormExpression(formInfo, linearityType, coordinateType, *fieldVector, weakform);
-                        }
+                        generateFormExpression(formInfo, linearityType, coordinateType, *fieldSurface, "VECTOR", weakform);
                     }
 
                     QList<FormInfo> essentialForms = Module::essential(&m_module->surface(), &boundary, analysisType, linearityType);
@@ -274,7 +258,7 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
 
                         foreach (FormInfo formInfo, essentialForms)
                         {
-                            generateFormExpression(formInfo, linearityType, coordinateType, *fieldExact, weakform);
+                            generateFormExpression(formInfo, linearityType, coordinateType, *fieldExact, "ESSENTIAL", weakform);
                         }
                     }
                 }
@@ -388,13 +372,14 @@ void Agros2DGeneratorModule::generateFormExpression(FormInfo formInfo,
                                                     LinearityType linearityType,
                                                     CoordinateType coordinateType,
                                                     ctemplate::TemplateDictionary &output,
+                                                    QString formType,
                                                     WeakForm weakform)
 {
     QString expression = (coordinateType == CoordinateType_Planar ? formInfo.expr_planar : formInfo.expr_axi);
 
     if (!expression.isEmpty())
     {
-        ctemplate::TemplateDictionary *expr = output.AddSectionDictionary("FORM_EXPRESSION");
+        ctemplate::TemplateDictionary *expr = output.AddSectionDictionary(("FORM_EXPRESSION_" + formType).toStdString());
 
         expr->SetValue("EXPRESSION_ID", formInfo.id.toStdString());
 

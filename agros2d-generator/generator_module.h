@@ -66,7 +66,7 @@ private:
 
     //ToDo: make up better names
     template <typename WeakForm>
-    void generateFormExpression(FormInfo form, LinearityType linearityType, CoordinateType coordinateType, ctemplate::TemplateDictionary &output, WeakForm weakform);
+    void generateFormExpression(FormInfo form, LinearityType linearityType, CoordinateType coordinateType, ctemplate::TemplateDictionary &output, QString formType, WeakForm weakform);
     template <typename WeakForm>
     ctemplate::TemplateDictionary *generateVolumeVariables(LinearityType linearityType, CoordinateType coordinateType, ctemplate::TemplateDictionary &output, WeakForm weakform, QString weakFormType);
     template <typename WeakForm>
