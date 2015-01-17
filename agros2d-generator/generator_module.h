@@ -51,6 +51,7 @@ private:
     XMLModule::field *m_module;
     QString m_docString;
     QStringList m_names;
+    QString m_id;
     // dictionary for variables used in weakforms
     QHash<QString, QString> m_volumeVariables;
     QHash<QString, QString> m_surfaceVariables;

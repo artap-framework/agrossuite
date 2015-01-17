@@ -98,16 +98,30 @@ void ParserInstance::addCouplingWeakformTokens(int numSourceSolutions)
 {
     for (int i = 1; i < numSourceSolutions + 1; i++)
     {
-        m_dict[QString("source%1").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->val[i]").arg(i-1);
-        if(m_parserModuleInfo.coordinateType == CoordinateType_Planar)
+//        m_dict[QString("source%1").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->val[i]").arg(i-1);
+//        if(m_parserModuleInfo.coordinateType == CoordinateType_Planar)
+//        {
+//            m_dict[QString("source%1dx").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->dx[i]").arg(i-1);
+//            m_dict[QString("source%1dy").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->dy[i]").arg(i-1);
+//        }
+//        else
+//        {
+//            m_dict[QString("source%1dr").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->dx[i]").arg(i-1);
+//            m_dict[QString("source%1dz").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->dy[i]").arg(i-1);
+//        }
+        foreach(QString moduleId, Module::availableModules().keys())
         {
-            m_dict[QString("source%1dx").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->dx[i]").arg(i-1);
-            m_dict[QString("source%1dy").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->dy[i]").arg(i-1);
-        }
-        else
-        {
-            m_dict[QString("source%1dr").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->dx[i]").arg(i-1);
-            m_dict[QString("source%1dz").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->dy[i]").arg(i-1);
+            m_dict[moduleId + QString("%1").arg(i)] = moduleId + QString("_value[q_point][%1]").arg(i-1);
+            if(m_parserModuleInfo.coordinateType == CoordinateType_Planar)
+            {
+                m_dict[moduleId + QString("%1dx").arg(i)] = moduleId + QString("_grad[q_point][%1][0]").arg(i-1);
+                m_dict[moduleId + QString("%1dy").arg(i)] = moduleId + QString("_grad[q_point][%1][1]").arg(i-1);
+            }
+            else
+            {
+                m_dict[moduleId + QString("%1dr").arg(i)] = moduleId + QString("_grad[q_point][%1][0]").arg(i-1);
+                m_dict[moduleId + QString("%1dz").arg(i)] = moduleId + QString("_grad[q_point][%1][1]").arg(i-1);
+            }
         }
     }
 }

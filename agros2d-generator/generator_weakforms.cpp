@@ -1,6 +1,7 @@
 #include "generator.h"
 #include "generator_module.h"
 #include "parser.h"
+#include "util/constants.h"
 
 #include "solver/weak_form.h"
 #include "solver/module.h"
@@ -138,6 +139,28 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
 {
     this->m_docString = "";
 
+    QMap<QString, QString> availableModules = Module::availableModules();
+    QMap<QString, XMLModule::coupling *> xml_couplings;
+
+    QMap<QString, std::shared_ptr<XMLModule::module> > couplings_xsd;
+    std::shared_ptr<XMLModule::module> coupling_xsd;
+
+    //qDebug() << couplingList()->availableCouplings();
+    foreach(QString sourceField, availableModules.keys())
+    {
+        if(couplingList()->isCouplingAvailable(sourceField, this->m_id, CouplingType_Weak))
+        {
+            ctemplate::TemplateDictionary *coupling = output.AddSectionDictionary("COUPLING_SOURCE");
+            coupling->SetValue("COUPLING_SOURCE_ID", sourceField.toStdString());
+
+            coupling_xsd = XMLModule::module_(compatibleFilename(datadir() + COUPLINGROOT + "/" + sourceField + "-" + this->m_id + ".xml").toStdString(), xml_schema::flags::dont_validate);
+            XMLModule::module *mod = coupling_xsd.get();
+            assert(mod->coupling().present());
+            xml_couplings[sourceField] = &mod->coupling().get();
+            couplings_xsd[sourceField] = coupling_xsd;
+        }
+    }
+
     // volume
     foreach(XMLModule::weakform_volume weakform, m_module->volume().weakforms_volume().weakform_volume())
     {
@@ -167,6 +190,29 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
                     {
                         generateFormExpression(formInfo, linearityType, coordinateType, *fieldVector, weakform);
                     }
+                    foreach(QString sourceField, xml_couplings.keys())
+                    {
+                        ctemplate::TemplateDictionary *coupling = fieldVector->AddSectionDictionary("COUPLING_SOURCE");
+                        coupling->SetValue("COUPLING_SOURCE_ID", sourceField.toStdString());
+
+                        // todo: loop over source analysis types
+                        QList<FormInfo> vectorForms = CouplingInfo::wfVectorVolumeSeparated(&(xml_couplings[sourceField]->volume()), analysisType, analysisType, CouplingType_Weak, linearityType);
+                        if (!vectorForms.isEmpty())
+                        {
+                            foreach(FormInfo formInfo, vectorForms)
+                            {
+                                generateFormExpression(formInfo, linearityType, coordinateType, *coupling, weakform);
+                            }
+                        }
+
+                    }
+
+                }
+
+                // find if there are any possible coupling sources
+                foreach(QString mod, availableModules.keys())
+                {
+                    //qDebug() << mod;
                 }
             }
         }

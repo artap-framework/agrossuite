@@ -274,11 +274,11 @@ void Agros2DGenerator::createStructure()
         field->SetValue("ID", moduleId.toStdString());
     }
 
-    foreach (QString couplingId, couplings)
-    {
-        ctemplate::TemplateDictionary *field = output.AddSectionDictionary("SOURCE");
-        field->SetValue("ID", couplingId.toStdString());
-    }
+//    foreach (QString couplingId, couplings)
+//    {
+//        ctemplate::TemplateDictionary *field = output.AddSectionDictionary("SOURCE");
+//        field->SetValue("ID", couplingId.toStdString());
+//    }
 
     // generate plugins project file
     // expand template
@@ -299,16 +299,18 @@ void Agros2DGenerator::generateSources()
     QMap<QString, QString> modules = Module::availableModules();
     QList<QString> couplings = couplingList()->availableCouplings();
 
+    qDebug() << couplings;
+
     foreach (QString moduleId, modules.keys())
     {
         generateModule(moduleId);
         generateDocumentation(moduleId);
     }
 
-    foreach (QString couplingId, couplings)
-    {
-        generateCoupling(couplingId);
-    }
+//    foreach (QString couplingId, couplings)
+//    {
+//        generateCoupling(couplingId);
+//    }
 }
 
 void Agros2DGenerator::generateModule(const QString &moduleId)

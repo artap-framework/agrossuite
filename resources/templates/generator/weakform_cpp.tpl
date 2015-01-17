@@ -142,6 +142,15 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
     dealii::hp::HpDoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
 
+    // coupling sources{{#COUPLING_SOURCE}}
+    dealii::hp::HpDoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}}, endc_{{COUPLING_SOURCE_ID}};
+    const SolverDeal* {{COUPLING_SOURCE_ID}}_solver = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"];
+    if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
+    {
+        cell_{{COUPLING_SOURCE_ID}} = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->begin_active();
+        endc = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->end();
+    }
+    {{/COUPLING_SOURCE}}
     system_rhs = 0.0;
     system_matrix = 0.0;
 
@@ -180,6 +189,22 @@ void SolverDeal{{CLASS}}::assembleSystem()
             fe_values.get_function_gradients(*m_solution_previous, solution_grad_previous);
         }
 
+        // coupling sources{{#COUPLING_SOURCE}}
+        FieldInfo* {{COUPLING_SOURCE_ID}}_fieldInfo = nullptr;
+        std::vector<dealii::Vector<double> > {{COUPLING_SOURCE_ID}}_value(n_q_points, dealii::Vector<double>(1)); // todo: num source solutions
+        std::vector<std::vector<dealii::Tensor<1,2> > > {{COUPLING_SOURCE_ID}}_grad(n_q_points, std::vector<dealii::Tensor<1,2> >(1));// todo: num source solutions
+
+        if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
+        {
+            {{COUPLING_SOURCE_ID}}_fieldInfo = Agros2D::problem()->fieldInfo("{{COUPLING_SOURCE_ID}}");
+            // todo: we probably do not need to initialize everything
+            dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values(*{{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadrature_formulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
+            {{COUPLING_SOURCE_ID}}_hp_fe_values.reinit(cell_{{COUPLING_SOURCE_ID}});
+            const dealii::FEValues<2> &{{COUPLING_SOURCE_ID}}_fe_values = {{COUPLING_SOURCE_ID}}_hp_fe_values.get_present_fe_values();
+            {{COUPLING_SOURCE_ID}}_fe_values.get_function_values(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_value);
+            {{COUPLING_SOURCE_ID}}_fe_values.get_function_gradients(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_grad);
+        }
+        {{/COUPLING_SOURCE}}
         // cache volume
         for (unsigned int i = 0; i < dofs_per_cell; ++i)
         {
@@ -298,6 +323,15 @@ void SolverDeal{{CLASS}}::assembleSystem()
                         {
                             cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
                         }{{/FORM_EXPRESSION}}
+                        {{#COUPLING_SOURCE}}
+                        if({{COUPLING_SOURCE_ID}}_fieldInfo)
+                        { {{#FORM_EXPRESSION}}
+                            // {{EXPRESSION_ID}}
+                            if (component_i == {{ROW_INDEX}})
+                            {
+                                cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
+                            }{{/FORM_EXPRESSION}}
+                        }{{/COUPLING_SOURCE}}
                     }
                 }
             }
@@ -414,6 +448,15 @@ void SolverDeal{{CLASS}}::assembleSystem()
             system_rhs(local_dof_indices[i]) += cell_rhs(i);
         }
         */
+
+        // todo: different domains
+        // coupling sources{{#COUPLING_SOURCE}}
+        if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
+        {
+            ++cell_{{COUPLING_SOURCE_ID}};
+        }
+        {{/COUPLING_SOURCE}}
+
     }
 }
 
