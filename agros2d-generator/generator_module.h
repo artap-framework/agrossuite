@@ -51,6 +51,7 @@ private:
     XMLModule::field *m_module;
     QString m_docString;
     QStringList m_names;
+    QString m_id;
     // dictionary for variables used in weakforms
     QHash<QString, QString> m_volumeVariables;
     QHash<QString, QString> m_surfaceVariables;
@@ -65,7 +66,7 @@ private:
 
     //ToDo: make up better names
     template <typename WeakForm>
-    void generateFormExpression(FormInfo form, LinearityType linearityType, CoordinateType coordinateType, ctemplate::TemplateDictionary &output, WeakForm weakform);
+    void generateFormExpression(FormInfo form, LinearityType linearityType, CoordinateType coordinateType, ctemplate::TemplateDictionary &output, QString formType, WeakForm weakform);
     template <typename WeakForm>
     ctemplate::TemplateDictionary *generateVolumeVariables(LinearityType linearityType, CoordinateType coordinateType, ctemplate::TemplateDictionary &output, WeakForm weakform, QString weakFormType);
     template <typename WeakForm>

@@ -25,7 +25,7 @@
 
 #include "util/constants.h"
 
-Agros2DGeneratorModule::Agros2DGeneratorModule(const QString &moduleId) : m_output(nullptr)
+Agros2DGeneratorModule::Agros2DGeneratorModule(const QString &moduleId) : m_output(nullptr), m_id(moduleId)
 {
     QDir root(QApplication::applicationDirPath());
     root.mkpath(QString("%1/%2").arg(GENERATOR_PLUGINROOT).arg(moduleId));

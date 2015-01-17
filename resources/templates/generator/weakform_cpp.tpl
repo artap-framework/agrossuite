@@ -69,10 +69,10 @@ virtual double value (const dealii::Point<dim> &p,
     {{#VARIABLE_SOURCE_NONLINEAR}}
     const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
 
-    {{#FORM_EXPRESSION}}
+    {{#FORM_EXPRESSION_ESSENTIAL}}
     // {{EXPRESSION_ID}}
     if (component == {{ROW_INDEX}})
-        return {{EXPRESSION}}; {{/FORM_EXPRESSION}}
+        return {{EXPRESSION}}; {{/FORM_EXPRESSION_ESSENTIAL}}
 
     assert(0);
     return 0.0;
@@ -86,9 +86,9 @@ virtual void vector_value (const dealii::Point<dim> &p,
     {{#VARIABLE_SOURCE_NONLINEAR}}
     const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
 
-    {{#FORM_EXPRESSION}}
+    {{#FORM_EXPRESSION_ESSENTIAL}}
     // {{EXPRESSION_ID}}
-    values[{{ROW_INDEX}}] = {{EXPRESSION}};{{/FORM_EXPRESSION}}
+    values[{{ROW_INDEX}}] = {{EXPRESSION}};{{/FORM_EXPRESSION_ESSENTIAL}}
 }
 
 virtual void value_list (const std::vector<dealii::Point<dim> > &points,
@@ -104,11 +104,11 @@ virtual void value_list (const std::vector<dealii::Point<dim> > &points,
         {{#VARIABLE_SOURCE_NONLINEAR}}
         const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
 
-        {{#FORM_EXPRESSION}}
+        {{#FORM_EXPRESSION_ESSENTIAL}}
         // {{EXPRESSION_ID}}
         if (component == {{ROW_INDEX}})
             values[i] = {{EXPRESSION}};
-        {{/FORM_EXPRESSION}}
+        {{/FORM_EXPRESSION_ESSENTIAL}}
     }
 }
 
@@ -142,6 +142,15 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
     dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
 
+    // coupling sources{{#COUPLING_SOURCE}}
+    dealii::hp::HpDoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}}, endc_{{COUPLING_SOURCE_ID}};
+    const SolverDeal* {{COUPLING_SOURCE_ID}}_solver = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"];
+    if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
+    {
+        cell_{{COUPLING_SOURCE_ID}} = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->begin_active();
+        endc = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->end();
+    }
+    {{/COUPLING_SOURCE}}
     system_rhs = 0.0;
     system_matrix = 0.0;
 
@@ -180,6 +189,22 @@ void SolverDeal{{CLASS}}::assembleSystem()
             fe_values.get_function_gradients(*m_solution_previous, solution_grad_previous);
         }
 
+        // coupling sources{{#COUPLING_SOURCE}}
+        FieldInfo* {{COUPLING_SOURCE_ID}}_fieldInfo = nullptr;
+        std::vector<dealii::Vector<double> > {{COUPLING_SOURCE_ID}}_value(n_q_points, dealii::Vector<double>(1)); // todo: num source solutions
+        std::vector<std::vector<dealii::Tensor<1,2> > > {{COUPLING_SOURCE_ID}}_grad(n_q_points, std::vector<dealii::Tensor<1,2> >(1));// todo: num source solutions
+
+        if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
+        {
+            {{COUPLING_SOURCE_ID}}_fieldInfo = Agros2D::problem()->fieldInfo("{{COUPLING_SOURCE_ID}}");
+            // todo: we probably do not need to initialize everything
+            dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values(*{{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadrature_formulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
+            {{COUPLING_SOURCE_ID}}_hp_fe_values.reinit(cell_{{COUPLING_SOURCE_ID}});
+            const dealii::FEValues<2> &{{COUPLING_SOURCE_ID}}_fe_values = {{COUPLING_SOURCE_ID}}_hp_fe_values.get_present_fe_values();
+            {{COUPLING_SOURCE_ID}}_fe_values.get_function_values(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_value);
+            {{COUPLING_SOURCE_ID}}_fe_values.get_function_gradients(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_grad);
+        }
+        {{/COUPLING_SOURCE}}
         // cache volume
         for (unsigned int i = 0; i < dofs_per_cell; ++i)
         {
@@ -227,9 +252,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
         if (material != Agros2D::scene()->materials->getNone(m_fieldInfo))
         {
             const QMap<QString, QSharedPointer<Value> > materialValues = material->values();
-
-            // MATRIX VOLUME
-            {{#VOLUME_MATRIX_SOURCE}}
+            {{#VOLUME_SOURCE}}
             if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}}))
             {
                 // matrix
@@ -241,7 +264,6 @@ void SolverDeal{{CLASS}}::assembleSystem()
                 for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
                 {
                     const dealii::Point<2> p = fe_values.quadrature_point(q_point);
-
                     {{#VARIABLE_SOURCE_NONLINEAR}}
                     const double {{VARIABLE_SHORT}}_val = materialValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}};
                     const double {{VARIABLE_SHORT}}_der = materialValues["{{VARIABLE}}"]->{{VARIABLE_DERIVATIVE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
@@ -256,52 +278,32 @@ void SolverDeal{{CLASS}}::assembleSystem()
                         {
                             const unsigned int component_j = cell->get_fe().system_to_component_index(j).first;
 
-                            {{#FORM_EXPRESSION}}
+                            {{#FORM_EXPRESSION_MATRIX}}
                             // {{EXPRESSION_ID}}
                             if (component_i == {{ROW_INDEX}} && component_j == {{COLUMN_INDEX}})
                             {
                                 cell_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
-                            }{{/FORM_EXPRESSION}}
-                        }
-                    }
-                }
-            }
-            {{/VOLUME_MATRIX_SOURCE}}
-
-            // VECTOR VOLUME
-            {{#VOLUME_VECTOR_SOURCE}}
-            if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}}))
-            {
-                // rhs
-                {{#VARIABLE_SOURCE_LINEAR}}
-                const double {{VARIABLE_SHORT}}_val = materialValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
-                {{#FUNCTION_SOURCE_CONSTANT}}
-                const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_CONSTANT}}
-
-                for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
-                {
-                    const dealii::Point<2> p = fe_values.quadrature_point(q_point);
-
-                    {{#VARIABLE_SOURCE_NONLINEAR}}
-                    const double {{VARIABLE_SHORT}}_val = materialValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}};
-                    const double {{VARIABLE_SHORT}}_der = materialValues["{{VARIABLE}}"]->{{VARIABLE_DERIVATIVE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
-                    {{#FUNCTION_SOURCE_NONCONSTANT}}
-                    const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_NONCONSTANT}}
-
-                    for (unsigned int i = 0; i < dofs_per_cell; ++i)
-                    {
-                        const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
-
-                        {{#FORM_EXPRESSION}}
+                            }{{/FORM_EXPRESSION_MATRIX}}
+                        }                        
+                        {{#FORM_EXPRESSION_VECTOR}}
                         // {{EXPRESSION_ID}}
                         if (component_i == {{ROW_INDEX}})
                         {
                             cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
-                        }{{/FORM_EXPRESSION}}
+                        }{{/FORM_EXPRESSION_VECTOR}}
+                        {{#COUPLING_SOURCE}}
+                        if({{COUPLING_SOURCE_ID}}_fieldInfo)
+                        { {{#FORM_EXPRESSION_VECTOR}}
+                            // {{EXPRESSION_ID}}
+                            if (component_i == {{ROW_INDEX}})
+                            {
+                                cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
+                            }{{/FORM_EXPRESSION_VECTOR}}
+                        }{{/COUPLING_SOURCE}}
                     }
                 }
             }
-            {{/VOLUME_VECTOR_SOURCE}}
+            {{/VOLUME_SOURCE}}
         }
 
 
@@ -315,8 +317,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
                 if (boundary != Agros2D::scene()->boundaries->getNone(m_fieldInfo))
                 {
-                    // MATRIX SURFACE
-                    {{#SURFACE_MATRIX_SOURCE}}
+                    {{#SURFACE_SOURCE}}
                     // {{BOUNDARY_ID}}
                     if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}})
                             && boundary->type() == "{{BOUNDARY_ID}}")
@@ -344,52 +345,25 @@ void SolverDeal{{CLASS}}::assembleSystem()
                                 {
                                     const unsigned int component_j = cell->get_fe().system_to_component_index(j).first;
 
-                                    {{#FORM_EXPRESSION}}
+                                    {{#FORM_EXPRESSION_MATRIX}}
                                     // {{EXPRESSION_ID}}
                                     if (component_i == {{ROW_INDEX}} && component_j == {{COLUMN_INDEX}})
                                     {
                                         cell_matrix(i,j) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
-                                    }{{/FORM_EXPRESSION}}
+                                    }{{/FORM_EXPRESSION_MATRIX}}
                                 }
-                            }
-                        }
-                    }
-                    {{/SURFACE_MATRIX_SOURCE}}
-
-                    // VECTOR SURFACE
-                    {{#SURFACE_VECTOR_SOURCE}}
-                    if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}})
-                            && boundary->type() == "{{BOUNDARY_ID}}")
-                    {
-                        {{#VARIABLE_SOURCE_LINEAR}}
-                        const double {{VARIABLE_SHORT}}_val = boundaryValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
-
-                        // value and grad cache
-                        std::vector<dealii::Vector<double> > shape_value = shape_face_value[face];
-                        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad = shape_face_grad;
-
-                        const dealii::FEFaceValues<2> &fe_face_values = hp_fe_face_values.get_present_fe_values();
-                        for (unsigned int q_point = 0; q_point < fe_face_values.n_quadrature_points; ++q_point)
-                        {
-                            const dealii::Point<2> p = shape_face_point[face][q_point];
-
-                            {{#VARIABLE_SOURCE_NONLINEAR}}
-                            const double {{VARIABLE_SHORT}}_val = boundaryValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
-
-                            for (unsigned int i = 0; i < dofs_per_cell; ++i)
-                            {
-                                const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
-
-                                {{#FORM_EXPRESSION}}
+                                {{#FORM_EXPRESSION_VECTOR}}
                                 // {{EXPRESSION_ID}}
                                 if (component_i == {{ROW_INDEX}})
                                 {
                                     cell_rhs(i) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
-                                }{{/FORM_EXPRESSION}}
+                                }{{/FORM_EXPRESSION_VECTOR}}
+
                             }
                         }
                     }
-                    {{/SURFACE_VECTOR_SOURCE}}
+                    {{/SURFACE_SOURCE}}
+
                 }
             }
         }
@@ -414,6 +388,15 @@ void SolverDeal{{CLASS}}::assembleSystem()
             system_rhs(local_dof_indices[i]) += cell_rhs(i);
         }
         */
+
+        // todo: different domains
+        // coupling sources{{#COUPLING_SOURCE}}
+        if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
+        {
+            ++cell_{{COUPLING_SOURCE_ID}};
+        }
+        {{/COUPLING_SOURCE}}
+
     }
 }
 

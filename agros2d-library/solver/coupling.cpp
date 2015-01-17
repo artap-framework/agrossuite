@@ -153,13 +153,48 @@ QList<QString> CouplingList::availableCouplings()
 
     return couplings;
 }
+bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField, CouplingType couplingType)
+{
+    foreach (Item item, m_couplings)
+    {
+        if (item.sourceAnalysisType == sourceField->analysisType() && item.targetAnalysisType == targetField->analysisType()
+                && item.sourceField == sourceField->fieldId() && item.targetField == targetField->fieldId()
+                && item.couplingType == couplingType)
+            return true;
+    }
+
+    return false;
+}
 
 bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField)
-{    
+{
     foreach (Item item, m_couplings)
     {
         if (item.sourceAnalysisType == sourceField->analysisType() && item.targetAnalysisType == targetField->analysisType()
                 && item.sourceField == sourceField->fieldId() && item.targetField == targetField->fieldId())
+            return true;
+    }
+
+    return false;
+}
+
+bool CouplingList::isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis, QString targetField, AnalysisType targetAnalysis, CouplingType couplingType)
+{
+    foreach (Item item, m_couplings)
+    {
+        if (item.sourceAnalysisType == sourceAnalysis && item.targetAnalysisType == targetAnalysis
+                && item.sourceField == sourceField && item.targetField == targetField && item.couplingType == couplingType)
+            return true;
+    }
+
+    return false;
+}
+
+bool CouplingList::isCouplingAvailable(QString sourceField, QString targetField, CouplingType couplingType)
+{
+    foreach (Item item, m_couplings)
+    {
+        if (item.sourceField == sourceField && item.targetField == targetField && item.couplingType == couplingType)
             return true;
     }
 
@@ -178,7 +213,8 @@ CouplingInfo::CouplingInfo(FieldInfo *sourceField,
 
 CouplingInfo::~CouplingInfo()
 {
-    delete m_plugin;
+    if(m_plugin)
+        delete m_plugin;
 }
 
 void CouplingInfo::setCouplingType(CouplingType couplingType)
@@ -206,28 +242,32 @@ void CouplingInfo::reload()
     if (m_plugin)
         delete m_plugin;
 
-    try{
-        m_plugin = Agros2D::loadPlugin(m_couplingId);
-    }
-    catch (AgrosPluginException &e)
-    {
-        Agros2D::log()->printError("Solver", "Cannot load plugin");
-        throw;
-    }
 
-    assert(m_plugin);
+    qDebug() << "coupling module is not loaded now... ";
+//    try{
+//        m_plugin = Agros2D::loadPlugin(m_couplingId);
+//    }
+//    catch (AgrosPluginException &e)
+//    {
+//        Agros2D::log()->printError("Solver", "Cannot load plugin");
+//        throw;
+//    }
+
+//    assert(m_plugin);
 }
 
 // name
 QString CouplingInfo::name() const
 {
-    return QString::fromStdString(m_plugin->coupling()->general_coupling().name());
+    return "todo: name";
+    //return QString::fromStdString(m_plugin->coupling()->general_coupling().name());
 }
 
 // description
 QString CouplingInfo::description() const
 {
-    return QString::fromStdString(m_plugin->coupling()->general_coupling().description());
+    return "todo: description";
+//    return QString::fromStdString(m_plugin->coupling()->general_coupling().description());
 }
 
 // constants
@@ -330,6 +370,7 @@ XMLModule::linearity_option findLinearityOption(XMLModule::volume *volume, Analy
         }
     }
 
+    qDebug() << "neexistuje";
     // todo: osetrit, napr pro silne sdruzeni current-heat neexistuje linearni forma
     assert(0);
 }

@@ -50,6 +50,9 @@ public:
 
     QList<QString> availableCouplings();
     bool isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField);
+    bool isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField, CouplingType couplingType);
+    bool isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis, QString targetField, AnalysisType targetAnalysis, CouplingType couplingType);
+    bool isCouplingAvailable(QString sourceField, QString targetField, CouplingType couplingType);
 
 private:
     QList<Item> m_couplings;

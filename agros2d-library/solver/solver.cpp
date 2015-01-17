@@ -77,6 +77,7 @@
 #include "problem.h"
 #include "solver/problem_config.h"
 //#include "module.h"
+#include "coupling.h"
 #include "scene.h"
 #include "sceneedge.h"
 #include "scenelabel.h"
@@ -1300,6 +1301,8 @@ void AgrosExternalSolverExternal::solve(double* initial_guess)
 }
 */
 
+QMap<FieldInfo *, SolverDeal *> ProblemSolver::m_solverDeal;
+
 ProblemSolver::ProblemSolver()
 {
 }
@@ -1317,15 +1320,62 @@ void ProblemSolver::init()
     }
 }
 
+QMap<QString, const SolverDeal *> ProblemSolver::solvers()
+{
+    QMap<QString, const SolverDeal *> res;
+    foreach(FieldInfo* fieldInfo, m_solverDeal.keys())
+    {
+        res[fieldInfo->fieldId()] = m_solverDeal[fieldInfo];
+    }
+
+    return res;
+}
+
+
 void ProblemSolver::solveProblem()
 {
-    foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
+    // todo: this is temporary!!!
+    QList<FieldInfo*> fieldInfosSorted;
+    QList<QString> fieldInfoOrder;
+    fieldInfoOrder.push_back("electrostatic");
+    fieldInfoOrder.push_back("magnetic");
+    fieldInfoOrder.push_back("current");
+    fieldInfoOrder.push_back("heat");
+    fieldInfoOrder.push_back("elasticity");
+
+    foreach(QString fieldName, fieldInfoOrder)
+    {
+        foreach(FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
+        {
+            if(fieldInfo->fieldId() == fieldName)
+            {
+                fieldInfosSorted.push_back(fieldInfo);
+            }
+        }
+    }
+
+    foreach (FieldInfo* fieldInfo, fieldInfosSorted)
     {
         // frequency
         // todo: find some better place, where some values are initialized
         fieldInfo->setFrequency(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toDouble());
 
+        qDebug() << "solving " << fieldInfo->name();
         SolverDeal *solverDeal = m_solverDeal[fieldInfo];
+
+        // look for coupling sources
+        foreach(FieldInfo* sourceFieldInfo, fieldInfosSorted)
+        {
+            // todo: check if it is also used!
+            if(couplingList()->isCouplingAvailable(sourceFieldInfo, fieldInfo, CouplingType_Weak))
+            {
+                FieldSolutionID solutionID(sourceFieldInfo, 0, 0, SolutionMode_Normal);
+                MultiArray sourceSolution = Agros2D::solutionStore()->multiArray(solutionID);
+
+                solverDeal->setCouplingSource(sourceFieldInfo->fieldId(), sourceSolution.solution());
+            }
+        }
+
         solverDeal->solve();
     }
 }

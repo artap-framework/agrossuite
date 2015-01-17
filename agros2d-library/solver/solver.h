@@ -58,10 +58,10 @@ public:
     SolverDeal(const FieldInfo *fieldInfo);
     virtual ~SolverDeal();
 
-    inline dealii::Vector<double> *solution() { return m_solution; }
-    inline dealii::Triangulation<2> *triangulation() { return m_triangulation; }
-    inline dealii::hp::DoFHandler<2> *doFHandler() { return m_doFHandler; }
-    dealii::hp::FECollection<2> *feCollection() { return m_feCollection; }
+    inline dealii::Vector<double> *solution() const { return m_solution; }
+    inline dealii::Triangulation<2> *triangulation() const { return m_triangulation; }
+    inline dealii::hp::DoFHandler<2> *doFHandler() const { return m_doFHandler; }
+    dealii::hp::FECollection<2> *feCollection() const { return m_feCollection; }
 
     inline dealii::hp::QCollection<2> quadrature_formulas() const { return m_quadrature_formulas; }
     inline dealii::hp::QCollection<2-1> face_quadrature_formulas() const { return m_face_quadrature_formulas; }
@@ -79,6 +79,8 @@ public:
     // problem
     void solve();
     void solveTransientStep();
+
+    void setCouplingSource(QString fieldID, dealii::Vector<double> * sourceVector) { m_coupling_sources[fieldID] = sourceVector; }
 
     double computeNorm();
 
@@ -105,6 +107,9 @@ protected:
     dealii::Vector<double> *m_solution;
     // previous solution
     dealii::Vector<double> *m_solution_previous;
+
+    // weak coupling sources
+    QMap<QString, dealii::Vector<double> * >m_coupling_sources;
 
     // hanging nodes and sparsity pattern
     dealii::ConstraintMatrix hanging_node_constraints;
@@ -134,6 +139,9 @@ protected:
     void solveAdaptivity();
     void solveAdaptivitySimple();
     void solveAdaptivityAdaptive();
+
+    // coupling: todo: first I do it separately, but it has to be integrated with transient/adaptivity/Newton...
+    void solveWeakCoupled();
 
     void estimateSmoothness(dealii::Vector<float> &smoothness_indicators) const;
 
@@ -239,11 +247,12 @@ class ProblemSolver
 public:
     ProblemSolver();
 
-    void init();
-    void solveProblem();
+    static void init();
+    static void solveProblem();
+    static QMap<QString, const SolverDeal *> solvers();
 
 private:
-    QMap<FieldInfo *, SolverDeal *> m_solverDeal;
+    static QMap<FieldInfo *, SolverDeal *> m_solverDeal;
 };
 
 #endif // SOLVER_H

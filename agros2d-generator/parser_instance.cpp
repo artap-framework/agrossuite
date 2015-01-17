@@ -42,6 +42,9 @@ ParserInstanceWeakForm::ParserInstanceWeakForm(ParserModuleInfo pmi) : ParserIns
     addBasicWeakformTokens();
     addConstants(m_parserModuleInfo);
     addPreviousSolWeakform(pmi.numSolutions);
+
+    // todo: simplification: all possible (and impossible) source tokens generated
+    addCouplingWeakformTokens(4);
     addVolumeVariablesWeakform(pmi, false);
     addSurfaceVariables();
 }
