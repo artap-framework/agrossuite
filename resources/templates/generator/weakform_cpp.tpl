@@ -156,101 +156,101 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
     for (; cell != endc; ++cell)
     {
-        const unsigned int dofs_per_cell = cell->get_fe().dofs_per_cell;
-
-        // local matrix
-        cell_matrix.reinit(dofs_per_cell, dofs_per_cell);
-        cell_matrix = 0;
-        cell_rhs.reinit(dofs_per_cell);
-        cell_rhs = 0;
-
-        hp_fe_values.reinit(cell);
-
-        // qDebug() << dofs_per_cell;
-        const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
-        const unsigned int n_q_points = fe_values.n_quadrature_points;
-
-        // volume value and grad cache
-        std::vector<dealii::Vector<double> > shape_value(dofs_per_cell, dealii::Vector<double>(n_q_points));
-        std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
-        // surface cache
-        std::vector<std::vector<dealii::Point<2> > > shape_face_point(dealii::GeometryInfo<2>::faces_per_cell);
-        std::vector<std::vector<dealii::Vector<double> > > shape_face_value(dealii::GeometryInfo<2>::faces_per_cell, std::vector<dealii::Vector<double> >(dofs_per_cell));
-        std::vector<std::vector<double> > shape_face_JxW(dealii::GeometryInfo<2>::faces_per_cell);
-        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(dofs_per_cell);
-
-        // previous values and grads
-        std::vector<dealii::Vector<double> > solution_value_previous(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-        std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
-
-        if (m_solution_previous)
-        {
-            fe_values.get_function_values(*m_solution_previous, solution_value_previous);
-            fe_values.get_function_gradients(*m_solution_previous, solution_grad_previous);
-        }
-
-        // coupling sources{{#COUPLING_SOURCE}}
-        FieldInfo* {{COUPLING_SOURCE_ID}}_fieldInfo = nullptr;
-        std::vector<dealii::Vector<double> > {{COUPLING_SOURCE_ID}}_value(n_q_points, dealii::Vector<double>(1)); // todo: num source solutions
-        std::vector<std::vector<dealii::Tensor<1,2> > > {{COUPLING_SOURCE_ID}}_grad(n_q_points, std::vector<dealii::Tensor<1,2> >(1));// todo: num source solutions
-
-        if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
-        {
-            {{COUPLING_SOURCE_ID}}_fieldInfo = Agros2D::problem()->fieldInfo("{{COUPLING_SOURCE_ID}}");
-            // todo: we probably do not need to initialize everything
-            dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values(*{{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadrature_formulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
-            {{COUPLING_SOURCE_ID}}_hp_fe_values.reinit(cell_{{COUPLING_SOURCE_ID}});
-            const dealii::FEValues<2> &{{COUPLING_SOURCE_ID}}_fe_values = {{COUPLING_SOURCE_ID}}_hp_fe_values.get_present_fe_values();
-            {{COUPLING_SOURCE_ID}}_fe_values.get_function_values(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_value);
-            {{COUPLING_SOURCE_ID}}_fe_values.get_function_gradients(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_grad);
-        }
-        {{/COUPLING_SOURCE}}
-        // cache volume
-        for (unsigned int i = 0; i < dofs_per_cell; ++i)
-        {
-            for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
-            {
-                shape_value[i][q_point] = fe_values.shape_value(i, q_point);
-                shape_grad[i][q_point] = fe_values.shape_grad(i, q_point);
-            }
-        }
-
-        // cache surface
-        for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
-        {
-            if (cell->face(face)->at_boundary())
-            {
-                hp_fe_face_values.reinit(cell, face);
-
-                const dealii::FEFaceValues<2> &fe_face_values = hp_fe_face_values.get_present_fe_values();
-                const unsigned int n_face_q_points = fe_face_values.n_quadrature_points;
-
-                shape_face_point[face].resize(n_face_q_points);
-                shape_face_JxW[face].resize(n_face_q_points);
-
-                for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
-                {
-                    shape_face_point[face][q_point] = fe_face_values.quadrature_point(q_point);
-                    shape_face_JxW[face][q_point] = fe_face_values.JxW(q_point);
-                }
-
-                for (unsigned int i = 0; i < dofs_per_cell; ++i)
-                {
-                    shape_face_value[face][i].reinit(n_face_q_points);
-                    for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
-                    {
-                        shape_face_value[face][i][q_point] = fe_face_values.shape_value(i, q_point);
-                        // shape_face_grad[i][q_point] = fe_face_values.shape_grad(i, q_point);
-                    }
-                }
-            }
-        }
-
         // materials
         SceneMaterial *material = Agros2D::scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo);
 
         if (material != Agros2D::scene()->materials->getNone(m_fieldInfo))
         {
+            const unsigned int dofs_per_cell = cell->get_fe().dofs_per_cell;
+
+            // local matrix
+            cell_matrix.reinit(dofs_per_cell, dofs_per_cell);
+            cell_matrix = 0;
+            cell_rhs.reinit(dofs_per_cell);
+            cell_rhs = 0;
+
+            hp_fe_values.reinit(cell);
+
+            // qDebug() << dofs_per_cell;
+            const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
+            const unsigned int n_q_points = fe_values.n_quadrature_points;
+
+            // volume value and grad cache
+            std::vector<dealii::Vector<double> > shape_value(dofs_per_cell, dealii::Vector<double>(n_q_points));
+            std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
+            // surface cache
+            std::vector<std::vector<dealii::Point<2> > > shape_face_point(dealii::GeometryInfo<2>::faces_per_cell);
+            std::vector<std::vector<dealii::Vector<double> > > shape_face_value(dealii::GeometryInfo<2>::faces_per_cell, std::vector<dealii::Vector<double> >(dofs_per_cell));
+            std::vector<std::vector<double> > shape_face_JxW(dealii::GeometryInfo<2>::faces_per_cell);
+            // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(dofs_per_cell);
+
+            // previous values and grads
+            std::vector<dealii::Vector<double> > solution_value_previous(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+            std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
+            if (m_solution_previous)
+            {
+                fe_values.get_function_values(*m_solution_previous, solution_value_previous);
+                fe_values.get_function_gradients(*m_solution_previous, solution_grad_previous);
+            }
+
+            // coupling sources{{#COUPLING_SOURCE}}
+            FieldInfo* {{COUPLING_SOURCE_ID}}_fieldInfo = nullptr;
+            std::vector<dealii::Vector<double> > {{COUPLING_SOURCE_ID}}_value(n_q_points, dealii::Vector<double>(1)); // todo: num source solutions
+            std::vector<std::vector<dealii::Tensor<1,2> > > {{COUPLING_SOURCE_ID}}_grad(n_q_points, std::vector<dealii::Tensor<1,2> >(1));// todo: num source solutions
+
+            if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
+            {
+                {{COUPLING_SOURCE_ID}}_fieldInfo = Agros2D::problem()->fieldInfo("{{COUPLING_SOURCE_ID}}");
+                // todo: we probably do not need to initialize everything
+                dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values(*{{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadrature_formulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
+                {{COUPLING_SOURCE_ID}}_hp_fe_values.reinit(cell_{{COUPLING_SOURCE_ID}});
+                const dealii::FEValues<2> &{{COUPLING_SOURCE_ID}}_fe_values = {{COUPLING_SOURCE_ID}}_hp_fe_values.get_present_fe_values();
+                {{COUPLING_SOURCE_ID}}_fe_values.get_function_values(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_value);
+                {{COUPLING_SOURCE_ID}}_fe_values.get_function_gradients(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_grad);
+            }
+            {{/COUPLING_SOURCE}}
+            // cache volume
+            for (unsigned int i = 0; i < dofs_per_cell; ++i)
+            {
+                for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
+                {
+                    shape_value[i][q_point] = fe_values.shape_value(i, q_point);
+                    shape_grad[i][q_point] = fe_values.shape_grad(i, q_point);
+                }
+            }
+
+            // cache surface
+            for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
+            {
+                if (cell->face(face)->at_boundary())
+                {
+                    hp_fe_face_values.reinit(cell, face);
+
+                    const dealii::FEFaceValues<2> &fe_face_values = hp_fe_face_values.get_present_fe_values();
+                    const unsigned int n_face_q_points = fe_face_values.n_quadrature_points;
+
+                    shape_face_point[face].resize(n_face_q_points);
+                    shape_face_JxW[face].resize(n_face_q_points);
+
+                    for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
+                    {
+                        shape_face_point[face][q_point] = fe_face_values.quadrature_point(q_point);
+                        shape_face_JxW[face][q_point] = fe_face_values.JxW(q_point);
+                    }
+
+                    for (unsigned int i = 0; i < dofs_per_cell; ++i)
+                    {
+                        shape_face_value[face][i].reinit(n_face_q_points);
+                        for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
+                        {
+                            shape_face_value[face][i][q_point] = fe_face_values.shape_value(i, q_point);
+                            // shape_face_grad[i][q_point] = fe_face_values.shape_grad(i, q_point);
+                        }
+                    }
+                }
+            }
+
             const QMap<QString, QSharedPointer<Value> > materialValues = material->values();
             {{#VOLUME_SOURCE}}
             if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}}))
@@ -304,80 +304,80 @@ void SolverDeal{{CLASS}}::assembleSystem()
                 }
             }
             {{/VOLUME_SOURCE}}
-        }
 
 
-        // boundaries
-        for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
-        {
-            if (cell->face(face)->at_boundary())
+            // boundaries
+            for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
             {
-                SceneBoundary *boundary = Agros2D::scene()->edges->at(cell->face(face)->boundary_indicator() - 1)->marker(m_fieldInfo);
-                const QMap<QString, QSharedPointer<Value> > boundaryValues = boundary->values();
-
-                if (boundary != Agros2D::scene()->boundaries->getNone(m_fieldInfo))
+                if (cell->face(face)->at_boundary())
                 {
-                    {{#SURFACE_SOURCE}}
-                    // {{BOUNDARY_ID}}
-                    if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}})
-                            && boundary->type() == "{{BOUNDARY_ID}}")
+                    SceneBoundary *boundary = Agros2D::scene()->edges->at(cell->face(face)->boundary_indicator() - 1)->marker(m_fieldInfo);
+                    const QMap<QString, QSharedPointer<Value> > boundaryValues = boundary->values();
+
+                    if (boundary != Agros2D::scene()->boundaries->getNone(m_fieldInfo))
                     {
-                        {{#VARIABLE_SOURCE_LINEAR}}
-                        const double {{VARIABLE_SHORT}}_val = boundaryValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
-
-                        // value and grad cache
-                        std::vector<dealii::Vector<double> > shape_value = shape_face_value[face];
-                        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad = shape_face_grad;
-
-                        const dealii::FEFaceValues<2> &fe_face_values = hp_fe_face_values.get_present_fe_values();
-                        for (unsigned int q_point = 0; q_point < fe_face_values.n_quadrature_points; ++q_point)
+                        {{#SURFACE_SOURCE}}
+                        // {{BOUNDARY_ID}}
+                        if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}})
+                                && boundary->type() == "{{BOUNDARY_ID}}")
                         {
-                            const dealii::Point<2> p = shape_face_point[face][q_point];
+                            {{#VARIABLE_SOURCE_LINEAR}}
+                            const double {{VARIABLE_SHORT}}_val = boundaryValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
 
-                            {{#VARIABLE_SOURCE_NONLINEAR}}
-                            const double {{VARIABLE_SHORT}}_val = boundaryValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
+                            // value and grad cache
+                            std::vector<dealii::Vector<double> > shape_value = shape_face_value[face];
+                            // std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad = shape_face_grad;
 
-                            for (unsigned int i = 0; i < dofs_per_cell; ++i)
+                            const dealii::FEFaceValues<2> &fe_face_values = hp_fe_face_values.get_present_fe_values();
+                            for (unsigned int q_point = 0; q_point < fe_face_values.n_quadrature_points; ++q_point)
                             {
-                                const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
+                                const dealii::Point<2> p = shape_face_point[face][q_point];
 
-                                for (unsigned int j = 0; j < dofs_per_cell; ++j)
+                                {{#VARIABLE_SOURCE_NONLINEAR}}
+                                const double {{VARIABLE_SHORT}}_val = boundaryValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
+
+                                for (unsigned int i = 0; i < dofs_per_cell; ++i)
                                 {
-                                    const unsigned int component_j = cell->get_fe().system_to_component_index(j).first;
+                                    const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
 
-                                    {{#FORM_EXPRESSION_MATRIX}}
-                                    // {{EXPRESSION_ID}}
-                                    if (component_i == {{ROW_INDEX}} && component_j == {{COLUMN_INDEX}})
+                                    for (unsigned int j = 0; j < dofs_per_cell; ++j)
                                     {
-                                        cell_matrix(i,j) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
-                                    }{{/FORM_EXPRESSION_MATRIX}}
-                                }
-                                {{#FORM_EXPRESSION_VECTOR}}
-                                // {{EXPRESSION_ID}}
-                                if (component_i == {{ROW_INDEX}})
-                                {
-                                    cell_rhs(i) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
-                                }{{/FORM_EXPRESSION_VECTOR}}
+                                        const unsigned int component_j = cell->get_fe().system_to_component_index(j).first;
 
+                                        {{#FORM_EXPRESSION_MATRIX}}
+                                        // {{EXPRESSION_ID}}
+                                        if (component_i == {{ROW_INDEX}} && component_j == {{COLUMN_INDEX}})
+                                        {
+                                            cell_matrix(i,j) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
+                                        }{{/FORM_EXPRESSION_MATRIX}}
+                                    }
+                                    {{#FORM_EXPRESSION_VECTOR}}
+                                    // {{EXPRESSION_ID}}
+                                    if (component_i == {{ROW_INDEX}})
+                                    {
+                                        cell_rhs(i) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
+                                    }{{/FORM_EXPRESSION_VECTOR}}
+
+                                }
                             }
                         }
-                    }
-                    {{/SURFACE_SOURCE}}
+                        {{/SURFACE_SOURCE}}
 
+                    }
                 }
             }
+
+            // distribute local to global matrix
+            local_dof_indices.resize(dofs_per_cell);
+            cell->get_dof_indices(local_dof_indices);
+
+            // distribute local to global system
+            hanging_node_constraints.distribute_local_to_global(cell_matrix,
+                                                                cell_rhs,
+                                                                local_dof_indices,
+                                                                system_matrix,
+                                                                system_rhs);
         }
-
-        // distribute local to global matrix
-        local_dof_indices.resize(dofs_per_cell);
-        cell->get_dof_indices(local_dof_indices);
-
-        // distribute local to global system
-        hanging_node_constraints.distribute_local_to_global(cell_matrix,
-                                                            cell_rhs,
-                                                            local_dof_indices,
-                                                            system_matrix,
-                                                            system_rhs);
 
         /*
         for (unsigned int i=0; i<dofs_per_cell; ++i)
