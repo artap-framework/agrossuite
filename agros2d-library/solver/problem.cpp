@@ -431,11 +431,7 @@ bool Problem::meshAction(bool emitMeshed)
         // case MeshType_Triangle_QuadFineDivision:
         // case MeshType_Triangle_QuadRoughDivision:
         // case MeshType_Triangle_QuadJoin:
-#ifdef WIN64
-        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangleExternal());
-#else
         meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangle());
-#endif
         break;
         // case MeshType_GMSH_Triangle:
     // case MeshType_GMSH_Quad:
