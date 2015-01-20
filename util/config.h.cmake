@@ -10,4 +10,6 @@ const int VERSION_DAY = ${VERSION_DAY}.0;
 
 #cmakedefine WITH_OPENMP
 
+#cmakedefine DEAL_II_WITH_UMFPACK
+
 #endif
