@@ -143,7 +143,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
     dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
 
     // coupling sources{{#COUPLING_SOURCE}}
-    dealii::hp::HpDoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}}, endc_{{COUPLING_SOURCE_ID}};
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}}, endc_{{COUPLING_SOURCE_ID}};
     const SolverDeal* {{COUPLING_SOURCE_ID}}_solver = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"];
     if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
     {
