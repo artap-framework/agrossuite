@@ -140,14 +140,32 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
     std::vector<dealii::types::global_dof_index> local_dof_indices;
 
+    // cache
+    int max_dofs_per_cell = m_feCollection->max_dofs_per_cell();
+    int max_n_quadrature_points = m_quadrature_formulas.max_n_quadrature_points();
+
+    // volume value and grad cache
+    std::vector<dealii::Vector<double> > shape_value(max_dofs_per_cell, dealii::Vector<double>(max_n_quadrature_points));
+    std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad(max_dofs_per_cell, std::vector<dealii::Tensor<1,2> >(max_n_quadrature_points));
+    // surface cache
+    std::vector<std::vector<dealii::Point<2> > > shape_face_point(dealii::GeometryInfo<2>::faces_per_cell);
+    std::vector<std::vector<dealii::Vector<double> > > shape_face_value(dealii::GeometryInfo<2>::faces_per_cell, std::vector<dealii::Vector<double> >(max_dofs_per_cell));
+    std::vector<std::vector<double> > shape_face_JxW(dealii::GeometryInfo<2>::faces_per_cell);
+    // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(max_dofs_per_cell);
+
+    // previous values and grads
+    std::vector<dealii::Vector<double> > solution_value_previous(max_n_quadrature_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+    std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous(max_n_quadrature_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
     dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
 
-    // coupling sources{{#COUPLING_SOURCE}}
+    // coupling sources {{#COUPLING_SOURCE}}
     dealii::hp::DoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}}, endc_{{COUPLING_SOURCE_ID}};
     const SolverDeal* {{COUPLING_SOURCE_ID}}_solver = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"];
     if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
     {
         cell_{{COUPLING_SOURCE_ID}} = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->begin_active();
+        // to Pavel Kus: is it OK? Should be endc_{{COUPLING_SOURCE_ID}}; ???
         endc = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->end();
     }
     {{/COUPLING_SOURCE}}
@@ -171,22 +189,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
 
             hp_fe_values.reinit(cell);
 
-            // qDebug() << dofs_per_cell;
             const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
             const unsigned int n_q_points = fe_values.n_quadrature_points;
-
-            // volume value and grad cache
-            std::vector<dealii::Vector<double> > shape_value(dofs_per_cell, dealii::Vector<double>(n_q_points));
-            std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
-            // surface cache
-            std::vector<std::vector<dealii::Point<2> > > shape_face_point(dealii::GeometryInfo<2>::faces_per_cell);
-            std::vector<std::vector<dealii::Vector<double> > > shape_face_value(dealii::GeometryInfo<2>::faces_per_cell, std::vector<dealii::Vector<double> >(dofs_per_cell));
-            std::vector<std::vector<double> > shape_face_JxW(dealii::GeometryInfo<2>::faces_per_cell);
-            // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(dofs_per_cell);
-
-            // previous values and grads
-            std::vector<dealii::Vector<double> > solution_value_previous(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-            std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
 
             if (m_solution_previous)
             {
