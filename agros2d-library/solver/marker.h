@@ -32,13 +32,19 @@ public:
     virtual ~Marker();
 
     /// value of one individual variable
-    const Value* valueNakedPtr(const QString &id) const;
+    const Value* valueNakedPtr(const QString &name) const;
+    const Value* valueNakedPtr(const uint id) const;
 
     /// value of one individual variable
-    const QSharedPointer<Value> value(const QString &id) const;
+    const QSharedPointer<Value> value(const QString &name) const;
+    const QSharedPointer<Value> value(const uint id) const;
 
     /// get all values
-    const QMap<QString, QSharedPointer<Value> > values() const;
+    const QMap<uint, QSharedPointer<Value> > values() const;
+
+    /// key exists
+    bool contains(const QString &name) const;
+    const QString valueName(const uint id) const;
 
     // creates new shared pointer and copy Value inside
     void setValue(const QString &name, Value value);
@@ -47,7 +53,7 @@ public:
     void modifyValue(const QString &name, Value value);
 
     /// return name
-    QString name() {return m_name; }
+    QString name() const { return m_name; }
 
     /// set name
     void setName(QString paramName) { m_name = paramName; }
@@ -58,7 +64,8 @@ public:
     QString fieldId();
 
     /// ????
-    bool evaluate(const QString &id, double time);
+    bool evaluate(const QString &name, double time);
+    bool evaluate(const uint id, double time);
 
     /// returns true if all OK
     bool evaluateAllVariables();
@@ -75,7 +82,8 @@ protected:
 
 private:
     /// variables - the way to customize boundary "template", given by the type parameter
-    QMap<QString, QSharedPointer<Value> > m_values;
+    QMap<uint, QSharedPointer<Value> > m_values;
+    QMap<QString, uint> m_valuesHash;
 
     /// we don't want those objects to be copied since we compare pointers
     Marker(const Marker& );

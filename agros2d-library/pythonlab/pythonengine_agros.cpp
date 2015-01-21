@@ -448,14 +448,14 @@ QString createPythonFromModel()
         str += "\n# boundaries\n";
         foreach (SceneBoundary *boundary, Agros2D::scene()->boundaries->filter(fieldInfo).items())
         {
-            const QMap<QString, QSharedPointer<Value> > values = boundary->values();
+            const QMap<uint, QSharedPointer<Value> > values = boundary->values();
 
             QString variables = "{";
 
             Module::BoundaryType boundaryType = fieldInfo->boundaryType(boundary->type());
             foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
             {
-                QSharedPointer<Value> value = values[variable.id()];
+                QSharedPointer<Value> value = values[qHash(variable.id())];
 
                 if (value->isTimeDependent() || value->isCoordinateDependent() || (value->hasTable() && (fieldInfo->linearityType() != LinearityType_Linear)))
                 {
@@ -484,12 +484,12 @@ QString createPythonFromModel()
         str += "\n# materials\n";
         foreach (SceneMaterial *material, Agros2D::scene()->materials->filter(fieldInfo).items())
         {
-            const QMap<QString, QSharedPointer<Value> > values = material->values();
+            const QMap<uint, QSharedPointer<Value> > values = material->values();
 
             QString variables = "{";
             foreach (Module::MaterialTypeVariable variable, material->fieldInfo()->materialTypeVariables())
             {
-                QSharedPointer<Value> value = values[variable.id()];
+                QSharedPointer<Value> value = values[qHash(variable.id())];
 
                 if (value->hasTable() && !value->isNumber())
                 {

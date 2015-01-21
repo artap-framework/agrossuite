@@ -441,6 +441,7 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateVolumeVariables(L
         {
             ctemplate::TemplateDictionary *subFieldNonlinear = field->AddSectionDictionary("VARIABLE_SOURCE_NONLINEAR");
             subFieldNonlinear->SetValue("VARIABLE", quantity.id().c_str());
+            subFieldNonlinear->SetValue("VARIABLE_HASH", QString::number(qHash(QString::fromStdString(quantity.id()))).toStdString());
             subFieldNonlinear->SetValue("VARIABLE_SHORT", m_volumeVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
 
             // nonlinear value and derivative
@@ -455,6 +456,7 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateVolumeVariables(L
 
             ctemplate::TemplateDictionary *subFieldLinear = field->AddSectionDictionary("VARIABLE_SOURCE_LINEAR");
             subFieldLinear->SetValue("VARIABLE", quantity.id().c_str());
+            subFieldLinear->SetValue("VARIABLE_HASH", QString::number(qHash(QString::fromStdString(quantity.id()))).toStdString());
             subFieldLinear->SetValue("VARIABLE_SHORT", m_volumeVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
 
             subFieldLinear->SetValue("VARIABLE_VALUE", QString("number()").toStdString());
@@ -558,6 +560,7 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateSurfaceVariables(
             // linear only value
             ctemplate::TemplateDictionary *subFieldLinear = field->AddSectionDictionary("VARIABLE_SOURCE_LINEAR");
             subFieldLinear->SetValue("VARIABLE", quantity.id().c_str());
+            subFieldLinear->SetValue("VARIABLE_HASH", QString::number(qHash(QString::fromStdString(quantity.id()))).toStdString());
             subFieldLinear->SetValue("VARIABLE_SHORT", m_surfaceVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
 
             subFieldLinear->SetValue("VARIABLE_VALUE", QString("number()").toStdString());
@@ -567,6 +570,7 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateSurfaceVariables(
             // linear only value
             ctemplate::TemplateDictionary *subFieldLinear = field->AddSectionDictionary("VARIABLE_SOURCE_LINEAR");
             subFieldLinear->SetValue("VARIABLE", quantity.id().c_str());
+            subFieldLinear->SetValue("VARIABLE_HASH", QString::number(qHash(QString::fromStdString(quantity.id()))).toStdString());
             subFieldLinear->SetValue("VARIABLE_SHORT", m_surfaceVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
 
             // linear boundary condition
@@ -577,6 +581,7 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateSurfaceVariables(
             // nonlinear case
             ctemplate::TemplateDictionary *subFieldNonlinear = field->AddSectionDictionary("VARIABLE_SOURCE_NONLINEAR");
             subFieldNonlinear->SetValue("VARIABLE", quantity.id().c_str());
+            subFieldNonlinear->SetValue("VARIABLE_HASH", QString::number(qHash(QString::fromStdString(quantity.id()))).toStdString());
             subFieldNonlinear->SetValue("VARIABLE_SHORT", m_surfaceVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
 
             // spacedep boundary condition
@@ -587,6 +592,7 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateSurfaceVariables(
             // nonlinear case
             ctemplate::TemplateDictionary *subFieldNonlinear = field->AddSectionDictionary("VARIABLE_SOURCE_NONLINEAR");
             subFieldNonlinear->SetValue("VARIABLE", quantity.id().c_str());
+            subFieldNonlinear->SetValue("VARIABLE_HASH", QString::number(qHash(QString::fromStdString(quantity.id()))).toStdString());
             subFieldNonlinear->SetValue("VARIABLE_SHORT", m_surfaceVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
 
             // spacedep boundary condition

@@ -31,36 +31,60 @@ Marker::Marker(const FieldInfo *fieldInfo, QString name)
 
 Marker::~Marker()
 {
+    m_valuesHash.clear();
     m_values.clear();
 }
 
-const QSharedPointer<Value> Marker::value(const QString &id) const
+const QSharedPointer<Value> Marker::value(const QString &name) const
 {
-    assert(! id.isEmpty());
-    // if(!m_values.contains(id))
-    // {
-    //     qDebug() << " marker does not contain " << id;
-    // }
+    assert(!name.isEmpty());
+    assert(m_valuesHash.contains(name));
+
+    return value(m_valuesHash[name]);
+}
+
+const QSharedPointer<Value> Marker::value(const uint id) const
+{
     assert(m_values.contains(id));
 
     return m_values[id];
 }
 
-const Value* Marker::valueNakedPtr(const QString &id) const
+
+const Value* Marker::valueNakedPtr(const QString &name) const
 {    
+    return value(name).data();
+}
+
+const Value* Marker::valueNakedPtr(const uint id) const
+{
     return value(id).data();
 }
 
-const QMap<QString, QSharedPointer<Value> > Marker::values() const
+const QMap<uint, QSharedPointer<Value> > Marker::values() const
 {
     return m_values;
+}
+
+bool Marker::contains(const QString &name) const
+{    
+    return m_valuesHash.contains(name);
+}
+
+const QString Marker::valueName(const uint id) const
+{
+    assert(m_valuesHash.values().contains(id));
+
+    return m_valuesHash.key(id);
 }
 
 void Marker::setValue(const QString& name, Value value)
 {
 #pragma omp critical
     {
-        m_values[name] = QSharedPointer<Value>(new Value(value));
+        uint hsh = qHash(name);
+        m_valuesHash[name] = hsh;
+        m_values[hsh] = QSharedPointer<Value>(new Value(value));
     }
 }
 
@@ -68,22 +92,35 @@ void Marker::modifyValue(const QString& name, Value value)
 {
 #pragma omp critical
     {
-        if(! m_values.contains(name))
-            m_values[name] = QSharedPointer<Value>(new Value(value));
+        if ((m_valuesHash.contains(name) && m_values.contains(m_valuesHash[name])))
+        {
+            // existing value
+            *m_values[m_valuesHash[name]].data() = value;
+        }
         else
-            *m_values[name].data() = value;
+        {
+            // new value
+            uint hsh = qHash(name);
+            m_valuesHash[name] = hsh;
+            m_values[hsh] = QSharedPointer<Value>(new Value(value));
+        }
     }
 }
 
-bool Marker::evaluate(const QString &id, double time)
+bool Marker::evaluate(const QString &name, double time)
+{
+    return evaluate(m_valuesHash[name], time);
+}
+
+bool Marker::evaluate(const uint id, double time)
 {
     return m_values[id]->evaluateAtTime(time);
 }
 
 bool Marker::evaluateAllVariables()
 {
-    foreach (QString key, m_values.keys())
-        if (!evaluate(key, 0.0))
+    foreach (uint id, m_values.keys())
+        if (!evaluate(id, 0.0))
             return false;
 
     return true;
@@ -101,7 +138,7 @@ Boundary::Boundary(const FieldInfo *fieldInfo, QString name, QString type,
     setType(type);
 
     // set values
-    foreach(QString id, values.keys())
+    foreach (QString id, values.keys())
         setValue(id, values[id]);
 
     if (!isNone() && !m_type.isEmpty())
@@ -110,7 +147,7 @@ Boundary::Boundary(const FieldInfo *fieldInfo, QString name, QString type,
         {
             foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
             {
-                if(!this->values().contains(variable.id()))
+                if (!this->contains(variable.id()))
                 {
                     // default for GUI
                     Module::DialogRow row = fieldInfo->boundaryUI().dialogRow(variable.id());
@@ -134,7 +171,7 @@ Material::Material(const FieldInfo *fieldInfo, QString name,
         QList<Module::MaterialTypeVariable> materialTypeVariables = fieldInfo->materialTypeVariables();
         foreach (Module::MaterialTypeVariable variable, materialTypeVariables)
         {
-            if(!this->values().contains(variable.id()))
+            if (!this->contains(variable.id()))
             {
                 // default for GUI
                 Module::DialogRow row = fieldInfo->materialUI().dialogRow(variable.id());
@@ -144,7 +181,7 @@ Material::Material(const FieldInfo *fieldInfo, QString name,
 
         foreach (QString id, m_fieldInfo->allMaterialQuantities())
         {
-            if(!this->values().contains(id))
+            if (!this->contains(id))
             {
                 setValue(id, Value(QString::number(0)));
             }

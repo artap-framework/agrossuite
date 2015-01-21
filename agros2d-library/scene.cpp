@@ -517,7 +517,7 @@ QString Scene::checkStartupScript(const QString scriptToCheck)
             // check materials
             foreach (SceneMaterial* material, Agros2D::scene()->materials->items())
             {
-                foreach (QString key, material->values().keys())
+                foreach (uint key, material->values().keys())
                 {
                     if (!material->evaluate(key, 0.0))
                     {
@@ -531,7 +531,7 @@ QString Scene::checkStartupScript(const QString scriptToCheck)
             // check boundaries
             foreach (SceneBoundary* boundary, Agros2D::scene()->boundaries->items())
             {
-                foreach (QString key, boundary->values().keys())
+                foreach (uint key, boundary->values().keys())
                 {
                     if (!boundary->evaluate(key, 0.0))
                     {
@@ -2342,9 +2342,9 @@ void Scene::writeToFile31(const QString &fileName)
                         boundary_edges.boundary_edge().push_back(XMLProblem::boundary_edge(edges->items().indexOf(edge)));
 
                 XMLProblem::boundary_types boundary_types;
-                const QMap<QString, QSharedPointer<Value> > values = bound->values();
-                for (QMap<QString, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
-                    boundary_types.boundary_type().push_back(XMLProblem::boundary_type(it.key().toStdString(), it.value()->toString().toStdString()));
+                const QMap<uint, QSharedPointer<Value> > values = bound->values();
+                for (QMap<uint, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
+                    boundary_types.boundary_type().push_back(XMLProblem::boundary_type(bound->valueName(it.key()).toStdString(), it.value()->toString().toStdString()));
 
                 XMLProblem::boundary boundary(boundary_edges,
                                               boundary_types,
@@ -2370,9 +2370,9 @@ void Scene::writeToFile31(const QString &fileName)
                         material_labels.material_label().push_back(XMLProblem::material_label(labels->items().indexOf(label)));
 
                 XMLProblem::material_types material_types;
-                const QMap<QString, QSharedPointer<Value> > values = mat->values();
-                for (QMap<QString, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
-                    material_types.material_type().push_back(XMLProblem::material_type(it.key().toStdString(), it.value()->toString().toStdString()));
+                const QMap<uint, QSharedPointer<Value> > values = mat->values();
+                for (QMap<uint, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
+                    material_types.material_type().push_back(XMLProblem::material_type(mat->valueName(it.key()).toStdString(), it.value()->toString().toStdString()));
 
                 XMLProblem::material material(material_labels,
                                               material_types,

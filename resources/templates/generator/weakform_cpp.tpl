@@ -251,22 +251,24 @@ void SolverDeal{{CLASS}}::assembleSystem()
                 }
             }
 
-            const QMap<QString, QSharedPointer<Value> > materialValues = material->values();
+            const QMap<uint, QSharedPointer<Value> > materialValues = material->values();
             {{#VOLUME_SOURCE}}
             if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}}))
             {
                 // matrix
                 {{#VARIABLE_SOURCE_LINEAR}}
-                const double {{VARIABLE_SHORT}}_val = materialValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
+                // {{VARIABLE}}
+                const double {{VARIABLE_SHORT}}_val = materialValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
                 {{#FUNCTION_SOURCE_CONSTANT}}
                 const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_CONSTANT}}
 
                 for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
                 {
                     const dealii::Point<2> p = fe_values.quadrature_point(q_point);
-                    {{#VARIABLE_SOURCE_NONLINEAR}}
-                    const double {{VARIABLE_SHORT}}_val = materialValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}};
-                    const double {{VARIABLE_SHORT}}_der = materialValues["{{VARIABLE}}"]->{{VARIABLE_DERIVATIVE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
+                    {{#VARIABLE_SOURCE_NONLINEAR}}                    
+                    // {{VARIABLE}}
+                    const double {{VARIABLE_SHORT}}_val = materialValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}};
+                    const double {{VARIABLE_SHORT}}_der = materialValues[{{VARIABLE_HASH}}]->{{VARIABLE_DERIVATIVE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
                     {{#FUNCTION_SOURCE_NONCONSTANT}}
                     const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_NONCONSTANT}}
 
@@ -312,7 +314,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
                 if (cell->face(face)->at_boundary())
                 {
                     SceneBoundary *boundary = Agros2D::scene()->edges->at(cell->face(face)->boundary_indicator() - 1)->marker(m_fieldInfo);
-                    const QMap<QString, QSharedPointer<Value> > boundaryValues = boundary->values();
+                    const QMap<uint, QSharedPointer<Value> > boundaryValues = boundary->values();
 
                     if (boundary != Agros2D::scene()->boundaries->getNone(m_fieldInfo))
                     {
@@ -322,7 +324,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
                                 && boundary->type() == "{{BOUNDARY_ID}}")
                         {
                             {{#VARIABLE_SOURCE_LINEAR}}
-                            const double {{VARIABLE_SHORT}}_val = boundaryValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
+                            // {{VARIABLE}}
+                            const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
 
                             // value and grad cache
                             std::vector<dealii::Vector<double> > shape_value = shape_face_value[face];
@@ -334,7 +337,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
                                 const dealii::Point<2> p = shape_face_point[face][q_point];
 
                                 {{#VARIABLE_SOURCE_NONLINEAR}}
-                                const double {{VARIABLE_SHORT}}_val = boundaryValues["{{VARIABLE}}"]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
+                                // {{VARIABLE}}
+                                const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
 
                                 for (unsigned int i = 0; i < dofs_per_cell; ++i)
                                 {
