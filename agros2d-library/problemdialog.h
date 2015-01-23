@@ -104,6 +104,7 @@ private:
 
     // main
     QComboBox *cmbAnalysisType;
+    QCheckBox *chkTransientAnalysis;
 
     // adaptivity
     QComboBox *cmbAdaptivityType;

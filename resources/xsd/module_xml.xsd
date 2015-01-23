@@ -63,6 +63,7 @@
                    <attribute name="name" use="required" type="string" />
                    <attribute name="solutions" use="required" type="integer" />
                    <attribute name="type" use="required" type="string" />
+                   <attribute name="transient_analysis" use="required" type="integer" />
                 </complexType>
         </element>
 

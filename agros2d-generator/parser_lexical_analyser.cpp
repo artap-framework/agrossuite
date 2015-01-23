@@ -589,13 +589,14 @@ void Parser::addWeakFormLATokens(QSharedPointer<LexicalAnalyser> lex, ParserModu
         lex->addVariable(QString("z"));
     }
 
+    /*
     if (parserModuleInfo.analysisType == AnalysisType_Transient)
     {
         lex->addVariable("deltat");
         lex->addVariable("timedermat");
         lex->addVariable("timedervec");
     }
-
+    */
 }
 
 void Parser::addPostprocessorLATokens(QSharedPointer<LexicalAnalyser> lex, ParserModuleInfo parserModuleInfo)

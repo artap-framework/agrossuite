@@ -62,7 +62,7 @@ void {{CLASS}}LocalValue::calculate()
             MultiArray ma = Agros2D::solutionStore()->multiArray(fsid);
 
             // update time functions
-            if (!Agros2D::problem()->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
+            if (!Agros2D::problem()->isSolving() && m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
             {
                 Module::updateTimeFunctions(Agros2D::problem()->timeStepToTotalTime(m_timeStep));
             }
@@ -84,7 +84,7 @@ void {{CLASS}}LocalValue::calculate()
 
             for (int i = 0; i < numberOfSolutions; i++)
             {
-                if ((m_fieldInfo->analysisType() == AnalysisType_Transient) && m_timeStep == 0)
+                if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool() && m_timeStep == 0)
                 {
                     // set variables
                     solution_values[k][i] = m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble();

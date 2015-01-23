@@ -68,7 +68,7 @@
 
   <problem coordinate_type="axisymmetric" matrix_solver="umfpack" mesh_type="triangle">
     <fields>
-      <field adaptivity_type="disabled" analysis_type="transient" field_id="heat" linearity_type="linear">
+      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="heat" linearity_type="linear">
         <refinement_edges/>
         <refinement_labels/>
         <polynomial_orders/>

@@ -136,6 +136,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
     dealii::hp::FEFaceValues<2> hp_fe_face_values(*m_feCollection, m_face_quadrature_formulas, dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values);
 
     dealii::FullMatrix<double> cell_matrix;
+    dealii::FullMatrix<double> cell_mass_matrix;
     dealii::Vector<double> cell_rhs;
 
     std::vector<dealii::types::global_dof_index> local_dof_indices;
@@ -186,6 +187,11 @@ void SolverDeal{{CLASS}}::assembleSystem()
             cell_matrix = 0;
             cell_rhs.reinit(dofs_per_cell);
             cell_rhs = 0;
+            if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+            {
+                cell_mass_matrix.reinit(dofs_per_cell, dofs_per_cell);
+                cell_mass_matrix = 0;
+            }
 
             hp_fe_values.reinit(cell);
 
@@ -290,6 +296,16 @@ void SolverDeal{{CLASS}}::assembleSystem()
                             {
                                 cell_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
                             }{{/FORM_EXPRESSION_MATRIX}}
+
+                            // transient mass matrix
+                            if (component_i == component_j)
+                            {
+                                if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+                                {
+                                    // TODO: he_rho_val * he_cp_val *
+                                    cell_mass_matrix(i, j) += fe_values.JxW(q_point) * shape_value[i][q_point] * shape_value[j][q_point];
+                                }
+                            }
                         }                        
                         {{#FORM_EXPRESSION_VECTOR}}
                         // {{EXPRESSION_ID}}
@@ -357,7 +373,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
                                         if (component_i == {{ROW_INDEX}} && component_j == {{COLUMN_INDEX}})
                                         {
                                             cell_matrix(i,j) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
-                                        }{{/FORM_EXPRESSION_MATRIX}}
+                                        }{{/FORM_EXPRESSION_MATRIX}}     
                                     }
                                     {{#FORM_EXPRESSION_VECTOR}}
                                     // {{EXPRESSION_ID}}
@@ -365,7 +381,6 @@ void SolverDeal{{CLASS}}::assembleSystem()
                                     {
                                         cell_rhs(i) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
                                     }{{/FORM_EXPRESSION_VECTOR}}
-
                                 }
                             }
                         }
@@ -385,6 +400,14 @@ void SolverDeal{{CLASS}}::assembleSystem()
                                                                 local_dof_indices,
                                                                 system_matrix,
                                                                 system_rhs);
+
+            if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+            {
+                // distribute local to global system
+                hanging_node_constraints.distribute_local_to_global(cell_mass_matrix,
+                                                                    local_dof_indices,
+                                                                    mass_matrix);
+            }
         }
 
         /*
@@ -404,8 +427,10 @@ void SolverDeal{{CLASS}}::assembleSystem()
             ++cell_{{COUPLING_SOURCE_ID}};
         }
         {{/COUPLING_SOURCE}}
-
     }
+
+    if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+        mass_matrix_inverse.initialize(mass_matrix);
 }
 
 void SolverDeal{{CLASS}}::assembleDirichlet(bool use_dirichlet_lift)

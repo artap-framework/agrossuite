@@ -213,6 +213,7 @@ void FieldInfo::setAnalysisType(AnalysisType at)
         if (an.type() == analysisTypeToStringKey(at).toStdString())
         {
             m_numberOfSolutions = an.solutions();
+            m_hasTransientAnalysis = (an.transient_analysis() == 1);
 
             if (an.field_config().present())
             {
@@ -249,10 +250,10 @@ QList<LinearityType> FieldInfo::availableLinearityTypes(AnalysisType at) const
 
     foreach (XMLModule::weakform_volume weakformVolume, m_plugin->module()->volume().weakforms_volume().weakform_volume())
     {
-        if(weakformVolume.analysistype() == analysisTypeToStringKey(at).toStdString())
+        if (weakformVolume.analysistype() == analysisTypeToStringKey(at).toStdString())
         {
             foreach(XMLModule::linearity_option linearityOption, weakformVolume.linearity_option())
-            {
+            {                
                 availableLinearityTypes.push_back(linearityTypeFromStringKey(QString::fromStdString(linearityOption.type())));
             }
         }
@@ -907,6 +908,7 @@ void FieldInfo::setStringKeys()
     m_settingKey[AdaptivityFinePercentage] = "AdaptivityFinePercentage";
     m_settingKey[AdaptivityCoarsePercentage] = "AdaptivityCoarsePercentage";
     m_settingKey[AdaptivityEstimator] = "AdaptivityEstimator";    
+    m_settingKey[TransientAnalysis] = "TransientAnalysis";
     m_settingKey[TransientTimeSkip] = "TransientTimeSkip";
     m_settingKey[TransientInitialCondition] = "TransientInitialCondition";
     m_settingKey[LinearSolverIterMethod] = "LinearSolverIterMethod";
@@ -942,6 +944,7 @@ void FieldInfo::setDefaultValues()
     m_settingDefault[AdaptivityCoarsePercentage] = 3;
     m_settingDefault[AdaptivityTransientBackSteps] = 3;
     m_settingDefault[AdaptivityTransientRedoneEach] = 5;
+    m_settingDefault[TransientAnalysis] = false;
     m_settingDefault[TransientTimeSkip] = 0.0;
     m_settingDefault[TransientInitialCondition] = 0.0;
     m_settingDefault[LinearSolverIterMethod] = IterSolverType_BiCGStab;

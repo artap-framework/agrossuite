@@ -73,12 +73,10 @@ public:
     virtual void setupNewtonInitial();
 
     virtual void assembleSystem() = 0;
-
     virtual void assembleDirichlet(bool use_dirichlet_lift) = 0;
 
     // problem
     void solve();
-    void solveTransientStep();
 
     void setCouplingSource(QString fieldID, dealii::Vector<double> * sourceVector) { m_coupling_sources[fieldID] = sourceVector; }
 
@@ -86,11 +84,13 @@ public:
 
     // transient - Runge Kutta - future step!
     void assembleMassMatrix();
-    /*
-    void explicitMethod(const dealii::TimeStepping::runge_kutta_method method, const unsigned int n_time_steps, const double initial_time, const double final_time);
-    void implicitMethod(const dealii::TimeStepping::runge_kutta_method method, const unsigned int n_time_steps, const double initial_time, const double final_time);
-    unsigned int explicitEmbeddedMethod(const dealii::TimeStepping::runge_kutta_method method, const unsigned int n_time_steps, const double initial_time, const double final_time);
-    */
+
+    // Runge Kutta methods
+    void transientExplicitMethod(const dealii::TimeStepping::runge_kutta_method method, const unsigned int n_time_steps, const double initial_time, const double final_time);
+    void transientImplicitMethod(const dealii::TimeStepping::runge_kutta_method method, const unsigned int n_time_steps, const double initial_time, const double final_time);
+    unsigned int transientExplicitEmbeddedMethod(const dealii::TimeStepping::runge_kutta_method method, const unsigned int n_time_steps, const double initial_time, const double final_time);
+    dealii::Vector<double> transientEvaluateMassMatrix(const double time, const dealii::Vector<double> &y) const;
+    dealii::Vector<double> transientIdMinusTauJacobianInverse(const double time, const double tau, const dealii::Vector<double> &y);
 
 protected:
     const FieldInfo *m_fieldInfo;
@@ -119,9 +119,11 @@ protected:
     dealii::SparseMatrix<double> system_matrix;
     dealii::Vector<double> system_rhs;
 
-    // transient steady and mass matrix
-    dealii::SparseMatrix<double> steady_matrix;
+    // transient mass matrix
     dealii::SparseMatrix<double> mass_matrix;
+    dealii::SparseMatrix<double> mass_minus_tau_Jacobian;
+    dealii::SparseDirectUMFPACK mass_matrix_inverse;
+
 
     // linear system
     void solveLinearSystem();

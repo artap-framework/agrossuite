@@ -553,7 +553,6 @@ ModuleItemAnalysisDialog::ModuleItemAnalysisDialog(ModuleDialog *moduleDialog, X
     // TODO: (Franta)
     cmbType = new QComboBox();
     cmbType->addItem(analysisTypeToStringKey(AnalysisType_SteadyState));
-    cmbType->addItem(analysisTypeToStringKey(AnalysisType_Transient));
     cmbType->addItem(analysisTypeToStringKey(AnalysisType_Harmonic));
     cmbType->setCurrentIndex(cmbType->findText(analysisTypeToStringKey(analysisTypeFromStringKey(
                                                                            QString::fromStdString(analysis->type())))));

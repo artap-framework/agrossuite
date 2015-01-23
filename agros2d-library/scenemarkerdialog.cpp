@@ -220,7 +220,7 @@ ValueLineEdit *SceneFieldWidgetMaterial::addValueEditWidget(const Module::Dialog
         if (variable.id() == row.id())
         {
             ValueLineEdit *edit = new ValueLineEdit(this,
-                                                    (variable.isTimeDep() && m_material->fieldInfo()->analysisType() == AnalysisType_Transient),
+                                                    (variable.isTimeDep() && m_material->fieldInfo()->hasTransientAnalysis() && m_material->fieldInfo()->value(FieldInfo::TransientAnalysis).toBool()),
                                                     (variable.isNonlinear() && m_material->fieldInfo()->linearityType() != LinearityType_Linear),
                                                     variable.isBool(), variable.id(), variable.onlyIf(), variable.onlyIfNot(), variable.isSource());
             if (variable.isNonlinear())
@@ -295,7 +295,7 @@ ValueLineEdit *SceneFieldWidgetBoundary::addValueEditWidget(const Module::Dialog
             if (variable.id() == row.id())
             {
                 ValueLineEdit *edit = new ValueLineEdit(this,
-                                                        (variable.isTimeDep() && m_boundary->fieldInfo()->analysisType() == AnalysisType_Transient),
+                                                        (variable.isTimeDep() && m_boundary->fieldInfo()->hasTransientAnalysis() && m_boundary->fieldInfo()->value(FieldInfo::TransientAnalysis).toBool()),
                                                         false);
                 return edit;
             }

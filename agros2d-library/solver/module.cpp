@@ -1113,7 +1113,7 @@ AGROS_LIBRARY_API void Module::updateTimeFunctions(double time)
     foreach (SceneMaterial *material, Agros2D::scene()->materials->items())
         if (material->fieldInfo())
             foreach (Module::MaterialTypeVariable variable, material->fieldInfo()->materialTypeVariables())
-                if (variable.isTimeDep() && material->fieldInfo()->analysisType() == AnalysisType_Transient)
+                if (variable.isTimeDep() && material->fieldInfo()->hasTransientAnalysis() && material->fieldInfo()->value(FieldInfo::TransientAnalysis).toBool())
                     material->evaluate(variable.id(), time);
 
     // update boundaries
@@ -1121,7 +1121,7 @@ AGROS_LIBRARY_API void Module::updateTimeFunctions(double time)
         if (boundary->fieldInfo())
             foreach (Module::BoundaryType boundaryType, boundary->fieldInfo()->boundaryTypes())
                 foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
-                    if (variable.isTimeDep() && boundary->fieldInfo()->analysisType() == AnalysisType_Transient)
+                    if (variable.isTimeDep() && boundary->fieldInfo()->hasTransientAnalysis() && boundary->fieldInfo()->value(FieldInfo::TransientAnalysis).toBool())
                         boundary->evaluate(variable.id(), time);
 }
 

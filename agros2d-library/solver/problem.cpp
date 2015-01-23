@@ -148,7 +148,7 @@ int Problem::numTransientFields() const
 {
     int num = 0;
     foreach (FieldInfo* fieldInfo, m_fieldInfos)
-        if (fieldInfo->analysisType() == AnalysisType_Transient)
+        if (fieldInfo->hasTransientAnalysis() && fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
             num++;
     return num;
 }
@@ -575,7 +575,7 @@ void Problem::solveInit(bool reCreateStructure)
             throw AgrosSolverException(tr("Total time is zero"));
         if (!(Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble() > 0.0))
             throw AgrosSolverException(tr("Time method tolerance is zero"));
-        if (!(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() < 0.0))
+        if (Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() < 0.0)
             throw AgrosSolverException(tr("Initial step size is negative"));
     }
 

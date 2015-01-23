@@ -183,9 +183,7 @@ QString Agros2DGenerator::coordinateTypeStringEnum(CoordinateType coordinateType
 QString Agros2DGenerator::analysisTypeStringEnum(AnalysisType analysisType)
 {
     if (analysisType == AnalysisType_SteadyState)
-        return "AnalysisType_SteadyState";
-    else if (analysisType == AnalysisType_Transient)
-        return "AnalysisType_Transient";
+        return "AnalysisType_SteadyState";    
     else if (analysisType == AnalysisType_Harmonic)
         return "AnalysisType_Harmonic";
     else

@@ -148,9 +148,11 @@ void FieldWidget::createContent()
     cmbAnalysisType = new QComboBox();
     cmbLinearityType = new QComboBox();
     cmbLinearSolver = new QComboBox();
+    chkTransientAnalysis = new QCheckBox(tr("Transient"));
 
     connect(cmbAdaptivityType, SIGNAL(currentIndexChanged(int)), this, SLOT(doAdaptivityChanged(int)));
     connect(cmbAnalysisType, SIGNAL(currentIndexChanged(int)), this, SLOT(doAnalysisTypeChanged(int)));
+    connect(chkTransientAnalysis, SIGNAL(clicked(bool)), this, SLOT(doAnalysisTypeChanged(int)));
     connect(cmbLinearityType, SIGNAL(currentIndexChanged(int)), this, SLOT(doLinearityTypeChanged(int)));
     connect(cmbLinearSolver, SIGNAL(currentIndexChanged(int)), this, SLOT(doLinearSolverChanged(int)));
 
@@ -168,10 +170,11 @@ void FieldWidget::createContent()
     layoutGeneral->setColumnStretch(1, 1);
     layoutGeneral->addWidget(new QLabel(tr("Analysis:")), 0, 0);
     layoutGeneral->addWidget(cmbAnalysisType, 0, 1);
+    layoutGeneral->addWidget(chkTransientAnalysis, 0, 2);
     layoutGeneral->addWidget(new QLabel(tr("Solver:")), 1, 0);
-    layoutGeneral->addWidget(cmbLinearityType, 1, 1);
+    layoutGeneral->addWidget(cmbLinearityType, 1, 1, 1, 2);
     layoutGeneral->addWidget(new QLabel(tr("Matrix solver:")), 2, 0);
-    layoutGeneral->addWidget(cmbLinearSolver, 2, 1);
+    layoutGeneral->addWidget(cmbLinearSolver, 2, 1, 1, 2);
 
     QGroupBox *grpGeneral = new QGroupBox(tr("General"));
     grpGeneral->setLayout(layoutGeneral);
@@ -486,7 +489,7 @@ void FieldWidget::fillComboBox()
     cmbAdaptivityType->addItem(adaptivityTypeString(AdaptivityMethod_HP), AdaptivityMethod_HP);
 
     foreach(LinearityType linearityType, m_fieldInfo->availableLinearityTypes())
-    {
+    {        
         cmbLinearityType->addItem(linearityTypeString(linearityType), linearityType);
     }
 
@@ -532,6 +535,7 @@ void FieldWidget::load()
     txtNumberOfRefinements->setValue(m_fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt());
     txtPolynomialOrder->setValue(m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt());
     // transient
+    chkTransientAnalysis->setChecked(m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool());
     txtTransientInitialCondition->setValue(m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble());
     txtTransientTimeSkip->setValue(m_fieldInfo->value(FieldInfo::TransientTimeSkip).toDouble());
     // linearity
@@ -578,6 +582,7 @@ bool FieldWidget::save()
     m_fieldInfo->setValue(FieldInfo::SpaceNumberOfRefinements, txtNumberOfRefinements->value());
     m_fieldInfo->setValue(FieldInfo::SpacePolynomialOrder, txtPolynomialOrder->value());
     // transient
+    m_fieldInfo->setValue(FieldInfo::TransientAnalysis, chkTransientAnalysis->isChecked());
     m_fieldInfo->setValue(FieldInfo::TransientInitialCondition, txtTransientInitialCondition->value());
     m_fieldInfo->setValue(FieldInfo::TransientTimeSkip, txtTransientTimeSkip->value());
     // linearity
@@ -615,25 +620,28 @@ FieldInfo *FieldWidget::fieldInfo()
 
 void FieldWidget::doAnalysisTypeChanged(int index)
 {
+    chkTransientAnalysis->setEnabled(m_fieldInfo->hasTransientAnalysis());
+
     // initial condition
-    txtTransientInitialCondition->setEnabled((AnalysisType) cmbAnalysisType->itemData(index).toInt() == AnalysisType_Transient);
+    txtTransientInitialCondition->setEnabled(chkTransientAnalysis->isChecked());
 
     // time steps skip
     bool otherFieldIsTransient = false;
     foreach (FieldInfo* otherFieldInfo, Agros2D::problem()->fieldInfos())
-        if (otherFieldInfo->analysisType() == AnalysisType_Transient && otherFieldInfo->fieldId() != m_fieldInfo->fieldId())
+        if (otherFieldInfo->hasTransientAnalysis() && otherFieldInfo->fieldId() != m_fieldInfo->fieldId())
             otherFieldIsTransient = true;
 
-    AnalysisType analysisType = (AnalysisType) cmbAnalysisType->itemData(index).toInt();
-    txtTransientTimeSkip->setEnabled(analysisType != AnalysisType_Transient && otherFieldIsTransient);
+    txtTransientTimeSkip->setEnabled(!m_fieldInfo->hasTransientAnalysis() && otherFieldIsTransient);
 
     LinearityType previousLinearityType = (LinearityType) cmbLinearityType->itemData(cmbLinearityType->currentIndex()).toInt();
     cmbLinearityType->clear();
+
     int idx = 0, nextIndex = 0;
-    foreach(LinearityType linearityType, m_fieldInfo->availableLinearityTypes(analysisType))
+    foreach(LinearityType linearityType, m_fieldInfo->availableLinearityTypes((AnalysisType) cmbAnalysisType->itemData(cmbAnalysisType->currentIndex()).toInt()))
     {
         cmbLinearityType->addItem(linearityTypeString(linearityType), linearityType);
-        if(linearityType == previousLinearityType)
+
+        if (linearityType == previousLinearityType)
             nextIndex = idx;
         idx++;
     }
@@ -665,8 +673,8 @@ void FieldWidget::doAdaptivityChanged(int index)
     cmbAdaptivityEstimator->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);    
 
     AnalysisType analysisType = (AnalysisType) cmbAnalysisType->itemData(cmbAnalysisType->currentIndex()).toInt();
-    txtAdaptivityBackSteps->setEnabled(Agros2D::problem()->isTransient() && analysisType != AnalysisType_Transient && (AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
-    txtAdaptivityRedoneEach->setEnabled(Agros2D::problem()->isTransient() && analysisType != AnalysisType_Transient && (AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
+    txtAdaptivityBackSteps->setEnabled(Agros2D::problem()->isTransient() && !m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool() && (AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
+    txtAdaptivityRedoneEach->setEnabled(Agros2D::problem()->isTransient() && !m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool() && (AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
 }
 
 void FieldWidget::doLinearityTypeChanged(int index)
