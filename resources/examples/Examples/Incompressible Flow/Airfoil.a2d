@@ -1,92 +1,90 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<problem:document xmlns:problem="XMLProblem" version="3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="XMLProblem /home/pkus/sources/agros2d/resources/xsd/problem_a2d_31_xml.xsd">
-
+<problem:document xmlns:problem="XMLProblem" version="3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="XMLProblem /home/karban/Projects/agros2d-dealii/resources/xsd/problem_a2d_31_xml.xsd">
   <geometry>
     <nodes>
-      <node id="0" x="0.884808" y="-0.123648"/>
-      <node id="1" x="0.837564" y="-0.10364"/>
-      <node id="2" x="0.789974" y="-0.0856024"/>
-      <node id="3" x="0.694792" y="-0.0495262"/>
-      <node id="4" x="0.599437" y="-0.0144349"/>
-      <node id="5" x="0.503908" y="0.0196717"/>
-      <node id="6" x="0.407685" y="0.049839"/>
-      <node id="7" x="0.31042" y="0.0740975"/>
-      <node id="8" x="0.211939" y="0.0914623"/>
-      <node id="9" x="0.111722" y="0.098979"/>
-      <node id="10" x="0.0612136" y="0.100472"/>
-      <node id="11" x="0.00976791" y="0.0966477"/>
-      <node id="12" x="-0.0156858" y="0.0962618"/>
-      <node id="13" x="-0.0424245" y="0.0885884"/>
-      <node id="14" x="-0.068868" y="0.0825891"/>
-      <node id="15" x="-0.0818473" y="0.0795073"/>
-      <node id="16" x="-0.0948422" y="0.0650192"/>
-      <node id="17" x="-0.0872037" y="0.0505869"/>
-      <node id="18" x="-0.0753798" y="0.0456588"/>
-      <node id="19" x="-0.0507596" y="0.0413176"/>
-      <node id="20" x="-0.0261394" y="0.0369764"/>
-      <node id="21" x="-0.00151922" y="0.0326352"/>
-      <node id="22" x="0.0477212" y="0.0239528"/>
-      <node id="23" x="0.0973088" y="0.01724"/>
-      <node id="24" x="0.196397" y="0.00332199"/>
-      <node id="25" x="0.295139" y="-0.0125656"/>
-      <node id="26" x="0.393793" y="-0.0289456"/>
-      <node id="27" x="0.492274" y="-0.0463104"/>
-      <node id="28" x="0.590581" y="-0.0646601"/>
-      <node id="29" x="0.688714" y="-0.0839945"/>
-      <node id="30" x="0.786674" y="-0.104314"/>
-      <node id="31" x="0.835567" y="-0.114966"/>
-      <node id="32" x="-1.5" y="-0.85"/>
-      <node id="33" x="-1.5" y="0.85"/>
-      <node id="34" x="5" y="0.85"/>
-      <node id="35" x="5" y="-0.85"/>
+      <node id="0" valuex="0.884808" valuey="-0.123648" x="0.884808" y="-0.123648"/>
+      <node id="1" valuex="0.837564" valuey="-0.10364" x="0.837564" y="-0.10364"/>
+      <node id="2" valuex="0.789974" valuey="-0.0856024" x="0.789974" y="-0.0856024"/>
+      <node id="3" valuex="0.694792" valuey="-0.0495262" x="0.694792" y="-0.0495262"/>
+      <node id="4" valuex="0.599437" valuey="-0.0144349" x="0.599437" y="-0.0144349"/>
+      <node id="5" valuex="0.503908" valuey="0.0196717" x="0.503908" y="0.0196717"/>
+      <node id="6" valuex="0.407685" valuey="0.049839" x="0.407685" y="0.049839"/>
+      <node id="7" valuex="0.31042" valuey="0.0740975" x="0.31042" y="0.0740975"/>
+      <node id="8" valuex="0.211939" valuey="0.0914623" x="0.211939" y="0.0914623"/>
+      <node id="9" valuex="0.111722" valuey="0.098979" x="0.111722" y="0.098979"/>
+      <node id="10" valuex="0.0612136" valuey="0.100472" x="0.0612136" y="0.100472"/>
+      <node id="11" valuex="0.00976791" valuey="0.0966477" x="0.00976791" y="0.0966477"/>
+      <node id="12" valuex="-0.0156858" valuey="0.0962618" x="-0.0156858" y="0.0962618"/>
+      <node id="13" valuex="-0.0424245" valuey="0.0885884" x="-0.0424245" y="0.0885884"/>
+      <node id="14" valuex="-0.068868" valuey="0.0825891" x="-0.068868" y="0.0825891"/>
+      <node id="15" valuex="-0.0818473" valuey="0.0795073" x="-0.0818473" y="0.0795073"/>
+      <node id="16" valuex="-0.0948422" valuey="0.0650192" x="-0.0948422" y="0.0650192"/>
+      <node id="17" valuex="-0.0872037" valuey="0.0505869" x="-0.0872037" y="0.0505869"/>
+      <node id="18" valuex="-0.0753798" valuey="0.0456588" x="-0.0753798" y="0.0456588"/>
+      <node id="19" valuex="-0.0507596" valuey="0.0413176" x="-0.0507596" y="0.0413176"/>
+      <node id="20" valuex="-0.0261394" valuey="0.0369764" x="-0.0261394" y="0.0369764"/>
+      <node id="21" valuex="-0.00151922" valuey="0.0326352" x="-0.00151922" y="0.0326352"/>
+      <node id="22" valuex="0.0477212" valuey="0.0239528" x="0.0477212" y="0.0239528"/>
+      <node id="23" valuex="0.0973088" valuey="0.01724" x="0.0973088" y="0.01724"/>
+      <node id="24" valuex="0.196397" valuey="0.00332199" x="0.196397" y="0.00332199"/>
+      <node id="25" valuex="0.295139" valuey="-0.0125656" x="0.295139" y="-0.0125656"/>
+      <node id="26" valuex="0.393793" valuey="-0.0289456" x="0.393793" y="-0.0289456"/>
+      <node id="27" valuex="0.492274" valuey="-0.0463104" x="0.492274" y="-0.0463104"/>
+      <node id="28" valuex="0.590581" valuey="-0.0646601" x="0.590581" y="-0.0646601"/>
+      <node id="29" valuex="0.688714" valuey="-0.0839945" x="0.688714" y="-0.0839945"/>
+      <node id="30" valuex="0.786674" valuey="-0.104314" x="0.786674" y="-0.104314"/>
+      <node id="31" valuex="0.835567" valuey="-0.114966" x="0.835567" y="-0.114966"/>
+      <node id="32" valuex="-1.5" valuey="-0.85" x="-1.5" y="-0.85"/>
+      <node id="33" valuex="-1.5" valuey="0.85" x="-1.5" y="0.85"/>
+      <node id="34" valuex="5" valuey="0.85" x="5" y="0.85"/>
+      <node id="35" valuex="5" valuey="-0.85" x="5" y="-0.85"/>
     </nodes>
     <edges>
-      <edge angle="0" end="1" id="0" is_curvilinear="1" segments="3" start="0"/>
-      <edge angle="0" end="2" id="1" is_curvilinear="1" segments="3" start="1"/>
-      <edge angle="0" end="3" id="2" is_curvilinear="1" segments="3" start="2"/>
-      <edge angle="0" end="4" id="3" is_curvilinear="1" segments="3" start="3"/>
-      <edge angle="0" end="5" id="4" is_curvilinear="1" segments="3" start="4"/>
-      <edge angle="0" end="6" id="5" is_curvilinear="1" segments="3" start="5"/>
-      <edge angle="0" end="7" id="6" is_curvilinear="1" segments="3" start="6"/>
-      <edge angle="0" end="8" id="7" is_curvilinear="1" segments="3" start="7"/>
-      <edge angle="0" end="9" id="8" is_curvilinear="1" segments="3" start="8"/>
-      <edge angle="0" end="10" id="9" is_curvilinear="1" segments="3" start="9"/>
-      <edge angle="0" end="11" id="10" is_curvilinear="1" segments="3" start="10"/>
-      <edge angle="0" end="12" id="11" is_curvilinear="1" segments="3" start="11"/>
-      <edge angle="0" end="13" id="12" is_curvilinear="1" segments="3" start="12"/>
-      <edge angle="0" end="14" id="13" is_curvilinear="1" segments="3" start="13"/>
-      <edge angle="5" end="15" id="14" is_curvilinear="1" segments="3" start="14"/>
-      <edge angle="60" end="16" id="15" is_curvilinear="1" segments="3" start="15"/>
-      <edge angle="60" end="17" id="16" is_curvilinear="1" segments="3" start="16"/>
-      <edge angle="10" end="18" id="17" is_curvilinear="1" segments="3" start="17"/>
-      <edge angle="0" end="19" id="18" is_curvilinear="1" segments="3" start="18"/>
-      <edge angle="0" end="20" id="19" is_curvilinear="1" segments="3" start="19"/>
-      <edge angle="0" end="21" id="20" is_curvilinear="1" segments="3" start="20"/>
-      <edge angle="0" end="22" id="21" is_curvilinear="1" segments="3" start="21"/>
-      <edge angle="0" end="23" id="22" is_curvilinear="1" segments="3" start="22"/>
-      <edge angle="0" end="24" id="23" is_curvilinear="1" segments="3" start="23"/>
-      <edge angle="0" end="25" id="24" is_curvilinear="1" segments="3" start="24"/>
-      <edge angle="0" end="26" id="25" is_curvilinear="1" segments="3" start="25"/>
-      <edge angle="0" end="27" id="26" is_curvilinear="1" segments="3" start="26"/>
-      <edge angle="0" end="28" id="27" is_curvilinear="1" segments="3" start="27"/>
-      <edge angle="0" end="29" id="28" is_curvilinear="1" segments="3" start="28"/>
-      <edge angle="0" end="30" id="29" is_curvilinear="1" segments="3" start="29"/>
-      <edge angle="0" end="31" id="30" is_curvilinear="1" segments="3" start="30"/>
-      <edge angle="0" end="0" id="31" is_curvilinear="1" segments="3" start="31"/>
-      <edge angle="0" end="34" id="32" is_curvilinear="1" segments="3" start="33"/>
-      <edge angle="0" end="35" id="33" is_curvilinear="1" segments="3" start="34"/>
-      <edge angle="0" end="32" id="34" is_curvilinear="1" segments="3" start="35"/>
-      <edge angle="0" end="32" id="35" is_curvilinear="1" segments="3" start="33"/>
+      <edge angle="0" end="1" id="0" is_curvilinear="1" segments="3" start="0" valueangle="0"/>
+      <edge angle="0" end="2" id="1" is_curvilinear="1" segments="3" start="1" valueangle="0"/>
+      <edge angle="0" end="3" id="2" is_curvilinear="1" segments="3" start="2" valueangle="0"/>
+      <edge angle="0" end="4" id="3" is_curvilinear="1" segments="3" start="3" valueangle="0"/>
+      <edge angle="0" end="5" id="4" is_curvilinear="1" segments="3" start="4" valueangle="0"/>
+      <edge angle="0" end="6" id="5" is_curvilinear="1" segments="3" start="5" valueangle="0"/>
+      <edge angle="0" end="7" id="6" is_curvilinear="1" segments="3" start="6" valueangle="0"/>
+      <edge angle="0" end="8" id="7" is_curvilinear="1" segments="3" start="7" valueangle="0"/>
+      <edge angle="0" end="9" id="8" is_curvilinear="1" segments="3" start="8" valueangle="0"/>
+      <edge angle="0" end="10" id="9" is_curvilinear="1" segments="3" start="9" valueangle="0"/>
+      <edge angle="0" end="11" id="10" is_curvilinear="1" segments="3" start="10" valueangle="0"/>
+      <edge angle="0" end="12" id="11" is_curvilinear="1" segments="3" start="11" valueangle="0"/>
+      <edge angle="0" end="13" id="12" is_curvilinear="1" segments="3" start="12" valueangle="0"/>
+      <edge angle="0" end="14" id="13" is_curvilinear="1" segments="3" start="13" valueangle="0"/>
+      <edge angle="5" end="15" id="14" is_curvilinear="1" segments="3" start="14" valueangle="5"/>
+      <edge angle="60" end="16" id="15" is_curvilinear="1" segments="3" start="15" valueangle="60"/>
+      <edge angle="60" end="17" id="16" is_curvilinear="1" segments="3" start="16" valueangle="60"/>
+      <edge angle="10" end="18" id="17" is_curvilinear="1" segments="3" start="17" valueangle="10"/>
+      <edge angle="0" end="19" id="18" is_curvilinear="1" segments="3" start="18" valueangle="0"/>
+      <edge angle="0" end="20" id="19" is_curvilinear="1" segments="3" start="19" valueangle="0"/>
+      <edge angle="0" end="21" id="20" is_curvilinear="1" segments="3" start="20" valueangle="0"/>
+      <edge angle="0" end="22" id="21" is_curvilinear="1" segments="3" start="21" valueangle="0"/>
+      <edge angle="0" end="23" id="22" is_curvilinear="1" segments="3" start="22" valueangle="0"/>
+      <edge angle="0" end="24" id="23" is_curvilinear="1" segments="3" start="23" valueangle="0"/>
+      <edge angle="0" end="25" id="24" is_curvilinear="1" segments="3" start="24" valueangle="0"/>
+      <edge angle="0" end="26" id="25" is_curvilinear="1" segments="3" start="25" valueangle="0"/>
+      <edge angle="0" end="27" id="26" is_curvilinear="1" segments="3" start="26" valueangle="0"/>
+      <edge angle="0" end="28" id="27" is_curvilinear="1" segments="3" start="27" valueangle="0"/>
+      <edge angle="0" end="29" id="28" is_curvilinear="1" segments="3" start="28" valueangle="0"/>
+      <edge angle="0" end="30" id="29" is_curvilinear="1" segments="3" start="29" valueangle="0"/>
+      <edge angle="0" end="31" id="30" is_curvilinear="1" segments="3" start="30" valueangle="0"/>
+      <edge angle="0" end="0" id="31" is_curvilinear="1" segments="3" start="31" valueangle="0"/>
+      <edge angle="0" end="34" id="32" is_curvilinear="1" segments="3" start="33" valueangle="0"/>
+      <edge angle="0" end="35" id="33" is_curvilinear="1" segments="3" start="34" valueangle="0"/>
+      <edge angle="0" end="32" id="34" is_curvilinear="1" segments="3" start="35" valueangle="0"/>
+      <edge angle="0" end="32" id="35" is_curvilinear="1" segments="3" start="33" valueangle="0"/>
     </edges>
     <labels>
-      <label area="0" id="0" x="0.289021" y="0.0407265"/>
-      <label area="0" id="1" x="1.71743" y="0.461503"/>
+      <label area="0" id="0" valuex="0.289021" valuey="0.0407265" x="0.289021" y="0.0407265"/>
+      <label area="0" id="1" valuex="1.71743" valuey="0.461503" x="1.71743" y="0.461503"/>
     </labels>
   </geometry>
-
-  <problem coordinate_type="planar" mesh_type="gmsh_quad">
+  <problem coordinate_type="planar" mesh_type="triangle">
     <fields>
-      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="flow" linearity_type="newton" matrix_solver="mumps">
+      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="flow" linearity_type="newton" matrix_solver="umfpack">
         <refinement_edges/>
         <refinement_labels/>
         <polynomial_orders/>
@@ -170,10 +168,10 @@
               <material_label id="1"/>
             </material_labels>
             <material_types>
-              <material_type key="flow_density" value="1"/>
               <material_type key="flow_force_x" value="0"/>
               <material_type key="flow_force_y" value="0"/>
               <material_type key="flow_viscosity" value="0.001"/>
+              <material_type key="flow_density" value="1"/>
             </material_types>
           </material>
         </materials>
@@ -190,23 +188,19 @@
           <field_item field_key="PicardAndersonAcceleration" field_value="1"/>
           <field_item field_key="PicardAndersonBeta" field_value="0.2"/>
           <field_item field_key="PicardAndersonNumberOfLastVectors" field_value="3"/>
-          <field_item field_key="SpaceNumberOfRefinements" field_value="1"/>
+          <field_item field_key="SpaceNumberOfRefinements" field_value="0"/>
           <field_item field_key="SpacePolynomialOrder" field_value="2"/>
           <field_item field_key="AdaptivitySteps" field_value="1"/>
           <field_item field_key="AdaptivityTolerance" field_value="1"/>
+          <field_item field_key="AdaptivityEstimator" field_value="0"/>
+          <field_item field_key="AdaptivityFinePercentage" field_value="30"/>
+          <field_item field_key="AdaptivityCoarsePercentage" field_value="3"/>
           <field_item field_key="AdaptivityTransientBackSteps" field_value="0"/>
           <field_item field_key="AdaptivityTransientRedoneEach" field_value="1"/>
-          <field_item field_key="AdaptivityStoppingCriterion" field_value="1"/>
-          <field_item field_key="AdaptivityThreshold" field_value="0.6"/>
-          <field_item field_key="AdaptivityErrorCalculator" field_value="h1"/>
-          <field_item field_key="AdaptivityUseAniso" field_value="1"/>
-          <field_item field_key="AdaptivityFinerReference" field_value="0"/>
-          <field_item field_key="AdaptivityOrderIncrease" field_value="1"/>
-          <field_item field_key="AdaptivitySpaceRefinement" field_value="1"/>
           <field_item field_key="TransientTimeSkip" field_value="0"/>
           <field_item field_key="TransientInitialCondition" field_value="0"/>
           <field_item field_key="LinearSolverIterMethod" field_value="2"/>
-          <field_item field_key="LinearSolverIterPreconditioner" field_value="2"/>
+          <field_item field_key="LinearSolverIterPreconditioner" field_value="0"/>
           <field_item field_key="LinearSolverIterToleranceAbsolute" field_value="1e-16"/>
           <field_item field_key="LinearSolverIterIters" field_value="1000"/>
           <field_item field_key="TimeUnit" field_value="s"/>
@@ -224,22 +218,10 @@
       <problem_item problem_key="TimeTotal" problem_value="1"/>
     </problem_config>
   </problem>
-
   <config>
     <item key="Problem_StartupScript" value=""/>
-    <item key="View_RulersFontFamily" value="Droid"/>
-    <item key="View_RulersFontPointSize" value="12"/>
-    <item key="View_PostFontFamily" value="Droid"/>
-    <item key="View_PostFontPointSize" value="16"/>
-    <item key="View_ZoomToMouse" value="1"/>
-    <item key="View_NodeSize" value="6"/>
-    <item key="View_EdgeWidth" value="2"/>
-    <item key="View_LabelSize" value="6"/>
-    <item key="View_ShowGrid" value="1"/>
     <item key="View_GridStep" value="0.05"/>
-    <item key="View_ShowRulers" value="1"/>
     <item key="View_SnapToGrid" value="1"/>
-    <item key="View_ShowAxes" value="1"/>
     <item key="View_ScalarView3DMode" value="-1"/>
     <item key="View_ScalarView3DLighting" value="1"/>
     <item key="View_ScalarView3DAngle" value="240"/>
@@ -250,45 +232,6 @@
     <item key="View_DeformScalar" value="1"/>
     <item key="View_DeformContour" value="1"/>
     <item key="View_DeformVector" value="1"/>
-    <item key="View_ColorBackgroundRed" value="255"/>
-    <item key="View_ColorBackgroundGreen" value="255"/>
-    <item key="View_ColorBackgroundBlue" value="255"/>
-    <item key="View_ColorGridRed" value="200"/>
-    <item key="View_ColorGridGreen" value="200"/>
-    <item key="View_ColorGridBlue" value="200"/>
-    <item key="View_ColorCrossRed" value="150"/>
-    <item key="View_ColorCrossGreen" value="150"/>
-    <item key="View_ColorCrossBlue" value="150"/>
-    <item key="View_ColorNodesRed" value="150"/>
-    <item key="View_ColorNodesGreen" value="0"/>
-    <item key="View_ColorNodesBlue" value="0"/>
-    <item key="View_ColorEdgesRed" value="0"/>
-    <item key="View_ColorEdgesGreen" value="0"/>
-    <item key="View_ColorEdgesBlue" value="150"/>
-    <item key="View_ColorLabelsRed" value="0"/>
-    <item key="View_ColorLabelsGreen" value="150"/>
-    <item key="View_ColorLabelsBlue" value="0"/>
-    <item key="View_ColorContoursRed" value="0"/>
-    <item key="View_ColorContoursGreen" value="0"/>
-    <item key="View_ColorContoursBlue" value="0"/>
-    <item key="View_ColorVectorsRed" value="0"/>
-    <item key="View_ColorVectorsGreen" value="0"/>
-    <item key="View_ColorVectorsBlue" value="0"/>
-    <item key="View_ColorInitialMeshRed" value="250"/>
-    <item key="View_ColorInitialMeshGreen" value="202"/>
-    <item key="View_ColorInitialMeshBlue" value="119"/>
-    <item key="View_ColorSolutionMeshRed" value="150"/>
-    <item key="View_ColorSolutionMeshGreen" value="70"/>
-    <item key="View_ColorSolutionMeshBlue" value="0"/>
-    <item key="View_ColorSelectedRed" value="150"/>
-    <item key="View_ColorSelectedGreen" value="0"/>
-    <item key="View_ColorSelectedBlue" value="0"/>
-    <item key="View_ColorHighlightedRed" value="250"/>
-    <item key="View_ColorHighlightedGreen" value="150"/>
-    <item key="View_ColorHighlightedBlue" value="0"/>
-    <item key="View_ColorCrossedRed" value="255"/>
-    <item key="View_ColorCrossedGreen" value="0"/>
-    <item key="View_ColorCrossedBlue" value="0"/>
     <item key="View_ShowInitialMeshView" value="1"/>
     <item key="View_ShowSolutionMeshView" value="0"/>
     <item key="View_ContourVariable" value="flow_velocity"/>
@@ -306,8 +249,8 @@
     <item key="View_ScalarRangeBase" value="10"/>
     <item key="View_ScalarDecimalPlace" value="4"/>
     <item key="View_ScalarRangeAuto" value="1"/>
-    <item key="View_ScalarRangeMin" value="0"/>
-    <item key="View_ScalarRangeMax" value="1.26604038270714"/>
+    <item key="View_ScalarRangeMin" value="1.79769313486232e+308"/>
+    <item key="View_ScalarRangeMax" value="-1.79769313486232e+308"/>
     <item key="View_ShowVectorView" value="0"/>
     <item key="View_VectorVariable" value="flow_velocity"/>
     <item key="View_VectorProportional" value="1"/>
@@ -347,6 +290,8 @@
     <item key="View_ParticleCustomForceX" value="0"/>
     <item key="View_ParticleCustomForceY" value="0"/>
     <item key="View_ParticleCustomForceZ" value="0"/>
+    <item key="View_ParticleP2PElectricForce" value="0"/>
+    <item key="View_ParticleP2PMagneticForce" value="0"/>
     <item key="View_ChartStartX" value="0"/>
     <item key="View_ChartStartY" value="0"/>
     <item key="View_ChartEndX" value="0"/>
@@ -356,8 +301,6 @@
     <item key="View_ChartHorizontalAxis" value="2"/>
     <item key="View_ChartHorizontalAxisReverse" value="0"/>
     <item key="View_ChartHorizontalAxisPoints" value="200"/>
-    <item key="View_LinearizerQuality" value="4"/>
     <item key="View_SolidViewHide" value=""/>
   </config>
-
 </problem:document>
