@@ -7,7 +7,6 @@ class TestFlowPlanar(Agros2DTestCase):
         # problem
         problem = agros2d.problem(clear = True)
         problem.coordinate_type = "planar"
-        problem.mesh_type = "triangle_quad_join"        
         
         # disable view
         agros2d.view.mesh.disable()
@@ -16,10 +15,11 @@ class TestFlowPlanar(Agros2DTestCase):
         # flow
         self.flow = agros2d.field("flow")
         self.flow.analysis_type = "steadystate"
-        self.flow.number_of_refinements = 2
-        self.flow.polynomial_order = 2
+        self.flow.number_of_refinements = 1
+        self.flow.polynomial_order = 3
         
-        self.flow.solver = "newton"
+        # self.flow.solver = "newton"
+        self.flow.solver = "picard"
         self.flow.solver_parameters['residual'] = 1e-6
         self.flow.solver_parameters['relative_change_of_solutions'] = 100
         self.flow.solver_parameters['damping'] = 'automatic'
@@ -90,7 +90,6 @@ class TestFlowAxisymmetric(Agros2DTestCase):
         # problem
         problem = agros2d.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
-        problem.mesh_type = "gmsh_quad"
         
         # disable view
         agros2d.view.mesh.disable()
@@ -103,7 +102,8 @@ class TestFlowAxisymmetric(Agros2DTestCase):
         self.flow.polynomial_order = 2
         self.flow.adaptivity_type = "disabled"
         
-        self.flow.solver = "newton"
+        #self.flow.solver = "newton"
+        self.flow.solver = "picard"
         self.flow.solver_parameters['residual'] = 0.0001
         self.flow.solver_parameters['damping'] = 'automatic'
         self.flow.solver_parameters['damping_factor'] = 1.0
@@ -168,6 +168,6 @@ if __name__ == '__main__':
     suite = ut.TestSuite()
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowPlanar))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowAxisymmetric))
+    # suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowAxisymmetric))
     suite.run(result)
     

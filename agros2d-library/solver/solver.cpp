@@ -1342,6 +1342,9 @@ void ProblemSolver::solveProblem()
     fieldInfoOrder.push_back("current");
     fieldInfoOrder.push_back("heat");
     fieldInfoOrder.push_back("elasticity");
+    fieldInfoOrder.push_back("rf_te");
+    fieldInfoOrder.push_back("rf_tm");
+    fieldInfoOrder.push_back("flow");
 
     foreach(QString fieldName, fieldInfoOrder)
     {
