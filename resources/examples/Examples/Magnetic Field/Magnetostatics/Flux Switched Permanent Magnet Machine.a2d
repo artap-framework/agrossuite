@@ -189,7 +189,7 @@
   </geometry>
   <problem coordinate_type="planar" mesh_type="triangle">
     <fields>
-      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="magnetic" linearity_type="picard" matrix_solver="umfpack">
+      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="magnetic" linearity_type="newton" matrix_solver="umfpack">
         <refinement_edges/>
         <refinement_labels/>
         <polynomial_orders/>
@@ -215,18 +215,18 @@
               <material_label id="4"/>
             </material_labels>
             <material_types>
-              <material_type key="magnetic_conductivity" value="0"/>
               <material_type key="magnetic_current_density_external_imag" value="0"/>
               <material_type key="magnetic_current_density_external_real" value="0"/>
-              <material_type key="magnetic_permeability" value="500;piecewise_linear,1,1$0,0.227065,0.45413,0.681195,0.90826,1.13533,1.36239,1.58935,1.81236,2.01004,2.13316,2.19999,2.25479,2.29993,2.34251,2.37876,2.41501,2.45126,2.4875,2.52375,2.56,3,5,10,20;13001,13001,13001,12786,12168,10967,7494,1409,315,90,41,26,19,15,12,11,9,8,8,7,6,4,3,3,2"/>
+              <material_type key="magnetic_conductivity" value="0"/>
+              <material_type key="magnetic_total_current_imag" value="0"/>
+              <material_type key="magnetic_total_current_real" value="0"/>
               <material_type key="magnetic_remanence" value="0"/>
               <material_type key="magnetic_remanence_angle" value="0"/>
-              <material_type key="magnetic_total_current_imag" value="0"/>
               <material_type key="magnetic_total_current_prescribed" value="0"/>
-              <material_type key="magnetic_total_current_real" value="0"/>
-              <material_type key="magnetic_velocity_angular" value="0"/>
+              <material_type key="magnetic_permeability" value="500;piecewise_linear,1,1$0,0.227065,0.45413,0.681195,0.90826,1.13533,1.36239,1.58935,1.81236,2.01004,2.13316,2.19999,2.25479,2.29993,2.34251,2.37876,2.41501,2.45126,2.4875,2.52375,2.56,3,5,10,20;13001,13001,13001,12786,12168,10967,7494,1409,315,90,41,26,19,15,12,11,9,8,8,7,6,4,3,3,2"/>
               <material_type key="magnetic_velocity_x" value="0"/>
               <material_type key="magnetic_velocity_y" value="0"/>
+              <material_type key="magnetic_velocity_angular" value="0"/>
             </material_types>
           </material>
           <material id="2" name="NdBFe">
@@ -235,18 +235,18 @@
               <material_label id="2"/>
             </material_labels>
             <material_types>
-              <material_type key="magnetic_conductivity" value="0"/>
               <material_type key="magnetic_current_density_external_imag" value="0"/>
               <material_type key="magnetic_current_density_external_real" value="0"/>
-              <material_type key="magnetic_permeability" value="1.1"/>
+              <material_type key="magnetic_conductivity" value="0"/>
+              <material_type key="magnetic_total_current_imag" value="0"/>
+              <material_type key="magnetic_total_current_real" value="0"/>
               <material_type key="magnetic_remanence" value="1.4"/>
               <material_type key="magnetic_remanence_angle" value="90"/>
-              <material_type key="magnetic_total_current_imag" value="0"/>
               <material_type key="magnetic_total_current_prescribed" value="0"/>
-              <material_type key="magnetic_total_current_real" value="0"/>
-              <material_type key="magnetic_velocity_angular" value="0"/>
+              <material_type key="magnetic_permeability" value="1.1"/>
               <material_type key="magnetic_velocity_x" value="0"/>
               <material_type key="magnetic_velocity_y" value="0"/>
+              <material_type key="magnetic_velocity_angular" value="0"/>
             </material_types>
           </material>
           <material id="3" name="Cu A1">
@@ -254,18 +254,18 @@
               <material_label id="5"/>
             </material_labels>
             <material_types>
-              <material_type key="magnetic_conductivity" value="0"/>
               <material_type key="magnetic_current_density_external_imag" value="0"/>
               <material_type key="magnetic_current_density_external_real" value="-0.5e6"/>
-              <material_type key="magnetic_permeability" value="1"/>
+              <material_type key="magnetic_conductivity" value="0"/>
+              <material_type key="magnetic_total_current_imag" value="0"/>
+              <material_type key="magnetic_total_current_real" value="0"/>
               <material_type key="magnetic_remanence" value="0"/>
               <material_type key="magnetic_remanence_angle" value="0"/>
-              <material_type key="magnetic_total_current_imag" value="0"/>
               <material_type key="magnetic_total_current_prescribed" value="0"/>
-              <material_type key="magnetic_total_current_real" value="0"/>
-              <material_type key="magnetic_velocity_angular" value="0"/>
+              <material_type key="magnetic_permeability" value="1"/>
               <material_type key="magnetic_velocity_x" value="0"/>
               <material_type key="magnetic_velocity_y" value="0"/>
+              <material_type key="magnetic_velocity_angular" value="0"/>
             </material_types>
           </material>
           <material id="4" name="Cu A2">
@@ -273,18 +273,18 @@
               <material_label id="6"/>
             </material_labels>
             <material_types>
-              <material_type key="magnetic_conductivity" value="0"/>
               <material_type key="magnetic_current_density_external_imag" value="0"/>
               <material_type key="magnetic_current_density_external_real" value="0.5e6"/>
-              <material_type key="magnetic_permeability" value="1"/>
+              <material_type key="magnetic_conductivity" value="0"/>
+              <material_type key="magnetic_total_current_imag" value="0"/>
+              <material_type key="magnetic_total_current_real" value="0"/>
               <material_type key="magnetic_remanence" value="0"/>
               <material_type key="magnetic_remanence_angle" value="0"/>
-              <material_type key="magnetic_total_current_imag" value="0"/>
               <material_type key="magnetic_total_current_prescribed" value="0"/>
-              <material_type key="magnetic_total_current_real" value="0"/>
-              <material_type key="magnetic_velocity_angular" value="0"/>
+              <material_type key="magnetic_permeability" value="1"/>
               <material_type key="magnetic_velocity_x" value="0"/>
               <material_type key="magnetic_velocity_y" value="0"/>
+              <material_type key="magnetic_velocity_angular" value="0"/>
             </material_types>
           </material>
           <material id="5" name="Cu B1">
@@ -292,18 +292,18 @@
               <material_label id="8"/>
             </material_labels>
             <material_types>
-              <material_type key="magnetic_conductivity" value="0"/>
               <material_type key="magnetic_current_density_external_imag" value="0"/>
               <material_type key="magnetic_current_density_external_real" value="0"/>
-              <material_type key="magnetic_permeability" value="1"/>
+              <material_type key="magnetic_conductivity" value="0"/>
+              <material_type key="magnetic_total_current_imag" value="0"/>
+              <material_type key="magnetic_total_current_real" value="0"/>
               <material_type key="magnetic_remanence" value="0"/>
               <material_type key="magnetic_remanence_angle" value="0"/>
-              <material_type key="magnetic_total_current_imag" value="0"/>
               <material_type key="magnetic_total_current_prescribed" value="0"/>
-              <material_type key="magnetic_total_current_real" value="0"/>
-              <material_type key="magnetic_velocity_angular" value="0"/>
+              <material_type key="magnetic_permeability" value="1"/>
               <material_type key="magnetic_velocity_x" value="0"/>
               <material_type key="magnetic_velocity_y" value="0"/>
+              <material_type key="magnetic_velocity_angular" value="0"/>
             </material_types>
           </material>
           <material id="6" name="Cu B2">
@@ -311,18 +311,18 @@
               <material_label id="7"/>
             </material_labels>
             <material_types>
-              <material_type key="magnetic_conductivity" value="0"/>
               <material_type key="magnetic_current_density_external_imag" value="0"/>
               <material_type key="magnetic_current_density_external_real" value="0"/>
-              <material_type key="magnetic_permeability" value="1"/>
+              <material_type key="magnetic_conductivity" value="0"/>
+              <material_type key="magnetic_total_current_imag" value="0"/>
+              <material_type key="magnetic_total_current_real" value="0"/>
               <material_type key="magnetic_remanence" value="0"/>
               <material_type key="magnetic_remanence_angle" value="0"/>
-              <material_type key="magnetic_total_current_imag" value="0"/>
               <material_type key="magnetic_total_current_prescribed" value="0"/>
-              <material_type key="magnetic_total_current_real" value="0"/>
-              <material_type key="magnetic_velocity_angular" value="0"/>
+              <material_type key="magnetic_permeability" value="1"/>
               <material_type key="magnetic_velocity_x" value="0"/>
               <material_type key="magnetic_velocity_y" value="0"/>
+              <material_type key="magnetic_velocity_angular" value="0"/>
             </material_types>
           </material>
           <material id="7" name="Air">
@@ -331,18 +331,18 @@
               <material_label id="10"/>
             </material_labels>
             <material_types>
-              <material_type key="magnetic_conductivity" value="0"/>
               <material_type key="magnetic_current_density_external_imag" value="0"/>
               <material_type key="magnetic_current_density_external_real" value="0"/>
-              <material_type key="magnetic_permeability" value="1"/>
+              <material_type key="magnetic_conductivity" value="0"/>
+              <material_type key="magnetic_total_current_imag" value="0"/>
+              <material_type key="magnetic_total_current_real" value="0"/>
               <material_type key="magnetic_remanence" value="0"/>
               <material_type key="magnetic_remanence_angle" value="0"/>
-              <material_type key="magnetic_total_current_imag" value="0"/>
               <material_type key="magnetic_total_current_prescribed" value="0"/>
-              <material_type key="magnetic_total_current_real" value="0"/>
-              <material_type key="magnetic_velocity_angular" value="0"/>
+              <material_type key="magnetic_permeability" value="1"/>
               <material_type key="magnetic_velocity_x" value="0"/>
               <material_type key="magnetic_velocity_y" value="0"/>
+              <material_type key="magnetic_velocity_angular" value="0"/>
             </material_types>
           </material>
         </materials>
@@ -363,19 +363,16 @@
           <field_item field_key="SpacePolynomialOrder" field_value="2"/>
           <field_item field_key="AdaptivitySteps" field_value="10"/>
           <field_item field_key="AdaptivityTolerance" field_value="1"/>
+          <field_item field_key="AdaptivityEstimator" field_value="0"/>
+          <field_item field_key="AdaptivityFinePercentage" field_value="30"/>
+          <field_item field_key="AdaptivityCoarsePercentage" field_value="3"/>
           <field_item field_key="AdaptivityTransientBackSteps" field_value="3"/>
           <field_item field_key="AdaptivityTransientRedoneEach" field_value="5"/>
-          <field_item field_key="AdaptivityStoppingCriterion" field_value="1"/>
-          <field_item field_key="AdaptivityThreshold" field_value="0.6"/>
-          <field_item field_key="AdaptivityErrorCalculator" field_value="h1"/>
-          <field_item field_key="AdaptivityUseAniso" field_value="1"/>
-          <field_item field_key="AdaptivityFinerReference" field_value="0"/>
-          <field_item field_key="AdaptivityOrderIncrease" field_value="1"/>
-          <field_item field_key="AdaptivitySpaceRefinement" field_value="1"/>
+          <field_item field_key="TransientAnalysis" field_value="0"/>
           <field_item field_key="TransientTimeSkip" field_value="0"/>
           <field_item field_key="TransientInitialCondition" field_value="0"/>
           <field_item field_key="LinearSolverIterMethod" field_value="2"/>
-          <field_item field_key="LinearSolverIterPreconditioner" field_value="2"/>
+          <field_item field_key="LinearSolverIterPreconditioner" field_value="0"/>
           <field_item field_key="LinearSolverIterToleranceAbsolute" field_value="1e-16"/>
           <field_item field_key="LinearSolverIterIters" field_value="1000"/>
           <field_item field_key="TimeUnit" field_value="s"/>
@@ -424,9 +421,9 @@
     <item key="View_ScalarRangeBase" value="10"/>
     <item key="View_ScalarDecimalPlace" value="4"/>
     <item key="View_ScalarRangeAuto" value="1"/>
-    <item key="View_ScalarRangeMin" value="1.48563118127972e-05"/>
-    <item key="View_ScalarRangeMax" value="1.54025034570763"/>
-    <item key="View_ShowVectorView" value="1"/>
+    <item key="View_ScalarRangeMin" value="5.04946410728735e-06"/>
+    <item key="View_ScalarRangeMax" value="1.73833537101746"/>
+    <item key="View_ShowVectorView" value="0"/>
     <item key="View_VectorVariable" value="magnetic_flux_density_real"/>
     <item key="View_VectorProportional" value="1"/>
     <item key="View_VectorColor" value="1"/>

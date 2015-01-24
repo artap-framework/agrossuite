@@ -166,7 +166,8 @@ public:
     {
         Phase_Undefined,
         Phase_Init,
-        Phase_DFDetermined,
+        Phase_Solving,
+        Phase_DampingFactorChanged,
         Phase_JacobianReused,
         Phase_Finished
     };

@@ -123,7 +123,7 @@ void NewtonSolverAgros<Scalar>::setError()
         Agros2D::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Initial step, error: %1")
                                      .arg(m_residualNorms.last()));
     }
-    else if (m_phase == Phase_DFDetermined)
+    else if (m_phase == Phase_DampingFactorChanged)
     {
         Agros2D::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Iteration: %1 (res. norm: %3, rel. change of sol.: %4 %, Jacobian recalculated, damping: %2)")
                                      .arg(iteration)
