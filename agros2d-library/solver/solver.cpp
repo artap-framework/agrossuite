@@ -306,7 +306,8 @@ void SolverDeal::solveLinearityLinear()
     time.start();
 
     assembleSystem();
-    qDebug() << "assemble (" << time.elapsed() << "ms )";
+    std::cout << "assemble (" << time.elapsed() << "ms )" << std::endl;
+    time.start();
 
     // transientExplicitMethod(dealii::TimeStepping::FORWARD_EULER, Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(), 0.0, Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
     // std::cout << "FORWARD_EULER: error=" << m_solution->l2_norm() << std::endl;
@@ -316,8 +317,7 @@ void SolverDeal::solveLinearityLinear()
 
     solveLinearSystem();
 
-    qDebug() << "solve linear total (" << time.elapsed() << "ms )";
-
+    std::cout << "solve linear total (" << time.elapsed() << "ms )" << std::endl;
 }
 
 void SolverDeal::solveLinearityNonLinear()
@@ -442,7 +442,7 @@ void SolverDeal::solveLinearityNonLinearNewton()
         {
             if (previousResidualNorm > 0.0 && (residualNorm > previousResidualNorm * m_fieldInfo->value(FieldInfo::NonlinearDampingFactorDecreaseRatio).toDouble()))
             {
-                if (residualNorm > minAllowedDampingCoeff)
+                if (dampingFactor > minAllowedDampingCoeff)
                 {
                     phase = SolverAgros::Phase_DampingFactorChanged;
 

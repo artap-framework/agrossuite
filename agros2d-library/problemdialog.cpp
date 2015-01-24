@@ -152,7 +152,7 @@ void FieldWidget::createContent()
 
     connect(cmbAdaptivityType, SIGNAL(currentIndexChanged(int)), this, SLOT(doAdaptivityChanged(int)));
     connect(cmbAnalysisType, SIGNAL(currentIndexChanged(int)), this, SLOT(doAnalysisTypeChanged(int)));
-    connect(chkTransientAnalysis, SIGNAL(clicked(bool)), this, SLOT(doAnalysisTypeChanged(int)));
+    connect(chkTransientAnalysis, SIGNAL(clicked()), this, SLOT(doAnalysisTypeChanged(int)));
     connect(cmbLinearityType, SIGNAL(currentIndexChanged(int)), this, SLOT(doLinearityTypeChanged(int)));
     connect(cmbLinearSolver, SIGNAL(currentIndexChanged(int)), this, SLOT(doLinearSolverChanged(int)));
 

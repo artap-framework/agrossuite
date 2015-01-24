@@ -45,6 +45,9 @@
 #include <deal.II/numerics/vector_tools.h>
 #include <deal.II/numerics/matrix_tools.h>
 
+#include <deal.II/base/work_stream.h>
+#include <deal.II/base/multithread_info.h>
+
 {{#EXACT_SOURCE}}
 template <int dim>
 class Essential_{{COORDINATE_TYPE}}_{{ANALYSIS_TYPE}}_{{LINEARITY_TYPE}}_{{BOUNDARY_ID}} : public dealii::Function<dim>
@@ -121,304 +124,322 @@ virtual void vector_value_list (const std::vector<dealii::Point<dim> > &points,
 
 private:
 {{#VARIABLE_SOURCE_LINEAR}}
-    const Value *{{VARIABLE_SHORT}};{{/VARIABLE_SOURCE_LINEAR}}
+const Value *{{VARIABLE_SHORT}};{{/VARIABLE_SOURCE_LINEAR}}
 {{#VARIABLE_SOURCE_NONLINEAR}}
-    const Value *{{VARIABLE_SHORT}};{{/VARIABLE_SOURCE_NONLINEAR}}
+const Value *{{VARIABLE_SHORT}};{{/VARIABLE_SOURCE_NONLINEAR}}
 };
 {{/EXACT_SOURCE}}
 
 // *************************************************************************************************************************************************
 
-void SolverDeal{{CLASS}}::assembleSystem()
+SolverDeal{{CLASS}}::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
+                                                              dealii::hp::QCollection<2> quadratureFormulas,
+                                                              dealii::hp::QCollection<2-1> faceQuadratureFormulas)
+    :
+      hp_fe_values(feCollection, quadratureFormulas,
+                   dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values),
+      hp_fe_face_values(feCollection, faceQuadratureFormulas,
+                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
+{}
+
+
+SolverDeal{{CLASS}}::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &scratch_data)
+    :
+      hp_fe_values(scratch_data.hp_fe_values.get_fe_collection(), scratch_data.hp_fe_values.get_quadrature_collection(),
+                   dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values),
+      hp_fe_face_values(scratch_data.hp_fe_face_values.get_fe_collection(), scratch_data.hp_fe_face_values.get_quadrature_collection(),
+                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
+{}
+
+SolverDeal{{CLASS}}::AssemblyCopyData::AssemblyCopyData(const dealii::hp::FECollection<2> &feCollection,
+                                                        dealii::hp::QCollection<2> quadratureFormulas,
+                                                        dealii::hp::QCollection<2-1> faceQuadratureFormulas,
+                                                        const FieldInfo *fieldInfo)
+    : isAssembled(false)
 {
-    // assemble
-    dealii::hp::FEValues<2> hp_fe_values(*m_feCollection, m_quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
-    dealii::hp::FEFaceValues<2> hp_fe_face_values(*m_feCollection, m_face_quadrature_formulas, dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values);
-
-    dealii::FullMatrix<double> cell_matrix;
-    dealii::FullMatrix<double> cell_mass_matrix;
-    dealii::Vector<double> cell_rhs;
-
-    std::vector<dealii::types::global_dof_index> local_dof_indices;
-
+    /*
     // cache
-    int max_dofs_per_cell = m_feCollection->max_dofs_per_cell();
-    int max_n_quadrature_points = m_quadrature_formulas.max_n_quadrature_points();
+    int max_dofs_per_cell = feCollection.max_dofs_per_cell();
+    int max_n_quadrature_points = quadratureFormulas.max_n_quadrature_points();
 
     // volume value and grad cache
-    std::vector<dealii::Vector<double> > shape_value(max_dofs_per_cell, dealii::Vector<double>(max_n_quadrature_points));
-    std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad(max_dofs_per_cell, std::vector<dealii::Tensor<1,2> >(max_n_quadrature_points));
+    shape_value = std::vector<dealii::Vector<double> >(max_dofs_per_cell, dealii::Vector<double>(max_n_quadrature_points));
+    shape_grad = std::vector<std::vector<dealii::Tensor<1,2> > >(max_dofs_per_cell, std::vector<dealii::Tensor<1,2> >(max_n_quadrature_points));
     // surface cache
-    std::vector<std::vector<dealii::Point<2> > > shape_face_point(dealii::GeometryInfo<2>::faces_per_cell);
-    std::vector<std::vector<dealii::Vector<double> > > shape_face_value(dealii::GeometryInfo<2>::faces_per_cell, std::vector<dealii::Vector<double> >(max_dofs_per_cell));
-    std::vector<std::vector<double> > shape_face_JxW(dealii::GeometryInfo<2>::faces_per_cell);
+    shape_face_point = std::vector<std::vector<dealii::Point<2> > >(dealii::GeometryInfo<2>::faces_per_cell);
+    shape_face_value = std::vector<std::vector<dealii::Vector<double> > >(dealii::GeometryInfo<2>::faces_per_cell, std::vector<dealii::Vector<double> >(max_dofs_per_cell));
+    shape_face_JxW = std::vector<std::vector<double> >(dealii::GeometryInfo<2>::faces_per_cell);
     // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(max_dofs_per_cell);
 
     // previous values and grads
-    std::vector<dealii::Vector<double> > solution_value_previous(max_n_quadrature_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-    std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous(max_n_quadrature_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+    solution_value_previous = std::vector<dealii::Vector<double> >(max_n_quadrature_points, dealii::Vector<double>(fieldInfo->numberOfSolutions()));
+    solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(max_n_quadrature_points, std::vector<dealii::Tensor<1,2> >(fieldInfo->numberOfSolutions()));
+    */
+}
 
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+void SolverDeal{{CLASS}}::assembleSystem()
+{
+    dealii::WorkStream::run(m_doFHandler->begin_active(),
+                            m_doFHandler->end(),
+                            *this,
+                            &SolverDeal{{CLASS}}::localAssembleSystem,
+                            &SolverDeal{{CLASS}}::copyLocalToGlobal,
+                            AssemblyScratchData(*m_feCollection, m_quadrature_formulas, m_face_quadrature_formulas),
+                            AssemblyCopyData(*m_feCollection, m_quadrature_formulas, m_face_quadrature_formulas, m_fieldInfo));
 
-    // coupling sources {{#COUPLING_SOURCE}}
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}}, endc_{{COUPLING_SOURCE_ID}};
-    const SolverDeal* {{COUPLING_SOURCE_ID}}_solver = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"];
-    if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
+    if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+        mass_matrix_inverse.initialize(mass_matrix);
+}
+
+void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHandler<2>::active_cell_iterator &cell,
+                                              AssemblyScratchData &scratch_data,
+                                              AssemblyCopyData &copy_data)
+{
+    // reinit volume
+    scratch_data.hp_fe_values.reinit(cell);
+
+    // materials
+    SceneMaterial *material = Agros2D::scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo);
+
+    if (material != Agros2D::scene()->materials->getNone(m_fieldInfo))
     {
-        cell_{{COUPLING_SOURCE_ID}} = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->begin_active();
-        // to Pavel Kus: is it OK? Should be endc_{{COUPLING_SOURCE_ID}}; ???
-        endc = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->end();
-    }
-    {{/COUPLING_SOURCE}}
-    system_rhs = 0.0;
-    system_matrix = 0.0;
-
-    for (; cell != endc; ++cell)
-    {
-        // materials
-        SceneMaterial *material = Agros2D::scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo);
-
-        if (material != Agros2D::scene()->materials->getNone(m_fieldInfo))
+        // TODO: move outside
+        // coupling sources{{#COUPLING_SOURCE}}
+        dealii::hp::DoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}}, endc_{{COUPLING_SOURCE_ID}};
+        const SolverDeal* {{COUPLING_SOURCE_ID}}_solver = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"];
+        if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
         {
-            const unsigned int dofs_per_cell = cell->get_fe().dofs_per_cell;
+            cell_{{COUPLING_SOURCE_ID}} = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->begin_active();
+            endc_{{COUPLING_SOURCE_ID}} = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->end();
+        }
+        {{/COUPLING_SOURCE}}
 
-            // local matrix
-            cell_matrix.reinit(dofs_per_cell, dofs_per_cell);
-            cell_matrix = 0;
-            cell_rhs.reinit(dofs_per_cell);
-            cell_rhs = 0;
-            if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+        const unsigned int dofs_per_cell = cell->get_fe().dofs_per_cell;
+
+        // local matrix
+        copy_data.cell_matrix.reinit(dofs_per_cell, dofs_per_cell);
+        copy_data.cell_matrix = 0;
+        copy_data.cell_rhs.reinit(dofs_per_cell);
+        copy_data.cell_rhs = 0;
+        if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+        {
+            copy_data.cell_mass_matrix.reinit(dofs_per_cell, dofs_per_cell);
+            copy_data.cell_mass_matrix = 0;
+        }
+
+        scratch_data.hp_fe_values.reinit(cell);
+
+        const dealii::FEValues<2> &fe_values = scratch_data.hp_fe_values.get_present_fe_values();
+        const unsigned int n_q_points = fe_values.n_quadrature_points;
+
+        // volume value and grad cache
+        std::vector<dealii::Vector<double> > shape_value(dofs_per_cell, dealii::Vector<double>(n_q_points));
+        std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
+
+        // surface cache
+        std::vector<std::vector<dealii::Point<2> > > shape_face_point(dealii::GeometryInfo<2>::faces_per_cell);
+        std::vector<std::vector<dealii::Vector<double> > > shape_face_value(dealii::GeometryInfo<2>::faces_per_cell, std::vector<dealii::Vector<double> >(dofs_per_cell));
+        std::vector<std::vector<double> > shape_face_JxW(dealii::GeometryInfo<2>::faces_per_cell);
+        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(dofs_per_cell);
+
+        // previous values and grads
+        std::vector<dealii::Vector<double> > solution_value_previous(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+        std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
+
+        if (m_solution_previous)
+        {
+            fe_values.get_function_values(*m_solution_previous, solution_value_previous);
+            fe_values.get_function_gradients(*m_solution_previous, solution_grad_previous);
+        }
+
+        // coupling sources{{#COUPLING_SOURCE}}
+        FieldInfo* {{COUPLING_SOURCE_ID}}_fieldInfo = nullptr;
+        std::vector<dealii::Vector<double> > {{COUPLING_SOURCE_ID}}_value(n_q_points, dealii::Vector<double>(1)); // todo: num source solutions
+        std::vector<std::vector<dealii::Tensor<1,2> > > {{COUPLING_SOURCE_ID}}_grad(n_q_points, std::vector<dealii::Tensor<1,2> >(1));// todo: num source solutions
+
+        if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
+        {
+            {{COUPLING_SOURCE_ID}}_fieldInfo = Agros2D::problem()->fieldInfo("{{COUPLING_SOURCE_ID}}");
+            // todo: we probably do not need to initialize everything
+            dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values(*{{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadrature_formulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
+            {{COUPLING_SOURCE_ID}}_hp_fe_values.reinit(cell_{{COUPLING_SOURCE_ID}});
+            const dealii::FEValues<2> &{{COUPLING_SOURCE_ID}}_fe_values = {{COUPLING_SOURCE_ID}}_hp_fe_values.get_present_fe_values();
+            {{COUPLING_SOURCE_ID}}_fe_values.get_function_values(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_value);
+            {{COUPLING_SOURCE_ID}}_fe_values.get_function_gradients(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_grad);
+        }
+        {{/COUPLING_SOURCE}}
+
+        // cache volume
+        for (unsigned int i = 0; i < dofs_per_cell; ++i)
+        {
+            for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
             {
-                cell_mass_matrix.reinit(dofs_per_cell, dofs_per_cell);
-                cell_mass_matrix = 0;
+                shape_value[i][q_point] = fe_values.shape_value(i, q_point);
+                shape_grad[i][q_point] = fe_values.shape_grad(i, q_point);
             }
+        }
 
-            hp_fe_values.reinit(cell);
-
-            const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
-            const unsigned int n_q_points = fe_values.n_quadrature_points;
-
-            if (m_solution_previous)
+        // cache surface
+        for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
+        {
+            if (cell->face(face)->at_boundary())
             {
-                fe_values.get_function_values(*m_solution_previous, solution_value_previous);
-                fe_values.get_function_gradients(*m_solution_previous, solution_grad_previous);
-            }
+                scratch_data.hp_fe_face_values.reinit(cell, face);
 
-            // coupling sources{{#COUPLING_SOURCE}}
-            FieldInfo* {{COUPLING_SOURCE_ID}}_fieldInfo = nullptr;
-            std::vector<dealii::Vector<double> > {{COUPLING_SOURCE_ID}}_value(n_q_points, dealii::Vector<double>(1)); // todo: num source solutions
-            std::vector<std::vector<dealii::Tensor<1,2> > > {{COUPLING_SOURCE_ID}}_grad(n_q_points, std::vector<dealii::Tensor<1,2> >(1));// todo: num source solutions
+                const dealii::FEFaceValues<2> &fe_face_values = scratch_data.hp_fe_face_values.get_present_fe_values();
+                const unsigned int n_face_q_points = fe_face_values.n_quadrature_points;
 
-            if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
-            {
-                {{COUPLING_SOURCE_ID}}_fieldInfo = Agros2D::problem()->fieldInfo("{{COUPLING_SOURCE_ID}}");
-                // todo: we probably do not need to initialize everything
-                dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values(*{{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadrature_formulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
-                {{COUPLING_SOURCE_ID}}_hp_fe_values.reinit(cell_{{COUPLING_SOURCE_ID}});
-                const dealii::FEValues<2> &{{COUPLING_SOURCE_ID}}_fe_values = {{COUPLING_SOURCE_ID}}_hp_fe_values.get_present_fe_values();
-                {{COUPLING_SOURCE_ID}}_fe_values.get_function_values(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_value);
-                {{COUPLING_SOURCE_ID}}_fe_values.get_function_gradients(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_grad);
-            }
-            {{/COUPLING_SOURCE}}
-            // cache volume
-            for (unsigned int i = 0; i < dofs_per_cell; ++i)
-            {
-                for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
+                shape_face_point[face].resize(n_face_q_points);
+                shape_face_JxW[face].resize(n_face_q_points);
+
+                for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
                 {
-                    shape_value[i][q_point] = fe_values.shape_value(i, q_point);
-                    shape_grad[i][q_point] = fe_values.shape_grad(i, q_point);
+                    shape_face_point[face][q_point] = fe_face_values.quadrature_point(q_point);
+                    shape_face_JxW[face][q_point] = fe_face_values.JxW(q_point);
                 }
-            }
 
-            // cache surface
-            for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
-            {
-                if (cell->face(face)->at_boundary())
+                for (unsigned int i = 0; i < dofs_per_cell; ++i)
                 {
-                    hp_fe_face_values.reinit(cell, face);
-
-                    const dealii::FEFaceValues<2> &fe_face_values = hp_fe_face_values.get_present_fe_values();
-                    const unsigned int n_face_q_points = fe_face_values.n_quadrature_points;
-
-                    shape_face_point[face].resize(n_face_q_points);
-                    shape_face_JxW[face].resize(n_face_q_points);
-
+                    shape_face_value[face][i].reinit(n_face_q_points);
                     for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
                     {
-                        shape_face_point[face][q_point] = fe_face_values.quadrature_point(q_point);
-                        shape_face_JxW[face][q_point] = fe_face_values.JxW(q_point);
-                    }
-
-                    for (unsigned int i = 0; i < dofs_per_cell; ++i)
-                    {
-                        shape_face_value[face][i].reinit(n_face_q_points);
-                        for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
-                        {
-                            shape_face_value[face][i][q_point] = fe_face_values.shape_value(i, q_point);
-                            // shape_face_grad[i][q_point] = fe_face_values.shape_grad(i, q_point);
-                        }
+                        shape_face_value[face][i][q_point] = fe_face_values.shape_value(i, q_point);
+                        // shape_face_grad[i][q_point] = fe_face_values.shape_grad(i, q_point);
                     }
                 }
             }
+        }
 
-            const QMap<uint, QSharedPointer<Value> > materialValues = material->values();
-            {{#VOLUME_SOURCE}}
-            if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}}))
+        const QMap<uint, QSharedPointer<Value> > materialValues = material->values();
+
+        {{#VOLUME_SOURCE}}
+        if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}}))
+        {
+            // matrix
+            {{#VARIABLE_SOURCE_LINEAR}}
+            // {{VARIABLE}}
+            const double {{VARIABLE_SHORT}}_val = materialValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
+            {{#FUNCTION_SOURCE_CONSTANT}}
+            const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_CONSTANT}}
+
+            for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
             {
-                // matrix
-                {{#VARIABLE_SOURCE_LINEAR}}
+                const dealii::Point<2> p = fe_values.quadrature_point(q_point);
+                {{#VARIABLE_SOURCE_NONLINEAR}}
                 // {{VARIABLE}}
-                const double {{VARIABLE_SHORT}}_val = materialValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
-                {{#FUNCTION_SOURCE_CONSTANT}}
-                const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_CONSTANT}}
+                const double {{VARIABLE_SHORT}}_val = materialValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}};
+                const double {{VARIABLE_SHORT}}_der = materialValues[{{VARIABLE_HASH}}]->{{VARIABLE_DERIVATIVE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
+                {{#FUNCTION_SOURCE_NONCONSTANT}}
+                const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_NONCONSTANT}}
 
-                for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
+                for (unsigned int i = 0; i < dofs_per_cell; ++i)
                 {
-                    const dealii::Point<2> p = fe_values.quadrature_point(q_point);
-                    {{#VARIABLE_SOURCE_NONLINEAR}}                    
-                    // {{VARIABLE}}
-                    const double {{VARIABLE_SHORT}}_val = materialValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}};
-                    const double {{VARIABLE_SHORT}}_der = materialValues[{{VARIABLE_HASH}}]->{{VARIABLE_DERIVATIVE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
-                    {{#FUNCTION_SOURCE_NONCONSTANT}}
-                    const double {{FUNCTION_SHORT}} = {{FUNCTION_EXPRESSION}}; {{/FUNCTION_SOURCE_NONCONSTANT}}
+                    const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
 
-                    for (unsigned int i = 0; i < dofs_per_cell; ++i)
+                    for (unsigned int j = 0; j < dofs_per_cell; ++j)
                     {
-                        const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
+                        const unsigned int component_j = cell->get_fe().system_to_component_index(j).first;
 
-                        for (unsigned int j = 0; j < dofs_per_cell; ++j)
+                        {{#FORM_EXPRESSION_MATRIX}}
+                        // {{EXPRESSION_ID}}
+                        if (component_i == {{ROW_INDEX}} && component_j == {{COLUMN_INDEX}})
                         {
-                            const unsigned int component_j = cell->get_fe().system_to_component_index(j).first;
+                            copy_data.cell_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
+                        }{{/FORM_EXPRESSION_MATRIX}}
 
-                            {{#FORM_EXPRESSION_MATRIX}}
-                            // {{EXPRESSION_ID}}
-                            if (component_i == {{ROW_INDEX}} && component_j == {{COLUMN_INDEX}})
+                        // transient mass matrix
+                        if (component_i == component_j)
+                        {
+                            if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
                             {
-                                cell_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
-                            }{{/FORM_EXPRESSION_MATRIX}}
-
-                            // transient mass matrix
-                            if (component_i == component_j)
-                            {
-                                if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
-                                {
-                                    // TODO: he_rho_val * he_cp_val *
-                                    cell_mass_matrix(i, j) += fe_values.JxW(q_point) * shape_value[i][q_point] * shape_value[j][q_point];
-                                }
+                                // TODO: he_rho_val * he_cp_val *
+                                copy_data.cell_mass_matrix(i, j) += fe_values.JxW(q_point) * shape_value[i][q_point] * shape_value[j][q_point];
                             }
-                        }                        
-                        {{#FORM_EXPRESSION_VECTOR}}
+                        }
+                    }
+                    {{#FORM_EXPRESSION_VECTOR}}
+                    // {{EXPRESSION_ID}}
+                    if (component_i == {{ROW_INDEX}})
+                    {
+                        copy_data.cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
+                    }{{/FORM_EXPRESSION_VECTOR}}
+                    {{#COUPLING_SOURCE}}
+                    if({{COUPLING_SOURCE_ID}}_fieldInfo)
+                    { {{#FORM_EXPRESSION_VECTOR}}
                         // {{EXPRESSION_ID}}
                         if (component_i == {{ROW_INDEX}})
                         {
-                            cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
+                            copy_data.cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
                         }{{/FORM_EXPRESSION_VECTOR}}
-                        {{#COUPLING_SOURCE}}
-                        if({{COUPLING_SOURCE_ID}}_fieldInfo)
-                        { {{#FORM_EXPRESSION_VECTOR}}
-                            // {{EXPRESSION_ID}}
-                            if (component_i == {{ROW_INDEX}})
-                            {
-                                cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
-                            }{{/FORM_EXPRESSION_VECTOR}}
-                        }{{/COUPLING_SOURCE}}
-                    }
+                    }{{/COUPLING_SOURCE}}
                 }
             }
-            {{/VOLUME_SOURCE}}
+        }
+        {{/VOLUME_SOURCE}}
 
 
-            // boundaries
-            for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
+        // boundaries
+        for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
+        {
+            if (cell->face(face)->at_boundary())
             {
-                if (cell->face(face)->at_boundary())
+                SceneBoundary *boundary = Agros2D::scene()->edges->at(cell->face(face)->boundary_indicator() - 1)->marker(m_fieldInfo);
+                const QMap<uint, QSharedPointer<Value> > boundaryValues = boundary->values();
+
+                if (boundary != Agros2D::scene()->boundaries->getNone(m_fieldInfo))
                 {
-                    SceneBoundary *boundary = Agros2D::scene()->edges->at(cell->face(face)->boundary_indicator() - 1)->marker(m_fieldInfo);
-                    const QMap<uint, QSharedPointer<Value> > boundaryValues = boundary->values();
-
-                    if (boundary != Agros2D::scene()->boundaries->getNone(m_fieldInfo))
+                    {{#SURFACE_SOURCE}}
+                    // {{BOUNDARY_ID}}
+                    if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}})
+                            && boundary->type() == "{{BOUNDARY_ID}}")
                     {
-                        {{#SURFACE_SOURCE}}
-                        // {{BOUNDARY_ID}}
-                        if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}})
-                                && boundary->type() == "{{BOUNDARY_ID}}")
+                        {{#VARIABLE_SOURCE_LINEAR}}
+                        // {{VARIABLE}}
+                        const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
+
+                        // value and grad cache
+                        std::vector<dealii::Vector<double> > shape_value = shape_face_value[face];
+                        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad = shape_face_grad;
+
+                        const dealii::FEFaceValues<2> &fe_face_values = scratch_data.hp_fe_face_values.get_present_fe_values();
+                        for (unsigned int q_point = 0; q_point < fe_face_values.n_quadrature_points; ++q_point)
                         {
-                            {{#VARIABLE_SOURCE_LINEAR}}
+                            const dealii::Point<2> p = shape_face_point[face][q_point];
+
+                            {{#VARIABLE_SOURCE_NONLINEAR}}
                             // {{VARIABLE}}
-                            const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
+                            const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
 
-                            // value and grad cache
-                            std::vector<dealii::Vector<double> > shape_value = shape_face_value[face];
-                            // std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad = shape_face_grad;
-
-                            const dealii::FEFaceValues<2> &fe_face_values = hp_fe_face_values.get_present_fe_values();
-                            for (unsigned int q_point = 0; q_point < fe_face_values.n_quadrature_points; ++q_point)
+                            for (unsigned int i = 0; i < dofs_per_cell; ++i)
                             {
-                                const dealii::Point<2> p = shape_face_point[face][q_point];
+                                const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
 
-                                {{#VARIABLE_SOURCE_NONLINEAR}}
-                                // {{VARIABLE}}
-                                const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
-
-                                for (unsigned int i = 0; i < dofs_per_cell; ++i)
+                                for (unsigned int j = 0; j < dofs_per_cell; ++j)
                                 {
-                                    const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
+                                    const unsigned int component_j = cell->get_fe().system_to_component_index(j).first;
 
-                                    for (unsigned int j = 0; j < dofs_per_cell; ++j)
-                                    {
-                                        const unsigned int component_j = cell->get_fe().system_to_component_index(j).first;
-
-                                        {{#FORM_EXPRESSION_MATRIX}}
-                                        // {{EXPRESSION_ID}}
-                                        if (component_i == {{ROW_INDEX}} && component_j == {{COLUMN_INDEX}})
-                                        {
-                                            cell_matrix(i,j) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
-                                        }{{/FORM_EXPRESSION_MATRIX}}     
-                                    }
-                                    {{#FORM_EXPRESSION_VECTOR}}
+                                    {{#FORM_EXPRESSION_MATRIX}}
                                     // {{EXPRESSION_ID}}
-                                    if (component_i == {{ROW_INDEX}})
+                                    if (component_i == {{ROW_INDEX}} && component_j == {{COLUMN_INDEX}})
                                     {
-                                        cell_rhs(i) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
-                                    }{{/FORM_EXPRESSION_VECTOR}}
+                                        copy_data.cell_matrix(i,j) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
+                                    }{{/FORM_EXPRESSION_MATRIX}}
                                 }
+                                {{#FORM_EXPRESSION_VECTOR}}
+                                // {{EXPRESSION_ID}}
+                                if (component_i == {{ROW_INDEX}})
+                                {
+                                    copy_data.cell_rhs(i) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
+                                }{{/FORM_EXPRESSION_VECTOR}}
                             }
                         }
-                        {{/SURFACE_SOURCE}}
-
                     }
+                    {{/SURFACE_SOURCE}}
+
                 }
             }
-
-            // distribute local to global matrix
-            local_dof_indices.resize(dofs_per_cell);
-            cell->get_dof_indices(local_dof_indices);
-
-            // distribute local to global system
-            hanging_node_constraints.distribute_local_to_global(cell_matrix,
-                                                                cell_rhs,
-                                                                local_dof_indices,
-                                                                system_matrix,
-                                                                system_rhs);
-
-            if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
-            {
-                // distribute local to global system
-                hanging_node_constraints.distribute_local_to_global(cell_mass_matrix,
-                                                                    local_dof_indices,
-                                                                    mass_matrix);
-            }
         }
-
-        /*
-        for (unsigned int i=0; i<dofs_per_cell; ++i)
-        {
-            for (unsigned int j=0; j<dofs_per_cell; ++j)
-                system_matrix.add (local_dof_indices[i], local_dof_indices[j], cell_matrix(i,j));
-
-            system_rhs(local_dof_indices[i]) += cell_rhs(i);
-        }
-        */
 
         // todo: different domains
         // coupling sources{{#COUPLING_SOURCE}}
@@ -427,10 +448,13 @@ void SolverDeal{{CLASS}}::assembleSystem()
             ++cell_{{COUPLING_SOURCE_ID}};
         }
         {{/COUPLING_SOURCE}}
-    }
 
-    if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
-        mass_matrix_inverse.initialize(mass_matrix);
+        // distribute local to global matrix
+        copy_data.local_dof_indices.resize(dofs_per_cell);
+        cell->get_dof_indices(copy_data.local_dof_indices);
+
+        copy_data.isAssembled = true;
+    }
 }
 
 void SolverDeal{{CLASS}}::assembleDirichlet(bool use_dirichlet_lift)
@@ -467,6 +491,28 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool use_dirichlet_lift)
                 // dealii::MatrixTools::apply_boundary_values (boundary_values, system_matrix, *m_solution, system_rhs);
             }
             {{/EXACT_SOURCE}}
+        }
+    }
+}
+
+
+void SolverDeal{{CLASS}}::copyLocalToGlobal(const AssemblyCopyData &copy_data)
+{
+    if (copy_data.isAssembled)
+    {
+        // distribute local to global system
+        hanging_node_constraints.distribute_local_to_global(copy_data.cell_matrix,
+                                                            copy_data.cell_rhs,
+                                                            copy_data.local_dof_indices,
+                                                            system_matrix,
+                                                            system_rhs);
+
+        if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+        {
+            // distribute local to global system
+            hanging_node_constraints.distribute_local_to_global(copy_data.cell_mass_matrix,
+                                                                copy_data.local_dof_indices,
+                                                                mass_matrix);
         }
     }
 }

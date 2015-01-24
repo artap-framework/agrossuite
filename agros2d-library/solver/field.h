@@ -122,7 +122,7 @@ public:
     inline int numberOfSolutions() const { return m_numberOfSolutions; }
 
     // time dep
-    inline int hasTransientAnalysis() const { return m_hasTransientAnalysis; }
+    inline bool hasTransientAnalysis() const { return m_hasTransientAnalysis; }
 
     const QMap<SceneEdge *, int> edgesRefinement() { return m_edgesRefinement; }
     int edgeRefinement(SceneEdge *edge);

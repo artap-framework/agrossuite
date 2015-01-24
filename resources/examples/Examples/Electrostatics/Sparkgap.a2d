@@ -27,7 +27,7 @@
       <label area="0.06" id="0" valuex="0.879551" valuey="0.764057" x="0.879551" y="0.764057"/>
     </labels>
   </geometry>
-  <problem coordinate_type="axisymmetric" mesh_type="cubit">
+  <problem coordinate_type="axisymmetric" mesh_type="triangle">
     <fields>
       <field adaptivity_type="hp-adaptivity" analysis_type="steadystate" field_id="electrostatic" linearity_type="linear" matrix_solver="umfpack">
         <refinement_edges/>
@@ -40,8 +40,8 @@
               <boundary_edge id="5"/>
             </boundary_edges>
             <boundary_types>
-              <boundary_type key="electrostatic_potential" value="1000"/>
               <boundary_type key="electrostatic_surface_charge_density" value="0"/>
+              <boundary_type key="electrostatic_potential" value="1000"/>
             </boundary_types>
           </boundary>
           <boundary id="2" name="Ground" type="electrostatic_potential">
@@ -50,8 +50,8 @@
               <boundary_edge id="8"/>
             </boundary_edges>
             <boundary_types>
-              <boundary_type key="electrostatic_potential" value="0"/>
               <boundary_type key="electrostatic_surface_charge_density" value="0"/>
+              <boundary_type key="electrostatic_potential" value="0"/>
             </boundary_types>
           </boundary>
           <boundary id="3" name="Border" type="electrostatic_surface_charge_density">
@@ -63,8 +63,8 @@
               <boundary_edge id="6"/>
             </boundary_edges>
             <boundary_types>
-              <boundary_type key="electrostatic_potential" value="1000"/>
               <boundary_type key="electrostatic_surface_charge_density" value="0"/>
+              <boundary_type key="electrostatic_potential" value="1000"/>
             </boundary_types>
           </boundary>
         </boundaries>
@@ -101,6 +101,7 @@
           <field_item field_key="AdaptivityCoarsePercentage" field_value="3"/>
           <field_item field_key="AdaptivityTransientBackSteps" field_value="0"/>
           <field_item field_key="AdaptivityTransientRedoneEach" field_value="1"/>
+          <field_item field_key="TransientAnalysis" field_value="0"/>
           <field_item field_key="TransientTimeSkip" field_value="0"/>
           <field_item field_key="TransientInitialCondition" field_value="0"/>
           <field_item field_key="LinearSolverIterMethod" field_value="2"/>
