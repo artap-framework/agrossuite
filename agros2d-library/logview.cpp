@@ -531,7 +531,6 @@ void LogDialog::updateNonlinearChartInfo(SolverAgros::Phase phase, const QVector
     else
     {
         double valueRelativeChange = pow(10000.0, ((relativeChangeOfSolutions.first() - relativeChangeOfSolutions.last()) / relativeChangeOfSolutions.first()));
-        std::cout << valueRelativeChange << std::endl;
         m_nonlinearProgress->setValue(valueRelativeChange);
     }
 }

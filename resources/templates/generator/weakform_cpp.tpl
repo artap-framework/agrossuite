@@ -179,6 +179,13 @@ SolverDeal{{CLASS}}::AssemblyCopyData::AssemblyCopyData(const dealii::hp::FEColl
 
 void SolverDeal{{CLASS}}::assembleSystem()
 {
+    system_rhs = 0.0;
+    system_matrix = 0.0;
+
+    // transient
+    if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+        mass_matrix = 0.0;
+
     dealii::WorkStream::run(m_doFHandler->begin_active(),
                             m_doFHandler->end(),
                             *this,
