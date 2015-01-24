@@ -217,7 +217,7 @@ void SolverDeal::setupNewtonInitial()
 
     // reinit sln
 
-    if(!m_solution_previous)
+    if (!m_solution_previous)
         m_solution_previous = new dealii::Vector<double>();
 
     m_solution_previous->reinit(m_doFHandler->n_dofs());
@@ -357,7 +357,7 @@ void SolverDeal::solveLinearityNonLinearPicard()
         if (m_solution_previous)
         {
             m_solution_previous->add(-1, *m_solution);
-            rel_change_sol = m_solution_previous->l2_norm()/ m_solution->l2_norm() * 100;
+            rel_change_sol = m_solution_previous->l2_norm() / m_solution->l2_norm() * 100;
             delete m_solution_previous;
         }
 
@@ -392,6 +392,9 @@ void SolverDeal::solveLinearityNonLinearPicard()
 
 void SolverDeal::solveLinearityNonLinearNewton()
 {
+    const double minAllowedDampingCoeff = 1e-4;
+    const double autoDampingRatio = 2.0;
+
     QTime time;
     time.start();
 
@@ -403,14 +406,22 @@ void SolverDeal::solveLinearityNonLinearNewton()
     setupNewtonInitial();
     setup(false);
 
+    // initial residual norm
+    double residualNorm = 0.0;
+
+    // initial damping factor
+    const double initialDampingFactor = m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble();
+    double dampingFactor = initialDampingFactor;
+    int dampingSuccessfulSteps = 0;
+
     int iteration = 0;
-    bool criteria_reached = false;
-    while((iteration < MAX_NUM_NONLIN_ITERS) && !criteria_reached)
+    bool criteriaReached = false;
+    while((iteration < MAX_NUM_NONLIN_ITERS) && !criteriaReached)
     {
         QTime time;
         time.start();
 
-        iteration += 1;
+        iteration++;
         qDebug() << "step: " << iteration;
         assembleSystem();
         qDebug() << "assemble (" << time.elapsed() << "ms )";
@@ -418,32 +429,55 @@ void SolverDeal::solveLinearityNonLinearNewton()
         system_rhs *= -1.0;
         solveLinearSystem();
 
-        assert(m_solution_previous);
-        // todo: not implemented yet
-        if((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() == DampingType_Automatic)
-            std::cout << "automatic damping not implemented yet" << std::endl;
+        // residual norm
+        double previousResidualNorm = residualNorm;
+        residualNorm = system_rhs.l2_norm();
 
-        const double damping_factor = m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble();
-        m_solution_previous->add(damping_factor, *m_solution);
+        assert(m_solution_previous);
+        if ((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() == DampingType_Automatic)
+        {
+            if (residualNorm > 0.0 && (residualNorm > previousResidualNorm * m_fieldInfo->value(FieldInfo::NonlinearDampingFactorDecreaseRatio).toDouble()))
+            {
+                if (residualNorm > minAllowedDampingCoeff)
+                {
+                    dampingFactor = dampingFactor * 1.0 / autoDampingRatio;
+                    dampingSuccessfulSteps = 0;
+                }
+            }
+            else
+            {
+                dampingSuccessfulSteps++;
+
+                if (dampingSuccessfulSteps >= m_fieldInfo->value(FieldInfo::NonlinearStepsToIncreaseDampingFactor).toInt())
+                {
+                    if (dampingFactor * autoDampingRatio <= initialDampingFactor)
+                        dampingFactor = dampingFactor * autoDampingRatio;
+                }
+            }
+        }
+
+        m_solution_previous->add(dampingFactor, *m_solution);
 
         // update
         steps.append(iteration);
-        double residual_norm = system_rhs.l2_norm();
-        double rel_change_sol = damping_factor * (*m_solution).l2_norm()/ m_solution_previous->l2_norm() * 100;
-        relativeChangeOfSolutions.append(rel_change_sol);
-        criteria_reached = true;
-        if((m_fieldInfo->value(FieldInfo::NonlinearResidualNorm).toDouble() > 0) &&
-                (m_fieldInfo->value(FieldInfo::NonlinearResidualNorm).toDouble() < residual_norm))
-            criteria_reached = false;
-        if((m_fieldInfo->value(FieldInfo::NonlinearRelativeChangeOfSolutions).toDouble() > 0) &&
-                (m_fieldInfo->value(FieldInfo::NonlinearRelativeChangeOfSolutions).toDouble() < rel_change_sol))
-            criteria_reached = false;
+        double relChangeSol = dampingFactor * (*m_solution).l2_norm() / m_solution_previous->l2_norm() * 100;
+        relativeChangeOfSolutions.append(relChangeSol);
+
+        criteriaReached = true;
+        if ((m_fieldInfo->value(FieldInfo::NonlinearResidualNorm).toDouble() > 0) &&
+                (m_fieldInfo->value(FieldInfo::NonlinearResidualNorm).toDouble() < residualNorm))
+            criteriaReached = false;
+
+        if ((m_fieldInfo->value(FieldInfo::NonlinearRelativeChangeOfSolutions).toDouble() > 0) &&
+                (m_fieldInfo->value(FieldInfo::NonlinearRelativeChangeOfSolutions).toDouble() < relChangeSol))
+            criteriaReached = false;
 
         // damping: %2
-        Agros2D::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, residual %3)")
+        Agros2D::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, residual %3, damping %4)")
                                      .arg(iteration)
                                      .arg(QString::number(relativeChangeOfSolutions.last(), 'f', 5))
-                                     .arg(QString::number(residual_norm, 'f', 5)));
+                                     .arg(QString::number(residualNorm, 'f', 5))
+                                     .arg(dampingFactor));
 
         Agros2D::log()->updateNonlinearChartInfo(SolverAgros::Phase_Finished, steps, relativeChangeOfSolutions);
     }
