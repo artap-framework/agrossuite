@@ -21,6 +21,7 @@
 #define SOLVER_H
 
 #include "util.h"
+#include "util/global.h"
 #include "solutiontypes.h"
 
 #undef signals
@@ -93,7 +94,10 @@ public:
     dealii::Vector<double> transientIdMinusTauJacobianInverse(const double time, const double tau, const dealii::Vector<double> &y);
 
 protected:
+    // local reference
     const FieldInfo *m_fieldInfo;
+    const Scene *m_scene;
+    const Problem *m_problem;
 
     dealii::Triangulation<2> *m_triangulation;
     dealii::hp::DoFHandler<2> *m_doFHandler;
@@ -251,6 +255,7 @@ public:
     ProblemSolver();
 
     static void init();
+    static void clear();
     static void solveProblem();
     static QMap<QString, const SolverDeal *> solvers();
 

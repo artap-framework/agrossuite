@@ -201,6 +201,9 @@ void Problem::clearFieldsAndConfig()
 {
     clearSolution();
 
+    // clear fields
+    m_solverDeal->clear();
+
     // clear couplings
     foreach (CouplingInfo* couplingInfo, m_couplingInfos)
         delete couplingInfo;

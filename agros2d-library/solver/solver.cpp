@@ -133,7 +133,7 @@ double RightHandSide<dim>::value (const dealii::Point<dim> &p,
 // *******************************************************************************************
 
 SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
-    : m_fieldInfo(fieldInfo), m_solution_previous(NULL)
+    : m_fieldInfo(fieldInfo), m_scene(Agros2D::scene()), m_problem(Agros2D::problem()), m_solution_previous(NULL)
 {    
     // fe collection
     qDebug() << "SolverDeal::SolverDeal: numberOfSolutions" << fieldInfo->numberOfSolutions();
@@ -166,8 +166,21 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
 
 SolverDeal::~SolverDeal()
 {
-    // delete m_triangulation;
-    // delete m_fe;
+    if (m_triangulation)
+        delete m_triangulation;
+    m_triangulation = nullptr;
+
+    if (m_doFHandler)
+        delete m_doFHandler;
+    m_doFHandler = nullptr;
+
+    if (m_solution)
+        delete m_solution;
+    m_solution = nullptr;
+
+    if (m_feCollection)
+        delete m_feCollection;
+    m_feCollection = nullptr;
 }
 
 void SolverDeal::setup(bool use_dirichlet_lift)
@@ -1321,12 +1334,17 @@ ProblemSolver::ProblemSolver()
 {
 }
 
-void ProblemSolver::init()
+void ProblemSolver::clear()
 {
     foreach (FieldInfo *fieldInfo, m_solverDeal.keys())
         if (m_solverDeal[fieldInfo])
             delete m_solverDeal[fieldInfo];
     m_solverDeal.clear();
+}
+
+void ProblemSolver::init()
+{
+    clear();
 
     foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
     {

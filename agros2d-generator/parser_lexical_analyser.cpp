@@ -48,7 +48,7 @@ void ParserInstance::addBasicWeakformTokens()
     // scalar field
     m_dict["uval"] = "shape_value[j][q_point]"; // "u->val[i]";
     m_dict["vval"] = "shape_value[i][q_point]"; // "v->val[i]";
-    m_dict["upval"] = "solution_value_previous[q_point][component_i]"; // "u_ext[this->j]->val[i]";
+    m_dict["upval"] = "solution_value_previous[q_point][components[i]]"; // "u_ext[this->j]->val[i]";
     m_dict["uptval"] = "ext[*this->m_offsetPreviousTimeExt + this->j - this->m_offsetJ]->val[i]";
     m_dict["deltat"] = "Agros2D::problem()->actualTimeStepLength()";
 
@@ -71,8 +71,8 @@ void ParserInstance::addBasicWeakformTokens()
         m_dict["vdx"] = "shape_grad[i][q_point][0]"; // "v->dx[i]";
         m_dict["udy"] = "shape_grad[j][q_point][1]"; // "u->dy[i]";
         m_dict["vdy"] = "shape_grad[i][q_point][1]"; // "v->dy[i]";
-        m_dict["updx"] = "solution_grad_previous[q_point][component_i][0]"; // "u_ext[this->j]->dx[i]";
-        m_dict["updy"] = "solution_grad_previous[q_point][component_i][1]"; // "u_ext[this->j]->dy[i]";
+        m_dict["updx"] = "solution_grad_previous[q_point][components[i]][0]"; // "u_ext[this->j]->dx[i]";
+        m_dict["updy"] = "solution_grad_previous[q_point][components[i]][1]"; // "u_ext[this->j]->dy[i]";
     }
     else
     {
@@ -81,8 +81,8 @@ void ParserInstance::addBasicWeakformTokens()
         m_dict["vdr"] = "shape_grad[i][q_point][0]"; // "v->dx[i]";
         m_dict["udz"] = "shape_grad[j][q_point][1]"; // "u->dy[i]";
         m_dict["vdz"] = "shape_grad[i][q_point][1]"; // "v->dy[i]";
-        m_dict["updr"] = "solution_grad_previous[q_point][component_i][0]"; // "u_ext[this->j]->dx[i]";
-        m_dict["updz"] = "solution_grad_previous[q_point][component_i][1]"; // "u_ext[this->j]->dy[i]";
+        m_dict["updr"] = "solution_grad_previous[q_point][components[i]][0]"; // "u_ext[this->j]->dx[i]";
+        m_dict["updz"] = "solution_grad_previous[q_point][components[i]][1]"; // "u_ext[this->j]->dy[i]";
     }
 }
 

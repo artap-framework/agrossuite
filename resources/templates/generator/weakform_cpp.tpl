@@ -202,19 +202,21 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                                               AssemblyScratchData &scratch_data,
                                               AssemblyCopyData &copy_data)
 {
+    CoordinateType coordinateType = m_problem->config()->coordinateType();
+
     // reinit volume
     scratch_data.hp_fe_values.reinit(cell);
 
     // materials
-    SceneMaterial *material = Agros2D::scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo);
+    SceneMaterial *material = m_scene->labels->at(cell->material_id() - 1)->marker(m_fieldInfo);
 
-    if (material != Agros2D::scene()->materials->getNone(m_fieldInfo))
+    if (material != m_scene->materials->getNone(m_fieldInfo))
     {
         // TODO: move outside
         // coupling sources{{#COUPLING_SOURCE}}
         dealii::hp::DoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}}, endc_{{COUPLING_SOURCE_ID}};
         const SolverDeal* {{COUPLING_SOURCE_ID}}_solver = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"];
-        if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
+        if(m_problem->hasField("{{COUPLING_SOURCE_ID}}"))
         {
             cell_{{COUPLING_SOURCE_ID}} = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->begin_active();
             endc_{{COUPLING_SOURCE_ID}} = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->end();
@@ -239,6 +241,9 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
         const dealii::FEValues<2> &fe_values = scratch_data.hp_fe_values.get_present_fe_values();
         const unsigned int n_q_points = fe_values.n_quadrature_points;
 
+        // components cache
+        std::vector<int> components(dofs_per_cell);
+
         // volume value and grad cache
         std::vector<dealii::Vector<double> > shape_value(dofs_per_cell, dealii::Vector<double>(n_q_points));
         std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
@@ -250,12 +255,14 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
         // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(dofs_per_cell);
 
         // previous values and grads
-        std::vector<dealii::Vector<double> > solution_value_previous(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-        std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
-
+        std::vector<dealii::Vector<double> > solution_value_previous;
+        std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous;
 
         if (m_solution_previous)
         {
+            solution_value_previous = std::vector<dealii::Vector<double> > (n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+            solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
             fe_values.get_function_values(*m_solution_previous, solution_value_previous);
             fe_values.get_function_gradients(*m_solution_previous, solution_grad_previous);
         }
@@ -265,9 +272,9 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
         std::vector<dealii::Vector<double> > {{COUPLING_SOURCE_ID}}_value(n_q_points, dealii::Vector<double>(1)); // todo: num source solutions
         std::vector<std::vector<dealii::Tensor<1,2> > > {{COUPLING_SOURCE_ID}}_grad(n_q_points, std::vector<dealii::Tensor<1,2> >(1));// todo: num source solutions
 
-        if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
+        if(m_problem->hasField("{{COUPLING_SOURCE_ID}}"))
         {
-            {{COUPLING_SOURCE_ID}}_fieldInfo = Agros2D::problem()->fieldInfo("{{COUPLING_SOURCE_ID}}");
+            {{COUPLING_SOURCE_ID}}_fieldInfo = m_problem->fieldInfo("{{COUPLING_SOURCE_ID}}");
             // todo: we probably do not need to initialize everything
             dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values(*{{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadrature_formulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
             {{COUPLING_SOURCE_ID}}_hp_fe_values.reinit(cell_{{COUPLING_SOURCE_ID}});
@@ -280,6 +287,8 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
         // cache volume
         for (unsigned int i = 0; i < dofs_per_cell; ++i)
         {
+            components[i] = cell->get_fe().system_to_component_index(i).first;
+
             for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
             {
                 shape_value[i][q_point] = fe_values.shape_value(i, q_point);
@@ -321,7 +330,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
         const QMap<uint, QSharedPointer<Value> > materialValues = material->values();
 
         {{#VOLUME_SOURCE}}
-        if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}}))
+        if ((coordinateType == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}}))
         {
             // matrix
             {{#VARIABLE_SOURCE_LINEAR}}
@@ -342,21 +351,17 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
 
                 for (unsigned int i = 0; i < dofs_per_cell; ++i)
                 {
-                    const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
-
                     for (unsigned int j = 0; j < dofs_per_cell; ++j)
                     {
-                        const unsigned int component_j = cell->get_fe().system_to_component_index(j).first;
-
                         {{#FORM_EXPRESSION_MATRIX}}
                         // {{EXPRESSION_ID}}
-                        if (component_i == {{ROW_INDEX}} && component_j == {{COLUMN_INDEX}})
+                        if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}})
                         {
                             copy_data.cell_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
                         }{{/FORM_EXPRESSION_MATRIX}}
 
                         // transient mass matrix
-                        if (component_i == component_j)
+                        if (components[i] == components[j])
                         {
                             if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
                             {
@@ -367,7 +372,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                     }
                     {{#FORM_EXPRESSION_VECTOR}}
                     // {{EXPRESSION_ID}}
-                    if (component_i == {{ROW_INDEX}})
+                    if (components[i] == {{ROW_INDEX}})
                     {
                         copy_data.cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
                     }{{/FORM_EXPRESSION_VECTOR}}
@@ -375,7 +380,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                     if({{COUPLING_SOURCE_ID}}_fieldInfo)
                     { {{#FORM_EXPRESSION_VECTOR}}
                         // {{EXPRESSION_ID}}
-                        if (component_i == {{ROW_INDEX}})
+                        if (components[i] == {{ROW_INDEX}})
                         {
                             copy_data.cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
                         }{{/FORM_EXPRESSION_VECTOR}}
@@ -391,14 +396,14 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
         {
             if (cell->face(face)->at_boundary())
             {
-                SceneBoundary *boundary = Agros2D::scene()->edges->at(cell->face(face)->boundary_indicator() - 1)->marker(m_fieldInfo);
+                SceneBoundary *boundary = m_scene->edges->at(cell->face(face)->boundary_indicator() - 1)->marker(m_fieldInfo);
                 const QMap<uint, QSharedPointer<Value> > boundaryValues = boundary->values();
 
-                if (boundary != Agros2D::scene()->boundaries->getNone(m_fieldInfo))
+                if (boundary != m_scene->boundaries->getNone(m_fieldInfo))
                 {
                     {{#SURFACE_SOURCE}}
                     // {{BOUNDARY_ID}}
-                    if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}})
+                    if ((coordinateType == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}})
                             && boundary->type() == "{{BOUNDARY_ID}}")
                     {
                         {{#VARIABLE_SOURCE_LINEAR}}
@@ -420,22 +425,18 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
 
                             for (unsigned int i = 0; i < dofs_per_cell; ++i)
                             {
-                                const unsigned int component_i = cell->get_fe().system_to_component_index(i).first;
-
                                 for (unsigned int j = 0; j < dofs_per_cell; ++j)
                                 {
-                                    const unsigned int component_j = cell->get_fe().system_to_component_index(j).first;
-
                                     {{#FORM_EXPRESSION_MATRIX}}
                                     // {{EXPRESSION_ID}}
-                                    if (component_i == {{ROW_INDEX}} && component_j == {{COLUMN_INDEX}})
+                                    if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}})
                                     {
                                         copy_data.cell_matrix(i,j) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
                                     }{{/FORM_EXPRESSION_MATRIX}}
                                 }
                                 {{#FORM_EXPRESSION_VECTOR}}
                                 // {{EXPRESSION_ID}}
-                                if (component_i == {{ROW_INDEX}})
+                                if (components[i] == {{ROW_INDEX}})
                                 {
                                     copy_data.cell_rhs(i) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
                                 }{{/FORM_EXPRESSION_VECTOR}}
@@ -450,7 +451,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
 
         // todo: different domains
         // coupling sources{{#COUPLING_SOURCE}}
-        if(Agros2D::problem()->hasField("{{COUPLING_SOURCE_ID}}"))
+        if(m_problem->hasField("{{COUPLING_SOURCE_ID}}"))
         {
             ++cell_{{COUPLING_SOURCE_ID}};
         }
@@ -466,16 +467,18 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
 
 void SolverDeal{{CLASS}}::assembleDirichlet(bool use_dirichlet_lift)
 {
-    for (int i = 0; i < Agros2D::scene()->edges->count(); i++)
+    CoordinateType coordinateType = m_problem->config()->coordinateType();
+
+    for (int i = 0; i < m_scene->edges->count(); i++)
     {
-        SceneEdge *edge = Agros2D::scene()->edges->at(i);
+        SceneEdge *edge = m_scene->edges->at(i);
         SceneBoundary *boundary = edge->marker(m_fieldInfo);
 
         if (boundary && (!boundary->isNone()))
         {
             {{#EXACT_SOURCE}}
             // {{BOUNDARY_ID}}
-            if ((Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}})
+            if ((coordinateType == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}})
                     && boundary->type() == "{{BOUNDARY_ID}}")
             {
                 // component mask
