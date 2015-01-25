@@ -179,11 +179,13 @@ SolverDeal{{CLASS}}::AssemblyCopyData::AssemblyCopyData(const dealii::hp::FEColl
 
 void SolverDeal{{CLASS}}::assembleSystem()
 {
+    bool isTransient = (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool());
+
     system_rhs = 0.0;
     system_matrix = 0.0;
 
     // transient
-    if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+    if (isTransient)
         mass_matrix = 0.0;
 
     dealii::WorkStream::run(m_doFHandler->begin_active(),
@@ -194,7 +196,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
                             AssemblyScratchData(*m_feCollection, m_quadrature_formulas, m_face_quadrature_formulas),
                             AssemblyCopyData(*m_feCollection, m_quadrature_formulas, m_face_quadrature_formulas, m_fieldInfo));
 
-    if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+    if (isTransient)
         mass_matrix_inverse.initialize(mass_matrix);
 }
 
@@ -203,6 +205,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                                               AssemblyCopyData &copy_data)
 {
     CoordinateType coordinateType = m_problem->config()->coordinateType();
+    bool isTransient = (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool());
 
     // reinit volume
     scratch_data.hp_fe_values.reinit(cell);
@@ -230,7 +233,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
         copy_data.cell_matrix = 0;
         copy_data.cell_rhs.reinit(dofs_per_cell);
         copy_data.cell_rhs = 0;
-        if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+        if (isTransient)
         {
             copy_data.cell_mass_matrix.reinit(dofs_per_cell, dofs_per_cell);
             copy_data.cell_mass_matrix = 0;
@@ -274,7 +277,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
 
         if(m_problem->hasField("{{COUPLING_SOURCE_ID}}"))
         {
-            {{COUPLING_SOURCE_ID}}_fieldInfo = m_problem->fieldInfo("{{COUPLING_SOURCE_ID}}");
+            {{COUPLING_SOURCE_ID}}_fieldInfo = Agros2D::problem()->fieldInfo("{{COUPLING_SOURCE_ID}}");
             // todo: we probably do not need to initialize everything
             dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values(*{{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadrature_formulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
             {{COUPLING_SOURCE_ID}}_hp_fe_values.reinit(cell_{{COUPLING_SOURCE_ID}});
@@ -363,7 +366,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                         // transient mass matrix
                         if (components[i] == components[j])
                         {
-                            if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+                            if (isTransient)
                             {
                                 // TODO: he_rho_val * he_cp_val *
                                 copy_data.cell_mass_matrix(i, j) += fe_values.JxW(q_point) * shape_value[i][q_point] * shape_value[j][q_point];
