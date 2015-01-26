@@ -329,6 +329,8 @@ void MeshGenerator::writeTodealii()
 {
     foreach(FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
     {
+        std::cout << fieldInfo->name().toStdString() << std::endl;
+
         dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>();
 
         // vertices
@@ -362,7 +364,7 @@ void MeshGenerator::writeTodealii()
 
                     cells.push_back(cell);
                 }
-            }
+            }            
         }
 
         // boundary markers

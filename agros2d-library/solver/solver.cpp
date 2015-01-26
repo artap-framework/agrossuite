@@ -322,15 +322,20 @@ void SolverDeal::solveLinearityLinear()
     std::cout << "assemble (" << time.elapsed() << "ms )" << std::endl;
     time.start();
 
-    // transientExplicitMethod(dealii::TimeStepping::FORWARD_EULER, Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(), 0.0, Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
-    // std::cout << "FORWARD_EULER: error=" << m_solution->l2_norm() << std::endl;
+    if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+    {
+        transientExplicitMethod(dealii::TimeStepping::FORWARD_EULER, Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(), 0.0, Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
+         std::cout << "FORWARD_EULER: error=" << m_solution->l2_norm() << std::endl;
 
-    // transientImplicitMethod(dealii::TimeStepping::SDIRK_TWO_STAGES, Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(), 0.0, Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
-    // std::cout << "SDIRK: error=" << m_solution->l2_norm() << std::endl;
+        // transientImplicitMethod(dealii::TimeStepping::SDIRK_TWO_STAGES, Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(), 0.0, Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
+        // std::cout << "SDIRK: error=" << m_solution->l2_norm() << std::endl;
+    }
+    else
+    {
+        solveLinearSystem();
+    }
 
-    solveLinearSystem();
-
-    std::cout << "solve linear total (" << time.elapsed() << "ms )" << std::endl;
+    std::cout << "solve linear (" << time.elapsed() << "ms )" << std::endl;
 }
 
 void SolverDeal::solveLinearityNonLinear()

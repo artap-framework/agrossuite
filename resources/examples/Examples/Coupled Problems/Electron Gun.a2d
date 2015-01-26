@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<problem:document xmlns:problem="XMLProblem" version="3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="XMLProblem /home/karban/Projects/agros2d/resources/xsd/problem_a2d_31_xml.xsd">
-
+<problem:document xmlns:problem="XMLProblem" version="3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="XMLProblem /home/karban/Projects/agros2d-dealii/resources/xsd/problem_a2d_31_xml.xsd">
   <geometry>
     <nodes>
       <node id="0" valuex="0" valuey="0" x="0" y="0"/>
@@ -94,10 +93,9 @@
       <label area="0" id="5" valuex="0.0150981" valuey="0.00681121" x="0.0150981" y="0.00681121"/>
     </labels>
   </geometry>
-
   <problem coordinate_type="axisymmetric" mesh_type="triangle">
     <fields>
-      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="electrostatic" linearity_type="linear" matrix_solver="mumps">
+      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="electrostatic" linearity_type="linear" matrix_solver="umfpack">
         <refinement_edges/>
         <refinement_labels/>
         <polynomial_orders/>
@@ -119,8 +117,8 @@
               <boundary_edge id="39"/>
             </boundary_edges>
             <boundary_types>
-              <boundary_type key="electrostatic_potential" value="0"/>
               <boundary_type key="electrostatic_surface_charge_density" value="0"/>
+              <boundary_type key="electrostatic_potential" value="0"/>
             </boundary_types>
           </boundary>
           <boundary id="2" name="Cathode" type="electrostatic_potential">
@@ -136,8 +134,8 @@
               <boundary_edge id="32"/>
             </boundary_edges>
             <boundary_types>
-              <boundary_type key="electrostatic_potential" value="-7000"/>
               <boundary_type key="electrostatic_surface_charge_density" value="0"/>
+              <boundary_type key="electrostatic_potential" value="-7000"/>
             </boundary_types>
           </boundary>
           <boundary id="3" name="Neumann" type="electrostatic_surface_charge_density">
@@ -150,8 +148,8 @@
               <boundary_edge id="26"/>
             </boundary_edges>
             <boundary_types>
-              <boundary_type key="electrostatic_potential" value="1000"/>
               <boundary_type key="electrostatic_surface_charge_density" value="0"/>
+              <boundary_type key="electrostatic_potential" value="1000"/>
             </boundary_types>
           </boundary>
         </boundaries>
@@ -182,29 +180,26 @@
           <field_item field_key="PicardAndersonAcceleration" field_value="1"/>
           <field_item field_key="PicardAndersonBeta" field_value="0.2"/>
           <field_item field_key="PicardAndersonNumberOfLastVectors" field_value="3"/>
-          <field_item field_key="SpaceNumberOfRefinements" field_value="1"/>
+          <field_item field_key="SpaceNumberOfRefinements" field_value="0"/>
           <field_item field_key="SpacePolynomialOrder" field_value="2"/>
-          <field_item field_key="AdaptivitySteps" field_value="0"/>
+          <field_item field_key="AdaptivitySteps" field_value="1"/>
           <field_item field_key="AdaptivityTolerance" field_value="1"/>
-          <field_item field_key="AdaptivityTransientBackSteps" field_value="1523"/>
-          <field_item field_key="AdaptivityTransientRedoneEach" field_value="1524"/>
-          <field_item field_key="AdaptivityStoppingCriterion" field_value="1"/>
-          <field_item field_key="AdaptivityThreshold" field_value="0.6"/>
-          <field_item field_key="AdaptivityErrorCalculator" field_value="h1"/>
-          <field_item field_key="AdaptivityUseAniso" field_value="1"/>
-          <field_item field_key="AdaptivityFinerReference" field_value="0"/>
-          <field_item field_key="AdaptivityOrderIncrease" field_value="1"/>
-          <field_item field_key="AdaptivitySpaceRefinement" field_value="1"/>
+          <field_item field_key="AdaptivityEstimator" field_value="0"/>
+          <field_item field_key="AdaptivityFinePercentage" field_value="30"/>
+          <field_item field_key="AdaptivityCoarsePercentage" field_value="3"/>
+          <field_item field_key="AdaptivityTransientBackSteps" field_value="100"/>
+          <field_item field_key="AdaptivityTransientRedoneEach" field_value="100"/>
+          <field_item field_key="TransientAnalysis" field_value="0"/>
           <field_item field_key="TransientTimeSkip" field_value="0"/>
           <field_item field_key="TransientInitialCondition" field_value="0"/>
           <field_item field_key="LinearSolverIterMethod" field_value="2"/>
-          <field_item field_key="LinearSolverIterPreconditioner" field_value="2"/>
+          <field_item field_key="LinearSolverIterPreconditioner" field_value="0"/>
           <field_item field_key="LinearSolverIterToleranceAbsolute" field_value="1e-16"/>
           <field_item field_key="LinearSolverIterIters" field_value="1000"/>
           <field_item field_key="TimeUnit" field_value="s"/>
         </field_config>
       </field>
-      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="magnetic" linearity_type="linear" matrix_solver="mumps">
+      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="magnetic" linearity_type="linear" matrix_solver="umfpack">
         <refinement_edges/>
         <refinement_labels/>
         <polynomial_orders/>
@@ -232,18 +227,18 @@
               <material_label id="5"/>
             </material_labels>
             <material_types>
-              <material_type key="magnetic_current_density_external_real" value="0"/>
-              <material_type key="magnetic_total_current_real" value="0"/>
-              <material_type key="magnetic_velocity_angular" value="0"/>
-              <material_type key="magnetic_permeability" value="1"/>
-              <material_type key="magnetic_total_current_imag" value="0"/>
-              <material_type key="magnetic_conductivity" value="0"/>
-              <material_type key="magnetic_remanence" value="0"/>
-              <material_type key="magnetic_total_current_prescribed" value="0"/>
               <material_type key="magnetic_current_density_external_imag" value="0"/>
+              <material_type key="magnetic_current_density_external_real" value="0"/>
+              <material_type key="magnetic_conductivity" value="0"/>
+              <material_type key="magnetic_total_current_imag" value="0"/>
+              <material_type key="magnetic_total_current_real" value="0"/>
+              <material_type key="magnetic_remanence" value="0"/>
               <material_type key="magnetic_remanence_angle" value="0"/>
+              <material_type key="magnetic_total_current_prescribed" value="0"/>
+              <material_type key="magnetic_permeability" value="1"/>
               <material_type key="magnetic_velocity_x" value="0"/>
               <material_type key="magnetic_velocity_y" value="0"/>
+              <material_type key="magnetic_velocity_angular" value="0"/>
             </material_types>
           </material>
           <material id="2" name="Coil 1">
@@ -251,18 +246,18 @@
               <material_label id="4"/>
             </material_labels>
             <material_types>
-              <material_type key="magnetic_current_density_external_real" value="2e7"/>
-              <material_type key="magnetic_total_current_real" value="0"/>
-              <material_type key="magnetic_velocity_angular" value="0"/>
-              <material_type key="magnetic_permeability" value="1"/>
-              <material_type key="magnetic_total_current_imag" value="0"/>
-              <material_type key="magnetic_conductivity" value="0"/>
-              <material_type key="magnetic_remanence" value="0"/>
-              <material_type key="magnetic_total_current_prescribed" value="0"/>
               <material_type key="magnetic_current_density_external_imag" value="0"/>
+              <material_type key="magnetic_current_density_external_real" value="2e7"/>
+              <material_type key="magnetic_conductivity" value="0"/>
+              <material_type key="magnetic_total_current_imag" value="0"/>
+              <material_type key="magnetic_total_current_real" value="0"/>
+              <material_type key="magnetic_remanence" value="0"/>
               <material_type key="magnetic_remanence_angle" value="0"/>
+              <material_type key="magnetic_total_current_prescribed" value="0"/>
+              <material_type key="magnetic_permeability" value="1"/>
               <material_type key="magnetic_velocity_x" value="0"/>
               <material_type key="magnetic_velocity_y" value="0"/>
+              <material_type key="magnetic_velocity_angular" value="0"/>
             </material_types>
           </material>
           <material id="3" name="Coil 2">
@@ -270,18 +265,18 @@
               <material_label id="3"/>
             </material_labels>
             <material_types>
-              <material_type key="magnetic_current_density_external_real" value="2e7"/>
-              <material_type key="magnetic_total_current_real" value="0"/>
-              <material_type key="magnetic_velocity_angular" value="0"/>
-              <material_type key="magnetic_permeability" value="1"/>
-              <material_type key="magnetic_total_current_imag" value="0"/>
-              <material_type key="magnetic_conductivity" value="0"/>
-              <material_type key="magnetic_remanence" value="0"/>
-              <material_type key="magnetic_total_current_prescribed" value="0"/>
               <material_type key="magnetic_current_density_external_imag" value="0"/>
+              <material_type key="magnetic_current_density_external_real" value="2e7"/>
+              <material_type key="magnetic_conductivity" value="0"/>
+              <material_type key="magnetic_total_current_imag" value="0"/>
+              <material_type key="magnetic_total_current_real" value="0"/>
+              <material_type key="magnetic_remanence" value="0"/>
               <material_type key="magnetic_remanence_angle" value="0"/>
+              <material_type key="magnetic_total_current_prescribed" value="0"/>
+              <material_type key="magnetic_permeability" value="1"/>
               <material_type key="magnetic_velocity_x" value="0"/>
               <material_type key="magnetic_velocity_y" value="0"/>
+              <material_type key="magnetic_velocity_angular" value="0"/>
             </material_types>
           </material>
           <material id="4" name="Coil 3">
@@ -289,18 +284,18 @@
               <material_label id="2"/>
             </material_labels>
             <material_types>
-              <material_type key="magnetic_current_density_external_real" value="2e7"/>
-              <material_type key="magnetic_total_current_real" value="0"/>
-              <material_type key="magnetic_velocity_angular" value="0"/>
-              <material_type key="magnetic_permeability" value="1"/>
-              <material_type key="magnetic_total_current_imag" value="0"/>
-              <material_type key="magnetic_conductivity" value="0"/>
-              <material_type key="magnetic_remanence" value="0"/>
-              <material_type key="magnetic_total_current_prescribed" value="0"/>
               <material_type key="magnetic_current_density_external_imag" value="0"/>
+              <material_type key="magnetic_current_density_external_real" value="2e7"/>
+              <material_type key="magnetic_conductivity" value="0"/>
+              <material_type key="magnetic_total_current_imag" value="0"/>
+              <material_type key="magnetic_total_current_real" value="0"/>
+              <material_type key="magnetic_remanence" value="0"/>
               <material_type key="magnetic_remanence_angle" value="0"/>
+              <material_type key="magnetic_total_current_prescribed" value="0"/>
+              <material_type key="magnetic_permeability" value="1"/>
               <material_type key="magnetic_velocity_x" value="0"/>
               <material_type key="magnetic_velocity_y" value="0"/>
+              <material_type key="magnetic_velocity_angular" value="0"/>
             </material_types>
           </material>
         </materials>
@@ -317,23 +312,20 @@
           <field_item field_key="PicardAndersonAcceleration" field_value="1"/>
           <field_item field_key="PicardAndersonBeta" field_value="0.2"/>
           <field_item field_key="PicardAndersonNumberOfLastVectors" field_value="3"/>
-          <field_item field_key="SpaceNumberOfRefinements" field_value="1"/>
+          <field_item field_key="SpaceNumberOfRefinements" field_value="0"/>
           <field_item field_key="SpacePolynomialOrder" field_value="2"/>
           <field_item field_key="AdaptivitySteps" field_value="1"/>
           <field_item field_key="AdaptivityTolerance" field_value="1"/>
+          <field_item field_key="AdaptivityEstimator" field_value="0"/>
+          <field_item field_key="AdaptivityFinePercentage" field_value="30"/>
+          <field_item field_key="AdaptivityCoarsePercentage" field_value="3"/>
           <field_item field_key="AdaptivityTransientBackSteps" field_value="100"/>
           <field_item field_key="AdaptivityTransientRedoneEach" field_value="40"/>
-          <field_item field_key="AdaptivityStoppingCriterion" field_value="1"/>
-          <field_item field_key="AdaptivityThreshold" field_value="0.6"/>
-          <field_item field_key="AdaptivityErrorCalculator" field_value="h1"/>
-          <field_item field_key="AdaptivityUseAniso" field_value="1"/>
-          <field_item field_key="AdaptivityFinerReference" field_value="0"/>
-          <field_item field_key="AdaptivityOrderIncrease" field_value="1"/>
-          <field_item field_key="AdaptivitySpaceRefinement" field_value="1"/>
+          <field_item field_key="TransientAnalysis" field_value="0"/>
           <field_item field_key="TransientTimeSkip" field_value="0"/>
           <field_item field_key="TransientInitialCondition" field_value="0"/>
           <field_item field_key="LinearSolverIterMethod" field_value="2"/>
-          <field_item field_key="LinearSolverIterPreconditioner" field_value="2"/>
+          <field_item field_key="LinearSolverIterPreconditioner" field_value="0"/>
           <field_item field_key="LinearSolverIterToleranceAbsolute" field_value="1e-16"/>
           <field_item field_key="LinearSolverIterIters" field_value="1000"/>
           <field_item field_key="TimeUnit" field_value="s"/>
@@ -351,7 +343,6 @@
       <problem_item problem_key="TimeTotal" problem_value="1"/>
     </problem_config>
   </problem>
-
   <config>
     <item key="Problem_StartupScript" value=""/>
     <item key="View_GridStep" value="0.000625"/>
@@ -437,5 +428,4 @@
     <item key="View_ChartHorizontalAxisPoints" value="200"/>
     <item key="View_SolidViewHide" value=""/>
   </config>
-
 </problem:document>

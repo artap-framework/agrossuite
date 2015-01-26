@@ -588,30 +588,11 @@ bool MeshGeneratorTriangle::writeToTriangle()
         }
     }
 
-    // holes
-    int holesCount = 0;
-    foreach (SceneLabel *label, Agros2D::scene()->labels->items())
-        if (label->markersCount() == 0)
-            holesCount++;
-
-    QList<MeshNode> inHoles;
-    holesCount = 0;
-    foreach (SceneLabel *label, Agros2D::scene()->labels->items())
-    {
-        if (label->markersCount() == 0)
-        {
-            inHoles.append(MeshNode(holesCount,
-                                    label->point().x,
-                                    label->point().y,
-                                    -1));
-
-            holesCount++;
-        }
-    }
-
-    // labels
+    // labels and holes
     QList<MeshLabel> inLabels;
     int labelsCount = 0;
+    QList<MeshNode> inHoles;
+    int holesCount = 0;
     foreach (SceneLabel *label, Agros2D::scene()->labels->items())
     {
         if (label->markersCount() > 0)
@@ -622,6 +603,15 @@ bool MeshGeneratorTriangle::writeToTriangle()
                                       Agros2D::scene()->labels->items().indexOf(label) + 1,
                                       label->area()));
             labelsCount++;
+        }
+        else
+        {
+            inHoles.append(MeshNode(holesCount,
+                                    label->point().x,
+                                    label->point().y,
+                                    -1));
+
+            holesCount++;
         }
     }
 
