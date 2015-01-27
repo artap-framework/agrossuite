@@ -479,6 +479,29 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                                 }{{/FORM_EXPRESSION_VECTOR}}
                             }
                         }
+//                        {{#ESSENTIAL}}
+//                        Essential_{{COORDINATE_TYPE}}_{{ANALYSIS_TYPE}}_{{LINEARITY_TYPE}}_{{BOUNDARY_ID}}<2> essential(boundary);
+//                        std::vector<bool> mask;
+//                        {{#COMPONENTS}}
+//                        mask.push_back({{IS_ESSENTIAL}});{{/COMPONENTS}}
+
+//                        for(unsigned int i = 0; i < dofs_per_face; i++)
+//                        {
+//                            for(unsigned int comp = 0; comp < {{NUM_SOLUTIONS}}; comp++)
+//                            {
+//                                if(mask[comp])
+//                                {
+//                                    if (cell->get_fe().face_system_to_component_index(i).first == comp)
+//                                    {
+//                                        hanging_node_constraints.add_line (local_face_dof_indices[i]);
+//                                        // todo: nonconstant essential BC
+//                                        const double bc_value = essential.value(dealii::Point<2>(0,0), comp);
+//                                        hanging_node_constraints.set_inhomogeneity(local_face_dof_indices[i], bc_value);
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        {{/ESSENTIAL}}
                     }
                     {{/SURFACE_SOURCE}}
 
@@ -505,39 +528,60 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
 void SolverDeal{{CLASS}}::assembleDirichlet(bool useDirichletLift)
 {
     CoordinateType coordinateType = m_problem->config()->coordinateType();
+    // component mask
 
-    for (int i = 0; i < m_scene->edges->count(); i++)
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+    for(; cell != endc; ++cell)
     {
-        SceneEdge *edge = m_scene->edges->at(i);
-        SceneBoundary *boundary = edge->marker(m_fieldInfo);
-
-        if (boundary && (!boundary->isNone()))
+        // boundaries
+        for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
         {
-            {{#EXACT_SOURCE}}
-            // {{BOUNDARY_ID}}
-            if ((coordinateType == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}})
-                    && boundary->type() == "{{BOUNDARY_ID}}")
+            if (cell->face(face)->at_boundary())
             {
-                // component mask
-                std::vector<bool> mask;
-                {{#FORM_EXPRESSION_MASK}}
-                mask.push_back({{MASK}});{{/FORM_EXPRESSION_MASK}}
-                dealii::ComponentMask component_mask(mask);
+                SceneBoundary *boundary = m_scene->edges->at(cell->face(face)->boundary_indicator() - 1)->marker(m_fieldInfo);
 
-                if(useDirichletLift)
-                    dealii::VectorTools::interpolate_boundary_values (*m_doFHandler, i+1,
-                                                                      Essential_{{COORDINATE_TYPE}}_{{ANALYSIS_TYPE}}_{{LINEARITY_TYPE}}_{{BOUNDARY_ID}}<2>(boundary),
-                                                                      hanging_node_constraints, // boundary_values,
-                                                                      component_mask);
-                else
-                    dealii::VectorTools::interpolate_boundary_values (*m_doFHandler, i+1,
-                                                                      dealii::ZeroFunction<2>({{NUM_SOLUTIONS}}), // for the Newton method
-                                                                      hanging_node_constraints, // boundary_values,
-                                                                      component_mask);
+                if (boundary != m_scene->boundaries->getNone(m_fieldInfo))
+                {
+                    const unsigned int dofs_per_face = cell->get_fe().dofs_per_face;
+                    std::vector<dealii::types::global_dof_index> local_face_dof_indices (dofs_per_face);
+                    // todo: the second argument.... what exactly does it mean?
+                    cell->face(face)->get_dof_indices (local_face_dof_indices, 0);
 
-                // dealii::MatrixTools::apply_boundary_values (boundary_values, system_matrix, *m_solution, system_rhs);
+                    {{#EXACT_SOURCE}}
+                    // {{BOUNDARY_ID}}
+                    if ((coordinateType == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}})
+                            && boundary->type() == "{{BOUNDARY_ID}}")
+                    {
+
+                        std::vector<bool> mask;
+                        {{#FORM_EXPRESSION_MASK}}
+                        mask.push_back({{MASK}});{{/FORM_EXPRESSION_MASK}}
+                        // dealii::ZeroFunction<2>({{NUM_SOLUTIONS}}), // for the Newton method
+                        Essential_{{COORDINATE_TYPE}}_{{ANALYSIS_TYPE}}_{{LINEARITY_TYPE}}_{{BOUNDARY_ID}}<2> essential(boundary);
+
+                        for(unsigned int i = 0; i < dofs_per_face; i++)
+                        {
+                            for(unsigned int comp = 0; comp < {{NUM_SOLUTIONS}}; comp++)
+                            {
+                                if(mask[comp])
+                                {
+                                    if (cell->get_fe().face_system_to_component_index(i).first == comp)
+                                    {
+                                        hanging_node_constraints.add_line (local_face_dof_indices[i]);
+                                        // todo: nonconstant essential BC
+                                        double bc_value = 0.0;
+                                        if(use_dirichlet_lift)
+                                            bc_value = essential.value(dealii::Point<2>(0,0), comp);
+                                        hanging_node_constraints.set_inhomogeneity(local_face_dof_indices[i], bc_value);
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                    {{/EXACT_SOURCE}}
+                }
             }
-            {{/EXACT_SOURCE}}
         }
     }
 }

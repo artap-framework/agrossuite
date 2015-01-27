@@ -381,6 +381,9 @@ void MeshGenerator::writeTodealii()
             cell_data.vertices[0] = edgeList[edge_i].node[0];
             cell_data.vertices[1] = edgeList[edge_i].node[1];
             cell_data.boundary_id = edgeList[edge_i].marker + 1;
+            // todo: (Pavel Kus) I do not know how exactly this works, whether internal_face_boundary_id is determined apriori or not
+            // todo: but it seems to be potentially dangerous, when there would be many boundaries
+            assert(cell_data.boundary_id != dealii::numbers::internal_face_boundary_id);
 
             subcelldata.boundary_lines.push_back(cell_data);
         }

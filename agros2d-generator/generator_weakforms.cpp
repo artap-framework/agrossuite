@@ -160,6 +160,34 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
                     QList<FormInfo> essentialForms = Module::essential(&m_module->surface(), &boundary, analysisType, linearityType);
                     if (!essentialForms.isEmpty())
                     {
+                        ctemplate::TemplateDictionary *fieldEssential = fieldSurface->AddSectionDictionary("ESSENTIAL");
+                        int numSolutions = Agros2DGenerator::numberOfSolutions(m_module->general_field().analyses(), analysisType);
+                        fieldEssential->SetValue("NUM_SOLUTIONS", QString::number(numSolutions).toStdString());
+
+                        for (int i = 0; i < numSolutions; i++)
+                        {
+                            QString maskValue = "false";
+                            ctemplate::TemplateDictionary *components = fieldEssential->AddSectionDictionary("COMPONENTS");
+                            foreach (FormInfo formInfo, essentialForms)
+                            {
+                                if (formInfo.i - 1 == i)
+                                    maskValue = "true";
+                            }
+                            components->SetValue("IS_ESSENTIAL", maskValue.toStdString());
+                            components->SetValue("COMP_NUM", QString::number(i).toStdString());
+                        }
+
+//                        foreach (FormInfo formInfo, essentialForms)
+//                        {
+//                            generateFormExpression(formInfo, linearityType, coordinateType, *fieldSurface, "ESSENTIAL", weakform);
+//                        }
+                    }
+
+                    // separate essential condition generation
+
+//                    QList<FormInfo> essentialForms = Module::essential(&m_module->surface(), &boundary, analysisType, linearityType);
+                    if (!essentialForms.isEmpty())
+                    {
                         ctemplate::TemplateDictionary *fieldExact = generateSurfaceVariables(linearityType, coordinateType, output, weakform, "EXACT", &boundary);
 
                         // TODO: do it better

@@ -97,6 +97,256 @@
 // todo: what for curved elements?
 const int QUADRATURE_ORDER_INCREASE = 1;
 
+template<int dim>
+class RightHandSide : public dealii::Function<dim>
+{
+public:
+    RightHandSide ()
+        :
+          dealii::Function<dim>()
+    {}
+    virtual double value (const dealii::Point<dim> &p,
+                          const unsigned int component = 0) const;
+};
+
+template<int dim>
+double RightHandSide<dim>::value (const dealii::Point<dim> &p,
+                                  const unsigned int component) const
+{
+    Assert (component == 0, ExcInternalError());
+    Assert (dim == 2, ExcNotImplemented());
+
+    const double time = this->get_time();
+
+    if ((time >= 0.0) && (time <= 10))
+    {
+        if ((p[0] >= 0.013) && (p[0] <= 0.028) && (p[1] >= 0.041) && (p[1] <= 0.17))
+        {
+            return 2e6;
+        }
+    }
+
+    return 0;
+}
+
+// *******************************************************************************************
+
+SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
+    : m_fieldInfo(fieldInfo), m_scene(Agros2D::scene()), m_problem(Agros2D::problem()), m_solution_previous(NULL)
+{    
+    // fe collection
+    qDebug() << "SolverDeal::SolverDeal: numberOfSolutions" << fieldInfo->numberOfSolutions();
+    m_feCollection = new dealii::hp::FECollection<2>();
+
+    // copy initial mesh
+    m_triangulation = new dealii::Triangulation<2>();
+    m_triangulation->copy_triangulation(*m_fieldInfo->initialMesh());
+
+    // info
+     std::vector<dealii::types::boundary_id> bindicators = m_triangulation->get_boundary_indicators();
+    // std::cout << "Number of boundary indicators: " << bindicators.size() << std::endl;
+    // std::cout << "Number of active cells: " << m_triangulation->n_active_cells() << std::endl;
+    // std::cout << "Total number of cells: " << m_triangulation->n_cells() << std::endl;
+
+    // create dof handler
+    m_doFHandler = new dealii::hp::DoFHandler<2>(*m_triangulation);
+
+    // create solution vector
+    m_solution = new dealii::Vector<double>();
+
+    // Gauss quadrature and fe collection
+    for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+    {
+        m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Q<2>(degree), fieldInfo->numberOfSolutions()));
+        m_quadrature_formulas.push_back(dealii::QGauss<2>(degree +  QUADRATURE_ORDER_INCREASE));
+        m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(degree + QUADRATURE_ORDER_INCREASE));
+    }
+}
+
+SolverDeal::~SolverDeal()
+{
+    if (m_triangulation)
+        delete m_triangulation;
+    m_triangulation = nullptr;
+
+    if (m_doFHandler)
+        delete m_doFHandler;
+    m_doFHandler = nullptr;
+
+    if (m_solution)
+        delete m_solution;
+    m_solution = nullptr;
+
+    if (m_feCollection)
+        delete m_feCollection;
+    m_feCollection = nullptr;
+}
+
+void SolverDeal::setup(bool use_dirichlet_lift)
+{
+    QTime time;
+    time.start();
+
+    m_doFHandler->distribute_dofs(*m_feCollection);
+    // std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
+
+    // reinit sln and rhs
+    system_rhs.reinit(m_doFHandler->n_dofs());
+    m_solution->reinit(m_doFHandler->n_dofs());
+
+    hanging_node_constraints.clear();
+    dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler, hanging_node_constraints);
+
+    // assemble Dirichlet
+    assembleDirichlet(use_dirichlet_lift);
+
+    hanging_node_constraints.close();
+
+    // create sparsity pattern
+    dealii::CompressedSetSparsityPattern csp(m_doFHandler->n_dofs(), m_doFHandler->n_dofs());
+    dealii::DoFTools::make_sparsity_pattern(*m_doFHandler, csp, hanging_node_constraints); // , false
+    sparsity_pattern.copy_from(csp);
+
+    // reinit system matrix
+    system_matrix.reinit(sparsity_pattern);
+
+    // mass matrix (transient)
+    if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+    {
+        mass_matrix.reinit(sparsity_pattern);
+        mass_minus_tau_Jacobian.reinit(sparsity_pattern);
+    }
+    // qDebug() << "setup (" << time.elapsed() << "ms )";
+}
+
+void SolverDeal::setupNewtonInitial()
+{
+    //    QTime time;
+    //    time.start();
+
+    m_doFHandler->distribute_dofs(*m_feCollection);
+    // std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
+
+    // reinit sln
+
+    if (!m_solution_previous)
+        m_solution_previous = new dealii::Vector<double>();
+
+    m_solution_previous->reinit(m_doFHandler->n_dofs());
+
+    hanging_node_constraints.clear();
+    dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler, hanging_node_constraints);
+
+    // assemble Dirichlet
+    assembleDirichlet(true);
+
+    hanging_node_constraints.close();
+
+    // todo: this has to be verified
+    // I hope, that it will construct dirichlet lift, taking into account hanging nodes close to the boundary,
+    // since to the hanging_node_constraints, first are applied hanging nodes and than the Dirichlet BC
+    // todo: is that correct?
+    for(dealii::types::global_dof_index dof = 0; dof < m_doFHandler->n_dofs(); dof++)
+    {
+        if (hanging_node_constraints.is_constrained(dof))
+        {
+            // first consider only BC, not hanging nodes
+            // todo: extend
+            assert(hanging_node_constraints.get_constraint_entries(dof)->size() == 0);
+            //            const std::vector<std::pair<dealii::types::global_dof_index,double> > * constraints = hanging_node_constraints.get_constraint_entries(dof);
+            //            if(constraints != nullptr)
+            //            {
+            //                for(int i = 0; i < constraints->size(); i++)
+            //                {
+            //                    std::cout << "(" << (*constraints)[i].first << ", " << (*constraints)[i].second << "), ";
+            //                }
+            //                std::cout << std::endl;
+            //            }
+
+            //            std::cout << "inhomogenity " << hanging_node_constraints.get_inhomogeneity(dof) << std::endl;
+
+            (*m_solution_previous)(dof) = hanging_node_constraints.get_inhomogeneity(dof);
+        }
+    }
+
+    //    for (std::map<dealii::types::global_dof_index, double>::const_iterator p = hanging_node_constraints.begin(); p != hanging_node_constraints.end(); ++p)
+    //        m_solution_previous(p->first) = p->second;
+}
+
+void SolverDeal::solve()
+{
+
+    solveAdaptivity();
+}
+
+void SolverDeal::solveLinearSystem()
+{
+    QTime time;
+    time.start();
+
+    switch (m_fieldInfo->matrixSolver())
+    {
+    case SOLVER_UMFPACK:
+        solveUMFPACK();
+        break;
+    case SOLVER_DEALII:
+        solvedealii();
+        break;
+    default:
+        Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Solver '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
+        return;
+    }
+
+    hanging_node_constraints.distribute(*m_solution);
+
+    qDebug() << "solved (" << time.elapsed() << "ms )";
+}
+
+void SolverDeal::solveLinearity()
+{
+    if (m_fieldInfo->linearityType() == LinearityType_Linear)
+        solveLinearityLinear();
+    else
+        solveLinearityNonLinear();
+}
+
+void SolverDeal::solveLinearityLinear()
+{
+    setup(true);
+
+    QTime time;
+    time.start();
+
+    assembleSystem();
+    std::cout << "assemble (" << time.elapsed() << "ms )" << std::endl;
+    time.start();
+
+    if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+    {
+        transientExplicitMethod(dealii::TimeStepping::FORWARD_EULER, Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(), 0.0, Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
+         std::cout << "FORWARD_EULER: error=" << m_solution->l2_norm() << std::endl;
+
+        // transientImplicitMethod(dealii::TimeStepping::SDIRK_TWO_STAGES, Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(), 0.0, Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
+        // std::cout << "SDIRK: error=" << m_solution->l2_norm() << std::endl;
+    }
+    else
+    {
+        solveLinearSystem();
+    }
+
+    std::cout << "solve linear (" << time.elapsed() << "ms )" << std::endl;
+}
+
+void SolverDeal::solveLinearityNonLinear()
+{
+    if (m_fieldInfo->linearityType() == LinearityType_Picard)
+        solveLinearityNonLinearPicard();
+    else if (m_fieldInfo->linearityType() == LinearityType_Newton)
+        solveLinearityNonLinearNewton();
+    else
+        assert(0);
+}
+
 // todo: is it defined somewhere?
 const int MAX_NUM_NONLIN_ITERS = 100;
 
