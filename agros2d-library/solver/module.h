@@ -150,6 +150,24 @@ private:
     Expression m_expression;
 };
 
+// space
+struct Space
+{
+    Space(int i = 1, const QString &type = "h1", int orderAdjust = 0)
+        : m_i(i), m_type(type), m_orderAdjust(orderAdjust) {}
+
+    // expressions
+    inline int i() const { return m_i; }
+    inline const QString &type() const { return m_type; }
+    inline int orderAdjust() const { return m_orderAdjust; }
+
+private:
+    // expressions
+    int m_i;
+    QString m_type;
+    int m_orderAdjust;
+};
+
 // force
 struct Force
 {

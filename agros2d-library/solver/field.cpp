@@ -427,6 +427,21 @@ QMap<AnalysisType, QString> FieldInfo::analyses() const
     return analyses;
 }
 
+// spaces
+QMap<int, Module::Space> FieldInfo::spaces() const
+{
+    // spaces
+    QMap<int, Module::Space> spaces;
+
+    foreach (XMLModule::space spc, m_plugin->module()->spaces().space())
+        if (spc.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
+            foreach (XMLModule::space_config config, spc.space_config())
+                spaces[config.i()] = Module::Space(config.i(),
+                                                   QString::fromStdString(config.type()),
+                                                   config.orderadjust());
+    return spaces;
+}
+
 QList<QString> FieldInfo::allMaterialQuantities() const
 {
     QList<QString> result;

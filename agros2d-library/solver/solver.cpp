@@ -158,8 +158,21 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     // Gauss quadrature and fe collection
     for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
     {
+        /*
+        std::vector<const dealii::FiniteElement<2> *> fes;
+        std::vector<unsigned int> multiplicities;
+
+        QMap<int, Module::Space> spaces = m_fieldInfo->spaces();
+        foreach (int key, spaces.keys())
+        {
+            dealii::FE_Q<2> *fe = new dealii::FE_Q<2>(degree + spaces[key].orderAdjust());
+            fes.push_back(fe);
+            multiplicities.push_back(1);
+        }
+        */
         m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Q<2>(degree), fieldInfo->numberOfSolutions()));
-        m_quadrature_formulas.push_back(dealii::QGauss<2>(degree +  QUADRATURE_ORDER_INCREASE));
+        // m_feCollection->push_back(dealii::FESystem<2>(fes, multiplicities));
+        m_quadrature_formulas.push_back(dealii::QGauss<2>(degree + QUADRATURE_ORDER_INCREASE));
         m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(degree + QUADRATURE_ORDER_INCREASE));
     }
 }
@@ -1122,10 +1135,20 @@ dealii::Vector<double> SolverDeal::transientEvaluateMassMatrix(const double time
     tmp = 0.0;
     system_matrix.vmult(tmp, y);
 
+    std::cout << "y.l2_norm: " << y.l2_norm() << std::endl;
+    std::cout << "tmp.l2_norm: " << tmp.l2_norm() << std::endl;
+
     // TODO: apply RHS
+    tmp.add(system_rhs);
+    std::cout << "system_rhs.l2_norm: " << system_rhs.l2_norm() << std::endl;
+    std::cout << "tmp.l2_norm: " << tmp.l2_norm() << std::endl;
 
     dealii::Vector<double> value(m_doFHandler->n_dofs());
     mass_matrix_inverse.vmult(value, tmp);
+
+    std::cout << "value.l2_norm: " << value.l2_norm() << std::endl;
+
+
 
     return value;
 }

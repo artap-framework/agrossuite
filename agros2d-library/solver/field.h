@@ -177,7 +177,11 @@ public:
     // macros
     QMap<QString, QString> macros() const;
 
+    // analyses
     QMap<AnalysisType, QString> analyses() const;
+
+    // spaces
+    QMap<int, Module::Space> spaces() const;
 
     // material type
     QList<Module::MaterialTypeVariable> materialTypeVariables() const;
