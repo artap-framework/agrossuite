@@ -1134,7 +1134,7 @@ dealii::Vector<double> SolverDeal::transientEvaluateMassMatrix(const double time
     dealii::Vector<double> tmp(m_doFHandler->n_dofs());
     tmp = 0.0;
     system_matrix.vmult(tmp, y);
-
+    //tmp *= -1.0;
     std::cout << "y.l2_norm: " << y.l2_norm() << std::endl;
     std::cout << "tmp.l2_norm: " << tmp.l2_norm() << std::endl;
 
@@ -1158,12 +1158,15 @@ dealii::Vector<double> SolverDeal::transientIdMinusTauJacobianInverse(const doub
     dealii::SparseDirectUMFPACK inverse_mass_minus_tau_Jacobian;
 
     mass_minus_tau_Jacobian.copy_from(mass_matrix);
-    mass_minus_tau_Jacobian.add(-tau, system_matrix);
+    //mass_minus_tau_Jacobian.add(-tau, system_matrix);
+    mass_minus_tau_Jacobian.add(tau, system_matrix);
 
     inverse_mass_minus_tau_Jacobian.initialize(mass_minus_tau_Jacobian);
 
     dealii::Vector<double> tmp(m_doFHandler->n_dofs());
     mass_matrix.vmult(tmp, y);
+
+    tmp.add(tau, system_rhs);
 
     dealii::Vector<double> result(y);
     inverse_mass_minus_tau_Jacobian.vmult(result, tmp);
@@ -1184,9 +1187,19 @@ void SolverDeal::transientExplicitMethod(const dealii::TimeStepping::runge_kutta
 
     for (unsigned int i = 0; i < n_time_steps; ++i)
     {
-        time = explicit_runge_kutta.evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrix,
-                                                                   this, std::placeholders::_1, std::placeholders::_2),
-                                                         time, time_step, *m_solution);
+//        time = explicit_runge_kutta.evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrix,
+//                                                                   this, std::placeholders::_1, std::placeholders::_2),
+//                                                         time, time_step, *m_solution);
+
+        std::cout << "apply" << std::endl;
+        dealii::Vector<double> tmp(*m_solution);
+
+        // explicit Euler
+        //m_solution->add(time_step, transientEvaluateMassMatrix(time, tmp));
+
+        // implicit Euler
+        *m_solution = transientIdMinusTauJacobianInverse(time, time_step, tmp);
+
         std::cout << "time: " << time << std::endl;
     }
 
