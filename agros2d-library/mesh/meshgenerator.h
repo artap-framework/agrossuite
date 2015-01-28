@@ -47,7 +47,7 @@ public:
 
     virtual bool mesh() = 0;
 
-    inline QMap<FieldInfo *, dealii::Triangulation<2> *> meshes() { return m_triangulations; }
+    inline dealii::Triangulation<2>* triangulation() { return m_triangulation; }
 
 protected:
     struct MeshEdge
@@ -220,7 +220,7 @@ protected:
     bool m_isError;
     QSharedPointer<QProcess> m_process;
 
-    QMap<FieldInfo *, dealii::Triangulation<2> *> m_triangulations;
+    dealii::Triangulation<2> *m_triangulation;
 };
 
 #endif //MESHGENERATOR_H

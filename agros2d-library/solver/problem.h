@@ -139,8 +139,12 @@ public:
     int numTimeLevels() { return m_timeStepLengths.size() + 1; }
 
     // read initial meshes and solution
-    void readInitialMeshesFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator = QSharedPointer<MeshGenerator>(nullptr));
+    void readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator = QSharedPointer<MeshGenerator>(nullptr));
     void readSolutionsFromFile();
+
+    inline dealii::Triangulation<2> *initialMesh() const { return m_initialMesh; }
+    void clearInitialMesh();
+    void setInitialMesh(dealii::Triangulation<2> *mesh);
 
     QList<QPair<double, bool> > timeStepHistory() const { return m_timeHistory; }
 
@@ -156,6 +160,9 @@ private:
 
     QMap<QString, FieldInfo *> m_fieldInfos;
     QMap<QPair<FieldInfo*, FieldInfo* >, CouplingInfo* > m_couplingInfos;
+
+    // initial mesh
+    dealii::Triangulation<2> *m_initialMesh;
 
     QTime m_lastTimeElapsed;
 

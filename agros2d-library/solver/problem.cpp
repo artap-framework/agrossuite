@@ -97,6 +97,7 @@ Problem::Problem()
 
     m_solverDeal = new ProblemSolver();
 
+    m_initialMesh = nullptr;
     actMesh = new QAction(icon("scene-meshgen"), tr("&Mesh area"), this);
     actMesh->setShortcut(QKeySequence(tr("Alt+W")));
     connect(actMesh, SIGNAL(triggered()), this, SLOT(doMeshWithGUI()));
@@ -120,11 +121,25 @@ Problem::~Problem()
     delete m_solverDeal;
 }
 
+void Problem::clearInitialMesh()
+{
+    if (m_initialMesh)
+        delete m_initialMesh;
+
+    m_initialMesh = new dealii::Triangulation<2>();
+}
+
+void Problem::setInitialMesh(dealii::Triangulation<2> *mesh)
+{
+    m_initialMesh = mesh;
+}
+
+
+
 bool Problem::isMeshed() const
 {
-    foreach (FieldInfo* fieldInfo, m_fieldInfos)
-        if (!fieldInfo->initialMesh())
-            return false;
+    if (!Agros2D::problem()->initialMesh())
+        return false;
 
     return (m_fieldInfos.size() > 0);
 }
@@ -185,8 +200,7 @@ void Problem::clearSolution()
     m_timeStepLengths.clear();
     m_timeHistory.clear();
 
-    foreach (FieldInfo* fieldInfo, m_fieldInfos)
-        fieldInfo->clearInitialMesh();
+    clearInitialMesh();
 
     Agros2D::solutionStore()->clearAll();
 
@@ -461,7 +475,7 @@ bool Problem::meshAction(bool emitMeshed)
         // load mesh
         try
         {
-            readInitialMeshesFromFile(emitMeshed, meshGenerator);
+            readInitialMeshFromFile(emitMeshed, meshGenerator);
             return true;
         }
         catch (AgrosException& e)
@@ -790,44 +804,43 @@ void Problem::solveAction()
     }
     */
 
-void Problem::readInitialMeshesFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator)
+void Problem::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator)
 {
-    QMap<FieldInfo *, dealii::Triangulation<2> *> meshesDeal;
+    dealii::Triangulation<2>* meshDeal;
 
     if (!meshGenerator)
     {
         // load initial mesh file
-        foreach (FieldInfo* fieldInfo, m_fieldInfos)
-        {
-            // triangulation
-            dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>();
+        dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>();
 
-            QString fnMesh = QString("%1/%2_initial.msh").arg(cacheProblemDir()).arg(fieldInfo->fieldId());
-            std::ifstream ifsMesh(fnMesh.toStdString());
-            boost::archive::binary_iarchive sbiMesh(ifsMesh);
-            triangulation->load(sbiMesh, 0);
+        QString fnMesh = QString("%1/%2_initial.msh").arg(cacheProblemDir()).arg("mesh"/*fieldInfo->fieldId()*/);
+        std::ifstream ifsMesh(fnMesh.toStdString());
+        boost::archive::binary_iarchive sbiMesh(ifsMesh);
+        triangulation->load(sbiMesh, 0);
 
-            // cache
-            meshesDeal[fieldInfo] = triangulation;
-            Agros2D::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from disk"));
-        }
+        // cache
+        meshDeal = triangulation;
+        Agros2D::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from disk"));
     }
     else
     {
-        meshesDeal = meshGenerator->meshes();
+        meshDeal = meshGenerator->triangulation();
         Agros2D::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from memory"));
     }
 
+    int max_num_refinements = 0;
     foreach (FieldInfo *fieldInfo, m_fieldInfos)
     {
-        dealii::Triangulation<2> *meshDeal = meshesDeal[fieldInfo];
-
         // refine mesh
-        fieldInfo->refineMesh(meshDeal);
+        // todo: at the present moment, not possible to refine independently
+        //fieldInfo->refineMesh(meshDeal);
 
-        // set initial mesh
-        fieldInfo->setInitialMesh(meshDeal);
+        max_num_refinements = std::max(max_num_refinements, fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt());
     }
+
+    meshDeal->refine_global(max_num_refinements);
+
+    setInitialMesh(meshDeal);
 
     // nonlinearity
     m_isNonlinear = determineIsNonlinear();

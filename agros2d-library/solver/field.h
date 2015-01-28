@@ -62,10 +62,6 @@ public:
     QString fieldId() const { return m_fieldId; }
     inline int numberId() const { return m_numberId; }
 
-    inline dealii::Triangulation<2> *initialMesh() const { return m_initialMesh; }
-    void clearInitialMesh();
-    void setInitialMesh(dealii::Triangulation<2> *mesh);
-
     enum Type
     {
         Unknown,
@@ -251,9 +247,6 @@ private:
 
     /// unique field info
     QString m_fieldId;
-
-    // initial mesh
-    dealii::Triangulation<2> *m_initialMesh;
 
     // analysis type
     AnalysisType m_analysisType;

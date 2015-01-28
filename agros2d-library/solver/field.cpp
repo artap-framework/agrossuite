@@ -57,8 +57,7 @@ bool FieldBlock::solveInitVariables()
 int FieldInfo::numberIdNext = 0;
 
 FieldInfo::FieldInfo(QString fieldId)
-    : m_plugin(NULL), m_numberOfSolutions(0),
-      m_hermesMarkerToAgrosLabelConversion(nullptr), m_labelAreas(nullptr), m_initialMesh(nullptr)
+    : m_plugin(NULL), m_numberOfSolutions(0), m_hermesMarkerToAgrosLabelConversion(nullptr), m_labelAreas(nullptr), m_initialMesh(nullptr)
 {    
     assert(!fieldId.isEmpty());
     m_fieldId = fieldId;
@@ -192,19 +191,6 @@ double FieldInfo::labelArea(int agrosLabel) const
     return m_labelAreas[agrosLabel];
 }
 
-void FieldInfo::clearInitialMesh()
-{
-    if (m_initialMesh)
-        delete m_initialMesh;
-
-    m_initialMesh = new dealii::Triangulation<2>();
-}
-
-void FieldInfo::setInitialMesh(dealii::Triangulation<2> *mesh)
-{
-    m_initialMesh = mesh;
-}
-
 void FieldInfo::setAnalysisType(AnalysisType at)
 {
     m_analysisType = at;
@@ -302,9 +288,6 @@ int FieldInfo::labelPolynomialOrder(SceneLabel *label)
 
 void FieldInfo::clear()
 {
-    // mesh
-    clearInitialMesh();
-
     // set default values and types
     m_setting.clear();
     setDefaultValues();

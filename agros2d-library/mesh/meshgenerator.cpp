@@ -327,9 +327,7 @@ void MeshGenerator::fillNeighborStructures()
 
 void MeshGenerator::writeTodealii()
 {
-    foreach(FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
-    {
-        std::cout << fieldInfo->name().toStdString() << std::endl;
+        //std::cout << fieldInfo->name().toStdString() << std::endl;
 
         dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>();
 
@@ -347,7 +345,7 @@ void MeshGenerator::writeTodealii()
         for (int element_i = 0; element_i < elementList.count(); element_i++)
         {
             if (elementList[element_i].isUsed &&
-                    (Agros2D::scene()->labels->at(elementList[element_i].marker)->marker(fieldInfo) != SceneMaterialContainer::getNone(fieldInfo)))
+                    (! Agros2D::scene()->labels->at(elementList[element_i].marker)->isHole()))
             {
                 if (elementList[element_i].isTriangle())
                 {
@@ -374,8 +372,14 @@ void MeshGenerator::writeTodealii()
             if (edgeList[edge_i].marker == -1)
                 continue;
 
-            if (Agros2D::scene()->edges->at(edgeList[edge_i].marker)->marker(fieldInfo) == SceneBoundaryContainer::getNone(fieldInfo))
+            // todo: co je hranice?
+            // todo: kde to deal potrebuje? Kdyz si okrajove podminky resim sam...
+//            if (Agros2D::scene()->edges->at(edgeList[edge_i].marker)->marker(fieldInfo) == SceneBoundaryContainer::getNone(fieldInfo))
+//                continue;
+
+            if (Agros2D::scene()->edges->at(edgeList[edge_i].marker)->marker(Agros2D::problem()->fieldInfo("current"))== SceneBoundaryContainer::getNone(Agros2D::problem()->fieldInfo("current")))
                 continue;
+
 
             dealii::CellData<1> cell_data;
             cell_data.vertices[0] = edgeList[edge_i].node[0];
@@ -394,14 +398,13 @@ void MeshGenerator::writeTodealii()
 
         triangulation->create_triangulation_compatibility(vertices, cells, subcelldata);
 
-        m_triangulations[fieldInfo] = triangulation;
+        m_triangulation = triangulation;
 
         // save to disk
-        QString fnMesh = QString("%1/%2_initial.msh").arg(cacheProblemDir()).arg(fieldInfo->fieldId());
+        QString fnMesh = QString("%1/%2_initial.msh").arg(cacheProblemDir()).arg("mesh"/*fieldInfo->fieldId()*/);
         std::ofstream ofsMesh(fnMesh.toStdString());
         boost::archive::binary_oarchive sbMesh(ofsMesh);
         triangulation->save(sbMesh, 0);
-    }
 }
 
 bool MeshGenerator::prepare()

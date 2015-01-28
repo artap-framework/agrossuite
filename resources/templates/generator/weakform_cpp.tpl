@@ -536,7 +536,7 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool useDirichletLift)
         // boundaries
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
         {
-            if (cell->face(face)->at_boundary())
+            if (cell->face(face)->boundary_indicator() != dealii::numbers::internal_face_boundary_id)
             {
                 SceneBoundary *boundary = m_scene->edges->at(cell->face(face)->boundary_indicator() - 1)->marker(m_fieldInfo);
 

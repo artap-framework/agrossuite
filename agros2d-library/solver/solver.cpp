@@ -29,6 +29,7 @@
 
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_dgp.h>
+#include <deal.II/fe/fe_nothing.h>
 #include <deal.II/fe/fe_system.h>
 #include <deal.II/fe/fe_values.h>
 
@@ -140,7 +141,7 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
 
     // copy initial mesh
     m_triangulation = new dealii::Triangulation<2>();
-    m_triangulation->copy_triangulation(*m_fieldInfo->initialMesh());
+    m_triangulation->copy_triangulation(*Agros2D::problem()->initialMesh());
 
     // info
      std::vector<dealii::types::boundary_id> bindicators = m_triangulation->get_boundary_indicators();
@@ -154,6 +155,12 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     // create solution vector
     m_solution = new dealii::Vector<double>();
 
+    // first position of feCollection, quadrature_formulas and face_quadrature_formulas belongs to NONE space
+    // this will be used for implementation of different meshes
+    m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Nothing<2>(), 1));
+    m_quadrature_formulas.push_back(dealii::QGauss<2>(1));
+    m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(1));
+
     // Gauss quadrature and fe collection
     for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
     {
@@ -161,6 +168,17 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
         m_quadrature_formulas.push_back(dealii::QGauss<2>(degree +  QUADRATURE_ORDER_INCREASE));
         m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(degree + QUADRATURE_ORDER_INCREASE));
     }
+
+    // find those elements, which are used for this field
+
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+    for (unsigned int index = 0; cell != endc; ++cell, ++index)
+    {
+        if(cell->active_fe_index() != 0)
+            std::cout << "assert" << std::endl;
+        cell->set_active_fe_index(1);
+    }
+
 }
 
 SolverDeal::~SolverDeal()
@@ -335,6 +353,7 @@ void SolverDeal::solveLinearityLinear()
     }
 
     std::cout << "solve linear (" << time.elapsed() << "ms )" << std::endl;
+    std::cout << "solution norm " << m_solution->l2_norm() << std::endl;
 }
 
 void SolverDeal::solveLinearityNonLinear()
@@ -1412,7 +1431,7 @@ void ProblemSolver::clear()
 
 void ProblemSolver::init()
 {
-    clear();
+    clear();    
 
     foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
     {

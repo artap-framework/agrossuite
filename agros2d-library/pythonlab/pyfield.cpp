@@ -665,8 +665,9 @@ void PyField::initialMeshInfo(map<std::string, int> &info) const
     if (!Agros2D::problem()->isMeshed())
         throw logic_error(QObject::tr("Problem is not meshed.").toStdString());
 
-    info["nodes"] = m_fieldInfo->initialMesh()->n_used_vertices();
-    info["elements"] = m_fieldInfo->initialMesh()->n_active_cells();
+    // todo: initial mesh the same for all fields
+    info["nodes"] = Agros2D::problem()->initialMesh()->n_used_vertices();
+    info["elements"] = Agros2D::problem()->initialMesh()->n_active_cells();
     info["dofs"] = -1;
 }
 
