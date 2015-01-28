@@ -483,7 +483,8 @@ void SolutionStore::loadRunTimeDetails()
                 // new time step
                 time_step = data.time_step();
 
-                Agros2D::problem()->defineActualTimeStepLength(data.time_step_length().get());
+                assert(1);
+                // Agros2D::problem()->defineActualTimeStepLength(data.time_step_length().get());
             }
 
             SolutionRunTimeDetails::FileName fileNames;

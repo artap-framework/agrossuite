@@ -87,11 +87,14 @@ public:
     void assembleMassMatrix();
 
     // Runge Kutta methods
-    void transientExplicitMethod(const dealii::TimeStepping::runge_kutta_method method, const unsigned int n_time_steps, const double initial_time, const double final_time);
-    void transientImplicitMethod(const dealii::TimeStepping::runge_kutta_method method, const unsigned int n_time_steps, const double initial_time, const double final_time);
-    unsigned int transientExplicitEmbeddedMethod(const dealii::TimeStepping::runge_kutta_method method, const unsigned int n_time_steps, const double initial_time, const double final_time);
-    dealii::Vector<double> transientEvaluateMassMatrix(const double time, const dealii::Vector<double> &y) const;
-    dealii::Vector<double> transientIdMinusTauJacobianInverse(const double time, const double tau, const dealii::Vector<double> &y);
+    void transientExplicitMethod();
+    void transientImplicitMethod();
+    unsigned int transientExplicitEmbeddedMethod();
+    dealii::Vector<double> transientEvaluateMassMatrixExplicitPart(const double time, const dealii::Vector<double> &y) const;
+    dealii::Vector<double> transientEvaluateMassMatrixImplicitPart(const double time, const double tau, const dealii::Vector<double> &y);
+
+    inline void set_time(const double new_time) { m_time = new_time; }
+    inline double get_time() const { return m_time; }
 
 protected:
     // local reference
@@ -124,10 +127,10 @@ protected:
     dealii::Vector<double> system_rhs;
 
     // transient mass matrix
+    double m_time;
     dealii::SparseMatrix<double> mass_matrix;
     dealii::SparseMatrix<double> mass_minus_tau_Jacobian;
     dealii::SparseDirectUMFPACK mass_matrix_inverse;
-
 
     // linear system
     void solveLinearSystem();
@@ -150,11 +153,6 @@ protected:
     void solveWeakCoupled();
 
     void estimateSmoothness(dealii::Vector<float> &smoothness_indicators) const;
-
-    // transient
-    void solveTransient();
-
-
 };
 
 namespace Module {

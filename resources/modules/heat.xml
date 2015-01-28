@@ -40,6 +40,8 @@
 
     <module:vector_form id="rhs" i="1" j="1" planar="he_p * vval" axi="r * he_p * vval" condition="fabs(he_p) > 0.0" />
     
+    <module:matrix_form id="transient" i="1" j="1" planar="he_rho * he_cp * uval * vval" axi="he_rho * he_cp * r * uval * vval"/>
+    
     <module:weakforms_volume>
       <module:weakform_volume analysistype="steadystate" equation="-\, \div \left( \lambda\,\, \grad T \right) + \rho c_\mathrm{p} \left(\vec{v} \cdot \grad T\right) = Q">
         <module:quantity dependence="" id="heat_conductivity" nonlinearity_axi="value1" nonlinearity_planar="value1"/>
@@ -54,6 +56,7 @@
           <module:matrix_form id="laplace" />
           <module:matrix_form id="velocity" />
           <module:vector_form id="rhs" />
+          <module:matrix_transient_form id="transient" />          
         </module:linearity_option>
 
         <module:linearity_option type="picard">

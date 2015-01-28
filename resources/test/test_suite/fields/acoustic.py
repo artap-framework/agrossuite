@@ -17,7 +17,7 @@ class TestAcousticHarmonicPlanar(Agros2DTestCase):
         # fields
         self.acoustic = agros2d.field("acoustic")
         self.acoustic.analysis_type = "harmonic"
-        self.acoustic.number_of_refinements = 3
+        self.acoustic.number_of_refinements = 2
         self.acoustic.polynomial_order = 2
         self.acoustic.solver = "linear"
         
@@ -34,12 +34,12 @@ class TestAcousticHarmonicPlanar(Agros2DTestCase):
         geometry.add_edge(-0.4, 0.05, 0.1, 0.2, boundaries = {"acoustic" : "Matched boundary"})
         geometry.add_edge(0.1, -0.2, -0.4, -0.05, boundaries = {"acoustic" : "Matched boundary"})
         geometry.add_edge(-0.4, 0.05, -0.4, -0.05, boundaries = {"acoustic" : "Matched boundary"})
-        geometry.add_edge(-0.18, -0.06, -0.17, -0.05, boundaries = {"acoustic" : "Source"}, angle=90)
-        geometry.add_edge(-0.17, -0.05, -0.18, -0.04, boundaries = {"acoustic" : "Source"}, angle=90)
-        geometry.add_edge(-0.18, -0.04, -0.19, -0.05, boundaries = {"acoustic" : "Source"}, angle=90)
-        geometry.add_edge(-0.19, -0.05, -0.18, -0.06, boundaries = {"acoustic" : "Source"}, angle=90)
-        geometry.add_edge(0.1, -0.2, 0.1, 0.2, boundaries = {"acoustic" : "Matched boundary"}, angle=90)
-        geometry.add_edge(0.03, 0.1, -0.04, -0.05, boundaries = {"acoustic" : "Wall"}, angle=90)
+        geometry.add_edge(-0.18, -0.06, -0.17, -0.05, segments = 6, boundaries = {"acoustic" : "Source"}, angle=90)
+        geometry.add_edge(-0.17, -0.05, -0.18, -0.04, segments = 6, boundaries = {"acoustic" : "Source"}, angle=90)
+        geometry.add_edge(-0.18, -0.04, -0.19, -0.05, segments = 6, boundaries = {"acoustic" : "Source"}, angle=90)
+        geometry.add_edge(-0.19, -0.05, -0.18, -0.06, segments = 6, boundaries = {"acoustic" : "Source"}, angle=90)
+        geometry.add_edge(0.1, -0.2, 0.1, 0.2, segments = 15, boundaries = {"acoustic" : "Matched boundary"}, angle=90)
+        geometry.add_edge(0.03, 0.1, -0.04, -0.05, segments = 10, boundaries = {"acoustic" : "Wall"}, angle=90)
         geometry.add_edge(-0.04, -0.05, 0.08, -0.04, boundaries = {"acoustic" : "Wall"})
         geometry.add_edge(0.08, -0.04, 0.03, 0.1, boundaries = {"acoustic" : "Wall"})
         
@@ -63,13 +63,13 @@ class TestAcousticHarmonicPlanar(Agros2DTestCase):
                         
         # volume integral
         volume = self.acoustic.volume_integrals([0])
-        self.value_test("Acoustic pressure - real", volume["pr"], -1.915211e-5)
-        self.value_test("Acoustic pressure - imag", volume["pi"], -1.918928e-5)
+        self.value_test("Volume acoustic pressure - real", volume["pr"], -1.915211e-5)
+        self.value_test("Volume acoustic pressure - imag", volume["pi"], -1.918928e-5)
         
         # surface integral 
         surface = self.acoustic.surface_integrals([7])
-        self.value_test("Acoustic pressure - real", surface["pr"], 3.079084e-4)
-        self.value_test("Acoustic pressure - imag", surface["pi"], 4.437581e-5)      
+        self.value_test("Surface acoustic pressure - real", surface["pr"], 3.079084e-4)
+        self.value_test("Surface acoustic pressure - imag", surface["pi"], 4.437581e-5)      
         
 
 class TestAcousticHarmonicAxisymmetric(Agros2DTestCase):
@@ -87,7 +87,7 @@ class TestAcousticHarmonicAxisymmetric(Agros2DTestCase):
         # fields
         self.acoustic = agros2d.field("acoustic")
         self.acoustic.analysis_type = "harmonic"
-        self.acoustic.number_of_refinements = 3
+        self.acoustic.number_of_refinements = 2
         self.acoustic.polynomial_order = 2
         self.acoustic.solver = "linear"
         
@@ -107,8 +107,8 @@ class TestAcousticHarmonicAxisymmetric(Agros2DTestCase):
         geometry.add_edge(0.25, 0, 0, 0, boundaries = {"acoustic" : "Source acceleration"})
         geometry.add_edge(0, 0, 0, 0.7, boundaries = {"acoustic" : "Wall"})
         geometry.add_edge(0, 1, 0, 1.5, boundaries = {"acoustic" : "Wall"})
-        geometry.add_edge(0, 0.7, 0.15, 0.85, boundaries = {"acoustic" : "Wall"}, angle=90)
-        geometry.add_edge(0.15, 0.85, 0, 1, boundaries = {"acoustic" : "Wall"}, angle=90)
+        geometry.add_edge(0, 0.7, 0.15, 0.85, segments = 7, boundaries = {"acoustic" : "Wall"}, angle=90)
+        geometry.add_edge(0.15, 0.85, 0, 1, segments = 7, boundaries = {"acoustic" : "Wall"}, angle=90)
         geometry.add_edge(0.35, 1.15, 0.65, 1, boundaries = {"acoustic" : "Matched boundary"})
         geometry.add_edge(0.65, 1, 0.35, 0.9, boundaries = {"acoustic" : "Matched boundary"})
         geometry.add_edge(0.35, 1.15, 0.35, 0.9, boundaries = {"acoustic" : "Matched boundary"})
@@ -188,8 +188,8 @@ class TestAcousticTransientPlanar(Agros2DTestCase):
         geometry.add_edge(-0.17, -0.05, -0.18, -0.04, angle = 90, boundaries = {"acoustic" : "Source"})
         geometry.add_edge(-0.18, -0.04, -0.19, -0.05, angle = 90, boundaries = {"acoustic" : "Source"})
         geometry.add_edge(-0.19, -0.05, -0.18, -0.06, angle = 90, boundaries = {"acoustic" : "Source"})
-        geometry.add_edge(0.1, -0.2, 0.1, 0.2, angle = 90, boundaries = {"acoustic" : "Matched bundary"})
-        geometry.add_edge(0.03, 0.1, -0.04, -0.05, angle = 90, boundaries = {"acoustic" : "Hard wall"})
+        geometry.add_edge(0.1, -0.2, 0.1, 0.2, angle = 90, segments = 6, boundaries = {"acoustic" : "Matched bundary"})
+        geometry.add_edge(0.03, 0.1, -0.04, -0.05, angle = 90, segments = 6, boundaries = {"acoustic" : "Hard wall"})
         geometry.add_edge(-0.04, -0.05, 0.08, -0.04, boundaries = {"acoustic" : "Hard wall"})
         geometry.add_edge(0.08, -0.04, 0.03, 0.1, boundaries = {"acoustic" : "Hard wall"})
         

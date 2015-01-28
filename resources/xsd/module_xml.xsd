@@ -482,6 +482,7 @@
                                 <choice minOccurs="0" maxOccurs="unbounded">
                                        <element ref="module:matrix_form" />
                                        <element ref="module:vector_form" />
+                                       <element ref="module:matrix_transient_form" />                                       
                                        <element ref="module:essential_form" />
                                 </choice>
                         </sequence>
@@ -521,6 +522,20 @@
                 </complexType>
         </element>
 
+        <element name="matrix_transient_form">
+                <complexType>
+                        <attribute name="id" use="required" type="string" />
+                        <attribute name="i" type="integer" />
+                        <attribute name="j" type="integer" />
+                        <attribute name="planar" type="string" />
+                        <attribute name="axi"  type="string" />
+                        <attribute name="symmetric" type="integer" />
+                        <attribute name="symmetric_planar" type="integer" />
+                        <attribute name="symmetric_axi" type="integer" />
+                        <attribute name="condition" type="string" />
+                </complexType>
+        </element>
+        
         <element name="essential_form">
                 <complexType>
                         <attribute name="id" use="required" type="string" />

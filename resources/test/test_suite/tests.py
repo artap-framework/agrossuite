@@ -154,8 +154,8 @@ test_suite.fields.elasticity.TestElasticityAxisymmetric,
 #test_suite.fields.flow.TestFlowPlanar,
 #test_suite.fields.flow.TestFlowAxisymmetric,
 # acoustic field
-#test_suite.fields.acoustic.TestAcousticHarmonicPlanar,
-#test_suite.fields.acoustic.TestAcousticHarmonicAxisymmetric,
+test_suite.fields.acoustic.TestAcousticHarmonicPlanar,
+test_suite.fields.acoustic.TestAcousticHarmonicAxisymmetric,
 # heat transfer
 test_suite.fields.heat.TestHeatPlanar,
 test_suite.fields.heat.TestHeatAxisymmetric,

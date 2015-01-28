@@ -183,7 +183,6 @@ void Problem::clearSolution()
     // m_timeStep = 0;
     m_lastTimeElapsed = QTime(0, 0);
     m_timeStepLengths.clear();
-    updateActualTimeDuringCalculation();
     m_timeHistory.clear();
 
     foreach (FieldInfo* fieldInfo, m_fieldInfos)
@@ -509,60 +508,22 @@ int Problem::timeToTimeStep(double time) const
     assert(0);
 }
 
-bool Problem::defineActualTimeStepLength(double ts)
+void Problem::setActualTimeStepLength(double timeStep)
 {
-    // todo: do properly
-    const double eps = 1e-9 * config()->value(ProblemConfig::TimeTotal).toDouble();
-    assert(actualTime() < config()->value(ProblemConfig::TimeTotal).toDouble() + eps);
-    if(actualTime() > config()->value(ProblemConfig::TimeTotal).toDouble() - eps)
-    {
-        return false;
-    }
-    else
-    {
-        double alteredTS = min(ts, config()->value(ProblemConfig::TimeTotal).toDouble() - actualTime());
-        m_timeStepLengths.push_back(alteredTS);
-        updateActualTimeDuringCalculation();
-        return true;
-    }
-}
-
-bool Problem::skipThisTimeStep() // Block *block
-{
-    /*
-    if(actualTime() == 0)
-        return false;
-    double timeSkip = block->timeSkip();
-    double lastTime = Agros2D::solutionStore()->lastTime(block);
-
-    return lastTime + timeSkip > actualTime();
-    */
-    return false;
-}
-
-void Problem::refuseLastTimeStepLength()
-{
-    m_timeStepLengths.removeLast();
-    updateActualTimeDuringCalculation();
-}
-
-void Problem::updateActualTimeDuringCalculation()
-{
-    m_actualTime = timeStepToTotalTime(m_timeStepLengths.size());
+    m_timeStepLengths.append(timeStep);
 }
 
 double Problem::actualTimeStepLength() const
 {
-    if(m_timeStepLengths.isEmpty())
+    if (m_timeStepLengths.isEmpty())
         return config()->constantTimeStepLength();
 
     return m_timeStepLengths.last();
 }
 
-void Problem::solveInit(bool reCreateStructure)
+void Problem::solveInit()
 {
-    m_timeStepLengths.clear();
-    updateActualTimeDuringCalculation();
+    m_timeStepLengths.clear();    
     m_timeHistory.clear();
 
     if (fieldInfos().isEmpty())

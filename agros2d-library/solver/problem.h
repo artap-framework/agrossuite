@@ -128,27 +128,15 @@ public:
 
     inline QTime timeElapsed() const { return m_lastTimeElapsed; }
 
+    void setActualTimeStepLength(double timeStep);
     double actualTimeStepLength() const;
     QList<double> timeStepLengths() const { return m_timeStepLengths; }
     double timeStepToTime(int timeStepIndex) const;
     double timeStepToTotalTime(int timeStepIndex) const;
     int timeToTimeStep(double time) const;
 
-    int actualTimeStep() {return m_timeStepLengths.size(); }
-
-
-    // has two meainings. During the calculation it is calculated automaticaly from timeStepLengths
-    // during postprocessing it has to be set manualy by the function setActualTimePostprocessing()
-    inline double actualTime() const {return m_actualTime;}
-    void setActualTimePostprocessing(double time) { m_actualTime = time; }
-
     // terminology: time levels are actual times, whre calculations are performed
-    int numTimeLevels() {return m_timeStepLengths.size() + 1; }
-
-    // sets next time step length. If it would mean exceeding total time, smaller time step is used instead
-    // to fit the desired total time period. If we are allready at the end of the interval, returns false. True otherwise (to continue)
-    bool defineActualTimeStepLength(double ts);
-    void refuseLastTimeStepLength();
+    int numTimeLevels() { return m_timeStepLengths.size() + 1; }
 
     // read initial meshes and solution
     void readInitialMeshesFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator = QSharedPointer<MeshGenerator>(nullptr));
@@ -185,19 +173,13 @@ private:
     // determined in create structure to speed up the calculation
     bool m_isNonlinear;
 
+    // transient analysis
     QList<double> m_timeStepLengths;
-    double m_actualTime;
-
-    // has to be called allways when m_timeStepLengths are modified during the calculation
-    void updateActualTimeDuringCalculation();
-
     QList<QPair<double, bool> > m_timeHistory;
-
-    bool skipThisTimeStep(); // Block* block
 
     bool mesh(bool emitMeshed);
     bool meshAction(bool emitMeshed);
-    void solveInit(bool reCreateStructure = true);
+    void solveInit();
     void solve(bool commandLine);
     void solveAction(); // called by solve, can throw SolverException
 

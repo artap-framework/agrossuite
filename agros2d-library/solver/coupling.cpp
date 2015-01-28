@@ -282,9 +282,7 @@ QMap<QString, double> CouplingInfo::constants()
 }
 
 
-
-// todo: copied!
-// todo: copied!
+// TODO: copied!
 template <typename SectionWithTemplates>
 QList<FormInfo> wfMatrixTemplates(SectionWithTemplates *section)
 {

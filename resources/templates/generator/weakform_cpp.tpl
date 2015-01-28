@@ -363,14 +363,14 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                             copy_data.cell_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
                         }{{/FORM_EXPRESSION_MATRIX}}
 
-                        // transient mass matrix
-                        if (components[i] == components[j])
+                        if (isTransient)
                         {
-                            if (isTransient)
+                            {{#FORM_EXPRESSION_TRANSIENT}}
+                            // {{EXPRESSION_ID}}
+                            if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}})
                             {
-                                // TODO: he_rho_val * he_cp_val *
-                                copy_data.cell_mass_matrix(i, j) += fe_values.JxW(q_point) * shape_value[i][q_point] * shape_value[j][q_point];
-                            }
+                                copy_data.cell_mass_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
+                            }{{/FORM_EXPRESSION_TRANSIENT}}
                         }
                     }
                     {{#FORM_EXPRESSION_VECTOR}}

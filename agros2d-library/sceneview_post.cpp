@@ -516,7 +516,6 @@ void PostDeal::setActiveViewField(FieldInfo* fieldInfo)
 void PostDeal::setActiveTimeStep(int ts)
 {
     m_activeTimeStep = ts;
-    Agros2D::problem()->setActualTimePostprocessing(Agros2D::problem()->timeStepToTime(ts));
 }
 
 void PostDeal::setActiveAdaptivityStep(int as)

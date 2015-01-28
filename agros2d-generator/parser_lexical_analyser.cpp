@@ -223,7 +223,7 @@ void ParserInstance::addVolumeVariablesErrorCalculation()
                 {
                     // spacedep boundary condition
                     // ERROR: Python expression evaluation doesn't work from weakform - ERROR
-                    m_dict[QString::fromStdString(quantity.shortname().get())] = QString("%1->numberAtTimeAndPoint(Agros2D::problem()->actualTime(), Point(x, y))").
+                    m_dict[QString::fromStdString(quantity.shortname().get())] = QString("%1->numberAtTimeAndPoint(this->get_time(), Point(x, y))").
                             arg(QString::fromStdString(quantity.shortname().get()));
                 }
             }

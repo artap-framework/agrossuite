@@ -87,66 +87,7 @@ QList<FormInfo> generateSeparated(QList<FormInfo> elements, QList<FormInfo> temp
 
 template <typename SectionWithTemplates>
 QList<FormInfo> wfMatrixTemplates(SectionWithTemplates *section);
+template <typename SectionWithTemplates>
+QList<FormInfo> wfMatrixTransientTemplates(SectionWithTemplates *section);
 
-/*
-template <typename Scalar>
-class AGROS_LIBRARY_API WeakFormAgros : public WeakForm<Scalar>
-{
-public:
-    WeakFormAgros(Block* block);
-    ~WeakFormAgros();
-
-    void registerForms();
-    void updateExtField();
-    inline BDF2Table* bdf2Table() { return m_bdf2Table; }
-
-    inline const PositionInfo* positionInfo(int index) const { return &m_positionInfos[index]; }
-    inline void positionInfoBasicCheck(int index) const
-    {
-        const PositionInfo* positionInfo = &m_positionInfos[index];
-        if (positionInfo->formsOffset == INVALID_POSITION_INFO_VALUE)
-            throw AgrosException("Unset form offset in positionInfo #%i.", index);
-        if (positionInfo->quantAndSpecOffset == INVALID_POSITION_INFO_VALUE)
-            throw AgrosException("Unset quantAndSpec offset in positionInfo #%i.", index);
-    }
-    inline const PositionInfo* positionInfoSourceFieldInfoCheck(int index) const
-    {
-        const PositionInfo* positionInfo = &m_positionInfos[index];
-        if (positionInfo->previousSolutionsOffset == INVALID_POSITION_INFO_VALUE)
-            throw AgrosException("Unset previous solutions offset in positionInfo #%i.", index);
-    }
-
-    void outputPositionInfos();
-
-    Offset offsetInfo(const FieldInfo *sourceFieldInfo, const FieldInfo *targetFieldInfo) const;
-    Offset offsetInfo(const Marker *sourceMarker, const Marker *targetMarker) const;
-
-private:
-    Form<Scalar> *factoryForm(WeakFormKind type, const ProblemID problemId,
-                                                const QString &area, FormInfo *form,
-                                                Material *markerSource, Marker *markerTarget);
-
-    // materialTarget has to be specified for coupling forms. couplingInfo only for weak couplings
-    void registerForm(WeakFormKind type, FieldBlock *field, QString area, FormInfo form, Marker *marker);
-
-    // offsetCouplingExt defines position in Ext field where coupling solutions start
-    void registerFormCoupling(WeakFormKind type, QString area, FormInfo form, SceneMaterial *materialSource,
-                              SceneMaterial *materialTarget, CouplingInfo *couplingInfo);
-    void addForm(WeakFormKind type, Form<Scalar>* form);
-
-    virtual WeakForm<Scalar>* clone() const { return new WeakFormAgros<Scalar>(m_block); }
-
-    Block* m_block;
-
-    BDF2Table* m_bdf2Table;
-
-    PositionInfo m_positionInfos[MAX_FIELDS];
-
-    int m_numberOfForms;
-
-    std::vector<UExtFunctionSharedPtr<Scalar> > quantitiesAndSpecialFunctions(const FieldInfo* fieldInfo, bool linearize) const;
-    std::vector<MeshFunctionSharedPtr<Scalar> > previousTimeLevelsSolutions(const FieldInfo* fieldInfo) const;
-    std::vector<MeshFunctionSharedPtr<Scalar> > sourceCouplingSolutions(const FieldInfo* fieldInfo) const;
-};
-*/
 #endif // WEAK_FORM_H

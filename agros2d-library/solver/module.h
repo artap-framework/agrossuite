@@ -331,6 +331,7 @@ private:
     // name
     QString m_name;
 
+    // steady state and harmonic
     QList<FormInfo> m_wfMatrix;
     QList<FormInfo> m_wfVector;
     QList<FormInfo> m_essential;
@@ -460,6 +461,8 @@ void AGROS_LIBRARY_API volumeQuantityProperties(XMLModule::field *module, QMap<Q
 
 QList<FormInfo> AGROS_LIBRARY_API wfMatrixVolumeSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType);
 QList<FormInfo> AGROS_LIBRARY_API wfVectorVolumeSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType);
+// transient
+QList<FormInfo> AGROS_LIBRARY_API wfMatrixTransientVolumeSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType);
 
 QList<FormInfo> AGROS_LIBRARY_API wfMatrixSurface(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType);
 QList<FormInfo> AGROS_LIBRARY_API wfVectorSurface(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType);
