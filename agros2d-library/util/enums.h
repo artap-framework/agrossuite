@@ -25,6 +25,10 @@
 #include "util.h"
 #include "util/table.h"
 
+#undef signals
+#include <deal.II/base/time_stepping.h>
+#define signals public
+
 enum CoordinateType
 {
     CoordinateType_Undefined = -1,
@@ -53,14 +57,6 @@ enum AdaptivityEstimator
     AdaptivityEstimator_Undefined = -1,
     AdaptivityEstimator_Kelly = 0,
     AdaptivityEstimator_Gradient = 1
-};
-
-enum TimeStepMethod
-{
-    TimeStepMethod_Undefined = -1,
-    TimeStepMethod_Fixed = 0,
-    TimeStepMethod_BDFTolerance = 1,
-    TimeStepMethod_BDFNumSteps = 2
 };
 
 enum LinearityType
@@ -245,6 +241,13 @@ enum SpecialFunctionType
     SpecialFunctionType_Function1D = 1
 };
 
+enum TimeStepMethodType
+{
+    TimeStepMethodType_Implicit,
+    TimeStepMethodType_Explicit,
+    TimeStepMethodType_EmbeddedExplicit
+};
+
 enum MatrixSolverType
 {
     SOLVER_UMFPACK = 0,
@@ -381,10 +384,11 @@ AGROS_LIBRARY_API QString adaptivityNormTypeToStringKey(NormType adaptivityNormT
 AGROS_LIBRARY_API NormType adaptivityNormTypeFromStringKey(const QString &adaptivityNormType);
 
 // time step method
-AGROS_LIBRARY_API QString timeStepMethodString(TimeStepMethod timeStepMethod);
+AGROS_LIBRARY_API QString timeStepMethodString(dealii::TimeStepping::runge_kutta_method timeStepMethod);
 AGROS_LIBRARY_API QStringList timeStepMethodStringKeys();
-AGROS_LIBRARY_API QString timeStepMethodToStringKey(TimeStepMethod timeStepMethod);
-AGROS_LIBRARY_API TimeStepMethod timeStepMethodFromStringKey(const QString &timeStepMethod);
+AGROS_LIBRARY_API QString timeStepMethodToStringKey(dealii::TimeStepping::runge_kutta_method timeStepMethod);
+AGROS_LIBRARY_API dealii::TimeStepping::runge_kutta_method timeStepMethodFromStringKey(const QString &timeStepMethod);
+AGROS_LIBRARY_API TimeStepMethodType timeStepMethodType(dealii::TimeStepping::runge_kutta_method timeStepMethod);
 
 // solution mode
 AGROS_LIBRARY_API QString solutionTypeString(SolutionMode solutionMode);

@@ -221,6 +221,7 @@ void InfoWidget::showInfo()
 
     if (Agros2D::problem()->isTransient())
     {
+        /*
         problemInfo.ShowSection("TRANSIENT");
         if (Agros2D::problem()->config()->isTransientAdaptive())
         {
@@ -245,12 +246,11 @@ void InfoWidget::showInfo()
                 problemInfo.SetValue("TIME_STEPS_CHART", timeSteps.toStdString());
             }
         }
+        */
     }
     problemInfo.SetValue("TRANSIENT_LABEL", tr("Transient analysis").toStdString());
     problemInfo.SetValue("TRANSIENT_STEP_METHOD_LABEL", tr("Method:").toStdString());
-    problemInfo.SetValue("TRANSIENT_STEP_METHOD", timeStepMethodString((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()).toStdString());
-    problemInfo.SetValue("TRANSIENT_STEP_ORDER_LABEL", tr("Order:").toStdString());
-    problemInfo.SetValue("TRANSIENT_STEP_ORDER", QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt()).toStdString());
+    problemInfo.SetValue("TRANSIENT_STEP_METHOD", timeStepMethodString((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()).toStdString());
     problemInfo.SetValue("TRANSIENT_TOLERANCE_LABEL", tr("Tolerance:").toStdString());
     problemInfo.SetValue("TRANSIENT_TOLERANCE", QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble()).toStdString());
     problemInfo.SetValue("TRANSIENT_INITIALTIMESTEP_LABEL", tr("Initial step size:").toStdString());

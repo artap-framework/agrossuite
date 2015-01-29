@@ -331,8 +331,26 @@ void SolverDeal::solveLinearityLinear()
 
     if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
     {
-        transientImplicitMethod();
+        // initial condition
+        *m_solution = 0.0;
+        dealii::VectorTools::interpolate(*m_doFHandler,
+                                         dealii::ConstantFunction<2>(m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble()),
+                                         *m_solution);
 
+        switch (timeStepMethodType((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()))
+        {
+        case TimeStepMethodType_Implicit:
+            transientImplicitMethod();
+            break;
+        case TimeStepMethodType_Explicit:
+            transientExplicitMethod();
+            break;
+        case TimeStepMethodType_EmbeddedExplicit:
+            transientExplicitEmbeddedMethod();
+            break;
+        default:
+            assert(0);
+        }
     }
     else
     {
@@ -929,13 +947,9 @@ dealii::Vector<double> SolverDeal::transientEvaluateMassMatrixImplicitPart(const
 
 void SolverDeal::transientExplicitMethod()
 {   
-    *m_solution = 0;
-    dealii::VectorTools::interpolate(*m_doFHandler,
-                                     dealii::ConstantFunction<2>(m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble()),
-                                     *m_solution);
-
     const double time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
-    dealii::TimeStepping::ExplicitRungeKutta<dealii::Vector<double> > explicit_runge_kutta(dealii::TimeStepping::FORWARD_EULER);
+    dealii::TimeStepping::ExplicitRungeKutta<dealii::Vector<double> >
+            explicit_runge_kutta((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt());
 
     double time = 0.0;
     for (unsigned int i = 0; i < Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); ++i)
@@ -952,14 +966,9 @@ void SolverDeal::transientExplicitMethod()
 
 void SolverDeal::transientImplicitMethod()
 {
-    // initial condition
-    *m_solution = 0.0;
-    dealii::VectorTools::interpolate(*m_doFHandler,
-                                     dealii::ConstantFunction<2>(m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble()),
-                                     *m_solution);
-
     const double time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
-    dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> > implicit_runge_kutta(dealii::TimeStepping::BACKWARD_EULER);
+    dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> >
+            implicit_runge_kutta((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt());
 
     double time = 0.0;
     for (unsigned int i = 0; i < Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); ++i)
@@ -995,9 +1004,7 @@ void SolverDeal::transientImplicitMethod()
 
 unsigned int SolverDeal::transientExplicitEmbeddedMethod()
 {
-    *m_solution = 0;
-
-    double time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
+    double time_step = Agros2D::problem()->config()->constantTimeStepLength();
 
     const double coarsen_param = 1.2;
     const double refine_param = 0.8;
@@ -1006,9 +1013,15 @@ unsigned int SolverDeal::transientExplicitEmbeddedMethod()
     const double refine_tol = 1e-1;
     const double coarsen_tol = 1e-5;
 
-    dealii::TimeStepping::EmbeddedExplicitRungeKutta<dealii::Vector<double> > embedded_explicit_runge_kutta(dealii::TimeStepping::HEUN_EULER,
-                                                                                                            coarsen_param, refine_param, min_delta, max_delta,
-                                                                                                            refine_tol, coarsen_tol);
+    dealii::TimeStepping::EmbeddedExplicitRungeKutta<dealii::Vector<double> >
+            embedded_explicit_runge_kutta((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt(),
+                                          coarsen_param,
+                                          refine_param,
+                                          min_delta,
+                                          max_delta,
+                                          refine_tol,
+                                          coarsen_tol);
+
     unsigned int n_steps = 0;
     double time = 0.0;
     while (time < Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble())

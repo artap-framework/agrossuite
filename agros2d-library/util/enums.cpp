@@ -34,7 +34,7 @@ static QMap<WeakFormVariant, QString> weakFormVariantList;
 static QMap<AdaptivityMethod, QString> adaptivityTypeList;
 static QMap<AdaptivityEstimator, QString> adaptivityEstimatorList;
 static QMap<NormType, QString> adaptivityNormTypeList;
-static QMap<TimeStepMethod, QString> timeStepMethodList;
+static QMap<dealii::TimeStepping::runge_kutta_method, QString> timeStepMethodList;
 static QMap<SolutionMode, QString> solutionTypeList;
 static QMap<AnalysisType, QString> analysisTypeList;
 static QMap<CouplingType, QString> couplingTypeList;
@@ -94,8 +94,8 @@ QString adaptivityNormTypeToStringKey(NormType adaptivityNormType) { return adap
 NormType adaptivityNormTypeFromStringKey(const QString &adaptivityNormType) { return adaptivityNormTypeList.key(adaptivityNormType); }
 
 QStringList timeStepMethodStringKeys() { return timeStepMethodList.values(); }
-QString timeStepMethodToStringKey(TimeStepMethod timeStepMethod) { return timeStepMethodList[timeStepMethod]; }
-TimeStepMethod timeStepMethodFromStringKey(const QString &timeStepMethod) { return timeStepMethodList.key(timeStepMethod); }
+QString timeStepMethodToStringKey(dealii::TimeStepping::runge_kutta_method timeStepMethod) { return timeStepMethodList[timeStepMethod]; }
+dealii::TimeStepping::runge_kutta_method timeStepMethodFromStringKey(const QString &timeStepMethod) { return timeStepMethodList.key(timeStepMethod); }
 
 QStringList solutionTypeStringKeys() { return solutionTypeList.values(); }
 QString solutionTypeToStringKey(SolutionMode solutionType) { return solutionTypeList[solutionType]; }
@@ -195,13 +195,21 @@ void initLists()
     // meshTypeList.insert(MeshType_NETGEN_QuadDominated, "netgen_quaddominated");
     meshTypeList.insert(MeshType_CUBIT, "cubit");
 
-    timeStepMethodList.insert(TimeStepMethod_Fixed, "fixed");
-    timeStepMethodList.insert(TimeStepMethod_BDFTolerance, "adaptive");
-    timeStepMethodList.insert(TimeStepMethod_BDFNumSteps, "adaptive_numsteps");
-    //    timeStepMethodList.insert(TimeStepMethod_BDF2, "bdf2_adaptive");
-    //    timeStepMethodList.insert(TimeStepMethod_BDF2Combine, "bdf2_combine");
-    //    timeStepMethodList.insert(TimeStepMethod_FixedBDF2B, "fixed_bdf2b");
-    //    timeStepMethodList.insert(TimeStepMethod_FixedCombine, "fixed_combine");
+    // explicit methods
+    timeStepMethodList.insert(dealii::TimeStepping::FORWARD_EULER, "forward_euler");
+    timeStepMethodList.insert(dealii::TimeStepping::RK_THIRD_ORDER, "rk_third_order");
+    timeStepMethodList.insert(dealii::TimeStepping::RK_CLASSIC_FOURTH_ORDER, "rk_classic_fourth_order");
+    // implicit methods
+    timeStepMethodList.insert(dealii::TimeStepping::BACKWARD_EULER, "backward_euler");
+    timeStepMethodList.insert(dealii::TimeStepping::IMPLICIT_MIDPOINT, "implicit_midpoint");
+    timeStepMethodList.insert(dealii::TimeStepping::CRANK_NICOLSON, "crank_nicolson");
+    timeStepMethodList.insert(dealii::TimeStepping::SDIRK_TWO_STAGES, "sdirk_two_stages");
+    // embedded explicit methods
+    timeStepMethodList.insert(dealii::TimeStepping::HEUN_EULER, "heun_euler");
+    timeStepMethodList.insert(dealii::TimeStepping::BOGACKI_SHAMPINE, "bogacki_shampine");
+    timeStepMethodList.insert(dealii::TimeStepping::DOPRI, "dopri");
+    timeStepMethodList.insert(dealii::TimeStepping::FEHLBERG, "fehlberg");
+    timeStepMethodList.insert(dealii::TimeStepping::CASH_KARP, "cash_karp");
 
     // PHYSICFIELDVARIABLECOMP
     physicFieldVariableCompList.insert(PhysicFieldVariableComp_Scalar, "scalar");
@@ -374,7 +382,7 @@ QString analysisTypeString(AnalysisType analysisType)
     switch (analysisType)
     {
     case AnalysisType_SteadyState:
-        return QObject::tr("Steady state");    
+        return QObject::tr("Steady state");
     case AnalysisType_Harmonic:
         return QObject::tr("Harmonic");
     default:
@@ -469,16 +477,69 @@ QString adaptivityEstimatorString(AdaptivityEstimator adaptivityEstimator)
     }
 }
 
-QString timeStepMethodString(TimeStepMethod timeStepMethod)
+TimeStepMethodType timeStepMethodType(dealii::TimeStepping::runge_kutta_method timeStepMethod)
 {
     switch (timeStepMethod)
     {
-    case TimeStepMethod_Fixed:
-        return QObject::tr("Fixed step");
-    case TimeStepMethod_BDFTolerance:
-        return QObject::tr("Adaptive (tolerance)");
-    case TimeStepMethod_BDFNumSteps:
-        return QObject::tr("Adaptive (num steps)");
+    // explicit methods
+    case dealii::TimeStepping::FORWARD_EULER:
+    case dealii::TimeStepping::RK_THIRD_ORDER:
+    case dealii::TimeStepping::RK_CLASSIC_FOURTH_ORDER:
+        return TimeStepMethodType_Explicit;
+
+    // implicit methods
+    case dealii::TimeStepping::BACKWARD_EULER:
+    case dealii::TimeStepping::IMPLICIT_MIDPOINT:
+    case dealii::TimeStepping::CRANK_NICOLSON:
+    case dealii::TimeStepping::SDIRK_TWO_STAGES:
+        return TimeStepMethodType_Implicit;
+
+     // embedded explicit methods
+    case dealii::TimeStepping::HEUN_EULER:
+    case dealii::TimeStepping::BOGACKI_SHAMPINE:
+    case dealii::TimeStepping::DOPRI:
+    case dealii::TimeStepping::FEHLBERG:
+    case dealii::TimeStepping::CASH_KARP:
+        return TimeStepMethodType_EmbeddedExplicit;
+    default:
+        std::cerr << "Time step method '" + QString::number(timeStepMethod).toStdString() + "' is not implemented. timeStepMethodString(TimeStepMethod timeStepMethod)" << endl;
+        throw;
+    }
+}
+
+QString timeStepMethodString(dealii::TimeStepping::runge_kutta_method timeStepMethod)
+{
+    switch (timeStepMethod)
+    {
+    // explicit methods
+    case dealii::TimeStepping::FORWARD_EULER:
+        return QObject::tr("Forward Euler (expl.)");
+    case dealii::TimeStepping::RK_THIRD_ORDER:
+        return QObject::tr("Runge-Kutta 3rd order (expl.)");
+    case dealii::TimeStepping::RK_CLASSIC_FOURTH_ORDER:
+        return QObject::tr("Runge-Kutta 4th order (expl.)");
+
+    // implicit methods
+    case dealii::TimeStepping::BACKWARD_EULER:
+        return QObject::tr("Backward Euler (impl.)");
+    case dealii::TimeStepping::IMPLICIT_MIDPOINT:
+        return QObject::tr("Midpoint (impl.)");
+    case dealii::TimeStepping::CRANK_NICOLSON:
+        return QObject::tr("Crank Nicolson (impl.)");
+    case dealii::TimeStepping::SDIRK_TWO_STAGES:
+        return QObject::tr("SDIRK two stages (impl.)");
+
+    // embedded explicit methods
+    case dealii::TimeStepping::HEUN_EULER:
+        return QObject::tr("Heun Euler (embed.)");
+    case dealii::TimeStepping::BOGACKI_SHAMPINE:
+        return QObject::tr("Bogacki-Shampine (embed.)");
+    case dealii::TimeStepping::DOPRI:
+        return QObject::tr("Dopri (embed.)");
+    case dealii::TimeStepping::FEHLBERG:
+        return QObject::tr("Fehlberg (embed.)");
+    case dealii::TimeStepping::CASH_KARP:
+        return QObject::tr("Cash-Karp (embed.)");
     default:
         std::cerr << "Time step method '" + QString::number(timeStepMethod).toStdString() + "' is not implemented. timeStepMethodString(TimeStepMethod timeStepMethod)" << endl;
         throw;
@@ -525,22 +586,22 @@ QString meshTypeString(MeshType meshType)
     {
     case MeshType_Triangle:
         return QObject::tr("Triangle (quad)");
-    // case MeshType_Triangle_QuadFineDivision:
-    //     return QObject::tr("Triangle - quad fine div.");
-    // case MeshType_Triangle_QuadRoughDivision:
-    //     return QObject::tr("Triangle - quad rough div.");
-    // case MeshType_Triangle_QuadJoin:
-    //     return QObject::tr("Triangle - quad join");
-    // case MeshType_GMSH_Triangle:
-    //     return QObject::tr("GMSH (exp.) - triangle");
-    // case MeshType_GMSH_Quad:
-    //     return QObject::tr("GMSH (exp.) - quad");
-    // case MeshType_GMSH_QuadDelaunay_Experimental:
-    //    return QObject::tr("GMSH (exp.) - quad Delaunay");
-    // case MeshType_NETGEN_Triangle:
-    //     return QObject::tr("NETGEN (exp.) - triangle");
-    // case MeshType_NETGEN_QuadDominated:
-    //     return QObject::tr("NETGEN (exp.) - quad dominated");
+        // case MeshType_Triangle_QuadFineDivision:
+        //     return QObject::tr("Triangle - quad fine div.");
+        // case MeshType_Triangle_QuadRoughDivision:
+        //     return QObject::tr("Triangle - quad rough div.");
+        // case MeshType_Triangle_QuadJoin:
+        //     return QObject::tr("Triangle - quad join");
+        // case MeshType_GMSH_Triangle:
+        //     return QObject::tr("GMSH (exp.) - triangle");
+        // case MeshType_GMSH_Quad:
+        //     return QObject::tr("GMSH (exp.) - quad");
+        // case MeshType_GMSH_QuadDelaunay_Experimental:
+        //    return QObject::tr("GMSH (exp.) - quad Delaunay");
+        // case MeshType_NETGEN_Triangle:
+        //     return QObject::tr("NETGEN (exp.) - triangle");
+        // case MeshType_NETGEN_QuadDominated:
+        //     return QObject::tr("NETGEN (exp.) - quad dominated");
     case MeshType_CUBIT:
         return QObject::tr("CUBIT");
     default:

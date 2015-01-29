@@ -48,12 +48,8 @@ class PyProblem
         void setFrequency(double frequency);
 
         // time step method
-        inline std::string getTimeStepMethod() const { return timeStepMethodToStringKey((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()).toStdString(); }
+        inline std::string getTimeStepMethod() const { return timeStepMethodToStringKey((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()).toStdString(); }
         void setTimeStepMethod(const std::string &timeStepMethod);
-
-        // time method order
-        inline int getTimeMethodOrder() const { return Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt(); }
-        void setTimeMethodOrder(int timeMethodOrder);
 
         // time method tolerance
         inline double getTimeMethodTolerance() const { return Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble(); }

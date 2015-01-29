@@ -1131,9 +1131,6 @@ void ProblemWidget::createControls()
 
     // transient
     cmbTransientMethod = new QComboBox();
-    txtTransientOrder = new QSpinBox();
-    txtTransientOrder->setMinimum(1);
-    txtTransientOrder->setMaximum(3);
     txtTransientTimeTotal = new LineEditDouble(1.0);
     txtTransientTimeTotal->setBottom(0.0);
     lblTransientTimeTotal = new QLabel("Total time");
@@ -1154,8 +1151,6 @@ void ProblemWidget::createControls()
     layoutTransientAnalysis->setColumnStretch(2, 1);
     layoutTransientAnalysis->addWidget(new QLabel(tr("Method:")), 0, 0, 1, 2);
     layoutTransientAnalysis->addWidget(cmbTransientMethod, 0, 2);
-    layoutTransientAnalysis->addWidget(new QLabel(tr("Order:")), 1, 0, 1, 2);
-    layoutTransientAnalysis->addWidget(txtTransientOrder, 1, 2);
     layoutTransientAnalysis->addWidget(new QLabel(tr("Tolerance:")), 2, 0, 1, 2);
     layoutTransientAnalysis->addWidget(txtTransientTolerance, 2, 2);
     layoutTransientAnalysis->addWidget(lblTransientTimeTotal, 3, 0, 1, 2);
@@ -1254,9 +1249,9 @@ void ProblemWidget::fillComboBox()
     foreach (QString meshType, meshTypeStringKeys())
         cmbMeshType->addItem(meshTypeString(meshTypeFromStringKey(meshType)), meshTypeFromStringKey(meshType));
 
-    cmbTransientMethod->addItem(timeStepMethodString(TimeStepMethod_Fixed), TimeStepMethod_Fixed);
-    cmbTransientMethod->addItem(timeStepMethodString(TimeStepMethod_BDFTolerance), TimeStepMethod_BDFTolerance);
-    cmbTransientMethod->addItem(timeStepMethodString(TimeStepMethod_BDFNumSteps), TimeStepMethod_BDFNumSteps);
+    cmbTransientMethod->clear();
+    foreach (QString timeStepType, timeStepMethodStringKeys())
+        cmbTransientMethod->addItem(timeStepMethodString(timeStepMethodFromStringKey(timeStepType)), timeStepMethodFromStringKey(timeStepType));
 }
 
 void ProblemWidget::updateControls()
@@ -1268,7 +1263,6 @@ void ProblemWidget::updateControls()
     txtFrequency->disconnect();
 
     cmbTransientMethod->disconnect();
-    txtTransientOrder->disconnect();
     txtTransientTimeTotal->disconnect();
     txtTransientTolerance->disconnect();
     chkTransientInitialStepSize->disconnect();
@@ -1296,9 +1290,8 @@ void ProblemWidget::updateControls()
     txtTransientTolerance->setValue(Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble());
     chkTransientInitialStepSize->setChecked(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() > 0.0);
     txtTransientInitialStepSize->setEnabled(chkTransientInitialStepSize->isChecked());
-    txtTransientInitialStepSize->setValue(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());
-    txtTransientOrder->setValue(Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt());
-    cmbTransientMethod->setCurrentIndex(cmbTransientMethod->findData((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()));
+    txtTransientInitialStepSize->setValue(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());    
+    cmbTransientMethod->setCurrentIndex(cmbTransientMethod->findData((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()));
     if (cmbTransientMethod->currentIndex() == -1)
         cmbTransientMethod->setCurrentIndex(0);
 
@@ -1326,7 +1319,6 @@ void ProblemWidget::updateControls()
     connect(cmbTransientMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(changedWithClear()));
     connect(txtTransientSteps, SIGNAL(valueChanged(int)), this, SLOT(changedWithClear()));
     connect(txtTransientTimeTotal, SIGNAL(textChanged(QString)), this, SLOT(changedWithClear()));
-    connect(txtTransientOrder, SIGNAL(valueChanged(int)), this, SLOT(changedWithClear()));
     connect(txtTransientTolerance, SIGNAL(textChanged(QString)), this, SLOT(changedWithClear()));
     connect(chkTransientInitialStepSize, SIGNAL(stateChanged(int)), this, SLOT(changedWithClear()));
     connect(txtTransientInitialStepSize, SIGNAL(textChanged(QString)), this, SLOT(changedWithClear()));
@@ -1334,7 +1326,6 @@ void ProblemWidget::updateControls()
     connect(cmbTransientMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(transientChanged()));
     connect(txtTransientSteps, SIGNAL(valueChanged(int)), this, SLOT(transientChanged()));
     connect(txtTransientTimeTotal, SIGNAL(textChanged(QString)), this, SLOT(transientChanged()));
-    connect(txtTransientOrder, SIGNAL(valueChanged(int)), this, SLOT(transientChanged()));
 
     // startup
     // connect(txtStartupScript, SIGNAL(textChanged()), this, SLOT(changedWithClear()));
@@ -1349,8 +1340,7 @@ void ProblemWidget::changedWithClear()
     Agros2D::problem()->config()->setMeshType((MeshType) cmbMeshType->itemData(cmbMeshType->currentIndex()).toInt());
 
     Agros2D::problem()->config()->setValue(ProblemConfig::Frequency, txtFrequency->value());
-    Agros2D::problem()->config()->setValue(ProblemConfig::TimeMethod, (TimeStepMethod) cmbTransientMethod->itemData(cmbTransientMethod->currentIndex()).toInt());
-    Agros2D::problem()->config()->setValue(ProblemConfig::TimeOrder, txtTransientOrder->value());
+    Agros2D::problem()->config()->setValue(ProblemConfig::TimeMethod, (dealii::TimeStepping::runge_kutta_method) cmbTransientMethod->itemData(cmbTransientMethod->currentIndex()).toInt());
     Agros2D::problem()->config()->setValue(ProblemConfig::TimeMethodTolerance, txtTransientTolerance->value());
     Agros2D::problem()->config()->setValue(ProblemConfig::TimeConstantTimeSteps, txtTransientSteps->value());
     Agros2D::problem()->config()->setValue(ProblemConfig::TimeTotal, txtTransientTimeTotal->value());
@@ -1378,31 +1368,24 @@ void ProblemWidget::transientChanged()
 {
     lblTransientTimeStep->setText(QString("%1 %2").arg(txtTransientTimeTotal->value() / txtTransientSteps->value()).arg(Agros2D::problem()->timeUnit()));
 
-    if (((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_Fixed)
+    TimeStepMethodType type = timeStepMethodType((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt());
+
+    if (type == TimeStepMethodType_Implicit || type == TimeStepMethodType_Explicit)
     {
         chkTransientInitialStepSize->setEnabled(false);
         txtTransientInitialStepSize->setEnabled(false);
         txtTransientTolerance->setEnabled(false);
         txtTransientSteps->setEnabled(true);
-
     }
-    else if (((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFTolerance)
+    else if (type == TimeStepMethodType_EmbeddedExplicit)
     {
-        chkTransientInitialStepSize->setEnabled(true);
-        txtTransientTolerance->setEnabled(true);
-        txtTransientSteps->setEnabled(false);
-    }
-    else if (((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFNumSteps)
-    {
-        chkTransientInitialStepSize->setEnabled(true);
+        chkTransientInitialStepSize->setEnabled(false);
         txtTransientTolerance->setEnabled(false);
-        txtTransientSteps->setEnabled(true);
     }
-
-    if (((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_Fixed)
-        lblTransientSteps->setText(tr("Number of steps:"));
     else
-        lblTransientSteps->setText(tr("Approx. number of steps:"));
+    {
+        assert(1);
+    }
 }
 
 void ProblemWidget::startupScriptCollapse(bool collapsed)

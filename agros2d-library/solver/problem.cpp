@@ -614,18 +614,6 @@ void Problem::solve(bool commandLine)
         return;
     }
 
-    if (isTransient() && config()->isTransientAdaptive() && (numAdaptiveFields() >= 1))
-    {
-        Agros2D::log()->printError(tr("Solver"), tr("Both space and time adaptivity at the same time not possible at the moment."));
-        return;
-    }
-
-    if( isTransient() && config()->isTransientAdaptive() && (config()->value(ProblemConfig::TimeOrder).toInt() == 1))
-    {
-        Agros2D::log()->printError(tr("Solver"), tr("Select higher order of time method to use adaptivity."));
-        return;
-    }
-
     if (Agros2D::problem()->fieldInfos().isEmpty())
     {
         Agros2D::log()->printError(tr("Solver"), tr("No fields defined"));

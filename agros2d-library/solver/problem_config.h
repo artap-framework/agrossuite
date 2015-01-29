@@ -47,7 +47,6 @@ public:
         TimeMethod,
         TimeMethodTolerance,
         TimeInitialStepSize,
-        TimeOrder,
         TimeConstantTimeSteps,
         TimeTotal
     };
@@ -88,7 +87,6 @@ public:
 
     inline double constantTimeStepLength() { return value(ProblemConfig::TimeTotal).toDouble() / value(ProblemConfig::TimeConstantTimeSteps).toInt(); }
     double initialTimeStepLength();
-    bool isTransientAdaptive() const;
 
     void refresh() { emit changed(); }
 

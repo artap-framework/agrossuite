@@ -62,39 +62,9 @@ void ProblemConfig::clear()
     m_setting = m_settingDefault;
 }
 
-bool ProblemConfig::isTransientAdaptive() const
-{
-    if ((((TimeStepMethod) value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFTolerance)
-            || (((TimeStepMethod) value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFNumSteps))
-        return true;
-    else if(((TimeStepMethod) value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_Fixed)
-        return false;
-
-    assert(0);
-}
-
 double ProblemConfig::initialTimeStepLength()
 {
-    if (((TimeStepMethod) value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_Fixed)
-    {
-        return constantTimeStepLength();
-    }
-    else if (((TimeStepMethod) value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFNumSteps)
-    {
-        if (value(ProblemConfig::TimeInitialStepSize).toDouble() > 0.0)
-            return value(ProblemConfig::TimeInitialStepSize).toDouble();
-        else
-            return constantTimeStepLength() / 3.0;
-    }
-    else if (((TimeStepMethod) value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFTolerance)
-    {
-        if (value(ProblemConfig::TimeInitialStepSize).toDouble() > 0.0)
-            return value(ProblemConfig::TimeInitialStepSize).toDouble();
-        else
-            return value(ProblemConfig::TimeTotal).toDouble() / 500.0;
-    }
-    else
-        assert(0);
+    return constantTimeStepLength();
 }
 
 void ProblemConfig::load(XMLProblem::problem_config *configxsd)
@@ -141,7 +111,6 @@ void ProblemConfig::setStringKeys()
     m_settingKey[TimeMethod] = "TimeMethod";
     m_settingKey[TimeMethodTolerance] = "TimeMethodTolerance";
     m_settingKey[TimeInitialStepSize] = "TimeInitialStepSize";
-    m_settingKey[TimeOrder] = "TimeOrder";
     m_settingKey[TimeConstantTimeSteps] = "TimeSteps";
     m_settingKey[TimeTotal] = "TimeTotal";
 }
@@ -151,10 +120,9 @@ void ProblemConfig::setDefaultValues()
     m_settingDefault.clear();
 
     m_settingDefault[Frequency] = 50.0;
-    m_settingDefault[TimeMethod] = TimeStepMethod_BDFNumSteps;
+    m_settingDefault[TimeMethod] = dealii::TimeStepping::BACKWARD_EULER;
     m_settingDefault[TimeMethodTolerance] = 0.05;
     m_settingDefault[TimeInitialStepSize] = 0.0;
-    m_settingDefault[TimeOrder] = 2;
     m_settingDefault[TimeConstantTimeSteps] = 10;
     m_settingDefault[TimeTotal] = 10.0;
 }

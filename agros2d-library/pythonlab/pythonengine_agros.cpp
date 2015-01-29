@@ -257,26 +257,11 @@ QString createPythonFromModel()
     if (Agros2D::problem()->isTransient())
     {
         str += QString("problem.time_step_method = \"%1\"\n"
-                       "problem.time_method_order = %2\n"
+                       "problem.time_steps = %2\n"
                        "problem.time_total = %3\n").
-                arg(timeStepMethodToStringKey((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt())).
-                arg(Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt()).
+                arg(timeStepMethodToStringKey((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt())).
+                arg(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()).
                 arg(Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
-
-        if (((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFTolerance)
-        {
-            str += QString("problem.time_method_tolerance = %1\n").
-                    arg(Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble());
-        }
-        else
-        {
-            str += QString("problem.time_steps = %1\n").
-                    arg(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt());
-        }
-        if (((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) != TimeStepMethod_Fixed &&
-                (Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() > 0.0))
-            str += QString("problem.time_initial_time_step = %1\n").
-                    arg(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());
     }
 
     // fields

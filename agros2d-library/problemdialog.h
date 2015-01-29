@@ -252,7 +252,6 @@ private:
     QCheckBox *chkTransientInitialStepSize;
     LineEditDouble *txtTransientInitialStepSize;
     QLabel *lblTransientTimeTotal;
-    QSpinBox *txtTransientOrder;
     QComboBox *cmbTransientMethod;
     QLabel *lblTransientTimeStep;
 

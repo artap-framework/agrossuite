@@ -79,17 +79,9 @@ void PyProblem::setFrequency(double frequency)
 void PyProblem::setTimeStepMethod(const std::string &timeStepMethod)
 {
     if (timeStepMethodStringKeys().contains(QString::fromStdString(timeStepMethod)))
-        Agros2D::problem()->config()->setValue(ProblemConfig::TimeMethod, (TimeStepMethod) timeStepMethodFromStringKey(QString::fromStdString(timeStepMethod)));
+        Agros2D::problem()->config()->setValue(ProblemConfig::TimeMethod, (dealii::TimeStepping::runge_kutta_method) timeStepMethodFromStringKey(QString::fromStdString(timeStepMethod)));
     else
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(timeStepMethodStringKeys())).toStdString());
-}
-
-void PyProblem::setTimeMethodOrder(int timeMethodOrder)
-{
-    if (timeMethodOrder >= 1 && timeMethodOrder <= 3)
-        Agros2D::problem()->config()->setValue(ProblemConfig::TimeOrder, timeMethodOrder);
-    else
-        throw out_of_range(QObject::tr("Number of time method order must be greater than 1.").toStdString());
 }
 
 void PyProblem::setTimeMethodTolerance(double timeMethodTolerance)
