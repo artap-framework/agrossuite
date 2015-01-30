@@ -350,6 +350,11 @@ void SolverDeal::solveLinearityLinear()
                                          dealii::ConstantFunction<2>(m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble()),
                                          *m_solution);
 
+        // initial step
+        FieldSolutionID solutionID(m_fieldInfo, 0, 0, SolutionMode_Normal);
+        SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, m_doFHandler->n_dofs());
+        Agros2D::solutionStore()->addSolution(solutionID, MultiArray(m_doFHandler, m_solution), runTime);
+
         switch (timeStepMethodType((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()))
         {
         case TimeStepMethodType_Implicit:
@@ -1010,6 +1015,13 @@ void SolverDeal::transientImplicitMethod()
                                      arg(time));
 
         Agros2D::log()->updateTransientChartInfo(time);
+
+        // add solution
+        // TODO: create better adaptive, linear, time workflow!!!!!!
+
+        FieldSolutionID solutionID(m_fieldInfo, i+1, 0, SolutionMode_Normal);
+        SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, m_doFHandler->n_dofs());
+        Agros2D::solutionStore()->addSolution(solutionID, MultiArray(m_doFHandler, m_solution), runTime);
     }
 
     hanging_node_constraints.distribute(*m_solution);

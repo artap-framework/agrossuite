@@ -163,6 +163,7 @@ void fillComboBoxTimeStep(const FieldInfo* fieldInfo, QComboBox *cmbTimeStep)
     cmbTimeStep->clear();
 
     QList<double> timeLevels = Agros2D::solutionStore()->timeLevels(fieldInfo);
+
     int i = 0;
     // timeStep = 0;
     foreach (double time, timeLevels)
