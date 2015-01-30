@@ -132,25 +132,12 @@ double RightHandSide<dim>::value (const dealii::Point<dim> &p,
 
 // *******************************************************************************************
 
-SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
-    : m_fieldInfo(fieldInfo), m_scene(Agros2D::scene()), m_problem(Agros2D::problem()), m_solution_previous(NULL), m_time(0.0)
-{    
-    // fe collection
-    qDebug() << "SolverDeal::SolverDeal: numberOfSolutions" << fieldInfo->numberOfSolutions();
-    m_feCollection = new dealii::hp::FECollection<2>();
-
-    // copy initial mesh
-    m_triangulation = new dealii::Triangulation<2>();
-    m_triangulation->copy_triangulation(*m_fieldInfo->initialMesh());
-
-    // create dof handler
-    m_doFHandler = new dealii::hp::DoFHandler<2>(*m_triangulation);
-
-    // create solution vector
-    m_solution = new dealii::Vector<double>();
+dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fieldInfo)
+{
+    dealii::hp::FECollection<2> *feCollection = new dealii::hp::FECollection<2>();
 
     // Gauss quadrature and fe collection
-    for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
     {
         /*
         std::vector<const dealii::FiniteElement<2> *> fes;
@@ -164,8 +151,34 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
             multiplicities.push_back(1);
         }
         */
-        m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Q<2>(degree), fieldInfo->numberOfSolutions()));
+        feCollection->push_back(dealii::FESystem<2>(dealii::FE_Q<2>(degree), fieldInfo->numberOfSolutions()));
         // m_feCollection->push_back(dealii::FESystem<2>(fes, multiplicities));
+    }
+
+    return feCollection;
+}
+
+SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
+    : m_fieldInfo(fieldInfo), m_scene(Agros2D::scene()), m_problem(Agros2D::problem()), m_solution_previous(NULL), m_time(0.0)
+{    
+    // fe collection
+    qDebug() << "SolverDeal::SolverDeal: numberOfSolutions" << fieldInfo->numberOfSolutions();
+
+    // copy initial mesh
+    m_triangulation = new dealii::Triangulation<2>();
+    m_triangulation->copy_triangulation(*m_fieldInfo->initialMesh());
+
+    // create dof handler
+    m_doFHandler = new dealii::hp::DoFHandler<2>(*m_triangulation);
+
+    // create solution vector
+    m_solution = new dealii::Vector<double>();
+
+    // fe collection
+    m_feCollection = SolverDeal::createFECollection(m_fieldInfo);
+
+    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+    {
         m_quadrature_formulas.push_back(dealii::QGauss<2>(degree + QUADRATURE_ORDER_INCREASE));
         m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(degree + QUADRATURE_ORDER_INCREASE));
     }

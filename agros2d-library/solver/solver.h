@@ -96,6 +96,8 @@ public:
     inline void set_time(const double new_time) { m_time = new_time; }
     inline double get_time() const { return m_time; }
 
+    static dealii::hp::FECollection<2> *createFECollection(const FieldInfo *fieldInfo);
+
 protected:
     // local reference
     const FieldInfo *m_fieldInfo;

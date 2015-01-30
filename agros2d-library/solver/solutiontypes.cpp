@@ -29,7 +29,7 @@
 QString FieldSolutionID::toString()
 {
     QString str = QString("%1_%2_%3_%4").
-            arg(group->fieldId()).
+            arg(fieldInfo->fieldId()).
             arg(timeStep).
             arg(adaptivityStep).
             arg(solutionTypeToStringKey(solutionMode));
@@ -61,5 +61,3 @@ void MultiArray::append(dealii::hp::DoFHandler<2> *doFHandler, dealii::Vector<do
     m_doFHandler = doFHandler;
     m_solution = solution;
 }
-
-template class SolutionID<FieldInfo>;

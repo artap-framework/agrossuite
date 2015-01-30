@@ -28,6 +28,7 @@
 
 #include "util.h"
 #include "util/enums.h"
+#include "field.h"
 
 /// this header file should be kept small, since it is included in other header files
 
@@ -57,28 +58,25 @@ private:
     dealii::Vector<double> *m_solution;
 };
 
-//const int LAST_ADAPTIVITY_STEP = -1;
-//const int LAST_TIME_STEP = -1;
-
-/// !!!! In case of adding more data fields, update the following operator< !!!
-template <typename Group>
-struct SolutionID
+class FieldSolutionID
 {
-    const Group* group;
+public:
+    const FieldInfo* fieldInfo;
     int timeStep;
     int adaptivityStep;
     SolutionMode solutionMode;
 
-    SolutionID() : group(NULL), timeStep(0), adaptivityStep(0), solutionMode(SolutionMode_Normal) {}
-    SolutionID(const Group* group, int timeStep, int adaptivityStep, SolutionMode solutionMode) :
-        group(group), timeStep(timeStep), adaptivityStep(adaptivityStep), solutionMode(solutionMode) {}
+    FieldSolutionID() : fieldInfo(NULL), timeStep(0), adaptivityStep(0), solutionMode(SolutionMode_Normal) {}
+    FieldSolutionID(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionMode) :
+        fieldInfo(fieldInfo), timeStep(timeStep), adaptivityStep(adaptivityStep), solutionMode(solutionMode) {}
+
+    QString toString();
 };
 
-template <typename Group>
-inline bool operator<(const SolutionID<Group> &sid1, const SolutionID<Group> &sid2)
+inline bool operator<(const FieldSolutionID &sid1, const FieldSolutionID &sid2)
 {
-    if (sid1.group != sid2.group)
-        return sid1.group < sid2.group;
+    if (sid1.fieldInfo != sid2.fieldInfo)
+        return sid1.fieldInfo < sid2.fieldInfo;
 
     if (sid1.timeStep != sid2.timeStep)
         return sid1.timeStep < sid2.timeStep;
@@ -89,52 +87,21 @@ inline bool operator<(const SolutionID<Group> &sid1, const SolutionID<Group> &si
     return sid1.solutionMode < sid2.solutionMode;
 }
 
-template <typename Group>
-inline bool operator==(const SolutionID<Group> &sid1, const SolutionID<Group> &sid2)
+inline bool operator==(const FieldSolutionID &sid1, const FieldSolutionID &sid2)
 {
     return !((sid1 < sid2) || (sid2 < sid1));
 }
 
-template <typename Group>
-inline bool operator!=(const SolutionID<Group> &sid1, const SolutionID<Group> &sid2)
+inline bool operator!=(const FieldSolutionID &sid1, const FieldSolutionID &sid2)
 {
     return !(sid1 == sid2);
 }
 
-template <typename Group>
-ostream& operator<<(ostream& output, const SolutionID<Group>& id)
+inline ostream& operator<<(ostream& output, const FieldSolutionID& id)
 {
-    output << "(" << *id.group << ", timeStep " << id.timeStep << ", adaptStep " <<
+    output << "(" << id.fieldInfo->fieldId().toStdString() << ", timeStep " << id.timeStep << ", adaptStep " <<
               id.adaptivityStep << ", type "<< id.solutionMode << ")";
     return output;
 }
-
-
-//template class SolutionID<Block>;
-
-class FieldSolutionID : public SolutionID<FieldInfo>
-{
-public:
-    FieldSolutionID(const FieldInfo* fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType) :
-        SolutionID<FieldInfo>(fieldInfo, timeStep, adaptivityStep, solutionType) {}
-
-    FieldSolutionID() : SolutionID<FieldInfo>() {}
-
-    QString toString();
-};
-
-enum SolverAction
-{
-    SolverAction_Solve,
-    SolverAction_AdaptivityStep,
-    SolverAction_TimeStep
-};
-
-struct SolverConfig
-{
-    SolverAction action;
-    double timeStep;
-};
-
 
 #endif // SOLUTIONTYPES_H

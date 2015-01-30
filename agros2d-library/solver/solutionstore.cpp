@@ -91,8 +91,6 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
 
     if (!m_multiSolutionDealCache.contains(solutionID))
     {
-        assert(0);
-
         // load from stream
         QString baseFN = baseStoreFileName(solutionID);
 
@@ -104,16 +102,15 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
         triangulation->load(sbiMesh, 0);
 
         dealii::hp::DoFHandler<2> *doFHandler = new dealii::hp::DoFHandler<2>(*triangulation);
-        // dealii::DoFHandler<2> *doFHandler2;
 
         // fe collection
-        dealii::FESystem<2> *fe = new dealii::FESystem<2>(dealii::FE_Q<2>(solutionID.group->value(FieldInfo::SpacePolynomialOrder).toInt()), solutionID.group->numberOfSolutions());
-        //! doFHandler->distribute_dofs(*fe);
+        // dealii::FESystem<2> *fe = new dealii::FESystem<2>(dealii::FE_Q<2>(solutionID.group->value(FieldInfo::SpacePolynomialOrder).toInt()), solutionID.group->numberOfSolutions());
+        doFHandler->distribute_dofs(*SolverDeal::createFECollection(solutionID.fieldInfo));
 
         QString fnDoF = QString("%1.dof").arg(baseFN);
         std::ifstream ifsDoF(fnDoF.toStdString());
         boost::archive::binary_iarchive sbiDoF(ifsDoF);
-        //!doFHandler->load(sbiDoF, 0);
+        doFHandler->load(sbiDoF, 0);
 
         // solution vector
         dealii::Vector<double> *solution = new dealii::Vector<double>();
@@ -163,7 +160,7 @@ void SolutionStore::addSolution(FieldSolutionID solutionID, MultiArray multiSolu
     fileNames.setDoFFileName(QFileInfo(fnDoF).fileName());
     std::ofstream ofsDoF(fnDoF.toStdString());
     boost::archive::binary_oarchive sbDoF(ofsDoF);
-    //! multiSolution.doFHandler()->save(sbDoF, 0);
+    multiSolution.doFHandler()->save(sbDoF, 0);
 
     QString fnSol = QString("%1.sol").arg(baseFN);
     fileNames.setSolutionFileName(QFileInfo(fnSol).fileName());
@@ -214,7 +211,7 @@ void SolutionStore::removeSolution(FieldSolutionID solutionID, bool saveRunTime)
     {
         QString fn = baseStoreFileName(solutionID);
 
-        for (int solutionIndex = 0; solutionIndex < solutionID.group->numberOfSolutions(); solutionIndex++)
+        for (int solutionIndex = 0; solutionIndex < solutionID.fieldInfo->numberOfSolutions(); solutionIndex++)
         {
             QString fnMesh = QString("%1_%2.msh").arg(fn).arg(solutionIndex);
             if (QFile::exists(fnMesh))
@@ -250,7 +247,7 @@ int SolutionStore::lastTimeStep(const FieldInfo *fieldInfo, SolutionMode solutio
     int timeStep = NOT_FOUND_SO_FAR;
     foreach (FieldSolutionID sid, m_multiSolutions)
     {
-        if((sid.group == fieldInfo) && (sid.solutionMode == solutionType) && (sid.timeStep > timeStep))
+        if((sid.fieldInfo == fieldInfo) && (sid.solutionMode == solutionType) && (sid.timeStep > timeStep))
             timeStep = sid.timeStep;
     }
 
@@ -310,7 +307,7 @@ double SolutionStore::lastTime(const FieldInfo *fieldInfo)
 
     foreach (FieldSolutionID id, m_multiSolutions)
     {
-        if ((id.group == fieldInfo) && (id.timeStep == timeStep))
+        if ((id.fieldInfo == fieldInfo) && (id.timeStep == timeStep))
         {
             if (time == NOT_FOUND_SO_FAR)
                 time = Agros2D::problem()->timeStepToTotalTime(id.timeStep);
@@ -330,7 +327,7 @@ int SolutionStore::lastAdaptiveStep(const FieldInfo *fieldInfo, SolutionMode sol
     int adaptiveStep = NOT_FOUND_SO_FAR;
     foreach (FieldSolutionID sid, m_multiSolutions)
     {
-        if ((sid.group == fieldInfo) && (sid.solutionMode == solutionType) && (sid.timeStep == timeStep) && (sid.adaptivityStep > adaptiveStep))
+        if ((sid.fieldInfo == fieldInfo) && (sid.solutionMode == solutionType) && (sid.timeStep == timeStep) && (sid.adaptivityStep > adaptiveStep))
             adaptiveStep = sid.adaptivityStep;
     }
 
@@ -355,7 +352,7 @@ FieldSolutionID SolutionStore::lastTimeAndAdaptiveSolution(const FieldInfo *fiel
     }
     else
     {
-        solutionID.group = fieldInfo;
+        solutionID.fieldInfo = fieldInfo;
         solutionID.adaptivityStep = lastAdaptiveStep(fieldInfo, solutionType);
         solutionID.timeStep = lastTimeStep(fieldInfo, solutionType);
         solutionID.solutionMode = solutionType;
@@ -370,7 +367,7 @@ QList<double> SolutionStore::timeLevels(const FieldInfo *fieldInfo) const
 
     foreach(FieldSolutionID fsid, m_multiSolutions)
     {
-        if (fsid.group == fieldInfo)
+        if (fsid.fieldInfo == fieldInfo)
         {
             double time = Agros2D::problem()->timeStepToTotalTime(fsid.timeStep);
             if (!list.contains(time))
@@ -409,27 +406,26 @@ double SolutionStore::timeLevel(const FieldInfo *fieldInfo, int timeLevelIndex)
 
 void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, MultiArray multiSolution)
 {
-    // TODO: IMPLEMENT load and save in hp::DoFHandler
-
     // triangulation
-    // dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>();
-    // triangulation->copy_triangulation(multiSolution.doFHandler()->get_tria());
+    dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>();
+    triangulation->copy_triangulation(multiSolution.doFHandler()->get_tria());
 
-    // fe collection
-    // dealii::hp::FECollection<2> *feCollection = new dealii::hp::FECollection<2>();
-    // for (unsigned int degree = solutionID.group->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
-    //     feCollection->push_back(dealii::FESystem<2>(dealii::FE_Q<2>(degree), solutionID.group->numberOfSolutions()));
-
-    // dof handler    
-    // dealii::hp::DoFHandler<2> *doFHandler = new dealii::hp::DoFHandler<2>(multiSolution.doFHandler()->get_tria());
-    // doFHandler->distribute_dofs(multiSolution.doFHandler()->get_fe());
+    // dof handler
+    std::stringstream fsDoF(std::ios::out | std::ios::in | std::ios::binary);
+    boost::archive::binary_oarchive sboDoF(fsDoF);
+    multiSolution.doFHandler()->save(sboDoF, 0);
+    // new handler
+    dealii::hp::DoFHandler<2> *doFHandler = new dealii::hp::DoFHandler<2>(*triangulation);
+    doFHandler->distribute_dofs(multiSolution.doFHandler()->get_fe());
+    // load
+    boost::archive::binary_iarchive sbiDoF(fsDoF);
+    doFHandler->load(sbiDoF, 0);
 
     // solution vector
     dealii::Vector<double> *solution = new dealii::Vector<double>(*multiSolution.solution());
 
     // new multisolution
-    // MultiArray multiSolutionCopy(doFHandler, solution);
-    MultiArray multiSolutionCopy(multiSolution.doFHandler(), solution);
+    MultiArray multiSolutionCopy(doFHandler, solution);
 
     if (!m_multiSolutionDealCache.contains(solutionID))
     {
@@ -525,7 +521,7 @@ void SolutionStore::saveRunTimeDetails()
             SolutionRunTimeDetails str = m_multiSolutionRunTimeDetails[solutionID];
 
             XMLStructure::files files;
-            for (int solutionIndex = 0; solutionIndex < solutionID.group->numberOfSolutions(); solutionIndex++)
+            for (int solutionIndex = 0; solutionIndex < solutionID.fieldInfo->numberOfSolutions(); solutionIndex++)
             {
                 files.file().push_back(XMLStructure::file(solutionIndex,
                                                           str.fileNames().meshFileName().toStdString(),
@@ -549,7 +545,7 @@ void SolutionStore::saveRunTimeDetails()
             XMLStructure::element_data data(files,
                                             newton_residuals,
                                             newton_damping_coefficients,
-                                            solutionID.group->fieldId().toStdString(),
+                                            solutionID.fieldInfo->fieldId().toStdString(),
                                             solutionID.timeStep,
                                             solutionID.adaptivityStep,
                                             solutionTypeToStringKey(solutionID.solutionMode).toStdString());
