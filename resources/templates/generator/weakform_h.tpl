@@ -32,7 +32,7 @@ public:
         : SolverDeal(fieldInfo) {}
 
     virtual void assembleSystem();
-    virtual void assembleDirichlet(bool use_dirichlet_lift);
+    virtual void assembleDirichlet(bool useDirichletLift);
 
     struct AssemblyScratchData
         {

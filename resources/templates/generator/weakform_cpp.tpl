@@ -468,7 +468,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
     }
 }
 
-void SolverDeal{{CLASS}}::assembleDirichlet(bool use_dirichlet_lift)
+void SolverDeal{{CLASS}}::assembleDirichlet(bool useDirichletLift)
 {
     CoordinateType coordinateType = m_problem->config()->coordinateType();
 
@@ -490,7 +490,7 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool use_dirichlet_lift)
                 mask.push_back({{MASK}});{{/FORM_EXPRESSION_MASK}}
                 dealii::ComponentMask component_mask(mask);
 
-                if(use_dirichlet_lift)
+                if(useDirichletLift)
                     dealii::VectorTools::interpolate_boundary_values (*m_doFHandler, i+1,
                                                                       Essential_{{COORDINATE_TYPE}}_{{ANALYSIS_TYPE}}_{{LINEARITY_TYPE}}_{{BOUNDARY_ID}}<2>(boundary),
                                                                       hanging_node_constraints, // boundary_values,

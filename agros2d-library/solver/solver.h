@@ -70,28 +70,15 @@ public:
     // if use_dirichlet_lift == false, zero dirichlet boundary condition is used
     // this is used for later iterations of the Newton method
     // this function, however, has to be called to ensure zero dirichlet boundary
-    virtual void setup(bool use_dirichlet_lift);
-    virtual void setupNewtonInitial();
+    virtual void setup(bool useDirichletLift);
 
     virtual void assembleSystem() = 0;
-    virtual void assembleDirichlet(bool use_dirichlet_lift) = 0;
+    virtual void assembleDirichlet(bool useDirichletLift) = 0;
 
     // problem
     void solve();
 
     void setCouplingSource(QString fieldID, dealii::Vector<double> * sourceVector) { m_coupling_sources[fieldID] = sourceVector; }
-
-    double computeNorm();
-
-    // transient - Runge Kutta - future step!
-    void assembleMassMatrix();
-
-    // Runge Kutta methods
-    void transientExplicitMethod();
-    void transientImplicitMethod();
-    unsigned int transientExplicitEmbeddedMethod();
-    dealii::Vector<double> transientEvaluateMassMatrixExplicitPart(const double time, const dealii::Vector<double> &y) const;
-    dealii::Vector<double> transientEvaluateMassMatrixImplicitPart(const double time, const double tau, const dealii::Vector<double> &y);
 
     inline void set_time(const double new_time) { m_time = new_time; }
     inline double get_time() const { return m_time; }
@@ -134,27 +121,27 @@ protected:
     dealii::SparseMatrix<double> mass_minus_tau_Jacobian;
     dealii::SparseDirectUMFPACK mass_matrix_inverse;
 
+    double computeNorm();
+
     // linear system
     void solveLinearSystem();
     void solveUMFPACK();
     void solvedealii();
 
     //  linearity
-    void solveLinearity();
-    void solveLinearityLinear();
-    void solveLinearityNonLinear();
-    void solveLinearityNonLinearPicard();
-    void solveLinearityNonLinearNewton();
+    void solveProblem();
+    void solveProblemNonLinearPicard();
+    void solveProblemNonLinearNewton();
+    void setupProblemNonLinearNewton();
 
     // adaptivity
     void solveAdaptivity();
-    void solveAdaptivitySimple();
-    void solveAdaptivityAdaptive();
+    void estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_indicators) const;
+    void refineGrid(bool refine = true);
 
-    // coupling: todo: first I do it separately, but it has to be integrated with transient/adaptivity/Newton...
-    void solveWeakCoupled();
-
-    void estimateSmoothness(dealii::Vector<float> &smoothness_indicators) const;
+    // Runge Kutta methods
+    dealii::Vector<double> transientEvaluateMassMatrixExplicitPart(const double time, const dealii::Vector<double> &y) const;
+    dealii::Vector<double> transientEvaluateMassMatrixImplicitPart(const double time, const double tau, const dealii::Vector<double> &y);
 };
 
 namespace Module {
