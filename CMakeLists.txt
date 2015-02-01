@@ -201,16 +201,13 @@ ELSE()
 SET(DEAL_II_BUILD_TYPE "Release")
 SET(CMAKE_BUILD_TYPE "Release")
 ENDIF()
-add_subdirectory(dealii)
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.56.0/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/tbb41_20130401oss/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/umfpack/UMFPACK/Include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/umfpack/AMD/Include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/muparser_v2_2_3/include/")
-
-FIND_PACKAGE(deal.II REQUIRED HINTS dealii)
-DEAL_II_INITIALIZE_CACHED_VARIABLES()
+FIND_PACKAGE(deal.II HINTS "dealii/${CMAKE_INSTALL_PREFIX}" ${CMAKE_INSTALL_PREFIX} REQUIRED)
 
 # Include external directories.
 INCLUDE_DIRECTORIES(${UMFPACK_INCLUDE_DIR})
