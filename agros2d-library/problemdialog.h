@@ -162,6 +162,7 @@ private:
 
 private slots:
     void doAnalysisTypeChanged(int index = -1);
+    void doAnalysisTypeClicked();
     void doAdaptivityChanged(int index);
     void doLinearityTypeChanged(int index);
     void doLinearSolverChanged(int index);

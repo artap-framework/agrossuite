@@ -18,9 +18,7 @@ class TestProblem(Agros2DTestCase):
 
     """ mesh_type """
     def test_mesh_type(self):
-        for type in ['triangle', 'triangle_quad_fine_division',
-                     'triangle_quad_rough_division', 'triangle_quad_join',
-                     'gmsh_triangle', 'gmsh_quad', 'gmsh_quad_delaunay']:
+        for type in ['triangle']:
             self.problem.mesh_type = type
             self.assertEqual(self.problem.mesh_type, type)
 

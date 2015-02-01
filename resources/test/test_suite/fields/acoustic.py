@@ -150,8 +150,7 @@ class TestAcousticTransientPlanar(Agros2DTestCase):
         problem = agros2d.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
-        problem.time_step_method = "fixed"
-        problem.time_method_order = 2
+        #problem.time_step_method = "fixed"
         problem.time_method_tolerance = 1
         problem.time_total = 0.001
         problem.time_steps = 250
@@ -163,7 +162,7 @@ class TestAcousticTransientPlanar(Agros2DTestCase):
         # fields
         # acoustic
         self.acoustic = agros2d.field("acoustic")
-        self.acoustic.analysis_type = "transient"
+        self.acoustic.analysis_type = "steadystate"
         self.acoustic.transient_initial_condition = 0
         self.acoustic.number_of_refinements = 0
         self.acoustic.polynomial_order = 2
@@ -234,7 +233,7 @@ class TestAcousticTransientAxisymmetric(Agros2DTestCase):
         # fields
         # acoustic
         self.acoustic = agros2d.field("acoustic")
-        self.acoustic.analysis_type = "transient"
+        self.acoustic.analysis_type = "steadystate"
         self.acoustic.transient_initial_condition = 0
         self.acoustic.number_of_refinements = 2
         self.acoustic.polynomial_order = 2
@@ -295,8 +294,8 @@ if __name__ == '__main__':
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticHarmonicPlanar))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticHarmonicAxisymmetric))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(AcousticTransientPlanar))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(AcousticTransientAxisymmetric))    
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticHarmonicPlanar))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticHarmonicAxisymmetric))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticTransientPlanar))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticTransientAxisymmetric))    
     suite.run(result)

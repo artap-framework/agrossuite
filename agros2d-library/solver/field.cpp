@@ -57,7 +57,8 @@ bool FieldBlock::solveInitVariables()
 int FieldInfo::numberIdNext = 0;
 
 FieldInfo::FieldInfo(QString fieldId)
-    : m_plugin(NULL), m_numberOfSolutions(0), m_hermesMarkerToAgrosLabelConversion(nullptr), m_labelAreas(nullptr), m_initialMesh(nullptr)
+    : m_plugin(NULL), m_numberOfSolutions(0), m_hasTransientAnalysis(false),
+      m_hermesMarkerToAgrosLabelConversion(nullptr), m_labelAreas(nullptr), m_initialMesh(nullptr)
 {    
     assert(!fieldId.isEmpty());
     m_fieldId = fieldId;
