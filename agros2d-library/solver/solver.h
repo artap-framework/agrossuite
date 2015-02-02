@@ -83,11 +83,6 @@ public:
     // transient - Runge Kutta - future step!
     void assembleMassMatrix();
 
-    // Runge Kutta methods
-    void transientExplicitMethod();
-    void transientImplicitMethod();
-    unsigned int transientExplicitEmbeddedMethod();
-
     // Hand made Euler methods
     void transientForwardEuler();
     void transientBackwardEuler();

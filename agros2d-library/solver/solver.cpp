@@ -600,7 +600,6 @@ void SolverDeal::solve()
         double time = 0.0;
         for (unsigned int i = 0; i < Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); ++i)
         {
-            /*
             switch (timeStepMethodType((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()))
             {
             case TimeStepMethodType_Implicit:
@@ -630,10 +629,8 @@ void SolverDeal::solve()
             default:
                 assert(0);
             }
-            */
 
             // implicit Euler
-            *m_solution = transientEvaluateMassMatrixImplicitPart(time, time_step, *m_solution);
             time += time_step;
 
             // set new time
@@ -1053,6 +1050,9 @@ void SolverDeal::transientBackwardEuler()
     hanging_node_constraints.distribute(*m_solution);
 }
 
+/*
+TODO: REMOVE
+
 void SolverDeal::transientExplicitMethod()
 {
 //    transientForwardEuler();
@@ -1161,7 +1161,7 @@ unsigned int SolverDeal::transientExplicitEmbeddedMethod()
 
     return n_steps;
 }
-
+*/
 void SolverAgros::clearSteps()
 {
     m_steps.clear();
