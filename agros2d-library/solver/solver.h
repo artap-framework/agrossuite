@@ -80,8 +80,6 @@ public:
 
     void setCouplingSource(QString fieldID, dealii::Vector<double> * sourceVector) { m_coupling_sources[fieldID] = sourceVector; }
 
-    double computeNorm();
-
     // transient - Runge Kutta - future step!
     void assembleMassMatrix();
 
@@ -93,9 +91,6 @@ public:
     // Hand made Euler methods
     void transientForwardEuler();
     void transientBackwardEuler();
-
-    dealii::Vector<double> transientEvaluateMassMatrixExplicitPart(const double time, const dealii::Vector<double> &y) const;
-    dealii::Vector<double> transientEvaluateMassMatrixImplicitPart(const double time, const double tau, const dealii::Vector<double> &y);
 
     inline void set_time(const double new_time) { m_time = new_time; }
     inline double get_time() const { return m_time; }
@@ -138,12 +133,10 @@ protected:
     dealii::SparseMatrix<double> mass_minus_tau_Jacobian;
     dealii::SparseDirectUMFPACK mass_matrix_inverse;
 
-<<<<<<< HEAD
     double computeNorm();
-=======
+
     // Newton method
     bool m_assemble_matrix;
->>>>>>> Implicit time methods work using DEAL, previsously it was only hand-made implicit Euler.
 
     // linear system
     void solveLinearSystem();

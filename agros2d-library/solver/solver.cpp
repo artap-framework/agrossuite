@@ -142,22 +142,14 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     // create solution vector
     m_solution = new dealii::Vector<double>();
 
-<<<<<<< HEAD
     // fe collection
     m_feCollection = SolverDeal::createFECollection(m_fieldInfo);
-=======
+
     // this will be set to false for Jacobian reuse
     m_assemble_matrix = true;
 
     // Gauss quadrature and fe collection
     for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
-    {
-        /*
-        std::vector<const dealii::FiniteElement<2> *> fes;
-        std::vector<unsigned int> multiplicities;
->>>>>>> Implicit time methods work using DEAL, previsously it was only hand-made implicit Euler.
-
-    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
     {
         m_quadrature_formulas.push_back(dealii::QGauss<2>(degree + QUADRATURE_ORDER_INCREASE));
         m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(degree + QUADRATURE_ORDER_INCREASE));
