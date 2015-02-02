@@ -630,9 +630,6 @@ void SolverDeal::solve()
                 assert(0);
             }
 
-            // implicit Euler
-            time += time_step;
-
             // set new time
             set_time(time);
             // store time actual timestep
