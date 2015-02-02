@@ -80,6 +80,18 @@ public:
 
     void setCouplingSource(QString fieldID, dealii::Vector<double> * sourceVector) { m_coupling_sources[fieldID] = sourceVector; }
 
+    // transient - Runge Kutta - future step!
+    void assembleMassMatrix();
+
+    // Runge Kutta methods
+    void transientExplicitMethod();
+    void transientImplicitMethod();
+    unsigned int transientExplicitEmbeddedMethod();
+
+    // Hand made Euler methods
+    void transientForwardEuler();
+    void transientBackwardEuler();
+
     inline void set_time(const double new_time) { m_time = new_time; }
     inline double get_time() const { return m_time; }
 
@@ -122,6 +134,9 @@ protected:
     dealii::SparseDirectUMFPACK mass_matrix_inverse;
 
     double computeNorm();
+
+    // Newton method
+    bool m_assemble_matrix;
 
     // linear system
     void solveLinearSystem();
