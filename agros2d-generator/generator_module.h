@@ -61,8 +61,6 @@ private:
     void generatePluginWeakFormHeaderFiles();
 
     void generateWeakForms(ctemplate::TemplateDictionary &output);
-    void generateExtFunctions(ctemplate::TemplateDictionary &output);
-//    void generateSpecialFunctionsPostprocessor(ctemplate::TemplateDictionary &output);
 
     //ToDo: make up better names
     template <typename WeakForm>
@@ -71,9 +69,6 @@ private:
     ctemplate::TemplateDictionary *generateVolumeVariables(LinearityType linearityType, CoordinateType coordinateType, ctemplate::TemplateDictionary &output, WeakForm weakform, QString weakFormType);
     template <typename WeakForm>
     ctemplate::TemplateDictionary *generateSurfaceVariables(LinearityType linearityType, CoordinateType coordinateType, ctemplate::TemplateDictionary &output, WeakForm weakform, QString weakFormType, XMLModule::boundary *boundary);
-    void generateExtFunction(XMLModule::quantity quantity, AnalysisType analysisType, LinearityType linearityType, CoordinateType coordinateType, bool derivative, bool linearize, ctemplate::TemplateDictionary &output);
-    void generateValueExtFunction(XMLModule::function function, AnalysisType analysisType, LinearityType linearityType, CoordinateType coordinateType, bool linearize, ctemplate::TemplateDictionary &output);
-    void generateSpecialFunction(XMLModule::function function, AnalysisType analysisType, LinearityType linearityType, CoordinateType coordinateType, ctemplate::TemplateDictionary &output);
 
     void createFilterExpression(ctemplate::TemplateDictionary &output, const QString &variable, AnalysisType analysisType, CoordinateType coordinateType, PhysicFieldVariableComp physicFieldVariableComp, const QString &expr);
     void createLocalValueExpression(ctemplate::TemplateDictionary &output, const QString &variable, AnalysisType analysisType, CoordinateType coordinateType, const QString &exprScalar, const QString &exprVectorX, const QString &exprVectorY);

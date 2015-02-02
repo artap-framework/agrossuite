@@ -702,8 +702,13 @@ void SolverDeal::solveProblem()
     if (m_fieldInfo->linearityType() == LinearityType_Linear)
     {
         setup(true);
+        QTime time;
+        time.start();
         assembleSystem();
+        std::cout << "assemble: " << time.elapsed() << std::endl;
+        time.start();
         solveLinearSystem();
+        std::cout << "solve: " << time.elapsed() << std::endl;
     }
     else if (m_fieldInfo->linearityType() == LinearityType_Picard)
     {

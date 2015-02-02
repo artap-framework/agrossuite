@@ -158,13 +158,6 @@ void Agros2DGeneratorCoupling::generatePluginWeakFormHeaderFiles()
                        arg(GENERATOR_PLUGINROOT).
                        arg(id),
                        QString::fromStdString(text));
-
-    // generate empty extfunction header file
-    writeStringContent(QString("%1/%2/%3/%3_extfunction.h").
-                       arg(QApplication::applicationDirPath()).
-                       arg(GENERATOR_PLUGINROOT).
-                       arg(id),
-                       QString::fromStdString(""));
 }
 
 

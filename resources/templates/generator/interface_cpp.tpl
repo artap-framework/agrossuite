@@ -21,7 +21,6 @@
 
 #include "{{ID}}_interface.h"
 #include "{{ID}}_weakform.h"
-// #include "{{ID}}_extfunction.h"
 #include "{{ID}}_filter.h"
 #include "{{ID}}_force.h"
 #include "{{ID}}_localvalue.h"
@@ -103,38 +102,6 @@ SolverDeal *{{CLASS}}Interface::solverDeal(const FieldInfo *fieldInfo)
     return new SolverDeal{{CLASS}}(fieldInfo);
 }
 
-/*
-AgrosExtFunction *{{CLASS}}Interface::extFunction(const ProblemID problemId, QString id, bool derivative, bool linearized, const WeakFormAgros<double>* wfAgros)
-{
-    {{#EXT_FUNCTIONS_PART}}
-    if((problemId.coordinateType == {{COORDINATE_TYPE}}) && (problemId.analysisTypeTarget == {{ANALYSIS_TYPE}}) && (problemId.linearityType == {{LINEARITY_TYPE}}))
-    {
-        return this->{{PART_NAME}}(problemId, id, derivative, linearized, wfAgros);
-    }
-    {{/EXT_FUNCTIONS_PART}}
-}
-*/
-
-/*
-{{#EXT_FUNCTIONS_PART}}
-AgrosExtFunction *{{PART_NAME}}(const ProblemID problemId, QString id, bool derivative, bool linearized, const WeakFormAgros<double>* wfAgros)
-{
-    {{#EXT_FUNCTION}}
-    if((id == "{{QUANTITY_ID}}") && (derivative == {{IS_DERIVATIVE}}) && (linearized == {{IS_LINEARIZED}}))
-        return new {{EXT_FUNCTION_NAME}}(Agros2D::problem()->fieldInfo(problemId.targetFieldId), wfAgros);
-    {{/EXT_FUNCTION}}
-    {{#VALUE_FUNCTION_SOURCE}}
-    if((id == "{{VALUE_FUNCTION_ID}}") && (linearized == {{IS_LINEARIZED}}))
-        return new {{VALUE_FUNCTION_FULL_NAME}}(Agros2D::problem()->fieldInfo(problemId.targetFieldId), wfAgros);
-    {{/VALUE_FUNCTION_SOURCE}}
-    {{#SPECIAL_FUNCTION_SOURCE}}
-    if(id == "{{SPECIAL_FUNCTION_ID}}")
-        return new {{SPECIAL_EXT_FUNCTION_FULL_NAME}}(Agros2D::problem()->fieldInfo(problemId.targetFieldId), wfAgros);
-    {{/SPECIAL_FUNCTION_SOURCE}}
-    return NULL;
-}
-{{/EXT_FUNCTIONS_PART}}
-*/
 /*
 ErrorCalculator<double> *{{CLASS}}Interface::errorCalculator(const FieldInfo *fieldInfo,
                                                                                const QString &calculator, CalculatedErrorType errorType)

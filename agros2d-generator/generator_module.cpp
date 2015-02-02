@@ -140,7 +140,6 @@ void Agros2DGeneratorModule::prepareWeakFormsOutput()
     if (m_module->cpp().present())
         m_output->SetValue("CPP", m_module->cpp().get());
 
-    generateExtFunctions(*m_output);
     generateWeakForms(*m_output);
 
     foreach(QString name, m_names)
