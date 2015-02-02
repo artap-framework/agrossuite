@@ -182,7 +182,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
     bool isTransient = (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool());
 
     system_rhs = 0.0;
-    system_matrix = 0.0;
+    if(m_assemble_matrix)
+        system_matrix = 0.0;
 
     // transient
     if (isTransient)
@@ -354,23 +355,26 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
 
                 for (unsigned int i = 0; i < dofs_per_cell; ++i)
                 {
-                    for (unsigned int j = 0; j < dofs_per_cell; ++j)
+                    if(m_assemble_matrix)
                     {
-                        {{#FORM_EXPRESSION_MATRIX}}
-                        // {{EXPRESSION_ID}}
-                        if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}})
+                        for (unsigned int j = 0; j < dofs_per_cell; ++j)
                         {
-                            copy_data.cell_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
-                        }{{/FORM_EXPRESSION_MATRIX}}
-
-                        if (isTransient)
-                        {
-                            {{#FORM_EXPRESSION_TRANSIENT}}
+                            {{#FORM_EXPRESSION_MATRIX}}
                             // {{EXPRESSION_ID}}
                             if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}})
                             {
-                                copy_data.cell_mass_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
-                            }{{/FORM_EXPRESSION_TRANSIENT}}
+                                copy_data.cell_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
+                            }{{/FORM_EXPRESSION_MATRIX}}
+
+                            if (isTransient)
+                            {
+                                {{#FORM_EXPRESSION_TRANSIENT}}
+                                // {{EXPRESSION_ID}}
+                                if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}})
+                                {
+                                    copy_data.cell_mass_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
+                                }{{/FORM_EXPRESSION_TRANSIENT}}
+                            }
                         }
                     }
                     {{#FORM_EXPRESSION_VECTOR}}
@@ -428,14 +432,17 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
 
                             for (unsigned int i = 0; i < dofs_per_cell; ++i)
                             {
-                                for (unsigned int j = 0; j < dofs_per_cell; ++j)
+                                if(m_assemble_matrix)
                                 {
-                                    {{#FORM_EXPRESSION_MATRIX}}
-                                    // {{EXPRESSION_ID}}
-                                    if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}})
+                                    for (unsigned int j = 0; j < dofs_per_cell; ++j)
                                     {
-                                        copy_data.cell_matrix(i,j) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
-                                    }{{/FORM_EXPRESSION_MATRIX}}
+                                        {{#FORM_EXPRESSION_MATRIX}}
+                                        // {{EXPRESSION_ID}}
+                                        if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}})
+                                        {
+                                            copy_data.cell_matrix(i,j) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
+                                        }{{/FORM_EXPRESSION_MATRIX}}
+                                    }
                                 }
                                 {{#FORM_EXPRESSION_VECTOR}}
                                 // {{EXPRESSION_ID}}
@@ -514,11 +521,20 @@ void SolverDeal{{CLASS}}::copyLocalToGlobal(const AssemblyCopyData &copy_data)
     if (copy_data.isAssembled)
     {
         // distribute local to global system
-        hanging_node_constraints.distribute_local_to_global(copy_data.cell_matrix,
-                                                            copy_data.cell_rhs,
-                                                            copy_data.local_dof_indices,
-                                                            system_matrix,
-                                                            system_rhs);
+        if(m_assemble_matrix)
+        {
+            hanging_node_constraints.distribute_local_to_global(copy_data.cell_matrix,
+                                                                copy_data.cell_rhs,
+                                                                copy_data.local_dof_indices,
+                                                                system_matrix,
+                                                                system_rhs);
+        }
+        else
+        {
+            hanging_node_constraints.distribute_local_to_global(copy_data.cell_rhs,
+                                                                copy_data.local_dof_indices,
+                                                                system_rhs);
+        }
 
         if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
         {

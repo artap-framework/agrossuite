@@ -142,8 +142,20 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     // create solution vector
     m_solution = new dealii::Vector<double>();
 
+<<<<<<< HEAD
     // fe collection
     m_feCollection = SolverDeal::createFECollection(m_fieldInfo);
+=======
+    // this will be set to false for Jacobian reuse
+    m_assemble_matrix = true;
+
+    // Gauss quadrature and fe collection
+    for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+    {
+        /*
+        std::vector<const dealii::FiniteElement<2> *> fes;
+        std::vector<unsigned int> multiplicities;
+>>>>>>> Implicit time methods work using DEAL, previsously it was only hand-made implicit Euler.
 
     for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
     {
@@ -933,24 +945,17 @@ void SolverDeal::solveAdaptivity()
 
 dealii::Vector<double> SolverDeal::transientEvaluateMassMatrixExplicitPart(const double time, const dealii::Vector<double> &y) const
 {
-    assert(0);
+    dealii::SparseDirectUMFPACK inverse_mass_matrix;
+
     dealii::Vector<double> tmp(m_doFHandler->n_dofs());
     tmp = 0.0;
     system_matrix.vmult(tmp, y);
-    // tmp *= -1.0;
-    // std::cout << "y.l2_norm: " << y.l2_norm() << std::endl;
-    // std::cout << "tmp.l2_norm: " << tmp.l2_norm() << std::endl;
+    tmp *= -1.0;
+    tmp.add(system_rhs);
 
-    // TODO: apply RHS
-    const double time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
-    tmp.add(time_step, system_rhs);
-    // std::cout << "system_rhs.l2_norm: " << system_rhs.l2_norm() << std::endl;
-    // std::cout << "tmp.l2_norm: " << tmp.l2_norm() << std::endl;
-
+    inverse_mass_matrix.initialize(mass_matrix);
     dealii::Vector<double> value(m_doFHandler->n_dofs());
-    mass_matrix_inverse.vmult(value, tmp);
-
-    std::cout << "value.l2_norm: " << value.l2_norm() << std::endl;
+    inverse_mass_matrix.vmult(value, tmp);
 
     return value;
 }
@@ -967,12 +972,202 @@ dealii::Vector<double> SolverDeal::transientEvaluateMassMatrixImplicitPart(const
     // add rhs
     dealii::Vector<double> tmp(m_doFHandler->n_dofs());
     mass_matrix.vmult(tmp, y);
-    tmp.add(tau, system_rhs);
 
     dealii::Vector<double> result(y);
     inverse_mass_minus_tau_Jacobian.vmult(result, tmp);
 
     return result;
+}
+
+// hand made Euler, used only for debugging
+void SolverDeal::transientForwardEuler()
+{
+    const double time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
+
+    dealii::SparseDirectUMFPACK inverse_mass_matrix;
+    inverse_mass_matrix.initialize(mass_matrix);
+    dealii::Vector<double> tmp(m_doFHandler->n_dofs());
+
+    double time = 0.0;
+    for (unsigned int i = 0; i < Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); ++i)
+    {
+        tmp = 0.0;
+        system_matrix.vmult(tmp, *m_solution);
+        tmp.add(-1.0, system_rhs);
+
+        dealii::Vector<double> value(m_doFHandler->n_dofs());
+        inverse_mass_matrix.vmult(value, tmp);
+
+        m_solution->add(-time_step, value);
+        time += time_step;
+
+        // set new time
+        set_time(time);
+        // store time actual timestep
+        Agros2D::problem()->setActualTimeStepLength(time_step);
+
+        Agros2D::log()->printMessage(QObject::tr("Solver (%1), Forward Euler").arg(m_fieldInfo->fieldId()),
+                                     QObject::tr("Transient step %1/%2 (actual time: %3 s)").
+                                     arg(i).
+                                     arg(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()).
+                                     arg(time));
+
+        Agros2D::log()->updateTransientChartInfo(time);
+    }
+
+    hanging_node_constraints.distribute(*m_solution);
+}
+
+// hand made Euler, used only for debugging
+void SolverDeal::transientBackwardEuler()
+{
+    const double time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
+    dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> >
+            implicit_runge_kutta((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt());
+
+    dealii::SparseDirectUMFPACK inverse_mass_minus_tau_Jacobian;
+
+    mass_minus_tau_Jacobian.copy_from(mass_matrix);
+    //mass_minus_tau_Jacobian.add(-tau, system_matrix);
+    mass_minus_tau_Jacobian.add(time_step, system_matrix);
+
+    inverse_mass_minus_tau_Jacobian.initialize(mass_minus_tau_Jacobian);
+    dealii::Vector<double> tmp(m_doFHandler->n_dofs());
+
+    double time = 0.0;
+    for (unsigned int i = 0; i < Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); ++i)
+    {
+        mass_matrix.vmult(tmp, *m_solution);
+        tmp.add(time_step, system_rhs);
+
+        inverse_mass_minus_tau_Jacobian.vmult(*m_solution, tmp);
+
+        time += time_step;
+
+        // set new time
+        set_time(time);
+        // store time actual timestep
+        Agros2D::problem()->setActualTimeStepLength(time_step);
+
+        Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
+                                     QObject::tr("Transient step %1/%2 (actual time: %3 s)").
+                                     arg(i).
+                                     arg(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()).
+                                     arg(time));
+
+        Agros2D::log()->updateTransientChartInfo(time);
+    }
+
+    hanging_node_constraints.distribute(*m_solution);
+}
+
+void SolverDeal::transientExplicitMethod()
+{
+//    transientForwardEuler();
+//    return;
+
+    const double time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
+    dealii::TimeStepping::ExplicitRungeKutta<dealii::Vector<double> >
+            explicit_runge_kutta((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt());
+
+    double time = 0.0;
+    for (unsigned int i = 0; i < Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); ++i)
+    {
+        time = explicit_runge_kutta.evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrixExplicitPart,
+                                                                   this, std::placeholders::_1, std::placeholders::_2),
+                                                         time, time_step, *m_solution);
+        // set new time
+        set_time(time);
+        // store time actual timestep
+        Agros2D::problem()->setActualTimeStepLength(time_step);
+
+        Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
+                                     QObject::tr("Transient step %1/%2 (actual time: %3 s)").
+                                     arg(i).
+                                     arg(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()).
+                                     arg(time));
+
+        Agros2D::log()->updateTransientChartInfo(time);
+    }
+
+    hanging_node_constraints.distribute(*m_solution);
+}
+
+
+void SolverDeal::transientImplicitMethod()
+{
+//    transientBackwardEuler();
+//    return;
+
+
+    const double time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
+    dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> >
+            implicit_runge_kutta((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt());
+
+    double time = 0.0;
+    for (unsigned int i = 0; i < Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); ++i)
+    {
+        time = implicit_runge_kutta.evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrixExplicitPart,
+                                                                   this, std::placeholders::_1, std::placeholders::_2),
+                                                         std::bind(&SolverDeal::transientEvaluateMassMatrixImplicitPart,
+                                                                   this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
+                                                         time, time_step, *m_solution);
+
+        // set new time
+        set_time(time);
+        // store time actual timestep
+        Agros2D::problem()->setActualTimeStepLength(time_step);
+
+        Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
+                                     QObject::tr("Transient step %1/%2 (actual time: %3 s)").
+                                     arg(i).
+                                     arg(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()).
+                                     arg(time));
+
+        Agros2D::log()->updateTransientChartInfo(time);
+    }
+
+    hanging_node_constraints.distribute(*m_solution);
+}
+
+unsigned int SolverDeal::transientExplicitEmbeddedMethod()
+{
+    double time_step = Agros2D::problem()->config()->constantTimeStepLength();
+
+    const double coarsen_param = 1.2;
+    const double refine_param = 0.8;
+    const double min_delta = 1e-8;
+    const double max_delta = 10 * time_step;
+    const double refine_tol = 1e-1;
+    const double coarsen_tol = 1e-5;
+
+    dealii::TimeStepping::EmbeddedExplicitRungeKutta<dealii::Vector<double> >
+            embedded_explicit_runge_kutta((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt(),
+                                          coarsen_param,
+                                          refine_param,
+                                          min_delta,
+                                          max_delta,
+                                          refine_tol,
+                                          coarsen_tol);
+
+    unsigned int n_steps = 0;
+    double time = 0.0;
+    while (time < Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble())
+    {
+        if (time + time_step > Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble())
+            time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() - time;
+        time = embedded_explicit_runge_kutta.evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrixExplicitPart,
+                                                                            this, std::placeholders::_1, std::placeholders::_2),
+                                                                  time, time_step, *m_solution);
+        std::cout << "time: " << time << std::endl;
+
+        time_step = embedded_explicit_runge_kutta.get_status().delta_t_guess;
+        ++n_steps;
+    }
+
+    hanging_node_constraints.distribute(*m_solution);
+
+    return n_steps;
 }
 
 void SolverAgros::clearSteps()
