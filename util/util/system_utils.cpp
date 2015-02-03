@@ -28,6 +28,8 @@
 #include "cpuid.h"
 #endif
 
+#include <thread>
+
 #include <QSysInfo>
 
 CleanExit::CleanExit()
@@ -211,7 +213,7 @@ QString SystemUtils::cpuType()
 
 int SystemUtils::numberOfThreads()
 {
-    return 1;
+    return std::thread::hardware_concurrency();
 }
 
 size_t SystemUtils::totalMemorySize()

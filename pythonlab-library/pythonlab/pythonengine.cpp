@@ -481,10 +481,9 @@ bool PythonEngine::runExpression(const QString &expression, double *value, const
         else
             exp = QString("%1; result_pythonlab = %2").arg(command).arg(expression);
 
-#pragma omp critical(expression)
-        {
-            output = PyRun_String(exp.toLatin1().data(), Py_single_input, dict(), dict());
-        }
+
+        // std::cout << exp.toStdString() << std::endl;
+        output = PyRun_String(exp.toLatin1().data(), Py_single_input, dict(), dict());
 
         if (output)
         {

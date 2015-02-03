@@ -489,7 +489,7 @@ void InfoWidget::showInfo()
         problemInfo.SetValue("SOLUTION_ELAPSED_TIME_LABEL", tr("Total elapsed time:").toStdString());
         problemInfo.SetValue("SOLUTION_ELAPSED_TIME", tr("%1 s").arg(Agros2D::problem()->timeElapsed().toString("mm:ss.zzz")).toStdString());
         problemInfo.SetValue("NUM_THREADS_LABEL", tr("Number of threads:").toStdString());
-        problemInfo.SetValue("NUM_THREADS", QString("%1").arg(-1).toStdString());
+        problemInfo.SetValue("NUM_THREADS", QString("%1").arg(Agros2D::configComputer()->value(Config::Config_NumberOfThreads).toInt()).toStdString());
         problemInfo.ShowSection("SOLUTION_PARAMETERS_SECTION");
     }
 

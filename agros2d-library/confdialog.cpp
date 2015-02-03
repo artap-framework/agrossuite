@@ -19,6 +19,8 @@
 
 #include "confdialog.h"
 
+#include <deal.II/base/multithread_info.h>
+
 #include "util/constants.h"
 #include "util/global.h"
 #include "gui/lineeditdouble.h"
@@ -32,7 +34,7 @@
 
 #include "solver/module.h"
 #include "solver/coupling.h"
-
+#include "util/system_utils.h"
 
 ConfigComputerDialog::ConfigComputerDialog(QWidget *parent) : QDialog(parent)
 {
@@ -107,6 +109,7 @@ void ConfigComputerDialog::save()
 
     // number of threads
     Agros2D::configComputer()->setValue(Config::Config_NumberOfThreads, txtNumOfThreads->value());
+    dealii::multithread_info.set_thread_limit(txtNumOfThreads->value());
 
     // cache size
     Agros2D::configComputer()->setValue(Config::Config_CacheSize, txtCacheSize->value());
@@ -273,7 +276,7 @@ QWidget *ConfigComputerDialog::createSolverWidget()
 
     txtNumOfThreads = new QSpinBox(this);
     txtNumOfThreads->setMinimum(1);
-    txtNumOfThreads->setMaximum(-1); // TODO: omp -> tbb
+    txtNumOfThreads->setMaximum(SystemUtils::numberOfThreads());
 
     QGridLayout *layoutSolver = new QGridLayout();
     layoutSolver->addWidget(new QLabel(tr("Number of threads:")), 0, 0);

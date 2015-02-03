@@ -20,9 +20,12 @@
 #include "config.h"
 #include "scene.h"
 
+#include <deal.II/base/multithread_info.h>
+
 #include "solver/module.h"
 #include "util/constants.h"
 #include "util/global.h"
+#include "util/system_utils.h"
 
 Config::Config()
 {
@@ -73,8 +76,9 @@ void Config::load()
     }
 
     // number of threads
-    // if (m_setting[Config_NumberOfThreads].toInt() > omp_get_max_threads())
-    //    m_setting[Config_NumberOfThreads] = omp_get_max_threads();
+    if (m_setting[Config_NumberOfThreads].toInt() > SystemUtils::numberOfThreads())
+        m_setting[Config_NumberOfThreads] = SystemUtils::numberOfThreads();
+    dealii::multithread_info.set_thread_limit(m_setting[Config_NumberOfThreads].toInt());
 }
 
 void Config::save()

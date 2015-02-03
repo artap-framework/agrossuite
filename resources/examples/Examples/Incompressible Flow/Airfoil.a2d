@@ -178,8 +178,8 @@
         <field_config>
           <field_item field_key="NonlinearResidualNorm" field_value="0"/>
           <field_item field_key="NonlinearRelativeChangeOfSolutions" field_value="0.4"/>
-          <field_item field_key="NonlinearDampingType" field_value="0"/>
-          <field_item field_key="NonlinearDampingCoeff" field_value="0.8"/>
+          <field_item field_key="NonlinearDampingType" field_value="1"/>
+          <field_item field_key="NonlinearDampingCoeff" field_value="0.2"/>
           <field_item field_key="NewtonReuseJacobian" field_value="0"/>
           <field_item field_key="NewtonJacobianReuseRatio" field_value="0.8"/>
           <field_item field_key="NonlinearDampingFactorDecreaseRatio" field_value="1.2"/>
@@ -197,6 +197,7 @@
           <field_item field_key="AdaptivityCoarsePercentage" field_value="3"/>
           <field_item field_key="AdaptivityTransientBackSteps" field_value="0"/>
           <field_item field_key="AdaptivityTransientRedoneEach" field_value="1"/>
+          <field_item field_key="TransientAnalysis" field_value="0"/>
           <field_item field_key="TransientTimeSkip" field_value="0"/>
           <field_item field_key="TransientInitialCondition" field_value="0"/>
           <field_item field_key="LinearSolverIterMethod" field_value="2"/>
@@ -213,7 +214,6 @@
       <problem_item problem_key="TimeMethod" problem_value="0"/>
       <problem_item problem_key="TimeMethodTolerance" problem_value="0.05"/>
       <problem_item problem_key="TimeInitialStepSize" problem_value="0"/>
-      <problem_item problem_key="TimeOrder" problem_value="1"/>
       <problem_item problem_key="TimeSteps" problem_value="2"/>
       <problem_item problem_key="TimeTotal" problem_value="1"/>
     </problem_config>
@@ -222,7 +222,7 @@
     <item key="Problem_StartupScript" value=""/>
     <item key="View_GridStep" value="0.05"/>
     <item key="View_SnapToGrid" value="1"/>
-    <item key="View_ScalarView3DMode" value="-1"/>
+    <item key="View_ScalarView3DMode" value="0"/>
     <item key="View_ScalarView3DLighting" value="1"/>
     <item key="View_ScalarView3DAngle" value="240"/>
     <item key="View_ScalarView3DBackground" value="1"/>

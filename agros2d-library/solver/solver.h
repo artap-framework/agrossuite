@@ -81,8 +81,8 @@ public:
     void assembleMassMatrix();
 
     // Hand made Euler methods
-    void transientForwardEuler();
-    void transientBackwardEuler();
+    double transientForwardEuler(const double time, const double time_step);
+    double transientBackwardEuler(const double time, const double time_step);
 
     inline void set_time(const double new_time) { m_time = new_time; }
     inline double get_time() const { return m_time; }
