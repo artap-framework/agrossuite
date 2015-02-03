@@ -262,7 +262,7 @@ void initLists()
 #ifdef HAVE_AZTECOO
     matrixSolverTypeList.insert(SOLVER_AZTECOO, "trilinos_aztecoo");
 #endif
-    // matrixSolverTypeList.insert(SOLVER_EXTERNAL, "external");
+    matrixSolverTypeList.insert(SOLVER_EXTERNAL, "external");
 
     // dump format
     dumpFormatList.insert(EXPORT_FORMAT_PLAIN_ASCII, "plain_ascii");

@@ -92,57 +92,24 @@ Point3 ParticleTracing::force(int particleIndex,
             continue;
 
         Point3 fieldForce;
-        /*
-        bool elementIsValid = false;
-        Element *activeElement = NULL;
-
-        // active element for current field
-        if (m_activeElement.contains(fieldInfo))
-            activeElement = m_activeElement[fieldInfo];
-
-        if (activeElement)
-        {
-            double x_reference;
-            double y_reference;
-            elementIsValid = RefMap::is_element_on_physical_coordinates(activeElement,
-                                                                                          position.x, position.y, &x_reference, &y_reference);
-        }
-
-        if (!elementIsValid)
-        {
-            m_activeElement[fieldInfo] = RefMap::element_on_physical_coordinates(true, m_meshes[fieldInfo],
-                                                                                                   position.x, position.y);
-        }
-
-        if (activeElement)
-        {
-            // find material
-            SceneLabel *label = Agros2D::scene()->labels->at(atoi(fieldInfo->initialMesh()->get_element_markers_conversion().get_user_marker(activeElement->marker).marker.c_str()));
-            SceneMaterial* material = label->marker(fieldInfo);
-
-            assert(!material->isNone());
-
-            try
-            {
-                fieldForce = fieldInfo->plugin()->force(fieldInfo, m_solutionIDs[fieldInfo].timeStep, m_solutionIDs[fieldInfo].adaptivityStep, m_solutionIDs[fieldInfo].solutionMode,
-                                                        activeElement, material, position, velocity)
-                        * m_particleChargesList[particleIndex];
-            }
-            catch (AgrosException e)
-            {
-                qDebug() << "Particle Tracing warning: " << e.what();
-                return Point3();
-            }
-        }
-        */
 
         // find material
-        dealii::Point<2> p(position.x, position.y);
-        std::pair<typename dealii::Triangulation<2>::active_cell_iterator, dealii::Point<2> > current_cell =
-                dealii::GridTools::find_active_cell_around_point(dealii::MappingQ1<2>(), *fieldInfo->initialMesh(), p);
+        SceneMaterial *material = nullptr;
+        try
+        {
+            dealii::Point<2> p(position.x, position.y);
+            std::pair<typename dealii::Triangulation<2>::active_cell_iterator, dealii::Point<2> > current_cell =
+                    dealii::GridTools::find_active_cell_around_point(dealii::MappingQ1<2>(), *fieldInfo->initialMesh(), p);
 
-        SceneLabel *label = Agros2D::scene()->labels->at(current_cell.first->material_id() - 1);
-        SceneMaterial *material = label->marker(fieldInfo);
+            SceneLabel *label = Agros2D::scene()->labels->at(current_cell.first->material_id() - 1);
+            material = label->marker(fieldInfo);
+        }
+        catch (const TYPENAME dealii::GridTools::ExcPointNotFound<2> &e)
+        {
+            // point not found
+            return Point3();
+        }
+
 
         assert(!material->isNone());
 
@@ -381,12 +348,12 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
 
         double timeStp = 0.0;
         if (syncParticle == -1)
-        for (int particleIndex = 0; particleIndex < numberOfParticles; particleIndex++)
-            if (timeStep[particleIndex] > timeStp)
-            {
-                timeStp = timeStep[particleIndex];
-                syncParticle = particleIndex;
-            }
+            for (int particleIndex = 0; particleIndex < numberOfParticles; particleIndex++)
+                if (timeStep[particleIndex] > timeStp)
+                {
+                    timeStp = timeStep[particleIndex];
+                    syncParticle = particleIndex;
+                }
 
         for (int particleIndex = 0; particleIndex < numberOfParticles; particleIndex++)
         {

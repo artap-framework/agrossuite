@@ -17,8 +17,16 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include "hermes2d.h"
-#include "util/memory_handling.h"
+#include <deal.II/lac/vector.h>
+#include <deal.II/lac/full_matrix.h>
+#include <deal.II/lac/sparse_matrix.h>
+#include <deal.II/lac/sparse_direct.h>
+
+#include <streambuf>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <fstream>
 
 #include "../3rdparty/tclap/CmdLine.h"
 
@@ -27,16 +35,18 @@ int main(int argc, char *argv[])
     try
     {
         // command line info
-        TCLAP::CmdLine cmd("Solver MUMPS", ' ');
+        TCLAP::CmdLine cmd("Solver UMFPACK", ' ');
 
         TCLAP::ValueArg<std::string> solverArg("o", "solver", "Solver", true, "", "string");
         TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
+        TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
         TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
         TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", true, "", "string");
         TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
 
         cmd.add(solverArg);
         cmd.add(matrixArg);
+        cmd.add(matrixPatternArg);
         cmd.add(rhsArg);
         cmd.add(solutionArg);
         cmd.add(initialArg);
@@ -44,40 +54,33 @@ int main(int argc, char *argv[])
         // parse the argv array.
         cmd.parse(argc, argv);
 
-        CSCMatrix<double> *matrix = NULL;
-        SimpleVector<double> *rhs = new SimpleVector<double>();
-        LinearMatrixSolver<double> *solver;
+        dealii::SparsityPattern system_matrix_pattern;
+        std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
+        system_matrix_pattern.block_read(readMatrixSparsityPattern);
+        readMatrixSparsityPattern.close();
 
-        /*
+        dealii::SparseMatrix<double> system_matrix;
+        std::ifstream readMatrix(matrixArg.getValue());
+        system_matrix.reinit(system_matrix_pattern);
+        system_matrix.block_read(readMatrix);
+        readMatrix.close();
+
+        dealii::Vector<double> system_rhs;
+        std::ifstream readRHS(rhsArg.getValue());
+        system_rhs.block_read(readRHS);
+        readRHS.close();
+
+        dealii::Vector<double> solution(system_rhs.size());
         if (solverArg.getValue() == "umfpack")
         {
-            matrix = new CSCMatrix<double>();
-            solver = new UMFPackLinearMatrixSolver<double>(matrix, rhs);
-        }
-        else
-        */
-        if (solverArg.getValue() == "mumps")
-        {
-            matrix = new MumpsMatrix<double>();
-            solver = new MumpsSolver<double>(static_cast<MumpsMatrix<double> *>(matrix), rhs);
+            dealii::SparseDirectUMFPACK direct;
+            direct.initialize(system_matrix);
+            direct.vmult(solution, system_rhs);
         }
 
-        matrix->import_from_file(matrixArg.getValue().c_str(), "matrix", EXPORT_FORMAT_BSON);
-        rhs->import_from_file(rhsArg.getValue().c_str(), "rhs", EXPORT_FORMAT_BSON);
-
-        // solve
-        // solver->set_verbose_output(true);
-        solver->solve();
-
-        // sln vector
-        SimpleVector<double> *solution = new SimpleVector<double>(rhs->get_size());
-        solution->alloc(rhs->get_size());
-        solution->set_vector(solver->get_sln_vector());
-        solution->export_to_file(solutionArg.getValue(), "sln", EXPORT_FORMAT_BSON);
-
-        delete matrix;
-        delete rhs;
-        delete solution;
+        std::ofstream writeSln(solutionArg.getValue());
+        solution.block_write(writeSln);
+        writeSln.close();
     }
     catch (TCLAP::ArgException &e)
     {

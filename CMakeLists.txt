@@ -90,9 +90,8 @@ SET(TRIANGLE_LIBRARY agros2d_3dparty_triangle)
 SET(AGROS_GRID agros_grid)
 
 # SET(GMSH_LIBRARY agros2d_3dparty_gmsh)
-# SET(NETGEN_LIBRARY agros2d_3dparty_netgen)
 
-# SET(AGROS_SOLVER_EXTERNAL solver_external)
+SET(AGROS_SOLVER_EXTERNAL solver_external)
 
 # xerces
 find_package(XSD 4.0 REQUIRED)
@@ -239,7 +238,7 @@ ADD_SUBDIRECTORY(agros2d-binary)
 ADD_SUBDIRECTORY(agros2d-solver)
 ADD_SUBDIRECTORY(agros2d-generator)
 ADD_SUBDIRECTORY(agros2d-remote)
-#ADD_SUBDIRECTORY(solver-external)
+ADD_SUBDIRECTORY(solver-external)
 #ADD_SUBDIRECTORY(agros2d-forms)
 
 message("\nAgros2D Configuration results")

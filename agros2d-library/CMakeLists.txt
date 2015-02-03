@@ -25,10 +25,6 @@ INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Geo)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Graphics)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Mesh)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Numeric)
-# netgen
-# INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/netgen/libsrc/include)
-# INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/netgen/libsrc/meshing)
-# INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/netgen/agros2d_3dparty_netgen)
 
 # languages
 # message("Translations")
@@ -99,10 +95,8 @@ SET(SOURCES value.cpp
     solver/weak_form.cpp
     solver/module.cpp
     solver/solver.cpp
+    solver/solver_external.cpp
     solver/estimators.cpp
-    #solver/solver_linear.cpp
-    #solver/solver_newton.cpp
-    #solver/solver_picard.cpp
     solver/field.cpp
     solver/problem.cpp
     solver/problem_config.cpp
@@ -126,7 +120,6 @@ SET(SOURCES value.cpp
     mesh/meshgenerator_triangle.cpp
     mesh/meshgenerator_cubit.cpp
     # mesh/meshgenerator_gmsh.cpp
-    # mesh/meshgenerator_netgen.cpp
     chartdialog.cpp
     problemdialog.cpp
     scenetransformdialog.cpp
@@ -217,7 +210,6 @@ SET(SOURCES value.cpp
     mesh/meshgenerator_triangle.h
     mesh/meshgenerator_cubit.h
     # mesh/meshgenerator_gmsh.h
-    # mesh/meshgenerator_netgen.h
     chartdialog.h
     problemdialog.h
     scenetransformdialog.h
@@ -232,10 +224,8 @@ SET(SOURCES value.cpp
     materialbrowserdialog.h
     confdialog.h
     solver/solver.h
+    solver/solver_external.h
     solver/estimators.h
-    #solver/solver_linear.h
-    #solver/solver_newton.h
-    #solver/solver_picard.h
     sceneedge.h
     scenelabel.h
     scenenode.h

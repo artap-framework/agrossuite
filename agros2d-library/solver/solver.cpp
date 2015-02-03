@@ -63,10 +63,8 @@
 #include <sstream>
 
 #include "solver.h"
+#include "solver_external.h"
 #include "estimators.h"
-// #include "solver_linear.h"
-// #include "solver_newton.h"
-// #include "solver_picard.h"
 
 #include "util.h"
 #include "util/global.h"
@@ -188,6 +186,9 @@ void SolverDeal::solveLinearSystem()
     case SOLVER_DEALII:
         solvedealii();
         break;
+    case SOLVER_EXTERNAL:
+        solveExternalUMFPACK();
+        break;
     default:
         Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Solver '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
         return;
@@ -203,6 +204,15 @@ void SolverDeal::solveUMFPACK()
     dealii::SparseDirectUMFPACK direct;
     direct.initialize(system_matrix);
     direct.vmult(*m_solution, system_rhs);
+}
+
+void SolverDeal::solveExternalUMFPACK()
+{
+    std::cout << system_matrix.n_nonzero_elements() << std::endl;
+    AgrosExternalSolverUMFPack ext(&system_matrix, &system_rhs);
+    ext.solve();
+
+    *m_solution = ext.solution();
 }
 
 void SolverDeal::solvedealii()
@@ -1060,97 +1070,7 @@ void SolverAgros::clearSteps()
     m_solutionNorms.clear();
 }
 
-/*
-void AgrosExternalSolverExternal::solve(double* initial_guess)
-{
-    initialGuess = initial_guess;
-
-    fileMatrix = QString("%1/solver_matrix").arg(cacheProblemDir());
-    fileRHS = QString("%1/solver_rhs").arg(cacheProblemDir());
-    fileInitial = QString("%1/solver_initial").arg(cacheProblemDir());
-    fileSln = QString("%1/solver_sln").arg(cacheProblemDir());
-
-    this->set_matrix_export_format(EXPORT_FORMAT_BSON);
-    this->set_matrix_filename(fileMatrix.toStdString());
-    this->set_matrix_varname("matrix");
-    this->set_matrix_number_format((char *) "%g");
-    this->set_rhs_export_format(EXPORT_FORMAT_BSON);
-    this->set_rhs_filename(fileRHS.toStdString());
-    this->set_rhs_varname("rhs");
-    this->set_rhs_number_format((char *) "%g");
-
-    // store state
-    bool matrixOn = this->output_matrixOn;
-    bool rhsOn = this->output_rhsOn;
-    this->output_matrixOn = true;
-    this->output_rhsOn = true;
-
-    // write matrix and rhs to disk
-    // QTime time;
-    // time.start();
-    this->process_matrix_output(this->m);
-    // qDebug() << "process_matrix_output" << time.elapsed();
-    // time.start();
-    this->process_vector_output(this->rhs);
-    // qDebug() << "process_vector_output" << time.elapsed();
-
-    // write initial guess to disk
-    if (initialGuess)
-    {
-        SimpleVector<double> initialVector;
-        initialVector.alloc(rhs->get_size());
-        initialVector.set_vector(initialGuess);
-        initialVector.export_to_file(fileInitial.toStdString().c_str(),
-                                     (char *) "initial",
-                                     EXPORT_FORMAT_BSON,
-                                     (char *) "%lf");
-        initialVector.free();
-    }
-
-    if (!(Agros2D::problem()->isTransient() || Agros2D::problem()->isNonlinear()))
-        this->m->free();
-    this->rhs->free();
-
-    // restore state
-    this->output_matrixOn = matrixOn;
-    this->output_rhsOn = rhsOn;
-
-    // exec octave
-    m_process = new QProcess();
-    m_process->setStandardOutputFile(tempProblemDir() + "/solver.out");
-    m_process->setStandardErrorFile(tempProblemDir() + "/solver.err");
-    connect(m_process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(processError(QProcess::ProcessError)));
-    connect(m_process, SIGNAL(finished(int)), this, SLOT(processFinished(int)));
-
-    setSolverCommand();
-    m_process->start(command);
-
-    // execute an event loop to process the request (nearly-synchronous)
-    QEventLoop eventLoop;
-    QObject::connect(m_process, SIGNAL(finished(int)), &eventLoop, SLOT(quit()));
-    QObject::connect(m_process, SIGNAL(error(QProcess::ProcessError)), &eventLoop, SLOT(quit()));
-    eventLoop.exec();
-
-    SimpleVector<double> slnVector;
-    // time.start();
-    slnVector.import_from_file((char*) fileSln.toStdString().c_str(), "sln", EXPORT_FORMAT_BSON);
-    // qDebug() << "slnVector import_from_file" << time.elapsed();
-
-    delete [] this->sln;
-    this->sln = new double[slnVector.get_size()];
-    memcpy(this->sln, slnVector.v, slnVector.get_size() * sizeof(double));
-
-    QFile::remove(command);
-    if (initialGuess)
-        QFile::remove(fileInitial);
-    QFile::remove(fileMatrix);
-    QFile::remove(fileRHS);
-    QFile::remove(fileSln);
-
-    QFile::remove(tempProblemDir() + "/solver.out");
-    QFile::remove(tempProblemDir() + "/solver.err");
-}
-*/
+// *************************************************************************************************************************************************
 
 QMap<FieldInfo *, SolverDeal *> ProblemSolver::m_solverDeal;
 

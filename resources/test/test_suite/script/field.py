@@ -15,7 +15,7 @@ class TestField(Agros2DTestCase):
 
     """ analysis_type """
     def test_analysis_type(self):
-        for type in ['steadystate', 'transient', 'harmonic']:
+        for type in ['steadystate', 'harmonic']:
             self.field.analysis_type = type
             self.assertEqual(self.field.analysis_type, type)
 

@@ -48,9 +48,6 @@
 
 class FieldInfo;
 
-template <typename Scalar>
-class ExactSolutionScalarAgros;
-
 class SceneBoundary;
 
 class AGROS_LIBRARY_API SolverDeal
@@ -136,6 +133,7 @@ protected:
     // linear system
     void solveLinearSystem();
     void solveUMFPACK();
+    void solveExternalUMFPACK();
     void solvedealii();
 
     //  linearity
@@ -197,55 +195,6 @@ protected:
     int m_jacobianCalculations;
 };
 
-/*
-class AgrosExternalSolverExternal : public QObject
-{
-    Q_OBJECT
-
-public:
-    AgrosExternalSolverExternal(CSCMatrix<double> *m, SimpleVector<double> *rhs);
-    void solve();
-    void solve(double* initial_guess);
-
-    virtual void setSolverCommand() = 0;
-
-protected:
-    QProcess *m_process;
-
-    QString command;
-
-    QString fileMatrix;
-    QString fileRHS;
-    QString fileInitial;
-    QString fileSln;
-
-    double *initialGuess;
-
-protected slots:
-    void processError(QProcess::ProcessError error);
-    void processFinished(int exitCode);
-};
-
-class AgrosExternalSolverMUMPS : public AgrosExternalSolverExternal
-{
-public:
-    AgrosExternalSolverMUMPS(CSCMatrix<double> *m, SimpleVector<double> *rhs);
-
-    virtual void setSolverCommand();
-    virtual void free();
-};
-
-class AgrosExternalSolverUMFPack : public AgrosExternalSolverExternal
-{
-public:
-    AgrosExternalSolverUMFPack(CSCMatrix<double> *m, SimpleVector<double> *rhs);
-
-    virtual void setSolverCommand();
-    virtual void free();
-};
-*/
-
-// solve
 class ProblemSolver
 {
 public:
