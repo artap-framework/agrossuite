@@ -361,7 +361,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                         {
                             {{#FORM_EXPRESSION_MATRIX}}
                             // {{EXPRESSION_ID}}
-                            if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}})
+                            if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && {{EXPRESSION_CHECK}})
                             {
                                 copy_data.cell_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
                             }{{/FORM_EXPRESSION_MATRIX}}
@@ -370,7 +370,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                             {
                                 {{#FORM_EXPRESSION_TRANSIENT}}
                                 // {{EXPRESSION_ID}}
-                                if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}})
+                                if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && {{EXPRESSION_CHECK}})
                                 {
                                     copy_data.cell_mass_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
                                 }{{/FORM_EXPRESSION_TRANSIENT}}
@@ -382,7 +382,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                         {
                             {{#FORM_EXPRESSION_MATRIX_SYM}}
                             // {{EXPRESSION_ID}}
-                            if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}})
+                            if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && {{EXPRESSION_CHECK}})
                             {
                                 expression_value = fe_values.JxW(q_point) *({{EXPRESSION}});
                                 copy_data.cell_matrix(i,j) += expression_value;
@@ -394,7 +394,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                             {
                                 {{#FORM_EXPRESSION_TRANSIENT_SYM}}
                                 // {{EXPRESSION_ID}}
-                                if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}})
+                                if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && {{EXPRESSION_CHECK}})
                                 {
                                     expression_value = fe_values.JxW(q_point) *({{EXPRESSION}});
                                     copy_data.cell_mass_matrix(i,j) += expression_value;

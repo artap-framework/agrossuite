@@ -77,7 +77,10 @@ ParserInstanceWeakformCheck::ParserInstanceWeakformCheck(ParserModuleInfo pmi) :
 {
     m_lexicalAnalyser =  Parser::weakFormLexicalAnalyser(m_parserModuleInfo);
 
-    addWeakformCheckTokens();
+    addBasicWeakformTokens();
+    addConstants(m_parserModuleInfo);
+    addPreviousSolWeakform(pmi.numSolutions);
+    addVolumeVariablesWeakform(pmi, false);
 }
 
 ParserInstancePostprocessorExpression::ParserInstancePostprocessorExpression(ParserModuleInfo pmi, bool withVariables) : ParserInstance(pmi)
