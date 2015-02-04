@@ -612,6 +612,8 @@ void SolverDeal::solve()
         double time = 0.0;
         for (unsigned int i = 0; i < Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); ++i)
         {
+            if(Agros2D::problem()->isAborted())
+                break;
 //            switch (timeStepMethodType((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()))
 //            {
 //            case TimeStepMethodType_Implicit:
@@ -824,7 +826,7 @@ void SolverDeal::   solveProblemNonLinearNewton()
     int iteration = 0;
     int numReusedJacobian = 0;
     bool criteriaReached = false;
-    while ((iteration < MAX_NUM_NONLIN_ITERS) && !criteriaReached)
+    while ((iteration < MAX_NUM_NONLIN_ITERS) && !criteriaReached && !Agros2D::problem()->isAborted())
     {
         SolverAgros::Phase phase = SolverAgros::Phase_Solving;
 
