@@ -200,9 +200,12 @@ void SolverDeal::solveLinearSystem()
 
 void SolverDeal::solveUMFPACK()
 {
-    dealii::SparseDirectUMFPACK direct;
-    direct.initialize(system_matrix);
-    direct.vmult(*m_solution, system_rhs);
+    if(m_assemble_matrix)
+        direct_solver.initialize(system_matrix);
+    else
+        qDebug() << "LU decomposition has been reused";
+
+    direct_solver.vmult(*m_solution, system_rhs);
 }
 
 void SolverDeal::solveExternalUMFPACK()
@@ -795,7 +798,7 @@ void SolverDeal::solveProblemNonLinearPicard()
     qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
 
-void SolverDeal::solveProblemNonLinearNewton()
+void SolverDeal::   solveProblemNonLinearNewton()
 {
     const double minAllowedDampingCoeff = 1e-4;
     const double autoDampingRatio = 2.0;
@@ -819,6 +822,7 @@ void SolverDeal::solveProblemNonLinearNewton()
     int dampingSuccessfulSteps = 0;
 
     int iteration = 0;
+    int numReusedJacobian = 0;
     bool criteriaReached = false;
     while ((iteration < MAX_NUM_NONLIN_ITERS) && !criteriaReached)
     {
@@ -829,51 +833,81 @@ void SolverDeal::solveProblemNonLinearNewton()
 
         iteration++;
         std::cout << "step: " << iteration << std::endl;
-        assembleSystem();
-        std::cout << "assemble (" << time.elapsed() << "ms )" << std::endl;
 
-        system_rhs *= -1.0;
-        solveLinearSystem();
-
-        // residual norm
         double previousResidualNorm = residualNorm;
-        residualNorm = system_rhs.l2_norm();
+        bool jacobianReused = false;
 
-        m_solution_previous->add(dampingFactor, *m_solution);
-
-        assert(m_solution_previous);
-        // automatic damping factor
-        if ((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() == DampingType_Automatic)
+        if(numReusedJacobian == m_fieldInfo->value(FieldInfo::NewtonMaxStepsReuseJacobian).toInt())
         {
-            previousResidualNorm = residualNorm;
-            assert(previousResidualNorm > 0.0);
-
-            // todo: code repetition, get rid of it together with jacobian reuse
-            time.start();
-            m_assemble_matrix = false;
-            assembleSystem();
-            m_assemble_matrix = true;
-            residualNorm = system_rhs.l2_norm();
-            std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
-
-            while(residualNorm > previousResidualNorm * m_fieldInfo->value(FieldInfo::NonlinearDampingFactorDecreaseRatio).toDouble())
+            // Jacobian has been reused too many times. Do not do it this time
+            numReusedJacobian = 0;
+        }
+        else
+        {
+            // Jacobian can be reused, if it is allowed
+            if((iteration > 1) && (m_fieldInfo->value(FieldInfo::NewtonReuseJacobian).toBool()))
             {
-                dampingSuccessfulSteps = -1;
-                double previousDampingFactor = dampingFactor;
+                // first try to reuse the Jacobian
+                m_assemble_matrix = false;
+                time.start();
+                assembleSystem();
+                std::cout << "assemble for Jac reuse (" << time.elapsed() << "ms )" << std::endl;
 
-                if (dampingFactor > minAllowedDampingCoeff)
+                system_rhs *= -1.0;
+
+                // since m_assemble_matrix is false, this will reuse the LU decomposition
+                time.start();
+                solveLinearSystem();
+                std::cout << "back substitution (" << time.elapsed() << "ms )" << std::endl;
+
+                m_solution_previous->add(dampingFactor, *m_solution);
+
+                time.start();
+                assembleSystem();
+                residualNorm = system_rhs.l2_norm();
+                std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
+
+                residualNorm = system_rhs.l2_norm();
+                if(residualNorm < previousResidualNorm * m_fieldInfo->value(FieldInfo::NewtonJacobianReuseRatio).toDouble())
                 {
-                    phase = SolverAgros::Phase_DampingFactorChanged;
-
-                    dampingFactor = dampingFactor * 1.0 / autoDampingRatio;
+                    jacobianReused = true;
+                    numReusedJacobian++;
                 }
                 else
                 {
-                    assert(0);
-                    // todo: damping factor below minimal possible
+                    // revert step
+                    m_solution_previous->add(-dampingFactor, *m_solution);
+                    jacobianReused = false;
+                    numReusedJacobian = 0;
                 }
+                std::cout << "norms: " << residualNorm << ", old: " << previousResidualNorm << " -> " << jacobianReused << std::endl;
 
-                m_solution_previous->add(-previousDampingFactor + dampingFactor, *m_solution);
+                m_assemble_matrix = true;
+            }
+        }
+
+        if(! jacobianReused)
+        {
+            time.start();
+            assembleSystem();
+            std::cout << "assemble (" << time.elapsed() << "ms )" << std::endl;
+
+            system_rhs *= -1.0;
+            time.start();
+            solveLinearSystem();
+            std::cout << "full system solve (" << time.elapsed() << "ms )" << std::endl;
+
+            // residual norm
+            residualNorm = system_rhs.l2_norm();
+
+            m_solution_previous->add(dampingFactor, *m_solution);
+
+            assert(m_solution_previous);
+            // automatic damping factor
+            if ((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() == DampingType_Automatic)
+            {
+                previousResidualNorm = residualNorm;
+                assert(previousResidualNorm > 0.0);
 
                 // todo: code repetition, get rid of it together with jacobian reuse
                 time.start();
@@ -882,22 +916,50 @@ void SolverDeal::solveProblemNonLinearNewton()
                 m_assemble_matrix = true;
                 residualNorm = system_rhs.l2_norm();
                 std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
-            }
 
-            dampingSuccessfulSteps++;
-            if(dampingSuccessfulSteps > 0)
-            {
-
-                if (dampingSuccessfulSteps >= m_fieldInfo->value(FieldInfo::NonlinearStepsToIncreaseDampingFactor).toInt())
+                while(residualNorm > previousResidualNorm * m_fieldInfo->value(FieldInfo::NonlinearDampingFactorDecreaseRatio).toDouble())
                 {
-                    if (dampingFactor * autoDampingRatio <= m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble())
-                        dampingFactor = dampingFactor * autoDampingRatio;
+                    dampingSuccessfulSteps = -1;
+                    double previousDampingFactor = dampingFactor;
+
+                    if (dampingFactor > minAllowedDampingCoeff)
+                    {
+                        phase = SolverAgros::Phase_DampingFactorChanged;
+
+                        dampingFactor = dampingFactor * 1.0 / autoDampingRatio;
+                    }
                     else
-                        dampingFactor = m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble();
+                    {
+                        assert(0);
+                        // todo: damping factor below minimal possible
+                    }
+
+                    // Line search. Take back the previous steps (too long) and make a new one, with new damping factor
+                    m_solution_previous->add(-previousDampingFactor + dampingFactor, *m_solution);
+
+                    // todo: code repetition, get rid of it together with jacobian reuse
+                    time.start();
+                    m_assemble_matrix = false;
+                    assembleSystem();
+                    m_assemble_matrix = true;
+                    residualNorm = system_rhs.l2_norm();
+                    std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
+                }
+
+                dampingSuccessfulSteps++;
+                if(dampingSuccessfulSteps > 0)
+                {
+
+                    if (dampingSuccessfulSteps >= m_fieldInfo->value(FieldInfo::NonlinearStepsToIncreaseDampingFactor).toInt())
+                    {
+                        if (dampingFactor * autoDampingRatio <= m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble())
+                            dampingFactor = dampingFactor * autoDampingRatio;
+                        else
+                            dampingFactor = m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble();
+                    }
                 }
             }
         }
-
         // update
         steps.append(iteration);
         double relChangeSol = dampingFactor * (*m_solution).l2_norm() / m_solution_previous->l2_norm() * 100;

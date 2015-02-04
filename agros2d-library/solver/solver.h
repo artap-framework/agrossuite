@@ -125,6 +125,9 @@ protected:
     dealii::SparseMatrix<double> mass_minus_tau_Jacobian;
     dealii::SparseDirectUMFPACK mass_matrix_inverse;
 
+    // we need to be able to keep lu decomposition for Jacobian reuse
+    dealii::SparseDirectUMFPACK direct_solver;
+
     double computeNorm();
 
     // Newton method
