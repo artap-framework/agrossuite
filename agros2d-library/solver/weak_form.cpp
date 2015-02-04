@@ -69,13 +69,19 @@ QList<FormInfo> generateSeparated(QList<FormInfo> elements, QList<FormInfo> temp
         catch(AgrosGeneratorException &err)
         {
             if(templatesForResidual.empty())
+            {
                 throw;
+            }
             else
+            {
                 formTemplate = findFormInfo(templatesForResidual, formElement.id);
+                formTemplate.variant = WeakFormVariant_Residual;
+            }
         }
 
         FormInfo formResult(formTemplate.id, formTemplate.i, formTemplate.j, formTemplate.sym_planar, formTemplate.sym_axi);
         formResult.condition = formTemplate.condition;
+        formResult.variant = formTemplate.variant;
 
         if (formElement.coefficient != 1.)
         {

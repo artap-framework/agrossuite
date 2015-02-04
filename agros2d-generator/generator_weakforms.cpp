@@ -202,7 +202,23 @@ void Agros2DGeneratorModule::generateFormExpression(FormInfo formInfo,
 
     if (!expression.isEmpty())
     {
-        ctemplate::TemplateDictionary *expr = output.AddSectionDictionary(("FORM_EXPRESSION_" + formType).toStdString());
+        QString symetryAppendix;
+        symetryAppendix = "";
+
+        if(formInfo.variant == WeakFormVariant_Normal)
+        {
+            if((coordinateType == CoordinateType_Planar) && (formInfo.sym_planar))
+                symetryAppendix = "_SYM";
+            if((coordinateType == CoordinateType_Axisymmetric) && (formInfo.sym_axi))
+                symetryAppendix = "_SYM";
+        }
+        if((formType == "VECTOR") && (symetryAppendix == "_SYM"))
+        {
+            std::cout << " symmetric vector !!!" << std::endl;
+            assert(0);
+        }
+
+        ctemplate::TemplateDictionary *expr = output.AddSectionDictionary(("FORM_EXPRESSION_" + formType + symetryAppendix).toStdString());
 
         expr->SetValue("EXPRESSION_ID", formInfo.id.toStdString());
 
