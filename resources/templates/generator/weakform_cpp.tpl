@@ -332,7 +332,6 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
         }
 
         const QMap<uint, QSharedPointer<Value> > materialValues = material->values();
-        double expression_value;
         {{#VOLUME_SOURCE}}
         if ((coordinateType == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}}))
         {
@@ -384,7 +383,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                             // {{EXPRESSION_ID}}
                             if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && {{EXPRESSION_CHECK}})
                             {
-                                expression_value = fe_values.JxW(q_point) *({{EXPRESSION}});
+                                double expression_value = fe_values.JxW(q_point) *({{EXPRESSION}});
                                 copy_data.cell_matrix(i,j) += expression_value;
                                 if(j != i)
                                     copy_data.cell_matrix(j,i) += expression_value;
@@ -396,7 +395,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                                 // {{EXPRESSION_ID}}
                                 if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && {{EXPRESSION_CHECK}})
                                 {
-                                    expression_value = fe_values.JxW(q_point) *({{EXPRESSION}});
+                                    double expression_value = fe_values.JxW(q_point) *({{EXPRESSION}});
                                     copy_data.cell_mass_matrix(i,j) += expression_value;
                                     if(j != i)
                                         copy_data.cell_matrix(j,i) += expression_value;
