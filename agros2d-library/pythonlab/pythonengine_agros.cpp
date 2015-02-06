@@ -28,6 +28,11 @@
 #include "solver/module.h"
 #include "util/memory_monitor.h"
 
+#ifdef TBB_FOUND
+#include <tbb/tbb.h>
+tbb::mutex runPythonHeaderMutex;
+#endif
+
 // current python engine agros
 AGROS_LIBRARY_API PythonEngineAgros *currentPythonEngineAgros()
 {
@@ -59,8 +64,11 @@ void PythonEngineAgros::runPythonHeader()
     // run script
     if (!script.trimmed().isEmpty())
     {
-#pragma omp critical(flakes)
         {
+#ifdef TBB_FOUND
+            tbb::mutex::scoped_lock lock(runPythonHeaderMutex);
+#endif
+
             PyObject *func = PyRun_String(script.toLatin1().data(), Py_file_input, dict(), dict());
             Py_XDECREF(func);
         }

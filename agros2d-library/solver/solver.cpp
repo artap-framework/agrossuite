@@ -28,6 +28,7 @@
 #include <deal.II/grid/grid_refinement.h>
 
 #include <deal.II/fe/fe_q.h>
+#include <deal.II/fe/fe_dgp.h>
 #include <deal.II/fe/fe_system.h>
 #include <deal.II/fe/fe_values.h>
 
@@ -112,8 +113,12 @@ dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fie
         QMap<int, Module::Space> spaces = fieldInfo->spaces();
         foreach (int key, spaces.keys())
         {
-            dealii::FE_Q<2> *fe = new dealii::FE_Q<2>(degree + spaces[key].orderAdjust());
-            fes.push_back(fe);
+            if (spaces.value(key).type() == "h1")
+                fes.push_back(new dealii::FE_Q<2>(degree + spaces[key].orderAdjust()));
+            else if (spaces.value(key).type() == "l2")
+                fes.push_back(new dealii::FE_DGP<2>(degree + spaces[key].orderAdjust()));
+                // fes.push_back(new dealii::FE_Q<2>(degree + spaces[key].orderAdjust()));
+
             multiplicities.push_back(1);
         }
 
@@ -800,7 +805,7 @@ void SolverDeal::solveProblemNonLinearPicard()
     qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
 
-void SolverDeal::   solveProblemNonLinearNewton()
+void SolverDeal::solveProblemNonLinearNewton()
 {
     const double minAllowedDampingCoeff = 1e-4;
     const double autoDampingRatio = 2.0;

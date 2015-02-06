@@ -27,6 +27,17 @@
 
 #include "../resources_source/python/pythonlab.cpp"
 
+#ifdef TBB_FOUND
+#include <tbb/tbb.h>
+tbb::mutex codePyFlakesMutex;
+tbb::mutex codeGotoDefinitionMutex;
+tbb::mutex codeCompletionMutex;
+tbb::mutex codeHelpMutex;
+tbb::mutex runDeleteUserModulesMutex;
+tbb::mutex runExpressionMutex;
+tbb::mutex runScriptMutex;
+#endif
+
 #ifdef Q_WS_X11
 #include <csignal>
 #endif
@@ -378,8 +389,11 @@ void PythonEngine::deleteUserModules()
                 continue;
 
             QString exp = QString("del %1; import sys; del sys.modules[\"%1\"]").arg(variable.name);
-#pragma omp critical(del)
             {
+#ifdef TBB_FOUND
+                tbb::mutex::scoped_lock lock(runDeleteUserModulesMutex);
+#endif
+
                 PyObject *del = PyRun_String(exp.toLatin1().data(), Py_single_input, dict(), dict());
                 Py_XDECREF(del);
             }
@@ -410,8 +424,11 @@ bool PythonEngine::runScript(const QString &script, const QString &fileName)
     if (QFile::exists(fileName))
     {
         QString str = QString("from os import chdir; chdir(u'" + QFileInfo(fileName).absolutePath() + "')");
-#pragma omp critical(import)
         {
+#ifdef TBB_FOUND
+            tbb::mutex::scoped_lock lock(runScriptMutex);
+#endif
+
             PyObject *import = PyRun_String(str.toLatin1().data(), Py_single_input, dict(), dict());
             Py_XDECREF(import);
         }
@@ -469,81 +486,84 @@ bool PythonEngine::runExpression(const QString &expression, double *value, const
 {
     bool successfulRun = false;
 
-    PyObject *output = NULL;
-    runPythonHeader();
-
-    if (value)
     {
-        // return value
-        QString exp;
-        if (command.isEmpty())
-            exp = QString("result_pythonlab = %1").arg(expression);
-        else
-            exp = QString("%1; result_pythonlab = %2").arg(command).arg(expression);
+#ifdef TBB_FOUND
+        tbb::mutex::scoped_lock lock(runExpressionMutex);
+#endif
 
+        PyObject *output = NULL;
+        runPythonHeader();
 
-        // std::cout << exp.toStdString() << std::endl;
-        output = PyRun_String(exp.toLatin1().data(), Py_single_input, dict(), dict());
-
-        if (output)
+        if (value)
         {
-            // parse result
-            PyObject *result = PyDict_GetItemString(dict(), "result_pythonlab");
+            // return value
+            QString exp;
+            if (command.isEmpty())
+                exp = QString("result_pythonlab = %1").arg(expression);
+            else
+                exp = QString("%1; result_pythonlab = %2").arg(command).arg(expression);
 
-            if (result)
+
+            // std::cout << exp.toStdString() << std::endl;
+            output = PyRun_String(exp.toLatin1().data(), Py_single_input, dict(), dict());
+
+            if (output)
             {
-                if ((QString(result->ob_type->tp_name) == "bool") ||
-                        (QString(result->ob_type->tp_name) == "int") ||
-                        (QString(result->ob_type->tp_name) == "float"))
-                {
-                    Py_INCREF(result);
-                    PyArg_Parse(result, "d", value);
-                    if (fabs(*value) < EPS_ZERO)
-                        *value = 0.0;
-                    Py_XDECREF(result);
+                // parse result
+                PyObject *result = PyDict_GetItemString(dict(), "result_pythonlab");
 
-                    successfulRun = true;
-                }
-                else
+                if (result)
                 {
-                    qDebug() << tr("Type '%1' is not supported.").arg(result->ob_type->tp_name).arg(expression);
+                    if ((QString(result->ob_type->tp_name) == "bool") ||
+                            (QString(result->ob_type->tp_name) == "int") ||
+                            (QString(result->ob_type->tp_name) == "float"))
+                    {
+                        Py_INCREF(result);
+                        PyArg_Parse(result, "d", value);
+                        if (fabs(*value) < EPS_ZERO)
+                            *value = 0.0;
+                        Py_XDECREF(result);
 
-                    successfulRun = false;
+                        successfulRun = true;
+                    }
+                    else
+                    {
+                        qDebug() << tr("Type '%1' is not supported.").arg(result->ob_type->tp_name).arg(expression);
+
+                        successfulRun = false;
+                    }
                 }
+
+                // speed up?
+                // PyRun_String("del result_pythonlab", Py_single_input, m_dict, m_dict);
             }
-
-            // speed up?
-            // PyRun_String("del result_pythonlab", Py_single_input, m_dict, m_dict);
         }
-    }
-    else
-    {
-#pragma omp critical(expression)
+        else
         {
             output = PyRun_String(expression.toLatin1().data(), Py_single_input, dict(), dict());
+            if (output)
+                successfulRun = true;
         }
-        if (output)
-            successfulRun = true;
-    }
 
-    if (!output)
-    {
-        // error traceback
-        Py_XDECREF(errorType);
-        Py_XDECREF(errorValue);
-        Py_XDECREF(errorTraceback);
-        PyErr_Fetch(&errorType, &errorValue, &errorTraceback);
-        if (errorTraceback)
+        if (!output)
         {
-            ErrorResult result = parseError(false);
-            if (!result.error().isEmpty())
-                qDebug() << result.tracebackToString();
+            // error traceback
+            Py_XDECREF(errorType);
+            Py_XDECREF(errorValue);
+            Py_XDECREF(errorTraceback);
+            PyErr_Fetch(&errorType, &errorValue, &errorTraceback);
+            if (errorTraceback)
+            {
+                ErrorResult result = parseError(false);
+                if (!result.error().isEmpty())
+                    qDebug() << result.tracebackToString();
 
-            successfulRun = false;
+                successfulRun = false;
+            }
         }
-    }
 
-    Py_XDECREF(output);
+        Py_XDECREF(output);
+    }
 
     return successfulRun;
 }
@@ -590,8 +610,11 @@ QStringList PythonEngine::codeCompletion(const QString& command)
 
     runPythonHeader();
 
-#pragma omp critical(completion)
     {
+#ifdef TBB_FOUND
+        tbb::mutex::scoped_lock lock(codeCompletionMutex);
+#endif
+
         PyObject *output = PyRun_String(command.toLatin1().data(), Py_single_input, dict(), dict());
 
         // parse result
@@ -644,8 +667,11 @@ QStringList PythonEngine::codePyFlakes(const QString& fileName)
     {
         QString exp = QString("result_pyflakes_pythonlab = python_engine_pyflakes_check(\"%1\")").arg(compatibleFilename(fileName));
 
-#pragma omp critical(flakes)
         {
+#ifdef TBB_FOUND
+            tbb::mutex::scoped_lock lock(codePyFlakesMutex);
+#endif
+
             PyObject *run = PyRun_String(exp.toLatin1().data(), Py_single_input, dict(), dict());
             // parse result
             PyObject *result = PyDict_GetItemString(dict(), "result_pyflakes_pythonlab");
@@ -680,8 +706,11 @@ PythonGotoDefinition PythonEngine::codeGotoDefinition(const QString& filename, i
 {
     PythonGotoDefinition out;
 
-#pragma omp critical(completion)
     {
+#ifdef TBB_FOUND
+        tbb::mutex::scoped_lock lock(codeGotoDefinitionMutex);
+#endif
+
         QString str = QString("agros2d_goto_definition = python_engine_goto_definition(path = '%1', line = %2, column = %3)").arg(filename).arg(row).arg(column);
         runExpression(str);
 
@@ -725,8 +754,11 @@ QString PythonEngine::codeHelp(const QString& filename, int row, int column)
 {
     QString help = "";
 
-#pragma omp critical(completion)
     {
+#ifdef TBB_FOUND
+        tbb::mutex::scoped_lock lock(codeHelpMutex);
+#endif
+
         QString str = QString("agros2d_code_help = python_engine_code_help(path = '%1', line = %2, column = %3)").arg(filename).arg(row).arg(column);
         runExpression(str);
 

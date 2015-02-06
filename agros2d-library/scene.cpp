@@ -1791,7 +1791,11 @@ void Scene::readFromFile31(const QString &fileName)
             FieldInfo *fieldInfo = new FieldInfo(QString::fromStdString(field.field_id()));
 
             // analysis type
-            fieldInfo->setAnalysisType(analysisTypeFromStringKey(QString::fromStdString(field.analysis_type())));
+            // hack for transient
+            QString analysisType = QString::fromStdString(field.analysis_type());
+            if (analysisType == "transient")
+                analysisType = "steadystate";
+            fieldInfo->setAnalysisType(analysisTypeFromStringKey(analysisType));
             // adaptivity
             fieldInfo->setAdaptivityType(adaptivityTypeFromStringKey(QString::fromStdString(field.adaptivity_type())));
             // linearity
@@ -1802,6 +1806,10 @@ void Scene::readFromFile31(const QString &fileName)
 
             // field config
             fieldInfo->load(&field.field_config());
+
+            // hack for transient
+            if (analysisType == "transient")
+                fieldInfo->setValue(FieldInfo::TransientAnalysis, true);
 
             // edge refinement
             for (unsigned int j = 0; j < field.refinement_edges().refinement_edge().size(); j++)
