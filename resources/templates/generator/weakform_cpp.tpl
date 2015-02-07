@@ -376,7 +376,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                             }
                         }
 
-                        // symetrical forms
+                        // symmetrical forms
                         for (unsigned int j = i; j < dofs_per_cell; ++j)
                         {
                             {{#FORM_EXPRESSION_MATRIX_SYM}}
@@ -385,7 +385,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                             {
                                 double expression_value = fe_values.JxW(q_point) *({{EXPRESSION}});
                                 copy_data.cell_matrix(i,j) += expression_value;
-                                if(j != i)
+                                if (j != i)
                                     copy_data.cell_matrix(j,i) += expression_value;
                             }{{/FORM_EXPRESSION_MATRIX_SYM}}
 
@@ -397,7 +397,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                                 {
                                     double expression_value = fe_values.JxW(q_point) *({{EXPRESSION}});
                                     copy_data.cell_mass_matrix(i,j) += expression_value;
-                                    if(j != i)
+                                    if (j != i)
                                         copy_data.cell_mass_matrix(j,i) += expression_value;
                                 }{{/FORM_EXPRESSION_TRANSIENT_SYM}}
                             }

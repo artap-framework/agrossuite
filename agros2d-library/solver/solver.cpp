@@ -131,9 +131,6 @@ dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fie
 SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     : m_fieldInfo(fieldInfo), m_scene(Agros2D::scene()), m_problem(Agros2D::problem()), m_solution_previous(NULL), m_time(0.0)
 {    
-    // fe collection
-    qDebug() << "SolverDeal::SolverDeal: numberOfSolutions" << fieldInfo->numberOfSolutions();
-
     // copy initial mesh
     m_triangulation = new dealii::Triangulation<2>();
     m_triangulation->copy_triangulation(*m_fieldInfo->initialMesh());
@@ -617,7 +614,7 @@ void SolverDeal::solve()
         double time = 0.0;
         for (unsigned int i = 0; i < Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); ++i)
         {
-            if(Agros2D::problem()->isAborted())
+            if (Agros2D::problem()->isAborted())
                 break;
 //            switch (timeStepMethodType((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()))
 //            {
@@ -651,6 +648,13 @@ void SolverDeal::solve()
 //            default:
 //                assert(0);
 //            }
+
+            // update time dep variables
+            Module::updateTimeFunctions(time);
+
+            // m_assemble_matrix = false;
+            assembleSystem();
+            // m_assemble_matrix = true;
 
             time = transientBackwardEuler(time, time_step);
 
@@ -767,9 +771,11 @@ void SolverDeal::solveProblemNonLinearPicard()
 
         iteration++;
 
-        qDebug() << "step: " << iteration;
+        std::cout << "step: " << iteration << std::endl;
         assembleSystem();
+        std::cout << "step: " << iteration << " - ass" << std::endl;
         solveLinearSystem();
+        std::cout << "step: " << iteration << " - OK" << std::endl;
 
         // copy solution
         if (m_solution_previous)

@@ -128,7 +128,7 @@ bool Value::evaluateAtPoint(const Point &point)
 }
 
 bool Value::evaluateAtTime(double time)
-{
+{   
     m_time = time;
     return evaluateAndSave();
 }

@@ -221,12 +221,9 @@ class TestHeatNonlinPlanarPicard(Agros2DTestCase):
         self.heat.polynomial_order = 2
 
         self.heat.solver = "picard"
-        self.heat.solver_parameters['residual'] = 0.0001
+        self.heat.solver_parameters['residual'] = 0.1
         self.heat.solver_parameters['damping'] = 'automatic'
-        self.heat.solver_parameters['damping_factor'] = 0.8
-        self.heat.solver_parameters['jacobian_reuse'] = True
-        self.heat.solver_parameters['jacobian_reuse_ratio'] = 0.3
-        self.heat.solver_parameters['jacobian_reuse_steps'] = 20
+        self.heat.solver_parameters['damping_factor'] = 1.0
 
         self.heat.add_boundary("Left", "heat_temperature", {"heat_temperature" : 10})
         self.heat.add_boundary("Radiace", "heat_heat_flux", {"heat_convection_external_temperature" : 0, "heat_convection_heat_transfer_coefficient" : 0, "heat_heat_flux" : 0, "heat_radiation_ambient_temperature" : 20, "heat_radiation_emissivity" : 0.9})
@@ -246,7 +243,7 @@ class TestHeatNonlinPlanarPicard(Agros2DTestCase):
         geometry.add_edge(0.25, 0.25, 0.1, 0.1, boundaries = {"heat" : "Radiace"})
         geometry.add_edge(0.1, 0.1, 0.25, -0.25, boundaries = {"heat" : "Radiace"})
         geometry.add_edge(0.25, -0.25, 0.05, -0.05, boundaries = {"heat" : "Neumann"})
-        geometry.add_edge(0.05, -0.05, -0.25, -0.25, boundaries = {"heat" : "Neumann"}, angle = 90)
+        geometry.add_edge(0.05, -0.05, -0.25, -0.25, boundaries = {"heat" : "Neumann"}, angle = 90, segments = 6)
         geometry.add_edge(-0.25, -0.05, 0.1, 0.1, boundaries = {})
         geometry.add_edge(-0.25, 0.25, -0.25, -0.05, boundaries = {"heat" : "Left"})
         geometry.add_edge(-0.25, -0.05, -0.25, -0.25, boundaries = {"heat" : "Left"})
@@ -288,10 +285,8 @@ class BenchmarkHeatTransientAxisymmetric(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
 
-        problem.time_step_method = "adaptive"
-        problem.time_method_order = 3
-        problem.time_method_tolerance = 1.0
-        problem.time_steps = 20
+        problem.time_step_method = "implicit_midpoint"
+        problem.time_steps = 30
         problem.time_total = 190
 
         # disable view
@@ -303,7 +298,7 @@ class BenchmarkHeatTransientAxisymmetric(Agros2DTestCase):
         self.heat = agros2d.field("heat")
         self.heat.analysis_type = "transient"
         self.heat.transient_initial_condition = 0
-        self.heat.number_of_refinements = 2
+        self.heat.number_of_refinements = 1
         self.heat.polynomial_order = 3
         self.heat.solver = "linear"
 
@@ -338,11 +333,9 @@ class TestHeatTransientAxisymmetric(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
-        problem.time_step_method = "fixed"
-        problem.time_method_order = 3
-        problem.time_method_tolerance = 1
+        problem.time_step_method = "implicit_midpoint"
         problem.time_total = 10000
-        problem.time_steps = 40
+        problem.time_steps = 30
         
         # disable view
         agros2d.view.mesh.disable()
@@ -352,7 +345,7 @@ class TestHeatTransientAxisymmetric(Agros2DTestCase):
         self.heat = agros2d.field("heat")
         self.heat.analysis_type = "transient"
         self.heat.number_of_refinements = 0
-        self.heat.polynomial_order = 5
+        self.heat.polynomial_order = 2
         self.heat.solver = "linear"
         self.heat.solver_parameters['residual'] = 0.001
         self.heat.transient_initial_condition = 20
@@ -430,10 +423,10 @@ if __name__ == '__main__':
 
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatPlanar))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatAxisymmetric))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarNewton))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarPicard))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatPlanar))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatAxisymmetric))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarNewton))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarPicard))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatTransientAxisymmetric))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(BenchmarkHeatTransientAxisymmetric))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(BenchmarkHeatTransientAxisymmetric))
     suite.run(result)
