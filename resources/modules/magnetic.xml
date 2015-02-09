@@ -104,7 +104,7 @@
     <module:vector_form  id="steady_rhs_current" i="1" j="1" planar="ma_Jer_compl * vval " axi="ma_Jer_compl * vval" />
     <module:vector_form  id="transient_rhs_current" i="1" j="1" planar="ma_Jer * vval " axi="ma_Jer * vval"/>
 
-    <module:matrix_form id="transient" i="1" j="1" planar="ma_gamma * uval * vval" axi="ma_gamma * uval * vval" condition="fabs(ma_gamma) > 0.0"/>
+    <module:matrix_form id="transient" i="1" j="1" planar="ma_gamma * uval * vval" axi="ma_gamma * uval * vval" condition="fabs(ma_gamma) > 0.0" symmetric_planar="1" symmetric_axi="1" />
 
     <!-- TODO: replace value1 with value1+value3 in nonlinear form?????-->
     <module:matrix_form  id="harmonic_laplace_1_1" i="1" j="1" planar="ma_one_over_mu * (udx * vdx + udy * vdy)" symmetric_planar="1" axi="ma_one_over_mu * (udr * vdr + udz * vdz + uval * vdr / r)"/>
@@ -143,9 +143,9 @@
         <module:quantity id="magnetic_velocity_x"/>
         <module:quantity id="magnetic_velocity_y"/>
         <module:quantity id="magnetic_velocity_angular"/>
-        <module:quantity id="magnetic_current_density_external_real"/>
-        <module:quantity id="magnetic_total_current_prescribed"/>
-        <module:quantity id="magnetic_total_current_real"/>
+        <module:quantity id="magnetic_current_density_external_real" dependence="time" />
+        <module:quantity id="magnetic_total_current_prescribed" />
+        <module:quantity id="magnetic_total_current_real" />
 
         <module:function_use id="magnetic_func_current_density_external_real_complete"/>
         <module:function_use id="magnetic_func_one_over_mu"/>
@@ -156,16 +156,16 @@
         <module:linearity_option type="linear">
           <module:matrix_form id="steady_laplace"/>
           <module:matrix_form id="steady_velocity"/>
-          <module:vector_form  id="steady_rhs_remanence"/>
-          <module:vector_form  id="steady_rhs_current"/>          
+          <module:vector_form id="steady_rhs_remanence" />
+          <module:vector_form id="steady_rhs_current"/>          
           <module:matrix_transient_form id="transient" />   
         </module:linearity_option>
 
         <module:linearity_option type="picard">
           <module:matrix_form id="steady_laplace"/>
           <module:matrix_form id="steady_velocity"/>
-          <module:vector_form  id="steady_rhs_remanence"/>
-          <module:vector_form  id="steady_rhs_current"/>
+          <module:vector_form id="steady_rhs_remanence"/>
+          <module:vector_form id="steady_rhs_current"/>
         </module:linearity_option>
 
         <module:linearity_option type="newton">

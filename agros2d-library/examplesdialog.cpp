@@ -356,8 +356,8 @@ void ExamplesDialog::problemInfo(const QString &fileName)
 
                     fieldInfo->SetValue("PHYSICAL_FIELD_LABEL", Module::availableModules()[QString::fromStdString(field.field_id())].toStdString());
 
-                    fieldInfo->SetValue("ANALYSIS_TYPE_LABEL", tr("Analysis:").toStdString());
-                    fieldInfo->SetValue("ANALYSIS_TYPE", analysisTypeString(analysisTypeFromStringKey(QString::fromStdString(field.analysis_type()))).toStdString());
+                    // fieldInfo->SetValue("ANALYSIS_TYPE_LABEL", tr("Analysis:").toStdString());
+                    // fieldInfo->SetValue("ANALYSIS_TYPE", analysisTypeString(analysisTypeFromStringKey(QString::fromStdString(field.analysis_type()))).toStdString());
 
                     fieldInfo->SetValue("LINEARITY_TYPE_LABEL", tr("Solver:").toStdString());
                     fieldInfo->SetValue("LINEARITY_TYPE", linearityTypeString(linearityTypeFromStringKey(QString::fromStdString(field.linearity_type()))).toStdString());
