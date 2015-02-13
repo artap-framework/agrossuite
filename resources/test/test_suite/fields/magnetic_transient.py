@@ -9,10 +9,9 @@ class TestMagneticTransientPlanar(Agros2DTestCase):
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         
-        problem.time_step_method = "fixed"
-        problem.time_method_order = 2
+        problem.time_step_method = "backward_euler"
         problem.time_total = 0.4
-        problem.time_steps = 50
+        problem.time_steps = 100
         
         # disable view
         agros2d.view.mesh.disable()
@@ -22,7 +21,7 @@ class TestMagneticTransientPlanar(Agros2DTestCase):
         self.magnetic = agros2d.field("magnetic")
         self.magnetic.analysis_type = "transient"
         self.magnetic.transient_initial_condition = 0
-        self.magnetic.number_of_refinements = 3
+        self.magnetic.number_of_refinements = 1
         self.magnetic.polynomial_order = 2
         self.magnetic.adaptivity_type = "disabled"
         self.magnetic.solver = "linear"
@@ -96,8 +95,7 @@ class TestMagneticTransientAxisymmetric(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
-        problem.time_step_method = "fixed"
-        problem.time_method_order = 2
+        problem.time_step_method = "backward_euler"
         problem.time_total = 0.30
         problem.time_steps = 30
         
@@ -109,7 +107,7 @@ class TestMagneticTransientAxisymmetric(Agros2DTestCase):
         self.magnetic = agros2d.field("magnetic")
         self.magnetic.analysis_type = "transient"
         self.magnetic.transient_initial_condition = 0
-        self.magnetic.number_of_refinements = 3
+        self.magnetic.number_of_refinements = 1
         self.magnetic.polynomial_order = 2
         self.magnetic.adaptivity_type = "disabled"
         self.magnetic.solver = "linear"
@@ -176,6 +174,6 @@ if __name__ == '__main__':
 
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticTransientPlanar))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticTransientPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticTransientAxisymmetric))
     suite.run(result)

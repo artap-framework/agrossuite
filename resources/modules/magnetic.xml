@@ -108,9 +108,10 @@
     <module:vector_form  id="steady_rhs_current" i="1" j="1" planar="ma_Jer_compl * vval " axi="ma_Jer_compl * vval" />
     <module:vector_form  id="transient_rhs_current" i="1" j="1" planar="ma_Jer * vval " axi="ma_Jer * vval"/>
 
-    <module:matrix_form id="transient" i="1" j="2" planar="ma_gamma * uval * vval" axi="ma_gamma * uval * vval" condition="fabs(ma_gamma) > 0.0" symmetric_planar="1" symmetric_axi="1" />
+    <module:matrix_form id="transient" i="1" j="2" planar="ma_gamma * uval * vval" axi="ma_gamma * uval * vval" condition="fabs(ma_gamma) > 0.0" />
     <module:matrix_form id="transient_fake" i="1" j="1" planar="1e-9 * uval * vval" axi="1e-9 * uval * vval" symmetric_planar="1" symmetric_axi="1" />
-    <module:matrix_form id="transient_intensity" i="2" j="2" planar="- uval * vval" axi="- uval * vval" symmetric_planar="1" symmetric_axi="1" />
+    <module:matrix_form id="transient_intensity" i="2" j="2" planar="uval * vval" axi="uval * vval" symmetric_planar="1" symmetric_axi="1" />
+    <module:matrix_form id="transient_intensity_mass" i="2" j="1" planar="- uval * vval" axi="- uval * vval" />
 
     <!-- TODO: replace value1 with value1+value3 in nonlinear form?????-->
     <module:matrix_form  id="harmonic_laplace_1_1" i="1" j="1" planar="ma_one_over_mu * (udx * vdx + udy * vdy)" symmetric_planar="1" axi="ma_one_over_mu * (udr * vdr + udz * vdz + uval * vdr / r)"/>
@@ -207,8 +208,9 @@
           <module:vector_form  id="steady_rhs_remanence"/>
           <module:vector_form  id="transient_rhs_current"/>
           <module:matrix_form id="transient" />   
-          <module:matrix_transient_form id="transient_fake" />   
-          <module:matrix_transient_form id="transient_intensity" />   
+          <module:matrix_form id="transient_intensity" />             
+          <!-- <module:matrix_transient_form id="transient_fake" />    -->
+          <module:matrix_transient_form id="transient_intensity_mass" />   
         </module:linearity_option>
 
         <module:linearity_option type="picard">

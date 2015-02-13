@@ -651,7 +651,6 @@ void SolverDeal::solve()
 
             // update time dep variables
             Module::updateTimeFunctions(time);
-
             // m_assemble_matrix = false;
             assembleSystem();
             // m_assemble_matrix = true;
