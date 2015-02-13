@@ -179,7 +179,7 @@ SolverDeal{{CLASS}}::AssemblyCopyData::AssemblyCopyData(const dealii::hp::FEColl
 
 void SolverDeal{{CLASS}}::assembleSystem()
 {
-    bool isTransient = (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool());
+    bool isTransient = (m_fieldInfo->analysisType() == AnalysisType_Transient);
 
     system_rhs = 0.0;
     if(m_assemble_matrix)
@@ -206,7 +206,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
                                               AssemblyCopyData &copy_data)
 {
     CoordinateType coordinateType = m_problem->config()->coordinateType();
-    bool isTransient = (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool());
+    bool isTransient = (m_fieldInfo->analysisType() == AnalysisType_Transient);
 
     // reinit volume
     scratch_data.hp_fe_values.reinit(cell);
@@ -562,7 +562,7 @@ void SolverDeal{{CLASS}}::copyLocalToGlobal(const AssemblyCopyData &copy_data)
                                                                 system_rhs);
         }
 
-        if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+        if (m_fieldInfo->analysisType() == AnalysisType_Transient)
         {
             // distribute local to global system
             hanging_node_constraints.distribute_local_to_global(copy_data.cell_mass_matrix,

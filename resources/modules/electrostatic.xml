@@ -5,7 +5,7 @@
   <module:general_field id="electrostatic" name="Electrostatic field">
     <module:description>Electrostatics is the branch of science that deals with the phenomena and properties of stationary or slow-moving (without acceleration) electric charges.</module:description>
     <module:analyses>
-      <module:analysis id="steadystate" name="Steady state" solutions="1" type="steadystate" transient_analysis="0" />
+      <module:analysis id="steadystate" name="Steady state" solutions="1" type="steadystate" />
     </module:analyses>
     </module:general_field>
 

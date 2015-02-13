@@ -90,7 +90,6 @@ public:
         AdaptivityCoarsePercentage,
         AdaptivityTransientBackSteps,
         AdaptivityTransientRedoneEach,
-        TransientAnalysis,
         TransientTimeSkip,
         TransientInitialCondition,
         LinearSolverIterMethod,
@@ -120,9 +119,6 @@ public:
 
     // number of solutions
     inline int numberOfSolutions() const { return m_numberOfSolutions; }
-
-    // time dep
-    inline bool hasTransientAnalysis() const { return m_hasTransientAnalysis; }
 
     const QMap<SceneEdge *, int> edgesRefinement() { return m_edgesRefinement; }
     int edgeRefinement(SceneEdge *edge);
@@ -263,9 +259,6 @@ private:
     AnalysisType m_analysisType;
     // number of solutions cache
     int m_numberOfSolutions;
-
-    // has timedep
-    bool m_hasTransientAnalysis;
 
     // linearity
     LinearityType m_linearityType;

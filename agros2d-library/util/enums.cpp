@@ -165,6 +165,7 @@ void initLists()
 
     // Analysis Type
     analysisTypeList.insert(AnalysisType_SteadyState, "steadystate");
+    analysisTypeList.insert(AnalysisType_Transient, "transient");
     analysisTypeList.insert(AnalysisType_Harmonic, "harmonic");
 
     // coupling type
@@ -383,6 +384,8 @@ QString analysisTypeString(AnalysisType analysisType)
     {
     case AnalysisType_SteadyState:
         return QObject::tr("Steady state");
+    case AnalysisType_Transient:
+        return QObject::tr("Transient");
     case AnalysisType_Harmonic:
         return QObject::tr("Harmonic");
     default:

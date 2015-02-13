@@ -383,11 +383,15 @@ void ParserInstance::addPostprocessorBasic()
         {
             m_dict[QString("dx%1").arg(i)] = QString("solution_grads[k][%1][0]").arg(i-1); // QString("dudx[%1][i]").arg(i-1);
             m_dict[QString("dy%1").arg(i)] = QString("solution_grads[k][%1][1]").arg(i-1); // QString("dudy[%1][i]").arg(i-1);
+            m_dict[QString("ddxx%1").arg(i)] = QString("solution_hessian[k][%1][0][0]").arg(i-1);
+            m_dict[QString("ddyy%1").arg(i)] = QString("solution_hessian[k][%1][1][1]").arg(i-1);
         }
         else
         {
             m_dict[QString("dr%1").arg(i)] = QString("solution_grads[k][%1][0]").arg(i-1); // QString("dudx[%1][i]").arg(i-1);
             m_dict[QString("dz%1").arg(i)] = QString("solution_grads[k][%1][1]").arg(i-1); // QString("dudy[%1][i]").arg(i-1);
+            m_dict[QString("ddrr%1").arg(i)] = QString("solution_hessian[k][%1][0][0]").arg(i-1);
+            m_dict[QString("ddzz%1").arg(i)] = QString("solution_hessian[k][%1][1][1]").arg(i-1);
         }
     }
     // eggshell

@@ -501,7 +501,7 @@ void SolverDeal::setup(bool useDirichletLift)
     system_matrix.reinit(sparsity_pattern);
 
     // mass matrix (transient)
-    if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+    if (m_fieldInfo->analysisType() == AnalysisType_Transient)
     {
         mass_matrix.reinit(sparsity_pattern);
         mass_minus_tau_Jacobian.reinit(sparsity_pattern);
@@ -560,7 +560,7 @@ void SolverDeal::setupProblemNonLinearNewton()
 
 void SolverDeal::solve()
 {
-    if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+    if (m_fieldInfo->analysisType() == AnalysisType_Transient)
     {
         setup(true);
         assembleSystem();
@@ -943,7 +943,7 @@ void SolverDeal::solveProblemNonLinearNewton()
                     }
                     else
                     {
-                        assert(0);
+                        // assert(0);
                         // todo: damping factor below minimal possible
                     }
 

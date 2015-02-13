@@ -96,7 +96,7 @@ void VideoDialog::showDialog()
     sliderAdaptiveAnimate->setMaximum(m_adaptiveSteps);
     sliderAdaptiveAnimate->blockSignals(false);
 
-    if (m_postDeal->activeViewField()->hasTransientAnalysis() && m_postDeal->activeViewField()->value(FieldInfo::TransientAnalysis).toBool())
+    if (m_postDeal->activeViewField()->analysisType() == AnalysisType_Transient)
     {
         tabType->setCurrentWidget(tabTransient);
     }

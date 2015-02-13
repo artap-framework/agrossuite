@@ -5,7 +5,7 @@
     <module:description>Structural analysis is the determination of the effects of loads on physical structures and their components.
     </module:description>
     <module:analyses>
-      <module:analysis id="steadystate" name="Steady state" solutions="2" type="steadystate" transient_analysis="0" />
+      <module:analysis id="steadystate" name="Steady state" solutions="2" type="steadystate" />
     </module:analyses>
     </module:general_field>
 

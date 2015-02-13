@@ -148,7 +148,7 @@ int Problem::numTransientFields() const
 {
     int num = 0;
     foreach (FieldInfo* fieldInfo, m_fieldInfos)
-        if (fieldInfo->hasTransientAnalysis() && fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+        if (fieldInfo->analysisType() == AnalysisType_Transient)
             num++;
     return num;
 }

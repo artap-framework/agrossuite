@@ -58,16 +58,10 @@ PyField::PyField(std::string fieldId)
 void PyField::setAnalysisType(const std::string &analysisType)
 {
     std::string at = analysisType;
-    // TODO: hack
-    if (analysisType == "transient")
-        at = "steadystate";
 
     if (m_fieldInfo->analyses().contains(analysisTypeFromStringKey(QString::fromStdString(at))))
     {
         m_fieldInfo->setAnalysisType(analysisTypeFromStringKey(QString::fromStdString(at)));
-        // TODO: hack
-        if (analysisType == "transient")
-            m_fieldInfo->setValue(FieldInfo::TransientAnalysis, true);
     }
     else
     {

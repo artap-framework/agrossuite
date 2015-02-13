@@ -57,7 +57,7 @@ bool FieldBlock::solveInitVariables()
 int FieldInfo::numberIdNext = 0;
 
 FieldInfo::FieldInfo(QString fieldId)
-    : m_plugin(NULL), m_numberOfSolutions(0), m_hasTransientAnalysis(false),
+    : m_plugin(NULL), m_numberOfSolutions(0),
       m_hermesMarkerToAgrosLabelConversion(nullptr), m_labelAreas(nullptr), m_initialMesh(nullptr)
 {    
     assert(!fieldId.isEmpty());
@@ -214,7 +214,6 @@ void FieldInfo::setAnalysisType(AnalysisType at)
         if (an.type() == analysisTypeToStringKey(at).toStdString())
         {
             m_numberOfSolutions = an.solutions();
-            m_hasTransientAnalysis = (an.transient_analysis() == 1);
 
             if (an.field_config().present())
             {
@@ -924,7 +923,6 @@ void FieldInfo::setStringKeys()
     m_settingKey[AdaptivityFinePercentage] = "AdaptivityFinePercentage";
     m_settingKey[AdaptivityCoarsePercentage] = "AdaptivityCoarsePercentage";
     m_settingKey[AdaptivityEstimator] = "AdaptivityEstimator";    
-    m_settingKey[TransientAnalysis] = "TransientAnalysis";
     m_settingKey[TransientTimeSkip] = "TransientTimeSkip";
     m_settingKey[TransientInitialCondition] = "TransientInitialCondition";
     m_settingKey[LinearSolverIterMethod] = "LinearSolverIterMethod";
@@ -960,7 +958,6 @@ void FieldInfo::setDefaultValues()
     m_settingDefault[AdaptivityCoarsePercentage] = 3;
     m_settingDefault[AdaptivityTransientBackSteps] = 3;
     m_settingDefault[AdaptivityTransientRedoneEach] = 5;
-    m_settingDefault[TransientAnalysis] = false;
     m_settingDefault[TransientTimeSkip] = 0.0;
     m_settingDefault[TransientInitialCondition] = 0.0;
     m_settingDefault[LinearSolverIterMethod] = IterSolverType_BiCGStab;

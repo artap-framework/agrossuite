@@ -202,7 +202,7 @@ void {{CLASS}}VolumeIntegral::calculate()
         MultiArray ma = Agros2D::solutionStore()->multiArray(fsid);
 
         // update time functions
-        if (!Agros2D::problem()->isSolving() && m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+        if (!Agros2D::problem()->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
         {
             Module::updateTimeFunctions(Agros2D::problem()->timeStepToTotalTime(m_timeStep));
         }

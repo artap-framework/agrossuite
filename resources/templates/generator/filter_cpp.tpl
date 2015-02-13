@@ -38,7 +38,7 @@
                                                      MultiArray *ma,
                                                      const QString &variable,
                                                      PhysicFieldVariableComp physicFieldVariableComp)
-    : dealii::DataPostprocessorScalar<2>("Field",  dealii::update_values | dealii::update_gradients | dealii::update_q_points),
+    : dealii::DataPostprocessorScalar<2>("Field",  dealii::update_values | dealii::update_gradients | dealii::update_hessians | dealii::update_q_points),
       m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep), m_solutionType(solutionType),
       ma(ma), m_variable(variable), m_physicFieldVariableComp(physicFieldVariableComp)
 {
@@ -89,6 +89,7 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_scalar (const std::ve
 
     std::vector<dealii::Vector<double> > solution_values(computed_quantities.size(), dealii::Vector<double>(numberOfSolutions));
     std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(computed_quantities.size(), std::vector<dealii::Tensor<1,2> >(numberOfSolutions));
+    std::vector<std::vector<dealii::Tensor<2,2> > >  solution_hessian(computed_quantities.size(), std::vector<dealii::Tensor<2,2> >(numberOfSolutions));
 
     for (unsigned int k = 0; k < computed_quantities.size(); k++)
     {
@@ -96,6 +97,7 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_scalar (const std::ve
 
         solution_values[k][0] = uh[k];
         solution_grads[k][0] = duh[k];
+        solution_hessian[k][0] = dduh[k];
 
         {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
         {{/VARIABLE_MATERIAL}}
@@ -140,6 +142,7 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_vector (const std::ve
 
     std::vector<dealii::Vector<double> > solution_values(computed_quantities.size(), dealii::Vector<double>(numberOfSolutions));
     std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(computed_quantities.size(), std::vector<dealii::Tensor<1,2> >(numberOfSolutions));
+    std::vector<std::vector<dealii::Tensor<2,2> > >  solution_hessian(computed_quantities.size(), std::vector<dealii::Tensor<2,2> >(numberOfSolutions));
 
     for (unsigned int k = 0; k < computed_quantities.size(); k++)
     {
@@ -149,6 +152,7 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_vector (const std::ve
         {
             solution_values[k][i] = uh[k][i];
             solution_grads[k][i] = duh[k][i];
+            solution_hessian[k][i] = dduh[k][i];
         }
 
         {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));

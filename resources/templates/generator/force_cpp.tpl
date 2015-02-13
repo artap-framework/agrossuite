@@ -64,7 +64,7 @@ Point3 force{{CLASS}}(const FieldInfo *fieldInfo, int timeStep, int adaptivitySt
         {{/VARIABLE_MATERIAL}}
 
         // update time functions
-        if (fieldInfo->hasTransientAnalysis() && fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
+        if (fieldInfo->analysisType() == AnalysisType_Transient)
         {
             QList<double> timeLevels = Agros2D::solutionStore()->timeLevels(fieldInfo);
             Module::updateTimeFunctions(timeLevels[timeStep]);
@@ -84,7 +84,7 @@ Point3 force{{CLASS}}(const FieldInfo *fieldInfo, int timeStep, int adaptivitySt
             // point values
             try
             {
-                if (fieldInfo->hasTransientAnalysis() && fieldInfo->value(FieldInfo::TransientAnalysis).toBool() && timeStep == 0)
+                if (fieldInfo->analysisType() == AnalysisType_Transient && timeStep == 0)
                 {
                     // set variables
                     solution_values[k][i] = fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble();
