@@ -134,6 +134,11 @@ void Problem::setInitialMesh(dealii::Triangulation<2> *mesh)
     m_initialMesh = mesh;
 }
 
+void Problem::setInitialUnrefinedMesh(dealii::Triangulation<2> *mesh)
+{
+    m_initialUnrefinedMesh = mesh;
+}
+
 void Problem::setCalculationMesh(dealii::Triangulation<2> *mesh)
 {
     m_calculationMesh = mesh;
@@ -874,7 +879,45 @@ void Problem::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenera
 //        }
 //    }
 //    std::cout << "total " << idx << " elements " <<std::endl;
+
+    // this is just a workaround for the problem in deal
+    // user data are not preserved on faces after refinement
+    dealii::Triangulation<2> *initialUnrefinedMeshDeal = new dealii::Triangulation<2>();
+    initialUnrefinedMeshDeal->copy_triangulation(*meshDeal);
+    setInitialUnrefinedMesh(initialUnrefinedMeshDeal);
+
+
     meshDeal->refine_global(max_num_refinements);
+
+    dealii::Triangulation<2>::cell_iterator cell_unrefined = initialUnrefinedMeshDeal->begin();
+    dealii::Triangulation<2>::cell_iterator end_cell_unrefined = initialUnrefinedMeshDeal->end();
+    dealii::Triangulation<2>::cell_iterator cell = meshDeal->begin();
+
+    //    std::cout << "propagate markers " << std::endl;
+
+        for (int idx = 0; cell_unrefined != end_cell_unrefined; ++cell, ++cell_unrefined, ++idx)   // loop over all cells, not just active ones
+        {
+            //std::cout << "cell with " << cell->n_children() << " children " << std::endl;
+            for (int f=0; f < dealii::GeometryInfo<2>::faces_per_cell; f++)
+            {
+              //  std::cout << cell->face(f)->user_index() << std::endl;
+                if (cell_unrefined->face(f)->user_index() != 0)
+                {
+                    cell->face(f)->recursively_set_user_index(cell_unrefined->face(f)->user_index());
+                //    std::cout << "  nenulovy marker " << cell->face(f)->user_index() << std::endl;
+//                    if (cell->face(f)->has_children())
+//                    {
+//                        std::cout<< "   ma deti" << std::endl;
+//                        for (unsigned int c=0; c<cell->face(f)->n_children(); ++c)
+//                        {
+//                            cell->face(f)->child(c)->set_user_index(cell->face(f)->user_index());
+//                            std::cout << "propagated " << cell->face(f)->child(c)->user_index() << std::endl;
+//                        }
+//                    }
+                }
+            }
+        }
+
 
 
 //    std::cout << "\nMESH DEAL AFTER " << std::endl;

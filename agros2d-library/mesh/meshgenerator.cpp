@@ -441,7 +441,7 @@ void MeshGenerator::writeTodealii()
                     else
                     {
                         cell->face(neigh_i)->set_user_index((int)cell->face(neigh_i)->boundary_indicator());
-                        std::cout << "cell cell_idx: " << cell_idx << ", face  " << neigh_i << " set to " << (int) cell->face(neigh_i)->boundary_indicator() << " -> value " << cell->face(neigh_i)->user_index() << std::endl;
+                        //std::cout << "cell cell_idx: " << cell_idx << ", face  " << neigh_i << " set to " << (int) cell->face(neigh_i)->boundary_indicator() << " -> value " << cell->face(neigh_i)->user_index() << std::endl;
                     }
 
                     int neighbor_cell_idx = cell->neighbor_index(neigh_i);
@@ -454,7 +454,7 @@ void MeshGenerator::writeTodealii()
                             if(neighbor_edge_pair.first == neighbor_cell_idx)
                             {
                                 cell->face(neigh_i)->set_user_index(neighbor_edge_pair.second);
-                                std::cout << "cell cell_idx: " << cell_idx << ", face adj to " << neighbor_cell_idx << " set to " << neighbor_edge_pair.second << " -> value " << cell->face(neigh_i)->user_index() << std::endl;
+                                //std::cout << "cell cell_idx: " << cell_idx << ", face adj to " << neighbor_cell_idx << " set to " << neighbor_edge_pair.second << " -> value " << cell->face(neigh_i)->user_index() << std::endl;
                                 //dealii::TriaAccessor<1,2,2> line = cell->line(neigh_i);
                                 //cell->neighbor()
                             }

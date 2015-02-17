@@ -146,6 +146,9 @@ public:
     void clearInitialMesh();
     void setInitialMesh(dealii::Triangulation<2> *mesh);
 
+    inline dealii::Triangulation<2> *initialUnrefinedMesh() const { return m_initialUnrefinedMesh; }
+    void setInitialUnrefinedMesh(dealii::Triangulation<2> *mesh);
+
     inline dealii::Triangulation<2> *calculationMesh() const { return m_calculationMesh; }
     void setCalculationMesh(dealii::Triangulation<2> *mesh);
 
@@ -166,6 +169,8 @@ private:
 
     // initial mesh
     dealii::Triangulation<2> *m_initialMesh;
+
+    dealii::Triangulation<2> *m_initialUnrefinedMesh;
 
     // calculation mesh
     // at the present moment we do not use multimesh

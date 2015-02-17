@@ -207,7 +207,7 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
         if(cell->active_fe_index() != 0)
             std::cout << "assert" << std::endl;
 
-        std::cout << "material id " << cell->material_id() - 1 << std::endl;
+        //std::cout << "material id " << cell->material_id() - 1 << std::endl;
         if(m_scene->labels->at(cell->material_id() - 1)->marker(m_fieldInfo) != m_scene->materials->getNone(m_fieldInfo))
         {
             cell->set_active_fe_index(1);
@@ -538,22 +538,22 @@ void SolverDeal::propagateBoundaryMarkers()
 //    dealii::Triangulation<2>::cell_iterator cell = m_triangulation->begin();
 //    dealii::Triangulation<2>::cell_iterator end_cell = m_triangulation->end();
 
-    std::cout << "propagate markers " << std::endl;
+    //std::cout << "propagate markers " << std::endl;
     for (; cell != end_cell; ++cell)   // loop over all cells, not just active ones
     {
-        std::cout << "cell " <<std::endl;
+        //std::cout << "cell " <<std::endl;
         for (int f=0; f < dealii::GeometryInfo<2>::faces_per_cell; f++)
         {
             if (cell->face(f)->user_index() != 0)
             {
-                std::cout << "  nenulovy marker " << cell->face(f)->user_index() << std::endl;
+                //std::cout << "  nenulovy marker " << cell->face(f)->user_index() << std::endl;
                 if (cell->face(f)->has_children())
                 {
-                    std::cout<< "   ma deti" << std::endl;
+                    //std::cout<< "   ma deti" << std::endl;
                     for (unsigned int c=0; c<cell->face(f)->n_children(); ++c)
                     {
                         cell->face(f)->child(c)->set_user_index(cell->face(f)->user_index());
-                        std::cout << "propagated " << cell->face(f)->child(c)->user_index() << std::endl;
+                        //std::cout << "propagated " << cell->face(f)->child(c)->user_index() << std::endl;
                     }
                 }
             }
