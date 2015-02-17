@@ -83,6 +83,7 @@ public:
     // Hand made Euler methods
     double transientForwardEuler(const double time, const double time_step);
     double transientBackwardEuler(const double time, const double time_step);
+    double transientCrankNicolson(const double time, const double time_step);
 
     inline void set_time(const double new_time) { m_time = new_time; }
     inline double get_time() const { return m_time; }
@@ -122,8 +123,9 @@ protected:
     // transient mass matrix
     double m_time;
     dealii::SparseMatrix<double> mass_matrix;
-    dealii::SparseMatrix<double> mass_minus_tau_Jacobian;
+    dealii::SparseMatrix<double> transient_left_matrix;
     dealii::SparseDirectUMFPACK mass_matrix_inverse;
+    dealii::Vector<double> system_rhs_previous;
 
     // we need to be able to keep lu decomposition for Jacobian reuse
     dealii::SparseDirectUMFPACK direct_solver;

@@ -197,20 +197,20 @@ void initLists()
     meshTypeList.insert(MeshType_CUBIT, "cubit");
 
     // explicit methods
-    timeStepMethodList.insert(dealii::TimeStepping::FORWARD_EULER, "forward_euler");
-    timeStepMethodList.insert(dealii::TimeStepping::RK_THIRD_ORDER, "rk_third_order");
-    timeStepMethodList.insert(dealii::TimeStepping::RK_CLASSIC_FOURTH_ORDER, "rk_classic_fourth_order");
+    // timeStepMethodList.insert(dealii::TimeStepping::FORWARD_EULER, "forward_euler");
+    // timeStepMethodList.insert(dealii::TimeStepping::RK_THIRD_ORDER, "rk_third_order");
+    // timeStepMethodList.insert(dealii::TimeStepping::RK_CLASSIC_FOURTH_ORDER, "rk_classic_fourth_order");
     // implicit methods
     timeStepMethodList.insert(dealii::TimeStepping::BACKWARD_EULER, "backward_euler");
-    timeStepMethodList.insert(dealii::TimeStepping::IMPLICIT_MIDPOINT, "implicit_midpoint");
+    // timeStepMethodList.insert(dealii::TimeStepping::IMPLICIT_MIDPOINT, "implicit_midpoint");
     timeStepMethodList.insert(dealii::TimeStepping::CRANK_NICOLSON, "crank_nicolson");
-    timeStepMethodList.insert(dealii::TimeStepping::SDIRK_TWO_STAGES, "sdirk_two_stages");
+    // timeStepMethodList.insert(dealii::TimeStepping::SDIRK_TWO_STAGES, "sdirk_two_stages");
     // embedded explicit methods
-    timeStepMethodList.insert(dealii::TimeStepping::HEUN_EULER, "heun_euler");
-    timeStepMethodList.insert(dealii::TimeStepping::BOGACKI_SHAMPINE, "bogacki_shampine");
-    timeStepMethodList.insert(dealii::TimeStepping::DOPRI, "dopri");
-    timeStepMethodList.insert(dealii::TimeStepping::FEHLBERG, "fehlberg");
-    timeStepMethodList.insert(dealii::TimeStepping::CASH_KARP, "cash_karp");
+    // timeStepMethodList.insert(dealii::TimeStepping::HEUN_EULER, "heun_euler");
+    // timeStepMethodList.insert(dealii::TimeStepping::BOGACKI_SHAMPINE, "bogacki_shampine");
+    // timeStepMethodList.insert(dealii::TimeStepping::DOPRI, "dopri");
+    // timeStepMethodList.insert(dealii::TimeStepping::FEHLBERG, "fehlberg");
+    // timeStepMethodList.insert(dealii::TimeStepping::CASH_KARP, "cash_karp");
 
     // PHYSICFIELDVARIABLECOMP
     physicFieldVariableCompList.insert(PhysicFieldVariableComp_Scalar, "scalar");

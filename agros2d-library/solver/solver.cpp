@@ -502,7 +502,7 @@ void SolverDeal::setup(bool useDirichletLift)
     if (m_fieldInfo->analysisType() == AnalysisType_Transient)
     {
         mass_matrix.reinit(sparsity_pattern);
-        mass_minus_tau_Jacobian.reinit(sparsity_pattern);
+        transient_left_matrix.reinit(sparsity_pattern);
     }
     // qDebug() << "setup (" << time.elapsed() << "ms )";
 }
@@ -560,6 +560,8 @@ void SolverDeal::solve()
 {
     if (m_fieldInfo->analysisType() == AnalysisType_Transient)
     {
+        system_rhs_previous.reinit(m_doFHandler->n_dofs());
+
         setup(true);
         assembleSystem();
 
@@ -652,14 +654,28 @@ void SolverDeal::solve()
             }
             */
 
+            // store previous rhs
+            system_rhs_previous = system_rhs;
+
             // update time dep variables
             Module::updateTimeFunctions(time);
             // m_assemble_matrix = false;
             assembleSystem();
             // m_assemble_matrix = true;
 
-            time = transientBackwardEuler(time, time_step);
             // time = transientForwardEuler(time, time_step);
+
+            switch ((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt())
+            {
+            case dealii::TimeStepping::BACKWARD_EULER:
+               time = transientBackwardEuler(time, time_step);
+               break;
+            case dealii::TimeStepping::CRANK_NICOLSON:
+               time = transientCrankNicolson(time, time_step);
+               break;
+            default:
+                assert(0);
+            }
 
             // set new time
             set_time(time);
@@ -1084,11 +1100,11 @@ dealii::Vector<double> SolverDeal::transientEvaluateMassMatrixImplicitPart(const
 
     static dealii::SparseDirectUMFPACK inverse_mass_minus_tau_Jacobian;
 
-    mass_minus_tau_Jacobian.copy_from(mass_matrix);
-    mass_minus_tau_Jacobian.add(tau, system_matrix);
+    transient_left_matrix.copy_from(mass_matrix);
+    transient_left_matrix.add(tau, system_matrix);
 
     // if (i == 1)
-    inverse_mass_minus_tau_Jacobian.initialize(mass_minus_tau_Jacobian);
+    inverse_mass_minus_tau_Jacobian.initialize(transient_left_matrix);
 
     // add rhs
     dealii::Vector<double> tmp(m_doFHandler->n_dofs());
@@ -1121,17 +1137,44 @@ double SolverDeal::transientForwardEuler(const double time, const double time_st
 // hand made Euler, used only for debugging
 double SolverDeal::transientBackwardEuler(const double time, const double time_step)
 {
-    mass_minus_tau_Jacobian.copy_from(mass_matrix);
-    mass_minus_tau_Jacobian.add(time_step, system_matrix);
+    // LHM = (M + dt * K)
+    transient_left_matrix.copy_from(mass_matrix);
+    transient_left_matrix.add(time_step, system_matrix);
 
-    dealii::Vector<double> tmp(m_doFHandler->n_dofs());
-    mass_matrix.vmult(tmp, *m_solution);
-    tmp.add(time_step, system_rhs);
+    // m = M * SLN + dt * RHS
+    dealii::Vector<double> m(m_doFHandler->n_dofs());
+    mass_matrix.vmult(m, *m_solution);
+    m.add(time_step, system_rhs);
 
-    solveLinearSystem(mass_minus_tau_Jacobian, tmp, *m_solution);
-    // dealii::SparseDirectUMFPACK inverse;
-    // inverse.initialize(mass_minus_tau_Jacobian);
-    // inverse.vmult(*m_solution, tmp);
+    solveLinearSystem(transient_left_matrix, m, *m_solution);
+
+    return (time + time_step);
+}
+
+// hand made Crank Nicolson, used only for debugging
+double SolverDeal::transientCrankNicolson(const double time, const double time_step)
+{
+    // (M + dt * K)
+    transient_left_matrix.copy_from(mass_matrix);
+    transient_left_matrix.add(time_step / 2.0, system_matrix);
+
+    // m1 = M * SLN
+    dealii::Vector<double> m1(m_doFHandler->n_dofs());
+    mass_matrix.vmult(m1, *m_solution);
+
+    // m2 = K * SLN
+    dealii::Vector<double> m2(m_doFHandler->n_dofs());
+    system_matrix.vmult(m2, *m_solution);
+
+    // m1 = - dt / 2 * m2
+    m1.add(- time_step / 2.0, m2);
+
+    // m1 = dt / 2 * SLN
+    m1.add(time_step / 2.0, system_rhs);
+    // m1 = dt / 2 * SLN_prev
+    m1.add(time_step / 2.0, system_rhs_previous);
+
+    solveLinearSystem(transient_left_matrix, m1, *m_solution);
 
     return (time + time_step);
 }
