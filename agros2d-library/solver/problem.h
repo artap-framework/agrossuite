@@ -146,6 +146,9 @@ public:
     void clearInitialMesh();
     void setInitialMesh(dealii::Triangulation<2> *mesh);
 
+    inline dealii::Triangulation<2> *calculationMesh() const { return m_calculationMesh; }
+    void setCalculationMesh(dealii::Triangulation<2> *mesh);
+
     QList<QPair<double, bool> > timeStepHistory() const { return m_timeHistory; }
 
     QString timeUnit();
@@ -163,6 +166,10 @@ private:
 
     // initial mesh
     dealii::Triangulation<2> *m_initialMesh;
+
+    // calculation mesh
+    // at the present moment we do not use multimesh
+    dealii::Triangulation<2> *m_calculationMesh;
 
     QTime m_lastTimeElapsed;
 

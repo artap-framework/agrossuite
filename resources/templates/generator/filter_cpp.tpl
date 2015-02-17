@@ -83,6 +83,8 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_scalar (const std::ve
     // SceneLabel *label = m_labels->at(current_cell.first->material_id() - 1);
     SceneLabel *label = m_labels->at(mat_id - 1);
     SceneMaterial *material = label->marker(m_fieldInfo);
+    if(material == Agros2D::scene()->materials->getNone(m_fieldInfo))
+        return;
 
     {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
     {{/VARIABLE_MATERIAL}}
@@ -136,6 +138,8 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_vector (const std::ve
     // SceneLabel *label = m_labels->at(current_cell.first->material_id() - 1);
     SceneLabel *label = m_labels->at(mat_id - 1);
     SceneMaterial *material = label->marker(m_fieldInfo);
+    if(material == Agros2D::scene()->materials->getNone(m_fieldInfo))
+        return;
 
     {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
     {{/VARIABLE_MATERIAL}}

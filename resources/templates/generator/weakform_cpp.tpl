@@ -189,8 +189,24 @@ void SolverDeal{{CLASS}}::assembleSystem()
     if (isTransient)
         mass_matrix = 0.0;
 
-    dealii::WorkStream::run(m_doFHandler->begin_active(),
-                            m_doFHandler->end(),
+    typename dealii::hp::DoFHandler<2>::active_cell_iterator cell_begin, cell_end, source_begin, source_end;
+    cell_begin = m_doFHandler->begin_active();
+    cell_end = m_doFHandler->end();
+
+    // if there is no source, we use the same as dummy
+    source_begin = m_doFHandler->begin_active();
+    source_end = m_doFHandler->end();
+    // coupling sources{{#COUPLING_SOURCE}}
+    if(m_problem->hasField("{{COUPLING_SOURCE_ID}}"))
+    {
+        source_begin = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->begin_active();
+        source_end = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->end();
+    }
+    {{/COUPLING_SOURCE}}
+
+
+    dealii::WorkStream::run(DoubleCellIterator(source_begin, cell_begin),
+                            DoubleCellIterator(source_end, cell_end),
                             *this,
                             &SolverDeal{{CLASS}}::localAssembleSystem,
                             &SolverDeal{{CLASS}}::copyLocalToGlobal,
@@ -202,10 +218,21 @@ void SolverDeal{{CLASS}}::assembleSystem()
     //     mass_matrix_inverse.initialize(mass_matrix);
 }
 
-void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHandler<2>::active_cell_iterator &cell,
+void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                                               AssemblyScratchData &scratch_data,
                                               AssemblyCopyData &copy_data)
 {
+    const typename dealii::hp::DoFHandler<2>::active_cell_iterator cell = iter.cell_second;
+
+    // coupling sources{{#COUPLING_SOURCE}}
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}};
+    const SolverDeal* {{COUPLING_SOURCE_ID}}_solver = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"];
+    if(m_problem->hasField("{{COUPLING_SOURCE_ID}}"))
+    {
+        cell_{{COUPLING_SOURCE_ID}} = iter.cell_first;
+    }
+    {{/COUPLING_SOURCE}}
+
     CoordinateType coordinateType = m_problem->config()->coordinateType();
     bool isTransient = (m_fieldInfo->analysisType() == AnalysisType_Transient);
 
@@ -217,17 +244,6 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
 
     if (material != m_scene->materials->getNone(m_fieldInfo))
     {
-        // TODO: move outside
-        // coupling sources{{#COUPLING_SOURCE}}
-        dealii::hp::DoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}}, endc_{{COUPLING_SOURCE_ID}};
-        const SolverDeal* {{COUPLING_SOURCE_ID}}_solver = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"];
-        if(m_problem->hasField("{{COUPLING_SOURCE_ID}}"))
-        {
-            cell_{{COUPLING_SOURCE_ID}} = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->begin_active();
-            endc_{{COUPLING_SOURCE_ID}} = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->end();
-        }
-        {{/COUPLING_SOURCE}}
-
         const unsigned int dofs_per_cell = cell->get_fe().dofs_per_cell;
 
         // local matrix
@@ -304,29 +320,33 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
         // cache surface
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
         {
-            if (cell->face(face)->at_boundary())
+            if(cell->face(face)->user_index() > 0 )
             {
-                scratch_data.hp_fe_face_values.reinit(cell, face);
-
-                const dealii::FEFaceValues<2> &fe_face_values = scratch_data.hp_fe_face_values.get_present_fe_values();
-                const unsigned int n_face_q_points = fe_face_values.n_quadrature_points;
-
-                shape_face_point[face].resize(n_face_q_points);
-                shape_face_JxW[face].resize(n_face_q_points);
-
-                for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
+                SceneBoundary *boundary = m_scene->edges->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
+                if (boundary != m_scene->boundaries->getNone(m_fieldInfo))
                 {
-                    shape_face_point[face][q_point] = fe_face_values.quadrature_point(q_point);
-                    shape_face_JxW[face][q_point] = fe_face_values.JxW(q_point);
-                }
+                    scratch_data.hp_fe_face_values.reinit(cell, face);
 
-                for (unsigned int i = 0; i < dofs_per_cell; ++i)
-                {
-                    shape_face_value[face][i].reinit(n_face_q_points);
+                    const dealii::FEFaceValues<2> &fe_face_values = scratch_data.hp_fe_face_values.get_present_fe_values();
+                    const unsigned int n_face_q_points = fe_face_values.n_quadrature_points;
+
+                    shape_face_point[face].resize(n_face_q_points);
+                    shape_face_JxW[face].resize(n_face_q_points);
+
                     for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
                     {
-                        shape_face_value[face][i][q_point] = fe_face_values.shape_value(i, q_point);
-                        // shape_face_grad[i][q_point] = fe_face_values.shape_grad(i, q_point);
+                        shape_face_point[face][q_point] = fe_face_values.quadrature_point(q_point);
+                        shape_face_JxW[face][q_point] = fe_face_values.JxW(q_point);
+                    }
+
+                    for (unsigned int i = 0; i < dofs_per_cell; ++i)
+                    {
+                        shape_face_value[face][i].reinit(n_face_q_points);
+                        for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
+                        {
+                            shape_face_value[face][i][q_point] = fe_face_values.shape_value(i, q_point);
+                            // shape_face_grad[i][q_point] = fe_face_values.shape_grad(i, q_point);
+                        }
                     }
                 }
             }
@@ -428,9 +448,9 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
         // boundaries
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
         {
-            if (cell->face(face)->at_boundary())
+            if(cell->face(face)->user_index() > 0 )
             {
-                SceneBoundary *boundary = m_scene->edges->at(cell->face(face)->boundary_indicator() - 1)->marker(m_fieldInfo);
+                SceneBoundary *boundary = m_scene->edges->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
                 const QMap<uint, QSharedPointer<Value> > boundaryValues = boundary->values();
 
                 if (boundary != m_scene->boundaries->getNone(m_fieldInfo))
@@ -509,14 +529,6 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
             }
         }
 
-        // todo: different domains
-        // coupling sources{{#COUPLING_SOURCE}}
-        if(m_problem->hasField("{{COUPLING_SOURCE_ID}}"))
-        {
-            ++cell_{{COUPLING_SOURCE_ID}};
-        }
-        {{/COUPLING_SOURCE}}
-
         // distribute local to global matrix
         copy_data.local_dof_indices.resize(dofs_per_cell);
         cell->get_dof_indices(copy_data.local_dof_indices);
@@ -536,16 +548,15 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool useDirichletLift)
         // boundaries
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
         {
-            if (cell->face(face)->boundary_indicator() != dealii::numbers::internal_face_boundary_id)
+            if(cell->face(face)->user_index() > 0 )
             {
-                SceneBoundary *boundary = m_scene->edges->at(cell->face(face)->boundary_indicator() - 1)->marker(m_fieldInfo);
-
+                SceneBoundary *boundary = m_scene->edges->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
                 if (boundary != m_scene->boundaries->getNone(m_fieldInfo))
                 {
                     const unsigned int dofs_per_face = cell->get_fe().dofs_per_face;
                     std::vector<dealii::types::global_dof_index> local_face_dof_indices (dofs_per_face);
-                    // todo: the second argument.... what exactly does it mean?
-                    cell->face(face)->get_dof_indices (local_face_dof_indices, 0);
+
+                    cell->face(face)->get_dof_indices (local_face_dof_indices, cell->active_fe_index());
 
                     {{#EXACT_SOURCE}}
                     // {{BOUNDARY_ID}}
@@ -570,7 +581,7 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool useDirichletLift)
                                         hanging_node_constraints.add_line (local_face_dof_indices[i]);
                                         // todo: nonconstant essential BC
                                         double bc_value = 0.0;
-                                        if(use_dirichlet_lift)
+                                        if(useDirichletLift)
                                             bc_value = essential.value(dealii::Point<2>(0,0), comp);
                                         hanging_node_constraints.set_inhomogeneity(local_face_dof_indices[i], bc_value);
                                     }

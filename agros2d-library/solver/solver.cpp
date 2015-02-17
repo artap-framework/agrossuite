@@ -98,50 +98,80 @@
 // todo: what for curved elements?
 const int QUADRATURE_ORDER_INCREASE = 1;
 
-template<int dim>
-class RightHandSide : public dealii::Function<dim>
+// todo: is it defined somewhere?
+const int MAX_NUM_NONLIN_ITERS = 100;
+
+dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fieldInfo)
 {
-public:
-    RightHandSide ()
-        :
-          dealii::Function<dim>()
-    {}
-    virtual double value (const dealii::Point<dim> &p,
-                          const unsigned int component = 0) const;
-};
+    dealii::hp::FECollection<2> *feCollection = new dealii::hp::FECollection<2>();
 
-template<int dim>
-double RightHandSide<dim>::value (const dealii::Point<dim> &p,
-                                  const unsigned int component) const
-{
-    Assert (component == 0, ExcInternalError());
-    Assert (dim == 2, ExcNotImplemented());
-
-    const double time = this->get_time();
-
-    if ((time >= 0.0) && (time <= 10))
+    // Gauss quadrature and fe collection
+    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
     {
-        if ((p[0] >= 0.013) && (p[0] <= 0.028) && (p[1] >= 0.041) && (p[1] <= 0.17))
+        std::vector<const dealii::FiniteElement<2> *> fes;
+        std::vector<unsigned int> multiplicities;
+
+        QMap<int, Module::Space> spaces = fieldInfo->spaces();
+        foreach (int key, spaces.keys())
         {
-            return 2e6;
+            dealii::FE_Q<2> *fe = new dealii::FE_Q<2>(degree + spaces[key].orderAdjust());
+            fes.push_back(fe);
+            multiplicities.push_back(1);
         }
+
+        feCollection->push_back(dealii::FESystem<2>(fes, multiplicities));
     }
 
-    return 0;
+    return feCollection;
 }
+
+//template<int dim>
+//class RightHandSide : public dealii::Function<dim>
+//{
+//public:
+//    RightHandSide ()
+//        :
+//          dealii::Function<dim>()
+//    {}
+//    virtual double value (const dealii::Point<dim> &p,
+//                          const unsigned int component = 0) const;
+//};
+
+//template<int dim>
+//double RightHandSide<dim>::value (const dealii::Point<dim> &p,
+//                                  const unsigned int component) const
+//{
+//    Assert (component == 0, ExcInternalError());
+//    Assert (dim == 2, ExcNotImplemented());
+
+//    const double time = this->get_time();
+
+//    if ((time >= 0.0) && (time <= 10))
+//    {
+//        if ((p[0] >= 0.013) && (p[0] <= 0.028) && (p[1] >= 0.041) && (p[1] <= 0.17))
+//        {
+//            return 2e6;
+//        }
+//    }
+
+//    return 0;
+//}
 
 // *******************************************************************************************
 
 SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
-    : m_fieldInfo(fieldInfo), m_scene(Agros2D::scene()), m_problem(Agros2D::problem()), m_solution_previous(NULL)
+    : m_fieldInfo(fieldInfo), m_scene(Agros2D::scene()), m_problem(Agros2D::problem()), m_solution_previous(NULL),
+      m_assemble_matrix(true)
 {    
     // fe collection
     qDebug() << "SolverDeal::SolverDeal: numberOfSolutions" << fieldInfo->numberOfSolutions();
     m_feCollection = new dealii::hp::FECollection<2>();
 
     // copy initial mesh
-    m_triangulation = new dealii::Triangulation<2>();
-    m_triangulation->copy_triangulation(*Agros2D::problem()->initialMesh());
+    // at the present moment we do not use multimesh
+//    m_triangulation = new dealii::Triangulation<2>();
+//    m_triangulation->copy_triangulation(*Agros2D::problem()->initialMesh());
+    m_triangulation = Agros2D::problem()->calculationMesh();
 
     // info
      std::vector<dealii::types::boundary_id> bindicators = m_triangulation->get_boundary_indicators();
@@ -155,9 +185,9 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     // create solution vector
     m_solution = new dealii::Vector<double>();
 
-    // first position of feCollection, quadrature_formulas and face_quadrature_formulas belongs to NONE space
-    // this will be used for implementation of different meshes
-    m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Nothing<2>(), 1));
+//    // first position of feCollection, quadrature_formulas and face_quadrature_formulas belongs to NONE space
+//    // this will be used for implementation of different meshes
+    m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Nothing<2>(), fieldInfo->numberOfSolutions()));
     m_quadrature_formulas.push_back(dealii::QGauss<2>(1));
     m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(1));
 
@@ -176,258 +206,20 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     {
         if(cell->active_fe_index() != 0)
             std::cout << "assert" << std::endl;
-        cell->set_active_fe_index(1);
+
+        std::cout << "material id " << cell->material_id() - 1 << std::endl;
+        if(m_scene->labels->at(cell->material_id() - 1)->marker(m_fieldInfo) != m_scene->materials->getNone(m_fieldInfo))
+        {
+            cell->set_active_fe_index(1);
+        }
     }
 
 }
 
 SolverDeal::~SolverDeal()
 {
-    if (m_triangulation)
-        delete m_triangulation;
-    m_triangulation = nullptr;
-
-    if (m_doFHandler)
-        delete m_doFHandler;
-    m_doFHandler = nullptr;
-
-    if (m_solution)
-        delete m_solution;
-    m_solution = nullptr;
-
-    if (m_feCollection)
-        delete m_feCollection;
-    m_feCollection = nullptr;
-}
-
-void SolverDeal::setup(bool use_dirichlet_lift)
-{
-    QTime time;
-    time.start();
-
-    m_doFHandler->distribute_dofs(*m_feCollection);
-    // std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
-
-    // reinit sln and rhs
-    system_rhs.reinit(m_doFHandler->n_dofs());
-    m_solution->reinit(m_doFHandler->n_dofs());
-
-    hanging_node_constraints.clear();
-    dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler, hanging_node_constraints);
-
-    // assemble Dirichlet
-    assembleDirichlet(use_dirichlet_lift);
-
-    hanging_node_constraints.close();
-
-    // create sparsity pattern
-    dealii::CompressedSetSparsityPattern csp(m_doFHandler->n_dofs(), m_doFHandler->n_dofs());
-    dealii::DoFTools::make_sparsity_pattern(*m_doFHandler, csp, hanging_node_constraints); // , false
-    sparsity_pattern.copy_from(csp);
-
-    // reinit system matrix
-    system_matrix.reinit(sparsity_pattern);
-
-    // mass matrix (transient)
-    if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
-    {
-        mass_matrix.reinit(sparsity_pattern);
-        mass_minus_tau_Jacobian.reinit(sparsity_pattern);
-    }
-    // qDebug() << "setup (" << time.elapsed() << "ms )";
-}
-
-void SolverDeal::setupNewtonInitial()
-{
-    //    QTime time;
-    //    time.start();
-
-    m_doFHandler->distribute_dofs(*m_feCollection);
-    // std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
-
-    // reinit sln
-
-    if (!m_solution_previous)
-        m_solution_previous = new dealii::Vector<double>();
-
-    m_solution_previous->reinit(m_doFHandler->n_dofs());
-
-    hanging_node_constraints.clear();
-    dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler, hanging_node_constraints);
-
-    // assemble Dirichlet
-    assembleDirichlet(true);
-
-    hanging_node_constraints.close();
-
-    // todo: this has to be verified
-    // I hope, that it will construct dirichlet lift, taking into account hanging nodes close to the boundary,
-    // since to the hanging_node_constraints, first are applied hanging nodes and than the Dirichlet BC
-    // todo: is that correct?
-    for(dealii::types::global_dof_index dof = 0; dof < m_doFHandler->n_dofs(); dof++)
-    {
-        if (hanging_node_constraints.is_constrained(dof))
-        {
-            // first consider only BC, not hanging nodes
-            // todo: extend
-            assert(hanging_node_constraints.get_constraint_entries(dof)->size() == 0);
-            //            const std::vector<std::pair<dealii::types::global_dof_index,double> > * constraints = hanging_node_constraints.get_constraint_entries(dof);
-            //            if(constraints != nullptr)
-            //            {
-            //                for(int i = 0; i < constraints->size(); i++)
-            //                {
-            //                    std::cout << "(" << (*constraints)[i].first << ", " << (*constraints)[i].second << "), ";
-            //                }
-            //                std::cout << std::endl;
-            //            }
-
-            //            std::cout << "inhomogenity " << hanging_node_constraints.get_inhomogeneity(dof) << std::endl;
-
-            (*m_solution_previous)(dof) = hanging_node_constraints.get_inhomogeneity(dof);
-        }
-    }
-
-    //    for (std::map<dealii::types::global_dof_index, double>::const_iterator p = hanging_node_constraints.begin(); p != hanging_node_constraints.end(); ++p)
-    //        m_solution_previous(p->first) = p->second;
-}
-
-void SolverDeal::solve()
-{
-
-    solveAdaptivity();
-}
-
-void SolverDeal::solveLinearSystem()
-{
-    QTime time;
-    time.start();
-
-    switch (m_fieldInfo->matrixSolver())
-    {
-    case SOLVER_UMFPACK:
-        solveUMFPACK();
-        break;
-    case SOLVER_DEALII:
-        solvedealii();
-        break;
-    default:
-        Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Solver '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
-        return;
-    }
-
-    hanging_node_constraints.distribute(*m_solution);
-
-    qDebug() << "solved (" << time.elapsed() << "ms )";
-}
-
-void SolverDeal::solveLinearity()
-{
-    if (m_fieldInfo->linearityType() == LinearityType_Linear)
-        solveLinearityLinear();
-    else
-        solveLinearityNonLinear();
-}
-
-void SolverDeal::solveLinearityLinear()
-{
-    setup(true);
-
-    QTime time;
-    time.start();
-
-    assembleSystem();
-    std::cout << "assemble (" << time.elapsed() << "ms )" << std::endl;
-    time.start();
-
-    if (m_fieldInfo->hasTransientAnalysis() && m_fieldInfo->value(FieldInfo::TransientAnalysis).toBool())
-    {
-        transientExplicitMethod(dealii::TimeStepping::FORWARD_EULER, Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(), 0.0, Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
-         std::cout << "FORWARD_EULER: error=" << m_solution->l2_norm() << std::endl;
-
-        // transientImplicitMethod(dealii::TimeStepping::SDIRK_TWO_STAGES, Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(), 0.0, Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
-        // std::cout << "SDIRK: error=" << m_solution->l2_norm() << std::endl;
-    }
-    else
-    {
-        solveLinearSystem();
-    }
-
-    std::cout << "solve linear (" << time.elapsed() << "ms )" << std::endl;
-    std::cout << "solution norm " << m_solution->l2_norm() << std::endl;
-}
-
-void SolverDeal::solveLinearityNonLinear()
-{
-    if (m_fieldInfo->linearityType() == LinearityType_Picard)
-        solveLinearityNonLinearPicard();
-    else if (m_fieldInfo->linearityType() == LinearityType_Newton)
-        solveLinearityNonLinearNewton();
-    else
-        assert(0);
-}
-
-// todo: is it defined somewhere?
-const int MAX_NUM_NONLIN_ITERS = 100;
-
-dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fieldInfo)
-{
-    dealii::hp::FECollection<2> *feCollection = new dealii::hp::FECollection<2>();
-
-    // Gauss quadrature and fe collection
-    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
-    {
-        std::vector<const dealii::FiniteElement<2> *> fes;
-        std::vector<unsigned int> multiplicities;
-
-        QMap<int, Module::Space> spaces = fieldInfo->spaces();
-        foreach (int key, spaces.keys())
-        {
-            if (spaces.value(key).type() == "h1")
-                fes.push_back(new dealii::FE_Q<2>(degree + spaces[key].orderAdjust()));
-            else if (spaces.value(key).type() == "l2")
-                fes.push_back(new dealii::FE_DGP<2>(degree + spaces[key].orderAdjust()));
-                // fes.push_back(new dealii::FE_Q<2>(degree + spaces[key].orderAdjust()));
-
-            multiplicities.push_back(1);
-        }
-
-        feCollection->push_back(dealii::FESystem<2>(fes, multiplicities));
-    }
-
-    return feCollection;
-}
-
-SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
-    : m_fieldInfo(fieldInfo), m_scene(Agros2D::scene()), m_problem(Agros2D::problem()), m_solution_previous(NULL), m_time(0.0)
-{    
-    // copy initial mesh
-    m_triangulation = new dealii::Triangulation<2>();
-    m_triangulation->copy_triangulation(*m_fieldInfo->initialMesh());
-
-    // create dof handler
-    m_doFHandler = new dealii::hp::DoFHandler<2>(*m_triangulation);
-
-    // create solution vector
-    m_solution = new dealii::Vector<double>();
-
-    // fe collection
-    m_feCollection = SolverDeal::createFECollection(m_fieldInfo);
-
-    // this will be set to false for Jacobian reuse
-    m_assemble_matrix = true;
-
-    // Gauss quadrature and fe collection
-    for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
-    {
-        m_quadrature_formulas.push_back(dealii::QGauss<2>(degree + QUADRATURE_ORDER_INCREASE));
-        m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(degree + QUADRATURE_ORDER_INCREASE));
-    }
-}
-
-SolverDeal::~SolverDeal()
-{
-    if (m_triangulation)
-        delete m_triangulation;
+//    if (m_triangulation)
+//        delete m_triangulation;
     m_triangulation = nullptr;
 
     if (m_doFHandler)
@@ -739,10 +531,42 @@ double SolverDeal::computeNorm()
     return h1Norm;
 }
 
-void SolverDeal::setup(bool useDirichletLift)
+void SolverDeal::propagateBoundaryMarkers()
+{
+    dealii::Triangulation<2>::cell_iterator cell = Agros2D::problem()->initialMesh()->begin();
+    dealii::Triangulation<2>::cell_iterator end_cell = Agros2D::problem()->initialMesh()->end();
+//    dealii::Triangulation<2>::cell_iterator cell = m_triangulation->begin();
+//    dealii::Triangulation<2>::cell_iterator end_cell = m_triangulation->end();
+
+    std::cout << "propagate markers " << std::endl;
+    for (; cell != end_cell; ++cell)   // loop over all cells, not just active ones
+    {
+        std::cout << "cell " <<std::endl;
+        for (int f=0; f < dealii::GeometryInfo<2>::faces_per_cell; f++)
+        {
+            if (cell->face(f)->user_index() != 0)
+            {
+                std::cout << "  nenulovy marker " << cell->face(f)->user_index() << std::endl;
+                if (cell->face(f)->has_children())
+                {
+                    std::cout<< "   ma deti" << std::endl;
+                    for (unsigned int c=0; c<cell->face(f)->n_children(); ++c)
+                    {
+                        cell->face(f)->child(c)->set_user_index(cell->face(f)->user_index());
+                        std::cout << "propagated " << cell->face(f)->child(c)->user_index() << std::endl;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void SolverDeal::setup(bool use_dirichlet_lift)
 {
     QTime time;
     time.start();
+
+    propagateBoundaryMarkers();
 
     m_doFHandler->distribute_dofs(*m_feCollection);
     // std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
@@ -755,7 +579,7 @@ void SolverDeal::setup(bool useDirichletLift)
     dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler, hanging_node_constraints);
 
     // assemble Dirichlet
-    assembleDirichlet(useDirichletLift);
+    assembleDirichlet(use_dirichlet_lift);
 
     hanging_node_constraints.close();
 
@@ -778,9 +602,14 @@ void SolverDeal::setup(bool useDirichletLift)
 
 void SolverDeal::setupProblemNonLinearNewton()
 {
+    //    QTime time;
+    //    time.start();
+
     m_doFHandler->distribute_dofs(*m_feCollection);
+    // std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
 
     // reinit sln
+
     if (!m_solution_previous)
         m_solution_previous = new dealii::Vector<double>();
 
@@ -1005,7 +834,7 @@ void SolverDeal::solveProblem()
         QTime time;
         time.start();
         assembleSystem();
-        std::cout << "assemble: " << time.elapsed() << std::endl;
+        std::cout << "assemble: " << time.elapsed() << ", ndofs: " << m_doFHandler->n_dofs() <<  std::endl;
         time.start();
         solveLinearSystem(system_matrix, system_rhs, *m_solution);
         std::cout << "solve: " << time.elapsed() << std::endl;

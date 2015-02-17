@@ -46,6 +46,65 @@
 
 #define signals public
 
+struct DoubleCellIterator
+{
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell_first, cell_second;
+
+    DoubleCellIterator(const dealii::hp::DoFHandler<2>::active_cell_iterator cell_heat, const dealii::hp::DoFHandler<2>::active_cell_iterator cell_elasticity):
+        cell_first(cell_heat), cell_second(cell_elasticity)
+    {
+    }
+
+    DoubleCellIterator(const DoubleCellIterator &dci) :
+        cell_first(dci.cell_first), cell_second(dci.cell_second)
+    {
+    }
+
+    DoubleCellIterator& operator=(const DoubleCellIterator& ehi)
+    {
+        cell_first = ehi.cell_first;
+        cell_second = ehi.cell_second;
+
+        return *this;
+    }
+
+    DoubleCellIterator& operator++()
+    {
+        ++cell_first;
+        ++cell_second;
+        return *this;
+    }
+
+    DoubleCellIterator operator++(int)
+    {
+        DoubleCellIterator tmp(*this); // copy
+        operator++(); // pre-increment
+        return tmp;   // return old value
+    }
+
+
+};
+
+
+inline bool operator==(const DoubleCellIterator& a, const DoubleCellIterator& b)
+{
+    if((a.cell_second == b.cell_second) || (a.cell_first == b.cell_first))
+    {
+        assert((a.cell_second == b.cell_second) && (a.cell_first == b.cell_first));
+        return true;
+    }
+    return false;
+}
+
+inline bool operator!=(const DoubleCellIterator& a, const DoubleCellIterator& b)
+{
+    return ! (a==b);
+}
+
+
+
+
+
 class FieldInfo;
 
 class SceneBoundary;
@@ -68,6 +127,8 @@ public:
     // this is used for later iterations of the Newton method
     // this function, however, has to be called to ensure zero dirichlet boundary
     virtual void setup(bool useDirichletLift);
+
+    void propagateBoundaryMarkers();
 
     virtual void assembleSystem() = 0;
     virtual void assembleDirichlet(bool useDirichletLift) = 0;

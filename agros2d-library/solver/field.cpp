@@ -57,7 +57,11 @@ bool FieldBlock::solveInitVariables()
 int FieldInfo::numberIdNext = 0;
 
 FieldInfo::FieldInfo(QString fieldId)
+<<<<<<< HEAD
     : m_plugin(NULL), m_numberOfSolutions(0), m_hermesMarkerToAgrosLabelConversion(nullptr), m_labelAreas(nullptr), m_initialMesh(nullptr)
+=======
+    : m_plugin(NULL), m_numberOfSolutions(0), m_hermesMarkerToAgrosLabelConversion(nullptr), m_labelAreas(nullptr)
+>>>>>>> coupling progress. missing:
 {    
     assert(!fieldId.isEmpty());
     m_fieldId = fieldId;

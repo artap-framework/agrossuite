@@ -77,7 +77,7 @@ public:
         };
 
     protected:
-        void localAssembleSystem(const typename dealii::hp::DoFHandler<2>::active_cell_iterator &cell,
+        void localAssembleSystem(const DoubleCellIterator &iter,
                                     AssemblyScratchData &scratch,
                                     AssemblyCopyData &copy_data);
         void copyLocalToGlobal(const AssemblyCopyData &copy_data);

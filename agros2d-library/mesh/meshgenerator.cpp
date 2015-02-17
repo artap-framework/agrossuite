@@ -340,6 +340,9 @@ void MeshGenerator::writeTodealii()
                                    nodeList[vertex_i].y));
         }
 
+        QList<QList<QPair<int, int> > > edges_between_elements;
+
+
         // elements
         std::vector<dealii::CellData<2> > cells;
         for (int element_i = 0; element_i < elementList.count(); element_i++)
@@ -363,7 +366,10 @@ void MeshGenerator::writeTodealii()
                     cells.push_back(cell);
                 }
             }            
+
+            edges_between_elements.push_back(QList<QPair<int, int> > ());
         }
+
 
         // boundary markers
         dealii::SubCellData subcelldata;
@@ -371,23 +377,39 @@ void MeshGenerator::writeTodealii()
         {
             if (edgeList[edge_i].marker == -1)
                 continue;
+            std::cout << " neigh elements " << edgeList[edge_i].neighElem[0] << ", " << edgeList[edge_i].neighElem[1] << std::endl;
 
+            dealii::CellData<1> cell_data;
+            cell_data.vertices[0] = edgeList[edge_i].node[0];
+            cell_data.vertices[1] = edgeList[edge_i].node[1];
+
+            if(edgeList[edge_i].neighElem[1] != -1)
+            {
+                edges_between_elements[edgeList[edge_i].neighElem[0]].push_back(QPair<int, int>(edgeList[edge_i].neighElem[1], edgeList[edge_i].marker + 1));
+                edges_between_elements[edgeList[edge_i].neighElem[1]].push_back(QPair<int, int>(edgeList[edge_i].neighElem[0], edgeList[edge_i].marker + 1));
+
+                // do not push the boundary line
+                continue;
+                //cell_data.boundary_id = dealii::numbers::internal_face_boundary_id;
+            }
+            else
+            {
+                cell_data.boundary_id = edgeList[edge_i].marker + 1;
+                std::cout << "marker: " << edgeList[edge_i].marker + 1 << std::endl;
+            }
             // todo: co je hranice?
             // todo: kde to deal potrebuje? Kdyz si okrajove podminky resim sam...
 //            if (Agros2D::scene()->edges->at(edgeList[edge_i].marker)->marker(fieldInfo) == SceneBoundaryContainer::getNone(fieldInfo))
 //                continue;
 
-            if (Agros2D::scene()->edges->at(edgeList[edge_i].marker)->marker(Agros2D::problem()->fieldInfo("current"))== SceneBoundaryContainer::getNone(Agros2D::problem()->fieldInfo("current")))
-                continue;
+//            if (Agros2D::scene()->edges->at(edgeList[edge_i].marker)->marker(Agros2D::problem()->fieldInfo("current"))== SceneBoundaryContainer::getNone(Agros2D::problem()->fieldInfo("current")))
+//                continue;
 
 
-            dealii::CellData<1> cell_data;
-            cell_data.vertices[0] = edgeList[edge_i].node[0];
-            cell_data.vertices[1] = edgeList[edge_i].node[1];
-            cell_data.boundary_id = edgeList[edge_i].marker + 1;
+            //cell_data.boundary_id = dealii::numbers::internal_face_boundary_id;
             // todo: (Pavel Kus) I do not know how exactly this works, whether internal_face_boundary_id is determined apriori or not
             // todo: but it seems to be potentially dangerous, when there would be many boundaries
-            assert(cell_data.boundary_id != dealii::numbers::internal_face_boundary_id);
+            //assert(cell_data.boundary_id != dealii::numbers::internal_face_boundary_id);
 
             subcelldata.boundary_lines.push_back(cell_data);
         }
@@ -399,6 +421,49 @@ void MeshGenerator::writeTodealii()
         triangulation->create_triangulation_compatibility(vertices, cells, subcelldata);
 
         m_triangulation = triangulation;
+        std::cout << "triangulation created " << std::endl;
+
+        dealii::Triangulation<2>::cell_iterator cell = triangulation->begin();
+        dealii::Triangulation<2>::cell_iterator end_cell = triangulation->end();
+
+        int cell_idx = 0;
+        for(; cell != end_cell; ++cell)
+        {
+            // todo: probably active is not neccessary
+            if(cell->active())
+            {
+                for(int neigh_i = 0; neigh_i < dealii::GeometryInfo<2>::faces_per_cell; neigh_i++)
+                {
+                    if(cell->face(neigh_i)->boundary_indicator() == dealii::numbers::internal_face_boundary_id)
+                    {
+                        cell->face(neigh_i)->set_user_index(0);
+                    }
+                    else
+                    {
+                        cell->face(neigh_i)->set_user_index((int)cell->face(neigh_i)->boundary_indicator());
+                        std::cout << "cell cell_idx: " << cell_idx << ", face  " << neigh_i << " set to " << (int) cell->face(neigh_i)->boundary_indicator() << " -> value " << cell->face(neigh_i)->user_index() << std::endl;
+                    }
+
+                    int neighbor_cell_idx = cell->neighbor_index(neigh_i);
+                    if(neighbor_cell_idx != -1)
+                    {
+                        assert(cell->face(neigh_i)->user_index() == 0);
+                        QPair<int, int> neighbor_edge_pair;
+                        foreach(neighbor_edge_pair, edges_between_elements[cell_idx])
+                        {
+                            if(neighbor_edge_pair.first == neighbor_cell_idx)
+                            {
+                                cell->face(neigh_i)->set_user_index(neighbor_edge_pair.second);
+                                std::cout << "cell cell_idx: " << cell_idx << ", face adj to " << neighbor_cell_idx << " set to " << neighbor_edge_pair.second << " -> value " << cell->face(neigh_i)->user_index() << std::endl;
+                                //dealii::TriaAccessor<1,2,2> line = cell->line(neigh_i);
+                                //cell->neighbor()
+                            }
+                        }
+                    }
+                }
+                cell_idx++;
+            }
+        }
 
         // save to disk
         QString fnMesh = QString("%1/%2_initial.msh").arg(cacheProblemDir()).arg("mesh"/*fieldInfo->fieldId()*/);

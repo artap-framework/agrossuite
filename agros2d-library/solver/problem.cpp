@@ -134,6 +134,11 @@ void Problem::setInitialMesh(dealii::Triangulation<2> *mesh)
     m_initialMesh = mesh;
 }
 
+void Problem::setCalculationMesh(dealii::Triangulation<2> *mesh)
+{
+    m_calculationMesh = mesh;
+}
+
 
 
 bool Problem::isMeshed() const
@@ -838,9 +843,76 @@ void Problem::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenera
         max_num_refinements = std::max(max_num_refinements, fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt());
     }
 
+
+
+//    std::cout << "\nMESH DEAL BEFORE " << std::endl;
+//    dealii::Triangulation<2>::cell_iterator cell = meshDeal->begin();
+//    dealii::Triangulation<2>::cell_iterator end_cell = meshDeal->end();
+////    dealii::Triangulation<2>::cell_iterator cell = m_triangulation->begin();
+////    dealii::Triangulation<2>::cell_iterator end_cell = m_triangulation->end();
+
+//    std::cout << "propagate markers " << std::endl;
+//    int idx;
+//    for (idx = 0; cell != end_cell; ++cell, ++idx)   // loop over all cells, not just active ones
+//    {
+//        std::cout << "cell " <<std::endl;
+//        for (int f=0; f < dealii::GeometryInfo<2>::faces_per_cell; f++)
+//        {
+//            if (cell->face(f)->user_index() != 0)
+//            {
+//                std::cout << "  nenulovy marker " << cell->face(f)->user_index() << std::endl;
+//                if (cell->face(f)->has_children())
+//                {
+//                    std::cout<< "   ma deti" << std::endl;
+//                    for (unsigned int c=0; c<cell->face(f)->n_children(); ++c)
+//                    {
+//                        cell->face(f)->child(c)->set_user_index(cell->face(f)->user_index());
+//                        std::cout << "propagated " << cell->face(f)->child(c)->user_index() << std::endl;
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    std::cout << "total " << idx << " elements " <<std::endl;
     meshDeal->refine_global(max_num_refinements);
 
+
+//    std::cout << "\nMESH DEAL AFTER " << std::endl;
+//    cell = meshDeal->begin();
+//    end_cell = meshDeal->end();
+////    dealii::Triangulation<2>::cell_iterator cell = m_triangulation->begin();
+////    dealii::Triangulation<2>::cell_iterator end_cell = m_triangulation->end();
+
+//    std::cout << "propagate markers " << std::endl;
+//    for (idx = 0; cell != end_cell; ++cell, ++idx)   // loop over all cells, not just active ones
+//    {
+//        std::cout << "cell with " << cell->n_children() << " children " << std::endl;
+//        for (int f=0; f < dealii::GeometryInfo<2>::faces_per_cell; f++)
+//        {
+//            std::cout << cell->face(f)->user_index() << std::endl;
+//            if (cell->face(f)->user_index() != 0)
+//            {
+//                std::cout << "  nenulovy marker " << cell->face(f)->user_index() << std::endl;
+//                if (cell->face(f)->has_children())
+//                {
+//                    std::cout<< "   ma deti" << std::endl;
+//                    for (unsigned int c=0; c<cell->face(f)->n_children(); ++c)
+//                    {
+//                        cell->face(f)->child(c)->set_user_index(cell->face(f)->user_index());
+//                        std::cout << "propagated " << cell->face(f)->child(c)->user_index() << std::endl;
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    std::cout << "total " << idx << " elements " <<std::endl;
+
+
     setInitialMesh(meshDeal);
+
+    dealii::Triangulation<2> *calculationMeshDeal = new dealii::Triangulation<2>();
+    calculationMeshDeal->copy_triangulation(*meshDeal);
+    setCalculationMesh(calculationMeshDeal);
 
     // nonlinearity
     m_isNonlinear = determineIsNonlinear();
