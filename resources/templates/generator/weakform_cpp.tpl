@@ -197,8 +197,9 @@ void SolverDeal{{CLASS}}::assembleSystem()
                             AssemblyScratchData(*m_feCollection, m_quadrature_formulas, m_face_quadrature_formulas),
                             AssemblyCopyData(*m_feCollection, m_quadrature_formulas, m_face_quadrature_formulas, m_fieldInfo));
 
-    if (isTransient)
-        mass_matrix_inverse.initialize(mass_matrix);
+    // disable for our transient solver
+    // if (isTransient)
+    //     mass_matrix_inverse.initialize(mass_matrix);
 }
 
 void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHandler<2>::active_cell_iterator &cell,

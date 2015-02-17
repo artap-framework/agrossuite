@@ -134,10 +134,10 @@ protected:
     bool m_assemble_matrix;
 
     // linear system
-    void solveLinearSystem();
-    void solveUMFPACK();
-    void solveExternalUMFPACK();
-    void solvedealii();
+    void solveLinearSystem(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln);
+    void solveUMFPACK(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln);
+    void solveExternalUMFPACK(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln);
+    void solvedealii(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln);
 
     //  linearity
     void solveProblem();

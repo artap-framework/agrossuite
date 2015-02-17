@@ -174,7 +174,7 @@ SolverDeal::~SolverDeal()
     m_feCollection = nullptr;
 }
 
-void SolverDeal::solveLinearSystem()
+void SolverDeal::solveLinearSystem(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln)
 {
     QTime time;
     time.start();
@@ -182,13 +182,13 @@ void SolverDeal::solveLinearSystem()
     switch (m_fieldInfo->matrixSolver())
     {
     case SOLVER_UMFPACK:
-        solveUMFPACK();
+        solveUMFPACK(system, rhs, sln);
         break;
     case SOLVER_DEALII:
-        solvedealii();
+        solvedealii(system, rhs, sln);
         break;
     case SOLVER_EXTERNAL:
-        solveExternalUMFPACK();
+        solveExternalUMFPACK(system, rhs, sln);
         break;
     default:
         Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Solver '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
@@ -200,26 +200,24 @@ void SolverDeal::solveLinearSystem()
     qDebug() << "solved (" << time.elapsed() << "ms )";
 }
 
-void SolverDeal::solveUMFPACK()
+void SolverDeal::solveUMFPACK(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln)
 {
-    if(m_assemble_matrix)
-        direct_solver.initialize(system_matrix);
+    if (m_assemble_matrix)
+        direct_solver.initialize(system);
     else
         qDebug() << "LU decomposition has been reused";
 
-    direct_solver.vmult(*m_solution, system_rhs);
+    direct_solver.vmult(sln, rhs);
 }
 
-void SolverDeal::solveExternalUMFPACK()
-{
-    std::cout << system_matrix.n_nonzero_elements() << std::endl;
-    AgrosExternalSolverUMFPack ext(&system_matrix, &system_rhs);
+void SolverDeal::solveExternalUMFPACK(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln)
+{    
+    AgrosExternalSolverUMFPack ext(&system, &rhs);
     ext.solve();
-
-    *m_solution = ext.solution();
+    sln = ext.solution();
 }
 
-void SolverDeal::solvedealii()
+void SolverDeal::solvedealii(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln)
 {
     // preconditioner
     dealii::PreconditionSSOR<> preconditioner;
@@ -229,7 +227,7 @@ void SolverDeal::solvedealii()
     case PreconditionerType_SSOR:
     {
         // TODO:
-        preconditioner.initialize(system_matrix, 1.2);
+        preconditioner.initialize(system, 1.2);
     }
         break;
     default:
@@ -239,26 +237,26 @@ void SolverDeal::solvedealii()
 
     // solver control
     dealii::SolverControl solver_control(m_fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt(),
-                                         m_fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble());
+                                         m_fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble() * system_rhs.l2_norm());
 
     switch ((IterSolverType) m_fieldInfo->value(FieldInfo::LinearSolverIterMethod).toInt())
     {
     case IterSolverType_CG:
     {
         dealii::SolverCG<> solver(solver_control);
-        solver.solve(system_matrix, *m_solution, system_rhs, preconditioner);
+        solver.solve(system, sln, rhs, preconditioner);
     }
         break;
     case IterSolverType_BiCGStab:
     {
         dealii::SolverBicgstab<> solver(solver_control);
-        solver.solve(system_matrix, *m_solution, system_rhs, preconditioner);
+        solver.solve(system, sln, rhs, preconditioner);
     }
         break;
     case IterSolverType_GMRES:
     {
         dealii::SolverGMRES<> solver(solver_control);
-        solver.solve(system_matrix, *m_solution, system_rhs, preconditioner);
+        solver.solve(system, sln, rhs, preconditioner);
     }
         break;
     default:
@@ -585,6 +583,7 @@ void SolverDeal::solve()
         const double refine_tol = 1e-1;
         const double coarsen_tol = 1e-5;
 
+        /*
         std::shared_ptr<dealii::TimeStepping::RungeKutta<dealii::Vector<double> > > rungeKutta;
 
         switch (timeStepMethodType((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()))
@@ -610,44 +609,48 @@ void SolverDeal::solve()
         default:
             assert(0);
         }
+        */
 
         double time = 0.0;
         for (unsigned int i = 0; i < Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); ++i)
         {
             if (Agros2D::problem()->isAborted())
                 break;
-//            switch (timeStepMethodType((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()))
-//            {
-//            case TimeStepMethodType_Implicit:
-//                time = static_cast<dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->
-//                        evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrixExplicitPart,
-//                                                       this, std::placeholders::_1, std::placeholders::_2),
-//                                             std::bind(&SolverDeal::transientEvaluateMassMatrixImplicitPart,
-//                                                       this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
-//                                             time, time_step, *m_solution);
-//                std::cout << "iter " << static_cast<dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->get_status().n_iterations
-//                              << ", res. " << static_cast<dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->get_status().norm_residual
-//                              << std::endl;
-//                break;
-//            case TimeStepMethodType_Explicit:
-//                time = static_cast<dealii::TimeStepping::ExplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->
-//                        evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrixExplicitPart,
-//                                                       this, std::placeholders::_1, std::placeholders::_2),
-//                                             time, time_step, *m_solution);
-//                break;
-//            case TimeStepMethodType_EmbeddedExplicit:
-//                if (time + time_step > Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble())
-//                    time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() - time;
-//                time = static_cast<dealii::TimeStepping::EmbeddedExplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->
-//                        evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrixExplicitPart,
-//                                                       this, std::placeholders::_1, std::placeholders::_2),
-//                                             time, time_step, *m_solution);
 
-//                time_step = static_cast<dealii::TimeStepping::EmbeddedExplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->get_status().delta_t_guess;
-//                break;
-//            default:
-//                assert(0);
-//            }
+            /*
+            switch (timeStepMethodType((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()))
+            {
+            case TimeStepMethodType_Implicit:
+                time = static_cast<dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->
+                        evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrixExplicitPart,
+                                                       this, std::placeholders::_1, std::placeholders::_2),
+                                             std::bind(&SolverDeal::transientEvaluateMassMatrixImplicitPart,
+                                                       this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
+                                             time, time_step, *m_solution);
+                std::cout << "iter " << static_cast<dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->get_status().n_iterations
+                              << ", res. " << static_cast<dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->get_status().norm_residual
+                              << std::endl;
+                break;
+            case TimeStepMethodType_Explicit:
+                time = static_cast<dealii::TimeStepping::ExplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->
+                        evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrixExplicitPart,
+                                                       this, std::placeholders::_1, std::placeholders::_2),
+                                             time, time_step, *m_solution);
+                break;
+            case TimeStepMethodType_EmbeddedExplicit:
+                if (time + time_step > Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble())
+                    time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() - time;
+                time = static_cast<dealii::TimeStepping::EmbeddedExplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->
+                        evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrixExplicitPart,
+                                                       this, std::placeholders::_1, std::placeholders::_2),
+                                             time, time_step, *m_solution);
+
+                time_step = static_cast<dealii::TimeStepping::EmbeddedExplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->get_status().delta_t_guess;
+                break;
+            default:
+                assert(0);
+            }
+            */
 
             // update time dep variables
             Module::updateTimeFunctions(time);
@@ -656,6 +659,7 @@ void SolverDeal::solve()
             // m_assemble_matrix = true;
 
             time = transientBackwardEuler(time, time_step);
+            // time = transientForwardEuler(time, time_step);
 
             // set new time
             set_time(time);
@@ -734,7 +738,7 @@ void SolverDeal::solveProblem()
         assembleSystem();
         std::cout << "assemble: " << time.elapsed() << std::endl;
         time.start();
-        solveLinearSystem();
+        solveLinearSystem(system_matrix, system_rhs, *m_solution);
         std::cout << "solve: " << time.elapsed() << std::endl;
     }
     else if (m_fieldInfo->linearityType() == LinearityType_Picard)
@@ -773,7 +777,7 @@ void SolverDeal::solveProblemNonLinearPicard()
         std::cout << "step: " << iteration << std::endl;
         assembleSystem();
         std::cout << "step: " << iteration << " - ass" << std::endl;
-        solveLinearSystem();
+        solveLinearSystem(system_matrix, system_rhs, *m_solution);
         std::cout << "step: " << iteration << " - OK" << std::endl;
 
         // copy solution
@@ -869,7 +873,7 @@ void SolverDeal::solveProblemNonLinearNewton()
 
                 // since m_assemble_matrix is false, this will reuse the LU decomposition
                 time.start();
-                solveLinearSystem();
+                solveLinearSystem(system_matrix, system_rhs, *m_solution);
                 std::cout << "back substitution (" << time.elapsed() << "ms )" << std::endl;
 
                 m_solution_previous->add(dampingFactor, *m_solution);
@@ -906,7 +910,7 @@ void SolverDeal::solveProblemNonLinearNewton()
 
             system_rhs *= -1.0;
             time.start();
-            solveLinearSystem();
+            solveLinearSystem(system_matrix, system_rhs, *m_solution);
             std::cout << "full system solve (" << time.elapsed() << "ms )" << std::endl;
 
             // residual norm
@@ -1117,19 +1121,17 @@ double SolverDeal::transientForwardEuler(const double time, const double time_st
 // hand made Euler, used only for debugging
 double SolverDeal::transientBackwardEuler(const double time, const double time_step)
 {
-    dealii::SparseDirectUMFPACK inverse_mass_minus_tau_Jacobian;
-
     mass_minus_tau_Jacobian.copy_from(mass_matrix);
-    //mass_minus_tau_Jacobian.add(-tau, system_matrix);
     mass_minus_tau_Jacobian.add(time_step, system_matrix);
 
-    inverse_mass_minus_tau_Jacobian.initialize(mass_minus_tau_Jacobian);
     dealii::Vector<double> tmp(m_doFHandler->n_dofs());
-
     mass_matrix.vmult(tmp, *m_solution);
     tmp.add(time_step, system_rhs);
 
-    inverse_mass_minus_tau_Jacobian.vmult(*m_solution, tmp);
+    solveLinearSystem(mass_minus_tau_Jacobian, tmp, *m_solution);
+    // dealii::SparseDirectUMFPACK inverse;
+    // inverse.initialize(mass_minus_tau_Jacobian);
+    // inverse.vmult(*m_solution, tmp);
 
     return (time + time_step);
 }
