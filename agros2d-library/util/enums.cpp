@@ -34,7 +34,7 @@ static QMap<WeakFormVariant, QString> weakFormVariantList;
 static QMap<AdaptivityMethod, QString> adaptivityTypeList;
 static QMap<AdaptivityEstimator, QString> adaptivityEstimatorList;
 static QMap<NormType, QString> adaptivityNormTypeList;
-static QMap<dealii::TimeStepping::runge_kutta_method, QString> timeStepMethodList;
+static QMap<TimeStepMethod, QString> timeStepMethodList;
 static QMap<SolutionMode, QString> solutionTypeList;
 static QMap<AnalysisType, QString> analysisTypeList;
 static QMap<CouplingType, QString> couplingTypeList;
@@ -48,7 +48,6 @@ static QMap<PaletteOrderType, QString> paletteOrderTypeList;
 static QMap<VectorType, QString> vectorTypeList;
 static QMap<VectorCenter, QString> vectorCenterList;
 static QMap<DataTableType, QString> dataTableTypeList;
-static QMap<SpecialFunctionType, QString> specialFunctionTypeList;
 static QMap<ButcherTableType, QString> butcherTableTypeList;
 static QMap<IterSolverType, QString> iterLinearSolverMethodList;
 static QMap<PreconditionerType, QString> iterLinearSolverPreconditionerTypeList;
@@ -94,8 +93,8 @@ QString adaptivityNormTypeToStringKey(NormType adaptivityNormType) { return adap
 NormType adaptivityNormTypeFromStringKey(const QString &adaptivityNormType) { return adaptivityNormTypeList.key(adaptivityNormType); }
 
 QStringList timeStepMethodStringKeys() { return timeStepMethodList.values(); }
-QString timeStepMethodToStringKey(dealii::TimeStepping::runge_kutta_method timeStepMethod) { return timeStepMethodList[timeStepMethod]; }
-dealii::TimeStepping::runge_kutta_method timeStepMethodFromStringKey(const QString &timeStepMethod) { return timeStepMethodList.key(timeStepMethod); }
+QString timeStepMethodToStringKey(TimeStepMethod timeStepMethod) { return timeStepMethodList[timeStepMethod]; }
+TimeStepMethod timeStepMethodFromStringKey(const QString &timeStepMethod) { return timeStepMethodList.key(timeStepMethod); }
 
 QStringList solutionTypeStringKeys() { return solutionTypeList.values(); }
 QString solutionTypeToStringKey(SolutionMode solutionType) { return solutionTypeList[solutionType]; }
@@ -140,10 +139,6 @@ VectorCenter vectorCenterFromStringKey(const QString &vectorCenter) { return vec
 QStringList dataTableTypeStringKeys() { return dataTableTypeList.values(); }
 QString dataTableTypeToStringKey(DataTableType dataTableType) { return dataTableTypeList[dataTableType]; }
 DataTableType dataTableTypeFromStringKey(const QString &dataTableType) { return dataTableTypeList.key(dataTableType); }
-
-QStringList specialFunctionTypeStringKeys() { return specialFunctionTypeList.values(); }
-QString specialFunctionTypeToStringKey(SpecialFunctionType specialFunctionType) { return specialFunctionTypeList[specialFunctionType]; }
-SpecialFunctionType specialFunctionTypeFromStringKey(const QString &specialFunctionType) { return specialFunctionTypeList.key(specialFunctionType); }
 
 QStringList butcherTableTypeStringKeys() { return butcherTableTypeList.values(); }
 QString butcherTableTypeToStringKey(ButcherTableType tableType) { return butcherTableTypeList[tableType]; }
@@ -196,21 +191,10 @@ void initLists()
     // meshTypeList.insert(MeshType_NETGEN_QuadDominated, "netgen_quaddominated");
     meshTypeList.insert(MeshType_CUBIT, "cubit");
 
-    // explicit methods
-    // timeStepMethodList.insert(dealii::TimeStepping::FORWARD_EULER, "forward_euler");
-    // timeStepMethodList.insert(dealii::TimeStepping::RK_THIRD_ORDER, "rk_third_order");
-    // timeStepMethodList.insert(dealii::TimeStepping::RK_CLASSIC_FOURTH_ORDER, "rk_classic_fourth_order");
-    // implicit methods
-    timeStepMethodList.insert(dealii::TimeStepping::BACKWARD_EULER, "backward_euler");
-    // timeStepMethodList.insert(dealii::TimeStepping::IMPLICIT_MIDPOINT, "implicit_midpoint");
-    timeStepMethodList.insert(dealii::TimeStepping::CRANK_NICOLSON, "crank_nicolson");
-    // timeStepMethodList.insert(dealii::TimeStepping::SDIRK_TWO_STAGES, "sdirk_two_stages");
-    // embedded explicit methods
-    // timeStepMethodList.insert(dealii::TimeStepping::HEUN_EULER, "heun_euler");
-    // timeStepMethodList.insert(dealii::TimeStepping::BOGACKI_SHAMPINE, "bogacki_shampine");
-    // timeStepMethodList.insert(dealii::TimeStepping::DOPRI, "dopri");
-    // timeStepMethodList.insert(dealii::TimeStepping::FEHLBERG, "fehlberg");
-    // timeStepMethodList.insert(dealii::TimeStepping::CASH_KARP, "cash_karp");
+    timeStepMethodList.insert(TimeStepMethod_BDF_1, "bdf_1");
+    timeStepMethodList.insert(TimeStepMethod_BDF_2, "bdf_2");
+    timeStepMethodList.insert(TimeStepMethod_BDF_3, "bdf_3");
+    timeStepMethodList.insert(TimeStepMethod_CrankNicolson, "cranknicolson");
 
     // PHYSICFIELDVARIABLECOMP
     physicFieldVariableCompList.insert(PhysicFieldVariableComp_Scalar, "scalar");
@@ -323,10 +307,6 @@ void initLists()
     dataTableTypeList.insert(DataTableType_CubicSpline, "cubic_spline");
     dataTableTypeList.insert(DataTableType_PiecewiseLinear, "piecewise_linear");
     dataTableTypeList.insert(DataTableType_Constant, "constant");
-
-    // SpecialFunctionType
-    specialFunctionTypeList.insert(SpecialFunctionType_Constant, "constant");
-    specialFunctionTypeList.insert(SpecialFunctionType_Function1D, "function_1d");
 
     // ButcherTableType
     butcherTableTypeList.insert(Explicit_HEUN_EULER_2_12_embedded, "heun-euler");
@@ -480,30 +460,18 @@ QString adaptivityEstimatorString(AdaptivityEstimator adaptivityEstimator)
     }
 }
 
-TimeStepMethodType timeStepMethodType(dealii::TimeStepping::runge_kutta_method timeStepMethod)
+QString timeStepMethodString(TimeStepMethod timeStepMethod)
 {
     switch (timeStepMethod)
     {
-    // explicit methods
-    case dealii::TimeStepping::FORWARD_EULER:
-    case dealii::TimeStepping::RK_THIRD_ORDER:
-    case dealii::TimeStepping::RK_CLASSIC_FOURTH_ORDER:
-        return TimeStepMethodType_Explicit;
-
-    // implicit methods
-    case dealii::TimeStepping::BACKWARD_EULER:
-    case dealii::TimeStepping::IMPLICIT_MIDPOINT:
-    case dealii::TimeStepping::CRANK_NICOLSON:
-    case dealii::TimeStepping::SDIRK_TWO_STAGES:
-        return TimeStepMethodType_Implicit;
-
-     // embedded explicit methods
-    case dealii::TimeStepping::HEUN_EULER:
-    case dealii::TimeStepping::BOGACKI_SHAMPINE:
-    case dealii::TimeStepping::DOPRI:
-    case dealii::TimeStepping::FEHLBERG:
-    case dealii::TimeStepping::CASH_KARP:
-        return TimeStepMethodType_EmbeddedExplicit;
+    case TimeStepMethod_BDF_1:
+        return QObject::tr("BDF 1 (Backstep Euler)");
+    case TimeStepMethod_BDF_2:
+        return QObject::tr("BDF 2");
+    case TimeStepMethod_BDF_3:
+        return QObject::tr("BDF 3");
+    case TimeStepMethod_CrankNicolson:
+        return QObject::tr("Crank-Nicolson");
     default:
         std::cerr << "Time step method '" + QString::number(timeStepMethod).toStdString() + "' is not implemented. timeStepMethodString(TimeStepMethod timeStepMethod)" << endl;
         throw;
@@ -766,20 +734,6 @@ QString dataTableTypeString(DataTableType dataTableType)
         return QObject::tr("Constant");
     default:
         std::cerr << "Data table type '" + QString::number(dataTableType).toStdString() + "' is not implemented. dataTableTypeString(DataTableType dataTableType)" << endl;
-        throw;
-    }
-}
-
-QString specialFunctionTypeString(SpecialFunctionType specialFunctionType)
-{
-    switch (specialFunctionType)
-    {
-    case SpecialFunctionType_Constant:
-        return QObject::tr("Constant");
-    case SpecialFunctionType_Function1D:
-        return QObject::tr("1D function");
-    default:
-        std::cerr << "Data table type '" + QString::number(specialFunctionType).toStdString() + "' is not implemented. specialFunctionTypeString(SpecialFunctionType specialFunctionType)" << endl;
         throw;
     }
 }

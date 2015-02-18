@@ -47,8 +47,8 @@
 #define signals public
 
 class FieldInfo;
-
 class SceneBoundary;
+class BDF2Table;
 
 class AGROS_LIBRARY_API SolverDeal
 {
@@ -81,8 +81,7 @@ public:
     void assembleMassMatrix();
 
     // Hand made Euler methods
-    double transientForwardEuler(const double time, const double time_step);
-    double transientBackwardEuler(const double time, const double time_step);
+    double transientBDF(const double time, const double time_step);
     double transientCrankNicolson(const double time, const double time_step);
 
     inline void set_time(const double new_time) { m_time = new_time; }
@@ -106,8 +105,8 @@ protected:
 
     // current solution
     dealii::Vector<double> *m_solution;
-    // previous solution
-    dealii::Vector<double> *m_solution_previous;
+    // previous solution (for nonlinear solver)
+    dealii::Vector<double> *m_solution_nonlinear_previous;
 
     // weak coupling sources
     QMap<QString, dealii::Vector<double> * >m_coupling_sources;
@@ -124,8 +123,9 @@ protected:
     double m_time;
     dealii::SparseMatrix<double> mass_matrix;
     dealii::SparseMatrix<double> transient_left_matrix;
-    dealii::SparseDirectUMFPACK mass_matrix_inverse;
-    dealii::Vector<double> system_rhs_previous;
+    dealii::Vector<double> system_rhs_transient_previous;
+    QList<dealii::Vector<double> > solution_transient_previous;
+    BDF2Table *m_bdf2Table;
 
     // we need to be able to keep lu decomposition for Jacobian reuse
     dealii::SparseDirectUMFPACK direct_solver;

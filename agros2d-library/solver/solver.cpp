@@ -85,9 +85,9 @@
 #include "solutionstore.h"
 #include "plugin_interface.h"
 #include "logview.h"
-#include "bdf2.h"
 #include "plugin_interface.h"
 #include "weak_form.h"
+#include "bdf2.h"
 
 #include "pythonlab/pythonengine.h"
 
@@ -117,7 +117,7 @@ dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fie
                 fes.push_back(new dealii::FE_Q<2>(degree + spaces[key].orderAdjust()));
             else if (spaces.value(key).type() == "l2")
                 fes.push_back(new dealii::FE_DGP<2>(degree + spaces[key].orderAdjust()));
-                // fes.push_back(new dealii::FE_Q<2>(degree + spaces[key].orderAdjust()));
+            // fes.push_back(new dealii::FE_Q<2>(degree + spaces[key].orderAdjust()));
 
             multiplicities.push_back(1);
         }
@@ -129,7 +129,8 @@ dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fie
 }
 
 SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
-    : m_fieldInfo(fieldInfo), m_scene(Agros2D::scene()), m_problem(Agros2D::problem()), m_solution_previous(NULL), m_time(0.0)
+    : m_fieldInfo(fieldInfo), m_scene(Agros2D::scene()), m_problem(Agros2D::problem()), m_solution_nonlinear_previous(NULL), m_time(0.0),
+      m_bdf2Table(new BDF2ATable())
 {    
     // copy initial mesh
     m_triangulation = new dealii::Triangulation<2>();
@@ -157,6 +158,9 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
 
 SolverDeal::~SolverDeal()
 {
+    // delete bdf2 table
+    delete m_bdf2Table;
+
     if (m_triangulation)
         delete m_triangulation;
     m_triangulation = nullptr;
@@ -512,10 +516,10 @@ void SolverDeal::setupProblemNonLinearNewton()
     m_doFHandler->distribute_dofs(*m_feCollection);
 
     // reinit sln
-    if (!m_solution_previous)
-        m_solution_previous = new dealii::Vector<double>();
+    if (!m_solution_nonlinear_previous)
+        m_solution_nonlinear_previous = new dealii::Vector<double>();
 
-    m_solution_previous->reinit(m_doFHandler->n_dofs());
+    m_solution_nonlinear_previous->reinit(m_doFHandler->n_dofs());
 
     hanging_node_constraints.clear();
     dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler, hanging_node_constraints);
@@ -548,19 +552,23 @@ void SolverDeal::setupProblemNonLinearNewton()
 
             //            std::cout << "inhomogenity " << hanging_node_constraints.get_inhomogeneity(dof) << std::endl;
 
-            (*m_solution_previous)(dof) = hanging_node_constraints.get_inhomogeneity(dof);
+            (*m_solution_nonlinear_previous)(dof) = hanging_node_constraints.get_inhomogeneity(dof);
         }
     }
 
     //    for (std::map<dealii::types::global_dof_index, double>::const_iterator p = hanging_node_constraints.begin(); p != hanging_node_constraints.end(); ++p)
-    //        m_solution_previous(p->first) = p->second;
+    //        m_solution_nonlinear_previous(p->first) = p->second;
 }
 
 void SolverDeal::solve()
 {
     if (m_fieldInfo->analysisType() == AnalysisType_Transient)
     {
-        system_rhs_previous.reinit(m_doFHandler->n_dofs());
+        system_rhs_transient_previous.reinit(m_doFHandler->n_dofs());
+
+        int order = 1;
+        for (unsigned int o = 0; o < order - 1; o++)
+            solution_transient_previous.push_back(dealii::Vector<double>(m_doFHandler->n_dofs()));
 
         setup(true);
         assembleSystem();
@@ -578,84 +586,15 @@ void SolverDeal::solve()
 
         // parameters
         double time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
-        const double coarsen_param = 1.2;
-        const double refine_param = 0.8;
-        const double min_delta = 1e-8;
-        const double max_delta = 10 * time_step;
-        const double refine_tol = 1e-1;
-        const double coarsen_tol = 1e-5;
-
-        /*
-        std::shared_ptr<dealii::TimeStepping::RungeKutta<dealii::Vector<double> > > rungeKutta;
-
-        switch (timeStepMethodType((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()))
-        {
-        case TimeStepMethodType_Implicit:
-            rungeKutta = std::shared_ptr<dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> > >(
-                        new dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> >((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()));
-            break;
-        case TimeStepMethodType_Explicit:
-            rungeKutta = std::shared_ptr<dealii::TimeStepping::ExplicitRungeKutta<dealii::Vector<double> > >(
-                        new dealii::TimeStepping::ExplicitRungeKutta<dealii::Vector<double> >((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()));
-            break;
-        case TimeStepMethodType_EmbeddedExplicit:
-            rungeKutta = std::shared_ptr<dealii::TimeStepping::EmbeddedExplicitRungeKutta<dealii::Vector<double> > >(
-                        new dealii::TimeStepping::EmbeddedExplicitRungeKutta<dealii::Vector<double> >((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt(),
-                                                                                                      coarsen_param,
-                                                                                                      refine_param,
-                                                                                                      min_delta,
-                                                                                                      max_delta,
-                                                                                                      refine_tol,
-                                                                                                      coarsen_tol));
-            break;
-        default:
-            assert(0);
-        }
-        */
-
         double time = 0.0;
+
         for (unsigned int i = 0; i < Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); ++i)
         {
             if (Agros2D::problem()->isAborted())
                 break;
 
-            /*
-            switch (timeStepMethodType((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()))
-            {
-            case TimeStepMethodType_Implicit:
-                time = static_cast<dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->
-                        evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrixExplicitPart,
-                                                       this, std::placeholders::_1, std::placeholders::_2),
-                                             std::bind(&SolverDeal::transientEvaluateMassMatrixImplicitPart,
-                                                       this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
-                                             time, time_step, *m_solution);
-                std::cout << "iter " << static_cast<dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->get_status().n_iterations
-                              << ", res. " << static_cast<dealii::TimeStepping::ImplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->get_status().norm_residual
-                              << std::endl;
-                break;
-            case TimeStepMethodType_Explicit:
-                time = static_cast<dealii::TimeStepping::ExplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->
-                        evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrixExplicitPart,
-                                                       this, std::placeholders::_1, std::placeholders::_2),
-                                             time, time_step, *m_solution);
-                break;
-            case TimeStepMethodType_EmbeddedExplicit:
-                if (time + time_step > Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble())
-                    time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() - time;
-                time = static_cast<dealii::TimeStepping::EmbeddedExplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->
-                        evolve_one_time_step(std::bind(&SolverDeal::transientEvaluateMassMatrixExplicitPart,
-                                                       this, std::placeholders::_1, std::placeholders::_2),
-                                             time, time_step, *m_solution);
-
-                time_step = static_cast<dealii::TimeStepping::EmbeddedExplicitRungeKutta<dealii::Vector<double> > *>(rungeKutta.get())->get_status().delta_t_guess;
-                break;
-            default:
-                assert(0);
-            }
-            */
-
             // store previous rhs
-            system_rhs_previous = system_rhs;
+            system_rhs_transient_previous = system_rhs;
 
             // update time dep variables
             Module::updateTimeFunctions(time);
@@ -665,14 +604,23 @@ void SolverDeal::solve()
 
             // time = transientForwardEuler(time, time_step);
 
-            switch ((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt())
+            switch ((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt())
             {
-            case dealii::TimeStepping::BACKWARD_EULER:
-               time = transientBackwardEuler(time, time_step);
-               break;
-            case dealii::TimeStepping::CRANK_NICOLSON:
-               time = transientCrankNicolson(time, time_step);
-               break;
+            case TimeStepMethod_BDF_1:
+                m_bdf2Table->setOrderAndPreviousSteps(1, Agros2D::problem()->timeStepLengths());
+                time = transientBDF(time, time_step);
+                break;
+            case TimeStepMethod_BDF_2:
+                m_bdf2Table->setOrderAndPreviousSteps((i > 1) ? 2 : 1, Agros2D::problem()->timeStepLengths());
+                time = transientBDF(time, time_step);
+                break;
+            case TimeStepMethod_BDF_3:
+                m_bdf2Table->setOrderAndPreviousSteps((i > 1) ? ((i > 2) ? 3 : 2) : 1, Agros2D::problem()->timeStepLengths());
+                time = transientBDF(time, time_step);
+                break;
+            case TimeStepMethod_CrankNicolson:
+                time = transientCrankNicolson(time, time_step);
+                break;
             default:
                 assert(0);
             }
@@ -797,14 +745,14 @@ void SolverDeal::solveProblemNonLinearPicard()
         std::cout << "step: " << iteration << " - OK" << std::endl;
 
         // copy solution
-        if (m_solution_previous)
+        if (m_solution_nonlinear_previous)
         {
-            m_solution_previous->add(-1, *m_solution);
-            relChangeSol = m_solution_previous->l2_norm() / m_solution->l2_norm() * 100;
-            delete m_solution_previous;
+            m_solution_nonlinear_previous->add(-1, *m_solution);
+            relChangeSol = m_solution_nonlinear_previous->l2_norm() / m_solution->l2_norm() * 100;
+            delete m_solution_nonlinear_previous;
         }
 
-        m_solution_previous = new dealii::Vector<double>(*m_solution);
+        m_solution_nonlinear_previous = new dealii::Vector<double>(*m_solution);
 
         // update
         steps.append(iteration);
@@ -892,7 +840,7 @@ void SolverDeal::solveProblemNonLinearNewton()
                 solveLinearSystem(system_matrix, system_rhs, *m_solution);
                 std::cout << "back substitution (" << time.elapsed() << "ms )" << std::endl;
 
-                m_solution_previous->add(dampingFactor, *m_solution);
+                m_solution_nonlinear_previous->add(dampingFactor, *m_solution);
 
                 time.start();
                 assembleSystem();
@@ -908,7 +856,7 @@ void SolverDeal::solveProblemNonLinearNewton()
                 else
                 {
                     // revert step
-                    m_solution_previous->add(-dampingFactor, *m_solution);
+                    m_solution_nonlinear_previous->add(-dampingFactor, *m_solution);
                     jacobianReused = false;
                     numReusedJacobian = 0;
                 }
@@ -932,9 +880,9 @@ void SolverDeal::solveProblemNonLinearNewton()
             // residual norm
             residualNorm = system_rhs.l2_norm();
 
-            m_solution_previous->add(dampingFactor, *m_solution);
+            m_solution_nonlinear_previous->add(dampingFactor, *m_solution);
 
-            assert(m_solution_previous);
+            assert(m_solution_nonlinear_previous);
             // automatic damping factor
             if ((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() == DampingType_Automatic)
             {
@@ -967,7 +915,7 @@ void SolverDeal::solveProblemNonLinearNewton()
                     }
 
                     // Line search. Take back the previous steps (too long) and make a new one, with new damping factor
-                    m_solution_previous->add(-previousDampingFactor + dampingFactor, *m_solution);
+                    m_solution_nonlinear_previous->add(-previousDampingFactor + dampingFactor, *m_solution);
 
                     // todo: code repetition, get rid of it together with jacobian reuse
                     time.start();
@@ -994,7 +942,7 @@ void SolverDeal::solveProblemNonLinearNewton()
         }
         // update
         steps.append(iteration);
-        double relChangeSol = dampingFactor * (*m_solution).l2_norm() / m_solution_previous->l2_norm() * 100;
+        double relChangeSol = dampingFactor * (*m_solution).l2_norm() / m_solution_nonlinear_previous->l2_norm() * 100;
         relativeChangeOfSolutions.append(relChangeSol);
 
         // stop criteria
@@ -1023,9 +971,9 @@ void SolverDeal::solveProblemNonLinearNewton()
     // put the final solution into the solution
     assert(m_solution);
     delete(m_solution);
-    m_solution = new dealii::Vector<double>(*m_solution_previous);
-    delete m_solution_previous;
-    m_solution_previous = nullptr;
+    m_solution = new dealii::Vector<double>(*m_solution_nonlinear_previous);
+    delete m_solution_nonlinear_previous;
+    m_solution_nonlinear_previous = nullptr;
 
     qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
@@ -1116,34 +1064,36 @@ dealii::Vector<double> SolverDeal::transientEvaluateMassMatrixImplicitPart(const
     return result;
 }
 
-// hand made Euler, used only for debugging
-double SolverDeal::transientForwardEuler(const double time, const double time_step)
+// BDF methods
+double SolverDeal::transientBDF(const double time, const double time_step)
 {
-    dealii::SparseDirectUMFPACK inverse_mass_matrix;
-    inverse_mass_matrix.initialize(mass_matrix);
-    dealii::Vector<double> tmp(m_doFHandler->n_dofs());
+    // qDebug() << "solution_transient_previous.size : " << solution_transient_previous.size();
 
-    tmp = 0.0;
-    system_matrix.vmult(tmp, *m_solution);
-    tmp.add(-1.0, system_rhs);
+    // remove first solution
+    if (solution_transient_previous.size() == m_bdf2Table->order())
+        solution_transient_previous.removeLast();
 
-    dealii::Vector<double> value(m_doFHandler->n_dofs());
-    inverse_mass_matrix.vmult(value, tmp);
+    // copy last M * SLN
+    dealii::Vector<double> m_sln(m_doFHandler->n_dofs());
+    mass_matrix.vmult(m_sln, *solution());
+    solution_transient_previous.insert(0, m_sln);
 
-    m_solution->add(-time_step, value);
-    return (time + time_step);
-}
-
-// hand made Euler, used only for debugging
-double SolverDeal::transientBackwardEuler(const double time, const double time_step)
-{
     // LHM = (M + dt * K)
     transient_left_matrix.copy_from(mass_matrix);
+    transient_left_matrix *= m_bdf2Table->matrixFormCoefficient();
     transient_left_matrix.add(time_step, system_matrix);
+    // qDebug() << "matrixFormCoefficient : " << m_bdf2Table->matrixFormCoefficient();
 
-    // m = M * SLN + dt * RHS
+    // m = sum(M * SLN)
     dealii::Vector<double> m(m_doFHandler->n_dofs());
-    mass_matrix.vmult(m, *m_solution);
+    for (int i = 0; i < m_bdf2Table->order(); i++)
+    {
+        // qDebug() << "vectorFormCoefficient : " << i << " : " << - m_bdf2Table->vectorFormCoefficient(i);
+        // m += Mi * SLNi
+        m.add(- m_bdf2Table->vectorFormCoefficient(i), solution_transient_previous[i]);
+    }
+
+    // m += dt * RHS
     m.add(time_step, system_rhs);
 
     solveLinearSystem(transient_left_matrix, m, *m_solution);
@@ -1151,7 +1101,7 @@ double SolverDeal::transientBackwardEuler(const double time, const double time_s
     return (time + time_step);
 }
 
-// hand made Crank Nicolson, used only for debugging
+// Crank Nicolson
 double SolverDeal::transientCrankNicolson(const double time, const double time_step)
 {
     // (M + dt * K)
@@ -1172,7 +1122,7 @@ double SolverDeal::transientCrankNicolson(const double time, const double time_s
     // m1 = dt / 2 * SLN
     m1.add(time_step / 2.0, system_rhs);
     // m1 = dt / 2 * SLN_prev
-    m1.add(time_step / 2.0, system_rhs_previous);
+    m1.add(time_step / 2.0, system_rhs_transient_previous);
 
     solveLinearSystem(transient_left_matrix, m1, *m_solution);
 

@@ -120,7 +120,7 @@ void ProblemConfig::setDefaultValues()
     m_settingDefault.clear();
 
     m_settingDefault[Frequency] = 50.0;
-    m_settingDefault[TimeMethod] = dealii::TimeStepping::BACKWARD_EULER;
+    m_settingDefault[TimeMethod] = TimeStepMethod_BDF_2;
     m_settingDefault[TimeMethodTolerance] = 0.05;
     m_settingDefault[TimeInitialStepSize] = 0.0;
     m_settingDefault[TimeConstantTimeSteps] = 10;

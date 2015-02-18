@@ -285,7 +285,7 @@ class BenchmarkHeatTransientAxisymmetric(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
 
-        problem.time_step_method = "implicit_midpoint"
+        problem.time_step_method = "bdf_1"
         problem.time_steps = 30
         problem.time_total = 190
 
@@ -333,7 +333,7 @@ class TestHeatTransientAxisymmetric(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
-        problem.time_step_method = "implicit_midpoint"
+        problem.time_step_method = "bdf_1"
         problem.time_total = 10000
         problem.time_steps = 30
         

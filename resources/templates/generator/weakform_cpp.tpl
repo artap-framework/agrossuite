@@ -263,13 +263,13 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const typename dealii::hp::DoFHand
         std::vector<dealii::Vector<double> > solution_value_previous;
         std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous;
 
-        if (m_solution_previous)
+        if (m_solution_nonlinear_previous)
         {
             solution_value_previous = std::vector<dealii::Vector<double> > (n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
             solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
 
-            fe_values.get_function_values(*m_solution_previous, solution_value_previous);
-            fe_values.get_function_gradients(*m_solution_previous, solution_grad_previous);
+            fe_values.get_function_values(*m_solution_nonlinear_previous, solution_value_previous);
+            fe_values.get_function_gradients(*m_solution_nonlinear_previous, solution_grad_previous);
         }
 
         // coupling sources{{#COUPLING_SOURCE}}

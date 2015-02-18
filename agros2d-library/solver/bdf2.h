@@ -30,34 +30,30 @@ class Material;
 class AGROS_LIBRARY_API BDF2Table
 {
 public:
-    BDF2Table() : m_n(-100) {}
+    BDF2Table() : m_order(0) {}
+    virtual ~BDF2Table() {}
 
-    // returns true if matrix unchanged
-    bool setOrderAndPreviousSteps(int order, QList<double> previousStepsLengths);
+    void setOrderAndPreviousSteps(int order, QList<double> previousStepsLengths);
+    int order() const { return m_order;}
 
-    int n() const { return m_n;}
-    int order() const { return m_n;}
-
-    inline double matrixFormCoefficient() const {return m_alpha[0];}
-    // double vectorFormCoefficient(Func<double> **ext, int component, int numComponents, int offsetPreviousTimeExt, int integrationPoint) const;
+    inline double matrixFormCoefficient() const { return m_alpha[0]; }
+    inline double vectorFormCoefficient(int order) const { return m_alpha[order + 1]; }
 
     static void test(bool varyLength = false);
 
 protected:
-    inline double* alpha() {return m_alpha; }
-
     double testCalcValue(double step, QList<double> values, double fVal);
 
     virtual void recalculate() = 0;
 
-    int m_n;
+    int m_order;
     double th[10];
-    double m_actualTimeStepLength;
     double m_alpha[10];
 };
 
 class BDF2ATable : public BDF2Table
 {
+protected:
     virtual void recalculate();
 };
 

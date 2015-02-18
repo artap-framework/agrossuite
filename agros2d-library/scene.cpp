@@ -1434,7 +1434,7 @@ void Scene::readFromFile21(const QString &fileName)
     Agros2D::problem()->config()->setValue(ProblemConfig::TimeConstantTimeSteps, eleProblemInfo.toElement().attribute("time_steps", "2").toInt());
     Agros2D::problem()->config()->setValue(ProblemConfig::TimeTotal, eleProblemInfo.toElement().attribute("time_total", "1.0").toDouble());    
     Agros2D::problem()->config()->setValue(ProblemConfig::TimeMethod, timeStepMethodFromStringKey(
-                                               eleProblemInfo.toElement().attribute("time_method", timeStepMethodToStringKey(dealii::TimeStepping::BACKWARD_EULER))));
+                                               eleProblemInfo.toElement().attribute("time_method", timeStepMethodToStringKey(TimeStepMethod_BDF_2))));
     Agros2D::problem()->config()->setValue(ProblemConfig::TimeMethodTolerance, eleProblemInfo.toElement().attribute("time_method_tolerance", "0.05").toDouble());
     Agros2D::problem()->config()->setValue(ProblemConfig::TimeInitialStepSize, eleProblemInfo.toElement().attribute("time_initial_time_step", "0.0").toDouble());
 
