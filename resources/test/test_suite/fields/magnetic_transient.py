@@ -95,9 +95,9 @@ class TestMagneticTransientAxisymmetric(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
-        problem.time_step_method = "backward_euler"
+        problem.time_step_method = "bdf_1"
         problem.time_total = 0.30
-        problem.time_steps = 30
+        problem.time_steps = 50
         
         # disable view
         agros2d.view.mesh.disable()

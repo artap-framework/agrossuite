@@ -1368,15 +1368,14 @@ void ProblemWidget::transientChanged()
 {
     lblTransientTimeStep->setText(QString("%1 %2").arg(txtTransientTimeTotal->value() / txtTransientSteps->value()).arg(Agros2D::problem()->timeUnit()));
 
-    TimeStepMethodType type = timeStepMethodType((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt());
-
-    if (type == TimeStepMethodType_Implicit || type == TimeStepMethodType_Explicit)
+    TimeStepMethod type = (TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt();
     {
         chkTransientInitialStepSize->setEnabled(false);
         txtTransientInitialStepSize->setEnabled(false);
         txtTransientTolerance->setEnabled(false);
         txtTransientSteps->setEnabled(true);
     }
+    /*
     else if (type == TimeStepMethodType_EmbeddedExplicit)
     {
         chkTransientInitialStepSize->setEnabled(false);
@@ -1386,6 +1385,7 @@ void ProblemWidget::transientChanged()
     {
         assert(1);
     }
+    */
 }
 
 void ProblemWidget::startupScriptCollapse(bool collapsed)

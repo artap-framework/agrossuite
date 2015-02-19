@@ -267,7 +267,7 @@ QString createPythonFromModel()
         str += QString("problem.time_step_method = \"%1\"\n"
                        "problem.time_steps = %2\n"
                        "problem.time_total = %3\n").
-                arg(timeStepMethodToStringKey((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt())).
+                arg(timeStepMethodToStringKey((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt())).
                 arg(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()).
                 arg(Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
     }

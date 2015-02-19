@@ -236,17 +236,13 @@ enum DataTableType
     DataTableType_Constant = 2
 };
 
-enum SpecialFunctionType
+enum TimeStepMethod
 {
-    SpecialFunctionType_Constant = 0,
-    SpecialFunctionType_Function1D = 1
-};
-
-enum TimeStepMethodType
-{
-    TimeStepMethodType_Implicit,
-    TimeStepMethodType_Explicit,
-    TimeStepMethodType_EmbeddedExplicit
+    TimeStepMethod_Undefined = -1,
+    TimeStepMethod_BDF_1 = 1,
+    TimeStepMethod_BDF_2 = 2,
+    TimeStepMethod_BDF_3 = 3,
+    TimeStepMethod_CrankNicolson = 20
 };
 
 enum MatrixSolverType
@@ -385,11 +381,10 @@ AGROS_LIBRARY_API QString adaptivityNormTypeToStringKey(NormType adaptivityNormT
 AGROS_LIBRARY_API NormType adaptivityNormTypeFromStringKey(const QString &adaptivityNormType);
 
 // time step method
-AGROS_LIBRARY_API QString timeStepMethodString(dealii::TimeStepping::runge_kutta_method timeStepMethod);
+AGROS_LIBRARY_API QString timeStepMethodString(TimeStepMethod timeStepMethod);
 AGROS_LIBRARY_API QStringList timeStepMethodStringKeys();
-AGROS_LIBRARY_API QString timeStepMethodToStringKey(dealii::TimeStepping::runge_kutta_method timeStepMethod);
-AGROS_LIBRARY_API dealii::TimeStepping::runge_kutta_method timeStepMethodFromStringKey(const QString &timeStepMethod);
-AGROS_LIBRARY_API TimeStepMethodType timeStepMethodType(dealii::TimeStepping::runge_kutta_method timeStepMethod);
+AGROS_LIBRARY_API QString timeStepMethodToStringKey(TimeStepMethod timeStepMethod);
+AGROS_LIBRARY_API TimeStepMethod timeStepMethodFromStringKey(const QString &timeStepMethod);
 
 // solution mode
 AGROS_LIBRARY_API QString solutionTypeString(SolutionMode solutionMode);
@@ -455,12 +450,6 @@ AGROS_LIBRARY_API QString dataTableTypeString(DataTableType dataTableType);
 AGROS_LIBRARY_API QStringList dataTableTypeStringKeys();
 AGROS_LIBRARY_API QString dataTableTypeToStringKey(DataTableType dataTableType);
 AGROS_LIBRARY_API DataTableType dataTableTypeFromStringKey(const QString &dataTableType);
-
-// special function type
-AGROS_LIBRARY_API QString specialFunctionTypeString(SpecialFunctionType specialFunctionType);
-AGROS_LIBRARY_API QStringList specialFunctionTypeStringKeys();
-AGROS_LIBRARY_API QString specialFunctionTypeToStringKey(SpecialFunctionType specialFunctionType);
-AGROS_LIBRARY_API SpecialFunctionType specialFunctionTypeFromStringKey(const QString &specialFunctionType);
 
 // butcher table type
 AGROS_LIBRARY_API QString butcherTableTypeString(ButcherTableType tableType);
