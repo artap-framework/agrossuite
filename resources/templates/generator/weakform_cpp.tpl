@@ -132,51 +132,6 @@ const Value *{{VARIABLE_SHORT}};{{/VARIABLE_SOURCE_NONLINEAR}}
 
 // *************************************************************************************************************************************************
 
-SolverDeal{{CLASS}}::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
-                                                              dealii::hp::QCollection<2> quadratureFormulas,
-                                                              dealii::hp::QCollection<2-1> faceQuadratureFormulas)
-    :
-      hp_fe_values(feCollection, quadratureFormulas,
-                   dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values),
-      hp_fe_face_values(feCollection, faceQuadratureFormulas,
-                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
-{}
-
-
-SolverDeal{{CLASS}}::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &scratch_data)
-    :
-      hp_fe_values(scratch_data.hp_fe_values.get_fe_collection(), scratch_data.hp_fe_values.get_quadrature_collection(),
-                   dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values),
-      hp_fe_face_values(scratch_data.hp_fe_face_values.get_fe_collection(), scratch_data.hp_fe_face_values.get_quadrature_collection(),
-                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
-{}
-
-SolverDeal{{CLASS}}::AssemblyCopyData::AssemblyCopyData(const dealii::hp::FECollection<2> &feCollection,
-                                                        dealii::hp::QCollection<2> quadratureFormulas,
-                                                        dealii::hp::QCollection<2-1> faceQuadratureFormulas,
-                                                        const FieldInfo *fieldInfo)
-    : isAssembled(false)
-{
-    /*
-    // cache
-    int max_dofs_per_cell = feCollection.max_dofs_per_cell();
-    int max_n_quadrature_points = quadratureFormulas.max_n_quadrature_points();
-
-    // volume value and grad cache
-    shape_value = std::vector<dealii::Vector<double> >(max_dofs_per_cell, dealii::Vector<double>(max_n_quadrature_points));
-    shape_grad = std::vector<std::vector<dealii::Tensor<1,2> > >(max_dofs_per_cell, std::vector<dealii::Tensor<1,2> >(max_n_quadrature_points));
-    // surface cache
-    shape_face_point = std::vector<std::vector<dealii::Point<2> > >(dealii::GeometryInfo<2>::faces_per_cell);
-    shape_face_value = std::vector<std::vector<dealii::Vector<double> > >(dealii::GeometryInfo<2>::faces_per_cell, std::vector<dealii::Vector<double> >(max_dofs_per_cell));
-    shape_face_JxW = std::vector<std::vector<double> >(dealii::GeometryInfo<2>::faces_per_cell);
-    // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(max_dofs_per_cell);
-
-    // previous values and grads
-    solution_value_previous = std::vector<dealii::Vector<double> >(max_n_quadrature_points, dealii::Vector<double>(fieldInfo->numberOfSolutions()));
-    solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(max_n_quadrature_points, std::vector<dealii::Tensor<1,2> >(fieldInfo->numberOfSolutions()));
-    */
-}
-
 void SolverDeal{{CLASS}}::assembleSystem()
 {
     bool isTransient = (m_fieldInfo->analysisType() == AnalysisType_Transient);

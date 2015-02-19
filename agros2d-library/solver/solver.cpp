@@ -129,37 +129,51 @@ dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fie
     return feCollection;
 }
 
-//template<int dim>
-//class RightHandSide : public dealii::Function<dim>
-//{
-//public:
-//    RightHandSide ()
-//        :
-//          dealii::Function<dim>()
-//    {}
-//    virtual double value (const dealii::Point<dim> &p,
-//                          const unsigned int component = 0) const;
-//};
+SolverDeal::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
+                                                     dealii::hp::QCollection<2> quadratureFormulas,
+                                                     dealii::hp::QCollection<2-1> faceQuadratureFormulas)
+    :
+      hp_fe_values(feCollection, quadratureFormulas,
+                   dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values),
+      hp_fe_face_values(feCollection, faceQuadratureFormulas,
+                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
+{}
 
-//template<int dim>
-//double RightHandSide<dim>::value (const dealii::Point<dim> &p,
-//                                  const unsigned int component) const
-//{
-//    Assert (component == 0, ExcInternalError());
-//    Assert (dim == 2, ExcNotImplemented());
 
-//    const double time = this->get_time();
+SolverDeal::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &scratch_data)
+    :
+      hp_fe_values(scratch_data.hp_fe_values.get_fe_collection(), scratch_data.hp_fe_values.get_quadrature_collection(),
+                   dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values),
+      hp_fe_face_values(scratch_data.hp_fe_face_values.get_fe_collection(), scratch_data.hp_fe_face_values.get_quadrature_collection(),
+                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
+{}
 
-//    if ((time >= 0.0) && (time <= 10))
-//    {
-//        if ((p[0] >= 0.013) && (p[0] <= 0.028) && (p[1] >= 0.041) && (p[1] <= 0.17))
-//        {
-//            return 2e6;
-//        }
-//    }
+SolverDeal::AssemblyCopyData::AssemblyCopyData(const dealii::hp::FECollection<2> &feCollection,
+                                               dealii::hp::QCollection<2> quadratureFormulas,
+                                               dealii::hp::QCollection<2-1> faceQuadratureFormulas,
+                                               const FieldInfo *fieldInfo)
+    : isAssembled(false)
+{
+    /*
+    // cache
+    int max_dofs_per_cell = feCollection.max_dofs_per_cell();
+    int max_n_quadrature_points = quadratureFormulas.max_n_quadrature_points();
 
-//    return 0;
-//}
+    // volume value and grad cache
+    shape_value = std::vector<dealii::Vector<double> >(max_dofs_per_cell, dealii::Vector<double>(max_n_quadrature_points));
+    shape_grad = std::vector<std::vector<dealii::Tensor<1,2> > >(max_dofs_per_cell, std::vector<dealii::Tensor<1,2> >(max_n_quadrature_points));
+    // surface cache
+    shape_face_point = std::vector<std::vector<dealii::Point<2> > >(dealii::GeometryInfo<2>::faces_per_cell);
+    shape_face_value = std::vector<std::vector<dealii::Vector<double> > >(dealii::GeometryInfo<2>::faces_per_cell, std::vector<dealii::Vector<double> >(max_dofs_per_cell));
+    shape_face_JxW = std::vector<std::vector<double> >(dealii::GeometryInfo<2>::faces_per_cell);
+    // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(max_dofs_per_cell);
+
+    // previous values and grads
+    solution_value_previous = std::vector<dealii::Vector<double> >(max_n_quadrature_points, dealii::Vector<double>(fieldInfo->numberOfSolutions()));
+    solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(max_n_quadrature_points, std::vector<dealii::Tensor<1,2> >(fieldInfo->numberOfSolutions()));
+    */
+}
+
 
 // *******************************************************************************************
 
@@ -173,12 +187,12 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
 
     // copy initial mesh
     // at the present moment we do not use multimesh
-//    m_triangulation = new dealii::Triangulation<2>();
-//    m_triangulation->copy_triangulation(*Agros2D::problem()->initialMesh());
+    //    m_triangulation = new dealii::Triangulation<2>();
+    //    m_triangulation->copy_triangulation(*Agros2D::problem()->initialMesh());
     m_triangulation = Agros2D::problem()->calculationMesh();
 
     // info
-     std::vector<dealii::types::boundary_id> bindicators = m_triangulation->get_boundary_indicators();
+    std::vector<dealii::types::boundary_id> bindicators = m_triangulation->get_boundary_indicators();
     // std::cout << "Number of boundary indicators: " << bindicators.size() << std::endl;
     // std::cout << "Number of active cells: " << m_triangulation->n_active_cells() << std::endl;
     // std::cout << "Total number of cells: " << m_triangulation->n_cells() << std::endl;
@@ -189,8 +203,8 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     // create solution vector
     m_solution = new dealii::Vector<double>();
 
-//    // first position of feCollection, quadrature_formulas and face_quadrature_formulas belongs to NONE space
-//    // this will be used for implementation of different meshes
+    //    // first position of feCollection, quadrature_formulas and face_quadrature_formulas belongs to NONE space
+    //    // this will be used for implementation of different meshes
     m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Nothing<2>(), fieldInfo->numberOfSolutions()));
     m_quadrature_formulas.push_back(dealii::QGauss<2>(1));
     m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(1));
@@ -542,8 +556,8 @@ void SolverDeal::propagateBoundaryMarkers()
 {
     dealii::Triangulation<2>::cell_iterator cell = Agros2D::problem()->initialMesh()->begin();
     dealii::Triangulation<2>::cell_iterator end_cell = Agros2D::problem()->initialMesh()->end();
-//    dealii::Triangulation<2>::cell_iterator cell = m_triangulation->begin();
-//    dealii::Triangulation<2>::cell_iterator end_cell = m_triangulation->end();
+    //    dealii::Triangulation<2>::cell_iterator cell = m_triangulation->begin();
+    //    dealii::Triangulation<2>::cell_iterator end_cell = m_triangulation->end();
 
     //std::cout << "propagate markers " << std::endl;
     for (; cell != end_cell; ++cell)   // loop over all cells, not just active ones
@@ -1255,7 +1269,7 @@ void ProblemSolver::clear()
 
 void ProblemSolver::init()
 {
-    clear();    
+    clear();
 
     foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
     {
