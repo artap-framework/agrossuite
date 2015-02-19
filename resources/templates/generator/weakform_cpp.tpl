@@ -293,15 +293,32 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
         std::vector<dealii::Vector<double> > {{COUPLING_SOURCE_ID}}_value(n_q_points, dealii::Vector<double>(1)); // todo: num source solutions
         std::vector<std::vector<dealii::Tensor<1,2> > > {{COUPLING_SOURCE_ID}}_grad(n_q_points, std::vector<dealii::Tensor<1,2> >(1));// todo: num source solutions
 
+        //{{COUPLING_SOURCE_ID}} variables{{#COUPLING_VARIABLES}}
+        double {{VARIABLE_SHORT}};{{/COUPLING_VARIABLES}}
+
+        SceneMaterial *{{COUPLING_SOURCE_ID}}_material = nullptr;
         if(m_problem->hasField("{{COUPLING_SOURCE_ID}}"))
         {
             {{COUPLING_SOURCE_ID}}_fieldInfo = Agros2D::problem()->fieldInfo("{{COUPLING_SOURCE_ID}}");
+            {{COUPLING_SOURCE_ID}}_material = m_scene->labels->at(cell->material_id() - 1)->marker({{COUPLING_SOURCE_ID}}_fieldInfo);
+
             // todo: we probably do not need to initialize everything
             dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values(*{{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadrature_formulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
             {{COUPLING_SOURCE_ID}}_hp_fe_values.reinit(cell_{{COUPLING_SOURCE_ID}});
             const dealii::FEValues<2> &{{COUPLING_SOURCE_ID}}_fe_values = {{COUPLING_SOURCE_ID}}_hp_fe_values.get_present_fe_values();
             {{COUPLING_SOURCE_ID}}_fe_values.get_function_values(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_value);
             {{COUPLING_SOURCE_ID}}_fe_values.get_function_gradients(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_grad);
+
+            if({{COUPLING_SOURCE_ID}}_material != m_scene->materials->getNone({{COUPLING_SOURCE_ID}}_fieldInfo))
+            {
+                const QMap<uint, QSharedPointer<Value> > {{COUPLING_SOURCE_ID}}_materialValues = {{COUPLING_SOURCE_ID}}_material->values();
+                //{{COUPLING_SOURCE_ID}} variables for individual source analysis types{{#COUPLING_VARIABLES_ANALYSIS_TYPE}}
+                if({{COUPLING_SOURCE_ID}}_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
+                {{{#COUPLING_VARIABLES}}
+                    // {{VARIABLE}}
+                    {{VARIABLE_SHORT}} = {{COUPLING_SOURCE_ID}}_materialValues[{{VARIABLE_HASH}}]->number(); {{/COUPLING_VARIABLES}}
+                }{{/COUPLING_VARIABLES_ANALYSIS_TYPE}}
+            }
         }
         {{/COUPLING_SOURCE}}
 
@@ -431,13 +448,16 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                         copy_data.cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
                     }{{/FORM_EXPRESSION_VECTOR}}
                     {{#COUPLING_SOURCE}}
-                    if({{COUPLING_SOURCE_ID}}_fieldInfo)
-                    { {{#FORM_EXPRESSION_VECTOR}}
-                        // {{EXPRESSION_ID}}
-                        if (components[i] == {{ROW_INDEX}})
-                        {
-                            copy_data.cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
-                        }{{/FORM_EXPRESSION_VECTOR}}
+                    if({{COUPLING_SOURCE_ID}}_fieldInfo && ({{COUPLING_SOURCE_ID}}_material != m_scene->materials->getNone({{COUPLING_SOURCE_ID}}_fieldInfo)))
+                    {{{#COUPLING_FORMS_ANALYSIS_TYPE}}
+                        if({{COUPLING_SOURCE_ID}}_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
+                        {{{#FORM_EXPRESSION_COUPLING_VECTOR}}
+                               // {{EXPRESSION_ID}}
+                               if (components[i] == {{ROW_INDEX}})
+                               {
+                                   copy_data.cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
+                               }{{/FORM_EXPRESSION_COUPLING_VECTOR}}
+                        }{{/COUPLING_FORMS_ANALYSIS_TYPE}}
                     }{{/COUPLING_SOURCE}}
                 }
             }

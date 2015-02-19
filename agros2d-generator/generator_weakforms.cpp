@@ -61,6 +61,11 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
     QMap<QString, std::shared_ptr<XMLModule::module> > couplings_xsd;
     std::shared_ptr<XMLModule::module> coupling_xsd;
 
+    QList<AnalysisType> allAnalysisTypes;
+    allAnalysisTypes.push_back(AnalysisType_SteadyState);
+    allAnalysisTypes.push_back(AnalysisType_Transient);
+    allAnalysisTypes.push_back(AnalysisType_Harmonic);
+
     //qDebug() << couplingList()->availableCouplings();
     foreach(QString sourceField, availableModules.keys())
     {
@@ -74,6 +79,36 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
             assert(mod->coupling().present());
             xml_couplings[sourceField] = &mod->coupling().get();
             couplings_xsd[sourceField] = coupling_xsd;
+
+            QHash<QString, QString> volumeVariables;
+            //QHash<std::string, std::string> volumeVariables;
+            volumeVariables.clear();
+
+            std::shared_ptr<XMLModule::module> source_module_xsd = XMLModule::module_(compatibleFilename(datadir() + MODULEROOT + "/" + sourceField + ".xml").toStdString(), xml_schema::flags::dont_validate);;
+            XMLModule::field source_module = source_module_xsd->field().get();
+            foreach(XMLModule::quantity variable, source_module.volume().quantity())
+            {
+                ctemplate::TemplateDictionary *sourceVariables = coupling->AddSectionDictionary("COUPLING_VARIABLES");
+                sourceVariables->SetValue("VARIABLE", variable.id().c_str());
+                sourceVariables->SetValue("VARIABLE_SHORT", variable.shortname().get().c_str());
+                volumeVariables.insert(QString::fromStdString(variable.id().c_str()), QString::fromStdString(variable.shortname().get().c_str()));
+            }
+
+            foreach(XMLModule::weakform_volume weakform, source_module.volume().weakforms_volume().weakform_volume())
+            {
+                ctemplate::TemplateDictionary *sectionAnalysisType = coupling->AddSectionDictionary("COUPLING_VARIABLES_ANALYSIS_TYPE");
+                sectionAnalysisType->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype().c_str()))).toStdString());
+                foreach(XMLModule::quantity quantity, weakform.quantity())
+                {
+                    ctemplate::TemplateDictionary *variables = sectionAnalysisType->AddSectionDictionary("COUPLING_VARIABLES");
+                    variables->SetValue("VARIABLE", quantity.id().c_str());
+                    variables->SetValue("VARIABLE_HASH", QString::number(qHash(QString::fromStdString(quantity.id()))).toStdString());
+                    variables->SetValue("VARIABLE_SHORT", volumeVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
+
+                }
+
+            }
+
         }
     }
 
@@ -112,13 +147,18 @@ void Agros2DGeneratorModule::generateWeakForms(ctemplate::TemplateDictionary &ou
                     ctemplate::TemplateDictionary *coupling = fieldVolume->AddSectionDictionary("COUPLING_SOURCE");
                     coupling->SetValue("COUPLING_SOURCE_ID", sourceField.toStdString());
 
-                    // todo: loop over source analysis types
-                    QList<FormInfo> vectorForms = CouplingInfo::wfVectorVolumeSeparated(&(xml_couplings[sourceField]->volume()), analysisType, analysisType, CouplingType_Weak, linearityType);
-                    if (!vectorForms.isEmpty())
+                    foreach(AnalysisType sourceAnalysisType, allAnalysisTypes)
                     {
-                        foreach(FormInfo formInfo, vectorForms)
+                        ctemplate::TemplateDictionary *sectionAnalysisType = coupling->AddSectionDictionary("COUPLING_FORMS_ANALYSIS_TYPE");
+                        sectionAnalysisType->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(sourceAnalysisType).toStdString());
+
+                        QList<FormInfo> vectorForms = CouplingInfo::wfVectorVolumeSeparated(&(xml_couplings[sourceField]->volume()), sourceAnalysisType, analysisType, CouplingType_Weak, linearityType);
+                        if (!vectorForms.isEmpty())
                         {
-                            generateFormExpression(formInfo, linearityType, coordinateType, *coupling, "VECTOR", weakform);
+                            foreach(FormInfo formInfo, vectorForms)
+                            {
+                                generateFormExpression(formInfo, linearityType, coordinateType, *sectionAnalysisType, "COUPLING_VECTOR", weakform);
+                            }
                         }
                     }
                 }

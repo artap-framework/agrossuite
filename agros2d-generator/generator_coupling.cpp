@@ -247,6 +247,8 @@ void Agros2DGeneratorCoupling::generateWeakForms(ctemplate::TemplateDictionary &
         AnalysisType targetAnalysis = analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype().c_str()));
         CouplingType couplingType = couplingTypeFromStringKey(QString::fromStdString(weakform.couplingtype().get().c_str()));
 
+        qDebug() << "chci" << QString::fromStdString(weakform.sourceanalysis().get().c_str()) << ", " <<  QString::fromStdString(weakform.analysistype().c_str()) << ", " << QString::fromStdString(weakform.couplingtype().get().c_str());
+
         foreach(XMLModule::linearity_option option, weakform.linearity_option())
         {
             LinearityType linearityType = linearityTypeFromStringKey(QString::fromStdString(option.type().c_str()));
