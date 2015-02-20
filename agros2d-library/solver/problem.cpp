@@ -64,6 +64,8 @@ void CalculationThread::run()
 {
     Agros2D::log()->printHeading(QDateTime::currentDateTime().toString("hh:mm:ss.zzz"));
 
+    dealii::deal_II_exceptions::disable_abort_on_exception();
+
     switch (m_calculationType)
     {
     case CalculationType_Mesh:

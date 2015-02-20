@@ -266,6 +266,44 @@ QList<Point> intersection(const Point &p1s, const Point &p1e, const Point &cente
     return out;
 }
 
+Point prolong_point_to_arc(const Point &p, const Point &c, double r)
+{
+  double a_, b_, c_;
+  Point d = p - c;
+
+  double x_plus;
+  double x_minus;
+  double y_plus;
+  double y_minus;
+
+  if (std::abs(d.x / d.y) < 1e-12)
+  {
+    x_plus = p.x;
+    x_minus = p.x;
+    y_plus = c.y + r;
+    y_minus = c.y - r;
+  }
+  else
+  {
+    double f = d.y / d.x;
+    double k = p.y - (f * p.x);
+
+    a_ = 1. + (f * f);
+    b_ = (2. * f * k) - (2. * c.x) - (2. * c.y * f);
+    c_ = (c.x * c.x) + (c.y * c.y) - (r * r) + (k * k) - (2. * c.y * k);
+
+    double discriminant = (pow(b_, 2.) - 4. * a_*c_);
+    x_plus = (((-b_) + sqrt(discriminant)) / (2.* a_));
+    x_minus = (((-b_) - sqrt(discriminant)) / (2. * a_));
+    y_plus = f * x_plus + k;
+    y_minus = f * x_minus + k;
+  }
+  if ((p - c).x * (Point(x_plus, y_plus) - c).x + (p - c).y * (Point(x_plus, y_plus) - c).y > ((p - c).magnitude() * (Point(x_plus, y_plus) - c).magnitude()) * 0.5)
+    return Point(x_plus, y_plus);
+  else
+    return Point(x_minus, y_minus);
+}
+
 QDebug& operator<<(QDebug &output, const Point& pt)
 {
     output << "(" << pt.x << ", " << pt.y << ")";

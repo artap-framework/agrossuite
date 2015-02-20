@@ -32,7 +32,7 @@
 #include <deal.II/hp/fe_collection.h>
 #include <deal.II/hp/q_collection.h>
 #include <deal.II/hp/fe_values.h>
-
+#include <deal.II/hp/mapping_collection.h>
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_system.h>
 #include <deal.II/dofs/dof_tools.h>
@@ -120,6 +120,7 @@ public:
     inline dealii::Triangulation<2> *triangulation() const { return m_triangulation; }
     inline dealii::hp::DoFHandler<2> *doFHandler() const { return m_doFHandler; }
     dealii::hp::FECollection<2> *feCollection() const { return m_feCollection; }
+    dealii::hp::MappingCollection<2> *mappingCollection() const { return m_mappingCollection; }
 
     inline dealii::hp::QCollection<2> quadrature_formulas() const { return m_quadrature_formulas; }
     inline dealii::hp::QCollection<2-1> face_quadrature_formulas() const { return m_face_quadrature_formulas; }
@@ -153,11 +154,12 @@ public:
     inline double get_time() const { return m_time; }
 
     static dealii::hp::FECollection<2> *createFECollection(const FieldInfo *fieldInfo);
+    static dealii::hp::MappingCollection<2> *createMappingCollection(const FieldInfo *fieldInfo);
 
 protected:   
     struct AssemblyScratchData
     {
-        AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
+        AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection, const dealii::hp::MappingCollection<2>& mappingCollection,
                              dealii::hp::QCollection<2> quadratureFormulas,
                              dealii::hp::QCollection<2-1> faceQuadratureFormulas);
         AssemblyScratchData(const AssemblyScratchData &scratch_data);
@@ -168,7 +170,7 @@ protected:
 
     struct AssemblyCopyData
     {
-        AssemblyCopyData(const dealii::hp::FECollection<2> &feCollection,
+        AssemblyCopyData(const dealii::hp::FECollection<2> &feCollection, const dealii::hp::MappingCollection<2>& mappingCollection,
                          dealii::hp::QCollection<2> quadratureFormulas,
                          dealii::hp::QCollection<2-1> faceQuadratureFormulas,
                          const FieldInfo *fieldInfo);
@@ -204,6 +206,7 @@ protected:
 
     dealii::Triangulation<2> *m_triangulation;
     dealii::hp::DoFHandler<2> *m_doFHandler;
+    dealii::hp::MappingCollection<2> *m_mappingCollection;
     dealii::hp::FECollection<2> *m_feCollection;
 
     // quadrature cache
@@ -307,7 +310,7 @@ protected:
     int m_jacobianCalculations;
 };
 
-class ProblemSolver
+class AGROS_LIBRARY_API ProblemSolver
 {
 public:
     ProblemSolver();

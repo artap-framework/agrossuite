@@ -134,16 +134,10 @@ ENDIF(MSVC)
 
 # Include OUR header files location
 include(${CMAKE_AGROS_DIRECTORY}/IncludeSubdirs.cmake)
-FIND_PACKAGE(LAPACK REQUIRED)
+
 # The searching using dealII modules is at the end so we do not mess up anything before.
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../dealii/cmake
 ${PROJECT_SOURCE_DIR}/../dealii/cmake/modules)
-
-FILE(GLOB _macro_files "${PROJECT_SOURCE_DIR}/../dealii/cmake/macros/*.cmake")
-INCLUDE(${PROJECT_SOURCE_DIR}/../dealii/cmake/setup_external_macros.cmake)
-FOREACH(_file ${_macro_files})
-  INCLUDE(${_file})
-ENDFOREACH()
 
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/boost-1.56.0/include/")
@@ -152,9 +146,7 @@ INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/UMFPACK/Inclu
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/AMD/Include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/muparser_v2_2_3/include/")
 
-FIND_PACKAGE(deal.II REQUIRED HINTS ../dealii)
-DEAL_II_INITIALIZE_CACHED_VARIABLES()
-
+FIND_PACKAGE(deal.II HINTS "../dealii/${CMAKE_INSTALL_PREFIX}" ${CMAKE_INSTALL_PREFIX} REQUIRED)
 
 # DealII linking name & location.
 IF(MSVC)

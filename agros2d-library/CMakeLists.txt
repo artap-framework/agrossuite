@@ -119,6 +119,7 @@ SET(SOURCES value.cpp
     mesh/meshgenerator.cpp
     mesh/meshgenerator_triangle.cpp
     mesh/meshgenerator_cubit.cpp
+	mesh/agros_manifold.cpp
     # mesh/meshgenerator_gmsh.cpp
     chartdialog.cpp
     problemdialog.cpp
@@ -209,6 +210,7 @@ SET(SOURCES value.cpp
     mesh/meshgenerator.h
     mesh/meshgenerator_triangle.h
     mesh/meshgenerator_cubit.h
+	mesh/agros_manifold.h
     # mesh/meshgenerator_gmsh.h
     chartdialog.h
     problemdialog.h
