@@ -335,7 +335,7 @@
     <couplings/>
     <problem_config>
       <problem_item problem_key="Frequency" problem_value="0"/>
-      <problem_item problem_key="TimeMethod" problem_value="2"/>
+      <problem_item problem_key="TimeMethod" problem_value="0"/>
       <problem_item problem_key="TimeMethodTolerance" problem_value="0.1"/>
       <problem_item problem_key="TimeInitialStepSize" problem_value="0"/>
       <problem_item problem_key="TimeOrder" problem_value="2"/>

@@ -169,14 +169,14 @@ void fillComboBoxTimeStep(const FieldInfo* fieldInfo, QComboBox *cmbTimeStep)
     foreach (double time, timeLevels)
     {
         if (i == 0)
-            cmbTimeStep->addItem(QObject::tr("Initial step"),
-                                 i++);
+            cmbTimeStep->addItem(QObject::tr("Initial step"), i);
         else
-            cmbTimeStep->addItem(QObject::tr("Step: %1, time: %2 %3").arg(i-1).arg(QString::number(time, 'e', 2)).arg(Agros2D::problem()->timeUnit()),
-                                 i++);
+            cmbTimeStep->addItem(QObject::tr("Step: %1, time: %2 %3").arg(i-1).arg(QString::number(time, 'e', 2)).arg(Agros2D::problem()->timeUnit()), i);
 
         if (time < timeValue)
             timeStep = i;
+
+        i++;
     }
 
     cmbTimeStep->setCurrentIndex(timeStep);

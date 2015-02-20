@@ -203,8 +203,8 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     // create solution vector
     m_solution = new dealii::Vector<double>();
 
-    //    // first position of feCollection, quadrature_formulas and face_quadrature_formulas belongs to NONE space
-    //    // this will be used for implementation of different meshes
+    // first position of feCollection, quadrature_formulas and face_quadrature_formulas belongs to NONE space
+    // this will be used for implementation of different meshes
     m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Nothing<2>(), fieldInfo->numberOfSolutions()));
     m_quadrature_formulas.push_back(dealii::QGauss<2>(1));
     m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(1));
@@ -218,7 +218,6 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     }
 
     // find those elements, which are used for this field
-
     dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
     for (unsigned int index = 0; cell != endc; ++cell, ++index)
     {
@@ -231,7 +230,6 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
             cell->set_active_fe_index(1);
         }
     }
-
 }
 
 SolverDeal::~SolverDeal()

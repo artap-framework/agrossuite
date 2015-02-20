@@ -57,7 +57,7 @@ struct PostTriangle
 class PostDataOut : public dealii::DataOut<2, dealii::hp::DoFHandler<2> >
 {
 public:
-    PostDataOut();
+    PostDataOut(FieldInfo *fieldInfo);
 
     void compute_nodes(QList<PostTriangle> &values, bool deform = false);
 
@@ -76,7 +76,7 @@ private:
     double m_min;
     double m_max;
 
-    std::vector<int> m_subdomains;
+    const FieldInfo *m_fieldInfo;
 
     void compute_node(dealii::Point<2> &node, const dealii::DataOutBase::Patch<2> *patch,
                       const unsigned int xstep, const unsigned int ystep, const unsigned int zstep,

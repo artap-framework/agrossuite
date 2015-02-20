@@ -57,7 +57,8 @@
 
 #include "pythonlab/pythonengine.h"
 
-PostDataOut::PostDataOut() : dealii::DataOut<2, dealii::hp::DoFHandler<2> >()
+PostDataOut::PostDataOut(FieldInfo *fieldInfo) : dealii::DataOut<2, dealii::hp::DoFHandler<2> >(),
+    m_fieldInfo(fieldInfo)
 {
 }
 
@@ -171,31 +172,23 @@ void PostDataOut::compute_node(dealii::Point<2> &node, const dealii::DataOutBase
 
 dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
 {
-    if (m_subdomains.size() == 0)
-        return this->dofs->begin_active();
-
-    DataOut<2, dealii::hp::DoFHandler<2> >::active_cell_iterator cell = this->dofs->begin_active();
-    while ((cell != this->dofs->end()) &&
-           (cell->subdomain_id() != m_subdomains[0])) // TODO !!!
-        ++cell;
-
-    return cell;
+    return this->dofs->begin_active();
 }
 
-dealii::DataOut<2>::cell_iterator PostDataOut::next_cell (const DataOut<2>::cell_iterator &old_cell)
+dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_iterator &old_cell)
 {
-    if (m_subdomains.size() == 0)
-        return dealii::DataOut<2, dealii::hp::DoFHandler<2> >::next_cell(old_cell);
+    // return dealii::DataOut<2, dealii::hp::DoFHandler<2> >::next_cell(old_cell);
 
-    if (old_cell != this->dofs->end())
+    DataOut<2>::cell_iterator cell = dealii::DataOut<2, dealii::hp::DoFHandler<2> >::next_cell(old_cell);
+    while (cell != this->dofs->end())
     {
-        const dealii::IteratorFilters::SubdomainEqualTo predicate(m_subdomains[0]); // TODO !!!!
-        return ++(dealii::FilteredIterator <typename dealii::DataOut<2>::active_cell_iterator>(predicate, old_cell));
+        if (!Agros2D::scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
+            break;
+        else
+            cell++;
     }
-    else
-    {
-        return old_cell;
-    }
+
+    return cell;
 }
 
 // ************************************************************************************************************************
@@ -421,8 +414,8 @@ void PostDeal::processSolved()
 PostDataOut *PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariable,
                                         PhysicFieldVariableComp physicFieldVariableComp)
 {    
-    QTime time;
-    time.start();
+    // QTime time;
+    // time.start();
 
     // update time functions
     if (Agros2D::problem()->isTransient())
@@ -440,7 +433,7 @@ PostDataOut *PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariabl
                                                                                    physicFieldVariableComp);
 
 
-    PostDataOut *data_out = new PostDataOut();
+    PostDataOut *data_out = new PostDataOut(activeViewField());
     data_out->attach_dof_handler(*ma.doFHandler());
     data_out->add_data_vector(*ma.solution(), *post);
     // deform shape

@@ -301,11 +301,14 @@ void SceneViewMesh::paintSolutionMesh()
             dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
+                if (cell_int->active_fe_index() == 0)
+                    continue;
+
                 // coordinates
                 dealii::Point<2> point0 = cell_int->vertex(0);
                 dealii::Point<2> point1 = cell_int->vertex(1);
                 dealii::Point<2> point2 = cell_int->vertex(2);
-                dealii::Point<2> point3 = cell_int->vertex(3);
+                dealii::Point<2> point3 = cell_int->vertex(3);                
 
                 m_arraySolutionMesh.append(QVector2D(point0[0], point0[1]));
                 m_arraySolutionMesh.append(QVector2D(point1[0], point1[1]));
@@ -351,6 +354,9 @@ void SceneViewMesh::paintOrder()
             dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
+                if (cell_int->active_fe_index() == 0)
+                    continue;
+
                 // coordinates
                 dealii::Point<2> point0 = cell_int->vertex(0);
                 dealii::Point<2> point1 = cell_int->vertex(1);

@@ -377,7 +377,7 @@ void MeshGenerator::writeTodealii()
         {
             if (edgeList[edge_i].marker == -1)
                 continue;
-            std::cout << " neigh elements " << edgeList[edge_i].neighElem[0] << ", " << edgeList[edge_i].neighElem[1] << std::endl;
+            // std::cout << " neigh elements " << edgeList[edge_i].neighElem[0] << ", " << edgeList[edge_i].neighElem[1] << std::endl;
 
             dealii::CellData<1> cell_data;
             cell_data.vertices[0] = edgeList[edge_i].node[0];
@@ -395,7 +395,7 @@ void MeshGenerator::writeTodealii()
             else
             {
                 cell_data.boundary_id = edgeList[edge_i].marker + 1;
-                std::cout << "marker: " << edgeList[edge_i].marker + 1 << std::endl;
+                // std::cout << "marker: " << edgeList[edge_i].marker + 1 << std::endl;
             }
             // todo: co je hranice?
             // todo: kde to deal potrebuje? Kdyz si okrajove podminky resim sam...

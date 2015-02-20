@@ -242,7 +242,7 @@ enum TimeStepMethod
     TimeStepMethod_BDF_2 = 0,
     TimeStepMethod_BDF_1 = 1,
     TimeStepMethod_BDF_3 = 3,
-    TimeStepMethod_CrankNicolson = 20
+    TimeStepMethod_CrankNicolson = 2
 };
 
 enum MatrixSolverType
