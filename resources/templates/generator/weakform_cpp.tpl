@@ -165,8 +165,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
                             *this,
                             &SolverDeal{{CLASS}}::localAssembleSystem,
                             &SolverDeal{{CLASS}}::copyLocalToGlobal,
-                            AssemblyScratchData(*m_feCollection, m_quadrature_formulas, m_face_quadrature_formulas),
-                            AssemblyCopyData(*m_feCollection, m_quadrature_formulas, m_face_quadrature_formulas, m_fieldInfo));
+                            AssemblyScratchData(*m_feCollection, *m_mappingCollection, m_quadrature_formulas, m_face_quadrature_formulas),
+							AssemblyCopyData(*m_feCollection, *m_mappingCollection, m_quadrature_formulas, m_face_quadrature_formulas, m_fieldInfo));
 
     // disable for our transient solver
     // if (isTransient)

@@ -32,6 +32,7 @@
 #include <deal.II/fe/fe_nothing.h>
 #include <deal.II/fe/fe_system.h>
 #include <deal.II/fe/fe_values.h>
+#include <deal.II/fe/mapping_q.h>
 
 #include <deal.II/dofs/dof_tools.h>
 #include <deal.II/dofs/dof_handler.h>
@@ -129,26 +130,26 @@ dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fie
     return feCollection;
 }
 
-SolverDeal::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
+    SolverDeal::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection, const dealii::hp::MappingCollection<2>& mappingCollection,
                                                      dealii::hp::QCollection<2> quadratureFormulas,
                                                      dealii::hp::QCollection<2-1> faceQuadratureFormulas)
     :
-      hp_fe_values(feCollection, quadratureFormulas,
+    hp_fe_values(mappingCollection, feCollection, quadratureFormulas,
                    dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values),
-      hp_fe_face_values(feCollection, faceQuadratureFormulas,
+    hp_fe_face_values(mappingCollection, feCollection, faceQuadratureFormulas,
                         dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
 {}
 
 
 SolverDeal::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &scratch_data)
     :
-      hp_fe_values(scratch_data.hp_fe_values.get_fe_collection(), scratch_data.hp_fe_values.get_quadrature_collection(),
+    hp_fe_values(scratch_data.hp_fe_values.get_mapping_collection(), scratch_data.hp_fe_values.get_fe_collection(), scratch_data.hp_fe_values.get_quadrature_collection(),
                    dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values),
-      hp_fe_face_values(scratch_data.hp_fe_face_values.get_fe_collection(), scratch_data.hp_fe_face_values.get_quadrature_collection(),
+    hp_fe_face_values(scratch_data.hp_fe_values.get_mapping_collection(), scratch_data.hp_fe_face_values.get_fe_collection(), scratch_data.hp_fe_face_values.get_quadrature_collection(),
                         dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
 {}
 
-SolverDeal::AssemblyCopyData::AssemblyCopyData(const dealii::hp::FECollection<2> &feCollection,
+SolverDeal::AssemblyCopyData::AssemblyCopyData(const dealii::hp::FECollection<2> &feCollection, const dealii::hp::MappingCollection<2>& mappingCollection,
                                                dealii::hp::QCollection<2> quadratureFormulas,
                                                dealii::hp::QCollection<2-1> faceQuadratureFormulas,
                                                const FieldInfo *fieldInfo)
@@ -172,6 +173,18 @@ SolverDeal::AssemblyCopyData::AssemblyCopyData(const dealii::hp::FECollection<2>
     solution_value_previous = std::vector<dealii::Vector<double> >(max_n_quadrature_points, dealii::Vector<double>(fieldInfo->numberOfSolutions()));
     solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(max_n_quadrature_points, std::vector<dealii::Tensor<1,2> >(fieldInfo->numberOfSolutions()));
     */
+}
+
+dealii::hp::MappingCollection<2> *SolverDeal::createMappingCollection(const FieldInfo *fieldInfo)
+{
+    dealii::hp::MappingCollection<2> *mappingCollection = new dealii::hp::MappingCollection<2>();
+
+    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+    {
+        mappingCollection->push_back(dealii::MappingQ<2>(1, true));
+    }
+
+    return mappingCollection;
 }
 
 
@@ -207,7 +220,10 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     // this will be used for implementation of different meshes
     m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Nothing<2>(), fieldInfo->numberOfSolutions()));
     m_quadrature_formulas.push_back(dealii::QGauss<2>(1));
-    m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(1));
+    m_face_quadrature_formulas.push_back(dealii::QGauss<2 - 1>(1));
+
+    // fe collection
+    m_mappingCollection = SolverDeal::createMappingCollection(m_fieldInfo);
 
     // Gauss quadrature and fe collection
     for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)

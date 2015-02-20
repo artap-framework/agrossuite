@@ -163,7 +163,7 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
     // nodes
     QString outNodes;
     int nodesCount = 0;
-    for (int i = 0; i<Agros2D::scene()->nodes->length(); i++)
+    for (int i = 0; i < Agros2D::scene()->nodes->length(); i++)
     {
         outNodes += QString("%1  %2  %3  %4\n").
                 arg(i).
@@ -176,7 +176,7 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
     // edges
     QString outEdges;
     int edgesCount = 0;
-    for (int i = 0; i<Agros2D::scene()->edges->length(); i++)
+    for (int i = 0; i < Agros2D::scene()->edges->length(); i++)
     {
         if (Agros2D::scene()->edges->at(i)->angle() == 0)
         {
@@ -348,14 +348,39 @@ bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
     // triangle edges
     QString lineEdge = inEdge.readLine().trimmed();
     int numberOfEdges = lineEdge.split(whiteChar).at(0).toInt();
+
+    // for curvature
+    std::map<std::pair<int, int>, Point> centers;
+    std::map<std::pair<int, int>, double> sizes;
     for (int i = 0; i < numberOfEdges; i++)
     {
         QStringList parsedLine = inEdge.readLine().trimmed().split(whiteChar);
 
         // marker conversion from triangle, where it starts from 1
         edgeList.append(MeshEdge(parsedLine.at(1).toInt(),
-                                 parsedLine.at(2).toInt(),
-                                 parsedLine.at(3).toInt() - 1));
+            parsedLine.at(2).toInt(),
+            parsedLine.at(3).toInt() - 1));
+
+        if (parsedLine.at(3).toInt() > 0)
+        {
+            SceneEdge* sceneEdge = Agros2D::scene()->edges->at(parsedLine.at(3).toInt() - 1);
+
+            if (sceneEdge->angle() > 0.0 && sceneEdge->isCurvilinear())
+            {
+                int node_indices[2] = { parsedLine.at(1).toInt(), parsedLine.at(2).toInt() };
+
+                centers.insert(std::pair<std::pair<int, int>, Point>(std::pair<int, int>(node_indices[0], node_indices[1]), sceneEdge->center()));
+                sizes.insert(std::pair<std::pair<int, int>, double>(std::pair<int, int>(node_indices[0], node_indices[1]), sceneEdge->radius()));
+
+                for (int node_i = 0; node_i < 2; node_i++)
+                {
+                    Point p = nodeList[node_indices[node_i]];
+                    Point c = sceneEdge->center();
+                    double r = sceneEdge->radius();
+                    nodeList[node_indices[node_i]] = prolong_point_to_arc(p, c, r);
+                }
+            }
+        }
     }
     int edgeCountLinear = edgeList.count();
 
@@ -387,6 +412,27 @@ bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
         int nodeNA = parsedLine.at(4).toInt();
         int nodeNB = parsedLine.at(5).toInt();
         int nodeNC = parsedLine.at(6).toInt();
+
+        // handle curvature
+        int endpoints_to_midpoints[6][3] = {
+            { nodeA, nodeB, nodeNC },
+            { nodeB, nodeA, nodeNC },
+            { nodeC, nodeB, nodeNA },
+            { nodeB, nodeC, nodeNA },
+            { nodeA, nodeC, nodeNB },
+            { nodeC, nodeA, nodeNB }
+        };
+
+        for (int test_i = 0; test_i < 6; test_i++)
+        {
+            if (centers.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1])) != centers.end())
+            {
+                Point p = nodeList[endpoints_to_midpoints[test_i][2]];
+                Point c = centers.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1]))->second;
+                double r = sizes.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1]))->second;
+                nodeList[endpoints_to_midpoints[test_i][2]] = prolong_point_to_arc(p, c, r);
+            }
+        }
 
         /*
         if (Agros2D::problem()->config()->meshType() == MeshType_Triangle ||
@@ -558,7 +604,7 @@ bool MeshGeneratorTriangle::writeToTriangle()
                 double x = radius * cos(arc);
                 double y = radius * sin(arc);
 
-                nodeEndIndex = nodesCount+1;
+                nodeEndIndex = nodesCount + 1;
                 if (j == 0)
                 {
                     nodeStartIndex = Agros2D::scene()->nodes->items().indexOf(Agros2D::scene()->edges->at(i)->nodeStart());
@@ -726,18 +772,42 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
     int numberOfNodes = triOut.numberofpoints;
     for (int i = 0; i < numberOfNodes; i++)
     {
-        nodeList.append(Point(triOut.pointlist[2*i],
-                        triOut.pointlist[2*i+1]));
+        nodeList.append(Point(triOut.pointlist[2 * i],
+            triOut.pointlist[2 * i + 1]));
     }
 
     // triangle edges
     int numberOfEdges = triOut.numberofedges;
+    // for curvature
+    std::map<std::pair<int, int>, Point> centers;
+    std::map<std::pair<int, int>, double> sizes;
     for (int i = 0; i < numberOfEdges; i++)
     {
         // marker conversion from triangle, where it starts from 1
-        edgeList.append(MeshEdge(triOut.edgelist[2*i],
-                        triOut.edgelist[2*i+1],
-                triOut.edgemarkerlist[i] - 1));
+        edgeList.append(MeshEdge(triOut.edgelist[2 * i],
+            triOut.edgelist[2 * i + 1],
+            triOut.edgemarkerlist[i] - 1));
+
+        if (triOut.edgemarkerlist[i] > 0)
+        {
+            SceneEdge* sceneEdge = Agros2D::scene()->edges->at(triOut.edgemarkerlist[i] - 1);
+
+            if (sceneEdge->angle() > 0.0 && sceneEdge->isCurvilinear())
+            {
+                int node_indices[2] = { triOut.edgelist[2 * i], triOut.edgelist[2 * i + 1] };
+
+                centers.insert(std::pair<std::pair<int, int>, Point>(std::pair<int, int>(node_indices[0], node_indices[1]), sceneEdge->center()));
+                sizes.insert(std::pair<std::pair<int, int>, double>(std::pair<int, int>(node_indices[0], node_indices[1]), sceneEdge->radius()));
+
+                for (int node_i = 0; node_i < 2; node_i++)
+                {
+                    Point p = nodeList[node_indices[node_i]];
+                    Point c = sceneEdge->center();
+                    double r = sceneEdge->radius();
+                    nodeList[node_indices[node_i]] = prolong_point_to_arc(p, c, r);
+                }
+            }
+        }
     }
     int edgeCountLinear = edgeList.count();
 
@@ -753,13 +823,34 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
         }
 
         // vertices
-        int nodeA = triOut.trianglelist[6*i];
-        int nodeB = triOut.trianglelist[6*i+1];
-        int nodeC = triOut.trianglelist[6*i+2];
+        int nodeA = triOut.trianglelist[6 * i];
+        int nodeB = triOut.trianglelist[6 * i + 1];
+        int nodeC = triOut.trianglelist[6 * i + 2];
         // 2nd order nodes (in the middle of edges)
-        int nodeNA = triOut.trianglelist[6*i+3];
-        int nodeNB = triOut.trianglelist[6*i+4];
-        int nodeNC = triOut.trianglelist[6*i+5];
+        int nodeNA = triOut.trianglelist[6 * i + 3];
+        int nodeNB = triOut.trianglelist[6 * i + 4];
+        int nodeNC = triOut.trianglelist[6 * i + 5];
+
+        // handle curvature
+        int endpoints_to_midpoints[6][3] = {
+            { nodeA, nodeB, nodeNC },
+            { nodeB, nodeA, nodeNC },
+            { nodeC, nodeB, nodeNA },
+            { nodeB, nodeC, nodeNA },
+            { nodeA, nodeC, nodeNB },
+            { nodeC, nodeA, nodeNB }
+        };
+
+        for (int test_i = 0; test_i < 6; test_i++)
+        {
+            if (centers.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1])) != centers.end())
+            {
+                Point p = nodeList[endpoints_to_midpoints[test_i][2]];
+                Point c = centers.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1]))->second;
+                double r = sizes.find(std::pair<int, int>(endpoints_to_midpoints[test_i][0], endpoints_to_midpoints[test_i][1]))->second;
+                nodeList[endpoints_to_midpoints[test_i][2]] = prolong_point_to_arc(p, c, r);
+            }
+        }
 
         /*
         if (Agros2D::problem()->config()->meshType() == MeshType_Triangle ||

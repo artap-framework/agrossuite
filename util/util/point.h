@@ -39,7 +39,10 @@ AGROS_UTIL_API bool intersectionLines(const Point &p1s, const Point &p1e, const 
 
 // intersection of two lines or line and arc
 AGROS_UTIL_API QList<Point> intersection(const Point &p1s, const Point &p1e, const Point &center1, double radius1, double angle1,
-                                    const Point &p2s, const Point &p2e, const Point &center2, double radius2, double angle2);
+  const Point &p2s, const Point &p2e, const Point &center2, double radius2, double angle2);
+
+// find a point on an arc which lies on a line between the given point and center
+AGROS_UTIL_API Point prolong_point_to_arc(const Point &candidate, const Point &center, double radius);
 
 
 struct AGROS_UTIL_API  Point
