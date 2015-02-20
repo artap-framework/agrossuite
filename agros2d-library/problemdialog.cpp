@@ -631,7 +631,7 @@ void FieldWidget::doAnalysisTypeChanged(int index)
         if (otherFieldInfo->analysisType() == AnalysisType_Transient && otherFieldInfo->fieldId() != m_fieldInfo->fieldId())
             otherFieldIsTransient = true;
 
-    txtTransientTimeSkip->setEnabled(!m_fieldInfo->analysisType() == AnalysisType_Transient && otherFieldIsTransient);
+    txtTransientTimeSkip->setEnabled(!(m_fieldInfo->analysisType() == AnalysisType_Transient) && otherFieldIsTransient);
 
     LinearityType previousLinearityType = (LinearityType) cmbLinearityType->itemData(cmbLinearityType->currentIndex()).toInt();
     cmbLinearityType->clear();

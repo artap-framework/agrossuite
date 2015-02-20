@@ -41,15 +41,13 @@ dealii::Point<spacedim> AgrosManifoldSurface<dim, spacedim>::project_to_manifold
     return dealii::Point<2>(result.x, result.y);
 }
 
-template class AgrosManifoldSurface < 2, 2 > ;
-
 template <int dim, int spacedim>
 AgrosManifoldVolume<dim, spacedim>::AgrosManifoldVolume(int element_i, AgrosManifoldSurface<dim, spacedim>* first_manifold) : element_i(element_i)
 {
     this->surfManifolds.push_back(first_manifold);
-    std::cout << "------------ constructor ------------" << std::endl;
-    std::cout << "element_i: " << element_i << std::endl;
-    std::cout << "-----------------------------------" << std::endl;
+    // std::cout << "------------ constructor ------------" << std::endl;
+    // std::cout << "element_i: " << element_i << std::endl;
+    // std::cout << "-----------------------------------" << std::endl;
 }
 
 template <int dim, int spacedim>

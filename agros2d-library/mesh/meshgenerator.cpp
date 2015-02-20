@@ -349,7 +349,7 @@ void MeshGenerator::writeTodealii()
         std::map<dealii::types::manifold_id, AgrosManifoldVolume<2>*> volManifolds;
 
         // it is important that we know what is the largest edge marker, so that the manifold_ids for elements (volumetric) do not coincide with the surface ones.
-        int maxEdgeMarker = edgeList.count() + 1;
+        unsigned int maxEdgeMarker = edgeList.count() + 1;
 
         for (int edge_i = 0; edge_i < edgeList.count(); edge_i++)
         {
