@@ -253,17 +253,13 @@ SolverDeal::~SolverDeal()
     // delete bdf2 table
     delete m_bdf2Table;
 
-    if (m_triangulation)
-        delete m_triangulation;
-    m_triangulation = nullptr;
+    if (m_solution)
+        delete m_solution;
+    m_solution = nullptr;
 
     if (m_doFHandler)
         delete m_doFHandler;
     m_doFHandler = nullptr;
-
-    if (m_solution)
-        delete m_solution;
-    m_solution = nullptr;
 
     if (m_feCollection)
         delete m_feCollection;

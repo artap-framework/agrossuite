@@ -82,7 +82,7 @@ void CalculationThread::run()
     }
 }
 
-Problem::Problem()
+Problem::Problem() : m_initialMesh(nullptr), m_initialUnrefinedMesh(nullptr), m_calculationMesh(nullptr)
 {
     // m_timeStep = 0;
     m_lastTimeElapsed = QTime(0, 0);
@@ -121,6 +121,18 @@ Problem::~Problem()
     delete m_calculationThread;
 
     delete m_solverDeal;
+
+    if (m_initialMesh)
+        delete m_initialMesh;
+    m_initialMesh = nullptr;
+
+    if (m_initialUnrefinedMesh)
+        delete m_initialUnrefinedMesh;
+    m_initialUnrefinedMesh = nullptr;
+
+    if (m_calculationMesh)
+        delete m_calculationMesh;
+    m_calculationMesh = nullptr;
 }
 
 void Problem::clearInitialMesh()
@@ -133,16 +145,25 @@ void Problem::clearInitialMesh()
 
 void Problem::setInitialMesh(dealii::Triangulation<2> *mesh)
 {
+    if (m_initialMesh)
+        delete m_initialMesh;
+
     m_initialMesh = mesh;
 }
 
 void Problem::setInitialUnrefinedMesh(dealii::Triangulation<2> *mesh)
 {
+    if (m_initialUnrefinedMesh)
+        delete m_initialUnrefinedMesh;
+
     m_initialUnrefinedMesh = mesh;
 }
 
 void Problem::setCalculationMesh(dealii::Triangulation<2> *mesh)
 {
+    if (m_calculationMesh)
+        delete m_calculationMesh;
+
     m_calculationMesh = mesh;
 }
 

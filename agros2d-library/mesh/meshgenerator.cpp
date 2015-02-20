@@ -480,7 +480,7 @@ void MeshGenerator::writeTodealii()
         }
 
         m_triangulation = triangulation;
-        std::cout << "triangulation created " << std::endl;
+        // std::cout << "triangulation created " << std::endl;
 
         dealii::Triangulation<2>::cell_iterator cell = triangulation->begin();
         dealii::Triangulation<2>::cell_iterator end_cell = triangulation->end();
