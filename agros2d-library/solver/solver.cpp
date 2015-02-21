@@ -953,23 +953,24 @@ void SolverDeal::solveProblemNonLinearNewton()
             {
                 // first try to reuse the Jacobian
                 m_assemble_matrix = false;
+
                 time.start();
                 assembleSystem();
-                std::cout << "assemble for Jac reuse (" << time.elapsed() << "ms )" << std::endl;
+                // std::cout << "assemble for Jac reuse (" << time.elapsed() << "ms )" << std::endl;
 
                 system_rhs *= -1.0;
 
                 // since m_assemble_matrix is false, this will reuse the LU decomposition
                 time.start();
                 solveLinearSystem(system_matrix, system_rhs, *m_solution);
-                std::cout << "back substitution (" << time.elapsed() << "ms )" << std::endl;
+                // std::cout << "back substitution (" << time.elapsed() << "ms )" << std::endl;
 
                 m_solution_nonlinear_previous->add(dampingFactor, *m_solution);
 
                 time.start();
                 assembleSystem();
                 residualNorm = system_rhs.l2_norm();
-                std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
+                // std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
 
                 residualNorm = system_rhs.l2_norm();
                 if(residualNorm < previousResidualNorm * m_fieldInfo->value(FieldInfo::NewtonJacobianReuseRatio).toDouble())
@@ -984,7 +985,7 @@ void SolverDeal::solveProblemNonLinearNewton()
                     jacobianReused = false;
                     numReusedJacobian = 0;
                 }
-                std::cout << "norms: " << residualNorm << ", old: " << previousResidualNorm << " -> " << jacobianReused << std::endl;
+                // std::cout << "norms: " << residualNorm << ", old: " << previousResidualNorm << " -> " << jacobianReused << std::endl;
 
                 m_assemble_matrix = true;
             }
@@ -994,12 +995,12 @@ void SolverDeal::solveProblemNonLinearNewton()
         {
             time.start();
             assembleSystem();
-            std::cout << "assemble (" << time.elapsed() << "ms )" << std::endl;
+            // std::cout << "assemble (" << time.elapsed() << "ms )" << std::endl;
 
             system_rhs *= -1.0;
             time.start();
             solveLinearSystem(system_matrix, system_rhs, *m_solution);
-            std::cout << "full system solve (" << time.elapsed() << "ms )" << std::endl;
+            // std::cout << "full system solve (" << time.elapsed() << "ms )" << std::endl;
 
             // residual norm
             residualNorm = system_rhs.l2_norm();
@@ -1019,7 +1020,7 @@ void SolverDeal::solveProblemNonLinearNewton()
                 assembleSystem();
                 m_assemble_matrix = true;
                 residualNorm = system_rhs.l2_norm();
-                std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
+                // std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
 
                 while(residualNorm > previousResidualNorm * m_fieldInfo->value(FieldInfo::NonlinearDampingFactorDecreaseRatio).toDouble())
                 {
@@ -1047,7 +1048,7 @@ void SolverDeal::solveProblemNonLinearNewton()
                     assembleSystem();
                     m_assemble_matrix = true;
                     residualNorm = system_rhs.l2_norm();
-                    std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
+                    // std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
                 }
 
                 dampingSuccessfulSteps++;

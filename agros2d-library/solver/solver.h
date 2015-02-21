@@ -71,8 +71,17 @@ struct DoubleCellIterator
 
     DoubleCellIterator& operator++()
     {
-        ++cell_first;
-        ++cell_second;
+        if (cell_first == cell_second)
+        {
+            ++cell_first;
+            cell_second = cell_first;
+        }
+        else
+        {
+            ++cell_first;
+            ++cell_second;
+        }
+
         return *this;
     }
 
@@ -82,13 +91,12 @@ struct DoubleCellIterator
         operator++(); // pre-increment
         return tmp;   // return old value
     }
-
-
 };
 
 
 inline bool operator==(const DoubleCellIterator& a, const DoubleCellIterator& b)
 {
+    // is it ok? should be () && () ??
     if((a.cell_second == b.cell_second) || (a.cell_first == b.cell_first))
     {
         assert((a.cell_second == b.cell_second) && (a.cell_first == b.cell_first));
