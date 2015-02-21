@@ -118,8 +118,7 @@ dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fie
             if (spaces.value(key).type() == "h1")
                 fes.push_back(new dealii::FE_Q<2>(degree + spaces[key].orderAdjust()));
             else if (spaces.value(key).type() == "l2")
-                fes.push_back(new dealii::FE_DGP<2>(degree + spaces[key].orderAdjust()));
-            // fes.push_back(new dealii::FE_Q<2>(degree + spaces[key].orderAdjust()));
+                fes.push_back(new dealii::FE_Q<2>(degree + spaces[key].orderAdjust())); // fes.push_back(new dealii::FE_DGP<2>(degree + spaces[key].orderAdjust()));
 
             multiplicities.push_back(1);
         }
@@ -130,30 +129,48 @@ dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fie
     return feCollection;
 }
 
-    SolverDeal::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection, const dealii::hp::MappingCollection<2>& mappingCollection,
+dealii::hp::MappingCollection<2> *SolverDeal::createMappingCollection(const FieldInfo *fieldInfo)
+{
+    dealii::hp::MappingCollection<2> *mappingCollection = new dealii::hp::MappingCollection<2>();
+
+    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+    {
+        mappingCollection->push_back(dealii::MappingQ<2>(1, true));
+    }
+
+    return mappingCollection;
+}
+
+SolverDeal::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
+                                                     const dealii::hp::MappingCollection<2>& mappingCollection,
                                                      dealii::hp::QCollection<2> quadratureFormulas,
                                                      dealii::hp::QCollection<2-1> faceQuadratureFormulas)
     :
-    hp_fe_values(mappingCollection, feCollection, quadratureFormulas,
+      hp_fe_values(mappingCollection,
+                   feCollection,
+                   quadratureFormulas,
                    dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values),
-    hp_fe_face_values(mappingCollection, feCollection, faceQuadratureFormulas,
+      hp_fe_face_values(mappingCollection,
+                        feCollection,
+                        faceQuadratureFormulas,
                         dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
 {}
 
 
 SolverDeal::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &scratch_data)
     :
-    hp_fe_values(scratch_data.hp_fe_values.get_mapping_collection(), scratch_data.hp_fe_values.get_fe_collection(), scratch_data.hp_fe_values.get_quadrature_collection(),
+      hp_fe_values(scratch_data.hp_fe_values.get_mapping_collection(),
+                   scratch_data.hp_fe_values.get_fe_collection(),
+                   scratch_data.hp_fe_values.get_quadrature_collection(),
                    dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values),
-    hp_fe_face_values(scratch_data.hp_fe_values.get_mapping_collection(), scratch_data.hp_fe_face_values.get_fe_collection(), scratch_data.hp_fe_face_values.get_quadrature_collection(),
+      hp_fe_face_values(scratch_data.hp_fe_values.get_mapping_collection(),
+                        scratch_data.hp_fe_face_values.get_fe_collection(),
+                        scratch_data.hp_fe_face_values.get_quadrature_collection(),
                         dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
 {}
 
-SolverDeal::AssemblyCopyData::AssemblyCopyData(const dealii::hp::FECollection<2> &feCollection, const dealii::hp::MappingCollection<2>& mappingCollection,
-                                               dealii::hp::QCollection<2> quadratureFormulas,
-                                               dealii::hp::QCollection<2-1> faceQuadratureFormulas,
-                                               const FieldInfo *fieldInfo)
-    : isAssembled(false)
+SolverDeal::AssemblyCopyData::AssemblyCopyData()
+    : isAssembled(false), cell_matrix(0), cell_mass_matrix(0), cell_rhs(0)
 {
     /*
     // cache
@@ -174,19 +191,6 @@ SolverDeal::AssemblyCopyData::AssemblyCopyData(const dealii::hp::FECollection<2>
     solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(max_n_quadrature_points, std::vector<dealii::Tensor<1,2> >(fieldInfo->numberOfSolutions()));
     */
 }
-
-dealii::hp::MappingCollection<2> *SolverDeal::createMappingCollection(const FieldInfo *fieldInfo)
-{
-    dealii::hp::MappingCollection<2> *mappingCollection = new dealii::hp::MappingCollection<2>();
-
-    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
-    {
-        mappingCollection->push_back(dealii::MappingQ<2>(1, true));
-    }
-
-    return mappingCollection;
-}
-
 
 // *******************************************************************************************
 
@@ -252,6 +256,8 @@ SolverDeal::~SolverDeal()
 {
     // delete bdf2 table
     delete m_bdf2Table;
+
+    delete m_mappingCollection;
 
     if (m_solution)
         delete m_solution;

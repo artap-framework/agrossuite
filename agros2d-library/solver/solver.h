@@ -167,9 +167,10 @@ public:
 protected:   
     struct AssemblyScratchData
     {
-        AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection, const dealii::hp::MappingCollection<2>& mappingCollection,
-                             dealii::hp::QCollection<2> quadratureFormulas,
-                             dealii::hp::QCollection<2-1> faceQuadratureFormulas);
+        AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
+                            const dealii::hp::MappingCollection<2>& mappingCollection,
+                            dealii::hp::QCollection<2> quadratureFormulas,
+                            dealii::hp::QCollection<2-1> faceQuadratureFormulas);
         AssemblyScratchData(const AssemblyScratchData &scratch_data);
 
         dealii::hp::FEValues<2> hp_fe_values;
@@ -178,10 +179,7 @@ protected:
 
     struct AssemblyCopyData
     {
-        AssemblyCopyData(const dealii::hp::FECollection<2> &feCollection, const dealii::hp::MappingCollection<2>& mappingCollection,
-                         dealii::hp::QCollection<2> quadratureFormulas,
-                         dealii::hp::QCollection<2-1> faceQuadratureFormulas,
-                         const FieldInfo *fieldInfo);
+        AssemblyCopyData();
 
         bool isAssembled;
 
