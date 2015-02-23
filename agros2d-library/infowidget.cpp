@@ -92,7 +92,6 @@ InfoWidget::~InfoWidget()
 
 void InfoWidget::refresh()
 {          
-    return;
     if (Agros2D::problem()->fieldInfos().isEmpty())
         showWelcome();
     else
