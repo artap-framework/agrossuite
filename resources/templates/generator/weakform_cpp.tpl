@@ -221,14 +221,14 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
         std::vector<int> components(dofs_per_cell);
 
         // volume value and grad cache
-        AssemblyScratchData::Cache &cache = scratch_data.cache(tbb::this_tbb_thread::get_id(), dofs_per_cell, n_q_points);
+        AssembleCache &cache = assembleCache(tbb::this_tbb_thread::get_id(), dofs_per_cell);
 
-        std::vector<dealii::Vector<double> > shape_value = cache.shape_value;
+        std::vector<std::vector<double> > shape_value = cache.shape_value;
         std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad = cache.shape_grad;
 
         // surface cache
         std::vector<std::vector<dealii::Point<2> > > shape_face_point = cache.shape_face_point;
-        std::vector<std::vector<dealii::Vector<double> > > shape_face_value = cache.shape_face_value;
+        std::vector<std::vector<std::vector<double> > > shape_face_value = cache.shape_face_value;
         std::vector<std::vector<double> > shape_face_JxW = cache.shape_face_JxW;
 
         // previous values and grads
@@ -314,7 +314,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
 
                     for (unsigned int i = 0; i < dofs_per_cell; ++i)
                     {
-                        shape_face_value[face][i].reinit(n_face_q_points);
+                        shape_face_value[face][i].resize(n_face_q_points);
                         for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
                         {
                             shape_face_value[face][i][q_point] = fe_face_values.shape_value(i, q_point);
@@ -441,7 +441,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                         const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
 
                         // value and grad cache
-                        std::vector<dealii::Vector<double> > shape_value = shape_face_value[face];
+                        std::vector<std::vector<double> > shape_value = shape_face_value[face];
                         // std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad = shape_face_grad;
 
                         const dealii::FEFaceValues<2> &fe_face_values = scratch_data.hp_fe_face_values.get_present_fe_values();

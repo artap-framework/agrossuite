@@ -177,30 +177,6 @@ protected:
 
         dealii::hp::FEValues<2> hp_fe_values;
         dealii::hp::FEFaceValues<2> hp_fe_face_values;
-
-        struct Cache
-        {
-            // volume value and grad cache
-            std::vector<dealii::Vector<double> > shape_value;
-            std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad;
-            // surface cache
-            std::vector<std::vector<dealii::Point<2> > > shape_face_point;
-            std::vector<std::vector<dealii::Vector<double> > > shape_face_value;
-            std::vector<std::vector<double> > shape_face_JxW;
-            // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad;
-
-            // previous values and grads
-            std::vector<dealii::Vector<double> > solution_value_previous;
-            std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous;
-        };
-
-        int numberOfSolutions;
-        int dofs_per_cell;
-        int n_q_points;
-
-        std::map<tbb::tbb_thread::id, Cache> m_cache;
-
-        Cache &cache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points);
     };
 
     struct AssemblyCopyData
@@ -216,6 +192,26 @@ protected:
         std::vector<dealii::types::global_dof_index> local_dof_indices;       
     };
 
+    struct AssembleCache
+    {
+        AssembleCache() : dofs_per_cell(-1) {}
+
+        // volume value and grad cache
+        std::vector<std::vector<double> > shape_value;
+        std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad;
+        // surface cache
+        std::vector<std::vector<dealii::Point<2> > > shape_face_point;
+        std::vector<std::vector<std::vector<double> > > shape_face_value;
+        std::vector<std::vector<double> > shape_face_JxW;
+        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad;
+
+        // previous values and grads
+        std::vector<dealii::Vector<double> > solution_value_previous;
+        std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous;
+
+        int dofs_per_cell;
+    };
+
     // local reference
     const FieldInfo *m_fieldInfo;
     const Scene *m_scene;
@@ -225,6 +221,10 @@ protected:
     dealii::hp::DoFHandler<2> *m_doFHandler;
     dealii::hp::MappingCollection<2> *m_mappingCollection;
     dealii::hp::FECollection<2> *m_feCollection;
+
+    // assemble cache
+    std::map<tbb::tbb_thread::id, AssembleCache> m_assembleCache;
+    AssembleCache &assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell);
 
     // quadrature cache
     dealii::hp::QCollection<2> m_quadrature_formulas;

@@ -157,45 +157,43 @@ SolverDeal::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollect
       hp_fe_face_values(mappingCollection,
                         feCollection,
                         faceQuadratureFormulas,
-                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values),
-
-      numberOfSolutions(fieldInfo->numberOfSolutions()), dofs_per_cell(-1), n_q_points(-1)
-
+                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
 {}
 
-SolverDeal::AssemblyScratchData::Cache &SolverDeal::AssemblyScratchData::cache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points)
+SolverDeal::AssembleCache &SolverDeal::assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell)
 {
     // create or resize cache
-    if (m_cache.find(thread_id) == m_cache.end() || this->dofs_per_cell < dofs_per_cell || this->n_q_points < n_q_points)
+    bool idExists = !(m_assembleCache.find(thread_id) == m_assembleCache.end());
+
+    if (!idExists || m_assembleCache[thread_id].dofs_per_cell < dofs_per_cell)
     {
         {
             tbb::mutex::scoped_lock lock(createCache);
 
-            Cache cache;
+            SolverDeal::AssembleCache cache;
+
+            int n_q_points = dofs_per_cell;
 
             // volume value and grad cache
-            cache.shape_value = std::vector<dealii::Vector<double> >(dofs_per_cell, dealii::Vector<double>(n_q_points));
+            cache.shape_value = std::vector<std::vector<double> >(dofs_per_cell, std::vector<double>(n_q_points));
             cache.shape_grad = std::vector<std::vector<dealii::Tensor<1,2> > >(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
             // surface cache
             cache.shape_face_point = std::vector<std::vector<dealii::Point<2> > >(dealii::GeometryInfo<2>::faces_per_cell);
-            cache.shape_face_value = std::vector<std::vector<dealii::Vector<double> > >(dealii::GeometryInfo<2>::faces_per_cell, std::vector<dealii::Vector<double> >(dofs_per_cell));
+            cache.shape_face_value = std::vector<std::vector<std::vector<double> > >(dealii::GeometryInfo<2>::faces_per_cell, std::vector<std::vector<double> >(dofs_per_cell));
             cache.shape_face_JxW = std::vector<std::vector<double> >(dealii::GeometryInfo<2>::faces_per_cell);
-            // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(max_dofs_per_cell);
 
             // previous values and grads
-            cache.solution_value_previous = std::vector<dealii::Vector<double> >(n_q_points, dealii::Vector<double>(numberOfSolutions));
-            cache.solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(n_q_points, std::vector<dealii::Tensor<1,2> >(numberOfSolutions));
+            cache.solution_value_previous = std::vector<dealii::Vector<double> >(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+            cache.solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
 
-            this->dofs_per_cell = dofs_per_cell;
-            this->n_q_points = n_q_points;
+            cache.dofs_per_cell = dofs_per_cell;
 
-            m_cache[thread_id] = cache;
-
+            m_assembleCache[thread_id] = cache;
             // std::cout << "init " << thread_id << std::endl;
         }
     }
 
-    return m_cache[thread_id];
+    return m_assembleCache[thread_id];
 }
 
 SolverDeal::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &scratch_data)
@@ -207,10 +205,7 @@ SolverDeal::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &
       hp_fe_face_values(scratch_data.hp_fe_values.get_mapping_collection(),
                         scratch_data.hp_fe_face_values.get_fe_collection(),
                         scratch_data.hp_fe_face_values.get_quadrature_collection(),
-                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values),
-      numberOfSolutions(scratch_data.numberOfSolutions),
-      dofs_per_cell(scratch_data.dofs_per_cell),
-      n_q_points(scratch_data.n_q_points)
+                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
 {}
 
 SolverDeal::AssemblyCopyData::AssemblyCopyData()
