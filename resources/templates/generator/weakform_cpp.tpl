@@ -165,7 +165,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
                             *this,
                             &SolverDeal{{CLASS}}::localAssembleSystem,
                             &SolverDeal{{CLASS}}::copyLocalToGlobal,
-                            AssemblyScratchData(*m_feCollection, *m_mappingCollection, m_quadrature_formulas, m_face_quadrature_formulas),
+                            AssemblyScratchData(*m_feCollection, *m_mappingCollection, m_quadrature_formulas, m_face_quadrature_formulas, m_fieldInfo),
                             AssemblyCopyData());
 
     // disable for our transient solver
@@ -221,26 +221,27 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
         std::vector<int> components(dofs_per_cell);
 
         // volume value and grad cache
-        std::vector<dealii::Vector<double> > shape_value(dofs_per_cell, dealii::Vector<double>(n_q_points));
-        std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
+        AssemblyScratchData::Cache &cache = scratch_data.cache(tbb::this_tbb_thread::get_id(), dofs_per_cell, n_q_points);
+
+        std::vector<dealii::Vector<double> > shape_value = cache.shape_value;
+        std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad = cache.shape_grad;
 
         // surface cache
-        std::vector<std::vector<dealii::Point<2> > > shape_face_point(dealii::GeometryInfo<2>::faces_per_cell);
-        std::vector<std::vector<dealii::Vector<double> > > shape_face_value(dealii::GeometryInfo<2>::faces_per_cell, std::vector<dealii::Vector<double> >(dofs_per_cell));
-        std::vector<std::vector<double> > shape_face_JxW(dealii::GeometryInfo<2>::faces_per_cell);
-        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(dofs_per_cell);
+        std::vector<std::vector<dealii::Point<2> > > shape_face_point = cache.shape_face_point;
+        std::vector<std::vector<dealii::Vector<double> > > shape_face_value = cache.shape_face_value;
+        std::vector<std::vector<double> > shape_face_JxW = cache.shape_face_JxW;
 
         // previous values and grads
         std::vector<dealii::Vector<double> > solution_value_previous;
         std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous;
 
-        if (m_solution_nonlinear_previous)
+        if (m_solution_nonlinear_previous.size() > 0)
         {
-            solution_value_previous = std::vector<dealii::Vector<double> > (n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-            solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+            solution_value_previous = cache.solution_value_previous;
+            solution_grad_previous = cache.solution_grad_previous;
 
-            fe_values.get_function_values(*m_solution_nonlinear_previous, solution_value_previous);
-            fe_values.get_function_gradients(*m_solution_nonlinear_previous, solution_grad_previous);
+            fe_values.get_function_values(m_solution_nonlinear_previous, solution_value_previous);
+            fe_values.get_function_gradients(m_solution_nonlinear_previous, solution_grad_previous);
         }
 
         // coupling sources{{#COUPLING_SOURCE}}
@@ -353,7 +354,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                         {
                             {{#FORM_EXPRESSION_MATRIX}}
                             // {{EXPRESSION_ID}}
-                            if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && {{EXPRESSION_CHECK}})
+                            if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && ({{EXPRESSION_CHECK}}))
                             {
                                 copy_data.cell_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
                             }{{/FORM_EXPRESSION_MATRIX}}
@@ -362,7 +363,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                             {
                                 {{#FORM_EXPRESSION_TRANSIENT}}
                                 // {{EXPRESSION_ID}}
-                                if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && {{EXPRESSION_CHECK}})
+                                if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && ({{EXPRESSION_CHECK}}))
                                 {
                                     copy_data.cell_mass_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
                                 }{{/FORM_EXPRESSION_TRANSIENT}}
@@ -374,7 +375,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                         {
                             {{#FORM_EXPRESSION_MATRIX_SYM}}
                             // {{EXPRESSION_ID}}
-                            if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && {{EXPRESSION_CHECK}})
+                            if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && ({{EXPRESSION_CHECK}}))
                             {
                                 double expression_value = fe_values.JxW(q_point) *({{EXPRESSION}});
                                 copy_data.cell_matrix(i,j) += expression_value;
@@ -386,7 +387,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                             {
                                 {{#FORM_EXPRESSION_TRANSIENT_SYM}}
                                 // {{EXPRESSION_ID}}
-                                if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && {{EXPRESSION_CHECK}})
+                                if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && ({{EXPRESSION_CHECK}}))
                                 {
                                     double expression_value = fe_values.JxW(q_point) *({{EXPRESSION}});
                                     copy_data.cell_mass_matrix(i,j) += expression_value;

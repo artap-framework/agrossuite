@@ -435,7 +435,7 @@ PostDataOut *PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariabl
 
     PostDataOut *data_out = new PostDataOut(activeViewField());
     data_out->attach_dof_handler(*ma.doFHandler());
-    data_out->add_data_vector(*ma.solution(), *post);
+    data_out->add_data_vector(ma.solution(), *post);
     // deform shape
     if (m_activeViewField->hasDeformableShape())
     {
@@ -443,7 +443,7 @@ PostDataOut *PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariabl
         solution_names.push_back ("x_displacement");
         solution_names.push_back ("y_displacement");
 
-        data_out->add_data_vector(*ma.solution(), solution_names);
+        data_out->add_data_vector(ma.solution(), solution_names);
     }
     data_out->build_patches(2);
 

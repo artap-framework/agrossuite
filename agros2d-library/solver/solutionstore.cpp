@@ -110,12 +110,12 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
         doFHandler->load(sbiDoF, 0);
 
         // solution vector
-        dealii::Vector<double> *solution = new dealii::Vector<double>();
+        dealii::Vector<double> solution;
 
         QString fnSol = QString("%1.sol").arg(baseFN);
         std::ifstream ifsSol(fnSol.toStdString());
         boost::archive::binary_iarchive sbiSol(ifsSol);
-        solution->load(sbiSol, 0);
+        solution.load(sbiSol, 0);
 
         // new multisolution
         MultiArray msa(doFHandler, solution);
@@ -163,7 +163,7 @@ void SolutionStore::addSolution(FieldSolutionID solutionID, MultiArray multiSolu
     fileNames.setSolutionFileName(QFileInfo(fnSol).fileName());
     std::ofstream ofsSol(fnSol.toStdString());
     boost::archive::binary_oarchive sbSol(ofsSol);
-    multiSolution.solution()->save(sbSol, 0);
+    multiSolution.solution().save(sbSol, 0);
 
     runTime.setFileNames(fileNames);
 
@@ -419,7 +419,7 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, Multi
     doFHandler->load(sbiDoF, 0);
 
     // solution vector
-    dealii::Vector<double> *solution = new dealii::Vector<double>(*multiSolution.solution());
+    dealii::Vector<double> solution = dealii::Vector<double>(multiSolution.solution());
 
     // new multisolution
     MultiArray multiSolutionCopy(doFHandler, solution);

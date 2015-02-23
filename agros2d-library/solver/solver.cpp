@@ -102,6 +102,9 @@ const int QUADRATURE_ORDER_INCREASE = 1;
 // todo: is it defined somewhere?
 const int MAX_NUM_NONLIN_ITERS = 100;
 
+tbb::mutex createCache;
+tbb::mutex resizeCache;
+
 dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fieldInfo)
 {
     dealii::hp::FECollection<2> *feCollection = new dealii::hp::FECollection<2>();
@@ -142,9 +145,10 @@ dealii::hp::MappingCollection<2> *SolverDeal::createMappingCollection(const Fiel
 }
 
 SolverDeal::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
-                                                     const dealii::hp::MappingCollection<2>& mappingCollection,
-                                                     dealii::hp::QCollection<2> quadratureFormulas,
-                                                     dealii::hp::QCollection<2-1> faceQuadratureFormulas)
+                                                     const dealii::hp::MappingCollection<2> &mappingCollection,
+                                                     const dealii::hp::QCollection<2> &quadratureFormulas,
+                                                     const dealii::hp::QCollection<2-1> &faceQuadratureFormulas,
+                                                     const FieldInfo *fieldInfo)
     :
       hp_fe_values(mappingCollection,
                    feCollection,
@@ -153,9 +157,46 @@ SolverDeal::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollect
       hp_fe_face_values(mappingCollection,
                         feCollection,
                         faceQuadratureFormulas,
-                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
+                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values),
+
+      numberOfSolutions(fieldInfo->numberOfSolutions()), dofs_per_cell(-1), n_q_points(-1)
+
 {}
 
+SolverDeal::AssemblyScratchData::Cache &SolverDeal::AssemblyScratchData::cache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points)
+{
+    // create or resize cache
+    if (m_cache.find(thread_id) == m_cache.end() || this->dofs_per_cell < dofs_per_cell || this->n_q_points < n_q_points)
+    {
+        {
+            tbb::mutex::scoped_lock lock(createCache);
+
+            Cache cache;
+
+            // volume value and grad cache
+            cache.shape_value = std::vector<dealii::Vector<double> >(dofs_per_cell, dealii::Vector<double>(n_q_points));
+            cache.shape_grad = std::vector<std::vector<dealii::Tensor<1,2> > >(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
+            // surface cache
+            cache.shape_face_point = std::vector<std::vector<dealii::Point<2> > >(dealii::GeometryInfo<2>::faces_per_cell);
+            cache.shape_face_value = std::vector<std::vector<dealii::Vector<double> > >(dealii::GeometryInfo<2>::faces_per_cell, std::vector<dealii::Vector<double> >(dofs_per_cell));
+            cache.shape_face_JxW = std::vector<std::vector<double> >(dealii::GeometryInfo<2>::faces_per_cell);
+            // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(max_dofs_per_cell);
+
+            // previous values and grads
+            cache.solution_value_previous = std::vector<dealii::Vector<double> >(n_q_points, dealii::Vector<double>(numberOfSolutions));
+            cache.solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(n_q_points, std::vector<dealii::Tensor<1,2> >(numberOfSolutions));
+
+            this->dofs_per_cell = dofs_per_cell;
+            this->n_q_points = n_q_points;
+
+            m_cache[thread_id] = cache;
+
+            // std::cout << "init " << thread_id << std::endl;
+        }
+    }
+
+    return m_cache[thread_id];
+}
 
 SolverDeal::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &scratch_data)
     :
@@ -166,36 +207,20 @@ SolverDeal::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &
       hp_fe_face_values(scratch_data.hp_fe_values.get_mapping_collection(),
                         scratch_data.hp_fe_face_values.get_fe_collection(),
                         scratch_data.hp_fe_face_values.get_quadrature_collection(),
-                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
+                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values),
+      numberOfSolutions(scratch_data.numberOfSolutions),
+      dofs_per_cell(scratch_data.dofs_per_cell),
+      n_q_points(scratch_data.n_q_points)
 {}
 
 SolverDeal::AssemblyCopyData::AssemblyCopyData()
     : isAssembled(false), cell_matrix(0), cell_mass_matrix(0), cell_rhs(0)
-{
-    /*
-    // cache
-    int max_dofs_per_cell = feCollection.max_dofs_per_cell();
-    int max_n_quadrature_points = quadratureFormulas.max_n_quadrature_points();
-
-    // volume value and grad cache
-    shape_value = std::vector<dealii::Vector<double> >(max_dofs_per_cell, dealii::Vector<double>(max_n_quadrature_points));
-    shape_grad = std::vector<std::vector<dealii::Tensor<1,2> > >(max_dofs_per_cell, std::vector<dealii::Tensor<1,2> >(max_n_quadrature_points));
-    // surface cache
-    shape_face_point = std::vector<std::vector<dealii::Point<2> > >(dealii::GeometryInfo<2>::faces_per_cell);
-    shape_face_value = std::vector<std::vector<dealii::Vector<double> > >(dealii::GeometryInfo<2>::faces_per_cell, std::vector<dealii::Vector<double> >(max_dofs_per_cell));
-    shape_face_JxW = std::vector<std::vector<double> >(dealii::GeometryInfo<2>::faces_per_cell);
-    // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad(max_dofs_per_cell);
-
-    // previous values and grads
-    solution_value_previous = std::vector<dealii::Vector<double> >(max_n_quadrature_points, dealii::Vector<double>(fieldInfo->numberOfSolutions()));
-    solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(max_n_quadrature_points, std::vector<dealii::Tensor<1,2> >(fieldInfo->numberOfSolutions()));
-    */
-}
+{}
 
 // *******************************************************************************************
 
 SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
-    : m_fieldInfo(fieldInfo), m_scene(Agros2D::scene()), m_problem(Agros2D::problem()), m_solution_nonlinear_previous(NULL), m_time(0.0),
+    : m_fieldInfo(fieldInfo), m_scene(Agros2D::scene()), m_problem(Agros2D::problem()), m_time(0.0),
       m_bdf2Table(new BDF2ATable()), m_assemble_matrix(true)
 {    
     // fe collection
@@ -216,9 +241,6 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
 
     // create dof handler
     m_doFHandler = new dealii::hp::DoFHandler<2>(*m_triangulation);
-
-    // create solution vector
-    m_solution = new dealii::Vector<double>();
 
     // first position of feCollection, quadrature_formulas and face_quadrature_formulas belongs to NONE space
     // this will be used for implementation of different meshes
@@ -259,10 +281,6 @@ SolverDeal::~SolverDeal()
 
     delete m_mappingCollection;
 
-    if (m_solution)
-        delete m_solution;
-    m_solution = nullptr;
-
     if (m_doFHandler)
         delete m_doFHandler;
     m_doFHandler = nullptr;
@@ -293,7 +311,7 @@ void SolverDeal::solveLinearSystem(dealii::SparseMatrix<double> &system, dealii:
         return;
     }
 
-    hanging_node_constraints.distribute(*m_solution);
+    hanging_node_constraints.distribute(m_solution);
 
     qDebug() << "solved (" << time.elapsed() << "ms )";
 }
@@ -407,7 +425,7 @@ void SolverDeal::estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_
     for (unsigned int index=0; cell!=endc; ++cell, ++index)
     {
         local_dof_values.reinit (cell->get_fe().dofs_per_cell);
-        cell->get_dof_values (*m_solution, local_dof_values);
+        cell->get_dof_values (m_solution, local_dof_values);
         for (unsigned int f=0; f<n_fourier_modes; ++f)
         {
             fourier_coefficients[f] = 0;
@@ -456,12 +474,12 @@ void SolverDeal::refineGrid(bool refine)
         dealii::KellyErrorEstimator<2>::estimate(*m_doFHandler,
                                                  m_face_quadrature_formulas,
                                                  TYPENAME dealii::FunctionMap<2>::type(),
-                                                 *m_solution,
+                                                 m_solution,
                                                  estimated_error_per_cell);
         break;
     case AdaptivityEstimator_Gradient:
         GradientErrorEstimator::estimate(*m_doFHandler,
-                                         *m_solution,
+                                         m_solution,
                                          estimated_error_per_cell);
         break;
     default:
@@ -554,8 +572,8 @@ double SolverDeal::computeNorm()
         std::vector<dealii::Vector<double> > solution_values(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
         std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
 
-        fe_values.get_function_values(*m_solution, solution_values);
-        fe_values.get_function_gradients(*m_solution, solution_grads);
+        fe_values.get_function_values(m_solution, solution_values);
+        fe_values.get_function_gradients(m_solution, solution_grads);
 
         // expressions
         for (unsigned int k = 0; k < n_q_points; ++k)
@@ -610,7 +628,7 @@ void SolverDeal::setup(bool use_dirichlet_lift)
 
     // reinit sln and rhs
     system_rhs.reinit(m_doFHandler->n_dofs());
-    m_solution->reinit(m_doFHandler->n_dofs());
+    m_solution.reinit(m_doFHandler->n_dofs());
 
     hanging_node_constraints.clear();
     dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler, hanging_node_constraints);
@@ -646,10 +664,7 @@ void SolverDeal::setupProblemNonLinearNewton()
     // std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
 
     // reinit sln
-    if (!m_solution_nonlinear_previous)
-        m_solution_nonlinear_previous = new dealii::Vector<double>();
-
-    m_solution_nonlinear_previous->reinit(m_doFHandler->n_dofs());
+    m_solution_nonlinear_previous.reinit(m_doFHandler->n_dofs());
 
     hanging_node_constraints.clear();
     dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler, hanging_node_constraints);
@@ -682,7 +697,7 @@ void SolverDeal::setupProblemNonLinearNewton()
 
             //            std::cout << "inhomogenity " << hanging_node_constraints.get_inhomogeneity(dof) << std::endl;
 
-            (*m_solution_nonlinear_previous)(dof) = hanging_node_constraints.get_inhomogeneity(dof);
+            (m_solution_nonlinear_previous)(dof) = hanging_node_constraints.get_inhomogeneity(dof);
         }
     }
 
@@ -704,10 +719,10 @@ void SolverDeal::solve()
         assembleSystem();
 
         // initial condition
-        *m_solution = 0.0;
+        m_solution = 0.0;
         dealii::VectorTools::interpolate(*m_doFHandler,
                                          dealii::ConstantFunction<2>(m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble()),
-                                         *m_solution);
+                                         m_solution);
 
         // initial step
         FieldSolutionID solutionID(m_fieldInfo, 0, 0, SolutionMode_Normal);
@@ -715,7 +730,8 @@ void SolverDeal::solve()
         Agros2D::solutionStore()->addSolution(solutionID, MultiArray(m_doFHandler, m_solution), runTime);
 
         // parameters
-        double time_step = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
+        double initialTimeStep = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
+        double actualTimeStep = initialTimeStep;
         double time = 0.0;
 
         for (unsigned int i = 0; i < Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); ++i)
@@ -732,33 +748,32 @@ void SolverDeal::solve()
             assembleSystem();
             // m_assemble_matrix = true;
 
-            // time = transientForwardEuler(time, time_step);
-
             switch ((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt())
             {
             case TimeStepMethod_BDF_1:
                 m_bdf2Table->setOrderAndPreviousSteps(1, Agros2D::problem()->timeStepLengths());
-                time = transientBDF(time, time_step);
+                actualTimeStep = transientBDF(time, actualTimeStep);
                 break;
             case TimeStepMethod_BDF_2:
                 m_bdf2Table->setOrderAndPreviousSteps((i > 1) ? 2 : 1, Agros2D::problem()->timeStepLengths());
-                time = transientBDF(time, time_step);
+                actualTimeStep = transientBDF(time, actualTimeStep);
                 break;
             case TimeStepMethod_BDF_3:
                 m_bdf2Table->setOrderAndPreviousSteps((i > 1) ? ((i > 2) ? 3 : 2) : 1, Agros2D::problem()->timeStepLengths());
-                time = transientBDF(time, time_step);
+                actualTimeStep = transientBDF(time, actualTimeStep);
                 break;
             case TimeStepMethod_CrankNicolson:
-                time = transientCrankNicolson(time, time_step);
+                actualTimeStep = transientCrankNicolson(time, actualTimeStep);
                 break;
             default:
                 assert(0);
             }
 
             // set new time
+            time += actualTimeStep;
             set_time(time);
             // store time actual timestep
-            Agros2D::problem()->setActualTimeStepLength(time_step);
+            Agros2D::problem()->setActualTimeStepLength(actualTimeStep);
 
             Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
                                          QObject::tr("Transient step %1/%2 (actual time: %3 s)").
@@ -771,7 +786,7 @@ void SolverDeal::solve()
             // add solution
             // TODO: create better adaptive, linear, time workflow!!!!!!
 
-            hanging_node_constraints.distribute(*m_solution);
+            hanging_node_constraints.distribute(m_solution);
 
             FieldSolutionID solutionID(m_fieldInfo, i+1, 0, SolutionMode_Normal);
             SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, m_doFHandler->n_dofs());
@@ -798,10 +813,10 @@ void SolverDeal::solve()
                 // for (dealii::Triangulation<2>::active_cell_iterator cell = m_triangulation->begin_active(min_grid_level); cell != m_triangulation->end_active(min_grid_level); ++cell)
                 //     cell->clear_coarsen_flag();
 
-                hanging_node_constraints.distribute(*m_solution);
+                hanging_node_constraints.distribute(m_solution);
 
                 dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solutionTrans(*m_doFHandler);
-                dealii::Vector<double> previousSolution = *m_solution;
+                dealii::Vector<double> previousSolution = m_solution;
 
                 m_triangulation->prepare_coarsening_and_refinement();
                 solutionTrans.prepare_for_coarsening_and_refinement(previousSolution);
@@ -812,7 +827,7 @@ void SolverDeal::solve()
                 assembleSystem();
 
                 // transfer solution
-                solutionTrans.interpolate(previousSolution, *m_solution);
+                solutionTrans.interpolate(previousSolution, m_solution);
             }
         }
     }
@@ -832,7 +847,7 @@ void SolverDeal::solveProblem()
         assembleSystem();
         std::cout << "assemble: " << time.elapsed() << ", ndofs: " << m_doFHandler->n_dofs() <<  std::endl;
         time.start();
-        solveLinearSystem(system_matrix, system_rhs, *m_solution);
+        solveLinearSystem(system_matrix, system_rhs, m_solution);
         std::cout << "solve: " << time.elapsed() << std::endl;
     }
     else if (m_fieldInfo->linearityType() == LinearityType_Picard)
@@ -871,18 +886,13 @@ void SolverDeal::solveProblemNonLinearPicard()
         std::cout << "step: " << iteration << std::endl;
         assembleSystem();
         std::cout << "step: " << iteration << " - ass" << std::endl;
-        solveLinearSystem(system_matrix, system_rhs, *m_solution);
+        solveLinearSystem(system_matrix, system_rhs, m_solution);
         std::cout << "step: " << iteration << " - OK" << std::endl;
 
         // copy solution
-        if (m_solution_nonlinear_previous)
-        {
-            m_solution_nonlinear_previous->add(-1, *m_solution);
-            relChangeSol = m_solution_nonlinear_previous->l2_norm() / m_solution->l2_norm() * 100;
-            delete m_solution_nonlinear_previous;
-        }
-
-        m_solution_nonlinear_previous = new dealii::Vector<double>(*m_solution);
+        m_solution_nonlinear_previous.add(-1, m_solution);
+        relChangeSol = m_solution_nonlinear_previous.l2_norm() / m_solution.l2_norm() * 100;
+        m_solution_nonlinear_previous = m_solution;
 
         // update
         steps.append(iteration);
@@ -968,10 +978,10 @@ void SolverDeal::solveProblemNonLinearNewton()
 
                 // since m_assemble_matrix is false, this will reuse the LU decomposition
                 time.start();
-                solveLinearSystem(system_matrix, system_rhs, *m_solution);
+                solveLinearSystem(system_matrix, system_rhs, m_solution);
                 // std::cout << "back substitution (" << time.elapsed() << "ms )" << std::endl;
 
-                m_solution_nonlinear_previous->add(dampingFactor, *m_solution);
+                m_solution_nonlinear_previous.add(dampingFactor, m_solution);
 
                 time.start();
                 assembleSystem();
@@ -987,7 +997,7 @@ void SolverDeal::solveProblemNonLinearNewton()
                 else
                 {
                     // revert step
-                    m_solution_nonlinear_previous->add(-dampingFactor, *m_solution);
+                    m_solution_nonlinear_previous.add(-dampingFactor, m_solution);
                     jacobianReused = false;
                     numReusedJacobian = 0;
                 }
@@ -1005,13 +1015,13 @@ void SolverDeal::solveProblemNonLinearNewton()
 
             system_rhs *= -1.0;
             time.start();
-            solveLinearSystem(system_matrix, system_rhs, *m_solution);
+            solveLinearSystem(system_matrix, system_rhs, m_solution);
             // std::cout << "full system solve (" << time.elapsed() << "ms )" << std::endl;
 
             // residual norm
             residualNorm = system_rhs.l2_norm();
 
-            m_solution_nonlinear_previous->add(dampingFactor, *m_solution);
+            m_solution_nonlinear_previous.add(dampingFactor, m_solution);
 
             assert(m_solution_nonlinear_previous);
             // automatic damping factor
@@ -1046,7 +1056,7 @@ void SolverDeal::solveProblemNonLinearNewton()
                     }
 
                     // Line search. Take back the previous steps (too long) and make a new one, with new damping factor
-                    m_solution_nonlinear_previous->add(-previousDampingFactor + dampingFactor, *m_solution);
+                    m_solution_nonlinear_previous.add(-previousDampingFactor + dampingFactor, m_solution);
 
                     // todo: code repetition, get rid of it together with jacobian reuse
                     time.start();
@@ -1073,7 +1083,7 @@ void SolverDeal::solveProblemNonLinearNewton()
         }
         // update
         steps.append(iteration);
-        double relChangeSol = dampingFactor * (*m_solution).l2_norm() / m_solution_nonlinear_previous->l2_norm() * 100;
+        double relChangeSol = dampingFactor * (m_solution).l2_norm() / m_solution_nonlinear_previous.l2_norm() * 100;
         relativeChangeOfSolutions.append(relChangeSol);
 
         // stop criteria
@@ -1101,10 +1111,9 @@ void SolverDeal::solveProblemNonLinearNewton()
 
     // put the final solution into the solution
     assert(m_solution);
-    delete(m_solution);
-    m_solution = new dealii::Vector<double>(*m_solution_nonlinear_previous);
-    delete m_solution_nonlinear_previous;
-    m_solution_nonlinear_previous = nullptr;
+    // delete(m_solution);
+    // m_solution = new dealii::Vector<double>(m_solution_nonlinear_previous);
+    m_solution = m_solution_nonlinear_previous;
 
     qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
@@ -1150,55 +1159,10 @@ void SolverDeal::solveAdaptivity()
     }
 }
 
-dealii::Vector<double> SolverDeal::transientEvaluateMassMatrixExplicitPart(const double time, const dealii::Vector<double> &y) const
-{
-    static int i = 0;
-    i++;
-    std::cout << "transientEvaluateMassMatrixExplicitPart: " << i << " " << time << std::endl;
-    static dealii::SparseDirectUMFPACK inverse_mass_matrix;
-
-    dealii::Vector<double> tmp(m_doFHandler->n_dofs());
-    tmp = 0.0;
-    system_matrix.vmult(tmp, y);
-    tmp *= -1.0;
-    tmp.add(system_rhs);
-
-    // if (i == 1)
-    inverse_mass_matrix.initialize(mass_matrix);
-    dealii::Vector<double> value(m_doFHandler->n_dofs());
-    inverse_mass_matrix.vmult(value, tmp);
-
-    return value;
-}
-
-dealii::Vector<double> SolverDeal::transientEvaluateMassMatrixImplicitPart(const double time, const double tau, const dealii::Vector<double> &y)
-{
-    static int i = 0;
-    i++;
-    std::cout << "transientEvaluateMassMatrixImplicitPart: " << i << " " << time << std::endl;
-
-    static dealii::SparseDirectUMFPACK inverse_mass_minus_tau_Jacobian;
-
-    transient_left_matrix.copy_from(mass_matrix);
-    transient_left_matrix.add(tau, system_matrix);
-
-    // if (i == 1)
-    inverse_mass_minus_tau_Jacobian.initialize(transient_left_matrix);
-
-    // add rhs
-    dealii::Vector<double> tmp(m_doFHandler->n_dofs());
-    mass_matrix.vmult(tmp, y);
-
-    dealii::Vector<double> result(y);
-    inverse_mass_minus_tau_Jacobian.vmult(result, tmp);
-
-    return result;
-}
-
 // BDF methods
-double SolverDeal::transientBDF(const double time, const double time_step)
+double SolverDeal::transientBDF(const double time, const double timeStep)
 {
-    // qDebug() << "solution_transient_previous.size : " << solution_transient_previous.size();
+    double newTimeStep = timeStep;
 
     // remove first solution
     if (solution_transient_previous.size() == m_bdf2Table->order())
@@ -1206,58 +1170,84 @@ double SolverDeal::transientBDF(const double time, const double time_step)
 
     // copy last M * SLN
     dealii::Vector<double> m_sln(m_doFHandler->n_dofs());
-    mass_matrix.vmult(m_sln, *solution());
+    mass_matrix.vmult(m_sln, m_solution);
     solution_transient_previous.insert(0, m_sln);
 
     // LHM = (M + dt * K)
     transient_left_matrix.copy_from(mass_matrix);
     transient_left_matrix *= m_bdf2Table->matrixFormCoefficient();
-    transient_left_matrix.add(time_step, system_matrix);
-    // qDebug() << "matrixFormCoefficient : " << m_bdf2Table->matrixFormCoefficient();
+    transient_left_matrix.add(newTimeStep, system_matrix);
 
     // m = sum(M * SLN)
     dealii::Vector<double> m(m_doFHandler->n_dofs());
+    // m += dt * RHS
+    m.add(newTimeStep, system_rhs);
+
+    // estimate error
+    dealii::Vector<double> sln(m_doFHandler->n_dofs());
+
     for (int i = 0; i < m_bdf2Table->order(); i++)
     {
-        // qDebug() << "vectorFormCoefficient : " << i << " : " << - m_bdf2Table->vectorFormCoefficient(i);
         // m += Mi * SLNi
         m.add(- m_bdf2Table->vectorFormCoefficient(i), solution_transient_previous[i]);
+        /*
+        qDebug() << i << m_bdf2Table->order() - i;
+        if ((m_bdf2Table->order() - i) == 1)
+        {
+            solveLinearSystem(transient_left_matrix, m, m_solution);
+            m_assemble_matrix = true;
+
+            if (!sln.all_zero())
+            {
+                sln.add(-1, m_solution);
+                double relError = sln.l2_norm() / m_solution.l2_norm();
+
+                // if (relError > 0.1)
+                //     newTimeStep *= 0.5;
+                qDebug() << "timestep: " << newTimeStep << ", error: " << relError;
+            }
+        }
+        if ((m_bdf2Table->order() - i) == 2)
+        {
+            solveLinearSystem(transient_left_matrix, m, sln);
+            m_assemble_matrix = false;
+        }
+        */
     }
 
-    // m += dt * RHS
-    m.add(time_step, system_rhs);
+    solveLinearSystem(transient_left_matrix, m, m_solution);
 
-    solveLinearSystem(transient_left_matrix, m, *m_solution);
-
-    return (time + time_step);
+    return newTimeStep;
 }
 
 // Crank Nicolson
-double SolverDeal::transientCrankNicolson(const double time, const double time_step)
+double SolverDeal::transientCrankNicolson(const double time, const double timeStep)
 {
+    double newTimeStep = timeStep;
+
     // (M + dt * K)
     transient_left_matrix.copy_from(mass_matrix);
-    transient_left_matrix.add(time_step / 2.0, system_matrix);
+    transient_left_matrix.add(newTimeStep / 2.0, system_matrix);
 
     // m1 = M * SLN
     dealii::Vector<double> m1(m_doFHandler->n_dofs());
-    mass_matrix.vmult(m1, *m_solution);
+    mass_matrix.vmult(m1, m_solution);
 
     // m2 = K * SLN
     dealii::Vector<double> m2(m_doFHandler->n_dofs());
-    system_matrix.vmult(m2, *m_solution);
+    system_matrix.vmult(m2, m_solution);
 
     // m1 = - dt / 2 * m2
-    m1.add(- time_step / 2.0, m2);
+    m1.add(- newTimeStep / 2.0, m2);
 
     // m1 = dt / 2 * SLN
-    m1.add(time_step / 2.0, system_rhs);
+    m1.add(newTimeStep / 2.0, system_rhs);
     // m1 = dt / 2 * SLN_prev
-    m1.add(time_step / 2.0, system_rhs_transient_previous);
+    m1.add(newTimeStep / 2.0, system_rhs_transient_previous);
 
-    solveLinearSystem(transient_left_matrix, m1, *m_solution);
+    solveLinearSystem(transient_left_matrix, m1, m_solution);
 
-    return (time + time_step);
+    return newTimeStep;
 }
 
 void SolverAgros::clearSteps()

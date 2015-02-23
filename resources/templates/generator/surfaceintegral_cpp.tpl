@@ -193,8 +193,8 @@ void {{CLASS}}SurfaceIntegral::calculate()
                         std::vector<dealii::Vector<double> > solution_values(n_face_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
                         std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_face_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
 
-                        fe_values.get_function_values(*ma.solution(), solution_values);
-                        fe_values.get_function_gradients(*ma.solution(), solution_grads);
+                        fe_values.get_function_values(ma.solution(), solution_values);
+                        fe_values.get_function_gradients(ma.solution(), solution_grads);
 
                         x.resize(n_face_q_points);
                         y.resize(n_face_q_points);

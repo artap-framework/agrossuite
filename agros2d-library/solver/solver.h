@@ -24,6 +24,8 @@
 #include "util/global.h"
 #include "solutiontypes.h"
 
+#include "tbb/tbb.h"
+
 #undef signals
 #include <deal.II/grid/tria.h>
 #include <deal.II/dofs/dof_handler.h>
@@ -51,8 +53,8 @@ struct DoubleCellIterator
 {
     dealii::hp::DoFHandler<2>::active_cell_iterator cell_first, cell_second;
 
-    DoubleCellIterator(const dealii::hp::DoFHandler<2>::active_cell_iterator cell_heat, const dealii::hp::DoFHandler<2>::active_cell_iterator cell_elasticity):
-        cell_first(cell_heat), cell_second(cell_elasticity)
+    DoubleCellIterator(const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_first, const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_second):
+        cell_first(cell_first), cell_second(cell_second)
     {
     }
 
@@ -124,7 +126,6 @@ public:
     SolverDeal(const FieldInfo *fieldInfo);
     virtual ~SolverDeal();
 
-    inline dealii::Vector<double> *solution() const { return m_solution; }
     inline dealii::Triangulation<2> *triangulation() const { return m_triangulation; }
     inline dealii::hp::DoFHandler<2> *doFHandler() const { return m_doFHandler; }
     dealii::hp::FECollection<2> *feCollection() const { return m_feCollection; }
@@ -149,14 +150,14 @@ public:
     // problem
     void solve();
 
-    void setCouplingSource(QString fieldID, dealii::Vector<double> * sourceVector) { m_coupling_sources[fieldID] = sourceVector; }
+    void setCouplingSource(QString fieldID, dealii::Vector<double> &sourceVector) { m_coupling_sources[fieldID] = &sourceVector; }
 
     // transient - Runge Kutta - future step!
     void assembleMassMatrix();
 
     // Hand made Euler methods
-    double transientBDF(const double time, const double time_step);
-    double transientCrankNicolson(const double time, const double time_step);
+    double transientBDF(const double time, const double timeStep);
+    double transientCrankNicolson(const double time, const double timeStep);
 
     inline void set_time(const double new_time) { m_time = new_time; }
     inline double get_time() const { return m_time; }
@@ -168,13 +169,38 @@ protected:
     struct AssemblyScratchData
     {
         AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
-                            const dealii::hp::MappingCollection<2>& mappingCollection,
-                            dealii::hp::QCollection<2> quadratureFormulas,
-                            dealii::hp::QCollection<2-1> faceQuadratureFormulas);
+                            const dealii::hp::MappingCollection<2> &mappingCollection,
+                            const dealii::hp::QCollection<2> &quadratureFormulas,
+                            const dealii::hp::QCollection<2-1> &faceQuadratureFormulas,
+                            const FieldInfo *fieldInfo);
         AssemblyScratchData(const AssemblyScratchData &scratch_data);
 
         dealii::hp::FEValues<2> hp_fe_values;
         dealii::hp::FEFaceValues<2> hp_fe_face_values;
+
+        struct Cache
+        {
+            // volume value and grad cache
+            std::vector<dealii::Vector<double> > shape_value;
+            std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad;
+            // surface cache
+            std::vector<std::vector<dealii::Point<2> > > shape_face_point;
+            std::vector<std::vector<dealii::Vector<double> > > shape_face_value;
+            std::vector<std::vector<double> > shape_face_JxW;
+            // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad;
+
+            // previous values and grads
+            std::vector<dealii::Vector<double> > solution_value_previous;
+            std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous;
+        };
+
+        int numberOfSolutions;
+        int dofs_per_cell;
+        int n_q_points;
+
+        std::map<tbb::tbb_thread::id, Cache> m_cache;
+
+        Cache &cache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points);
     };
 
     struct AssemblyCopyData
@@ -187,22 +213,7 @@ protected:
         dealii::FullMatrix<double> cell_mass_matrix; // transient
         dealii::Vector<double> cell_rhs;
 
-        std::vector<dealii::types::global_dof_index> local_dof_indices;
-
-        /*
-        // volume value and grad cache
-        std::vector<dealii::Vector<double> > shape_value;
-        std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad;
-        // surface cache
-        std::vector<std::vector<dealii::Point<2> > > shape_face_point;
-        std::vector<std::vector<dealii::Vector<double> > > shape_face_value;
-        std::vector<std::vector<double> > shape_face_JxW;
-        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad;
-
-        // previous values and grads
-        std::vector<dealii::Vector<double> > solution_value_previous;
-        std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous;
-        */
+        std::vector<dealii::types::global_dof_index> local_dof_indices;       
     };
 
     // local reference
@@ -220,12 +231,12 @@ protected:
     dealii::hp::QCollection<2-1> m_face_quadrature_formulas;
 
     // current solution
-    dealii::Vector<double> *m_solution;
+    dealii::Vector<double> m_solution;
     // previous solution (for nonlinear solver)
-    dealii::Vector<double> *m_solution_nonlinear_previous;
+    dealii::Vector<double> m_solution_nonlinear_previous;
 
     // weak coupling sources
-    QMap<QString, dealii::Vector<double> * >m_coupling_sources;
+    QMap<QString, dealii::Vector<double> *> m_coupling_sources;
 
     // hanging nodes and sparsity pattern
     dealii::ConstraintMatrix hanging_node_constraints;
@@ -267,10 +278,6 @@ protected:
     void solveAdaptivity();
     void estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_indicators) const;
     void refineGrid(bool refine = true);
-
-    // Runge Kutta methods
-    dealii::Vector<double> transientEvaluateMassMatrixExplicitPart(const double time, const dealii::Vector<double> &y) const;
-    dealii::Vector<double> transientEvaluateMassMatrixImplicitPart(const double time, const double tau, const dealii::Vector<double> &y);
 };
 
 namespace Module {
