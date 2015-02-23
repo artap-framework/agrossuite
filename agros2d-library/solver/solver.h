@@ -71,16 +71,16 @@ struct DoubleCellIterator
 
     DoubleCellIterator& operator++()
     {
-        if (cell_first == cell_second)
-        {
-            ++cell_first;
-            cell_second = cell_first;
-        }
-        else
-        {
+//        if (cell_first == cell_second)
+//        {
+//            ++cell_first;
+//            cell_second = cell_first;
+//        }
+//        else
+//        {
             ++cell_first;
             ++cell_second;
-        }
+//        }
 
         return *this;
     }
