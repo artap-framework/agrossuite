@@ -194,7 +194,7 @@ test_suite.fields.magnetic_steady.TestMagneticNonlinAxisymmetric,
 #test_suite.particle_tracing.particle_tracing.TestParticleTracingPlanar,
 #test_suite.particle_tracing.particle_tracing.TestParticleTracingAxisymmetric,
 # coupled fields
-#test_suite.coupled_problems.basic_coupled_problems.TestCoupledProblemsBasic1WeakWeak,
+test_suite.coupled_problems.basic_coupled_problems.TestCoupledProblemsBasic1WeakWeak,
 #test_suite.coupled_problems.basic_coupled_problems.TestCoupledProblemsBasic1WeakHard,
 #test_suite.coupled_problems.basic_coupled_problems.TestCoupledProblemsBasic1HardWeak,
 #test_suite.coupled_problems.basic_coupled_problems.TestCoupledProblemsBasic1HardHard,
