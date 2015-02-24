@@ -52,8 +52,6 @@
 # TBB_DEBUG_LIBRARIES, the libraries to link against to use TBB with debug symbols.
 # TBB_FOUND, If false, don't try to use TBB.
 # TBB_INTERFACE_VERSION, as defined in tbb/tbb_stddef.h
-
-
 if (WIN32)
     # has em64t/vc8 em64t/vc9
     # has ia32/vc7.1 ia32/vc8 ia32/vc9
@@ -74,7 +72,10 @@ if (WIN32)
     if(MSVC10)
         set(_TBB_COMPILER "vc10")
     endif(MSVC10)
-    # Todo: add other Windows compilers such as ICL.
+	set(_TBB_COMPILER ${TBB_COMPILER})
+	if(NOT _TBB_COMPILER)
+		set(_TBB_COMPILER "vc12")
+	endif()    
     set(_TBB_ARCHITECTURE ${TBB_ARCHITECTURE})
 endif (WIN32)
 
@@ -178,7 +179,6 @@ macro(TBB_CORRECT_LIB_DIR var_name)
     string(REPLACE vc10 "${_TBB_COMPILER}" ${var_name} ${${var_name}})
 endmacro(TBB_CORRECT_LIB_DIR var_content)
 
-
 #-- Look for include directory and set ${TBB_INCLUDE_DIR}
 set (TBB_INC_SEARCH_DIR ${_TBB_INSTALL_DIR}/include)
 # Jiri: tbbvars now sets the CPATH environment variable to the directory
@@ -188,7 +188,6 @@ find_path(TBB_INCLUDE_DIR
     PATHS ${TBB_INC_SEARCH_DIR} ENV CPATH
 )
 mark_as_advanced(TBB_INCLUDE_DIR)
-
 
 #-- Look for libraries
 # GvdB: $ENV{TBB_ARCH_PLATFORM} is set by the build script tbbvars[.bat|.sh|.csh]
@@ -207,7 +206,10 @@ if ((NOT ${TBB_ARCHITECTURE} STREQUAL "") AND (NOT ${TBB_COMPILER} STREQUAL ""))
     # Jiri: It doesn't hurt to look in more places, so I store the hints from
     #       ENV{TBB_ARCH_PLATFORM} and the TBB_ARCHITECTURE and TBB_COMPILER
     #       variables and search them both.
-    set (_TBB_LIBRARY_DIR "${_TBB_INSTALL_DIR}/${_TBB_ARCHITECTURE}/${_TBB_COMPILER}/lib" ${_TBB_LIBRARY_DIR})
+	set (_TBB_LIBRARY_DIR ${_TBB_INSTALL_DIR}/lib)
+    list(APPEND _TBB_LIBRARY_DIR "${_TBB_INSTALL_DIR}/${_TBB_ARCHITECTURE}/${_TBB_COMPILER}/lib")
+    list(APPEND _TBB_LIBRARY_DIR "${_TBB_INSTALL_DIR}/lib/${_TBB_ARCHITECTURE}/${_TBB_COMPILER}")
+	
 endif ((NOT ${TBB_ARCHITECTURE} STREQUAL "") AND (NOT ${TBB_COMPILER} STREQUAL ""))
 
 # GvdB: Mac OS X distribution places libraries directly in lib directory.
