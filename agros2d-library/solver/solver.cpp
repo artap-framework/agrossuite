@@ -1018,7 +1018,6 @@ void SolverDeal::solveProblemNonLinearNewton()
 
             m_solution_nonlinear_previous.add(dampingFactor, m_solution);
 
-            assert(m_solution_nonlinear_previous);
             // automatic damping factor
             if ((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() == DampingType_Automatic)
             {
@@ -1105,9 +1104,6 @@ void SolverDeal::solveProblemNonLinearNewton()
     }
 
     // put the final solution into the solution
-    assert(m_solution);
-    // delete(m_solution);
-    // m_solution = new dealii::Vector<double>(m_solution_nonlinear_previous);
     m_solution = m_solution_nonlinear_previous;
 
     qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
