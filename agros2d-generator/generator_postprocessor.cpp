@@ -180,7 +180,7 @@ void Agros2DGeneratorModule::generatePluginForceFiles()
             expression->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisType).toStdString());
             expression->SetValue("COORDINATE_TYPE", Agros2DGenerator::coordinateTypeStringEnum(coordinateType).toStdString());
 
-            ParserModuleInfo pmi(*m_module, analysisType, coordinateType, LinearityType_Linear);
+            ParserModuleInfo pmi(*m_module, analysisType, coordinateType, LinearityType_Linear, false);
             if (coordinateType == CoordinateType_Planar)
             {
                 expression->SetValue("EXPRESSION_X", Parser::parsePostprocessorExpression(pmi, QString::fromStdString(expr.planar_x().get())).replace("[i]", "").toStdString());
@@ -527,7 +527,7 @@ void Agros2DGeneratorModule::createFilterExpression(ctemplate::TemplateDictionar
         expression->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisType).toStdString());
         expression->SetValue("COORDINATE_TYPE", Agros2DGenerator::coordinateTypeStringEnum(coordinateType).toStdString());
         expression->SetValue("PHYSICFIELDVARIABLECOMP_TYPE", Agros2DGenerator::physicFieldVariableCompStringEnum(physicFieldVariableComp).toStdString());
-        ParserModuleInfo pmi(*m_module, analysisType, coordinateType, LinearityType_Linear);
+        ParserModuleInfo pmi(*m_module, analysisType, coordinateType, LinearityType_Linear, false);
         expression->SetValue("EXPRESSION", Parser::parseFilterExpression(pmi, expr).toStdString());
     }
 }
@@ -542,7 +542,7 @@ void Agros2DGeneratorModule::createLocalValueExpression(ctemplate::TemplateDicti
 {
     ctemplate::TemplateDictionary *expression = output.AddSectionDictionary("VARIABLE_SOURCE");
 
-    ParserModuleInfo pmi(*m_module, analysisType, coordinateType, LinearityType_Linear);
+    ParserModuleInfo pmi(*m_module, analysisType, coordinateType, LinearityType_Linear, false);
     expression->SetValue("VARIABLE", variable.toStdString());
     expression->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisType).toStdString());
     expression->SetValue("COORDINATE_TYPE", Agros2DGenerator::coordinateTypeStringEnum(coordinateType).toStdString());
@@ -563,7 +563,7 @@ void Agros2DGeneratorModule::createIntegralExpression(ctemplate::TemplateDiction
     {
         ctemplate::TemplateDictionary *expression = output.AddSectionDictionary(section.toStdString());
 
-        ParserModuleInfo pmi(*m_module, analysisType, coordinateType, LinearityType_Linear);
+        ParserModuleInfo pmi(*m_module, analysisType, coordinateType, LinearityType_Linear, false);
         expression->SetValue("VARIABLE", variable.toStdString());
         expression->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisType).toStdString());
         expression->SetValue("COORDINATE_TYPE", Agros2DGenerator::coordinateTypeStringEnum(coordinateType).toStdString());

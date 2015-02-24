@@ -6,8 +6,8 @@
 #include "parser_module_info.h"
 
 
-ParserModuleInfo::ParserModuleInfo(XMLModule::field field, AnalysisType analysisType, CoordinateType coordinateType, LinearityType linearityType) :
-    analysisType(analysisType), coordinateType(coordinateType), linearityType(linearityType),
+ParserModuleInfo::ParserModuleInfo(XMLModule::field field, AnalysisType analysisType, CoordinateType coordinateType, LinearityType linearityType, bool isSurface) :
+    analysisType(analysisType), coordinateType(coordinateType), linearityType(linearityType), isSurface(isSurface),
     constants(field.constants()), volume(field.volume()), surface(field.surface())
 {
     numSolutions = Agros2DGenerator::numberOfSolutions(field.general_field().analyses(), analysisType);

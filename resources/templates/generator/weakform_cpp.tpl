@@ -137,10 +137,10 @@ void SolverDeal{{CLASS}}::assembleSystem()
     bool isTransient = (m_fieldInfo->analysisType() == AnalysisType_Transient);
 
     system_rhs = 0.0;
-    if(m_assemble_matrix)
+    if (m_assemble_matrix)
         system_matrix = 0.0;
 
-    // transient
+    // transient solver
     if (isTransient)
         mass_matrix = 0.0;
 
@@ -165,12 +165,8 @@ void SolverDeal{{CLASS}}::assembleSystem()
                             *this,
                             &SolverDeal{{CLASS}}::localAssembleSystem,
                             &SolverDeal{{CLASS}}::copyLocalToGlobal,
-                            AssemblyScratchData(*m_feCollection, *m_mappingCollection, m_quadrature_formulas, m_face_quadrature_formulas, m_fieldInfo),
+                            AssemblyScratchData(*m_feCollection, *m_mappingCollection, m_quadrature_formulas, m_face_quadrature_formulas),
                             AssemblyCopyData());
-
-    // disable for our transient solver
-    // if (isTransient)
-    //     mass_matrix_inverse.initialize(mass_matrix);
 }
 
 void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
@@ -223,25 +219,10 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
         // volume value and grad cache
         AssembleCache &cache = assembleCache(tbb::this_tbb_thread::get_id(), dofs_per_cell);
 
-        std::vector<std::vector<double> > shape_value = cache.shape_value;
-        std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad = cache.shape_grad;
-
-        // surface cache
-        std::vector<std::vector<dealii::Point<2> > > shape_face_point = cache.shape_face_point;
-        std::vector<std::vector<std::vector<double> > > shape_face_value = cache.shape_face_value;
-        std::vector<std::vector<double> > shape_face_JxW = cache.shape_face_JxW;
-
-        // previous values and grads
-        std::vector<dealii::Vector<double> > solution_value_previous;
-        std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous;
-
         if (m_solution_nonlinear_previous.size() > 0)
         {
-            solution_value_previous = cache.solution_value_previous;
-            solution_grad_previous = cache.solution_grad_previous;
-
-            fe_values.get_function_values(m_solution_nonlinear_previous, solution_value_previous);
-            fe_values.get_function_gradients(m_solution_nonlinear_previous, solution_grad_previous);
+            fe_values.get_function_values(m_solution_nonlinear_previous, cache.solution_value_previous);
+            fe_values.get_function_gradients(m_solution_nonlinear_previous, cache.solution_grad_previous);
         }
 
         // coupling sources{{#COUPLING_SOURCE}}
@@ -285,8 +266,8 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
 
             for (unsigned int q_point = 0; q_point < n_q_points; ++q_point)
             {
-                shape_value[i][q_point] = fe_values.shape_value(i, q_point);
-                shape_grad[i][q_point] = fe_values.shape_grad(i, q_point);
+                cache.shape_value[i][q_point] = fe_values.shape_value(i, q_point);
+                cache.shape_grad[i][q_point] = fe_values.shape_grad(i, q_point);
             }
         }
 
@@ -303,22 +284,21 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                     const dealii::FEFaceValues<2> &fe_face_values = scratch_data.hp_fe_face_values.get_present_fe_values();
                     const unsigned int n_face_q_points = fe_face_values.n_quadrature_points;
 
-                    shape_face_point[face].resize(n_face_q_points);
-                    shape_face_JxW[face].resize(n_face_q_points);
+                    cache.shape_face_point[face].resize(n_face_q_points);
+                    cache.shape_face_JxW[face].resize(n_face_q_points);
 
                     for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
                     {
-                        shape_face_point[face][q_point] = fe_face_values.quadrature_point(q_point);
-                        shape_face_JxW[face][q_point] = fe_face_values.JxW(q_point);
+                        cache.shape_face_point[face][q_point] = fe_face_values.quadrature_point(q_point);
+                        cache.shape_face_JxW[face][q_point] = fe_face_values.JxW(q_point);
                     }
 
                     for (unsigned int i = 0; i < dofs_per_cell; ++i)
                     {
-                        shape_face_value[face][i].resize(n_face_q_points);
+                        cache.shape_face_value[face][i].resize(n_face_q_points);
                         for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
                         {
-                            shape_face_value[face][i][q_point] = fe_face_values.shape_value(i, q_point);
-                            // shape_face_grad[i][q_point] = fe_face_values.shape_grad(i, q_point);
+                            cache.shape_face_value[face][i][q_point] = fe_face_values.shape_value(i, q_point);
                         }
                     }
                 }
@@ -440,14 +420,10 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                         // {{VARIABLE}}
                         const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
 
-                        // value and grad cache
-                        std::vector<std::vector<double> > shape_value = shape_face_value[face];
-                        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad = shape_face_grad;
-
                         const dealii::FEFaceValues<2> &fe_face_values = scratch_data.hp_fe_face_values.get_present_fe_values();
                         for (unsigned int q_point = 0; q_point < fe_face_values.n_quadrature_points; ++q_point)
                         {
-                            const dealii::Point<2> p = shape_face_point[face][q_point];
+                            const dealii::Point<2> p = cache.shape_face_point[face][q_point];
 
                             {{#VARIABLE_SOURCE_NONLINEAR}}
                             // {{VARIABLE}}
@@ -463,7 +439,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                                         // {{EXPRESSION_ID}}
                                         if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}})
                                         {
-                                            copy_data.cell_matrix(i,j) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
+                                            copy_data.cell_matrix(i,j) += cache.shape_face_JxW[face][q_point] *({{EXPRESSION}});
                                         }{{/FORM_EXPRESSION_MATRIX}}
                                     }
                                 }
@@ -471,7 +447,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                                 // {{EXPRESSION_ID}}
                                 if (components[i] == {{ROW_INDEX}})
                                 {
-                                    copy_data.cell_rhs(i) += shape_face_JxW[face][q_point] *({{EXPRESSION}});
+                                    copy_data.cell_rhs(i) += cache.shape_face_JxW[face][q_point] *({{EXPRESSION}});
                                 }{{/FORM_EXPRESSION_VECTOR}}
                             }
                         }

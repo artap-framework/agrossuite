@@ -222,11 +222,11 @@ void Agros2DGeneratorCoupling::generateForm(FormInfo formInfo, LinearityType lin
 
             ParserModuleInfo pmiSource(*m_sourceModule,
                                        analysisTypeFromStringKey(QString::fromStdString(weakform.sourceanalysis().get())),
-                                       coordinateType, linearityType);
+                                       coordinateType, linearityType, false);
 
             ParserModuleInfo pmi(*m_targetModule,
-                                       analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype())),
-                                       coordinateType, linearityType);
+                                 analysisTypeFromStringKey(QString::fromStdString(weakform.analysistype())),
+                                 coordinateType, linearityType, false);
 
             QString exprCpp = Parser::parseCouplingWeakFormExpression(pmiSource, pmi, expression);
             field->SetValue("EXPRESSION", exprCpp.toStdString());
@@ -282,7 +282,7 @@ void Agros2DGeneratorCoupling::prepareWeakFormsOutput()
     QStringList modules = QString::fromStdString(m_coupling->general_coupling().id()).split("-");
     m_output->SetValue("ID", id.toStdString());
     m_output->SetValue("CLASS", (modules[0].left(1).toUpper() + modules[0].right(modules[0].length() - 1) +
-                              modules[1].left(1).toUpper() + modules[1].right(modules[1].length() - 1)).toStdString());
+            modules[1].left(1).toUpper() + modules[1].right(modules[1].length() - 1)).toStdString());
 
     //comment on beginning of weakform.cpp, may be removed
     ctemplate::TemplateDictionary *field;

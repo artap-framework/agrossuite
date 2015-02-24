@@ -8,11 +8,13 @@
 // encapsulates information needed for construction of specific parser instances
 struct ParserModuleInfo
 {
-    ParserModuleInfo(XMLModule::field field, AnalysisType analysisType, CoordinateType coordinateType, LinearityType linearityType);
+    ParserModuleInfo(XMLModule::field field, AnalysisType analysisType, CoordinateType coordinateType, LinearityType linearityType, bool isSurface);
 
     XMLModule::constants constants;
     XMLModule::volume volume;
     XMLModule::surface surface;
+
+    bool isSurface;
 
     int numSolutions;
     QString id;

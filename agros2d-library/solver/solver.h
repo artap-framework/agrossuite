@@ -171,8 +171,7 @@ protected:
         AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
                             const dealii::hp::MappingCollection<2> &mappingCollection,
                             const dealii::hp::QCollection<2> &quadratureFormulas,
-                            const dealii::hp::QCollection<2-1> &faceQuadratureFormulas,
-                            const FieldInfo *fieldInfo);
+                            const dealii::hp::QCollection<2-1> &faceQuadratureFormulas);
         AssemblyScratchData(const AssemblyScratchData &scratch_data);
 
         dealii::hp::FEValues<2> hp_fe_values;
@@ -203,7 +202,6 @@ protected:
         std::vector<std::vector<dealii::Point<2> > > shape_face_point;
         std::vector<std::vector<std::vector<double> > > shape_face_value;
         std::vector<std::vector<double> > shape_face_JxW;
-        // std::vector<std::vector<dealii::Tensor<1,2> > > shape_face_grad;
 
         // previous values and grads
         std::vector<dealii::Vector<double> > solution_value_previous;

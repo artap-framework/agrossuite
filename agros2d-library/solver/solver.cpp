@@ -147,8 +147,7 @@ dealii::hp::MappingCollection<2> *SolverDeal::createMappingCollection(const Fiel
 SolverDeal::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
                                                      const dealii::hp::MappingCollection<2> &mappingCollection,
                                                      const dealii::hp::QCollection<2> &quadratureFormulas,
-                                                     const dealii::hp::QCollection<2-1> &faceQuadratureFormulas,
-                                                     const FieldInfo *fieldInfo)
+                                                     const dealii::hp::QCollection<2-1> &faceQuadratureFormulas)
     :
       hp_fe_values(mappingCollection,
                    feCollection,
@@ -157,6 +156,18 @@ SolverDeal::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollect
       hp_fe_face_values(mappingCollection,
                         feCollection,
                         faceQuadratureFormulas,
+                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
+{}
+
+SolverDeal::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &scratch_data)
+    :
+      hp_fe_values(scratch_data.hp_fe_values.get_mapping_collection(),
+                   scratch_data.hp_fe_values.get_fe_collection(),
+                   scratch_data.hp_fe_values.get_quadrature_collection(),
+                   dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values),
+      hp_fe_face_values(scratch_data.hp_fe_values.get_mapping_collection(),
+                        scratch_data.hp_fe_face_values.get_fe_collection(),
+                        scratch_data.hp_fe_face_values.get_quadrature_collection(),
                         dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
 {}
 
@@ -177,6 +188,7 @@ SolverDeal::AssembleCache &SolverDeal::assembleCache(tbb::tbb_thread::id thread_
             // volume value and grad cache
             cache.shape_value = std::vector<std::vector<double> >(dofs_per_cell, std::vector<double>(n_q_points));
             cache.shape_grad = std::vector<std::vector<dealii::Tensor<1,2> > >(dofs_per_cell, std::vector<dealii::Tensor<1,2> >(n_q_points));
+
             // surface cache
             cache.shape_face_point = std::vector<std::vector<dealii::Point<2> > >(dealii::GeometryInfo<2>::faces_per_cell);
             cache.shape_face_value = std::vector<std::vector<std::vector<double> > >(dealii::GeometryInfo<2>::faces_per_cell, std::vector<std::vector<double> >(dofs_per_cell));
@@ -196,17 +208,6 @@ SolverDeal::AssembleCache &SolverDeal::assembleCache(tbb::tbb_thread::id thread_
     return m_assembleCache[thread_id];
 }
 
-SolverDeal::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &scratch_data)
-    :
-      hp_fe_values(scratch_data.hp_fe_values.get_mapping_collection(),
-                   scratch_data.hp_fe_values.get_fe_collection(),
-                   scratch_data.hp_fe_values.get_quadrature_collection(),
-                   dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values),
-      hp_fe_face_values(scratch_data.hp_fe_values.get_mapping_collection(),
-                        scratch_data.hp_fe_face_values.get_fe_collection(),
-                        scratch_data.hp_fe_face_values.get_quadrature_collection(),
-                        dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
-{}
 
 SolverDeal::AssemblyCopyData::AssemblyCopyData()
     : isAssembled(false), cell_matrix(0), cell_mass_matrix(0), cell_rhs(0)
@@ -219,7 +220,6 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
       m_bdf2Table(new BDF2ATable()), m_assemble_matrix(true)
 {    
     // fe collection
-    qDebug() << "SolverDeal::SolverDeal: numberOfSolutions" << fieldInfo->numberOfSolutions();
     m_feCollection = new dealii::hp::FECollection<2>();
 
     // copy initial mesh

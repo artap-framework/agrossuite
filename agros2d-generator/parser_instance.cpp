@@ -39,7 +39,7 @@ ParserInstanceWeakForm::ParserInstanceWeakForm(ParserModuleInfo pmi) : ParserIns
 {
     m_lexicalAnalyser = Parser::weakFormLexicalAnalyser(m_parserModuleInfo);
 
-    addBasicWeakformTokens();
+    addBasicWeakformTokens(pmi);
     addConstants(m_parserModuleInfo);
     addPreviousSolWeakform(pmi.numSolutions);
 
@@ -53,7 +53,7 @@ ParserInstanceErrorExpression::ParserInstanceErrorExpression(ParserModuleInfo pm
 {
     m_lexicalAnalyser = Parser::weakFormLexicalAnalyser(m_parserModuleInfo);
 
-    addBasicWeakformTokens();
+    addBasicWeakformTokens(pmi);
     addConstants(m_parserModuleInfo);
     addPreviousSolErrorCalculation();
 
@@ -68,7 +68,7 @@ ParserInstanceLinearizeDependence::ParserInstanceLinearizeDependence(ParserModul
 {
     m_lexicalAnalyser = Parser::weakFormLexicalAnalyser(m_parserModuleInfo);
 
-    addBasicWeakformTokens();
+    addBasicWeakformTokens(pmi);
     addConstants(m_parserModuleInfo);
     addPreviousSolLinearizeDependence();
 }
@@ -77,7 +77,7 @@ ParserInstanceWeakformCheck::ParserInstanceWeakformCheck(ParserModuleInfo pmi) :
 {
     m_lexicalAnalyser =  Parser::weakFormLexicalAnalyser(m_parserModuleInfo);
 
-    addBasicWeakformTokens();
+    addBasicWeakformTokens(pmi);
     addConstants(m_parserModuleInfo);
     addPreviousSolWeakform(pmi.numSolutions);
     addVolumeVariablesWeakform(pmi, false);
@@ -114,7 +114,7 @@ ParserInstanceCouplingWeakForm::ParserInstanceCouplingWeakForm(ParserModuleInfo 
 {
     m_lexicalAnalyser = Parser::weakFormCouplingLexicalAnalyser(m_parserModuleInfoSource, m_parserModuleInfo);
 
-    addBasicWeakformTokens();
+    addBasicWeakformTokens(pmi);
     addConstants(m_parserModuleInfo);
     addConstants(m_parserModuleInfoSource);
     addCouplingWeakformTokens(pmiSource.numSolutions);

@@ -16,7 +16,7 @@ public:
     ParserInstance(ParserModuleInfo pmiSource, ParserModuleInfo pmi);
 
 protected:
-    void addBasicWeakformTokens();
+    void addBasicWeakformTokens(ParserModuleInfo pmi);
     void addCouplingWeakformTokens(int numSourceSolutions);
     void addPreviousSolWeakform(int numSolutions);
     void addPreviousSolErrorCalculation();

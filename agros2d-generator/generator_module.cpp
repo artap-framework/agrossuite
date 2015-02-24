@@ -289,7 +289,7 @@ void Agros2DGeneratorModule::generatePluginErrorCalculator()
                         else
                             exprOriginal = QString::fromStdString(expr.axi().get());
 
-                        ParserModuleInfo pmi(*m_module, analysisType, coordinateType, linearityTypes[lt]);
+                        ParserModuleInfo pmi(*m_module, analysisType, coordinateType, linearityTypes[lt], false);
                         exprCpp = Parser::parseErrorExpression(pmi, exprOriginal);
 
                         expression->SetValue("EXPRESSION", exprCpp.toStdString());

@@ -14,7 +14,7 @@
 // This is probably not ideal state
 //********************************************************************************************************
 
-void ParserInstance::addBasicWeakformTokens()
+void ParserInstance::addBasicWeakformTokens(ParserModuleInfo pmi)
 {
     // coordinates
     if (m_parserModuleInfo.coordinateType == CoordinateType_Planar)
@@ -46,11 +46,9 @@ void ParserInstance::addBasicWeakformTokens()
 
     // functions
     // scalar field
-    m_dict["uval"] = "shape_value[j][q_point]"; // "u->val[i]";
-    m_dict["vval"] = "shape_value[i][q_point]"; // "v->val[i]";
-    m_dict["upval"] = "solution_value_previous[q_point][components[i]]"; // "u_ext[this->j]->val[i]";
-    m_dict["uptval"] = "ext[*this->m_offsetPreviousTimeExt + this->j - this->m_offsetJ]->val[i]";
-    m_dict["deltat"] = "Agros2D::problem()->actualTimeStepLength()";
+    m_dict["uval"] = pmi.isSurface ? "cache.shape_face_value[face][j][q_point]" : "cache.shape_value[j][q_point]"; // "u->val[i]";
+    m_dict["vval"] = pmi.isSurface ? "cache.shape_face_value[face][i][q_point]" : "cache.shape_value[i][q_point]"; // "v->val[i]";
+    m_dict["upval"] = "cache.solution_value_previous[q_point][components[i]]"; // "u_ext[this->j]->val[i]";
 
     // vector field
     m_dict["uval0"] = "u->val0[i]";
@@ -61,28 +59,25 @@ void ParserInstance::addBasicWeakformTokens()
     m_dict["vcurl"] = "v->curl[i]";
     m_dict["upcurl"] = "0"; // "u_ext[this->j]->curl[i]";
 
-    m_dict["timedermat"] = "(*this->m_table)->matrixFormCoefficient()";
-    m_dict["timedervec"] = "(*this->m_table)->vectorFormCoefficient(ext, this->j, this->m_markerTarget->fieldInfo()->numberOfSolutions(), offset.prevSol, i)";
-
     if (m_parserModuleInfo.coordinateType == CoordinateType_Planar)
     {
         // scalar field
-        m_dict["udx"] = "shape_grad[j][q_point][0]"; // u->dx[i]";
-        m_dict["vdx"] = "shape_grad[i][q_point][0]"; // "v->dx[i]";
-        m_dict["udy"] = "shape_grad[j][q_point][1]"; // "u->dy[i]";
-        m_dict["vdy"] = "shape_grad[i][q_point][1]"; // "v->dy[i]";
-        m_dict["updx"] = "solution_grad_previous[q_point][components[i]][0]"; // "u_ext[this->j]->dx[i]";
-        m_dict["updy"] = "solution_grad_previous[q_point][components[i]][1]"; // "u_ext[this->j]->dy[i]";
+        m_dict["udx"] = "cache.shape_grad[j][q_point][0]"; // u->dx[i]";
+        m_dict["vdx"] = "cache.shape_grad[i][q_point][0]"; // "v->dx[i]";
+        m_dict["udy"] = "cache.shape_grad[j][q_point][1]"; // "u->dy[i]";
+        m_dict["vdy"] = "cache.shape_grad[i][q_point][1]"; // "v->dy[i]";
+        m_dict["updx"] = "cache.solution_grad_previous[q_point][components[i]][0]"; // "u_ext[this->j]->dx[i]";
+        m_dict["updy"] = "cache.solution_grad_previous[q_point][components[i]][1]"; // "u_ext[this->j]->dy[i]";
     }
     else
     {
         // scalar field
-        m_dict["udr"] = "shape_grad[j][q_point][0]"; // u->dx[i]";
-        m_dict["vdr"] = "shape_grad[i][q_point][0]"; // "v->dx[i]";
-        m_dict["udz"] = "shape_grad[j][q_point][1]"; // "u->dy[i]";
-        m_dict["vdz"] = "shape_grad[i][q_point][1]"; // "v->dy[i]";
-        m_dict["updr"] = "solution_grad_previous[q_point][components[i]][0]"; // "u_ext[this->j]->dx[i]";
-        m_dict["updz"] = "solution_grad_previous[q_point][components[i]][1]"; // "u_ext[this->j]->dy[i]";
+        m_dict["udr"] = "cache.shape_grad[j][q_point][0]"; // u->dx[i]";
+        m_dict["vdr"] = "cache.shape_grad[i][q_point][0]"; // "v->dx[i]";
+        m_dict["udz"] = "cache.shape_grad[j][q_point][1]"; // "u->dy[i]";
+        m_dict["vdz"] = "cache.shape_grad[i][q_point][1]"; // "v->dy[i]";
+        m_dict["updr"] = "cache.solution_grad_previous[q_point][components[i]][0]"; // "u_ext[this->j]->dx[i]";
+        m_dict["updz"] = "cache.solution_grad_previous[q_point][components[i]][1]"; // "u_ext[this->j]->dy[i]";
     }
 }
 
@@ -131,18 +126,17 @@ void ParserInstance::addPreviousSolWeakform(int numSolutions)
 {
     for (int i = 1; i < numSolutions + 1; i++)
     {
-        m_dict[QString("value%1").arg(i)] = QString("solution_value_previous[q_point][%1]").arg(i-1); //QString("u_ext[%1 + offset.forms]->val[i]").arg(i-1);
-        m_dict[QString("timedervec%1").arg(i)] = QString("(*this->m_table)->vectorFormCoefficient(ext, %1, this->m_markerTarget->fieldInfo()->numberOfSolutions(), offset.prevSol, i)").arg(i-1);
+        m_dict[QString("value%1").arg(i)] = QString("cache.solution_value_previous[q_point][%1]").arg(i-1); //QString("u_ext[%1 + offset.forms]->val[i]").arg(i-1);
 
         if (m_parserModuleInfo.coordinateType == CoordinateType_Planar)
         {
-            m_dict[QString("dx%1").arg(i)] = QString("solution_grad_previous[q_point][%1][0]").arg(i-1); //QString("u_ext[%1 + offset.forms]->dx[i]").arg(i-1);
-            m_dict[QString("dy%1").arg(i)] = QString("solution_grad_previous[q_point][%1][1]").arg(i-1); //QString("u_ext[%1 + offset.forms]->dy[i]").arg(i-1);
+            m_dict[QString("dx%1").arg(i)] = QString("cache.solution_grad_previous[q_point][%1][0]").arg(i-1); //QString("u_ext[%1 + offset.forms]->dx[i]").arg(i-1);
+            m_dict[QString("dy%1").arg(i)] = QString("cache.solution_grad_previous[q_point][%1][1]").arg(i-1); //QString("u_ext[%1 + offset.forms]->dy[i]").arg(i-1);
         }
         else
         {
-            m_dict[QString("dr%1").arg(i)] = QString("solution_grad_previous[q_point][%1][0]").arg(i-1); //QString("u_ext[%1 + offset.forms]->dx[i]").arg(i-1);
-            m_dict[QString("dz%1").arg(i)] = QString("solution_grad_previous[q_point][%1][1]").arg(i-1); //QString("u_ext[%1 + offset.forms]->dy[i]").arg(i-1);
+            m_dict[QString("dr%1").arg(i)] = QString("cache.solution_grad_previous[q_point][%1][0]").arg(i-1); //QString("u_ext[%1 + offset.forms]->dx[i]").arg(i-1);
+            m_dict[QString("dz%1").arg(i)] = QString("cache.solution_grad_previous[q_point][%1][1]").arg(i-1); //QString("u_ext[%1 + offset.forms]->dy[i]").arg(i-1);
         }
     }
 }
@@ -152,17 +146,17 @@ void ParserInstance::addPreviousSolErrorCalculation()
 {
     for (int i = 1; i < m_parserModuleInfo.numSolutions + 1; i++)
     {
-        m_dict[QString("value%1").arg(i)] = QString("solution_value_previous[q_point][%1]").arg(i-1); // u->val[i]
+        m_dict[QString("value%1").arg(i)] = QString("cache.solution_value_previous[q_point][%1]").arg(i-1); // u->val[i]
 
         if (m_parserModuleInfo.coordinateType == CoordinateType_Planar)
         {
-            m_dict[QString("dx%1").arg(i)] = QString("solution_grad_previous[q_point][%1][0]").arg(i-1); // u->dx[i]
-            m_dict[QString("dy%1").arg(i)] = QString("solution_grad_previous[q_point][%1][1]").arg(i-1); // u->dy[i]
+            m_dict[QString("dx%1").arg(i)] = QString("cache.solution_grad_previous[q_point][%1][0]").arg(i-1); // u->dx[i]
+            m_dict[QString("dy%1").arg(i)] = QString("cache.solution_grad_previous[q_point][%1][1]").arg(i-1); // u->dy[i]
         }
         else
         {
-            m_dict[QString("dr%1").arg(i)] = QString("solution_grad_previous[q_point][%1][0]").arg(i-1); // u->dx[i]
-            m_dict[QString("dz%1").arg(i)] = QString("solution_grad_previous[q_point][%1][1]").arg(i-1); // u->dy[i]
+            m_dict[QString("dr%1").arg(i)] = QString("cache.solution_grad_previous[q_point][%1][0]").arg(i-1); // u->dx[i]
+            m_dict[QString("dz%1").arg(i)] = QString("cache.solution_grad_previous[q_point][%1][1]").arg(i-1); // u->dy[i]
         }
     }
 }
