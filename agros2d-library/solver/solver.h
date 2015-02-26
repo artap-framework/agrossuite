@@ -137,7 +137,7 @@ public:
     // problem
     void solve();
 
-    void setCouplingSource(QString fieldID, dealii::Vector<double> &sourceVector) { m_coupling_sources[fieldID] = dealii::Vector<double>(sourceVector); }
+    void setCouplingSource(QString fieldID, dealii::Vector<double>& sourceVector) { m_coupling_sources[fieldID] = sourceVector; }
 
     // transient - Runge Kutta - future step!
     void assembleMassMatrix();
