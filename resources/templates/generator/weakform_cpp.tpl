@@ -187,9 +187,6 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
     CoordinateType coordinateType = m_problem->config()->coordinateType();
     bool isTransient = (m_fieldInfo->analysisType() == AnalysisType_Transient);
 
-    // reinit volume
-    scratch_data.hp_fe_values.reinit(cell);
-
     // materials
     SceneMaterial *material = m_scene->labels->at(cell->material_id() - 1)->marker(m_fieldInfo);
 
@@ -208,6 +205,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
             copy_data.cell_mass_matrix = 0;
         }
 
+        // reinit volume
         scratch_data.hp_fe_values.reinit(cell);
 
         const dealii::FEValues<2> &fe_values = scratch_data.hp_fe_values.get_present_fe_values();
