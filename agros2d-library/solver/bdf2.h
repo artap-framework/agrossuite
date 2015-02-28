@@ -53,6 +53,8 @@ protected:
 
 class BDF2ATable : public BDF2Table
 {
+public:
+    BDF2ATable() : BDF2Table() { setOrderAndPreviousSteps(1, QList<double>()); }
 protected:
     virtual void recalculate();
 };

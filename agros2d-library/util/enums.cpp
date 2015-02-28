@@ -191,10 +191,9 @@ void initLists()
     // meshTypeList.insert(MeshType_NETGEN_QuadDominated, "netgen_quaddominated");
     meshTypeList.insert(MeshType_CUBIT, "cubit");
 
-    timeStepMethodList.insert(TimeStepMethod_BDF_1, "bdf_1");
-    timeStepMethodList.insert(TimeStepMethod_BDF_2, "bdf_2");
-    timeStepMethodList.insert(TimeStepMethod_BDF_3, "bdf_3");
-    timeStepMethodList.insert(TimeStepMethod_CrankNicolson, "cranknicolson");
+    timeStepMethodList.insert(TimeStepMethod_Fixed, "fixed");
+    timeStepMethodList.insert(TimeStepMethod_BDFTolerance, "adaptive");
+    timeStepMethodList.insert(TimeStepMethod_BDFNumSteps, "adaptive_numsteps");
 
     // PHYSICFIELDVARIABLECOMP
     physicFieldVariableCompList.insert(PhysicFieldVariableComp_Scalar, "scalar");
@@ -464,14 +463,12 @@ QString timeStepMethodString(TimeStepMethod timeStepMethod)
 {
     switch (timeStepMethod)
     {
-    case TimeStepMethod_BDF_1:
-        return QObject::tr("BDF 1 (Backstep Euler)");
-    case TimeStepMethod_BDF_2:
-        return QObject::tr("BDF 2");
-    case TimeStepMethod_BDF_3:
-        return QObject::tr("BDF 3");
-    case TimeStepMethod_CrankNicolson:
-        return QObject::tr("Crank-Nicolson");
+    case TimeStepMethod_Fixed:
+        return QObject::tr("BDF2 Fixed");
+    case TimeStepMethod_BDFTolerance:
+        return QObject::tr("BDF2 adaptive (tolerance)");
+    case TimeStepMethod_BDFNumSteps:
+        return QObject::tr("BDF2 adaptive (num. steps)");
     default:
         std::cerr << "Time step method '" + QString::number(timeStepMethod).toStdString() + "' is not implemented. timeStepMethodString(TimeStepMethod timeStepMethod)" << endl;
         throw;

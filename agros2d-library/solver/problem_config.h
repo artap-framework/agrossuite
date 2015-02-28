@@ -47,6 +47,7 @@ public:
         TimeMethod,
         TimeMethodTolerance,
         TimeInitialStepSize,
+        TimeOrder,
         TimeConstantTimeSteps,
         TimeTotal
     };

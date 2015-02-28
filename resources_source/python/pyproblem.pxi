@@ -18,6 +18,9 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         string getTimeStepMethod()
         void setTimeStepMethod(string &timeStepMethod) except +
 
+        int getTimeMethodOrder()
+        void setTimeMethodOrder(int timeMethodOrder) except +
+        
         double getTimeMethodTolerance()
         void setTimeMethodTolerance(double timeMethodTolerance) except +
 
@@ -86,6 +89,12 @@ cdef class __Problem__:
         def __set__(self, time_step_method):
             self.thisptr.setTimeStepMethod(time_step_method.encode())
 
+    property time_method_order:
+        def __get__(self):
+            return self.thisptr.getTimeMethodOrder()
+        def __set__(self, time_method_order):
+            self.thisptr.setTimeMethodOrder(time_method_order)
+            
     property time_method_tolerance:
         def __get__(self):
             return self.thisptr.getTimeMethodTolerance()

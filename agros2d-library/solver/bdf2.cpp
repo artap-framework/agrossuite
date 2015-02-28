@@ -25,10 +25,13 @@ void BDF2Table::setOrderAndPreviousSteps(int order, QList<double> previousStepsL
     this->m_order = order;
 
     int numSteps = previousStepsLengths.length();
-    assert(numSteps >= m_order - 1);
+    assert(numSteps >= m_order - 1);   
 
     for (int i = 0; i < order - 1; i++)
+    {
         th[i] = previousStepsLengths[numSteps - 1 - i] / previousStepsLengths[numSteps - 2 - i];
+        // cout << i << ": " << " order " << order << " th " << th[i] << " " << numSteps << endl;
+    }
 
     recalculate();
 }

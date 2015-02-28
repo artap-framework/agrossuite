@@ -241,8 +241,8 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
             dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values(*{{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadrature_formulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
             {{COUPLING_SOURCE_ID}}_hp_fe_values.reinit(cell_{{COUPLING_SOURCE_ID}});
             const dealii::FEValues<2> &{{COUPLING_SOURCE_ID}}_fe_values = {{COUPLING_SOURCE_ID}}_hp_fe_values.get_present_fe_values();
-            {{COUPLING_SOURCE_ID}}_fe_values.get_function_values(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_value);
-            {{COUPLING_SOURCE_ID}}_fe_values.get_function_gradients(*m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_grad);
+            {{COUPLING_SOURCE_ID}}_fe_values.get_function_values(m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_value);
+            {{COUPLING_SOURCE_ID}}_fe_values.get_function_gradients(m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_grad);
 
             if({{COUPLING_SOURCE_ID}}_material != m_scene->materials->getNone({{COUPLING_SOURCE_ID}}_fieldInfo))
             {

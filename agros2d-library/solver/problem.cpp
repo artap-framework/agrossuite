@@ -560,6 +560,11 @@ void Problem::setActualTimeStepLength(double timeStep)
     m_timeStepLengths.append(timeStep);
 }
 
+void Problem::removeLastTimeStepLength()
+{
+    m_timeStepLengths.removeLast();
+}
+
 double Problem::actualTimeStepLength() const
 {
     if (m_timeStepLengths.isEmpty())

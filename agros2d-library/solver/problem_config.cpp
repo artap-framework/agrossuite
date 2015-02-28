@@ -111,6 +111,7 @@ void ProblemConfig::setStringKeys()
     m_settingKey[TimeMethod] = "TimeMethod";
     m_settingKey[TimeMethodTolerance] = "TimeMethodTolerance";
     m_settingKey[TimeInitialStepSize] = "TimeInitialStepSize";
+    m_settingKey[TimeOrder] = "TimeOrder";
     m_settingKey[TimeConstantTimeSteps] = "TimeSteps";
     m_settingKey[TimeTotal] = "TimeTotal";
 }
@@ -120,9 +121,10 @@ void ProblemConfig::setDefaultValues()
     m_settingDefault.clear();
 
     m_settingDefault[Frequency] = 50.0;
-    m_settingDefault[TimeMethod] = TimeStepMethod_BDF_2;
+    m_settingDefault[TimeMethod] = TimeStepMethod_Fixed;
     m_settingDefault[TimeMethodTolerance] = 0.05;
     m_settingDefault[TimeInitialStepSize] = 0.0;
+    m_settingDefault[TimeOrder] = 2;
     m_settingDefault[TimeConstantTimeSteps] = 10;
     m_settingDefault[TimeTotal] = 10.0;
 }

@@ -239,10 +239,9 @@ enum DataTableType
 enum TimeStepMethod
 {
     TimeStepMethod_Undefined = -1,
-    TimeStepMethod_BDF_2 = 0,
-    TimeStepMethod_BDF_1 = 1,
-    TimeStepMethod_BDF_3 = 3,
-    TimeStepMethod_CrankNicolson = 2
+    TimeStepMethod_Fixed = 0,
+    TimeStepMethod_BDFTolerance = 1,
+    TimeStepMethod_BDFNumSteps = 2
 };
 
 enum MatrixSolverType

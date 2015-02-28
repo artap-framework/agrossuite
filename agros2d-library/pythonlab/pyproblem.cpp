@@ -92,6 +92,14 @@ void PyProblem::setTimeMethodTolerance(double timeMethodTolerance)
         throw out_of_range(QObject::tr("The time method tolerance must be positive.").toStdString());
 }
 
+void PyProblem::setTimeMethodOrder(int timeMethodOrder)
+{
+    if (timeMethodOrder >= 1 && timeMethodOrder <= 3)
+        Agros2D::problem()->config()->setValue(ProblemConfig::TimeOrder, timeMethodOrder);
+    else
+        throw out_of_range(QObject::tr("Number of time method order must be greater than 1.").toStdString());
+}
+
 void PyProblem::setTimeInitialTimeStep(double timeInitialTimeStep)
 {
     if (timeInitialTimeStep > 0.0)

@@ -129,6 +129,7 @@ public:
     inline QTime timeElapsed() const { return m_lastTimeElapsed; }
 
     void setActualTimeStepLength(double timeStep);
+    void removeLastTimeStepLength();
     double actualTimeStepLength() const;
     QList<double> timeStepLengths() const { return m_timeStepLengths; }
     double timeStepToTime(int timeStepIndex) const;

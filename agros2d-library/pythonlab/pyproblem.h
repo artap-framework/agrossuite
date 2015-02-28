@@ -55,6 +55,10 @@ class PyProblem
         inline double getTimeMethodTolerance() const { return Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble(); }
         void setTimeMethodTolerance(double timeMethodTolerance);
 
+        // time method order
+        inline int getTimeMethodOrder() const { return Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt(); }
+        void setTimeMethodOrder(int timeMethodOrder);
+
         // initial time step
         inline double getTimeInitialTimeStep() const { return Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble(); }
         void setTimeInitialTimeStep(double timeInitialTimeStep);

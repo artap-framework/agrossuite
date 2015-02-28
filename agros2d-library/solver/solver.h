@@ -73,16 +73,8 @@ struct DoubleCellIterator
 
     DoubleCellIterator& operator++()
     {
-//        if (cell_first == cell_second)
-//        {
-//            ++cell_first;
-//            cell_second = cell_first;
-//        }
-//        else
-//        {
-            ++cell_first;
-            ++cell_second;
-//        }
+        ++cell_first;
+        ++cell_second;
 
         return *this;
     }
@@ -112,13 +104,8 @@ inline bool operator!=(const DoubleCellIterator& a, const DoubleCellIterator& b)
     return ! (a==b);
 }
 
-
-
-
-
 class FieldInfo;
 class SceneBoundary;
-class BDF2Table;
 
 class AGROS_LIBRARY_API SolverDeal
 {
@@ -150,14 +137,13 @@ public:
     // problem
     void solve();
 
-    void setCouplingSource(QString fieldID, dealii::Vector<double> &sourceVector) { m_coupling_sources[fieldID] = &sourceVector; }
+    void setCouplingSource(QString fieldID, dealii::Vector<double> &sourceVector) { m_coupling_sources[fieldID] = dealii::Vector<double>(sourceVector); }
 
     // transient - Runge Kutta - future step!
     void assembleMassMatrix();
 
-    // Hand made Euler methods
-    double transientBDF(const double time, const double timeStep);
-    double transientCrankNicolson(const double time, const double timeStep);
+    // hand made methods
+    void transientBDF(const double timeStep, dealii::Vector<double> &solution, const QList<dealii::Vector<double> > solutions, const BDF2Table &bdf2Table);
 
     inline void set_time(const double new_time) { m_time = new_time; }
     inline double get_time() const { return m_time; }
@@ -234,7 +220,7 @@ protected:
     dealii::Vector<double> m_solution_nonlinear_previous;
 
     // weak coupling sources
-    QMap<QString, dealii::Vector<double> *> m_coupling_sources;
+    QMap<QString, dealii::Vector<double> > m_coupling_sources;
 
     // hanging nodes and sparsity pattern
     dealii::ConstraintMatrix hanging_node_constraints;
@@ -247,10 +233,7 @@ protected:
     // transient mass matrix
     double m_time;
     dealii::SparseMatrix<double> mass_matrix;
-    dealii::SparseMatrix<double> transient_left_matrix;
-    dealii::Vector<double> system_rhs_transient_previous;
-    QList<dealii::Vector<double> > solution_transient_previous;
-    BDF2Table *m_bdf2Table;
+    dealii::SparseMatrix<double> transient_left_matrix;       
 
     // we need to be able to keep lu decomposition for Jacobian reuse
     dealii::SparseDirectUMFPACK direct_solver;

@@ -285,7 +285,7 @@ class BenchmarkHeatTransientAxisymmetric(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
 
-        problem.time_step_method = "bdf_1"
+        problem.time_step_method = "fixed"
         problem.time_steps = 30
         problem.time_total = 190
 
@@ -333,9 +333,11 @@ class TestHeatTransientAxisymmetric(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
-        problem.time_step_method = "bdf_1"
+        problem.time_step_method = "adaptive"
         problem.time_total = 10000
-        problem.time_steps = 30
+        #problem.time_steps = 50
+        problem.time_method_order = 2
+        problem.time_method_tolerance = 5
         
         # disable view
         agros2d.view.mesh.disable()
@@ -405,7 +407,7 @@ class TestHeatTransientAxisymmetric(Agros2DTestCase):
     def test_values(self):
         # point value
         point = self.heat.local_values(0.00503, 0.134283)
-        self.value_test("Temperature", point["T"], 72.88058)
+        self.value_test("Temperature", point["T"], 73.115)
         self.value_test("Heat flux", point["F"], 6.9739, 0.09)   #todo: large error
         self.value_test("Heat flux - r", point["Fr"], -3.39076, 0.09) #todo: large error
         self.value_test("Heat flux - z", point["Fz"], -6.09395, 0.09) #todo: large error
