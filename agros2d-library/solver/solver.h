@@ -47,6 +47,7 @@
 
 #include <deal.II/base/time_stepping.h>
 
+#include <paralution.hpp>
 #define signals public
 
 struct DoubleCellIterator
@@ -248,6 +249,8 @@ protected:
     void solveUMFPACK(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln);
     void solveExternalUMFPACK(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln);
     void solvedealii(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln);
+    // \todo So far this only solves using LU decomposition (implemented in PARALUTION).
+    void solvePARALUTION(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln);
 
     //  linearity
     void solveProblem();
