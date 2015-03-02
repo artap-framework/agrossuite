@@ -579,42 +579,10 @@ double SolverDeal::computeNorm()
     return h1Norm;
 }
 
-void SolverDeal::propagateBoundaryMarkers()
-{
-    dealii::Triangulation<2>::cell_iterator cell = Agros2D::problem()->initialMesh()->begin();
-    dealii::Triangulation<2>::cell_iterator end_cell = Agros2D::problem()->initialMesh()->end();
-    //    dealii::Triangulation<2>::cell_iterator cell = m_triangulation->begin();
-    //    dealii::Triangulation<2>::cell_iterator end_cell = m_triangulation->end();
-
-    //std::cout << "propagate markers " << std::endl;
-    for (; cell != end_cell; ++cell)   // loop over all cells, not just active ones
-    {
-        //std::cout << "cell " <<std::endl;
-        for (int f=0; f < dealii::GeometryInfo<2>::faces_per_cell; f++)
-        {
-            if (cell->face(f)->user_index() != 0)
-            {
-                //std::cout << "  nenulovy marker " << cell->face(f)->user_index() << std::endl;
-                if (cell->face(f)->has_children())
-                {
-                    //std::cout<< "   ma deti" << std::endl;
-                    for (unsigned int c=0; c<cell->face(f)->n_children(); ++c)
-                    {
-                        cell->face(f)->child(c)->set_user_index(cell->face(f)->user_index());
-                        //std::cout << "propagated " << cell->face(f)->child(c)->user_index() << std::endl;
-                    }
-                }
-            }
-        }
-    }
-}
-
 void SolverDeal::setup(bool use_dirichlet_lift)
 {
     QTime time;
     time.start();
-
-    propagateBoundaryMarkers();
 
     m_doFHandler->distribute_dofs(*m_feCollection);
     // std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
@@ -950,6 +918,10 @@ void SolverDeal::solve()
 
 void SolverDeal::solveProblem()
 {
+    // this is a little bit inconsistent. Each solver has pointer to triangulation, but they actually point to
+    // mesh object of Agrs2D::problem()
+    Agros2D::problem()->propagateBoundaryMarkers();
+
     if (m_fieldInfo->linearityType() == LinearityType_Linear)
     {
         setup(true);
@@ -959,6 +931,8 @@ void SolverDeal::solveProblem()
         std::cout << "assemble: " << time.elapsed() << ", ndofs: " << m_doFHandler->n_dofs() <<  std::endl;
         time.start();
         solveLinearSystem(system_matrix, system_rhs, m_solution);
+        //m_solution.print(std::cout);
+        //system_matrix.print(std::cout);
         std::cout << "solve: " << time.elapsed() << std::endl;
     }
     else if (m_fieldInfo->linearityType() == LinearityType_Picard)
