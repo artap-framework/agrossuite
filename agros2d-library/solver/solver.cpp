@@ -92,8 +92,11 @@
 #include "bdf2.h"
 
 #include "pythonlab/pythonengine.h"
+#include "solver/paralution_dealii.hpp"
 
 #include <functional>
+
+using namespace paralution;
 
 // todo: find better place
 // todo: what for curved elements?
@@ -296,6 +299,9 @@ void SolverDeal::solveLinearSystem(dealii::SparseMatrix<double> &system, dealii:
     case SOLVER_DEALII:
         solvedealii(system, rhs, sln);
         break;
+    case SOLVER_PARALUTION:
+        solvedealii(system, rhs, sln);
+        break;
     case SOLVER_EXTERNAL:
         solveExternalUMFPACK(system, rhs, sln);
         break;
@@ -331,14 +337,14 @@ void SolverDeal::solvedealii(dealii::SparseMatrix<double> &system, dealii::Vecto
     // preconditioner
     dealii::PreconditionSSOR<> preconditioner;
 
-    switch ((PreconditionerType) m_fieldInfo->value(FieldInfo::LinearSolverIterPreconditioner).toInt())
+    switch ((PreconditionerType)m_fieldInfo->value(FieldInfo::LinearSolverIterPreconditioner).toInt())
     {
     case PreconditionerType_SSOR:
     {
         // TODO:
         preconditioner.initialize(system, 1.2);
     }
-        break;
+    break;
     default:
         Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Preconditioner '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
         return;
@@ -346,32 +352,68 @@ void SolverDeal::solvedealii(dealii::SparseMatrix<double> &system, dealii::Vecto
 
     // solver control
     dealii::SolverControl solver_control(m_fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt(),
-                                         m_fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble() * system_rhs.l2_norm());
+        m_fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble() * system_rhs.l2_norm());
 
-    switch ((IterSolverType) m_fieldInfo->value(FieldInfo::LinearSolverIterMethod).toInt())
+    switch ((IterSolverType)m_fieldInfo->value(FieldInfo::LinearSolverIterMethod).toInt())
     {
     case IterSolverType_CG:
     {
         dealii::SolverCG<> solver(solver_control);
         solver.solve(system, sln, rhs, preconditioner);
     }
-        break;
+    break;
     case IterSolverType_BiCGStab:
     {
         dealii::SolverBicgstab<> solver(solver_control);
         solver.solve(system, sln, rhs, preconditioner);
     }
-        break;
+    break;
     case IterSolverType_GMRES:
     {
         dealii::SolverGMRES<> solver(solver_control);
         solver.solve(system, sln, rhs, preconditioner);
     }
-        break;
+    break;
     default:
         Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Solver method '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
         return;
     }
+}
+
+void SolverDeal::solvePARALUTION(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln)
+{
+    init_paralution();
+    info_paralution();
+
+    LocalVector<double> sln_paralution;
+    LocalVector<double> rhs_paralution;
+    LocalMatrix<double> mat_paralution;
+
+    import_dealii_matrix(sparsity_pattern, system, &mat_paralution);
+    import_dealii_vector(rhs, &rhs_paralution);
+    mat_paralution.MoveToAccelerator();
+    sln_paralution.MoveToAccelerator();
+    rhs_paralution.MoveToAccelerator();
+
+    sln_paralution.Allocate("x", mat_paralution.get_nrow());
+    rhs_paralution.Allocate("rhs", mat_paralution.get_nrow());
+
+    // Linear Solver
+    Inversion<LocalMatrix<double>, LocalVector<double>, double > ls;
+
+    rhs_paralution.Ones();
+    sln_paralution.Zeros();
+
+    ls.SetOperator(mat_paralution);
+    ls.Build();
+
+    mat_paralution.info();
+
+    ls.Solve(rhs_paralution, &sln_paralution);
+
+    ls.Clear();
+
+    stop_paralution();
 }
 
 void SolverDeal::estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_indicators) const

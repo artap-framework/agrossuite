@@ -250,6 +250,7 @@ enum MatrixSolverType
     SOLVER_MUMPS = 4,
     SOLVER_EXTERNAL = 8,
     SOLVER_DEALII,
+    SOLVER_PARALUTION,
     SOLVER_EMPTY = 100
 };
 
