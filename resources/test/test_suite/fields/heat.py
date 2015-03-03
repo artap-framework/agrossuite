@@ -333,11 +333,10 @@ class TestHeatTransientAxisymmetric(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
-        problem.time_step_method = "adaptive"
+        problem.time_step_method = "adaptive_numsteps"
+        problem.time_method_order = 3
         problem.time_total = 10000
-        #problem.time_steps = 50
-        problem.time_method_order = 2
-        problem.time_method_tolerance = 5
+        problem.time_steps = 25
         
         # disable view
         agros2d.view.mesh.disable()

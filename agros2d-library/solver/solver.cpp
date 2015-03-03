@@ -899,6 +899,8 @@ void SolverDeal::solve()
                 SolutionStore::SolutionRunTimeDetails runTime(actualTimeStep, 0.0, m_doFHandler->n_dofs());
                 Agros2D::solutionStore()->addSolution(solutionID, MultiArray(m_doFHandler, m_solution), runTime);
 
+                cout << m_time << endl;
+
                 if (m_time > Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() - EPS_ZERO)
                     break;
 
@@ -940,6 +942,8 @@ void SolverDeal::solve()
                     solutionTrans.interpolate(previousSolution, m_solution);
                 }
             }
+
+
         }
     }
     else
