@@ -126,18 +126,13 @@ public:
     // this function, however, has to be called to ensure zero dirichlet boundary
     virtual void setup(bool useDirichletLift);
 
-    // todo: this does not work due to a problem in Deal.
-    // todo: after a refinement, user_data associated with faces are lost
-    // todo: might be worked around using initialUnrefinedMesh
-    void propagateBoundaryMarkers();
-
     virtual void assembleSystem() = 0;
     virtual void assembleDirichlet(bool useDirichletLift) = 0;
 
     // problem
     void solve();
 
-    void setCouplingSource(QString fieldID, dealii::Vector<double> &sourceVector) { m_coupling_sources[fieldID] = dealii::Vector<double>(sourceVector); }
+    void setCouplingSource(QString fieldID, dealii::Vector<double>& sourceVector) { m_coupling_sources[fieldID] = sourceVector; }
 
     // transient - Runge Kutta - future step!
     void assembleMassMatrix();

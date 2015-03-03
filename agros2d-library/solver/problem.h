@@ -153,6 +153,8 @@ public:
     inline dealii::Triangulation<2> *calculationMesh() const { return m_calculationMesh; }
     void setCalculationMesh(dealii::Triangulation<2> *mesh);
 
+    void propagateBoundaryMarkers();
+
     QList<QPair<double, bool> > timeStepHistory() const { return m_timeHistory; }
 
     QString timeUnit();
