@@ -22,7 +22,7 @@
       <edge angle="90" end="1" id="3" is_curvilinear="1" segments="3" start="2" valueangle="90"/>
       <edge angle="0" end="6" id="4" is_curvilinear="1" segments="3" start="3" valueangle="0"/>
       <edge angle="0" end="7" id="5" is_curvilinear="1" segments="3" start="3" valueangle="0"/>
-      <edge angle="90" end="5" id="6" is_curvilinear="1" segments="7" start="2" valueangle="90"/>
+      <edge angle="90" end="5" id="6" is_curvilinear="1" segments="9" start="2" valueangle="90"/>
       <edge angle="90" end="9" id="7" is_curvilinear="1" segments="3" start="6" valueangle="90"/>
       <edge angle="30" end="8" id="8" is_curvilinear="1" segments="3" start="9" valueangle="30"/>
       <edge angle="90" end="7" id="9" is_curvilinear="1" segments="3" start="10" valueangle="90"/>
