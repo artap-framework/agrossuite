@@ -28,6 +28,10 @@ SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/../")
 # Allow to override the default values in CMake.vars:
 include(../CMake.vars OPTIONAL)
 
+# PARALUTION
+find_package(PARALUTION REQUIRED)
+INCLUDE_DIRECTORIES(${PARALUTION_INCLUDE_DIR})
+
 # OpenGL
 FIND_PACKAGE(OpenGLCustom REQUIRED)
 
