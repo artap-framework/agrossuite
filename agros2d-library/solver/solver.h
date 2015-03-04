@@ -153,8 +153,9 @@ public:
     static dealii::hp::MappingCollection<2> *createMappingCollection(const FieldInfo *fieldInfo);
 
 protected:   
-    struct AssemblyScratchData
+    class AGROS_LIBRARY_API AssemblyScratchData
     {
+    public:
         AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
                             const dealii::hp::MappingCollection<2> &mappingCollection,
                             const dealii::hp::QCollection<2> &quadratureFormulas,
@@ -165,8 +166,9 @@ protected:
         dealii::hp::FEFaceValues<2> hp_fe_face_values;
     };
 
-    struct AssemblyCopyData
+    class AGROS_LIBRARY_API AssemblyCopyData
     {
+    public:
         AssemblyCopyData();
 
         bool isAssembled;
@@ -178,8 +180,9 @@ protected:
         std::vector<dealii::types::global_dof_index> local_dof_indices;       
     };
 
-    struct AssembleCache
+    class AGROS_LIBRARY_API AssembleCache
     {
+    public:
         AssembleCache() : dofs_per_cell(-1) {}
 
         // volume value and grad cache

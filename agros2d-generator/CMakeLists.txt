@@ -10,7 +10,6 @@ IF(WIN32)
 ELSE(WIN32)
     INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/ctemplate/linux)
 ENDIF(WIN32)
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/paralution/src)
 
 SET(SOURCES main.cpp 
     generator.cpp 
