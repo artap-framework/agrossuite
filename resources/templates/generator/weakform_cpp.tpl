@@ -144,7 +144,7 @@ void SolverDeal{{CLASS}}::assembleSystem()
     if (isTransient)
         mass_matrix = 0.0;
 
-    typename dealii::hp::DoFHandler<2>::active_cell_iterator cell_begin, cell_end, source_begin, source_end;
+    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_begin, cell_end, source_begin, source_end;
     cell_begin = m_doFHandler->begin_active();
     cell_end = m_doFHandler->end();
 
@@ -173,7 +173,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                                               AssemblyScratchData &scratch_data,
                                               AssemblyCopyData &copy_data)
 {
-    const typename dealii::hp::DoFHandler<2>::active_cell_iterator cell = iter.cell_second;
+    const TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = iter.cell_second;
 
     // coupling sources{{#COUPLING_SOURCE}}
     dealii::hp::DoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}};

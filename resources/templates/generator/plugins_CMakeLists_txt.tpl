@@ -1,6 +1,6 @@
 project(plugins)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../cmake ${PROJECT_SOURCE_DIR}/../dealii/cmake)
 
 # Policy handling
 if(POLICY CMP0020)
@@ -28,11 +28,21 @@ SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/../")
 # Allow to override the default values in CMake.vars:
 include(../CMake.vars OPTIONAL)
 
+# PARALUTION
+find_package(PARALUTION REQUIRED)
+INCLUDE_DIRECTORIES(${PARALUTION_INCLUDE_DIR})
+
 # OpenGL
 FIND_PACKAGE(OpenGLCustom REQUIRED)
 
 # Handle Qt.
 include(../QtHandling.cmake)
+
+# tbb
+FIND_PACKAGE(TBB)
+if (TBB_FOUND)
+    add_definitions(-DTBB_FOUND)
+ENDIF(TBB_FOUND)
 
 # Build type.
 ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
@@ -46,7 +56,6 @@ ENDIF()
 
 IF(WIN32)
   # Naming of libraries to link to.
-  FIND_LIBRARY(PLUGINS_PARALUTION_LIBRARY agros2d_3dparty_paralution PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
   FIND_LIBRARY(PLUGINS_QCUSTOMPLOT_LIBRARY agros2d_3dparty_qcustomplot PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
   FIND_LIBRARY(PLUGINS_QUAZIP_LIBRARY agros2d_3dparty_quazip PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
   FIND_LIBRARY(PLUGINS_POLY2TRI_LIBRARY agros2d_3dparty_poly2tri PATHS ${CMAKE_AGROS_DIRECTORY}/libs NO_DEFAULT_PATH)
@@ -139,10 +148,7 @@ ENDIF(MSVC)
 # Include OUR header files location
 include(${CMAKE_AGROS_DIRECTORY}/IncludeSubdirs.cmake)
 
-# The searching using dealII modules is at the end so we do not mess up anything before.
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../dealii/cmake
-${PROJECT_SOURCE_DIR}/../dealii/cmake/modules)
-
+# DealII
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/boost-1.56.0/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/tbb41_20130401oss/include/")
@@ -151,15 +157,6 @@ INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/AMD/Include/"
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/muparser_v2_2_3/include/")
 
 FIND_PACKAGE(deal.II HINTS "../dealii/${CMAKE_INSTALL_PREFIX}" ${CMAKE_INSTALL_PREFIX} REQUIRED)
-
-# DealII linking name & location.
-IF(MSVC)
-IF(AGROS_DEBUG)
-SET(DEAL_II_LIBRARIES ${CMAKE_HOME_DIRECTORY}/../libs/deal_II.g.lib)
-ELSE()
-SET(DEAL_II_LIBRARIES ${CMAKE_HOME_DIRECTORY}/../libs/deal_II.lib)
-ENDIF()
-ENDIF()
 
 # modules
 {{#SOURCE}}
