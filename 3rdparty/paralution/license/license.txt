@@ -1,0 +1,27 @@
+This version of PARALUTION software is released under GPLv3 license.
+By download and using this software you agree to complaint with the GPLv3 license, 
+see license-gpl.txt file for details.
+
+Some functions in this source code are adopted/modified (considered as derivative work) 
+from other open source software projects. For details see the functions definition
+(in the source code), the corresponding licenses are available in others/ directory.
+
+The DPCG solver (in src/solvers/deflation/, files dpcg.cpp and dpcg.hpp) is
+released under LGPLv3 (Copyright (C) 2013-2015 Kees Vuik, TU Delft), see 
+the files for details.
+
+The SIRA-AMPE eigenvalue solver (in src/solvers/eigenvalue/, files ampe_sira.cpp, 
+ampe_sira.hpp, cg_hn.cpp and cg_hn.hpp) is released under LGPLv3 (Copyright 
+(C) 2014-2015 Weichung Wang, NTU), see the files for details.
+
+
+PARALUTION   www.paralution.com
+
+Copyright (C) 2015  PARALUTION Labs UG (haftungsbeschränkt) & Co. KG
+Am Hasensprung 6, 76571 Gaggenau
+Handelsregister: Amtsgericht Mannheim, HRA 706051
+Vertreten durch PARALUTION Labs Verwaltungs UG (haftungsbeschränkt)
+Am Hasensprung 6, 76571 Gaggenau
+Handelsregister: Amtsgericht Mannheim, HRB 721277
+Geschäftsführer: Dimitar Lukarski, Nico Trost
+
