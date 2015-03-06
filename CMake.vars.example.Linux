@@ -7,9 +7,6 @@ SET(CMAKE_BUILD_TYPE "Debug")
 SET(WITH_QT5 YES)
 SET(CMAKE_PREFIX_PATH /home/lk/Qt/5.2.1/gcc_64/)
 
-# Fill this if PARALUTION was installed in a non-standard location.
-SET(PARALUTION_ROOT "/home/lk/Downloads/paralution-1.0.0/build")
-
 # BLAS & LAPACK
 SET(BLAS_LIBRARIES /usr/lib/libblas.so)
 SET(LAPACK_LIBRARIES /usr/lib/liblapack.so)
