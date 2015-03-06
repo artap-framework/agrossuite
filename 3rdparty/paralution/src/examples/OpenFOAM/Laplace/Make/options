@@ -1,0 +1,10 @@
+EXE_INC = \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I../../../../build/inc
+
+EXE_LIBS = \
+    -lfiniteVolume \
+    -lOpenFOAM \
+    -fopenmp \
+    ../../../../build/lib/libparalution.so
+

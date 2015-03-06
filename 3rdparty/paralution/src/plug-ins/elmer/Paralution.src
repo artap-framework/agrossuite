@@ -1,0 +1,101 @@
+! **************************************************************************
+!
+!    PARALUTION   www.paralution.com
+!
+!    Copyright (C) 2015  PARALUTION Labs UG (haftungsbeschränkt) & Co. KG
+!                        Am Hasensprung 6, 76571 Gaggenau
+!                        Handelsregister: Amtsgericht Mannheim, HRA 706051
+!                        Vertreten durch:
+!                        PARALUTION Labs Verwaltungs UG (haftungsbeschränkt)
+!                        Am Hasensprung 6, 76571 Gaggenau
+!                        Handelsregister: Amtsgericht Mannheim, HRB 721277
+!                        Geschäftsführer: Dimitar Lukarski, Nico Trost
+!
+!    This program is free software: you can redistribute it and/or modify
+!    it under the terms of the GNU General Public License as published by
+!    the Free Software Foundation, either version 3 of the License, or
+!    (at your option) any later version.
+!
+!    This program is distributed in the hope that it will be useful,
+!    but WITHOUT ANY WARRANTY; without even the implied warranty of
+!    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!    GNU General Public License for more details.
+!
+!    You should have received a copy of the GNU General Public License
+!    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+!
+! **************************************************************************
+
+!
+!
+! PARALUTION version 1.0.0 
+!
+!
+MODULE Paralution
+
+  USE Types
+  USE Lists
+
+  IMPLICIT NONE
+
+CONTAINS
+
+!--------------------------------------------------------------------
+!> Call paralution solver
+!--------------------------------------------------------------------
+  SUBROUTINE ParalutionSolve(A, x, b, Solver)
+!------------------------------------------------------------------------------
+      INTERFACE
+        SUBROUTINE paralution_solve(n, m, nnz, row_off, cols, rval, rhs,      &
+        &                           atol, div, maxiter, x)                    &
+        &                           BIND(C,name='paralution_solve')
+
+          USE, intrinsic :: ISO_C_BINDING
+
+          integer(KIND=C_INT), value, intent(IN)  :: n, m, nnz, maxiter
+          real(KIND=C_DOUBLE), value, intent(IN)  :: atol, div
+          integer(C_INT),             intent(IN)  :: row_off(n+1), cols(nnz)
+          real(C_DOUBLE),             intent(IN)  :: rval(nnz), rhs(n)
+          real(C_DOUBLE)                          :: x(n)
+
+        END SUBROUTINE paralution_solve
+      END INTERFACE
+!------------------------------------------------------------------------------
+      TYPE(Solver_t) :: Solver
+      TYPE (Matrix_t), POINTER :: A
+      REAL(KIND=dp), DIMENSION(:) :: x, b
+!------------------------------------------------------------------------------
+      CHARACTER(LEN=MAX_NAME_LEN) :: Prec, IterativeMethod
+      REAL(KIND=dp) :: TOL, DIV
+      INTEGER :: n, nnz, ierr, Rounds
+      LOGICAL :: Found
+!------------------------------------------------------------------------------
+! NOT SUPPORTED - THIS IS JUST A TESTING VERSION
+!
+!      IterativeMethod = ListGetString( Params,'Linear System Iterative Method' )
+!      Prec = ListGetString(Params,'Linear System Preconditioning', Found )
+!
+      CALL Info("Paralution", "BiCGStab", Level=3)
+!
+      TOL = ListGetConstReal( Solver%Values, &
+           'Linear System Convergence Tolerance', Found )
+      IF ( .NOT. Found ) TOL = 1.0d-6
+!
+      DIV = ListGetCReal( Solver%Values, &
+        'Linear System Divergence Tolerance', Found)
+      IF ( .NOT. Found ) DIV = 1.0d+8
+!
+      Rounds = ListGetInteger( Solver%Values, &
+           'Linear System Max Iterations', Found )
+      IF ( .NOT. Found ) Rounds = 1000
+!
+      n = A%NumberOfRows
+      nnz = A%Rows(n+1)-1
+!
+      call paralution_solve(n, n, nnz, A%Rows, A%Cols, A%Values, b, TOL, &
+      &                     DIV, Rounds, x)
+!
+  END SUBROUTINE ParalutionSolve
+!------------------------------------------------------------------------------
+END MODULE Paralution
+!------------------------------------------------------------------------------

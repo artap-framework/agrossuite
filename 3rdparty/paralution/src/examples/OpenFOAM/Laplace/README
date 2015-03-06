@@ -1,0 +1,19 @@
+This example is adapted from https://code.google.com/p/cufflink-library/
+
+1) Set your OpenFOAM env, for example 
+$ export FOAM_INST_DIR=~/
+$ export WM_NCOMPPROCS=4
+$ source $FOAM_INST_DIR/OpenFOAM-2.1.x/etc/bashrc
+
+2) Edit your Make/* files
+
+3) Compile
+$ wmake
+
+4) Build your mesh
+$ blockMesh
+
+5) Run the code
+$ ./Laplace
+
+

@@ -1,0 +1,2 @@
+This file is here only so that the directory is commited to git.
+The directory is there so that it reminds us that PARALUTION does not support in-tree builds and so that we have a common name for the build directory.

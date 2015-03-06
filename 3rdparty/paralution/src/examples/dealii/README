@@ -1,0 +1,25 @@
+Get Deall.II from http://www.dealii.org/
+Compile it (~/deal.II/)
+Compile PARALUTION (~/paralution-x.y.z/)
+
+cd ~/deal.II/
+mkdir ns-proj
+cd ns-proj
+cp -r ~/paralution-x.y.z/src/examples/dealii/* .
+
+Edit ns-paralution-pres/Makefile to set the correct path to PARALUTION
+
+Check the parameter-file.prm files in each directory
+
+Run Deal II code only:
+cd ns-dealii
+make
+./ns
+
+Run Deal II + PARALUTION
+cd ns-paralution-pres
+make
+./ns-paralution-pres
+
+
+

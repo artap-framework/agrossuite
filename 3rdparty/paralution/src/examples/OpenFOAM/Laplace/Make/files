@@ -1,0 +1,6 @@
+Laplace.C
+../../../../build/inc/plug-ins/OpenFOAM/matrices/lduMatrix/solvers/paralution_PCG/paralution_PCG.C
+../../../../build/inc/plug-ins/OpenFOAM/matrices/lduMatrix/solvers/paralution_PBiCG/paralution_PBiCG.C
+../../../../build/inc/plug-ins/OpenFOAM/matrices/lduMatrix/solvers/paralution_PGMRES/paralution_PGMRES.C
+../../../../build/inc/plug-ins/OpenFOAM/matrices/lduMatrix/solvers/paralution_AMG/paralution_AMG.C
+EXE = ./Laplace
