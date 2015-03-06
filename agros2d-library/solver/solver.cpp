@@ -344,7 +344,7 @@ void SolverDeal::solvedealii(dealii::SparseMatrix<double> &system, dealii::Vecto
         // TODO:
         preconditioner.initialize(system, 1.2);
     }
-    break;
+        break;
     default:
         Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Preconditioner '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
         return;
@@ -352,7 +352,7 @@ void SolverDeal::solvedealii(dealii::SparseMatrix<double> &system, dealii::Vecto
 
     // solver control
     dealii::SolverControl solver_control(m_fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt(),
-        m_fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble() * system_rhs.l2_norm());
+                                         m_fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble() * system_rhs.l2_norm());
 
     switch ((IterSolverType)m_fieldInfo->value(FieldInfo::LinearSolverIterMethod).toInt())
     {
@@ -361,19 +361,19 @@ void SolverDeal::solvedealii(dealii::SparseMatrix<double> &system, dealii::Vecto
         dealii::SolverCG<> solver(solver_control);
         solver.solve(system, sln, rhs, preconditioner);
     }
-    break;
+        break;
     case IterSolverType_BiCGStab:
     {
         dealii::SolverBicgstab<> solver(solver_control);
         solver.solve(system, sln, rhs, preconditioner);
     }
-    break;
+        break;
     case IterSolverType_GMRES:
     {
         dealii::SolverGMRES<> solver(solver_control);
         solver.solve(system, sln, rhs, preconditioner);
     }
-    break;
+        break;
     default:
         Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Solver method '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
         return;
@@ -771,15 +771,9 @@ void SolverDeal::solve()
             if ((m_time + actualTimeStep) > Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble())
                 actualTimeStep = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() - m_time;
 
-            // increase step
-            step++;
-            // std::cout << "step = " << step << " actualTimeStep = " << actualTimeStep << std::endl;
-
             // update time dep variables
             Module::updateTimeFunctions(m_time);
             assembleSystem();
-
-            refused = false;
 
             // remove first solution and step length
             if (solutions.size() > Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt() - 1)
@@ -790,13 +784,28 @@ void SolverDeal::solve()
             assert(solutions.size() == stepLengths.size());
 
             // copy last M * SLN
-            dealii::Vector<double> sln(m_doFHandler->n_dofs());
-            mass_matrix.vmult(sln, m_solution);
-            solutions.append(sln);
-            stepLengths.append(actualTimeStep);
+            if (!refused)
+            {
+                // increase step
+                step++;
+
+                dealii::Vector<double> sln(m_doFHandler->n_dofs());
+                mass_matrix.vmult(sln, m_solution);
+                solutions.append(sln);
+                stepLengths.append(actualTimeStep);
+            }
+
+            // cout << "Agros2D::solutionStore()->size = " << Agros2D::solutionStore()->timeLevels(m_fieldInfo).size() <<
+            //         ", Agros2D::problem()->size = " << Agros2D::problem()->timeStepLengths().size() <<
+            //         ", stepLengths.size = " << stepLengths.size() <<
+            //         ", solutions.size = " << solutions.size() <<
+            //         ", actualTimeStep = " << actualTimeStep <<
+            //         endl;
 
             int order = std::min(step, solutions.size());
             // cout << "order: " << order << " solutions.size() " << solutions.size() << " stepSizes.size() " << stepLengths.size() <<  endl;
+
+            refused = false;
 
             if (step < order || order == 1 || timeStepMethod == TimeStepMethod_Fixed)
             {
@@ -875,18 +884,16 @@ void SolverDeal::solve()
             {
                 // refuse step
                 refused = true;
-                step -= 2;
+                step -= 1;
+
+                m_time -= stepLengths.last();
 
                 // remove last step and shift time
-                m_time -= stepLengths.last();
-                Agros2D::problem()->removeLastTimeStepLength();
+                stepLengths.removeLast();
+                solutions.removeLast();
 
-                for (int j = 0; j < 2; j++)
-                {
-                    // remove last solution
-                    stepLengths.removeLast();
-                    solutions.removeLast();
-                }
+                Agros2D::problem()->removeLastTimeStepLength();
+                Agros2D::solutionStore()->removeSolution(solutionID);
 
                 if (solutions.size() > 0)
                     m_solution = solutions.last();
@@ -895,6 +902,8 @@ void SolverDeal::solve()
 
                 Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
                                              QObject::tr("Transient step refused"));
+
+                //cout << m_time << " - refused" << endl;
             }
             else
             {
@@ -905,11 +914,11 @@ void SolverDeal::solve()
                 Agros2D::problem()->setActualTimeStepLength(actualTimeStep);
                 Agros2D::log()->updateTransientChartInfo(m_time);
 
-                FieldSolutionID solutionID(m_fieldInfo, step, 0, SolutionMode_Normal);
+                solutionID = FieldSolutionID(m_fieldInfo, step, 0, SolutionMode_Normal);
                 SolutionStore::SolutionRunTimeDetails runTime(actualTimeStep, 0.0, m_doFHandler->n_dofs());
                 Agros2D::solutionStore()->addSolution(solutionID, MultiArray(m_doFHandler, m_solution), runTime);
 
-                cout << m_time << endl;
+                //cout << m_time << " - ok" << endl;
 
                 if (m_time > Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() - EPS_ZERO)
                     break;
