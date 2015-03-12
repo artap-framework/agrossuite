@@ -146,37 +146,30 @@ void fillComboBoxTimeStep(const FieldInfo* fieldInfo, QComboBox *cmbTimeStep)
 
     cmbTimeStep->blockSignals(true);
 
+    QList<double> timeLevels = Agros2D::problem()->timeStepLengths();
+
     // store variable
     int timeStep = cmbTimeStep->currentIndex();
-    double timeValue;
     if (timeStep == -1)
-    {
-        timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo, SolutionMode_Normal);
-        timeValue = Agros2D::problem()->timeStepToTotalTime(timeStep);
-    }
-    else
-    {
-        timeValue = cmbTimeStep->currentText().toDouble();
-    }
+        timeStep = timeLevels.count() - 1;
+
+    double timeValue = Agros2D::problem()->timeStepToTotalTime(timeStep);
 
     // clear combo
     cmbTimeStep->clear();
-
-    QList<double> timeLevels = Agros2D::solutionStore()->timeLevels(fieldInfo);
+    cmbTimeStep->addItem(QObject::tr("Initial step"), 0);
 
     int i = 0;
-    // timeStep = 0;
-    foreach (double time, timeLevels)
+    double time = 0.0;
+    foreach (double stepLength, timeLevels)
     {
-        if (i == 0)
-            cmbTimeStep->addItem(QObject::tr("Initial step"), i);
-        else
-            cmbTimeStep->addItem(QObject::tr("Step: %1, time: %2 %3").arg(i).arg(QString::number(time, 'e', 2)).arg(Agros2D::problem()->timeUnit()), i);
-
-        if (time < timeValue)
-            timeStep = i;
-
         i++;
+        time += stepLength;
+
+        cmbTimeStep->addItem(QObject::tr("Step: %1, time: %2 %3").arg(i).arg(QString::number(time, 'e', 2)).arg(Agros2D::problem()->timeUnit()), i);
+
+        if (time <= timeValue)
+            timeStep = i;
     }
 
     cmbTimeStep->setCurrentIndex(timeStep);

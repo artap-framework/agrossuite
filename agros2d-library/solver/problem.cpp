@@ -558,11 +558,13 @@ int Problem::timeToTimeStep(double time) const
 void Problem::setActualTimeStepLength(double timeStep)
 {
     m_timeStepLengths.append(timeStep);
+    // cout << "setActualTimeStepLength : " << m_timeStepLengths.length() << " : " << m_timeStepLengths.last() << " : total time : " << timeStepToTotalTime(m_timeStepLengths.length()) << endl;
 }
 
 void Problem::removeLastTimeStepLength()
 {
     m_timeStepLengths.removeLast();
+    // cout << "removeLastTimeStepLength : " << m_timeStepLengths.length() << " : " << m_timeStepLengths.last() << " : total time : " << timeStepToTotalTime(m_timeStepLengths.length()) << endl;
 }
 
 double Problem::actualTimeStepLength() const

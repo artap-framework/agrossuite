@@ -51,6 +51,7 @@
     */
     m_coordinateType = Agros2D::problem()->config()->coordinateType();
     m_labels = Agros2D::scene()->labels;
+    m_noneMarker = Agros2D::scene()->materials->getNone(m_fieldInfo);
 }
 
 {{CLASS}}ViewScalarFilter::~{{CLASS}}ViewScalarFilter()
@@ -83,7 +84,7 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_scalar (const std::ve
     // SceneLabel *label = m_labels->at(current_cell.first->material_id() - 1);
     SceneLabel *label = m_labels->at(mat_id - 1);
     SceneMaterial *material = label->marker(m_fieldInfo);
-    if(material == Agros2D::scene()->materials->getNone(m_fieldInfo))
+    if(material == m_noneMarker)
         return;
 
     {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
@@ -101,8 +102,6 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_scalar (const std::ve
         solution_grads[k][0] = duh[k];
         solution_hessian[k][0] = dduh[k];
 
-        {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
-        {{/VARIABLE_MATERIAL}}
         {{#VARIABLE_SOURCE}}
         if ((m_variableHash == {{VARIABLE_HASH}})
                 && (m_coordinateType == {{COORDINATE_TYPE}})

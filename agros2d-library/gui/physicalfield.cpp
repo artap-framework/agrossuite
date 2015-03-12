@@ -135,7 +135,7 @@ int PhysicalFieldWidget::selectedTimeStep()
 
         // due to timeskipping
         double realTime = Agros2D::solutionStore()->timeLevels(selectedField()).at(selectedTimeStep);
-        int realTimeStep = Agros2D::problem()->timeToTimeStep(realTime);
+        int realTimeStep = Agros2D::solutionStore()->timeLevelIndex(selectedField(), realTime);
         return realTimeStep;
     }
 }

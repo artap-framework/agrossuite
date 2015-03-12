@@ -1156,7 +1156,7 @@ void ProblemWidget::createControls()
     layoutTransientAnalysis->addWidget(cmbTransientMethod, 0, 2);
     layoutTransientAnalysis->addWidget(new QLabel(tr("Order:")), 1, 0, 1, 2);
     layoutTransientAnalysis->addWidget(txtTransientOrder, 1, 2);
-    layoutTransientAnalysis->addWidget(new QLabel(tr("Tolerance:")), 2, 0, 1, 2);
+    layoutTransientAnalysis->addWidget(new QLabel(tr("Tolerance (%):")), 2, 0, 1, 2);
     layoutTransientAnalysis->addWidget(txtTransientTolerance, 2, 2);
     layoutTransientAnalysis->addWidget(lblTransientTimeTotal, 3, 0, 1, 2);
     layoutTransientAnalysis->addWidget(txtTransientTimeTotal, 3, 2);

@@ -64,6 +64,7 @@ private:
     MultiArray *ma;
 
     SceneLabelContainer *m_labels;
+    SceneMaterial *m_noneMarker;
 
     QString m_variable;
     uint m_variableHash;

@@ -27,7 +27,6 @@
 
 #include "../resources_source/python/pythonlab.cpp"
 
-#ifdef TBB_FOUND
 #include <tbb/tbb.h>
 tbb::mutex codePyFlakesMutex;
 tbb::mutex codeGotoDefinitionMutex;
@@ -36,7 +35,6 @@ tbb::mutex codeHelpMutex;
 tbb::mutex runDeleteUserModulesMutex;
 tbb::mutex runExpressionMutex;
 tbb::mutex runScriptMutex;
-#endif
 
 #ifdef Q_WS_X11
 #include <csignal>
@@ -390,9 +388,7 @@ void PythonEngine::deleteUserModules()
 
             QString exp = QString("del %1; import sys; del sys.modules[\"%1\"]").arg(variable.name);
             {
-#ifdef TBB_FOUND
                 tbb::mutex::scoped_lock lock(runDeleteUserModulesMutex);
-#endif
 
                 PyObject *del = PyRun_String(exp.toLatin1().data(), Py_single_input, dict(), dict());
                 Py_XDECREF(del);
@@ -425,9 +421,7 @@ bool PythonEngine::runScript(const QString &script, const QString &fileName)
     {
         QString str = QString("from os import chdir; chdir(u'" + QFileInfo(fileName).absolutePath() + "')");
         {
-#ifdef TBB_FOUND
             tbb::mutex::scoped_lock lock(runScriptMutex);
-#endif
 
             PyObject *import = PyRun_String(str.toLatin1().data(), Py_single_input, dict(), dict());
             Py_XDECREF(import);
@@ -487,9 +481,7 @@ bool PythonEngine::runExpression(const QString &expression, double *value, const
     bool successfulRun = false;
 
     {
-#ifdef TBB_FOUND
         tbb::mutex::scoped_lock lock(runExpressionMutex);
-#endif
 
         PyObject *output = NULL;
         runPythonHeader();
@@ -611,9 +603,7 @@ QStringList PythonEngine::codeCompletion(const QString& command)
     runPythonHeader();
 
     {
-#ifdef TBB_FOUND
         tbb::mutex::scoped_lock lock(codeCompletionMutex);
-#endif
 
         PyObject *output = PyRun_String(command.toLatin1().data(), Py_single_input, dict(), dict());
 
@@ -668,9 +658,7 @@ QStringList PythonEngine::codePyFlakes(const QString& fileName)
         QString exp = QString("result_pyflakes_pythonlab = python_engine_pyflakes_check(\"%1\")").arg(compatibleFilename(fileName));
 
         {
-#ifdef TBB_FOUND
             tbb::mutex::scoped_lock lock(codePyFlakesMutex);
-#endif
 
             PyObject *run = PyRun_String(exp.toLatin1().data(), Py_single_input, dict(), dict());
             // parse result
@@ -707,9 +695,7 @@ PythonGotoDefinition PythonEngine::codeGotoDefinition(const QString& filename, i
     PythonGotoDefinition out;
 
     {
-#ifdef TBB_FOUND
         tbb::mutex::scoped_lock lock(codeGotoDefinitionMutex);
-#endif
 
         QString str = QString("agros2d_goto_definition = python_engine_goto_definition(path = '%1', line = %2, column = %3)").arg(filename).arg(row).arg(column);
         runExpression(str);
@@ -755,9 +741,7 @@ QString PythonEngine::codeHelp(const QString& filename, int row, int column)
     QString help = "";
 
     {
-#ifdef TBB_FOUND
         tbb::mutex::scoped_lock lock(codeHelpMutex);
-#endif
 
         QString str = QString("agros2d_code_help = python_engine_code_help(path = '%1', line = %2, column = %3)").arg(filename).arg(row).arg(column);
         runExpression(str);

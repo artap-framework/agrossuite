@@ -312,7 +312,7 @@ void SolverDeal::solveLinearSystem(dealii::SparseMatrix<double> &system, dealii:
 
     hanging_node_constraints.distribute(m_solution);
 
-    qDebug() << "solved (" << time.elapsed() << "ms )";
+    // qDebug() << "solved (" << time.elapsed() << "ms )";
 }
 
 void SolverDeal::solveUMFPACK(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln)
@@ -734,30 +734,30 @@ void SolverDeal::solve()
         m_solution = initialSolution;
 
         // parameters
-        double initialTimeStep = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
+        double constantTimeStep = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
         if (((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFNumSteps
                 || ((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFTolerance)
             if (Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() > 0.0)
-                initialTimeStep = Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble();
+                constantTimeStep = Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble();
 
-        double actualTimeStep = initialTimeStep;
+        double actualTimeStep = constantTimeStep;
 
         // BDF table
         BDF2ATable bdf2Table;
-        const double relativeTimeStepLen = Agros2D::problem()->actualTimeStepLength() / Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble();
+        const double relativeTimeStepLen = actualTimeStep / Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble();
         const double maxTimeStepRatio = relativeTimeStepLen > 0.02 ? 2.0 : 3.0; // small steps may rise faster
         const double maxTimeStepLength = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / 5;
         const double maxToleranceMultiplyToAccept = 2.5;
         double tolerance = 0.0;
         TimeStepMethod timeStepMethod = (TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt();
-        double nextTimeStepLength = initialTimeStep;
+        double nextTimeStepLength = constantTimeStep;
         double averageErrorToLenghtRatio = 0.0;
 
         // solutions and step length
         QList<dealii::Vector<double> > solutions;
         QList<double> stepLengths;
 
-        int step = 0;
+        int step = 1;
         bool refused = false;
 
         while (true)
@@ -765,11 +765,22 @@ void SolverDeal::solve()
             if (Agros2D::problem()->isAborted())
                 break;
 
+            if (m_time > Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() - EPS_ZERO)
+                break;
+
+            // actual time step
             actualTimeStep = nextTimeStepLength;
+            // actual time
+            m_time += actualTimeStep;
 
             // set last step
-            if ((m_time + actualTimeStep) > Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble())
-                actualTimeStep = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() - m_time;
+            if (m_time > Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble())
+            {
+                actualTimeStep = actualTimeStep - (m_time - Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
+                m_time = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble();
+            }
+
+            // cout << "actualTimeStep = " << actualTimeStep << ", time = " << m_time << endl;
 
             // update time dep variables
             Module::updateTimeFunctions(m_time);
@@ -783,17 +794,9 @@ void SolverDeal::solve()
             }
             assert(solutions.size() == stepLengths.size());
 
-            // copy last M * SLN
-            if (!refused)
-            {
-                // increase step
-                step++;
-
-                dealii::Vector<double> sln(m_doFHandler->n_dofs());
-                mass_matrix.vmult(sln, m_solution);
-                solutions.append(sln);
-                stepLengths.append(actualTimeStep);
-            }
+            // store sln
+            solutions.append(m_solution);
+            stepLengths.append(actualTimeStep);
 
             // cout << "Agros2D::solutionStore()->size = " << Agros2D::solutionStore()->timeLevels(m_fieldInfo).size() <<
             //         ", Agros2D::problem()->size = " << Agros2D::problem()->timeStepLengths().size() <<
@@ -820,7 +823,7 @@ void SolverDeal::solve()
                                              QObject::tr("Constant step %1/%2, time %3 s").
                                              arg(step).
                                              arg(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()).
-                                             arg(m_time + actualTimeStep));
+                                             arg(m_time));
             }
             else
             {
@@ -840,7 +843,7 @@ void SolverDeal::solve()
 
                 // estimate error
                 estSln.add(-1, m_solution);
-                error = estSln.l2_norm();
+                error = estSln.l2_norm() / m_solution.l2_norm();
 
                 // ratio
                 double actualRatio = error / actualTimeStep;
@@ -848,7 +851,7 @@ void SolverDeal::solve()
 
                 if (timeStepMethod == TimeStepMethod_BDFTolerance)
                 {
-                    tolerance = Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble();
+                    tolerance = Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble() / 100.0;
                 }
                 else if (timeStepMethod == TimeStepMethod_BDFNumSteps)
                 {
@@ -872,8 +875,8 @@ void SolverDeal::solve()
 
                 Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
                                              QObject::tr("Adaptive step, time %1 s, rel. error %2, step size %4 -> %5 (%6 %), average err/len %7").
-                                             arg(m_time + actualTimeStep).
-                                             arg(error).
+                                             arg(m_time).
+                                             arg(error * 100.0).
                                              arg(actualTimeStep).
                                              arg(nextTimeStepLength).
                                              arg(nextTimeStepLength / actualTimeStep * 100.0).
@@ -882,35 +885,46 @@ void SolverDeal::solve()
 
             if (refused)
             {
-                // refuse step
-                refused = true;
-                step -= 1;
+                if (step == 2)
+                {
+                    // remove all steps (initial step should be wrong)
+                    // shift time
+                    m_time = 0;
+                    step = 1;
+                    stepLengths.clear();
+                    solutions.clear();
 
-                m_time -= stepLengths.last();
-
-                // remove last step and shift time
-                stepLengths.removeLast();
-                solutions.removeLast();
-
-                Agros2D::problem()->removeLastTimeStepLength();
-                Agros2D::solutionStore()->removeSolution(solutionID);
-
-                if (solutions.size() > 0)
-                    m_solution = solutions.last();
-                else
+                    Agros2D::problem()->removeLastTimeStepLength();
+                    Agros2D::solutionStore()->removeSolution(solutionID);
                     m_solution = initialSolution;
+
+                    //cout << "ref step = " << step << ", numTimeLevels() = " << Agros2D::problem()->numTimeLevels() << endl;
+                }
+                else
+                {
+                    // remove last step
+                    // shift time
+                    m_time -= actualTimeStep;
+                    stepLengths.removeLast();
+
+                    if (step == Agros2D::problem()->numTimeLevels())
+                    {
+                        solutions.removeLast();
+
+                        if (solutions.size() > 0)
+                            m_solution = solutions.last();
+                        else
+                            m_solution = initialSolution;
+                    }
+                }
 
                 Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
                                              QObject::tr("Transient step refused"));
-
-                //cout << m_time << " - refused" << endl;
             }
             else
             {
-                // set new time
-                m_time += actualTimeStep;
+                // cout << "step = " << step << ", numTimeLevels() = " << Agros2D::problem()->numTimeLevels() << endl;
 
-                // store time actual timestep
                 Agros2D::problem()->setActualTimeStepLength(actualTimeStep);
                 Agros2D::log()->updateTransientChartInfo(m_time);
 
@@ -918,14 +932,11 @@ void SolverDeal::solve()
                 SolutionStore::SolutionRunTimeDetails runTime(actualTimeStep, 0.0, m_doFHandler->n_dofs());
                 Agros2D::solutionStore()->addSolution(solutionID, MultiArray(m_doFHandler, m_solution), runTime);
 
-                //cout << m_time << " - ok" << endl;
-
-                if (m_time > Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() - EPS_ZERO)
-                    break;
+                // increase step
+                step++;
 
                 // adapt mesh
-                if (m_fieldInfo->adaptivityType() != AdaptivityMethod_None &&
-                        m_time < Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble())
+                if (m_fieldInfo->adaptivityType() != AdaptivityMethod_None)
                 {
                     Agros2D::log()->updateAdaptivityChartInfo(m_fieldInfo, step, 1);
                     Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2, DOFs: %3)").
@@ -961,8 +972,6 @@ void SolverDeal::solve()
                     solutionTrans.interpolate(previousSolution, m_solution);
                 }
             }
-
-
         }
     }
     else
@@ -1023,11 +1032,8 @@ void SolverDeal::solveProblemNonLinearPicard()
 
         iteration++;
 
-        std::cout << "step: " << iteration << std::endl;
         assembleSystem();
-        std::cout << "step: " << iteration << " - ass" << std::endl;
         solveLinearSystem(system_matrix, system_rhs, m_solution);
-        std::cout << "step: " << iteration << " - OK" << std::endl;
 
         // copy solution
         m_solution_nonlinear_previous.add(-1, m_solution);
@@ -1092,7 +1098,6 @@ void SolverDeal::solveProblemNonLinearNewton()
         time.start();
 
         iteration++;
-        std::cout << "step: " << iteration << std::endl;
 
         double previousResidualNorm = residualNorm;
         bool jacobianReused = false;
@@ -1310,8 +1315,13 @@ void SolverDeal::transientBDF(const double timeStep,
     dealii::Vector<double> m(m_doFHandler->n_dofs());
     for (int i = 0; i < bdf2Table.order(); i++)
     {
+        // m += M * SLNi
+        dealii::Vector<double> sln(m_doFHandler->n_dofs());
+        mass_matrix.vmult(sln, solutions[solutions.size() - i - 1]);
+        m.add(- bdf2Table.vectorFormCoefficient(i), sln);
+
         // m += Mi * SLNi
-        m.add(- bdf2Table.vectorFormCoefficient(i), solutions[solutions.size() - i - 1]);
+        // m.add(- bdf2Table.vectorFormCoefficient(i), solutions[solutions.size() - i - 1]);
     }
     // m += dt * RHS
     m.add(timeStep, system_rhs);

@@ -422,7 +422,7 @@ PostDataOut *PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariabl
         Module::updateTimeFunctions(Agros2D::problem()->timeStepToTotalTime(activeTimeStep()));
 
     MultiArray ma = activeMultiSolutionArray();
-    // qDebug() << "solution->size()" << ma.solution()->size() << "doFHandler->size()" << ma.doFHandler()->n_dofs();
+    // qDebug() << "solution->size()" << ma.solution().size() << "doFHandler->size()" << ma.doFHandler()->n_dofs();
 
     dealii::DataPostprocessorScalar<2> *post = activeViewField()->plugin()->filter(activeViewField(),
                                                                                    activeTimeStep(),
@@ -446,6 +446,8 @@ PostDataOut *PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariabl
         data_out->add_data_vector(ma.solution(), solution_names);
     }
     data_out->build_patches(2);
+
+    delete post;
 
     // qDebug() << "process - build patches (" << time.elapsed() << "ms )";
 

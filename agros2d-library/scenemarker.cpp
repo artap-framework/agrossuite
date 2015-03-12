@@ -28,6 +28,9 @@
 #include "solver/field.h"
 #include "solver/problem.h"
 
+#include <tbb/tbb.h>
+tbb::mutex addMarkerMutex;
+
 template <typename MarkerType>
 MarkerContainer<MarkerType>::~MarkerContainer()
 {
@@ -63,8 +66,11 @@ MarkerType* MarkerContainer<MarkerType>::getNone(const FieldInfo* field)
 {
     if (!noneMarkers.contains(field))
     {
-        noneMarkers[field] = new MarkerType(field, "none");
-        noneMarkers[field]->setNone();
+        MarkerType *marker = new MarkerType(field, "none");
+        marker->setNone();
+        noneMarkers[field] = marker;
+
+        return marker;
     }
 
     return noneMarkers[field];
