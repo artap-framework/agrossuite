@@ -231,6 +231,7 @@ void initLists()
     // matrixSolverTypeList.insert(SOLVER_EMPTY, "empty");
     matrixSolverTypeList.insert(SOLVER_UMFPACK, "umfpack");
     matrixSolverTypeList.insert(SOLVER_DEALII, "dealii");
+    matrixSolverTypeList.insert(SOLVER_PARALUTION, "paralution");
 #ifdef WITH_MUMPS
     matrixSolverTypeList.insert(SOLVER_MUMPS, "mumps");
 #endif
@@ -656,6 +657,8 @@ QString matrixSolverTypeString(MatrixSolverType matrixSolverType)
         return QObject::tr("UMFPACK");
     case SOLVER_DEALII:
         return QObject::tr("deal.II");
+    case SOLVER_PARALUTION:
+        return QObject::tr("PARALUTION");
     case SOLVER_MUMPS:
         return QObject::tr("MUMPS");
     case SOLVER_EXTERNAL:
@@ -684,7 +687,7 @@ QString dumpFormatString(MatrixExportFormat format)
 
 bool isMatrixSolverIterative(MatrixSolverType type)
 {
-    return ((type == SOLVER_DEALII));
+    return ((type == SOLVER_DEALII) || (type == SOLVER_PARALUTION));
 }
 
 QString linearityTypeString(LinearityType linearityType)

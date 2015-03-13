@@ -304,7 +304,7 @@ QString createPythonFromModel()
                 arg(fieldInfo->fieldId()).
                 arg(matrixSolverTypeToStringKey(fieldInfo->matrixSolver()));
 
-        if (fieldInfo->matrixSolver() == SOLVER_DEALII)
+        if (isMatrixSolverIterative(fieldInfo->matrixSolver()))
         {
             str += QString("%1.matrix_iterative_solver_method = \"%2\"\n").
                     arg(fieldInfo->fieldId()).

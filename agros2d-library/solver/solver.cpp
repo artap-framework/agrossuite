@@ -300,7 +300,7 @@ void SolverDeal::solveLinearSystem(dealii::SparseMatrix<double> &system, dealii:
         solvedealii(system, rhs, sln);
         break;
     case SOLVER_PARALUTION:
-        solvedealii(system, rhs, sln);
+        solvePARALUTION(system, rhs, sln);
         break;
     case SOLVER_EXTERNAL:
         solveExternalUMFPACK(system, rhs, sln);
@@ -382,38 +382,45 @@ void SolverDeal::solvedealii(dealii::SparseMatrix<double> &system, dealii::Vecto
 
 void SolverDeal::solvePARALUTION(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln)
 {
-    init_paralution();
-    info_paralution();
-
     LocalVector<double> sln_paralution;
     LocalVector<double> rhs_paralution;
     LocalMatrix<double> mat_paralution;
 
+    sln_paralution.Allocate("sol", sln.size());
+    rhs_paralution.Allocate("rhs", rhs.size());
+
     import_dealii_matrix(sparsity_pattern, system, &mat_paralution);
+    mat_paralution.ConvertToCSR();
     import_dealii_vector(rhs, &rhs_paralution);
+    import_dealii_vector(sln, &sln_paralution);
+
     mat_paralution.MoveToAccelerator();
     sln_paralution.MoveToAccelerator();
     rhs_paralution.MoveToAccelerator();
 
-    sln_paralution.Allocate("x", mat_paralution.get_nrow());
-    rhs_paralution.Allocate("rhs", mat_paralution.get_nrow());
-
     // Linear Solver
-    Inversion<LocalMatrix<double>, LocalVector<double>, double > ls;
-
-    rhs_paralution.Ones();
-    sln_paralution.Zeros();
+    BiCGStab<LocalMatrix<double>, LocalVector<double>, double > ls;
+    ILU<LocalMatrix<double>, LocalVector<double>, double> p;
+    ls.Init(m_fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble(),
+            1e-8,
+            1e8,
+            m_fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt());
 
     ls.SetOperator(mat_paralution);
+    ls.SetPreconditioner(p);
     ls.Build();
 
     mat_paralution.info();
 
     ls.Solve(rhs_paralution, &sln_paralution);
 
-    ls.Clear();
+    export_dealii_vector(sln_paralution, &sln);
 
-    stop_paralution();
+    p.Clear();
+    ls.Clear();
+    rhs_paralution.Clear();
+    sln_paralution.Clear();
+    mat_paralution.Clear();
 }
 
 void SolverDeal::estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_indicators) const

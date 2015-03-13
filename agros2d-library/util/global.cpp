@@ -35,6 +35,7 @@
 #include "solver/coupling.h"
 #include "solver/solutionstore.h"
 #include "solver/plugin_interface.h"
+#include "solver/paralution_dealii.hpp"
 
 #include "util/system_utils.h"
 
@@ -63,6 +64,10 @@ AgrosApplication::AgrosApplication(int& argc, char ** argv) : QApplication(argc,
     // force number format
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
 
+    // init PARALUTION
+    paralution::init_paralution();
+    paralution::info_paralution();
+
     // init singleton
     Agros2D::createSingleton();
 }
@@ -71,6 +76,9 @@ AgrosApplication::~AgrosApplication()
 {
     if (m_scriptEngineRemote)
         delete m_scriptEngineRemote;
+
+    // stop PARALUTION
+    paralution::stop_paralution();
 }
 
 // reimplemented from QApplication so we can throw exceptions in slots
