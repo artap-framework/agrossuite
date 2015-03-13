@@ -23,6 +23,7 @@
 #include "util.h"
 #include "util/global.h"
 #include "solutiontypes.h"
+#include "scene.h"
 
 #include "tbb/tbb.h"
 
@@ -50,17 +51,18 @@
 #include <paralution.hpp>
 #define signals public
 
-struct DoubleCellIterator
+class DoubleCellIterator
 {
+public:
     dealii::hp::DoFHandler<2>::active_cell_iterator cell_first, cell_second;
 
-    DoubleCellIterator(const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_first, const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_second):
-        cell_first(cell_first), cell_second(cell_second)
+    DoubleCellIterator(const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_first, const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_second, const dealii::hp::DoFHandler<2>* doFHandler, const FieldInfo *fieldInfo) :
+        cell_first(cell_first), cell_second(cell_second), m_fieldInfo(fieldInfo), m_doFHandler(doFHandler)
     {
     }
 
     DoubleCellIterator(const DoubleCellIterator &dci) :
-        cell_first(dci.cell_first), cell_second(dci.cell_second)
+        cell_first(dci.cell_first), cell_second(dci.cell_second), m_fieldInfo(dci.m_fieldInfo), m_doFHandler(dci.m_doFHandler)
     {
     }
 
@@ -68,6 +70,8 @@ struct DoubleCellIterator
     {
         cell_first = ehi.cell_first;
         cell_second = ehi.cell_second;
+        m_fieldInfo = ehi.m_fieldInfo;
+        m_doFHandler = ehi.m_doFHandler;
 
         return *this;
     }
@@ -76,6 +80,17 @@ struct DoubleCellIterator
     {
         ++cell_first;
         ++cell_second;
+
+        while (cell_second != this->m_doFHandler->end())
+        {
+            if (!Agros2D::scene()->labels->at(cell_second->material_id() - 1)->marker(m_fieldInfo)->isNone())
+                break;
+            else
+            {
+                ++cell_first;
+                ++cell_second;
+            }
+        }
 
         return *this;
     }
@@ -86,6 +101,8 @@ struct DoubleCellIterator
         operator++(); // pre-increment
         return tmp;   // return old value
     }
+    const FieldInfo *m_fieldInfo;
+    const dealii::hp::DoFHandler<2>* m_doFHandler;
 };
 
 
