@@ -159,9 +159,20 @@ void SolverDeal{{CLASS}}::assembleSystem()
     }
     {{/COUPLING_SOURCE}}
 
+    // Fix the beginning cells wrt. subdomains.
+    while (cell_begin != m_doFHandler->end())
+    {
+        if (!Agros2D::scene()->labels->at(cell_begin->material_id() - 1)->marker(m_fieldInfo)->isNone())
+            break;
+        else
+        {
+            ++cell_begin;
+            ++source_begin;
+        }
+    }
 
-    dealii::WorkStream::run(DoubleCellIterator(source_begin, cell_begin),
-                            DoubleCellIterator(source_end, cell_end),
+    dealii::WorkStream::run(DoubleCellIterator(source_begin, cell_begin, m_doFHandler, m_fieldInfo),
+                            DoubleCellIterator(source_end, cell_end, m_doFHandler, m_fieldInfo),
                             *this,
                             &SolverDeal{{CLASS}}::localAssembleSystem,
                             &SolverDeal{{CLASS}}::copyLocalToGlobal,

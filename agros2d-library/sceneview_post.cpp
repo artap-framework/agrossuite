@@ -172,7 +172,16 @@ void PostDataOut::compute_node(dealii::Point<2> &node, const dealii::DataOutBase
 
 dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
 {
-    return this->dofs->begin_active();
+    DataOut<2>::cell_iterator cell = this->dofs->begin_active();
+    while (cell != this->dofs->end())
+    {
+        if (!Agros2D::scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
+            break;
+        else
+            cell++;
+    }
+
+    return cell;
 }
 
 dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_iterator &old_cell)
