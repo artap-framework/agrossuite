@@ -27,11 +27,15 @@ cdef extern from "../../agros2d-library/pythonlab/pyfield.h":
         string getMatrixSolver()
         void setMatrixSolver(string &matrixSolver) except +
 
-        string getLinearSolverMethod()
-        void setLinearSolverMethod(string &linearSolverMethod) except +
-
-        string getLinearSolverPreconditioner()
-        void setLinearSolverPreconditioner(string &linearSolverPreconditioner) except +
+        string getLinearSolverDealIIMethod()
+        void setLinearSolverDealIIMethod(string &linearSolverMethod) except +
+        string getLinearSolverDealIIPreconditioner()
+        void setLinearSolverDealIIPreconditioner(string &linearSolverPreconditioner) except +
+    
+        string getLinearSolverPARALUTIONMethod()
+        void setLinearSolverPARALUTIONMethod(string &linearSolverMethod) except +
+        string getLinearSolverPARALUTIONPreconditioner()
+        void setLinearSolverPARALUTIONPreconditioner(string &linearSolverPreconditioner) except +
 
         string getNonlinearDampingType()
         void setNonlinearDampingType(string &dampingType) except +
@@ -306,8 +310,10 @@ cdef class __Field__:
     def __get_matrix_solver_parameters__(self):
         return {'tolerance' : self.thisptr.getDoubleParameter(b'LinearSolverIterToleranceAbsolute'),
                 'iterations' : self.thisptr.getIntParameter(b'LinearSolverIterIters'),
-                'method' : self.thisptr.getLinearSolverMethod().decode(),
-                'preconditioner' : self.thisptr.getLinearSolverPreconditioner().decode()}
+                'method_dealii' : self.thisptr.getLinearSolverDealIIMethod().decode(),
+                'preconditioner_dealii' : self.thisptr.getLinearSolverDealIIPreconditioner().decode(),
+                'method_paralution' : self.thisptr.getLinearSolverPARALUTIONMethod().decode(),
+                'preconditioner_paralution' : self.thisptr.getLinearSolverPARALUTIONPreconditioner().decode()}
 
     def __set_matrix_solver_parameters__(self, parameters):
         # tolerance
@@ -319,8 +325,10 @@ cdef class __Field__:
         self.thisptr.setParameter(string(b'LinearSolverIterIters'), <int>parameters['iterations'])
 
         # method, preconditioner
-        self.thisptr.setLinearSolverMethod(parameters['method'].encode())
-        self.thisptr.setLinearSolverPreconditioner(parameters['preconditioner'].encode())
+        self.thisptr.setLinearSolverDealIIMethod(parameters['method_dealii'].encode())
+        self.thisptr.setLinearSolverDealIIPreconditioner(parameters['preconditioner_dealii'].encode())
+        self.thisptr.setLinearSolverPARALUTIONMethod(parameters['method_paralution'].encode())
+        self.thisptr.setLinearSolverPARALUTIONPreconditioner(parameters['preconditioner_paralution'].encode())
 
     # refinements
     property number_of_refinements:

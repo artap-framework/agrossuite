@@ -441,28 +441,46 @@ QWidget *FieldWidget::createTransientAnalysisWidget()
 
 QWidget *FieldWidget::createLinearSolverWidget()
 {
-    cmbIterLinearSolverMethod = new QComboBox();
-    cmbIterLinearSolverPreconditioner = new QComboBox();
+    cmbIterLinearSolverDealIIMethod = new QComboBox();
+    cmbIterLinearSolverDealIIPreconditioner = new QComboBox();
+    cmbIterLinearSolverPARALUTIONMethod = new QComboBox();
+    cmbIterLinearSolverPARALUTIONPreconditioner= new QComboBox();
     txtIterLinearSolverToleranceAbsolute = new LineEditDouble(1e-15);
     txtIterLinearSolverToleranceAbsolute->setBottom(0.0);
     txtIterLinearSolverIters = new QSpinBox();
     txtIterLinearSolverIters->setMinimum(1);
     txtIterLinearSolverIters->setMaximum(10000);
 
+    QGridLayout *iterSolverDealIILayout = new QGridLayout();
+    iterSolverDealIILayout->addWidget(new QLabel(tr("Method:")), 0, 0);
+    iterSolverDealIILayout->addWidget(cmbIterLinearSolverDealIIMethod, 0, 1);
+    iterSolverDealIILayout->addWidget(new QLabel(tr("Preconditioner:")), 1, 0);
+    iterSolverDealIILayout->addWidget(cmbIterLinearSolverDealIIPreconditioner, 1, 1);
+
+    QGroupBox *iterSolverDealIIGroup = new QGroupBox(tr("deal.II"));
+    iterSolverDealIIGroup->setLayout(iterSolverDealIILayout);
+
+    QGridLayout *iterSolverPARALUTIONLayout = new QGridLayout();
+    iterSolverPARALUTIONLayout->addWidget(new QLabel(tr("Method:")), 0, 0);
+    iterSolverPARALUTIONLayout->addWidget(cmbIterLinearSolverPARALUTIONMethod, 0, 1);
+    iterSolverPARALUTIONLayout->addWidget(new QLabel(tr("Preconditioner:")), 1, 0);
+    iterSolverPARALUTIONLayout->addWidget(cmbIterLinearSolverPARALUTIONPreconditioner, 1, 1);
+
+    QGroupBox *iterSolverPARALUTIONGroup = new QGroupBox(tr("PARALUTION"));
+    iterSolverPARALUTIONGroup->setLayout(iterSolverPARALUTIONLayout);
+
     QGridLayout *iterSolverLayout = new QGridLayout();
-    iterSolverLayout->addWidget(new QLabel(tr("Method:")), 0, 0);
-    iterSolverLayout->addWidget(cmbIterLinearSolverMethod, 0, 1);
-    iterSolverLayout->addWidget(new QLabel(tr("Preconditioner:")), 1, 0);
-    iterSolverLayout->addWidget(cmbIterLinearSolverPreconditioner, 1, 1);
-    iterSolverLayout->addWidget(new QLabel(tr("Absolute tolerance:")), 2, 0);
-    iterSolverLayout->addWidget(txtIterLinearSolverToleranceAbsolute, 2, 1);
-    iterSolverLayout->addWidget(new QLabel(tr("Maximum number of iterations:")), 3, 0);
-    iterSolverLayout->addWidget(txtIterLinearSolverIters, 3, 1);
+    iterSolverLayout->addWidget(new QLabel(tr("Absolute tolerance:")), 0, 0);
+    iterSolverLayout->addWidget(txtIterLinearSolverToleranceAbsolute, 0, 1);
+    iterSolverLayout->addWidget(new QLabel(tr("Maximum number of iterations:")), 1, 0);
+    iterSolverLayout->addWidget(txtIterLinearSolverIters, 1, 1);
 
     QGroupBox *iterSolverGroup = new QGroupBox(tr("Iterative solver"));
     iterSolverGroup->setLayout(iterSolverLayout);
 
     QVBoxLayout *layoutLinearSolver = new QVBoxLayout();
+    layoutLinearSolver->addWidget(iterSolverDealIIGroup);
+    layoutLinearSolver->addWidget(iterSolverPARALUTIONGroup);
     layoutLinearSolver->addWidget(iterSolverGroup);
     layoutLinearSolver->addStretch();
 
@@ -501,13 +519,21 @@ void FieldWidget::fillComboBox()
     foreach (QString solver, matrixSolverTypeStringKeys())
         cmbLinearSolver->addItem(matrixSolverTypeString(matrixSolverTypeFromStringKey(solver)), matrixSolverTypeFromStringKey(solver));
 
-    cmbIterLinearSolverMethod->clear();
-    foreach (QString method, iterLinearSolverMethodStringKeys())
-        cmbIterLinearSolverMethod->addItem(iterLinearSolverMethodString(iterLinearSolverMethodFromStringKey(method)), iterLinearSolverMethodFromStringKey(method));
+    cmbIterLinearSolverDealIIMethod->clear();
+    foreach (QString method, iterLinearSolverDealIIMethodStringKeys())
+        cmbIterLinearSolverDealIIMethod->addItem(iterLinearSolverDealIIMethodString(iterLinearSolverDealIIMethodFromStringKey(method)), iterLinearSolverDealIIMethodFromStringKey(method));
 
-    cmbIterLinearSolverPreconditioner->clear();
-    foreach (QString type, iterLinearSolverPreconditionerTypeStringKeys())
-        cmbIterLinearSolverPreconditioner->addItem(iterLinearSolverPreconditionerTypeString(iterLinearSolverPreconditionerTypeFromStringKey(type)), iterLinearSolverPreconditionerTypeFromStringKey(type));
+    cmbIterLinearSolverDealIIPreconditioner->clear();
+    foreach (QString type, iterLinearSolverDealIIPreconditionerStringKeys())
+        cmbIterLinearSolverDealIIPreconditioner->addItem(iterLinearSolverDealIIPreconditionerString(iterLinearSolverDealIIPreconditionerFromStringKey(type)), iterLinearSolverDealIIPreconditionerFromStringKey(type));
+
+    cmbIterLinearSolverPARALUTIONMethod->clear();
+    foreach (QString method, iterLinearSolverPARALUTIONMethodStringKeys())
+        cmbIterLinearSolverPARALUTIONMethod->addItem(iterLinearSolverPARALUTIONMethodString(iterLinearSolverPARALUTIONMethodFromStringKey(method)), iterLinearSolverPARALUTIONMethodFromStringKey(method));
+
+    cmbIterLinearSolverPARALUTIONPreconditioner->clear();
+    foreach (QString type, iterLinearSolverPARALUTIONPreconditionerStringKeys())
+        cmbIterLinearSolverPARALUTIONPreconditioner->addItem(iterLinearSolverPARALUTIONPreconditionerString(iterLinearSolverPARALUTIONPreconditionerFromStringKey(type)), iterLinearSolverPARALUTIONPreconditionerFromStringKey(type));
 }
 
 void FieldWidget::load()
@@ -551,10 +577,12 @@ void FieldWidget::load()
     txtPicardAndersonBeta->setValue(m_fieldInfo->value(FieldInfo::PicardAndersonBeta).toDouble());
     txtPicardAndersonNumberOfLastVectors->setValue(m_fieldInfo->value(FieldInfo::PicardAndersonNumberOfLastVectors).toInt());
     // linear solver
-    cmbIterLinearSolverMethod->setCurrentIndex((IterSolverType) cmbIterLinearSolverMethod->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterMethod).toInt()));
-    cmbIterLinearSolverPreconditioner->setCurrentIndex((PreconditionerType) cmbIterLinearSolverPreconditioner->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterPreconditioner).toInt()));
     txtIterLinearSolverToleranceAbsolute->setValue(m_fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble());
     txtIterLinearSolverIters->setValue(m_fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt());
+    cmbIterLinearSolverDealIIMethod->setCurrentIndex((IterSolverDealII) cmbIterLinearSolverDealIIMethod->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()));
+    cmbIterLinearSolverDealIIPreconditioner->setCurrentIndex((PreconditionerDealII) cmbIterLinearSolverDealIIPreconditioner->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
+    cmbIterLinearSolverPARALUTIONMethod->setCurrentIndex((IterSolverPARALUTION) cmbIterLinearSolverPARALUTIONMethod->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONMethod).toInt()));
+    cmbIterLinearSolverPARALUTIONPreconditioner->setCurrentIndex((PreconditionerPARALUTION) cmbIterLinearSolverPARALUTIONPreconditioner->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONPreconditioner).toInt()));
 
     doAnalysisTypeChanged(cmbAnalysisType->currentIndex());
 }
@@ -595,10 +623,12 @@ bool FieldWidget::save()
     m_fieldInfo->setValue(FieldInfo::PicardAndersonBeta, txtPicardAndersonBeta->value());
     m_fieldInfo->setValue(FieldInfo::PicardAndersonNumberOfLastVectors, txtPicardAndersonNumberOfLastVectors->value());
     // linear solver
-    m_fieldInfo->setValue(FieldInfo::LinearSolverIterMethod, cmbIterLinearSolverMethod->itemData(cmbIterLinearSolverMethod->currentIndex()).toInt());
-    m_fieldInfo->setValue(FieldInfo::LinearSolverIterPreconditioner, cmbIterLinearSolverPreconditioner->itemData(cmbIterLinearSolverPreconditioner->currentIndex()).toInt());
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterToleranceAbsolute, txtIterLinearSolverToleranceAbsolute->value());
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterIters, txtIterLinearSolverIters->value());
+    m_fieldInfo->setValue(FieldInfo::LinearSolverIterDealIIMethod, cmbIterLinearSolverDealIIMethod->itemData(cmbIterLinearSolverDealIIMethod->currentIndex()).toInt());
+    m_fieldInfo->setValue(FieldInfo::LinearSolverIterDealIIPreconditioner, cmbIterLinearSolverDealIIPreconditioner->itemData(cmbIterLinearSolverDealIIPreconditioner->currentIndex()).toInt());
+    m_fieldInfo->setValue(FieldInfo::LinearSolverIterPARALUTIONMethod, cmbIterLinearSolverPARALUTIONMethod->itemData(cmbIterLinearSolverPARALUTIONMethod->currentIndex()).toInt());
+    m_fieldInfo->setValue(FieldInfo::LinearSolverIterPARALUTIONPreconditioner, cmbIterLinearSolverPARALUTIONPreconditioner->itemData(cmbIterLinearSolverPARALUTIONPreconditioner->currentIndex()).toInt());
 
     return true;
 }
@@ -703,10 +733,12 @@ void FieldWidget::doLinearSolverChanged(int index)
     MatrixSolverType solverType = (MatrixSolverType) cmbLinearSolver->itemData(cmbLinearSolver->currentIndex()).toInt();
     bool isIterative = isMatrixSolverIterative(solverType);
 
-    cmbIterLinearSolverMethod->setEnabled(isIterative);
-    cmbIterLinearSolverPreconditioner->setEnabled(isIterative);
     txtIterLinearSolverToleranceAbsolute->setEnabled(isIterative);
     txtIterLinearSolverIters->setEnabled(isIterative);
+    cmbIterLinearSolverDealIIMethod->setEnabled(solverType == SOLVER_DEALII);
+    cmbIterLinearSolverDealIIPreconditioner->setEnabled(solverType == SOLVER_DEALII);
+    cmbIterLinearSolverPARALUTIONMethod->setEnabled(solverType == SOLVER_PARALUTION);
+    cmbIterLinearSolverPARALUTIONPreconditioner->setEnabled(solverType == SOLVER_PARALUTION);
 }
 
 void FieldWidget::doNonlinearDampingChanged(int index)

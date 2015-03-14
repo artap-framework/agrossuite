@@ -49,8 +49,10 @@ static QMap<VectorType, QString> vectorTypeList;
 static QMap<VectorCenter, QString> vectorCenterList;
 static QMap<DataTableType, QString> dataTableTypeList;
 static QMap<ButcherTableType, QString> butcherTableTypeList;
-static QMap<IterSolverType, QString> iterLinearSolverMethodList;
-static QMap<PreconditionerType, QString> iterLinearSolverPreconditionerTypeList;
+static QMap<IterSolverDealII, QString> iterLinearSolverDealIIMethodList;
+static QMap<PreconditionerDealII, QString> iterLinearSolverDealIIPreconditionerList;
+static QMap<IterSolverPARALUTION, QString> iterLinearSolverPARALUTIONMethodList;
+static QMap<PreconditionerPARALUTION, QString> iterLinearSolverPARALUTIONPreconditionerList;
 
 QStringList coordinateTypeStringKeys() { return coordinateTypeList.values(); }
 QString coordinateTypeToStringKey(CoordinateType coordinateType) { return coordinateTypeList[coordinateType]; }
@@ -144,13 +146,21 @@ QStringList butcherTableTypeStringKeys() { return butcherTableTypeList.values();
 QString butcherTableTypeToStringKey(ButcherTableType tableType) { return butcherTableTypeList[tableType]; }
 ButcherTableType butcherTableTypeFromStringKey(const QString &tableType) { return butcherTableTypeList.key(tableType); }
 
-QStringList iterLinearSolverMethodStringKeys() { return iterLinearSolverMethodList.values(); }
-QString iterLinearSolverMethodToStringKey(IterSolverType type) { return iterLinearSolverMethodList[type]; }
-IterSolverType iterLinearSolverMethodFromStringKey(const QString &type) { return iterLinearSolverMethodList.key(type); }
+QStringList iterLinearSolverDealIIMethodStringKeys() { return iterLinearSolverDealIIMethodList.values(); }
+QString iterLinearSolverDealIIMethodToStringKey(IterSolverDealII type) { return iterLinearSolverDealIIMethodList[type]; }
+IterSolverDealII iterLinearSolverDealIIMethodFromStringKey(const QString &type) { return iterLinearSolverDealIIMethodList.key(type); }
 
-QStringList iterLinearSolverPreconditionerTypeStringKeys() { return iterLinearSolverPreconditionerTypeList.values(); }
-QString iterLinearSolverPreconditionerTypeToStringKey(PreconditionerType type) { return iterLinearSolverPreconditionerTypeList[type]; }
-PreconditionerType iterLinearSolverPreconditionerTypeFromStringKey(const QString &type) { return iterLinearSolverPreconditionerTypeList.key(type); }
+QStringList iterLinearSolverDealIIPreconditionerStringKeys() { return iterLinearSolverDealIIPreconditionerList.values(); }
+QString iterLinearSolverDealIIPreconditionerToStringKey(PreconditionerDealII type) { return iterLinearSolverDealIIPreconditionerList[type]; }
+PreconditionerDealII iterLinearSolverDealIIPreconditionerFromStringKey(const QString &type) { return iterLinearSolverDealIIPreconditionerList.key(type); }
+
+QStringList iterLinearSolverPARALUTIONMethodStringKeys() { return iterLinearSolverPARALUTIONMethodList.values(); }
+QString iterLinearSolverPARALUTIONMethodToStringKey(IterSolverPARALUTION type) { return iterLinearSolverPARALUTIONMethodList[type]; }
+IterSolverPARALUTION iterLinearSolverPARALUTIONMethodFromStringKey(const QString &type) { return iterLinearSolverPARALUTIONMethodList.key(type); }
+
+QStringList iterLinearSolverPARALUTIONPreconditionerStringKeys() { return iterLinearSolverPARALUTIONPreconditionerList.values(); }
+QString iterLinearSolverPARALUTIONPreconditionerToStringKey(PreconditionerPARALUTION type) { return iterLinearSolverPARALUTIONPreconditionerList[type]; }
+PreconditionerPARALUTION iterLinearSolverPARALUTIONPreconditionerFromStringKey(const QString &type) { return iterLinearSolverPARALUTIONPreconditionerList.key(type); }
 
 void initLists()
 {
@@ -315,10 +325,10 @@ void initLists()
     butcherTableTypeList.insert(Explicit_CASH_KARP_6_45_embedded, "cash-karp");
     butcherTableTypeList.insert(Explicit_DORMAND_PRINCE_7_45_embedded, "dormand-prince");
 
-    // Iterative solver
-    iterLinearSolverMethodList.insert(IterSolverType_CG, "cg");
-    iterLinearSolverMethodList.insert(IterSolverType_GMRES, "gmres");
-    iterLinearSolverMethodList.insert(IterSolverType_BiCGStab, "bicgstab");
+    // Iterative solver - deal.II
+    iterLinearSolverDealIIMethodList.insert(IterSolverDealII_CG, "cg");
+    iterLinearSolverDealIIMethodList.insert(IterSolverDealII_BiCGStab, "bicgstab");
+    iterLinearSolverDealIIMethodList.insert(IterSolverDealII_GMRES, "gmres");
     //iterLinearSolverMethodList.insert(IterSolverType_Richardson, "richardson");
     //iterLinearSolverMethodList.insert(IterSolverType_MinRes, "minres");
     //iterLinearSolverMethodList.insert(IterSolverType_GMRS, "gmrs");
@@ -330,10 +340,26 @@ void initLists()
     // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_Relaxation, "relaxation");
     // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_Jacobi, "jacobi");
     // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_SOR, "sor");
-    iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_SSOR, "ssor");
+    iterLinearSolverDealIIPreconditionerList.insert(PreconditionerDealII_SSOR, "ssor");
     // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_PSOR, "psor");
     // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_LACSolver, "lacsolver");
     // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_Chebyshev, "chebyshev");
+
+    // Iterative solver - PARALUTION
+    iterLinearSolverPARALUTIONMethodList.insert(IterSolverPARALUTION_CG, "cg");
+    iterLinearSolverPARALUTIONMethodList.insert(IterSolverPARALUTION_BiCGStab, "bicgstab");
+    iterLinearSolverPARALUTIONMethodList.insert(IterSolverPARALUTION_GMRES, "gmres");
+    iterLinearSolverPARALUTIONMethodList.insert(IterSolverPARALUTION_FGMRES, "fgmres");
+    iterLinearSolverPARALUTIONMethodList.insert(IterSolverPARALUTION_CR, "cr");
+    iterLinearSolverPARALUTIONMethodList.insert(IterSolverPARALUTION_IDR, "idr");
+
+    iterLinearSolverPARALUTIONPreconditionerList.insert(PreconditionerPARALUTION_Jacobi, "jacobi");
+    iterLinearSolverPARALUTIONPreconditionerList.insert(PreconditionerPARALUTION_MultiColoredGS, "multicoloredgs");
+    iterLinearSolverPARALUTIONPreconditionerList.insert(PreconditionerPARALUTION_MultiColoredSGS, "multicoloredsgs");
+    iterLinearSolverPARALUTIONPreconditionerList.insert(PreconditionerPARALUTION_ILU, "ilu");
+    iterLinearSolverPARALUTIONPreconditionerList.insert(PreconditionerPARALUTION_MultiColoredILU, "multicoloredilu");
+    iterLinearSolverPARALUTIONPreconditionerList.insert(PreconditionerPARALUTION_MultiElimination, "multielimination");
+    iterLinearSolverPARALUTIONPreconditionerList.insert(PreconditionerPARALUTION_FSAI, "fsai");
 }
 
 QString errorNormString(NormType projNormType)
@@ -758,56 +784,102 @@ QString butcherTableTypeString(ButcherTableType tableType)
     }
 }
 
-QString iterLinearSolverMethodString(IterSolverType type)
+QString iterLinearSolverDealIIMethodString(IterSolverDealII type)
 {
     switch (type)
     {
-    case IterSolverType_CG:
+    case IterSolverDealII_CG:
         return QObject::tr("CG");
-    case IterSolverType_GMRES:
+    case IterSolverDealII_GMRES:
         return QObject::tr("GMRES");
-    case IterSolverType_BiCGStab:
+    case IterSolverDealII_BiCGStab:
         return QObject::tr("BiCGStab");
-    case IterSolverType_Richardson:
+    case IterSolverDealII_Richardson:
         return QObject::tr("Richardson");
-    case IterSolverType_MinRes:
+    case IterSolverDealII_MinRes:
         return QObject::tr("MinRes");
-    case IterSolverType_GMRS:
-        return QObject::tr("GMRS");
-    case IterSolverType_Relaxation:
+    case IterSolverDealII_Relaxation:
         return QObject::tr("Relaxation");
     default:
-        std::cerr << "Iterative solver method '" + QString::number(type).toStdString() + "' is not implemented. iterLinearSolverTypeString(ParalutionSolverType type)" << endl;
+        std::cerr << "Iterative solver Deal.II method '" + QString::number(type).toStdString() + "' is not implemented. iterLinearSolverTypeString(ParalutionSolverType type)" << endl;
         throw;
     }
 }
 
-QString iterLinearSolverPreconditionerTypeString(PreconditionerType type)
+QString iterLinearSolverDealIIPreconditionerString(PreconditionerDealII type)
 {
     switch (type)
     {
-    case PreconditionerType_Identity:
+    case PreconditionerDealII_Identity:
         return QObject::tr("Identity");
-    case PreconditionerType_Richardson:
+    case PreconditionerDealII_Richardson:
         return QObject::tr("Richardson");
-    case PreconditionerType_UseMatrix:
+    case PreconditionerDealII_UseMatrix:
         return QObject::tr("UseMatrix");
-    case PreconditionerType_Relaxation:
+    case PreconditionerDealII_Relaxation:
         return QObject::tr("Relaxation");
-    case PreconditionerType_Jacobi:
+    case PreconditionerDealII_Jacobi:
         return QObject::tr("Jacobi");
-    case PreconditionerType_SOR:
+    case PreconditionerDealII_SOR:
         return QObject::tr("SOR");
-    case PreconditionerType_SSOR:
+    case PreconditionerDealII_SSOR:
         return QObject::tr("SSOR");
-    case PreconditionerType_PSOR:
+    case PreconditionerDealII_PSOR:
         return QObject::tr("PSOR");
-    case PreconditionerType_LACSolver:
+    case PreconditionerDealII_LACSolver:
         return QObject::tr("LACSolver");
-    case PreconditionerType_Chebyshev:
+    case PreconditionerDealII_Chebyshev:
         return QObject::tr("Chebyshev");
     default:
-        std::cerr << "Iterative solver preconditioner '" + QString::number(type).toStdString() + "' is not implemented. iterLinearSolverPreconditionerTypeString(PreconditionerType type)" << endl;
+        std::cerr << "Iterative solver Deal.II preconditioner '" + QString::number(type).toStdString() + "' is not implemented. iterLinearSolverPreconditionerTypeString(PreconditionerType type)" << endl;
+        throw;
+    }
+}
+
+QString iterLinearSolverPARALUTIONMethodString(IterSolverPARALUTION type)
+{
+    switch (type)
+    {
+    case IterSolverPARALUTION_CG:
+        return QObject::tr("CG");
+    case IterSolverPARALUTION_BiCGStab:
+        return QObject::tr("BiCGStab");
+    case IterSolverPARALUTION_GMRES:
+        return QObject::tr("GMRES");
+    case IterSolverPARALUTION_FGMRES:
+        return QObject::tr("FGMRES");
+    case IterSolverPARALUTION_CR:
+        return QObject::tr("CR");
+    case IterSolverPARALUTION_IDR:
+        return QObject::tr("IDR");
+    default:
+        std::cerr << "Iterative solver PARALUTION method '" + QString::number(type).toStdString() + "' is not implemented. iterLinearSolverTypeString(ParalutionSolverType type)" << endl;
+        throw;
+    }
+}
+
+QString iterLinearSolverPARALUTIONPreconditionerString(PreconditionerPARALUTION type)
+{
+    switch (type)
+    {
+    case PreconditionerPARALUTION_None:
+        return QObject::tr("None");
+    case PreconditionerPARALUTION_Jacobi:
+        return QObject::tr("Jacobi");
+    case PreconditionerPARALUTION_MultiColoredGS:
+        return QObject::tr("MultiColoredG");
+    case PreconditionerPARALUTION_MultiColoredSGS:
+        return QObject::tr("MultiColoredSGS");
+    case PreconditionerPARALUTION_ILU:
+        return QObject::tr("ILUw");
+    case PreconditionerPARALUTION_MultiColoredILU:
+        return QObject::tr("MultiColoredILU");
+    case PreconditionerPARALUTION_MultiElimination:
+        return QObject::tr("MultiElimination");
+    case PreconditionerPARALUTION_FSAI:
+        return QObject::tr("FSAI");
+    default:
+        std::cerr << "Iterative solver PARALUTION preconditioner '" + QString::number(type).toStdString() + "' is not implemented. iterLinearSolverPreconditionerTypeString(PreconditionerType type)" << endl;
         throw;
     }
 }

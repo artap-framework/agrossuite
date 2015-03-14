@@ -341,11 +341,15 @@ void InfoWidget::showInfo()
             }
 
             QString matrixSolver = matrixSolverTypeString(fieldInfo->matrixSolver());
-            if (isMatrixSolverIterative(fieldInfo->matrixSolver()))
-                matrixSolver += tr(" (%1, %2) - iterative").
-                        arg(iterLinearSolverMethodString((IterSolverType) fieldInfo->value(FieldInfo::LinearSolverIterMethod).toInt())).
-                        arg(iterLinearSolverPreconditionerTypeString((PreconditionerType) fieldInfo->value(FieldInfo::LinearSolverIterPreconditioner).toInt()));
-            else
+            if (fieldInfo->matrixSolver() == SOLVER_DEALII)
+                matrixSolver += tr(" (%1, %2) - iterative (deal.II)").
+                        arg(iterLinearSolverDealIIMethodString((IterSolverDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt())).
+                        arg(iterLinearSolverDealIIPreconditionerString((PreconditionerDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
+            else if (fieldInfo->matrixSolver() == SOLVER_PARALUTION)
+                matrixSolver += tr(" (%1, %2) - iterative (PARALUTION)").
+                        arg(iterLinearSolverPARALUTIONMethodString((IterSolverPARALUTION) fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONMethod).toInt())).
+                        arg(iterLinearSolverPARALUTIONPreconditionerString((PreconditionerPARALUTION) fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONPreconditioner).toInt()));
+
                 matrixSolver += tr(" - direct");
 
             field->SetValue("LINEARSOLVER_TYPE_LABEL", tr("Linear solver:").toStdString());

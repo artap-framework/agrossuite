@@ -77,15 +77,27 @@ class PyField
         inline std::string getMatrixSolver() const { return matrixSolverTypeToStringKey(m_fieldInfo->matrixSolver()).toStdString(); }
         void setMatrixSolver(const std::string &matrixSolver);
 
-        inline std::string getLinearSolverMethod() const {
-             return iterLinearSolverMethodToStringKey((IterSolverType) m_fieldInfo->value(FieldInfo::LinearSolverIterMethod).toInt()).toStdString();
+        // matrix solver - iterative deal.II
+        inline std::string getLinearSolverDealIIMethod() const {
+             return iterLinearSolverDealIIMethodToStringKey((IterSolverDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()).toStdString();
         }
-        void setLinearSolverMethod(const std::string &linearSolverMethod);
+        void setLinearSolverDealIIMethod(const std::string &linearSolverMethod);
 
-        inline std::string getLinearSolverPreconditioner() const {
-            return iterLinearSolverPreconditionerTypeToStringKey((PreconditionerType) m_fieldInfo->value(FieldInfo::LinearSolverIterPreconditioner).toInt()).toStdString();
+        inline std::string getLinearSolverDealIIPreconditioner() const {
+            return iterLinearSolverDealIIPreconditionerToStringKey((PreconditionerDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()).toStdString();
         }
-        void setLinearSolverPreconditioner(const std::string &linearSolverPreconditioner);
+        void setLinearSolverDealIIPreconditioner(const std::string &linearSolverPreconditioner);
+
+        // matrix solver - iterative PARALUTION
+        inline std::string getLinearSolverPARALUTIONMethod() const {
+             return iterLinearSolverPARALUTIONMethodToStringKey((IterSolverPARALUTION) m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONMethod).toInt()).toStdString();
+        }
+        void setLinearSolverPARALUTIONMethod(const std::string &linearSolverMethod);
+
+        inline std::string getLinearSolverPARALUTIONPreconditioner() const {
+            return iterLinearSolverPARALUTIONPreconditionerToStringKey((PreconditionerPARALUTION) m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONPreconditioner).toInt()).toStdString();
+        }
+        void setLinearSolverPARALUTIONPreconditioner(const std::string &linearSolverPreconditioner);
 
         // number of refinements
         inline int getNumberOfRefinements() const { return m_fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt(); }

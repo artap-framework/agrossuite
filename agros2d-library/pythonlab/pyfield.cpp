@@ -145,22 +145,40 @@ void PyField::setMatrixSolver(const std::string &matrixSolver)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(matrixSolverTypeStringKeys())).toStdString());
 }
 
-void PyField::setLinearSolverMethod(const std::string &linearSolverMethod)
+void PyField::setLinearSolverDealIIMethod(const std::string &linearSolverMethod)
 {
-    if (iterLinearSolverMethodStringKeys().contains(QString::fromStdString(linearSolverMethod)))
-        m_fieldInfo->setValue(FieldInfo::LinearSolverIterMethod,
-                              (IterSolverType) iterLinearSolverMethodFromStringKey(QString::fromStdString(linearSolverMethod)));
+    if (iterLinearSolverDealIIMethodStringKeys().contains(QString::fromStdString(linearSolverMethod)))
+        m_fieldInfo->setValue(FieldInfo::LinearSolverIterDealIIMethod,
+                              (IterSolverDealII) iterLinearSolverDealIIMethodFromStringKey(QString::fromStdString(linearSolverMethod)));
     else
-        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(iterLinearSolverMethodStringKeys())).toStdString());
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(iterLinearSolverDealIIMethodStringKeys())).toStdString());
 }
 
-void PyField::setLinearSolverPreconditioner(const std::string &linearSolverPreconditioner)
+void PyField::setLinearSolverDealIIPreconditioner(const std::string &linearSolverPreconditioner)
 {
-    if (iterLinearSolverPreconditionerTypeStringKeys().contains(QString::fromStdString(linearSolverPreconditioner)))
-        m_fieldInfo->setValue(FieldInfo::LinearSolverIterPreconditioner,
-                              (PreconditionerType) iterLinearSolverPreconditionerTypeFromStringKey(QString::fromStdString(linearSolverPreconditioner)));
+    if (iterLinearSolverDealIIPreconditionerStringKeys().contains(QString::fromStdString(linearSolverPreconditioner)))
+        m_fieldInfo->setValue(FieldInfo::LinearSolverIterDealIIPreconditioner,
+                              (PreconditionerDealII) iterLinearSolverDealIIPreconditionerFromStringKey(QString::fromStdString(linearSolverPreconditioner)));
     else
-        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(iterLinearSolverPreconditionerTypeStringKeys())).toStdString());
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(iterLinearSolverDealIIPreconditionerStringKeys())).toStdString());
+}
+
+void PyField::setLinearSolverPARALUTIONMethod(const std::string &linearSolverMethod)
+{
+    if (iterLinearSolverPARALUTIONMethodStringKeys().contains(QString::fromStdString(linearSolverMethod)))
+        m_fieldInfo->setValue(FieldInfo::LinearSolverIterPARALUTIONMethod,
+                              (IterSolverPARALUTION) iterLinearSolverPARALUTIONMethodFromStringKey(QString::fromStdString(linearSolverMethod)));
+    else
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(iterLinearSolverPARALUTIONMethodStringKeys())).toStdString());
+}
+
+void PyField::setLinearSolverPARALUTIONPreconditioner(const std::string &linearSolverPreconditioner)
+{
+    if (iterLinearSolverPARALUTIONPreconditionerStringKeys().contains(QString::fromStdString(linearSolverPreconditioner)))
+        m_fieldInfo->setValue(FieldInfo::LinearSolverIterPARALUTIONPreconditioner,
+                              (PreconditionerPARALUTION) iterLinearSolverPARALUTIONPreconditionerFromStringKey(QString::fromStdString(linearSolverPreconditioner)));
+    else
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(iterLinearSolverPARALUTIONPreconditionerStringKeys())).toStdString());
 }
 
 void PyField::setAdaptivityEstimator(const std::string &adaptivityEstimator)

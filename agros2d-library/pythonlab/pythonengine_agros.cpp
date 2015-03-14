@@ -308,10 +308,10 @@ QString createPythonFromModel()
         {
             str += QString("%1.matrix_iterative_solver_method = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
-                    arg(iterLinearSolverMethodToStringKey((IterSolverType) fieldInfo->value(FieldInfo::LinearSolverIterMethod).toInt()));
+                    arg(iterLinearSolverDealIIMethodToStringKey((IterSolverDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()));
             str += QString("%1.matrix_iterative_solver_preconditioner = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
-                    arg(iterLinearSolverPreconditionerTypeToStringKey((PreconditionerType) fieldInfo->value(FieldInfo::LinearSolverIterPreconditioner).toInt()));
+                    arg(iterLinearSolverDealIIPreconditionerToStringKey((PreconditionerDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
             str += QString("%1.matrix_iterative_solver_tolerance = %2\n").
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble());

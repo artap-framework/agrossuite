@@ -88,8 +88,10 @@ public:
         AdaptivityTransientRedoneEach,
         TransientTimeSkip,
         TransientInitialCondition,
-        LinearSolverIterMethod,
-        LinearSolverIterPreconditioner,
+        LinearSolverIterDealIIMethod,
+        LinearSolverIterDealIIPreconditioner,
+        LinearSolverIterPARALUTIONMethod,
+        LinearSolverIterPARALUTIONPreconditioner,
         LinearSolverIterToleranceAbsolute,
         LinearSolverIterIters,        
         TimeUnit

@@ -317,6 +317,9 @@ void SolverDeal::solveLinearSystem(dealii::SparseMatrix<double> &system, dealii:
 
 void SolverDeal::solveUMFPACK(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln)
 {
+    Agros2D::log()->printDebug(QObject::tr("Solver"),
+                               QObject::tr("Direct solver - UMFPACK"));
+
     if (m_assemble_matrix)
         direct_solver.initialize(system);
     else
@@ -327,6 +330,9 @@ void SolverDeal::solveUMFPACK(dealii::SparseMatrix<double> &system, dealii::Vect
 
 void SolverDeal::solveExternalUMFPACK(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln)
 {    
+    Agros2D::log()->printDebug(QObject::tr("Solver"),
+                               QObject::tr("Direct solver - UMFPACK (external)"));
+
     AgrosExternalSolverUMFPack ext(&system, &rhs);
     ext.solve();
     sln = ext.solution();
@@ -334,12 +340,17 @@ void SolverDeal::solveExternalUMFPACK(dealii::SparseMatrix<double> &system, deal
 
 void SolverDeal::solvedealii(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln)
 {
+    Agros2D::log()->printDebug(QObject::tr("Solver"),
+                               QObject::tr("Iterative solver: deal.II (%1, %2)")
+                               .arg(iterLinearSolverDealIIMethodString((IterSolverDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()))
+                               .arg(iterLinearSolverDealIIPreconditionerString((PreconditionerDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt())));
+
     // preconditioner
     dealii::PreconditionSSOR<> preconditioner;
 
-    switch ((PreconditionerType)m_fieldInfo->value(FieldInfo::LinearSolverIterPreconditioner).toInt())
+    switch ((PreconditionerDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt())
     {
-    case PreconditionerType_SSOR:
+    case PreconditionerDealII_SSOR:
     {
         // TODO:
         preconditioner.initialize(system, 1.2);
@@ -354,34 +365,39 @@ void SolverDeal::solvedealii(dealii::SparseMatrix<double> &system, dealii::Vecto
     dealii::SolverControl solver_control(m_fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt(),
                                          m_fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble() * system_rhs.l2_norm());
 
-    switch ((IterSolverType)m_fieldInfo->value(FieldInfo::LinearSolverIterMethod).toInt())
+    switch ((IterSolverDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt())
     {
-    case IterSolverType_CG:
+    case IterSolverDealII_CG:
     {
         dealii::SolverCG<> solver(solver_control);
         solver.solve(system, sln, rhs, preconditioner);
     }
         break;
-    case IterSolverType_BiCGStab:
+    case IterSolverDealII_BiCGStab:
     {
         dealii::SolverBicgstab<> solver(solver_control);
         solver.solve(system, sln, rhs, preconditioner);
     }
         break;
-    case IterSolverType_GMRES:
+    case IterSolverDealII_GMRES:
     {
         dealii::SolverGMRES<> solver(solver_control);
         solver.solve(system, sln, rhs, preconditioner);
     }
         break;
     default:
-        Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Solver method '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
+        Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Solver method (deal.II) '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
         return;
     }
 }
 
 void SolverDeal::solvePARALUTION(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln)
 {
+    Agros2D::log()->printDebug(QObject::tr("Solver"),
+                               QObject::tr("Iterative solver: PARALUTION (%1, %2)")
+                               .arg(iterLinearSolverPARALUTIONMethodString((IterSolverPARALUTION) m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONMethod).toInt()))
+                               .arg(iterLinearSolverPARALUTIONPreconditionerString((PreconditionerPARALUTION) m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONPreconditioner).toInt())));
+
     LocalVector<double> sln_paralution;
     LocalVector<double> rhs_paralution;
     LocalMatrix<double> mat_paralution;
@@ -398,26 +414,89 @@ void SolverDeal::solvePARALUTION(dealii::SparseMatrix<double> &system, dealii::V
     sln_paralution.MoveToAccelerator();
     rhs_paralution.MoveToAccelerator();
 
-    // Linear Solver
-    BiCGStab<LocalMatrix<double>, LocalVector<double>, double > ls;
-    ILU<LocalMatrix<double>, LocalVector<double>, double> p;
-    ls.Init(m_fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble(),
-            1e-8,
-            1e8,
-            m_fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt());
+    // linear solver
+    IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double > *ls;
+    switch ((IterSolverPARALUTION) m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONMethod).toInt())
+    {
+    case IterSolverPARALUTION_CG:
+        ls = new CG<LocalMatrix<double>, LocalVector<double>, double >();
+        break;
+    case IterSolverPARALUTION_BiCGStab:
+        ls = new BiCGStab<LocalMatrix<double>, LocalVector<double>, double >();
+        break;
+    case IterSolverPARALUTION_GMRES:
+        ls = new GMRES<LocalMatrix<double>, LocalVector<double>, double >();
+        break;
+    case IterSolverPARALUTION_FGMRES:
+        ls = new FGMRES<LocalMatrix<double>, LocalVector<double>, double >();
+        break;
+    case IterSolverPARALUTION_CR:
+        ls = new CR<LocalMatrix<double>, LocalVector<double>, double >();
+        break;
+    case IterSolverPARALUTION_IDR:
+        ls = new IDR<LocalMatrix<double>, LocalVector<double>, double >();
+        break;
+    default:
+        Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Solver method (PARALUTION) '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
+        return;
+    }
 
-    ls.SetOperator(mat_paralution);
-    ls.SetPreconditioner(p);
-    ls.Build();
+    ls->Init(m_fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble(),
+             1e-8,
+             1e8,
+             m_fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt());
+
+    // preconditioner
+    Preconditioner<LocalMatrix<double>, LocalVector<double>, double> *p;
+    switch ((PreconditionerPARALUTION) m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONPreconditioner).toInt())
+    {
+    case PreconditionerPARALUTION_Jacobi:
+        p = new Jacobi<LocalMatrix<double>, LocalVector<double>, double >();
+        break;
+    case PreconditionerPARALUTION_MultiColoredGS:
+        p = new MultiColoredGS<LocalMatrix<double>, LocalVector<double>, double >();
+        break;
+    case PreconditionerPARALUTION_MultiColoredSGS:
+        p = new MultiColoredSGS<LocalMatrix<double>, LocalVector<double>, double >();
+        break;
+    case PreconditionerPARALUTION_ILU:
+        p = new ILU<LocalMatrix<double>, LocalVector<double>, double >();
+        break;
+    case PreconditionerPARALUTION_MultiColoredILU:
+        p = new MultiColoredILU<LocalMatrix<double>, LocalVector<double>, double >();
+        break;
+    case PreconditionerPARALUTION_MultiElimination:
+        p = new MultiElimination<LocalMatrix<double>, LocalVector<double>, double >();
+        break;
+    case PreconditionerPARALUTION_FSAI:
+        p = new FSAI<LocalMatrix<double>, LocalVector<double>, double >();
+        break;
+    default:
+        Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Precoditioner (PARALUTION) '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
+        return;
+    }
+
+    ls->SetOperator(mat_paralution);
+    ls->SetPreconditioner(*p);
+    ls->Build();
 
     mat_paralution.info();
 
-    ls.Solve(rhs_paralution, &sln_paralution);
+    ls->Solve(rhs_paralution, &sln_paralution);
+
+    Agros2D::log()->printDebug(QObject::tr("Solver"),
+                               QObject::tr("Iterative solver: PARALUTION (residual %1, steps %2)")
+                               .arg(ls->GetCurrentResidual())
+                               .arg(ls->GetIterationCount()));
 
     export_dealii_vector(sln_paralution, &sln);
 
-    p.Clear();
-    ls.Clear();
+    ls->Clear();
+    delete ls;
+
+    p->Clear();
+    delete p;
+
     rhs_paralution.Clear();
     sln_paralution.Clear();
     mat_paralution.Clear();

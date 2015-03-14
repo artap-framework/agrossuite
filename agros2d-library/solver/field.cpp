@@ -908,8 +908,10 @@ void FieldInfo::setStringKeys()
     m_settingKey[AdaptivityEstimator] = "AdaptivityEstimator";    
     m_settingKey[TransientTimeSkip] = "TransientTimeSkip";
     m_settingKey[TransientInitialCondition] = "TransientInitialCondition";
-    m_settingKey[LinearSolverIterMethod] = "LinearSolverIterMethod";
-    m_settingKey[LinearSolverIterPreconditioner] = "LinearSolverIterPreconditioner";
+    m_settingKey[LinearSolverIterDealIIMethod] = "LinearSolverIterDealIIMethod";
+    m_settingKey[LinearSolverIterDealIIPreconditioner] = "LinearSolverIterDealIIPreconditioner";
+    m_settingKey[LinearSolverIterPARALUTIONMethod] = "LinearSolverIterPARALUTIONMethod";
+    m_settingKey[LinearSolverIterPARALUTIONPreconditioner] = "LinearSolverIterPARALUTIONPreconditioner";
     m_settingKey[LinearSolverIterToleranceAbsolute] = "LinearSolverIterToleranceAbsolute";
     m_settingKey[LinearSolverIterIters] = "LinearSolverIterIters";
     m_settingKey[TimeUnit] = "TimeUnit";
@@ -943,8 +945,10 @@ void FieldInfo::setDefaultValues()
     m_settingDefault[AdaptivityTransientRedoneEach] = 5;
     m_settingDefault[TransientTimeSkip] = 0.0;
     m_settingDefault[TransientInitialCondition] = 0.0;
-    m_settingDefault[LinearSolverIterMethod] = IterSolverType_BiCGStab;
-    m_settingDefault[LinearSolverIterPreconditioner] = PreconditionerType_SSOR;
+    m_settingDefault[LinearSolverIterDealIIMethod] = IterSolverDealII_BiCGStab;
+    m_settingDefault[LinearSolverIterDealIIPreconditioner] = PreconditionerDealII_SSOR;
+    m_settingDefault[LinearSolverIterPARALUTIONMethod] = IterSolverPARALUTION_BiCGStab;
+    m_settingDefault[LinearSolverIterPARALUTIONPreconditioner] = PreconditionerPARALUTION_Jacobi;
     m_settingDefault[LinearSolverIterToleranceAbsolute] = 1e-16;
     m_settingDefault[LinearSolverIterIters] = 1000;
     m_settingDefault[TimeUnit] = "s";

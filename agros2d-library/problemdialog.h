@@ -148,10 +148,12 @@ private:
     LineEditDouble *txtTransientTimeSkip;
 
     // linear solver
-    QComboBox *cmbIterLinearSolverMethod;
-    QComboBox *cmbIterLinearSolverPreconditioner;
     LineEditDouble *txtIterLinearSolverToleranceAbsolute;
     QSpinBox *txtIterLinearSolverIters;
+    QComboBox *cmbIterLinearSolverDealIIMethod;
+    QComboBox *cmbIterLinearSolverDealIIPreconditioner;
+    QComboBox *cmbIterLinearSolverPARALUTIONMethod;
+    QComboBox *cmbIterLinearSolverPARALUTIONPreconditioner;
 
     // equation
     // LaTeXViewer *equationLaTeX;
