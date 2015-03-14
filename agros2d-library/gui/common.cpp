@@ -144,9 +144,12 @@ void fillComboBoxTimeStep(const FieldInfo* fieldInfo, QComboBox *cmbTimeStep)
     if (!Agros2D::problem()->isSolved())
         return;
 
+    QList<double> timeLevels = Agros2D::problem()->timeStepLengths();
+    if (timeLevels.count() == 0)
+        return;
+
     cmbTimeStep->blockSignals(true);
 
-    QList<double> timeLevels = Agros2D::problem()->timeStepLengths();
 
     // store variable
     int timeStep = cmbTimeStep->currentIndex();

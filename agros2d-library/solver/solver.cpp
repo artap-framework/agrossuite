@@ -478,6 +478,11 @@ void SolverDeal::solvePARALUTION(dealii::SparseMatrix<double> &system, dealii::V
 
     ls->SetOperator(mat_paralution);
     ls->SetPreconditioner(*p);
+    // AMG<LocalMatrix<double>, LocalVector<double>, double > amg;
+    // amg.InitMaxIter(1) ;
+    // amg.Verbose(0);
+    // ls->SetPreconditioner(amg);
+    ls->Verbose(1); // 2
     ls->Build();
 
     mat_paralution.info();
