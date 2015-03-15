@@ -334,9 +334,9 @@ class TestHeatTransientAxisymmetric(Agros2DTestCase):
         problem.mesh_type = "triangle"
         
         problem.time_step_method = "fixed"
-        problem.time_method_order = 2
+        problem.time_method_order = 3
         problem.time_total = 10000
-        problem.time_steps = 50
+        problem.time_steps = 40
         
         # disable view
         agros2d.view.mesh.disable()
@@ -428,6 +428,6 @@ if __name__ == '__main__':
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatAxisymmetric))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarNewton))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarPicard))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatTransientAxisymmetric))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(BenchmarkHeatTransientAxisymmetric))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatTransientAxisymmetric))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(BenchmarkHeatTransientAxisymmetric))
     suite.run(result)

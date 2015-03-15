@@ -145,7 +145,7 @@ __tests__["deal.II"] = [
 test_suite.fields.electrostatic.TestElectrostaticPlanar, 
 test_suite.fields.electrostatic.TestElectrostaticAxisymmetric,
 # current field
-#test_suite.fields.current.TestCurrentPlanar,
+test_suite.fields.current.TestCurrentPlanar,
 test_suite.fields.current.TestCurrentAxisymmetric,
 # elasticity
 test_suite.fields.elasticity.TestElasticityPlanar,
@@ -174,24 +174,24 @@ test_suite.fields.magnetic_steady.TestMagneticNonlinAxisymmetric,
 #test_suite.fields.magnetic_harmonic.TestMagneticHarmonicNonlinPlanar,
 #test_suite.fields.magnetic_harmonic.TestMagneticHarmonicNonlinAxisymmetric,
 # rf te
-#test_suite.fields.rf_te.TestRFTEHarmonicPlanar,
-#test_suite.fields.rf_te.TestRFTEHarmonicAxisymmetric,
+test_suite.fields.rf_te.TestRFTEHarmonicPlanar,
+test_suite.fields.rf_te.TestRFTEHarmonicAxisymmetric,
 # rf tm
-#test_suite.fields.rf_tm.TestRFTMHarmonicPlanar,
-#test_suite.fields.rf_tm.TestRFTMHarmonicAxisymmetric,
+test_suite.fields.rf_tm.TestRFTMHarmonicPlanar,
+test_suite.fields.rf_tm.TestRFTMHarmonicAxisymmetric,
 # math coeff
 #test_suite.fields.math_coeff.TestMathCoeffPlanar,
 #test_suite.fields.math_coeff.TestMathCoeffAxisymmetric,
 # adaptivity
-#test_suite.adaptivity.adaptivity.TestAdaptivityElectrostatic,
-#test_suite.adaptivity.adaptivity.TestAdaptivityAcoustic,
+test_suite.adaptivity.adaptivity.TestAdaptivityElectrostatic,
+test_suite.adaptivity.adaptivity.TestAdaptivityAcoustic,
 #test_suite.adaptivity.adaptivity.TestAdaptivityElasticityBracket,
 #test_suite.adaptivity.adaptivity.TestAdaptivityMagneticProfileConductor,
 #test_suite.adaptivity.adaptivity.TestAdaptivityRF_TE,
-#test_suite.adaptivity.adaptivity.TestAdaptivityHLenses,
+test_suite.adaptivity.adaptivity.TestAdaptivityHLenses,
 #test_suite.adaptivity.adaptivity.TestAdaptivityPAndHCoupled,
 # particle tracing
-#test_suite.particle_tracing.particle_tracing.TestParticleTracingPlanar,
+test_suite.particle_tracing.particle_tracing.TestParticleTracingPlanar,
 #test_suite.particle_tracing.particle_tracing.TestParticleTracingAxisymmetric,
 # coupled fields
 test_suite.coupled_problems.basic_coupled_problems.TestCoupledProblemsBasic1WeakWeak,

@@ -20,7 +20,6 @@ class TestRFTMHarmonicPlanar(Agros2DTestCase):
         self.rf_tm.analysis_type = "harmonic"
         self.rf_tm.number_of_refinements = 2
         self.rf_tm.polynomial_order = 3
-        self.rf_tm.adaptivity_type = "disabled"
         self.rf_tm.solver = "linear"
         
         # boundaries
@@ -100,9 +99,8 @@ class TestRFTMHarmonicAxisymmetric(Agros2DTestCase):
         # rf_tm
         self.rf_tm = agros2d.field("rf_tm")
         self.rf_tm.analysis_type = "harmonic"
-        self.rf_tm.number_of_refinements = 2
-        self.rf_tm.polynomial_order = 3
-        self.rf_tm.adaptivity_type = "disabled"
+        self.rf_tm.number_of_refinements = 3
+        self.rf_tm.polynomial_order = 2
         self.rf_tm.solver = "linear"        
         
         # boundaries

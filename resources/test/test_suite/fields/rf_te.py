@@ -104,7 +104,6 @@ class TestRFTEHarmonicAxisymmetric(Agros2DTestCase):
         self.rf.analysis_type = "harmonic"
         self.rf.number_of_refinements = 2
         self.rf.polynomial_order = 3
-        self.rf.adaptivity_type = "disabled"
         self.rf.solver = "linear"
         
         # boundaries
@@ -142,36 +141,38 @@ class TestRFTEHarmonicAxisymmetric(Agros2DTestCase):
         
     def test_values(self): 
         # point value        
-        point = self.rf.local_values(0.92463, -0.20118)
+        point1 = self.rf.local_values(1.729e-01, -1.289e-01)
         
-        self.value_test("Electric field", point["E"], 0.5385)
-        self.value_test("Electric field - real", point["Er"], 0.53821)
-        self.value_test("Electric field - imag", point["Ei"], 0.01767)
+        self.value_test("Electric field", point1["E"], 1.6461)
+        self.value_test("Electric field - real", point1["Er"], 0.49426)
+        self.value_test("Electric field - imag", point1["Ei"], 1.5701)
+
+        self.value_test("Displacement", point1["D"], 1.4575E-11)
+        self.value_test("Displacement - real", point1["Dr"], 4.3762E-12)
+        self.value_test("Displacement - imag", point1["Di"], 1.3902E-11)
+
+        point2 = self.rf.local_values(0.05574473738670349, -0.17109256982803345)
         
-        self.value_test("Displacement", point["D"], 4.768e-12)
-        self.value_test("Displacement - real", point["Dr"], 4.7654e-12)
-        self.value_test("Displacement - imag", point["Di"], 1.56463e-13)
+        self.value_test("Magnetic field", point2["H"], 0.010094494526820486)
+        self.value_test("Magnetic field r component - real", point2["Hrr"], -6.373444608076603E-4)
+        self.value_test("Magnetic field r component - imag", point2["Hir"], -0.0036385133316168745)
+        self.value_test("Magnetic field z component - real", point2["Hrz"], -0.00929280413705027)
+        self.value_test("Magnetic field z component - imag", point2["Hiz"], -0.001377358847510671)
         
-        self.value_test("Magnetic field", point["H"], 0.00195)
-        self.value_test("Magnetic field r component - real", point["Hrr"], -8.69388e-4)
-        self.value_test("Magnetic field r component - imag", point["Hir"], -0.00157)
-        self.value_test("Magnetic field z component - real", point["Hrz"], 7.3442e-4)
-        self.value_test("Magnetic field z component - imag", point["Hiz"], 1.06797e-4)
-        
-        self.value_test("Magnetic flux density", point["B"], 2.4447e-9)
-        self.value_test("Magnetic flux density r component - real", point["Brr"], -1.09251e-9)
-        self.value_test("Magnetic flux density r component - imag", point["Bir"], -1.9781e-9)
-        self.value_test("Magnetic flux density z component - real", point["Brz"], 9.2291e-10)
-        self.value_test("Magnetic flux density z component - imag", point["Biz"], 1.34204e-10)
-        
-        self.value_test("Poynting vector r component", point["Nr"], 1.98583e-4)
-        self.value_test("Poynting vector z component", point["Nz"], 2.47866e-4)
+        self.value_test("Magnetic flux density", point2["B"], 1.2685115938864646E-8)
+        self.value_test("Magnetic flux density r component - real", point2["Brr"], -8.009106703517974E-10)
+        self.value_test("Magnetic flux density r component - imag", point2["Bir"], -4.572290701038439E-9)
+        self.value_test("Magnetic flux density z component - real", point2["Brz"], -1.1677682083282389E-8)
+        self.value_test("Magnetic flux density z component - imag", point2["Biz"], -1.730840174678571E-9)
+
+        self.value_test("Poynting vector r component", point2["Nr"], -1.986494011280842E-4)
+        self.value_test("Poynting vector z component", point2["Nz"], 0.00424470406639853)
         
 if __name__ == '__main__':        
     import unittest as ut
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestRFTEHarmonicPlanar))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestRFTEHarmonicPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestRFTEHarmonicAxisymmetric))
     suite.run(result)        

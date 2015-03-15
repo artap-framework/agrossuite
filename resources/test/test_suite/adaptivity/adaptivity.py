@@ -18,12 +18,11 @@ class TestAdaptivityElectrostatic(Agros2DTestCase):
         # electrostatic
         self.electrostatic = agros2d.field("electrostatic")
         self.electrostatic.analysis_type = "steadystate"
-        self.electrostatic.polynomial_order = 2
+        self.electrostatic.number_of_refinements = 0
+        self.electrostatic.polynomial_order = 1
         
         self.electrostatic.adaptivity_type = "hp-adaptivity"
-        self.electrostatic.adaptivity_parameters['steps'] = 10
-        self.electrostatic.adaptivity_parameters['tolerance'] = 1
-        self.electrostatic.adaptivity_parameters['error_calculator'] = "h1"
+        self.electrostatic.adaptivity_parameters['steps'] = 7
         self.electrostatic.solver = "linear"
         
         # boundaries
@@ -52,11 +51,13 @@ class TestAdaptivityElectrostatic(Agros2DTestCase):
         problem.solve()
 
     def test_values(self):                
-        # exact values in this test are taken from Agros -> not a proper test
-        # only to see if adaptivity works, should be replaced with comsol values
-        point = self.electrostatic.local_values(3.278e-2, 4.624e-1)
-        self.value_test("Electrostatic potential", point["V"], 5.569e2)
-
+        # values from Comsol
+        local_values = self.electrostatic.local_values(3.278e-2, 4.624e-1)
+        self.value_test("Electrostatic potential", local_values["V"], 547.69)
+        self.value_test("Electric field - r", local_values["Er"], 647.34)
+        self.value_test("Electric field - z", local_values["Ez"], -3083.9)
+        self.value_test("Energy density", local_values["we"], 4.3959E-5)        
+			
 class TestAdaptivityAcoustic(Agros2DTestCase):
     def setUp(self):  
         # problem
@@ -73,11 +74,11 @@ class TestAdaptivityAcoustic(Agros2DTestCase):
         # acoustic
         self.acoustic = agros2d.field("acoustic")
         self.acoustic.analysis_type = "harmonic"
+        self.acoustic.number_of_refinements = 0
         self.acoustic.polynomial_order = 1
         self.acoustic.adaptivity_type = "hp-adaptivity"
-        self.acoustic.adaptivity_parameters['steps'] = 15
+        self.acoustic.adaptivity_parameters['steps'] = 7
         self.acoustic.adaptivity_parameters['tolerance'] = 2
-        self.acoustic.adaptivity_parameters['error_calculator'] = "h1"
         self.acoustic.solver = "linear"
         
         # boundaries
@@ -103,13 +104,12 @@ class TestAdaptivityAcoustic(Agros2DTestCase):
         problem.solve()
         
     def test_values(self):        
-        # exact values in this test are taken from Agros -> not a proper test
-        # only to see if adaptivity works, should be replaced with comsol values
+        # values from Comsol
         point1 = self.acoustic.local_values(7.544e-3, -0.145)
-        self.value_test("Acoustic pressure", point1["p"], 7.481e-1)
+        self.value_test("Acoustic pressure", point1["p"], 0.74307)
         point2 = self.acoustic.local_values(6.994e-2, 1.894e-2)
-        self.value_test("Acoustic pressure", point2["p"], 0.258660462753)
-         
+        self.value_test("Acoustic pressure", point2["p"], 0.28242)
+         	
 class TestAdaptivityElasticityBracket(Agros2DTestCase):
     def setUp(self):  
         # problem
@@ -133,7 +133,6 @@ class TestAdaptivityElasticityBracket(Agros2DTestCase):
         self.elasticity.adaptivity_parameters['tolerance'] = 0
         self.elasticity.adaptivity_parameters['threshold'] = 0.6
         self.elasticity.adaptivity_parameters['stopping_criterion'] = "singleelement"
-        self.elasticity.adaptivity_parameters['error_calculator'] = "h1"
         self.elasticity.adaptivity_parameters['anisotropic_refinement'] = True
         self.elasticity.adaptivity_parameters['finer_reference_solution'] = False
         self.elasticity.adaptivity_parameters['space_refinement'] = True
@@ -200,7 +199,6 @@ class TestAdaptivityMagneticProfileConductor(Agros2DTestCase):
         self.magnetic.adaptivity_parameters['tolerance'] = 0
         self.magnetic.adaptivity_parameters['threshold'] = 0.6
         self.magnetic.adaptivity_parameters['stopping_criterion'] = "singleelement"
-        self.magnetic.adaptivity_parameters['error_calculator'] = "h1"
         self.magnetic.adaptivity_parameters['anisotropic_refinement'] = True
         self.magnetic.adaptivity_parameters['finer_reference_solution'] = False
         self.magnetic.adaptivity_parameters['space_refinement'] = True
@@ -323,19 +321,10 @@ class TestAdaptivityHLenses(Agros2DTestCase):
         # magnetic
         self.magnetic = agros2d.field("magnetic")
         self.magnetic.analysis_type = "steadystate"
-        self.magnetic.matrix_solver = "mumps"
         self.magnetic.number_of_refinements = 0
-        self.magnetic.polynomial_order = 2
+        self.magnetic.polynomial_order = 1
         self.magnetic.adaptivity_type = "h-adaptivity"
-        self.magnetic.adaptivity_parameters['steps'] = 7
-        self.magnetic.adaptivity_parameters['tolerance'] = 0.01
-        self.magnetic.adaptivity_parameters['threshold'] = 0.6
-        self.magnetic.adaptivity_parameters['stopping_criterion'] = "singleelement"
-        self.magnetic.adaptivity_parameters['error_calculator'] = "h1"
-        self.magnetic.adaptivity_parameters['anisotropic_refinement'] = True
-        self.magnetic.adaptivity_parameters['finer_reference_solution'] = False
-        self.magnetic.adaptivity_parameters['space_refinement'] = True
-        self.magnetic.adaptivity_parameters['order_increase'] = 1
+        self.magnetic.adaptivity_parameters['steps'] = 5
         self.magnetic.solver = "linear"
                 
         # boundaries
@@ -374,11 +363,13 @@ class TestAdaptivityHLenses(Agros2DTestCase):
         problem.solve()
         
     def test_values(self):        
-        # exact values in this test are taken from Agros -> not a proper test
-        # only to see if adaptivity works, should be replaced with comsol values
-        point1 = self.magnetic.local_values(8.367e-03, 1.986e-03)
-        self.value_test("Flux density", point1["Br"], 4.890e-03, 0.003)
-        
+        # values from Comsol        
+        point1 = self.magnetic.local_values(5.902e-03, -1.241e-02)
+        self.value_test("Magnetic potential", point1["Ar"], 2.2250E-5)
+        self.value_test("Flux density - r", point1["Brr"], 0.0032758)
+        self.value_test("Flux density - z", point1["Brz"], 0.0068235)
+        self.value_test("Energy density", point1["wm"], 22.796)
+
 class TestAdaptivityPAndHCoupled(Agros2DTestCase):
     # test for h-adaptivity
     def setUp(self):  
@@ -396,19 +387,11 @@ class TestAdaptivityPAndHCoupled(Agros2DTestCase):
         # heat
         self.heat = agros2d.field("heat")
         self.heat.analysis_type = "steadystate"
-        self.heat.matrix_solver = "mumps"
         self.heat.number_of_refinements = 0
         self.heat.polynomial_order = 1
         self.heat.adaptivity_type = "p-adaptivity"
-        self.heat.adaptivity_parameters['steps'] = 6
+        self.heat.adaptivity_parameters['steps'] = 3
         self.heat.adaptivity_parameters['tolerance'] = 0
-        self.heat.adaptivity_parameters['threshold'] = 0.6
-        self.heat.adaptivity_parameters['stopping_criterion'] = "levels"
-        self.heat.adaptivity_parameters['error_calculator'] = "h1"
-        self.heat.adaptivity_parameters['anisotropic_refinement'] = True
-        self.heat.adaptivity_parameters['finer_reference_solution'] = True
-        self.heat.adaptivity_parameters['space_refinement'] = True
-        self.heat.adaptivity_parameters['order_increase'] = 1
         self.heat.solver = "linear"        
         
         # boundaries
@@ -423,19 +406,11 @@ class TestAdaptivityPAndHCoupled(Agros2DTestCase):
         # magnetic
         self.magnetic = agros2d.field("magnetic")
         self.magnetic.analysis_type = "harmonic"
-        self.magnetic.matrix_solver = "mumps"
         self.magnetic.number_of_refinements = 0
         self.magnetic.polynomial_order = 1
         self.magnetic.adaptivity_type = "h-adaptivity"
-        self.magnetic.adaptivity_parameters['steps'] = 8
+        self.magnetic.adaptivity_parameters['steps'] = 3
         self.magnetic.adaptivity_parameters['tolerance'] = 0
-        self.magnetic.adaptivity_parameters['threshold'] = 0.6
-        self.magnetic.adaptivity_parameters['stopping_criterion'] = "singleelement"
-        self.magnetic.adaptivity_parameters['error_calculator'] = "h1"
-        self.magnetic.adaptivity_parameters['anisotropic_refinement'] = False
-        self.magnetic.adaptivity_parameters['finer_reference_solution'] = False
-        self.magnetic.adaptivity_parameters['space_refinement'] = True
-        self.magnetic.adaptivity_parameters['order_increase'] = 1
         self.magnetic.solver = "linear"
         
         
@@ -489,12 +464,12 @@ if __name__ == '__main__':
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElectrostatic))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityAcoustic))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElasticityBracket))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityMagneticProfileConductor))    
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityRF_TE))  
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElectrostatic))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityAcoustic))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElasticityBracket))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityMagneticProfileConductor))    
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityRF_TE))  
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityHLenses))  
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityPAndHCoupled))  
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityPAndHCoupled))  
       
     suite.run(result)

@@ -17,7 +17,7 @@ class TestCurrentPlanar(Agros2DTestCase):
         self.current = agros2d.field("current")
         self.current.analysis_type = "steadystate"
         self.current.number_of_refinements = 3
-        self.current.polynomial_order = 5
+        self.current.polynomial_order = 3
         self.current.solver = "linear"
         
         self.current.add_boundary("Neumann", "current_inward_current_flow", {"current_inward_current_flow" : 0})
@@ -54,19 +54,19 @@ class TestCurrentPlanar(Agros2DTestCase):
         
     def test_values(self):
         # point value
-        point = self.current.local_values(0.11879, 0.346203)
-        self.value_test("Scalar potential", point["V"], 0.928377)
-        self.value_test("Electric field", point["Er"], 0.486928)
-        self.value_test("Electric field - x", point["Erx"], -0.123527)
-        self.value_test("Electric field - y", point["Ery"], -0.470999)
-        self.value_test("Current density", point["Jrc"], 48692.830437)
-        self.value_test("Current density - x", point["Jrcx"], -12352.691339)
-        self.value_test("Current density - y", point["Jrcy"], -47099.923064)
-        self.value_test("Losses", point["pj"], 23709.917359)
+        point = self.current.local_values(3.154e-01, 3.523e-01)
+        self.value_test("Scalar potential", point["V"], 0.87224)
+        self.value_test("Electric field", point["Er"], 1.831040)
+        self.value_test("Electric field - x", point["Erx"], 1.0138)
+        self.value_test("Electric field - y", point["Ery"], -1.5253)
+        self.value_test("Current density", point["Jrc"], 1831.483)
+        self.value_test("Current density - x", point["Jrcx"], 1013.8	)
+        self.value_test("Current density - y", point["Jrcy"], -1525.3)
+        self.value_test("Losses", point["pj"], 3354.2)
         
         # volume integral
         volume = self.current.volume_integrals([0, 1, 2])
-        self.value_test("Losses", volume["Pj"], 11640.65644)
+        self.value_test("Losses", volume["Pj"], 11792)
         
         # surface integral
         surface = self.current.surface_integrals([0])
