@@ -35,8 +35,7 @@ class TestField(Agros2DTestCase):
 
     """ matrix_solver """
     def test_matrix_solver(self):
-        for solver in ['umfpack', 'paralution_iterative', 'paralution_amg',
-                       'mumps', 'external', 'empty']:
+        for solver in ['umfpack', 'external', 'dealii', 'paralution']:
             self.field.matrix_solver = solver
             self.assertEqual(self.field.matrix_solver, solver)
 
@@ -321,7 +320,7 @@ class TestFieldMatrixSolver(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         self.field = a2d.field('magnetic')
-        self.field.matrix_solver = 'paralution_iterative'
+        self.field.matrix_solver = 'paralution'
 
     """ preconditioner """
     def test_preconditioner(self):
@@ -382,6 +381,16 @@ class TestFieldAdaptivity(Agros2DTestCase):
         with self.assertRaises(IndexError):
             self.field.adaptivity_parameters['steps'] = 101
 
+    """ estimator """
+    def test_estimator(self):
+        for method in ['kelly', 'gradient']:
+            self.field.adaptivity_parameters['estimator'] = method
+            self.assertEqual(self.field.adaptivity_parameters['estimator'], method)
+
+    def test_set_wrong_estimator(self):
+        with self.assertRaises(ValueError):
+            self.field.adaptivity_parameters['estimator'] = 'wrong_method'
+
     """ tolerance """
     def test_tolerance(self):
         self.field.adaptivity_parameters['tolerance'] = 3
@@ -391,71 +400,23 @@ class TestFieldAdaptivity(Agros2DTestCase):
         with self.assertRaises(IndexError):
             self.field.adaptivity_parameters['tolerance'] = -1
 
-    """ threshold """
-    def test_threshold(self):
-        self.field.adaptivity_parameters['threshold'] = 0.8
-        self.assertEqual(self.field.adaptivity_parameters['threshold'], 0.8)
+    """ fine_percentage """
+    def test_fine_percentage(self):
+        self.field.adaptivity_parameters['fine_percentage'] = 3
+        self.assertEqual(self.field.adaptivity_parameters['fine_percentage'], 3)
 
-    def test_set_wrong_threshold(self):
+    def test_set_wrong_fine_percentage(self):
         with self.assertRaises(IndexError):
-            self.field.adaptivity_parameters['threshold'] = 0.0
+            self.field.adaptivity_parameters['fine_percentage'] = -1
 
+    """ coarse_percentage """
+    def test_coarse_percentage(self):
+        self.field.adaptivity_parameters['coarse_percentage'] = 5
+        self.assertEqual(self.field.adaptivity_parameters['coarse_percentage'], 5)
+
+    def test_set_wrong_coarse_percentage(self):
         with self.assertRaises(IndexError):
-            self.field.adaptivity_parameters['threshold'] = 1.1
-
-    """ stopping_criterion """
-    def test_stopping_criterion(self):
-        for criterion in ['cumulative', 'singleelement', 'levels']:
-            self.field.adaptivity_parameters['stopping_criterion'] = criterion
-            self.assertEqual(self.field.adaptivity_parameters['stopping_criterion'], criterion)
-
-    def test_set_wrong_preconditioner(self):
-        with self.assertRaises(ValueError):
-            self.field.adaptivity_parameters['stopping_criterion'] = 'wrong_criterion'
-
-    """ norm """
-    """
-    def test_norm(self):
-        for norm in ['l2_norm', 'h1_norm', 'h1_seminorm']:
-            self.field.adaptivity_parameters['norm'] = norm
-            self.assertEqual(self.field.adaptivity_parameters['norm'], norm)
-
-    def test_set_wrong_norm(self):
-        with self.assertRaises(ValueError):
-            self.field.adaptivity_parameters['norm'] = 'wrong_norm'
-    """
-
-    """ order_increase """
-    def test_order_increase(self):
-        self.field.adaptivity_parameters['order_increase'] = 5
-        self.assertEqual(self.field.adaptivity_parameters['order_increase'], 5)
-
-    def test_set_wrong_order_increase(self):
-        with self.assertRaises(IndexError):
-            self.field.adaptivity_parameters['order_increase'] = 0
-
-        with self.assertRaises(IndexError):
-            self.field.adaptivity_parameters['order_increase'] = 11
-
-    """ space_refinement """
-    def test_space_refinement(self):
-        self.field.adaptivity_parameters['space_refinement'] = False
-        self.assertEqual(self.field.adaptivity_parameters['space_refinement'], False)
-
-    """ anisotropic_refinement """
-    def test_anisotropic_refinement(self):
-        self.field.adaptivity_parameters['anisotropic_refinement'] = False
-        self.assertEqual(self.field.adaptivity_parameters['anisotropic_refinement'], False)
-
-    """ finer_reference_solution """
-    def test_finer_reference_solution(self):
-        self.field.adaptivity_parameters['finer_reference_solution'] = True
-        self.assertEqual(self.field.adaptivity_parameters['finer_reference_solution'], True)
-
-    """ transient_redone_steps """
-    def test_transient_redone_steps(self):
-        self.field.adaptivity_parameters['transient_redone_steps'] = 10
-        self.assertEqual(self.field.adaptivity_parameters['transient_redone_steps'], 10)
+            self.field.adaptivity_parameters['coarse_percentage'] = -1
 
     def test_set_wrong_transient_redone_steps(self):
         with self.assertRaises(IndexError):
@@ -516,7 +477,9 @@ class TestFieldIntegrals(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
         self.field = a2d.field("electrostatic")
-
+        self.field.number_of_refinements = 1
+        self.field.polynomial_order = 1
+        
         self.field.add_boundary("Dirichlet", "electrostatic_potential", {"electrostatic_potential" : 1000})
         self.field.add_boundary("Neumann", "electrostatic_surface_charge_density", {"electrostatic_surface_charge_density" : 0})
         self.field.add_material("Source", {"electrostatic_permittivity" : 1, "electrostatic_charge_density" : 10})
@@ -525,16 +488,16 @@ class TestFieldIntegrals(Agros2DTestCase):
         geometry = a2d.geometry
         geometry.add_edge(0.25, 0, 0.75, 0, boundaries = {"electrostatic" : "Dirichlet"})
         geometry.add_edge(0.75, 0, 0.75, 0.25, boundaries = {"electrostatic" : "Dirichlet"})
-        geometry.add_edge(0.75, 0.25, 1.25, 0.75, angle = 90, boundaries = {"electrostatic" : "Neumann"})
-        geometry.add_edge(1.25, 0.75, 0.75, 1.25, angle = 90, boundaries = {"electrostatic" : "Neumann"})
-        geometry.add_edge(0.75, 1.25, 0.25, 0.75, angle = 90, boundaries = {"electrostatic" : "Neumann"})
+        geometry.add_edge(0.75, 0.25, 1.25, 0.75, angle = 90, segments = 5, boundaries = {"electrostatic" : "Neumann"})
+        geometry.add_edge(1.25, 0.75, 0.75, 1.25, angle = 90, segments = 5, boundaries = {"electrostatic" : "Neumann"})
+        geometry.add_edge(0.75, 1.25, 0.25, 0.75, angle = 90, segments = 5, boundaries = {"electrostatic" : "Neumann"})
         geometry.add_edge(0.25, 0.75, 0, 0.75, boundaries = {"electrostatic" : "Dirichlet"})
         geometry.add_edge(0, 0.75, 0, 0.25, boundaries = {"electrostatic" : "Dirichlet"})
-        geometry.add_edge(0.25, 0, 0, 0.25, angle = 90, boundaries = {"electrostatic" : "Dirichlet"})
-        geometry.add_edge(0.75, 0.5, 1, 0.75, angle = 90)
-        geometry.add_edge(1, 0.75, 0.75, 1, angle = 90)
-        geometry.add_edge(0.75, 1, 0.5, 0.75, angle = 90)
-        geometry.add_edge(0.5, 0.75, 0.75, 0.5, angle = 90)
+        geometry.add_edge(0.25, 0, 0, 0.25, angle = 90, segments = 5, boundaries = {"electrostatic" : "Dirichlet"})
+        geometry.add_edge(0.75, 0.5, 1, 0.75, angle = 90, segments = 5)
+        geometry.add_edge(1, 0.75, 0.75, 1, angle = 90, segments = 5)
+        geometry.add_edge(0.75, 1, 0.5, 0.75, angle = 90, segments = 5)
+        geometry.add_edge(0.5, 0.75, 0.75, 0.5, angle = 90, segments = 5)
         geometry.add_edge(0.4, 0.1, 0.6, 0.1, boundaries = {"electrostatic" : "Neumann"})
         geometry.add_edge(0.6, 0.1, 0.6, 0.3, boundaries = {"electrostatic" : "Neumann"})
         geometry.add_edge(0.6, 0.3, 0.4, 0.3, boundaries = {"electrostatic" : "Neumann"})
@@ -550,12 +513,12 @@ class TestFieldIntegrals(Agros2DTestCase):
         a2d.view.zoom_best_fit()
         
         self.volume = 0.75**2 + 3*(pi*0.5**2)/4.0 - (pi*0.25**2)/4.0 - 0.2**2 - (0.1*0.25)/2.0 - (pi*0.25**2)
-        self.surface = (2*pi*0.25) + (0.25+0.1+sqrt(0.25**2+0.1**2))
+        self.surface = (0.25+0.1+sqrt(0.25**2+0.1**2))
 
     """ surface_integrals """
     def test_surface_integrals(self):
         self.problem.solve()
-        self.assertAlmostEqual(self.field.surface_integrals([8,9,10,11,16,17,18])['l'], self.surface, 5)
+        self.assertAlmostEqual(self.field.surface_integrals([16,17,18])['l'], self.surface, 5)
 
     def test_surface_integrals_on_nonexistent_edge(self):
         self.problem.solve()
@@ -569,7 +532,7 @@ class TestFieldIntegrals(Agros2DTestCase):
     """ volume_integrals """
     def test_volume_integrals(self):
         self.problem.solve()
-        self.assertAlmostEqual(self.field.volume_integrals([1])['V'], self.volume, 5)
+        self.assertAlmostEqual(self.field.volume_integrals([1])['V'], self.volume, 3)
 
     def test_volume_integrals_on_nonexistent_edge(self):
         self.problem.solve()
@@ -588,9 +551,9 @@ class TestFieldAdaptivityInfo(Agros2DTestCase):
         
         self.field = a2d.field("electrostatic")
         self.field.adaptivity_type = "hp-adaptivity"
-        self.field.number_of_refinements = 1
-        self.field.polynomial_order = 2
-        self.field.adaptivity_parameters["steps"] = 10
+        self.field.number_of_refinements = 0
+        self.field.polynomial_order = 1
+        self.field.adaptivity_parameters["steps"] = 5
         self.field.adaptivity_parameters["tolerance"] = 1
         self.field.solver = "linear"
         
@@ -615,8 +578,13 @@ class TestFieldAdaptivityInfo(Agros2DTestCase):
 
     def test_adaptivity_info(self):
         self.problem.solve()
-        dofs = self.field.adaptivity_info()['dofs']
-        error = self.field.adaptivity_info()['error']
+        info = self.field.adaptivity_info()
+        dofs = info['dofs']
+        error = info['error']
+        print("dofs")
+        print(dofs)
+        print("error")        
+        print(error)        
 
         self.assertEqual(dofs, sorted(dofs))
         self.assertEqual(error, sorted(error, reverse=True))
@@ -630,12 +598,6 @@ class TestFieldAdaptivityInfo(Agros2DTestCase):
         self.problem.solve()
         with self.assertRaises(RuntimeError):
             self.field.adaptivity_info()
-
-    def test_adaptivity_info_with_solution_mode(self):
-        self.problem.solve()
-        normal_dofs = self.field.adaptivity_info(solution_type="normal")['dofs']
-        reference_dofs = self.field.adaptivity_info(solution_type="reference")['dofs']
-        self.assertGreater(sum(reference_dofs), sum(normal_dofs))
 
     def test_adaptivity_info_with_nonexisted_time_step(self):
         self.problem.solve()
@@ -697,10 +659,10 @@ class TestFieldAdaptivityInfoTransient(Agros2DTestCase):
         self.field.add_material("Material", {"heat_conductivity" : 237, "heat_volume_heat" : 0, "heat_density" : 2700, "heat_specific_heat" : 896})
 
         geometry = a2d.geometry
-        geometry.add_edge(0.25, 0, 0, 0.25, angle = 90, boundaries = {"heat" : "Neumann"})
-        geometry.add_edge(0, 0.25, -0.25, 0, angle = 90, boundaries = {"heat" : "Neumann"})
-        geometry.add_edge(-0.25, 0, 0, -0.25, angle = 90, boundaries = {"heat" : "Neumann"})
-        geometry.add_edge(0, -0.25, 0.25, 0, angle = 90, boundaries = {"heat" : "Neumann"})
+        geometry.add_edge(0.25, 0, 0, 0.25, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
+        geometry.add_edge(0, 0.25, -0.25, 0, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
+        geometry.add_edge(-0.25, 0, 0, -0.25, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
+        geometry.add_edge(0, -0.25, 0.25, 0, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
         geometry.add_edge(0.05, 0, 0, 0.05, boundaries = {"heat" : "Dirichlet"})
         geometry.add_edge(0, 0.05, -0.05, 0, boundaries = {"heat" : "Dirichlet"})
         geometry.add_edge(-0.05, 0, 0, -0.05, boundaries = {"heat" : "Dirichlet"})
@@ -733,23 +695,16 @@ class TestFieldSolverInfo(Agros2DTestCase):
 
         self.field = a2d.field("heat")
         self.field.analysis_type = "transient"
-        self.field.matrix_solver = "mumps"
+        self.field.matrix_solver = "umfpack"
         self.field.transient_initial_condition = 293.15
         self.field.number_of_refinements = 0
         self.field.polynomial_order = 1
         self.field.adaptivity_type = "hp-adaptivity"
         self.field.adaptivity_parameters['steps'] = 5
         self.field.adaptivity_parameters['tolerance'] = 10
-        self.field.adaptivity_parameters['threshold'] = 0.6
-        self.field.adaptivity_parameters['stopping_criterion'] = "singleelement"
-        self.field.adaptivity_parameters['error_calculator'] = "h1"
-        self.field.adaptivity_parameters['anisotropic_refinement'] = False
-        self.field.adaptivity_parameters['finer_reference_solution'] = False
-        self.field.adaptivity_parameters['space_refinement'] = True
-        self.field.adaptivity_parameters['order_increase'] = 1
         self.field.adaptivity_parameters['transient_back_steps'] = 3
         self.field.adaptivity_parameters['transient_redone_steps'] = 5
-        self.field.solver = "picard"
+        self.field.solver = "newton"
         self.field.solver_parameters['residual'] = 0.001
         self.field.solver_parameters['relative_change_of_solutions'] = 0.5
         self.field.solver_parameters['damping'] = "automatic"
@@ -785,10 +740,10 @@ class TestFieldSolverInfo(Agros2DTestCase):
                                                                   "derivative_at_endpoints" : "first" }})
         
         geometry = a2d.geometry
-        geometry.add_edge(0, -0.15, 0.15, 0, angle = 90, boundaries = {"heat" : "Neumann"})
-        geometry.add_edge(0.15, 0, 0, 0.15, angle = 90, boundaries = {"heat" : "Neumann"})
-        geometry.add_edge(0, 0.15, -0.15, 0, angle = 90, boundaries = {"heat" : "Neumann"})
-        geometry.add_edge(-0.15, 0, 0, -0.15, angle = 90, boundaries = {"heat" : "Neumann"})
+        geometry.add_edge(0, -0.15, 0.15, 0, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
+        geometry.add_edge(0.15, 0, 0, 0.15, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
+        geometry.add_edge(0, 0.15, -0.15, 0, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
+        geometry.add_edge(-0.15, 0, 0, -0.15, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
         geometry.add_edge(0.01, 0, 0.023097, 0.00956709, boundaries = {"heat" : "Dirichlet"})
         geometry.add_edge(0.023097, 0.00956709, 0.00707107, 0.00707107, boundaries = {"heat" : "Dirichlet"})
         geometry.add_edge(0.00707107, 0.00707107, 0.00956709, 0.023097, boundaries = {"heat" : "Dirichlet"})
@@ -840,16 +795,14 @@ if __name__ == '__main__':
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    """
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestField))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldBoundaries))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldMaterials))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldNewtonSolver))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldMatrixSolver))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivity))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldLocalValues))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldIntegrals))
-    """
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestField))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldBoundaries))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldMaterials))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldNewtonSolver))
+    ##suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldMatrixSolver))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivity))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldLocalValues))
+    #rsuite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldIntegrals))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivityInfo))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivityInfoTransient))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldSolverInfo))

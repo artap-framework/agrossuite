@@ -73,10 +73,10 @@ cdef class __Geometry__:
         cdef vector[int] nodes_vector = list_to_int_vector(nodes)
         self.thisptr.removeNodes(nodes_vector)
 
-    def add_edge(self, x1, y1, x2, y2, angle = 0.0, segments = 3, curvilinear = True, refinements = {}, boundaries = {}):
+    def add_edge(self, x1, y1, x2, y2, angle = 0.0, segments = 4, curvilinear = True, refinements = {}, boundaries = {}):
         """Add a new edge according to coordinates and return its index.
 
-        add_edge(x1, y1, x2, y2, angle = 0.0, segments = 3, curvilinear = True, refinements = {}, boundaries = {})
+        add_edge(x1, y1, x2, y2, angle = 0.0, segments = 4, curvilinear = True, refinements = {}, boundaries = {})
 
         Keyword arguments:
         x1 -- x or r coordinate of start node
@@ -92,10 +92,10 @@ cdef class __Geometry__:
 
         return self.thisptr.addEdge(x1, y1, x2, y2, angle, segments, curvilinear, refinements_map, boundaries_map)
 
-    def add_edge_by_nodes(self, start_node_index, end_node_index, angle = 0.0, segments = 3, curvilinear = True, refinements = {}, boundaries = {}):
+    def add_edge_by_nodes(self, start_node_index, end_node_index, angle = 0.0, segments = 4, curvilinear = True, refinements = {}, boundaries = {}):
         """Add a new edge according to indexes of start and end node and return the index of edge.
 
-        add_edge(start_node_index, end_node_index, angle = 0.0, segments = 3, refinements = {}, boundaries = {})
+        add_edge(start_node_index, end_node_index, angle = 0.0, segments = 4, refinements = {}, boundaries = {})
 
         Keyword arguments:
         start_node_index -- index of start node
@@ -109,10 +109,10 @@ cdef class __Geometry__:
 
         return self.thisptr.addEdgeByNodes(start_node_index, end_node_index, angle, segments, curvilinear, refinements_map, boundaries_map)
 
-    def modify_edge(self, index, angle = 0.0, segments = 3, curvilinear = True, refinements = {}, boundaries = {}):
+    def modify_edge(self, index, angle = 0.0, segments = 4, curvilinear = True, refinements = {}, boundaries = {}):
         """Modify parameters of existing edge.
 
-        modify_edge(index, angle = 0.0, segments = 3, curvilinear = True, refinements = {}, boundaries = {})
+        modify_edge(index, angle = 0.0, segments = 4, curvilinear = True, refinements = {}, boundaries = {})
 
         Keyword arguments:
         index -- edge index

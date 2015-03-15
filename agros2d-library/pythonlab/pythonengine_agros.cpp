@@ -563,7 +563,7 @@ QString createPythonFromModel()
             if (edge->angle() > 0.0)
             {
                 str += ", angle = " + QString::number(edge->angle());
-                if (edge->segments() > 3)
+                if (edge->segments() > 4)
                     str += ", segments = " + QString::number(edge->segments());
                 if (!edge->isCurvilinear())
                     str += ", curvilinear = False";

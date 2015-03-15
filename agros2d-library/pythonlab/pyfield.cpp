@@ -750,6 +750,7 @@ void PyField::adaptivityInfo(int timeStep, const std::string &solutionType, vect
     timeStep = getTimeStep(timeStep, solutionMode);
 
     int adaptivitySteps = Agros2D::solutionStore()->lastAdaptiveStep(m_fieldInfo, solutionMode, timeStep) + 1;
+    cout << adaptivitySteps << endl;
     for (int i = 0; i < adaptivitySteps; i++)
     {
         SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo, timeStep, i, solutionMode));

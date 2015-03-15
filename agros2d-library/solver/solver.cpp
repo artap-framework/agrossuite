@@ -1080,15 +1080,15 @@ void SolverDeal::solveProblem()
     if (m_fieldInfo->linearityType() == LinearityType_Linear)
     {
         setup(true);
-        QTime time;
-        time.start();
+        // QTime time;
+        // time.start();
         assembleSystem();
-        std::cout << "assemble: " << time.elapsed() << ", ndofs: " << m_doFHandler->n_dofs() <<  std::endl;
-        time.start();
+        // std::cout << "assemble: " << time.elapsed() << ", ndofs: " << m_doFHandler->n_dofs() <<  std::endl;
+        // time.start();
         solveLinearSystem(system_matrix, system_rhs, m_solution);
         //m_solution.print(std::cout);
         //system_matrix.print(std::cout);
-        std::cout << "solve: " << time.elapsed() << std::endl;
+        // std::cout << "solve: " << time.elapsed() << std::endl;
     }
     else if (m_fieldInfo->linearityType() == LinearityType_Picard)
     {

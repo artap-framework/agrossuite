@@ -43,25 +43,22 @@ class TestSaveAdaptiveSolution(Agros2DTestCase):
         self.problem.coordinate_type = "axisymmetric"
         self.problem.mesh_type = "triangle"
 
+        # disable view
+        agros2d.view.mesh.disable()
+        agros2d.view.post2d.disable()
+        
         self.magnetic = agros2d.field("magnetic")
         self.magnetic.analysis_type = "steadystate"
-        self.magnetic.matrix_solver = "mumps"
+        self.magnetic.matrix_solver = "umfpack"
         self.magnetic.number_of_refinements = 0
         self.magnetic.polynomial_order = 1
         self.magnetic.adaptivity_type = "hp-adaptivity"
-        self.magnetic.adaptivity_parameters['steps'] = 10
+        self.magnetic.adaptivity_parameters['steps'] = 5
         self.magnetic.adaptivity_parameters['tolerance'] = 1
-        self.magnetic.adaptivity_parameters['threshold'] = 0.6
-        self.magnetic.adaptivity_parameters['stopping_criterion'] = "singleelement"
-        self.magnetic.adaptivity_parameters['error_calculator'] = "h1"
-        self.magnetic.adaptivity_parameters['anisotropic_refinement'] = True
-        self.magnetic.adaptivity_parameters['finer_reference_solution'] = False
-        self.magnetic.adaptivity_parameters['space_refinement'] = True
-        self.magnetic.adaptivity_parameters['order_increase'] = 1
         self.magnetic.solver = "linear"
 
         self.magnetic.add_boundary("A = 0", "magnetic_potential", {"magnetic_potential_real" : 0})
-        self.magnetic.add_material("Copper", {"magnetic_permeability" : 1, "magnetic_total_current_real" : 200, "magnetic_total_current_prescribed" : 1})
+        self.magnetic.add_material("Copper", {"magnetic_permeability" : 1, "magnetic_current_density_external_real" : 1e6})
         self.magnetic.add_material("Iron", {"magnetic_permeability" : 100, "magnetic_conductivity" : 10e6})
         self.magnetic.add_material("Air", {"magnetic_permeability" : 1})
 
@@ -82,20 +79,24 @@ class TestSaveAdaptiveSolution(Agros2DTestCase):
         geometry.add_label(0.5, 0, materials = {"magnetic" : "Air"})
         geometry.add_label(0.2, 0, materials = {"magnetic" : "Copper"})
         geometry.add_label(0.05, 0, materials = {"magnetic" : "Iron"})
+            
         agros2d.view.zoom_best_fit()
 
     def test_steady_state(self):
-        self.problem.solve()
-        self.assertTrue(save_solution_test())
+        self.assertTrue(False)        
+        #self.problem.solve()
+        #self.assertTrue(save_solution_test())
     
     def test_transient(self):
-        self.problem.time_step_method = "fixed"
-        self.problem.time_total = 3
-        self.problem.time_steps = 1
+        self.assertTrue(False)
+        
+        #self.problem.time_step_method = "fixed"
+        #self.problem.time_total = 3
+        #self.problem.time_steps = 1
 
-        self.magnetic.analysis_type = "transient"
-        self.problem.solve()
-        self.assertTrue(save_solution_test())
+        #self.magnetic.analysis_type = "transient"
+        #self.problem.solve()
+        #self.assertTrue(save_solution_test())
     
 if __name__ == '__main__':
     import unittest as ut

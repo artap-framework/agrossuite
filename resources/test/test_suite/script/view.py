@@ -14,9 +14,9 @@ def simple_model():
 
     field = a2d.field("electrostatic")
     field.adaptivity_type = "hp-adaptivity"
-    field.number_of_refinements = 1
+    field.number_of_refinements = 0
     field.polynomial_order = 2
-    field.adaptivity_parameters["steps"] = 10
+    field.adaptivity_parameters["steps"] = 5
     field.adaptivity_parameters["tolerance"] = 1
     
     field.add_boundary("Source", "electrostatic_potential", {"electrostatic_potential" : 1000})
