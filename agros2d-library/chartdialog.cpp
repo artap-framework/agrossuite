@@ -425,11 +425,11 @@ void ChartWidget::plotGeometry()
 
         foreach (Point point, points)
         {
-            LocalValue *localValue = fieldWidget->selectedField()->plugin()->localValue(fieldWidget->selectedField(),
-                                                                                        fieldWidget->selectedTimeStep(),
-                                                                                        fieldWidget->selectedAdaptivityStep(),
-                                                                                        fieldWidget->selectedAdaptivitySolutionType(),
-                                                                                        point);
+            std::shared_ptr<LocalValue> localValue = fieldWidget->selectedField()->plugin()->localValue(fieldWidget->selectedField(),
+                                                                                                        fieldWidget->selectedTimeStep(),
+                                                                                                        fieldWidget->selectedAdaptivityStep(),
+                                                                                                        fieldWidget->selectedAdaptivitySolutionType(),
+                                                                                                        point);
             QMap<QString, LocalPointValue> values = localValue->values();
 
             if (variable.isScalar())
@@ -445,8 +445,6 @@ void ChartWidget::plotGeometry()
                 else
                     yval.append(values[variable.id()].vector.magnitude());
             }
-
-            delete localValue;
         }
     }
 
@@ -502,7 +500,7 @@ void ChartWidget::plotTime()
 
             Point point(txtTimeX->value(), txtTimeY->value());
             int timeLevelIndex = Agros2D::solutionStore()->nthCalculatedTimeStep(fieldWidget->selectedField(), i);
-            LocalValue *localValue = fieldWidget->selectedField()->plugin()->localValue(fieldWidget->selectedField(),
+            std::shared_ptr<LocalValue> localValue = fieldWidget->selectedField()->plugin()->localValue(fieldWidget->selectedField(),
                                                                                         timeLevelIndex,
                                                                                         Agros2D::solutionStore()->lastAdaptiveStep(fieldWidget->selectedField(), SolutionMode_Normal, timeLevelIndex),
                                                                                         SolutionMode_Normal,
@@ -520,8 +518,6 @@ void ChartWidget::plotTime()
                 else
                     yval.append(values[variable.id()].vector.magnitude());
             }
-
-            delete localValue;
         }
     }
 
@@ -763,7 +759,7 @@ QMap<QString, double> ChartWidget::getData(Point point, int timeStep, int adapti
 
     foreach (Module::LocalVariable variable, fieldWidget->selectedField()->localPointVariables())
     {
-        LocalValue *localValue = fieldWidget->selectedField()->plugin()->localValue(fieldWidget->selectedField(),
+        std::shared_ptr<LocalValue> localValue = fieldWidget->selectedField()->plugin()->localValue(fieldWidget->selectedField(),
                                                                                     timeStep,
                                                                                     adaptivityStep,
                                                                                     solutionType,
@@ -780,8 +776,6 @@ QMap<QString, double> ChartWidget::getData(Point point, int timeStep, int adapti
             table.insert(QString(variable.shortname() + "x"), values[variable.id()].vector.x);
             table.insert(QString(variable.shortname() + "y"), values[variable.id()].vector.y);
         }
-
-        delete localValue;
     }
 
     table.insert(Agros2D::problem()->config()->labelX(), point.x);

@@ -137,17 +137,17 @@ public:
 
     // postprocessor
     // filter
-    virtual dealii::DataPostprocessorScalar<2> *filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
-                                                       MultiArray *ma,
-                                                       const QString &variable,
-                                                       PhysicFieldVariableComp physicFieldVariableComp) = 0;
+    virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
+                                                                        MultiArray *ma,
+                                                                        const QString &variable,
+                                                                        PhysicFieldVariableComp physicFieldVariableComp) = 0;
 
     // local values
-    virtual LocalValue *localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType, const Point &point) = 0;
+    virtual std::shared_ptr<LocalValue> localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType, const Point &point) = 0;
     // surface integrals
-    virtual IntegralValue *surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType) = 0;
+    virtual std::shared_ptr<IntegralValue> surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType) = 0;
     // volume integrals
-    virtual IntegralValue *volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType) = 0;
+    virtual std::shared_ptr<IntegralValue> volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType) = 0;
     // force calculation
     virtual Point3 force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
                          SceneMaterial *material, const Point3 &point, const Point3 &velocity) = 0;

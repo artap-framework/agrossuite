@@ -48,21 +48,21 @@ virtual SolverDeal *solverDeal(const FieldInfo *fieldInfo);
 
 // postprocessor
 // filter
-virtual dealii::DataPostprocessorScalar<2> *filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
-                                                   MultiArray *ma,
-                                                   const QString &variable,
-                                                   PhysicFieldVariableComp physicFieldVariableComp);
+virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
+                                                                    MultiArray *ma,
+                                                                    const QString &variable,
+                                                                    PhysicFieldVariableComp physicFieldVariableComp);
 
 // error calculators
 // virtual ErrorCalculator<double> *errorCalculator(const FieldInfo *fieldInfo,
 //                                                                   const QString &calculator, CalculatedErrorType errorType);
 
 // local values
-virtual LocalValue *localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType, const Point &point);
+virtual std::shared_ptr<LocalValue> localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType, const Point &point);
 // surface integrals
-virtual IntegralValue *surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType);
+virtual std::shared_ptr<IntegralValue> surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType);
 // volume integrals
-virtual IntegralValue *volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType);
+virtual std::shared_ptr<IntegralValue> volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType);
 
 // force calculation
 virtual Point3 force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,

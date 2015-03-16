@@ -522,7 +522,7 @@ void PyField::localValues(double x, double y, int timeStep, int adaptivityStep,
         timeStep = getTimeStep(timeStep, solutionMode);
         adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep, solutionMode);
 
-        LocalValue *value = m_fieldInfo->plugin()->localValue(m_fieldInfo, timeStep, adaptivityStep, solutionMode, point);
+        std::shared_ptr<LocalValue> value = m_fieldInfo->plugin()->localValue(m_fieldInfo, timeStep, adaptivityStep, solutionMode, point);
         QMapIterator<QString, LocalPointValue> it(value->values());
         while (it.hasNext())
         {
@@ -541,7 +541,6 @@ void PyField::localValues(double x, double y, int timeStep, int adaptivityStep,
                 values[variable.shortname().toStdString() + Agros2D::problem()->config()->labelY().toLower().toStdString()] = it.value().vector.y;
             }
         }
-        delete value;
     }
     else
     {
@@ -590,7 +589,7 @@ void PyField::surfaceIntegrals(const vector<int> &edges, int timeStep, int adapt
         timeStep = getTimeStep(timeStep, solutionMode);
         adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep, solutionMode);
 
-        IntegralValue *integral = m_fieldInfo->plugin()->surfaceIntegral(m_fieldInfo, timeStep, adaptivityStep, solutionMode);
+        std::shared_ptr<IntegralValue> integral = m_fieldInfo->plugin()->surfaceIntegral(m_fieldInfo, timeStep, adaptivityStep, solutionMode);
         QMapIterator<QString, double> it(integral->values());
         while (it.hasNext())
         {
@@ -600,7 +599,6 @@ void PyField::surfaceIntegrals(const vector<int> &edges, int timeStep, int adapt
 
             values[integral.shortname().toStdString()] = it.value();
         }
-        delete integral;
     }
     else
     {
@@ -656,7 +654,7 @@ void PyField::volumeIntegrals(const vector<int> &labels, int timeStep, int adapt
         timeStep = getTimeStep(timeStep, solutionMode);
         adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep, solutionMode);
 
-        IntegralValue *integral = m_fieldInfo->plugin()->volumeIntegral(m_fieldInfo, timeStep, adaptivityStep, solutionMode);
+        std::shared_ptr<IntegralValue> integral = m_fieldInfo->plugin()->volumeIntegral(m_fieldInfo, timeStep, adaptivityStep, solutionMode);
         QMapIterator<QString, double> it(integral->values());
         while (it.hasNext())
         {
@@ -667,7 +665,6 @@ void PyField::volumeIntegrals(const vector<int> &labels, int timeStep, int adapt
             values[integral.shortname().toStdString()] = it.value();
 
         }
-        delete integral;
     }
     else
     {

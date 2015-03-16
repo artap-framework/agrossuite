@@ -110,27 +110,27 @@ ErrorCalculator<double> *{{CLASS}}Interface::errorCalculator(const FieldInfo *fi
 }
 */
 
-dealii::DataPostprocessorScalar<2> *{{CLASS}}Interface::filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
+std::shared_ptr<dealii::DataPostprocessorScalar<2> > {{CLASS}}Interface::filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
                                                                                 MultiArray *ma,
                                                                                 const QString &variable,
                                                                                 PhysicFieldVariableComp physicFieldVariableComp)
 {
-    return new {{CLASS}}ViewScalarFilter(fieldInfo, timeStep, adaptivityStep, solutionType, ma, variable, physicFieldVariableComp);
+    return std::shared_ptr<dealii::DataPostprocessorScalar<2> >(new {{CLASS}}ViewScalarFilter(fieldInfo, timeStep, adaptivityStep, solutionType, ma, variable, physicFieldVariableComp));
 }
 
-LocalValue *{{CLASS}}Interface::localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType, const Point &point)
+std::shared_ptr<LocalValue>{{CLASS}}Interface::localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType, const Point &point)
 {
-    return new {{CLASS}}LocalValue(fieldInfo, timeStep, adaptivityStep, solutionType, point);
+    return std::shared_ptr<LocalValue>(new {{CLASS}}LocalValue(fieldInfo, timeStep, adaptivityStep, solutionType, point));
 }
 
-IntegralValue *{{CLASS}}Interface::surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType)
+std::shared_ptr<IntegralValue> {{CLASS}}Interface::surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType)
 {
-    return new {{CLASS}}SurfaceIntegral(fieldInfo, timeStep, adaptivityStep, solutionType);
+    return std::shared_ptr<IntegralValue>(new {{CLASS}}SurfaceIntegral(fieldInfo, timeStep, adaptivityStep, solutionType));
 }
 
-IntegralValue *{{CLASS}}Interface::volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType)
+std::shared_ptr<IntegralValue> {{CLASS}}Interface::volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType)
 {
-    return new {{CLASS}}VolumeIntegral(fieldInfo, timeStep, adaptivityStep, solutionType);
+    return std::shared_ptr<IntegralValue>(new {{CLASS}}VolumeIntegral(fieldInfo, timeStep, adaptivityStep, solutionType));
 }
 
 Point3 {{CLASS}}Interface::force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,

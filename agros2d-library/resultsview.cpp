@@ -124,13 +124,12 @@ void ResultsView::showPoint()
 
     foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
     {
-        LocalValue *value = fieldInfo->plugin()->localValue(fieldInfo,
-                                                            m_postDeal->activeTimeStep(),
-                                                            m_postDeal->activeAdaptivityStep(),
-                                                            m_postDeal->activeAdaptivitySolutionType(),
-                                                            m_point);
+        std::shared_ptr<LocalValue> value = fieldInfo->plugin()->localValue(fieldInfo,
+                                                                            m_postDeal->activeTimeStep(),
+                                                                            m_postDeal->activeAdaptivityStep(),
+                                                                            m_postDeal->activeAdaptivitySolutionType(),
+                                                                            m_point);
         QMap<QString, LocalPointValue> values = value->values();
-        delete value;
 
         if (values.size() > 0)
         {
@@ -193,10 +192,10 @@ void ResultsView::showVolumeIntegral()
 
     foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
     {
-        IntegralValue *integral = fieldInfo->plugin()->volumeIntegral(fieldInfo,
-                                                                      m_postDeal->activeTimeStep(),
-                                                                      m_postDeal->activeAdaptivityStep(),
-                                                                      m_postDeal->activeAdaptivitySolutionType());
+        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->volumeIntegral(fieldInfo,
+                                                                                      m_postDeal->activeTimeStep(),
+                                                                                      m_postDeal->activeAdaptivityStep(),
+                                                                                      m_postDeal->activeAdaptivitySolutionType());
         QMap<QString, double> values = integral->values();
         if (values.size() > 0)
         {
@@ -212,7 +211,6 @@ void ResultsView::showVolumeIntegral()
                 item->SetValue("UNIT", integral.unitHtml().toStdString());
             }
         }
-        delete integral;
     }
 
     // expand template
@@ -237,10 +235,10 @@ void ResultsView::showSurfaceIntegral()
 
     foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
     {
-        IntegralValue *integral = fieldInfo->plugin()->surfaceIntegral(fieldInfo,
-                                                                       m_postDeal->activeTimeStep(),
-                                                                       m_postDeal->activeAdaptivityStep(),
-                                                                       m_postDeal->activeAdaptivitySolutionType());
+        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->surfaceIntegral(fieldInfo,
+                                                                                       m_postDeal->activeTimeStep(),
+                                                                                       m_postDeal->activeAdaptivityStep(),
+                                                                                       m_postDeal->activeAdaptivitySolutionType());
         QMap<QString, double> values = integral->values();
         {
             ctemplate::TemplateDictionary *field = surfaceIntegrals.AddSectionDictionary("FIELD");
@@ -255,7 +253,6 @@ void ResultsView::showSurfaceIntegral()
                 item->SetValue("UNIT", integral.unitHtml().toStdString());
             }
         }
-        delete integral;
     }
 
     // expand template

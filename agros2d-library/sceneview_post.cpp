@@ -431,15 +431,14 @@ PostDataOut *PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariabl
         Module::updateTimeFunctions(Agros2D::problem()->timeStepToTotalTime(activeTimeStep()));
 
     MultiArray ma = activeMultiSolutionArray();
-    // qDebug() << "solution->size()" << ma.solution().size() << "doFHandler->size()" << ma.doFHandler()->n_dofs();
 
-    dealii::DataPostprocessorScalar<2> *post = activeViewField()->plugin()->filter(activeViewField(),
-                                                                                   activeTimeStep(),
-                                                                                   activeAdaptivityStep(),
-                                                                                   activeAdaptivitySolutionType(),
-                                                                                   &ma,
-                                                                                   physicFieldVariable.id(),
-                                                                                   physicFieldVariableComp);
+    std::shared_ptr<dealii::DataPostprocessorScalar<2> > post = activeViewField()->plugin()->filter(activeViewField(),
+                                                                                                    activeTimeStep(),
+                                                                                                    activeAdaptivityStep(),
+                                                                                                    activeAdaptivitySolutionType(),
+                                                                                                    &ma,
+                                                                                                    physicFieldVariable.id(),
+                                                                                                    physicFieldVariableComp);
 
 
     PostDataOut *data_out = new PostDataOut(activeViewField());
@@ -455,8 +454,6 @@ PostDataOut *PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariabl
         data_out->add_data_vector(ma.solution(), solution_names);
     }
     data_out->build_patches(2);
-
-    delete post;
 
     // qDebug() << "process - build patches (" << time.elapsed() << "ms )";
 
