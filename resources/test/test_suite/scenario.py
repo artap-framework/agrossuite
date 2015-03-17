@@ -141,6 +141,11 @@ def run_test(test):
 
     return agros2d_result.report()
 
+def run_test_by_name(test_name): 
+    cls = eval(test_name)
+    print(cls)
+    return run_test(cls)
+
 def run_suite(tests): 
     suite = ut.TestSuite()
     

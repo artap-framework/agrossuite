@@ -1498,7 +1498,7 @@ void ProblemSolver::solveProblem()
         // todo: find some better place, where some values are initialized
         fieldInfo->setFrequency(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toDouble());
 
-        qDebug() << "solving " << fieldInfo->name();
+        // qDebug() << "solving " << fieldInfo->name();
         SolverDeal *solverDeal = m_solverDeal[fieldInfo];
 
         // look for coupling sources

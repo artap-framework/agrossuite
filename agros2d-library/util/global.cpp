@@ -66,7 +66,7 @@ AgrosApplication::AgrosApplication(int& argc, char ** argv) : QApplication(argc,
 
     // init PARALUTION
     paralution::init_paralution();
-    paralution::info_paralution();
+    // paralution::info_paralution();
 
     // init singleton
     Agros2D::createSingleton();
@@ -197,14 +197,8 @@ PluginInterface *Agros2D::loadPlugin(const QString &pluginName)
 #ifdef Q_WS_X11
     if (QFile::exists(QString("%1/libs/libagros2d_plugin_%2.so").arg(datadir()).arg(pluginName)))
         loader = new QPluginLoader(QString("%1/libs/libagros2d_plugin_%2.so").arg(datadir()).arg(pluginName));
-
-    if (!loader)
-    {
-        if (QFile::exists(QString("/usr/local/lib/libagros2d_plugin_%1.so").arg(pluginName)))
-            loader = new QPluginLoader(QString("/usr/local/lib/libagros2d_plugin_%1.so").arg(pluginName));
-        else if (QFile::exists(QString("/usr/lib/libagros2d_plugin_%1.so").arg(pluginName)))
-            loader = new QPluginLoader(QString("/usr/lib/libagros2d_plugin_%1.so").arg(pluginName));
-    }
+    else if (QFile::exists(QString(QCoreApplication::applicationDirPath() + "/../lib/libagros2d_plugin_%1.so").arg(pluginName)))
+        loader = new QPluginLoader(QString(QCoreApplication::applicationDirPath() + "/../lib/libagros2d_plugin_%1.so").arg(pluginName));
 #endif
 
 #ifdef Q_WS_WIN

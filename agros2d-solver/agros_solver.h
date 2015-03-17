@@ -39,13 +39,15 @@ public:
     inline void setCommand(const QString &command) { m_command = command; }
     inline void setFileName(const QString &fileName) { m_fileName = fileName; }
     inline void setEnableLog(bool enableLog = true) { m_enableLog = enableLog; }
-    inline void setScriptSuite(const QString &name) { m_suiteName = name; }
+    inline void setSuiteName(const QString &name) { m_suiteName = name; }
+    inline void setTestName(const QString &name) { m_testName = name; }
 
 public slots:
     void solveProblem();
     void runCommand();
     void runScript();
     void runSuite();
+    void runTest();
     void printTestSuites();
 
 private slots:
@@ -56,6 +58,7 @@ private:
     QString m_fileName;
     QString m_command;
     QString m_suiteName;
+    QString m_testName;
     bool m_enableLog;
     LogStdOut *m_log;
 };

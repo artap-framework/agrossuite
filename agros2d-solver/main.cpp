@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> problemArg("p", "problem", "Solve problem", false, "", "string");
         TCLAP::ValueArg<std::string> scriptArg("s", "script", "Solve script", false, "", "string");
         TCLAP::ValueArg<std::string> commandArg("c", "command", "Run command", false, "", "string");
+        TCLAP::ValueArg<std::string> suiteArg("u", "suite", "Run test suite", false, "", "string");
         TCLAP::ValueArg<std::string> testArg("t", "test", "Run tests", false, "list", "string");
 
         cmd.add(logArg);
@@ -48,6 +49,7 @@ int main(int argc, char *argv[])
         cmd.add(problemArg);
         cmd.add(commandArg);
         cmd.add(scriptArg);
+        cmd.add(suiteArg);
         cmd.add(testArg);
 
         // parse the argv array.
@@ -108,17 +110,24 @@ int main(int argc, char *argv[])
             QTimer::singleShot(0, &a, SLOT(runCommand()));
             return a.exec();
         }
-        else if (!testArg.getValue().empty())
+        else if (!suiteArg.getValue().empty())
         {
-            if (QString::fromStdString(testArg.getValue()) == "list")
+            if (QString::fromStdString(suiteArg.getValue()) == "list")
             {
                 QTimer::singleShot(0, &a, SLOT(printTestSuites()));
             }
             else
             {
-                a.setScriptSuite(QString::fromStdString(testArg.getValue()));
+                a.setSuiteName(QString::fromStdString(suiteArg.getValue()));
                 QTimer::singleShot(0, &a, SLOT(runSuite()));
             }
+            return a.exec();
+        }
+        else if (!testArg.getValue().empty())
+        {
+            a.setTestName(QString::fromStdString(testArg.getValue()));
+            QTimer::singleShot(0, &a, SLOT(runTest()));
+
             return a.exec();
         }
         else

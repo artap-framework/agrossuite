@@ -162,10 +162,41 @@ void AgrosSolver::runSuite()
     connect(currentPythonEngineAgros(), SIGNAL(pythonShowMessage(QString)), this, SLOT(stdOut(QString)));
     connect(currentPythonEngineAgros(), SIGNAL(pythonShowHtml(QString)), this, SLOT(stdHtml(QString)));
 
-    QString testSuite = QString("from test_suite.scenario import run_suite; run_suite(test_suite.test_%1)").arg(m_suiteName);
-    qDebug() << testSuite;
+    QString testSuite = QString("from test_suite.scenario import run_suite; from test_suite.tests import test; run_suite(test(\"%1\"))").arg(m_suiteName);
+    bool successfulRun = currentPythonEngineAgros()->runScript(testSuite);
 
-    bool successfulRun= currentPythonEngineAgros()->runScript(testSuite);
+    if (successfulRun)
+    {
+        Agros2D::scene()->clear();
+        Agros2D::clear();
+        QApplication::exit(0);
+    }
+    else
+    {
+        ErrorResult result = currentPythonEngineAgros()->parseError();
+        Agros2D::log()->printMessage(tr("Scripting Engine"), tr("%1\nLine: %2\nStacktrace:\n%3\n").
+                                  arg(result.error()).
+                                  arg(result.line()).
+                                  arg(result.tracebackToString()));
+
+        QApplication::exit(-1);
+    }
+}
+
+void AgrosSolver::runTest()
+{
+    // log stdout
+    if (m_enableLog)
+         m_log = new LogStdOut();
+
+    // silent mode
+    setSilentMode(true);
+
+    connect(currentPythonEngineAgros(), SIGNAL(pythonShowMessage(QString)), this, SLOT(stdOut(QString)));
+    connect(currentPythonEngineAgros(), SIGNAL(pythonShowHtml(QString)), this, SLOT(stdHtml(QString)));
+
+    QString testSuite = QString("from test_suite.scenario import run_test; cls = eval(\"%1\"); print(cls); run_test(cls)").arg(m_testName);
+    bool successfulRun = currentPythonEngineAgros()->runScript(testSuite);
 
     if (successfulRun)
     {

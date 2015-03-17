@@ -303,8 +303,10 @@ void PythonEngine::init(int argc, char *argv[])
     addCustomExtensions();
 
     // custom modules
-    PyObject *import = PyRun_String(QString("import sys; sys.path.insert(0, \"" + datadir() + "/resources/python" + "\")").toLatin1().data(), Py_file_input, dict(), dict());
-    Py_XDECREF(import);
+    PyObject *importPython = PyRun_String(QString("import sys; sys.path.insert(0, \"" + datadir() + "/resources/python" + "\")").toLatin1().data(), Py_file_input, dict(), dict());
+    Py_XDECREF(importPython);
+    PyObject *importTest = PyRun_String(QString("import sys; sys.path.insert(0, \"" + datadir() + "/resources/test" + "\")").toLatin1().data(), Py_file_input, dict(), dict());
+    Py_XDECREF(importTest);
 
     // functions.py
     PyObject *func = PyRun_String(m_functions.toLatin1().data(), Py_file_input, dict(), dict());
@@ -460,7 +462,10 @@ bool PythonEngine::runScript(const QString &script, const QString &fileName)
 
             ErrorResult result = parseError(false);
             if (!result.error().isEmpty())
-                qDebug() << result.tracebackToString();
+            {
+                qDebug() << "Error:\n" << result.error();
+                qDebug() << "Traceback:\n" << result.tracebackToString();
+            }
         }
     }
 
