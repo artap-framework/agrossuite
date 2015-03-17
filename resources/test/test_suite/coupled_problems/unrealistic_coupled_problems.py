@@ -17,7 +17,6 @@ class TestCoupledProblemsManyDomainsGeneral(Agros2DTestCase):
         # current
         self.current = agros2d.field("current")
         self.current.analysis_type = "steadystate"
-        self.current.matrix_solver = "mumps"
         self.current.number_of_refinements = 1
         self.current.polynomial_order = 2
         self.current.adaptivity_type = "disabled"
@@ -39,7 +38,6 @@ class TestCoupledProblemsManyDomainsGeneral(Agros2DTestCase):
         # heat
         self.heat = agros2d.field("heat")
         self.heat.analysis_type = "steadystate"
-        self.heat.matrix_solver = "mumps"
         self.heat.number_of_refinements = 1
         self.heat.polynomial_order = 2
         self.heat.adaptivity_type = "disabled"
@@ -60,9 +58,8 @@ class TestCoupledProblemsManyDomainsGeneral(Agros2DTestCase):
         # elasticity
         self.elasticity = agros2d.field("elasticity")
         self.elasticity.analysis_type = "steadystate"
-        self.elasticity.matrix_solver = "mumps"
-        self.elasticity.number_of_refinements = 0
-        self.elasticity.polynomial_order = 3
+        self.elasticity.number_of_refinements = 1
+        self.elasticity.polynomial_order = 2
         self.elasticity.adaptivity_type = "disabled"
         
         # boundaries
@@ -80,7 +77,6 @@ class TestCoupledProblemsManyDomainsGeneral(Agros2DTestCase):
         # electrostatic
         self.electrostatic = agros2d.field("electrostatic")
         self.electrostatic.analysis_type = "steadystate"
-        self.electrostatic.matrix_solver = "mumps"
         self.electrostatic.number_of_refinements = 1
         self.electrostatic.polynomial_order = 2
         self.electrostatic.adaptivity_type = "disabled"
@@ -278,7 +274,7 @@ if __name__ == '__main__':
     suite = ut.TestSuite()
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsWeakWeak))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsWeakHard))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsHardWeak))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsHardHard))
+#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsWeakHard))
+#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsHardWeak))
+#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsManyDomainsHardHard))
     suite.run(result)
