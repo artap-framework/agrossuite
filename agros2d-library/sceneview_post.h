@@ -146,6 +146,8 @@ private:
     int m_activeAdaptivityStep;
     SolutionMode m_activeSolutionMode;
 
+    // stored shared pointers for keeping the instance around
+    std::shared_ptr<dealii::DataPostprocessorScalar<2> > m_post;
 
 private slots:
     void processSolved();
