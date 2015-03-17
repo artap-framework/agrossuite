@@ -440,6 +440,8 @@ PostDataOut *PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariabl
                                                                                                     physicFieldVariable.id(),
                                                                                                     physicFieldVariableComp);
 
+    // This effectively deallocates the previous pointer.
+    this->m_post = post;
 
     PostDataOut *data_out = new PostDataOut(activeViewField());
     data_out->attach_dof_handler(*ma.doFHandler());
