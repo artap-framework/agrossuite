@@ -237,7 +237,7 @@ class TestCoupledProblemsBasic3General(Agros2DTestCase):
         self.current = agros2d.field("current")
         self.current.analysis_type = "steadystate"
         self.current.number_of_refinements = 1
-        self.current.polynomial_order = 2
+        self.current.polynomial_order = 3
         self.current.solver_parameters['residual'] = 0.001
         
         self.current.add_boundary("10 V", "current_potential", {"current_potential" : 10})
@@ -253,7 +253,7 @@ class TestCoupledProblemsBasic3General(Agros2DTestCase):
 
         self.heat = agros2d.field("heat")
         self.heat.analysis_type = "steadystate"
-        self.heat.number_of_refinements = 2
+        self.heat.number_of_refinements = 1
         self.heat.polynomial_order = 3
         
         self.heat.solver_parameters['residual'] = 0.001
@@ -469,7 +469,7 @@ if __name__ == '__main__':
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic1HardHard))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic2Weak))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic2Hard))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic3WeakWeak))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic3WeakWeak))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic3WeakHard))   
     ##suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic3HardWeak))
     ##suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic3HardHard))    
