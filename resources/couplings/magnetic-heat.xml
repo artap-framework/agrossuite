@@ -24,9 +24,9 @@
     <module:volume>
 <!--    todo: slozka pro celkovy proud!!!-->
 
-<!--        puvodni... pravdepodobne chyba pro axisymetricke, pouze value3 a 4 vydeleno
+<!--        puvodni... proc je  value3 a 4 vydeleno?
             <module:vector_form id="harmonic_weak" i="1" j="1" planar="0.5 * ma_gamma * (2 * PI * f)^2 * ((source1 + source3)^2 + (source2 + source4)^2) * vval" axi="0.5 * ma_gamma * (2 * PI * f)^2 * ((source1 + source3/(2*PI*(r+1e-12)))^2 + (source2 + source4/(2*PI*(r+1e-12)))^2) * r * vval" />-->
-        <module:vector_form id="harmonic_weak" i="1" j="1" planar="0.5 * ma_gamma * (2 * PI * f)^2 * ((magnetic1)^2 + (magnetic2)^2) * vval" axi="0.5 * ma_gamma * (2 * PI * f)^2 * ((magnetic1/(2*PI*(r+1e-12)))^2 + (magnetic2/(2*PI*(r+1e-12)))^2) * r * vval" />
+            <module:vector_form id="harmonic_weak" i="1" j="1" planar="0.5 * ma_gamma * (2 * PI * f)^2 * ((magnetic1)^2 + (magnetic2)^2) * vval" axi="0.5 * ma_gamma * (2 * PI * f)^2 * ((magnetic1)^2 + (magnetic2)^2) * r * vval" />
 
         <!-- TODO: has to be altered to new harmonic module with 4 fields. i: 3->5 and there will be probably two forms instead of one (i=5, j=1) AND (i=5, j=3)-->
         <module:matrix_form id="harmonic_hard_matrix_newton_3_1" i="5" j="1" planar="- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * 2 * upval * uval * vval" axi="- 0.5 * ma_gamma * (2 * PI * f) * (2 * PI * f) * 2 * upval * uval * r * vval" />
