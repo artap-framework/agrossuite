@@ -248,13 +248,14 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
             {{COUPLING_SOURCE_ID}}_fieldInfo = Agros2D::problem()->fieldInfo("{{COUPLING_SOURCE_ID}}");
             {{COUPLING_SOURCE_ID}}_material = m_scene->labels->at(cell->material_id() - 1)->marker({{COUPLING_SOURCE_ID}}_fieldInfo);
 
-            {{COUPLING_SOURCE_ID}}_value = std::vector<dealii::Vector<double> >(n_q_points, dealii::Vector<double>({{COUPLING_SOURCE_ID}}_fieldInfo->numberOfSolutions()));
-            {{COUPLING_SOURCE_ID}}_grad = std::vector<std::vector<dealii::Tensor<1,2> > >(n_q_points, std::vector<dealii::Tensor<1,2> >({{COUPLING_SOURCE_ID}}_fieldInfo->numberOfSolutions()));
-
             // todo: we probably do not need to initialize everything
             dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values(*{{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadrature_formulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
             {{COUPLING_SOURCE_ID}}_hp_fe_values.reinit(cell_{{COUPLING_SOURCE_ID}});
             const dealii::FEValues<2> &{{COUPLING_SOURCE_ID}}_fe_values = {{COUPLING_SOURCE_ID}}_hp_fe_values.get_present_fe_values();
+
+            {{COUPLING_SOURCE_ID}}_value = std::vector<dealii::Vector<double> >({{COUPLING_SOURCE_ID}}_fe_values.n_quadrature_points, dealii::Vector<double>({{COUPLING_SOURCE_ID}}_fieldInfo->numberOfSolutions()));
+            {{COUPLING_SOURCE_ID}}_grad = std::vector<std::vector<dealii::Tensor<1,2> > >({{COUPLING_SOURCE_ID}}_fe_values.n_quadrature_points, std::vector<dealii::Tensor<1,2> >({{COUPLING_SOURCE_ID}}_fieldInfo->numberOfSolutions()));
+
             {{COUPLING_SOURCE_ID}}_fe_values.get_function_values(m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_value);
             {{COUPLING_SOURCE_ID}}_fe_values.get_function_gradients(m_coupling_sources["{{COUPLING_SOURCE_ID}}"], {{COUPLING_SOURCE_ID}}_grad);
 
