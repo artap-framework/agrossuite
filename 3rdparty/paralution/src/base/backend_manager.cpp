@@ -144,13 +144,13 @@ int init_paralution(void) {
             "* begin");
 
   if (_get_backend_descriptor()->init == true) {
-    LOG_INFO("PARALUTION platform has been initialized - restarting");
+    // LOG_INFO("PARALUTION platform has been initialized - restarting");
     stop_paralution();
   }
 
   if (strcmp(__PARALUTION_VER_TYPE, "B") == 0) {
-    LOG_INFO("This version of PARALUTION is released under GPL.");
-    LOG_INFO("By downloading this package you fully agree with the GPL license.");
+    // LOG_INFO("This version of PARALUTION is released under GPL.");
+    // LOG_INFO("By downloading this package you fully agree with the GPL license.");
   }
 
 #ifdef SUPPORT_CUDA

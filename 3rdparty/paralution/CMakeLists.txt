@@ -73,7 +73,7 @@ configure_file(${UTILS_DIR}/paralution.ptk.in ${CMAKE_BINARY_DIR}/paralution.ptk
 
 #######################################################################################################################
 # Determine if library should be build shared or static
-option(BUILD_SHARED "Build the PARALUTION library shared." OFF)
+option(BUILD_SHARED "Build the PARALUTION library shared." ON)
 if(BUILD_SHARED)
   SET(LIBRARY_TYPE SHARED)
 else()
