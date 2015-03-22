@@ -125,18 +125,11 @@ class TestAdaptivityElasticityBracket(Agros2DTestCase):
         # elasticity
         self.elasticity = agros2d.field("elasticity")
         self.elasticity.analysis_type = "steadystate"
-        self.elasticity.matrix_solver = "mumps"
         self.elasticity.number_of_refinements = 0
         self.elasticity.polynomial_order = 1
-        self.elasticity.adaptivity_type = "hp-adaptivity"
-        self.elasticity.adaptivity_parameters['steps'] = 3
+        self.elasticity.adaptivity_type = "p-adaptivity"
+        self.elasticity.adaptivity_parameters['steps'] = 2
         self.elasticity.adaptivity_parameters['tolerance'] = 0
-        self.elasticity.adaptivity_parameters['threshold'] = 0.6
-        self.elasticity.adaptivity_parameters['stopping_criterion'] = "singleelement"
-        self.elasticity.adaptivity_parameters['anisotropic_refinement'] = True
-        self.elasticity.adaptivity_parameters['finer_reference_solution'] = False
-        self.elasticity.adaptivity_parameters['space_refinement'] = True
-        self.elasticity.adaptivity_parameters['order_increase'] = 1
         self.elasticity.solver = "linear"
                 
         # boundaries
@@ -157,9 +150,9 @@ class TestAdaptivityElasticityBracket(Agros2DTestCase):
         geometry.add_edge(0.03, -0.03, 0.15, -0.03, boundaries = {"elasticity" : "Free"})
         geometry.add_edge(0.27, -0.03, 0.03, -0.27, angle = 90, boundaries = {"elasticity" : "Free"})
         geometry.add_edge(0.03, -0.15, 0.030625, -0.150375, angle = 90, boundaries = {"elasticity" : "Free"})
-        geometry.add_edge(0.030625, -0.150375, 0.031, -0.15, angle = 30, boundaries = {"elasticity" : "Free"})
+        geometry.add_edge(0.030625, -0.150375, 0.031, -0.15, angle = 45, boundaries = {"elasticity" : "Free"})
         geometry.add_edge(0.150375, -0.030625, 0.15, -0.03, angle = 90, boundaries = {"elasticity" : "Free"})
-        geometry.add_edge(0.15, -0.031, 0.150375, -0.030625, angle = 30, boundaries = {"elasticity" : "Free"})
+        geometry.add_edge(0.15, -0.031, 0.150375, -0.030625, angle = 45, boundaries = {"elasticity" : "Free"})
         geometry.add_edge(0.15, -0.031, 0.031, -0.15, angle = 45, boundaries = {"elasticity" : "Free"})
         
         geometry.add_label(0.19805, -0.0157016, materials = {"elasticity" : "Steel"})
@@ -239,6 +232,7 @@ class TestAdaptivityMagneticProfileConductor(Agros2DTestCase):
         self.value_test("Flux density", point1["B"], 0.00026454021728)
         
 class TestAdaptivityRF_TE(Agros2DTestCase):
+    # TODO: add more adaptivity types
     # test for hp-adaptivity, used different settings from implicit (l2 error, cumulative, finer_reference=false, order_increase=2)
     def setUp(self):  
         # problem
@@ -255,19 +249,11 @@ class TestAdaptivityRF_TE(Agros2DTestCase):
         # rf_te
         self.rf_te = agros2d.field("rf_te")
         self.rf_te.analysis_type = "harmonic"
-        self.rf_te.matrix_solver = "mumps"
-        self.rf_te.number_of_refinements = 0
+        self.rf_te.number_of_refinements = 1
         self.rf_te.polynomial_order = 1
         self.rf_te.adaptivity_type = "hp-adaptivity"
-        self.rf_te.adaptivity_parameters['steps'] = 12
+        self.rf_te.adaptivity_parameters['steps'] = 5
         self.rf_te.adaptivity_parameters['tolerance'] = 0
-        self.rf_te.adaptivity_parameters['threshold'] = 0.7
-        self.rf_te.adaptivity_parameters['stopping_criterion'] = "cumulative"
-        self.rf_te.adaptivity_parameters['error_calculator'] = "l2"
-        self.rf_te.adaptivity_parameters['anisotropic_refinement'] = True
-        self.rf_te.adaptivity_parameters['finer_reference_solution'] = False
-        self.rf_te.adaptivity_parameters['space_refinement'] = False
-        self.rf_te.adaptivity_parameters['order_increase'] = 2
         self.rf_te.solver = "linear"
                 
         # boundaries
@@ -293,7 +279,7 @@ class TestAdaptivityRF_TE(Agros2DTestCase):
         geometry.add_edge(0.17, 0.01143, 0.081, 0.01143, boundaries = {"rf_te" : "Perfect electric conductor"})
         geometry.add_edge(0.076, 0.01143, 0, 0.01143, boundaries = {"rf_te" : "Perfect electric conductor"})
         
-        geometry.add_label(0.0367388, 0.0025708, area = 1e-05, materials = {"rf_te" : "Air"})
+        geometry.add_label(0.0367388, 0.0025708, materials = {"rf_te" : "Air"})
         agros2d.view.zoom_best_fit()
         problem.solve()
         
@@ -384,12 +370,33 @@ class TestAdaptivityPAndHCoupled(Agros2DTestCase):
         agros2d.view.post2d.disable()
   
         # fields
+        # magnetic
+        self.magnetic = agros2d.field("magnetic")
+        self.magnetic.analysis_type = "harmonic"
+        self.magnetic.number_of_refinements = 0
+        self.magnetic.polynomial_order = 1
+        #self.magnetic.adaptivity_type = "h-adaptivity"
+        self.magnetic.adaptivity_type = "disabled"
+        self.magnetic.adaptivity_parameters['steps'] = 3
+        self.magnetic.adaptivity_parameters['tolerance'] = 0
+        self.magnetic.solver = "linear"
+                
+        # boundaries
+        self.magnetic.add_boundary("A = 0", "magnetic_potential", {"magnetic_potential_real" : 0, "magnetic_potential_imag" : 0})
+                
+        # materials
+        self.magnetic.add_material("Air", {"magnetic_permeability" : 1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0, "magnetic_current_density_external_imag" : 0, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0, "magnetic_total_current_imag" : 0})
+        self.magnetic.add_material("Copper", {"magnetic_permeability" : 1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 6e5, "magnetic_current_density_external_imag" : 0, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0, "magnetic_total_current_imag" : 0})
+        self.magnetic.add_material("Insulation", {"magnetic_permeability" : 1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0, "magnetic_current_density_external_imag" : 0, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0, "magnetic_total_current_imag" : 0})
+        self.magnetic.add_material("Steel", {"magnetic_permeability" : 100, "magnetic_conductivity" : 3e5, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0, "magnetic_current_density_external_imag" : 0, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0, "magnetic_total_current_imag" : 0})
+                                
         # heat
         self.heat = agros2d.field("heat")
         self.heat.analysis_type = "steadystate"
         self.heat.number_of_refinements = 0
         self.heat.polynomial_order = 1
         self.heat.adaptivity_type = "p-adaptivity"
+        #self.heat.adaptivity_type = "disabled"
         self.heat.adaptivity_parameters['steps'] = 3
         self.heat.adaptivity_parameters['tolerance'] = 0
         self.heat.solver = "linear"        
@@ -402,28 +409,7 @@ class TestAdaptivityPAndHCoupled(Agros2DTestCase):
         # materials
         self.heat.add_material("Steel", {"heat_conductivity" : 70, "heat_volume_heat" : 0, "heat_velocity_x" : 0, "heat_velocity_y" : 0, "heat_velocity_angular" : 0, "heat_density" : 0, "heat_specific_heat" : 0})
         self.heat.add_material("Insulation", {"heat_conductivity" : 6, "heat_volume_heat" : 0, "heat_velocity_x" : 0, "heat_velocity_y" : 0, "heat_velocity_angular" : 0, "heat_density" : 0, "heat_specific_heat" : 0})
-        
-        # magnetic
-        self.magnetic = agros2d.field("magnetic")
-        self.magnetic.analysis_type = "harmonic"
-        self.magnetic.number_of_refinements = 0
-        self.magnetic.polynomial_order = 1
-        self.magnetic.adaptivity_type = "h-adaptivity"
-        self.magnetic.adaptivity_parameters['steps'] = 3
-        self.magnetic.adaptivity_parameters['tolerance'] = 0
-        self.magnetic.solver = "linear"
-        
-        
-        # boundaries
-        self.magnetic.add_boundary("A = 0", "magnetic_potential", {"magnetic_potential_real" : 0, "magnetic_potential_imag" : 0})
-        
-        
-        # materials
-        self.magnetic.add_material("Air", {"magnetic_permeability" : 1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0, "magnetic_current_density_external_imag" : 0, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0, "magnetic_total_current_imag" : 0})
-        self.magnetic.add_material("Copper", {"magnetic_permeability" : 1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 6e5, "magnetic_current_density_external_imag" : 0, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0, "magnetic_total_current_imag" : 0})
-        self.magnetic.add_material("Insulation", {"magnetic_permeability" : 1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0, "magnetic_current_density_external_imag" : 0, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0, "magnetic_total_current_imag" : 0})
-        self.magnetic.add_material("Steel", {"magnetic_permeability" : 100, "magnetic_conductivity" : 3e5, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0, "magnetic_current_density_external_imag" : 0, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0, "magnetic_total_current_imag" : 0})
-        
+                
         # geometry
         geometry = agros2d.geometry
         geometry.add_edge(0.3, 0.6, 0, 0.6, boundaries = {"heat" : "Radiation"})
@@ -469,7 +455,7 @@ if __name__ == '__main__':
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElasticityBracket))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityMagneticProfileConductor))    
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityRF_TE))  
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityHLenses))  
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityHLenses))  
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityPAndHCoupled))  
       
     suite.run(result)

@@ -185,7 +185,7 @@ test_suite.fields.rf_tm.TestRFTMHarmonicAxisymmetric,
 # adaptivity
 test_suite.adaptivity.adaptivity.TestAdaptivityElectrostatic,
 test_suite.adaptivity.adaptivity.TestAdaptivityAcoustic,
-#test_suite.adaptivity.adaptivity.TestAdaptivityElasticityBracket,
+test_suite.adaptivity.adaptivity.TestAdaptivityElasticityBracket,
 #test_suite.adaptivity.adaptivity.TestAdaptivityMagneticProfileConductor,
 #test_suite.adaptivity.adaptivity.TestAdaptivityRF_TE,
 test_suite.adaptivity.adaptivity.TestAdaptivityHLenses,
@@ -212,8 +212,6 @@ test_suite.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsMany
 ] 
 #+ __tests__["script"]
 
-
-
 def all_tests():
     global __tests__
     return __tests__
@@ -221,3 +219,18 @@ def all_tests():
 def test(name):
     global __tests__
     return __tests__[name]
+
+def create_ctest(file = ""):
+    if (file == ""):
+        import pythonlab
+        file = pythonlab.datadir() + "/CMakeTests.cmake"
+    with open(file, "w") as text_file: 
+        for g in __tests__:
+            print('IF(TEST_' + g + ')', file=text_file)
+            for t in __tests__[g]:
+                test_name = t.__module__ + "." + t.__name__
+                print('    agros_test("' + test_name + '")', file=text_file)
+                #agros_test("test_suite.fields.electrostatic.TestElectrostaticPlanar")
+            print('ENDIF(TEST_' + g + ')\n', file=text_file)
+
+# create_ctest()

@@ -1469,7 +1469,8 @@ QMap<QString, const SolverDeal *> ProblemSolver::solvers()
 void ProblemSolver::solveProblem()
 {
     // todo: this is temporary!!!
-    QList<FieldInfo*> fieldInfosSorted;
+    QList<FieldInfo *> fieldInfosSorted;
+
     QList<QString> fieldInfoOrder;
     fieldInfoOrder.push_back("electrostatic");
     fieldInfoOrder.push_back("magnetic");
@@ -1507,7 +1508,8 @@ void ProblemSolver::solveProblem()
             // todo: check if it is also used!
             if(couplingList()->isCouplingAvailable(sourceFieldInfo, fieldInfo, CouplingType_Weak))
             {
-                FieldSolutionID solutionID(sourceFieldInfo, 0, 0, SolutionMode_Normal);
+
+                FieldSolutionID solutionID = Agros2D::solutionStore()->lastTimeAndAdaptiveSolution(sourceFieldInfo, SolutionMode_Normal);
                 MultiArray sourceSolution = Agros2D::solutionStore()->multiArray(solutionID);
 
                 solverDeal->setCouplingSource(sourceFieldInfo->fieldId(), sourceSolution.solution());

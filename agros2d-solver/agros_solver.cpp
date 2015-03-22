@@ -162,7 +162,7 @@ void AgrosSolver::runSuite()
     connect(currentPythonEngineAgros(), SIGNAL(pythonShowMessage(QString)), this, SLOT(stdOut(QString)));
     connect(currentPythonEngineAgros(), SIGNAL(pythonShowHtml(QString)), this, SLOT(stdHtml(QString)));
 
-    QString testSuite = QString("from test_suite.scenario import run_suite; from test_suite.tests import test; run_suite(test(\"%1\"))").arg(m_suiteName);
+    QString testSuite = QString("import test_suite; from test_suite.scenario import run_suite; from test_suite.tests import test; run_suite(test(\"%1\"))").arg(m_suiteName);
     bool successfulRun = currentPythonEngineAgros()->runScript(testSuite);
 
     if (successfulRun)
@@ -195,7 +195,7 @@ void AgrosSolver::runTest()
     connect(currentPythonEngineAgros(), SIGNAL(pythonShowMessage(QString)), this, SLOT(stdOut(QString)));
     connect(currentPythonEngineAgros(), SIGNAL(pythonShowHtml(QString)), this, SLOT(stdHtml(QString)));
 
-    QString testSuite = QString("from test_suite.scenario import run_test; cls = eval(\"%1\"); print(cls); run_test(cls)").arg(m_testName);
+    QString testSuite = QString("import test_suite; from test_suite.scenario import run_test; cls = eval(\"%1\"); run_test(cls)").arg(m_testName);
     bool successfulRun = currentPythonEngineAgros()->runScript(testSuite);
 
     if (successfulRun)

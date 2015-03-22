@@ -179,11 +179,11 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
             try
             {
                 dealii::Point<2> pt(p.x, p.y);
-                std::pair<typename dealii::Triangulation<2>::active_cell_iterator, dealii::Point<2> > current_cell =
-                        dealii::GridTools::find_active_cell_around_point(dealii::MappingQ1<2>(), *Agros2D::problem()->initialMesh(), pt);
+                typename dealii::Triangulation<2>::active_cell_iterator current_cell =
+                        dealii::GridTools::find_active_cell_around_point(*Agros2D::problem()->initialMesh(), pt);
 
                 // find marker
-                SceneLabel *label = Agros2D::scene()->labels->at(current_cell.first->material_id() - 1);
+                SceneLabel *label = Agros2D::scene()->labels->at(current_cell->material_id() - 1);
                 label->setSelected(!label->isSelected());
 
                 updateGL();

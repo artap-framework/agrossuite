@@ -16,7 +16,7 @@ class TestCoupledProblemsBasic1General(Agros2DTestCase):
         # fields
         self.current = agros2d.field("current")
         self.current.analysis_type = "steadystate"
-        self.current.number_of_refinements = 1
+        self.current.number_of_refinements = 0
         self.current.polynomial_order = 3
         self.current.solver = "linear"
         

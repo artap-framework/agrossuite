@@ -267,7 +267,6 @@ ADD_SUBDIRECTORY(agros2d-solver)
 ADD_SUBDIRECTORY(agros2d-generator)
 ADD_SUBDIRECTORY(agros2d-remote)
 ADD_SUBDIRECTORY(solver-external)
-ADD_SUBDIRECTORY(tests)
 #ADD_SUBDIRECTORY(agros2d-forms)
 
 message("\nAgros2D Configuration results")
@@ -369,6 +368,17 @@ set(info #resources/modules/acoustic.xml
 )
 add_info_files(${info})
 add_custom_target(other SOURCES ${info})
+
+# tests
+MACRO(agros_test NAME)
+  add_test(NAME ${NAME} WORKING_DIRECTORY ${CMAKE_AGROS_DIRECTORY} COMMAND ${AGROS_SOLVER} -t ${NAME})
+ENDMACRO(agros_test)
+ENABLE_TESTING()
+INCLUDE(CTest)
+SET(TEST_deal.II ON)
+SET(TEST_script OFF)
+INCLUDE(CMakeTests.cmake)
+#agros_test("test_suite.fields.electrostatic.TestElectrostaticAxisymmetric")
 
 # Policy handling
 if(POLICY CMP0020)
