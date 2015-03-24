@@ -101,8 +101,8 @@ public:
     inline QList<PostTriangle> &vectorXValues() { return m_vectorXValues; }
     inline QList<PostTriangle> &vectorYValues() { return m_vectorYValues; }
 
-    PostDataOut *viewScalarFilter(Module::LocalVariable physicFieldVariable,
-                                                        PhysicFieldVariableComp physicFieldVariableComp);
+    std::shared_ptr<PostDataOut> viewScalarFilter(Module::LocalVariable physicFieldVariable,
+                                                  PhysicFieldVariableComp physicFieldVariableComp);
 
     // view
     inline FieldInfo* activeViewField() const { return m_activeViewField; } // assert(m_activeViewField);

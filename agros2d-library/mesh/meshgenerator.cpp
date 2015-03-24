@@ -80,7 +80,9 @@
 #include "solver/problem_config.h"
 #include "mesh/agros_manifold.h"
 
-MeshGenerator::MeshGenerator() : QObject()
+MeshGenerator::MeshGenerator()
+    : QObject(),
+    m_triangulation(dealii::Triangulation<2>(dealii::Triangulation<2>::maximum_smoothing, false))
 {
 }
 
@@ -330,8 +332,6 @@ void MeshGenerator::writeTodealii()
 {
         //std::cout << fieldInfo->name().toStdString() << std::endl;
 
-        dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>(dealii::Triangulation<2>::maximum_smoothing, false);
-
         // vertices
         std::vector<dealii::Point<2> > vertices;
         for (int vertex_i = 0; vertex_i < nodeList.count(); vertex_i++)
@@ -464,27 +464,24 @@ void MeshGenerator::writeTodealii()
         dealii::GridTools::delete_unused_vertices(vertices, cells, subcelldata);
         dealii::GridReordering<2>::invert_all_cells_of_negative_grid(vertices, cells);
         dealii::GridReordering<2>::reorder_cells(cells);
-        triangulation->create_triangulation_compatibility(vertices, cells, subcelldata);
+        m_triangulation.create_triangulation_compatibility(vertices, cells, subcelldata);
 
         // Fix of dealII automatic marking of sub-objects with the same manifoldIds (quads -> lines).
-        for (dealii::Triangulation<2>::face_iterator line = triangulation->begin_face(); line != triangulation->end_face(); ++line) {
+        for (dealii::Triangulation<2>::face_iterator line = m_triangulation.begin_face(); line != m_triangulation.end_face(); ++line) {
             if (line->manifold_id() >= maxEdgeMarker)
                 line->set_manifold_id(0);
         }
 
         for (std::map<dealii::types::manifold_id, AgrosManifoldVolume<2>*>::iterator iterator = volManifolds.begin(); iterator != volManifolds.end(); iterator++) {
-            triangulation->set_manifold(iterator->first, *iterator->second);
+            m_triangulation.set_manifold(iterator->first, *iterator->second);
         }
 
         for (std::map<dealii::types::manifold_id, AgrosManifoldSurface<2>*>::iterator iterator = surfManifolds.begin(); iterator != surfManifolds.end(); iterator++) {
-            triangulation->set_manifold(iterator->first, *iterator->second);
+            m_triangulation.set_manifold(iterator->first, *iterator->second);
         }
 
-        m_triangulation = triangulation;
-        // std::cout << "triangulation created " << std::endl;
-
-        dealii::Triangulation<2>::cell_iterator cell = triangulation->begin();
-        dealii::Triangulation<2>::cell_iterator end_cell = triangulation->end();
+        dealii::Triangulation<2>::cell_iterator cell = m_triangulation.begin();
+        dealii::Triangulation<2>::cell_iterator end_cell = m_triangulation.end();
 
         int cell_idx = 0;
         for(; cell != end_cell; ++cell)
@@ -526,10 +523,10 @@ void MeshGenerator::writeTodealii()
         }
 
         // save to disk
-        QString fnMesh = QString("%1/%2_initial.msh").arg(cacheProblemDir()).arg("mesh"/*fieldInfo->fieldId()*/);
+        QString fnMesh = QString("%1/%2_initial.msh").arg(cacheProblemDir()).arg("mesh");
         std::ofstream ofsMesh(fnMesh.toStdString());
         boost::archive::binary_oarchive sbMesh(ofsMesh);
-        triangulation->save(sbMesh, 0);
+        m_triangulation.save(sbMesh, 0);
 }
 
 bool MeshGenerator::prepare()

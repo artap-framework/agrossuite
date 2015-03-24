@@ -243,7 +243,7 @@ void PostDeal::processRangeContour()
 
         m_contourValues.clear();
 
-        PostDataOut *data_out = NULL;
+        std::shared_ptr<PostDataOut> data_out;
 
         if (variable.isScalar())
             data_out = viewScalarFilter(m_activeViewField->localVariable(Agros2D::problem()->setting()->value(ProblemSetting::View_ContourVariable).toString()),
@@ -254,8 +254,6 @@ void PostDeal::processRangeContour()
                                         PhysicFieldVariableComp_Magnitude);
 
         data_out->compute_nodes(m_contourValues, (m_activeViewField->hasDeformableShape() && Agros2D::problem()->setting()->value(ProblemSetting::View_DeformContour).toBool()));
-
-        delete data_out;
     }
 }
 
@@ -277,7 +275,7 @@ void PostDeal::processRangeScalar()
 
         Agros2D::log()->printMessage(tr("Post View"), tr("Scalar view (%1)").arg(Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarVariable).toString()));
 
-        PostDataOut *data_out = viewScalarFilter(m_activeViewField->localVariable(Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarVariable).toString()),
+        std::shared_ptr<PostDataOut> data_out = viewScalarFilter(m_activeViewField->localVariable(Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarVariable).toString()),
                                                  (PhysicFieldVariableComp) Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt());
         data_out->compute_nodes(m_scalarValues, (m_activeViewField->hasDeformableShape() && Agros2D::problem()->setting()->value(ProblemSetting::View_DeformContour).toBool()));
 
@@ -286,8 +284,6 @@ void PostDeal::processRangeScalar()
             Agros2D::problem()->setting()->setValue(ProblemSetting::View_ScalarRangeMin, data_out->min());
             Agros2D::problem()->setting()->setValue(ProblemSetting::View_ScalarRangeMax, data_out->max());
         }
-
-        delete data_out;
     }
 }
 
@@ -307,17 +303,14 @@ void PostDeal::processRangeVector()
 
         Agros2D::log()->printMessage(tr("Post View"), tr("Vector view (%1)").arg(Agros2D::problem()->setting()->value(ProblemSetting::View_VectorVariable).toString()));
 
-        PostDataOut *data_outX = viewScalarFilter(m_activeViewField->localVariable(Agros2D::problem()->setting()->value(ProblemSetting::View_VectorVariable).toString()),
+        std::shared_ptr<PostDataOut> data_outX = viewScalarFilter(m_activeViewField->localVariable(Agros2D::problem()->setting()->value(ProblemSetting::View_VectorVariable).toString()),
                                                   PhysicFieldVariableComp_X);
 
-        PostDataOut *data_outY = viewScalarFilter(m_activeViewField->localVariable(Agros2D::problem()->setting()->value(ProblemSetting::View_VectorVariable).toString()),
+        std::shared_ptr<PostDataOut> data_outY = viewScalarFilter(m_activeViewField->localVariable(Agros2D::problem()->setting()->value(ProblemSetting::View_VectorVariable).toString()),
                                                   PhysicFieldVariableComp_Y);
 
         data_outX->compute_nodes(m_vectorXValues);
         data_outY->compute_nodes(m_vectorYValues);
-
-        delete data_outX;
-        delete data_outY;
     }
 }
 
@@ -420,7 +413,7 @@ void PostDeal::processSolved()
 }
 
 
-PostDataOut *PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariable,
+std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariable,
                                         PhysicFieldVariableComp physicFieldVariableComp)
 {    
     // QTime time;
@@ -443,7 +436,7 @@ PostDataOut *PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariabl
     // This effectively deallocates the previous pointer.
     this->m_post = post;
 
-    PostDataOut *data_out = new PostDataOut(activeViewField());
+    std::shared_ptr<PostDataOut> data_out = std::shared_ptr<PostDataOut>(new PostDataOut(activeViewField()));
     data_out->attach_dof_handler(*ma.doFHandler());
     data_out->add_data_vector(ma.solution(), *post);
     // deform shape

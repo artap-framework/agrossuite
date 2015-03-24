@@ -39,7 +39,7 @@ QString FieldSolutionID::toString()
 
 // *********************************************************************************************
 
-MultiArray::MultiArray() : m_doFHandler(nullptr)
+MultiArray::MultiArray() : m_doFHandler(nullptr), m_triangulation(nullptr)
 {
 }
 
@@ -49,13 +49,14 @@ MultiArray::~MultiArray()
 }
 
 void MultiArray::clear()
-{
-    // if (m_doFHandler)
-    //     delete m_doFHandler;
+{        
+    delete m_triangulation;
+    delete m_doFHandler;
 }
 
-void MultiArray::append(dealii::hp::DoFHandler<2> *doFHandler, dealii::Vector<double> &solution)
-{
+void MultiArray::append(dealii::hp::DoFHandler<2> *doFHandler, dealii::Triangulation<2> *triangulation, dealii::Vector<double> &solution)
+{    
+    m_triangulation = triangulation;
     m_doFHandler = doFHandler;
     m_solution = solution;
 }

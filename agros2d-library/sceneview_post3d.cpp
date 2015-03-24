@@ -264,8 +264,8 @@ void SceneViewPost3D::paintScalarField3D()
 
         // triangles
         glBegin(GL_TRIANGLES); // GL_QUADS are not optimized in OpenGL
-        dealii::Triangulation<2>::active_cell_iterator cell_int = Agros2D::problem()->initialMesh()->begin_active(),
-                endc_int = Agros2D::problem()->initialMesh()->end();
+        dealii::Triangulation<2>::active_cell_iterator cell_int = Agros2D::problem()->initialMesh().begin_active(),
+                endc_int = Agros2D::problem()->initialMesh().end();
         for (; cell_int != endc_int; ++cell_int)
         {
             dealii::Point<2> point0 = cell_int->vertex(0);

@@ -373,8 +373,8 @@ void InfoWidget::showInfo()
             {
                 field->SetValue("MESH_LABEL", tr("Mesh parameters").toStdString());
                 field->SetValue("INITIAL_MESH_LABEL", tr("Initial mesh:").toStdString());
-                field->SetValue("INITIAL_MESH_NODES", tr("%1 nodes").arg(Agros2D::problem()->initialMesh()->n_used_vertices()).toStdString());
-                field->SetValue("INITIAL_MESH_ELEMENTS", tr("%1 elements").arg(Agros2D::problem()->initialMesh()->n_active_cells()).toStdString());
+                field->SetValue("INITIAL_MESH_NODES", tr("%1 nodes").arg(Agros2D::problem()->initialMesh().n_used_vertices()).toStdString());
+                field->SetValue("INITIAL_MESH_ELEMENTS", tr("%1 elements").arg(Agros2D::problem()->initialMesh().n_active_cells()).toStdString());
 
                 if (Agros2D::problem()->isSolved() && (fieldInfo->linearityType() == LinearityType_Newton))
                 {

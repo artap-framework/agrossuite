@@ -82,7 +82,7 @@ void CalculationThread::run()
     }
 }
 
-Problem::Problem() : m_initialMesh(nullptr), m_initialUnrefinedMesh(nullptr), m_calculationMesh(nullptr)
+Problem::Problem()
 {
     // m_timeStep = 0;
     m_lastTimeElapsed = QTime(0, 0);
@@ -99,7 +99,6 @@ Problem::Problem() : m_initialMesh(nullptr), m_initialUnrefinedMesh(nullptr), m_
 
     m_solverDeal = new ProblemSolver();
 
-    m_initialMesh = nullptr;
     actMesh = new QAction(icon("scene-meshgen"), tr("&Mesh area"), this);
     actMesh->setShortcut(QKeySequence(tr("Alt+W")));
     connect(actMesh, SIGNAL(triggered()), this, SLOT(doMeshWithGUI()));
@@ -121,57 +120,11 @@ Problem::~Problem()
     delete m_calculationThread;
 
     delete m_solverDeal;
-
-    if (m_initialMesh)
-        delete m_initialMesh;
-    m_initialMesh = nullptr;
-
-    if (m_initialUnrefinedMesh)
-        delete m_initialUnrefinedMesh;
-    m_initialUnrefinedMesh = nullptr;
-
-    if (m_calculationMesh)
-        delete m_calculationMesh;
-    m_calculationMesh = nullptr;
 }
-
-void Problem::clearInitialMesh()
-{
-    if (m_initialMesh)
-        delete m_initialMesh;
-
-    m_initialMesh = new dealii::Triangulation<2>();
-}
-
-void Problem::setInitialMesh(dealii::Triangulation<2> *mesh)
-{
-    if (m_initialMesh)
-        delete m_initialMesh;
-
-    m_initialMesh = mesh;
-}
-
-void Problem::setInitialUnrefinedMesh(dealii::Triangulation<2> *mesh)
-{
-    if (m_initialUnrefinedMesh)
-        delete m_initialUnrefinedMesh;
-
-    m_initialUnrefinedMesh = mesh;
-}
-
-void Problem::setCalculationMesh(dealii::Triangulation<2> *mesh)
-{
-    if (m_calculationMesh)
-        delete m_calculationMesh;
-
-    m_calculationMesh = mesh;
-}
-
-
 
 bool Problem::isMeshed() const
 {
-    if (!Agros2D::problem()->initialMesh())
+    if (Agros2D::problem()->initialMesh().n_active_cells() == 0)
         return false;
 
     return (m_fieldInfos.size() > 0);
@@ -233,7 +186,9 @@ void Problem::clearSolution()
     m_timeStepLengths.clear();
     m_timeHistory.clear();
 
-    clearInitialMesh();
+    m_initialMesh.clear();
+    m_initialUnrefinedMesh.clear();
+    m_calculationMesh.clear();
 
     Agros2D::solutionStore()->clearAll();
 
@@ -846,25 +801,19 @@ void Problem::solveAction()
 
 void Problem::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator)
 {
-    dealii::Triangulation<2>* meshDeal;
-
     if (!meshGenerator)
     {
         // load initial mesh file
-        dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>();
-
         QString fnMesh = QString("%1/%2_initial.msh").arg(cacheProblemDir()).arg("mesh"/*fieldInfo->fieldId()*/);
         std::ifstream ifsMesh(fnMesh.toStdString());
         boost::archive::binary_iarchive sbiMesh(ifsMesh);
-        triangulation->load(sbiMesh, 0);
+        m_initialMesh.load(sbiMesh, 0);
 
-        // cache
-        meshDeal = triangulation;
         Agros2D::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from disk"));
     }
     else
     {
-        meshDeal = meshGenerator->triangulation();
+        m_initialMesh.copy_triangulation(meshGenerator->triangulation());
         Agros2D::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from memory"));
     }
 
@@ -880,18 +829,11 @@ void Problem::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenera
 
     // this is just a workaround for the problem in deal
     // user data are not preserved on faces after refinement
-    dealii::Triangulation<2> *initialUnrefinedMeshDeal = new dealii::Triangulation<2>();
-    initialUnrefinedMeshDeal->copy_triangulation(*meshDeal);
+    m_initialUnrefinedMesh.copy_triangulation(m_initialMesh);
 
-    setInitialUnrefinedMesh(initialUnrefinedMeshDeal);
-    setInitialMesh(meshDeal);
-
-    meshDeal->refine_global(max_num_refinements);
+    m_calculationMesh.copy_triangulation(m_initialMesh);
+    m_calculationMesh.refine_global(max_num_refinements);
     //propagateBoundaryMarkers();
-
-    dealii::Triangulation<2> *calculationMeshDeal = new dealii::Triangulation<2>();
-    calculationMeshDeal->copy_triangulation(*meshDeal);
-    setCalculationMesh(calculationMeshDeal);
 
     // nonlinearity
     m_isNonlinear = determineIsNonlinear();
@@ -902,11 +844,10 @@ void Problem::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenera
 
 void Problem::propagateBoundaryMarkers()
 {
-
-    dealii::Triangulation<2>::cell_iterator cell_unrefined = initialUnrefinedMesh()->begin();
-    dealii::Triangulation<2>::cell_iterator end_cell_unrefined = initialUnrefinedMesh()->end();
-    dealii::Triangulation<2>::cell_iterator cell_initial = initialMesh()->begin();
-    dealii::Triangulation<2>::cell_iterator cell_calculation = calculationMesh()->begin();
+    dealii::Triangulation<2>::cell_iterator cell_unrefined = m_initialUnrefinedMesh.begin();
+    dealii::Triangulation<2>::cell_iterator end_cell_unrefined = m_initialUnrefinedMesh.end();
+    dealii::Triangulation<2>::cell_iterator cell_initial = m_initialMesh.begin();
+    dealii::Triangulation<2>::cell_iterator cell_calculation = m_calculationMesh.begin();
 
     for (int idx = 0; cell_unrefined != end_cell_unrefined; ++cell_initial, ++cell_calculation, ++cell_unrefined, ++idx)   // loop over all cells, not just active ones
     {

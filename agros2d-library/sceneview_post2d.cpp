@@ -180,7 +180,7 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
             {
                 dealii::Point<2> pt(p.x, p.y);
                 typename dealii::Triangulation<2>::active_cell_iterator current_cell =
-                        dealii::GridTools::find_active_cell_around_point(*Agros2D::problem()->initialMesh(), pt);
+                        dealii::GridTools::find_active_cell_around_point(Agros2D::problem()->initialMesh(), pt);
 
                 // find marker
                 SceneLabel *label = Agros2D::scene()->labels->at(current_cell->material_id() - 1);
@@ -883,7 +883,7 @@ void SceneViewPost2D::exportVTK(const QString &fileName, const QString &variable
                 QFile::remove(fn);
         }
 
-        PostDataOut *data_out = m_postDeal->viewScalarFilter(postDeal()->activeViewField()->localVariable(variable), physicFieldVariableComp);
+        std::shared_ptr<PostDataOut> data_out = m_postDeal->viewScalarFilter(postDeal()->activeViewField()->localVariable(variable), physicFieldVariableComp);
 
         std::ofstream output (fn.toStdString());
         data_out->write_vtk(output);
@@ -898,8 +898,6 @@ void SceneViewPost2D::exportVTK(const QString &fileName, const QString &variable
                 settings.setValue("General/LastVTKDir", fileInfo.absolutePath());
             }
         }
-
-        delete data_out;
     }
 }
 

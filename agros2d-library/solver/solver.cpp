@@ -220,35 +220,26 @@ SolverDeal::AssemblyCopyData::AssemblyCopyData()
 // *******************************************************************************************
 
 SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
-    : m_fieldInfo(fieldInfo), m_scene(Agros2D::scene()), m_problem(Agros2D::problem()), m_time(0.0),
-      m_assemble_matrix(true)
-{    
-    // fe collection
-    m_feCollection = new dealii::hp::FECollection<2>();
-
-    // copy initial mesh
-    // at the present moment we do not use multimesh
-    //    m_triangulation = new dealii::Triangulation<2>();
-    //    m_triangulation->copy_triangulation(*Agros2D::problem()->initialMesh());
-    m_triangulation = Agros2D::problem()->calculationMesh();
-
-    // info
-    std::vector<dealii::types::boundary_id> bindicators = m_triangulation->get_boundary_indicators();
-    // std::cout << "Number of boundary indicators: " << bindicators.size() << std::endl;
-    // std::cout << "Number of active cells: " << m_triangulation->n_active_cells() << std::endl;
-    // std::cout << "Total number of cells: " << m_triangulation->n_cells() << std::endl;
-
-    // create dof handler
-    m_doFHandler = new dealii::hp::DoFHandler<2>(*m_triangulation);
+    : m_fieldInfo(fieldInfo),
+      m_scene(Agros2D::scene()),
+      m_problem(Agros2D::problem()),
+      m_time(0.0),
+      m_assemble_matrix(true),
+      // fe collection
+      m_feCollection(new dealii::hp::FECollection<2>()),
+      // mapping collection
+      m_mappingCollection(SolverDeal::createMappingCollection(m_fieldInfo)),
+      // dof handler
+      m_doFHandler(Agros2D::problem()->calculationMesh())
+{       
+    // calculation mesh
+    m_triangulation = &Agros2D::problem()->calculationMesh();
 
     // first position of feCollection, quadrature_formulas and face_quadrature_formulas belongs to NONE space
     // this will be used for implementation of different meshes
     m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Nothing<2>(), fieldInfo->numberOfSolutions()));
     m_quadrature_formulas.push_back(dealii::QGauss<2>(1));
     m_face_quadrature_formulas.push_back(dealii::QGauss<2 - 1>(1));
-
-    // fe collection
-    m_mappingCollection = SolverDeal::createMappingCollection(m_fieldInfo);
 
     // Gauss quadrature and fe collection
     for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
@@ -259,10 +250,10 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     }
 
     // find those elements, which are used for this field
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler.begin_active(), endc = m_doFHandler.end();
     for (unsigned int index = 0; cell != endc; ++cell, ++index)
     {
-        if(cell->active_fe_index() != 0)
+        if (cell->active_fe_index() != 0)
             std::cout << "assert" << std::endl;
 
         //std::cout << "material id " << cell->material_id() - 1 << std::endl;
@@ -276,14 +267,7 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
 SolverDeal::~SolverDeal()
 {
     delete m_mappingCollection;
-
-    if (m_doFHandler)
-        delete m_doFHandler;
-    m_doFHandler = nullptr;
-
-    if (m_feCollection)
-        delete m_feCollection;
-    m_feCollection = nullptr;
+    delete m_feCollection;
 }
 
 void SolverDeal::solveLinearSystem(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln)
@@ -547,7 +531,7 @@ void SolverDeal::estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_
     }
     std::vector<std::complex<double> > fourier_coefficients (n_fourier_modes);
     dealii::Vector<double> local_dof_values;
-    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler.begin_active(), endc = m_doFHandler.end();
     for (unsigned int index=0; cell!=endc; ++cell, ++index)
     {
         local_dof_values.reinit (cell->get_fe().dofs_per_cell);
@@ -590,6 +574,9 @@ void SolverDeal::estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_
 
 void SolverDeal::refineGrid(bool refine)
 {
+    // previousSolutionTrans = std::shared_ptr<dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > >(
+    //             new dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> >(m_doFHandler));
+
     // estimated error per cell
     dealii::Vector<float> estimated_error_per_cell(m_triangulation->n_active_cells());
 
@@ -597,14 +584,14 @@ void SolverDeal::refineGrid(bool refine)
     switch ((AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt())
     {
     case AdaptivityEstimator_Kelly:
-        dealii::KellyErrorEstimator<2>::estimate(*m_doFHandler,
+        dealii::KellyErrorEstimator<2>::estimate(m_doFHandler,
                                                  m_face_quadrature_formulas,
                                                  TYPENAME dealii::FunctionMap<2>::type(),
                                                  m_solution,
                                                  estimated_error_per_cell);
         break;
     case AdaptivityEstimator_Gradient:
-        GradientErrorEstimator::estimate(*m_doFHandler,
+        GradientErrorEstimator::estimate(m_doFHandler,
                                          m_solution,
                                          estimated_error_per_cell);
         break;
@@ -612,6 +599,7 @@ void SolverDeal::refineGrid(bool refine)
         assert(0);
     }
 
+    // cout << estimated_error_per_cell.l2_norm() << endl;
     dealii::GridRefinement::refine_and_coarsen_fixed_number(*m_triangulation,
                                                             estimated_error_per_cell,
                                                             m_fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt() / 100.0,
@@ -629,7 +617,7 @@ void SolverDeal::refineGrid(bool refine)
 
         min_smoothness = *std::max_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
         max_smoothness = *std::min_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
-        dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = m_doFHandler->begin_active(), endcmm = m_doFHandler->end();
+        dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = m_doFHandler.begin_active(), endcmm = m_doFHandler.end();
         for (unsigned int index = 0; cellmm != endcmm; ++cellmm, ++index)
         {
             if (cellmm->refine_flag_set())
@@ -644,7 +632,7 @@ void SolverDeal::refineGrid(bool refine)
     {
         const float threshold_smoothness = (max_smoothness + min_smoothness) / 2;
 
-        dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+        dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler.begin_active(), endc = m_doFHandler.end();
         for (unsigned int index = 0; cell != endc; ++cell, ++index)
         {
             if (m_fieldInfo->adaptivityType() == AdaptivityMethod_P)
@@ -654,7 +642,7 @@ void SolverDeal::refineGrid(bool refine)
                     // remove h adaptivity flag
                     cell->clear_refine_flag();
 
-                    if (cell->active_fe_index() + 1 < m_doFHandler->get_fe().size())
+                    if (cell->active_fe_index() + 1 < m_doFHandler.get_fe().size())
                     {
                         // increase order
                         cell->set_active_fe_index(cell->active_fe_index() + 1);
@@ -665,7 +653,7 @@ void SolverDeal::refineGrid(bool refine)
             if (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP)
             {
                 if (cell->refine_flag_set() && (smoothnessIndicators(index) > threshold_smoothness)
-                        && (cell->active_fe_index() + 1 < m_doFHandler->get_fe().size()))
+                        && (cell->active_fe_index() + 1 < m_doFHandler.get_fe().size()))
                 {
                     // remove h adaptivity flag
                     cell->clear_refine_flag();
@@ -677,7 +665,15 @@ void SolverDeal::refineGrid(bool refine)
     }
 
     if (refine)
-        m_triangulation->execute_coarsening_and_refinement();
+    {
+        // hanging_node_constraints.distribute(m_solution);
+
+        // cout << m_solution.size() << endl;
+        m_triangulation->prepare_coarsening_and_refinement();
+        // previousSolutionTrans->prepare_for_coarsening_and_refinement(m_solution);
+        // previousSolutionTrans->prepare_for_pure_refinement();
+        m_triangulation->execute_coarsening_and_refinement();        
+    }
 }
 
 double SolverDeal::computeNorm()
@@ -686,7 +682,7 @@ double SolverDeal::computeNorm()
 
     dealii::hp::FEValues<2> hp_fe_values(*m_feCollection, m_quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_JxW_values);
 
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = m_doFHandler->begin_active(), endc_int = m_doFHandler->end();
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = m_doFHandler.begin_active(), endc_int = m_doFHandler.end();
     for (; cell_int != endc_int; ++cell_int)
     {
         // volume integration
@@ -717,15 +713,15 @@ void SolverDeal::setup(bool use_dirichlet_lift)
     QTime time;
     time.start();
 
-    m_doFHandler->distribute_dofs(*m_feCollection);
-    // std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
+    m_doFHandler.distribute_dofs(*m_feCollection);
+    // std::cout << "Number of degrees of freedom: " << m_doFHandler.n_dofs() << std::endl;
 
     // reinit sln and rhs
-    system_rhs.reinit(m_doFHandler->n_dofs());
-    m_solution.reinit(m_doFHandler->n_dofs());
+    system_rhs.reinit(m_doFHandler.n_dofs());
+    m_solution.reinit(m_doFHandler.n_dofs());
 
     hanging_node_constraints.clear();
-    dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler, hanging_node_constraints);
+    dealii::DoFTools::make_hanging_node_constraints(m_doFHandler, hanging_node_constraints);
 
     // assemble Dirichlet
     assembleDirichlet(use_dirichlet_lift);
@@ -733,8 +729,8 @@ void SolverDeal::setup(bool use_dirichlet_lift)
     hanging_node_constraints.close();
 
     // create sparsity pattern
-    dealii::CompressedSetSparsityPattern csp(m_doFHandler->n_dofs(), m_doFHandler->n_dofs());
-    dealii::DoFTools::make_sparsity_pattern(*m_doFHandler, csp, hanging_node_constraints); // , false
+    dealii::CompressedSetSparsityPattern csp(m_doFHandler.n_dofs(), m_doFHandler.n_dofs());
+    dealii::DoFTools::make_sparsity_pattern(m_doFHandler, csp, hanging_node_constraints); // , false
     sparsity_pattern.copy_from(csp);
 
     // reinit system matrix
@@ -754,14 +750,14 @@ void SolverDeal::setupProblemNonLinearNewton()
     //    QTime time;
     //    time.start();
 
-    m_doFHandler->distribute_dofs(*m_feCollection);
-    // std::cout << "Number of degrees of freedom: " << m_doFHandler->n_dofs() << std::endl;
+    m_doFHandler.distribute_dofs(*m_feCollection);
+    // std::cout << "Number of degrees of freedom: " << m_doFHandler.n_dofs() << std::endl;
 
     // reinit sln
-    m_solution_nonlinear_previous.reinit(m_doFHandler->n_dofs());
+    m_solution_nonlinear_previous.reinit(m_doFHandler.n_dofs());
 
     hanging_node_constraints.clear();
-    dealii::DoFTools::make_hanging_node_constraints(*m_doFHandler, hanging_node_constraints);
+    dealii::DoFTools::make_hanging_node_constraints(m_doFHandler, hanging_node_constraints);
 
     // assemble Dirichlet
     assembleDirichlet(true);
@@ -772,7 +768,7 @@ void SolverDeal::setupProblemNonLinearNewton()
     // I hope, that it will construct dirichlet lift, taking into account hanging nodes close to the boundary,
     // since to the hanging_node_constraints, first are applied hanging nodes and than the Dirichlet BC
     // todo: is that correct?
-    for(dealii::types::global_dof_index dof = 0; dof < m_doFHandler->n_dofs(); dof++)
+    for(dealii::types::global_dof_index dof = 0; dof < m_doFHandler.n_dofs(); dof++)
     {
         if (hanging_node_constraints.is_constrained(dof))
         {
@@ -805,23 +801,23 @@ void SolverDeal::solve()
     {
         // int order = 1;
         // for (unsigned int o = 0; o < order - 1; o++)
-        //    solution_transient_previous.push_back(dealii::Vector<double>(m_doFHandler->n_dofs()));
+        //    solution_transient_previous.push_back(dealii::Vector<double>(m_doFHandler.n_dofs()));
 
         setup(true);
         assembleSystem();
 
         // initial condition
         m_solution = 0.0;
-        dealii::Vector<double> initialSolution(m_doFHandler->n_dofs());
+        dealii::Vector<double> initialSolution(m_doFHandler.n_dofs());
 
-        dealii::VectorTools::interpolate(*m_doFHandler,
+        dealii::VectorTools::interpolate(m_doFHandler,
                                          dealii::ConstantFunction<2>(m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble()),
                                          initialSolution);
 
         // initial step
         FieldSolutionID solutionID(m_fieldInfo, 0, 0, SolutionMode_Normal);
-        SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, m_doFHandler->n_dofs());
-        Agros2D::solutionStore()->addSolution(solutionID, MultiArray(m_doFHandler, initialSolution), runTime);
+        SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, m_doFHandler.n_dofs());
+        Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, initialSolution), runTime);
         m_solution = initialSolution;
 
         // parameters
@@ -922,7 +918,7 @@ void SolverDeal::solve()
                 double error = 0.0;
 
                 // estimate error
-                dealii::Vector<double> estSln(m_doFHandler->n_dofs());
+                dealii::Vector<double> estSln(m_doFHandler.n_dofs());
 
                 // low order computation
                 bdf2Table.setOrderAndPreviousSteps(order - 1, stepLengths);
@@ -1020,8 +1016,8 @@ void SolverDeal::solve()
                 Agros2D::log()->updateTransientChartInfo(m_time);
 
                 solutionID = FieldSolutionID(m_fieldInfo, step, 0, SolutionMode_Normal);
-                SolutionStore::SolutionRunTimeDetails runTime(actualTimeStep, 0.0, m_doFHandler->n_dofs());
-                Agros2D::solutionStore()->addSolution(solutionID, MultiArray(m_doFHandler, m_solution), runTime);
+                SolutionStore::SolutionRunTimeDetails runTime(actualTimeStep, 0.0, m_doFHandler.n_dofs());
+                Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, m_solution), runTime);
 
                 // increase step
                 step++;
@@ -1029,11 +1025,11 @@ void SolverDeal::solve()
                 // adapt mesh
                 if (m_fieldInfo->adaptivityType() != AdaptivityMethod_None)
                 {
-                    Agros2D::log()->updateAdaptivityChartInfo(m_fieldInfo, step, 1);
+                    // Agros2D::log()->updateAdaptivityChartInfo(m_fieldInfo, step, 1);
                     Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2, DOFs: %3)").
                                                  arg(1).
                                                  arg(0.0).
-                                                 arg(m_doFHandler->n_dofs()));
+                                                 arg(m_doFHandler.n_dofs()));
 
                     refineGrid(false);
 
@@ -1048,7 +1044,7 @@ void SolverDeal::solve()
 
                     hanging_node_constraints.distribute(m_solution);
 
-                    dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solutionTrans(*m_doFHandler);
+                    dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solutionTrans(m_doFHandler);
                     dealii::Vector<double> previousSolution = m_solution;
 
                     m_triangulation->prepare_coarsening_and_refinement();
@@ -1083,7 +1079,7 @@ void SolverDeal::solveProblem()
         // QTime time;
         // time.start();
         assembleSystem();
-        // std::cout << "assemble: " << time.elapsed() << ", ndofs: " << m_doFHandler->n_dofs() <<  std::endl;
+        // std::cout << "assemble: " << time.elapsed() << ", ndofs: " << m_doFHandler.n_dofs() <<  std::endl;
         // time.start();
         solveLinearSystem(system_matrix, system_rhs, m_solution);
         //m_solution.print(std::cout);
@@ -1357,28 +1353,49 @@ void SolverDeal::solveAdaptivity()
         solveProblem();
 
         FieldSolutionID solutionID(m_fieldInfo, 0, 0, SolutionMode_Normal);
-        SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, m_doFHandler->n_dofs());
-        Agros2D::solutionStore()->addSolution(solutionID, MultiArray(m_doFHandler, m_solution), runTime);
+        SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, m_doFHandler.n_dofs());
+        Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, m_solution), runTime);
     }
     else
     {
         double previousNorm = 0.0;
         for (int i = 0; i < m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt(); i++)
         {
+
+            dealii::Vector<double> previousSolution;
             if (i > 0)
             {
+                previousSolution = m_solution;
                 refineGrid(true);
             }
 
+            // dealii::Vector<double> previousSolution = m_solution;
+
             solveProblem();
 
+            // error
+            // double error = 1;
+            if (i > 0)
+            {
+                // adaptiveSolutionInterpolated.reinit(m_doFHandler.n_dofs());
+                // solutionTrans.refine_interpolate(m_solution, previousSolutionInterpolated);
+                // previousSolutionTrans->interpolate(previousSolution, adaptiveSolutionInterpolated);
+                // cout << m_solution.size() << " , " << adaptiveSolutionInterpolated.size() << endl;
+
+                // adaptiveSolutionInterpolated.add(-1, m_solution);
+                // cout << adaptiveSolutionInterpolated.l2_norm() << endl;
+                // error = adaptiveSolutionInterpolated.l2_norm() / m_solution.l2_norm();
+            }
+
+            // TODO: do it better
             double norm = computeNorm();
             double error = std::fabs(previousNorm - norm) / norm * 100.0;
             previousNorm = norm;
+            // cout << "error: " << error << endl;
 
             FieldSolutionID solutionID(m_fieldInfo, 0, i, SolutionMode_Normal);
-            SolutionStore::SolutionRunTimeDetails runTime(0.0, error, m_doFHandler->n_dofs());
-            Agros2D::solutionStore()->addSolution(solutionID, MultiArray(m_doFHandler, m_solution), runTime);
+            SolutionStore::SolutionRunTimeDetails runTime(0.0, error, m_doFHandler.n_dofs());
+            Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, m_solution), runTime);
 
             if (i > 0)
                 Agros2D::log()->updateAdaptivityChartInfo(m_fieldInfo, 0, i);
@@ -1386,7 +1403,7 @@ void SolverDeal::solveAdaptivity()
             Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2, DOFs: %3)").
                                          arg(i + 1).
                                          arg(error).
-                                         arg(m_doFHandler->n_dofs()));
+                                         arg(m_doFHandler.n_dofs()));
         }
     }
 }
@@ -1403,11 +1420,11 @@ void SolverDeal::transientBDF(const double timeStep,
     transient_left_matrix.add(timeStep, system_matrix);
 
     // m = sum(M * SLN)
-    dealii::Vector<double> m(m_doFHandler->n_dofs());
+    dealii::Vector<double> m(m_doFHandler.n_dofs());
     for (int i = 0; i < bdf2Table.order(); i++)
     {
         // m += M * SLNi
-        dealii::Vector<double> sln(m_doFHandler->n_dofs());
+        dealii::Vector<double> sln(m_doFHandler.n_dofs());
         mass_matrix.vmult(sln, solutions[solutions.size() - i - 1]);
         m.add(- bdf2Table.vectorFormCoefficient(i), sln);
 

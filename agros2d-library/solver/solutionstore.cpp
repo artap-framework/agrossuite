@@ -117,7 +117,7 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
         solution.load(sbiSol, 0);
 
         // new multisolution
-        MultiArray msa(&doFHandler, solution);
+        MultiArray msa(&doFHandler, &triangulation, solution);
 
         insertMultiSolutionToCache(solutionID, msa);        
     }
@@ -412,31 +412,28 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, Multi
     // load
     boost::archive::binary_iarchive sbiDoF(fsDoF);
     doFHandler->load(sbiDoF, 0);
-
-    // solution vector
-    dealii::Vector<double> solution = dealii::Vector<double>(multiSolution.solution());
+    // cout << doFHandler->memory_consumption() << endl;
 
     // new multisolution
-    MultiArray multiSolutionCopy(doFHandler, solution);
+    MultiArray multiSolutionCopy(doFHandler, triangulation, multiSolution.solution());
 
-    if (!m_multiSolutionDealCache.contains(solutionID))
+    assert(!m_multiSolutionDealCache.contains(solutionID));
+
+    // flush cache
+    if (m_multiSolutionDealCache.count() > Agros2D::configComputer()->value(Config::Config_CacheSize).toInt())
     {
-        // flush cache
-        if (m_multiSolutionDealCache.count() > Agros2D::configComputer()->value(Config::Config_CacheSize).toInt())
-        {
-            assert(! m_multiSolutionCacheIDOrder.empty());
-            FieldSolutionID idRemove = m_multiSolutionCacheIDOrder[0];
-            m_multiSolutionCacheIDOrder.removeFirst();
+        assert(! m_multiSolutionCacheIDOrder.empty());
+        FieldSolutionID idRemove = m_multiSolutionCacheIDOrder[0];
+        m_multiSolutionCacheIDOrder.removeFirst();
 
-            // free ma
-            m_multiSolutionDealCache[idRemove].clear();
-            m_multiSolutionDealCache.remove(idRemove);
-        }
-
-        // add solution
-        m_multiSolutionDealCache.insert(solutionID, multiSolutionCopy);
-        m_multiSolutionCacheIDOrder.append(solutionID);
+        // free ma
+        m_multiSolutionDealCache[idRemove].clear();
+        m_multiSolutionDealCache.remove(idRemove);
     }
+
+    // add solution
+    m_multiSolutionDealCache.insert(solutionID, multiSolutionCopy);
+    m_multiSolutionCacheIDOrder.append(solutionID);
 }
 
 void SolutionStore::loadRunTimeDetails()

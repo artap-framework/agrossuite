@@ -248,17 +248,15 @@ void SceneViewMesh::paintInitialMesh()
 
     if (m_arrayInitialMesh.isEmpty())
     {
-        //dealii::Triangulation<2> *initial_mesh = m_postDeal->activeViewField()->initialMesh();
-        // todo: there is only one initial mesh now, fix paint
-        dealii::Triangulation<2> *initial_mesh = Agros2D::problem()->initialMesh();
-        if (!initial_mesh) return;
+        if (Agros2D::problem()->initialMesh().n_active_cells() == 0)
+            return;
 
         // vertices
-        const std::vector<dealii::Point<2> >& vertices = initial_mesh->get_vertices();
+        const std::vector<dealii::Point<2> > &vertices = Agros2D::problem()->initialMesh().get_vertices();
 
         // faces
-        dealii::Triangulation<2>::active_face_iterator ti = initial_mesh->begin_face();
-        while (ti != initial_mesh->end_face())
+        dealii::Triangulation<2>::active_face_iterator ti = Agros2D::problem()->initialMesh().begin_face();
+        while (ti != Agros2D::problem()->initialMesh().end_face())
         {
             m_arrayInitialMesh.append(QVector2D(vertices[ti->vertex_index(0)][0], vertices[ti->vertex_index(0)][1]));
             m_arrayInitialMesh.append(QVector2D(vertices[ti->vertex_index(1)][0], vertices[ti->vertex_index(1)][1]));

@@ -143,15 +143,8 @@ public:
     void readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator = QSharedPointer<MeshGenerator>(nullptr));
     void readSolutionsFromFile();
 
-    inline dealii::Triangulation<2> *initialMesh() const { return m_initialMesh; }
-    void clearInitialMesh();
-    void setInitialMesh(dealii::Triangulation<2> *mesh);
-
-    inline dealii::Triangulation<2> *initialUnrefinedMesh() const { return m_initialUnrefinedMesh; }
-    void setInitialUnrefinedMesh(dealii::Triangulation<2> *mesh);
-
-    inline dealii::Triangulation<2> *calculationMesh() const { return m_calculationMesh; }
-    void setCalculationMesh(dealii::Triangulation<2> *mesh);
+    inline const dealii::Triangulation<2> &initialMesh() const { return m_initialMesh; }
+    inline dealii::Triangulation<2> &calculationMesh() { return m_calculationMesh; }
 
     void propagateBoundaryMarkers();
 
@@ -171,13 +164,10 @@ private:
     QMap<QPair<FieldInfo*, FieldInfo* >, CouplingInfo* > m_couplingInfos;
 
     // initial mesh
-    dealii::Triangulation<2> *m_initialMesh;
-
-    dealii::Triangulation<2> *m_initialUnrefinedMesh;
-
-    // calculation mesh
-    // at the present moment we do not use multimesh
-    dealii::Triangulation<2> *m_calculationMesh;
+    dealii::Triangulation<2> m_initialMesh;
+    dealii::Triangulation<2> m_initialUnrefinedMesh;
+    // calculation mesh - at the present moment we do not use multimesh
+    dealii::Triangulation<2> m_calculationMesh;
 
     QTime m_lastTimeElapsed;
 

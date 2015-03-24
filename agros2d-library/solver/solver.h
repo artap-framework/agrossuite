@@ -45,7 +45,7 @@
 #include <deal.II/lac/full_matrix.h>
 #include <deal.II/lac/sparse_matrix.h>
 #include <deal.II/lac/sparse_direct.h>
-
+#include <deal.II/numerics/solution_transfer.h>
 #include <deal.II/base/time_stepping.h>
 
 #include <paralution.hpp>
@@ -56,8 +56,11 @@ class DoubleCellIterator
 public:
     dealii::hp::DoFHandler<2>::active_cell_iterator cell_first, cell_second;
 
-    DoubleCellIterator(const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_first, const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_second, const dealii::hp::DoFHandler<2>* doFHandler, const FieldInfo *fieldInfo) :
-        cell_first(cell_first), cell_second(cell_second), m_fieldInfo(fieldInfo), m_doFHandler(doFHandler)
+    DoubleCellIterator(const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_first,
+                       const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_second,
+                       const dealii::hp::DoFHandler<2> &doFHandler,
+                       const FieldInfo *fieldInfo) :
+        cell_first(cell_first), cell_second(cell_second), m_fieldInfo(fieldInfo), m_doFHandler(&doFHandler)
     {
     }
 
@@ -102,7 +105,7 @@ public:
         return tmp;   // return old value
     }
     const FieldInfo *m_fieldInfo;
-    const dealii::hp::DoFHandler<2>* m_doFHandler;
+    const dealii::hp::DoFHandler<2> *m_doFHandler;
 };
 
 
@@ -131,13 +134,12 @@ public:
     SolverDeal(const FieldInfo *fieldInfo);
     virtual ~SolverDeal();
 
-    inline dealii::Triangulation<2> *triangulation() const { return m_triangulation; }
-    inline dealii::hp::DoFHandler<2> *doFHandler() const { return m_doFHandler; }
-    dealii::hp::FECollection<2> *feCollection() const { return m_feCollection; }
-    dealii::hp::MappingCollection<2> *mappingCollection() const { return m_mappingCollection; }
-
-    inline dealii::hp::QCollection<2> quadrature_formulas() const { return m_quadrature_formulas; }
-    inline dealii::hp::QCollection<2-1> face_quadrature_formulas() const { return m_face_quadrature_formulas; }
+    inline const dealii::hp::DoFHandler<2> &doFHandler() const { return m_doFHandler; }
+    inline const dealii::hp::MappingCollection<2> &mappingCollection() const { return *m_mappingCollection; }
+    inline const dealii::hp::FECollection<2> &feCollection() const { return *m_feCollection; }
+    // quadrature cache
+    inline const dealii::hp::QCollection<2> &quadrature_formulas() const { return m_quadrature_formulas; }
+    inline const dealii::hp::QCollection<2-1> &face_quadrature_formulas() const { return m_face_quadrature_formulas; }
 
     // if use_dirichlet_lift == false, zero dirichlet boundary condition is used
     // this is used for later iterations of the Newton method
@@ -218,7 +220,7 @@ protected:
     const Problem *m_problem;
 
     dealii::Triangulation<2> *m_triangulation;
-    dealii::hp::DoFHandler<2> *m_doFHandler;
+    dealii::hp::DoFHandler<2> m_doFHandler;
     dealii::hp::MappingCollection<2> *m_mappingCollection;
     dealii::hp::FECollection<2> *m_feCollection;
 
@@ -273,6 +275,8 @@ protected:
     void setupProblemNonLinearNewton();
 
     // adaptivity
+    dealii::Vector<double> adaptiveSolutionInterpolated;
+    std::shared_ptr<dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > > previousSolutionTrans;
     void solveAdaptivity();
     void estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_indicators) const;
     void refineGrid(bool refine = true);

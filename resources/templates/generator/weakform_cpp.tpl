@@ -145,22 +145,22 @@ void SolverDeal{{CLASS}}::assembleSystem()
         mass_matrix = 0.0;
 
     TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_begin, cell_end, source_begin, source_end;
-    cell_begin = m_doFHandler->begin_active();
-    cell_end = m_doFHandler->end();
+    cell_begin = m_doFHandler.begin_active();
+    cell_end = m_doFHandler.end();
 
     // if there is no source, we use the same as dummy
-    source_begin = m_doFHandler->begin_active();
-    source_end = m_doFHandler->end();
+    source_begin = m_doFHandler.begin_active();
+    source_end = m_doFHandler.end();
     // coupling sources{{#COUPLING_SOURCE}}
     if (m_problem->hasField("{{COUPLING_SOURCE_ID}}"))
     {
-        source_begin = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->begin_active();
-        source_end = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler()->end();
+        source_begin = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler().begin_active();
+        source_end = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler().end();
     }
     {{/COUPLING_SOURCE}}
 
     // Fix the beginning cells wrt. subdomains.
-    while (cell_begin != m_doFHandler->end())
+    while (cell_begin != m_doFHandler.end())
     {
         if (!Agros2D::scene()->labels->at(cell_begin->material_id() - 1)->marker(m_fieldInfo)->isNone())
             break;
@@ -249,7 +249,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
             {{COUPLING_SOURCE_ID}}_material = m_scene->labels->at(cell->material_id() - 1)->marker({{COUPLING_SOURCE_ID}}_fieldInfo);
 
             // todo: we probably do not need to initialize everything
-            dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values(*{{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadrature_formulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
+            dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values({{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadrature_formulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
             {{COUPLING_SOURCE_ID}}_hp_fe_values.reinit(cell_{{COUPLING_SOURCE_ID}});
             const dealii::FEValues<2> &{{COUPLING_SOURCE_ID}}_fe_values = {{COUPLING_SOURCE_ID}}_hp_fe_values.get_present_fe_values();
 
@@ -507,7 +507,7 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool useDirichletLift)
     CoordinateType coordinateType = m_problem->config()->coordinateType();
     // component mask
 
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler->begin_active(), endc = m_doFHandler->end();
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler.begin_active(), endc = m_doFHandler.end();
     for(; cell != endc; ++cell)
     {
         // boundaries
