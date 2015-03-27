@@ -68,7 +68,7 @@ void {{CLASS}}LocalValue::calculate()
             }
 
             dealii::Point<2> p(m_point.x, m_point.y);
-            typename dealii::Triangulation<2>::active_cell_iterator current_cell =
+            TYPENAME dealii::Triangulation<2>::active_cell_iterator current_cell =
                     dealii::GridTools::find_active_cell_around_point(Agros2D::problem()->initialMesh(), p);
 
             // find marker

@@ -179,7 +179,7 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
             try
             {
                 dealii::Point<2> pt(p.x, p.y);
-                typename dealii::Triangulation<2>::active_cell_iterator current_cell =
+                TYPENAME dealii::Triangulation<2>::active_cell_iterator current_cell =
                         dealii::GridTools::find_active_cell_around_point(Agros2D::problem()->initialMesh(), pt);
 
                 // find marker
