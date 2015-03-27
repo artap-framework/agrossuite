@@ -32,7 +32,7 @@ public:
         : SolverDeal(fieldInfo) {}
 
     virtual void assembleSystem();
-    virtual void assembleDirichlet(bool useDirichletLift);
+    virtual void assembleDirichlet(bool calculateDirichletLiftValue);
 
 protected:
     virtual void localAssembleSystem(const DoubleCellIterator &iter,

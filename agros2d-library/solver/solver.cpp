@@ -294,8 +294,6 @@ void SolverDeal::solveLinearSystem(dealii::SparseMatrix<double> &system, dealii:
         return;
     }
 
-    hanging_node_constraints.distribute(m_solution);
-
     // qDebug() << "solved (" << time.elapsed() << "ms )";
 }
 
@@ -708,7 +706,7 @@ double SolverDeal::computeNorm()
     return h1Norm;
 }
 
-void SolverDeal::setup(bool use_dirichlet_lift)
+void SolverDeal::setup(bool useDirichletLift)
 {
     QTime time;
     time.start();
@@ -716,25 +714,19 @@ void SolverDeal::setup(bool use_dirichlet_lift)
     m_doFHandler.distribute_dofs(*m_feCollection);
     // std::cout << "Number of degrees of freedom: " << m_doFHandler.n_dofs() << std::endl;
 
-    // reinit sln and rhs
-    system_rhs.reinit(m_doFHandler.n_dofs());
-    m_solution.reinit(m_doFHandler.n_dofs());
-
-    hanging_node_constraints.clear();
-    dealii::DoFTools::make_hanging_node_constraints(m_doFHandler, hanging_node_constraints);
-
-    // assemble Dirichlet
-    assembleDirichlet(use_dirichlet_lift);
-
-    hanging_node_constraints.close();
+    // Handle hanging nodes.
+    this->recreateConstraints(!useDirichletLift);
 
     // create sparsity pattern
     dealii::CompressedSetSparsityPattern csp(m_doFHandler.n_dofs(), m_doFHandler.n_dofs());
-    dealii::DoFTools::make_sparsity_pattern(m_doFHandler, csp, hanging_node_constraints); // , false
+    dealii::DoFTools::make_sparsity_pattern(m_doFHandler, csp, all_constraints);
+    all_constraints.condense(csp);
     sparsity_pattern.copy_from(csp);
 
     // reinit system matrix
     system_matrix.reinit(sparsity_pattern);
+    system_rhs.reinit(m_doFHandler.n_dofs());
+    m_solution.reinit(m_doFHandler.n_dofs());
 
     // mass matrix (transient)
     if (m_fieldInfo->analysisType() == AnalysisType_Transient)
@@ -747,52 +739,15 @@ void SolverDeal::setup(bool use_dirichlet_lift)
 
 void SolverDeal::setupProblemNonLinearNewton()
 {
-    //    QTime time;
-    //    time.start();
-
-    m_doFHandler.distribute_dofs(*m_feCollection);
-    // std::cout << "Number of degrees of freedom: " << m_doFHandler.n_dofs() << std::endl;
-
-    // reinit sln
     m_solution_nonlinear_previous.reinit(m_doFHandler.n_dofs());
 
-    hanging_node_constraints.clear();
-    dealii::DoFTools::make_hanging_node_constraints(m_doFHandler, hanging_node_constraints);
-
-    // assemble Dirichlet
-    assembleDirichlet(true);
-
-    hanging_node_constraints.close();
-
-    // todo: this has to be verified
-    // I hope, that it will construct dirichlet lift, taking into account hanging nodes close to the boundary,
-    // since to the hanging_node_constraints, first are applied hanging nodes and than the Dirichlet BC
-    // todo: is that correct?
-    for(dealii::types::global_dof_index dof = 0; dof < m_doFHandler.n_dofs(); dof++)
+    for (dealii::types::global_dof_index dof = 0; dof < m_doFHandler.n_dofs(); dof++)
     {
-        if (hanging_node_constraints.is_constrained(dof))
+        if (Dirichlet_constraints.is_constrained(dof))
         {
-            // first consider only BC, not hanging nodes
-            // todo: extend
-            assert(hanging_node_constraints.get_constraint_entries(dof)->size() == 0);
-            //            const std::vector<std::pair<dealii::types::global_dof_index,double> > * constraints = hanging_node_constraints.get_constraint_entries(dof);
-            //            if(constraints != nullptr)
-            //            {
-            //                for(int i = 0; i < constraints->size(); i++)
-            //                {
-            //                    std::cout << "(" << (*constraints)[i].first << ", " << (*constraints)[i].second << "), ";
-            //                }
-            //                std::cout << std::endl;
-            //            }
-
-            //            std::cout << "inhomogenity " << hanging_node_constraints.get_inhomogeneity(dof) << std::endl;
-
-            (m_solution_nonlinear_previous)(dof) = hanging_node_constraints.get_inhomogeneity(dof);
+            (m_solution_nonlinear_previous)(dof) = Dirichlet_constraints.get_inhomogeneity(dof);
         }
     }
-
-    //    for (std::map<dealii::types::global_dof_index, double>::const_iterator p = hanging_node_constraints.begin(); p != hanging_node_constraints.end(); ++p)
-    //        m_solution_nonlinear_previous(p->first) = p->second;
 }
 
 void SolverDeal::solve()
@@ -1042,7 +997,7 @@ void SolverDeal::solve()
                     // for (dealii::Triangulation<2>::active_cell_iterator cell = m_triangulation->begin_active(min_grid_level); cell != m_triangulation->end_active(min_grid_level); ++cell)
                     //     cell->clear_coarsen_flag();
 
-                    hanging_node_constraints.distribute(m_solution);
+                    all_constraints.distribute(m_solution);
 
                     dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solutionTrans(m_doFHandler);
                     dealii::Vector<double> previousSolution = m_solution;
@@ -1082,6 +1037,8 @@ void SolverDeal::solveProblem()
         // std::cout << "assemble: " << time.elapsed() << ", ndofs: " << m_doFHandler.n_dofs() <<  std::endl;
         // time.start();
         solveLinearSystem(system_matrix, system_rhs, m_solution);
+        all_constraints.distribute(m_solution);
+
         //m_solution.print(std::cout);
         //system_matrix.print(std::cout);
         // std::cout << "solve: " << time.elapsed() << std::endl;
@@ -1151,6 +1108,38 @@ void SolverDeal::solveProblemNonLinearPicard()
     qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
 
+void SolverDeal::recreateConstraints(bool zeroDirichletLift)
+{
+    hanging_node_constraints.clear();
+    dealii::DoFTools::make_hanging_node_constraints(m_doFHandler, hanging_node_constraints);
+    // (from documentation) - this function also resolves chains of constraints.
+    hanging_node_constraints.close();
+
+    // Assemble Dirichlet
+    // - may introduce additional constraints (but in a different entity, which will be taken care of by merging).
+    // Even Newton needs exact Dirichlet lift, so it is calculated always.
+    Dirichlet_constraints.clear();
+    assembleDirichlet(true);
+    Dirichlet_constraints.close();
+
+    // Zero Dirichlet lift for Newton
+    if (zeroDirichletLift)
+    {
+        zero_Dirichlet_constraints.clear();
+        assembleDirichlet(false);
+        zero_Dirichlet_constraints.close();
+    }
+
+    // Merge constraints
+    all_constraints.clear();
+    all_constraints.merge(hanging_node_constraints);
+    if (zeroDirichletLift)
+        all_constraints.merge(zero_Dirichlet_constraints);
+    else
+        all_constraints.merge(Dirichlet_constraints);
+    all_constraints.close();
+}
+
 void SolverDeal::solveProblemNonLinearNewton()
 {
     const double minAllowedDampingCoeff = 1e-4;
@@ -1162,16 +1151,24 @@ void SolverDeal::solveProblemNonLinearNewton()
     QVector<double> steps;
     QVector<double> relativeChangeOfSolutions;
 
-    // todo: some work is duplicated
     // decide, how the adaptivity, nonlinear (and time ) steps will be organized
-    setupProblemNonLinearNewton();
     setup(false);
+    setupProblemNonLinearNewton();
 
     // initial residual norm
-    double residualNorm = 0.0;
+
+    // first assemble just residual.
+    m_assemble_matrix = false;
+    assembleSystem();
+    double residualNorm = system_rhs.l2_norm();
+
+    Agros2D::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Initial residual norm: %1")
+        .arg(residualNorm));
+
+    m_assemble_matrix = true;
 
     // initial damping factor
-    double dampingFactor = m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble();
+    double dampingFactor = (m_fieldInfo->value(FieldInfo::NonlinearDampingType) == DampingType_Off ? 1.0 : m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble());
     int dampingSuccessfulSteps = 0;
 
     int iteration = 0;
@@ -1189,7 +1186,7 @@ void SolverDeal::solveProblemNonLinearNewton()
         double previousResidualNorm = residualNorm;
         bool jacobianReused = false;
 
-        if(numReusedJacobian == m_fieldInfo->value(FieldInfo::NewtonMaxStepsReuseJacobian).toInt())
+        if (numReusedJacobian == m_fieldInfo->value(FieldInfo::NewtonMaxStepsReuseJacobian).toInt())
         {
             // Jacobian has been reused too many times. Do not do it this time
             numReusedJacobian = 0;
@@ -1213,14 +1210,17 @@ void SolverDeal::solveProblemNonLinearNewton()
                 solveLinearSystem(system_matrix, system_rhs, m_solution);
                 // std::cout << "back substitution (" << time.elapsed() << "ms )" << std::endl;
 
+                // Update
                 m_solution_nonlinear_previous.add(dampingFactor, m_solution);
 
                 time.start();
+                // Calculate residual - m_assemble_matrix is false at this point, so we are not wasting time on matrix assembly.
                 assembleSystem();
+                // Residual norm.
                 residualNorm = system_rhs.l2_norm();
+
                 // std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
 
-                residualNorm = system_rhs.l2_norm();
                 if(residualNorm < previousResidualNorm * m_fieldInfo->value(FieldInfo::NewtonJacobianReuseRatio).toDouble())
                 {
                     jacobianReused = true;
@@ -1243,17 +1243,21 @@ void SolverDeal::solveProblemNonLinearNewton()
         {
             time.start();
             assembleSystem();
-            // std::cout << "assemble (" << time.elapsed() << "ms )" << std::endl;
-
-            system_rhs *= -1.0;
+            
             time.start();
+            system_rhs *= -1.0;
             solveLinearSystem(system_matrix, system_rhs, m_solution);
             // std::cout << "full system solve (" << time.elapsed() << "ms )" << std::endl;
 
-            // residual norm
-            residualNorm = system_rhs.l2_norm();
-
+            // Update.
             m_solution_nonlinear_previous.add(dampingFactor, m_solution);
+
+            // Calculate residual.
+            m_assemble_matrix = false;
+            assembleSystem();
+            m_assemble_matrix = true;
+            // Residual norm.
+            residualNorm = system_rhs.l2_norm();
 
             // automatic damping factor
             if ((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() == DampingType_Automatic)
@@ -1342,6 +1346,9 @@ void SolverDeal::solveProblemNonLinearNewton()
 
     // put the final solution into the solution
     m_solution = m_solution_nonlinear_previous;
+
+
+    this->Dirichlet_constraints.distribute(m_solution);
 
     qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }

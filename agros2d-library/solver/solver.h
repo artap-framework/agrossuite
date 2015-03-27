@@ -141,13 +141,13 @@ public:
     inline const dealii::hp::QCollection<2> &quadrature_formulas() const { return m_quadrature_formulas; }
     inline const dealii::hp::QCollection<2-1> &face_quadrature_formulas() const { return m_face_quadrature_formulas; }
 
-    // if use_dirichlet_lift == false, zero dirichlet boundary condition is used
+    // if useDirichletLift == false, zero dirichlet boundary condition is used
     // this is used for later iterations of the Newton method
     // this function, however, has to be called to ensure zero dirichlet boundary
     virtual void setup(bool useDirichletLift);
 
     virtual void assembleSystem() = 0;
-    virtual void assembleDirichlet(bool useDirichletLift) = 0;
+    virtual void assembleDirichlet(bool calculateDirichletLiftValue) = 0;
 
     // problem
     void solve();
@@ -240,8 +240,13 @@ protected:
     // weak coupling sources
     QMap<QString, dealii::Vector<double> > m_coupling_sources;
 
-    // hanging nodes and sparsity pattern
+    // hanging nodes constraints, Dirichlet ones and sparsity pattern.
+    void recreateConstraints(bool zeroDirichletLift);
+
     dealii::ConstraintMatrix hanging_node_constraints;
+    dealii::ConstraintMatrix Dirichlet_constraints;
+    dealii::ConstraintMatrix zero_Dirichlet_constraints;
+    dealii::ConstraintMatrix all_constraints;
     dealii::SparsityPattern sparsity_pattern;
 
     // matrix and rhs

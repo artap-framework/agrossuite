@@ -418,7 +418,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
     }
 }
 
-void SolverDeal{{CLASS}}::assembleDirichlet(bool useDirichletLift)
+void SolverDeal{{CLASS}}::assembleDirichlet(bool calculateDirichletLiftValue)
 {
     CoordinateType coordinateType = m_problem->config()->coordinateType();
 
@@ -494,15 +494,14 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool useDirichletLift)
                                 {
                                     if (cell->get_fe().face_system_to_component_index(i).first == comp)
                                     {
-                                        if (hanging_node_constraints.can_store_line(local_face_dof_indices[i])
-                                                && !hanging_node_constraints.is_constrained(local_face_dof_indices[i]))
+                                        if (Dirichlet_constraints.can_store_line(local_face_dof_indices[i]) && !Dirichlet_constraints.is_constrained(local_face_dof_indices[i]))
                                         {
-                                            hanging_node_constraints.add_line (local_face_dof_indices[i]);
+                                            Dirichlet_constraints.add_line (local_face_dof_indices[i]);
                                             // todo: nonconstant essential BC
                                             double bc_value = 0.0;
                                             if (useDirichletLift)
                                             {
-                                                hanging_node_constraints.add_line(local_face_dof_indices[i]);
+                                                Dirichlet_constraints.add_line(local_face_dof_indices[i]);
 
                                                 dealii::Point<2> p = points[i];
                                                 {{#VARIABLE_SOURCE_LINEAR}}
@@ -516,7 +515,7 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool useDirichletLift)
                                                     bc_value = {{EXPRESSION}}; {{/FORM_EXPRESSION_ESSENTIAL}}
                                             }
 
-                                            hanging_node_constraints.set_inhomogeneity(local_face_dof_indices[i], bc_value);
+                                            Dirichlet_constraints.set_inhomogeneity(local_face_dof_indices[i], bc_value);
                                         }
                                     }
                                 }
@@ -537,7 +536,7 @@ void SolverDeal{{CLASS}}::copyLocalToGlobal(const AssemblyCopyData &copy_data)
         // distribute local to global system
         if(m_assemble_matrix)
         {
-            hanging_node_constraints.distribute_local_to_global(copy_data.cell_matrix,
+            all_constraints.distribute_local_to_global(copy_data.cell_matrix,
                                                                 copy_data.cell_rhs,
                                                                 copy_data.local_dof_indices,
                                                                 system_matrix,
@@ -545,7 +544,7 @@ void SolverDeal{{CLASS}}::copyLocalToGlobal(const AssemblyCopyData &copy_data)
         }
         else
         {
-            hanging_node_constraints.distribute_local_to_global(copy_data.cell_rhs,
+            all_constraints.distribute_local_to_global(copy_data.cell_rhs,
                                                                 copy_data.local_dof_indices,
                                                                 system_rhs);
         }
@@ -553,7 +552,7 @@ void SolverDeal{{CLASS}}::copyLocalToGlobal(const AssemblyCopyData &copy_data)
         if (m_fieldInfo->analysisType() == AnalysisType_Transient)
         {
             // distribute local to global system
-            hanging_node_constraints.distribute_local_to_global(copy_data.cell_mass_matrix,
+            all_constraints.distribute_local_to_global(copy_data.cell_mass_matrix,
                                                                 copy_data.local_dof_indices,
                                                                 mass_matrix);
         }
