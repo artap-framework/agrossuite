@@ -48,90 +48,6 @@
 #include <deal.II/base/work_stream.h>
 #include <deal.II/base/multithread_info.h>
 
-{{#EXACT_SOURCE}}
-template <int dim>
-class Essential_{{COORDINATE_TYPE}}_{{ANALYSIS_TYPE}}_{{LINEARITY_TYPE}}_{{BOUNDARY_ID}} : public dealii::Function<dim>
-{
-public:
-    Essential_{{COORDINATE_TYPE}}_{{ANALYSIS_TYPE}}_{{LINEARITY_TYPE}}_{{BOUNDARY_ID}}(SceneBoundary *boundary)
-    : dealii::Function<dim>({{NUM_SOLUTIONS}})
-    {
-        {{#VARIABLE_SOURCE_LINEAR}}
-        {{VARIABLE_SHORT}} = boundary->valueNakedPtr("{{VARIABLE}}"); {{/VARIABLE_SOURCE_LINEAR}}
-        {{#VARIABLE_SOURCE_NONLINEAR}}
-        {{VARIABLE_SHORT}} = boundary->valueNakedPtr("{{VARIABLE}}"); {{/VARIABLE_SOURCE_NONLINEAR}}
-    }
-
-    virtual ~Essential_{{COORDINATE_TYPE}}_{{ANALYSIS_TYPE}}_{{LINEARITY_TYPE}}_{{BOUNDARY_ID}}() {}
-
-virtual double value (const dealii::Point<dim> &p,
-                      const unsigned int component) const
-{
-    {{#VARIABLE_SOURCE_LINEAR}}
-    const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
-    {{#VARIABLE_SOURCE_NONLINEAR}}
-    const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
-
-    {{#FORM_EXPRESSION_ESSENTIAL}}
-    // {{EXPRESSION_ID}}
-    if (component == {{ROW_INDEX}})
-        return {{EXPRESSION}}; {{/FORM_EXPRESSION_ESSENTIAL}}
-
-    assert(0);
-    return 0.0;
-}
-
-virtual void vector_value (const dealii::Point<dim> &p,
-                           dealii::Vector<double> &values) const
-{    
-    {{#VARIABLE_SOURCE_LINEAR}}
-    const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
-    {{#VARIABLE_SOURCE_NONLINEAR}}
-    const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
-
-    {{#FORM_EXPRESSION_ESSENTIAL}}
-    // {{EXPRESSION_ID}}
-    values[{{ROW_INDEX}}] = {{EXPRESSION}};{{/FORM_EXPRESSION_ESSENTIAL}}
-}
-
-virtual void value_list (const std::vector<dealii::Point<dim> > &points,
-                         std::vector<double> &values,
-                         const unsigned int component = 0) const
-{
-    for (unsigned int i = 0; i < points.size(); ++i)
-    {
-        dealii::Point<2> p = points[i];
-
-        {{#VARIABLE_SOURCE_LINEAR}}
-        const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
-        {{#VARIABLE_SOURCE_NONLINEAR}}
-        const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
-
-        {{#FORM_EXPRESSION_ESSENTIAL}}
-        // {{EXPRESSION_ID}}
-        if (component == {{ROW_INDEX}})
-            values[i] = {{EXPRESSION}};
-        {{/FORM_EXPRESSION_ESSENTIAL}}
-    }
-}
-
-virtual void vector_value_list (const std::vector<dealii::Point<dim> > &points,
-                                std::vector<dealii::Vector<double> > &values) const
-{
-    for (unsigned int i = 0; i < points.size(); ++i)
-        vector_value(points[i], values[i]);
-}
-
-private:
-{{#VARIABLE_SOURCE_LINEAR}}
-const Value *{{VARIABLE_SHORT}};{{/VARIABLE_SOURCE_LINEAR}}
-{{#VARIABLE_SOURCE_NONLINEAR}}
-const Value *{{VARIABLE_SHORT}};{{/VARIABLE_SOURCE_NONLINEAR}}
-};
-{{/EXACT_SOURCE}}
-
-// *************************************************************************************************************************************************
-
 void SolverDeal{{CLASS}}::assembleSystem()
 {
     bool isTransient = (m_fieldInfo->analysisType() == AnalysisType_Transient);
@@ -505,7 +421,31 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
 void SolverDeal{{CLASS}}::assembleDirichlet(bool useDirichletLift)
 {
     CoordinateType coordinateType = m_problem->config()->coordinateType();
-    // component mask
+
+    // prepare QCollection
+    dealii::hp::FECollection<2> finite_elements(m_doFHandler.get_fe());
+    dealii::hp::QCollection<2-1> q_collection;
+    for (unsigned int f = 0; f<finite_elements.size(); ++f)
+    {
+        const dealii::FiniteElement<2> &fe = finite_elements[f];
+
+        if (fe.has_face_support_points())
+            q_collection.push_back (dealii::Quadrature<2-1>(fe.get_unit_face_support_points()));
+        else
+        {
+            std::vector<dealii::Point<2-1> > unit_support_points (fe.dofs_per_face);
+
+            for (unsigned int i=0; i<fe.dofs_per_face; ++i)
+                if (fe.is_primitive (fe.face_to_cell_index(i,0)))
+                    // if (mask[fe.face_system_to_component_index(i).first] == true)
+                    unit_support_points[i] = fe.unit_face_support_point(i);
+
+            q_collection.push_back (dealii::Quadrature<2-1>(unit_support_points));
+        }
+    }
+
+    // hp face values
+    dealii::hp::FEFaceValues<2> hp_fe_face_values(mappingCollection(), feCollection(), q_collection, dealii::update_quadrature_points);
 
     dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler.begin_active(), endc = m_doFHandler.end();
     for(; cell != endc; ++cell)
@@ -513,47 +453,75 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool useDirichletLift)
         // boundaries
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
         {
-            if(cell->face(face)->user_index() > 0 )
+            if (cell->face(face)->user_index() > 0)
             {
                 SceneBoundary *boundary = m_scene->edges->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
                 if (boundary != m_scene->boundaries->getNone(m_fieldInfo))
                 {
-                    const unsigned int dofs_per_face = cell->get_fe().dofs_per_face;
-                    std::vector<dealii::types::global_dof_index> local_face_dof_indices (dofs_per_face);
+                    const dealii::FiniteElement<2> &fe = cell->get_fe();
 
-                    cell->face(face)->get_dof_indices (local_face_dof_indices, cell->active_fe_index());
+                    hp_fe_face_values.reinit(cell, face);
+                    const dealii::FEFaceValues<2> &fe_values = hp_fe_face_values.get_present_fe_values();
+                    std::vector<dealii::Point<2> > points;
+                    points.reserve(dealii::DoFTools::max_dofs_per_face(m_doFHandler));
+                    points = fe_values.get_quadrature_points();
+
+                    const unsigned int dofs_per_face = fe.dofs_per_face;
+                    std::vector<dealii::types::global_dof_index> local_face_dof_indices(dofs_per_face);
+
+                    cell->face(face)->get_dof_indices(local_face_dof_indices, cell->active_fe_index());
 
                     {{#EXACT_SOURCE}}
                     // {{BOUNDARY_ID}}
                     if ((coordinateType == {{COORDINATE_TYPE}}) && (m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_fieldInfo->linearityType() == {{LINEARITY_TYPE}})
                             && boundary->type() == "{{BOUNDARY_ID}}")
                     {
+                        {{#VARIABLE_SOURCE_LINEAR}}
+                        const Value *{{VARIABLE_SHORT}} = boundary->valueNakedPtr("{{VARIABLE}}"); {{/VARIABLE_SOURCE_LINEAR}}
+                        {{#VARIABLE_SOURCE_NONLINEAR}}
+                        const Value *{{VARIABLE_SHORT}} = boundary->valueNakedPtr("{{VARIABLE}}"); {{/VARIABLE_SOURCE_NONLINEAR}}
 
+                        // component mask
                         std::vector<bool> mask;
                         {{#FORM_EXPRESSION_MASK}}
                         mask.push_back({{MASK}});{{/FORM_EXPRESSION_MASK}}
-                        // dealii::ZeroFunction<2>({{NUM_SOLUTIONS}}), // for the Newton method
-                        Essential_{{COORDINATE_TYPE}}_{{ANALYSIS_TYPE}}_{{LINEARITY_TYPE}}_{{BOUNDARY_ID}}<2> essential(boundary);
 
-                        for(unsigned int i = 0; i < dofs_per_face; i++)
+                        for (unsigned int i = 0; i < dofs_per_face; i++)
                         {
-                            for(unsigned int comp = 0; comp < {{NUM_SOLUTIONS}}; comp++)
+                            for (unsigned int comp = 0; comp < {{NUM_SOLUTIONS}}; comp++)
                             {
-                                if(mask[comp])
+                                if (mask[comp])
                                 {
                                     if (cell->get_fe().face_system_to_component_index(i).first == comp)
                                     {
-                                        hanging_node_constraints.add_line (local_face_dof_indices[i]);
-                                        // todo: nonconstant essential BC
-                                        double bc_value = 0.0;
-                                        if(useDirichletLift)
-                                            bc_value = essential.value(dealii::Point<2>(0,0), comp);
-                                        hanging_node_constraints.set_inhomogeneity(local_face_dof_indices[i], bc_value);
+                                        if (hanging_node_constraints.can_store_line(local_face_dof_indices[i])
+                                                && !hanging_node_constraints.is_constrained(local_face_dof_indices[i]))
+                                        {
+                                            hanging_node_constraints.add_line (local_face_dof_indices[i]);
+                                            // todo: nonconstant essential BC
+                                            double bc_value = 0.0;
+                                            if (useDirichletLift)
+                                            {
+                                                hanging_node_constraints.add_line(local_face_dof_indices[i]);
+
+                                                dealii::Point<2> p = points[i];
+                                                {{#VARIABLE_SOURCE_LINEAR}}
+                                                const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
+                                                {{#VARIABLE_SOURCE_NONLINEAR}}
+                                                const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
+
+                                                {{#FORM_EXPRESSION_ESSENTIAL}}
+                                                // {{EXPRESSION_ID}}
+                                                if (comp == {{ROW_INDEX}})
+                                                    bc_value = {{EXPRESSION}}; {{/FORM_EXPRESSION_ESSENTIAL}}
+                                            }
+
+                                            hanging_node_constraints.set_inhomogeneity(local_face_dof_indices[i], bc_value);
+                                        }
                                     }
                                 }
                             }
                         }
-
                     }
                     {{/EXACT_SOURCE}}
                 }
@@ -561,7 +529,6 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool useDirichletLift)
         }
     }
 }
-
 
 void SolverDeal{{CLASS}}::copyLocalToGlobal(const AssemblyCopyData &copy_data)
 {
