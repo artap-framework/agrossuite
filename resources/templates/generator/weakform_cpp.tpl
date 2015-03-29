@@ -494,28 +494,31 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool calculateDirichletLiftValue)
                                 {
                                     if (cell->get_fe().face_system_to_component_index(i).first == comp)
                                     {
-                                        if (Dirichlet_constraints.can_store_line(local_face_dof_indices[i]) && !Dirichlet_constraints.is_constrained(local_face_dof_indices[i]))
+                                        // todo: nonconstant essential BC
+                                        if (calculateDirichletLiftValue)
                                         {
-                                            Dirichlet_constraints.add_line (local_face_dof_indices[i]);
-                                            // todo: nonconstant essential BC
-                                            double bc_value = 0.0;
-                                            if (useDirichletLift)
-                                            {
-                                                Dirichlet_constraints.add_line(local_face_dof_indices[i]);
+                                            Dirichlet_constraints.add_line(local_face_dof_indices[i]);
 
-                                                dealii::Point<2> p = points[i];
-                                                {{#VARIABLE_SOURCE_LINEAR}}
-                                                const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
-                                                {{#VARIABLE_SOURCE_NONLINEAR}}
-                                                const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
+                                            dealii::Point<2> p = points[i];
+                                            
+                                            {{#VARIABLE_SOURCE_LINEAR}}
+                                            const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
+                                            
+                                            {{#VARIABLE_SOURCE_NONLINEAR}}
+                                            const double {{VARIABLE_SHORT}}_val = {{VARIABLE_SHORT}}->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
 
-                                                {{#FORM_EXPRESSION_ESSENTIAL}}
-                                                // {{EXPRESSION_ID}}
-                                                if (comp == {{ROW_INDEX}})
-                                                    bc_value = {{EXPRESSION}}; {{/FORM_EXPRESSION_ESSENTIAL}}
-                                            }
-
-                                            Dirichlet_constraints.set_inhomogeneity(local_face_dof_indices[i], bc_value);
+                                            {{#FORM_EXPRESSION_ESSENTIAL}}
+                                            
+                                            // {{EXPRESSION_ID}}
+                                            if (comp == {{ROW_INDEX}})
+                                                Dirichlet_constraints.set_inhomogeneity(local_face_dof_indices[i], {{EXPRESSION}});
+                                            
+                                            {{/FORM_EXPRESSION_ESSENTIAL}}
+                                        }
+                                        else
+                                        {
+                                            zero_Dirichlet_constraints.add_line (local_face_dof_indices[i]);
+                                            zero_Dirichlet_constraints.set_inhomogeneity(local_face_dof_indices[i], 0.0);
                                         }
                                     }
                                 }
