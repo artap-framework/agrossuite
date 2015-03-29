@@ -1039,8 +1039,6 @@ void SolverDeal::solveProblem()
         solveLinearSystem(system_matrix, system_rhs, m_solution);
         all_constraints.distribute(m_solution);
 
-        //m_solution.print(std::cout);
-        //system_matrix.print(std::cout);
         // std::cout << "solve: " << time.elapsed() << std::endl;
     }
     else if (m_fieldInfo->linearityType() == LinearityType_Picard)
@@ -1208,6 +1206,10 @@ void SolverDeal::solveProblemNonLinearNewton()
                 // since m_assemble_matrix is false, this will reuse the LU decomposition
                 time.start();
                 solveLinearSystem(system_matrix, system_rhs, m_solution);
+                m_solution.print(std::cout);
+                system_matrix.print(std::cout);
+                system_rhs.print(std::cout);
+
                 // std::cout << "back substitution (" << time.elapsed() << "ms )" << std::endl;
 
                 // Update
@@ -1247,6 +1249,10 @@ void SolverDeal::solveProblemNonLinearNewton()
             time.start();
             system_rhs *= -1.0;
             solveLinearSystem(system_matrix, system_rhs, m_solution);
+            m_solution.print(std::cout);
+            system_matrix.print(std::cout);
+            system_rhs.print(std::cout);
+
             // std::cout << "full system solve (" << time.elapsed() << "ms )" << std::endl;
 
             // Update.
