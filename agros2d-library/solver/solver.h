@@ -197,7 +197,7 @@ protected:
     class AGROS_LIBRARY_API AssembleCache
     {
     public:
-        AssembleCache() : dofs_per_cell(-1) {}
+        AssembleCache() : dofs_per_cell(-1), n_q_points(-1) {}
 
         // volume value and grad cache
         std::vector<std::vector<double> > shape_value;
@@ -216,6 +216,7 @@ protected:
         std::vector<std::vector<std::vector<dealii::Tensor<1, 2> > > > solution_grad_previous_face;
 
         int dofs_per_cell;
+        int n_q_points;
     };
 
     // local reference
@@ -230,7 +231,7 @@ protected:
 
     // assemble cache
     std::map<tbb::tbb_thread::id, AssembleCache> m_assembleCache;
-    AssembleCache &assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell);
+    AssembleCache &assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points);
 
     // quadrature cache
     dealii::hp::QCollection<2> m_quadrature_formulas;

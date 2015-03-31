@@ -142,7 +142,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
         std::vector<int> components(dofs_per_cell);
 
         // volume value and grad cache
-        AssembleCache &cache = assembleCache(tbb::this_tbb_thread::get_id(), dofs_per_cell);
+        AssembleCache &cache = assembleCache(tbb::this_tbb_thread::get_id(), dofs_per_cell, n_face_q_points);
 
         if (m_solution_nonlinear_previous.size() > 0)
         {
@@ -388,11 +388,12 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                         // {{VARIABLE}}
                         const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
 
-                        const dealii::FiniteElement<2> &fe = cell->get_fe();
-                        hp_fe_face_values.reinit(cell, face);
-                        const dealii::FEFaceValues<2> &fe_face_values = hp_fe_face_values.get_present_fe_values();
+                        scratch_data.hp_fe_face_values.reinit(cell, face);
+
+                        const dealii::FEFaceValues<2> &fe_face_values = scratch_data.hp_fe_face_values.get_present_fe_values();
+                        const unsigned int n_face_q_points = fe_face_values.n_quadrature_points;
                         
-                        for (unsigned int q_point = 0; q_point < fe_face_values.n_quadrature_points; ++q_point)
+                        for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
                         {
                             const dealii::Point<2> p = cache.shape_face_point[face][q_point];
 

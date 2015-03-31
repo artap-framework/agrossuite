@@ -175,7 +175,7 @@ SolverDeal::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &
                         dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values)
 {}
 
-SolverDeal::AssembleCache &SolverDeal::assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell)
+SolverDeal::AssembleCache &SolverDeal::assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points)
 {
     // create or resize cache
     bool idExists = !(m_assembleCache.find(thread_id) == m_assembleCache.end());
@@ -186,8 +186,6 @@ SolverDeal::AssembleCache &SolverDeal::assembleCache(tbb::tbb_thread::id thread_
             tbb::mutex::scoped_lock lock(createCache);
 
             SolverDeal::AssembleCache cache;
-
-            int n_q_points = dofs_per_cell;
 
             // volume value and grad cache
             cache.shape_value = std::vector<std::vector<double> >(dofs_per_cell, std::vector<double>(n_q_points));
@@ -203,6 +201,7 @@ SolverDeal::AssembleCache &SolverDeal::assembleCache(tbb::tbb_thread::id thread_
             cache.solution_grad_previous = std::vector<std::vector<dealii::Tensor<1,2> > >(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
 
             cache.dofs_per_cell = dofs_per_cell;
+            cache.n_q_points = n_q_points;
 
             m_assembleCache[thread_id] = cache;
             // std::cout << "init " << thread_id << std::endl;
