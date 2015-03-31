@@ -204,10 +204,6 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
         cache.solution_value_previous_face.resize(dealii::GeometryInfo<2>::faces_per_cell);
         cache.solution_grad_previous_face.resize(dealii::GeometryInfo<2>::faces_per_cell);
 
-        // components cache
-        std::vector<std::vector<int> > components_face(dealii::GeometryInfo<2>::faces_per_cell);
-        const unsigned int dofs_per_face = cell->get_fe().dofs_per_face;
-
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
         {
             if(cell->face(face)->user_index() > 0 )
@@ -229,12 +225,8 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                         cache.shape_face_JxW[face][q_point] = fe_face_values.JxW(q_point);
                     }
                     
-                    components_face[face].resize(dofs_per_face);
-
-                    for (unsigned int i = 0; i < dofs_per_face; ++i)
+                    for (unsigned int i = 0; i < dofs_per_cell; ++i)
                     {
-                        components_face[face][i] = cell->get_fe().face_system_to_component_index(i).first;
-
                         cache.shape_face_value[face][i].resize(n_face_q_points);
                         for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
                         {
@@ -399,7 +391,6 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                         const dealii::FiniteElement<2> &fe = cell->get_fe();
                         hp_fe_face_values.reinit(cell, face);
                         const dealii::FEFaceValues<2> &fe_face_values = hp_fe_face_values.get_present_fe_values();
-                        const unsigned int dofs_per_face = fe.dofs_per_face;
                         
                         for (unsigned int q_point = 0; q_point < fe_face_values.n_quadrature_points; ++q_point)
                         {
@@ -409,11 +400,11 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                             // {{VARIABLE}}
                             const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
 
-                            for (unsigned int i = 0; i < dofs_per_face; ++i)
+                            for (unsigned int i = 0; i < dofs_per_cell; ++i)
                             {
                                 if(m_assemble_matrix)
                                 {
-                                    for (unsigned int j = 0; j < dofs_per_face; ++j)
+                                    for (unsigned int j = 0; j < dofs_per_cell; ++j)
                                     {
                                         {{#FORM_EXPRESSION_MATRIX}}
                                         // {{EXPRESSION_ID}}
