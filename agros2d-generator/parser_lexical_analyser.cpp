@@ -48,7 +48,7 @@ void ParserInstance::addBasicWeakformTokens(ParserModuleInfo pmi)
     // scalar field
     m_dict["uval"] = pmi.isSurface ? "cache.shape_face_value[face][j][q_point]" : "cache.shape_value[j][q_point]"; // "u->val[i]";
     m_dict["vval"] = pmi.isSurface ? "cache.shape_face_value[face][i][q_point]" : "cache.shape_value[i][q_point]"; // "v->val[i]";
-    m_dict["upval"] = "cache.solution_value_previous[q_point][components[i]]"; // "u_ext[this->j]->val[i]";
+    m_dict["upval"] = pmi.isSurface ? "cache.solution_value_previous_face[face][q_point][components_face[face][i]]" : "cache.solution_value_previous[q_point][components[i]]"; // "u_ext[this->j]->val[i]";
 
     // vector field
     m_dict["uval0"] = "u->val0[i]";

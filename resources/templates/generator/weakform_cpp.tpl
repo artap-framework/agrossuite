@@ -201,6 +201,13 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
         }
 
         // cache surface
+        cache.solution_value_previous_face.resize(dealii::GeometryInfo<2>::faces_per_cell);
+        cache.solution_grad_previous_face.resize(dealii::GeometryInfo<2>::faces_per_cell);
+
+        // components cache
+        std::vector<std::vector<int> > components_face(dealii::GeometryInfo<2>::faces_per_cell);
+        const unsigned int dofs_per_face = cell->get_fe().dofs_per_face;
+
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
         {
             if(cell->face(face)->user_index() > 0 )
@@ -221,13 +228,31 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                         cache.shape_face_point[face][q_point] = fe_face_values.quadrature_point(q_point);
                         cache.shape_face_JxW[face][q_point] = fe_face_values.JxW(q_point);
                     }
+                    
+                    components_face[face].resize(dofs_per_face);
 
-                    for (unsigned int i = 0; i < dofs_per_cell; ++i)
+                    for (unsigned int i = 0; i < dofs_per_face; ++i)
                     {
+                        components_face[face][i] = cell->get_fe().face_system_to_component_index(i).first;
+
                         cache.shape_face_value[face][i].resize(n_face_q_points);
                         for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
                         {
                             cache.shape_face_value[face][i][q_point] = fe_face_values.shape_value(i, q_point);
+                        }
+                    }
+                    
+                    if (m_solution_nonlinear_previous.size() > 0)
+                    {
+                        // previous values and grads
+                        cache.solution_value_previous_face[face] = std::vector<dealii::Vector<double> >(n_face_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+                        cache.solution_grad_previous_face[face] = std::vector<std::vector<dealii::Tensor<1, 2> > >(n_face_q_points, std::vector<dealii::Tensor<1, 2> >(m_fieldInfo->numberOfSolutions()));
+
+                        for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
+                        {
+                            fe_face_values.get_function_values(m_solution_nonlinear_previous, cache.solution_value_previous_face[face]);
+                            // todo - throws some uninitialized error
+                            //fe_face_values.get_function_gradients(m_solution_nonlinear_previous, cache.solution_grad_previous_face[face]);
                         }
                     }
                 }
@@ -329,7 +354,29 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
         }
         {{/VOLUME_SOURCE}}
 
+        // prepare QCollection
+        dealii::hp::FECollection<2> finite_elements(m_doFHandler.get_fe());
+        dealii::hp::QCollection<2 - 1> q_collection;
+        for (unsigned int f = 0; f<finite_elements.size(); ++f)
+        {
+            const dealii::FiniteElement<2> &fe = finite_elements[f];
 
+            if (fe.has_face_support_points())
+                q_collection.push_back(dealii::Quadrature<2 - 1>(fe.get_unit_face_support_points()));
+            else
+            {
+                std::vector<dealii::Point<2 - 1> > unit_support_points(fe.dofs_per_face);
+
+                for (unsigned int i = 0; i<fe.dofs_per_face; ++i)
+                    if (fe.is_primitive(fe.face_to_cell_index(i, 0)))
+                        // if (mask[fe.face_system_to_component_index(i).first] == true)
+                        unit_support_points[i] = fe.unit_face_support_point(i);
+
+                q_collection.push_back(dealii::Quadrature<2 - 1>(unit_support_points));
+            }
+        }
+        dealii::hp::FEFaceValues<2> hp_fe_face_values(mappingCollection(), feCollection(), q_collection, dealii::update_quadrature_points);
+        
         // boundaries
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
         {
@@ -349,7 +396,11 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                         // {{VARIABLE}}
                         const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_LINEAR}}
 
-                        const dealii::FEFaceValues<2> &fe_face_values = scratch_data.hp_fe_face_values.get_present_fe_values();
+                        const dealii::FiniteElement<2> &fe = cell->get_fe();
+                        hp_fe_face_values.reinit(cell, face);
+                        const dealii::FEFaceValues<2> &fe_face_values = hp_fe_face_values.get_present_fe_values();
+                        const unsigned int dofs_per_face = fe.dofs_per_face;
+                        
                         for (unsigned int q_point = 0; q_point < fe_face_values.n_quadrature_points; ++q_point)
                         {
                             const dealii::Point<2> p = cache.shape_face_point[face][q_point];
@@ -358,11 +409,11 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                             // {{VARIABLE}}
                             const double {{VARIABLE_SHORT}}_val = boundaryValues[{{VARIABLE_HASH}}]->{{VARIABLE_VALUE}}; {{/VARIABLE_SOURCE_NONLINEAR}}
 
-                            for (unsigned int i = 0; i < dofs_per_cell; ++i)
+                            for (unsigned int i = 0; i < dofs_per_face; ++i)
                             {
                                 if(m_assemble_matrix)
                                 {
-                                    for (unsigned int j = 0; j < dofs_per_cell; ++j)
+                                    for (unsigned int j = 0; j < dofs_per_face; ++j)
                                     {
                                         {{#FORM_EXPRESSION_MATRIX}}
                                         // {{EXPRESSION_ID}}
@@ -380,29 +431,6 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                                 }{{/FORM_EXPRESSION_VECTOR}}
                             }
                         }
-//                        {{#ESSENTIAL}}
-//                        Essential_{{COORDINATE_TYPE}}_{{ANALYSIS_TYPE}}_{{LINEARITY_TYPE}}_{{BOUNDARY_ID}}<2> essential(boundary);
-//                        std::vector<bool> mask;
-//                        {{#COMPONENTS}}
-//                        mask.push_back({{IS_ESSENTIAL}});{{/COMPONENTS}}
-
-//                        for(unsigned int i = 0; i < dofs_per_face; i++)
-//                        {
-//                            for(unsigned int comp = 0; comp < {{NUM_SOLUTIONS}}; comp++)
-//                            {
-//                                if(mask[comp])
-//                                {
-//                                    if (cell->get_fe().face_system_to_component_index(i).first == comp)
-//                                    {
-//                                        hanging_node_constraints.add_line (local_face_dof_indices[i]);
-//                                        // todo: nonconstant essential BC
-//                                        const double bc_value = essential.value(dealii::Point<2>(0,0), comp);
-//                                        hanging_node_constraints.set_inhomogeneity(local_face_dof_indices[i], bc_value);
-//                                    }
-//                                }
-//                            }
-//                        }
-//                        {{/ESSENTIAL}}
                     }
                     {{/SURFACE_SOURCE}}
 
@@ -512,7 +540,6 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool calculateDirichletLiftValue)
                                             // {{EXPRESSION_ID}}
                                             if (comp == {{ROW_INDEX}})
                                                 Dirichlet_constraints.set_inhomogeneity(local_face_dof_indices[i], {{EXPRESSION}});
-                                            
                                             {{/FORM_EXPRESSION_ESSENTIAL}}
                                         }
                                         else

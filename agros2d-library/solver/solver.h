@@ -209,7 +209,11 @@ protected:
 
         // previous values and grads
         std::vector<dealii::Vector<double> > solution_value_previous;
-        std::vector<std::vector<dealii::Tensor<1,2> > > solution_grad_previous;
+        std::vector<std::vector<dealii::Tensor<1, 2> > > solution_grad_previous;
+
+        // previous values and grads
+        std::vector<std::vector<dealii::Vector<double> > > solution_value_previous_face;
+        std::vector<std::vector<std::vector<dealii::Tensor<1, 2> > > > solution_grad_previous_face;
 
         int dofs_per_cell;
     };
