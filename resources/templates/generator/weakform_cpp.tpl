@@ -142,7 +142,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
         std::vector<int> components(dofs_per_cell);
 
         // volume value and grad cache
-        AssembleCache &cache = assembleCache(tbb::this_tbb_thread::get_id(), dofs_per_cell, n_face_q_points);
+        AssembleCache &cache = assembleCache(tbb::this_tbb_thread::get_id(), dofs_per_cell, n_q_points);
 
         if (m_solution_nonlinear_previous.size() > 0)
         {
