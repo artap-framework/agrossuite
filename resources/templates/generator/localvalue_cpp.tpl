@@ -52,62 +52,63 @@ void {{CLASS}}LocalValue::calculate()
 
     if (Agros2D::problem()->isSolved())
     {
-        try
+        FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep, m_solutionType);
+        // check existence
+        if (!Agros2D::solutionStore()->contains(fsid))
+            return;
+
+        MultiArray ma = Agros2D::solutionStore()->multiArray(fsid);
+
+        // update time functions
+        if (!Agros2D::problem()->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
         {
-            FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep, m_solutionType);
-            // check existence
-            if (!Agros2D::solutionStore()->contains(fsid))
-                return;
-
-            MultiArray ma = Agros2D::solutionStore()->multiArray(fsid);
-
-            // update time functions
-            if (!Agros2D::problem()->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
-            {
-                Module::updateTimeFunctions(Agros2D::problem()->timeStepToTotalTime(m_timeStep));
-            }
-
-            // find marker
-            SceneLabel *label = SceneLabel::findClosestLabel(m_point);
-            SceneMaterial *material = label->marker(m_fieldInfo);
-
-            {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
-            {{/VARIABLE_MATERIAL}}
-
-            int k = 0; // only one point
-            std::vector<dealii::Vector<double> > solution_values(1, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-            std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(1, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
-
-            for (int i = 0; i < numberOfSolutions; i++)
-            {
-                if (m_fieldInfo->analysisType() == AnalysisType_Transient && m_timeStep == 0)
-                {
-                    // set variables
-                    solution_values[k][i] = m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble();
-                    solution_grads[k][i][0] = 0;
-                    solution_grads[k][i][1] = 0;
-                }
-                else
-                {
-                    // point values
-                    dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > localvalues(*ma.doFHandler(), ma.solution());
-
-                    // set variables
-                    solution_values[k][i] = localvalues.value(p, i);
-                    solution_grads[k][i] = localvalues.gradient(p, i);
-                }
-            }
-
-            // expressions
-            {{#VARIABLE_SOURCE}}
-            if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
-                    && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
-                m_values[QLatin1String("{{VARIABLE}}")] = LocalPointValue({{EXPRESSION_SCALAR}}, Point({{EXPRESSION_VECTORX}}, {{EXPRESSION_VECTORY}}), material);
-            {{/VARIABLE_SOURCE}}
+            Module::updateTimeFunctions(Agros2D::problem()->timeStepToTotalTime(m_timeStep));
         }
-        catch (const TYPENAME dealii::GridTools::ExcPointNotFound<2> &e)
+
+        // find marker
+        SceneLabel *label = SceneLabel::findLabelAtPoint(m_point);
+        if (label && label->hasMarker(m_fieldInfo))
         {
-            // qDebug() << e.what();
+            if (!material->isNone())
+            {
+                SceneMaterial *material = label->marker(m_fieldInfo);
+
+                {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
+                {{/VARIABLE_MATERIAL}}
+
+                int k = 0; // only one point
+                std::vector<dealii::Vector<double> > solution_values(1, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+                std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(1, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
+                dealii::Point<2> p(m_point.x, m_point.y);
+
+                for (int i = 0; i < numberOfSolutions; i++)
+                {
+                    if (m_fieldInfo->analysisType() == AnalysisType_Transient && m_timeStep == 0)
+                    {
+                        // set variables
+                        solution_values[k][i] = m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble();
+                        solution_grads[k][i][0] = 0;
+                        solution_grads[k][i][1] = 0;
+                    }
+                    else
+                    {
+                        // point values
+                        dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > localvalues(*ma.doFHandler(), ma.solution());
+
+                        // set variables
+                        solution_values[k][i] = localvalues.value(p, i);
+                        solution_grads[k][i] = localvalues.gradient(p, i);
+                    }
+                }
+
+                // expressions
+                {{#VARIABLE_SOURCE}}
+                if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
+                        && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+                    m_values[QLatin1String("{{VARIABLE}}")] = LocalPointValue({{EXPRESSION_SCALAR}}, Point({{EXPRESSION_VECTORX}}, {{EXPRESSION_VECTORY}}), material);
+                {{/VARIABLE_SOURCE}}
+            }
         }
     }
 }

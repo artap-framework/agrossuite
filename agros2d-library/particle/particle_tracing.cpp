@@ -95,11 +95,12 @@ Point3 ParticleTracing::force(int particleIndex,
 
         // find material
         SceneMaterial *material = nullptr;
-        SceneLabel *label = SceneLabel::findClosestLabel(Point(position.x, position.y));
-        if (label)
+        SceneLabel *label = SceneLabel::findLabelAtPoint(Point(position.x, position.y));
+        if (label && label->hasMarker(fieldInfo))
         {
             material = label->marker(fieldInfo);
-            assert(!material->isNone());
+            if (material->isNone())
+                return Point3();
         }
         else
         {

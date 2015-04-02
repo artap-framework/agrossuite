@@ -836,14 +836,13 @@ QList<LoopsInfo::Triangle> LoopsInfo::triangulateLabel(const QList<Point> &polyl
     return triangles;
 }
 
-void LoopsInfo::processPolygonTriangles()
+void LoopsInfo::processPolygonTriangles(bool force)
 {
-    if (currentPythonEngineAgros() && currentPythonEngineAgros()->isScriptRunning())
+    if (!force && currentPythonEngineAgros() && currentPythonEngineAgros()->isScriptRunning())
         return;
 
     m_polygonTriangles.clear();
 
-    // TODO: rewrite to exceptions
     // find loops
     try
     {

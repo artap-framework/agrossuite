@@ -1007,12 +1007,9 @@ void Scene::doInvalidated()
     foreach (SceneLabel *label, labels->items())
         label->setPointValue(label->pointValue());
 
-    if (currentPythonEngineAgros() && !currentPythonEngineAgros()->isScriptRunning())
-    {
-        findLyingEdgeNodes();
-        findNumberOfConnectedNodeEdges();
-        findCrossings();
-    }
+    findLyingEdgeNodes();
+    findNumberOfConnectedNodeEdges();
+    findCrossings();
 }
 
 void Scene::doNewNode(const Point &point)

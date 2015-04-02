@@ -54,6 +54,7 @@ public:
     int showDialog(QWidget *parent, bool isNew = false);
 
     static SceneLabel *findClosestLabel(const Point &point);
+    static SceneLabel *findLabelAtPoint(const Point &point);
 
     void addMarkersFromStrings(QMap<QString, QString> markers);
 

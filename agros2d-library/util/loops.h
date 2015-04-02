@@ -101,7 +101,7 @@ public:
 
 public slots:
     void processLoops();
-    void processPolygonTriangles();
+    void processPolygonTriangles(bool force = false);
 
     void clear();
 

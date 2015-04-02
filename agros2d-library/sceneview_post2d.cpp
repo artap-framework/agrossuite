@@ -177,7 +177,7 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
         if (actPostprocessorModeVolumeIntegral->isChecked())
         {
             // find marker
-            SceneLabel *label = SceneLabel::findClosestLabel(p);
+            SceneLabel *label = SceneLabel::findLabelAtPoint(p);
             if (label)
             {
                 label->setSelected(!label->isSelected());

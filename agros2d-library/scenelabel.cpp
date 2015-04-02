@@ -88,7 +88,8 @@ SceneLabelCommandRemove* SceneLabel::getRemoveCommand()
     return new SceneLabelCommandRemove(m_point, markersKeys(), m_area);
 }
 
-SceneLabel *SceneLabel::findClosestLabel(const Point &point)
+
+SceneLabel *SceneLabel::findLabelAtPoint(const Point &point)
 {
     try
     {
@@ -116,10 +117,17 @@ SceneLabel *SceneLabel::findClosestLabel(const Point &point)
         // do nothing
     }
 
-    if (Agros2D::scene()->loopsInfo()->isProcessPolygonError())
-    {
-        SceneLabel *labelClosest = NULL;
+    return nullptr;
+}
 
+SceneLabel *SceneLabel::findClosestLabel(const Point &point)
+{
+    // find the nearest label by position
+    SceneLabel *labelClosest = findLabelAtPoint(point);
+
+    // find the nearest label by position
+    if (!labelClosest && Agros2D::scene()->loopsInfo()->isProcessPolygonError())
+    {
         double distance = numeric_limits<double>::max();
         foreach (SceneLabel *label, Agros2D::scene()->labels->items())
         {
@@ -130,11 +138,9 @@ SceneLabel *SceneLabel::findClosestLabel(const Point &point)
                 labelClosest = label;
             }
         }
-
-        return labelClosest;
     }
 
-    return NULL;
+    return labelClosest;
 }
 
 void SceneLabel::addMarkersFromStrings(QMap<QString, QString> markers)

@@ -174,6 +174,7 @@ void PyProblem::checkExistingFields(const QString &sourceField, const QString &t
 void PyProblem::mesh()
 {
     Agros2D::scene()->invalidate();
+    Agros2D::scene()->loopsInfo()->processPolygonTriangles(true);
     Agros2D::problem()->mesh(true);
 
     if (!Agros2D::problem()->isMeshed())
@@ -183,6 +184,7 @@ void PyProblem::mesh()
 void PyProblem::solve()
 {
     Agros2D::scene()->invalidate();
+    Agros2D::scene()->loopsInfo()->processPolygonTriangles(true);
     Agros2D::problem()->solve(false);
 
     if (!Agros2D::problem()->isSolved())
