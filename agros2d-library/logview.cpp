@@ -258,9 +258,6 @@ LogDialog::LogDialog(QWidget *parent, const QString &title) : QDialog(parent),
 
     move(QApplication::activeWindow()->pos().x() + (QApplication::activeWindow()->width() - width()) / 2.0,
          QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
-
-    // QSettings settings;
-    // restoreGeometry(settings.value("LogDialog/Geometry", saveGeometry()).toByteArray());
 }
 
 void LogDialog::closeEvent(QCloseEvent *e)

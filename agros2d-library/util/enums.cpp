@@ -871,7 +871,7 @@ QString iterLinearSolverPARALUTIONPreconditionerString(PreconditionerPARALUTION 
     case PreconditionerPARALUTION_MultiColoredSGS:
         return QObject::tr("MultiColoredSGS");
     case PreconditionerPARALUTION_ILU:
-        return QObject::tr("ILUw");
+        return QObject::tr("ILU");
     case PreconditionerPARALUTION_MultiColoredILU:
         return QObject::tr("MultiColoredILU");
     case PreconditionerPARALUTION_MultiElimination:

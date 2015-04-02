@@ -233,6 +233,10 @@ void FieldWidget::createContent()
     setLayout(layoutProblem);
 
     setMinimumSize(sizeHint());
+    setMaximumSize(sizeHint());
+
+    move(QApplication::activeWindow()->pos().x() + (QApplication::activeWindow()->width() - width()) / 2.0,
+         QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
 }
 
 QWidget *FieldWidget::createSolverWidget()

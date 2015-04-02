@@ -95,22 +95,17 @@ Point3 ParticleTracing::force(int particleIndex,
 
         // find material
         SceneMaterial *material = nullptr;
-        try
+        SceneLabel *label = SceneLabel::findClosestLabel(Point(position.x, position.y));
+        if (label)
         {
-            dealii::Point<2> p(position.x, position.y);
-            TYPENAME dealii::Triangulation<2>::active_cell_iterator current_cell =
-                    dealii::GridTools::find_active_cell_around_point(Agros2D::problem()->initialMesh(), p);
-
-            SceneLabel *label = Agros2D::scene()->labels->at(current_cell->material_id() - 1);
             material = label->marker(fieldInfo);
+            assert(!material->isNone());
         }
-        catch (const TYPENAME dealii::GridTools::ExcPointNotFound<2> &e)
+        else
         {
             // point not found
             return Point3();
         }
-
-        assert(!material->isNone());
 
         try
         {

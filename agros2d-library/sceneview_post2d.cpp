@@ -176,22 +176,14 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
         // select volume integral area
         if (actPostprocessorModeVolumeIntegral->isChecked())
         {
-            try
+            // find marker
+            SceneLabel *label = SceneLabel::findClosestLabel(p);
+            if (label)
             {
-                dealii::Point<2> pt(p.x, p.y);
-                TYPENAME dealii::Triangulation<2>::active_cell_iterator current_cell =
-                        dealii::GridTools::find_active_cell_around_point(Agros2D::problem()->initialMesh(), pt);
-
-                // find marker
-                SceneLabel *label = Agros2D::scene()->labels->at(current_cell->material_id() - 1);
                 label->setSelected(!label->isSelected());
 
                 updateGL();
                 emit mousePressed();
-            }
-            catch (const dealii::GridTools::ExcPointNotFound<2> &e)
-            {
-                // do nothing
             }
         }
 

@@ -173,6 +173,6 @@ if __name__ == '__main__':
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestRFTEHarmonicPlanar))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestRFTEHarmonicPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestRFTEHarmonicAxisymmetric))
     suite.run(result)        
