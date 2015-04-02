@@ -113,20 +113,35 @@ dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fie
 {
     dealii::hp::FECollection<2> *feCollection = new dealii::hp::FECollection<2>();
 
-    // Gauss quadrature and fe collection
+    qDebug() << fieldInfo->name();
+    QMap<int, Module::Space> spaces = fieldInfo->spaces();
+
+    // first position of feCollection, quadrature_formulas and face_quadrature_formulas belongs to NONE space
+    // this will be used for implementation of different meshes
+    std::vector<const dealii::FiniteElement<2> *> fes;
+    std::vector<unsigned int> multiplicities;
+    foreach (int key, spaces.keys())
+    {
+        fes.push_back(new dealii::FE_Nothing<2>());
+        multiplicities.push_back(1);
+    }
+    feCollection->push_back(dealii::FESystem<2>(fes, multiplicities));
+
+    // fe collections
     for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
     {
         std::vector<const dealii::FiniteElement<2> *> fes;
         std::vector<unsigned int> multiplicities;
 
-        QMap<int, Module::Space> spaces = fieldInfo->spaces();
         foreach (int key, spaces.keys())
         {
-            if (spaces.value(key).type() == "h1")
-                fes.push_back(new dealii::FE_Q<2>(degree + spaces[key].orderAdjust()));
+            Module::Space space = spaces[key];
+            if (space.type() == "h1")
+                fes.push_back(new dealii::FE_Q<2>(degree + space.orderAdjust()));
             else if (spaces.value(key).type() == "l2")
-                fes.push_back(new dealii::FE_Q<2>(degree + spaces[key].orderAdjust())); // fes.push_back(new dealii::FE_DGP<2>(degree + spaces[key].orderAdjust()));
+                fes.push_back(new dealii::FE_Q<2>(degree + space.orderAdjust())); // fes.push_back(new dealii::FE_DGP<2>(degree + space.orderAdjust()));
 
+            qDebug() << fes.size();
             multiplicities.push_back(1);
         }
 
@@ -225,7 +240,7 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
       m_time(0.0),
       m_assemble_matrix(true),
       // fe collection
-      m_feCollection(new dealii::hp::FECollection<2>()),
+      m_feCollection(createFECollection(m_fieldInfo)),
       // mapping collection
       m_mappingCollection(SolverDeal::createMappingCollection(m_fieldInfo)),
       // dof handler
@@ -234,16 +249,12 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     // calculation mesh
     m_triangulation = &Agros2D::problem()->calculationMesh();
 
-    // first position of feCollection, quadrature_formulas and face_quadrature_formulas belongs to NONE space
-    // this will be used for implementation of different meshes
-    m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Nothing<2>(), fieldInfo->numberOfSolutions()));
     m_quadrature_formulas.push_back(dealii::QGauss<2>(1));
     m_face_quadrature_formulas.push_back(dealii::QGauss<2 - 1>(1));
 
-    // Gauss quadrature and fe collection
+    // Gauss quadrature
     for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
     {
-        m_feCollection->push_back(dealii::FESystem<2>(dealii::FE_Q<2>(degree), fieldInfo->numberOfSolutions()));
         m_quadrature_formulas.push_back(dealii::QGauss<2>(degree +  QUADRATURE_ORDER_INCREASE));
         m_face_quadrature_formulas.push_back(dealii::QGauss<2-1>(degree + QUADRATURE_ORDER_INCREASE));
     }
@@ -669,7 +680,7 @@ void SolverDeal::refineGrid(bool refine)
         m_triangulation->prepare_coarsening_and_refinement();
         // previousSolutionTrans->prepare_for_coarsening_and_refinement(m_solution);
         // previousSolutionTrans->prepare_for_pure_refinement();
-        m_triangulation->execute_coarsening_and_refinement();        
+        m_triangulation->execute_coarsening_and_refinement();
     }
 }
 
@@ -1157,11 +1168,11 @@ void SolverDeal::solveProblemNonLinearNewton()
     // first assemble just residual.
     m_assemble_matrix = false;
     assembleSystem();
-   // system_rhs.print(std::cout);
+    // system_rhs.print(std::cout);
     double residualNorm = system_rhs.l2_norm();
 
     Agros2D::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Initial residual norm: %1")
-        .arg(residualNorm));
+                                 .arg(residualNorm));
 
     m_assemble_matrix = true;
 
@@ -1249,9 +1260,9 @@ void SolverDeal::solveProblemNonLinearNewton()
             time.start();
             system_rhs *= -1.0;
             solveLinearSystem(system_matrix, system_rhs, m_solution);
-           // m_solution.print(std::cout);
-           // system_matrix.print(std::cout);
-           // system_rhs.print(std::cout);
+            // m_solution.print(std::cout);
+            // system_matrix.print(std::cout);
+            // system_rhs.print(std::cout);
 
             // std::cout << "full system solve (" << time.elapsed() << "ms )" << std::endl;
 
