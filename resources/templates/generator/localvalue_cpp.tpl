@@ -69,10 +69,9 @@ void {{CLASS}}LocalValue::calculate()
         SceneLabel *label = SceneLabel::findLabelAtPoint(m_point);
         if (label && label->hasMarker(m_fieldInfo))
         {
+            SceneMaterial *material = label->marker(m_fieldInfo);
             if (!material->isNone())
             {
-                SceneMaterial *material = label->marker(m_fieldInfo);
-
                 {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
                 {{/VARIABLE_MATERIAL}}
 
