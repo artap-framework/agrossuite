@@ -64,10 +64,6 @@ AgrosApplication::AgrosApplication(int& argc, char ** argv) : QApplication(argc,
     // force number format
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
 
-    // init PARALUTION
-    paralution::init_paralution();
-    // paralution::info_paralution();
-
     // init singleton
     Agros2D::createSingleton();
 }
@@ -158,6 +154,13 @@ Agros2D::Agros2D()
 
     m_configComputer = new Config();
     m_configComputer->load();
+
+    // init PARALUTION
+    if (m_configComputer->value(Config::Config_DisableAccelerator).toBool())
+        paralution::disable_accelerator_paralution(true);
+
+    paralution::init_paralution();
+    paralution::info_paralution();
 
     // log
     m_log = new Log();

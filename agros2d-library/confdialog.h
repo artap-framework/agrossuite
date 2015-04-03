@@ -67,6 +67,9 @@ private:
     // threads
     QSpinBox *txtNumOfThreads;
 
+    // accelerator
+    QCheckBox *chkDisableAccelerator;
+
     // grid
     QCheckBox *chkShowGrid;
 

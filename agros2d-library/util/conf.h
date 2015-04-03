@@ -42,6 +42,7 @@ public:
         Config_LinearSystemSave,
         Config_CacheSize,
         Config_NumberOfThreads,
+        Config_DisableAccelerator,
         Config_RulersFontFamily,
         Config_RulersFontPointSize,
         Config_PostFontFamily,

@@ -113,7 +113,7 @@ dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fie
 {
     dealii::hp::FECollection<2> *feCollection = new dealii::hp::FECollection<2>();
 
-    qDebug() << fieldInfo->name();
+    // qDebug() << fieldInfo->name();
     QMap<int, Module::Space> spaces = fieldInfo->spaces();
 
     // first position of feCollection, quadrature_formulas and face_quadrature_formulas belongs to NONE space
@@ -141,7 +141,6 @@ dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fie
             else if (spaces.value(key).type() == "l2")
                 fes.push_back(new dealii::FE_Q<2>(degree + space.orderAdjust())); // fes.push_back(new dealii::FE_DGP<2>(degree + space.orderAdjust()));
 
-            qDebug() << fes.size();
             multiplicities.push_back(1);
         }
 
