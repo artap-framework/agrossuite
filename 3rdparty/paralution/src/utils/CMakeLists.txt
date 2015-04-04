@@ -36,6 +36,7 @@ set(UTILS_SOURCES
   allocate_free.cpp
   math_functions.cpp
   time_functions.cpp
+  info.cpp
 )
 
 set(UTILS_PUBLIC_HEADERS
@@ -43,4 +44,5 @@ set(UTILS_PUBLIC_HEADERS
   allocate_free.hpp
   math_functions.hpp
   time_functions.hpp
+  info.hpp
 )

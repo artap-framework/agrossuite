@@ -24,7 +24,7 @@
 #include "../util/system_utils.h"
 
 #include "paralution.hpp"
-#include "paralution/src/base/ocl/ocl_utils.hpp"
+#include "paralution/src/utils/info.hpp"
 
 using namespace paralution;
 
@@ -208,7 +208,7 @@ QWidget *AboutDialog::createSysinfo()
     layoutOS->addWidget(new QLabel(tr("OS:")), 0, 0);
     layoutOS->addWidget(new QLabel(SystemUtils::operatingSystem()), 0, 1);
 
-    QGroupBox *grpOS = new QGroupBox(tr("GPU"));
+    QGroupBox *grpOS = new QGroupBox(tr("Operating system"));
     grpOS->setLayout(layoutOS);
 
     // system
@@ -221,8 +221,8 @@ QWidget *AboutDialog::createSysinfo()
     layoutSystem->addWidget(new QLabel(QString("%1 MB").arg(SystemUtils::totalMemorySize() / 1024 / 1024)), 12, 1);
     layoutSystem->addWidget(new QLabel(tr("Screen resolution:")), 13, 0);
     layoutSystem->addWidget(new QLabel(QString("%1 x %2").
-                                 arg(QApplication::desktop()->screenGeometry().width()).
-                                 arg(QApplication::desktop()->screenGeometry().height())), 13, 1);
+                                       arg(QApplication::desktop()->screenGeometry().width()).
+                                       arg(QApplication::desktop()->screenGeometry().height())), 13, 1);
     layoutSystem->setRowStretch(20, 1);
 
     QGroupBox *grpSystem = new QGroupBox(tr("System"));
@@ -231,6 +231,16 @@ QWidget *AboutDialog::createSysinfo()
     // gpu
     paralution::Paralution_Backend_Descriptor *desc = paralution::_get_backend_descriptor();
 
+    std::map<std::string, std::string> info;
+    if (desc->accelerator && desc->backend == OCL)
+    {
+        info = info_ocl();
+    }
+    else if (desc->accelerator && desc->backend == GPU)
+    {
+        info = info_gpu();
+    }
+
     QGridLayout *layoutGPU = new QGridLayout();
     layoutGPU->addWidget(new QLabel(tr("Accelerator backend:")), 0, 0);
     layoutGPU->addWidget(new QLabel(QString("%1 (%2)").arg(QString::fromStdString(_paralution_backend_name[desc->backend]))
@@ -238,47 +248,18 @@ QWidget *AboutDialog::createSysinfo()
 
     if (desc->accelerator)
     {
-        // opencl
-        cl_int err;
-        cl_uint ocl_freq;
-        cl_ulong ocl_global_mem_size;
-        cl_device_type ocl_typeDevice;
-
-        char ocl_namePlatform[256];
-        char ocl_nameDevice[256];
-        char ocl_ver[256];
-        QString ocl_type;
-
-        // Get and print OpenCL platform name
-        clGetDeviceInfo(OCL_HANDLE(desc->OCL_handle)->OCL_devices[desc->OCL_plat][desc->OCL_dev], CL_DEVICE_NAME, sizeof(ocl_nameDevice), &ocl_nameDevice, NULL);
-        // Get and print OpenCL device name
-        clGetPlatformInfo(OCL_HANDLE(desc->OCL_handle)->OCL_platforms[desc->OCL_plat], CL_PLATFORM_NAME, sizeof(ocl_namePlatform), &ocl_namePlatform, NULL);
-        // Get and print OpenCL device global memory
-        err = clGetDeviceInfo(OCL_HANDLE(desc->OCL_handle)->OCL_devices[desc->OCL_plat][desc->OCL_dev], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(ocl_global_mem_size), &ocl_global_mem_size, NULL);
-        // Get and print OpenCL device clock frequency
-        err = clGetDeviceInfo(OCL_HANDLE(desc->OCL_handle)->OCL_devices[desc->OCL_plat][desc->OCL_dev], CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(ocl_freq), &ocl_freq, NULL);
-        // Get and print OpenCL device version
-        err = clGetDeviceInfo(OCL_HANDLE(desc->OCL_handle)->OCL_devices[desc->OCL_plat][desc->OCL_dev], CL_DEVICE_VERSION, sizeof(ocl_ver), &ocl_ver, NULL);
-
-        // Get and print OpenCL device type
-        err = clGetDeviceInfo((OCL_HANDLE(desc->OCL_handle)->OCL_devices)[_get_backend_descriptor()->OCL_plat][_get_backend_descriptor()->OCL_dev], CL_DEVICE_TYPE, sizeof(ocl_typeDevice), &ocl_typeDevice, NULL);
-        if (ocl_typeDevice & CL_DEVICE_TYPE_CPU) ocl_type = tr("CPU");
-        if (ocl_typeDevice & CL_DEVICE_TYPE_GPU) ocl_type = tr("GPU");
-        if (ocl_typeDevice & CL_DEVICE_TYPE_ACCELERATOR) ocl_type = tr("ACCELERATOR");
-        if (ocl_typeDevice & CL_DEVICE_TYPE_DEFAULT) ocl_type = tr("DEFAULT");
-
         layoutGPU->addWidget(new QLabel(tr("Platform:")), 1, 0);
-        layoutGPU->addWidget(new QLabel(QString::fromLatin1(ocl_namePlatform)), 1, 1);
+        layoutGPU->addWidget(new QLabel(QString::fromStdString(info["platform"])), 1, 1);
         layoutGPU->addWidget(new QLabel(tr("Device:")), 2, 0);
-        layoutGPU->addWidget(new QLabel(QString::fromLatin1(ocl_nameDevice)), 2, 1);
+        layoutGPU->addWidget(new QLabel(QString::fromStdString(info["device"])), 2, 1);
         layoutGPU->addWidget(new QLabel(tr("Type:")), 3, 0);
-        layoutGPU->addWidget(new QLabel(ocl_type), 3, 1);
+        layoutGPU->addWidget(new QLabel(QString::fromStdString(info["type"])), 3, 1);
         layoutGPU->addWidget(new QLabel(tr("Memory:")), 4, 0);
-        layoutGPU->addWidget(new QLabel(QString::number(ocl_global_mem_size >> 20) + " MB"), 4, 1);
+        layoutGPU->addWidget(new QLabel(QString::fromStdString(info["memory"]) + " MB"), 4, 1);
         layoutGPU->addWidget(new QLabel(tr("Clock rate:")), 5, 0);
-        layoutGPU->addWidget(new QLabel(QString::number(ocl_freq) + " Hz"), 5, 1);
-        layoutGPU->addWidget(new QLabel(tr("OpenCL version:")), 6, 0);
-        layoutGPU->addWidget(new QLabel(QString::fromLatin1(ocl_ver)), 6, 1);
+        layoutGPU->addWidget(new QLabel(QString::fromStdString(info["clock_rate"]) + " Hz"), 5, 1);
+        layoutGPU->addWidget(new QLabel(tr("Version:")), 6, 0);
+        layoutGPU->addWidget(new QLabel(QString::fromStdString(info["version"])), 6, 1);
     }
 
     QGroupBox *grpGPU = new QGroupBox(tr("GPU"));
