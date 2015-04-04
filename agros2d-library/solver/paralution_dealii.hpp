@@ -28,10 +28,10 @@
 
 
 
-// PARALUTION version 1.0.0 
+// PARALUTION version 1.0.0
 
 
-// Deal II path 
+// Deal II path
 #include <deal.II/lac/sparse_matrix.h>
 #include <deal.II/lac/sparsity_pattern.h>
 #include <deal.II/lac/vector.h>
@@ -43,9 +43,9 @@
 
 /// Import (copy) a Deal.II block sparse matrix using its iterator and accessor into a
 /// paralution Local Matrix
-template <typename ValueType>
-void import_dealii_matrix(dealii::BlockSparseMatrix<ValueType> &deal_mat,
-                          paralution::LocalMatrix<ValueType> *mat) {
+template <typename ValueFrom, typename ValueTo>
+void import_dealii_matrix(dealii::BlockSparseMatrix<ValueFrom> &deal_mat,
+                          paralution::LocalMatrix<ValueTo> *mat) {
 
   // TODO
   // change for a Base class
@@ -59,7 +59,7 @@ void import_dealii_matrix(dealii::BlockSparseMatrix<ValueType> &deal_mat,
   // COO values
   int *col = NULL;
   int *row = NULL;
-  ValueType *val = NULL;
+  ValueTo *val = NULL;
 
   paralution::allocate_host(nnz, &row);
   paralution::allocate_host(nnz, &col);
@@ -83,29 +83,29 @@ void import_dealii_matrix(dealii::BlockSparseMatrix<ValueType> &deal_mat,
   mat->SetDataPtrCOO(&row, &col, &val,
                      "Deal II Matrix",
                      nnz, n, m);
-  
+
   mat->ConvertToCSR();
 
-} ;
+}
 
 
-/// Import (copy) a Deal.II sparse matrix via prescribed sparsity pattern into a 
+/// Import (copy) a Deal.II sparse matrix via prescribed sparsity pattern into a
 /// paralution Local Matrix
-template <typename ValueType>
-void import_dealii_matrix(const dealii::SparsityPattern &sp, 
-                          const dealii::SparseMatrix<ValueType> &deal_mat,
-                          paralution::LocalMatrix<ValueType> *mat) {
+template <typename ValueFrom, typename ValueTo>
+void import_dealii_matrix(const dealii::SparsityPattern &sp,
+                          const dealii::SparseMatrix<ValueFrom> &deal_mat,
+                          paralution::LocalMatrix<ValueTo> *mat) {
 
   // Matrix size
   int n = deal_mat.n();
   int m = deal_mat.m();
   //  int nnz = deal_mat.n_actually_nonzero_elements();
   int nnz = deal_mat.n_nonzero_elements();
-  
+
   // COO values
   int *col = NULL;
   int *row = NULL;
-  ValueType *val = NULL;
+  ValueTo *val = NULL;
 
   paralution::allocate_host(nnz, &row);
   paralution::allocate_host(nnz, &col);
@@ -116,12 +116,14 @@ void import_dealii_matrix(const dealii::SparsityPattern &sp,
 
   int i = 0;
   for (; it!=it_end; ++it) {
+      int c = it->column();
+      int r = it->row();
 
-    col[i] = it->column();
-    row[i] = it->row();
-    val[i] = deal_mat.el(it->row(),it->column());
+      col[i] = c;
+      row[i] = r;
+      val[i] = deal_mat(r, c);
 
-    ++i;    
+    ++i;
   }
 
   assert(i == nnz);
@@ -129,19 +131,19 @@ void import_dealii_matrix(const dealii::SparsityPattern &sp,
   mat->SetDataPtrCOO(&row, &col, &val,
                      "Deal II Matrix",
                      nnz, n, m);
-  
-  // mat->ConvertToCSR();
 
-} ;
+  mat->ConvertToCSR();
+
+}
 
 /// Import (copy) a Deal.II vector into a local vector
-template <typename ValueType>
-void import_dealii_vector(const dealii::Vector<ValueType> &deal_vec,                             
-                             paralution::LocalVector<ValueType> *vec) {
+template <typename ValueFrom, typename ValueTo>
+void import_dealii_vector(const dealii::Vector<ValueFrom> &deal_vec,
+                             paralution::LocalVector<ValueTo> *vec) {
 
   vec->MoveToHost();
 
-  ValueType *val = NULL;
+  ValueTo *val = NULL;
   paralution::allocate_host(int(deal_vec.size()), &val);
 
   for (unsigned int i=0; i<deal_vec.size(); ++i)
@@ -157,18 +159,18 @@ void import_dealii_vector(const dealii::Vector<ValueType> &deal_vec,
   //  for (unsigned int i=0; i<deal_vec.size(); ++i)
   //    (*vec)[i] = deal_vec[i];
 
-}; 
+}
 
-/// Export (copy) a local vector into a Deal.II vector 
-template <typename ValueType>
-void export_dealii_vector(paralution::LocalVector<ValueType> &vec,
-                            dealii::Vector<ValueType> *deal_vec) {
+/// Export (copy) a local vector into a Deal.II vector
+template <typename ValueFrom, typename ValueTo>
+void export_dealii_vector(paralution::LocalVector<ValueFrom> &vec,
+                            dealii::Vector<ValueTo> *deal_vec) {
 
   vec.MoveToHost();
   assert(int(vec.get_size()) == int(deal_vec->size()));
 
   int size = vec.get_size();
-  ValueType *val = NULL;
+  ValueFrom *val = NULL;
 
   vec.LeaveDataPtr(&val);
 
@@ -176,23 +178,23 @@ void export_dealii_vector(paralution::LocalVector<ValueType> &vec,
     (*deal_vec)[i] = val[i];
 
   paralution::free_host(&val);
-  
+
   //
   //  This is slower
   //
   //  for (unsigned int i=0; i<deal_vec->size(); ++i)
   //     (*deal_vec)[i] = vec[i];
 
-}; 
+}
 
 /// Import (copy) a Deal.II vector into a local vector
-template <typename ValueType>
-void import_dealii_vector(const dealii::BlockVector<ValueType> &deal_vec,                             
-                             paralution::LocalVector<ValueType> *vec) {
+template <typename ValueFrom, typename ValueTo>
+void import_dealii_vector(const dealii::BlockVector<ValueFrom> &deal_vec,
+                             paralution::LocalVector<ValueTo> *vec) {
 
   vec->MoveToHost();
 
-  ValueType *val = NULL;
+  ValueTo *val = NULL;
   paralution::allocate_host(int(deal_vec.size()), &val);
 
   for (unsigned int i=0; i<deal_vec.size(); ++i)
@@ -208,18 +210,18 @@ void import_dealii_vector(const dealii::BlockVector<ValueType> &deal_vec,
   //  for (unsigned int i=0; i<deal_vec.size(); ++i)
   //    (*vec)[i] = deal_vec[i];
 
-}; 
+}
 
-/// Export (copy) a local vector into a Deal.II vector 
-template <typename ValueType>
-void export_dealii_vector(paralution::LocalVector<ValueType> &vec,
-                            dealii::BlockVector<ValueType> *deal_vec) {
+/// Export (copy) a local vector into a Deal.II vector
+template <typename ValueFrom, typename ValueTo>
+void export_dealii_vector(paralution::LocalVector<ValueFrom> &vec,
+                            dealii::BlockVector<ValueTo> *deal_vec) {
 
   vec.MoveToHost();
   assert(int(vec.get_size()) == int(deal_vec->size()));
 
   int size = vec.get_size();
-  ValueType *val = NULL;
+  ValueFrom *val = NULL;
 
   vec.LeaveDataPtr(&val);
 
@@ -227,11 +229,11 @@ void export_dealii_vector(paralution::LocalVector<ValueType> &vec,
     (*deal_vec)[i] = val[i];
 
   paralution::free_host(&val);
-  
+
   //
   //  This is slower
   //
   //  for (unsigned int i=0; i<deal_vec->size(); ++i)
   //     (*deal_vec)[i] = vec[i];
 
-}; 
+}
