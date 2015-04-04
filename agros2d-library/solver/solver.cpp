@@ -401,9 +401,12 @@ void SolverDeal::solvePARALUTION(dealii::SparseMatrix<double> &system, dealii::V
     import_dealii_vector(rhs, &rhs_paralution);
     import_dealii_vector(sln, &sln_paralution);
 
-    mat_paralution.MoveToAccelerator();
-    sln_paralution.MoveToAccelerator();
-    rhs_paralution.MoveToAccelerator();
+    if (!Agros2D::configComputer()->value(Config::Config_DisableAccelerator).toBool())
+    {
+        mat_paralution.MoveToAccelerator();
+        sln_paralution.MoveToAccelerator();
+        rhs_paralution.MoveToAccelerator();
+    }
 
     // linear solver
     IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double > *ls;

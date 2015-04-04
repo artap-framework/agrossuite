@@ -26,6 +26,8 @@
 
 #ifdef SUPPORT_CUDA
 #include "../base/gpu/backend_gpu.hpp"
+#include <cuda.h>
+#include <cuda_runtime.h>
 #endif
 
 #ifdef SUPPORT_OCL
@@ -44,6 +46,7 @@ std::map<std::string, std::string> info_ocl()
     std::map<std::string, std::string> out;
 
     // opencl
+#ifdef SUPPORT_OCL    
     cl_uint ocl_freq;
     cl_ulong ocl_global_mem_size;
     cl_device_type ocl_typeDevice;
@@ -81,8 +84,9 @@ std::map<std::string, std::string> info_ocl()
     out["type"] = ocl_type;
     out["memory"] = smemory.str();
     out["clock_rate"] = sfreq.str();
-    out["version"] = ocl_ver;
-    
+    out["version"] = ocl_ver;    
+#endif
+
     return out;
 }
 
@@ -90,17 +94,24 @@ std::map<std::string, std::string> info_gpu()
 {
     std::map<std::string, std::string> out;
 
+#ifdef SUPPORT_CUDA
+    struct cudaDeviceProp dev_prop;      
+    cudaGetDeviceProperties(&dev_prop, _get_backend_descriptor()->GPU_dev);
+    
     std::stringstream smemory;
-    smemory << 0; // (ocl_global_mem_size >> 20);
+    smemory << (dev_prop.totalGlobalMem >> 20);
     std::stringstream sfreq;
-    sfreq << 0; // ocl_freq;
+    sfreq << dev_prop.clockRate;
+    std::stringstream sversion;
+    sversion << dev_prop.major << "." << dev_prop.minor;
     
     out["platform"] = ""; // ocl_namePlatform;
-    out["device"] = ""; // ocl_nameDevice;
+    out["device"] = dev_prop.name;
     out["type"] = ""; // ocl_type;
     out["memory"] = smemory.str();
     out["clock_rate"] = sfreq.str();
-    out["version"] = ""; // ocl_ver;
+    out["version"] = sversion.str();
+#endif
 
     return out;
 }

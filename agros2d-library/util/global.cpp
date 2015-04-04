@@ -156,9 +156,6 @@ Agros2D::Agros2D()
     m_configComputer->load();
 
     // init PARALUTION
-    if (m_configComputer->value(Config::Config_DisableAccelerator).toBool())
-        paralution::disable_accelerator_paralution(true);
-
     paralution::init_paralution();
     paralution::info_paralution();
 

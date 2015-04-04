@@ -284,7 +284,7 @@ QWidget *ConfigComputerDialog::createSolverWidget()
     txtNumOfThreads->setMinimum(1);
     txtNumOfThreads->setMaximum(SystemUtils::numberOfThreads());
 
-    chkDisableAccelerator = new QCheckBox(tr("Disable accelerator (Agros2D needs to restart)"));
+    chkDisableAccelerator = new QCheckBox(tr("Disable accelerator"));
 
     QGridLayout *layoutSolver = new QGridLayout();
     layoutSolver->addWidget(new QLabel(tr("Number of threads:")), 0, 0);
