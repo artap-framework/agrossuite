@@ -209,8 +209,7 @@ test_suite.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsMany
 #test_suite.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsManyDomainsHardHard,
 # core
 #test_suite.core.matrix_solvers.TestInternalMatrixSolvers
-] 
-#+ __tests__["script"]
+] + __tests__["script"]
 
 def all_tests():
     global __tests__

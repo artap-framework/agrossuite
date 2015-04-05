@@ -682,7 +682,6 @@ void PyField::initialMeshInfo(map<std::string, int> &info) const
     // todo: initial mesh the same for all fields
     info["nodes"] = Agros2D::problem()->initialMesh().n_used_vertices();
     info["elements"] = Agros2D::problem()->initialMesh().n_active_cells();
-    info["dofs"] = -1;
 }
 
 void PyField::solutionMeshInfo(int timeStep, int adaptivityStep, const std::string &solutionType, map<std::string, int> &info) const
@@ -699,10 +698,8 @@ void PyField::solutionMeshInfo(int timeStep, int adaptivityStep, const std::stri
     // TODO: (Franta) time and adaptivity step in gui vs. implementation
     MultiArray ma = Agros2D::solutionStore()->multiArray(FieldSolutionID(m_fieldInfo, timeStep, adaptivityStep, solutionMode));
 
-    // TODO: fix -> list
     info["nodes"] = ma.doFHandler()->get_tria().n_used_vertices();
     info["elements"] = ma.doFHandler()->get_tria().n_active_cells();
-
     info["dofs"] = ma.doFHandler()->n_dofs();
 }
 
