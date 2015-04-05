@@ -911,6 +911,7 @@ void FieldInfo::setStringKeys()
     m_settingKey[LinearSolverIterDealIIMethod] = "LinearSolverIterDealIIMethod";
     m_settingKey[LinearSolverIterDealIIPreconditioner] = "LinearSolverIterDealIIPreconditioner";
     m_settingKey[LinearSolverIterPARALUTIONMethod] = "LinearSolverIterPARALUTIONMethod";
+    m_settingKey[LinearSolverIterPARALUTIONDoublePrecision] = "LinearSolverIterPARALUTIONDoublePrecision";
     m_settingKey[LinearSolverIterPARALUTIONPreconditioner] = "LinearSolverIterPARALUTIONPreconditioner";
     m_settingKey[LinearSolverIterToleranceAbsolute] = "LinearSolverIterToleranceAbsolute";
     m_settingKey[LinearSolverIterIters] = "LinearSolverIterIters";
@@ -949,6 +950,7 @@ void FieldInfo::setDefaultValues()
     m_settingDefault[LinearSolverIterDealIIPreconditioner] = PreconditionerDealII_SSOR;
     m_settingDefault[LinearSolverIterPARALUTIONMethod] = IterSolverPARALUTION_BiCGStab;
     m_settingDefault[LinearSolverIterPARALUTIONPreconditioner] = PreconditionerPARALUTION_Jacobi;
+    m_settingDefault[LinearSolverIterPARALUTIONDoublePrecision] = true;
     m_settingDefault[LinearSolverIterToleranceAbsolute] = 1e-16;
     m_settingDefault[LinearSolverIterIters] = 1000;
     m_settingDefault[TimeUnit] = "s";

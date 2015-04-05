@@ -304,18 +304,34 @@ QString createPythonFromModel()
                 arg(fieldInfo->fieldId()).
                 arg(matrixSolverTypeToStringKey(fieldInfo->matrixSolver()));
 
-        if (isMatrixSolverIterative(fieldInfo->matrixSolver()))
+        if (fieldInfo->matrixSolver() == SOLVER_DEALII)
         {
-            str += QString("%1.matrix_iterative_solver_method = \"%2\"\n").
-                    arg(fieldInfo->fieldId()).
-                    arg(iterLinearSolverDealIIMethodToStringKey((IterSolverDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()));
-            str += QString("%1.matrix_iterative_solver_preconditioner = \"%2\"\n").
-                    arg(fieldInfo->fieldId()).
-                    arg(iterLinearSolverDealIIPreconditionerToStringKey((PreconditionerDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
-            str += QString("%1.matrix_iterative_solver_tolerance = %2\n").
+                str += QString("%1.matrix_solver_parameters[\"method_dealii\"] = \"%2\"\n").
+                        arg(fieldInfo->fieldId()).
+                        arg(iterLinearSolverDealIIMethodToStringKey((IterSolverDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()));
+                str += QString("%1.matrix_solver_parameters[\"preconditioner_dealii\"] = \"%2\"\n").
+                        arg(fieldInfo->fieldId()).
+                        arg(iterLinearSolverDealIIPreconditionerToStringKey((PreconditionerDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
+        }
+        if (fieldInfo->matrixSolver() == SOLVER_PARALUTION)
+        {
+                str += QString("%1.matrix_solver_parameters[\"method_paralution\"] = \"%2\"\n").
+                        arg(fieldInfo->fieldId()).
+                        arg(iterLinearSolverPARALUTIONMethodToStringKey((IterSolverPARALUTION) fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONMethod).toInt()));
+                str += QString("%1.matrix_solver_parameters[\"preconditioner_paralution\"] = \"%2\"\n").
+                        arg(fieldInfo->fieldId()).
+                        arg(iterLinearSolverPARALUTIONPreconditionerToStringKey((PreconditionerPARALUTION) fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONPreconditioner).toInt()));
+                str += QString("%1.matrix_solver_parameters[\"double_precision\"] = %2\n").
+                        arg(fieldInfo->fieldId()).
+                        arg(fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONDoublePrecision).toBool() ? "True" : "False");
+
+        }
+        if (isMatrixSolverIterative(fieldInfo->matrixSolver()))
+        {           
+            str += QString("%1.matrix_solver_parameters[\"tolerance\"] = %2\n").
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble());
-            str += QString("%1.matrix_iterative_solver_iterations = %2\n").
+            str += QString("%1.matrix_solver_parameters[\"iterations\"] = %2\n").
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt());
         }

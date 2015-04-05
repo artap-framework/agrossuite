@@ -449,6 +449,7 @@ QWidget *FieldWidget::createLinearSolverWidget()
     cmbIterLinearSolverDealIIPreconditioner = new QComboBox();
     cmbIterLinearSolverPARALUTIONMethod = new QComboBox();
     cmbIterLinearSolverPARALUTIONPreconditioner= new QComboBox();
+    chkIterLinearSolverPARALUTIONDoublePrecision = new QCheckBox(tr("Use double precision"));
     txtIterLinearSolverToleranceAbsolute = new LineEditDouble(1e-15);
     txtIterLinearSolverToleranceAbsolute->setBottom(0.0);
     txtIterLinearSolverIters = new QSpinBox();
@@ -469,6 +470,7 @@ QWidget *FieldWidget::createLinearSolverWidget()
     iterSolverPARALUTIONLayout->addWidget(cmbIterLinearSolverPARALUTIONMethod, 0, 1);
     iterSolverPARALUTIONLayout->addWidget(new QLabel(tr("Preconditioner:")), 1, 0);
     iterSolverPARALUTIONLayout->addWidget(cmbIterLinearSolverPARALUTIONPreconditioner, 1, 1);
+    iterSolverPARALUTIONLayout->addWidget(chkIterLinearSolverPARALUTIONDoublePrecision, 2, 1);
 
     QGroupBox *iterSolverPARALUTIONGroup = new QGroupBox(tr("PARALUTION"));
     iterSolverPARALUTIONGroup->setLayout(iterSolverPARALUTIONLayout);
@@ -587,6 +589,7 @@ void FieldWidget::load()
     cmbIterLinearSolverDealIIPreconditioner->setCurrentIndex((PreconditionerDealII) cmbIterLinearSolverDealIIPreconditioner->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
     cmbIterLinearSolverPARALUTIONMethod->setCurrentIndex((IterSolverPARALUTION) cmbIterLinearSolverPARALUTIONMethod->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONMethod).toInt()));
     cmbIterLinearSolverPARALUTIONPreconditioner->setCurrentIndex((PreconditionerPARALUTION) cmbIterLinearSolverPARALUTIONPreconditioner->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONPreconditioner).toInt()));
+    chkIterLinearSolverPARALUTIONDoublePrecision->setChecked(m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONDoublePrecision).toBool());
 
     doAnalysisTypeChanged(cmbAnalysisType->currentIndex());
 }
@@ -633,6 +636,7 @@ bool FieldWidget::save()
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterDealIIPreconditioner, cmbIterLinearSolverDealIIPreconditioner->itemData(cmbIterLinearSolverDealIIPreconditioner->currentIndex()).toInt());
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterPARALUTIONMethod, cmbIterLinearSolverPARALUTIONMethod->itemData(cmbIterLinearSolverPARALUTIONMethod->currentIndex()).toInt());
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterPARALUTIONPreconditioner, cmbIterLinearSolverPARALUTIONPreconditioner->itemData(cmbIterLinearSolverPARALUTIONPreconditioner->currentIndex()).toInt());
+    m_fieldInfo->setValue(FieldInfo::LinearSolverIterPARALUTIONDoublePrecision, chkIterLinearSolverPARALUTIONDoublePrecision->isChecked());
 
     return true;
 }
@@ -743,6 +747,8 @@ void FieldWidget::doLinearSolverChanged(int index)
     cmbIterLinearSolverDealIIPreconditioner->setEnabled(solverType == SOLVER_DEALII);
     cmbIterLinearSolverPARALUTIONMethod->setEnabled(solverType == SOLVER_PARALUTION);
     cmbIterLinearSolverPARALUTIONPreconditioner->setEnabled(solverType == SOLVER_PARALUTION);
+    chkIterLinearSolverPARALUTIONDoublePrecision->setEnabled(solverType == SOLVER_PARALUTION);
+
 }
 
 void FieldWidget::doNonlinearDampingChanged(int index)

@@ -95,6 +95,7 @@
 #include "solver/paralution_dealii.hpp"
 
 #include <functional>
+#include <typeinfo>
 
 using namespace paralution;
 
@@ -293,8 +294,13 @@ void SolverDeal::solveLinearSystem(dealii::SparseMatrix<double> &system, dealii:
         solvedealii(system, rhs, sln);
         break;
     case SOLVER_PARALUTION:
-        solvePARALUTION<double>(system, rhs, sln);
+    {
+        if (m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONDoublePrecision).toBool())
+            solvePARALUTION<double>(system, rhs, sln);
+        else
+            solvePARALUTION<float>(system, rhs, sln);
         break;
+    }
     case SOLVER_EXTERNAL:
         solveExternalUMFPACK(system, rhs, sln);
         break;
@@ -385,10 +391,22 @@ void SolverDeal::solvedealii(dealii::SparseMatrix<double> &system, dealii::Vecto
 template <typename NumberType>
 void SolverDeal::solvePARALUTION(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln)
 {
+    paralution::Paralution_Backend_Descriptor *desc = paralution::_get_backend_descriptor();
+
+    QString backend = QObject::tr("OpenMP");
+    if (desc->accelerator && desc->backend == OCL)
+        backend = QObject::tr("OpenCL");
+    else if (desc->accelerator && desc->backend == GPU)
+        backend = QObject::tr("CUDA");
+    else if (desc->accelerator && desc->backend == MIC)
+        backend = QObject::tr("Xeon MIC");
+
     Agros2D::log()->printDebug(QObject::tr("Solver"),
-                               QObject::tr("Iterative solver: PARALUTION (%1, %2)")
+                               QObject::tr("Iterative solver: PARALUTION (%1, %2, %3, %4)")
                                .arg(iterLinearSolverPARALUTIONMethodString((IterSolverPARALUTION) m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONMethod).toInt()))
-                               .arg(iterLinearSolverPARALUTIONPreconditionerString((PreconditionerPARALUTION) m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONPreconditioner).toInt())));
+                               .arg(iterLinearSolverPARALUTIONPreconditionerString((PreconditionerPARALUTION) m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONPreconditioner).toInt()))
+                               .arg(backend)
+                               .arg(strcmp(typeid(NumberType).name(), "d") == 0 ? "double" : "single"));
 
     QTime time;
     time.start();

@@ -313,7 +313,8 @@ cdef class __Field__:
                 'method_dealii' : self.thisptr.getLinearSolverDealIIMethod().decode(),
                 'preconditioner_dealii' : self.thisptr.getLinearSolverDealIIPreconditioner().decode(),
                 'method_paralution' : self.thisptr.getLinearSolverPARALUTIONMethod().decode(),
-                'preconditioner_paralution' : self.thisptr.getLinearSolverPARALUTIONPreconditioner().decode()}
+                'preconditioner_paralution' : self.thisptr.getLinearSolverPARALUTIONPreconditioner().decode(),
+                'double_precision' : self.thisptr.getBoolParameter(b'LinearSolverIterPARALUTIONDoublePrecision')}
 
     def __set_matrix_solver_parameters__(self, parameters):
         # tolerance
@@ -329,6 +330,7 @@ cdef class __Field__:
         self.thisptr.setLinearSolverDealIIPreconditioner(parameters['preconditioner_dealii'].encode())
         self.thisptr.setLinearSolverPARALUTIONMethod(parameters['method_paralution'].encode())
         self.thisptr.setLinearSolverPARALUTIONPreconditioner(parameters['preconditioner_paralution'].encode())
+        self.thisptr.setParameter(string(b'LinearSolverIterPARALUTIONDoublePrecision'), <bool>parameters['double_precision'])
 
     # refinements
     property number_of_refinements:

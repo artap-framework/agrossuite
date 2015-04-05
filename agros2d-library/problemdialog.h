@@ -154,6 +154,7 @@ private:
     QComboBox *cmbIterLinearSolverDealIIPreconditioner;
     QComboBox *cmbIterLinearSolverPARALUTIONMethod;
     QComboBox *cmbIterLinearSolverPARALUTIONPreconditioner;
+    QCheckBox *chkIterLinearSolverPARALUTIONDoublePrecision;
 
     // equation
     // LaTeXViewer *equationLaTeX;

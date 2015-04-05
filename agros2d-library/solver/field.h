@@ -92,6 +92,7 @@ public:
         LinearSolverIterDealIIPreconditioner,
         LinearSolverIterPARALUTIONMethod,
         LinearSolverIterPARALUTIONPreconditioner,
+        LinearSolverIterPARALUTIONDoublePrecision,
         LinearSolverIterToleranceAbsolute,
         LinearSolverIterIters,        
         TimeUnit
