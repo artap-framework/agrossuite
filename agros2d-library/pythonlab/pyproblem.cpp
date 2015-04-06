@@ -209,6 +209,6 @@ void PyProblem::timeStepsLength(vector<double> &steps) const
     if (!Agros2D::problem()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    for (int i = 0; i < Agros2D::problem()->timeStepLengths().size(); i++)
+    for (int i = 0; i < Agros2D::problem()->timeLastStep(); i++)
         steps.push_back(Agros2D::problem()->timeStepLengths().at(i));
 }

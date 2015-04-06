@@ -130,15 +130,13 @@ public:
 
     void setActualTimeStepLength(double timeStep);
     void removeLastTimeStepLength();
-    double actualTimeStepLength() const;
-    QList<double> timeStepLengths() const { return m_timeStepLengths; }
-    double timeStepToTime(int timeStepIndex) const;
-    double timeStepToTotalTime(int timeStepIndex) const;
-    int timeToTimeStep(double time) const;
 
-    // terminology: time levels are actual times, whre calculations are performed
-    int numTimeLevels() { return m_timeStepLengths.size() + 1; }
-    QList<QPair<double, bool> > timeStepHistory() const { return m_timeHistory; }
+    // time step lengths
+    QList<double> timeStepLengths() const { return m_timeStepLengths; }
+    // cumulative times
+    QList<double> timeStepTimes() const;
+    double timeStepToTotalTime(int timeStepIndex) const;
+    int timeLastStep() const { return m_timeStepLengths.length() - 1; }
 
     // read initial meshes and solution
     void readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator = QSharedPointer<MeshGenerator>(nullptr));

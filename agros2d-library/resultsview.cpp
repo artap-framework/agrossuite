@@ -121,6 +121,8 @@ void ResultsView::showPoint()
     localPointValues.SetValue("POINTX", (QString("%1").arg(m_point.x, 0, 'e', 3)).toStdString());
     localPointValues.SetValue("POINTY", (QString("%1").arg(m_point.y, 0, 'e', 3)).toStdString());
     localPointValues.SetValue("POINT_UNIT", "m");
+    localPointValues.SetValue("LABELTIME", QString("<i>t</i>").toStdString());
+    localPointValues.SetValue("TIME", (QString("%1").arg(Agros2D::problem()->timeStepToTotalTime(m_postDeal->activeTimeStep()), 0, 'e', 3)).toStdString());
 
     foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
     {
@@ -189,6 +191,9 @@ void ResultsView::showVolumeIntegral()
     volumeIntegrals.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
     volumeIntegrals.SetValue("LABEL", tr("Volume integrals").toStdString());
 
+    volumeIntegrals.SetValue("LABELTIME", QString("<i>t</i>").toStdString());
+    volumeIntegrals.SetValue("TIME", (QString("%1").arg(Agros2D::problem()->timeStepToTotalTime(m_postDeal->activeTimeStep()), 0, 'e', 3)).toStdString());
+
     foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
     {
         std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->volumeIntegral(fieldInfo,
@@ -230,6 +235,9 @@ void ResultsView::showSurfaceIntegral()
 
     surfaceIntegrals.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
     surfaceIntegrals.SetValue("LABEL", tr("Surface integrals").toStdString());
+
+    surfaceIntegrals.SetValue("LABELTIME", QString("<i>t</i>").toStdString());
+    surfaceIntegrals.SetValue("TIME", (QString("%1").arg(Agros2D::problem()->timeStepToTotalTime(m_postDeal->activeTimeStep()), 0, 'e', 3)).toStdString());
 
     foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
     {

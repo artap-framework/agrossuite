@@ -79,7 +79,7 @@ void SolutionStore::clearAll()
 }
 
 MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
-{
+{    
     assert(m_multiSolutions.contains(solutionID));
 
     if (!m_multiSolutionDealCache.contains(solutionID))
@@ -217,16 +217,6 @@ void SolutionStore::removeSolution(FieldSolutionID solutionID, bool saveRunTime)
         saveRunTimeDetails();
 }
 
-void SolutionStore::removeTimeStep(int timeStep)
-{
-    foreach (FieldSolutionID sid, m_multiSolutions)
-    {
-        if (sid.timeStep == timeStep)
-            removeSolution(sid);
-    }
-
-}
-
 int SolutionStore::lastTimeStep(const FieldInfo *fieldInfo) const
 {
     int timeStep = NOT_FOUND_SO_FAR;
@@ -237,25 +227,6 @@ int SolutionStore::lastTimeStep(const FieldInfo *fieldInfo) const
     }
 
     return timeStep;
-}
-
-double SolutionStore::lastTime(const FieldInfo *fieldInfo)
-{
-    int timeStep = lastTimeStep(fieldInfo);
-    double time = NOT_FOUND_SO_FAR;
-
-    foreach (FieldSolutionID id, m_multiSolutions)
-    {
-        if ((id.fieldInfo == fieldInfo) && (id.timeStep == timeStep))
-        {
-            if (time == NOT_FOUND_SO_FAR)
-                time = Agros2D::problem()->timeStepToTotalTime(id.timeStep);
-            else
-                assert(time == Agros2D::problem()->timeStepToTotalTime(id.timeStep));
-        }
-    }
-    assert(time != NOT_FOUND_SO_FAR);
-    return time;
 }
 
 int SolutionStore::lastAdaptiveStep(const FieldInfo *fieldInfo, int timeStep) const
@@ -271,59 +242,6 @@ int SolutionStore::lastAdaptiveStep(const FieldInfo *fieldInfo, int timeStep) co
     }
 
     return adaptiveStep;
-}
-
-FieldSolutionID SolutionStore::lastTimeAndAdaptiveSolution(const FieldInfo *fieldInfo)
-{
-    FieldSolutionID solutionID;
-    solutionID.fieldInfo = fieldInfo;
-    solutionID.adaptivityStep = lastAdaptiveStep(fieldInfo);
-    solutionID.timeStep = lastTimeStep(fieldInfo);
-
-    return solutionID;
-}
-
-QList<double> SolutionStore::timeLevels(const FieldInfo *fieldInfo) const
-{
-    QList<double> list;
-
-    foreach(FieldSolutionID fsid, m_multiSolutions)
-    {
-        if (fsid.fieldInfo == fieldInfo)
-        {
-            double time = Agros2D::problem()->timeStepToTotalTime(fsid.timeStep);
-            if (!list.contains(time))
-                list.push_back(time);
-        }
-    }
-
-    return list;
-}
-
-int SolutionStore::timeLevelIndex(const FieldInfo *fieldInfo, double time)
-{
-    int level = -1;
-    QList<double> levels = timeLevels(fieldInfo);
-    if(levels.isEmpty())
-        return 0;
-
-    foreach(double timeLevel, levels)
-    {
-        if(timeLevel <= time)
-            level++;
-    }
-    assert(level >= 0);
-    return level;
-}
-
-double SolutionStore::timeAtLevel(const FieldInfo *fieldInfo, int timeLevelIndex)
-{
-    QList<double> levels = timeLevels(fieldInfo);
-    if (timeLevelIndex >= 0 && timeLevelIndex < levels.count())
-        return levels.at(timeLevelIndex);
-
-    assert(0);
-    return 0.0;
 }
 
 void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, MultiArray multiSolution)
@@ -390,15 +308,12 @@ void SolutionStore::loadRunTimeDetails()
             // append multisolution
             m_multiSolutions.append(solutionID);
 
-            // TODO: remove "problem time step structures"
             // define transient time step
             if (data.time_step() > time_step)
             {
                 // new time step
                 time_step = data.time_step();
-
-                assert(1);
-                // Agros2D::problem()->defineActualTimeStepLength(data.time_step_length().get());
+                Agros2D::problem()->setActualTimeStepLength(data.time_step_length().get());
             }
 
             SolutionRunTimeDetails::FileName fileNames;
@@ -417,8 +332,7 @@ void SolutionStore::loadRunTimeDetails()
             runTime.setFileNames(fileNames);
 
             // append run time details
-            m_multiSolutionRunTimeDetails.insert(solutionID,
-                                                 runTime);
+            m_multiSolutionRunTimeDetails.insert(solutionID, runTime);
         }
     }
     catch (const xml_schema::exception& e)

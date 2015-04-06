@@ -11,6 +11,14 @@
 <h1>{{LABEL}}</h1>
 <hr/>
 <div class="section">
+<table class="maintable">
+    <tr>
+		<td class="description">&nbsp;</td>
+		<td class="quantity">{{LABELTIME}}</td>
+		<td>{{TIME}}</td>
+		<td class="unit">s</td>
+	</tr>	
+</table>
 {{#FIELD}}
 <h3>{{FIELDNAME}}</h3>
 <table class="maintable">

@@ -91,28 +91,12 @@ public:
     bool contains(FieldSolutionID solutionID) const;
     MultiArray multiArray(FieldSolutionID solutionID);
 
-    // returns MultiSolution with components related to last time step, in which was each respective field calculated
-    // this time step can be different for respective fields due to time step skipping
-    // intented to be used as initial condition for the newton method
-    // MultiArray<double> multiSolutionPreviousCalculatedTS(BlockSolutionID solutionID);
-
     void addSolution(FieldSolutionID solutionID, MultiArray multiArray, SolutionRunTimeDetails runTime);
     void removeSolution(FieldSolutionID solutionID, bool saveRunTime = true);
 
     // last adaptive step for given time step. If time step not given, last time step used implicitly
-    int lastAdaptiveStep(const FieldInfo* fieldInfo, int timeStep = -1) const;
-
-    // number of time steps, where this fieldInfo was calculated up to this time
-    int timeLevelIndex(const FieldInfo* fieldInfo, double time);
-    // removes all solutions with the given time step
-    void removeTimeStep(int timeStep);
-    int lastTimeStep(const FieldInfo* fieldInfo) const;
-    QList<double> timeLevels(const FieldInfo* fieldInfo) const;
-    double timeAtLevel(const FieldInfo* fieldInfo, int timeLevelIndex);
-    double lastTime(const FieldInfo* fieldInfo);
-
-    // last time and adaptive step
-    FieldSolutionID lastTimeAndAdaptiveSolution(const FieldInfo* fieldInfo);
+    int lastAdaptiveStep(const FieldInfo *fieldInfo, int timeStep = -1) const;
+    int lastTimeStep(const FieldInfo *fieldInfo) const;
 
     void loadRunTimeDetails();
 

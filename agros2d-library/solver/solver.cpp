@@ -794,10 +794,6 @@ void SolverDeal::solve()
 {
     if (m_fieldInfo->analysisType() == AnalysisType_Transient)
     {
-        // int order = 1;
-        // for (unsigned int o = 0; o < order - 1; o++)
-        //    solution_transient_previous.push_back(dealii::Vector<double>(m_doFHandler.n_dofs()));
-
         setup(true);
         assembleSystem();
 
@@ -810,6 +806,9 @@ void SolverDeal::solve()
                                          initialSolution);
 
         // initial step
+        // only one trasient is supported
+        assert(Agros2D::problem()->timeLastStep() == 0);
+
         FieldSolutionID solutionID(m_fieldInfo, 0, 0);
         SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, m_doFHandler.n_dofs());
         Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, initialSolution), runTime);
@@ -879,13 +878,6 @@ void SolverDeal::solve()
             // store sln
             solutions.append(m_solution);
             stepLengths.append(actualTimeStep);
-
-            // cout << "Agros2D::solutionStore()->size = " << Agros2D::solutionStore()->timeLevels(m_fieldInfo).size() <<
-            //         ", Agros2D::problem()->size = " << Agros2D::problem()->timeStepLengths().size() <<
-            //         ", stepLengths.size = " << stepLengths.size() <<
-            //         ", solutions.size = " << solutions.size() <<
-            //         ", actualTimeStep = " << actualTimeStep <<
-            //         endl;
 
             int order = std::min(step, solutions.size());
             // cout << "order: " << order << " solutions.size() " << solutions.size() << " stepSizes.size() " << stepLengths.size() <<  endl;
@@ -989,7 +981,7 @@ void SolverDeal::solve()
                     m_time -= actualTimeStep;
                     stepLengths.removeLast();
 
-                    if (step == Agros2D::problem()->numTimeLevels())
+                    if (step == Agros2D::problem()->timeLastStep())
                     {
                         solutions.removeLast();
 
@@ -1406,7 +1398,7 @@ void SolverDeal::solveAdaptivity()
     {
         solveProblem();
 
-        FieldSolutionID solutionID(m_fieldInfo, 0, 0);
+        FieldSolutionID solutionID(m_fieldInfo, Agros2D::problem()->timeLastStep(), 0);
         SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, m_doFHandler.n_dofs());
         Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, m_solution), runTime);
     }
@@ -1447,7 +1439,7 @@ void SolverDeal::solveAdaptivity()
             previousNorm = norm;
             // cout << "error: " << error << endl;
 
-            FieldSolutionID solutionID(m_fieldInfo, 0, i);
+            FieldSolutionID solutionID(m_fieldInfo, Agros2D::problem()->timeLastStep(), i);
             SolutionStore::SolutionRunTimeDetails runTime(0.0, error, m_doFHandler.n_dofs());
             Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, m_solution), runTime);
 
@@ -1574,13 +1566,15 @@ void ProblemSolver::solveProblem()
         SolverDeal *solverDeal = m_solverDeal[fieldInfo];
 
         // look for coupling sources
-        foreach(FieldInfo* sourceFieldInfo, fieldInfosSorted)
+        foreach (FieldInfo* sourceFieldInfo, fieldInfosSorted)
         {
             // todo: check if it is also used!
-            if(couplingList()->isCouplingAvailable(sourceFieldInfo, fieldInfo, CouplingType_Weak))
+            if (couplingList()->isCouplingAvailable(sourceFieldInfo, fieldInfo, CouplingType_Weak))
             {
+                FieldSolutionID solutionID(sourceFieldInfo,
+                                           Agros2D::solutionStore()->lastTimeStep(sourceFieldInfo),
+                                           Agros2D::solutionStore()->lastAdaptiveStep(sourceFieldInfo));
 
-                FieldSolutionID solutionID = Agros2D::solutionStore()->lastTimeAndAdaptiveSolution(sourceFieldInfo);
                 MultiArray sourceSolution = Agros2D::solutionStore()->multiArray(solutionID);
 
                 solverDeal->setCouplingSource(sourceFieldInfo->fieldId(), sourceSolution.solution());

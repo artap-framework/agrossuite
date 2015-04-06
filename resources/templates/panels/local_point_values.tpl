@@ -30,6 +30,12 @@
 		<td>{{POINTY}}</td>
 		<td class="unit">{{POINT_UNIT}}</td>
 	</tr>
+    <tr>
+		<td class="description">&nbsp;</td>
+		<td class="quantity">{{LABELTIME}}</td>
+		<td>{{TIME}}</td>
+		<td class="unit">s</td>
+	</tr>	
 </table>
 {{#FIELD}}
 

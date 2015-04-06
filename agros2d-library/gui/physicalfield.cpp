@@ -105,12 +105,6 @@ void PhysicalFieldWidget::selectField(const FieldInfo* fieldInfo)
             fillComboBoxTimeStep(fieldInfo, cmbTimeStep);
             doTimeStep(-1);
         }
-
-        // if (m_currentFieldName != fieldInfo->fieldId())
-        //     emit fieldChanged();
-
-        // set current field name
-        // m_currentFieldName = fieldInfo->fieldId();
     }
 }
 
@@ -119,28 +113,13 @@ int PhysicalFieldWidget::selectedTimeStep()
     if (cmbTimeStep->currentIndex() == -1)
         return 0;
     else
-    {
-        int selectedTimeStep = cmbTimeStep->itemData(cmbTimeStep->currentIndex()).toInt();
-
-        // todo: this is here to avoid fail after loading new model
-        // todo: cmbTimeStep should probably be cleared somewhere
-        // todo: or the PostprocessorWidget should be destroyed and created a new one?
-        if(Agros2D::solutionStore()->timeLevels(selectedField()).size() <= selectedTimeStep)
-            return 0;
-
-        // due to timeskipping
-        double realTime = Agros2D::solutionStore()->timeLevels(selectedField()).at(selectedTimeStep);
-        int realTimeStep = Agros2D::solutionStore()->timeLevelIndex(selectedField(), realTime);
-        return realTimeStep;
-    }
+        return cmbTimeStep->itemData(cmbTimeStep->currentIndex()).toInt();
 }
 
 void PhysicalFieldWidget::selectTimeStep(int timeStep)
 {
     if (cmbTimeStep->findData(timeStep) != -1)
-    {
         cmbTimeStep->setCurrentIndex(cmbTimeStep->findData(timeStep));
-    }
 }
 
 int PhysicalFieldWidget::selectedAdaptivityStep()
@@ -154,9 +133,7 @@ int PhysicalFieldWidget::selectedAdaptivityStep()
 void PhysicalFieldWidget::selectAdaptivityStep(int adaptivityStep)
 {
     if (cmbAdaptivityStep->findData(adaptivityStep) != -1)
-    {
         cmbAdaptivityStep->setCurrentIndex(cmbAdaptivityStep->findData(adaptivityStep));
-    }
 }
 
 void PhysicalFieldWidget::updateControls()
@@ -171,9 +148,6 @@ void PhysicalFieldWidget::updateControls()
         cmbFieldInfo->clear();
         doFieldInfo(cmbFieldInfo->currentIndex());
     }
-
-    grpTime->setVisible(cmbTimeStep->count() > 1);
-    grpAdaptivity->setVisible(cmbAdaptivityStep->count() > 1);
 }
 
 void PhysicalFieldWidget::doFieldInfo(int index)
@@ -220,5 +194,8 @@ void PhysicalFieldWidget::doTimeStep(int index)
     {
         cmbAdaptivityStep->clear();        
     }
+
+    grpTime->setVisible(cmbTimeStep->count() >= 1);
+    grpAdaptivity->setVisible(cmbAdaptivityStep->count() > 1);
 }
 

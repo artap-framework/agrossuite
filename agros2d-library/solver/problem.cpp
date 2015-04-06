@@ -97,6 +97,8 @@ Problem::Problem()
 
     m_isNonlinear = false;
 
+    m_timeStepLengths.append(0.0);
+
     m_solverDeal = new ProblemSolver();
 
     actMesh = new QAction(icon("scene-meshgen"), tr("&Mesh area"), this);
@@ -184,6 +186,7 @@ void Problem::clearSolution()
     // m_timeStep = 0;
     m_lastTimeElapsed = QTime();
     m_timeStepLengths.clear();
+    m_timeStepLengths.append(0.0);
     m_timeHistory.clear();
 
     m_initialMesh.clear();
@@ -265,97 +268,7 @@ void Problem::removeField(FieldInfo *field)
 
     emit fieldsChanged();
 }
-/*
-void Problem::createStructure()
-{
-    // hermes
-    foreach (Block* block, m_blocks)
-        delete block;
-    m_blocks.clear();
 
-    m_isNonlinear = determineIsNonlinear();
-
-    synchronizeCouplings();
-    QMap<QPair<FieldInfo*, FieldInfo* >, CouplingInfo* > ci = couplingInfos();
-
-    //copy lists, items will be removed from them
-    QList<FieldInfo *> fieldInfosCopy = fieldInfos().values();
-    QList<CouplingInfo* > couplingInfosCopy = couplingInfos().values();
-
-    while (!fieldInfosCopy.empty()){
-        QList<FieldInfo*> blockFieldInfos;
-        QList<CouplingInfo*> blockCouplingInfos;
-
-        //first find one field, that is not weakly coupled and dependent on other fields
-        bool dependent;
-        foreach (FieldInfo* fieldInfo, fieldInfosCopy)
-        {
-            dependent = false;
-
-            foreach (CouplingInfo* couplingInfo, couplingInfosCopy)
-            {
-                if (couplingInfo->isWeak() && (couplingInfo->targetField() == fieldInfo) && fieldInfosCopy.contains(couplingInfo->sourceField()))
-                    dependent = true;
-            }
-
-            // this field is not weakly dependent, we can put it into this block
-            if (!dependent){
-                blockFieldInfos.push_back(fieldInfo);
-                fieldInfosCopy.removeOne(fieldInfo);
-                break;
-            }
-        }
-        assert(! dependent);
-
-        // find hardly coupled fields to construct block
-        bool added = true;
-        while(added)
-        {
-            added = false;
-
-            // first check whether there is related coupling
-            foreach (CouplingInfo* checkedCouplingInfo, couplingInfosCopy)
-            {
-                foreach (FieldInfo* checkedFieldInfo, blockFieldInfos)
-                {
-                    if(checkedCouplingInfo->isHard() && checkedCouplingInfo->isRelated(checkedFieldInfo))
-                    {
-                        //this coupling is related, add it to the block
-                        added = true;
-                        blockCouplingInfos.push_back(checkedCouplingInfo);
-                        couplingInfosCopy.removeOne(checkedCouplingInfo);
-                    }
-                }
-            }
-
-            // check for fields related to allready included couplings
-            foreach (FieldInfo* checkedFieldInfo, fieldInfosCopy)
-            {
-                foreach (CouplingInfo* checkedCouplingInfo, blockCouplingInfos)
-                {
-                    if(checkedCouplingInfo->isHard() && checkedCouplingInfo->isRelated(checkedFieldInfo))
-                    {
-                        //this field is related (by this coupling)
-                        added = true;
-                        blockFieldInfos.push_back(checkedFieldInfo);
-                        fieldInfosCopy.removeOne(checkedFieldInfo);
-                    }
-                }
-            }
-        }
-
-        // now all hard-coupled fields are here, create block
-        m_blocks.append(new Block(blockFieldInfos, blockCouplingInfos));
-    }
-
-    foreach (Block* block, m_blocks)
-    {
-        // todo: is released?
-        block->setWeakForm(WeakFormSharedPtr<double>(new WeakFormAgros<double>(block)));
-        block->weakFormInternal()->registerForms();
-    }
-}
-*/
 bool Problem::mesh(bool emitMeshed)
 {
     bool result = false;
@@ -475,66 +388,41 @@ bool Problem::meshAction(bool emitMeshed)
     return false;
 }
 
-double Problem::timeStepToTime(int timeStepIndex) const
+QList<double> Problem::timeStepTimes() const
 {
-    if (timeStepIndex == 0 || timeStepIndex == NOT_FOUND_SO_FAR)
-        return 0.0;
-    else
-        return m_timeStepLengths[timeStepIndex - 1];
+    QList<double> times;
+
+    double time = 0.0;
+    for (int ts = 0; ts < m_timeStepLengths.size(); ts++)
+    {
+        time += m_timeStepLengths[ts];
+        times.append(time);
+    }
+
+    return times;
 }
 
 double Problem::timeStepToTotalTime(int timeStepIndex) const
 {
-    double time = 0;
-    for(int ts = 0; ts < timeStepIndex; ts++)
+    double time = 0.0;
+    for (int ts = 0; ts <= timeStepIndex; ts++)
         time += m_timeStepLengths[ts];
 
     return time;
 }
 
-int Problem::timeToTimeStep(double time) const
-{
-    if (time == 0)
-        return 0;
-
-    double timeSum = 0;
-    for(int ts = 0; ts < m_timeStepLengths.size(); ts++)
-    {
-        timeSum += m_timeStepLengths.at(ts);
-        if(fabs(timeSum - time) < 1e-9* config()->value(ProblemConfig::TimeTotal).toDouble())
-            return ts+1;
-    }
-
-    // todo: revise
-    return 0;
-    assert(0);
-}
-
 void Problem::setActualTimeStepLength(double timeStep)
 {
-    m_timeStepLengths.append(timeStep);
-    // cout << "setActualTimeStepLength : " << m_timeStepLengths.length() << " : " << m_timeStepLengths.last() << " : total time : " << timeStepToTotalTime(m_timeStepLengths.length()) << endl;
+    m_timeStepLengths.append(timeStep);    
 }
 
 void Problem::removeLastTimeStepLength()
 {
     m_timeStepLengths.removeLast();
-    // cout << "removeLastTimeStepLength : " << m_timeStepLengths.length() << " : " << m_timeStepLengths.last() << " : total time : " << timeStepToTotalTime(m_timeStepLengths.length()) << endl;
-}
-
-double Problem::actualTimeStepLength() const
-{
-    if (m_timeStepLengths.isEmpty())
-        return config()->constantTimeStepLength();
-
-    return m_timeStepLengths.last();
 }
 
 void Problem::solveInit()
 {
-    m_timeStepLengths.clear();    
-    m_timeHistory.clear();
-
     if (fieldInfos().isEmpty())
     {
         Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("No fields defined"));
@@ -736,10 +624,6 @@ void Problem::solve(bool commandLine)
     }
 }
 
-//adaptivity step: from 0, if no adaptivity, than 0
-//time step: from 0 (initial condition), if block is not transient, calculate allways (todo: timeskipping)
-//if no block transient, everything in timestep 0
-
 void Problem::solveAction()
 {
     // clear solution
@@ -750,51 +634,6 @@ void Problem::solveAction()
 
     m_solverDeal->solveProblem();
 }
-
-    /*
-    // log analysis
-    QString fields;
-    foreach(FieldBlock *field, block->fields())
-    {
-        Agros2D::log()->addIcon(icon(QString("fields/%1").arg(field->fieldInfo()->fieldId())),
-                                QString("%1\n%2\n%3").
-                                arg(field->fieldInfo()->name()).
-                                arg(analysisTypeString(field->fieldInfo()->analysisType())).
-                                arg(linearityTypeString(field->fieldInfo()->linearityType())));
-
-        fields += field->fieldInfo()->fieldId() + ", ";
-    }
-    fields = fields.left(fields.length() - 2);
-
-    if (block->isTransient())
-    {
-        if(config()->isTransientAdaptive())
-        {
-            Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(fields),
-                                         QObject::tr("Transient step %1 (actual time: %3 s, %2 %)").
-                                         arg(actualTimeStep()).
-                                         arg(int(100*actualTime() / config()->value(ProblemConfig::TimeTotal).toDouble())).
-                                         arg(actualTime()));
-        }
-        else
-        {
-            Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(fields),
-                                         QObject::tr("Transient step %1/%2 (actual time: %3 s)").
-                                         arg(actualTimeStep()).
-                                         arg(config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()).
-                                         arg(actualTime()));
-        }
-
-        Agros2D::log()->updateTransientChartInfo(actualTime());
-    }
-    else
-    {
-        if (block->fields().count() == 1)
-            Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(fields), QObject::tr("Field solving (single analysis)"));
-        else
-            Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(fields), QObject::tr("Fields solving (coupled analysis)"));
-    }
-    */
 
 void Problem::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator)
 {
@@ -818,14 +657,11 @@ void Problem::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenera
     foreach (FieldInfo *fieldInfo, m_fieldInfos)
     {
         // refine mesh
-        // todo: at the present moment, not possible to refine independently
-        //fieldInfo->refineMesh(meshDeal);
-
+        // TODO: at the present moment, not possible to refine independently
         max_num_refinements = std::max(max_num_refinements, fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt());
     }
 
-    // this is just a workaround for the problem in deal
-    // user data are not preserved on faces after refinement
+    // this is just a workaround for the problem in deal user data are not preserved on faces after refinement
     m_initialUnrefinedMesh.copy_triangulation(m_initialMesh);
 
     m_calculationMesh.copy_triangulation(m_initialMesh);

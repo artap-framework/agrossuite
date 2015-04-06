@@ -109,17 +109,13 @@ void PyViewMeshAndPost::setActiveTimeStep(int timeStep)
     if (!Agros2D::problem()->isSolved())
         throw invalid_argument(QObject::tr("Problem is not solved.").toStdString());
 
-    if (timeStep < 0 || timeStep >= Agros2D::problem()->numTimeLevels())
-        throw out_of_range(QObject::tr("Time step must be in the range from 0 to %1.").arg(Agros2D::problem()->numTimeLevels() - 1).toStdString());
+    if (timeStep < 0 || timeStep > Agros2D::problem()->timeLastStep())
+        throw out_of_range(QObject::tr("Time step must be in the range from 0 to %1.").arg(Agros2D::problem()->timeLastStep()).toStdString());
 
     if (silentMode())
         return;
 
     FieldInfo *fieldInfo = currentPythonEngineAgros()->postDeal()->activeViewField();
-    if (!Agros2D::solutionStore()->timeLevels(fieldInfo).contains(Agros2D::problem()->timeStepToTotalTime(timeStep)))
-        throw out_of_range(QObject::tr("Field '%1' does not have solution for time step %2 (%3 s).").arg(fieldInfo->fieldId()).
-                           arg(timeStep).arg(Agros2D::problem()->timeStepToTotalTime(timeStep)).toStdString());
-
     int adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, timeStep);
 
     currentPythonEngineAgros()->postDeal()->setActiveTimeStep(timeStep);
@@ -248,10 +244,7 @@ void PyViewPost::setField(const std::string &fieldId)
 
     FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(QString::fromStdString(fieldId));
     int timeStep = currentPythonEngineAgros()->postDeal()->activeTimeStep();
-
-
-    if (!Agros2D::solutionStore()->timeLevels(fieldInfo).contains(Agros2D::problem()->timeStepToTotalTime(timeStep)))
-        timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo);
+    // int timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo);
 
     // set last adaptivity step (keeping of previous step can be misleading)
     int adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, timeStep);

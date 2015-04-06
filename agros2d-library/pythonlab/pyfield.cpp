@@ -743,8 +743,9 @@ int PyField::getTimeStep(int timeStep) const
 {
     if (timeStep == -1)
         timeStep = Agros2D::solutionStore()->lastTimeStep(m_fieldInfo);
-    else if (timeStep < 0 || timeStep > Agros2D::problem()->numTimeLevels() - 1)
-        throw out_of_range(QObject::tr("Time step is out of range (0 - %1).").arg(Agros2D::problem()->numTimeLevels()-1).toStdString());
+    else if (timeStep < 0 || timeStep >= Agros2D::problem()->timeStepLengths().length() - 1)
+        throw out_of_range(QObject::tr("Time step must be in the range from 0 to %1.").arg(Agros2D::problem()->timeStepLengths().length() - 1).toStdString());
+
 
     return timeStep;
 }

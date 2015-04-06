@@ -96,7 +96,6 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
     {
         RectPoint rect = Agros2D::scene()->boundingBox();
         dmult = qMax(rect.width(), rect.height()) / maxDeform / 15.0;
-        qDebug() << dmult;
     }
 
     // compute values in patches
@@ -258,6 +257,9 @@ void PostDeal::processRangeContour()
 
 void PostDeal::processRangeScalar()
 {
+    Agros2D::problem()->setting()->setValue(ProblemSetting::View_ScalarRangeMin, 0.0);
+    Agros2D::problem()->setting()->setValue(ProblemSetting::View_ScalarRangeMax, 0.0);
+
     if ((Agros2D::problem()->isSolved()) && (m_activeViewField)
             && ((Agros2D::problem()->setting()->value(ProblemSetting::View_ShowScalarView).toBool())
                 || (((SceneViewPost3DMode) Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D)))
