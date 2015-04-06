@@ -179,21 +179,13 @@ class TestMeshViewAdaptiveProblem(TestView):
         steps = len(a2d.field('magnetic').adaptivity_info()['dofs'])
         for i in range(1, steps+1):
             a2d.view.mesh.adaptivity_step = i
-            a2d.view.mesh.solution_type = 'normal'
             a2d.view.mesh.refresh()
             self.process('adaptive_problem-mesh-adaptive_step_{0}'.format(i))
     """
 
-    def test_solution_type(self):
-        a2d.view.mesh.adaptivity_step = len(a2d.field('magnetic').adaptivity_info()['dofs'])
-        a2d.view.mesh.solution_type = 'reference'
-        a2d.view.mesh.refresh()
-        self.process('adaptive_problem-mesh_view-reference_solution')
-
     def test_component(self):
         for i in [1, 2]:
             a2d.view.mesh.adaptivity_step = len(a2d.field('magnetic').adaptivity_info()['dofs'])
-            a2d.view.mesh.solution_type = 'normal'
             a2d.view.mesh.component = i
             a2d.view.mesh.refresh()
 

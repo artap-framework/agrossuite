@@ -151,7 +151,7 @@ private slots:
     void doFieldVariable(int index);
     void doExportData();
     void doSaveImage();
-    QMap<QString, double> getData(Point point, int timeStep, int adaptivityStep, SolutionMode solutionType);
+    QMap<QString, double> getData(Point point, int timeStep, int adaptivityStep);
 
     void createChartLine();
 };

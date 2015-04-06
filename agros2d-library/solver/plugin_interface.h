@@ -68,8 +68,8 @@ struct LocalPointValue
 class LocalValue
 {
 public:
-    LocalValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType, const Point &point)
-        : m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep), m_solutionType(solutionType), m_point(point) {}
+    LocalValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, const Point &point)
+        : m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep), m_point(point) {}
     virtual ~LocalValue()
     {
         m_values.clear();
@@ -90,7 +90,6 @@ protected:
     const FieldInfo *m_fieldInfo;
     int m_timeStep;
     int m_adaptivityStep;
-    SolutionMode m_solutionType;
 
     // variables
     QMap<QString, LocalPointValue> m_values;
@@ -99,8 +98,8 @@ protected:
 class IntegralValue
 {
 public:
-    IntegralValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType)
-        : m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep), m_solutionType(solutionType) {}
+    IntegralValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
+        : m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep) {}
 
     // variables
     inline QMap<QString, double> values() const { return m_values; }
@@ -109,8 +108,7 @@ protected:
     // field info
     const FieldInfo *m_fieldInfo;
     int m_timeStep;
-    int m_adaptivityStep;
-    SolutionMode m_solutionType;
+    int m_adaptivityStep;    
 
     // variables
     QMap<QString, double> m_values;
@@ -137,19 +135,18 @@ public:
 
     // postprocessor
     // filter
-    virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
-                                                                        MultiArray *ma,
+    virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,                                                                         MultiArray *ma,
                                                                         const QString &variable,
                                                                         PhysicFieldVariableComp physicFieldVariableComp) = 0;
 
     // local values
-    virtual std::shared_ptr<LocalValue> localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType, const Point &point) = 0;
+    virtual std::shared_ptr<LocalValue> localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, const Point &point) = 0;
     // surface integrals
-    virtual std::shared_ptr<IntegralValue> surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType) = 0;
+    virtual std::shared_ptr<IntegralValue> surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) = 0;
     // volume integrals
-    virtual std::shared_ptr<IntegralValue> volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType) = 0;
+    virtual std::shared_ptr<IntegralValue> volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) = 0;
     // force calculation
-    virtual Point3 force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
+    virtual Point3 force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
                          SceneMaterial *material, const Point3 &point, const Point3 &velocity) = 0;
     virtual bool hasForce(const FieldInfo *fieldInfo) = 0;
 

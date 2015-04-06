@@ -205,8 +205,7 @@ dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_
 PostDeal::PostDeal() :
     m_activeViewField(NULL),
     m_activeTimeStep(NOT_FOUND_SO_FAR),
-    m_activeAdaptivityStep(NOT_FOUND_SO_FAR),
-    m_activeSolutionMode(SolutionMode_Undefined),
+    m_activeAdaptivityStep(NOT_FOUND_SO_FAR),    
     m_isProcessed(false)
 {
     connect(Agros2D::scene(), SIGNAL(cleared()), this, SLOT(clear()));
@@ -344,7 +343,6 @@ void PostDeal::clear()
     m_activeViewField = NULL;
     m_activeTimeStep = NOT_FOUND_SO_FAR;
     m_activeAdaptivityStep = NOT_FOUND_SO_FAR;
-    m_activeSolutionMode = SolutionMode_Undefined;
 }
 
 void PostDeal::problemMeshed()
@@ -352,16 +350,7 @@ void PostDeal::problemMeshed()
     if (!m_activeViewField)
     {
         setActiveViewField(Agros2D::problem()->fieldInfos().begin().value());
-    }
-    //    if (m_activeTimeStep == NOT_FOUND_SO_FAR)
-    //    {
-    //        setActiveTimeStep(0);
-    //    }
-    //    if (m_activeAdaptivityStep == NOT_FOUND_SO_FAR)
-    //    {
-    //        setActiveAdaptivityStep(0);
-    //        setActiveAdaptivitySolutionType(SolutionMode_Normal);
-    //    }
+    }    
 }
 
 void PostDeal::problemSolved()
@@ -372,7 +361,7 @@ void PostDeal::problemSolved()
     }
 
     // time step
-    int lastTimeStep = Agros2D::solutionStore()->lastTimeStep(m_activeViewField, SolutionMode_Normal);
+    int lastTimeStep = Agros2D::solutionStore()->lastTimeStep(m_activeViewField);
 
     if (m_activeTimeStep == NOT_FOUND_SO_FAR || activeTimeStep() > lastTimeStep)
     {
@@ -380,10 +369,9 @@ void PostDeal::problemSolved()
     }
 
     // adaptive step
-    int lastAdaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(m_activeViewField, SolutionMode_Normal, m_activeTimeStep);
+    int lastAdaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(m_activeViewField, m_activeTimeStep);
 
     setActiveAdaptivityStep(lastAdaptivityStep);
-    setActiveAdaptivitySolutionType(SolutionMode_Normal);
 }
 
 void PostDeal::processSolved()
@@ -392,7 +380,7 @@ void PostDeal::processSolved()
     if (Agros2D::problem()->isTransient())
         Module::updateTimeFunctions(Agros2D::problem()->timeStepToTotalTime(activeTimeStep()));
 
-    FieldSolutionID fsid(activeViewField(), activeTimeStep(), activeAdaptivityStep(), activeAdaptivitySolutionType());
+    FieldSolutionID fsid(activeViewField(), activeTimeStep(), activeAdaptivityStep());
     if (Agros2D::solutionStore()->contains(fsid))
     {
         /*
@@ -428,7 +416,6 @@ std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable ph
     std::shared_ptr<dealii::DataPostprocessorScalar<2> > post = activeViewField()->plugin()->filter(activeViewField(),
                                                                                                     activeTimeStep(),
                                                                                                     activeAdaptivityStep(),
-                                                                                                    activeAdaptivitySolutionType(),
                                                                                                     &ma,
                                                                                                     physicFieldVariable.id(),
                                                                                                     physicFieldVariableComp);
@@ -468,7 +455,6 @@ void PostDeal::setActiveViewField(FieldInfo* fieldInfo)
     {
         setActiveTimeStep(NOT_FOUND_SO_FAR);
         setActiveAdaptivityStep(NOT_FOUND_SO_FAR);
-        setActiveAdaptivitySolutionType(SolutionMode_Normal);
 
         // set default variables
         Module::LocalVariable scalarVariable = m_activeViewField->defaultViewScalarVariable();
@@ -521,7 +507,7 @@ void PostDeal::setActiveAdaptivityStep(int as)
 
 MultiArray PostDeal::activeMultiSolutionArray()
 {
-    FieldSolutionID fsid(activeViewField(), activeTimeStep(), activeAdaptivityStep(), activeAdaptivitySolutionType());
+    FieldSolutionID fsid(activeViewField(), activeTimeStep(), activeAdaptivityStep());
     if (Agros2D::solutionStore()->contains(fsid))
         return Agros2D::solutionStore()->multiArray(fsid);
     else

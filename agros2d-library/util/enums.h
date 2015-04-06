@@ -207,14 +207,6 @@ enum SceneTransformMode
     SceneTransformMode_Scale = 2
 };
 
-enum SolutionMode
-{
-    SolutionMode_Undefined = -1,
-    SolutionMode_Normal = 0,
-    SolutionMode_Reference = 1,
-    SolutionMode_Finer = 100 // used to choose reference if exists, normal otherwise
-};
-
 enum VectorType
 {
     VectorType_Arrow = 0,
@@ -406,12 +398,6 @@ AGROS_LIBRARY_API QString timeStepMethodString(TimeStepMethod timeStepMethod);
 AGROS_LIBRARY_API QStringList timeStepMethodStringKeys();
 AGROS_LIBRARY_API QString timeStepMethodToStringKey(TimeStepMethod timeStepMethod);
 AGROS_LIBRARY_API TimeStepMethod timeStepMethodFromStringKey(const QString &timeStepMethod);
-
-// solution mode
-AGROS_LIBRARY_API QString solutionTypeString(SolutionMode solutionMode);
-AGROS_LIBRARY_API QStringList solutionTypeStringKeys();
-AGROS_LIBRARY_API QString solutionTypeToStringKey(SolutionMode solutionType);
-AGROS_LIBRARY_API SolutionMode solutionTypeFromStringKey(const QString &solutionType);
 
 // matrix solver type
 AGROS_LIBRARY_API bool isMatrixSolverIterative(MatrixSolverType type);

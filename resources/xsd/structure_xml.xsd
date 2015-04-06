@@ -47,7 +47,6 @@
         <attribute name="field_id" type="string" use="required" />
         <attribute name="time_step" type="integer" use="required" />
         <attribute name="adaptivity_step" type="integer" use="required" />
-        <attribute name="solution_type" type="string" use="required" />
 
         <attribute name="time_step_length" type="double" use="optional" />
         <attribute name="adaptivity_error" type="double" use="optional" />

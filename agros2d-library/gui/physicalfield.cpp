@@ -58,17 +58,12 @@ PhysicalFieldWidget::PhysicalFieldWidget(QWidget *parent) : QWidget(parent)
     // adaptivity
     lblAdaptivityStep = new QLabel(tr("Adaptivity step:"));
     cmbAdaptivityStep = new QComboBox(this);
-    connect(cmbAdaptivityStep, SIGNAL(currentIndexChanged(int)), this, SLOT(doAdaptivityStep(int)));
-    lblAdaptivitySolutionType = new QLabel(tr("Solution type:"));
-    cmbAdaptivitySolutionType = new QComboBox(this);
 
     QGridLayout *layoutAdaptivity = new QGridLayout();
     layoutAdaptivity->setColumnMinimumWidth(0, columnMinimumWidth());
     layoutAdaptivity->setColumnStretch(1, 1);
     layoutAdaptivity->addWidget(lblAdaptivityStep, 0, 0);
     layoutAdaptivity->addWidget(cmbAdaptivityStep, 0, 1);
-    layoutAdaptivity->addWidget(lblAdaptivitySolutionType, 1, 0);
-    layoutAdaptivity->addWidget(cmbAdaptivitySolutionType, 1, 1);
 
     grpAdaptivity = new QGroupBox(tr("Space adaptivity"), this);
     grpAdaptivity->setVisible(false);
@@ -145,7 +140,6 @@ void PhysicalFieldWidget::selectTimeStep(int timeStep)
     if (cmbTimeStep->findData(timeStep) != -1)
     {
         cmbTimeStep->setCurrentIndex(cmbTimeStep->findData(timeStep));
-        doAdaptivityStep(-1);
     }
 }
 
@@ -163,19 +157,6 @@ void PhysicalFieldWidget::selectAdaptivityStep(int adaptivityStep)
     {
         cmbAdaptivityStep->setCurrentIndex(cmbAdaptivityStep->findData(adaptivityStep));
     }
-}
-
-SolutionMode PhysicalFieldWidget::selectedAdaptivitySolutionType()
-{
-    if (cmbAdaptivityStep->currentIndex() == -1)
-        return SolutionMode_Undefined;
-    else
-        return (SolutionMode) cmbAdaptivitySolutionType->itemData(cmbAdaptivitySolutionType->currentIndex()).toInt();
-}
-
-void PhysicalFieldWidget::selectedAdaptivitySolutionType(SolutionMode solutionMode)
-{
-    cmbAdaptivitySolutionType->setCurrentIndex(cmbAdaptivitySolutionType->findData(solutionMode));
 }
 
 void PhysicalFieldWidget::updateControls()
@@ -239,15 +220,5 @@ void PhysicalFieldWidget::doTimeStep(int index)
     {
         cmbAdaptivityStep->clear();        
     }
-
-    doAdaptivityStep(-1);
 }
 
-void PhysicalFieldWidget::doAdaptivityStep(int index)
-{
-    fillComboBoxSolutionType(selectedField(), selectedTimeStep(), selectedAdaptivityStep(), cmbAdaptivitySolutionType);
-    if ((cmbAdaptivitySolutionType->currentIndex() >= cmbAdaptivitySolutionType->count()) || (cmbAdaptivitySolutionType->currentIndex() < 0))
-    {
-        cmbAdaptivitySolutionType->setCurrentIndex(0);
-    }
-}

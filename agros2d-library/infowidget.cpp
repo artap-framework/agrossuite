@@ -258,11 +258,11 @@ void InfoWidget::showInfo()
     problemInfo.SetValue("TRANSIENT_INITIALTIMESTEP_LABEL", tr("Initial step size:").toStdString());
     problemInfo.SetValue("TRANSIENT_INITIALTIMESTEP", QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble()).toStdString());
     problemInfo.SetValue("TRANSIENT_CONSTANT_STEP_LABEL", tr("Constant time step:").toStdString());
-    problemInfo.SetValue("TRANSIENT_CONSTANT_STEP", QString::number(Agros2D::problem()->config()->constantTimeStepLength()).toStdString() + " s";
+    problemInfo.SetValue("TRANSIENT_CONSTANT_STEP", QString::number(Agros2D::problem()->config()->constantTimeStepLength()).toStdString() + " s");
     problemInfo.SetValue("TRANSIENT_CONSTANT_NUM_STEPS_LABEL", tr("Number of const. time steps:").toStdString());
     problemInfo.SetValue("TRANSIENT_CONSTANT_NUM_STEPS", QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()).toStdString());
     problemInfo.SetValue("TRANSIENT_TOTAL_LABEL", tr("Total time:").toStdString());
-    problemInfo.SetValue("TRANSIENT_TOTAL", QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()).toStdString() + " " + Agros2D::problem()->timeUnit().toStdString());
+    problemInfo.SetValue("TRANSIENT_TOTAL", QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()).toStdString() + " s");
 
     problemInfo.SetValue("GEOMETRY_LABEL", tr("Geometry").toStdString());
     problemInfo.SetValue("GEOMETRY_NODES_LABEL", tr("Nodes:").toStdString());
@@ -362,9 +362,9 @@ void InfoWidget::showInfo()
 
             if (Agros2D::problem()->isSolved())
             {
-                int timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo, SolutionMode_Normal);
-                int adaptiveStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, SolutionMode_Normal);
-                MultiArray ma = Agros2D::solutionStore()->multiArray(FieldSolutionID(fieldInfo, timeStep, adaptiveStep, SolutionMode_Normal));
+                int timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo);
+                int adaptiveStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo);
+                MultiArray ma = Agros2D::solutionStore()->multiArray(FieldSolutionID(fieldInfo, timeStep, adaptiveStep));
 
                 DOFs = ma.doFHandler()->n_dofs();
             }
@@ -380,10 +380,10 @@ void InfoWidget::showInfo()
                 {
                     field->ShowSection("MESH_SOLUTION_NEWTON_SECTION");
 
-                    int timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo, SolutionMode_Normal);
-                    int adaptiveStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, SolutionMode_Normal);
+                    int timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo);
+                    int adaptiveStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo);
 
-                    SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(fieldInfo, timeStep, adaptiveStep, SolutionMode_Normal));
+                    SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(fieldInfo, timeStep, adaptiveStep));
                     QString newtonResiduals = "[";
                     for (int i = 0; i < runTime.newtonResidual().size(); i++)
                         newtonResiduals += QString("[%1, %2], ").arg(i+1).arg(runTime.newtonResidual().at(i));
@@ -414,14 +414,14 @@ void InfoWidget::showInfo()
                     field->ShowSection("MESH_SOLUTION_ADAPTIVITY_PARAMETERS_SECTION");
 
                     int timeStep = Agros2D::solutionStore()->timeLevels(fieldInfo).count() - 1;
-                    int adaptiveSteps = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, SolutionMode_Normal);
-                    error = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(fieldInfo, timeStep, adaptiveSteps, SolutionMode_Normal)).adaptivityError();
+                    int adaptiveSteps = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo);
+                    error = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(fieldInfo, timeStep, adaptiveSteps)).adaptivityError();
 
                     QString dataDOFs = "[";
                     QString dataError = "[";
                     for (int i = 0; i <= adaptiveSteps; i++)
                     {
-                        SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(fieldInfo, timeStep, i, SolutionMode_Normal));
+                        SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(fieldInfo, timeStep, i));
 
                         // qDebug() << structure.adaptivity_error;
 

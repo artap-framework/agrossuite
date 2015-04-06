@@ -33,7 +33,7 @@ class SceneLabelContainer;
 class {{CLASS}}ViewScalarFilter : public dealii::DataPostprocessorScalar<2>
 {
 public:
-    {{CLASS}}ViewScalarFilter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
+    {{CLASS}}ViewScalarFilter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
                      MultiArray *ma,
                      const QString &variable,
                      PhysicFieldVariableComp physicFieldVariableComp);
@@ -60,7 +60,6 @@ private:
     const FieldInfo *m_fieldInfo;
     int m_timeStep;
     int m_adaptivityStep;
-    SolutionMode m_solutionType;
     MultiArray *ma;
 
     SceneLabelContainer *m_labels;

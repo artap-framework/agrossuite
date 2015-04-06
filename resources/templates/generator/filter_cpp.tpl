@@ -34,12 +34,12 @@
 #include <deal.II/fe/mapping_q1.h>
 #include <deal.II/numerics/fe_field_function.h>
 
-{{CLASS}}ViewScalarFilter::{{CLASS}}ViewScalarFilter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
+{{CLASS}}ViewScalarFilter::{{CLASS}}ViewScalarFilter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
                                                      MultiArray *ma,
                                                      const QString &variable,
                                                      PhysicFieldVariableComp physicFieldVariableComp)
     : dealii::DataPostprocessorScalar<2>("Field",  dealii::update_values | dealii::update_gradients | dealii::update_hessians | dealii::update_q_points),
-      m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep), m_solutionType(solutionType),
+      m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep),
       ma(ma), m_variable(variable), m_physicFieldVariableComp(physicFieldVariableComp)
 {
     m_variableHash = qHash(m_variable);

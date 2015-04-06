@@ -97,13 +97,6 @@ struct PyViewMeshAndPost : PyViewClass
     // adaptivity step
     void setActiveAdaptivityStep(int adaptivityStep);
     inline int getActiveAdaptivityStep() const { return currentPythonEngineAgros()->postDeal()->activeAdaptivityStep(); }
-
-    // solution type
-    void setActiveSolutionType(const std::string &solutionType);
-    inline std::string getActiveSolutionType() const
-    {
-        return solutionTypeToStringKey(currentPythonEngineAgros()->postDeal()->activeAdaptivitySolutionType()).toStdString();
-    }
 };
 
 struct PyViewMesh : PyViewMeshAndPost

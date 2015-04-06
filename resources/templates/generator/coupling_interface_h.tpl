@@ -47,20 +47,20 @@ public:
 
     // postprocessor
     // filter
-    virtual dealii::DataPostprocessorScalar<2> *filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
+    virtual dealii::DataPostprocessorScalar<2> *filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
                                                        MultiArray *ma,
                                                        const QString &variable,
                                                        PhysicFieldVariableComp physicFieldVariableComp) { assert(0); return NULL; }
 
     // local values
-    virtual LocalValue *localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType, const Point &point) { assert(0); return NULL; }
+    virtual LocalValue *localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, const Point &point) { assert(0); return NULL; }
     // surface integrals
-    virtual IntegralValue *surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType) { assert(0); return NULL; }
+    virtual IntegralValue *surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) { assert(0); return NULL; }
     // volume integrals
-    virtual IntegralValue *volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType) { assert(0); return NULL; }
+    virtual IntegralValue *volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) { assert(0); return NULL; }
 
     // force calculation
-    virtual Point3 force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
+    virtual Point3 force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
                          SceneMaterial *material, const Point3 &point, const Point3 &velocity) { assert(0); return Point3(); }
     virtual bool hasForce(const FieldInfo *fieldInfo) { return false; }
 

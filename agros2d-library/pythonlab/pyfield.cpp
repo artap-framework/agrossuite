@@ -507,8 +507,7 @@ void PyField::removeMaterial(const std::string &name)
     Agros2D::scene()->removeMaterial(sceneMaterial);
 }
 
-void PyField::localValues(double x, double y, int timeStep, int adaptivityStep,
-                          const std::string &solutionType, map<std::string, double> &results) const
+void PyField::localValues(double x, double y, int timeStep, int adaptivityStep, map<std::string, double> &results) const
 {
     map<std::string, double> values;
 
@@ -516,13 +515,11 @@ void PyField::localValues(double x, double y, int timeStep, int adaptivityStep,
     {
         Point point(x, y);
 
-        SolutionMode solutionMode = getSolutionMode(QString::fromStdString(solutionType));
-
         // set time and adaptivity step if -1 (default parameter - last steps), check steps
-        timeStep = getTimeStep(timeStep, solutionMode);
-        adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep, solutionMode);
+        timeStep = getTimeStep(timeStep);
+        adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-        std::shared_ptr<LocalValue> value = m_fieldInfo->plugin()->localValue(m_fieldInfo, timeStep, adaptivityStep, solutionMode, point);
+        std::shared_ptr<LocalValue> value = m_fieldInfo->plugin()->localValue(m_fieldInfo, timeStep, adaptivityStep, point);
         QMapIterator<QString, LocalPointValue> it(value->values());
         while (it.hasNext())
         {
@@ -551,7 +548,7 @@ void PyField::localValues(double x, double y, int timeStep, int adaptivityStep,
 }
 
 void PyField::surfaceIntegrals(const vector<int> &edges, int timeStep, int adaptivityStep,
-                               const std::string &solutionType, map<std::string, double> &results) const
+                               map<std::string, double> &results) const
 {
     map<std::string, double> values;
 
@@ -583,13 +580,11 @@ void PyField::surfaceIntegrals(const vector<int> &edges, int timeStep, int adapt
             Agros2D::scene()->selectAll(SceneGeometryMode_OperateOnEdges);
         }
 
-        SolutionMode solutionMode = getSolutionMode(QString::fromStdString(solutionType));
-
         // set time and adaptivity step if -1 (default parameter - last steps), check steps
-        timeStep = getTimeStep(timeStep, solutionMode);
-        adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep, solutionMode);
+        timeStep = getTimeStep(timeStep);
+        adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-        std::shared_ptr<IntegralValue> integral = m_fieldInfo->plugin()->surfaceIntegral(m_fieldInfo, timeStep, adaptivityStep, solutionMode);
+        std::shared_ptr<IntegralValue> integral = m_fieldInfo->plugin()->surfaceIntegral(m_fieldInfo, timeStep, adaptivityStep);
         QMapIterator<QString, double> it(integral->values());
         while (it.hasNext())
         {
@@ -609,7 +604,7 @@ void PyField::surfaceIntegrals(const vector<int> &edges, int timeStep, int adapt
 }
 
 void PyField::volumeIntegrals(const vector<int> &labels, int timeStep, int adaptivityStep,
-                              const std::string &solutionType, map<std::string, double> &results) const
+                              map<std::string, double> &results) const
 {
     map<std::string, double> values;
 
@@ -648,13 +643,11 @@ void PyField::volumeIntegrals(const vector<int> &labels, int timeStep, int adapt
             Agros2D::scene()->selectAll(SceneGeometryMode_OperateOnLabels);
         }
 
-        SolutionMode solutionMode = getSolutionMode(QString::fromStdString(solutionType));
-
         // set time and adaptivity step if -1 (default parameter - last steps), check steps
-        timeStep = getTimeStep(timeStep, solutionMode);
-        adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep, solutionMode);
+        timeStep = getTimeStep(timeStep);
+        adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-        std::shared_ptr<IntegralValue> integral = m_fieldInfo->plugin()->volumeIntegral(m_fieldInfo, timeStep, adaptivityStep, solutionMode);
+        std::shared_ptr<IntegralValue> integral = m_fieldInfo->plugin()->volumeIntegral(m_fieldInfo, timeStep, adaptivityStep);
         QMapIterator<QString, double> it(integral->values());
         while (it.hasNext())
         {
@@ -684,39 +677,35 @@ void PyField::initialMeshInfo(map<std::string, int> &info) const
     info["elements"] = Agros2D::problem()->initialMesh().n_active_cells();
 }
 
-void PyField::solutionMeshInfo(int timeStep, int adaptivityStep, const std::string &solutionType, map<std::string, int> &info) const
+void PyField::solutionMeshInfo(int timeStep, int adaptivityStep, map<std::string, int> &info) const
 {
     if (!Agros2D::problem()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    SolutionMode solutionMode = getSolutionMode(QString::fromStdString(solutionType));
-
     // set time and adaptivity step if -1 (default parameter - last steps), check steps
-    timeStep = getTimeStep(timeStep, solutionMode);
-    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep, solutionMode);
+    timeStep = getTimeStep(timeStep);
+    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
     // TODO: (Franta) time and adaptivity step in gui vs. implementation
-    MultiArray ma = Agros2D::solutionStore()->multiArray(FieldSolutionID(m_fieldInfo, timeStep, adaptivityStep, solutionMode));
+    MultiArray ma = Agros2D::solutionStore()->multiArray(FieldSolutionID(m_fieldInfo, timeStep, adaptivityStep));
 
     info["nodes"] = ma.doFHandler()->get_tria().n_used_vertices();
     info["elements"] = ma.doFHandler()->get_tria().n_active_cells();
     info["dofs"] = ma.doFHandler()->n_dofs();
 }
 
-void PyField::solverInfo(int timeStep, int adaptivityStep, const std::string &solutionType,
+void PyField::solverInfo(int timeStep, int adaptivityStep,
                          vector<double> &solutionsChange, vector<double> &residual,
                          vector<double> &dampingCoeff, int &jacobianCalculations) const
 {
     if (!Agros2D::problem()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    SolutionMode solutionMode = getSolutionMode(QString::fromStdString(solutionType));
-
     // step if -1 (default parameter - last steps)
-    timeStep = getTimeStep(timeStep, solutionMode);
-    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep, solutionMode);
+    timeStep = getTimeStep(timeStep);
+    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-    SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo, timeStep, adaptivityStep, solutionMode));
+    SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo, timeStep, adaptivityStep));
 
     for (int i = 0; i < runTime.relativeChangeOfSolutions().size(); i++)
         solutionsChange.push_back(runTime.relativeChangeOfSolutions().at(i));
@@ -730,7 +719,7 @@ void PyField::solverInfo(int timeStep, int adaptivityStep, const std::string &so
     jacobianCalculations = runTime.jacobianCalculations();
 }
 
-void PyField::adaptivityInfo(int timeStep, const std::string &solutionType, vector<double> &error, vector<int> &dofs) const
+void PyField::adaptivityInfo(int timeStep, vector<double> &error, vector<int> &dofs) const
 {
     if (!Agros2D::problem()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
@@ -738,46 +727,32 @@ void PyField::adaptivityInfo(int timeStep, const std::string &solutionType, vect
     if (m_fieldInfo->adaptivityType() == AdaptivityMethod_None)
         throw logic_error(QObject::tr("Solution is not adaptive.").toStdString());
 
-    SolutionMode solutionMode = getSolutionMode(QString::fromStdString(solutionType));
-
     // set time step if -1 (default parameter - last steps)
-    timeStep = getTimeStep(timeStep, solutionMode);
+    timeStep = getTimeStep(timeStep);
 
-    int adaptivitySteps = Agros2D::solutionStore()->lastAdaptiveStep(m_fieldInfo, solutionMode, timeStep) + 1;
-    cout << adaptivitySteps << endl;
+    int adaptivitySteps = Agros2D::solutionStore()->lastAdaptiveStep(m_fieldInfo, timeStep) + 1;    
     for (int i = 0; i < adaptivitySteps; i++)
     {
-        SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo, timeStep, i, solutionMode));
+        SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo, timeStep, i));
         error.push_back(runTime.adaptivityError());
         dofs.push_back(runTime.DOFs());
     }
 }
 
-SolutionMode PyField::getSolutionMode(const QString &solutionType) const
-{
-    if (!solutionTypeStringKeys().contains(solutionType))
-        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(solutionTypeStringKeys())).toStdString());
-
-    if (solutionType == solutionTypeToStringKey(SolutionMode_Reference) && m_fieldInfo->adaptivityType() == AdaptivityMethod_None)
-        throw logic_error(QObject::tr("Reference solution does not exist.").toStdString());
-
-    return solutionTypeFromStringKey(solutionType);
-}
-
-int PyField::getTimeStep(int timeStep, SolutionMode solutionMode) const
+int PyField::getTimeStep(int timeStep) const
 {
     if (timeStep == -1)
-        timeStep = Agros2D::solutionStore()->lastTimeStep(m_fieldInfo, solutionMode);
+        timeStep = Agros2D::solutionStore()->lastTimeStep(m_fieldInfo);
     else if (timeStep < 0 || timeStep > Agros2D::problem()->numTimeLevels() - 1)
         throw out_of_range(QObject::tr("Time step is out of range (0 - %1).").arg(Agros2D::problem()->numTimeLevels()-1).toStdString());
 
     return timeStep;
 }
 
-int PyField::getAdaptivityStep(int adaptivityStep, int timeStep, SolutionMode solutionMode) const
+int PyField::getAdaptivityStep(int adaptivityStep, int timeStep) const
 {
     if (adaptivityStep == -1)
-        adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(m_fieldInfo, solutionMode, timeStep);
+        adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(m_fieldInfo, timeStep);
     else if (adaptivityStep < 0 || adaptivityStep > m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt() - 1)
         throw out_of_range(QObject::tr("Adaptivity step is out of range. (0 to %1).").arg(m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt() - 1).toStdString());
 
@@ -786,8 +761,8 @@ int PyField::getAdaptivityStep(int adaptivityStep, int timeStep, SolutionMode so
 
 std::string PyField::filenameMatrix(int timeStep, int adaptivityStep) const
 {
-    timeStep = getTimeStep(timeStep, SolutionMode_Normal);
-    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep, SolutionMode_Normal);
+    timeStep = getTimeStep(timeStep);
+    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
     QString name = QString("%1/%2_%3_%4_Matrix").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
     if (QFile::exists(name))
@@ -798,8 +773,8 @@ std::string PyField::filenameMatrix(int timeStep, int adaptivityStep) const
 
 std::string PyField::filenameRHS(int timeStep, int adaptivityStep) const
 {
-    timeStep = getTimeStep(timeStep, SolutionMode_Normal);
-    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep, SolutionMode_Normal);
+    timeStep = getTimeStep(timeStep);
+    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
     QString name = QString("%1/%2_%3_%4_RHS").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
     if (QFile::exists(name))

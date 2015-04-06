@@ -75,20 +75,20 @@ cdef extern from "../../agros2d-library/pythonlab/pyfield.h":
         void solve()
 
         void localValues(double x, double y, int timeStep, int adaptivityStep,
-                         string &solutionType, map[string, double] &results) except +
+                         map[string, double] &results) except +
         void surfaceIntegrals(vector[int], int timeStep, int adaptivityStep,
-                              string &solutionType, map[string, double] &results) except +
+                              map[string, double] &results) except +
         void volumeIntegrals(vector[int], int timeStep, int adaptivityStep,
-                             string &solutionType, map[string, double] &results) except +
+                             map[string, double] &results) except +
 
         void initialMeshInfo(map[string , int] &info) except +
-        void solutionMeshInfo(int timeStep, int adaptivityStep, string &solutionType, map[string , int] &info) except +
+        void solutionMeshInfo(int timeStep, int adaptivityStep, map[string , int] &info) except +
 
-        void solverInfo(int timeStep, int adaptivityStep, string &solutionType,
+        void solverInfo(int timeStep, int adaptivityStep, 
                         vector[double] &solution_change, vector[double] &residual,
                         vector[double] &dampingCoeff, int &jacobianCalculations) except +
 
-        void adaptivityInfo(int timeStep, string &solutionType, vector[double] &error, vector[int] &dofs) except +
+        void adaptivityInfo(int timeStep, vector[double] &error, vector[int] &dofs) except +
 
         string filenameMatrix(int timeStep, int adaptivityStep) except +
         string filenameRHS(int timeStep, int adaptivityStep) except +
@@ -497,17 +497,16 @@ cdef class __Field__:
         self.thisptr.removeMaterial(name.encode())
 
     # local values
-    def local_values(self, x, y, time_step = None, adaptivity_step = None, solution_type = "normal"):
+    def local_values(self, x, y, time_step = None, adaptivity_step = None):
         """Compute local values in point and return dictionary with results.
 
-        local_values(x, y, time_step = None, adaptivity_step = None, solution_type = "normal")
+        local_values(x, y, time_step = None, adaptivity_step = None)
 
         Keyword arguments:
         x -- x or r coordinate of point
         y -- y or z coordinate of point
         time_step -- time step (default is None - use last time step)
-        adaptivity_step -- adaptivity step (default is None - use adaptive step)
-        solution_type -- solution type (default is "normal")
+        adaptivity_step -- adaptivity step (default is None - use adaptive step)        
         """
         out = dict()
         cdef map[string, double] results
@@ -515,7 +514,7 @@ cdef class __Field__:
         self.thisptr.localValues(x, y,
                                  int(-1 if time_step is None else time_step),
                                  int(-1 if adaptivity_step is None else adaptivity_step),
-                                 solution_type.encode(), results)
+                                 results)
         it = results.begin()
         while it != results.end():
             out[deref(it).first.decode()] = deref(it).second
@@ -524,16 +523,15 @@ cdef class __Field__:
         return out
 
     # surface integrals
-    def surface_integrals(self, edges = [], time_step = None, adaptivity_step = None, solution_type = "normal"):
+    def surface_integrals(self, edges = [], time_step = None, adaptivity_step = None):
         """Compute surface integrals on edges and return dictionary with results.
 
-        surface_integrals(edges = [], time_step = None, adaptivity_step = None, solution_type = "normal")
+        surface_integrals(edges = [], time_step = None, adaptivity_step = None)
 
         Keyword arguments:
         edges -- list of edges (default is [] - compute integrals on all edges)
         time_step -- time step (default is None - use last time step)
-        adaptivity_step -- adaptivity step (default is None - use adaptive step)
-        solution_type -- solution type (default is "normal")
+        adaptivity_step -- adaptivity step (default is None - use adaptive step)        
         """
         cdef vector[int] edges_vector
         for i in edges:
@@ -545,7 +543,7 @@ cdef class __Field__:
         self.thisptr.surfaceIntegrals(edges_vector,
                                       int(-1 if time_step is None else time_step),
                                       int(-1 if adaptivity_step is None else adaptivity_step),
-                                      solution_type.encode(), results)
+                                      results)
         it = results.begin()
         while it != results.end():
             out[deref(it).first.decode()] = deref(it).second
@@ -554,16 +552,15 @@ cdef class __Field__:
         return out
 
     # volume integrals
-    def volume_integrals(self, labels = [], time_step = None, adaptivity_step = None, solution_type = "normal"):
+    def volume_integrals(self, labels = [], time_step = None, adaptivity_step = None):
         """Compute volume integrals on labels and return dictionary with results.
 
-        volume_integrals(labels = [], time_step = None, adaptivity_step = None, solution_type = "normal")
+        volume_integrals(labels = [], time_step = None, adaptivity_step = None)
 
         Keyword arguments:
         labels -- list of labels (default is [] - compute integrals on all labels)
         time_step -- time step (default is None - use last time step)
-        adaptivity_step -- adaptivity step (default is None - use adaptive step)
-        solution_type -- solution type (default is "normal")
+        adaptivity_step -- adaptivity step (default is None - use adaptive step)        
         """
         cdef vector[int] labels_vector
         for i in labels:
@@ -575,7 +572,7 @@ cdef class __Field__:
         self.thisptr.volumeIntegrals(labels_vector,
                                      int(-1 if time_step is None else time_step),
                                      int(-1 if adaptivity_step is None else adaptivity_step),
-                                     solution_type.encode(), results)
+                                     results)
         it = results.begin()
         while it != results.end():
             out[deref(it).first.decode()] = deref(it).second
@@ -597,22 +594,21 @@ cdef class __Field__:
 
         return info
 
-    def solution_mesh_info(self, time_step = None, adaptivity_step = None, solution_type = "normal"):
+    def solution_mesh_info(self, time_step = None, adaptivity_step = None):
         """Return dictionary with solution mesh info.
 
-        solution_mesh_info(time_step = None, adaptivity_step = None, solution_type = "normal")
+        solution_mesh_info(time_step = None, adaptivity_step = None)
 
         Keyword arguments:
         time_step -- time step (default is None - use last time step)
         adaptivity_step -- adaptivity step (default is None - use adaptive step)
-        solution_type -- solution type (default is "normal")
         """
         info = dict()
         cdef map[string, int] info_map
 
         self.thisptr.solutionMeshInfo(int(-1 if time_step is None else time_step),
                                       int(-1 if adaptivity_step is None else adaptivity_step),
-                                      solution_type.encode(), info_map)
+                                      info_map)
 
         it = info_map.begin()
         while it != info_map.end():
@@ -622,15 +618,14 @@ cdef class __Field__:
         return info
 
     # solver info
-    def solver_info(self, time_step = None, adaptivity_step = None, solution_type = 'normal'):
+    def solver_info(self, time_step = None, adaptivity_step = None):
         """Return dictionary with solver info.
 
-        solver_info(time_step = None, adaptivity_step = None, solution_type = "normal")
+        solver_info(time_step = None, adaptivity_step = None)
 
         Keyword arguments:
         time_step -- time step (default is None - use last time step)
         adaptivity_step -- adaptivity step (default is None - use adaptive step)
-        solution_type -- solution type (default is "normal")
         """
         cdef vector[double] solution_change_vector
         cdef vector[double] residual_vector
@@ -639,8 +634,8 @@ cdef class __Field__:
         jacobian_calculations = -1
         self.thisptr.solverInfo(int(-1 if time_step is None else time_step),
                                 int(-1 if adaptivity_step is None else adaptivity_step),
-                                solution_type.encode(),
-                                solution_change_vector, residual_vector, damping_vector, jacobian_calculations)
+                                solution_change_vector, residual_vector, 
+                                damping_vector, jacobian_calculations)
 
         solution_change = list()
         for i in range(solution_change_vector.size()):
@@ -657,19 +652,18 @@ cdef class __Field__:
         return {'solution_change' : solution_change, 'residual' : residual, 'damping' : damping, 'jacobian_calculations' : jacobian_calculations}
 
     # adaptivity info
-    def adaptivity_info(self, time_step = None, solution_type = 'normal'):
+    def adaptivity_info(self, time_step = None):
         """Return dictionary with adaptivity process info.
 
-        adaptivity_info(time_step = None, solution_type = "normal")
+        adaptivity_info(time_step = None)
 
         Keyword arguments:
         time_step -- time step (default is None - use last time step)
-        solution_type -- solution type (default is "normal")
         """
         cdef vector[double] error_vector
         cdef vector[int] dofs_vector
         self.thisptr.adaptivityInfo(int(-1 if time_step is None else time_step),
-                                    solution_type.encode(), error_vector, dofs_vector)
+                                    error_vector, dofs_vector)
 
         error = list()
         for i in range(error_vector.size()):

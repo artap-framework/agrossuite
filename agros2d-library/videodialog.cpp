@@ -89,7 +89,7 @@ void VideoDialog::showDialog()
     sliderTransientAnimate->blockSignals(false);
 
     // adaptive steps
-    m_adaptiveSteps = Agros2D::solutionStore()->lastAdaptiveStep(m_postDeal->activeViewField(), SolutionMode_Normal) + 1;
+    m_adaptiveSteps = Agros2D::solutionStore()->lastAdaptiveStep(m_postDeal->activeViewField()) + 1;
     lblAdaptiveStep->setText(QString("%1 / %2").arg(1).arg(m_adaptiveSteps));
     sliderAdaptiveAnimate->blockSignals(true);
     sliderAdaptiveAnimate->setMinimum(1);
@@ -273,7 +273,7 @@ void VideoDialog::setTransientStep(int transientStep)
     Agros2D::configComputer()->setValue(Config::Config_ShowAxes, chkFigureShowAxes->isChecked());
 
     m_postDeal->setActiveTimeStep(transientStep);
-    m_postDeal->setActiveAdaptivityStep(Agros2D::solutionStore()->lastAdaptiveStep(m_postDeal->activeViewField(), SolutionMode_Normal, transientStep));
+    m_postDeal->setActiveAdaptivityStep(Agros2D::solutionStore()->lastAdaptiveStep(m_postDeal->activeViewField(), transientStep));
     m_postDeal->refresh();
 
     if (chkSaveImages->isChecked())

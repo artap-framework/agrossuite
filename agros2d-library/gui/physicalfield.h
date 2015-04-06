@@ -44,8 +44,6 @@ public:
     void selectTimeStep(int timeStep);
     int selectedAdaptivityStep();
     void selectAdaptivityStep(int adaptivityStep);
-    SolutionMode selectedAdaptivitySolutionType();
-    void selectedAdaptivitySolutionType(SolutionMode solutionMode);
 
 private:
     QComboBox *cmbFieldInfo;
@@ -59,8 +57,6 @@ private:
     QGroupBox *grpAdaptivity;
     QLabel *lblAdaptivityStep;
     QComboBox *cmbAdaptivityStep;
-    QLabel *lblAdaptivitySolutionType;
-    QComboBox *cmbAdaptivitySolutionType;
 
     QString m_currentFieldName;
     AnalysisType m_currentAnalysisType;
@@ -68,7 +64,6 @@ private:
 public slots:
     void doFieldInfo(int index);
     void doTimeStep(int index);
-    void doAdaptivityStep(int index);
 };
 
 #endif // GUI_PHYSICALFIELD_H

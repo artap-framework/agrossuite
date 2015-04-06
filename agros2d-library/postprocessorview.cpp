@@ -831,7 +831,6 @@ void PostprocessorWidget::doCalculationFinished()
         fieldWidget->selectField(m_postDeal->activeViewField());
         fieldWidget->selectTimeStep(m_postDeal->activeTimeStep());
         fieldWidget->selectAdaptivityStep(m_postDeal->activeAdaptivityStep());
-        fieldWidget->selectedAdaptivitySolutionType(m_postDeal->activeAdaptivitySolutionType());
     }
 
     if ((Agros2D::problem()->isMeshed() && !Agros2D::problem()->isSolving()) || Agros2D::problem()->isSolved())
@@ -1021,9 +1020,8 @@ void PostprocessorWidget::doApply()
     m_postDeal->setActiveViewField(fieldWidget->selectedField());
     m_postDeal->setActiveTimeStep(fieldWidget->selectedTimeStep());
     m_postDeal->setActiveAdaptivityStep(fieldWidget->selectedAdaptivityStep());
-    m_postDeal->setActiveAdaptivitySolutionType(fieldWidget->selectedAdaptivitySolutionType());
 
-    // qDebug() << "doApply: " << fieldWidget->selectedField()->fieldId() << fieldWidget->selectedTimeStep() << fieldWidget->selectedAdaptivityStep() << fieldWidget->selectedAdaptivitySolutionType();
+    // qDebug() << "doApply: " << fieldWidget->selectedField()->fieldId() << fieldWidget->selectedTimeStep() << fieldWidget->selectedAdaptivityStep();
 
     saveBasic();
     saveAdvanced();

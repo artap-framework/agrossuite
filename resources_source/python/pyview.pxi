@@ -36,9 +36,6 @@ cdef extern from "../../agros2d-library/pythonlab/pyview.h":
         void setActiveAdaptivityStep(int adaptiveStep) except +
         int getActiveAdaptivityStep()
 
-        void setActiveSolutionType(string &solutionType) except +
-        string getActiveSolutionType()
-
     # PyViewMesh
     cdef cppclass PyViewMesh:
         void setParameter(string &parameter, bool value) except +
@@ -233,12 +230,6 @@ cdef class __ViewMeshAndPost__:
             return self.thisptrmp.getActiveAdaptivityStep()
         def __set__(self, adaptivity_step):
             self.thisptrmp.setActiveAdaptivityStep(adaptivity_step)
-
-    property solution_type:
-        def __get__(self):
-            return self.thisptrmp.getActiveSolutionType().decode()
-        def __set__(self, solution_type):
-            self.thisptrmp.setActiveSolutionType(solution_type.encode())
 
 # ViewMesh
 cdef class __ViewMesh__(__ViewMeshAndPost__):

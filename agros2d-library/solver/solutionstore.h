@@ -99,29 +99,20 @@ public:
     void addSolution(FieldSolutionID solutionID, MultiArray multiArray, SolutionRunTimeDetails runTime);
     void removeSolution(FieldSolutionID solutionID, bool saveRunTime = true);
 
-    // removes all solutions with the given time step
-    void removeTimeStep(int timeStep);
-
-    int lastTimeStep(const FieldInfo* fieldInfo, SolutionMode solutionType) const;
-
-    // finds nearest smaller(or equal) time step, where this fieldInfo was calculated
-    int nearestTimeStep(const FieldInfo* fieldInfo, int timeStep) const;
-
-    // finds nth calculated time step for the given field
-    int nthCalculatedTimeStep(const FieldInfo* fieldInfo, int n) const;
-
-    double lastTime(const FieldInfo* fieldInfo);
-
     // last adaptive step for given time step. If time step not given, last time step used implicitly
-    int lastAdaptiveStep(const FieldInfo* fieldInfo, SolutionMode solutionType, int timeStep = -1) const;
-
-    QList<double> timeLevels(const FieldInfo* fieldInfo) const;
+    int lastAdaptiveStep(const FieldInfo* fieldInfo, int timeStep = -1) const;
 
     // number of time steps, where this fieldInfo was calculated up to this time
     int timeLevelIndex(const FieldInfo* fieldInfo, double time);
-    double timeLevel(const FieldInfo* fieldInfo, int timeLevelIndex);
+    // removes all solutions with the given time step
+    void removeTimeStep(int timeStep);
+    int lastTimeStep(const FieldInfo* fieldInfo) const;
+    QList<double> timeLevels(const FieldInfo* fieldInfo) const;
+    double timeAtLevel(const FieldInfo* fieldInfo, int timeLevelIndex);
+    double lastTime(const FieldInfo* fieldInfo);
 
-    FieldSolutionID lastTimeAndAdaptiveSolution(const FieldInfo* fieldInfo, SolutionMode solutionType);
+    // last time and adaptive step
+    FieldSolutionID lastTimeAndAdaptiveSolution(const FieldInfo* fieldInfo);
 
     void loadRunTimeDetails();
 

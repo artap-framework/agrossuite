@@ -810,7 +810,7 @@ void SolverDeal::solve()
                                          initialSolution);
 
         // initial step
-        FieldSolutionID solutionID(m_fieldInfo, 0, 0, SolutionMode_Normal);
+        FieldSolutionID solutionID(m_fieldInfo, 0, 0);
         SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, m_doFHandler.n_dofs());
         Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, initialSolution), runTime);
         m_solution = initialSolution;
@@ -1010,7 +1010,7 @@ void SolverDeal::solve()
                 Agros2D::problem()->setActualTimeStepLength(actualTimeStep);
                 Agros2D::log()->updateTransientChartInfo(m_time);
 
-                solutionID = FieldSolutionID(m_fieldInfo, step, 0, SolutionMode_Normal);
+                solutionID = FieldSolutionID(m_fieldInfo, step, 0);
                 SolutionStore::SolutionRunTimeDetails runTime(actualTimeStep, 0.0, m_doFHandler.n_dofs());
                 Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, m_solution), runTime);
 
@@ -1406,7 +1406,7 @@ void SolverDeal::solveAdaptivity()
     {
         solveProblem();
 
-        FieldSolutionID solutionID(m_fieldInfo, 0, 0, SolutionMode_Normal);
+        FieldSolutionID solutionID(m_fieldInfo, 0, 0);
         SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, m_doFHandler.n_dofs());
         Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, m_solution), runTime);
     }
@@ -1447,7 +1447,7 @@ void SolverDeal::solveAdaptivity()
             previousNorm = norm;
             // cout << "error: " << error << endl;
 
-            FieldSolutionID solutionID(m_fieldInfo, 0, i, SolutionMode_Normal);
+            FieldSolutionID solutionID(m_fieldInfo, 0, i);
             SolutionStore::SolutionRunTimeDetails runTime(0.0, error, m_doFHandler.n_dofs());
             Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, m_solution), runTime);
 
@@ -1580,7 +1580,7 @@ void ProblemSolver::solveProblem()
             if(couplingList()->isCouplingAvailable(sourceFieldInfo, fieldInfo, CouplingType_Weak))
             {
 
-                FieldSolutionID solutionID = Agros2D::solutionStore()->lastTimeAndAdaptiveSolution(sourceFieldInfo, SolutionMode_Normal);
+                FieldSolutionID solutionID = Agros2D::solutionStore()->lastTimeAndAdaptiveSolution(sourceFieldInfo);
                 MultiArray sourceSolution = Agros2D::solutionStore()->multiArray(solutionID);
 
                 solverDeal->setCouplingSource(sourceFieldInfo->fieldId(), sourceSolution.solution());

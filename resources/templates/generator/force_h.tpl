@@ -27,7 +27,7 @@
 
 bool hasForce{{CLASS}}(const FieldInfo *fieldInfo);
 
-Point3 force{{CLASS}}(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
+Point3 force{{CLASS}}(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
                       SceneMaterial *material, const Point3 &point, const Point3 &velocity = Point3());
 
 

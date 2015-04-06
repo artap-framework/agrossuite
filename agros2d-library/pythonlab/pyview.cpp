@@ -120,8 +120,7 @@ void PyViewMeshAndPost::setActiveTimeStep(int timeStep)
         throw out_of_range(QObject::tr("Field '%1' does not have solution for time step %2 (%3 s).").arg(fieldInfo->fieldId()).
                            arg(timeStep).arg(Agros2D::problem()->timeStepToTotalTime(timeStep)).toStdString());
 
-    SolutionMode solutionType = currentPythonEngineAgros()->postDeal()->activeAdaptivitySolutionType();
-    int adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, solutionType, timeStep);
+    int adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, timeStep);
 
     currentPythonEngineAgros()->postDeal()->setActiveTimeStep(timeStep);
     currentPythonEngineAgros()->postDeal()->setActiveAdaptivityStep(adaptivityStep);
@@ -134,7 +133,6 @@ void PyViewMeshAndPost::setActiveAdaptivityStep(int adaptivityStep)
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     int last_step = Agros2D::solutionStore()->lastAdaptiveStep(currentPythonEngineAgros()->postDeal()->activeViewField(),
-                                                               currentPythonEngineAgros()->postDeal()->activeAdaptivitySolutionType(),
                                                                currentPythonEngineAgros()->postDeal()->activeTimeStep());
 
     if (adaptivityStep < 1 || adaptivityStep > last_step + 1)
@@ -145,25 +143,6 @@ void PyViewMeshAndPost::setActiveAdaptivityStep(int adaptivityStep)
     if (!silentMode())
     {
         currentPythonEngineAgros()->postDeal()->setActiveAdaptivityStep(adaptivityStep - 1);
-        currentPythonEngineAgros()->postDeal()->refresh();
-    }
-}
-
-void PyViewMeshAndPost::setActiveSolutionType(const std::string &solutionType)
-{
-    if (!Agros2D::problem()->isSolved())
-        throw logic_error(QObject::tr("Problem is not solved.").toStdString());
-
-    if (!solutionTypeStringKeys().contains(QString::fromStdString(solutionType)))
-        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(solutionTypeStringKeys())).toStdString());
-
-    if (currentPythonEngineAgros()->postDeal()->activeViewField()->adaptivityType() == AdaptivityMethod_None)
-        throw logic_error(QObject::tr("Field '%1' was not solved with space adaptivity.").
-                          arg(currentPythonEngineAgros()->postDeal()->activeViewField()->fieldId()).toStdString());
-
-    if (!silentMode())
-    {
-        currentPythonEngineAgros()->postDeal()->setActiveAdaptivitySolutionType(solutionTypeFromStringKey(QString::fromStdString(solutionType)));
         currentPythonEngineAgros()->postDeal()->refresh();
     }
 }
@@ -268,22 +247,18 @@ void PyViewPost::setField(const std::string &fieldId)
         return;
 
     FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(QString::fromStdString(fieldId));
-    SolutionMode solutionType = currentPythonEngineAgros()->postDeal()->activeAdaptivitySolutionType();
     int timeStep = currentPythonEngineAgros()->postDeal()->activeTimeStep();
 
-    if (fieldInfo->adaptivityType() == AdaptivityMethod_None)
-        solutionType = SolutionMode_Normal;
 
     if (!Agros2D::solutionStore()->timeLevels(fieldInfo).contains(Agros2D::problem()->timeStepToTotalTime(timeStep)))
-        timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo, solutionType);
+        timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo);
 
     // set last adaptivity step (keeping of previous step can be misleading)
-    int adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, solutionType, timeStep);
+    int adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, timeStep);
 
     currentPythonEngineAgros()->postDeal()->setActiveViewField(fieldInfo);
     currentPythonEngineAgros()->postDeal()->setActiveTimeStep(timeStep);
     currentPythonEngineAgros()->postDeal()->setActiveAdaptivityStep(adaptivityStep);
-    currentPythonEngineAgros()->postDeal()->setActiveAdaptivitySolutionType(solutionType);
     currentPythonEngineAgros()->postDeal()->refresh();
 }
 

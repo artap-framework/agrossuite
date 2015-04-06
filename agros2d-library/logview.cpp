@@ -543,7 +543,7 @@ void LogDialog::updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeSt
 
     for (int i = 0; i < adaptivityStep; i++)
     {
-        SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(fieldInfo, timeStep, i, SolutionMode_Normal));
+        SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(fieldInfo, timeStep, i));
 
         adaptiveSteps.append(i + 1);
         adaptiveDOFs.append(runTime.DOFs());

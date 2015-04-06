@@ -50,11 +50,10 @@ ParticleTracing::ParticleTracing(QObject *parent)
         if(!fieldInfo->plugin()->hasForce(fieldInfo))
             continue;
 
-        int timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo, SolutionMode_Normal);
-        int adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, SolutionMode_Normal, timeStep);
-        SolutionMode solutionMode = SolutionMode_Finer;
+        int timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo);
+        int adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, timeStep);
 
-        m_solutionIDs[fieldInfo] = FieldSolutionID(fieldInfo, timeStep, adaptivityStep, solutionMode);
+        m_solutionIDs[fieldInfo] = FieldSolutionID(fieldInfo, timeStep, adaptivityStep);
     }
 }
 
@@ -110,7 +109,9 @@ Point3 ParticleTracing::force(int particleIndex,
 
         try
         {
-            fieldForce = fieldInfo->plugin()->force(fieldInfo, m_solutionIDs[fieldInfo].timeStep, m_solutionIDs[fieldInfo].adaptivityStep, m_solutionIDs[fieldInfo].solutionMode,
+            fieldForce = fieldInfo->plugin()->force(fieldInfo,
+                                                    m_solutionIDs[fieldInfo].timeStep,
+                                                    m_solutionIDs[fieldInfo].adaptivityStep,
                                                     material, position, velocity)
                     * m_particleChargesList[particleIndex];
         }

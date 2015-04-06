@@ -48,7 +48,7 @@ bool hasForce{{CLASS}}(const FieldInfo *fieldInfo)
     return false;
 }
 
-Point3 force{{CLASS}}(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
+Point3 force{{CLASS}}(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
                       SceneMaterial *material, const Point3 &point, const Point3 &velocity)
 {
     Point3 res;
@@ -57,7 +57,7 @@ Point3 force{{CLASS}}(const FieldInfo *fieldInfo, int timeStep, int adaptivitySt
     {
         int numberOfSolutions = fieldInfo->numberOfSolutions();
 
-        FieldSolutionID fsid(fieldInfo, timeStep, adaptivityStep, solutionType);
+        FieldSolutionID fsid(fieldInfo, timeStep, adaptivityStep);
         MultiArray ma = Agros2D::solutionStore()->multiArray(fsid);
 
         {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));

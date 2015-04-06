@@ -37,9 +37,9 @@
 #include <deal.II/numerics/fe_field_function.h>
 
 
-{{CLASS}}LocalValue::{{CLASS}}LocalValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
+{{CLASS}}LocalValue::{{CLASS}}LocalValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
                                          const Point &point)
-    : LocalValue(fieldInfo, timeStep, adaptivityStep, solutionType, point)
+    : LocalValue(fieldInfo, timeStep, adaptivityStep, point)
 {
     calculate();
 }
@@ -52,7 +52,7 @@ void {{CLASS}}LocalValue::calculate()
 
     if (Agros2D::problem()->isSolved())
     {
-        FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep, m_solutionType);
+        FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep);
         // check existence
         if (!Agros2D::solutionStore()->contains(fsid))
             return;

@@ -114,9 +114,6 @@ public:
     inline int activeAdaptivityStep() const { return m_activeAdaptivityStep; }
     void setActiveAdaptivityStep(int as);
 
-    inline SolutionMode activeAdaptivitySolutionType() const { return m_activeSolutionMode; }
-    void setActiveAdaptivitySolutionType(SolutionMode st) { m_activeSolutionMode = st; }
-
     MultiArray activeMultiSolutionArray();
 
     inline bool isProcessed() const { return m_isProcessed; }
@@ -144,7 +141,6 @@ private:
     FieldInfo *m_activeViewField;
     int m_activeTimeStep;
     int m_activeAdaptivityStep;
-    SolutionMode m_activeSolutionMode;
 
     // stored shared pointers for keeping the instance around
     std::shared_ptr<dealii::DataPostprocessorScalar<2> > m_post;

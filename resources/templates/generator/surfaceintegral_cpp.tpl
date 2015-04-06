@@ -129,8 +129,8 @@ private:
 };
 */
 
-{{CLASS}}SurfaceIntegral::{{CLASS}}SurfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType)
-    : IntegralValue(fieldInfo, timeStep, adaptivityStep, solutionType)
+{{CLASS}}SurfaceIntegral::{{CLASS}}SurfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
+    : IntegralValue(fieldInfo, timeStep, adaptivityStep)
 {
     calculate();
 }
@@ -141,7 +141,7 @@ void {{CLASS}}SurfaceIntegral::calculate()
 
     if (Agros2D::problem()->isSolved())
     {
-        FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep, m_solutionType);
+        FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep);
         // check existence
         if (!Agros2D::solutionStore()->contains(fsid))
             return;

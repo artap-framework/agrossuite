@@ -126,8 +126,7 @@ void ResultsView::showPoint()
     {
         std::shared_ptr<LocalValue> value = fieldInfo->plugin()->localValue(fieldInfo,
                                                                             m_postDeal->activeTimeStep(),
-                                                                            m_postDeal->activeAdaptivityStep(),
-                                                                            m_postDeal->activeAdaptivitySolutionType(),
+                                                                            m_postDeal->activeAdaptivityStep(),                                                                            
                                                                             m_point);
         QMap<QString, LocalPointValue> values = value->values();
 
@@ -194,8 +193,7 @@ void ResultsView::showVolumeIntegral()
     {
         std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->volumeIntegral(fieldInfo,
                                                                                       m_postDeal->activeTimeStep(),
-                                                                                      m_postDeal->activeAdaptivityStep(),
-                                                                                      m_postDeal->activeAdaptivitySolutionType());
+                                                                                      m_postDeal->activeAdaptivityStep());
         QMap<QString, double> values = integral->values();
         if (values.size() > 0)
         {
@@ -237,8 +235,7 @@ void ResultsView::showSurfaceIntegral()
     {
         std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->surfaceIntegral(fieldInfo,
                                                                                        m_postDeal->activeTimeStep(),
-                                                                                       m_postDeal->activeAdaptivityStep(),
-                                                                                       m_postDeal->activeAdaptivitySolutionType());
+                                                                                       m_postDeal->activeAdaptivityStep());
         QMap<QString, double> values = integral->values();
         {
             ctemplate::TemplateDictionary *field = surfaceIntegrals.AddSectionDictionary("FIELD");

@@ -66,11 +66,10 @@ public:
     const FieldInfo* fieldInfo;
     int timeStep;
     int adaptivityStep;
-    SolutionMode solutionMode;
 
-    FieldSolutionID() : fieldInfo(NULL), timeStep(0), adaptivityStep(0), solutionMode(SolutionMode_Normal) {}
-    FieldSolutionID(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionMode) :
-        fieldInfo(fieldInfo), timeStep(timeStep), adaptivityStep(adaptivityStep), solutionMode(solutionMode) {}
+    FieldSolutionID() : fieldInfo(NULL), timeStep(0), adaptivityStep(0) {}
+    FieldSolutionID(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) :
+        fieldInfo(fieldInfo), timeStep(timeStep), adaptivityStep(adaptivityStep) {}
 
     QString toString();
 };
@@ -83,10 +82,7 @@ inline bool operator<(const FieldSolutionID &sid1, const FieldSolutionID &sid2)
     if (sid1.timeStep != sid2.timeStep)
         return sid1.timeStep < sid2.timeStep;
 
-    if (sid1.adaptivityStep != sid2.adaptivityStep)
-        return sid1.adaptivityStep < sid2.adaptivityStep;
-
-    return sid1.solutionMode < sid2.solutionMode;
+    return sid1.adaptivityStep < sid2.adaptivityStep;
 }
 
 inline bool operator==(const FieldSolutionID &sid1, const FieldSolutionID &sid2)
@@ -102,7 +98,7 @@ inline bool operator!=(const FieldSolutionID &sid1, const FieldSolutionID &sid2)
 inline ostream& operator<<(ostream& output, const FieldSolutionID& id)
 {
     output << "(" << id.fieldInfo->fieldId().toStdString() << ", timeStep " << id.timeStep << ", adaptStep " <<
-              id.adaptivityStep << ", type "<< id.solutionMode << ")";
+              id.adaptivityStep << ")";
     return output;
 }
 

@@ -80,13 +80,6 @@ void SolutionStore::clearAll()
 
 MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
 {
-    if(solutionID.solutionMode == SolutionMode_Finer)
-    {
-        solutionID.solutionMode = SolutionMode_Reference;
-        if(!m_multiSolutions.contains(solutionID))
-            solutionID.solutionMode = SolutionMode_Normal;
-    }
-
     assert(m_multiSolutions.contains(solutionID));
 
     if (!m_multiSolutionDealCache.contains(solutionID))
@@ -234,67 +227,21 @@ void SolutionStore::removeTimeStep(int timeStep)
 
 }
 
-int SolutionStore::lastTimeStep(const FieldInfo *fieldInfo, SolutionMode solutionType) const
+int SolutionStore::lastTimeStep(const FieldInfo *fieldInfo) const
 {
     int timeStep = NOT_FOUND_SO_FAR;
     foreach (FieldSolutionID sid, m_multiSolutions)
     {
-        if((sid.fieldInfo == fieldInfo) && (sid.solutionMode == solutionType) && (sid.timeStep > timeStep))
+        if((sid.fieldInfo == fieldInfo) && (sid.timeStep > timeStep))
             timeStep = sid.timeStep;
     }
 
     return timeStep;
 }
 
-/*
-MultiArray<double> SolutionStore::multiSolutionPreviousCalculatedTS(BlockSolutionID solutionID)
-{
-    MultiArray<double> ma;
-    foreach(FieldBlock *field, solutionID.group->fields())
-    {
-        FieldSolutionID fieldSolutionID = solutionID.fieldSolutionID(field->fieldInfo());
-        fieldSolutionID.timeStep = nearestTimeStep(field->fieldInfo(), solutionID.timeStep - 1);
-
-        MultiArray<double> maGroup = multiArray(fieldSolutionID);
-        ma.append(maGroup.spaces(), maGroup.solutions());
-    }
-
-    return ma;
-}
-*/
-
-int SolutionStore::nthCalculatedTimeStep(const FieldInfo *fieldInfo, int n) const
-{
-    int count = 0;
-    for(int step = 0; step <= lastTimeStep(fieldInfo, SolutionMode_Normal); step++)
-    {
-        if(this->contains(FieldSolutionID(fieldInfo, step, 0, SolutionMode_Normal)))
-            count++;
-
-        // n is counted from zero
-        if(count == n + 1)
-            return step;
-    }
-
-    assert(0);
-}
-
-
-int SolutionStore::nearestTimeStep(const FieldInfo *fieldInfo, int timeStep) const
-{
-    int ts = timeStep;
-    while (!this->contains(FieldSolutionID(fieldInfo, ts, 0, SolutionMode_Normal)))
-    {
-        ts--;
-        if (ts <= 0)
-            return 0;
-    }
-    return ts;
-}
-
 double SolutionStore::lastTime(const FieldInfo *fieldInfo)
 {
-    int timeStep = lastTimeStep(fieldInfo, SolutionMode_Normal);
+    int timeStep = lastTimeStep(fieldInfo);
     double time = NOT_FOUND_SO_FAR;
 
     foreach (FieldSolutionID id, m_multiSolutions)
@@ -311,44 +258,27 @@ double SolutionStore::lastTime(const FieldInfo *fieldInfo)
     return time;
 }
 
-int SolutionStore::lastAdaptiveStep(const FieldInfo *fieldInfo, SolutionMode solutionType, int timeStep) const
+int SolutionStore::lastAdaptiveStep(const FieldInfo *fieldInfo, int timeStep) const
 {
     if (timeStep == -1)
-        timeStep = lastTimeStep(fieldInfo, solutionType);
+        timeStep = lastTimeStep(fieldInfo);
 
     int adaptiveStep = NOT_FOUND_SO_FAR;
     foreach (FieldSolutionID sid, m_multiSolutions)
     {
-        if ((sid.fieldInfo == fieldInfo) && (sid.solutionMode == solutionType) && (sid.timeStep == timeStep) && (sid.adaptivityStep > adaptiveStep))
+        if ((sid.fieldInfo == fieldInfo) && (sid.timeStep == timeStep) && (sid.adaptivityStep > adaptiveStep))
             adaptiveStep = sid.adaptivityStep;
     }
 
     return adaptiveStep;
 }
 
-FieldSolutionID SolutionStore::lastTimeAndAdaptiveSolution(const FieldInfo *fieldInfo, SolutionMode solutionType)
+FieldSolutionID SolutionStore::lastTimeAndAdaptiveSolution(const FieldInfo *fieldInfo)
 {
     FieldSolutionID solutionID;
-    if (solutionType == SolutionMode_Finer) {
-        FieldSolutionID solutionIDNormal = lastTimeAndAdaptiveSolution(fieldInfo, SolutionMode_Normal);
-        FieldSolutionID solutionIDReference = lastTimeAndAdaptiveSolution(fieldInfo, SolutionMode_Reference);
-        if((solutionIDNormal.timeStep > solutionIDReference.timeStep) ||
-                (solutionIDNormal.adaptivityStep > solutionIDReference.adaptivityStep))
-        {
-            solutionID = solutionIDNormal;
-        }
-        else
-        {
-            solutionID = solutionIDReference;
-        }
-    }
-    else
-    {
-        solutionID.fieldInfo = fieldInfo;
-        solutionID.adaptivityStep = lastAdaptiveStep(fieldInfo, solutionType);
-        solutionID.timeStep = lastTimeStep(fieldInfo, solutionType);
-        solutionID.solutionMode = solutionType;
-    }
+    solutionID.fieldInfo = fieldInfo;
+    solutionID.adaptivityStep = lastAdaptiveStep(fieldInfo);
+    solutionID.timeStep = lastTimeStep(fieldInfo);
 
     return solutionID;
 }
@@ -386,7 +316,7 @@ int SolutionStore::timeLevelIndex(const FieldInfo *fieldInfo, double time)
     return level;
 }
 
-double SolutionStore::timeLevel(const FieldInfo *fieldInfo, int timeLevelIndex)
+double SolutionStore::timeAtLevel(const FieldInfo *fieldInfo, int timeLevelIndex)
 {
     QList<double> levels = timeLevels(fieldInfo);
     if (timeLevelIndex >= 0 && timeLevelIndex < levels.count())
@@ -456,8 +386,7 @@ void SolutionStore::loadRunTimeDetails()
 
             FieldSolutionID solutionID(Agros2D::problem()->fieldInfo(QString::fromStdString(data.field_id())),
                                        data.time_step(),
-                                       data.adaptivity_step(),
-                                       solutionTypeFromStringKey(QString::fromStdString(data.solution_type())));
+                                       data.adaptivity_step());
             // append multisolution
             m_multiSolutions.append(solutionID);
 
@@ -536,8 +465,7 @@ void SolutionStore::saveRunTimeDetails()
                                             newton_damping_coefficients,
                                             solutionID.fieldInfo->fieldId().toStdString(),
                                             solutionID.timeStep,
-                                            solutionID.adaptivityStep,
-                                            solutionTypeToStringKey(solutionID.solutionMode).toStdString());
+                                            solutionID.adaptivityStep);
 
             // properties
             data.time_step_length().set(str.timeStepLength());

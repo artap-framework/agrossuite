@@ -182,8 +182,8 @@ private:
 };
 */
 
-{{CLASS}}VolumeIntegral::{{CLASS}}VolumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType)
-    : IntegralValue(fieldInfo, timeStep, adaptivityStep, solutionType)
+{{CLASS}}VolumeIntegral::{{CLASS}}VolumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
+    : IntegralValue(fieldInfo, timeStep, adaptivityStep)
 {
     calculate();
 }
@@ -194,7 +194,7 @@ void {{CLASS}}VolumeIntegral::calculate()
 
     if (Agros2D::problem()->isSolved())
     {
-        FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep, m_solutionType);
+        FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep);
         // check existence
         if (!Agros2D::solutionStore()->contains(fsid))
             return;

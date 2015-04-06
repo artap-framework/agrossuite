@@ -48,7 +48,7 @@ virtual SolverDeal *solverDeal(const FieldInfo *fieldInfo);
 
 // postprocessor
 // filter
-virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
+virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
                                                                     MultiArray *ma,
                                                                     const QString &variable,
                                                                     PhysicFieldVariableComp physicFieldVariableComp);
@@ -58,14 +58,14 @@ virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(const FieldI
 //                                                                   const QString &calculator, CalculatedErrorType errorType);
 
 // local values
-virtual std::shared_ptr<LocalValue> localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType, const Point &point);
+virtual std::shared_ptr<LocalValue> localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, const Point &point);
 // surface integrals
-virtual std::shared_ptr<IntegralValue> surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType);
+virtual std::shared_ptr<IntegralValue> surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep);
 // volume integrals
-virtual std::shared_ptr<IntegralValue> volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType);
+virtual std::shared_ptr<IntegralValue> volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep);
 
 // force calculation
-virtual Point3 force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, SolutionMode solutionType,
+virtual Point3 force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
                      SceneMaterial *material, const Point3 &point, const Point3 &velocity);
 virtual bool hasForce(const FieldInfo *fieldInfo);
 

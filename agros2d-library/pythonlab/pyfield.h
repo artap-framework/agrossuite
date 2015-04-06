@@ -143,23 +143,23 @@ class PyField
 
         // local values, integrals
         void localValues(double x, double y, int timeStep, int adaptivityStep,
-                         const std::string &solutionType, map<std::string, double> &results) const;
+                         map<std::string, double> &results) const;
         void surfaceIntegrals(const vector<int> &edges, int timeStep, int adaptivityStep,
-                              const std::string &solutionType, map<std::string, double> &results) const;
+                              map<std::string, double> &results) const;
         void volumeIntegrals(const vector<int> &labels, int timeStep, int adaptivityStep,
-                             const std::string &solutionType, map<std::string, double> &results) const;
+                             map<std::string, double> &results) const;
 
         // mesh info
         void initialMeshInfo(map<std::string, int> &info) const;
-        void solutionMeshInfo(int timeStep, int adaptivityStep, const std::string &solutionType, map<std::string, int> &info) const;
+        void solutionMeshInfo(int timeStep, int adaptivityStep, map<std::string, int> &info) const;
 
         // solver info
-        void solverInfo(int timeStep, int adaptivityStep, const std::string &solutionType,
+        void solverInfo(int timeStep, int adaptivityStep,
                         vector<double> &solutionsChange, vector<double> &residual,
                         vector<double> &dampingCoeff, int &jacobianCalculations) const;
 
         // adaptivity info
-        void adaptivityInfo(int timeStep, const std::string &solutionType, vector<double> &error, vector<int> &dofs) const;
+        void adaptivityInfo(int timeStep, vector<double> &error, vector<int> &dofs) const;
 
         // matrix and RHS
         std::string filenameMatrix(int timeStep, int adaptivityStep) const;
@@ -168,9 +168,8 @@ class PyField
 private:
     FieldInfo *m_fieldInfo;
 
-    SolutionMode getSolutionMode(const QString &solutionType) const;
-    int getTimeStep(int timeStep, SolutionMode solutionMode) const;
-    int getAdaptivityStep(int adaptivityStep, int timeStep, SolutionMode solutionMode) const;
+    int getTimeStep(int timeStep) const;
+    int getAdaptivityStep(int adaptivityStep, int timeStep) const;
 };
 
 #endif // PYTHONLABFIELD_H

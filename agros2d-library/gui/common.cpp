@@ -189,7 +189,7 @@ void fillComboBoxAdaptivityStep(FieldInfo* fieldInfo, int timeStep, QComboBox *c
 
     cmbAdaptivityStep->blockSignals(true);
 
-    int lastAdaptiveStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, SolutionMode_Normal, timeStep);
+    int lastAdaptiveStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, timeStep);
 
     // store variable
     int adaptivityStep = cmbAdaptivityStep->currentIndex();
@@ -206,32 +206,6 @@ void fillComboBoxAdaptivityStep(FieldInfo* fieldInfo, int timeStep, QComboBox *c
 
     cmbAdaptivityStep->setCurrentIndex(adaptivityStep);
     cmbAdaptivityStep->blockSignals(false);
-}
-
-void fillComboBoxSolutionType(FieldInfo* fieldInfo, int timeStep, int adaptivityStep, QComboBox *cmbSolutionType)
-{
-    if (!Agros2D::problem()->isSolved())
-        return;
-
-    cmbSolutionType->blockSignals(true);
-
-    // store variable
-    SolutionMode solutionType = (SolutionMode) cmbSolutionType->itemData(cmbSolutionType->currentIndex()).toInt();
-
-    // clear combo
-    cmbSolutionType->clear();
-
-    if (Agros2D::solutionStore()->contains(FieldSolutionID(fieldInfo, timeStep, adaptivityStep, SolutionMode_Normal)))
-    {
-        cmbSolutionType->addItem(solutionTypeString(SolutionMode_Normal), SolutionMode_Normal);
-    }
-    if (Agros2D::solutionStore()->contains(FieldSolutionID(fieldInfo, timeStep, adaptivityStep, SolutionMode_Reference)))
-    {
-        cmbSolutionType->addItem(solutionTypeString(SolutionMode_Reference), SolutionMode_Reference);
-    }
-
-    cmbSolutionType->setCurrentIndex(solutionType);
-    cmbSolutionType->blockSignals(false);
 }
 
 void fillComboBoxFonts(QComboBox *cmbFonts)

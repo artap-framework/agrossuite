@@ -35,7 +35,6 @@ static QMap<AdaptivityMethod, QString> adaptivityTypeList;
 static QMap<AdaptivityEstimator, QString> adaptivityEstimatorList;
 static QMap<NormType, QString> adaptivityNormTypeList;
 static QMap<TimeStepMethod, QString> timeStepMethodList;
-static QMap<SolutionMode, QString> solutionTypeList;
 static QMap<AnalysisType, QString> analysisTypeList;
 static QMap<CouplingType, QString> couplingTypeList;
 static QMap<LinearityType, QString> linearityTypeList;
@@ -97,10 +96,6 @@ NormType adaptivityNormTypeFromStringKey(const QString &adaptivityNormType) { re
 QStringList timeStepMethodStringKeys() { return timeStepMethodList.values(); }
 QString timeStepMethodToStringKey(TimeStepMethod timeStepMethod) { return timeStepMethodList[timeStepMethod]; }
 TimeStepMethod timeStepMethodFromStringKey(const QString &timeStepMethod) { return timeStepMethodList.key(timeStepMethod); }
-
-QStringList solutionTypeStringKeys() { return solutionTypeList.values(); }
-QString solutionTypeToStringKey(SolutionMode solutionType) { return solutionTypeList[solutionType]; }
-SolutionMode solutionTypeFromStringKey(const QString &solutionType) { return solutionTypeList.key(solutionType); }
 
 QStringList linearityTypeStringKeys() { return linearityTypeList.values(); }
 QString linearityTypeToStringKey(LinearityType linearityType) { return linearityTypeList[linearityType]; }
@@ -231,11 +226,6 @@ void initLists()
     adaptivityNormTypeList.insert(NormType_H1_NORM, "h1_norm");
     adaptivityNormTypeList.insert(NormType_L2_NORM, "l2_norm");
     adaptivityNormTypeList.insert(NormType_H1_SEMINORM, "h1_seminorm");
-
-    // SolutionType
-    solutionTypeList.insert(SolutionMode_Normal, "normal");
-    solutionTypeList.insert(SolutionMode_Reference, "reference");
-    //solutionTypeList.insert(SolutionMode_Finer, "finer");
 
     // MatrixSolverType
     // matrixSolverTypeList.insert(SOLVER_EMPTY, "empty");
@@ -436,22 +426,6 @@ QString physicFieldVariableCompString(PhysicFieldVariableComp physicFieldVariabl
 QString coordinateTypeString(CoordinateType coordinateType)
 {
     return ((coordinateType == CoordinateType_Planar) ? QObject::tr("Planar") : QObject::tr("Axisymmetric"));
-}
-
-QString solutionTypeString(SolutionMode solutionMode)
-{
-    switch (solutionMode)
-    {
-    case SolutionMode_Normal:
-        return QObject::tr("Normal");
-    case SolutionMode_Reference:
-        return QObject::tr("Reference");
-    case SolutionMode_Finer:
-        return QObject::tr("Finer"); // used to choose reference if exists, normal otherwise
-    default:
-        std::cerr << "Solution mode '" + QString::number(solutionMode).toStdString() + "' is not implemented. solutionTypeString(SolutionMode solutionMode)" << endl;
-        throw;
-    }
 }
 
 QString adaptivityTypeString(AdaptivityMethod adaptivityType)
