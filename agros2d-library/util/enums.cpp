@@ -169,7 +169,7 @@ void initLists()
     analysisTypeList.insert(AnalysisType_Harmonic, "harmonic");
 
     // coupling type
-    couplingTypeList.insert(CouplingType_Hard, "hard");
+    // couplingTypeList.insert(CouplingType_Hard, "hard");
     couplingTypeList.insert(CouplingType_Weak, "weak");
     couplingTypeList.insert(CouplingType_None, "none");
 
@@ -396,8 +396,8 @@ QString couplingTypeString(CouplingType couplingType)
     {
     case CouplingType_None:
         return QObject::tr("Not used");
-    case CouplingType_Hard:
-        return QObject::tr("Hard");
+    // case CouplingType_Hard:
+    //     return QObject::tr("Hard");
     case CouplingType_Weak:
         return QObject::tr("Weak");
     default:

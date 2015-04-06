@@ -57,9 +57,6 @@ CouplingList::CouplingList()
     {
         try
         {
-            // todo: this was copied from module. Find a way to do all catching at one place
-
-            // todo: find a way to validate if required. If validated here, sensible error messages will be obtained
             bool validateAtTheBeginning = false;
             ::xml_schema::flags parsing_flags = xml_schema::flags::dont_validate;
             if(validateAtTheBeginning)
@@ -81,6 +78,8 @@ CouplingList::CouplingList()
 
                 CouplingList::Item item;
 
+                item.name = QString::fromStdString(coup->general_coupling().name());
+                item.description = QString::fromStdString(coup->general_coupling().description());
                 item.sourceField = QString::fromStdString(coup->general_coupling().modules().source().id());
                 item.sourceAnalysisType = analysisTypeFromStringKey(QString::fromStdString(wf.sourceanalysis().get()));
                 item.targetField = QString::fromStdString(coup->general_coupling().modules().target().id());
@@ -153,7 +152,32 @@ QList<QString> CouplingList::availableCouplings()
 
     return couplings;
 }
-bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField, CouplingType couplingType)
+
+QString CouplingList::name(FieldInfo *sourceField, FieldInfo *targetField) const
+{
+    foreach (Item item, m_couplings)
+    {
+        if (item.sourceField == sourceField->fieldId() && item.targetField == targetField->fieldId())
+            return item.name;
+    }
+
+    assert(0);
+    return "";
+}
+
+QString CouplingList::description(FieldInfo *sourceField, FieldInfo *targetField) const
+{
+    foreach (Item item, m_couplings)
+    {
+        if (item.sourceField == sourceField->fieldId() && item.targetField == targetField->fieldId())
+            return item.description;
+    }
+
+    assert(0);
+    return "";
+}
+
+bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField, CouplingType couplingType) const
 {
     foreach (Item item, m_couplings)
     {
@@ -166,7 +190,7 @@ bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *target
     return false;
 }
 
-bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField)
+bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField) const
 {
     foreach (Item item, m_couplings)
     {
@@ -178,23 +202,25 @@ bool CouplingList::isCouplingAvailable(FieldInfo *sourceField, FieldInfo *target
     return false;
 }
 
-bool CouplingList::isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis, QString targetField, AnalysisType targetAnalysis, CouplingType couplingType)
+bool CouplingList::isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis, QString targetField, AnalysisType targetAnalysis, CouplingType couplingType) const
 {
     foreach (Item item, m_couplings)
     {
         if (item.sourceAnalysisType == sourceAnalysis && item.targetAnalysisType == targetAnalysis
-                && item.sourceField == sourceField && item.targetField == targetField && item.couplingType == couplingType)
+                && item.sourceField == sourceField && item.targetField == targetField
+                && item.couplingType == couplingType)
             return true;
     }
 
     return false;
 }
 
-bool CouplingList::isCouplingAvailable(QString sourceField, QString targetField, CouplingType couplingType)
+bool CouplingList::isCouplingAvailable(QString sourceField, QString targetField, CouplingType couplingType) const
 {
     foreach (Item item, m_couplings)
     {
-        if (item.sourceField == sourceField && item.targetField == targetField && item.couplingType == couplingType)
+        if (item.sourceField == sourceField && item.targetField == targetField
+                && item.couplingType == couplingType)
             return true;
     }
 
@@ -204,85 +230,45 @@ bool CouplingList::isCouplingAvailable(QString sourceField, QString targetField,
 CouplingInfo::CouplingInfo(FieldInfo *sourceField,
                            FieldInfo *targetField,
                            CouplingType couplingType) :
-    m_plugin(NULL),
-    m_sourceField(sourceField), m_targetField(targetField),
+    m_sourceField(sourceField),
+    m_targetField(targetField),
     m_couplingType(couplingType)
-{
-    reload();
+{    
+
 }
 
 CouplingInfo::~CouplingInfo()
 {
-    if(m_plugin)
-        delete m_plugin;
 }
 
 void CouplingInfo::setCouplingType(CouplingType couplingType)
 {
     m_couplingType = couplingType;
-    reload();
 }
 
 CouplingType CouplingInfo::couplingType() const
 {
-//    if(m_couplingType == CouplingType_Hard)
-//    {
-//        Agros2D::log()->printDebug(QObject::tr("Solver"), QObject::tr("Hard coupling is not available yet, switching to weak coupling"));
-//        return CouplingType_Weak;
-//    }
     return m_couplingType;
 }
 
-void CouplingInfo::reload()
+QString CouplingInfo::couplingId() const
 {
-    // coupling id
-    m_couplingId = m_sourceField->fieldId() + "-" + m_targetField->fieldId();
+    assert(m_sourceField);
+    assert(m_targetField);
 
-    // read plugin
-    if (m_plugin)
-        delete m_plugin;
-
-
-    qDebug() << "coupling module is not loaded now... ";
-//    try{
-//        m_plugin = Agros2D::loadPlugin(m_couplingId);
-//    }
-//    catch (AgrosPluginException &e)
-//    {
-//        Agros2D::log()->printError("Solver", "Cannot load plugin");
-//        throw;
-//    }
-
-//    assert(m_plugin);
+    return m_sourceField->fieldId() + "-" + m_targetField->fieldId();
 }
 
-// name
 QString CouplingInfo::name() const
 {
-    return "todo: name";
-    //return QString::fromStdString(m_plugin->coupling()->general_coupling().name());
+    return couplingList()->name(m_sourceField, m_targetField);
 }
 
-// description
 QString CouplingInfo::description() const
 {
-    return "todo: description";
-//    return QString::fromStdString(m_plugin->coupling()->general_coupling().description());
+    return couplingList()->description(m_sourceField, m_targetField);
 }
 
-// constants
-QMap<QString, double> CouplingInfo::constants()
-{
-    QMap<QString, double> constants;
-    // constants
-    foreach (XMLModule::constant cnst, m_plugin->coupling()->constants().constant())
-        constants[QString::fromStdString(cnst.id())] = cnst.value();
-
-    return constants;
-}
-
-
-// TODO: copied!
 template <typename SectionWithTemplates>
 QList<FormInfo> wfMatrixTemplates(SectionWithTemplates *section)
 {
@@ -343,10 +329,6 @@ QList<FormInfo> wfVectorTemplates(SectionWithTemplates *section)
     return weakForms;
 }
 
-
-
-// todo: copied!
-// todo: copied!
 XMLModule::linearity_option findLinearityOption(XMLModule::volume *volume, AnalysisType analysisTypeSource, AnalysisType analysisTypeTarget, CouplingType couplingType, LinearityType linearityType)
 {
     for (unsigned int i = 0; i < volume->weakforms_volume().weakform_volume().size(); i++)
@@ -368,15 +350,9 @@ XMLModule::linearity_option findLinearityOption(XMLModule::volume *volume, Analy
         }
     }
 
-    //qDebug() << "neexistuje" << analysisTypeString(analysisTypeSource) << ", " <<  analysisTypeString(analysisTypeTarget) << ", " << couplingTypeString(couplingType) << ", " << linearityTypeString(linearityType);
-    // todo: osetrit, napr pro silne sdruzeni current-heat neexistuje linearni forma
-    //assert(0);
     return XMLModule::linearity_option("");
-
 }
 
-// todo: copied!
-// todo: copied!
 template <typename SectionWithElements>
 QList<FormInfo> wfMatrixElementsCoupling(SectionWithElements *section, AnalysisType analysisTypeSource, AnalysisType analysisTypeTarget, CouplingType couplingType, LinearityType linearityType)
 {
@@ -394,8 +370,6 @@ QList<FormInfo> wfMatrixElementsCoupling(SectionWithElements *section, AnalysisT
     return weakForms;
 }
 
-// todo: copied!
-// todo: copied!
 template <typename SectionWithElements>
 QList<FormInfo> wfVectorElementsCoupling(SectionWithElements *section, AnalysisType analysisTypeSource, AnalysisType analysisTypeTarget, CouplingType couplingType, LinearityType linearityType)
 {
@@ -417,7 +391,6 @@ QList<FormInfo> wfVectorElementsCoupling(SectionWithElements *section, AnalysisT
     return weakForms;
 }
 
-
 // weak forms
 QList<FormInfo> CouplingInfo::wfMatrixVolumeSeparated(XMLModule::volume* volume, AnalysisType sourceAnalysis, AnalysisType targetAnalysis, CouplingType couplingType, LinearityType linearityType)
 {
@@ -434,13 +407,4 @@ QList<FormInfo> CouplingInfo::wfVectorVolumeSeparated(XMLModule::volume* volume,
     QList<FormInfo> elements = wfVectorElementsCoupling(volume, sourceAnalysis, targetAnalysis, couplingType, linearityType);
 
     return generateSeparated(elements, templatesVector, templatesMatrix);
-}
-
-LinearityType CouplingInfo::linearityType()
-{
-    // TODO: FIX - warning
-    if (couplingType() == CouplingType_Hard)
-        assert(sourceField()->linearityType() == targetField()->linearityType());
-
-    return targetField()->linearityType();
 }

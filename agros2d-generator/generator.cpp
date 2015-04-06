@@ -67,7 +67,7 @@ QString Agros2DGenerator::weakFormTypeStringEnum(WeakFormKind weakformType)
 QList<CouplingType> Agros2DGenerator::couplingFormTypeList()
 {
     QList<CouplingType> list;
-    list << CouplingType_Weak << CouplingType_Hard << CouplingType_None << CouplingType_Undefined;
+    list << CouplingType_Weak << CouplingType_None << CouplingType_Undefined;
     return list;
 }
 
@@ -109,13 +109,13 @@ QString Agros2DGenerator::couplingTypeToString(QString couplingType)
 
 CouplingType Agros2DGenerator::couplingTypeFromString(QString couplingType)
 {
-    if(couplingType == "hard")
-        return CouplingType_Hard;
-    if(couplingType == "weak")
+    // if (couplingType == "hard")
+    //     return CouplingType_Hard;
+    if (couplingType == "weak")
         return CouplingType_Weak;
-    if(couplingType == "none")
+    if (couplingType == "none")
         return CouplingType_None;
-    if(couplingType == "undefined")
+    if (couplingType == "undefined")
         return CouplingType_Undefined;
 }
 

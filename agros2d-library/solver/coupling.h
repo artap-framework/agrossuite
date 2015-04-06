@@ -34,6 +34,9 @@ class AGROS_LIBRARY_API CouplingList
 public:
     struct Item
     {
+        QString name;
+        QString description;
+
         QString sourceField;
         AnalysisType sourceAnalysisType;
         QString targetField;
@@ -49,10 +52,13 @@ public:
     CouplingList();
 
     QList<QString> availableCouplings();
-    bool isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField);
-    bool isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField, CouplingType couplingType);
-    bool isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis, QString targetField, AnalysisType targetAnalysis, CouplingType couplingType);
-    bool isCouplingAvailable(QString sourceField, QString targetField, CouplingType couplingType);
+
+    QString name(FieldInfo *sourceField, FieldInfo *targetField) const;
+    QString description(FieldInfo *sourceField, FieldInfo *targetField) const;
+    bool isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField) const;
+    bool isCouplingAvailable(FieldInfo *sourceField, FieldInfo *targetField, CouplingType couplingType) const;
+    bool isCouplingAvailable(QString sourceField, AnalysisType sourceAnalysis, QString targetField, AnalysisType targetAnalysis, CouplingType couplingType) const;
+    bool isCouplingAvailable(QString sourceField, QString targetField, CouplingType couplingType) const;
 
 private:
     QList<Item> m_couplings;
@@ -63,65 +69,39 @@ AGROS_LIBRARY_API CouplingList *couplingList();
 
 class AGROS_LIBRARY_API CouplingInfo : public QObject
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
     CouplingInfo(FieldInfo* sourceField, FieldInfo* targetField,
                  CouplingType couplingType = CouplingType_Weak);
     ~CouplingInfo();
 
-    inline PluginInterface *plugin() const { assert(m_plugin); return m_plugin; }
-
-    QString couplingId() { return m_couplingId; }
+    QString couplingId() const;
 
     CouplingType couplingType() const;
     void setCouplingType(CouplingType couplingType);
 
-    inline bool isHard() { return couplingType() == CouplingType_Hard;}
-    inline bool isWeak() { return couplingType() == CouplingType_Weak;}
-
-    inline FieldInfo* sourceField() {return m_sourceField; }
-    inline FieldInfo* targetField() {return m_targetField; }
-
-    bool isRelated(FieldInfo* fieldInfo) { return((fieldInfo == sourceField()) || (fieldInfo == targetField())); }
-
-    /// reloads the Coupling ("module"). Should be called when couplingType or AnalysisType of either fields changes
-    void reload();
-
-    LinearityType linearityType();
-
-    // xml coupling
+    inline FieldInfo *sourceField() {return m_sourceField; }
+    inline FieldInfo *targetField() {return m_targetField; }
 
     // name
     QString name() const;
     // description
     QString description() const;
 
-    // constants
-    QMap<QString, double> constants();
-
     // weak forms
     static QList<FormInfo> wfMatrixVolumeSeparated(XMLModule::volume* volume, AnalysisType sourceAnalysis, AnalysisType targetAnalysis, CouplingType couplingType, LinearityType linearityType);
     static QList<FormInfo> wfVectorVolumeSeparated(XMLModule::volume* volume, AnalysisType sourceAnalysis, AnalysisType targetAnalysis, CouplingType couplingType, LinearityType linearityType);
 
 private:
-    /// plugin
-    PluginInterface *m_plugin;
+    // pointers to problem infos
+    FieldInfo *m_sourceField;
+    FieldInfo *m_targetField;
 
-    /// unique field info
-    QString m_couplingId;
-
-    /// pointers to problem infos
-    FieldInfo* m_sourceField;
-    FieldInfo* m_targetField;
-
-    /// coupling type
+    // coupling type
     CouplingType m_couplingType;
 
 signals:
     void invalidated();
 };
-
-//}
-
 
 #endif // COUPLING_H
