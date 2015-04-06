@@ -27,7 +27,6 @@
 
 class FieldInfo;
 class ProblemConfig;
-class PluginInterface;
 
 class AGROS_LIBRARY_API CouplingList
 {

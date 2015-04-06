@@ -119,11 +119,11 @@ public:
     void removeField(FieldInfo *field);
 
     void synchronizeCouplings();
-    inline QMap<QPair<FieldInfo*, FieldInfo* >, CouplingInfo* > couplingInfos() const { return m_couplingInfos; }
-    inline CouplingInfo* couplingInfo(FieldInfo* sourceField, FieldInfo* targetField) { assert (m_couplingInfos.contains(QPair<FieldInfo*, FieldInfo* >(sourceField, targetField)));
+    inline QMap<QPair<FieldInfo *, FieldInfo *>, CouplingInfo* > couplingInfos() const { return m_couplingInfos; }
+    inline CouplingInfo *couplingInfo(FieldInfo *sourceField, FieldInfo *targetField) { assert (m_couplingInfos.contains(QPair<FieldInfo*, FieldInfo* >(sourceField, targetField)));
                                                                                         return m_couplingInfos[QPair<FieldInfo*, FieldInfo* >(sourceField, targetField)]; }
-    inline CouplingInfo* couplingInfo(const QString &sourceFieldId, const QString &targetFieldId) { return couplingInfo(fieldInfo(sourceFieldId), fieldInfo(targetFieldId)); }
-    inline bool hasCoupling(FieldInfo* sourceField, FieldInfo* targetField) { return (m_couplingInfos.contains(QPair<FieldInfo*, FieldInfo* >(sourceField, targetField))); }
+    inline CouplingInfo *couplingInfo(const QString &sourceFieldId, const QString &targetFieldId) { return couplingInfo(fieldInfo(sourceFieldId), fieldInfo(targetFieldId)); }
+    inline bool hasCoupling(FieldInfo *sourceField, FieldInfo *targetField) { return (m_couplingInfos.contains(QPair<FieldInfo*, FieldInfo* >(sourceField, targetField))); }
     inline bool hasCoupling(const QString &sourceFieldId, const QString &targetFieldId) { return hasCoupling(fieldInfo(sourceFieldId), fieldInfo(targetFieldId)); }
 
     inline QTime timeElapsed() const { return m_lastTimeElapsed; }
@@ -156,7 +156,7 @@ private:
     ProblemSolver *m_solverDeal;
 
     QMap<QString, FieldInfo *> m_fieldInfos;
-    QMap<QPair<FieldInfo*, FieldInfo* >, CouplingInfo* > m_couplingInfos;
+    QMap<QPair<FieldInfo *, FieldInfo *>, CouplingInfo *> m_couplingInfos;
 
     // initial mesh
     dealii::Triangulation<2> m_initialMesh;

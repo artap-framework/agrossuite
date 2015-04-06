@@ -728,7 +728,6 @@ void Problem::synchronizeCouplings()
                 if (!m_couplingInfos.keys().contains(fieldInfosPair))
                 {
                     m_couplingInfos[fieldInfosPair] = new CouplingInfo(sourceField, targetField);
-
                     changed = true;
                 }
             }
@@ -736,13 +735,14 @@ void Problem::synchronizeCouplings()
     }
 
     // remove extra
-    foreach (CouplingInfo* couplingInfo, m_couplingInfos)
+    foreach (CouplingInfo *couplingInfo, m_couplingInfos)
     {
         if (!(m_fieldInfos.contains(couplingInfo->sourceField()->fieldId()) &&
               m_fieldInfos.contains(couplingInfo->targetField()->fieldId()) &&
               couplingList()->isCouplingAvailable(couplingInfo->sourceField(), couplingInfo->targetField())))
         {
-            m_couplingInfos.remove(QPair<FieldInfo*, FieldInfo*>(couplingInfo->sourceField(), couplingInfo->targetField()));
+            QPair<FieldInfo *, FieldInfo *> key = QPair<FieldInfo *, FieldInfo *>(couplingInfo->sourceField(), couplingInfo->targetField());
+            m_couplingInfos.remove(key);
 
             changed = true;
         }

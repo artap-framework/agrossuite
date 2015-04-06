@@ -1531,45 +1531,42 @@ QMap<QString, const SolverDeal *> ProblemSolver::solvers()
 
 void ProblemSolver::solveProblem()
 {
-    // todo: this is temporary!!!
-    QList<FieldInfo *> fieldInfosSorted;
+    QList<FieldInfo *> fieldInfosSorted = Agros2D::problem()->fieldInfos().values();
 
-    QList<QString> fieldInfoOrder;
-    fieldInfoOrder.push_back("electrostatic");
-    fieldInfoOrder.push_back("magnetic");
-    fieldInfoOrder.push_back("current");
-    fieldInfoOrder.push_back("heat");
-    fieldInfoOrder.push_back("elasticity");
-    fieldInfoOrder.push_back("rf_te");
-    fieldInfoOrder.push_back("rf_tm");
-    fieldInfoOrder.push_back("flow");
-    fieldInfoOrder.push_back("acoustic");
-
-    foreach(QString fieldName, fieldInfoOrder)
+    // sort fields (very small arrays -> sufficiently fast)
+    bool swapped = false;
+    do
     {
-        foreach(FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
+        swapped = false;
+        foreach (CouplingInfo *couplingInfo, Agros2D::problem()->couplingInfos().values())
         {
-            if(fieldInfo->fieldId() == fieldName)
+            if (couplingInfo->couplingType() == CouplingType_Weak)
             {
-                fieldInfosSorted.push_back(fieldInfo);
+                int sourceIndex = fieldInfosSorted.indexOf(couplingInfo->sourceField());
+                int targetIndex = fieldInfosSorted.indexOf(couplingInfo->targetField());
+
+                if (targetIndex < sourceIndex)
+                {
+                    fieldInfosSorted.move(sourceIndex, 0);
+                    swapped = true;
+                }
             }
         }
     }
+    while (swapped);
 
-    foreach (FieldInfo* fieldInfo, fieldInfosSorted)
+    foreach (FieldInfo* targetfieldInfo, fieldInfosSorted)
     {
         // frequency
-        // todo: find some better place, where some values are initialized
-        fieldInfo->setFrequency(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toDouble());
+        // TODO: find some better place, where some values are initialized
+        targetfieldInfo->setFrequency(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toDouble());
 
-        // qDebug() << "solving " << fieldInfo->name();
-        SolverDeal *solverDeal = m_solverDeal[fieldInfo];
+        SolverDeal *solverDeal = m_solverDeal[targetfieldInfo];
 
         // look for coupling sources
         foreach (FieldInfo* sourceFieldInfo, fieldInfosSorted)
         {
-            // todo: check if it is also used!
-            if (couplingList()->isCouplingAvailable(sourceFieldInfo, fieldInfo, CouplingType_Weak))
+            if (Agros2D::problem()->hasCoupling(sourceFieldInfo, targetfieldInfo))
             {
                 FieldSolutionID solutionID(sourceFieldInfo,
                                            Agros2D::solutionStore()->lastTimeStep(sourceFieldInfo),

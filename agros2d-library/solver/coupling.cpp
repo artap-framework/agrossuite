@@ -31,7 +31,6 @@
 #include "solver/field.h"
 #include "solver/problem.h"
 #include "solver/problem_config.h"
-#include "solver/plugin_interface.h"
 
 #include "../../resources_source/classes/module_xml.h"
 
