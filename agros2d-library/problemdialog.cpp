@@ -1344,7 +1344,7 @@ void ProblemWidget::updateControls()
     if (cmbTransientMethod->currentIndex() == -1)
         cmbTransientMethod->setCurrentIndex(0);
 
-    lblTransientTimeTotal->setText(QString("Total time (%1)").arg(Agros2D::problem()->timeUnit()));
+    lblTransientTimeTotal->setText(QString("Total time (s)"));
 
     // couplings
     fieldsToolbar->refresh();
@@ -1418,7 +1418,7 @@ void ProblemWidget::changedWithClear()
 
 void ProblemWidget::transientChanged()
 {
-    lblTransientTimeStep->setText(QString("%1 %2").arg(txtTransientTimeTotal->value() / txtTransientSteps->value()).arg(Agros2D::problem()->timeUnit()));
+    lblTransientTimeStep->setText(QString("%1 s").arg(txtTransientTimeTotal->value() / txtTransientSteps->value()));
     lblTransientSteps->setText(tr("Approx. number of steps:"));
 
     switch ((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt())

@@ -85,7 +85,7 @@ void CalculationThread::run()
 Problem::Problem()
 {
     // m_timeStep = 0;
-    m_lastTimeElapsed = QTime(0, 0);
+    m_lastTimeElapsed = QTime();
     m_isSolving = false;
     m_isMeshing = false;
     m_abort = false;
@@ -182,7 +182,7 @@ void Problem::clearSolution()
     m_abort = false;
 
     // m_timeStep = 0;
-    m_lastTimeElapsed = QTime(0, 0);
+    m_lastTimeElapsed = QTime();
     m_timeStepLengths.clear();
     m_timeHistory.clear();
 
@@ -634,15 +634,12 @@ void Problem::solve(bool commandLine)
 
     try
     {
-        m_lastTimeElapsed = QTime();
-        QTime timeCounter = QTime();
-        timeCounter.start();
-
+        m_lastTimeElapsed = QTime();        
         m_isSolving = true;
 
         solveAction();
 
-        m_lastTimeElapsed = milisecondsToTime(timeCounter.elapsed());
+        m_lastTimeElapsed = milisecondsToTime(m_lastTimeElapsed.elapsed());
 
         // elapsed time
         Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Elapsed time: %1 s").arg(m_lastTimeElapsed.toString("mm:ss.zzz")));
@@ -941,12 +938,4 @@ void Problem::doSolveWithGUI()
 
     // solve problem
     solve();
-}
-
-QString Problem::timeUnit()
-{
-    if(fieldInfos().size() == 1)
-        return fieldInfos().begin().value()->value(FieldInfo::TimeUnit).toString();
-    else
-        return "s";
 }

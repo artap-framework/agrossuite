@@ -112,14 +112,14 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
         
         return matrix, rhs
 
-    def test_mumps(self):
+    #def test_mumps(self):
         # MUMPS
-        filename_mumps_matrix, filename_mumps_rhs = self.model("mumps")
-        mumps_mat, mumps_rhs = self.read_matrix_and_rhs(filename_mumps_matrix, filename_mumps_rhs)
-        self.assertTrue(np.allclose(self.reference_mat.todense(), mumps_mat.todense(), rtol=1e-15, atol=1e-15), 
-                        "MUMPS matrix failed.")
-        self.assertTrue(np.allclose(self.reference_rhs, mumps_rhs, rtol=1e-15, atol=1e-10), 
-                        "MUMPS rhs failed.")
+        #filename_mumps_matrix, filename_mumps_rhs = self.model("mumps")
+        #mumps_mat, mumps_rhs = self.read_matrix_and_rhs(filename_mumps_matrix, filename_mumps_rhs)
+        #self.assertTrue(np.allclose(self.reference_mat.todense(), mumps_mat.todense(), rtol=1e-15, atol=1e-15), 
+        #                "MUMPS matrix failed.")
+        #self.assertTrue(np.allclose(self.reference_rhs, mumps_rhs, rtol=1e-15, atol=1e-10), 
+        #                "MUMPS rhs failed.")
 
     def test_umfpack(self):
         # UMFPACK
@@ -141,15 +141,15 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
         self.assertTrue(np.allclose(self.reference_rhs, paralution_iterative_rhs, rtol=1e-15, atol=1e-10), 
                         "PARALUTION iterative rhs failed.")
                         
-    def test_paralution_amg(self):
+    #def test_paralution_amg(self):
         # PARALUTION - amg
-        filename_paralution_amg_matrix, filename_paralution_amg_rhs = self.model("paralution_amg")
-        paralution_amg_mat, paralution_amg_rhs = self.read_matrix_and_rhs(filename_paralution_amg_matrix, filename_paralution_amg_rhs)
-        
-        self.assertTrue(np.allclose(self.reference_mat.todense(), paralution_amg_mat.todense(), rtol=1e-15, atol=1e-15), 
-                        "PARALUTION AMG matrix failed.")
-        self.assertTrue(np.allclose(self.reference_rhs, paralution_amg_rhs, rtol=1e-15, atol=1e-10), 
-                        "PARALUTION AMG rhs failed.")
+        #filename_paralution_amg_matrix, filename_paralution_amg_rhs = self.model("paralution_amg")
+        #paralution_amg_mat, paralution_amg_rhs = self.read_matrix_and_rhs(filename_paralution_amg_matrix, filename_paralution_amg_rhs)
+        #
+        #self.assertTrue(np.allclose(self.reference_mat.todense(), paralution_amg_mat.todense(), rtol=1e-15, atol=1e-15), 
+        #                "PARALUTION AMG matrix failed.")
+        #self.assertTrue(np.allclose(self.reference_rhs, paralution_amg_rhs, rtol=1e-15, atol=1e-10), 
+        #                "PARALUTION AMG rhs failed.")
 
     def test_external(self):
         # external

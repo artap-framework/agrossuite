@@ -138,6 +138,7 @@ public:
 
     // terminology: time levels are actual times, whre calculations are performed
     int numTimeLevels() { return m_timeStepLengths.size() + 1; }
+    QList<QPair<double, bool> > timeStepHistory() const { return m_timeHistory; }
 
     // read initial meshes and solution
     void readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator = QSharedPointer<MeshGenerator>(nullptr));
@@ -147,10 +148,6 @@ public:
     inline dealii::Triangulation<2> &calculationMesh() { return m_calculationMesh; }
 
     void propagateBoundaryMarkers();
-
-    QList<QPair<double, bool> > timeStepHistory() const { return m_timeHistory; }
-
-    QString timeUnit();
 
     void setIsPostprocessingRunning(bool pr = true) { m_isPostprocessingRunning = pr; }
 
