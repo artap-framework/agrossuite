@@ -29,29 +29,24 @@ FormInfo findFormInfo(QList<FormInfo> list, QString id)
 }
 
 // todo: implement properly. What if uval is part of some identifier?
-void replaceForVariant(QString& str, WeakFormVariant variant)
+void replaceForVariant(QString& str, WeakFormVariant variant, int solutionIndex)
 {
-    if(variant == WeakFormVariant_Normal)
+    if (variant == WeakFormVariant_Normal)
     {
+        // pass
     }
-    else if(variant == WeakFormVariant_Residual)
+    else if (variant == WeakFormVariant_Residual)
     {
-        str.replace("uval", "upval");
-        str.replace("udx", "updx");
-        str.replace("udy", "updy");
-        str.replace("udr", "updr");
-        str.replace("udz", "updz");
-    }
-    else if(variant == WeakFormVariant_TimeResidual)
-    {
-        str.replace("uval", "uptval");
-        str.replace("udx", "uptdx");
-        str.replace("udy", "uptdy");
-        str.replace("udr", "uptdr");
-        str.replace("udz", "uptdz");
+        str.replace("uval", QString("upval%1").arg(solutionIndex));
+        str.replace("udx", QString("updx%1").arg(solutionIndex));
+        str.replace("udy", QString("updy%1").arg(solutionIndex));
+        str.replace("udr", QString("updr%1").arg(solutionIndex));
+        str.replace("udz", QString("updz%1").arg(solutionIndex));
     }
     else
+    {
         throw AgrosGeneratorException("Unknown form variant");
+    }
 }
 
 QList<FormInfo> generateSeparated(QList<FormInfo> elements, QList<FormInfo> templates, QList<FormInfo> templatesForResidual)
@@ -59,7 +54,7 @@ QList<FormInfo> generateSeparated(QList<FormInfo> elements, QList<FormInfo> temp
     checkDuplicities(templates);
     checkDuplicities(elements);
     QList<FormInfo> listResult;
-    foreach(FormInfo formElement, elements)
+    foreach (FormInfo formElement, elements)
     {
         FormInfo formTemplate;
         try
@@ -93,8 +88,11 @@ QList<FormInfo> generateSeparated(QList<FormInfo> elements, QList<FormInfo> temp
             formResult.expr_axi = formTemplate.expr_axi;
             formResult.expr_planar = formTemplate.expr_planar;
         }
-        replaceForVariant(formResult.expr_axi, formElement.variant);
-        replaceForVariant(formResult.expr_planar, formElement.variant);
+
+        // qDebug() << "i" << formResult.i << "j" << formResult.j;
+
+        replaceForVariant(formResult.expr_axi, formElement.variant, formResult.j);
+        replaceForVariant(formResult.expr_planar, formElement.variant, formResult.j);
 
         listResult.push_back(formResult);
     }

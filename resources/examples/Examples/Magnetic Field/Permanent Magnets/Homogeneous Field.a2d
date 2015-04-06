@@ -241,8 +241,8 @@
         <field_config>
           <field_item field_key="NonlinearResidualNorm" field_value="0.1"/>
           <field_item field_key="NonlinearRelativeChangeOfSolutions" field_value="0.001"/>
-          <field_item field_key="NonlinearDampingType" field_value="0"/>
-          <field_item field_key="NonlinearDampingCoeff" field_value="1"/>
+          <field_item field_key="NonlinearDampingType" field_value="1"/>
+          <field_item field_key="NonlinearDampingCoeff" field_value="0.8"/>
           <field_item field_key="NewtonReuseJacobian" field_value="1"/>
           <field_item field_key="NewtonJacobianReuseRatio" field_value="0.8"/>
           <field_item field_key="NonlinearDampingFactorDecreaseRatio" field_value="1.2"/>
@@ -262,8 +262,11 @@
           <field_item field_key="AdaptivityTransientRedoneEach" field_value="1"/>
           <field_item field_key="TransientTimeSkip" field_value="0"/>
           <field_item field_key="TransientInitialCondition" field_value="0"/>
-          <field_item field_key="LinearSolverIterMethod" field_value="2"/>
-          <field_item field_key="LinearSolverIterPreconditioner" field_value="0"/>
+          <field_item field_key="LinearSolverIterDealIIMethod" field_value="1"/>
+          <field_item field_key="LinearSolverIterDealIIPreconditioner" field_value="6"/>
+          <field_item field_key="LinearSolverIterPARALUTIONMethod" field_value="1"/>
+          <field_item field_key="LinearSolverIterPARALUTIONPreconditioner" field_value="1"/>
+          <field_item field_key="LinearSolverIterPARALUTIONDoublePrecision" field_value="1"/>
           <field_item field_key="LinearSolverIterToleranceAbsolute" field_value="1e-16"/>
           <field_item field_key="LinearSolverIterIters" field_value="1000"/>
           <field_item field_key="TimeUnit" field_value="s"/>
@@ -276,6 +279,7 @@
       <problem_item problem_key="TimeMethod" problem_value="0"/>
       <problem_item problem_key="TimeMethodTolerance" problem_value="0.05"/>
       <problem_item problem_key="TimeInitialStepSize" problem_value="0"/>
+      <problem_item problem_key="TimeOrder" problem_value="2"/>
       <problem_item problem_key="TimeSteps" problem_value="2"/>
       <problem_item problem_key="TimeTotal" problem_value="1"/>
     </problem_config>

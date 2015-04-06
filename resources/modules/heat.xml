@@ -35,7 +35,7 @@
 
     <module:matrix_form id="laplace" i="1"  j="1" planar="he_lambda * (udx * vdx + udy * vdy)" axi="he_lambda * r * (udr * vdr + udz * vdz)" symmetric="1" />
     <module:matrix_form id="velocity" i="1"  j="1" planar="he_rho * he_cp * ((he_vx - y * he_va) * udx + (he_vy + x * he_va) * udy) * vval" axi="r * he_rho * he_cp * (he_vy * udz) * vval" condition="(((fabs(he_rho) > 0.0) &amp;&amp; ((fabs(he_cp) > 0.0)) &amp;&amp; ((fabs(he_vx) > 0.0) || (fabs(he_vy) > 0.0) || (fabs(he_va) > 0.0))))"/>
-    <module:matrix_form id="jac_laplace" i="1"  j="1" planar="dhe_lambda * uval * (updx * vdx + updy * vdy)" axi="dhe_lambda * r * uval * (updr * vdr + updz * vdz)"/>
+    <module:matrix_form id="jac_laplace" i="1"  j="1" planar="dhe_lambda * uval * (dx1 * vdx + dy1 * vdy)" axi="dhe_lambda * r * uval * (dr1 * vdr + dz1 * vdz)"/>
 
     <module:vector_form id="rhs" i="1" j="1" planar="he_p * vval" axi="r * he_p * vval" condition="fabs(he_p) > 0.0" />
     
@@ -120,8 +120,8 @@
     <module:essential_form id="essential" i="1" axi="he_T" planar="he_T"/>
     <module:matrix_form id="flux_matrix" i="1" j="1" axi="he_h * r * uval * vval" planar="he_h * uval * vval"/>
     <module:vector_form id="flux_vector" i="1" j="1" axi="r * (he_f + he_h * he_Te) * vval" planar="(he_f + he_h * he_Te) * vval"/>
-    <module:matrix_form id="emission_jacobian" i="1" j="1" axi="SIGMA0 * he_eps * r * 4 * uval * upval*upval*upval * vval" planar="SIGMA0 * he_eps * 4 * uval * upval*upval*upval * vval"/>
-    <module:vector_form id="emission_vector" i="1" j="1" axi="r * (- SIGMA0 * he_eps * he_Ta*he_Ta*he_Ta*he_Ta + SIGMA0 * he_eps * upval*upval*upval*upval) * vval" planar="(- SIGMA0 * he_eps * he_Ta*he_Ta*he_Ta*he_Ta + SIGMA0 * he_eps * upval*upval*upval*upval) * vval"/>
+    <module:matrix_form id="emission_jacobian" i="1" j="1" axi="SIGMA0 * he_eps * r * 4 * uval * value1*value1*value1 * vval" planar="SIGMA0 * he_eps * 4 * uval * value1*value1*value1 * vval"/>
+    <module:vector_form id="emission_vector" i="1" j="1" axi="r * (- SIGMA0 * he_eps * he_Ta*he_Ta*he_Ta*he_Ta + SIGMA0 * he_eps * value1*value1*value1*value1) * vval" planar="(- SIGMA0 * he_eps * he_Ta*he_Ta*he_Ta*he_Ta + SIGMA0 * he_eps * value1*value1*value1*value1) * vval"/>
 
     <module:weakforms_surface>
       <module:weakform_surface analysistype="steadystate" default="heat_temperature">

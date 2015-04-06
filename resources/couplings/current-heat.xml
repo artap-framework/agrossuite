@@ -17,8 +17,8 @@
 
     <module:volume>
         <module:vector_form id="weak" i="1" j="1" planar="cu_gamma * (current1dx * current1dx + current1dy * current1dy) * vval" axi="cu_gamma * (current1dr * current1dr + current1dz * current1dz) * r * vval"/>
-        <module:matrix_form id="hard_matrix" i="2" j="1" planar="- cu_gamma * 2 * (updx * udx + updy * udy) * vval" axi="- cu_gamma * 2 * (updr * udr + updz * udz) * r * vval" />
-        <module:vector_form id="hard_vector" i="2" j="1" planar="- cu_gamma * (updx * updx + updy * updy) * vval"  axi="- cu_gamma * (updr * updr + updz * updz) * r * vval" />
+        <module:matrix_form id="hard_matrix" i="2" j="1" planar="- cu_gamma * 2 * (dx1 * udx + dy1 * udy) * vval" axi="- cu_gamma * 2 * (dr1 * udr + dz1 * udz) * r * vval" />
+        <module:vector_form id="hard_vector" i="2" j="1" planar="- cu_gamma * (dx1 * updx + dy1 * updy) * vval"  axi="- cu_gamma * (dr1 * dr1 + updz * dz1) * r * vval" />
 
         <module:weakforms_volume>
             <module:weakform_volume couplingtype="weak" sourceanalysis="steadystate" analysistype="steadystate" equation="">

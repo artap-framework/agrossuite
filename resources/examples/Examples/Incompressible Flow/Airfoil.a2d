@@ -84,7 +84,7 @@
   </geometry>
   <problem coordinate_type="planar" mesh_type="triangle">
     <fields>
-      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="flow" linearity_type="picard" matrix_solver="umfpack">
+      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="flow" linearity_type="newton" matrix_solver="umfpack">
         <refinement_edges/>
         <refinement_labels/>
         <polynomial_orders/>
@@ -203,6 +203,7 @@
           <field_item field_key="LinearSolverIterDealIIPreconditioner" field_value="6"/>
           <field_item field_key="LinearSolverIterPARALUTIONMethod" field_value="1"/>
           <field_item field_key="LinearSolverIterPARALUTIONPreconditioner" field_value="1"/>
+          <field_item field_key="LinearSolverIterPARALUTIONDoublePrecision" field_value="1"/>
           <field_item field_key="LinearSolverIterToleranceAbsolute" field_value="1e-16"/>
           <field_item field_key="LinearSolverIterIters" field_value="1000"/>
           <field_item field_key="TimeUnit" field_value="s"/>

@@ -16,7 +16,7 @@ class TestFlowPlanar(Agros2DTestCase):
         self.flow = agros2d.field("flow")
         self.flow.analysis_type = "steadystate"
         self.flow.number_of_refinements = 1
-        self.flow.polynomial_order = 3
+        self.flow.polynomial_order = 2
         
         # self.flow.solver = "newton"
         self.flow.solver = "picard"
@@ -168,6 +168,6 @@ if __name__ == '__main__':
     suite = ut.TestSuite()
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowPlanar))
-    # suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowAxisymmetric))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowAxisymmetric))
     suite.run(result)
     

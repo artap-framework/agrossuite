@@ -319,27 +319,27 @@ QList<FormInfo> wfEssentialElements(XMLModule::boundary *boundary, AnalysisType 
 
 QList<FormInfo> Module::wfMatrixVolumeSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType)
 {
-    QList<FormInfo> templates = wfMatrixTemplates(&module->volume());
-    QList<FormInfo> elements = wfMatrixElements(&module->volume(), analysisType, linearityType);
+    QList<FormInfo> matrixTemplates = wfMatrixTemplates(&module->volume());
+    QList<FormInfo> matrixElements = wfMatrixElements(&module->volume(), analysisType, linearityType);
 
-    return generateSeparated(elements, templates);
+    return generateSeparated(matrixElements, matrixTemplates);
 }
 
 QList<FormInfo> Module::wfVectorVolumeSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType)
 {
-    QList<FormInfo> templatesVector = wfVectorTemplates(&module->volume());
-    QList<FormInfo> templatesMatrix = wfMatrixTemplates(&module->volume());
-    QList<FormInfo> elements = wfVectorElements(&module->volume(), analysisType, linearityType);
+    QList<FormInfo> vectorTemplates = wfVectorTemplates(&module->volume());
+    QList<FormInfo> matrixTemplates = wfMatrixTemplates(&module->volume());
+    QList<FormInfo> vectorElements = wfVectorElements(&module->volume(), analysisType, linearityType);
 
-    return generateSeparated(elements, templatesVector, templatesMatrix);
+    return generateSeparated(vectorElements, vectorTemplates, matrixTemplates);
 }
 
 QList<FormInfo> Module::wfMatrixTransientVolumeSeparated(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType)
 {
     QList<FormInfo> templates = wfMatrixTemplates(&module->volume());
-    QList<FormInfo> elements = wfMatrixTransientElements(&module->volume(), analysisType, linearityType);
+    QList<FormInfo> matrixElements = wfMatrixTransientElements(&module->volume(), analysisType, linearityType);
 
-    return generateSeparated(elements, templates);
+    return generateSeparated(matrixElements, templates);
 }
 
 QList<FormInfo> Module::wfMatrixSurface(XMLModule::surface *surface, XMLModule::boundary *boundary, AnalysisType analysisType, LinearityType linearityType)

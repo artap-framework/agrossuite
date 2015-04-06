@@ -182,7 +182,6 @@ void initLists()
     // Weak form variant
     weakFormVariantList.insert(WeakFormVariant_Normal, "normal");
     weakFormVariantList.insert(WeakFormVariant_Residual, "residual");
-    weakFormVariantList.insert(WeakFormVariant_TimeResidual, "time_residual");
 
     // Mesh Type
     meshTypeList.insert(MeshType_Triangle, "triangle");
@@ -541,8 +540,6 @@ QString weakFormVariantString(WeakFormVariant weakFormVariant)
         return QObject::tr("Normal");
     case WeakFormVariant_Residual:
         return QObject::tr("Residual");
-    case WeakFormVariant_TimeResidual:
-        return QObject::tr("Time residual");
     default:
         std::cerr << "Weak form variant '" + QString::number(weakFormVariant).toStdString() + "' is not implemented. weakFormVariantString(WeakFormVariant weakFormVariant)" << endl;
         throw;

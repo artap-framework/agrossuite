@@ -101,7 +101,7 @@ using namespace paralution;
 
 // todo: find better place
 // todo: what for curved elements?
-const int QUADRATURE_ORDER_INCREASE = 1;
+const int QUADRATURE_ORDER_INCREASE = 2;
 
 // todo: is it defined somewhere?
 const int MAX_NUM_NONLIN_ITERS = 100;

@@ -48,7 +48,6 @@ void ParserInstance::addBasicWeakformTokens(ParserModuleInfo pmi)
     // scalar field
     m_dict["uval"] = pmi.isSurface ? "cache.shape_face_value[face][j][q_point]" : "cache.shape_value[j][q_point]"; // "u->val[i]";
     m_dict["vval"] = pmi.isSurface ? "cache.shape_face_value[face][i][q_point]" : "cache.shape_value[i][q_point]"; // "v->val[i]";
-    m_dict["upval"] = pmi.isSurface ? "cache.solution_value_previous_face[face][q_point][components[i]]" : "cache.solution_value_previous[q_point][components[i]]"; // "u_ext[this->j]->val[i]";
 
     // vector field
     m_dict["uval0"] = "u->val0[i]";
@@ -66,8 +65,6 @@ void ParserInstance::addBasicWeakformTokens(ParserModuleInfo pmi)
         m_dict["vdx"] = "cache.shape_grad[i][q_point][0]"; // "v->dx[i]";
         m_dict["udy"] = "cache.shape_grad[j][q_point][1]"; // "u->dy[i]";
         m_dict["vdy"] = "cache.shape_grad[i][q_point][1]"; // "v->dy[i]";
-        m_dict["updx"] = "cache.solution_grad_previous[q_point][components[i]][0]"; // "u_ext[this->j]->dx[i]";
-        m_dict["updy"] = "cache.solution_grad_previous[q_point][components[i]][1]"; // "u_ext[this->j]->dy[i]";
     }
     else
     {
@@ -76,8 +73,26 @@ void ParserInstance::addBasicWeakformTokens(ParserModuleInfo pmi)
         m_dict["vdr"] = "cache.shape_grad[i][q_point][0]"; // "v->dx[i]";
         m_dict["udz"] = "cache.shape_grad[j][q_point][1]"; // "u->dy[i]";
         m_dict["vdz"] = "cache.shape_grad[i][q_point][1]"; // "v->dy[i]";
-        m_dict["updr"] = "cache.solution_grad_previous[q_point][components[i]][0]"; // "u_ext[this->j]->dx[i]";
-        m_dict["updz"] = "cache.solution_grad_previous[q_point][components[i]][1]"; // "u_ext[this->j]->dy[i]";
+    }
+
+    // previous solution (residual form in Newton's method)
+    for (int i = 1; i < pmi.numSolutions + 1; i++)
+    {
+        m_dict[QString("upval%1").arg(i)] = pmi.isSurface ? QString("cache.solution_value_previous_face[face][q_point][%1]").arg(i-1)
+                                                  : QString("cache.solution_value_previous[q_point][%1]").arg(i-1); // "u_ext[this->j]->val[i]";
+
+        if (m_parserModuleInfo.coordinateType == CoordinateType_Planar)
+        {
+            // scalar field
+            m_dict[QString("updx%1").arg(i)] = QString("cache.solution_grad_previous[q_point][%1][0]").arg(i-1); // "u_ext[this->j]->dx[i]";
+            m_dict[QString("updy%1").arg(i)] = QString("cache.solution_grad_previous[q_point][%1][1]").arg(i-1); // "u_ext[this->j]->dy[i]";
+        }
+        else
+        {
+            // scalar field
+            m_dict[QString("updr%1").arg(i)] = QString("cache.solution_grad_previous[q_point][%1][0]").arg(i-1); // "u_ext[this->j]->dx[i]";
+            m_dict[QString("updz%1").arg(i)] = QString("cache.solution_grad_previous[q_point][%1][1]").arg(i-1); // "u_ext[this->j]->dy[i]";
+        }
     }
 }
 
@@ -93,17 +108,6 @@ void ParserInstance::addCouplingWeakformTokens(int numSourceSolutions)
 {
     for (int i = 1; i < numSourceSolutions + 1; i++)
     {
-//        m_dict[QString("source%1").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->val[i]").arg(i-1);
-//        if(m_parserModuleInfo.coordinateType == CoordinateType_Planar)
-//        {
-//            m_dict[QString("source%1dx").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->dx[i]").arg(i-1);
-//            m_dict[QString("source%1dy").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->dy[i]").arg(i-1);
-//        }
-//        else
-//        {
-//            m_dict[QString("source%1dr").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->dx[i]").arg(i-1);
-//            m_dict[QString("source%1dz").arg(i)] = QString("ext[%1 + offset.sourcePrevSol]->dy[i]").arg(i-1);
-//        }
         foreach(QString moduleId, Module::availableModules().keys())
         {
             m_dict[moduleId + QString("%1").arg(i)] = moduleId + QString("_value[q_point][%1]").arg(i-1);

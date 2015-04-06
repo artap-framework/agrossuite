@@ -120,8 +120,7 @@ enum WeakFormKind
 enum WeakFormVariant
 {
     WeakFormVariant_Normal = 0,
-    WeakFormVariant_Residual = 1,
-    WeakFormVariant_TimeResidual = 2
+    WeakFormVariant_Residual = 1
 };
 
 enum SceneGeometryMode
