@@ -18,10 +18,9 @@ class TestFlowPlanar(Agros2DTestCase):
         self.flow.number_of_refinements = 1
         self.flow.polynomial_order = 2
         
-        # self.flow.solver = "newton"
-        self.flow.solver = "picard"
+        self.flow.solver = "newton"        
         self.flow.solver_parameters['residual'] = 1e-6
-        self.flow.solver_parameters['relative_change_of_solutions'] = 100
+        self.flow.solver_parameters['relative_change_of_solutions'] = 0.01
         self.flow.solver_parameters['damping'] = 'automatic'
         self.flow.solver_parameters['damping_factor'] = 1.0
         self.flow.solver_parameters['jacobian_reuse'] = False
@@ -77,13 +76,13 @@ class TestFlowPlanar(Agros2DTestCase):
         # testPj = agros2d.test("Losses", volume["Pj"], 10070.23937)
         
         # surface integral
-        surface = self.flow.surface_integrals([8, 9])
-        self.value_test("Pressure force x", surface["Fpx"], -0.040703 + 0.009752)
-        self.value_test("Pressure force y", surface["Fpy"], 0.00461 - 0.004474, 7)
-        self.value_test("Viscous force x", surface["Fvx"], -0.009752)
-        self.value_test("Viscous force y", surface["Fvy"], 0.004474)
-        self.value_test("Total force x", surface["Fx"], -0.040703)
-        self.value_test("Total force y", surface["Fy"], 0.00461)
+        surface = self.flow.surface_integrals([5])
+        self.value_test("Pressure force x", surface["Fpx"], -0.13155320861904402 + 0.004544859567663737)
+        self.value_test("Pressure force y", surface["Fpy"], -0.002419169736737781 + 5.14286345695936E-4)
+        self.value_test("Viscous force x", surface["Fvx"], -0.004544859567663737)
+        self.value_test("Viscous force y", surface["Fvy"], -5.14286345695936E-4, 7)
+        self.value_test("Total force x", surface["Fx"], -0.13155320861904402)
+        self.value_test("Total force y", surface["Fy"], -0.002419169736737781)
 
 class TestFlowAxisymmetric(Agros2DTestCase):
     def setUp(self):  
@@ -98,12 +97,11 @@ class TestFlowAxisymmetric(Agros2DTestCase):
         # flow
         self.flow = agros2d.field("flow")
         self.flow.analysis_type = "steadystate"
-        self.flow.number_of_refinements = 1
+        self.flow.number_of_refinements = 2
         self.flow.polynomial_order = 2
         self.flow.adaptivity_type = "disabled"
         
-        #self.flow.solver = "newton"
-        self.flow.solver = "picard"
+        self.flow.solver = "newton"
         self.flow.solver_parameters['residual'] = 0.0001
         self.flow.solver_parameters['damping'] = 'automatic'
         self.flow.solver_parameters['damping_factor'] = 1.0
@@ -168,6 +166,6 @@ if __name__ == '__main__':
     suite = ut.TestSuite()
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowPlanar))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowAxisymmetric))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowAxisymmetric))
     suite.run(result)
     

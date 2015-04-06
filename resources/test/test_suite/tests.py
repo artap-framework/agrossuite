@@ -151,8 +151,8 @@ test_suite.fields.current.TestCurrentAxisymmetric,
 test_suite.fields.elasticity.TestElasticityPlanar,
 test_suite.fields.elasticity.TestElasticityAxisymmetric,
 # incompressible flow
-#test_suite.fields.flow.TestFlowPlanar,
-#test_suite.fields.flow.TestFlowAxisymmetric,
+test_suite.fields.flow.TestFlowPlanar,
+test_suite.fields.flow.TestFlowAxisymmetric,
 # acoustic field
 test_suite.fields.acoustic.TestAcousticHarmonicPlanar,
 test_suite.fields.acoustic.TestAcousticHarmonicAxisymmetric,
