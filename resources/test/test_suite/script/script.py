@@ -130,11 +130,10 @@ class TestSaveAdaptiveSolutionTransient(Agros2DTestCase):
         geometry.add_label(0.2, 0, materials = {"magnetic" : "Copper"})
         geometry.add_label(0.05, 0, materials = {"magnetic" : "Iron"})    
 
-        #self.problem.solve()                        
+        self.problem.solve()                        
 
     def test_transient(self):
-        raise Exception('TODO: load and save transient')
-        #self.assertTrue(save_solution_test(self.problem, self.magnetic))
+        self.assertTrue(save_solution_test(self.problem, self.magnetic))
     
 if __name__ == '__main__':
     import unittest as ut
