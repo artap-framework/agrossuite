@@ -154,11 +154,12 @@ public:
 
     void setCouplingSource(QString fieldID, dealii::Vector<double>& sourceVector) { m_coupling_sources[fieldID] = sourceVector; }
 
-    // transient - Runge Kutta - future step!
-    void assembleMassMatrix();
-
-    // hand made methods
-    void transientBDF(const double timeStep, dealii::Vector<double> &solution, const QList<dealii::Vector<double> > solutions, const BDF2Table &bdf2Table);
+    // BDF methods
+    void transientBDF(const double timeStep,
+                      dealii::Vector<double> &solution,
+                      const QList<dealii::Vector<double> > solutions,
+                      const BDF2Table &bdf2Table,
+                      bool spatialAdaptivity = false);
 
     inline void set_time(const double new_time) { m_time = new_time; }
     inline double get_time() const { return m_time; }

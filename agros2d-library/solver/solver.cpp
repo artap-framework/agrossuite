@@ -972,7 +972,7 @@ void SolverDeal::solve()
                     Agros2D::solutionStore()->removeSolution(solutionID);
                     m_solution = initialSolution;
 
-                    //cout << "ref step = " << step << ", numTimeLevels() = " << Agros2D::problem()->numTimeLevels() << endl;
+                    // cout << "ref step = " << step << ", numTimeLevels() = " << Agros2D::problem()->numTimeLevels() << endl;
                 }
                 else
                 {
@@ -1057,7 +1057,7 @@ void SolverDeal::solve()
 void SolverDeal::solveProblem()
 {
     // this is a little bit inconsistent. Each solver has pointer to triangulation, but they actually point to
-    // mesh object of Agrs2D::problem()
+    // mesh object of Agros2D::problem()
     Agros2D::problem()->propagateBoundaryMarkers();
 
     if (m_fieldInfo->linearityType() == LinearityType_Linear)
@@ -1076,6 +1076,7 @@ void SolverDeal::solveProblem()
     else if (m_fieldInfo->linearityType() == LinearityType_Picard)
     {
         solveProblemNonLinearPicard();
+        all_constraints.distribute(m_solution);
     }
     else if (m_fieldInfo->linearityType() == LinearityType_Newton)
     {
@@ -1087,6 +1088,9 @@ void SolverDeal::solveProblem()
 
 void SolverDeal::solveProblemNonLinearPicard()
 {
+    const double minAllowedDampingCoeff = 1e-4;
+    const double autoDampingRatio = 2.0;
+
     QTime time;
     time.start();
 
@@ -1096,11 +1100,15 @@ void SolverDeal::solveProblemNonLinearPicard()
     setup(true);
 
     // initial relative change of solutions
-    double relChangeSol = 100.0;
+    double lastRelChangeSol = 100.0;
+    m_solution_nonlinear_previous.reinit(m_doFHandler.n_dofs());
+
+    double dampingFactor = (m_fieldInfo->value(FieldInfo::NonlinearDampingType) == DampingType_Off ? 1.0 : m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble());
+    int dampingSuccessfulSteps = 0;
 
     int iteration = 0;
     bool criteriaReached = false;
-    while ((iteration < MAX_NUM_NONLIN_ITERS) && !criteriaReached)
+    while ((iteration < MAX_NUM_NONLIN_ITERS) && !criteriaReached && !Agros2D::problem()->isAborted())
     {
         SolverAgros::Phase phase = SolverAgros::Phase_Solving;
 
@@ -1109,33 +1117,67 @@ void SolverDeal::solveProblemNonLinearPicard()
         assembleSystem();
         solveLinearSystem(system_matrix, system_rhs, m_solution);
 
+        // estimate error
+        dealii::Vector<double> vec(m_solution_nonlinear_previous);
+        vec.add(-1, m_solution);
+        double relChangeSol = vec.l2_norm() / m_solution.l2_norm() * 100.0;
+
+        if ((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() == DampingType_Automatic)
+        {
+            if ((lastRelChangeSol < relChangeSol) && (dampingFactor > minAllowedDampingCoeff))
+            {
+                phase = SolverAgros::Phase_DampingFactorChanged;
+
+                // decrease damping
+                dampingFactor = dampingFactor * 1.0 / autoDampingRatio;
+                dampingSuccessfulSteps = -1;
+            }
+            else
+            {
+                dampingSuccessfulSteps++;
+                // increase damping
+                if (dampingSuccessfulSteps >= m_fieldInfo->value(FieldInfo::NonlinearStepsToIncreaseDampingFactor).toInt())
+                {
+                    if (dampingFactor * 0.75 * autoDampingRatio <= m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble())
+                    {
+                        dampingFactor = dampingFactor * 0.75 * autoDampingRatio;
+                        if (dampingFactor > 1.0)
+                            dampingFactor = 1.0;
+                    }
+                    else
+                    {
+                        dampingFactor = m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble();
+                    }
+                }
+            }
+        }
+
         // copy solution
-        m_solution_nonlinear_previous.add(-1, m_solution);
-        relChangeSol = m_solution_nonlinear_previous.l2_norm() / m_solution.l2_norm() * 100;
-        m_solution_nonlinear_previous = m_solution;
+        m_solution_nonlinear_previous.add(- dampingFactor, vec);
 
         // update
         steps.append(iteration);
         relativeChangeOfSolutions.append(relChangeSol);
+        lastRelChangeSol = relChangeSol;
 
         criteriaReached = true;
 
-        if ((m_fieldInfo->value(FieldInfo::NonlinearRelativeChangeOfSolutions).toDouble() > 0) &&
-                (m_fieldInfo->value(FieldInfo::NonlinearRelativeChangeOfSolutions).toDouble() < relChangeSol))
+        if (m_fieldInfo->value(FieldInfo::NonlinearRelativeChangeOfSolutions).toDouble() < relChangeSol)
             criteriaReached = false;
 
         // log messages
         if (criteriaReached)
             phase = SolverAgros::Phase_Finished;
 
-        Agros2D::log()->printMessage(QObject::tr("Solver (Picard)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %)")
+        Agros2D::log()->printMessage(QObject::tr("Solver (Picard)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, damping: %3)")
                                      .arg(iteration)
-                                     .arg(QString::number(relativeChangeOfSolutions.last(), 'f', 5)));
+                                     .arg(QString::number(relativeChangeOfSolutions.last(), 'f', 5))
+                                     .arg(dampingFactor));
 
         Agros2D::log()->updateNonlinearChartInfo(phase, steps, relativeChangeOfSolutions);
     }
 
-    qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
+    // qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
 
 void SolverDeal::recreateConstraints(bool zeroDirichletLift)
@@ -1256,7 +1298,7 @@ void SolverDeal::solveProblemNonLinearNewton()
 
                 // std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
 
-                if(residualNorm < previousResidualNorm * m_fieldInfo->value(FieldInfo::NewtonJacobianReuseRatio).toDouble())
+                if (residualNorm < previousResidualNorm * m_fieldInfo->value(FieldInfo::NewtonJacobianReuseRatio).toDouble())
                 {
                     jacobianReused = true;
                     numReusedJacobian++;
@@ -1274,7 +1316,7 @@ void SolverDeal::solveProblemNonLinearNewton()
             }
         }
 
-        if(! jacobianReused)
+        if (!jacobianReused)
         {
             time.start();
             assembleSystem();
@@ -1330,7 +1372,7 @@ void SolverDeal::solveProblemNonLinearNewton()
                     }
 
                     // Line search. Take back the previous steps (too long) and make a new one, with new damping factor
-                    m_solution_nonlinear_previous.add(-previousDampingFactor + dampingFactor, m_solution);
+                    m_solution_nonlinear_previous.add(- previousDampingFactor + dampingFactor, m_solution);
 
                     // todo: code repetition, get rid of it together with jacobian reuse
                     time.start();
@@ -1342,7 +1384,7 @@ void SolverDeal::solveProblemNonLinearNewton()
                 }
 
                 dampingSuccessfulSteps++;
-                if(dampingSuccessfulSteps > 0)
+                if (dampingSuccessfulSteps > 0)
                 {
 
                     if (dampingSuccessfulSteps >= m_fieldInfo->value(FieldInfo::NonlinearStepsToIncreaseDampingFactor).toInt())
@@ -1357,7 +1399,7 @@ void SolverDeal::solveProblemNonLinearNewton()
         }
         // update
         steps.append(iteration);
-        double relChangeSol = dampingFactor * (m_solution).l2_norm() / m_solution_nonlinear_previous.l2_norm() * 100;
+        double relChangeSol = dampingFactor * m_solution.l2_norm() / m_solution_nonlinear_previous.l2_norm() * 100;
         relativeChangeOfSolutions.append(relChangeSol);
 
         // stop criteria
@@ -1389,7 +1431,7 @@ void SolverDeal::solveProblemNonLinearNewton()
 
     this->Dirichlet_constraints.distribute(m_solution);
 
-    qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
+    // qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
 
 void SolverDeal::solveAdaptivity()
@@ -1450,6 +1492,10 @@ void SolverDeal::solveAdaptivity()
                                          arg(i + 1).
                                          arg(error).
                                          arg(m_doFHandler.n_dofs()));
+
+            // stopping criterium
+            if (error < m_fieldInfo->value(FieldInfo::AdaptivityTolerance).toDouble())
+                break;
         }
     }
 }
@@ -1458,7 +1504,8 @@ void SolverDeal::solveAdaptivity()
 void SolverDeal::transientBDF(const double timeStep,
                               dealii::Vector<double> &solution,
                               const QList<dealii::Vector<double> > solutions,
-                              const BDF2Table &bdf2Table)
+                              const BDF2Table &bdf2Table,
+                              bool spatialAdaptivity)
 {
     // LHM = (M + dt * K)
     transient_left_matrix.copy_from(mass_matrix);

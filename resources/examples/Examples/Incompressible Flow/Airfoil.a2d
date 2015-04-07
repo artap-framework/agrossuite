@@ -84,7 +84,7 @@
   </geometry>
   <problem coordinate_type="planar" mesh_type="triangle">
     <fields>
-      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="flow" linearity_type="newton" matrix_solver="umfpack">
+      <field adaptivity_type="disabled" analysis_type="steadystate" field_id="flow" linearity_type="picard" matrix_solver="umfpack">
         <refinement_edges/>
         <refinement_labels/>
         <polynomial_orders/>
@@ -177,9 +177,9 @@
         </materials>
         <field_config>
           <field_item field_key="NonlinearResidualNorm" field_value="0"/>
-          <field_item field_key="NonlinearRelativeChangeOfSolutions" field_value="0.004"/>
-          <field_item field_key="NonlinearDampingType" field_value="1"/>
-          <field_item field_key="NonlinearDampingCoeff" field_value="0.2"/>
+          <field_item field_key="NonlinearRelativeChangeOfSolutions" field_value="0.1"/>
+          <field_item field_key="NonlinearDampingType" field_value="0"/>
+          <field_item field_key="NonlinearDampingCoeff" field_value="1"/>
           <field_item field_key="NewtonReuseJacobian" field_value="0"/>
           <field_item field_key="NewtonJacobianReuseRatio" field_value="0.8"/>
           <field_item field_key="NonlinearDampingFactorDecreaseRatio" field_value="1.2"/>
@@ -188,7 +188,7 @@
           <field_item field_key="PicardAndersonAcceleration" field_value="1"/>
           <field_item field_key="PicardAndersonBeta" field_value="0.2"/>
           <field_item field_key="PicardAndersonNumberOfLastVectors" field_value="3"/>
-          <field_item field_key="SpaceNumberOfRefinements" field_value="0"/>
+          <field_item field_key="SpaceNumberOfRefinements" field_value="1"/>
           <field_item field_key="SpacePolynomialOrder" field_value="2"/>
           <field_item field_key="AdaptivitySteps" field_value="1"/>
           <field_item field_key="AdaptivityTolerance" field_value="1"/>
@@ -253,7 +253,7 @@
     <item key="View_ScalarDecimalPlace" value="4"/>
     <item key="View_ScalarRangeAuto" value="1"/>
     <item key="View_ScalarRangeMin" value="0"/>
-    <item key="View_ScalarRangeMax" value="8.51252269744873"/>
+    <item key="View_ScalarRangeMax" value="1.08902275562286"/>
     <item key="View_ShowVectorView" value="0"/>
     <item key="View_VectorVariable" value="flow_velocity"/>
     <item key="View_VectorProportional" value="1"/>

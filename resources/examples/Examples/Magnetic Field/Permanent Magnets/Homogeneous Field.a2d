@@ -241,11 +241,11 @@
         <field_config>
           <field_item field_key="NonlinearResidualNorm" field_value="0.1"/>
           <field_item field_key="NonlinearRelativeChangeOfSolutions" field_value="0.001"/>
-          <field_item field_key="NonlinearDampingType" field_value="1"/>
-          <field_item field_key="NonlinearDampingCoeff" field_value="0.8"/>
+          <field_item field_key="NonlinearDampingType" field_value="0"/>
+          <field_item field_key="NonlinearDampingCoeff" field_value="1"/>
           <field_item field_key="NewtonReuseJacobian" field_value="1"/>
           <field_item field_key="NewtonJacobianReuseRatio" field_value="0.8"/>
-          <field_item field_key="NonlinearDampingFactorDecreaseRatio" field_value="1.2"/>
+          <field_item field_key="NonlinearDampingFactorDecreaseRatio" field_value="1.1"/>
           <field_item field_key="NewtonMaxStepsReuseJacobian" field_value="20"/>
           <field_item field_key="NonlinearStepsToIncreaseDampingFactor" field_value="2"/>
           <field_item field_key="PicardAndersonAcceleration" field_value="1"/>
@@ -315,8 +315,8 @@
     <item key="View_ScalarRangeBase" value="10"/>
     <item key="View_ScalarDecimalPlace" value="2"/>
     <item key="View_ScalarRangeAuto" value="1"/>
-    <item key="View_ScalarRangeMin" value="1.39059352477489e-06"/>
-    <item key="View_ScalarRangeMax" value="3.22994804382324"/>
+    <item key="View_ScalarRangeMin" value="5.65790514883702e-06"/>
+    <item key="View_ScalarRangeMax" value="6.29892921447754"/>
     <item key="View_ShowVectorView" value="0"/>
     <item key="View_VectorVariable" value="magnetic_flux_density_real"/>
     <item key="View_VectorProportional" value="1"/>
