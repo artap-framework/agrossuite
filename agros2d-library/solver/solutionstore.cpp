@@ -277,6 +277,7 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, Multi
         // free ma
         m_multiSolutionDealCache[idRemove].clear();
         m_multiSolutionDealCache.remove(idRemove);
+        m_multiSolutionCacheIDOrder.removeOne(idRemove);
     }
 
     // add solution
