@@ -522,12 +522,14 @@ void Problem::solve(bool commandLine)
 
     try
     {
-        m_lastTimeElapsed = QTime();        
         m_isSolving = true;
+
+        QTime time;
+        time.start();
 
         solveAction();
 
-        m_lastTimeElapsed = milisecondsToTime(m_lastTimeElapsed.elapsed());
+        m_lastTimeElapsed = milisecondsToTime(time.elapsed());
 
         // elapsed time
         Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Elapsed time: %1 s").arg(m_lastTimeElapsed.toString("mm:ss.zzz")));
