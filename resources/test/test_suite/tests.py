@@ -180,8 +180,8 @@ test_suite.fields.rf_te.TestRFTEHarmonicAxisymmetric,
 test_suite.fields.rf_tm.TestRFTMHarmonicPlanar,
 test_suite.fields.rf_tm.TestRFTMHarmonicAxisymmetric,
 # math coeff
-#test_suite.fields.math_coeff.TestMathCoeffPlanar,
-#test_suite.fields.math_coeff.TestMathCoeffAxisymmetric,
+test_suite.fields.math_coeff.TestMathCoeffPlanar,
+test_suite.fields.math_coeff.TestMathCoeffAxisymmetric,
 # adaptivity
 test_suite.adaptivity.adaptivity.TestAdaptivityElectrostatic,
 test_suite.adaptivity.adaptivity.TestAdaptivityAcoustic,

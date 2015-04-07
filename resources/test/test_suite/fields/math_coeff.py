@@ -17,8 +17,7 @@ class TestMathCoeffPlanar(Agros2DTestCase):
         # fields
         self.math_coeff = agros2d.field("math_coeff")
         self.math_coeff.analysis_type = "steadystate"
-        self.math_coeff.matrix_solver = "mumps"
-        self.math_coeff.number_of_refinements = 3
+        self.math_coeff.number_of_refinements = 2
         self.math_coeff.polynomial_order = 3
         self.math_coeff.adaptivity_type = "disabled"
         self.math_coeff.solver = "linear"
@@ -91,7 +90,6 @@ class TestMathCoeffAxisymmetric(Agros2DTestCase):
         # fields
         self.math_coeff = agros2d.field("math_coeff")
         self.math_coeff.analysis_type = "steadystate"
-        self.math_coeff.matrix_solver = "mumps"
         self.math_coeff.number_of_refinements = 3
         self.math_coeff.polynomial_order = 3
         self.math_coeff.solver = "linear"
@@ -165,9 +163,8 @@ class TestMathCoeffTransientPlanar(Agros2DTestCase):
         # math_coeff
         self.math_coeff = agros2d.field("math_coeff")
         self.math_coeff.analysis_type = "transient"
-        self.math_coeff.matrix_solver = "mumps"
         self.math_coeff.transient_initial_condition = 0
-        self.math_coeff.number_of_refinements = 3
+        self.math_coeff.number_of_refinements = 2
         self.math_coeff.polynomial_order = 3
         self.math_coeff.adaptivity_type = "disabled"
         self.math_coeff.solver = "linear"
@@ -244,7 +241,6 @@ class TestMathCoeffTransientAxisymmetric(Agros2DTestCase):
         # fields
         self.math_coeff = agros2d.field("math_coeff")
         self.math_coeff.analysis_type = "transient"
-        self.math_coeff.matrix_solver = "mumps"
         self.math_coeff.number_of_refinements = 3
         self.math_coeff.polynomial_order = 3
         self.math_coeff.solver = "linear"
@@ -302,7 +298,7 @@ if __name__ == '__main__':
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffPlanar))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffAxisymmetric))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffTransientAxisymmetric))    
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffPlanar))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffAxisymmetric))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffTransientAxisymmetric))    
     suite.run(result)
