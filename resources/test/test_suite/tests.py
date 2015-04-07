@@ -160,7 +160,7 @@ test_suite.fields.acoustic.TestAcousticHarmonicAxisymmetric,
 test_suite.fields.heat.TestHeatPlanar,
 test_suite.fields.heat.TestHeatAxisymmetric,
 test_suite.fields.heat.TestHeatNonlinPlanarNewton,
-#test_suite.fields.heat.TestHeatNonlinPlanarPicard,
+test_suite.fields.heat.TestHeatNonlinPlanarPicard,
 test_suite.fields.heat.TestHeatTransientAxisymmetric,
 # magnetic field
 test_suite.fields.magnetic_steady.TestMagneticPlanar,
