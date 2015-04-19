@@ -343,6 +343,7 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateVolumeVariables(L
 
     foreach(XMLModule::quantity quantity, weakform.quantity())
     {
+        QString dep = pmi.dependenceVolume(QString::fromStdString(quantity.id()));
         QString nonlinearExpr = pmi.nonlinearExpressionVolume(QString::fromStdString(quantity.id()));
 
         if (linearityType != LinearityType_Linear && quantityIsNonlinear[QString::fromStdString(quantity.id())])
@@ -360,14 +361,50 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateVolumeVariables(L
         }
         else
         {
-            // linear only value
+            // value
+            if (dep.isEmpty())
+            {
+                // linear only value
+                ctemplate::TemplateDictionary *subFieldLinear = field->AddSectionDictionary("VARIABLE_SOURCE_LINEAR");
+                subFieldLinear->SetValue("VARIABLE", quantity.id().c_str());
+                subFieldLinear->SetValue("VARIABLE_HASH", QString::number(qHash(QString::fromStdString(quantity.id()))).toStdString());
+                subFieldLinear->SetValue("VARIABLE_SHORT", m_volumeVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
 
-            ctemplate::TemplateDictionary *subFieldLinear = field->AddSectionDictionary("VARIABLE_SOURCE_LINEAR");
-            subFieldLinear->SetValue("VARIABLE", quantity.id().c_str());
-            subFieldLinear->SetValue("VARIABLE_HASH", QString::number(qHash(QString::fromStdString(quantity.id()))).toStdString());
-            subFieldLinear->SetValue("VARIABLE_SHORT", m_volumeVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
+                subFieldLinear->SetValue("VARIABLE_VALUE", QString("number()").toStdString());
+            }
+            else if (dep == "time")
+            {
+                // linear only value
+                ctemplate::TemplateDictionary *subFieldLinear = field->AddSectionDictionary("VARIABLE_SOURCE_LINEAR");
+                subFieldLinear->SetValue("VARIABLE", quantity.id().c_str());
+                subFieldLinear->SetValue("VARIABLE_HASH", QString::number(qHash(QString::fromStdString(quantity.id()))).toStdString());
+                subFieldLinear->SetValue("VARIABLE_SHORT", m_volumeVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
 
-            subFieldLinear->SetValue("VARIABLE_VALUE", QString("number()").toStdString());
+                // linear boundary condition
+                subFieldLinear->SetValue("VARIABLE_VALUE", QString("numberAtTime(this->get_time())").toStdString());
+            }
+            else if (dep == "space")
+            {
+                // nonlinear case
+                ctemplate::TemplateDictionary *subFieldNonlinear = field->AddSectionDictionary("VARIABLE_SOURCE_NONLINEAR");
+                subFieldNonlinear->SetValue("VARIABLE", quantity.id().c_str());
+                subFieldNonlinear->SetValue("VARIABLE_HASH", QString::number(qHash(QString::fromStdString(quantity.id()))).toStdString());
+                subFieldNonlinear->SetValue("VARIABLE_SHORT", m_volumeVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
+
+                // spacedep boundary condition
+                subFieldNonlinear->SetValue("VARIABLE_VALUE", QString("numberAtPoint(Point(p[0], p[1]))").toStdString());
+            }
+            else if (dep == "time-space")
+            {
+                // nonlinear case
+                ctemplate::TemplateDictionary *subFieldNonlinear = field->AddSectionDictionary("VARIABLE_SOURCE_NONLINEAR");
+                subFieldNonlinear->SetValue("VARIABLE", quantity.id().c_str());
+                subFieldNonlinear->SetValue("VARIABLE_HASH", QString::number(qHash(QString::fromStdString(quantity.id()))).toStdString());
+                subFieldNonlinear->SetValue("VARIABLE_SHORT", m_volumeVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
+
+                // spacedep boundary condition
+                subFieldNonlinear->SetValue("VARIABLE_VALUE", QString("numberAtTimeAndPoint(this->get_time(), Point(p[0], p[1]))").toStdString());
+            }
         }
     }
 

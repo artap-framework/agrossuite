@@ -274,7 +274,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
 
                 for (unsigned int i = 0; i < dofs_per_cell; ++i)
                 {
-                    if(m_assemble_matrix)
+                    if (m_assemble_matrix)
                     {
                         for (unsigned int j = 0; j < dofs_per_cell; ++j)
                         {
@@ -283,7 +283,17 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                             if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && ({{EXPRESSION_CHECK}}))
                             {
                                 copy_data.cell_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
-                            }{{/FORM_EXPRESSION_MATRIX}}                        
+                            }{{/FORM_EXPRESSION_MATRIX}}                                                
+
+                            if (isTransient)
+                            {
+                                {{#FORM_EXPRESSION_TRANSIENT}}
+                                // {{EXPRESSION_ID}}
+                                if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && ({{EXPRESSION_CHECK}}))
+                                {
+                                    copy_data.cell_mass_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
+                                }{{/FORM_EXPRESSION_TRANSIENT}}
+                            }
                         }
 
                         // symmetrical forms
@@ -298,6 +308,19 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                                 if (j != i)
                                     copy_data.cell_matrix(j,i) += expression_value;
                             }{{/FORM_EXPRESSION_MATRIX_SYM}}
+
+                            if (isTransient)
+                            {
+                                {{#FORM_EXPRESSION_TRANSIENT_SYM}}
+                                // {{EXPRESSION_ID}}
+                                if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && ({{EXPRESSION_CHECK}}))
+                                {
+                                    double expression_value = fe_values.JxW(q_point) *({{EXPRESSION}});
+                                    copy_data.cell_mass_matrix(i,j) += expression_value;
+                                    if (j != i)
+                                        copy_data.cell_mass_matrix(j,i) += expression_value;
+                                }{{/FORM_EXPRESSION_TRANSIENT_SYM}}
+                            }
                         }
                     }
                     {{#FORM_EXPRESSION_VECTOR}}

@@ -206,21 +206,18 @@ void ParserInstance::addVolumeVariablesErrorCalculation()
                 else if (dep == "time")
                 {
                     // linear boundary condition
-                    // ERROR: Python expression evaluation doesn't work from weakform ("false" should be removed)
                     m_dict[QString::fromStdString(quantity.shortname().get())] = QString("%1->number()").
                             arg(QString::fromStdString(quantity.shortname().get()));
                 }
                 else if (dep == "space")
                 {
                     // spacedep boundary condition
-                    // ERROR: Python expression evaluation doesn't work from weakform - ERROR
                     m_dict[QString::fromStdString(quantity.shortname().get())] = QString("%1->numberAtPoint(Point(p[0], p[1]))").
                             arg(QString::fromStdString(quantity.shortname().get()));
                 }
                 else if (dep == "time-space")
                 {
                     // spacedep boundary condition
-                    // ERROR: Python expression evaluation doesn't work from weakform - ERROR
                     m_dict[QString::fromStdString(quantity.shortname().get())] = QString("%1->numberAtTimeAndPoint(this->get_time(), Point(x, y))").
                             arg(QString::fromStdString(quantity.shortname().get()));
                 }

@@ -17,12 +17,6 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#ifdef WIN32
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include "GL/glew.h"
-#endif
-#endif
-
 #include <deal.II/numerics/data_out.h>
 #include <deal.II/numerics/data_postprocessor.h>
 #include <deal.II/grid/filtered_iterator.h>
@@ -724,13 +718,7 @@ void SceneViewPostInterface::paletteCreate()
     glGenTextures(1, &m_textureScalar);
 
     glBindTexture(GL_TEXTURE_1D, m_textureScalar);
-#ifdef Q_WS_WIN
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) // This somehow does not work for Qt 4.8 in Windows.
     glTexParameteri(GL_TEXTURE_1D, GL_GENERATE_MIPMAP, GL_TRUE);
-#endif
-#else
-    glTexParameteri(GL_TEXTURE_1D, GL_GENERATE_MIPMAP, GL_TRUE);
-#endif
     if (Agros2D::problem()->setting()->value(ProblemSetting::View_PaletteFilter).toBool())
     {
 #ifdef Q_WS_WIN

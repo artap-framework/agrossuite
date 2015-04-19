@@ -51,7 +51,9 @@ void readCustomForms(QMenu *menu);
 void readCustomScripts(QMenu *menu, PythonScriptingConsoleView *consoleView, QWidget *parent);
 
 QT_BEGIN_NAMESPACE
-Q_DECLARE_INTERFACE(FormInterface, "agros2d.FormInterface/1.0")
+#define FormInterface_IID "org.agros.FormInterface"
+Q_DECLARE_INTERFACE(FormInterface,
+                    FormInterface_IID)
 QT_END_NAMESPACE
 
 #endif // FORM_INTERFACE_H

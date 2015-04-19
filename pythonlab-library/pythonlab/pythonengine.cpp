@@ -481,7 +481,7 @@ bool PythonEngine::runScript(const QString &script, const QString &fileName)
     return successfulRun;
 }
 
-bool PythonEngine::runExpression(const QString &expression, double *value, const QString &command)
+bool PythonEngine::runExpression(const QString &expression, double *value, const QString &commandPre, const QString &commandPost)
 {
     bool successfulRun = false;
 
@@ -494,12 +494,11 @@ bool PythonEngine::runExpression(const QString &expression, double *value, const
         if (value)
         {
             // return value
-            QString exp;
-            if (command.isEmpty())
-                exp = QString("result_pythonlab = %1").arg(expression);
-            else
-                exp = QString("%1; result_pythonlab = %2").arg(command).arg(expression);
-
+            QString exp = QString("result_pythonlab = %1").arg(expression);
+            if (!commandPre.isEmpty())
+                exp = exp.insert(0, QString("%1; ").arg(commandPre));
+            if (!commandPost.isEmpty())
+                exp = exp.append(QString("; %1").arg(commandPost));
 
             // std::cout << exp.toStdString() << std::endl;
             output = PyRun_String(exp.toLatin1().data(), Py_single_input, dict(), dict());
@@ -553,7 +552,7 @@ bool PythonEngine::runExpression(const QString &expression, double *value, const
             {
                 ErrorResult result = parseError(false);
                 if (!result.error().isEmpty())
-                    qDebug() << result.tracebackToString();
+                    qDebug() << result.error() << " : " << result.tracebackToString();
 
                 successfulRun = false;
             }

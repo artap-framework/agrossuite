@@ -34,10 +34,8 @@ class PythonScriptingConsoleView;
 class AGROS_LIBRARY_API FormScript : public FormInterface
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID FormInterface_IID FILE "")
     Q_INTERFACES(FormInterface)
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    Q_PLUGIN_METADATA(IID "org.agros.FormScript" FILE "")
-#endif
 
 public:
     FormScript(const QString &m_fileName = "", PythonScriptingConsoleView *consoleView = NULL, QWidget *parent = 0);

@@ -861,8 +861,6 @@ void SolverDeal::solve()
                 m_time = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble();
             }
 
-            // cout << "actualTimeStep = " << actualTimeStep << ", time = " << m_time << endl;
-
             // update time dep variables
             Module::updateTimeFunctions(m_time);
             assembleSystem();
@@ -918,6 +916,8 @@ void SolverDeal::solve()
                 // estimate error
                 estSln.add(-1, m_solution);
                 error = estSln.l2_norm() / m_solution.l2_norm();
+                if (error < EPS_ZERO)
+                    qDebug() << error;
 
                 // ratio
                 double actualRatio = error / actualTimeStep;
@@ -971,8 +971,6 @@ void SolverDeal::solve()
                     Agros2D::problem()->removeLastTimeStepLength();
                     Agros2D::solutionStore()->removeSolution(solutionID);
                     m_solution = initialSolution;
-
-                    // cout << "ref step = " << step << ", numTimeLevels() = " << Agros2D::problem()->numTimeLevels() << endl;
                 }
                 else
                 {
@@ -980,16 +978,12 @@ void SolverDeal::solve()
                     // shift time
                     m_time -= actualTimeStep;
                     stepLengths.removeLast();
+                    solutions.removeLast();
 
-                    if (step == Agros2D::problem()->timeLastStep())
-                    {
-                        solutions.removeLast();
-
-                        if (solutions.size() > 0)
-                            m_solution = solutions.last();
-                        else
-                            m_solution = initialSolution;
-                    }
+                    if (solutions.size() > 0)
+                        m_solution = solutions.last();
+                    else
+                        m_solution = initialSolution;
                 }
 
                 Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
@@ -997,8 +991,6 @@ void SolverDeal::solve()
             }
             else
             {
-                // cout << "step = " << step << ", numTimeLevels() = " << Agros2D::problem()->numTimeLevels() << endl;
-
                 Agros2D::problem()->setActualTimeStepLength(actualTimeStep);
                 Agros2D::log()->updateTransientChartInfo(m_time);
 
@@ -1032,7 +1024,7 @@ void SolverDeal::solve()
                     all_constraints.distribute(m_solution);
 
                     dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solutionTrans(m_doFHandler);
-                    dealii::Vector<double> previousSolution = m_solution;
+                    dealii::Vector<double> previousSolution(m_solution);
 
                     m_triangulation->prepare_coarsening_and_refinement();
                     solutionTrans.prepare_for_coarsening_and_refinement(previousSolution);

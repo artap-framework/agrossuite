@@ -29,7 +29,7 @@ Value::Value(double value)
     : m_isEvaluated(true), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(Agros2D::problem())
 {
     m_text = QString::number(value);
-    m_number = value;      
+    m_number = value;
 }
 
 Value::Value(double value, std::vector<double> x, std::vector<double> y, DataTableType type, bool splineFirstDerivatives, bool extrapolateConstant)
@@ -42,7 +42,7 @@ Value::Value(double value, std::vector<double> x, std::vector<double> y, DataTab
     m_table.setValues(x, y);
     m_table.setType(type);
     m_table.setSplineFirstDerivatives(splineFirstDerivatives);
-    m_table.setExtrapolateConstant(extrapolateConstant);       
+    m_table.setExtrapolateConstant(extrapolateConstant);
 }
 
 Value::Value(const QString &value)
@@ -153,6 +153,10 @@ double Value::number() const
 
 double Value::numberAtPoint(const Point &point) const
 {
+    // speed up
+    if (point == m_point)
+        return number();
+
     double result;
 
     // force evaluate
@@ -163,6 +167,10 @@ double Value::numberAtPoint(const Point &point) const
 
 double Value::numberAtTime(double time) const
 {
+    // speed up
+    if (time == m_time)
+        return number();
+
     double result;
 
     // force evaluate
@@ -173,6 +181,10 @@ double Value::numberAtTime(double time) const
 
 double Value::numberAtTimeAndPoint(double time, const Point &point) const
 {
+    // speed up
+    if ((time == m_time) && (point == m_point))
+        return number();
+
     double result;
 
     // force evaluate
@@ -310,60 +322,43 @@ bool Value::evaluateExpression(const QString &expression, double time, const Poi
     bool signalBlocked = currentPythonEngineAgros()->signalsBlocked();
     currentPythonEngineAgros()->blockSignals(true);
 
-    QString command;
+    QString commandPre;
+    QString commandPost;
 
     if (m_isCoordinateDependent && !m_isTimeDependent)
     {
         if (m_problem->config()->coordinateType() == CoordinateType_Planar)
-            command = QString("x = %1; y = %2").arg(point.x).arg(point.y);
+        {
+            commandPre = QString("x = %1; y = %2").arg(point.x).arg(point.y);
+            commandPost = QString("del x; del y");
+        }
         else
-            command = QString("r = %1; z = %2").arg(point.x).arg(point.y);
+        {
+            commandPre = QString("r = %1; z = %2").arg(point.x).arg(point.y);
+            commandPost = QString("del r; del z");
+        }
     }
-
-    if (m_isTimeDependent && !m_isCoordinateDependent)
+    else if (m_isTimeDependent && !m_isCoordinateDependent)
     {
-        command = QString("time = %1").arg(time);
+        commandPre = QString("time = %1").arg(time);
+        commandPost = QString("del time");
     }
-
-    if (m_isCoordinateDependent && m_isTimeDependent)
+    else if (m_isCoordinateDependent && m_isTimeDependent)
     {
         if (m_problem->config()->coordinateType() == CoordinateType_Planar)
-            command = QString("time = %1; x = %2; y = %3").arg(time).arg(point.x).arg(point.y);
+        {
+            commandPre = QString("time = %1; x = %2; y = %3").arg(time).arg(point.x).arg(point.y);
+            commandPost = QString("del time; del x; del y");
+        }
         else
-            command = QString("time = %1; r = %2; z = %3").arg(time).arg(point.x).arg(point.y);
+        {
+            commandPre = QString("time = %1; r = %2; z = %3").arg(time).arg(point.x).arg(point.y);
+            commandPost = QString("del time; del r; del z");
+        }
     }
 
     // eval expression
-    bool successfulRun = currentPythonEngineAgros()->runExpression(expression, &evaluationResult, command);
-
-    // delete reserved variables
-    if (!command.isEmpty())
-    {
-        QString commandDel;
-
-        if (m_isCoordinateDependent && !m_isTimeDependent)
-        {
-            if (m_problem->config()->coordinateType() == CoordinateType_Planar)
-                commandDel = QString("del x; del y");
-            else
-                commandDel = QString("del r; del z");
-        }
-
-        if (m_isTimeDependent && !m_isCoordinateDependent)
-        {
-            commandDel = QString("del time");
-        }
-
-        if (m_isCoordinateDependent && m_isTimeDependent)
-        {
-            if (m_problem->config()->coordinateType() == CoordinateType_Planar)
-                commandDel = QString("del time; del x; del y");
-            else
-                commandDel = QString("del time; del r; del z");
-        }
-
-        currentPythonEngineAgros()->runExpression(commandDel);
-    }
+    bool successfulRun = currentPythonEngineAgros()->runExpression(expression, &evaluationResult, commandPre, commandPost);
 
     if (!signalBlocked)
         currentPythonEngineAgros()->blockSignals(false);

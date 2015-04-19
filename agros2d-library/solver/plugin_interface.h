@@ -162,7 +162,9 @@ protected:
 
 
 QT_BEGIN_NAMESPACE
-Q_DECLARE_INTERFACE(PluginInterface, "agros2d.PluginInterface/1.0")
+#define PluginInterface_IID "org.agros.PluginInterface"
+Q_DECLARE_INTERFACE(PluginInterface,
+                    PluginInterface_IID)
 QT_END_NAMESPACE
 
 #endif // PLUGIN_INTERFACE_H

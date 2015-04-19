@@ -159,7 +159,7 @@ public:
     void pythonShowImageCommand(const QString &fileName, int width = 0, int height = 0);
 
     bool runScript(const QString &script, const QString &fileName = "");
-    bool runExpression(const QString &expression, double *value = NULL, const QString &command = QString());
+    bool runExpression(const QString &expression, double *value = NULL, const QString &commandPre = QString(), const QString &commandPost = QString());
     bool runExpressionConsole(const QString &expression);
     ErrorResult parseError(bool clear = true);
     inline bool isScriptRunning() { return m_isScriptRunning; }
