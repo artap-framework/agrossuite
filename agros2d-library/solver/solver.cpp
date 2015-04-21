@@ -1159,7 +1159,7 @@ void SolverDeal::solveProblemNonLinearPicard()
 
         Agros2D::log()->printMessage(QObject::tr("Solver (Picard)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, damping: %3)")
                                      .arg(iteration)
-                                     .arg(QString::number(relativeChangeOfSolutions.last(), 'f', 5))
+                                     .arg(QString::number(relativeChangeOfSolutions.last(), 'e', 3))
                                      .arg(dampingFactor));
 
         Agros2D::log()->updateNonlinearChartInfo(phase, steps, relativeChangeOfSolutions);
@@ -1406,7 +1406,7 @@ void SolverDeal::solveProblemNonLinearNewton()
 
         Agros2D::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, residual: %3, damping: %4)")
                                      .arg(iteration)
-                                     .arg(QString::number(relativeChangeOfSolutions.last(), 'f', 5))
+                                     .arg(QString::number(relativeChangeOfSolutions.last(), 'e', 3))
                                      .arg(QString::number(residualNorm, 'e', 3))
                                      .arg(dampingFactor));
 
@@ -1460,7 +1460,7 @@ void SolverDeal::solveAdaptivity()
             solveProblem();
 
             // error
-            double error = 100.0;
+            double relChangeSol = 100.0;
             if (i > 0)
             {
                 // interpolate previous solution to current grid
@@ -1471,14 +1471,14 @@ void SolverDeal::solveAdaptivity()
                 previousSolutionInterpolated.add(-1, m_solution);
                 double differenceSolutionNorm = previousSolutionInterpolated.l2_norm();
                 double currentSolutionNorm = m_solution.l2_norm();
-                error = fabs(differenceSolutionNorm / currentSolutionNorm) * 100.0;
+                relChangeSol = fabs(differenceSolutionNorm / currentSolutionNorm) * 100.0;
 
                 // cout << differenceSolutionNorm << " : " << currentSolutionNorm << endl;
             }
             // cout << "error: " << error << endl;
 
             FieldSolutionID solutionID(m_fieldInfo, Agros2D::problem()->timeLastStep(), i);
-            SolutionStore::SolutionRunTimeDetails runTime(0.0, error, m_doFHandler.n_dofs());
+            SolutionStore::SolutionRunTimeDetails runTime(0.0, relChangeSol, m_doFHandler.n_dofs());
             Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, m_solution), runTime);
 
             if (i > 0)
@@ -1486,11 +1486,11 @@ void SolverDeal::solveAdaptivity()
 
             Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2 %, DOFs: %3)").
                                          arg(i + 1).
-                                         arg(error).
+                                         arg(relChangeSol).
                                          arg(m_doFHandler.n_dofs()));
 
             // stopping criterium
-            if (error < m_fieldInfo->value(FieldInfo::AdaptivityTolerance).toDouble())
+            if (relChangeSol < m_fieldInfo->value(FieldInfo::AdaptivityTolerance).toDouble())
                 break;
         }
     }
