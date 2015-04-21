@@ -22,7 +22,7 @@ class TestAdaptivityElectrostatic(Agros2DTestCase):
         self.electrostatic.polynomial_order = 1
         
         self.electrostatic.adaptivity_type = "hp-adaptivity"
-        self.electrostatic.adaptivity_parameters['steps'] = 7
+        self.electrostatic.adaptivity_parameters['tolerance'] = 0.4
         self.electrostatic.solver = "linear"
         
         # boundaries
@@ -189,7 +189,7 @@ class TestAdaptivityMagneticProfileConductor(Agros2DTestCase):
         self.magnetic.polynomial_order = 1
         self.magnetic.adaptivity_type = "hp-adaptivity"
         self.magnetic.adaptivity_parameters['steps'] = 3
-        self.magnetic.adaptivity_parameters['tolerance'] = 2
+        self.magnetic.adaptivity_parameters['tolerance'] = 0
         self.magnetic.solver = "linear"
                 
         # boundaries
@@ -306,6 +306,7 @@ class TestAdaptivityHLenses(Agros2DTestCase):
         self.magnetic.polynomial_order = 1
         self.magnetic.adaptivity_type = "h-adaptivity"
         self.magnetic.adaptivity_parameters['steps'] = 5
+        self.magnetic.adaptivity_parameters['tolerance'] = 0
         self.magnetic.solver = "linear"
                 
         # boundaries
@@ -448,7 +449,7 @@ if __name__ == '__main__':
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElectrostatic))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityAcoustic))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElasticityBracket))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityMagneticProfileConductor))    
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityMagneticProfileConductor))    
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityRF_TE))  
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityHLenses))  
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityPAndHCoupled))  

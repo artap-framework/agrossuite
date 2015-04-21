@@ -291,7 +291,7 @@ protected:
     std::shared_ptr<dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > > previousSolutionTrans;
     void solveAdaptivity();
     void estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_indicators) const;
-    void refineGrid(bool refine = true);
+    void prepareGridRefinement();
 };
 
 namespace Module {

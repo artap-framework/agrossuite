@@ -610,11 +610,8 @@ void SolverDeal::estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_
     }
 }
 
-void SolverDeal::refineGrid(bool refine)
+void SolverDeal::prepareGridRefinement()
 {
-    // previousSolutionTrans = std::shared_ptr<dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > >(
-    //             new dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> >(m_doFHandler));
-
     // estimated error per cell
     dealii::Vector<float> estimated_error_per_cell(m_triangulation->n_active_cells());
 
@@ -701,17 +698,6 @@ void SolverDeal::refineGrid(bool refine)
             }
         }
     }
-
-    if (refine)
-    {
-        // hanging_node_constraints.distribute(m_solution);
-
-        // cout << m_solution.size() << endl;
-        m_triangulation->prepare_coarsening_and_refinement();
-        // previousSolutionTrans->prepare_for_coarsening_and_refinement(m_solution);
-        // previousSolutionTrans->prepare_for_pure_refinement();
-        m_triangulation->execute_coarsening_and_refinement();
-    }
 }
 
 double SolverDeal::computeNorm()
@@ -748,8 +734,8 @@ double SolverDeal::computeNorm()
 
 void SolverDeal::setup(bool useDirichletLift)
 {
-    QTime time;
-    time.start();
+    // QTime time;
+    // time.start();
 
     m_doFHandler.distribute_dofs(*m_feCollection);
     // std::cout << "Number of degrees of freedom: " << m_doFHandler.n_dofs() << std::endl;
@@ -834,6 +820,10 @@ void SolverDeal::solve()
         double nextTimeStepLength = constantTimeStep;
         double averageErrorToLenghtRatio = 0.0;
 
+        // solution transfer
+        dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solutionTrans(m_doFHandler);
+        dealii::Vector<double> previousSolution;
+
         // solutions and step length
         QList<dealii::Vector<double> > solutions;
         QList<double> stepLengths;
@@ -864,6 +854,13 @@ void SolverDeal::solve()
             // update time dep variables
             Module::updateTimeFunctions(m_time);
             assembleSystem();
+
+            // interpolate solution
+            if ((m_fieldInfo->adaptivityType() != AdaptivityMethod_None) && (step > 1))
+            {
+                if (previousSolution.size() != m_solution.size())
+                    solutionTrans.interpolate(previousSolution, m_solution);
+            }
 
             // remove first solution and step length
             if (solutions.size() > Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt() - 1)
@@ -991,6 +988,8 @@ void SolverDeal::solve()
             }
             else
             {
+                all_constraints.distribute(m_solution);
+
                 Agros2D::problem()->setActualTimeStepLength(actualTimeStep);
                 Agros2D::log()->updateTransientChartInfo(m_time);
 
@@ -1010,7 +1009,16 @@ void SolverDeal::solve()
                                                  arg(0.0).
                                                  arg(m_doFHandler.n_dofs()));
 
-                    refineGrid(false);
+                    all_constraints.distribute(m_solution);
+
+                    // prepare for transfer solution
+                    solutionTrans = dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> >(m_doFHandler);
+                    previousSolution = m_solution;
+
+                    m_triangulation->prepare_coarsening_and_refinement();
+                    solutionTrans.prepare_for_coarsening_and_refinement(previousSolution);
+
+                    prepareGridRefinement();
 
                     int min_grid_level = 1;
                     int max_grid_level = 2;
@@ -1018,24 +1026,15 @@ void SolverDeal::solve()
                     if (m_triangulation->n_levels() > max_grid_level)
                         for (dealii::Triangulation<2>::active_cell_iterator cell = m_triangulation->begin_active(max_grid_level); cell != m_triangulation->end(); ++cell)
                             cell->clear_refine_flag();
-                    // for (dealii::Triangulation<2>::active_cell_iterator cell = m_triangulation->begin_active(min_grid_level); cell != m_triangulation->end_active(min_grid_level); ++cell)
-                    //     cell->clear_coarsen_flag();
+                    for (dealii::Triangulation<2>::active_cell_iterator cell = m_triangulation->begin_active(min_grid_level); cell != m_triangulation->end_active(min_grid_level); ++cell)
+                        cell->clear_coarsen_flag();
 
-                    all_constraints.distribute(m_solution);
 
-                    dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solutionTrans(m_doFHandler);
-                    dealii::Vector<double> previousSolution(m_solution);
-
-                    m_triangulation->prepare_coarsening_and_refinement();
-                    solutionTrans.prepare_for_coarsening_and_refinement(previousSolution);
+                    // execute transfer solution
                     m_triangulation->execute_coarsening_and_refinement();
 
-                    // reinit
+                    // reinit system
                     setup(true);
-                    assembleSystem();
-
-                    // transfer solution
-                    solutionTrans.interpolate(previousSolution, m_solution);
                 }
             }
         }
@@ -1055,11 +1054,8 @@ void SolverDeal::solveProblem()
     if (m_fieldInfo->linearityType() == LinearityType_Linear)
     {
         setup(true);
-        // QTime time;
-        // time.start();
         assembleSystem();
-        // std::cout << "assemble: " << time.elapsed() << ", ndofs: " << m_doFHandler.n_dofs() <<  std::endl;
-        // time.start();
+
         solveLinearSystem(system_matrix, system_rhs, m_solution);
         all_constraints.distribute(m_solution);
 
@@ -1312,7 +1308,7 @@ void SolverDeal::solveProblemNonLinearNewton()
         {
             time.start();
             assembleSystem();
-            
+
             time.start();
             system_rhs *= -1.0;
             solveLinearSystem(system_matrix, system_rhs, m_solution);
@@ -1438,39 +1434,47 @@ void SolverDeal::solveAdaptivity()
     }
     else
     {
-        double previousNorm = 0.0;
+        // solution transfer
+        dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solutionTrans(m_doFHandler);
+        dealii::Vector<double> previousSolution;
+
+        // double previousNorm = 0.0;
         for (int i = 0; i < m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt(); i++)
         {
-
-            dealii::Vector<double> previousSolution;
             if (i > 0)
             {
+                // prepare for transfer solution
+                solutionTrans = dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> >(m_doFHandler);
                 previousSolution = m_solution;
-                refineGrid(true);
+
+                m_triangulation->prepare_coarsening_and_refinement();
+                solutionTrans.prepare_for_coarsening_and_refinement(previousSolution);
+
+                prepareGridRefinement();
+
+                // execute transfer solution
+                m_triangulation->execute_coarsening_and_refinement();
             }
 
-            // dealii::Vector<double> previousSolution = m_solution;
-
+            // solve problem
             solveProblem();
 
             // error
-            // double error = 1;
+            double error = 100.0;
             if (i > 0)
             {
-                // adaptiveSolutionInterpolated.reinit(m_doFHandler.n_dofs());
-                // solutionTrans.refine_interpolate(m_solution, previousSolutionInterpolated);
-                // previousSolutionTrans->interpolate(previousSolution, adaptiveSolutionInterpolated);
-                // cout << m_solution.size() << " , " << adaptiveSolutionInterpolated.size() << endl;
+                // interpolate previous solution to current grid
+                dealii::Vector<double> previousSolutionInterpolated(m_solution.size());
+                solutionTrans.interpolate(previousSolution, previousSolutionInterpolated);
 
-                // adaptiveSolutionInterpolated.add(-1, m_solution);
-                // cout << adaptiveSolutionInterpolated.l2_norm() << endl;
-                // error = adaptiveSolutionInterpolated.l2_norm() / m_solution.l2_norm();
+                // compute difference between previous and current solution
+                previousSolutionInterpolated.add(-1, m_solution);
+                double differenceSolutionNorm = previousSolutionInterpolated.l2_norm();
+                double currentSolutionNorm = m_solution.l2_norm();
+                error = fabs(differenceSolutionNorm / currentSolutionNorm) * 100.0;
+
+                // cout << differenceSolutionNorm << " : " << currentSolutionNorm << endl;
             }
-
-            // TODO: do it better
-            double norm = computeNorm();
-            double error = std::fabs(previousNorm - norm) / norm * 100.0;
-            previousNorm = norm;
             // cout << "error: " << error << endl;
 
             FieldSolutionID solutionID(m_fieldInfo, Agros2D::problem()->timeLastStep(), i);
@@ -1480,7 +1484,7 @@ void SolverDeal::solveAdaptivity()
             if (i > 0)
                 Agros2D::log()->updateAdaptivityChartInfo(m_fieldInfo, 0, i);
 
-            Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2, DOFs: %3)").
+            Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2 %, DOFs: %3)").
                                          arg(i + 1).
                                          arg(error).
                                          arg(m_doFHandler.n_dofs()));
