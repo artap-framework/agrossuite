@@ -489,7 +489,7 @@ void SolverDeal::setup(bool useDirichletLift)
         transientMassMatrix.reinit(sparsityPattern);
         transientTotalMatrix.reinit(sparsityPattern);
     }
-    qDebug() << "setup (" << time.elapsed() << "ms )";
+    // qDebug() << "setup (" << time.elapsed() << "ms )";
 }
 
 void SolverDeal::solveLinearSystem(dealii::SparseMatrix<double> &system,
@@ -604,7 +604,7 @@ void SolverDeal::solve()
 
             // update time dep variables
             Module::updateTimeFunctions(m_time);
-            // assembleSystem();
+            assembleSystem();
 
             // interpolate solution
             if ((m_fieldInfo->adaptivityType() != AdaptivityMethod_None) && (step > 1))

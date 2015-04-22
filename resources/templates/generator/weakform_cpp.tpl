@@ -558,13 +558,19 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool calculateDirichletLiftValue)
 
 void SolverDeal{{CLASS}}::copyLocalToGlobal(const AssemblyCopyData &copy_data)
 {
+    // distribute local to global system
     if (copy_data.isAssembled)
     {
-        // distribute local to global system
         bool emptyLocalMatrix = copy_data.cell_matrix.all_zero();
-        bool emptyLocalRHS = copy_data.cell_rhs.all_zero();
 
-        if (!emptyLocalMatrix && !emptyLocalRHS)
+        if (emptyLocalMatrix)
+        {
+            // rhs only
+            constraintsAll.distribute_local_to_global(copy_data.cell_rhs,
+                                                      copy_data.local_dof_indices,
+                                                      systemRHS);
+        }
+        else
         {
             // matrix and rhs
             constraintsAll.distribute_local_to_global(copy_data.cell_matrix,
@@ -573,21 +579,6 @@ void SolverDeal{{CLASS}}::copyLocalToGlobal(const AssemblyCopyData &copy_data)
                                                       systemMatrix,
                                                       systemRHS);
         }
-        else if (!emptyLocalMatrix && emptyLocalRHS)
-        {
-            // matrix only
-            constraintsAll.distribute_local_to_global(copy_data.cell_matrix,
-                                                      copy_data.local_dof_indices,
-                                                      systemMatrix);
-        }
-        else if (emptyLocalMatrix && !emptyLocalRHS)
-        {
-            // rhs only
-            constraintsAll.distribute_local_to_global(copy_data.cell_rhs,
-                                                      copy_data.local_dof_indices,
-                                                      systemRHS);
-        }
-
 
         if (m_fieldInfo->analysisType() == AnalysisType_Transient)
         {
