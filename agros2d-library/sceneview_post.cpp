@@ -198,7 +198,7 @@ dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_
 PostDeal::PostDeal() :
     m_activeViewField(NULL),
     m_activeTimeStep(NOT_FOUND_SO_FAR),
-    m_activeAdaptivityStep(NOT_FOUND_SO_FAR),    
+    m_activeAdaptivityStep(NOT_FOUND_SO_FAR),
     m_isProcessed(false)
 {
     connect(Agros2D::scene(), SIGNAL(cleared()), this, SLOT(clear()));
@@ -251,8 +251,11 @@ void PostDeal::processRangeContour()
 
 void PostDeal::processRangeScalar()
 {
-    Agros2D::problem()->setting()->setValue(ProblemSetting::View_ScalarRangeMin, 0.0);
-    Agros2D::problem()->setting()->setValue(ProblemSetting::View_ScalarRangeMax, 0.0);
+    if (Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarRangeAuto).toBool())
+    {
+        Agros2D::problem()->setting()->setValue(ProblemSetting::View_ScalarRangeMin, 0.0);
+        Agros2D::problem()->setting()->setValue(ProblemSetting::View_ScalarRangeMax, 0.0);
+    }
 
     if ((Agros2D::problem()->isSolved()) && (m_activeViewField)
             && ((Agros2D::problem()->setting()->value(ProblemSetting::View_ShowScalarView).toBool())
@@ -271,7 +274,7 @@ void PostDeal::processRangeScalar()
         Agros2D::log()->printMessage(tr("Post View"), tr("Scalar view (%1)").arg(Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarVariable).toString()));
 
         std::shared_ptr<PostDataOut> data_out = viewScalarFilter(m_activeViewField->localVariable(Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarVariable).toString()),
-                                                 (PhysicFieldVariableComp) Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt());
+                                                                 (PhysicFieldVariableComp) Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt());
         data_out->compute_nodes(m_scalarValues, (m_activeViewField->hasDeformableShape() && Agros2D::problem()->setting()->value(ProblemSetting::View_DeformContour).toBool()));
 
         if (Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarRangeAuto).toBool())
@@ -299,10 +302,10 @@ void PostDeal::processRangeVector()
         Agros2D::log()->printMessage(tr("Post View"), tr("Vector view (%1)").arg(Agros2D::problem()->setting()->value(ProblemSetting::View_VectorVariable).toString()));
 
         std::shared_ptr<PostDataOut> data_outX = viewScalarFilter(m_activeViewField->localVariable(Agros2D::problem()->setting()->value(ProblemSetting::View_VectorVariable).toString()),
-                                                  PhysicFieldVariableComp_X);
+                                                                  PhysicFieldVariableComp_X);
 
         std::shared_ptr<PostDataOut> data_outY = viewScalarFilter(m_activeViewField->localVariable(Agros2D::problem()->setting()->value(ProblemSetting::View_VectorVariable).toString()),
-                                                  PhysicFieldVariableComp_Y);
+                                                                  PhysicFieldVariableComp_Y);
 
         data_outX->compute_nodes(m_vectorXValues);
         data_outY->compute_nodes(m_vectorYValues);
@@ -346,7 +349,7 @@ void PostDeal::problemMeshed()
     if (!m_activeViewField)
     {
         setActiveViewField(Agros2D::problem()->fieldInfos().begin().value());
-    }    
+    }
 }
 
 void PostDeal::problemSolved()
@@ -398,7 +401,7 @@ void PostDeal::processSolved()
 
 
 std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariable,
-                                        PhysicFieldVariableComp physicFieldVariableComp)
+                                                        PhysicFieldVariableComp physicFieldVariableComp)
 {    
     // QTime time;
     // time.start();

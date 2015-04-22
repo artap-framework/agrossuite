@@ -1047,11 +1047,7 @@ void PostprocessorWidget::doApply()
         txtScalarFieldRangeMin->setValue(rangeMin);
         txtScalarFieldRangeMax->setValue(rangeMax);
     }
-    else
-    {
-        txtScalarFieldRangeMin->setValue(0.0);
-        txtScalarFieldRangeMax->setValue(0.0);
-    }
+
 
     refresh();
 
