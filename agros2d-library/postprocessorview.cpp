@@ -1048,7 +1048,6 @@ void PostprocessorWidget::doApply()
         txtScalarFieldRangeMax->setValue(rangeMax);
     }
 
-
     refresh();
 
     // refresh
