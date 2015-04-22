@@ -36,11 +36,11 @@
               <boundary_edge id="5"/>
             </boundary_edges>
             <boundary_types>
-              <boundary_type key="acoustic_impedance" value="0"/>
-              <boundary_type key="acoustic_normal_acceleration_imag" value="0"/>
-              <boundary_type key="acoustic_normal_acceleration_real" value="0"/>
               <boundary_type key="acoustic_pressure_imag" value="0"/>
+              <boundary_type key="acoustic_normal_acceleration_imag" value="0"/>
+              <boundary_type key="acoustic_impedance" value="0"/>
               <boundary_type key="acoustic_pressure_real" value="0"/>
+              <boundary_type key="acoustic_normal_acceleration_real" value="0"/>
             </boundary_types>
           </boundary>
           <boundary id="2" name="Source" type="acoustic_pressure">
@@ -48,11 +48,11 @@
               <boundary_edge id="4"/>
             </boundary_edges>
             <boundary_types>
-              <boundary_type key="acoustic_impedance" value="0"/>
-              <boundary_type key="acoustic_normal_acceleration_imag" value="0"/>
-              <boundary_type key="acoustic_normal_acceleration_real" value="0"/>
               <boundary_type key="acoustic_pressure_imag" value="0"/>
+              <boundary_type key="acoustic_normal_acceleration_imag" value="0"/>
+              <boundary_type key="acoustic_impedance" value="0"/>
               <boundary_type key="acoustic_pressure_real" value="1"/>
+              <boundary_type key="acoustic_normal_acceleration_real" value="0"/>
             </boundary_types>
           </boundary>
           <boundary id="3" name="Matched boundary" type="acoustic_impedance">
@@ -60,11 +60,11 @@
               <boundary_edge id="0"/>
             </boundary_edges>
             <boundary_types>
-              <boundary_type key="acoustic_impedance" value="1.25*343"/>
-              <boundary_type key="acoustic_normal_acceleration_imag" value="0"/>
-              <boundary_type key="acoustic_normal_acceleration_real" value="0"/>
               <boundary_type key="acoustic_pressure_imag" value="0"/>
+              <boundary_type key="acoustic_normal_acceleration_imag" value="0"/>
+              <boundary_type key="acoustic_impedance" value="1.25*343"/>
               <boundary_type key="acoustic_pressure_real" value="0"/>
+              <boundary_type key="acoustic_normal_acceleration_real" value="0"/>
             </boundary_types>
           </boundary>
         </boundaries>
@@ -94,18 +94,20 @@
           <field_item field_key="PicardAndersonNumberOfLastVectors" field_value="3"/>
           <field_item field_key="SpaceNumberOfRefinements" field_value="0"/>
           <field_item field_key="SpacePolynomialOrder" field_value="1"/>
-          <field_item field_key="AdaptivitySteps" field_value="8"/>
-          <field_item field_key="AdaptivityTolerance" field_value="3"/>
+          <field_item field_key="AdaptivitySteps" field_value="10"/>
+          <field_item field_key="AdaptivityTolerance" field_value="4"/>
           <field_item field_key="AdaptivityEstimator" field_value="0"/>
           <field_item field_key="AdaptivityFinePercentage" field_value="30"/>
           <field_item field_key="AdaptivityCoarsePercentage" field_value="3"/>
           <field_item field_key="AdaptivityTransientBackSteps" field_value="0"/>
           <field_item field_key="AdaptivityTransientRedoneEach" field_value="1"/>
-          <field_item field_key="TransientAnalysis" field_value="0"/>
           <field_item field_key="TransientTimeSkip" field_value="0"/>
           <field_item field_key="TransientInitialCondition" field_value="0"/>
-          <field_item field_key="LinearSolverIterMethod" field_value="2"/>
-          <field_item field_key="LinearSolverIterPreconditioner" field_value="0"/>
+          <field_item field_key="LinearSolverIterDealIIMethod" field_value="1"/>
+          <field_item field_key="LinearSolverIterDealIIPreconditioner" field_value="6"/>
+          <field_item field_key="LinearSolverIterPARALUTIONMethod" field_value="1"/>
+          <field_item field_key="LinearSolverIterPARALUTIONPreconditioner" field_value="1"/>
+          <field_item field_key="LinearSolverIterPARALUTIONDoublePrecision" field_value="1"/>
           <field_item field_key="LinearSolverIterToleranceAbsolute" field_value="1e-16"/>
           <field_item field_key="LinearSolverIterIters" field_value="1000"/>
           <field_item field_key="TimeUnit" field_value="s"/>
@@ -154,8 +156,8 @@
     <item key="View_ScalarRangeBase" value="10"/>
     <item key="View_ScalarDecimalPlace" value="4"/>
     <item key="View_ScalarRangeAuto" value="1"/>
-    <item key="View_ScalarRangeMin" value="-1.01853787899017"/>
-    <item key="View_ScalarRangeMax" value="1.00027716159821"/>
+    <item key="View_ScalarRangeMin" value="-1.02498769760132"/>
+    <item key="View_ScalarRangeMax" value="1"/>
     <item key="View_ShowVectorView" value="0"/>
     <item key="View_VectorVariable" value="acoustic_local_acceleration_real"/>
     <item key="View_VectorProportional" value="1"/>

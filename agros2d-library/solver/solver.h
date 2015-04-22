@@ -24,6 +24,7 @@
 #include "util/global.h"
 #include "solutiontypes.h"
 #include "scene.h"
+#include "linear_solver.h"
 
 #include "tbb/tbb.h"
 
@@ -47,8 +48,6 @@
 #include <deal.II/lac/sparse_direct.h>
 #include <deal.II/numerics/solution_transfer.h>
 #include <deal.II/base/time_stepping.h>
-
-#include <paralution.hpp>
 #define signals public
 
 class DoubleCellIterator
@@ -138,15 +137,17 @@ public:
     inline const dealii::hp::MappingCollection<2> &mappingCollection() const { return *m_mappingCollection; }
     inline const dealii::hp::FECollection<2> &feCollection() const { return *m_feCollection; }
     // quadrature cache
-    inline const dealii::hp::QCollection<2> &quadrature_formulas() const { return m_quadrature_formulas; }
-    inline const dealii::hp::QCollection<2-1> &face_quadrature_formulas() const { return m_face_quadrature_formulas; }
+    inline const dealii::hp::QCollection<2> &quadrature_formulas() const { return m_quadratureFormulas; }
+    inline const dealii::hp::QCollection<2-1> &face_quadrature_formulas() const { return m_quadratureFormulasFace; }
 
     // if useDirichletLift == false, zero dirichlet boundary condition is used
     // this is used for later iterations of the Newton method
     // this function, however, has to be called to ensure zero dirichlet boundary
     virtual void setup(bool useDirichletLift);
 
-    virtual void assembleSystem() = 0;
+    virtual void assembleSystem(const dealii::Vector<double> &solutionNonlinearPrevious = dealii::Vector<double>(),
+                                bool assembleMatrix = true,
+                                bool assembleRHS = true) = 0;
     virtual void assembleDirichlet(bool calculateDirichletLiftValue) = 0;
 
     // problem
@@ -161,6 +162,12 @@ public:
                       const BDF2Table &bdf2Table,
                       bool spatialAdaptivity = false);
 
+    // linear solver
+    void solveLinearSystem(dealii::SparseMatrix<double> &system,
+                           dealii::Vector<double> &rhs,
+                           dealii::Vector<double> &sln,
+                           bool reuseDecomposition = false);
+
     inline void set_time(const double new_time) { m_time = new_time; }
     inline double get_time() const { return m_time; }
 
@@ -174,11 +181,21 @@ protected:
         AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
                             const dealii::hp::MappingCollection<2> &mappingCollection,
                             const dealii::hp::QCollection<2> &quadratureFormulas,
-                            const dealii::hp::QCollection<2-1> &faceQuadratureFormulas);
+                            const dealii::hp::QCollection<2-1> &faceQuadratureFormulas,
+                            const dealii::Vector<double> &solutionNonlinearPrevious = dealii::Vector<double>(),
+                            bool assembleMatrix = true,
+                            bool assembleRHS = true);
         AssemblyScratchData(const AssemblyScratchData &scratch_data);
 
         dealii::hp::FEValues<2> hp_fe_values;
         dealii::hp::FEFaceValues<2> hp_fe_face_values;
+
+        // previous nonlinear solution
+        dealii::Vector<double> solutionNonlinearPrevious;
+
+        // conditional assembling
+        bool assembleMatrix;
+        bool assembleRHS;
     };
 
     class AGROS_LIBRARY_API AssemblyCopyData
@@ -192,7 +209,7 @@ protected:
         dealii::FullMatrix<double> cell_mass_matrix; // transient
         dealii::Vector<double> cell_rhs;
 
-        std::vector<dealii::types::global_dof_index> local_dof_indices;       
+        std::vector<dealii::types::global_dof_index> local_dof_indices;
     };
 
     class AGROS_LIBRARY_API AssembleCache
@@ -225,6 +242,10 @@ protected:
     const Scene *m_scene;
     const Problem *m_problem;
 
+    // linear solver
+    SolverLinearSolver m_linearSolver;
+
+    // assembling
     dealii::Triangulation<2> *m_triangulation;
     dealii::hp::DoFHandler<2> m_doFHandler;
     dealii::hp::MappingCollection<2> *m_mappingCollection;
@@ -235,13 +256,11 @@ protected:
     AssembleCache &assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points);
 
     // quadrature cache
-    dealii::hp::QCollection<2> m_quadrature_formulas;
-    dealii::hp::QCollection<2-1> m_face_quadrature_formulas;
+    dealii::hp::QCollection<2> m_quadratureFormulas;
+    dealii::hp::QCollection<2-1> m_quadratureFormulasFace;
 
     // current solution
     dealii::Vector<double> m_solution;
-    // previous solution (for nonlinear solver)
-    dealii::Vector<double> m_solution_nonlinear_previous;
 
     // weak coupling sources
     QMap<QString, dealii::Vector<double> > m_coupling_sources;
@@ -249,46 +268,28 @@ protected:
     // hanging nodes constraints, Dirichlet ones and sparsity pattern.
     void recreateConstraints(bool zeroDirichletLift);
 
-    dealii::ConstraintMatrix hanging_node_constraints;
-    dealii::ConstraintMatrix Dirichlet_constraints;
-    dealii::ConstraintMatrix zero_Dirichlet_constraints;
-    dealii::ConstraintMatrix all_constraints;
-    dealii::SparsityPattern sparsity_pattern;
+    dealii::ConstraintMatrix constraintsHangingNodes;
+    dealii::ConstraintMatrix constraintsDirichlet;
+    dealii::ConstraintMatrix constraintsZeroDirichlet;
+    dealii::ConstraintMatrix constraintsAll;
+    dealii::SparsityPattern sparsityPattern;
 
     // matrix and rhs
-    dealii::SparseMatrix<double> system_matrix;
-    dealii::Vector<double> system_rhs;
+    dealii::SparseMatrix<double> systemMatrix;
+    dealii::Vector<double> systemRHS;
 
     // transient mass matrix
     double m_time;
-    dealii::SparseMatrix<double> mass_matrix;
-    dealii::SparseMatrix<double> transient_left_matrix;       
-
-    // we need to be able to keep lu decomposition for Jacobian reuse
-    dealii::SparseDirectUMFPACK direct_solver;
-
-    double computeNorm();
-
-    // Newton method
-    bool m_assemble_matrix;
-
-    // linear system
-    void solveLinearSystem(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln);
-    void solveUMFPACK(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln);
-    void solveExternalUMFPACK(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln);
-    void solvedealii(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln);
-    template <typename NumberType>
-    void solvePARALUTION(dealii::SparseMatrix<double> &system, dealii::Vector<double> &rhs, dealii::Vector<double> &sln);
+    dealii::SparseMatrix<double> transientMassMatrix;
+    dealii::SparseMatrix<double> transientTotalMatrix;
 
     //  linearity
     void solveProblem();
+    void solveProblemLinear();
     void solveProblemNonLinearPicard();
     void solveProblemNonLinearNewton();
-    void setupProblemNonLinearNewton();
 
     // adaptivity
-    dealii::Vector<double> adaptiveSolutionInterpolated;
-    std::shared_ptr<dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > > previousSolutionTrans;
     void solveAdaptivity();
     void estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_indicators) const;
     void prepareGridRefinement();

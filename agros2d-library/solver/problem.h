@@ -182,7 +182,6 @@ private:
 
     // transient analysis
     QList<double> m_timeStepLengths;
-    QList<QPair<double, bool> > m_timeHistory;
 
     bool mesh(bool emitMeshed);
     bool meshAction(bool emitMeshed);

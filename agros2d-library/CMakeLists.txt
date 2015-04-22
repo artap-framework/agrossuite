@@ -154,7 +154,8 @@ SET(SOURCES
     solver/solutionstore.cpp
     solver/solutiontypes.cpp
     solver/solver.cpp
-    solver/solver_external.cpp
+    solver/linear_solver.cpp
+    solver/linear_solver_external.cpp
     solver/weak_form.cpp
     util/conf.cpp
     util/dxf_filter.cpp
@@ -265,7 +266,8 @@ SOURCE_GROUP(
   solver/solutionstore.cpp
   solver/solutiontypes.cpp
   solver/solver.cpp
-  solver/solver_external.cpp
+  solver/linear_solver.cpp
+  solver/linear_solver_external.cpp
   solver/weak_form.cpp
 )
 
@@ -359,7 +361,8 @@ SET(HEADERS
   solver/solutionstore.h
   solver/solutiontypes.h
   solver/solver.h
-  solver/solver_external.h
+  solver/linear_solver.h
+  solver/linear_solver_external.h
   solver/weak_form.h
   util/conf.h
   util/constants.h

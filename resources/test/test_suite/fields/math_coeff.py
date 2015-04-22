@@ -300,5 +300,5 @@ if __name__ == '__main__':
     result = Agros2DTestResult()
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffPlanar))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffAxisymmetric))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffTransientAxisymmetric))    
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffTransientAxisymmetric))    
     suite.run(result)

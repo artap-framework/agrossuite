@@ -31,7 +31,9 @@ public:
     SolverDeal{{CLASS}}(const FieldInfo *fieldInfo)
         : SolverDeal(fieldInfo) {}
 
-    virtual void assembleSystem();
+    virtual void assembleSystem(const dealii::Vector<double> &solutionNonlinearPrevious,
+                                bool assembleMatrix = true,
+                                bool assembleRHS = true);
     virtual void assembleDirichlet(bool calculateDirichletLiftValue);
 
 protected:

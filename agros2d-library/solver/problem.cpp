@@ -187,7 +187,6 @@ void Problem::clearSolution()
     m_lastTimeElapsed = QTime();
     m_timeStepLengths.clear();
     m_timeStepLengths.append(0.0);
-    m_timeHistory.clear();
 
     m_initialMesh.clear();
     m_initialUnrefinedMesh.clear();

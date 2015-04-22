@@ -48,17 +48,19 @@
 #include <deal.II/base/work_stream.h>
 #include <deal.II/base/multithread_info.h>
 
-void SolverDeal{{CLASS}}::assembleSystem()
+void SolverDeal{{CLASS}}::assembleSystem(const dealii::Vector<double> &solutionNonlinearPrevious,
+                                         bool assembleMatrix,
+                                         bool assembleRHS)
 {
     bool isTransient = (m_fieldInfo->analysisType() == AnalysisType_Transient);
 
-    system_rhs = 0.0;
-    if (m_assemble_matrix)
-        system_matrix = 0.0;
+    systemRHS = 0.0;
+    if (assembleMatrix)
+        systemMatrix = 0.0;
 
     // transient solver
     if (isTransient)
-        mass_matrix = 0.0;
+        transientMassMatrix = 0.0;
 
     TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_begin, cell_end, source_begin, source_end;
     cell_begin = m_doFHandler.begin_active();
@@ -92,7 +94,10 @@ void SolverDeal{{CLASS}}::assembleSystem()
                             *this,
                             &SolverDeal{{CLASS}}::localAssembleSystem,
                             &SolverDeal{{CLASS}}::copyLocalToGlobal,
-                            AssemblyScratchData(*m_feCollection, *m_mappingCollection, m_quadrature_formulas, m_face_quadrature_formulas),
+                            AssemblyScratchData(*m_feCollection, *m_mappingCollection, m_quadratureFormulas, m_quadratureFormulasFace,
+                                                solutionNonlinearPrevious,
+                                                assembleMatrix,
+                                                assembleRHS),
                             AssemblyCopyData());
 }
 
@@ -144,10 +149,10 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
         // volume value and grad cache
         AssembleCache &cache = assembleCache(tbb::this_tbb_thread::get_id(), dofs_per_cell, n_q_points);
 
-        if (m_solution_nonlinear_previous.size() > 0)
+        if (scratch_data.solutionNonlinearPrevious.size() > 0)
         {
-            fe_values.get_function_values(m_solution_nonlinear_previous, cache.solution_value_previous);
-            fe_values.get_function_gradients(m_solution_nonlinear_previous, cache.solution_grad_previous);
+            fe_values.get_function_values(scratch_data.solutionNonlinearPrevious, cache.solution_value_previous);
+            fe_values.get_function_gradients(scratch_data.solutionNonlinearPrevious, cache.solution_grad_previous);
         }
 
         // coupling sources{{#COUPLING_SOURCE}}
@@ -234,7 +239,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                         }
                     }
                     
-                    if (m_solution_nonlinear_previous.size() > 0)
+                    if (scratch_data.solutionNonlinearPrevious.size() > 0)
                     {
                         // previous values and grads
                         cache.solution_value_previous_face[face] = std::vector<dealii::Vector<double> >(n_face_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
@@ -242,9 +247,9 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
 
                         for (unsigned int q_point = 0; q_point < n_face_q_points; ++q_point)
                         {
-                            fe_face_values.get_function_values(m_solution_nonlinear_previous, cache.solution_value_previous_face[face]);
+                            fe_face_values.get_function_values(scratch_data.solutionNonlinearPrevious, cache.solution_value_previous_face[face]);
                             // todo - throws some uninitialized error
-                            //fe_face_values.get_function_gradients(m_solution_nonlinear_previous, cache.solution_grad_previous_face[face]);
+                            //fe_face_values.get_function_gradients(scratch_data.solutionNonlinearPrevious, cache.solution_grad_previous_face[face]);
                         }
                     }
                 }
@@ -274,7 +279,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
 
                 for (unsigned int i = 0; i < dofs_per_cell; ++i)
                 {
-                    if (m_assemble_matrix)
+                    if (scratch_data.assembleMatrix)
                     {
                         for (unsigned int j = 0; j < dofs_per_cell; ++j)
                         {
@@ -403,7 +408,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
 
                             for (unsigned int i = 0; i < dofs_per_cell; ++i)
                             {
-                                if(m_assemble_matrix)
+                                if(scratch_data.assembleMatrix)
                                 {
                                     for (unsigned int j = 0; j < dofs_per_cell; ++j)
                                     {
@@ -517,7 +522,7 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool calculateDirichletLiftValue)
                                         // todo: nonconstant essential BC
                                         if (calculateDirichletLiftValue)
                                         {
-                                            Dirichlet_constraints.add_line(local_face_dof_indices[i]);
+                                            constraintsDirichlet.add_line(local_face_dof_indices[i]);
 
                                             dealii::Point<2> p = points[i];
                                             
@@ -531,13 +536,13 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool calculateDirichletLiftValue)
                                             
                                             // {{EXPRESSION_ID}}
                                             if (comp == {{ROW_INDEX}})
-                                                Dirichlet_constraints.set_inhomogeneity(local_face_dof_indices[i], {{EXPRESSION}});
+                                                constraintsDirichlet.set_inhomogeneity(local_face_dof_indices[i], {{EXPRESSION}});
                                             {{/FORM_EXPRESSION_ESSENTIAL}}
                                         }
                                         else
                                         {
-                                            zero_Dirichlet_constraints.add_line (local_face_dof_indices[i]);
-                                            zero_Dirichlet_constraints.set_inhomogeneity(local_face_dof_indices[i], 0.0);
+                                            constraintsZeroDirichlet.add_line (local_face_dof_indices[i]);
+                                            constraintsZeroDirichlet.set_inhomogeneity(local_face_dof_indices[i], 0.0);
                                         }
                                     }
                                 }
@@ -556,27 +561,40 @@ void SolverDeal{{CLASS}}::copyLocalToGlobal(const AssemblyCopyData &copy_data)
     if (copy_data.isAssembled)
     {
         // distribute local to global system
-        if(m_assemble_matrix)
+        bool emptyLocalMatrix = copy_data.cell_matrix.all_zero();
+        bool emptyLocalRHS = copy_data.cell_rhs.all_zero();
+
+        if (!emptyLocalMatrix && !emptyLocalRHS)
         {
-            all_constraints.distribute_local_to_global(copy_data.cell_matrix,
-                                                                copy_data.cell_rhs,
-                                                                copy_data.local_dof_indices,
-                                                                system_matrix,
-                                                                system_rhs);
+            // matrix and rhs
+            constraintsAll.distribute_local_to_global(copy_data.cell_matrix,
+                                                      copy_data.cell_rhs,
+                                                      copy_data.local_dof_indices,
+                                                      systemMatrix,
+                                                      systemRHS);
         }
-        else
+        else if (!emptyLocalMatrix && emptyLocalRHS)
         {
-            all_constraints.distribute_local_to_global(copy_data.cell_rhs,
-                                                                copy_data.local_dof_indices,
-                                                                system_rhs);
+            // matrix only
+            constraintsAll.distribute_local_to_global(copy_data.cell_matrix,
+                                                      copy_data.local_dof_indices,
+                                                      systemMatrix);
         }
+        else if (emptyLocalMatrix && !emptyLocalRHS)
+        {
+            // rhs only
+            constraintsAll.distribute_local_to_global(copy_data.cell_rhs,
+                                                      copy_data.local_dof_indices,
+                                                      systemRHS);
+        }
+
 
         if (m_fieldInfo->analysisType() == AnalysisType_Transient)
         {
-            // distribute local to global system
-            all_constraints.distribute_local_to_global(copy_data.cell_mass_matrix,
-                                                                copy_data.local_dof_indices,
-                                                                mass_matrix);
+            // transient mass matrix
+            constraintsAll.distribute_local_to_global(copy_data.cell_mass_matrix,
+                                                      copy_data.local_dof_indices,
+                                                      transientMassMatrix);
         }
     }
 }

@@ -21,7 +21,7 @@
 #include <streambuf>
 #include <sstream>
 
-#include "solver_external.h"
+#include "linear_solver_external.h"
 
 #include "util/constants.h"
 
