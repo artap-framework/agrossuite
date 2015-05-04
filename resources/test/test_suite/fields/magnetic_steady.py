@@ -18,7 +18,7 @@ class TestMagneticPlanar(Agros2DTestCase):
         self.magnetic = agros2d.field("magnetic")
         self.magnetic.analysis_type = "steadystate"
         self.magnetic.number_of_refinements = 0
-        self.magnetic.polynomial_order = 5
+        self.magnetic.polynomial_order = 2
         self.magnetic.solver = "linear"
         
         self.magnetic.add_boundary("A = 0", "magnetic_potential", {"magnetic_potential_real" : 0})
@@ -94,9 +94,9 @@ class TestMagneticPlanar(Agros2DTestCase):
 #        self.value_test("Volume Maxwell force - y", volume["Fty"], -11.87, 0.15)            
 #        
 #        # surface integral
-#        surface = self.magnetic.surface_integrals([2, 3, 4, 5])
-#        self.value_test("Surface Maxwell force - x", surface["Ftx"], 2.66, 0.15)
-#        self.value_test("Surface Maxwell force - y", surface["Fty"], -11.87, 0.15)        
+        surface = self.magnetic.surface_integrals([2, 3, 4, 5])
+        self.value_test("Surface Maxwell force - x", surface["Ftx"], 2.66, 0.15)
+        self.value_test("Surface Maxwell force - y", surface["Fty"], -11.87, 0.15)        
         
 #    def test_values_total_current(self):
 #        self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_total_current_prescribed" : 1, "magnetic_total_current_real" : 1e6*1.225e-2})
@@ -125,7 +125,7 @@ class TestMagneticAxisymmetric(Agros2DTestCase):
         self.magnetic = agros2d.field("magnetic")
         self.magnetic.analysis_type = "steadystate"
         self.magnetic.number_of_refinements = 0
-        self.magnetic.polynomial_order = 5
+        self.magnetic.polynomial_order = 2
         self.magnetic.solver = "linear"
         
         self.magnetic.add_boundary("A = 0", "magnetic_potential", {"magnetic_potential_real" : 0})
@@ -170,7 +170,7 @@ class TestMagneticAxisymmetric(Agros2DTestCase):
         
         # labels
         self.geometry.add_label(0.0348743, 0.0347237, materials = {"magnetic" : "Fe"})
-        self.geometry.add_label(0.00512569, -0.0070852, area = 0.8e-06, materials = {"magnetic" : "Fe"})
+        self.geometry.add_label(0.00512569, -0.0070852, area = 8e-06, materials = {"magnetic" : "Fe"})
         self.geometry.add_label(0.0141705, 0.12445, materials = {"magnetic" : "Air"})
         self.geometry.add_label(0.0346923, 0.0892198, materials = {"magnetic" : "Fe"})
         self.geometry.add_label(0.036093, 0.0654078, materials = {"magnetic" : "Magnet"})
@@ -204,8 +204,8 @@ class TestMagneticAxisymmetric(Agros2DTestCase):
 #        self.value_test("Volume Maxwell force - z", volume["Fty"], 0.429770, 0.1)
 #        
 #        # surface integral
-#        surface = self.magnetic.surface_integrals([12, 13, 14, 15])
-#        self.value_test("Surface Maxwell force - z", surface["Fty"], 0.429770, 0.1)
+        surface = self.magnetic.surface_integrals([12, 13, 14, 15])
+        self.value_test("Surface Maxwell force - z", surface["Fty"], 0.429770, 0.1)
 #        
 #    def test_values_total_current(self):
 #        self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_total_current_prescribed" : 1, "magnetic_total_current_real" : 2e6*1.216e-3 }) 

@@ -475,6 +475,9 @@ void SolverDeal{{CLASS}}::assembleDirichlet(bool calculateDirichletLiftValue)
     dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler.begin_active(), endc = m_doFHandler.end();
     for(; cell != endc; ++cell)
     {
+        if (m_scene->labels->at(cell->material_id() - 1)->marker(m_fieldInfo) == m_scene->materials->getNone(m_fieldInfo))
+            continue;
+        
         // boundaries
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
         {

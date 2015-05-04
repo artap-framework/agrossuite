@@ -158,9 +158,8 @@ public:
     // BDF methods
     void transientBDF(const double timeStep,
                       dealii::Vector<double> &solution,
-                      const QList<dealii::Vector<double> > solutions,
-                      const BDF2Table &bdf2Table,
-                      bool spatialAdaptivity = false);
+                      const std::vector<dealii::Vector<double> > solutions,
+                      const BDF2Table &bdf2Table);
 
     // linear solver
     void solveLinearSystem(dealii::SparseMatrix<double> &system,
@@ -292,7 +291,7 @@ protected:
     // adaptivity
     void solveAdaptivity();
     void estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_indicators) const;
-    void prepareGridRefinement();
+    void prepareGridRefinement(int maxHIncrease = -1, int maxPIncrease = -1);
 };
 
 namespace Module {

@@ -46,89 +46,6 @@
 
 #include <deal.II/numerics/vector_tools.h>
 
-/*
-const double internal_coeff = 0.5;
-
-class {{CLASS}}SurfaceIntegralCalculator : public PostProcessing::SurfaceIntegralCalculator<double>
-{
-public:
-    {{CLASS}}SurfaceIntegralCalculator(const FieldInfo *fieldInfo, MeshFunctionSharedPtr<double> source_function, int number_of_integrals)
-        : PostProcessing::SurfaceIntegralCalculator<double>(source_function, number_of_integrals), m_fieldInfo(fieldInfo)
-    {
-    }
-
-    {{CLASS}}SurfaceIntegralCalculator(const FieldInfo *fieldInfo, std::vector<MeshFunctionSharedPtr<double> > source_functions, int number_of_integrals)
-        : PostProcessing::SurfaceIntegralCalculator<double>(source_functions, number_of_integrals), m_fieldInfo(fieldInfo)
-    {
-    }
-
-    virtual void integral(int n, double* wt, Func<double> **fns, GeomSurf<double> *e, double* result)
-    {
-        int labelIdx = atoi(m_fieldInfo->initialMesh()->get_element_markers_conversion().get_user_marker(e->elem_marker).marker.c_str());
-        int edgeIdx = atoi(m_fieldInfo->initialMesh()->get_boundary_markers_conversion().get_user_marker(e->edge_marker).marker.c_str());
-
-        // this was an attempt to allow proper integration of surface "flow-like" variables
-        // at the present moment, we integrate twice on each inner edge and the results are added, that
-        // is why there is internal_coeff = 0.5. The following three lines attempted to calculate each
-        // of such integrals only once, thus internal_coeff would be = 1. It is, however, very hard
-        // to determin, what is the inner or outer normal for inner edges, especially for coupled problems,
-        // where each field may have holes in diffrent places, etc.
-
-        // previous attempt
-        //int labelIdxToIntegrate = Agros2D::scene()->edges->at(edgeIdx)->innerLabelIdx(m_fieldInfo);
-        //if(labelIdx != labelIdxToIntegrate)
-        //    return;
-
-        // new idea: It might be possible to do it this way. We would distinguish two types of surface
-        // integral quantities, ordinary and flow-like. For the first group, nothing would change. For
-        // the second, we would use different threatment. They would be visible in the list in two cases
-        // only:
-        // 1) if only one edge is selected : than we can calculate the value correctly, but the
-        //    sign would be random (although we can indicate the "outer" normal graphicaly in the postprocessor)
-        //    and use convention, that, say, positive is in direction out and negative in.
-        // 2) if selected edges form a circle in whose interior all labes support given field. Than it is
-        //    clear what is interior and what is exterior and the value can be calculated
-        // In all other cases, integral of flow-like values would not be defined / visible in the list
-
-        SceneMaterial *material = Agros2D::scene()->labels->at(labelIdx)->marker(m_fieldInfo);
-
-        double *x = e->x;
-        double *y = e->y;
-
-        {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
-        {{/VARIABLE_MATERIAL}}
-
-        double **value = new double*[source_functions.size()];
-        double **dudx = new double*[source_functions.size()];
-        double **dudy = new double*[source_functions.size()];
-
-        for (int i = 0; i < source_functions.size(); i++)
-        {
-            value[i] = fns[i]->val;
-            dudx[i] = fns[i]->dx;
-            dudy[i] = fns[i]->dy;
-        }
-
-        // expressions
-        {{#VARIABLE_SOURCE}}
-        if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
-        {
-            for (int i = 0; i < n; i++)
-                result[{{POSITION}}] += wt[i] * ({{EXPRESSION}});
-        }
-        {{/VARIABLE_SOURCE}}
-
-        delete [] value;
-        delete [] dudx;
-        delete [] dudy;
-    }
-
-private:
-    // field info
-    const FieldInfo *m_fieldInfo;
-};
-*/
-
 {{CLASS}}SurfaceIntegral::{{CLASS}}SurfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
     : IntegralValue(fieldInfo, timeStep, adaptivityStep)
 {
@@ -183,9 +100,11 @@ void {{CLASS}}SurfaceIntegral::calculate()
                 // surface integration
                 for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
                 {
-                    if (cell_int->face(face)->at_boundary() && cell_int->face(face)->boundary_indicator() - 1 == iFace)
+                    if (cell_int->face(face)->user_index() - 1 == iFace)
                     {
                         hp_fe_face_values.reinit(cell_int, face);
+
+                        const bool atBoundary = cell_int->face(face)->at_boundary();
 
                         const dealii::FEFaceValues<2> &fe_values = hp_fe_face_values.get_present_fe_values();
                         const unsigned int n_face_q_points = fe_values.n_quadrature_points;
@@ -207,7 +126,7 @@ void {{CLASS}}SurfaceIntegral::calculate()
                                 const dealii::Point<2> p = fe_values.quadrature_point(k);
                                 const dealii::Point<2> normal = fe_values.normal_vector(k);
 
-                                m_values[QLatin1String("{{VARIABLE}}")] += fe_values.JxW(k) * ({{EXPRESSION}});
+                                m_values[QLatin1String("{{VARIABLE}}")] += (atBoundary ? 1.0 : 0.5) * fe_values.JxW(k) * ({{EXPRESSION}});
                             }
                         }
                         {{/VARIABLE_SOURCE}}

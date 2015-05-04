@@ -180,6 +180,35 @@ private:
     {{#SPECIAL_FUNCTION_SOURCE}}
     QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}> {{SPECIAL_FUNCTION_NAME}};{{/SPECIAL_FUNCTION_SOURCE}}
 };
+
+// find edges around the selected labels
+QList<int> surroundings;
+for (int iEdge = 0; iEdge < Agros2D::scene()->edges->count(); iEdge++)
+{
+    SceneEdge *edge = Agros2D::scene()->edges->at(iEdge);
+
+    if ((edge->leftLabelIdx() != MARKER_IDX_NOT_EXISTING) && (edge->rightLabelIdx() == MARKER_IDX_NOT_EXISTING))
+    {
+        if (edge->leftLabel()->isSelected())
+            surroundings.append(iEdge);
+    }
+    else if ((edge->leftLabelIdx() == MARKER_IDX_NOT_EXISTING) && (edge->rightLabelIdx() != MARKER_IDX_NOT_EXISTING))
+    {
+        if (edge->rightLabel()->isSelected())
+            surroundings.append(iEdge);
+    }
+    else if ((edge->leftLabelIdx() != MARKER_IDX_NOT_EXISTING) && (edge->rightLabelIdx() != MARKER_IDX_NOT_EXISTING))
+    {
+        if ((edge->leftLabel()->isSelected() && !edge->rightLabel()->isSelected()) ||
+                (!edge->leftLabel()->isSelected() && edge->rightLabel()->isSelected()))
+            surroundings.append(iEdge);
+    }
+}
+qDebug() << "surroundings";
+foreach (int idx, surroundings)
+    qDebug() << idx;
+qDebug() << "------------";
+
 */
 
 {{CLASS}}VolumeIntegral::{{CLASS}}VolumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
