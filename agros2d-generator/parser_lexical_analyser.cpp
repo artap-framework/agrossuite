@@ -392,13 +392,13 @@ void ParserInstance::addPostprocessorBasic()
     // eggshell
     if (m_parserModuleInfo.coordinateType == CoordinateType_Planar)
     {
-        m_dict["dxegg"] = "dudx[source_functions.size() - 1][i]";
-        m_dict["dyegg"] = "dudy[source_functions.size() - 1][i]";
+        m_dict["dxegg"] = "normal[0]";
+        m_dict["dyegg"] = "normal[1]";
     }
     else
     {
-        m_dict["dregg"] = "dudx[source_functions.size() - 1][i]";
-        m_dict["dzegg"] = "dudy[source_functions.size() - 1][i]";
+        m_dict["dregg"] = "normal[0]";
+        m_dict["dzegg"] = "normal[1]";
     }
 
 }

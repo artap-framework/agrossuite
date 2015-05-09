@@ -64,7 +64,6 @@ class TestMagneticPlanar(Agros2DTestCase):
         
         agros2d.view.zoom_best_fit()
         
-
     def general_test_values(self):                  
         # point value
         point = self.magnetic.local_values(0.018895, -0.173495)
@@ -87,16 +86,17 @@ class TestMagneticPlanar(Agros2DTestCase):
         self.value_test("Energy", volume["Wm"], 3.088946)
         self.value_test("Losses", volume["Pj"], 220.022114)
         self.value_test("Lorentz force - x", volume["Flx"], -110.011057)
-        self.value_test("Lorentz force - y", volume["Fly"], -36.62167)
-        self.value_test("Torque", volume["Tl"], 20.463818)
-#        volume = self.magnetic.volume_integrals([0])
-#        self.value_test("Volume Maxwell force - x", volume["Ftx"], 2.66, 0.15)
-#        self.value_test("Volume Maxwell force - y", volume["Fty"], -11.87, 0.15)            
-#        
-#        # surface integral
+        self.value_test("Lorentz force - y", volume["Fly"], -36.62167)        
+        volume = self.magnetic.volume_integrals([0])
+        self.value_test("Volume Maxwell force - x", volume["Ftx"], 2.531945167373358)
+        self.value_test("Volume Maxwell force - y", volume["Fty"], -10.176192051889345, 0.05)            
+        self.value_test("Volume Maxwell torque", volume["Tt"], 0.09914308361389448)
+        
+        # surface integral
         surface = self.magnetic.surface_integrals([2, 3, 4, 5])
-        self.value_test("Surface Maxwell force - x", surface["Ftx"], 2.66, 0.15)
-        self.value_test("Surface Maxwell force - y", surface["Fty"], -11.87, 0.15)        
+        self.value_test("Surface Maxwell force - x", surface["Ftx"], 2.531945167373358)
+        self.value_test("Surface Maxwell force - y", surface["Fty"], -10.176192051889345, 0.05)
+        self.value_test("Surface Maxwell torque", surface["Tt"], 0.09914308361389448)          
         
 #    def test_values_total_current(self):
 #        self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_total_current_prescribed" : 1, "magnetic_total_current_real" : 1e6*1.225e-2})
@@ -200,12 +200,12 @@ class TestMagneticAxisymmetric(Agros2DTestCase):
         volume = self.magnetic.volume_integrals([5])
         self.value_test("Integral Lorentz force - r", volume["Flx"], -8.069509) 
         self.value_test("Integral Lorentz force - z", volume["Fly"], -5.288991) 
-#        volume = self.magnetic.volume_integrals([1])        
-#        self.value_test("Volume Maxwell force - z", volume["Fty"], 0.429770, 0.1)
-#        
-#        # surface integral
+        volume = self.magnetic.volume_integrals([1])        
+        self.value_test("Volume Maxwell force - z", volume["Fty"], 0.429770, 0.05)
+        
+        # surface integral
         surface = self.magnetic.surface_integrals([12, 13, 14, 15])
-        self.value_test("Surface Maxwell force - z", surface["Fty"], 0.429770, 0.1)
+        self.value_test("Surface Maxwell force - z", surface["Fty"], 0.429770, 0.05)
 #        
 #    def test_values_total_current(self):
 #        self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_total_current_prescribed" : 1, "magnetic_total_current_real" : 2e6*1.216e-3 }) 
@@ -237,8 +237,8 @@ class TestMagneticNonlinPlanar(Agros2DTestCase):
         self.magnetic.polynomial_order = 3
         
         self.magnetic.solver = "newton"
-        self.magnetic.solver_parameters['residual'] = 0.1
-        self.magnetic.solver_parameters['damping_factor'] = 0.6
+        self.magnetic.solver_parameters['residual'] = 10.0
+        self.magnetic.solver_parameters['damping_factor'] = 0.8
         self.magnetic.solver_parameters['damping'] = 'automatic'
         self.magnetic.solver_parameters['jacobian_reuse'] = True
         self.magnetic.solver_parameters['jacobian_reuse_ratio'] = 0.9
@@ -321,8 +321,8 @@ class TestMagneticNonlinAxisymmetric(Agros2DTestCase):
         self.magnetic.polynomial_order = 3
         self.magnetic.adaptivity_type = "disabled"
         self.magnetic.solver = "newton"
-        self.magnetic.solver_parameters['residual'] = 1e-04
-        self.magnetic.solver_parameters['relative_change_of_solutions'] = 0.01
+        self.magnetic.solver_parameters['residual'] = 1e-01
+        self.magnetic.solver_parameters['relative_change_of_solutions'] = 0.1
         self.magnetic.solver_parameters['damping'] = "automatic"
         self.magnetic.solver_parameters['damping_factor'] = 0.8
         self.magnetic.solver_parameters['damping_factor_increase_steps'] = 1
@@ -408,12 +408,12 @@ class TestMagneticNonlinAxisymmetric(Agros2DTestCase):
         self.value_test("Integral Lorentz force - r", volume["Flx"], -8.101651950576503) 
         self.value_test("Integral Lorentz force - z", volume["Fly"], -5.501189057498289) 
 
-#        volume = self.magnetic.volume_integrals([1])        
-#        self.value_test("Volume Maxwell force - z", volume["Fty"], 0.4922392956664127, 0.1)
-#        
+        volume = self.magnetic.volume_integrals([1])        
+        self.value_test("Volume Maxwell force - z", volume["Fty"], 0.4922392956664127, 0.1)
+        
         # surface integral
-#        surface = self.magnetic.surface_integrals([12, 13, 14, 15])
-#        self.value_test("Surface Maxwell force - z", surface["Fty"], 0.4922392956664127, 0.1)
+        surface = self.magnetic.surface_integrals([12, 13, 14, 15])
+        self.value_test("Surface Maxwell force - z", surface["Fty"], 0.4922392956664127, 0.1)
                                                                                                                                                                                                                                            
 if __name__ == '__main__':        
     import unittest as ut

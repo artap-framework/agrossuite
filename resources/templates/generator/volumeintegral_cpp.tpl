@@ -47,170 +47,6 @@
 
 #include <deal.II/numerics/vector_tools.h>
 
-/*
-class {{CLASS}}VolumetricIntegralEggShellCalculator : public PostProcessing::VolumetricIntegralCalculator<double>
-{
-public:
-    {{CLASS}}VolumetricIntegralEggShellCalculator(const FieldInfo *fieldInfo, MeshFunctionSharedPtr<double> source_function, int number_of_integrals)
-        : PostProcessing::VolumetricIntegralCalculator<double>(source_function, number_of_integrals), m_fieldInfo(fieldInfo)
-    {
-        {{#SPECIAL_FUNCTION_SOURCE}}
-        {{SPECIAL_FUNCTION_NAME}} = QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}>(new {{SPECIAL_EXT_FUNCTION_FULL_NAME}}(m_fieldInfo, 0));{{/SPECIAL_FUNCTION_SOURCE}}
-    }
-
-    {{CLASS}}VolumetricIntegralEggShellCalculator(const FieldInfo *fieldInfo, std::vector<MeshFunctionSharedPtr<double> > source_functions, int number_of_integrals)
-        : PostProcessing::VolumetricIntegralCalculator<double>(source_functions, number_of_integrals), m_fieldInfo(fieldInfo)
-    {
-        {{#SPECIAL_FUNCTION_SOURCE}}
-        {{SPECIAL_FUNCTION_NAME}} = QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}>(new {{SPECIAL_EXT_FUNCTION_FULL_NAME}}(m_fieldInfo, 0));{{/SPECIAL_FUNCTION_SOURCE}}
-    }
-
-    virtual void integral(int n, double* wt, Func<double> **fns, GeomVol<double> *e, double* result)
-    {
-        SceneLabel *label = Agros2D::scene()->labels->at(atoi(m_fieldInfo->initialMesh()->get_element_markers_conversion().get_user_marker(e->elem_marker).marker.c_str()));
-        SceneMaterial *material = label->marker(m_fieldInfo);
-
-        double *x = e->x;
-        double *y = e->y;
-
-        {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
-        {{/VARIABLE_MATERIAL}}
-        // {{#SPECIAL_FUNCTION_SOURCE}}
-        // QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}> {{SPECIAL_FUNCTION_NAME}};
-        // if (m_fieldInfo->functionUsedInAnalysis("{{SPECIAL_FUNCTION_ID}}"))
-        //     {{SPECIAL_FUNCTION_NAME}} = QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}>(new {{SPECIAL_EXT_FUNCTION_FULL_NAME}}(m_fieldInfo, 0));
-        // {{/SPECIAL_FUNCTION_SOURCE}}
-
-        double **value = new double*[source_functions.size()];
-        double **dudx = new double*[source_functions.size()];
-        double **dudy = new double*[source_functions.size()];
-
-        for (int i = 0; i < source_functions.size(); i++)
-        {
-            value[i] = fns[i]->val;
-            dudx[i] = fns[i]->dx;
-            dudy[i] = fns[i]->dy;
-        }
-
-        // expressions
-        {{#VARIABLE_SOURCE_EGGSHELL}}
-        if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
-        {
-            for (int i = 0; i < n; i++)
-                result[{{POSITION}}] += wt[i] * ({{EXPRESSION}});
-        }
-        {{/VARIABLE_SOURCE_EGGSHELL}}
-
-        delete [] value;
-        delete [] dudx;
-        delete [] dudy;
-    }
-
-private:
-    // field info
-    const FieldInfo *m_fieldInfo;
-
-    {{#SPECIAL_FUNCTION_SOURCE}}
-    QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}> {{SPECIAL_FUNCTION_NAME}};{{/SPECIAL_FUNCTION_SOURCE}}
-};
-
-class {{CLASS}}VolumetricIntegralCalculator : public PostProcessing::VolumetricIntegralCalculator<double>
-{
-public:
-    {{CLASS}}VolumetricIntegralCalculator(const FieldInfo *fieldInfo, MeshFunctionSharedPtr<double> source_function, int number_of_integrals)
-        : PostProcessing::VolumetricIntegralCalculator<double>(source_function, number_of_integrals), m_fieldInfo(fieldInfo)
-    {
-        {{#SPECIAL_FUNCTION_SOURCE}}
-        {{SPECIAL_FUNCTION_NAME}} = QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}>(new {{SPECIAL_EXT_FUNCTION_FULL_NAME}}(m_fieldInfo, 0));{{/SPECIAL_FUNCTION_SOURCE}}
-    }
-
-    {{CLASS}}VolumetricIntegralCalculator(const FieldInfo *fieldInfo, std::vector<MeshFunctionSharedPtr<double> > source_functions, int number_of_integrals)
-        : PostProcessing::VolumetricIntegralCalculator<double>(source_functions, number_of_integrals), m_fieldInfo(fieldInfo)
-    {
-        {{#SPECIAL_FUNCTION_SOURCE}}
-        {{SPECIAL_FUNCTION_NAME}} = QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}>(new {{SPECIAL_EXT_FUNCTION_FULL_NAME}}(m_fieldInfo, 0));{{/SPECIAL_FUNCTION_SOURCE}}
-    }
-
-    virtual void integral(int n, double* wt, Func<double> **fns, GeomVol<double> *e, double* result)
-    {
-        SceneLabel *label = Agros2D::scene()->labels->at(atoi(m_fieldInfo->initialMesh()->get_element_markers_conversion().get_user_marker(e->elem_marker).marker.c_str()));
-        SceneMaterial *material = label->marker(m_fieldInfo);
-
-        double *x = e->x;
-        double *y = e->y;
-        int elementMarker = e->elem_marker;
-
-        {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
-        {{/VARIABLE_MATERIAL}}
-        // {{#SPECIAL_FUNCTION_SOURCE}}
-        // QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}> {{SPECIAL_FUNCTION_NAME}};
-        // if (isInCalculation_{{SPECIAL_FUNCTION_ID}})
-        //     {{SPECIAL_FUNCTION_NAME}} = QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}>(new {{SPECIAL_EXT_FUNCTION_FULL_NAME}}(m_fieldInfo, 0));
-        // {{/SPECIAL_FUNCTION_SOURCE}}
-
-        double **value = new double*[source_functions.size()];
-        double **dudx = new double*[source_functions.size()];
-        double **dudy = new double*[source_functions.size()];
-
-        for (int i = 0; i < source_functions.size(); i++)
-        {
-            value[i] = fns[i]->val;
-            dudx[i] = fns[i]->dx;
-            dudy[i] = fns[i]->dy;
-        }
-
-        // expressions
-        {{#VARIABLE_SOURCE}}
-        if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
-        {
-            for (int i = 0; i < n; i++)
-                result[{{POSITION}}] += wt[i] * ({{EXPRESSION}});
-        }
-        {{/VARIABLE_SOURCE}}
-
-        delete [] value;
-        delete [] dudx;
-        delete [] dudy;
-    }
-
-private:
-    // field info
-    const FieldInfo *m_fieldInfo;
-
-    {{#SPECIAL_FUNCTION_SOURCE}}
-    QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}> {{SPECIAL_FUNCTION_NAME}};{{/SPECIAL_FUNCTION_SOURCE}}
-};
-
-// find edges around the selected labels
-QList<int> surroundings;
-for (int iEdge = 0; iEdge < Agros2D::scene()->edges->count(); iEdge++)
-{
-    SceneEdge *edge = Agros2D::scene()->edges->at(iEdge);
-
-    if ((edge->leftLabelIdx() != MARKER_IDX_NOT_EXISTING) && (edge->rightLabelIdx() == MARKER_IDX_NOT_EXISTING))
-    {
-        if (edge->leftLabel()->isSelected())
-            surroundings.append(iEdge);
-    }
-    else if ((edge->leftLabelIdx() == MARKER_IDX_NOT_EXISTING) && (edge->rightLabelIdx() != MARKER_IDX_NOT_EXISTING))
-    {
-        if (edge->rightLabel()->isSelected())
-            surroundings.append(iEdge);
-    }
-    else if ((edge->leftLabelIdx() != MARKER_IDX_NOT_EXISTING) && (edge->rightLabelIdx() != MARKER_IDX_NOT_EXISTING))
-    {
-        if ((edge->leftLabel()->isSelected() && !edge->rightLabel()->isSelected()) ||
-                (!edge->leftLabel()->isSelected() && edge->rightLabel()->isSelected()))
-            surroundings.append(iEdge);
-    }
-}
-qDebug() << "surroundings";
-foreach (int idx, surroundings)
-    qDebug() << idx;
-qDebug() << "------------";
-
-*/
-
 {{CLASS}}VolumeIntegral::{{CLASS}}VolumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
     : IntegralValue(fieldInfo, timeStep, adaptivityStep)
 {
@@ -236,19 +72,50 @@ void {{CLASS}}VolumeIntegral::calculate()
             Module::updateTimeFunctions(Agros2D::problem()->timeStepToTotalTime(m_timeStep));
         }
 
-        // Gauss quadrature
+        // Gauss quadrature - volume
         dealii::hp::QCollection<2> quadrature_formulas;
         for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
             quadrature_formulas.push_back(dealii::QGauss<2>(degree + 1));
 
         dealii::hp::FEValues<2> hp_fe_values(ma.doFHandler()->get_fe(), quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
 
+        // Gauss quadrature - surface
+        dealii::hp::QCollection<2-1> face_quadrature_formulas;
+        for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+            face_quadrature_formulas.push_back(dealii::QGauss<2-1>(degree + 1));
+
+        dealii::hp::FEFaceValues<2> hp_fe_face_values(ma.doFHandler()->get_fe(), face_quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values);
+
+        // find edges around the selected labels
+        QList<int> surroundings;
+        if ({{INTEGRAL_COUNT_EGGSHELL}} > 0)
+        {
+            for (int iFace = 0; iFace < Agros2D::scene()->edges->count(); iFace++)
+            {
+                SceneEdge *edge = Agros2D::scene()->edges->at(iFace);
+
+                if ((edge->leftLabelIdx() != MARKER_IDX_NOT_EXISTING) && (edge->rightLabelIdx() == MARKER_IDX_NOT_EXISTING))
+                {
+                    if (edge->leftLabel()->isSelected())
+                        surroundings.append(iFace);
+                }
+                else if ((edge->leftLabelIdx() == MARKER_IDX_NOT_EXISTING) && (edge->rightLabelIdx() != MARKER_IDX_NOT_EXISTING))
+                {
+                    if (edge->rightLabel()->isSelected())
+                        surroundings.append(iFace);
+                }
+                else if ((edge->leftLabelIdx() != MARKER_IDX_NOT_EXISTING) && (edge->rightLabelIdx() != MARKER_IDX_NOT_EXISTING))
+                {
+                    if ((edge->leftLabel()->isSelected() && !edge->rightLabel()->isSelected()) ||
+                            (!edge->leftLabel()->isSelected() && edge->rightLabel()->isSelected()))
+                        surroundings.append(iFace);
+                }
+            }
+        }
+
         for (int iLabel = 0; iLabel < Agros2D::scene()->labels->count(); iLabel++)
         {
             SceneLabel *label = Agros2D::scene()->labels->at(iLabel);
-            if (!label->isSelected())
-                continue;
-
             SceneMaterial *material = label->marker(m_fieldInfo);
 
             {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
@@ -261,65 +128,73 @@ void {{CLASS}}VolumeIntegral::calculate()
                 // volume integration
                 if (cell_int->material_id() - 1 == iLabel)
                 {
-                    hp_fe_values.reinit(cell_int);
-
-                    const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
-                    const unsigned int n_q_points = fe_values.n_quadrature_points;
-
-                    std::vector<dealii::Vector<double> > solution_values(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-                    std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
-
-                    fe_values.get_function_values(ma.solution(), solution_values);
-                    fe_values.get_function_gradients(ma.solution(), solution_grads);
-
-                    // expressions
-                    {{#VARIABLE_SOURCE}}
-                    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+                    if (label->isSelected())
                     {
-                        for (unsigned int k = 0; k < n_q_points; ++k)
-                        {
-                            const dealii::Point<2> p = fe_values.quadrature_point(k);
+                        hp_fe_values.reinit(cell_int);
 
-                            m_values[QLatin1String("{{VARIABLE}}")] += fe_values.JxW(k) * ({{EXPRESSION}});
+                        const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
+                        const unsigned int n_q_points = fe_values.n_quadrature_points;
+
+                        std::vector<dealii::Vector<double> > solution_values(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+                        std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
+                        fe_values.get_function_values(ma.solution(), solution_values);
+                        fe_values.get_function_gradients(ma.solution(), solution_grads);
+
+                        // expressions
+                        {{#VARIABLE_SOURCE}}
+                        if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+                        {
+                            for (unsigned int k = 0; k < n_q_points; ++k)
+                            {
+                                const dealii::Point<2> p = fe_values.quadrature_point(k);
+
+                                m_values[QLatin1String("{{VARIABLE}}")] += fe_values.JxW(k) * ({{EXPRESSION}});
+                            }
+                        }
+                        {{/VARIABLE_SOURCE}}
+                    }
+
+                    // volume to surface (temporary eggshell replacement)
+                    if ({{INTEGRAL_COUNT_EGGSHELL}} > 0)
+                    {
+                        for (int j = 0; j < surroundings.count(); j++)
+                        {
+                            // surface integration
+                            for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
+                            {
+                                if (cell_int->face(face)->user_index() - 1 == surroundings[j])
+                                {
+                                    hp_fe_face_values.reinit(cell_int, face);
+
+                                    const dealii::FEFaceValues<2> &fe_values = hp_fe_face_values.get_present_fe_values();
+                                    const unsigned int n_face_q_points = fe_values.n_quadrature_points;
+
+                                    std::vector<dealii::Vector<double> > solution_values(n_face_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+                                    std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_face_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
+                                    fe_values.get_function_values(ma.solution(), solution_values);
+                                    fe_values.get_function_gradients(ma.solution(), solution_grads);
+
+                                    // expressions
+                                    {{#VARIABLE_SOURCE_EGGSHELL}}
+                                    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+                                    {
+                                        for (unsigned int k = 0; k < n_face_q_points; ++k)
+                                        {
+                                            const dealii::Point<2> p = fe_values.quadrature_point(k);
+                                            const dealii::Point<2> normal = fe_values.normal_vector(k);
+
+                                            m_values[QLatin1String("{{VARIABLE}}")] += fe_values.JxW(k) * ({{EXPRESSION}});
+                                        }
+                                    }
+                                    {{/VARIABLE_SOURCE_EGGSHELL}}
+                                }
+                            }
                         }
                     }
-                    {{/VARIABLE_SOURCE}}
                 }
             }
         }
-
-        //        if ({{INTEGRAL_COUNT_EGGSHELL}} > 0)
-        //        {
-        //            std::vector<std::string> markersInverted;
-        //            for (int i = 0; i < Agros2D::scene()->labels->count(); i++)
-        //            {
-        //                SceneLabel *label = Agros2D::scene()->labels->at(i);
-        //                if (!label->isSelected())
-        //                    markersInverted.push_back(QString::number(i).toStdString());
-        //            }
-
-        //            if (markers.size() > 0 && markersInverted.size() > 0)
-        //            {
-        //                MeshSharedPtr eggShellMesh = EggShell::get_egg_shell(ma.solutions().at(0)->get_mesh(), markers, 3);
-        //                if(eggShellMesh->get_num_active_elements() == 0)
-        //                  return;
-        //                MeshFunctionSharedPtr<double> eggShell(new ExactSolutionEggShell(eggShellMesh, 3));
-
-        //                std::vector<MeshFunctionSharedPtr<double> > slns;
-        //                for (int i = 0; i < ma.solutions().size(); i++)
-        //                    slns.push_back(ma.solutions().at(i));
-        //                slns.push_back(eggShell);
-
-        //                {{CLASS}}VolumetricIntegralEggShellCalculator calcEggShell(m_fieldInfo, slns, {{INTEGRAL_COUNT_EGGSHELL}});
-        //                double *valuesEggShell = calcEggShell.calculate(markersInverted);
-
-        //                {{#VARIABLE_SOURCE_EGGSHELL}}
-        //                if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
-        //                    m_values[QLatin1String("{{VARIABLE}}")] = valuesEggShell[{{POSITION}}];
-        //                {{/VARIABLE_SOURCE_EGGSHELL}}
-
-        //                ::free(valuesEggShell);
-        //            }
-        //        }
     }
 }

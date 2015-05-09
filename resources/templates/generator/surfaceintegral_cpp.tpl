@@ -78,9 +78,6 @@ void {{CLASS}}SurfaceIntegral::calculate()
 
         dealii::hp::FEFaceValues<2> hp_fe_face_values(ma.doFHandler()->get_fe(), face_quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values);
 
-        std::vector<double> x;
-        std::vector<double> y;
-
         for (int iFace = 0; iFace < Agros2D::scene()->edges->count(); iFace++)
         {
             SceneEdge *edge = Agros2D::scene()->edges->at(iFace);
@@ -114,9 +111,6 @@ void {{CLASS}}SurfaceIntegral::calculate()
 
                         fe_values.get_function_values(ma.solution(), solution_values);
                         fe_values.get_function_gradients(ma.solution(), solution_grads);
-
-                        x.resize(n_face_q_points);
-                        y.resize(n_face_q_points);
 
                         {{#VARIABLE_SOURCE}}
                         if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
