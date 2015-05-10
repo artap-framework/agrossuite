@@ -117,6 +117,8 @@ void {{CLASS}}VolumeIntegral::calculate()
         {
             SceneLabel *label = Agros2D::scene()->labels->at(iLabel);
             SceneMaterial *material = label->marker(m_fieldInfo);
+            if (material->isNone())
+                continue;
 
             {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
             {{/VARIABLE_MATERIAL}}

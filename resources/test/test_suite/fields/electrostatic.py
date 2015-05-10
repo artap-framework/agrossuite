@@ -17,16 +17,17 @@ class TestElectrostaticPlanar(Agros2DTestCase):
         self.electrostatic = agros2d.field("electrostatic")
         self.electrostatic.analysis_type = "steadystate"
         self.electrostatic.number_of_refinements = 1
-        self.electrostatic.polynomial_order = 3
+        self.electrostatic.polynomial_order = 2
         self.electrostatic.solver = "linear"
         
         self.electrostatic.add_boundary("Neumann", "electrostatic_surface_charge_density", {"electrostatic_surface_charge_density" : 0})
         self.electrostatic.add_boundary("U = 0 V", "electrostatic_potential", {"electrostatic_potential" : 0})
         self.electrostatic.add_boundary("U = 1000 V", "electrostatic_potential", {"electrostatic_potential" : 1000})
         
-        self.electrostatic.add_material("Dieletric", {"electrostatic_charge_density" : 0, "electrostatic_permittivity" : 3})
         self.electrostatic.add_material("Air", {"electrostatic_charge_density" : 0, "electrostatic_permittivity" : 1})
         self.electrostatic.add_material("Source", {"electrostatic_charge_density" : 4e-10, "electrostatic_permittivity" : 10})
+        self.electrostatic.add_material("Dieletric 1", {"electrostatic_permittivity" : 3, "electrostatic_charge_density" : 0})
+        self.electrostatic.add_material("Dieletric 2", {"electrostatic_permittivity" : 10, "electrostatic_charge_density" : 0})
         
         # geometry
         geometry = agros2d.geometry
@@ -48,12 +49,17 @@ class TestElectrostaticPlanar(Agros2DTestCase):
         geometry.add_edge(14, 13, 14, 18, boundaries = {})
         geometry.add_edge(14, 18, 7, 18, boundaries = {})
         geometry.add_edge(7, 18, 7, 13, boundaries = {})
-        
+        geometry.add_edge(9.5, 8, 7, 5.5)
+        geometry.add_edge(7, 5.5, 14, 4)
+        geometry.add_edge(13.5, 7, 14, 4)
+        geometry.add_edge(13.5, 7, 9.5, 8)
+
         # labels
         geometry.add_label(2.78257, 1.37346, materials = {"electrostatic" : "none"})
         geometry.add_label(10.3839, 15.7187, area = 0.2, materials = {"electrostatic" : "Source"})
         geometry.add_label(3.37832, 15.8626, materials = {"electrostatic" : "Air"})
-        geometry.add_label(12.3992, 0.556005, materials = {"electrostatic" : "Dieletric"})
+        geometry.add_label(12.3992, 0.556005, materials = {"electrostatic" : "Dieletric 1"})
+        geometry.add_label(10.7019, 5.86396, materials = {"electrostatic" : "Dieletric 2"})
         
         agros2d.view.zoom_best_fit()
         
@@ -62,25 +68,26 @@ class TestElectrostaticPlanar(Agros2DTestCase):
 
     def test_values(self):
         # point value
-        local_values = self.electrostatic.local_values(13.257584, 11.117738)
-        self.value_test("Scalar potential", local_values["V"], 1111.544825)
-        self.value_test("Electric field", local_values["E"], 111.954358)
-        self.value_test("Electric field - x", local_values["Ex"], 24.659054)
-        self.value_test("Electric field - y", local_values["Ey"], -109.204896)
-        self.value_test("Displacement", local_values["D"], 9.912649e-10)
-        self.value_test("Displacement - x", local_values["Dx"], 2.183359e-10)
-        self.value_test("Displacement - y", local_values["Dy"], -9.669207e-10)
-        self.value_test("Energy density", local_values["we"], 5.548821e-8)
+        local_values = self.electrostatic.local_values(5.06, 7.537)
+        self.value_test("Scalar potential", local_values["V"], 816.2345607039165)
+        self.value_test("Electric field", local_values["E"], 61.152854856080104)
+        self.value_test("Electric field - x", local_values["Ex"], 36.5703725807832)
+        self.value_test("Electric field - y", local_values["Ey"], -49.01305173634436)
+        self.value_test("Displacement", local_values["D"], 5.414588624414737E-10)
+        self.value_test("Displacement - x", local_values["Dx"], 3.2380094736792153E-10)
+        self.value_test("Displacement - y", local_values["Dy"], -4.3397076555793094E-10)
+        self.value_test("Energy density", local_values["we"], 1.6555878322139395E-8)
   
         # volume integral
-        volume_integrals = self.electrostatic.volume_integrals([1])
-        self.value_test("Energy", volume_integrals["We"], 1.307484e-7)
-        #self.value_test("Volume Maxwell force - x", volume_integrals["Ftx"], 7.592e-8, 0.1)
-        #self.value_test("Volume Maxwell force - y", volume_integrals["Fty"], -5.546e-7, 0.1)    
+        volume_integrals = self.electrostatic.volume_integrals([4])
+        self.value_test("Energy", volume_integrals["We"], 2.588874455677146E-7)
+        #self.value_test("Volume Maxwell force - x", volume_integrals["Ftx"], -5.1094828796447716E-8)
+        #self.value_test("Volume Maxwell force - y", volume_integrals["Fty"], -7.660962286643772E-8)    
+        #self.value_test("Volume Maxwell torque", volume_integrals["Tt"], -7.136150051327788E-6, 0.1)    
         
         # surface integral
         surface_integrals = self.electrostatic.surface_integrals([0, 1, 2, 3])
-        self.value_test("Electric charge", surface_integrals["Q"], 1.0961E-7)
+        self.value_test("Electric charge", surface_integrals["Q"], 1.0525248919143161E-7)
             
 class TestElectrostaticAxisymmetric(Agros2DTestCase):
     def setUp(self):       
@@ -162,6 +169,6 @@ if __name__ == '__main__':
     suite = ut.TestSuite()
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestElectrostaticPlanar))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestElectrostaticAxisymmetric))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestElectrostaticAxisymmetric))
     suite.run(result)
     
