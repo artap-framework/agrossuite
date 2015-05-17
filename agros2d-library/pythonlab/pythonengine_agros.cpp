@@ -366,8 +366,6 @@ QString createPythonFromModel()
 
         if (fieldInfo->adaptivityType() != AdaptivityMethod_None)
         {
-            // TODO: Quick FIX - must be more general
-
             str += QString("%1.adaptivity_parameters['steps'] = %2\n").
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::AdaptivitySteps).toInt());
@@ -376,17 +374,25 @@ QString createPythonFromModel()
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::AdaptivityTolerance).toDouble());
 
-            str += QString("%1.adaptivity_parameters['fine_percentage'] = %2\n").
-                    arg(fieldInfo->fieldId()).
-                    arg(fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt());
-
-            str += QString("%1.adaptivity_parameters['coarse_percentage'] = %2\n").
-                    arg(fieldInfo->fieldId()).
-                    arg(fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt());
-
             str += QString("%1.adaptivity_parameters['estimator'] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
                     arg(adaptivityEstimatorToStringKey((AdaptivityEstimator) fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt()));
+
+            str += QString("%1.adaptivity_parameters['strategy'] = \"%2\"\n").
+                    arg(fieldInfo->fieldId()).
+                    arg(adaptivityStrategyToStringKey((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt()));
+
+            if (((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt() == AdaptivityStrategy_FixedFractionOfCells) ||
+                        ((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt() == AdaptivityStrategy_FixedFractionOfTotalError))
+            {
+                str += QString("%1.adaptivity_parameters['fine_percentage'] = %2\n").
+                        arg(fieldInfo->fieldId()).
+                        arg(fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt());
+
+                str += QString("%1.adaptivity_parameters['coarse_percentage'] = %2\n").
+                        arg(fieldInfo->fieldId()).
+                        arg(fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt());
+            }
 
             if (Agros2D::problem()->isTransient())
             {

@@ -57,7 +57,19 @@ enum AdaptivityEstimator
 {
     AdaptivityEstimator_Undefined = -1,
     AdaptivityEstimator_Kelly = 0,
-    AdaptivityEstimator_Gradient = 1
+    AdaptivityEstimator_Gradient = 1,
+    AdaptivityEstimator_ReferenceSpatialAndOrder = 2,
+    AdaptivityEstimator_ReferenceSpatial = 3,
+    AdaptivityEstimator_ReferenceOrder = 4
+};
+
+enum AdaptivityStrategy
+{
+    AdaptivityStrategy_Undefined = -1,
+    AdaptivityStrategy_FixedFractionOfCells = 0,
+    AdaptivityStrategy_FixedFractionOfTotalError = 1,
+    AdaptivityStrategy_BalancedErrorAndCost = 2,
+    AdaptivityStrategy_GlobalRefinement
 };
 
 enum LinearityType
@@ -385,6 +397,12 @@ AGROS_LIBRARY_API QString adaptivityEstimatorString(AdaptivityEstimator adaptivi
 AGROS_LIBRARY_API QStringList adaptivityEstimatorStringKeys();
 AGROS_LIBRARY_API QString adaptivityEstimatorToStringKey(AdaptivityEstimator adaptivityEstimator);
 AGROS_LIBRARY_API AdaptivityEstimator adaptivityEstimatorFromStringKey(const QString &adaptivityEstimator);
+
+// adaptivity strategy
+AGROS_LIBRARY_API QString adaptivityStrategyString(AdaptivityStrategy adaptivityStrategy);
+AGROS_LIBRARY_API QStringList adaptivityStrategyStringKeys();
+AGROS_LIBRARY_API QString adaptivityStrategyToStringKey(AdaptivityStrategy adaptivityStrategy);
+AGROS_LIBRARY_API AdaptivityStrategy adaptivityStrategyFromStringKey(const QString &adaptivityStrategy);
 
 // adaptivity norm type
 AGROS_LIBRARY_API QString errorNormString(NormType projNormType);

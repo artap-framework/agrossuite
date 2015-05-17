@@ -73,6 +73,14 @@ class PyField
         inline std::string getAdaptivityType() const { return adaptivityTypeToStringKey(m_fieldInfo->adaptivityType()).toStdString(); }
         void setAdaptivityType(const std::string &adaptivityType);
 
+        // adaptivity estimator
+        inline std::string getAdaptivityEstimator() const { return adaptivityEstimatorToStringKey((AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt()).toStdString(); }
+        void setAdaptivityEstimator(const std::string &adaptivityEstimator);
+
+        // adaptivity strategy
+        inline std::string getAdaptivityStrategy() const { return adaptivityStrategyToStringKey((AdaptivityStrategy) m_fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt()).toStdString(); }
+        void setAdaptivityStrategy(const std::string &adaptivityStrategy);
+
         // matrix solver
         inline std::string getMatrixSolver() const { return matrixSolverTypeToStringKey(m_fieldInfo->matrixSolver()).toStdString(); }
         void setMatrixSolver(const std::string &matrixSolver);
@@ -106,10 +114,6 @@ class PyField
         // polynomial order
         inline int getPolynomialOrder() const { return m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); }
         void setPolynomialOrder(int polynomialOrder);
-
-        // adaptivity estimator
-        inline std::string getAdaptivityEstimator() const { return adaptivityEstimatorToStringKey((AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt()).toStdString(); }
-        void setAdaptivityEstimator(const std::string &adaptivityEstimator);
 
         // initial condition
         inline double getInitialCondition() const { return m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble(); }

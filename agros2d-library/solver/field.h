@@ -82,6 +82,7 @@ public:
         AdaptivitySteps,
         AdaptivityTolerance,
         AdaptivityEstimator,
+        AdaptivityStrategy,
         AdaptivityFinePercentage,
         AdaptivityCoarsePercentage,
         AdaptivityTransientBackSteps,

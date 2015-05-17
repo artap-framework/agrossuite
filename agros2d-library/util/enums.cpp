@@ -33,6 +33,7 @@ static QMap<WeakFormKind, QString> weakFormList;
 static QMap<WeakFormVariant, QString> weakFormVariantList;
 static QMap<AdaptivityMethod, QString> adaptivityTypeList;
 static QMap<AdaptivityEstimator, QString> adaptivityEstimatorList;
+static QMap<AdaptivityStrategy, QString> adaptivityStrategyList;
 static QMap<NormType, QString> adaptivityNormTypeList;
 static QMap<TimeStepMethod, QString> timeStepMethodList;
 static QMap<AnalysisType, QString> analysisTypeList;
@@ -88,6 +89,10 @@ AdaptivityMethod adaptivityTypeFromStringKey(const QString &adaptivityType) { re
 QStringList adaptivityEstimatorStringKeys() { return adaptivityEstimatorList.values(); }
 QString adaptivityEstimatorToStringKey(AdaptivityEstimator adaptivityEstimator) { return adaptivityEstimatorList[adaptivityEstimator]; }
 AdaptivityEstimator adaptivityEstimatorFromStringKey(const QString &adaptivityEstimator) { return adaptivityEstimatorList.key(adaptivityEstimator); }
+
+QStringList adaptivityStrategyStringKeys() { return adaptivityStrategyList.values(); }
+QString adaptivityStrategyToStringKey(AdaptivityStrategy adaptivityStrategy) { return adaptivityStrategyList[adaptivityStrategy]; }
+AdaptivityStrategy adaptivityStrategyFromStringKey(const QString &adaptivityStrategy) { return adaptivityStrategyList.key(adaptivityStrategy); }
 
 QStringList adaptivityNormTypeStringKeys() { return adaptivityNormTypeList.values(); }
 QString adaptivityNormTypeToStringKey(NormType adaptivityNormType) { return adaptivityNormTypeList[adaptivityNormType]; }
@@ -220,6 +225,15 @@ void initLists()
     // AdaptivityEstimator
     adaptivityEstimatorList.insert(AdaptivityEstimator_Kelly, "kelly");
     adaptivityEstimatorList.insert(AdaptivityEstimator_Gradient, "gradient");
+    // adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceSpatialAndOrder, "reference_spatial_and_order");
+    // adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceSpatial, "reference_spatial");
+    // adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceOrder, "reference_order");
+
+    // AdaptivityStrategy
+    adaptivityStrategyList.insert(AdaptivityStrategy_FixedFractionOfCells, "fixed_fraction_of_cells");
+    adaptivityStrategyList.insert(AdaptivityStrategy_FixedFractionOfTotalError, "fixed_fraction_of_total_error");
+    adaptivityStrategyList.insert(AdaptivityStrategy_BalancedErrorAndCost, "balanced_error_and_cost");
+    adaptivityStrategyList.insert(AdaptivityStrategy_GlobalRefinement, "global_refinement");
 
     // ADAPTIVITYNORMTYPE
     adaptivityNormTypeList.insert(NormType_H1_NORM, "h1_norm");
@@ -453,8 +467,32 @@ QString adaptivityEstimatorString(AdaptivityEstimator adaptivityEstimator)
         return QObject::tr("Kelly");
     case AdaptivityEstimator_Gradient:
         return QObject::tr("Gradient");
+    case AdaptivityEstimator_ReferenceSpatialAndOrder:
+        return QObject::tr("Reference - spatial and order");
+    case AdaptivityEstimator_ReferenceSpatial:
+        return QObject::tr("Reference - spatial");
+    case AdaptivityEstimator_ReferenceOrder:
+        return QObject::tr("Reference - order");
     default:
         std::cerr << "Adaptivity estimator '" + QString::number(adaptivityEstimator).toStdString() + "' is not implemented. adaptivityEstimatorString(AdaptivityEstimator adaptivityEstimator)" << endl;
+        throw;
+    }
+}
+
+QString adaptivityStrategyString(AdaptivityStrategy adaptivityStrategy)
+{
+    switch (adaptivityStrategy)
+    {
+    case AdaptivityStrategy_FixedFractionOfCells:
+        return QObject::tr("Fixed fraction of cells");
+    case AdaptivityStrategy_FixedFractionOfTotalError:
+        return QObject::tr("Fixed fraction of total error");
+    case AdaptivityStrategy_BalancedErrorAndCost:
+        return QObject::tr("Balance reducing error and numerical cost");
+    case AdaptivityStrategy_GlobalRefinement:
+        return QObject::tr("Global refinement");
+    default:
+        std::cerr << "Adaptivity strategy '" + QString::number(adaptivityStrategy).toStdString() + "' is not implemented. adaptivityEstimatorString(AdaptivityStrategy adaptivityStrategy)" << endl;
         throw;
     }
 }

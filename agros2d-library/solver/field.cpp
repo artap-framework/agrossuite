@@ -905,7 +905,8 @@ void FieldInfo::setStringKeys()
     m_settingKey[AdaptivityTransientRedoneEach] = "AdaptivityTransientRedoneEach";
     m_settingKey[AdaptivityFinePercentage] = "AdaptivityFinePercentage";
     m_settingKey[AdaptivityCoarsePercentage] = "AdaptivityCoarsePercentage";
-    m_settingKey[AdaptivityEstimator] = "AdaptivityEstimator";    
+    m_settingKey[AdaptivityEstimator] = "AdaptivityEstimator";
+    m_settingKey[AdaptivityStrategy] = "AdaptivityStrategy";
     m_settingKey[TransientTimeSkip] = "TransientTimeSkip";
     m_settingKey[TransientInitialCondition] = "TransientInitialCondition";
     m_settingKey[LinearSolverIterDealIIMethod] = "LinearSolverIterDealIIMethod";
@@ -940,6 +941,7 @@ void FieldInfo::setDefaultValues()
     m_settingDefault[AdaptivitySteps] = 10;
     m_settingDefault[AdaptivityTolerance] = 1.0;
     m_settingDefault[AdaptivityEstimator] = AdaptivityEstimator_Kelly;
+    m_settingDefault[AdaptivityStrategy] = AdaptivityStrategy_FixedFractionOfTotalError;
     m_settingDefault[AdaptivityFinePercentage] = 30;
     m_settingDefault[AdaptivityCoarsePercentage] = 3;
     m_settingDefault[AdaptivityTransientBackSteps] = 3;

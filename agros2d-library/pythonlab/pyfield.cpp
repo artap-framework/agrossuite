@@ -189,6 +189,14 @@ void PyField::setAdaptivityEstimator(const std::string &adaptivityEstimator)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(adaptivityEstimatorStringKeys())).toStdString());
 }
 
+void PyField::setAdaptivityStrategy(const std::string &adaptivityStrategy)
+{
+    if (adaptivityStrategyStringKeys().contains(QString::fromStdString(adaptivityStrategy)))
+        m_fieldInfo->setValue(FieldInfo::AdaptivityStrategy, (AdaptivityStrategy) adaptivityStrategyFromStringKey(QString::fromStdString(adaptivityStrategy)));
+    else
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(adaptivityStrategyStringKeys())).toStdString());
+}
+
 void PyField::setInitialCondition(double initialCondition)
 {
     m_fieldInfo->setValue(FieldInfo::TransientInitialCondition, initialCondition);

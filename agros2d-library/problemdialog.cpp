@@ -364,6 +364,13 @@ QWidget *FieldWidget::createAdaptivityWidget()
         if (adaptivityEstimatorFromStringKey(type) != AdaptivityEstimator_Undefined)
             cmbAdaptivityEstimator->addItem(adaptivityEstimatorString(adaptivityEstimatorFromStringKey(type)),
                                             adaptivityEstimatorFromStringKey(type));
+    cmbAdaptivityStrategy = new QComboBox();
+    foreach (QString type, adaptivityStrategyStringKeys())
+        if (adaptivityStrategyFromStringKey(type) != AdaptivityStrategy_Undefined)
+            cmbAdaptivityStrategy->addItem(adaptivityStrategyString(adaptivityStrategyFromStringKey(type)),
+                                            adaptivityStrategyFromStringKey(type));
+    connect(cmbAdaptivityStrategy, SIGNAL(currentIndexChanged(int)), this, SLOT(doAdaptivityStrategyChanged(int)));
+
     txtAdaptivityFineFraction = new QSpinBox(this);
     txtAdaptivityFineFraction->setMinimum(1);
     txtAdaptivityFineFraction->setMaximum(100);
@@ -389,10 +396,12 @@ QWidget *FieldWidget::createAdaptivityWidget()
     layoutAdaptivityControl->addWidget(txtAdaptivityTolerance, 1, 2);
     layoutAdaptivityControl->addWidget(new QLabel(tr("Error estimator:")), 0, 3);
     layoutAdaptivityControl->addWidget(cmbAdaptivityEstimator, 0, 4);
-    layoutAdaptivityControl->addWidget(new QLabel(tr("Percentage of cells to be refined:")), 1, 3);
-    layoutAdaptivityControl->addWidget(txtAdaptivityFineFraction, 1, 4);
-    layoutAdaptivityControl->addWidget(new QLabel(tr("Percentage of cells to be coarsened:")), 2, 3);
-    layoutAdaptivityControl->addWidget(txtAdaptivityCoarseFraction, 2, 4);
+    layoutAdaptivityControl->addWidget(new QLabel(tr("Control strategy:")), 1, 3);
+    layoutAdaptivityControl->addWidget(cmbAdaptivityStrategy, 1, 4);
+    layoutAdaptivityControl->addWidget(new QLabel(tr("Percentage to be refined:")), 2, 3);
+    layoutAdaptivityControl->addWidget(txtAdaptivityFineFraction, 2, 4);
+    layoutAdaptivityControl->addWidget(new QLabel(tr("Percentage to be coarsened:")), 3, 3);
+    layoutAdaptivityControl->addWidget(txtAdaptivityCoarseFraction, 3, 4);
     layoutAdaptivityControl->setRowStretch(50, 1);
 
     QGroupBox *grpControl = new QGroupBox(tr("Control"), this);
@@ -556,6 +565,7 @@ void FieldWidget::load()
     txtAdaptivityFineFraction->setValue(m_fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt());
     txtAdaptivityCoarseFraction->setValue(m_fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt());
     cmbAdaptivityEstimator->setCurrentIndex(cmbAdaptivityEstimator->findData((AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt()));
+    cmbAdaptivityStrategy->setCurrentIndex(cmbAdaptivityStrategy->findData((AdaptivityStrategy) m_fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt()));
     txtAdaptivityBackSteps->setValue(m_fieldInfo->value(FieldInfo::AdaptivityTransientBackSteps).toInt());
     txtAdaptivityRedoneEach->setValue(m_fieldInfo->value(FieldInfo::AdaptivityTransientRedoneEach).toInt());
     // matrix solver
@@ -605,6 +615,7 @@ bool FieldWidget::save()
     m_fieldInfo->setValue(FieldInfo::AdaptivityFinePercentage, txtAdaptivityFineFraction->value());
     m_fieldInfo->setValue(FieldInfo::AdaptivityCoarsePercentage, txtAdaptivityCoarseFraction->value());
     m_fieldInfo->setValue(FieldInfo::AdaptivityEstimator, (AdaptivityEstimator) cmbAdaptivityEstimator->itemData(cmbAdaptivityEstimator->currentIndex()).toInt());
+    m_fieldInfo->setValue(FieldInfo::AdaptivityStrategy, (AdaptivityStrategy) cmbAdaptivityStrategy->itemData(cmbAdaptivityStrategy->currentIndex()).toInt());
     m_fieldInfo->setValue(FieldInfo::AdaptivityTransientBackSteps, txtAdaptivityBackSteps->value());
     m_fieldInfo->setValue(FieldInfo::AdaptivityTransientRedoneEach, txtAdaptivityRedoneEach->value());
     // matrix solver
@@ -706,13 +717,23 @@ void FieldWidget::doAdaptivityChanged(int index)
     txtAdaptivitySteps->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
     chkAdaptivityTolerance->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
     txtAdaptivityTolerance->setEnabled(((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None) && chkAdaptivityTolerance->isChecked());
-    txtAdaptivityFineFraction->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
-    txtAdaptivityCoarseFraction->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
     cmbAdaptivityEstimator->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
+    cmbAdaptivityStrategy->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
 
     AnalysisType analysisType = (AnalysisType) cmbAnalysisType->itemData(cmbAnalysisType->currentIndex()).toInt();
     txtAdaptivityBackSteps->setEnabled(Agros2D::problem()->isTransient() && analysisType != AnalysisType_Transient && (AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
     txtAdaptivityRedoneEach->setEnabled(Agros2D::problem()->isTransient() && analysisType != AnalysisType_Transient && (AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
+
+    doAdaptivityStrategyChanged(cmbAdaptivityStrategy->currentIndex());
+}
+
+void FieldWidget::doAdaptivityStrategyChanged(int index)
+{
+    bool enabled = (((AdaptivityStrategy) cmbAdaptivityStrategy->itemData(index).toInt() == AdaptivityStrategy_FixedFractionOfCells) ||
+            ((AdaptivityStrategy) cmbAdaptivityStrategy->itemData(index).toInt() == AdaptivityStrategy_FixedFractionOfTotalError));
+
+    txtAdaptivityFineFraction->setEnabled(enabled);
+    txtAdaptivityCoarseFraction->setEnabled(enabled);
 }
 
 void FieldWidget::doLinearityTypeChanged(int index)

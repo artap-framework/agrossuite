@@ -81,9 +81,9 @@ class TestElectrostaticPlanar(Agros2DTestCase):
         # volume integral
         volume_integrals = self.electrostatic.volume_integrals([4])
         self.value_test("Energy", volume_integrals["We"], 2.588874455677146E-7)
-        #self.value_test("Volume Maxwell force - x", volume_integrals["Ftx"], -5.1094828796447716E-8)
-        #self.value_test("Volume Maxwell force - y", volume_integrals["Fty"], -7.660962286643772E-8)    
-        #self.value_test("Volume Maxwell torque", volume_integrals["Tt"], -7.136150051327788E-6, 0.1)    
+        #self.value_test("Volume Maxwell force - x", volume_integrals["Ftx"], -4.422241978223189E-8)
+        #self.value_test("Volume Maxwell force - y", volume_integrals["Fty"], -4.422241978223189E-8)    
+        #self.value_test("Volume Maxwell torque", volume_integrals["Tt"], -1.221282851368224E-6)    
         
         # surface integral
         surface_integrals = self.electrostatic.surface_integrals([0, 1, 2, 3])

@@ -376,31 +376,67 @@ void SolverDeal::prepareGridRefinement(int maxHIncrease, int maxPIncrease)
     // estimated error per cell
     dealii::Vector<float> estimated_error_per_cell(m_triangulation->n_active_cells());
 
+    bool estimate = ((AdaptivityStrategy) m_fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt()) != AdaptivityStrategy_GlobalRefinement;
+
     // estimator
-    switch ((AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt())
+    if (estimate)
     {
-    case AdaptivityEstimator_Kelly:
-        dealii::KellyErrorEstimator<2>::estimate(m_doFHandler,
-                                                 m_quadratureFormulasFace,
-                                                 TYPENAME dealii::FunctionMap<2>::type(),
-                                                 m_solution,
-                                                 estimated_error_per_cell);
+        switch ((AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt())
+        {
+        case AdaptivityEstimator_Kelly:
+            dealii::KellyErrorEstimator<2>::estimate(m_doFHandler,
+                                                     m_quadratureFormulasFace,
+                                                     TYPENAME dealii::FunctionMap<2>::type(),
+                                                     m_solution,
+                                                     estimated_error_per_cell);
+            break;
+        case AdaptivityEstimator_Gradient:
+            GradientErrorEstimator::estimate(m_doFHandler,
+                                             m_solution,
+                                             estimated_error_per_cell);
+            break;
+        default:
+            assert(0);
+        }
+    }
+
+    // cout << estimated_error_per_cell.l2_norm() << endl;
+
+    // strategy
+    switch ((AdaptivityStrategy) m_fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt())
+    {
+    case AdaptivityStrategy_FixedFractionOfCells:
+    {
+        dealii::GridRefinement::refine_and_coarsen_fixed_number(*m_triangulation,
+                                                                estimated_error_per_cell,
+                                                                m_fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt() / 100.0,
+                                                                m_fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt() / 100.0);
+    }
         break;
-    case AdaptivityEstimator_Gradient:
-        GradientErrorEstimator::estimate(m_doFHandler,
-                                         m_solution,
-                                         estimated_error_per_cell);
+    case AdaptivityStrategy_FixedFractionOfTotalError:
+    {
+        dealii::GridRefinement::refine_and_coarsen_fixed_fraction(*m_triangulation,
+                                                                  estimated_error_per_cell,
+                                                                  m_fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt() / 100.0,
+                                                                  m_fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt() / 100.0);
+    }
+        break;
+    case AdaptivityStrategy_BalancedErrorAndCost:
+    {
+        dealii::GridRefinement::refine_and_coarsen_optimize(*m_triangulation,
+                                                            estimated_error_per_cell);
+    }
+        break;
+    case AdaptivityStrategy_GlobalRefinement:
+    {
+        dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler.begin_active(), endcmm = m_doFHandler.end();
+        for (unsigned int index = 0; cell != endcmm; ++cell, ++index)
+            cell->set_refine_flag();
+    }
         break;
     default:
         assert(0);
     }
-
-    // cout << estimated_error_per_cell.l2_norm() << endl;
-    dealii::GridRefinement::refine_and_coarsen_fixed_number(*m_triangulation,
-    //dealii::GridRefinement::refine_and_coarsen_fixed_fraction(*m_triangulation,
-                                                            estimated_error_per_cell,
-                                                            m_fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt() / 100.0,
-                                                            m_fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt() / 100.0);
 
     // additional informations for p and hp adaptivity
     float min_smoothness = 0.0;

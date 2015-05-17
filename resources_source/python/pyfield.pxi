@@ -46,6 +46,9 @@ cdef extern from "../../agros2d-library/pythonlab/pyfield.h":
         string getAdaptivityEstimator()
         void setAdaptivityEstimator(string &adaptivityEstimator) except +
 
+        string getAdaptivityStrategy()
+        void setAdaptivityStrategy(string &adaptivityStrategy) except +
+
         double getInitialCondition()
         void setInitialCondition(double initialCondition) except +
 
@@ -361,6 +364,7 @@ cdef class __Field__:
         return {'tolerance' : self.thisptr.getDoubleParameter(b'AdaptivityTolerance'),
                 'steps' : self.thisptr.getIntParameter(b'AdaptivitySteps'),
                 'estimator' : self.thisptr.getAdaptivityEstimator().decode(),
+                'strategy' : self.thisptr.getAdaptivityStrategy().decode(),
                 'fine_percentage' : self.thisptr.getIntParameter(b'AdaptivityFinePercentage'),
                 'coarse_percentage' : self.thisptr.getIntParameter(b'AdaptivityCoarsePercentage'),
                 'transient_back_steps' : self.thisptr.getIntParameter(b'AdaptivityTransientBackSteps'),
@@ -377,13 +381,16 @@ cdef class __Field__:
 
         # estimator
         self.thisptr.setAdaptivityEstimator(parameters['estimator'].encode())
+        
+        # strategy
+        self.thisptr.setAdaptivityStrategy(parameters['strategy'].encode())
        
         # coarse percentage
-        value_in_range(parameters['coarse_percentage'], 0, 100, 'threshold')
+        value_in_range(parameters['coarse_percentage'], 0, 100, 'coarse_percentage')
         self.thisptr.setParameter(string(b'AdaptivityCoarsePercentage'), <int>parameters['coarse_percentage'])
 
         # fine percentage
-        value_in_range(parameters['fine_percentage'], 0, 100, 'threshold')
+        value_in_range(parameters['fine_percentage'], 0, 100, 'fine_percentage')
         self.thisptr.setParameter(string(b'AdaptivityFinePercentage'), <int>parameters['fine_percentage'])
         
         # back steps
