@@ -15,9 +15,8 @@ def model(omega):
     # magnetic
     magnetic = a2d.field("magnetic")
     magnetic.analysis_type = "harmonic"
-    magnetic.matrix_solver = "mumps"
     magnetic.number_of_refinements = 0
-    magnetic.polynomial_order = 3
+    magnetic.polynomial_order = 2
     magnetic.adaptivity_type = "disabled"
     magnetic.solver = "linear"
     

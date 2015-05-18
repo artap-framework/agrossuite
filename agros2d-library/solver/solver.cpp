@@ -45,7 +45,6 @@
 #include <deal.II/numerics/vector_tools.h>
 #include <deal.II/numerics/matrix_tools.h>
 #include <deal.II/numerics/error_estimator.h>
-#include <deal.II/numerics/error_estimator.h>
 #include <deal.II/numerics/fe_field_function.h>
 #include <deal.II/numerics/data_out.h>
 #include <deal.II/numerics/solution_transfer.h>
@@ -290,232 +289,7 @@ SolverDeal::~SolverDeal()
     delete m_feCollection;
 }
 
-void SolverDeal::estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_indicators) const
-{
-    const unsigned int N = 5;
-    std::vector<dealii::Tensor<1,2> > k_vectors;
-    std::vector<unsigned int> k_vectors_magnitude;
 
-
-    for (unsigned int i=0; i<N; ++i)
-        for (unsigned int j=0; j<N; ++j)
-            if (!((i==0) && (j==0)) && (i*i + j*j < N*N))
-            {
-                k_vectors.push_back (dealii::Point<2>(M_PI * i, M_PI * j));
-                k_vectors_magnitude.push_back (i*i+j*j);
-            }
-
-
-    const unsigned n_fourier_modes = k_vectors.size();
-    std::vector<double> ln_k (n_fourier_modes);
-    for (unsigned int i=0; i<n_fourier_modes; ++i)
-        ln_k[i] = std::log (k_vectors[i].norm());
-    std::vector<dealii::Table<2,std::complex<double> > > fourier_transform_matrices (m_feCollection->size());
-    dealii::QGauss<1> base_quadrature(2);
-    dealii::QIterated<2> quadrature (base_quadrature, N);
-    for (unsigned int fe=0; fe<m_feCollection->size(); ++fe)
-    {
-        fourier_transform_matrices[fe].reinit (n_fourier_modes, (*m_feCollection)[fe].dofs_per_cell);
-        for (unsigned int k=0; k<n_fourier_modes; ++k)
-            for (unsigned int j=0; j<(*m_feCollection)[fe].dofs_per_cell; ++j)
-            {
-                std::complex<double> sum = 0;
-                for (unsigned int q=0; q<quadrature.size(); ++q)
-                {
-                    const dealii::Point<2> x_q = quadrature.point(q);
-                    sum += std::exp(std::complex<double>(0,1) * (k_vectors[k] * x_q)) * (*m_feCollection)[fe].shape_value(j,x_q) * quadrature.weight(q);
-                }
-                fourier_transform_matrices[fe](k,j) = sum / std::pow(2*M_PI, 1);
-            }
-    }
-    std::vector<std::complex<double> > fourier_coefficients (n_fourier_modes);
-    dealii::Vector<double> local_dof_values;
-    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler.begin_active(), endc = m_doFHandler.end();
-    for (unsigned int index=0; cell!=endc; ++cell, ++index)
-    {
-        local_dof_values.reinit (cell->get_fe().dofs_per_cell);
-        cell->get_dof_values (m_solution, local_dof_values);
-        for (unsigned int f=0; f<n_fourier_modes; ++f)
-        {
-            fourier_coefficients[f] = 0;
-            for (unsigned int i=0; i<cell->get_fe().dofs_per_cell; ++i)
-                fourier_coefficients[f] += fourier_transform_matrices[cell->active_fe_index()](f,i) * local_dof_values(i);
-        }
-        std::map<unsigned int, double> k_to_max_U_map;
-        for (unsigned int f=0; f<n_fourier_modes; ++f)
-            if ((k_to_max_U_map.find (k_vectors_magnitude[f]) ==
-                 k_to_max_U_map.end())
-                    ||
-                    (k_to_max_U_map[k_vectors_magnitude[f]] <
-                     std::abs (fourier_coefficients[f])))
-                k_to_max_U_map[k_vectors_magnitude[f]]
-                        = std::abs (fourier_coefficients[f]);
-        double sum_1 = 0,
-                sum_ln_k = 0,
-                sum_ln_k_square = 0,
-                sum_ln_U = 0,
-                sum_ln_U_ln_k = 0;
-        for (unsigned int f=0; f<n_fourier_modes; ++f)
-            if (k_to_max_U_map[k_vectors_magnitude[f]] ==
-                    std::abs (fourier_coefficients[f]))
-            {
-                sum_1 += 1;
-                sum_ln_k += ln_k[f];
-                sum_ln_k_square += ln_k[f]*ln_k[f];
-                sum_ln_U += std::log (std::abs (fourier_coefficients[f]));
-                sum_ln_U_ln_k += std::log (std::abs (fourier_coefficients[f])) *
-                        ln_k[f];
-            }
-        const double mu = (1./(sum_1*sum_ln_k_square - sum_ln_k*sum_ln_k) * (sum_ln_k*sum_ln_U - sum_1*sum_ln_U_ln_k));
-        smoothness_indicators(index) = mu - 1;
-    }
-}
-
-void SolverDeal::prepareGridRefinement(int maxHIncrease, int maxPIncrease)
-{
-    // estimated error per cell
-    dealii::Vector<float> estimated_error_per_cell(m_triangulation->n_active_cells());
-
-    bool estimate = ((AdaptivityStrategy) m_fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt()) != AdaptivityStrategy_GlobalRefinement;
-
-    // estimator
-    if (estimate)
-    {
-        switch ((AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt())
-        {
-        case AdaptivityEstimator_Kelly:
-            dealii::KellyErrorEstimator<2>::estimate(m_doFHandler,
-                                                     m_quadratureFormulasFace,
-                                                     TYPENAME dealii::FunctionMap<2>::type(),
-                                                     m_solution,
-                                                     estimated_error_per_cell);
-            break;
-        case AdaptivityEstimator_Gradient:
-            GradientErrorEstimator::estimate(m_doFHandler,
-                                             m_solution,
-                                             estimated_error_per_cell);
-            break;
-        default:
-            assert(0);
-        }
-    }
-
-    // cout << estimated_error_per_cell.l2_norm() << endl;
-
-    // strategy
-    switch ((AdaptivityStrategy) m_fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt())
-    {
-    case AdaptivityStrategy_FixedFractionOfCells:
-    {
-        dealii::GridRefinement::refine_and_coarsen_fixed_number(*m_triangulation,
-                                                                estimated_error_per_cell,
-                                                                m_fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt() / 100.0,
-                                                                m_fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt() / 100.0);
-    }
-        break;
-    case AdaptivityStrategy_FixedFractionOfTotalError:
-    {
-        dealii::GridRefinement::refine_and_coarsen_fixed_fraction(*m_triangulation,
-                                                                  estimated_error_per_cell,
-                                                                  m_fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt() / 100.0,
-                                                                  m_fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt() / 100.0);
-    }
-        break;
-    case AdaptivityStrategy_BalancedErrorAndCost:
-    {
-        dealii::GridRefinement::refine_and_coarsen_optimize(*m_triangulation,
-                                                            estimated_error_per_cell);
-    }
-        break;
-    case AdaptivityStrategy_GlobalRefinement:
-    {
-        dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler.begin_active(), endcmm = m_doFHandler.end();
-        for (unsigned int index = 0; cell != endcmm; ++cell, ++index)
-            cell->set_refine_flag();
-    }
-        break;
-    default:
-        assert(0);
-    }
-
-    // additional informations for p and hp adaptivity
-    float min_smoothness = 0.0;
-    float max_smoothness = 0.0;
-    dealii::Vector<float> smoothnessIndicators;
-
-    if (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP)
-    {
-        smoothnessIndicators.reinit(m_triangulation->n_active_cells());
-        estimateAdaptivitySmoothness(smoothnessIndicators);
-
-        min_smoothness = *std::max_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
-        max_smoothness = *std::min_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
-        dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = m_doFHandler.begin_active(), endcmm = m_doFHandler.end();
-        for (unsigned int index = 0; cellmm != endcmm; ++cellmm, ++index)
-        {
-            if (cellmm->refine_flag_set())
-            {
-                max_smoothness = std::max(max_smoothness, smoothnessIndicators(index));
-                min_smoothness = std::min(min_smoothness, smoothnessIndicators(index));
-            }
-        }
-    }
-
-    if ((m_fieldInfo->adaptivityType() == AdaptivityMethod_P) || (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP))
-    {
-        const float threshold_smoothness = (max_smoothness + min_smoothness) / 2;
-
-        dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler.begin_active(), endc = m_doFHandler.end();
-        for (unsigned int index = 0; cell != endc; ++cell, ++index)
-        {
-            if (m_fieldInfo->adaptivityType() == AdaptivityMethod_P)
-            {
-                if (cell->refine_flag_set())
-                {
-                    // remove h adaptivity flag
-                    cell->clear_refine_flag();
-
-                    if ((maxPIncrease == -1) || (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease)
-                    {
-                        if (cell->active_fe_index() + 1 < m_doFHandler.get_fe().size())
-                        {
-                            // increase order
-                            cell->set_active_fe_index(cell->active_fe_index() + 1);
-                        }
-                    }
-                }
-            }
-
-            if (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP)
-            {
-                if ((maxPIncrease == -1) || (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease)
-                {
-                    if (cell->refine_flag_set() && (smoothnessIndicators(index) > threshold_smoothness)
-                            && (cell->active_fe_index() + 1 < m_doFHandler.get_fe().size()))
-                    {
-                        // remove h adaptivity flag
-                        cell->clear_refine_flag();
-                        // increase order
-                        cell->set_active_fe_index(cell->active_fe_index() + 1);
-                    }
-                }
-            }
-        }
-    }
-
-
-    // number of refinements
-    if (maxHIncrease != -1)
-    {
-        dealii::hp::DoFHandler<2>::active_cell_iterator cell = m_doFHandler.begin_active(), endc = m_doFHandler.end();
-        for (unsigned int index = 0; cell != endc; ++cell, ++index)
-        {
-            // remove h adaptivity flag
-            if (cell->level() > maxHIncrease)
-                cell->clear_refine_flag();
-        }
-    }
-}
 
 void SolverDeal::setup(bool useDirichletLift)
 {
@@ -848,7 +622,7 @@ void SolverDeal::solve()
                         m_triangulation->prepare_coarsening_and_refinement();
                         solutionTrans.prepare_for_coarsening_and_refinement(previousSolutions);
 
-                        prepareGridRefinement(2, 2);
+                        ErrorEstimator::prepareGridRefinement(m_fieldInfo, *m_feCollection, m_quadratureFormulasFace, m_solution, m_doFHandler, 2, 2);
 
                         /*
                         int min_grid_level = 1;
@@ -1296,7 +1070,7 @@ void SolverDeal::solveAdaptivity()
                 m_triangulation->prepare_coarsening_and_refinement();
                 solutionTrans.prepare_for_coarsening_and_refinement(previousSolution);
 
-                prepareGridRefinement();
+                ErrorEstimator::prepareGridRefinement(m_fieldInfo, *m_feCollection, m_quadratureFormulasFace, m_solution, m_doFHandler);
 
                 // execute transfer solution
                 m_triangulation->execute_coarsening_and_refinement();

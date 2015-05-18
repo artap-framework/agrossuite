@@ -289,9 +289,7 @@ protected:
     void solveProblemNonLinearNewton();
 
     // adaptivity
-    void solveAdaptivity();
-    void estimateAdaptivitySmoothness(dealii::Vector<float> &smoothness_indicators) const;
-    void prepareGridRefinement(int maxHIncrease = -1, int maxPIncrease = -1);
+    void solveAdaptivity();        
 };
 
 namespace Module {

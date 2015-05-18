@@ -21,6 +21,7 @@
 #define ESTIMATORS_H
 
 #include "util.h"
+#include "field.h"
 
 #undef signals
 #include <deal.II/grid/tria.h>
@@ -37,6 +38,21 @@
 #include <deal.II/dofs/dof_tools.h>
 #define signals public
 
+namespace ErrorEstimator
+{
+    void estimateAdaptivitySmoothness(const dealii::hp::FECollection<2> &feCollection,
+                                      const dealii::hp::DoFHandler<2> &doFHandler,
+                                      const dealii::Vector<double> &solution,
+                                      dealii::Vector<float> &smoothness_indicators);
+
+    void prepareGridRefinement(const FieldInfo *fieldInfo,
+                               const dealii::hp::FECollection<2> &feCollection,
+                               const dealii::hp::QCollection<2-1> &quadratureFormulasFace,
+                               const dealii::Vector<double> &solution,
+                               dealii::hp::DoFHandler<2> &doFHandler,
+                               int maxHIncrease = -1,
+                               int maxPIncrease = -1);
+};
 
 class GradientErrorEstimator
 {

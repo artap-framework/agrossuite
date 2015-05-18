@@ -484,7 +484,7 @@ QString adaptivityStrategyString(AdaptivityStrategy adaptivityStrategy)
     switch (adaptivityStrategy)
     {
     case AdaptivityStrategy_FixedFractionOfCells:
-        return QObject::tr("Fixed fraction of cells");
+        return QObject::tr("Fixed fraction of number of cells");
     case AdaptivityStrategy_FixedFractionOfTotalError:
         return QObject::tr("Fixed fraction of total error");
     case AdaptivityStrategy_BalancedErrorAndCost:

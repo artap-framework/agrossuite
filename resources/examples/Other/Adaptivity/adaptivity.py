@@ -179,12 +179,12 @@ strategies = ['fixed_fraction_of_cells', 'fixed_fraction_of_total_error', 'balan
 estimators = ['kelly']
 #strategies = ['balanced_error_and_cost']
 
-tolerance = 0.5
-model = model_sparkgap
+#tolerance = 0.5
+#model = model_sparkgap
 #tolerance = 0.5
 #model = model_capacitor
-#tolerance = 10
-#model = model_waveguide
+tolerance = 100
+model = model_waveguide
 
 dofs = {}
 errors = {}

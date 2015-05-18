@@ -368,7 +368,7 @@ QWidget *FieldWidget::createAdaptivityWidget()
     foreach (QString type, adaptivityStrategyStringKeys())
         if (adaptivityStrategyFromStringKey(type) != AdaptivityStrategy_Undefined)
             cmbAdaptivityStrategy->addItem(adaptivityStrategyString(adaptivityStrategyFromStringKey(type)),
-                                            adaptivityStrategyFromStringKey(type));
+                                           adaptivityStrategyFromStringKey(type));
     connect(cmbAdaptivityStrategy, SIGNAL(currentIndexChanged(int)), this, SLOT(doAdaptivityStrategyChanged(int)));
 
     txtAdaptivityFineFraction = new QSpinBox(this);
@@ -729,8 +729,9 @@ void FieldWidget::doAdaptivityChanged(int index)
 
 void FieldWidget::doAdaptivityStrategyChanged(int index)
 {
-    bool enabled = (((AdaptivityStrategy) cmbAdaptivityStrategy->itemData(index).toInt() == AdaptivityStrategy_FixedFractionOfCells) ||
-            ((AdaptivityStrategy) cmbAdaptivityStrategy->itemData(index).toInt() == AdaptivityStrategy_FixedFractionOfTotalError));
+    bool enabled = (((AdaptivityMethod) cmbAdaptivityType->itemData(cmbAdaptivityType->currentIndex()).toInt() != AdaptivityMethod_None) &&
+                    (((AdaptivityStrategy) cmbAdaptivityStrategy->itemData(index).toInt() == AdaptivityStrategy_FixedFractionOfCells) ||
+                     ((AdaptivityStrategy) cmbAdaptivityStrategy->itemData(index).toInt() == AdaptivityStrategy_FixedFractionOfTotalError)));
 
     txtAdaptivityFineFraction->setEnabled(enabled);
     txtAdaptivityCoarseFraction->setEnabled(enabled);
