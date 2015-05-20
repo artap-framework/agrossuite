@@ -96,6 +96,11 @@
 #include <functional>
 #include <typeinfo>
 
+#include <boost/config.hpp>
+#include <boost/archive/tmpdir.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+
 using namespace paralution;
 
 // todo: find better place
@@ -245,7 +250,6 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     : m_fieldInfo(fieldInfo),
       m_scene(Agros2D::scene()),
       m_problem(Agros2D::problem()),
-      m_time(0.0),
       // fe collection
       m_feCollection(createFECollection(m_fieldInfo)),
       // mapping collection
@@ -255,9 +259,6 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
       // linear solver
       m_linearSolver(SolverLinearSolver(fieldInfo))
 {       
-    // calculation mesh
-    m_triangulation = &Agros2D::problem()->calculationMesh();
-
     m_quadratureFormulas.push_back(dealii::QGauss<2>(1));
     m_quadratureFormulasFace.push_back(dealii::QGauss<2 - 1>(1));
 
@@ -289,8 +290,6 @@ SolverDeal::~SolverDeal()
     delete m_feCollection;
 }
 
-
-
 void SolverDeal::setup(bool useDirichletLift)
 {
     QTime time;
@@ -312,13 +311,6 @@ void SolverDeal::setup(bool useDirichletLift)
     systemMatrix.reinit(sparsityPattern);
     systemRHS.reinit(m_doFHandler.n_dofs());
     m_solution.reinit(m_doFHandler.n_dofs());
-
-    // mass matrix (transient)
-    if (m_fieldInfo->analysisType() == AnalysisType_Transient)
-    {
-        transientMassMatrix.reinit(sparsityPattern);
-        transientTotalMatrix.reinit(sparsityPattern);
-    }
     // qDebug() << "setup (" << time.elapsed() << "ms )";
 }
 
@@ -327,8 +319,8 @@ void SolverDeal::solveLinearSystem(dealii::SparseMatrix<double> &system,
                                    dealii::Vector<double> &sln,
                                    bool reuseDecomposition)
 {
-    QTime time;
-    time.start();
+    // QTime time;
+    // time.start();
 
     switch (m_fieldInfo->matrixSolver())
     {
@@ -359,336 +351,12 @@ void SolverDeal::solveLinearSystem(dealii::SparseMatrix<double> &system,
 
 void SolverDeal::solve()
 {
-    if (m_fieldInfo->analysisType() == AnalysisType_Transient)
-    {
-        setup(true);
-        assembleSystem();
-
-        // initial condition
-        m_solution = 0.0;
-        dealii::Vector<double> initialSolution(m_doFHandler.n_dofs());
-
-        dealii::VectorTools::interpolate(m_doFHandler,
-                                         dealii::ConstantFunction<2>(m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble()),
-                                         initialSolution);
-
-        // initial step
-        // only one trasient is supported
-        assert(Agros2D::problem()->timeLastStep() == 0);
-
-        FieldSolutionID solutionID(m_fieldInfo, 0, 0);
-        SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, m_doFHandler.n_dofs());
-        Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, initialSolution), runTime);
-        m_solution = initialSolution;
-
-        // parameters
-        double constantTimeStep = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
-        if (((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFNumSteps
-                || ((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()) == TimeStepMethod_BDFTolerance)
-            if (Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() > 0.0)
-                constantTimeStep = Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble();
-
-        double actualTimeStep = constantTimeStep;
-
-        // BDF table
-        BDF2ATable bdf2Table;
-        const double relativeTimeStepLen = actualTimeStep / Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble();
-        const double maxTimeStepRatio = relativeTimeStepLen > 0.02 ? 2.0 : 3.0; // small steps may rise faster
-        const double maxTimeStepLength = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / 5;
-        const double maxToleranceMultiplyToAccept = 2.5;
-        double tolerance = 0.0;
-        TimeStepMethod timeStepMethod = (TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt();
-        double nextTimeStepLength = constantTimeStep;
-        double averageErrorToLenghtRatio = 0.0;
-
-        // solution transfer
-        dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solutionTrans(m_doFHandler);
-        std::vector<dealii::Vector<double> > previousSolutions;
-
-        // solutions and step length
-        std::vector<dealii::Vector<double> > solutions;
-        QList<double> stepLengths;
-
-        int timeStep = 1;
-        bool refused = false;
-
-        while (true)
-        {
-            if (Agros2D::problem()->isAborted())
-                break;
-
-            if (m_time > Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() - EPS_ZERO)
-                break;
-
-            // actual time step
-            actualTimeStep = nextTimeStepLength;
-            // actual time
-            m_time += actualTimeStep;
-
-            // set last step
-            if (m_time > Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble())
-            {
-                actualTimeStep = actualTimeStep - (m_time - Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
-                m_time = Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble();
-            }
-
-            // update time dep variables
-            Module::updateTimeFunctions(m_time);
-
-            // remove first solution and step length
-            if (solutions.size() > Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt() - 1)
-            {
-                solutions.erase(solutions.begin());
-                stepLengths.removeFirst();
-            }
-            assert(solutions.size() == stepLengths.size());
-
-            // store sln
-            solutions.push_back(m_solution);
-            stepLengths.append(actualTimeStep);
-
-            int order = std::min(timeStep, (int) solutions.size());
-            // cout << "order: " << order << " solutions.size() " << solutions.size() << " stepSizes.size() " << stepLengths.size() <<  endl;
-
-            double relChangeSol = 100.0;
-            int maxSteps = (timeStep == 1) ? m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt() : 1;
-            for (int adaptiveStep = 0; adaptiveStep < maxSteps; adaptiveStep++)
-                // int adaptiveStep = 0;
-            {
-                // assemble system
-                assembleSystem();
-                refused = false;
-
-                dealii::Vector<double> previousSolution;
-                if (m_fieldInfo->adaptivityType() != AdaptivityMethod_None)
-                    previousSolution = m_solution;
-
-                if (timeStep < order || order == 1 || timeStepMethod == TimeStepMethod_Fixed)
-                {
-                    // constant time step
-                    // cout << "constant step" << endl;
-
-                    if (stepLengths.size() > order - 1)
-                        bdf2Table.setOrderAndPreviousSteps(order, stepLengths);
-                    transientBDF(actualTimeStep, m_solution, solutions, bdf2Table);
-
-                    Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
-                                                 QObject::tr("Constant step %1/%2, time %3 s").
-                                                 arg(timeStep).
-                                                 arg(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()).
-                                                 arg(m_time));
-                }
-                else
-                {
-                    // cout << "adaptive step" << endl;
-                    double error = 0.0;
-
-                    // estimate error
-                    dealii::Vector<double> estSln(m_doFHandler.n_dofs());
-
-                    // low order computation
-                    bdf2Table.setOrderAndPreviousSteps(order - 1, stepLengths);
-                    transientBDF(actualTimeStep, estSln, solutions, bdf2Table);
-
-                    // high order computation
-                    bdf2Table.setOrderAndPreviousSteps(order, stepLengths);
-                    transientBDF(actualTimeStep, m_solution, solutions, bdf2Table);
-
-                    // estimate error
-                    estSln.add(-1, m_solution);
-                    error = estSln.l2_norm() / m_solution.l2_norm();
-                    if (error < EPS_ZERO)
-                        qDebug() << error;
-
-                    // ratio
-                    double actualRatio = error / actualTimeStep;
-                    averageErrorToLenghtRatio = ((timeStep - 2) * averageErrorToLenghtRatio + actualRatio) / (timeStep - 1);
-
-                    if (timeStepMethod == TimeStepMethod_BDFTolerance)
-                    {
-                        tolerance = Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble() / 100.0;
-                    }
-                    else if (timeStepMethod == TimeStepMethod_BDFNumSteps)
-                    {
-                        int desiredNumSteps = (Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() / Agros2D::problem()->config()->constantTimeStepLength());
-                        int remainingSteps = max(2, desiredNumSteps - timeStep);
-                        double desiredStepSize = (Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() - actualTimeStep) / remainingSteps;
-
-                        tolerance = desiredStepSize * averageErrorToLenghtRatio;
-                    }
-
-                    // refuse
-                    if (error > tolerance)
-                        refused = true;
-
-                    // this guess is based on assymptotic considerations
-                    nextTimeStepLength = pow((tolerance / maxToleranceMultiplyToAccept) / error, 1.0 / (order + 1)) * actualTimeStep;
-
-                    nextTimeStepLength = min(nextTimeStepLength, maxTimeStepLength);
-                    nextTimeStepLength = min(nextTimeStepLength, actualTimeStep * maxTimeStepRatio);
-                    nextTimeStepLength = max(nextTimeStepLength, actualTimeStep / maxTimeStepRatio);
-
-                    Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
-                                                 QObject::tr("Adaptive step, time %1 s, rel. error %2, step size %4 -> %5 (%6 %), average err/len %7").
-                                                 arg(m_time).
-                                                 arg(error * 100.0).
-                                                 arg(actualTimeStep).
-                                                 arg(nextTimeStepLength).
-                                                 arg(nextTimeStepLength / actualTimeStep * 100.0).
-                                                 arg(averageErrorToLenghtRatio));
-                }
-
-                if (refused)
-                {
-                    if (timeStep == 2)
-                    {
-                        // remove all steps (initial step should be wrong)
-                        // shift time
-                        m_time = 0;
-                        timeStep = 1;
-                        stepLengths.clear();
-                        solutions.clear();
-
-                        Agros2D::problem()->removeLastTimeStepLength();
-                        Agros2D::solutionStore()->removeSolution(solutionID);
-                        m_solution = initialSolution;
-                    }
-                    else
-                    {
-                        // remove last step
-                        // shift time
-                        m_time -= actualTimeStep;
-                        stepLengths.removeLast();
-                        solutions.erase(solutions.end());
-
-                        if (solutions.size() > 0)
-                            m_solution = solutions.back();
-                        else
-                            m_solution = initialSolution;
-                    }
-
-                    Agros2D::log()->printMessage(QObject::tr("Solver (%1)").arg(m_fieldInfo->fieldId()),
-                                                 QObject::tr("Transient step refused"));
-                }
-                else
-                {
-                    constraintsAll.distribute(m_solution);
-
-                    Agros2D::problem()->setActualTimeStepLength(actualTimeStep);
-                    Agros2D::log()->updateTransientChartInfo(m_time);
-
-                    solutionID = FieldSolutionID(m_fieldInfo, timeStep, adaptiveStep);
-                    SolutionStore::SolutionRunTimeDetails runTime(actualTimeStep, relChangeSol, m_doFHandler.n_dofs());
-                    Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, m_solution), runTime);
-
-                    // adapt mesh
-                    if (m_fieldInfo->adaptivityType() != AdaptivityMethod_None)
-                    {
-                        // compute difference between previous and current solution
-                        if (adaptiveStep > 0)
-                        {
-                            previousSolution.add(-1, m_solution);
-                            double differenceSolutionNorm = previousSolution.l2_norm();
-                            double currentSolutionNorm = m_solution.l2_norm();
-                            double currentRelChangeSol = fabs(differenceSolutionNorm / currentSolutionNorm) * 100.0;
-
-                            double relativeDifference = fabs(relChangeSol - currentRelChangeSol) / currentRelChangeSol * 100.0;
-                            relChangeSol = currentRelChangeSol;
-
-                            qDebug() << timeStep << adaptiveStep << "relChangeSol" << relChangeSol << "m_doFHandler.n_dofs()" << m_doFHandler.n_dofs()
-                                     << "differenceSolutionNorm" << differenceSolutionNorm << "currentSolutionNorm" << currentSolutionNorm
-                                     << "relativeDifference" << relativeDifference;
-
-                            if (differenceSolutionNorm < EPS_ZERO)
-                                break;
-                        }
-
-                        Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Adaptivity step: %1 (error: %2, DOFs: %3)").
-                                                     arg(1).
-                                                     arg(0.0).
-                                                     arg(m_doFHandler.n_dofs()));
-
-                        if (adaptiveStep > 0)
-                            Agros2D::log()->updateAdaptivityChartInfo(m_fieldInfo, timeStep, adaptiveStep);
-
-                        solutionTrans = dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> >(m_doFHandler);
-                        previousSolutions.clear();
-                        // all previous solutions
-                        for (int i = 0; i < solutions.size(); i++)
-                            previousSolutions.push_back(solutions[i]);
-                        // add current solution
-                        previousSolutions.push_back(m_solution);
-
-                        m_triangulation->prepare_coarsening_and_refinement();
-                        solutionTrans.prepare_for_coarsening_and_refinement(previousSolutions);
-
-                        ErrorEstimator::prepareGridRefinement(m_fieldInfo, *m_feCollection, m_quadratureFormulasFace, m_solution, m_doFHandler, 2, 2);
-
-                        /*
-                        int min_grid_level = 1;
-                        int max_grid_level = 2;
-                        if (m_triangulation->n_levels() > max_grid_level)
-                            for (dealii::Triangulation<2>::active_cell_iterator cell = m_triangulation->begin_active(max_grid_level); cell != m_triangulation->end(); ++cell)
-                                cell->clear_refine_flag();
-                        for (dealii::Triangulation<2>::active_cell_iterator cell = m_triangulation->begin_active(min_grid_level); cell != m_triangulation->end_active(min_grid_level); ++cell)
-                            cell->clear_coarsen_flag();
-
-                        */
-
-                        // execute transfer solution
-                        m_triangulation->execute_coarsening_and_refinement();
-
-                        // reinit system
-                        setup(true);
-
-                        for (int i = 0; i < solutions.size(); i++)
-                            solutions[i].reinit(m_doFHandler.n_dofs());
-                        // prepare for interpolating current solution
-                        solutions.push_back(dealii::Vector<double>(m_doFHandler.n_dofs()));
-
-                        // interpolate
-                        solutionTrans.interpolate(previousSolutions, solutions);
-
-                        // store current solution
-                        m_solution = solutions.back();
-                        // remove interpolated solution
-                        solutions.pop_back();
-                    }
-                }
-            }
-
-            // increase step
-            if (!refused)
-                timeStep++;
-        }
-    }
-    else
-    {
-        solveAdaptivity();
-    }
+    solveAdaptivity();
 }
 
 void SolverDeal::solveProblem()
 {
-    // this is a little bit inconsistent. Each solver has pointer to triangulation, but they actually point to mesh object of Agros2D::problem()
     Agros2D::problem()->propagateBoundaryMarkers();
-
-    if (m_fieldInfo->linearityType() == LinearityType_Linear)
-    {
-        solveProblemLinear();
-    }
-    else if (m_fieldInfo->linearityType() == LinearityType_Picard)
-    {
-        solveProblemNonLinearPicard();
-    }
-    else if (m_fieldInfo->linearityType() == LinearityType_Newton)
-    {
-        solveProblemNonLinearNewton();
-    }
-    else
-    {
-        assert(0);
-    }
 }
 
 void SolverDeal::solveProblemLinear()
@@ -698,102 +366,6 @@ void SolverDeal::solveProblemLinear()
 
     solveLinearSystem(systemMatrix, systemRHS, m_solution);
     constraintsAll.distribute(m_solution);
-}
-
-void SolverDeal::solveProblemNonLinearPicard()
-{
-    const double minAllowedDampingCoeff = 1e-4;
-    const double autoDampingRatio = 2.0;
-
-    QTime time;
-    time.start();
-
-    QVector<double> steps;
-    QVector<double> relativeChangeOfSolutions;
-
-    setup(true);
-
-    // initial relative change of solutions
-    double lastRelChangeSol = 100.0;
-    dealii::Vector<double> solutionNonlinearPrevious(m_doFHandler.n_dofs());
-
-    double dampingFactor = (m_fieldInfo->value(FieldInfo::NonlinearDampingType) == DampingType_Off ? 1.0 : m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble());
-    int dampingSuccessfulSteps = 0;
-
-    int iteration = 0;
-    bool criteriaReached = false;
-    while ((iteration < MAX_NUM_NONLIN_ITERS) && !criteriaReached && !Agros2D::problem()->isAborted())
-    {
-        SolverAgros::Phase phase = SolverAgros::Phase_Solving;
-
-        iteration++;
-
-        assembleSystem(solutionNonlinearPrevious);
-        solveLinearSystem(systemMatrix, systemRHS, m_solution);
-
-        // estimate error
-        dealii::Vector<double> vec(solutionNonlinearPrevious);
-        vec.add(-1, m_solution);
-        double relChangeSol = vec.l2_norm() / m_solution.l2_norm() * 100.0;
-
-        if ((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() == DampingType_Automatic)
-        {
-            if ((lastRelChangeSol < relChangeSol) && (dampingFactor > minAllowedDampingCoeff))
-            {
-                phase = SolverAgros::Phase_DampingFactorChanged;
-
-                // decrease damping
-                dampingFactor = dampingFactor * 1.0 / autoDampingRatio;
-                dampingSuccessfulSteps = -1;
-            }
-            else
-            {
-                dampingSuccessfulSteps++;
-                // increase damping
-                if (dampingSuccessfulSteps >= m_fieldInfo->value(FieldInfo::NonlinearStepsToIncreaseDampingFactor).toInt())
-                {
-                    if (dampingFactor * 0.75 * autoDampingRatio <= m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble())
-                    {
-                        dampingFactor = dampingFactor * 0.75 * autoDampingRatio;
-                        if (dampingFactor > 1.0)
-                            dampingFactor = 1.0;
-                    }
-                    else
-                    {
-                        dampingFactor = m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble();
-                    }
-                }
-            }
-        }
-
-        // copy solution
-        solutionNonlinearPrevious.add(-dampingFactor, vec);
-
-        // update
-        steps.append(iteration);
-        relativeChangeOfSolutions.append(relChangeSol);
-        lastRelChangeSol = relChangeSol;
-
-        criteriaReached = true;
-
-        if (m_fieldInfo->value(FieldInfo::NonlinearRelativeChangeOfSolutions).toDouble() < relChangeSol)
-            criteriaReached = false;
-
-        // log messages
-        if (criteriaReached)
-            phase = SolverAgros::Phase_Finished;
-
-        Agros2D::log()->printMessage(QObject::tr("Solver (Picard)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, damping: %3)")
-                                     .arg(iteration)
-                                     .arg(QString::number(relativeChangeOfSolutions.last(), 'e', 3))
-                                     .arg(dampingFactor));
-
-        Agros2D::log()->updateNonlinearChartInfo(phase, steps, relativeChangeOfSolutions);
-    }
-
-    constraintsAll.distribute(m_solution);
-
-    // qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
 
 void SolverDeal::recreateConstraints(bool zeroDirichletLift)
@@ -828,219 +400,22 @@ void SolverDeal::recreateConstraints(bool zeroDirichletLift)
     constraintsAll.close();
 }
 
-void SolverDeal::solveProblemNonLinearNewton()
+dealii::hp::DoFHandler<2> *copyDoFHandler(dealii::hp::DoFHandler<2> &source, dealii::Triangulation<2> &tria)
 {
-    const double minAllowedDampingCoeff = 1e-4;
-    const double autoDampingRatio = 2.0;
+    // TODO: create copy constructor
 
-    QTime time;
-    time.start();
+    // dof handler
+    std::stringstream fsDoF(std::ios::out | std::ios::in | std::ios::binary);
+    boost::archive::binary_oarchive sboDoF(fsDoF);
+    source.save(sboDoF, 0);
+    // new handler
+    dealii::hp::DoFHandler<2> *cacheDoFHandler = new dealii::hp::DoFHandler<2>(tria);
+    cacheDoFHandler->distribute_dofs(source.get_fe());
+    // load
+    boost::archive::binary_iarchive sbiDoF(fsDoF);
+    cacheDoFHandler->load(sbiDoF, 0);
 
-    QVector<double> steps;
-    QVector<double> relativeChangeOfSolutions;
-
-    // decide, how the adaptivity, nonlinear (and time ) steps will be organized
-    setup(false);
-
-    // setup nonlinear solution
-    dealii::Vector<double> solutionNonlinearPrevious(m_doFHandler.n_dofs());
-    for (dealii::types::global_dof_index dof = 0; dof < m_doFHandler.n_dofs(); dof++)
-    {
-        if (constraintsDirichlet.is_constrained(dof))
-        {
-            (solutionNonlinearPrevious)(dof) = constraintsDirichlet.get_inhomogeneity(dof);
-        }
-    }
-
-    // first assemble just residual.
-    assembleSystem(solutionNonlinearPrevious, false);
-    // system_rhs.print(std::cout);
-    double residualNorm = systemRHS.l2_norm();
-
-    Agros2D::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Initial residual norm: %1")
-                                 .arg(residualNorm));
-
-    // initial damping factor
-    double dampingFactor = (m_fieldInfo->value(FieldInfo::NonlinearDampingType) == DampingType_Off ? 1.0 : m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble());
-    int dampingSuccessfulSteps = 0;
-
-    int iteration = 0;
-    int numReusedJacobian = 0;
-    bool criteriaReached = false;
-    while ((iteration < MAX_NUM_NONLIN_ITERS) && !criteriaReached && !Agros2D::problem()->isAborted())
-    {
-        SolverAgros::Phase phase = SolverAgros::Phase_Solving;
-
-        QTime time;
-        time.start();
-
-        iteration++;
-
-        double previousResidualNorm = residualNorm;
-        bool jacobianReused = false;
-
-        if (numReusedJacobian == m_fieldInfo->value(FieldInfo::NewtonMaxStepsReuseJacobian).toInt())
-        {
-            // Jacobian has been reused too many times. Do not do it this time
-            numReusedJacobian = 0;
-        }
-        else
-        {
-            // Jacobian can be reused, if it is allowed
-            if((iteration > 1) && (m_fieldInfo->value(FieldInfo::NewtonReuseJacobian).toBool()))
-            {
-                // first try to reuse the Jacobian
-                time.start();
-                assembleSystem(solutionNonlinearPrevious, false);
-                // std::cout << "assemble for Jac reuse (" << time.elapsed() << "ms )" << std::endl;
-
-                systemRHS *= -1.0;
-
-                // since m_assemble_matrix is false, this will reuse the LU decomposition
-                time.start();
-                solveLinearSystem(systemMatrix, systemRHS, m_solution, true);
-                //m_solution.print(std::cout);
-                //system_matrix.print(std::cout);
-                //system_rhs.print(std::cout);
-
-                // std::cout << "back substitution (" << time.elapsed() << "ms )" << std::endl;
-
-                // Update
-                solutionNonlinearPrevious.add(dampingFactor, m_solution);
-
-                time.start();
-                // calculate residual - we are not wasting time on matrix assembly.
-                assembleSystem(solutionNonlinearPrevious, false);
-                // Residual norm.
-                residualNorm = systemRHS.l2_norm();
-
-                // std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
-
-                if (residualNorm < previousResidualNorm * m_fieldInfo->value(FieldInfo::NewtonJacobianReuseRatio).toDouble())
-                {
-                    jacobianReused = true;
-                    numReusedJacobian++;
-                }
-                else
-                {
-                    // revert step
-                    solutionNonlinearPrevious.add(-dampingFactor, m_solution);
-                    jacobianReused = false;
-                    numReusedJacobian = 0;
-                }
-                // std::cout << "norms: " << residualNorm << ", old: " << previousResidualNorm << " -> " << jacobianReused << std::endl;
-            }
-        }
-
-        if (!jacobianReused)
-        {
-            time.start();
-            assembleSystem(solutionNonlinearPrevious);
-
-            time.start();
-            systemRHS *= -1.0;
-            solveLinearSystem(systemMatrix, systemRHS, m_solution);
-            // m_solution.print(std::cout);
-            // system_matrix.print(std::cout);
-            // system_rhs.print(std::cout);
-
-            // std::cout << "full system solve (" << time.elapsed() << "ms )" << std::endl;
-
-            // Update.
-            solutionNonlinearPrevious.add(dampingFactor, m_solution);
-
-            // Calculate residual.
-            assembleSystem(solutionNonlinearPrevious, false);
-            // Residual norm.
-            residualNorm = systemRHS.l2_norm();
-
-            // automatic damping factor
-            if ((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() == DampingType_Automatic)
-            {
-                previousResidualNorm = residualNorm;
-                assert(previousResidualNorm > 0.0);
-
-                // todo: code repetition, get rid of it together with jacobian reuse
-                time.start();
-                assembleSystem(solutionNonlinearPrevious, false);
-                residualNorm = systemRHS.l2_norm();
-                // std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
-
-                while(residualNorm > previousResidualNorm * m_fieldInfo->value(FieldInfo::NonlinearDampingFactorDecreaseRatio).toDouble())
-                {
-                    dampingSuccessfulSteps = -1;
-                    double previousDampingFactor = dampingFactor;
-
-                    if (dampingFactor > minAllowedDampingCoeff)
-                    {
-                        phase = SolverAgros::Phase_DampingFactorChanged;
-
-                        dampingFactor = dampingFactor * 1.0 / autoDampingRatio;
-                    }
-                    else
-                    {
-                        // assert(0);
-                        // todo: damping factor below minimal possible
-                    }
-
-                    // Line search. Take back the previous steps (too long) and make a new one, with new damping factor
-                    solutionNonlinearPrevious.add(- previousDampingFactor + dampingFactor, m_solution);
-
-                    // todo: code repetition, get rid of it together with jacobian reuse
-                    time.start();
-                    assembleSystem(solutionNonlinearPrevious, false);
-                    residualNorm = systemRHS.l2_norm();
-                    // std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
-                }
-
-                dampingSuccessfulSteps++;
-                if (dampingSuccessfulSteps > 0)
-                {
-
-                    if (dampingSuccessfulSteps >= m_fieldInfo->value(FieldInfo::NonlinearStepsToIncreaseDampingFactor).toInt())
-                    {
-                        if (dampingFactor * autoDampingRatio <= m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble())
-                            dampingFactor = dampingFactor * autoDampingRatio;
-                        else
-                            dampingFactor = m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble();
-                    }
-                }
-            }
-        }
-        // update
-        steps.append(iteration);
-        double relChangeSol = dampingFactor * m_solution.l2_norm() / solutionNonlinearPrevious.l2_norm() * 100;
-        relativeChangeOfSolutions.append(relChangeSol);
-
-        // stop criteria
-        criteriaReached = true;
-        if ((m_fieldInfo->value(FieldInfo::NonlinearResidualNorm).toDouble() > 0) &&
-                (m_fieldInfo->value(FieldInfo::NonlinearResidualNorm).toDouble() < residualNorm))
-            criteriaReached = false;
-
-        if ((m_fieldInfo->value(FieldInfo::NonlinearRelativeChangeOfSolutions).toDouble() > 0) &&
-                (m_fieldInfo->value(FieldInfo::NonlinearRelativeChangeOfSolutions).toDouble() < relChangeSol))
-            criteriaReached = false;
-
-        // log messages
-        if (criteriaReached)
-            phase = SolverAgros::Phase_Finished;
-
-        Agros2D::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, residual: %3, damping: %4)")
-                                     .arg(iteration)
-                                     .arg(QString::number(relativeChangeOfSolutions.last(), 'e', 3))
-                                     .arg(QString::number(residualNorm, 'e', 3))
-                                     .arg(dampingFactor));
-
-        Agros2D::log()->updateNonlinearChartInfo(phase, steps, relativeChangeOfSolutions);
-    }
-
-    // put the final solution into the solution
-    m_solution = solutionNonlinearPrevious;
-
-    constraintsDirichlet.distribute(m_solution);
-
-    // qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
+    return cacheDoFHandler;
 }
 
 void SolverDeal::solveAdaptivity()
@@ -1051,7 +426,7 @@ void SolverDeal::solveAdaptivity()
 
         FieldSolutionID solutionID(m_fieldInfo, Agros2D::problem()->timeLastStep(), 0);
         SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, m_doFHandler.n_dofs());
-        Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, m_solution), runTime);
+        Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_solution), runTime);
     }
     else
     {
@@ -1067,13 +442,13 @@ void SolverDeal::solveAdaptivity()
                 solutionTrans = dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> >(m_doFHandler);
                 previousSolution = m_solution;
 
-                m_triangulation->prepare_coarsening_and_refinement();
+                Agros2D::problem()->calculationMesh().prepare_coarsening_and_refinement();
                 solutionTrans.prepare_for_coarsening_and_refinement(previousSolution);
 
                 ErrorEstimator::prepareGridRefinement(m_fieldInfo, *m_feCollection, m_quadratureFormulasFace, m_solution, m_doFHandler);
 
                 // execute transfer solution
-                m_triangulation->execute_coarsening_and_refinement();
+                Agros2D::problem()->calculationMesh().execute_coarsening_and_refinement();
             }
 
             // solve problem
@@ -1099,7 +474,7 @@ void SolverDeal::solveAdaptivity()
 
             FieldSolutionID solutionID(m_fieldInfo, Agros2D::problem()->timeLastStep(), adaptiveStep);
             SolutionStore::SolutionRunTimeDetails runTime(0.0, relChangeSol, m_doFHandler.n_dofs());
-            Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_triangulation, m_solution), runTime);
+            Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&m_doFHandler, m_solution), runTime);
 
             if (adaptiveStep > 0)
                 Agros2D::log()->updateAdaptivityChartInfo(m_fieldInfo, 0, adaptiveStep);
@@ -1116,33 +491,7 @@ void SolverDeal::solveAdaptivity()
     }
 }
 
-// BDF methods
-void SolverDeal::transientBDF(const double timeStep,
-                              dealii::Vector<double> &solution,
-                              const std::vector<dealii::Vector<double> > solutions,
-                              const BDF2Table &bdf2Table)
-{
-    // LHM = (M + dt * K)
-    transientTotalMatrix.copy_from(transientMassMatrix);
-    transientTotalMatrix *= bdf2Table.matrixFormCoefficient();
-    transientTotalMatrix.add(timeStep, systemMatrix);
-
-    // m = sum(M * SLN)
-    dealii::Vector<double> m(solution.size());
-    for (int i = 0; i < bdf2Table.order(); i++)
-    {
-        // m += M * SLNi
-        dealii::Vector<double> sln(solution.size());
-        transientMassMatrix.vmult(sln, solutions[solutions.size() - i - 1]);
-        m.add(- bdf2Table.vectorFormCoefficient(i), sln);
-    }
-
-    // m += dt * RHS
-    m.add(timeStep, systemRHS);
-
-    solveLinearSystem(transientTotalMatrix, m, solution);
-    // solveProblem();
-}
+// *************************************************************************************************************************************************
 
 void SolverAgros::clearSteps()
 {

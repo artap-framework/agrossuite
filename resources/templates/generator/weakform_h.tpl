@@ -25,11 +25,13 @@
 #include "solver/marker.h"
 #include "{{ID}}_interface.h"
 
-class SolverDeal{{CLASS}} : public SolverDeal
+// typedef std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, typename dealii::hp::DoFHandler<2>::active_cell_iterator> IteratorTuple;
+
+class SolverDeal{{CLASS}} : public SolverDealTransient
 {
 public:
     SolverDeal{{CLASS}}(const FieldInfo *fieldInfo)
-        : SolverDeal(fieldInfo) {}
+        : SolverDealTransient(fieldInfo) {}
 
     virtual void assembleSystem(const dealii::Vector<double> &solutionNonlinearPrevious,
                                 bool assembleMatrix = true,
@@ -37,6 +39,7 @@ public:
     virtual void assembleDirichlet(bool calculateDirichletLiftValue);
 
 protected:
+    // virtual void localAssembleSystem(const dealii::SynchronousIterators<IteratorTuple> &iter,
     virtual void localAssembleSystem(const DoubleCellIterator &iter,
                                 AssemblyScratchData &scratch,
                                 AssemblyCopyData &copy_data);

@@ -144,6 +144,7 @@ public:
 
     inline const dealii::Triangulation<2> &initialMesh() const { return m_initialMesh; }
     inline dealii::Triangulation<2> &calculationMesh() { return m_calculationMesh; }
+    inline void setCalculationMesh(dealii::Triangulation<2> newMesh) { m_calculationMesh.copy_triangulation(newMesh); }
 
     void propagateBoundaryMarkers();
 

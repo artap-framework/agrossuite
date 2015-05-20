@@ -17,43 +17,27 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include "solutiontypes.h"
+#ifndef SOLVER_NONLINEAR_H
+#define SOLVER_NONLINEAR_H
 
+#include "util.h"
 #include "util/global.h"
-
+#include "solutiontypes.h"
 #include "scene.h"
-#include "field.h"
-#include "problem.h"
-#include "logview.h"
+#include "linear_solver.h"
 
-QString FieldSolutionID::toString()
+#include "solver.h"
+
+class AGROS_LIBRARY_API SolverDealNonlinear : public SolverDeal
 {
-    QString str = QString("%1_%2_%3").
-            arg(fieldInfo->fieldId()).
-            arg(timeStep).
-            arg(adaptivityStep);
+public:
+    SolverDealNonlinear(const FieldInfo *fieldInfo);
 
-    return str;
-}
+    virtual void solveProblem();
 
-// *********************************************************************************************
+protected:
+    void solveProblemNonLinearPicard();
+    void solveProblemNonLinearNewton();
+};
 
-MultiArray::MultiArray() : m_doFHandler(nullptr)
-{
-}
-
-MultiArray::~MultiArray()
-{
-    // clear must be called explicitely
-}
-
-void MultiArray::clear()
-{        
-    delete m_doFHandler;
-}
-
-void MultiArray::append(dealii::hp::DoFHandler<2> *doFHandler, dealii::Vector<double> &solution)
-{    
-    m_doFHandler = doFHandler;
-    m_solution = solution;
-}
+#endif // SOLVER_NONLINEAR_H

@@ -62,6 +62,11 @@ void SolverDeal{{CLASS}}::assembleSystem(const dealii::Vector<double> &solutionN
     if (isTransient)
         transientMassMatrix = 0.0;
 
+    // dealii::SynchronousIterators<IteratorTuple> cell_and_source_begin(IteratorTuple(m_doFHandler.begin_active(),
+    //                                                                                 m_doFHandler.begin_active()));
+    // dealii::SynchronousIterators<IteratorTuple> cell_and_source_end(IteratorTuple(m_doFHandler.end(),
+    //                                                                               m_doFHandler.end()));
+
     TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_begin, cell_end, source_begin, source_end;
     cell_begin = m_doFHandler.begin_active();
     cell_end = m_doFHandler.end();
@@ -74,6 +79,11 @@ void SolverDeal{{CLASS}}::assembleSystem(const dealii::Vector<double> &solutionN
     {
         source_begin = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler().begin_active();
         source_end = ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler().end();
+
+        // cell_and_source_begin = dealii::SynchronousIterators<IteratorTuple>(IteratorTuple(m_doFHandler.begin_active(),
+        //                                                                                   ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler().begin_active()));
+        // cell_and_source_end = dealii::SynchronousIterators<IteratorTuple>(IteratorTuple(m_doFHandler.end(),
+        //                                                                                 ProblemSolver::solvers()["{{COUPLING_SOURCE_ID}}"]->doFHandler().end()));
     }
     {{/COUPLING_SOURCE}}
 
@@ -89,6 +99,17 @@ void SolverDeal{{CLASS}}::assembleSystem(const dealii::Vector<double> &solutionN
         }
     }
 
+    // while (cell_and_source_begin != cell_and_source_end)
+    // {
+    //     if (!Agros2D::scene()->labels->at(std::get<0>(cell_and_source_begin.iterators)->material_id() - 1)->marker(m_fieldInfo)->isNone())
+    //         break;
+    //     else
+    //         ++cell_and_source_begin;
+    // }
+    //
+    //     dealii::WorkStream::run(cell_and_source_begin,
+    //                             cell_and_source_end,
+
     dealii::WorkStream::run(DoubleCellIterator(source_begin, cell_begin, m_doFHandler, m_fieldInfo),
                             DoubleCellIterator(source_end, cell_end, m_doFHandler, m_fieldInfo),
                             *this,
@@ -101,11 +122,13 @@ void SolverDeal{{CLASS}}::assembleSystem(const dealii::Vector<double> &solutionN
                             AssemblyCopyData());
 }
 
+// void SolverDeal{{CLASS}}::localAssembleSystem(const dealii::SynchronousIterators<IteratorTuple> &iter,
 void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
                                               AssemblyScratchData &scratch_data,
                                               AssemblyCopyData &copy_data)
 {
     const TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = iter.cell_second;
+    // const TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = std::get<0>(iter.iterators);
 
     // coupling sources{{#COUPLING_SOURCE}}
     dealii::hp::DoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}};
@@ -113,6 +136,7 @@ void SolverDeal{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
     if (m_problem->hasField("{{COUPLING_SOURCE_ID}}"))
     {
         cell_{{COUPLING_SOURCE_ID}} = iter.cell_first;
+        // cell_{{COUPLING_SOURCE_ID}} = std::get<1>(iter.iterators);
     }
     {{/COUPLING_SOURCE}}
 

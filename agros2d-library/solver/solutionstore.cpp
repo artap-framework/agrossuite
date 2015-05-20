@@ -110,7 +110,7 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
         solution.load(sbiSol, 0);
 
         // new multisolution
-        MultiArray msa(&doFHandler, &triangulation, solution);
+        MultiArray msa(&doFHandler, solution);
 
         insertMultiSolutionToCache(solutionID, msa);        
     }
@@ -263,7 +263,7 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, Multi
     // cout << doFHandler->memory_consumption() << endl;
 
     // new multisolution
-    MultiArray multiSolutionCopy(doFHandler, triangulation, multiSolution.solution());
+    MultiArray multiSolutionCopy(doFHandler, multiSolution.solution());
 
     assert(!m_multiSolutionDealCache.contains(solutionID));
 

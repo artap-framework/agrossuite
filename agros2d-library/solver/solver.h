@@ -129,7 +129,7 @@ class SceneBoundary;
 
 class AGROS_LIBRARY_API SolverDeal
 {
-public:    
+public:
     SolverDeal(const FieldInfo *fieldInfo);
     virtual ~SolverDeal();
 
@@ -151,24 +151,15 @@ public:
     virtual void assembleDirichlet(bool calculateDirichletLiftValue) = 0;
 
     // problem
-    void solve();
+    virtual void solve();
 
     void setCouplingSource(QString fieldID, dealii::Vector<double>& sourceVector) { m_coupling_sources[fieldID] = sourceVector; }
-
-    // BDF methods
-    void transientBDF(const double timeStep,
-                      dealii::Vector<double> &solution,
-                      const std::vector<dealii::Vector<double> > solutions,
-                      const BDF2Table &bdf2Table);
 
     // linear solver
     void solveLinearSystem(dealii::SparseMatrix<double> &system,
                            dealii::Vector<double> &rhs,
                            dealii::Vector<double> &sln,
                            bool reuseDecomposition = false);
-
-    inline void set_time(const double new_time) { m_time = new_time; }
-    inline double get_time() const { return m_time; }
 
     static dealii::hp::FECollection<2> *createFECollection(const FieldInfo *fieldInfo);
     static dealii::hp::MappingCollection<2> *createMappingCollection(const FieldInfo *fieldInfo);
@@ -245,7 +236,6 @@ protected:
     SolverLinearSolver m_linearSolver;
 
     // assembling
-    dealii::Triangulation<2> *m_triangulation;
     dealii::hp::DoFHandler<2> m_doFHandler;
     dealii::hp::MappingCollection<2> *m_mappingCollection;
     dealii::hp::FECollection<2> *m_feCollection;
@@ -277,24 +267,13 @@ protected:
     dealii::SparseMatrix<double> systemMatrix;
     dealii::Vector<double> systemRHS;
 
-    // transient mass matrix
-    double m_time;
-    dealii::SparseMatrix<double> transientMassMatrix;
-    dealii::SparseMatrix<double> transientTotalMatrix;
-
     //  linearity
-    void solveProblem();
+    virtual void solveProblem();
     void solveProblemLinear();
-    void solveProblemNonLinearPicard();
-    void solveProblemNonLinearNewton();
 
     // adaptivity
     void solveAdaptivity();        
 };
-
-namespace Module {
-class ErrorCalculator;
-}
 
 class SolverAgros
 {
