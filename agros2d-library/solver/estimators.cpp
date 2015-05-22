@@ -113,157 +113,7 @@ void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::FECollection
     }
 }
 
-void ErrorEstimator::prepareGridRefinement(const FieldInfo *fieldInfo,
-                                           const dealii::hp::FECollection<2> &feCollection,
-                                           const dealii::hp::QCollection<2-1> &quadratureFormulasFace,
-                                           const dealii::Vector<double> &solution,
-                                           dealii::hp::DoFHandler<2> &doFHandler,
-                                           int maxHIncrease,
-                                           int maxPIncrease)
-{
-    // estimated error per cell
-    dealii::Vector<float> estimated_error_per_cell(Agros2D::problem()->calculationMesh().n_active_cells());
-
-    bool estimate = ((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt()) != AdaptivityStrategy_GlobalRefinement;
-
-    // estimator
-    if (estimate)
-    {
-        switch ((AdaptivityEstimator) fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt())
-        {
-        case AdaptivityEstimator_Kelly:
-            dealii::KellyErrorEstimator<2>::estimate(doFHandler,
-                                                     quadratureFormulasFace,
-                                                     TYPENAME dealii::FunctionMap<2>::type(),
-                                                     solution,
-                                                     estimated_error_per_cell);
-            break;
-        case AdaptivityEstimator_Gradient:
-            GradientErrorEstimator::estimate(doFHandler,
-                                             solution,
-                                             estimated_error_per_cell);
-            break;
-        default:
-            assert(0);
-        }
-    }
-
-    // cout << estimated_error_per_cell.l2_norm() << endl;
-
-    // strategy
-    switch ((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt())
-    {
-    case AdaptivityStrategy_FixedFractionOfCells:
-    {
-        dealii::GridRefinement::refine_and_coarsen_fixed_number(Agros2D::problem()->calculationMesh(),
-                                                                estimated_error_per_cell,
-                                                                fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt() / 100.0,
-                                                                fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt() / 100.0);
-    }
-        break;
-    case AdaptivityStrategy_FixedFractionOfTotalError:
-    {
-        dealii::GridRefinement::refine_and_coarsen_fixed_fraction(Agros2D::problem()->calculationMesh(),
-                                                                  estimated_error_per_cell,
-                                                                  fieldInfo->value(FieldInfo::AdaptivityFinePercentage).toInt() / 100.0,
-                                                                  fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt() / 100.0);
-    }
-        break;
-    case AdaptivityStrategy_BalancedErrorAndCost:
-    {
-        dealii::GridRefinement::refine_and_coarsen_optimize(Agros2D::problem()->calculationMesh(),
-                                                            estimated_error_per_cell);
-    }
-        break;
-    case AdaptivityStrategy_GlobalRefinement:
-    {
-        dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endcmm = doFHandler.end();
-        for (unsigned int index = 0; cell != endcmm; ++cell, ++index)
-            cell->set_refine_flag();
-    }
-        break;
-    default:
-        assert(0);
-    }
-
-    // additional informations for p and hp adaptivity
-    float min_smoothness = 0.0;
-    float max_smoothness = 0.0;
-    dealii::Vector<float> smoothnessIndicators;
-
-    if (fieldInfo->adaptivityType() == AdaptivityMethod_HP)
-    {
-        smoothnessIndicators.reinit(Agros2D::problem()->calculationMesh().n_active_cells());
-        ErrorEstimator::estimateAdaptivitySmoothness(feCollection, doFHandler, solution, smoothnessIndicators);
-
-        min_smoothness = *std::max_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
-        max_smoothness = *std::min_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
-        dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = doFHandler.begin_active(), endcmm = doFHandler.end();
-        for (unsigned int index = 0; cellmm != endcmm; ++cellmm, ++index)
-        {
-            if (cellmm->refine_flag_set())
-            {
-                max_smoothness = std::max(max_smoothness, smoothnessIndicators(index));
-                min_smoothness = std::min(min_smoothness, smoothnessIndicators(index));
-            }
-        }
-    }
-
-    if ((fieldInfo->adaptivityType() == AdaptivityMethod_P) || (fieldInfo->adaptivityType() == AdaptivityMethod_HP))
-    {
-        const float threshold_smoothness = (max_smoothness + min_smoothness) / 2;
-
-        dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
-        for (unsigned int index = 0; cell != endc; ++cell, ++index)
-        {
-            if (fieldInfo->adaptivityType() == AdaptivityMethod_P)
-            {
-                if (cell->refine_flag_set())
-                {
-                    // remove h adaptivity flag
-                    cell->clear_refine_flag();
-
-                    if ((maxPIncrease == -1) || (cell->active_fe_index() - fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease)
-                    {
-                        if (cell->active_fe_index() + 1 < doFHandler.get_fe().size())
-                        {
-                            // increase order
-                            cell->set_active_fe_index(cell->active_fe_index() + 1);
-                        }
-                    }
-                }
-            }
-
-            if (fieldInfo->adaptivityType() == AdaptivityMethod_HP)
-            {
-                if ((maxPIncrease == -1) || (cell->active_fe_index() - fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease)
-                {
-                    if (cell->refine_flag_set() && (smoothnessIndicators(index) > threshold_smoothness)
-                            && (cell->active_fe_index() + 1 < doFHandler.get_fe().size()))
-                    {
-                        // remove h adaptivity flag
-                        cell->clear_refine_flag();
-                        // increase order
-                        cell->set_active_fe_index(cell->active_fe_index() + 1);
-                    }
-                }
-            }
-        }
-    }
-
-
-    // number of refinements
-    if (maxHIncrease != -1)
-    {
-        dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
-        for (unsigned int index = 0; cell != endc; ++cell, ++index)
-        {
-            // remove h adaptivity flag
-            if (cell->level() > maxHIncrease)
-                cell->clear_refine_flag();
-        }
-    }
-}
+// ******************************************************************************************************************
 
 GradientErrorEstimator::EstimateScratchData::EstimateScratchData(const dealii::hp::FECollection<2> &fe,
                                                                  const dealii::Vector<double> &solution)
@@ -305,8 +155,7 @@ void GradientErrorEstimator::estimate(const dealii::hp::DoFHandler<2> &dof_handl
                             EstimateCopyData());
 }
 
-void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator,
-                                           dealii::Vector<float>::iterator> > &cell,
+void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
                                            EstimateScratchData &scratch_data,
                                            const EstimateCopyData &)
 {
@@ -341,7 +190,7 @@ void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<st
     scratch_data.fe_midpoint_value.get_present_fe_values().get_function_values(scratch_data.solution, this_midpoint_value);
     std::vector<double> neighbor_midpoint_value(1);
     TYPENAME std::vector<TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator>::const_iterator neighbor_ptr = active_neighbors.begin();
-    for (; neighbor_ptr!=active_neighbors.end(); ++neighbor_ptr)
+    for (; neighbor_ptr != active_neighbors.end(); ++neighbor_ptr)
     {
         const TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator neighbor = *neighbor_ptr;
         scratch_data.fe_midpoint_value.reinit (neighbor);
@@ -364,3 +213,341 @@ void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<st
     contract (gradient, Y_inverse, projected_gradient);
     *(std::get<1>(cell.iterators)) = (std::pow(std::get<0>(cell.iterators)->diameter(), 2) * std::sqrt(gradient.square()));
 }
+
+// ************************************************************************************************************************
+
+DifferenceErrorEstimator::EstimateScratchData::EstimateScratchData(const dealii::hp::FECollection<2> &primal_fe,
+                                                                   const dealii::Vector<double> &primal_solution,
+                                                                   const dealii::Vector<double> &dual_solution)
+    :
+      hp_fe_values(primal_fe,
+                   dealii::hp::QCollection<2>(dealii::QGauss<2>(5)),
+                   dealii::update_values | dealii::update_gradients | dealii::update_JxW_values),
+      primal_solution(primal_solution),
+      dual_solution(dual_solution)
+{
+}
+
+DifferenceErrorEstimator::EstimateScratchData::EstimateScratchData(const EstimateScratchData &scratch_data)
+    :
+      hp_fe_values(scratch_data.hp_fe_values.get_fe_collection(),
+                   scratch_data.hp_fe_values.get_quadrature_collection(),
+                   dealii::update_values | dealii::update_gradients | dealii::update_JxW_values),
+      primal_solution(scratch_data.primal_solution),
+      dual_solution(scratch_data.dual_solution)
+{
+}
+
+void DifferenceErrorEstimator::estimate(const dealii::hp::DoFHandler<2> &primal_dof,
+                                        const dealii::Vector<double> &primal_solution,
+                                        const dealii::Vector<double> &dual_solution,
+                                        dealii::Vector<float> &error_per_cell)
+{
+    Assert (error_per_cell.size() == primal_dof.get_tria().n_active_cells(),
+            ExcInvalidVectorLength (error_per_cell.size(),
+                                    primal_dof.get_tria().n_active_cells()));
+    typedef std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
+
+    dealii::SynchronousIterators<IteratorTuple>
+            begin_sync_it (IteratorTuple(primal_dof.begin_active(), error_per_cell.begin())),
+            end_sync_it (IteratorTuple(primal_dof.end(), error_per_cell.end()));
+
+    dealii::WorkStream::run(begin_sync_it,
+                            end_sync_it,
+                            &DifferenceErrorEstimator::estimate_cell,
+                            std::function<void (const EstimateCopyData &)> (),
+                            EstimateScratchData(primal_dof.get_fe(), primal_solution, dual_solution),
+                            EstimateCopyData());
+}
+
+void DifferenceErrorEstimator::estimate_cell(const dealii::SynchronousIterators<std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
+                                             EstimateScratchData &scratch_data,
+                                             const EstimateCopyData &)
+{
+    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_it(std::get<0>(cell.iterators));
+
+    const unsigned int dofs_per_cell = cell_it->get_fe().dofs_per_cell;
+
+    // reinit volume
+    scratch_data.hp_fe_values.reinit(cell_it);
+
+    const dealii::FEValues<2> &fe_values = scratch_data.hp_fe_values.get_present_fe_values();
+    const unsigned int n_q_points = fe_values.n_quadrature_points;
+
+    // TODO: more solutions
+    std::vector<dealii::Vector<double> > primal_solution_value(n_q_points, dealii::Vector<double>(cell_it->get_fe().n_components()));
+    std::vector<std::vector<dealii::Tensor<1, 2> > > primal_solution_gradients(n_q_points, std::vector<dealii::Tensor<1, 2> >(cell_it->get_fe().n_components()));
+    std::vector<dealii::Vector<double> > dual_solution_value(n_q_points, dealii::Vector<double>(cell_it->get_fe().n_components()));
+    std::vector<std::vector<dealii::Tensor<1, 2> > > dual_solution_gradients(n_q_points, std::vector<dealii::Tensor<1, 2> >(cell_it->get_fe().n_components()));
+    fe_values.get_function_values(scratch_data.primal_solution, primal_solution_value);
+    fe_values.get_function_gradients(scratch_data.primal_solution, primal_solution_gradients);
+    fe_values.get_function_values(scratch_data.dual_solution, dual_solution_value);
+    fe_values.get_function_gradients(scratch_data.dual_solution, dual_solution_gradients);
+
+    // h1-norm
+    double value = 0.0;
+    for (unsigned int k = 0; k < n_q_points; ++k)
+    {
+        for (unsigned int l = 0; l < cell_it->get_fe().n_components(); l++)
+        {
+            value += fe_values.JxW(k) * ((primal_solution_value[k][l] - dual_solution_value[k][l]) * (primal_solution_value[k][l] - dual_solution_value[k][l])
+                    + (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]) * (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]));
+        }
+    }
+
+    *(std::get<1>(cell.iterators)) = value;
+}
+
+// ************************************************************************************************************************
+
+
+/*
+template <int dim>
+void
+WeightedResidual<dim>::
+estimate_error (Vector<float> &error_indicators) const
+{
+    const PrimalSolver<dim> &primal_solver = *this;
+    const DualSolver<dim>   &dual_solver   = *this;
+    ConstraintMatrix dual_hanging_node_constraints;
+    DoFTools::make_hanging_node_constraints (dual_solver.dof_handler,
+                                             dual_hanging_node_constraints);
+    dual_hanging_node_constraints.close();
+    Vector<double> primal_solution (dual_solver.dof_handler.n_dofs());
+    FETools::interpolate (primal_solver.dof_handler,
+                          primal_solver.solution,
+                          dual_solver.dof_handler,
+                          dual_hanging_node_constraints,
+                          primal_solution);
+    ConstraintMatrix primal_hanging_node_constraints;
+    DoFTools::make_hanging_node_constraints (primal_solver.dof_handler,
+                                             primal_hanging_node_constraints);
+    primal_hanging_node_constraints.close();
+    Vector<double> dual_weights (dual_solver.dof_handler.n_dofs());
+    FETools::interpolation_difference (dual_solver.dof_handler,
+                                       dual_hanging_node_constraints,
+                                       dual_solver.solution,
+                                       primal_solver.dof_handler,
+                                       primal_hanging_node_constraints,
+                                       dual_weights);
+    FaceIntegrals face_integrals;
+    for (active_cell_iterator cell=dual_solver.dof_handler.begin_active();
+         cell!=dual_solver.dof_handler.end();
+         ++cell)
+        for (unsigned int face_no=0;
+             face_no<GeometryInfo<dim>::faces_per_cell;
+             ++face_no)
+            face_integrals[cell->face(face_no)] = -1e20;
+    error_indicators.reinit (dual_solver.dof_handler
+                             .get_tria().n_active_cells());
+    typedef
+    std_cxx11::tuple<active_cell_iterator,Vector<float>::iterator>
+            IteratorTuple;
+    SynchronousIterators<IteratorTuple>
+            cell_and_error_begin(IteratorTuple (dual_solver.dof_handler.begin_active(),
+                                                error_indicators.begin()));
+    SynchronousIterators<IteratorTuple>
+            cell_and_error_end  (IteratorTuple (dual_solver.dof_handler.end(),
+                                                error_indicators.begin()));
+    WorkStream::run(cell_and_error_begin,
+                    cell_and_error_end,
+                    std_cxx11::bind(&WeightedResidual<dim>::estimate_on_one_cell,
+                                    this,
+                                    std_cxx11::_1,
+                                    std_cxx11::_2,
+                                    std_cxx11::_3,
+                                    std_cxx11::ref(face_integrals)),
+                    std_cxx11::function<void (const WeightedResidualCopyData &)>(),
+                    WeightedResidualScratchData (primal_solver,
+                                                 dual_solver,
+                                                 primal_solution,
+                                                 dual_weights),
+                    WeightedResidualCopyData());
+    unsigned int present_cell=0;
+    for (active_cell_iterator cell=dual_solver.dof_handler.begin_active();
+         cell!=dual_solver.dof_handler.end();
+         ++cell, ++present_cell)
+        for (unsigned int face_no=0; face_no<GeometryInfo<dim>::faces_per_cell;
+             ++face_no)
+        {
+            Assert(face_integrals.find(cell->face(face_no)) !=
+                    face_integrals.end(),
+                   ExcInternalError());
+            error_indicators(present_cell)
+                    -= 0.5*face_integrals[cell->face(face_no)];
+        }
+    std::cout << "   Estimated error="
+              << std::accumulate (error_indicators.begin(),
+                                  error_indicators.end(), 0.)
+              << std::endl;
+}
+template <int dim>
+void
+WeightedResidual<dim>::
+estimate_on_one_cell (const SynchronousIterators<std_cxx11::tuple<
+                      active_cell_iterator,Vector<float>::iterator> > &cell_and_error,
+                      WeightedResidualScratchData                       &scratch_data,
+                      WeightedResidualCopyData                          &copy_data,
+                      FaceIntegrals                                     &face_integrals) const
+{
+    active_cell_iterator cell = std_cxx11::get<0>(cell_and_error.iterators);
+    integrate_over_cell (cell_and_error,
+                         scratch_data.primal_solution,
+                         scratch_data.dual_weights,
+                         scratch_data.cell_data);
+    for (unsigned int face_no=0;
+         face_no<GeometryInfo<dim>::faces_per_cell;
+         ++face_no)
+    {
+        if (cell->face(face_no)->at_boundary())
+        {
+            face_integrals[cell->face(face_no)] = 0;
+            continue;
+        }
+        if ((cell->neighbor(face_no)->has_children() == false) &&
+                (cell->neighbor(face_no)->level() == cell->level()) &&
+                (cell->neighbor(face_no)->index() < cell->index()))
+            continue;
+        if (cell->at_boundary(face_no) == false)
+            if (cell->neighbor(face_no)->level() < cell->level())
+                continue;
+        if (cell->face(face_no)->has_children() == false)
+            integrate_over_regular_face (cell, face_no,
+                                         scratch_data.primal_solution,
+                                         scratch_data.dual_weights,
+                                         scratch_data.face_data,
+                                         face_integrals);
+        else
+            integrate_over_irregular_face (cell, face_no,
+                                           scratch_data.primal_solution,
+                                           scratch_data.dual_weights,
+                                           scratch_data.face_data,
+                                           face_integrals);
+    }
+}
+template <int dim>
+void WeightedResidual<dim>::
+integrate_over_cell (const SynchronousIterators<std_cxx11::tuple<
+                     active_cell_iterator,Vector<float>::iterator> >   &cell_and_error,
+                     const Vector<double>                              &primal_solution,
+                     const Vector<double>                              &dual_weights,
+                     CellData                                          &cell_data) const
+{
+    cell_data.fe_values.reinit (std_cxx11::get<0>(cell_and_error.iterators));
+    cell_data.right_hand_side
+            ->value_list (cell_data.fe_values.get_quadrature_points(),
+                          cell_data.rhs_values);
+    cell_data.fe_values.get_function_laplacians (primal_solution,
+                                                 cell_data.cell_laplacians);
+    cell_data.fe_values.get_function_values (dual_weights,
+                                             cell_data.dual_weights);
+    double sum = 0;
+    for (unsigned int p=0; p<cell_data.fe_values.n_quadrature_points; ++p)
+        sum += ((cell_data.rhs_values[p]+cell_data.cell_laplacians[p]) *
+                cell_data.dual_weights[p] *
+                cell_data.fe_values.JxW (p));
+    *(std_cxx11::get<1>(cell_and_error.iterators)) += sum;
+}
+template <int dim>
+void WeightedResidual<dim>::
+integrate_over_regular_face (const active_cell_iterator &cell,
+                             const unsigned int          face_no,
+                             const Vector<double>       &primal_solution,
+                             const Vector<double>       &dual_weights,
+                             FaceData                   &face_data,
+                             FaceIntegrals              &face_integrals) const
+{
+    const unsigned int
+            n_q_points = face_data.fe_face_values_cell.n_quadrature_points;
+    face_data.fe_face_values_cell.reinit (cell, face_no);
+    face_data.fe_face_values_cell.get_function_gradients (primal_solution,
+                                                          face_data.cell_grads);
+    Assert (cell->neighbor(face_no).state() == IteratorState::valid,
+            ExcInternalError());
+    const unsigned int
+            neighbor_neighbor = cell->neighbor_of_neighbor (face_no);
+    const active_cell_iterator neighbor = cell->neighbor(face_no);
+    face_data.fe_face_values_neighbor.reinit (neighbor, neighbor_neighbor);
+    face_data.fe_face_values_neighbor.get_function_gradients (primal_solution,
+                                                              face_data.neighbor_grads);
+    for (unsigned int p=0; p<n_q_points; ++p)
+        face_data.jump_residual[p]
+                = ((face_data.cell_grads[p] - face_data.neighbor_grads[p]) *
+                   face_data.fe_face_values_cell.normal_vector(p));
+    face_data.fe_face_values_cell.get_function_values (dual_weights,
+                                                       face_data.dual_weights);
+    double face_integral = 0;
+    for (unsigned int p=0; p<n_q_points; ++p)
+        face_integral += (face_data.jump_residual[p] *
+                          face_data.dual_weights[p]  *
+                          face_data.fe_face_values_cell.JxW(p));
+    Assert (face_integrals.find (cell->face(face_no)) != face_integrals.end(),
+            ExcInternalError());
+    Assert (face_integrals[cell->face(face_no)] == -1e20,
+            ExcInternalError());
+    face_integrals[cell->face(face_no)] = face_integral;
+}
+
+template <int dim>
+void WeightedResidual<dim>::integrate_over_irregular_face (const active_cell_iterator &cell,
+                               const unsigned int          face_no,
+                               const Vector<double>       &primal_solution,
+                               const Vector<double>       &dual_weights,
+                               FaceData                   &face_data,
+                               FaceIntegrals              &face_integrals) const
+{
+    const unsigned int
+            n_q_points = face_data.fe_face_values_cell.n_quadrature_points;
+    const typename DoFHandler<dim>::face_iterator
+            face = cell->face(face_no);
+    const typename DoFHandler<dim>::cell_iterator
+            neighbor = cell->neighbor(face_no);
+    Assert (neighbor.state() == IteratorState::valid,
+            ExcInternalError());
+    Assert (neighbor->has_children(),
+            ExcInternalError());
+    const unsigned int
+            neighbor_neighbor = cell->neighbor_of_neighbor (face_no);
+    for (unsigned int subface_no=0;
+         subface_no<face->n_children(); ++subface_no)
+    {
+        const active_cell_iterator neighbor_child
+                = cell->neighbor_child_on_subface (face_no, subface_no);
+        Assert (neighbor_child->face(neighbor_neighbor) ==
+                cell->face(face_no)->child(subface_no),
+                ExcInternalError());
+        face_data.fe_subface_values_cell.reinit (cell, face_no, subface_no);
+        face_data.fe_subface_values_cell.get_function_gradients (primal_solution,
+                                                                 face_data.cell_grads);
+        face_data.fe_face_values_neighbor.reinit (neighbor_child,
+                                                  neighbor_neighbor);
+        face_data.fe_face_values_neighbor.get_function_gradients (primal_solution,
+                                                                  face_data.neighbor_grads);
+        for (unsigned int p=0; p<n_q_points; ++p)
+            face_data.jump_residual[p]
+                    = ((face_data.neighbor_grads[p] - face_data.cell_grads[p]) *
+                       face_data.fe_face_values_neighbor.normal_vector(p));
+        face_data.fe_face_values_neighbor.get_function_values (dual_weights,
+                                                               face_data.dual_weights);
+        double face_integral = 0;
+        for (unsigned int p=0; p<n_q_points; ++p)
+            face_integral += (face_data.jump_residual[p] *
+                              face_data.dual_weights[p] *
+                              face_data.fe_face_values_neighbor.JxW(p));
+        face_integrals[neighbor_child->face(neighbor_neighbor)]
+                = face_integral;
+    }
+    double sum = 0;
+    for (unsigned int subface_no=0;
+         subface_no<face->n_children(); ++subface_no)
+    {
+        Assert (face_integrals.find(face->child(subface_no)) !=
+                face_integrals.end(),
+                ExcInternalError());
+        Assert (face_integrals[face->child(subface_no)] != -1e20,
+                ExcInternalError());
+        sum += face_integrals[face->child(subface_no)];
+    }
+    face_integrals[face] = sum;
+}
+*/

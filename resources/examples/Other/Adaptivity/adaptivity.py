@@ -172,18 +172,18 @@ def model_waveguide(type, tolerance, estimator, strategy):
     return info['dofs'], info['error'], problem.elapsed_time()
 
 types = ['h-adaptivity', 'p-adaptivity', 'hp-adaptivity']
-#estimators = ['kelly', 'gradient']
+#estimators = ['kelly', 'gradient', 'reference_order']
 strategies = ['fixed_fraction_of_cells', 'fixed_fraction_of_total_error', 'balanced_error_and_cost', 'global_refinement']
 
 #types = ['h-adaptivity']
-estimators = ['kelly']
+estimators = ['reference_order']
 #strategies = ['balanced_error_and_cost']
 
 #tolerance = 0.5
 #model = model_sparkgap
 #tolerance = 0.5
 #model = model_capacitor
-tolerance = 100
+tolerance = 200
 model = model_waveguide
 
 dofs = {}

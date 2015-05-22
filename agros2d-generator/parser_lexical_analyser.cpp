@@ -218,7 +218,7 @@ void ParserInstance::addVolumeVariablesErrorCalculation()
                 else if (dep == "time-space")
                 {
                     // spacedep boundary condition
-                    m_dict[QString::fromStdString(quantity.shortname().get())] = QString("%1->numberAtTimeAndPoint(this->get_time(), Point(x, y))").
+                    m_dict[QString::fromStdString(quantity.shortname().get())] = QString("%1->numberAtTimeAndPoint(actualTime, Point(x, y))").
                             arg(QString::fromStdString(quantity.shortname().get()));
                 }
             }

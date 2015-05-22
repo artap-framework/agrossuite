@@ -99,14 +99,15 @@
 // todo: is it defined somewhere?
 const int MAX_NUM_NONLIN_ITERS = 100;
 
-SolverDealNonlinear::SolverDealNonlinear(const FieldInfo *fieldInfo) : SolverDeal(fieldInfo)
+
+void AssembleNonlinear::solve()
 {
+    Agros2D::problem()->propagateBoundaryMarkers();
+    solveProblemNonLinear();
 }
 
-void SolverDealNonlinear::solveProblem()
+void AssembleNonlinear::solveProblemNonLinear()
 {
-    SolverDeal::solveProblem();
-
     if (m_fieldInfo->linearityType() == LinearityType_Linear)
     {
         solveProblemLinear();
@@ -125,7 +126,7 @@ void SolverDealNonlinear::solveProblem()
     }
 }
 
-void SolverDealNonlinear::solveProblemNonLinearPicard()
+void AssembleNonlinear::solveProblemNonLinearPicard()
 {
     const double minAllowedDampingCoeff = 1e-4;
     const double autoDampingRatio = 2.0;
@@ -140,7 +141,7 @@ void SolverDealNonlinear::solveProblemNonLinearPicard()
 
     // initial relative change of solutions
     double lastRelChangeSol = 100.0;
-    dealii::Vector<double> solutionNonlinearPrevious(m_doFHandler.n_dofs());
+    dealii::Vector<double> solutionNonlinearPrevious(doFHandler.n_dofs());
 
     double dampingFactor = (m_fieldInfo->value(FieldInfo::NonlinearDampingType) == DampingType_Off ? 1.0 : m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble());
     int dampingSuccessfulSteps = 0;
@@ -154,12 +155,12 @@ void SolverDealNonlinear::solveProblemNonLinearPicard()
         iteration++;
 
         assembleSystem(solutionNonlinearPrevious);
-        solveLinearSystem(systemMatrix, systemRHS, m_solution);
+        solveLinearSystem(systemMatrix, systemRHS, solution);
 
         // estimate error
         dealii::Vector<double> vec(solutionNonlinearPrevious);
-        vec.add(-1, m_solution);
-        double relChangeSol = vec.l2_norm() / m_solution.l2_norm() * 100.0;
+        vec.add(-1, solution);
+        double relChangeSol = vec.l2_norm() / solution.l2_norm() * 100.0;
 
         if ((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() == DampingType_Automatic)
         {
@@ -216,12 +217,12 @@ void SolverDealNonlinear::solveProblemNonLinearPicard()
         Agros2D::log()->updateNonlinearChartInfo(phase, steps, relativeChangeOfSolutions);
     }
 
-    constraintsAll.distribute(m_solution);
+    constraintsAll.distribute(solution);
 
     // qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
 
-void SolverDealNonlinear::solveProblemNonLinearNewton()
+void AssembleNonlinear::solveProblemNonLinearNewton()
 {
     const double minAllowedDampingCoeff = 1e-4;
     const double autoDampingRatio = 2.0;
@@ -235,8 +236,8 @@ void SolverDealNonlinear::solveProblemNonLinearNewton()
     setup(false);
 
     // setup nonlinear solution
-    dealii::Vector<double> solutionNonlinearPrevious(m_doFHandler.n_dofs());
-    for (dealii::types::global_dof_index dof = 0; dof < m_doFHandler.n_dofs(); dof++)
+    dealii::Vector<double> solutionNonlinearPrevious(doFHandler.n_dofs());
+    for (dealii::types::global_dof_index dof = 0; dof < doFHandler.n_dofs(); dof++)
     {
         if (constraintsDirichlet.is_constrained(dof))
         {
@@ -290,15 +291,15 @@ void SolverDealNonlinear::solveProblemNonLinearNewton()
 
                 // since m_assemble_matrix is false, this will reuse the LU decomposition
                 time.start();
-                solveLinearSystem(systemMatrix, systemRHS, m_solution, true);
-                //m_solution.print(std::cout);
+                solveLinearSystem(systemMatrix, systemRHS, solution, true);
+                //solution.print(std::cout);
                 //system_matrix.print(std::cout);
                 //system_rhs.print(std::cout);
 
                 // std::cout << "back substitution (" << time.elapsed() << "ms )" << std::endl;
 
                 // Update
-                solutionNonlinearPrevious.add(dampingFactor, m_solution);
+                solutionNonlinearPrevious.add(dampingFactor, solution);
 
                 time.start();
                 // calculate residual - we are not wasting time on matrix assembly.
@@ -316,7 +317,7 @@ void SolverDealNonlinear::solveProblemNonLinearNewton()
                 else
                 {
                     // revert step
-                    solutionNonlinearPrevious.add(-dampingFactor, m_solution);
+                    solutionNonlinearPrevious.add(-dampingFactor, solution);
                     jacobianReused = false;
                     numReusedJacobian = 0;
                 }
@@ -331,15 +332,15 @@ void SolverDealNonlinear::solveProblemNonLinearNewton()
 
             time.start();
             systemRHS *= -1.0;
-            solveLinearSystem(systemMatrix, systemRHS, m_solution);
-            // m_solution.print(std::cout);
+            solveLinearSystem(systemMatrix, systemRHS, solution);
+            // solution.print(std::cout);
             // system_matrix.print(std::cout);
             // system_rhs.print(std::cout);
 
             // std::cout << "full system solve (" << time.elapsed() << "ms )" << std::endl;
 
             // Update.
-            solutionNonlinearPrevious.add(dampingFactor, m_solution);
+            solutionNonlinearPrevious.add(dampingFactor, solution);
 
             // Calculate residual.
             assembleSystem(solutionNonlinearPrevious, false);
@@ -376,7 +377,7 @@ void SolverDealNonlinear::solveProblemNonLinearNewton()
                     }
 
                     // Line search. Take back the previous steps (too long) and make a new one, with new damping factor
-                    solutionNonlinearPrevious.add(- previousDampingFactor + dampingFactor, m_solution);
+                    solutionNonlinearPrevious.add(- previousDampingFactor + dampingFactor, solution);
 
                     // todo: code repetition, get rid of it together with jacobian reuse
                     time.start();
@@ -401,7 +402,7 @@ void SolverDealNonlinear::solveProblemNonLinearNewton()
         }
         // update
         steps.append(iteration);
-        double relChangeSol = dampingFactor * m_solution.l2_norm() / solutionNonlinearPrevious.l2_norm() * 100;
+        double relChangeSol = dampingFactor * solution.l2_norm() / solutionNonlinearPrevious.l2_norm() * 100;
         relativeChangeOfSolutions.append(relChangeSol);
 
         // stop criteria
@@ -428,9 +429,9 @@ void SolverDealNonlinear::solveProblemNonLinearNewton()
     }
 
     // put the final solution into the solution
-    m_solution = solutionNonlinearPrevious;
+    solution = solutionNonlinearPrevious;
 
-    constraintsDirichlet.distribute(m_solution);
+    constraintsDirichlet.distribute(solution);
 
     // qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }

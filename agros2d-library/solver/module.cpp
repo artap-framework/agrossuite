@@ -40,8 +40,6 @@
 
 #include "../../resources_source/classes/module_xml.h"
 
-double actualTime;
-
 QMap<QString, QString> Module::availableModules()
 {
     static QMap<QString, QString> modules;

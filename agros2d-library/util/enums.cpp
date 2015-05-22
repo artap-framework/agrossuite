@@ -227,7 +227,7 @@ void initLists()
     adaptivityEstimatorList.insert(AdaptivityEstimator_Gradient, "gradient");
     // adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceSpatialAndOrder, "reference_spatial_and_order");
     // adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceSpatial, "reference_spatial");
-    // adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceOrder, "reference_order");
+    adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceOrder, "reference_order");
 
     // AdaptivityStrategy
     adaptivityStrategyList.insert(AdaptivityStrategy_FixedFractionOfCells, "fixed_fraction_of_cells");

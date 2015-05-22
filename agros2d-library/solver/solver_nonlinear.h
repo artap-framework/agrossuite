@@ -28,12 +28,14 @@
 
 #include "solver.h"
 
-class AGROS_LIBRARY_API SolverDealNonlinear : public SolverDeal
+class AGROS_LIBRARY_API AssembleNonlinear : public SolverDeal::AssembleBase
 {
 public:
-    SolverDealNonlinear(const FieldInfo *fieldInfo);
+    AssembleNonlinear(SolverDeal *solverDeal) : SolverDeal::AssembleBase(solverDeal)
+    {}
 
-    virtual void solveProblem();
+    virtual void solve();
+    void solveProblemNonLinear();
 
 protected:
     void solveProblemNonLinearPicard();

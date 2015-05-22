@@ -35,7 +35,6 @@
 #include "solver/weak_form.h"
 #include "solver/solver.h"
 #include "solver/solver_nonlinear.h"
-#include "solver/solver_transient.h"
 #include "../sceneview_post.h"
 
 #include "../../resources_source/classes/module_xml.h"

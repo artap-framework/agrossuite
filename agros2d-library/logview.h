@@ -22,6 +22,7 @@
 
 #include "util.h"
 #include "solver/solver.h"
+#include "solver/solver_utils.h"
 
 class QCustomPlot;
 class QCPGraph;

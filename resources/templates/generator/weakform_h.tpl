@@ -23,27 +23,38 @@
 #include "util.h"
 #include "solver/plugin_interface.h"
 #include "solver/marker.h"
+#include "solver/solver_utils.h"
 #include "{{ID}}_interface.h"
 
 // typedef std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, typename dealii::hp::DoFHandler<2>::active_cell_iterator> IteratorTuple;
 
-class SolverDeal{{CLASS}} : public SolverDealTransient
+class SolverDeal{{CLASS}} : public SolverDeal
 {
 public:
-    SolverDeal{{CLASS}}(const FieldInfo *fieldInfo)
-        : SolverDealTransient(fieldInfo) {}
+    class Assemble{{CLASS}} : public AssembleNonlinear
+    {
+    public:
+        Assemble{{CLASS}}(SolverDeal *solverDeal) : AssembleNonlinear(solverDeal) {}
 
-    virtual void assembleSystem(const dealii::Vector<double> &solutionNonlinearPrevious,
-                                bool assembleMatrix = true,
-                                bool assembleRHS = true);
-    virtual void assembleDirichlet(bool calculateDirichletLiftValue);
+        virtual void assembleSystem(const dealii::Vector<double> &solutionNonlinearPrevious,
+                                    bool assembleMatrix = true,
+                                    bool assembleRHS = true);
+        virtual void assembleDirichlet(bool calculateDirichletLiftValue);
 
-protected:
-    // virtual void localAssembleSystem(const dealii::SynchronousIterators<IteratorTuple> &iter,
-    virtual void localAssembleSystem(const DoubleCellIterator &iter,
-                                AssemblyScratchData &scratch,
-                                AssemblyCopyData &copy_data);
-    virtual void copyLocalToGlobal(const AssemblyCopyData &copy_data);
+    protected:
+        // virtual void localAssembleSystem(const dealii::SynchronousIterators<IteratorTuple> &iter,
+        virtual void localAssembleSystem(const DoubleCellIterator &iter,
+                                        AssemblyScratchData &scratch,
+                                        AssemblyCopyData &copy_data);
+        virtual void copyLocalToGlobal(const AssemblyCopyData &copy_data);
+    };
+
+    SolverDeal{{CLASS}}(const FieldInfo *fieldInfo) : SolverDeal(fieldInfo) {}
+
+    virtual shared_ptr<SolverDeal::AssembleBase> createAssembleBase()
+    {
+        return shared_ptr<SolverDeal::AssembleBase>(new SolverDeal{{CLASS}}::Assemble{{CLASS}}(this));
+    }
 };
 
 #endif // {{CLASS}}_INTERFACE_H

@@ -50,119 +50,129 @@
 #include <deal.II/base/time_stepping.h>
 #define signals public
 
-class DoubleCellIterator
-{
-public:
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell_first, cell_second;
-
-    DoubleCellIterator(const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_first,
-                       const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_second,
-                       const dealii::hp::DoFHandler<2> &doFHandler,
-                       const FieldInfo *fieldInfo) :
-        cell_first(cell_first), cell_second(cell_second), m_fieldInfo(fieldInfo), m_doFHandler(&doFHandler)
-    {
-    }
-
-    DoubleCellIterator(const DoubleCellIterator &dci) :
-        cell_first(dci.cell_first), cell_second(dci.cell_second), m_fieldInfo(dci.m_fieldInfo), m_doFHandler(dci.m_doFHandler)
-    {
-    }
-
-    DoubleCellIterator& operator=(const DoubleCellIterator& ehi)
-    {
-        cell_first = ehi.cell_first;
-        cell_second = ehi.cell_second;
-        m_fieldInfo = ehi.m_fieldInfo;
-        m_doFHandler = ehi.m_doFHandler;
-
-        return *this;
-    }
-
-    DoubleCellIterator& operator++()
-    {
-        ++cell_first;
-        ++cell_second;
-
-        while (cell_second != this->m_doFHandler->end())
-        {
-            if (!Agros2D::scene()->labels->at(cell_second->material_id() - 1)->marker(m_fieldInfo)->isNone())
-                break;
-            else
-            {
-                ++cell_first;
-                ++cell_second;
-            }
-        }
-
-        return *this;
-    }
-
-    DoubleCellIterator operator++(int)
-    {
-        DoubleCellIterator tmp(*this); // copy
-        operator++(); // pre-increment
-        return tmp;   // return old value
-    }
-    const FieldInfo *m_fieldInfo;
-    const dealii::hp::DoFHandler<2> *m_doFHandler;
-};
-
-
-inline bool operator==(const DoubleCellIterator& a, const DoubleCellIterator& b)
-{
-    // is it ok? should be () && () ??
-    if((a.cell_second == b.cell_second) || (a.cell_first == b.cell_first))
-    {
-        assert((a.cell_second == b.cell_second) && (a.cell_first == b.cell_first));
-        return true;
-    }
-    return false;
-}
-
-inline bool operator!=(const DoubleCellIterator& a, const DoubleCellIterator& b)
-{
-    return ! (a==b);
-}
-
 class FieldInfo;
 class SceneBoundary;
 
 class AGROS_LIBRARY_API SolverDeal
 {
 public:
+    class AGROS_LIBRARY_API AssembleBase
+    {
+    public:
+        AssembleBase(SolverDeal *solverDeal);
+
+        // current solution
+        dealii::hp::DoFHandler<2> doFHandler;
+
+        dealii::ConstraintMatrix constraintsHangingNodes;
+        dealii::ConstraintMatrix constraintsDirichlet;
+        dealii::ConstraintMatrix constraintsZeroDirichlet;
+        dealii::ConstraintMatrix constraintsAll;
+        dealii::SparsityPattern sparsityPattern;
+
+        // matrix, rhs and solution
+        dealii::SparseMatrix<double> systemMatrix;
+        dealii::Vector<double> systemRHS;
+        dealii::Vector<double> solution;
+
+        // linear solver
+        SolverLinearSolver linearSolver;
+
+        // hanging nodes constraints, Dirichlet ones and sparsity pattern.
+        void recreateConstraints(bool zeroDirichletLift);
+
+        // if useDirichletLift == false, zero dirichlet boundary condition is used this is used for later iterations of the Newton method
+        // this function, however, has to be called to ensure zero dirichlet boundary
+        virtual void setup(bool useDirichletLift);
+
+        // assembling        
+        virtual void assembleSystem(const dealii::Vector<double> &solutionNonlinearPrevious = dealii::Vector<double>(),
+                                    bool assembleMatrix = true,
+                                    bool assembleRHS = true) = 0;
+        virtual void assembleDirichlet(bool calculateDirichletLiftValue) = 0;
+
+        // BDF methods
+        void transientBDF(const double timeStep,
+                          dealii::Vector<double> &solution,
+                          const std::vector<dealii::Vector<double> > solutions,
+                          const BDF2Table &bdf2Table);
+
+        virtual void solve();
+
+        void solveProblemLinear();
+        // linear solver
+        void solveLinearSystem(dealii::SparseMatrix<double> &system,
+                               dealii::Vector<double> &rhs,
+                               dealii::Vector<double> &sln,
+                               bool reuseDecomposition = false);
+
+    protected:
+        // local references
+        const FieldInfo *m_fieldInfo;
+        SolverDeal *solverDeal;
+
+        // transient mass matrix
+        dealii::SparseMatrix<double> transientMassMatrix;
+        dealii::SparseMatrix<double> transientTotalMatrix;
+    };
+
+    class AGROS_LIBRARY_API AssembleCache
+    {
+    public:
+        AssembleCache() : dofs_per_cell(-1), n_q_points(-1) {}
+
+        // volume value and grad cache
+        std::vector<std::vector<double> > shape_value;
+        std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad;
+        // surface cache
+        std::vector<std::vector<dealii::Point<2> > > shape_face_point;
+        std::vector<std::vector<std::vector<double> > > shape_face_value;
+        std::vector<std::vector<double> > shape_face_JxW;
+
+        // previous values and grads
+        std::vector<dealii::Vector<double> > solution_value_previous;
+        std::vector<std::vector<dealii::Tensor<1, 2> > > solution_grad_previous;
+
+        // previous values and grads
+        std::vector<std::vector<dealii::Vector<double> > > solution_value_previous_face;
+        std::vector<std::vector<std::vector<dealii::Tensor<1, 2> > > > solution_grad_previous_face;
+
+        int dofs_per_cell;
+        int n_q_points;
+    };
+
     SolverDeal(const FieldInfo *fieldInfo);
     virtual ~SolverDeal();
 
-    inline const dealii::hp::DoFHandler<2> &doFHandler() const { return m_doFHandler; }
+    // solve problem
+    void solveProblem();
+
+    // adaptivity
+    void solveAdaptivity(shared_ptr<SolverDeal::AssembleBase> primal,
+                         shared_ptr<SolverDeal::AssembleBase> dual = nullptr);
+    // transient
+    void solveTransient(shared_ptr<SolverDeal::AssembleBase> primal);
+    inline void set_time(const double new_time) { m_time = new_time; }
+    inline double get_time() const { return m_time; }
+
+    // collections
     inline const dealii::hp::MappingCollection<2> &mappingCollection() const { return *m_mappingCollection; }
     inline const dealii::hp::FECollection<2> &feCollection() const { return *m_feCollection; }
     // quadrature cache
-    inline const dealii::hp::QCollection<2> &quadrature_formulas() const { return m_quadratureFormulas; }
-    inline const dealii::hp::QCollection<2-1> &face_quadrature_formulas() const { return m_quadratureFormulasFace; }
+    inline const dealii::hp::QCollection<2> &quadratureFormulas() const { return m_quadratureFormulas; }
+    inline const dealii::hp::QCollection<2-1> &quadratureFormulasFace() const { return m_quadratureFormulasFace; }
 
-    // if useDirichletLift == false, zero dirichlet boundary condition is used
-    // this is used for later iterations of the Newton method
-    // this function, however, has to be called to ensure zero dirichlet boundary
-    virtual void setup(bool useDirichletLift);
-
-    virtual void assembleSystem(const dealii::Vector<double> &solutionNonlinearPrevious = dealii::Vector<double>(),
-                                bool assembleMatrix = true,
-                                bool assembleRHS = true) = 0;
-    virtual void assembleDirichlet(bool calculateDirichletLiftValue) = 0;
-
-    // problem
-    virtual void solve();
-
-    void setCouplingSource(QString fieldID, dealii::Vector<double>& sourceVector) { m_coupling_sources[fieldID] = sourceVector; }
-
-    // linear solver
-    void solveLinearSystem(dealii::SparseMatrix<double> &system,
-                           dealii::Vector<double> &rhs,
-                           dealii::Vector<double> &sln,
-                           bool reuseDecomposition = false);
+    inline MultiArray &couplingSource(const QString &fieldID) { return m_couplingSources[fieldID]; }
+    inline void setCouplingSource(const QString &fieldID, MultiArray sourceSolution) { m_couplingSources[fieldID] = sourceSolution; }
 
     static dealii::hp::FECollection<2> *createFECollection(const FieldInfo *fieldInfo);
     static dealii::hp::MappingCollection<2> *createMappingCollection(const FieldInfo *fieldInfo);
+
+    // assemble base class
+    virtual shared_ptr<SolverDeal::AssembleBase> createAssembleBase() = 0;
+
+    // assemble cache
+    AssembleCache &assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points);
 
 protected:   
     class AGROS_LIBRARY_API AssemblyScratchData
@@ -202,130 +212,32 @@ protected:
         std::vector<dealii::types::global_dof_index> local_dof_indices;
     };
 
-    class AGROS_LIBRARY_API AssembleCache
-    {
-    public:
-        AssembleCache() : dofs_per_cell(-1), n_q_points(-1) {}
-
-        // volume value and grad cache
-        std::vector<std::vector<double> > shape_value;
-        std::vector<std::vector<dealii::Tensor<1,2> > > shape_grad;
-        // surface cache
-        std::vector<std::vector<dealii::Point<2> > > shape_face_point;
-        std::vector<std::vector<std::vector<double> > > shape_face_value;
-        std::vector<std::vector<double> > shape_face_JxW;
-
-        // previous values and grads
-        std::vector<dealii::Vector<double> > solution_value_previous;
-        std::vector<std::vector<dealii::Tensor<1, 2> > > solution_grad_previous;
-
-        // previous values and grads
-        std::vector<std::vector<dealii::Vector<double> > > solution_value_previous_face;
-        std::vector<std::vector<std::vector<dealii::Tensor<1, 2> > > > solution_grad_previous_face;
-
-        int dofs_per_cell;
-        int n_q_points;
-    };
-
     // local reference
     const FieldInfo *m_fieldInfo;
-    const Scene *m_scene;
-    const Problem *m_problem;
-
-    // linear solver
-    SolverLinearSolver m_linearSolver;
 
     // assembling
-    dealii::hp::DoFHandler<2> m_doFHandler;
     dealii::hp::MappingCollection<2> *m_mappingCollection;
     dealii::hp::FECollection<2> *m_feCollection;
 
     // assemble cache
     std::map<tbb::tbb_thread::id, AssembleCache> m_assembleCache;
-    AssembleCache &assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points);
 
     // quadrature cache
     dealii::hp::QCollection<2> m_quadratureFormulas;
     dealii::hp::QCollection<2-1> m_quadratureFormulasFace;
 
-    // current solution
-    dealii::Vector<double> m_solution;
-
     // weak coupling sources
-    QMap<QString, dealii::Vector<double> > m_coupling_sources;
-
-    // hanging nodes constraints, Dirichlet ones and sparsity pattern.
-    void recreateConstraints(bool zeroDirichletLift);
-
-    dealii::ConstraintMatrix constraintsHangingNodes;
-    dealii::ConstraintMatrix constraintsDirichlet;
-    dealii::ConstraintMatrix constraintsZeroDirichlet;
-    dealii::ConstraintMatrix constraintsAll;
-    dealii::SparsityPattern sparsityPattern;
-
-    // matrix and rhs
-    dealii::SparseMatrix<double> systemMatrix;
-    dealii::Vector<double> systemRHS;
-
-    //  linearity
-    virtual void solveProblem();
-    void solveProblemLinear();
+    QMap<QString, MultiArray> m_couplingSources;
 
     // adaptivity
-    void solveAdaptivity();        
-};
+    void prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> primal,
+                               shared_ptr<SolverDeal::AssembleBase> dual = nullptr,
+                               int maxHIncrease = -1, int maxPIncrease = -1);
 
-class SolverAgros
-{
-public:
-    SolverAgros() : m_jacobianCalculations(0), m_phase(Phase_Undefined) {}
+    // transient
+    double m_time;
 
-    enum Phase
-    {
-        Phase_Undefined,
-        Phase_Init,
-        Phase_Solving,
-        Phase_DampingFactorChanged,
-        Phase_JacobianReused,
-        Phase_Finished
-    };
-
-    inline QVector<double> steps() const { return m_steps; }
-    inline QVector<double> damping() const { return m_damping; }
-    inline QVector<double> residualNorms() const { return m_residualNorms; }
-    inline QVector<double> solutionNorms() const { return m_solutionNorms; }
-    inline QVector<double> relativeChangeOfSolutions() const { return m_relativeChangeOfSolutions; }
-    inline int jacobianCalculations() const { return m_jacobianCalculations; }
-
-    inline Phase phase() const { return m_phase; }
-
-    void clearSteps();
-
-protected:
-    Phase m_phase;
-
-    virtual void setError() = 0;
-
-    QVector<double> m_steps;
-    QVector<double> m_damping;
-    QVector<double> m_residualNorms;
-    QVector<double> m_solutionNorms;
-    QVector<double> m_relativeChangeOfSolutions;
-    int m_jacobianCalculations;
-};
-
-class AGROS_LIBRARY_API ProblemSolver
-{
-public:
-    ProblemSolver();
-
-    static void init();
-    static void clear();
-    static void solveProblem();
-    static QMap<QString, const SolverDeal *> solvers();
-
-private:
-    static QMap<FieldInfo *, SolverDeal *> m_solverDeal;
+    friend class AssembleBase;
 };
 
 #endif // SOLVER_H

@@ -154,8 +154,8 @@ SET(SOURCES
     solver/solutionstore.cpp
     solver/solutiontypes.cpp
     solver/solver.cpp
+    solver/solver_utils.cpp
     solver/solver_nonlinear.cpp
-    solver/solver_transient.cpp
     solver/linear_solver.cpp
     solver/linear_solver_external.cpp
     solver/weak_form.cpp
@@ -268,6 +268,8 @@ SOURCE_GROUP(
   solver/solutionstore.cpp
   solver/solutiontypes.cpp
   solver/solver.cpp
+  solver/solver_utils.cpp
+  solver/solver_nonlinear.cpp
   solver/linear_solver.cpp
   solver/linear_solver_external.cpp
   solver/weak_form.cpp
@@ -363,8 +365,8 @@ SET(HEADERS
   solver/solutionstore.h
   solver/solutiontypes.h
   solver/solver.h
+  solver/solver_utils.h
   solver/solver_nonlinear.h
-  solver/solver_transient.h
   solver/linear_solver.h
   solver/linear_solver_external.h
   solver/weak_form.h
@@ -471,6 +473,8 @@ SOURCE_GROUP(
   solver/solutionstore.h
   solver/solutiontypes.h
   solver/solver.h
+  solver/solver_utils.h
+  solver/solver_nonlinear.h  
   solver/solver_external.h
   solver/weak_form.h
 )

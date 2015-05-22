@@ -38,8 +38,6 @@ public:
     }
 };
 
-extern double actualTime;
-
 namespace XMLModule
 {
 class field;
