@@ -389,19 +389,19 @@ QWidget *FieldWidget::createAdaptivityWidget()
     // control
     QGridLayout *layoutAdaptivityControl = new QGridLayout();
     layoutAdaptivityControl->setColumnMinimumWidth(0, columnMinimumWidth());
-    layoutAdaptivityControl->addWidget(new QLabel(tr("Maximum steps:")), 0, 0, 1, 2);
+    layoutAdaptivityControl->addWidget(new QLabel(tr("Maximum steps:")), 0, 0);
     layoutAdaptivityControl->addWidget(txtAdaptivitySteps, 0, 2);
     layoutAdaptivityControl->addWidget(new QLabel(tr("Tolerance (%):")), 1, 0);
     layoutAdaptivityControl->addWidget(chkAdaptivityTolerance, 1, 1, 1, 1, Qt::AlignRight);
     layoutAdaptivityControl->addWidget(txtAdaptivityTolerance, 1, 2);
-    layoutAdaptivityControl->addWidget(new QLabel(tr("Error estimator:")), 0, 3);
-    layoutAdaptivityControl->addWidget(cmbAdaptivityEstimator, 0, 4);
-    layoutAdaptivityControl->addWidget(new QLabel(tr("Control strategy:")), 1, 3);
-    layoutAdaptivityControl->addWidget(cmbAdaptivityStrategy, 1, 4);
-    layoutAdaptivityControl->addWidget(new QLabel(tr("Percentage to be refined:")), 2, 3);
-    layoutAdaptivityControl->addWidget(txtAdaptivityFineFraction, 2, 4);
-    layoutAdaptivityControl->addWidget(new QLabel(tr("Percentage to be coarsened:")), 3, 3);
-    layoutAdaptivityControl->addWidget(txtAdaptivityCoarseFraction, 3, 4);
+    layoutAdaptivityControl->addWidget(new QLabel(tr("Error estimator:")), 2, 0);
+    layoutAdaptivityControl->addWidget(cmbAdaptivityEstimator, 2, 2);
+    layoutAdaptivityControl->addWidget(new QLabel(tr("Control strategy:")), 3, 0);
+    layoutAdaptivityControl->addWidget(cmbAdaptivityStrategy, 3, 2);
+    layoutAdaptivityControl->addWidget(new QLabel(tr("Percentage to be refined:")), 4, 0);
+    layoutAdaptivityControl->addWidget(txtAdaptivityFineFraction, 4, 2);
+    layoutAdaptivityControl->addWidget(new QLabel(tr("Percentage to be coarsened:")), 5, 0);
+    layoutAdaptivityControl->addWidget(txtAdaptivityCoarseFraction, 5, 2);
     layoutAdaptivityControl->setRowStretch(50, 1);
 
     QGroupBox *grpControl = new QGroupBox(tr("Control"), this);

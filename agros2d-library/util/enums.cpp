@@ -464,15 +464,15 @@ QString adaptivityEstimatorString(AdaptivityEstimator adaptivityEstimator)
     switch (adaptivityEstimator)
     {
     case AdaptivityEstimator_Kelly:
-        return QObject::tr("Kelly");
+        return QObject::tr("Kelly error estimator");
     case AdaptivityEstimator_Gradient:
-        return QObject::tr("Gradient");
+        return QObject::tr("Gradient error estimator");
     case AdaptivityEstimator_ReferenceSpatialAndOrder:
-        return QObject::tr("Reference - spatial and order");
+        return QObject::tr("Reference solution - spatial and order");
     case AdaptivityEstimator_ReferenceSpatial:
-        return QObject::tr("Reference - spatial");
+        return QObject::tr("Reference solution - spatial");
     case AdaptivityEstimator_ReferenceOrder:
-        return QObject::tr("Reference - order");
+        return QObject::tr("Reference solution - order increase");
     default:
         std::cerr << "Adaptivity estimator '" + QString::number(adaptivityEstimator).toStdString() + "' is not implemented. adaptivityEstimatorString(AdaptivityEstimator adaptivityEstimator)" << endl;
         throw;
@@ -490,7 +490,7 @@ QString adaptivityStrategyString(AdaptivityStrategy adaptivityStrategy)
     case AdaptivityStrategy_BalancedErrorAndCost:
         return QObject::tr("Balance reducing error and numerical cost");
     case AdaptivityStrategy_GlobalRefinement:
-        return QObject::tr("Global refinement");
+        return QObject::tr("Global refinement (without estimator)");
     default:
         std::cerr << "Adaptivity strategy '" + QString::number(adaptivityStrategy).toStdString() + "' is not implemented. adaptivityEstimatorString(AdaptivityStrategy adaptivityStrategy)" << endl;
         throw;
