@@ -382,6 +382,14 @@ QString createPythonFromModel()
                     arg(fieldInfo->fieldId()).
                     arg(adaptivityStrategyToStringKey((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt()));
 
+            if (fieldInfo->adaptivityType() == AdaptivityMethod_HP)
+            {
+                str += QString("%1.adaptivity_parameters['strategy_hp'] = \"%2\"\n").
+                        arg(fieldInfo->fieldId()).
+                        arg(adaptivityStrategyHPToStringKey((AdaptivityStrategyHP) fieldInfo->value(FieldInfo::AdaptivityStrategyHP).toInt()));
+
+            }
+
             if (((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt() == AdaptivityStrategy_FixedFractionOfCells) ||
                         ((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt() == AdaptivityStrategy_FixedFractionOfTotalError))
             {

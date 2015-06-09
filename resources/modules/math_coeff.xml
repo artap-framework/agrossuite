@@ -102,7 +102,7 @@
       <module:weakforms_surface>
       <module:weakform_surface analysistype="steadystate" default="math_coeff_solution">
         <module:boundary equation="u = u_0" id="math_coeff_solution" name="Solution">
-          <module:quantity id="math_coeff_solution"/>
+          <module:quantity dependence="space" id="math_coeff_solution"/>
           
           <module:linearity_option type="linear">
             <module:essential_form id="solution"/>
@@ -120,8 +120,8 @@
 
       <module:weakform_surface analysistype="transient" default="math_coeff_solution">
         <module:boundary equation="u = u_0" id="math_coeff_solution" name="Solution">
-          <module:quantity dependence="time" id="math_coeff_solution"/>
-          <module:quantity dependence="time" id="math_coeff_solution_time_derivative"/>
+          <module:quantity dependence="time-space" id="math_coeff_solution"/>
+          <module:quantity dependence="time-space" id="math_coeff_solution_time_derivative"/>
 
           <module:linearity_option type="linear">
             <module:essential_form id="transient_solution_time"/>

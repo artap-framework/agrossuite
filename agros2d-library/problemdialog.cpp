@@ -371,6 +371,13 @@ QWidget *FieldWidget::createAdaptivityWidget()
                                            adaptivityStrategyFromStringKey(type));
     connect(cmbAdaptivityStrategy, SIGNAL(currentIndexChanged(int)), this, SLOT(doAdaptivityStrategyChanged(int)));
 
+    cmbAdaptivityStrategyHP = new QComboBox();
+    foreach (QString type, adaptivityStrategyHPStringKeys())
+        if (adaptivityStrategyHPFromStringKey(type) != AdaptivityStrategyHP_Undefined)
+            cmbAdaptivityStrategyHP->addItem(adaptivityStrategyHPString(adaptivityStrategyHPFromStringKey(type)),
+                                           adaptivityStrategyHPFromStringKey(type));
+    connect(cmbAdaptivityStrategyHP, SIGNAL(currentIndexChanged(int)), this, SLOT(doAdaptivityStrategyHPChanged(int)));
+
     txtAdaptivityFineFraction = new QSpinBox(this);
     txtAdaptivityFineFraction->setMinimum(1);
     txtAdaptivityFineFraction->setMaximum(100);
@@ -402,6 +409,8 @@ QWidget *FieldWidget::createAdaptivityWidget()
     layoutAdaptivityControl->addWidget(txtAdaptivityFineFraction, 4, 2);
     layoutAdaptivityControl->addWidget(new QLabel(tr("Percentage to be coarsened:")), 5, 0);
     layoutAdaptivityControl->addWidget(txtAdaptivityCoarseFraction, 5, 2);
+    layoutAdaptivityControl->addWidget(new QLabel(tr("<i>hp</i>-adaptivity strategy:")), 6, 0);
+    layoutAdaptivityControl->addWidget(cmbAdaptivityStrategyHP, 6, 2);
     layoutAdaptivityControl->setRowStretch(50, 1);
 
     QGroupBox *grpControl = new QGroupBox(tr("Control"), this);
@@ -566,6 +575,7 @@ void FieldWidget::load()
     txtAdaptivityCoarseFraction->setValue(m_fieldInfo->value(FieldInfo::AdaptivityCoarsePercentage).toInt());
     cmbAdaptivityEstimator->setCurrentIndex(cmbAdaptivityEstimator->findData((AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt()));
     cmbAdaptivityStrategy->setCurrentIndex(cmbAdaptivityStrategy->findData((AdaptivityStrategy) m_fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt()));
+    cmbAdaptivityStrategyHP->setCurrentIndex(cmbAdaptivityStrategyHP->findData((AdaptivityStrategyHP) m_fieldInfo->value(FieldInfo::AdaptivityStrategyHP).toInt()));
     txtAdaptivityBackSteps->setValue(m_fieldInfo->value(FieldInfo::AdaptivityTransientBackSteps).toInt());
     txtAdaptivityRedoneEach->setValue(m_fieldInfo->value(FieldInfo::AdaptivityTransientRedoneEach).toInt());
     // matrix solver
@@ -616,6 +626,7 @@ bool FieldWidget::save()
     m_fieldInfo->setValue(FieldInfo::AdaptivityCoarsePercentage, txtAdaptivityCoarseFraction->value());
     m_fieldInfo->setValue(FieldInfo::AdaptivityEstimator, (AdaptivityEstimator) cmbAdaptivityEstimator->itemData(cmbAdaptivityEstimator->currentIndex()).toInt());
     m_fieldInfo->setValue(FieldInfo::AdaptivityStrategy, (AdaptivityStrategy) cmbAdaptivityStrategy->itemData(cmbAdaptivityStrategy->currentIndex()).toInt());
+    m_fieldInfo->setValue(FieldInfo::AdaptivityStrategyHP, (AdaptivityStrategyHP) cmbAdaptivityStrategyHP->itemData(cmbAdaptivityStrategyHP->currentIndex()).toInt());
     m_fieldInfo->setValue(FieldInfo::AdaptivityTransientBackSteps, txtAdaptivityBackSteps->value());
     m_fieldInfo->setValue(FieldInfo::AdaptivityTransientRedoneEach, txtAdaptivityRedoneEach->value());
     // matrix solver
@@ -719,6 +730,7 @@ void FieldWidget::doAdaptivityChanged(int index)
     txtAdaptivityTolerance->setEnabled(((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None) && chkAdaptivityTolerance->isChecked());
     cmbAdaptivityEstimator->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
     cmbAdaptivityStrategy->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
+    cmbAdaptivityStrategyHP->setEnabled((AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() == AdaptivityMethod_HP);
 
     AnalysisType analysisType = (AnalysisType) cmbAnalysisType->itemData(cmbAnalysisType->currentIndex()).toInt();
     txtAdaptivityBackSteps->setEnabled(Agros2D::problem()->isTransient() && analysisType != AnalysisType_Transient && (AdaptivityMethod) cmbAdaptivityType->itemData(index).toInt() != AdaptivityMethod_None);
@@ -735,6 +747,10 @@ void FieldWidget::doAdaptivityStrategyChanged(int index)
 
     txtAdaptivityFineFraction->setEnabled(enabled);
     txtAdaptivityCoarseFraction->setEnabled(enabled);
+}
+
+void FieldWidget::doAdaptivityStrategyHPChanged(int index)
+{
 }
 
 void FieldWidget::doLinearityTypeChanged(int index)

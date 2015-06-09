@@ -34,6 +34,7 @@ static QMap<WeakFormVariant, QString> weakFormVariantList;
 static QMap<AdaptivityMethod, QString> adaptivityTypeList;
 static QMap<AdaptivityEstimator, QString> adaptivityEstimatorList;
 static QMap<AdaptivityStrategy, QString> adaptivityStrategyList;
+static QMap<AdaptivityStrategyHP, QString> adaptivityStrategyHPList;
 static QMap<NormType, QString> adaptivityNormTypeList;
 static QMap<TimeStepMethod, QString> timeStepMethodList;
 static QMap<AnalysisType, QString> analysisTypeList;
@@ -93,6 +94,10 @@ AdaptivityEstimator adaptivityEstimatorFromStringKey(const QString &adaptivityEs
 QStringList adaptivityStrategyStringKeys() { return adaptivityStrategyList.values(); }
 QString adaptivityStrategyToStringKey(AdaptivityStrategy adaptivityStrategy) { return adaptivityStrategyList[adaptivityStrategy]; }
 AdaptivityStrategy adaptivityStrategyFromStringKey(const QString &adaptivityStrategy) { return adaptivityStrategyList.key(adaptivityStrategy); }
+
+QStringList adaptivityStrategyHPStringKeys() { return adaptivityStrategyHPList.values(); }
+QString adaptivityStrategyHPToStringKey(AdaptivityStrategyHP adaptivityStrategyHP) { return adaptivityStrategyHPList[adaptivityStrategyHP]; }
+AdaptivityStrategyHP adaptivityStrategyHPFromStringKey(const QString &adaptivityStrategyHP) { return adaptivityStrategyHPList.key(adaptivityStrategyHP); }
 
 QStringList adaptivityNormTypeStringKeys() { return adaptivityNormTypeList.values(); }
 QString adaptivityNormTypeToStringKey(NormType adaptivityNormType) { return adaptivityNormTypeList[adaptivityNormType]; }
@@ -225,6 +230,7 @@ void initLists()
     // AdaptivityEstimator
     adaptivityEstimatorList.insert(AdaptivityEstimator_Kelly, "kelly");
     adaptivityEstimatorList.insert(AdaptivityEstimator_Gradient, "gradient");
+    adaptivityEstimatorList.insert(AdaptivityEstimator_Uniform, "uniform");
     // adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceSpatialAndOrder, "reference_spatial_and_order");
     // adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceSpatial, "reference_spatial");
     adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceOrder, "reference_order");
@@ -233,7 +239,10 @@ void initLists()
     adaptivityStrategyList.insert(AdaptivityStrategy_FixedFractionOfCells, "fixed_fraction_of_cells");
     adaptivityStrategyList.insert(AdaptivityStrategy_FixedFractionOfTotalError, "fixed_fraction_of_total_error");
     adaptivityStrategyList.insert(AdaptivityStrategy_BalancedErrorAndCost, "balanced_error_and_cost");
-    adaptivityStrategyList.insert(AdaptivityStrategy_GlobalRefinement, "global_refinement");
+
+    // AdaptivityStrategyHP
+    adaptivityStrategyHPList.insert(AdaptivityStrategyHP_FourierSeries, "fourier_series");
+    adaptivityStrategyHPList.insert(AdaptivityStrategyHP_Alternate, "alternate");
 
     // ADAPTIVITYNORMTYPE
     adaptivityNormTypeList.insert(NormType_H1_NORM, "h1_norm");
@@ -467,6 +476,8 @@ QString adaptivityEstimatorString(AdaptivityEstimator adaptivityEstimator)
         return QObject::tr("Kelly error estimator");
     case AdaptivityEstimator_Gradient:
         return QObject::tr("Gradient error estimator");
+    case AdaptivityEstimator_Uniform:
+        return QObject::tr("Uniform refinement");
     case AdaptivityEstimator_ReferenceSpatialAndOrder:
         return QObject::tr("Reference solution - spatial and order");
     case AdaptivityEstimator_ReferenceSpatial:
@@ -489,10 +500,22 @@ QString adaptivityStrategyString(AdaptivityStrategy adaptivityStrategy)
         return QObject::tr("Fixed fraction of total error");
     case AdaptivityStrategy_BalancedErrorAndCost:
         return QObject::tr("Balance reducing error and numerical cost");
-    case AdaptivityStrategy_GlobalRefinement:
-        return QObject::tr("Global refinement (without estimator)");
     default:
-        std::cerr << "Adaptivity strategy '" + QString::number(adaptivityStrategy).toStdString() + "' is not implemented. adaptivityEstimatorString(AdaptivityStrategy adaptivityStrategy)" << endl;
+        std::cerr << "Adaptivity strategy '" + QString::number(adaptivityStrategy).toStdString() + "' is not implemented. adaptivityStrategyString(AdaptivityStrategy adaptivityStrategy)" << endl;
+        throw;
+    }
+}
+
+QString adaptivityStrategyHPString(AdaptivityStrategyHP adaptivityStrategyHP)
+{
+    switch (adaptivityStrategyHP)
+    {
+    case AdaptivityStrategyHP_FourierSeries:
+        return QObject::tr("Smoother based on Fourier series");
+    case AdaptivityStrategyHP_Alternate:
+        return QObject::tr("Alternate h and p");
+    default:
+        std::cerr << "Adaptivity strategy hp '" + QString::number(adaptivityStrategyHP).toStdString() + "' is not implemented. adaptivityStrategyHPString(AdaptivityStrategyHP adaptivityStrategyHP)" << endl;
         throw;
     }
 }

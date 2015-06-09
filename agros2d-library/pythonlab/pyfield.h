@@ -81,6 +81,10 @@ class PyField
         inline std::string getAdaptivityStrategy() const { return adaptivityStrategyToStringKey((AdaptivityStrategy) m_fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt()).toStdString(); }
         void setAdaptivityStrategy(const std::string &adaptivityStrategy);
 
+        // adaptivity strategy hp
+        inline std::string getAdaptivityStrategyHP() const { return adaptivityStrategyHPToStringKey((AdaptivityStrategyHP) m_fieldInfo->value(FieldInfo::AdaptivityStrategyHP).toInt()).toStdString(); }
+        void setAdaptivityStrategyHP(const std::string &adaptivityStrategyHP);
+
         // matrix solver
         inline std::string getMatrixSolver() const { return matrixSolverTypeToStringKey(m_fieldInfo->matrixSolver()).toStdString(); }
         void setMatrixSolver(const std::string &matrixSolver);

@@ -106,14 +106,16 @@ public:
                                dealii::Vector<double> &sln,
                                bool reuseDecomposition = false);
 
+        SolverDeal *solverDeal;
     protected:
         // local references
         const FieldInfo *m_fieldInfo;
-        SolverDeal *solverDeal;
 
         // transient mass matrix
         dealii::SparseMatrix<double> transientMassMatrix;
         dealii::SparseMatrix<double> transientTotalMatrix;
+
+        friend class WeightedResidualScratchData;
     };
 
     class AGROS_LIBRARY_API AssembleCache

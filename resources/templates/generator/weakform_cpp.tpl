@@ -379,14 +379,14 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
         {{/VOLUME_SOURCE}}
 
         // prepare QCollection
-        dealii::hp::FECollection<2> finite_elements(doFHandler.get_fe());
-        dealii::hp::QCollection<2 - 1> q_collection;
-        for (unsigned int f = 0; f<finite_elements.size(); ++f)
+        dealii::hp::FECollection<2> feCollection(doFHandler.get_fe());
+        dealii::hp::QCollection<2 - 1> qCollection;
+        for (unsigned int f = 0; f<feCollection.size(); ++f)
         {
-            const dealii::FiniteElement<2> &fe = finite_elements[f];
+            const dealii::FiniteElement<2> &fe = feCollection[f];
 
             if (fe.has_face_support_points())
-                q_collection.push_back(dealii::Quadrature<2 - 1>(fe.get_unit_face_support_points()));
+                qCollection.push_back(dealii::Quadrature<2 - 1>(fe.get_unit_face_support_points()));
             else
             {
                 std::vector<dealii::Point<2 - 1> > unit_support_points(fe.dofs_per_face);
@@ -396,10 +396,10 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
                         // if (mask[fe.face_system_to_component_index(i).first] == true)
                         unit_support_points[i] = fe.unit_face_support_point(i);
 
-                q_collection.push_back(dealii::Quadrature<2 - 1>(unit_support_points));
+                qCollection.push_back(dealii::Quadrature<2 - 1>(unit_support_points));
             }
         }
-        dealii::hp::FEFaceValues<2> hp_fe_face_values(solverDeal->mappingCollection(), solverDeal->feCollection(), q_collection, dealii::update_quadrature_points);
+        dealii::hp::FEFaceValues<2> hp_fe_face_values(solverDeal->mappingCollection(), solverDeal->feCollection(), qCollection, dealii::update_quadrature_points);
         
         // boundaries
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
@@ -476,14 +476,14 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleDirichlet(bool calculateDir
     CoordinateType coordinateType = Agros2D::problem()->config()->coordinateType();
 
     // prepare QCollection
-    dealii::hp::FECollection<2> finite_elements(doFHandler.get_fe());
-    dealii::hp::QCollection<2-1> q_collection;
-    for (unsigned int f = 0; f<finite_elements.size(); ++f)
+    dealii::hp::FECollection<2> feCollection(doFHandler.get_fe());
+    dealii::hp::QCollection<2-1> qCollection;
+    for (unsigned int f = 0; f<feCollection.size(); ++f)
     {
-        const dealii::FiniteElement<2> &fe = finite_elements[f];
+        const dealii::FiniteElement<2> &fe = feCollection[f];
 
         if (fe.has_face_support_points())
-            q_collection.push_back (dealii::Quadrature<2-1>(fe.get_unit_face_support_points()));
+            qCollection.push_back (dealii::Quadrature<2-1>(fe.get_unit_face_support_points()));
         else
         {
             std::vector<dealii::Point<2-1> > unit_support_points (fe.dofs_per_face);
@@ -493,12 +493,12 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleDirichlet(bool calculateDir
                     // if (mask[fe.face_system_to_component_index(i).first] == true)
                     unit_support_points[i] = fe.unit_face_support_point(i);
 
-            q_collection.push_back (dealii::Quadrature<2-1>(unit_support_points));
+            qCollection.push_back (dealii::Quadrature<2-1>(unit_support_points));
         }
     }
 
     // hp face values
-    dealii::hp::FEFaceValues<2> hp_fe_face_values(solverDeal->mappingCollection(), solverDeal->feCollection(), q_collection, dealii::update_quadrature_points);
+    dealii::hp::FEFaceValues<2> hp_fe_face_values(solverDeal->mappingCollection(), feCollection, qCollection, dealii::update_quadrature_points);
 
     dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
     for(; cell != endc; ++cell)

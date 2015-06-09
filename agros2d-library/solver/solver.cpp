@@ -134,7 +134,7 @@ dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fie
     feCollection->push_back(dealii::FESystem<2>(fes, multiplicities));
 
     // fe collections
-    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER + 1; degree++)
     {
         std::vector<const dealii::FiniteElement<2> *> fes;
         std::vector<unsigned int> multiplicities;
@@ -160,7 +160,7 @@ dealii::hp::MappingCollection<2> *SolverDeal::createMappingCollection(const Fiel
 {
     dealii::hp::MappingCollection<2> *mappingCollection = new dealii::hp::MappingCollection<2>();
 
-    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER + 1; degree++)
     {
         mappingCollection->push_back(dealii::MappingQ<2>(1, true));
     }
@@ -217,26 +217,30 @@ void SolverDeal::solveProblem()
     }
     else
     {
-        if ((AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt() != AdaptivityEstimator_ReferenceOrder)
+        AdaptivityEstimator estimator = (AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt();
+
+        switch (estimator)
+        {
+        case AdaptivityEstimator_Kelly:
+        case AdaptivityEstimator_Gradient:
+        case AdaptivityEstimator_Uniform:
         {
             solveAdaptivity(primal, nullptr);
         }
-        else
+            break;
+        case AdaptivityEstimator_ReferenceOrder:
+        case AdaptivityEstimator_ReferenceSpatial:
+        case AdaptivityEstimator_ReferenceSpatialAndOrder:
         {
             // reference solution
             shared_ptr<SolverDeal::AssembleBase> dual = createAssembleBase();
 
-            // increase order
-            int orderIncrease = 1;
-
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell;
-            dealii::hp::DoFHandler<2>::active_cell_iterator endc;
-            cell = dual->doFHandler.begin_active();
-            endc = dual->doFHandler.end();
-            for (unsigned int index = 0; cell != endc; ++cell, ++index)
-                cell->set_active_fe_index(cell->active_fe_index() + orderIncrease);
-
+            // solve adaptivity
             solveAdaptivity(primal, dual);
+        }
+            break;
+        default:
+            assert(0);
         }
     }
 }
@@ -464,9 +468,9 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     m_quadratureFormulasFace.push_back(dealii::QGauss<2 - 1>(1));
 
     // Gauss quadrature
-    for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+    for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER + 1; degree++)
     {
-        m_quadratureFormulas.push_back(dealii::QGauss<2>(degree +  QUADRATURE_ORDER_INCREASE));
+        m_quadratureFormulas.push_back(dealii::QGauss<2>(degree + QUADRATURE_ORDER_INCREASE));
         m_quadratureFormulasFace.push_back(dealii::QGauss<2-1>(degree + QUADRATURE_ORDER_INCREASE));
     }
 }
@@ -562,53 +566,91 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
     // estimated error per cell
     dealii::Vector<float> estimated_error_per_cell(Agros2D::problem()->calculationMesh().n_active_cells());
 
-    bool estimate = ((AdaptivityStrategy) m_fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt()) != AdaptivityStrategy_GlobalRefinement;
-
     // estimator
-    if (estimate)
+    AdaptivityEstimator estimator = (AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt();
+
+    switch (estimator)
     {
-        switch ((AdaptivityEstimator) m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt())
-        {
-        case AdaptivityEstimator_Kelly:
-        {
-            dealii::KellyErrorEstimator<2>::estimate(primal->doFHandler,
-                                                     m_quadratureFormulasFace,
-                                                     TYPENAME dealii::FunctionMap<2>::type(),
-                                                     primal->solution,
-                                                     estimated_error_per_cell);
-        }
-            break;
-        case AdaptivityEstimator_Gradient:
-        {
-            GradientErrorEstimator::estimate(primal->doFHandler,
-                                             primal->solution,
-                                             estimated_error_per_cell);
-        }
-            break;
-        case AdaptivityEstimator_ReferenceOrder:
-        {
-            dual->solve();
+    case AdaptivityEstimator_Kelly:
+    {
+        dealii::KellyErrorEstimator<2>::estimate(primal->doFHandler,
+                                                 m_quadratureFormulasFace,
+                                                 TYPENAME dealii::FunctionMap<2>::type(),
+                                                 primal->solution,
+                                                 estimated_error_per_cell);
+    }
+        break;
+    case AdaptivityEstimator_Gradient:
+    {
+        GradientErrorEstimator::estimate(primal->doFHandler,
+                                         primal->solution,
+                                         estimated_error_per_cell);
+    }
+        break;
+    case AdaptivityEstimator_Uniform:
+    {
+        estimated_error_per_cell.add(1.0);
+    }
+        break;
+    case AdaptivityEstimator_ReferenceOrder:
+    case AdaptivityEstimator_ReferenceSpatialAndOrder:
+    case AdaptivityEstimator_ReferenceSpatial:
+    {
+        // increase order
+        int orderIncrease = 1;
 
-            dealii::Vector<double> dualInterpolation(primal->doFHandler.n_dofs());
-            dealii::FETools::interpolate(dual->doFHandler,
-                                         dual->solution,
-                                         primal->doFHandler,
-                                         primal->constraintsAll,
-                                         dualInterpolation);
+        dealii::hp::DoFHandler<2>::active_cell_iterator cell;
+        dealii::hp::DoFHandler<2>::active_cell_iterator endc;
+        cell = dual->doFHandler.begin_active();
+        endc = dual->doFHandler.end();
 
-            // qDebug() << "primal" << primal->solution.size();
-            // qDebug() << "dual" << dual->solution.size() << dualInterpolation.size();
+        std::stringstream refineHistory(std::ios::out | std::ios::in | std::ios::binary);
+        std::stringstream coarsenHistory(std::ios::out | std::ios::in | std::ios::binary);
+        Agros2D::problem()->calculationMesh().save_refine_flags(refineHistory);
+        Agros2D::problem()->calculationMesh().save_coarsen_flags(coarsenHistory);
 
-
-            DifferenceErrorEstimator::estimate(primal->doFHandler,
-                                               primal->solution,
-                                               dualInterpolation,
-                                               estimated_error_per_cell);
+        for (unsigned int index = 0; cell != endc; ++cell, ++index)
+        {
+            if ((estimator == AdaptivityEstimator_ReferenceOrder) || (estimator == AdaptivityEstimator_ReferenceSpatialAndOrder))
+                // if (cell->active_fe_index() < DEALII_MAX_ORDER)
+                cell->set_active_fe_index(cell->active_fe_index() + orderIncrease);
+            if ((estimator == AdaptivityEstimator_ReferenceSpatial) || (estimator == AdaptivityEstimator_ReferenceSpatialAndOrder))
+                cell->set_refine_flag();
         }
-            break;
-        default:
-            assert(0);
+
+        // execute refinement
+        if ((estimator == AdaptivityEstimator_ReferenceSpatial) || (estimator == AdaptivityEstimator_ReferenceSpatialAndOrder))
+            Agros2D::problem()->calculationMesh().execute_coarsening_and_refinement();
+
+        dual->solve();
+
+        dealii::Vector<double> dualInterpolation(primal->doFHandler.n_dofs());
+        dealii::FETools::interpolate(dual->doFHandler,
+                                     dual->solution,
+                                     primal->doFHandler,
+                                     primal->constraintsAll,
+                                     dualInterpolation);
+
+        // qDebug() << "primal" << primal->solution.size();
+        // qDebug() << "dual" << dual->solution.size() << dualInterpolation.size();
+
+        DifferenceErrorEstimator::estimate(primal->doFHandler,
+                                           primal->solution,
+                                           dualInterpolation,
+                                           estimated_error_per_cell);
+
+
+        // execute coarsening
+        if ((estimator == AdaptivityEstimator_ReferenceSpatial) || (estimator == AdaptivityEstimator_ReferenceSpatialAndOrder))
+        {
+            Agros2D::problem()->calculationMesh().load_refine_flags(refineHistory);
+            Agros2D::problem()->calculationMesh().load_coarsen_flags(coarsenHistory);
+            Agros2D::problem()->calculationMesh().execute_coarsening_and_refinement();
         }
+    }
+        break;
+    default:
+        assert(0);
     }
 
     // cout << estimated_error_per_cell.l2_norm() << endl;
@@ -638,66 +680,70 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                                                             estimated_error_per_cell);
     }
         break;
-    case AdaptivityStrategy_GlobalRefinement:
-    {
-        dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endcmm = primal->doFHandler.end();
-        for (unsigned int index = 0; cell != endcmm; ++cell, ++index)
-            cell->set_refine_flag();
-    }
-        break;
     default:
         assert(0);
     }
 
-    // additional informations for p and hp adaptivity
-    float min_smoothness = 0.0;
-    float max_smoothness = 0.0;
-    dealii::Vector<float> smoothnessIndicators;
-
-    if (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP)
+    // p-adaptivity
+    if (m_fieldInfo->adaptivityType() == AdaptivityMethod_P)
     {
-        smoothnessIndicators.reinit(Agros2D::problem()->calculationMesh().n_active_cells());
-        ErrorEstimator::estimateAdaptivitySmoothness(*m_feCollection, primal->doFHandler, primal->solution, smoothnessIndicators);
-
-        min_smoothness = *std::max_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
-        max_smoothness = *std::min_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
-        dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = primal->doFHandler.begin_active(), endcmm = primal->doFHandler.end();
-        for (unsigned int index = 0; cellmm != endcmm; ++cellmm, ++index)
+        dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
+        for (unsigned int index = 0; cell != endc; ++cell, ++index)
         {
-            if (cellmm->refine_flag_set())
+            if (cell->refine_flag_set())
             {
-                max_smoothness = std::max(max_smoothness, smoothnessIndicators(index));
-                min_smoothness = std::min(min_smoothness, smoothnessIndicators(index));
+                // remove h adaptivity flag
+                cell->clear_refine_flag();
+
+                if ((maxPIncrease == -1) || (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease)
+                {
+                    if (cell->active_fe_index() + 1 < primal->doFHandler.get_fe().size())
+                    {
+                        // increase order
+                        if (cell->active_fe_index() < DEALII_MAX_ORDER)
+                            cell->set_active_fe_index(cell->active_fe_index() + 1);
+                    }
+                }
             }
         }
     }
 
-    if ((m_fieldInfo->adaptivityType() == AdaptivityMethod_P) || (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP))
+    if (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP)
     {
-        const float threshold_smoothness = (max_smoothness + min_smoothness) / 2;
-
-        dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
-        for (unsigned int index = 0; cell != endc; ++cell, ++index)
+        switch ((AdaptivityStrategyHP) m_fieldInfo->value(FieldInfo::AdaptivityStrategyHP).toInt())
         {
-            if (m_fieldInfo->adaptivityType() == AdaptivityMethod_P)
-            {
-                if (cell->refine_flag_set())
-                {
-                    // remove h adaptivity flag
-                    cell->clear_refine_flag();
+        case AdaptivityStrategyHP_FourierSeries:
+        {
+            // tutorial 27, deal.II
+            // https://www.dealii.org/developer/doxygen/deal.II/step_27.html
 
-                    if ((maxPIncrease == -1) || (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease)
+            // additional informations for p and hp adaptivity
+            float min_smoothness = 0.0;
+            float max_smoothness = 0.0;
+            dealii::Vector<float> smoothnessIndicators;
+
+            if (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP)
+            {
+                smoothnessIndicators.reinit(Agros2D::problem()->calculationMesh().n_active_cells());
+                ErrorEstimator::estimateAdaptivitySmoothness(*m_feCollection, primal->doFHandler, primal->solution, smoothnessIndicators);
+
+                min_smoothness = *std::max_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
+                max_smoothness = *std::min_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
+                dealii::hp::DoFHandler<2>::active_cell_iterator cellmm = primal->doFHandler.begin_active(), endcmm = primal->doFHandler.end();
+                for (unsigned int index = 0; cellmm != endcmm; ++cellmm, ++index)
+                {
+                    if (cellmm->refine_flag_set())
                     {
-                        if (cell->active_fe_index() + 1 < primal->doFHandler.get_fe().size())
-                        {
-                            // increase order
-                            cell->set_active_fe_index(cell->active_fe_index() + 1);
-                        }
+                        max_smoothness = std::max(max_smoothness, smoothnessIndicators(index));
+                        min_smoothness = std::min(min_smoothness, smoothnessIndicators(index));
                     }
                 }
             }
 
-            if (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP)
+            const float threshold_smoothness = (max_smoothness + min_smoothness) / 2;
+
+            dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
+            for (unsigned int index = 0; cell != endc; ++cell, ++index)
             {
                 if ((maxPIncrease == -1) || (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease)
                 {
@@ -707,14 +753,46 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                         // remove h adaptivity flag
                         cell->clear_refine_flag();
                         // increase order
-                        cell->set_active_fe_index(cell->active_fe_index() + 1);
+                        if (cell->active_fe_index() < DEALII_MAX_ORDER)
+                            cell->set_active_fe_index(cell->active_fe_index() + 1);
                     }
                 }
             }
         }
+            break;
+        case AdaptivityStrategyHP_Alternate:
+        {
+            dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
+            for (unsigned int index = 0; cell != endc; ++cell, ++index)
+            {
+                // odd - h-adaptivity
+                // do nothing
+
+                // even - p-adaptivity
+                if (cell->refine_flag_set() && (((cell->active_fe_index() + cell->level()) % 2) == 0))
+                {
+                    // remove h adaptivity flag
+                    cell->clear_refine_flag();
+
+                    if ((maxPIncrease == -1) || (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease)
+                    {
+                        if (cell->active_fe_index() + 1 < primal->doFHandler.get_fe().size())
+                        {
+                            // increase order
+                            if (cell->active_fe_index() < DEALII_MAX_ORDER)
+                                cell->set_active_fe_index(cell->active_fe_index() + 1);
+                        }
+                    }
+                }
+            }
+        }
+            break;
+        default:
+            assert(0);
+        }
     }
 
-    // number of refinements
+    // maximum number of refinements
     if (maxHIncrease != -1)
     {
         dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();

@@ -114,6 +114,7 @@ private:
     QSpinBox *txtAdaptivityCoarseFraction;
     QComboBox *cmbAdaptivityEstimator;
     QComboBox *cmbAdaptivityStrategy;
+    QComboBox *cmbAdaptivityStrategyHP;
     QSpinBox *txtAdaptivityBackSteps;
     QSpinBox *txtAdaptivityRedoneEach;
 
@@ -168,6 +169,7 @@ private slots:
     void doAnalysisTypeClicked();
     void doAdaptivityChanged(int index);
     void doAdaptivityStrategyChanged(int index);
+    void doAdaptivityStrategyHPChanged(int index);
     void doLinearityTypeChanged(int index);
     void doLinearSolverChanged(int index);
 

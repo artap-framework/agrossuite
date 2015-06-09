@@ -197,6 +197,14 @@ void PyField::setAdaptivityStrategy(const std::string &adaptivityStrategy)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(adaptivityStrategyStringKeys())).toStdString());
 }
 
+void PyField::setAdaptivityStrategyHP(const std::string &adaptivityStrategyHP)
+{
+    if (adaptivityStrategyHPStringKeys().contains(QString::fromStdString(adaptivityStrategyHP)))
+        m_fieldInfo->setValue(FieldInfo::AdaptivityStrategyHP, (AdaptivityStrategyHP) adaptivityStrategyHPFromStringKey(QString::fromStdString(adaptivityStrategyHP)));
+    else
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(adaptivityStrategyHPStringKeys())).toStdString());
+}
+
 void PyField::setInitialCondition(double initialCondition)
 {
     m_fieldInfo->setValue(FieldInfo::TransientInitialCondition, initialCondition);

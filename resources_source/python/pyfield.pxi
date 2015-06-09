@@ -49,6 +49,9 @@ cdef extern from "../../agros2d-library/pythonlab/pyfield.h":
         string getAdaptivityStrategy()
         void setAdaptivityStrategy(string &adaptivityStrategy) except +
 
+        string getAdaptivityStrategyHP()
+        void setAdaptivityStrategyHP(string &adaptivityStrategyHP) except +
+
         double getInitialCondition()
         void setInitialCondition(double initialCondition) except +
 
@@ -365,6 +368,7 @@ cdef class __Field__:
                 'steps' : self.thisptr.getIntParameter(b'AdaptivitySteps'),
                 'estimator' : self.thisptr.getAdaptivityEstimator().decode(),
                 'strategy' : self.thisptr.getAdaptivityStrategy().decode(),
+                'strategy_hp' : self.thisptr.getAdaptivityStrategyHP().decode(),                
                 'fine_percentage' : self.thisptr.getIntParameter(b'AdaptivityFinePercentage'),
                 'coarse_percentage' : self.thisptr.getIntParameter(b'AdaptivityCoarsePercentage'),
                 'transient_back_steps' : self.thisptr.getIntParameter(b'AdaptivityTransientBackSteps'),
@@ -384,6 +388,9 @@ cdef class __Field__:
         
         # strategy
         self.thisptr.setAdaptivityStrategy(parameters['strategy'].encode())
+
+        # strategy hp
+        self.thisptr.setAdaptivityStrategyHP(parameters['strategy_hp'].encode())
        
         # coarse percentage
         value_in_range(parameters['coarse_percentage'], 0, 100, 'coarse_percentage')

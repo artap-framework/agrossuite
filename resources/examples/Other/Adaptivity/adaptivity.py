@@ -80,6 +80,7 @@ def model_capacitor(type, tolerance, estimator, strategy):
     electrostatic.adaptivity_parameters['steps'] = 50
     electrostatic.adaptivity_parameters['estimator'] = estimator
     electrostatic.adaptivity_parameters['strategy'] = strategy
+    electrostatic.adaptivity_parameters['strategy_hp'] = 'alternate' #strategy_hp
 
     # boundaries
     electrostatic.add_boundary("Source", "electrostatic_potential", {"electrostatic_potential" : U})
@@ -173,18 +174,19 @@ def model_waveguide(type, tolerance, estimator, strategy):
 
 types = ['h-adaptivity', 'p-adaptivity', 'hp-adaptivity']
 #estimators = ['kelly', 'gradient', 'reference_order']
-strategies = ['fixed_fraction_of_cells', 'fixed_fraction_of_total_error', 'balanced_error_and_cost', 'global_refinement']
+strategies = ['fixed_fraction_of_cells', 'fixed_fraction_of_total_error', 'balanced_error_and_cost']
+strategies_hp = ['fourier_series', 'alternate']
 
 #types = ['h-adaptivity']
-estimators = ['reference_order']
+estimators = ['kelly']
 #strategies = ['balanced_error_and_cost']
 
 #tolerance = 0.5
 #model = model_sparkgap
-#tolerance = 0.5
-#model = model_capacitor
-tolerance = 200
-model = model_waveguide
+tolerance = 0.2
+model = model_capacitor
+#tolerance = 200
+#model = model_waveguide
 
 dofs = {}
 errors = {}
