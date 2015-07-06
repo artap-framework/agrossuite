@@ -317,8 +317,13 @@ void PythonEngine::useLocalDict()
 {
     m_useGlobalDict = false;
 
-    m_dictLocal = PyDict_New();
+    PyObject *main = PyImport_ImportModule("__main__");
+    Py_INCREF(main);
+    m_dictLocal = PyModule_GetDict(main);
     Py_INCREF(m_dictLocal);
+
+    // m_dictLocal = PyDict_New();
+    // Py_INCREF(m_dictLocal);
 
     // init engine extensions
     PyObject *m = PyModule_Create(&pythonEngineDef);

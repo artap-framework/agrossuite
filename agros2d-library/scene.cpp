@@ -432,6 +432,7 @@ QString Scene::checkStartupScript(const QString scriptToCheck)
     {
         currentPythonEngineAgros()->blockSignals(true);
         currentPythonEngineAgros()->useLocalDict();
+        currentPythonEngineAgros()->runExpression("from math import *");
 
         // run in local dict
         // store startup script

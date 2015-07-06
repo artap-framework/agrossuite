@@ -53,7 +53,7 @@
         <module:quantity id="math_coeff_a"/>
         <module:quantity id="math_coeff_beta_x"/>
         <module:quantity id="math_coeff_beta_y"/>
-        <module:quantity id="math_coeff_f"/>
+        <module:quantity dependence="space" id="math_coeff_f"/>
 
         <module:linearity_option type="linear">
           <module:matrix_form id="diffusion" />
@@ -70,7 +70,7 @@
         <module:quantity id="math_coeff_a"/>
         <module:quantity id="math_coeff_beta_x"/>
         <module:quantity id="math_coeff_beta_y"/>
-        <module:quantity id="math_coeff_f"/>
+        <module:quantity dependence="time-space" id="math_coeff_f"/>
 
         <module:linearity_option type="linear">
           <module:matrix_form id="diffusion" />

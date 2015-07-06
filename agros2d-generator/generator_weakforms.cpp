@@ -381,7 +381,7 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateVolumeVariables(L
                 subFieldLinear->SetValue("VARIABLE_SHORT", m_volumeVariables.value(QString::fromStdString(quantity.id().c_str())).toStdString());
 
                 // linear boundary condition
-                subFieldLinear->SetValue("VARIABLE_VALUE", QString("numberAtTime(actualTime)").toStdString());
+                subFieldLinear->SetValue("VARIABLE_VALUE", QString("numberAtTime(actualTime)").toStdString());                
             }
             else if (dep == "space")
             {
@@ -393,6 +393,7 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateVolumeVariables(L
 
                 // spacedep boundary condition
                 subFieldNonlinear->SetValue("VARIABLE_VALUE", QString("numberAtPoint(Point(p[0], p[1]))").toStdString());
+                subFieldNonlinear->SetValue("VARIABLE_DERIVATIVE", QString("derivativeFromTable(0.0)").toStdString());
             }
             else if (dep == "time-space")
             {
@@ -404,6 +405,7 @@ ctemplate::TemplateDictionary *Agros2DGeneratorModule::generateVolumeVariables(L
 
                 // spacedep boundary condition
                 subFieldNonlinear->SetValue("VARIABLE_VALUE", QString("numberAtTimeAndPoint(actualTime, Point(p[0], p[1]))").toStdString());
+                subFieldNonlinear->SetValue("VARIABLE_DERIVATIVE", QString("derivativeFromTable(0.0)").toStdString());
             }
         }
     }

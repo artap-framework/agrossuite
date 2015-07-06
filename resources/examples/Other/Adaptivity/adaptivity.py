@@ -80,7 +80,7 @@ def model_capacitor(type, tolerance, estimator, strategy):
     electrostatic.adaptivity_parameters['steps'] = 50
     electrostatic.adaptivity_parameters['estimator'] = estimator
     electrostatic.adaptivity_parameters['strategy'] = strategy
-    electrostatic.adaptivity_parameters['strategy_hp'] = 'alternate' #strategy_hp
+    electrostatic.adaptivity_parameters['strategy_hp'] = 'fourier_series' #'alternate' 
 
     # boundaries
     electrostatic.add_boundary("Source", "electrostatic_potential", {"electrostatic_potential" : U})
