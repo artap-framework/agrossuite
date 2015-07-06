@@ -199,8 +199,8 @@ void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<st
         scratch_data.fe_midpoint_value.reinit (neighbor);
         const dealii::Point<2> neighbor_center = scratch_data.fe_midpoint_value.get_present_fe_values().quadrature_point(0);
         scratch_data.fe_midpoint_value.get_present_fe_values().get_function_values (scratch_data.solution, neighbor_midpoint_value);
-        dealii::Point<2> y = neighbor_center - this_center;
-        const double distance = std::sqrt(y.square());
+        dealii::Tensor<1,2> y = neighbor_center - this_center;
+        const double distance = y.norm();
         y /= distance;
 
         for (unsigned int i = 0; i < 2; ++i)

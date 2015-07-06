@@ -391,7 +391,7 @@ void SolverDeal::AssembleBase::setup(bool useDirichletLift)
     recreateConstraints(!useDirichletLift);
 
     // create sparsity pattern
-    dealii::CompressedSetSparsityPattern csp(doFHandler.n_dofs(), doFHandler.n_dofs());
+    dealii::DynamicSparsityPattern csp(doFHandler.n_dofs(), doFHandler.n_dofs());
     dealii::DoFTools::make_sparsity_pattern(doFHandler, csp, constraintsAll);
     constraintsAll.condense(csp);
     sparsityPattern.copy_from(csp);
