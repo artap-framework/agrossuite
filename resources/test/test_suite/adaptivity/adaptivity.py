@@ -77,7 +77,10 @@ class TestAdaptivityAcoustic(Agros2DTestCase):
         self.acoustic.number_of_refinements = 0
         self.acoustic.polynomial_order = 1
         self.acoustic.adaptivity_type = "hp-adaptivity"
-        self.acoustic.adaptivity_parameters['steps'] = 7
+        self.acoustic.adaptivity_parameters['steps'] = 12
+        self.acoustic.adaptivity_parameters['estimator'] = "kelly"
+        self.acoustic.adaptivity_parameters['strategy'] = "fixed_fraction_of_total_error"
+        self.acoustic.adaptivity_parameters['strategy_hp'] = "alternate"          
         self.acoustic.adaptivity_parameters['tolerance'] = 2
         self.acoustic.solver = "linear"
         
@@ -106,9 +109,9 @@ class TestAdaptivityAcoustic(Agros2DTestCase):
     def test_values(self):        
         # values from Comsol
         point1 = self.acoustic.local_values(7.544e-3, -0.145)
-        self.value_test("Acoustic pressure", point1["p"], 0.74307)
+        self.value_test("Acoustic pressure 1", point1["p"], 0.74307)
         point2 = self.acoustic.local_values(6.994e-2, 1.894e-2)
-        self.value_test("Acoustic pressure", point2["p"], 0.28242)
+        self.value_test("Acoustic pressure 2", point2["p"], 0.28242)
          	
 class TestAdaptivityElasticityBracket(Agros2DTestCase):
     def setUp(self):  
@@ -188,7 +191,7 @@ class TestAdaptivityMagneticProfileConductor(Agros2DTestCase):
         self.magnetic.number_of_refinements = 0
         self.magnetic.polynomial_order = 1
         self.magnetic.adaptivity_type = "hp-adaptivity"
-        self.magnetic.adaptivity_parameters['steps'] = 3
+        self.magnetic.adaptivity_parameters['steps'] = 5
         self.magnetic.adaptivity_parameters['tolerance'] = 0
         self.magnetic.solver = "linear"
                 
@@ -228,7 +231,6 @@ class TestAdaptivityMagneticProfileConductor(Agros2DTestCase):
 
 class TestAdaptivityRF_TE(Agros2DTestCase):
     # TODO: add more adaptivity types
-    # test for hp-adaptivity, used different settings from implicit (l2 error, cumulative, finer_reference=false, order_increase=2)
     def setUp(self):  
         # problem
         problem = agros2d.problem(clear = True)
@@ -247,7 +249,10 @@ class TestAdaptivityRF_TE(Agros2DTestCase):
         self.rf_te.number_of_refinements = 1
         self.rf_te.polynomial_order = 1
         self.rf_te.adaptivity_type = "hp-adaptivity"
-        self.rf_te.adaptivity_parameters['steps'] = 5
+        self.rf_te.adaptivity_parameters['steps'] = 8
+        self.rf_te.adaptivity_parameters['estimator'] = "kelly"
+        self.rf_te.adaptivity_parameters['strategy'] = "fixed_fraction_of_total_error"
+        self.rf_te.adaptivity_parameters['strategy_hp'] = "alternate"        
         self.rf_te.adaptivity_parameters['tolerance'] = 0
         self.rf_te.solver = "linear"
                 
@@ -279,13 +284,10 @@ class TestAdaptivityRF_TE(Agros2DTestCase):
         problem.solve()
         
     def test_values(self):        
-        # exact values in this test are taken from Agros -> not a proper test
-        # only to see if adaptivity works, should be replaced with comsol values
         point1 = self.rf_te.local_values(5.801e-02, 4.192e-03)
-        self.value_test("Electric field", point1["E"], 1.725e-01)
-        self.value_test("Flux density", point1["B"], 2.599e-09)
-        
-            
+        self.value_test("Electric field", point1["E"], 0.1769)
+        self.value_test("Flux density", point1["B"], 2.604E-9)
+           
 class TestAdaptivityHLenses(Agros2DTestCase):
     # test for h-adaptivity
     def setUp(self):  
@@ -447,7 +449,7 @@ if __name__ == '__main__':
     suite = ut.TestSuite()
     result = Agros2DTestResult()
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElectrostatic))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityAcoustic))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityAcoustic))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElasticityBracket))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityMagneticProfileConductor))    
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityRF_TE))  
