@@ -306,7 +306,7 @@ void SceneViewMesh::paintSolutionMesh()
                 dealii::Point<2> point0 = cell_int->vertex(0);
                 dealii::Point<2> point1 = cell_int->vertex(1);
                 dealii::Point<2> point2 = cell_int->vertex(2);
-                dealii::Point<2> point3 = cell_int->vertex(3);                
+                dealii::Point<2> point3 = cell_int->vertex(3);
 
                 m_arraySolutionMesh.append(QVector2D(point0[0], point0[1]));
                 m_arraySolutionMesh.append(QVector2D(point1[0], point1[1]));
@@ -340,13 +340,6 @@ void SceneViewMesh::paintOrder()
     {
         MultiArray ma = m_postDeal->activeMultiSolutionArray();
 
-        // TODO: components and level
-        // activeMultiSolutionArray().spaces().at(comp)
-        // int comp = Agros2D::problem()->setting()->value(ProblemSetting::View_OrderComponent).toInt() - 1;
-
-        // int level = m_postDeal->activeAdaptivityStep();
-        // qDebug() << m_postDeal->activeAdaptivityStep();
-        // for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
         for (int level = 0; level <= ma.doFHandler()->get_tria().n_levels() - 1; level++)
         {
             dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
@@ -405,31 +398,43 @@ void SceneViewMesh::paintOrder()
     // paint labels
     if (Agros2D::problem()->setting()->value(ProblemSetting::View_ShowOrderLabel).toBool())
     {
-        assert(0);
-        /*
         loadProjectionViewPort();
 
         glScaled(2.0 / width(), 2.0 / height(), 1.0);
         glTranslated(-width() / 2.0, -height() / 2.0, 0.0);
 
-        double3* vert = m_postDeal->ordView()->get_vertices();
-        int* lvert;
-        char** ltext;
-        double2* lbox;
-        int nl = m_postDeal->ordView()->get_labels(lvert, ltext, lbox);
+        MultiArray ma = m_postDeal->activeMultiSolutionArray();
 
-        for (int i = 0; i < nl; i++)
+        for (int level = 0; level <= ma.doFHandler()->get_tria().n_levels() - 1; level++)
         {
-            glColor3d(1, 1, 1);
-            // if (lbox[i][0]/m_scale*aspect() > size.x && lbox[i][1]/m_scale > size.y)
+            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
+            for (; cell_int != endc_int; ++cell_int)
             {
-                Point scr = untransform(vert[lvert[i]][0], vert[lvert[i]][1]);
+                if (cell_int->active_fe_index() == 0)
+                    continue;
+
+                // coordinates
+                dealii::Point<2> point0 = cell_int->vertex(0);
+                dealii::Point<2> point1 = cell_int->vertex(1);
+                dealii::Point<2> point2 = cell_int->vertex(2);
+                dealii::Point<2> point3 = cell_int->vertex(3);
+
+                // polynomial degree
+                int degree = cell_int->get_fe().degree;
+
+                // average value
+                dealii::Point<2> point = point0 + point1 + point2 + point3;
+
+                point[0] /= 4;
+                point[1] /= 4;
+
+                Point scr = untransform(point[0], point[1]);
+
                 printPostAt(scr.x - (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) / 2.0,
                             scr.y - (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0) / 2.0,
-                            ltext[i]);
+                            QString::number(degree));
             }
         }
-        */
     }
 }
 
