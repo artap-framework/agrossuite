@@ -70,7 +70,7 @@
           <field_item field_key="SpacePolynomialOrder" field_value="1"/>
           <field_item field_key="AdaptivitySteps" field_value="20"/>
           <field_item field_key="AdaptivityTolerance" field_value="0.05"/>
-          <field_item field_key="AdaptivityEstimator" field_value="0"/>
+          <field_item field_key="AdaptivityEstimator" field_value="1"/>
           <field_item field_key="AdaptivityStrategy" field_value="2"/>
           <field_item field_key="AdaptivityStrategyHP" field_value="1"/>
           <field_item field_key="AdaptivityFinePercentage" field_value="30"/>
@@ -132,8 +132,8 @@
     <item key="View_ScalarRangeBase" value="10"/>
     <item key="View_ScalarDecimalPlace" value="4"/>
     <item key="View_ScalarRangeAuto" value="1"/>
-    <item key="View_ScalarRangeMin" value="-4.13580164604355e-06"/>
-    <item key="View_ScalarRangeMax" value="0.999988853931427"/>
+    <item key="View_ScalarRangeMin" value="-0.999922335147858"/>
+    <item key="View_ScalarRangeMax" value="5.74750220039277e-06"/>
     <item key="View_ShowVectorView" value="0"/>
     <item key="View_VectorVariable" value="math_coeff_gradient"/>
     <item key="View_VectorProportional" value="1"/>

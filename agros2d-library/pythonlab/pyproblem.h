@@ -84,6 +84,7 @@ class PyProblem
 
         // time steps
         void timeStepsLength(vector<double> &steps) const;
+        void timeStepsTimes(vector<double> &times) const;
 
         // solution vector
 

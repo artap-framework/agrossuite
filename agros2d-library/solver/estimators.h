@@ -43,10 +43,14 @@
 
 namespace ErrorEstimator
 {
-void estimateAdaptivitySmoothness(const dealii::hp::FECollection<2> &feCollection,
-                                  const dealii::hp::DoFHandler<2> &doFHandler,
+void estimateAdaptivitySmoothness(const dealii::hp::DoFHandler<2> &doFHandler,
                                   const dealii::Vector<double> &solution,
                                   dealii::Vector<float> &smoothness_indicators);
+
+double relativeChangeBetweenSolutions(const dealii::hp::DoFHandler<2> &doFHandler,
+                                      const dealii::hp::QCollection<2> &quadratureFormulas,
+                                      const dealii::Vector<double> &sln1,
+                                      const dealii::Vector<double> &sln2);
 };
 
 class GradientErrorEstimator

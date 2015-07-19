@@ -31,24 +31,28 @@
 
 #include <functional>
 
-void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::FECollection<2> &feCollection,
-                                                  const dealii::hp::DoFHandler<2> &doFHandler,
+void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::DoFHandler<2> &doFHandler,
                                                   const dealii::Vector<double> &solution,
                                                   dealii::Vector<float> &smoothness_indicators)
 {
+    const dealii::hp::FECollection<2> &feCollection = doFHandler.get_fe();
+
     const unsigned int N = 5;
     std::vector<dealii::Tensor<1,2> > k_vectors;
     std::vector<unsigned int> k_vectors_magnitude;
 
 
     for (unsigned int i=0; i<N; ++i)
+    {
         for (unsigned int j=0; j<N; ++j)
+        {
             if (!((i==0) && (j==0)) && (i*i + j*j < N*N))
             {
                 k_vectors.push_back (dealii::Point<2>(M_PI * i, M_PI * j));
                 k_vectors_magnitude.push_back (i*i+j*j);
             }
-
+        }
+    }
 
     const unsigned n_fourier_modes = k_vectors.size();
     std::vector<double> ln_k (n_fourier_modes);
@@ -75,7 +79,7 @@ void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::FECollection
             }
         }
     }
-    std::vector<std::complex<double> > fourier_coefficients (n_fourier_modes);
+    std::vector<std::complex<double> > fourier_coefficients(n_fourier_modes);
     dealii::Vector<double> local_dof_values;
     TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
     for (unsigned int index=0; cell!=endc; ++cell, ++index)
@@ -91,14 +95,17 @@ void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::FECollection
 
         std::map<unsigned int, double> k_to_max_U_map;
         for (unsigned int f=0; f<n_fourier_modes; ++f)
+        {
             if ((k_to_max_U_map.find (k_vectors_magnitude[f]) ==
                  k_to_max_U_map.end()) || (k_to_max_U_map[k_vectors_magnitude[f]] < std::abs (fourier_coefficients[f])))
                 k_to_max_U_map[k_vectors_magnitude[f]] = std::abs (fourier_coefficients[f]);
-        double sum_1 = 0,
-                sum_ln_k = 0,
-                sum_ln_k_square = 0,
-                sum_ln_U = 0,
-                sum_ln_U_ln_k = 0;
+        }
+
+        double sum_1 = 0;
+        double sum_ln_k = 0;
+        double sum_ln_k_square = 0;
+        double sum_ln_U = 0;
+        double sum_ln_U_ln_k = 0;
         for (unsigned int f=0; f<n_fourier_modes; ++f)
         {
             if (k_to_max_U_map[k_vectors_magnitude[f]] == std::abs (fourier_coefficients[f]))
@@ -114,6 +121,71 @@ void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::FECollection
         const double mu = (1./(sum_1*sum_ln_k_square - sum_ln_k*sum_ln_k) * (sum_ln_k*sum_ln_U - sum_1*sum_ln_U_ln_k));
         smoothness_indicators(index) = mu - 1;
     }
+}
+
+double ErrorEstimator::relativeChangeBetweenSolutions(const dealii::hp::DoFHandler<2> &doFHandler,
+                                                      const dealii::hp::QCollection<2> &quadratureFormulas,
+                                                      const dealii::Vector<double> &sln1,
+                                                      const dealii::Vector<double> &sln2)
+{
+    int numberOfSolutions = doFHandler.get_fe().n_components();
+
+    double normCurrentL2 = 0.0;
+    double normCurrentH1Semi = 0.0;
+    double normPrevious = 0.0;
+    double normDifference = 0.0;
+
+    dealii::hp::FEValues<2> hp_fe_values(doFHandler.get_fe(), quadratureFormulas, dealii::update_values | dealii::update_gradients | dealii::update_JxW_values);
+
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = doFHandler.begin_active(), endc_int = doFHandler.end();
+    for (; cell_int != endc_int; ++cell_int)
+    {
+        // volume integration
+        hp_fe_values.reinit(cell_int);
+
+        const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
+        const unsigned int n_q_points = fe_values.n_quadrature_points;
+
+        std::vector<dealii::Vector<double> > solution_values(n_q_points, dealii::Vector<double>(numberOfSolutions));
+        std::vector<std::vector<dealii::Tensor<1,2> > > solution_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(numberOfSolutions));
+
+        fe_values.get_function_values(sln1, solution_values);
+        fe_values.get_function_gradients(sln1, solution_grads);
+
+        std::vector<dealii::Vector<double> > solution_previous_values(n_q_points, dealii::Vector<double>(numberOfSolutions));
+        std::vector<std::vector<dealii::Tensor<1,2> > >  solution_previous_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(numberOfSolutions));
+
+        fe_values.get_function_values(sln2, solution_previous_values);
+        fe_values.get_function_gradients(sln2, solution_previous_grads);
+
+        for (unsigned int j = 0; j < numberOfSolutions; j++)
+        {
+            for (unsigned int k = 0; k < n_q_points; ++k)
+            {
+                normCurrentL2 += fe_values.JxW(k) * (solution_values[k][j] * solution_values[k][j]);
+                normCurrentH1Semi += fe_values.JxW(k) * (solution_grads[k][j] * solution_grads[k][j]);
+
+                normPrevious += fe_values.JxW(k) * (solution_previous_values[k][j] * solution_previous_values[k][j] + solution_previous_grads[k][j] * solution_previous_grads[k][j]);
+                normDifference += fe_values.JxW(k) * (((solution_values[k][j] - solution_previous_values[k][j]) * (solution_values[k][j] - solution_previous_values[k][j]))
+                                                      + ((solution_grads[k][j] - solution_previous_grads[k][j]) * (solution_grads[k][j] - solution_previous_grads[k][j])));
+            }
+        }
+    }
+
+    double normCurrent = normCurrentL2 + normCurrentH1Semi;
+
+    //                std::cout << "normPrevious = " << normPrevious <<
+    //                             ", normCurrentL2 = " << normCurrentL2 <<
+    //                             ", normCurrentH1Semi = " << normCurrentH1Semi <<
+    //                             ", normCurrent = " << normCurrent <<
+    //                             ", normDifference = " << normDifference <<
+    //                             ", relChangeSol = " << fabs(normDifference / normCurrent) * 100.0 << std::endl;
+
+
+    // compute difference between previous and current solution - H1 norm
+    double relChangeSol = fabs(normDifference / normCurrent) * 100.0;
+
+    return relChangeSol;
 }
 
 // ******************************************************************************************************************

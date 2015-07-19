@@ -41,6 +41,7 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
 
         double timeElapsed() except +
         void timeStepsLength(vector[double] &steps) except +
+        void timeStepsTimes(vector[double] &times) except +
 
 cdef class __Problem__:
     cdef PyProblem *thisptr
@@ -173,12 +174,14 @@ cdef class __Problem__:
 
     def time_steps_total(self):
         """Return a list of time steps."""
-        steps = self.time_steps_length()
-        time = [0.0]
-        for step in steps:
-            time.append(time[-1] + step)
+        cdef vector[double] times_vector
+        self.thisptr.timeStepsTimes(times_vector)
 
-        return time
+        times = list()
+        for i in range(times_vector.size()):
+            times.append(times_vector[i])
+
+        return times
 
 __problem__ = __Problem__()
 def problem(clear = False):

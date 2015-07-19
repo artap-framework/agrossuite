@@ -130,7 +130,7 @@ if __name__ == '__main__':
     if (W/d > 1):
         Z0 = 120.0*pi/(sqrt(epse)*(W/d + 1.393 + 0.667*log(W/d + 1.444)))
         print('Analytical solution: Z0 = {0}'.format(Z0))
-    
+    """
     # optimization
     parameters = optimization.Parameters([optimization.ContinuousParameter('W', 1e-4, 1e-3),
                                           optimization.ContinuousParameter('d', 1e-4, 1e-3)])
@@ -146,3 +146,4 @@ if __name__ == '__main__':
     print('Best variant parameters: W={0}, d={1}'.format(star.parameters['W'], star.parameters['d']))
     
     optimization.model_dict.save(file_name='Microstrip.opt', problem='Microstrip.py')
+    """

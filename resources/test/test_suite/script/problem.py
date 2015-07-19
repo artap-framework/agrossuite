@@ -103,7 +103,7 @@ class TestProblemTime(Agros2DTestCase):
     """ time_steps_length """
     def test_time_steps_length(self):
         self.problem.solve()
-        self.assertEqual(self.problem.time_steps_length(), [10]*10)
+        self.assertEqual(self.problem.time_steps_length(), [0] + [10]*10)
 
     """ time_steps_total """
     def test_time_steps_total(self):
@@ -121,7 +121,8 @@ class TestProblemTime(Agros2DTestCase):
 
     """ time_callback """
     def time_callback(self, time_step):
-        self.steps += 1
+        if (time_step > 0):
+            self.steps += 1
         return True
 
     def test_time_callback(self):

@@ -530,13 +530,9 @@ void SolverDeal::solveAdaptivity(shared_ptr<SolverDeal::AssembleBase> primal,
                 dealii::Vector<double> previousSolutionInterpolated(primal->solution.size());
                 solutionTrans.interpolate(previousSolution, previousSolutionInterpolated);
 
-                // compute difference between previous and current solution
-                previousSolutionInterpolated.add(-1, primal->solution);
-                double differenceSolutionNorm = previousSolutionInterpolated.l2_norm();
-                double currentSolutionNorm = primal->solution.l2_norm();
-                relChangeSol = fabs(differenceSolutionNorm / currentSolutionNorm) * 100.0;
-
-                // cout << differenceSolutionNorm << " : " << currentSolutionNorm << endl;
+                relChangeSol = ErrorEstimator::relativeChangeBetweenSolutions(primal->doFHandler, quadratureFormulas(),
+                                                                              primal->solution,
+                                                                              previousSolutionInterpolated);
             }
             // cout << "error: " << error << endl;
 
@@ -700,7 +696,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                     if (cell->active_fe_index() + 1 < primal->doFHandler.get_fe().size())
                     {
                         // increase order
-                        if (cell->active_fe_index() < DEALII_MAX_ORDER)
+                        if (cell->active_fe_index() < DEALII_MAX_ORDER - 1)
                             cell->set_active_fe_index(cell->active_fe_index() + 1);
                     }
                 }
@@ -725,7 +721,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
             if (m_fieldInfo->adaptivityType() == AdaptivityMethod_HP)
             {
                 smoothnessIndicators.reinit(Agros2D::problem()->calculationMesh().n_active_cells());
-                ErrorEstimator::estimateAdaptivitySmoothness(*m_feCollection, primal->doFHandler, primal->solution, smoothnessIndicators);
+                ErrorEstimator::estimateAdaptivitySmoothness(primal->doFHandler, primal->solution, smoothnessIndicators);
 
                 min_smoothness = *std::max_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
                 max_smoothness = *std::min_element(smoothnessIndicators.begin(), smoothnessIndicators.end());
@@ -825,6 +821,13 @@ void SolverDeal::solveTransient(shared_ptr<SolverDeal::AssembleBase> primal)
     FieldSolutionID solutionID(m_fieldInfo, 0, 0);
     SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, primal->doFHandler.n_dofs());
     Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&primal->doFHandler, initialSolution), runTime);
+
+    // Python callback
+    double cont = 1.0;
+    QString command = QString("(agros2d.problem().time_callback(%1) if (agros2d.problem().time_callback is not None and hasattr(agros2d.problem().time_callback, '__call__')) else True)").
+            arg(0);
+    bool successfulRun = currentPythonEngine()->runExpression(command, &cont);
+
     primal->solution = initialSolution;
 
     // parameters
@@ -894,12 +897,10 @@ void SolverDeal::solveTransient(shared_ptr<SolverDeal::AssembleBase> primal)
         stepLengths.append(actualTimeStep);
 
         int order = std::min(timeStep, (int) solutions.size());
-        // cout << "order: " << order << " solutions.size() " << solutions.size() << " stepSizes.size() " << stepLengths.size() <<  endl;
 
         double relChangeSol = 100.0;
         int maxAdaptiveSteps = ((timeStep == 1) && (m_fieldInfo->adaptivityType() != AdaptivityMethod_None)) ? m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt() : 1;
         for (int adaptiveStep = 0; adaptiveStep < maxAdaptiveSteps; adaptiveStep++)
-            // int adaptiveStep = 0;
         {
             // assemble system
             primal->assembleSystem();
@@ -1026,6 +1027,21 @@ void SolverDeal::solveTransient(shared_ptr<SolverDeal::AssembleBase> primal)
                 solutionID = FieldSolutionID(m_fieldInfo, timeStep, adaptiveStep);
                 SolutionStore::SolutionRunTimeDetails runTime(actualTimeStep, relChangeSol, primal->doFHandler.n_dofs());
                 Agros2D::solutionStore()->addSolution(solutionID, MultiArray(&primal->doFHandler, primal->solution), runTime);
+
+                // Python callback
+                QString command = QString("(agros2d.problem().time_callback(%1) if (agros2d.problem().time_callback is not None and hasattr(agros2d.problem().time_callback, '__call__')) else True)").
+                        arg(timeStep);
+
+                double cont = 1.0;
+                bool successfulRun = currentPythonEngine()->runExpression(command, &cont);
+                if (!successfulRun)
+                {
+                    ErrorResult result = currentPythonEngine()->parseError();
+                    Agros2D::log()->printError(QObject::tr("Transient callback"), result.error());
+                }
+
+                if (!cont)
+                    break;
 
                 // adapt mesh
                 if (m_fieldInfo->adaptivityType() != AdaptivityMethod_None)

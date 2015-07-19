@@ -2,7 +2,7 @@ import agros2d as a2d
 import pythonlab
 import pylab as pl
 
-TEMP_COIL = 360
+TEMP_COIL = 60
 SIGMA = 57e6
 N = 1500
 k = 0.65
@@ -14,8 +14,8 @@ def time_callback(time_step):
     volume = heat.volume_integrals([2])
     
     time = problem.time_steps_total()[time_step]
-    avg = volume["T"] / volume["V"]
-    print('time = {0} s, average coil temperature = {1} K'.format(time, avg))
+    avg = volume["Td"] / volume["V"]
+    print('timestep = {0}, time = {1} s, average coil temperature = {2} deg.'.format(time_step, time, avg))
 
     # current
     if (avg > TEMP_COIL):
@@ -54,7 +54,7 @@ problem.time_callback = time_callback
 # heat
 heat = a2d.field("heat")
 heat.analysis_type = "transient"
-heat.matrix_solver = "mumps"
+heat.matrix_solver = "umfpack"
 heat.transient_initial_condition = 293.15
 heat.number_of_refinements = 0
 heat.polynomial_order = 2
@@ -127,7 +127,7 @@ pythonlab.image(chart_current)
 pl.figure(figsize=[8,3])
 pl.plot(total_time, temp, '-')
 pl.xlabel("time (s)")
-pl.ylabel("temperature (K)")
+pl.ylabel("temperature (deg.)")
 pl.grid(True)
 
 chart_temp = pythonlab.tempname("png")
