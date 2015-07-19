@@ -2,35 +2,21 @@ Requirements installation
 =========================
 
 First install the following free packages:
-- Hermes (http://hpfem.org/hermes)
-- Digia Qt (http://qt.digia.com)
+- dealii (http://dealii.org/)
+- Digia Qt (http://www.qt.io)
 - QCustomChart (http://www.workslikeclockwork.com/index.php/components/qt-plotting-widget/)
 - Python (http://www.python.org)
 - dxflib (http://www.ribbonsoft.com)
 - ctemplate (http://code.google.com/p/ctemplate)
 - poly2tri (http://code.google.com/p/poly2tri)
 - Triangle (http://www.cs.cmu.edu/~quake/triangle.html)
-- Gmsh (http://geuz.org/gmsh/)
 - UMFPACK (http://www.cise.ufl.edu/research/sparse/umfpack/)
 - MUMPS (http://graal.ens-lyon.fr/MUMPS)
-- SuperLU (http://crd-legacy.lbl.gov/~xiaoye/SuperLU)
 
 If you are using a Debian-like system, install the required libraries by following commands:
 
-Compilation with QT4:
-
-sudo apt-get install libqt4-dev libqt4-opengl-dev qt4-dev-tools qt4-qmake g++ 
-sudo apt-get install cython python-dev xsdcxx libxerces-c-dev
-sudo apt-get install triangle-bin gmsh libsuitesparse-dev libmumps-seq-dev libsuperlu3-dev libsuitesparse-dev ffmpeg
-sudo apt-get install libgoogle-perftools-dev zlib1g-dev
-sudo apt-get install libsqlite3-dev libgstreamer0.10-dev libxslt1-dev libgstreamermm-0.10-dev
-
-Compilation with QT5:
-sudo apt-get install qt5-default qmlscene libqt5opengl5-dev qttools5-dev-tools qt5-qmake libqt5webkit5-dev qtxmlpatterns5-dev-tools libqt5svg5-dev qtlocation5-dev qtsensors5-dev qttools5-dev qtquick1-5-dev libqt5xmlpatterns5-dev qtdeclarative5-dev g++ libsm-dev
-sudo apt-get install cython python-dev xsdcxx libxerces-c-dev
-sudo apt-get install triangle-bin gmsh libsuitesparse-dev libmumps-seq-dev libsuperlu3-dev libsuitesparse-dev ffmpeg
-sudo apt-get install libgoogle-perftools-dev zlib1g-dev
-sudo apt-get install libsqlite3-dev libgstreamer0.10-dev libxslt1-dev libgstreamermm-0.10-dev
+sudo apt-get install cmake libsuitesparse-dev cython3 xsdcxx libxerces-c-dev python3-dev python3-matplotlib python3-scipy python3-numpy libbz2-dev triangle-bin libtbb-dev zlib1g-dev libmetis-dev 
+sudo apt-get install qt5-default qmlscene libqt5opengl5-dev qttools5-dev-tools qt5-qmake libqt5webkit5-dev qtxmlpatterns5-dev-tools libqt5svg5-dev qtlocation5-dev qttools5-dev qtquick1-5-dev libqt5xmlpatterns5-dev qtdeclarative5-dev 
 
 You can use defines WITH_UNITY (support for Unity application launcher) for Ubuntu 11.04 and higher.
 This defines needs package libunity-dev.
@@ -40,9 +26,30 @@ Compilation
 
 In the first step of compilation, you have to generate makefiles and compile the code by issuing the following commands:
 
-$ cmake .
-# replace the previous line with ## $ cmake -G "Visual Studio 10" . ## if you are using Windows.
-$ make # Or open agros2d.sln with Visual Studio 10 (2010) and build.
+Linux:
+cp CMake.vars.example.Linux CMake.vars
+
+cmake .
+make 
+
+cd dealii
+mkdir build
+cd build
+cmake ..
+make
+cd ../../
+
+cd 3rdparty/paralution
+mkdir build
+cd build
+cmake ..
+make
+cd ../../..
+
+Windows:
+
+cmake -G "Visual Studio 10"
+open agros2d.sln with Visual Studio 10 (2010) and build.
 
 If you have more than one CPU, you can use “make -jN” where N is the number of CPUs of your computer.
 Next step is generating of plugins source code and their compilation:
