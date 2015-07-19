@@ -118,8 +118,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     sceneTransformDialog = new SceneTransformDialog(sceneViewPreprocessor, this);
 
     // OptiLab
-    optilabWindow  = new OptilabWindow(scriptEditorDialog);
-    sceneInfoWidget->setRecentOptilabFiles(optilabWindow->recentFiles());
+    // optilabWindow = new OptilabWindow(scriptEditorDialog);
+    // sceneInfoWidget->setRecentOptilabFiles(optilabWindow->recentFiles());
 
     createActions();
     createViews();
@@ -231,7 +231,7 @@ MainWindow::~MainWindow()
 
     delete logStdOut;
     delete scriptEditorDialog;
-    delete optilabWindow;
+    // delete optilabWindow;
 }
 
 void MainWindow::createActions()
@@ -357,9 +357,9 @@ void MainWindow::createActions()
     actScriptEditorRunScript = new QAction(icon("script"), tr("Run &script..."), this);
     connect(actScriptEditorRunScript, SIGNAL(triggered()), this, SLOT(doScriptEditorRunScript()));
 
-    actOptiLab = new QAction(icon("optilab"), tr("OptiLab"), this);
-    actOptiLab->setShortcut(Qt::Key_F10);
-    connect(actOptiLab, SIGNAL(triggered()), this, SLOT(doOptiLab()));
+    // actOptiLab = new QAction(icon("optilab"), tr("OptiLab"), this);
+    // actOptiLab->setShortcut(Qt::Key_F10);
+    // connect(actOptiLab, SIGNAL(triggered()), this, SLOT(doOptiLab()));
 
     actMaterialBrowser = new QAction(icon(""), tr("Material browser..."), this);
     actMaterialBrowser->setShortcut(QKeySequence(tr("Ctrl+M")));
@@ -512,7 +512,7 @@ void MainWindow::createMenus()
     QMenu *mnuTools = menuBar()->addMenu(tr("&Tools"));
     mnuTools->addAction(actScriptEditor);
     mnuTools->addAction(actScriptEditorRunScript);
-    mnuTools->addAction(actOptiLab);
+    // mnuTools->addAction(actOptiLab);
     mnuTools->addAction(actUnitTests);
     mnuTools->addSeparator();
     mnuTools->addAction(actMaterialBrowser);
@@ -705,7 +705,7 @@ void MainWindow::createMain()
     // tlbLeftBar->addAction(Agros2D::problem()->actionSolveAdaptiveStep());
     tlbLeftBar->addSeparator();
     tlbLeftBar->addAction(actScriptEditor);
-    tlbLeftBar->addAction(actOptiLab);
+    // tlbLeftBar->addAction(actOptiLab);
 
     splitter = new QSplitter(Qt::Horizontal, this);
     splitter->addWidget(viewControls);
@@ -958,8 +958,8 @@ void MainWindow::doDocumentOpen(const QString &fileName)
         if (fileInfo.suffix() == "opt")
         {
             // OptiLab
-            optilabWindow->documentOpen(fileNameDocument);
-            optilabWindow->showDialog();
+            // optilabWindow->documentOpen(fileNameDocument);
+            // optilabWindow->showDialog();
             return;
         }
 
@@ -1330,7 +1330,7 @@ void MainWindow::doScriptEditorRunScript(const QString &fileName)
 
 void MainWindow::doOptiLab()
 {
-    optilabWindow->showDialog();
+    // optilabWindow->showDialog();
 }
 
 void MainWindow::doCut()
