@@ -112,7 +112,7 @@ void ConfigComputerDialog::save()
 
     // number of threads
     Agros2D::configComputer()->setValue(Config::Config_NumberOfThreads, txtNumOfThreads->value());
-    dealii::multithread_info.set_thread_limit(txtNumOfThreads->value());
+    dealii::MultithreadInfo::set_thread_limit(txtNumOfThreads->value());
 
     // accelerator
     Agros2D::configComputer()->setValue(Config::Config_DisableAccelerator, chkDisableAccelerator->isChecked());

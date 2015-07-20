@@ -78,7 +78,7 @@ void Config::load()
     // number of threads
     if (m_setting[Config_NumberOfThreads].toInt() > SystemUtils::numberOfThreads())
         m_setting[Config_NumberOfThreads] = SystemUtils::numberOfThreads();
-    dealii::multithread_info.set_thread_limit(m_setting[Config_NumberOfThreads].toInt());
+    dealii::MultithreadInfo::set_thread_limit(m_setting[Config_NumberOfThreads].toInt());
 }
 
 void Config::save()
