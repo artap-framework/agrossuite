@@ -20,13 +20,6 @@ INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/poly2tri)
 # paralution
 INCLUDE_DIRECTORIES(${PARALUTION_INCLUDE_DIR})
 
-# gmsh
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Common)
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Geo)
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Graphics)
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Mesh)
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/gmsh/Numeric)
-
 # languages
 # message("Translations")
 FILE(GLOB lang_files "${CMAKE_HOME_DIRECTORY}/resources_source/lang/*.ts")

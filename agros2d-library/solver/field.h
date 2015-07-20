@@ -268,7 +268,6 @@ private:
     // matrix solver
     MatrixSolverType m_matrixSolver;
 
-    // TODO: (Franta) gmsh
     QMap<SceneEdge *, int> m_edgesRefinement;
     QMap<SceneLabel *, int> m_labelsRefinement;
     QMap<SceneLabel *, int> m_labelsPolynomialOrder;

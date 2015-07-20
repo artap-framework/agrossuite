@@ -102,8 +102,6 @@ SET(MATIO_LIBRARY agros2d_3dparty_matio)
 SET(TRIANGLE_LIBRARY agros2d_3dparty_triangle)
 SET(AGROS_GRID agros_grid)
 
-# SET(GMSH_LIBRARY agros2d_3dparty_gmsh)
-
 SET(AGROS_SOLVER_EXTERNAL solver_external)
 
 # xerces

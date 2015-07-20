@@ -47,7 +47,7 @@
 
 #include "mesh/meshgenerator_triangle.h"
 #include "mesh/meshgenerator_cubit.h"
-#include "mesh/meshgenerator_gmsh.h"
+// #include "mesh/meshgenerator_gmsh.h"
 // #include "mesh/meshgenerator_netgen.h"
 
 CalculationThread::CalculationThread() : QThread()
