@@ -5,7 +5,7 @@ from multiprocessing import cpu_count
 from subprocess import call
 #from glob import glob
 
-VERSION = 3.2
+VERSION = 4.0
 CORES = cpu_count()
 
 DOC_SOURCE_DIR = './resources_source/doc'
@@ -17,7 +17,7 @@ TEMP_DIR = './tmp'
 
 LOC_SOURCE_FILES = ['agros2d-binary/', 'agros2d-library/',
                     'pythonlab-binary/', 'pythonlab-library/',
-                    'agros2d-solver/', 'util/']
+                    'agros2d-solver/', 'util/', 'dealii']
 LOC_TARGET_FILES = ['resources_source/lang/en_US.ts', 'resources_source/lang/cs_CZ.ts',
                     'resources_source/lang/pl_PL.ts', 'resources_source/lang/ru_RU.ts',
                     'resources_source/lang/fr_FR.ts']
@@ -116,7 +116,7 @@ def source_package(version):
 
     temp = '{0}/agros2d-{1}'.format(TEMP_DIR, version)
 
-    ignored = ['tmp', '.git*', '*.mph']
+    ignored = ['tmp', '.git*', '*.mph', 'build']
     shutil.copytree('./', temp, ignore=shutil.ignore_patterns(*ignored))
 
     os.chdir(temp)
