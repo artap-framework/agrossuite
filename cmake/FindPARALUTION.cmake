@@ -17,8 +17,6 @@ ELSE(WIN64)
   ENDIF(WIN32)
 ENDIF(WIN64)
 
-message(${PARALUTION_LIBRARY})
-
 # Report the found libraries, quit with fatal error if any required library has not been found.
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(PARALUTION DEFAULT_MSG PARALUTION_LIBRARY PARALUTION_INCLUDE_DIR)
