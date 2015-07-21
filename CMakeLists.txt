@@ -34,7 +34,7 @@ SET(AGROS_DEBUG NO)
 SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
 
 # Allow to override the default values in CMake.vars:
-IF(CMAKE_SYSTEM_NAME STREQUAL Linux)
+IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
     INCLUDE(CMake.vars.Linux)
 ELSE()
     INCLUDE(CMake.vars.Windows)
