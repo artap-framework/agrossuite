@@ -158,7 +158,7 @@ INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/UMFPACK/Inclu
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/AMD/Include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/muparser_v2_2_3/include/")
 
-FIND_PACKAGE(deal.II HINTS "../dealii/${CMAKE_INSTALL_PREFIX}" ${CMAKE_INSTALL_PREFIX} REQUIRED)
+FIND_PACKAGE(deal.II HINTS "dealii/build" REQUIRED)
 
 # modules
 {{#SOURCE}}
