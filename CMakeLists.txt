@@ -34,6 +34,11 @@ SET(AGROS_DEBUG NO)
 SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
 
 # Allow to override the default values in CMake.vars:
+IF(CMAKE_SYSTEM_NAME STREQUAL Linux)
+    INCLUDE(CMake.vars.Linux)
+ELSE()
+    INCLUDE(CMake.vars.Windows)
+ENDIF()
 INCLUDE(CMake.vars OPTIONAL)
 
 # Handle OpenMP should it be included in DealII.
@@ -235,6 +240,7 @@ INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/umfpack/UMFPACK/Include/
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/umfpack/AMD/Include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/muparser_v2_2_3/include/")
 FIND_PACKAGE(deal.II HINTS "dealii/${CMAKE_INSTALL_PREFIX}" ${CMAKE_INSTALL_PREFIX} ${CMAKE_SOURCE_DIR}/libs REQUIRED)
+message( ${DEAL_II_LIBRARIES})
 # Include external directories.
 INCLUDE_DIRECTORIES(${UMFPACK_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${AMESOS_INCLUDE_PATH})
