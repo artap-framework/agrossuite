@@ -9,11 +9,15 @@ IF(WIN64)
   FIND_LIBRARY(PARALUTION_LIBRARY NAMES paralution PATHS ${PARALUTION_ROOT} ${PARALUTION_ROOT}/lib/x64 ${PARALUTION_ROOT}/x64/lib ${PARALUTION_ROOT}/x64/${CMAKE_BUILD_TYPE})
 ELSE(WIN64)
   IF(WIN32)
-    FIND_LIBRARY(PARALUTION_LIBRARY NAMES paralution PATHS ${PARALUTION_ROOT} ${PARALUTION_ROOT}/lib ${PARALUTION_ROOT}/lib/${CMAKE_BUILD_TYPE})
+    # ${PARALUTION_ROOT}/lib
+    FIND_LIBRARY(PARALUTION_LIBRARY NAMES paralution PATHS ${PARALUTION_ROOT} ${PARALUTION_ROOT}/lib/${CMAKE_BUILD_TYPE})
   ELSE(WIN32)
-    FIND_LIBRARY(PARALUTION_LIBRARY NAMES paralution PATHS ${PARALUTION_ROOT} ${PARALUTION_ROOT}/lib /usr/lib /usr/local/lib /usr/lib64 /usr/local/lib64)
+    # ${PARALUTION_ROOT}/lib
+    FIND_LIBRARY(PARALUTION_LIBRARY NAMES paralution PATHS ${PARALUTION_ROOT} ${PARALUTION_ROOT}/../../../libs ${PARALUTION_ROOT}/../../../libs/${CMAKE_BUILD_TYPE} /usr/lib /usr/local/lib /usr/lib64 /usr/local/lib64)
   ENDIF(WIN32)
 ENDIF(WIN64)
+
+message(${PARALUTION_LIBRARY})
 
 # Report the found libraries, quit with fatal error if any required library has not been found.
 INCLUDE(FindPackageHandleStandardArgs)
