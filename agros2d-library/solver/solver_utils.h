@@ -51,6 +51,9 @@
 #include <deal.II/base/time_stepping.h>
 #define signals public
 
+void writeMatioVector(dealii::Vector<double> &vec, const QString &name, const QString &varName);
+void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, const QString &varName);
+
 class DoubleCellIterator
 {
 public:

@@ -343,7 +343,6 @@ void SolverDeal::AssembleBase::recreateConstraints(bool zeroDirichletLift)
     constraintsAll.close();
 }
 
-
 void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &system,
                                                  dealii::Vector<double> &rhs,
                                                  dealii::Vector<double> &sln,
@@ -374,6 +373,28 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
     default:
         Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Solver '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));
         return;
+    }
+
+    if (Agros2D::configComputer()->value(Config::Config_LinearSystemSave).toBool())
+    {
+        writeMatioVector(rhs, QString("%1/rhs.mat").arg(cacheProblemDir()), "rhs");
+        writeMatioVector(sln, QString("%1/sln.mat").arg(cacheProblemDir()), "sln");
+        writeMatioMatrix(system, QString("%1/matrix.mat").arg(cacheProblemDir()), "matrix");
+
+        /*
+        solver->output_matrix(true);
+        solver->output_rhs(true);
+        QString name = QString("%1/%2_%3_%4").arg(cacheProblemDir()).arg(solverName).arg(Agros2D::problem()->actualTimeStep()).arg(adaptivityStep);
+        solver->set_matrix_export_format((Hermes::Algebra::MatrixExportFormat) Agros2D::configComputer()->value(Config::Config_LinearSystemFormat).toInt());
+        solver->set_matrix_filename(QString("%1_Matrix").arg(name).toStdString());
+        solver->set_matrix_varname("matrix");
+        solver->set_matrix_number_format((char *) "%g");
+        solver->set_rhs_export_format((Hermes::Algebra::MatrixExportFormat) Agros2D::configComputer()->value(Config::Config_LinearSystemFormat).toInt());
+        solver->set_rhs_filename(QString("%1_RHS").arg(name).toStdString());
+        solver->set_rhs_number_format((char *) "%g");
+        solver->set_rhs_varname("rhs");
+        */
+
     }
 
     // qDebug() << "solved (" << time.elapsed() << "ms )";
@@ -463,7 +484,7 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
       m_mappingCollection(SolverDeal::createMappingCollection(m_fieldInfo)),
       // time
       m_time(0.0)
-{       
+{
     m_quadratureFormulas.push_back(dealii::QGauss<2>(1));
     m_quadratureFormulasFace.push_back(dealii::QGauss<2 - 1>(1));
 

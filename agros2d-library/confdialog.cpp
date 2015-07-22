@@ -298,7 +298,7 @@ QWidget *ConfigComputerDialog::createSolverWidget()
 
     chkDiscreteSaveMatrixRHS = new QCheckBox(tr("Save matrix and RHS"));
     cmbDumpFormat = new QComboBox(this);
-    cmbDumpFormat->addItem(dumpFormatString(EXPORT_FORMAT_PLAIN_ASCII), EXPORT_FORMAT_PLAIN_ASCII);
+    // cmbDumpFormat->addItem(dumpFormatString(EXPORT_FORMAT_PLAIN_ASCII), EXPORT_FORMAT_PLAIN_ASCII);
     cmbDumpFormat->addItem(dumpFormatString(EXPORT_FORMAT_MATLAB_MATIO), EXPORT_FORMAT_MATLAB_MATIO);
     // cmbDumpFormat->addItem(dumpFormatString(DF_MATRIX_MARKET), DF_MATRIX_MARKET);
 
