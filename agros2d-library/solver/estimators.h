@@ -77,7 +77,7 @@ private:
     };
     struct EstimateCopyData {};
 
-    static void estimate_cell(const dealii::SynchronousIterators<std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator,
+    static void estimate_cell(const dealii::SynchronousIterators<boost::tuples::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator,
                               dealii::Vector<float>::iterator> > &cell,
                               EstimateScratchData &scratch_data,
                               const EstimateCopyData &copy_data);
@@ -114,7 +114,7 @@ private:
     };
     struct EstimateCopyData {};
 
-    static void estimate_cell(const dealii::SynchronousIterators<std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
+    static void estimate_cell(const dealii::SynchronousIterators<boost::tuples::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
                               EstimateScratchData &scratch_data,
                               const EstimateCopyData &copy_data);
 };
@@ -417,17 +417,17 @@ private:
     struct WeightedResidualCopyData
     {};
 
-    void estimate_on_one_cell (const dealii::SynchronousIterators<std::tuple<active_cell_iterator, dealii::Vector<float>::iterator> > &cell_and_error,
-                               WeightedResidual::WeightedResidualScratchData &scratch_data,
-                               WeightedResidual::WeightedResidualCopyData &copy_data,
-                               WeightedResidual::FaceIntegrals &face_integrals) const;
+    void estimate_on_one_cell (const dealii::SynchronousIterators<boost::tuples::tuple<active_cell_iterator, dealii::Vector<float>::iterator> > &cell_and_error,
+                               WeightedResidualScratchData &scratch_data,
+                               WeightedResidualCopyData &copy_data,
+                               FaceIntegrals &face_integrals) const;
 
     // Then we have functions that do the actual integration of the error
     // representation formula. They will treat the terms on the cell
     // interiors, on those faces that have no hanging nodes, and on those
     // faces with hanging nodes, respectively:
     void
-    integrate_over_cell (const dealii::SynchronousIterators<std::tuple<active_cell_iterator, dealii::Vector<float>::iterator> > &cell_and_error,
+    integrate_over_cell (const dealii::SynchronousIterators<boost::tuples::tuple<active_cell_iterator, dealii::Vector<float>::iterator> > &cell_and_error,
                          const dealii::Vector<double> &primal_solution,
                          const dealii::Vector<double> &dual_weights,
                          CellData &cell_data) const;

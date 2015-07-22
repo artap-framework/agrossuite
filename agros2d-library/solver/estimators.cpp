@@ -29,6 +29,7 @@
 
 #include "problem.h"
 
+#include <numeric>
 #include <functional>
 
 void ErrorEstimator::estimateAdaptivitySmoothness(const dealii::hp::DoFHandler<2> &doFHandler,
@@ -216,7 +217,7 @@ void GradientErrorEstimator::estimate(const dealii::hp::DoFHandler<2> &dof_handl
     Assert (error_per_cell.size() == dof_handler.get_tria().n_active_cells(),
             ExcInvalidVectorLength (error_per_cell.size(),
                                     dof_handler.get_tria().n_active_cells()));
-    typedef std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
+    typedef boost::tuples::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
 
     dealii::SynchronousIterators<IteratorTuple>
             begin_sync_it (IteratorTuple (dof_handler.begin_active(), error_per_cell.begin())),
@@ -230,24 +231,24 @@ void GradientErrorEstimator::estimate(const dealii::hp::DoFHandler<2> &dof_handl
                             EstimateCopyData());
 }
 
-void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
+void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<boost::tuples::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
                                            EstimateScratchData &scratch_data,
                                            const EstimateCopyData &)
 {
     dealii::Tensor<2,2> Y;
     std::vector<typename dealii::hp::DoFHandler<2>::active_cell_iterator> active_neighbors;
     active_neighbors.reserve(dealii::GeometryInfo<2>::faces_per_cell * dealii::GeometryInfo<2>::max_children_per_face);
-    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_it(std::get<0>(cell.iterators));
+    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_it(dealii::std_cxx11::get<0>(cell.iterators));
     scratch_data.fe_midpoint_value.reinit(cell_it);
 
     dealii::Tensor<1,2> projected_gradient;
     active_neighbors.clear ();
     for (unsigned int face_no = 0; face_no<dealii::GeometryInfo<2>::faces_per_cell; ++face_no)
     {
-        if (!std::get<0>(cell.iterators)->at_boundary(face_no))
+        if (!dealii::std_cxx11::get<0>(cell.iterators)->at_boundary(face_no))
         {
-            const TYPENAME dealii::hp::DoFHandler<2>::face_iterator face = std::get<0>(cell.iterators)->face(face_no);
-            const TYPENAME dealii::hp::DoFHandler<2>::cell_iterator neighbor = std::get<0>(cell.iterators)->neighbor(face_no);
+            const TYPENAME dealii::hp::DoFHandler<2>::face_iterator face = dealii::std_cxx11::get<0>(cell.iterators)->face(face_no);
+            const TYPENAME dealii::hp::DoFHandler<2>::cell_iterator neighbor = dealii::std_cxx11::get<0>(cell.iterators)->neighbor(face_no);
             if (neighbor->active())
             {
                 active_neighbors.push_back(neighbor);
@@ -255,7 +256,7 @@ void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<st
             else
             {
                 for (unsigned int subface_no=0; subface_no<face->n_children(); ++subface_no)
-                    active_neighbors.push_back(std::get<0>(cell.iterators)->neighbor_child_on_subface(face_no,subface_no));
+                    active_neighbors.push_back(dealii::std_cxx11::get<0>(cell.iterators)->neighbor_child_on_subface(face_no,subface_no));
             }
         }
     }
@@ -286,7 +287,7 @@ void GradientErrorEstimator::estimate_cell(const dealii::SynchronousIterators<st
     const dealii::Tensor<2,2> Y_inverse = invert(Y);
     dealii::Point<2> gradient;
     contract (gradient, Y_inverse, projected_gradient);
-    *(std::get<1>(cell.iterators)) = (std::pow(std::get<0>(cell.iterators)->diameter(), 2) * std::sqrt(gradient.square()));
+    *(dealii::std_cxx11::get<1>(cell.iterators)) = (std::pow(dealii::std_cxx11::get<0>(cell.iterators)->diameter(), 2) * std::sqrt(gradient.square()));
 }
 
 // ************************************************************************************************************************
@@ -321,7 +322,7 @@ void DifferenceErrorEstimator::estimate(const dealii::hp::DoFHandler<2> &primal_
     Assert (error_per_cell.size() == primal_dof.get_tria().n_active_cells(),
             ExcInvalidVectorLength (error_per_cell.size(),
                                     primal_dof.get_tria().n_active_cells()));
-    typedef std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
+    typedef boost::tuples::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
 
     dealii::SynchronousIterators<IteratorTuple>
             begin_sync_it (IteratorTuple(primal_dof.begin_active(), error_per_cell.begin())),
@@ -335,11 +336,11 @@ void DifferenceErrorEstimator::estimate(const dealii::hp::DoFHandler<2> &primal_
                             EstimateCopyData());
 }
 
-void DifferenceErrorEstimator::estimate_cell(const dealii::SynchronousIterators<std::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
+void DifferenceErrorEstimator::estimate_cell(const dealii::SynchronousIterators<boost::tuples::tuple<typename dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> > &cell,
                                              EstimateScratchData &scratch_data,
                                              const EstimateCopyData &)
 {
-    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_it(std::get<0>(cell.iterators));
+    TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell_it(dealii::std_cxx11::get<0>(cell.iterators));
 
     const unsigned int dofs_per_cell = cell_it->get_fe().dofs_per_cell;
 
@@ -370,7 +371,7 @@ void DifferenceErrorEstimator::estimate_cell(const dealii::SynchronousIterators<
         }
     }
 
-    *(std::get<1>(cell.iterators)) = value;
+    *(dealii::std_cxx11::get<1>(cell.iterators)) = value;
 }
 
 // ************************************************************************************************************************
@@ -425,7 +426,7 @@ WeightedResidual<dim>::estimate_error (dealii::Vector<float> &error_indicators) 
             face_integrals[cell->face(face_no)] = -1e20;
     error_indicators.reinit (dual_solver->doFHandler.get_tria().n_active_cells());
 
-    typedef std::tuple<dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
+    typedef boost::tuples::tuple<dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Vector<float>::iterator> IteratorTuple;
     dealii::SynchronousIterators<IteratorTuple> cell_and_error_begin(IteratorTuple (dual_solver->doFHandler.begin_active(), error_indicators.begin()));
     dealii::SynchronousIterators<IteratorTuple> cell_and_error_end  (IteratorTuple (dual_solver->doFHandler.end(), error_indicators.begin()));
     dealii::WorkStream::run(cell_and_error_begin,
@@ -460,12 +461,12 @@ WeightedResidual<dim>::estimate_error (dealii::Vector<float> &error_indicators) 
 
 template <int dim>
 void
-WeightedResidual<dim>::estimate_on_one_cell (const dealii::SynchronousIterators<std::tuple<active_cell_iterator, dealii::Vector<float>::iterator> > &cell_and_error,
-                                             WeightedResidual::WeightedResidualScratchData &scratch_data,
-                                             WeightedResidual::WeightedResidualCopyData &copy_data,
-                                             WeightedResidual::FaceIntegrals &face_integrals) const
+WeightedResidual<dim>::estimate_on_one_cell (const dealii::SynchronousIterators<boost::tuples::tuple<active_cell_iterator, dealii::Vector<float>::iterator> > &cell_and_error,
+                                             WeightedResidualScratchData &scratch_data,
+                                             WeightedResidualCopyData &copy_data,
+                                             FaceIntegrals &face_integrals) const
 {
-    active_cell_iterator cell = std::get<0>(cell_and_error.iterators);
+    active_cell_iterator cell = dealii::std_cxx11::get<0>(cell_and_error.iterators);
     integrate_over_cell (cell_and_error,
                          scratch_data.primal_solution,
                          scratch_data.dual_weights,
@@ -500,12 +501,12 @@ WeightedResidual<dim>::estimate_on_one_cell (const dealii::SynchronousIterators<
     }
 }
 template <int dim>
-void WeightedResidual<dim>::integrate_over_cell (const dealii::SynchronousIterators<std::tuple<active_cell_iterator, dealii::Vector<float>::iterator> > &cell_and_error,
+void WeightedResidual<dim>::integrate_over_cell (const dealii::SynchronousIterators<boost::tuples::tuple<active_cell_iterator, dealii::Vector<float>::iterator> > &cell_and_error,
                                                  const dealii::Vector<double> &primal_solution,
                                                  const dealii::Vector<double> &dual_weights,
                                                  CellData &cell_data) const
 {
-    cell_data.hp_fe_values.reinit (std::get<0>(cell_and_error.iterators));
+    cell_data.hp_fe_values.reinit (dealii::std_cxx11::get<0>(cell_and_error.iterators));
     int n_quadrature_points = cell_data.hp_fe_values.get_present_fe_values().n_quadrature_points;
 
     cell_data.rhs_values.resize(n_quadrature_points);
@@ -524,7 +525,7 @@ void WeightedResidual<dim>::integrate_over_cell (const dealii::SynchronousIterat
     for (unsigned int p = 0; p < cell_data.hp_fe_values.get_present_fe_values().n_quadrature_points; ++p)
         sum += ((cell_data.rhs_values[p] + cell_data.cell_laplacians[p]) * cell_data.dual_weights[p] * cell_data.hp_fe_values.get_present_fe_values().JxW(p));
 
-    *(std::get<1>(cell_and_error.iterators)) += sum;
+    *(dealii::std_cxx11::get<1>(cell_and_error.iterators)) += sum;
 }
 template <int dim>
 void WeightedResidual<dim>::integrate_over_regular_face (const active_cell_iterator &cell,
