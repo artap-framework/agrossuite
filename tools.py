@@ -125,8 +125,25 @@ def source_package(version):
 def binary_package():
     call(['dpkg-buildpackage', '-sgpg', '-rfakeroot'])
 
+def standalone_package():
+    from shutil import copytree, ignore_patterns
+
+    dest = 'standalone'
+    # rm dir
+    if (os.path.exists(dest)):
+        shutil.rmtree(dest)
+    # mk dir
+    os.mkdir(dest)
+    # copy binary files
+    shutil.copy('agros2d', dest + '/agros2d')
+    shutil.copy('agros2d_remote', dest + '/agros2d_remote')
+    shutil.copy('agros2d_solver', dest + '/agros2d_solver')
+    shutil.copy('agros_pythonlab', dest + '/agros_pythonlab')
+    shutil.copytree('resources', dest + '/resources')
+    shutil.copytree('libs', dest + '/libs', ignore=ignore_patterns('*.a'))
+
 def callgrind():
-	call(['valgrind --tool=callgrind --smc-check=all-non-file --fn-skip=QMetaObject::activate* --fn-skip=QMetaObject::metacall* --fn-skip=*::qt_metacall* --fn-skip=*::qt_static_metacall* ./agros2d'])	  
+    call(['valgrind --tool=callgrind --smc-check=all-non-file --fn-skip=QMetaObject::activate* --fn-skip=QMetaObject::metacall* --fn-skip=*::qt_metacall* --fn-skip=*::qt_static_metacall* ./agros2d'])	  
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -165,12 +182,15 @@ if __name__ == "__main__":
     pack.add_argument('-v', '--version', nargs='?', default=VERSION, type=float, required=False,
                       help='version of package')
 
+    # stand alone
+    pack = subparsers.add_parser('standalone', help='make standalone install')
+
     # equations
     eqs = subparsers.add_parser('eqs', help='generate equations from modules')
-	
-	  # callgrind
+
+     # callgrind
     cgrind = subparsers.add_parser('callgrind', help='call callgrind')
-	    
+
     args = parser.parse_args()
 
     if (args.command == 'doc'):
@@ -193,6 +213,9 @@ if __name__ == "__main__":
             source_package(args.version)
         if (args.binary):
             binary_package()
+
+    if (args.command == 'standalone'):
+        standalone_package()
 
     if (args.command == 'eqs'):
         equations()
