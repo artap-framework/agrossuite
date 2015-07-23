@@ -94,7 +94,7 @@ void writeMatioVector(dealii::Vector<double> &vec, const QString &name, const QS
 
     matvar_t *matvar = Mat_VarCreate(varName.toStdString().c_str(), MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, data, MAT_F_DONT_COPY_DATA);
 
-    Mat_VarWrite(mat, matvar, MAT_COMPRESSION_NONE); // MAT_COMPRESSION_ZLIB);
+    Mat_VarWrite(mat, matvar, MAT_COMPRESSION_ZLIB);
     Mat_VarFree(matvar);
     Mat_Close(mat);
 
@@ -150,7 +150,7 @@ void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, co
 
     matvar_t *matvar = Mat_VarCreate(varName.toStdString().c_str(), MAT_C_SPARSE, MAT_T_DOUBLE, 2, dims, &sparse, MAT_F_DONT_COPY_DATA);
 
-    Mat_VarWrite(mat, matvar, MAT_COMPRESSION_ZLIB); // MAT_COMPRESSION_NONE MAT_COMPRESSION_ZLIB);
+    Mat_VarWrite(mat, matvar, MAT_COMPRESSION_ZLIB);
     Mat_VarFree(matvar);
     Mat_Close(mat);
 
