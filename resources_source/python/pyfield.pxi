@@ -98,6 +98,7 @@ cdef extern from "../../agros2d-library/pythonlab/pyfield.h":
 
         string filenameMatrix(int timeStep, int adaptivityStep) except +
         string filenameRHS(int timeStep, int adaptivityStep) except +
+        string filenameSLN(int timeStep, int adaptivityStep) except +        
 
 cdef map[string, double] get_parameters_map(parameters):
     cdef map[string, double] parameters_map
@@ -689,15 +690,21 @@ cdef class __Field__:
 
         return {'error' : error, 'dofs' : dofs}
 
-        # filename - matrix
+    # filename - matrix
     def filename_matrix(self, time_step = None, adaptivity_step = None):
         return self.thisptr.filenameMatrix(int(-1 if time_step is None else time_step),
                                            int(-1 if adaptivity_step is None else adaptivity_step)).decode()
 
-        # filename - vector
+    # filename - rhs
     def filename_rhs(self, time_step = None, adaptivity_step = None):
         return self.thisptr.filenameRHS(int(-1 if time_step is None else time_step),
                                         int(-1 if adaptivity_step is None else adaptivity_step)).decode()
+                                        
+    # filename - sln
+    def filename_sln(self, time_step = None, adaptivity_step = None):
+        return self.thisptr.filenameSLN(int(-1 if time_step is None else time_step),
+                                        int(-1 if adaptivity_step is None else adaptivity_step)).decode()
+                                                                                
 __fields__ = {}
 def field(field_id):
     if (not field_id in __fields__):

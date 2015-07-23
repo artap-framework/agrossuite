@@ -172,6 +172,7 @@ class PyField
         // matrix and RHS
         std::string filenameMatrix(int timeStep, int adaptivityStep) const;
         std::string filenameRHS(int timeStep, int adaptivityStep) const;
+        std::string filenameSLN(int timeStep, int adaptivityStep) const;
 
 private:
     FieldInfo *m_fieldInfo;

@@ -377,24 +377,20 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
 
     if (Agros2D::configComputer()->value(Config::Config_LinearSystemSave).toBool())
     {
-        writeMatioVector(rhs, QString("%1/rhs.mat").arg(cacheProblemDir()), "rhs");
-        writeMatioVector(sln, QString("%1/sln.mat").arg(cacheProblemDir()), "sln");
-        writeMatioMatrix(system, QString("%1/matrix.mat").arg(cacheProblemDir()), "matrix");
+        // int timeStep = Agros2D::solutionStore()->lastTimeStep(m_fieldInfo);
+        // int adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(m_fieldInfo);
+        // QString matrixName = QString("%1/%2_%3_%4_matrix.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+        // QString rhsName = QString("%1/%2_%3_%4_rhs.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+        // QString slnName = QString("%1/%2_%3_%4_sln.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
 
-        /*
-        solver->output_matrix(true);
-        solver->output_rhs(true);
-        QString name = QString("%1/%2_%3_%4").arg(cacheProblemDir()).arg(solverName).arg(Agros2D::problem()->actualTimeStep()).arg(adaptivityStep);
-        solver->set_matrix_export_format((Hermes::Algebra::MatrixExportFormat) Agros2D::configComputer()->value(Config::Config_LinearSystemFormat).toInt());
-        solver->set_matrix_filename(QString("%1_Matrix").arg(name).toStdString());
-        solver->set_matrix_varname("matrix");
-        solver->set_matrix_number_format((char *) "%g");
-        solver->set_rhs_export_format((Hermes::Algebra::MatrixExportFormat) Agros2D::configComputer()->value(Config::Config_LinearSystemFormat).toInt());
-        solver->set_rhs_filename(QString("%1_RHS").arg(name).toStdString());
-        solver->set_rhs_number_format((char *) "%g");
-        solver->set_rhs_varname("rhs");
-        */
+        qDebug() << "TODO: add time and adaptive step";
+        QString matrixName = QString("%1/%2_matrix.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
+        QString rhsName = QString("%1/%2_rhs.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
+        QString slnName = QString("%1/%2_sln.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
 
+        writeMatioMatrix(system, matrixName, "matrix");
+        writeMatioVector(rhs, rhsName, "rhs");
+        writeMatioVector(sln, slnName, "sln");
     }
 
     // qDebug() << "solved (" << time.elapsed() << "ms )";

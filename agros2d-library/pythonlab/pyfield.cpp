@@ -781,7 +781,9 @@ std::string PyField::filenameMatrix(int timeStep, int adaptivityStep) const
     timeStep = getTimeStep(timeStep);
     adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-    QString name = QString("%1/%2_%3_%4_Matrix").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+    qDebug() << "TODO: add time and adaptive step";
+    // QString name = QString("%1/%2_%3_%4_matrix.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+    QString name = QString("%1/%2_matrix.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
     if (QFile::exists(name))
         return name.toStdString();
     else
@@ -793,9 +795,26 @@ std::string PyField::filenameRHS(int timeStep, int adaptivityStep) const
     timeStep = getTimeStep(timeStep);
     adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-    QString name = QString("%1/%2_%3_%4_RHS").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+    qDebug() << "TODO: add time and adaptive step";
+    // QString name = QString("%1/%2_%3_%4_RHS").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+    QString name = QString("%1/%2_rhs.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
     if (QFile::exists(name))
         return name.toStdString();
     else
         throw logic_error(QObject::tr("RHS file does not exist.").toStdString());
 }
+
+std::string PyField::filenameSLN(int timeStep, int adaptivityStep) const
+{
+    timeStep = getTimeStep(timeStep);
+    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
+
+    qDebug() << "TODO: add time and adaptive step";
+    // QString name = QString("%1/%2_%3_%4_RHS").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+    QString name = QString("%1/%2_sln.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
+    if (QFile::exists(name))
+        return name.toStdString();
+    else
+        throw logic_error(QObject::tr("RHS file does not exist.").toStdString());
+}
+

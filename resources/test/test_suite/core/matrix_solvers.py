@@ -7,6 +7,9 @@ import numpy as np
 from test_suite.scenario import Agros2DTestCase
 from test_suite.scenario import Agros2DTestResult
 
+# TODO: add more iter methods (PARALUTION and deal.II)
+# TODO: add MUMPS
+
 class TestInternalMatrixSolvers(Agros2DTestCase):
     @classmethod
     def setUpClass(self): 
@@ -19,8 +22,9 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
         agros2d.options.dump_format = "matlab_mat"
         
         # read reference matrix and rhs from file
-        self.reference_mat, self.reference_rhs = self.read_matrix_and_rhs(pythonlab.datadir("/resources/test/test_suite/core/matrix_solvers_matrix.mat"), 
-                                                                          pythonlab.datadir("/resources/test/test_suite/core/matrix_solvers_rhs.mat"))
+        self.reference_mat, self.reference_rhs, self.reference_sln = self.read_system(pythonlab.datadir("/resources/test/test_suite/core/matrix_solvers_matrix.mat"), 
+                                                                                      pythonlab.datadir("/resources/test/test_suite/core/matrix_solvers_rhs.mat"), 
+                                                                                      pythonlab.datadir("/resources/test/test_suite/core/matrix_solvers_sln.mat"))
 
     @classmethod
     def tearDownClass(self):
@@ -78,10 +82,10 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
         agros2d.view.zoom_best_fit()
         problem.solve()
         
-        return electrostatic.filename_matrix(), electrostatic.filename_rhs()
+        return electrostatic.filename_matrix(), electrostatic.filename_rhs(), electrostatic.filename_sln()
     
     @classmethod    
-    def analyse_matrix_and_rhs(self, filename_matrix, filename_rhs):
+    def analyse_system(self, filename_matrix, filename_rhs, filename_sln):
         import pylab as pl
    
         # read matrix and rhs from file
@@ -89,7 +93,9 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
         matrix = mat_object["matrix"]
         rhs_object = sio.loadmat(filename_rhs)
         rhs = rhs_object["rhs"]
-        
+        sln_object = sio.loadmat(filename_sln)
+        sln = sln_object["sln"]
+              
         # size of the matrix
         print(("Matrix size: " + str(len(rhs))))
         print(("Number of nonzeros: " + str(matrix.getnnz()) + " (" + str(round(float(matrix.getnnz()) / (len(rhs)**2) * 100.0, 3)) + " %)"))
@@ -104,47 +110,62 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
         pythonlab.image(fn_pattern)
 
     @classmethod        
-    def read_matrix_and_rhs(self, matrix_filename, rhs_filename):
-        mat_object = sio.loadmat(matrix_filename)
+    def read_system(self, filename_matrix, filename_rhs, filename_sln):
+        mat_object = sio.loadmat(filename_matrix)
         matrix = mat_object["matrix"]
-        rhs_object = sio.loadmat(rhs_filename)
+        rhs_object = sio.loadmat(filename_rhs)
         rhs = rhs_object["rhs"]
+        sln_object = sio.loadmat(filename_sln)
+        sln = sln_object["sln"]
         
-        return matrix, rhs
-
-    #def test_mumps(self):
-        # MUMPS
-        #filename_mumps_matrix, filename_mumps_rhs = self.model("mumps")
-        #mumps_mat, mumps_rhs = self.read_matrix_and_rhs(filename_mumps_matrix, filename_mumps_rhs)
-        #self.assertTrue(np.allclose(self.reference_mat.todense(), mumps_mat.todense(), rtol=1e-15, atol=1e-15), 
-        #                "MUMPS matrix failed.")
-        #self.assertTrue(np.allclose(self.reference_rhs, mumps_rhs, rtol=1e-15, atol=1e-10), 
-        #                "MUMPS rhs failed.")
+        return matrix, rhs, sln
 
     def test_umfpack(self):
         # UMFPACK
-        filename_umfpack_matrix, filename_umfpack_rhs = self.model("umfpack")
-        umfpack_mat, umfpack_rhs = self.read_matrix_and_rhs(filename_umfpack_matrix, filename_umfpack_rhs)
+        filename_umfpack_matrix, filename_umfpack_rhs, filename_umfpack_sln = self.model("umfpack")
+        umfpack_mat, umfpack_rhs, umfpack_sln = self.read_system(filename_umfpack_matrix, 
+                                                                 filename_umfpack_rhs, 
+                                                                 filename_umfpack_sln)
         
         self.assertTrue(np.allclose(self.reference_mat.todense(), umfpack_mat.todense(), rtol=1e-15, atol=1e-15), 
                         "UMFPACK matrix failed.")
         self.assertTrue(np.allclose(self.reference_rhs, umfpack_rhs, rtol=1e-15, atol=1e-10), 
                         "UMFPACK rhs failed.")
+        self.assertTrue(np.allclose(self.reference_sln, umfpack_sln, rtol=1e-15, atol=1e-6), 
+                        "UMFPACK sln failed.")       
 
     def test_paralution_iter(self):
         # PARALUTION - iterative
-        filename_paralution_iterative_matrix, filename_paralution_iterative_rhs = self.model("paralution_iterative")
-        paralution_iterative_mat, paralution_iterative_rhs = self.read_matrix_and_rhs(filename_paralution_iterative_matrix, filename_paralution_iterative_rhs)
-        
+        filename_paralution_iterative_matrix, filename_paralution_iterative_rhs, filename_paralution_iterative_sln = self.model("paralution")
+        paralution_iterative_mat, paralution_iterative_rhs, paralution_iterative_sln = self.read_system(filename_paralution_iterative_matrix, 
+                                                                                                        filename_paralution_iterative_rhs,
+                                                                                                        filename_paralution_iterative_sln)
+                
         self.assertTrue(np.allclose(self.reference_mat.todense(), paralution_iterative_mat.todense(), rtol=1e-15, atol=1e-15), 
                         "PARALUTION iterative matrix failed.")
         self.assertTrue(np.allclose(self.reference_rhs, paralution_iterative_rhs, rtol=1e-15, atol=1e-10), 
                         "PARALUTION iterative rhs failed.")
+        self.assertTrue(np.allclose(self.reference_sln, paralution_iterative_sln, rtol=1e-6), 
+                        "PARALUTION iterative sln failed.")                        
+                        
+    def test_dealii_iter(self):
+        # deal.II - iterative
+        filename_dealii_iterative_matrix, filename_dealii_iterative_rhs, filename_dealii_iterative_sln = self.model("dealii")
+        dealii_iterative_mat, dealii_iterative_rhs, dealii_iterative_sln = self.read_system(filename_dealii_iterative_matrix, 
+                                                                                            filename_dealii_iterative_rhs,
+                                                                                            filename_dealii_iterative_sln)
+                                
+        self.assertTrue(np.allclose(self.reference_mat.todense(), dealii_iterative_mat.todense(), rtol=1e-15, atol=1e-15), 
+                        "dealii iterative matrix failed.")
+        self.assertTrue(np.allclose(self.reference_rhs, dealii_iterative_rhs, rtol=1e-15, atol=1e-10), 
+                        "dealii iterative rhs failed.")
+        self.assertTrue(np.allclose(self.reference_sln, dealii_iterative_sln, rtol=1e-6), 
+                        "dealii iterative sln failed.")                           
                         
     #def test_paralution_amg(self):
         # PARALUTION - amg
         #filename_paralution_amg_matrix, filename_paralution_amg_rhs = self.model("paralution_amg")
-        #paralution_amg_mat, paralution_amg_rhs = self.read_matrix_and_rhs(filename_paralution_amg_matrix, filename_paralution_amg_rhs)
+        #paralution_amg_mat, paralution_amg_rhs = self.read_system(filename_paralution_amg_matrix, filename_paralution_amg_rhs)
         #
         #self.assertTrue(np.allclose(self.reference_mat.todense(), paralution_amg_mat.todense(), rtol=1e-15, atol=1e-15), 
         #                "PARALUTION AMG matrix failed.")
@@ -153,12 +174,16 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
 
     def test_external(self):
         # external
-        filename_external_matrix, filename_external_rhs = self.model("external")
-        external_mat, external_rhs = self.read_matrix_and_rhs(filename_external_matrix, filename_external_rhs)
+        filename_external_matrix, filename_external_rhs, filename_external_sln = self.model("external")
+        external_mat, external_rhs, external_sln = self.read_system(filename_external_matrix, 
+                                                                    filename_external_rhs, 
+                                                                    filename_external_sln)
         
         self.assertTrue(np.allclose(self.reference_mat.todense(), external_mat.todense(), rtol=1e-15, atol=1e-15), 
                         "EXTERNAL matrix failed.")
         self.assertTrue(np.allclose(self.reference_rhs, external_rhs, rtol=1e-15, atol=1e-10), 
+                        "EXTERNAL rhs failed.")        
+        self.assertTrue(np.allclose(self.reference_sln, external_sln, rtol=1e-6), 
                         "EXTERNAL rhs failed.")        
 
 if __name__ == '__main__':        
