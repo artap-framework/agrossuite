@@ -1,7 +1,7 @@
 # SET dependencies directory.
 # If individual dependencies are not all in this common directory, it has to be changed further down.
-SET(DEPENDENCIES_DIR "c:/hpfem/agros-windows-dependencies")
-SET(DEPENDENCIES_DIR_WITH_SLASHES "c:\\hpfem\\agros-windows-dependencies")
+SET(DEPENDENCIES_DIR "c:/Users/VIRTUAL/Documents/agros-windows-dependencies")
+SET(DEPENDENCIES_DIR_WITH_SLASHES "c:\\Users\\VIRTUAL\\Documents\\agros-windows-dependencies")
 
 SET(AGROS_DEBUG YES)
 SET(AGROS_PLUGINS_DEBUG YES)
@@ -13,7 +13,7 @@ IF(${CMAKE_CL_64})
 	SET(CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.3.0_64\\5.3\\msvc2013_64_opengl\\")
 	SET(CMAKE_LIBRARY_PATH "C:\\Program Files (x86)\\Windows Kits\\8.1\\Lib\\winv6.3\\um\\x64" )
 ELSE()
-	SET(CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.3.0\\5.3\\msvc2013_opengl\\")
+	SET(CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.3\\msvc2012_opengl\\")
 	SET(CMAKE_LIBRARY_PATH "C:\\Program Files (x86)\\Windows Kits\\8.1\\Lib\\winv6.3\\um\\x86" )
 ENDIF()
 
@@ -51,7 +51,7 @@ SET(DEAL_II_COMPONENT_MESH_CONVERTER NO)
 SET(DEAL_II_FORCE_BUNDLED_BOOST YES)
 SET(DEAL_II_WITH_ARPACK NO)
 SET(DEAL_II_WITH_BZIP2 NO)
-SET(DEAL_II_WITH_CXX11 YES)
+SET(DEAL_II_WITH_CXX11 NO)
 SET(DEAL_II_WITH_LAPACK YES)
 SET(DEAL_II_WITH_METIS NO)
 SET(DEAL_II_WITH_MPI NO)
