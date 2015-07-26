@@ -276,14 +276,14 @@ QWidget *FieldWidget::createSolverWidget()
 
     QGridLayout *layoutSolverDamping = new QGridLayout();
 
-    layoutSolverDamping->addWidget(new QLabel(tr("Damping type:")), 1, 0);
-    layoutSolverDamping->addWidget(cmbNonlinearDampingType, 1, 1);
-    layoutSolverDamping->addWidget(new QLabel(tr("Factor:")), 1, 2);
-    layoutSolverDamping->addWidget(txtNonlinearDampingCoeff, 1, 3);
-    layoutSolverDamping->addWidget(new QLabel(tr("Min. residual ratio for factor decrease:")), 2, 0, 1, 3);
-    layoutSolverDamping->addWidget(txtNonlinearDampingRatioForFactorDecrease, 2, 3);
-    layoutSolverDamping->addWidget(new QLabel(tr("Min. steps for factor increase:")), 3, 0, 1, 3);
-    layoutSolverDamping->addWidget(txtNonlinearDampingStepsForFactorIncrease, 3, 3);
+    layoutSolverDamping->addWidget(new QLabel(tr("Damping type:")), 0, 0);
+    layoutSolverDamping->addWidget(cmbNonlinearDampingType, 0, 1);
+    layoutSolverDamping->addWidget(new QLabel(tr("Factor:")), 1, 0);
+    layoutSolverDamping->addWidget(txtNonlinearDampingCoeff, 1, 1);
+    layoutSolverDamping->addWidget(new QLabel(tr("Min. residual ratio for factor decrease:")), 0, 2);
+    layoutSolverDamping->addWidget(txtNonlinearDampingRatioForFactorDecrease, 0, 3);
+    layoutSolverDamping->addWidget(new QLabel(tr("Min. steps for factor increase:")), 1, 2);
+    layoutSolverDamping->addWidget(txtNonlinearDampingStepsForFactorIncrease, 1, 3);
 
     QGroupBox *grpSolverDamping = new QGroupBox(tr("Damping"));
     grpSolverDamping->setLayout(layoutSolverDamping);
@@ -295,23 +295,17 @@ QWidget *FieldWidget::createSolverWidget()
     txtNewtonMaximumStepsWithReusedJacobian->setMinimum(0);
     txtNewtonMaximumStepsWithReusedJacobian->setMaximum(100);
 
-    QGridLayout *layoutNewtonSolverReuse = new QGridLayout();
-
-    layoutNewtonSolverReuse->addWidget(chkNewtonReuseJacobian, 1, 0);
-    layoutNewtonSolverReuse->addWidget(new QLabel(tr("Max. residual ratio for Jacobian reuse:")), 2, 0);
-    layoutNewtonSolverReuse->addWidget(txtNewtonSufficientImprovementFactorForJacobianReuse, 2, 1);
-    layoutNewtonSolverReuse->addWidget(new QLabel(tr("Max. steps with the same Jacobian:")), 3, 0);
-    layoutNewtonSolverReuse->addWidget(txtNewtonMaximumStepsWithReusedJacobian, 3, 1);
-
-    QGroupBox *grpNewtonSolverReuse = new QGroupBox(tr("Jacobian reuse"));
-    grpNewtonSolverReuse->setLayout(layoutNewtonSolverReuse);
-
     // Newton's solver
-    QGridLayout *layoutNewtonSolver = new QGridLayout();
-    layoutNewtonSolver->addWidget(grpNewtonSolverReuse, 3, 0, 1, 2);
+    QGridLayout *layoutNewtonSolverReuse = new QGridLayout();
+    layoutNewtonSolverReuse->addWidget(chkNewtonReuseJacobian, 0, 0);
+    layoutNewtonSolverReuse->addWidget(new QLabel(tr("Max. residual ratio for Jacobian reuse:")), 1, 0);
+    layoutNewtonSolverReuse->addWidget(txtNewtonSufficientImprovementFactorForJacobianReuse, 1, 1);
+    layoutNewtonSolverReuse->addWidget(new QLabel(tr("Max. steps with the same Jacobian:")), 2, 0);
+    layoutNewtonSolverReuse->addWidget(txtNewtonMaximumStepsWithReusedJacobian, 2, 1);
+    layoutNewtonSolverReuse->setRowStretch(50, 1);
 
     QWidget *widgetNewtonSolver = new QWidget(this);
-    widgetNewtonSolver->setLayout(layoutNewtonSolver);
+    widgetNewtonSolver->setLayout(layoutNewtonSolverReuse);
 
     // Picard's solver
     chkPicardAndersonAcceleration = new QCheckBox(tr("Use Anderson acceleration"));

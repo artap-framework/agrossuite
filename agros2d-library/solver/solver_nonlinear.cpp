@@ -143,6 +143,19 @@ void AssembleNonlinear::solveProblemNonLinearPicard()
     double lastRelChangeSol = 100.0;
     dealii::Vector<double> solutionNonlinearPrevious(doFHandler.n_dofs());
 
+    // last solution (if exists - adaptivity)    
+    /*
+    FieldSolutionID solutionID(m_fieldInfo,
+                               Agros2D::solutionStore()->lastTimeStep(m_fieldInfo),
+                               Agros2D::solutionStore()->lastAdaptiveStep(m_fieldInfo));
+
+    if (Agros2D::solutionStore()->contains(solutionID))
+    {
+        MultiArray lastSolution = Agros2D::solutionStore()->multiArray(solutionID);
+        solutionNonlinearPrevious = lastSolution.solution();
+    }
+    */
+
     double dampingFactor = (m_fieldInfo->value(FieldInfo::NonlinearDampingType) == DampingType_Off ? 1.0 : m_fieldInfo->value(FieldInfo::NonlinearDampingCoeff).toDouble());
     int dampingSuccessfulSteps = 0;
 

@@ -1,4 +1,3 @@
-hermes
 *.o
 *.a
 moc_*
@@ -7,7 +6,6 @@ qtc-*
 Makefile*
 *~
 include/*
-lib/*
 configure-stamp
 *.anh
 *.log
@@ -35,8 +33,7 @@ doc/doxygen
 *.exe
 pthreadGC2.dll
 mingwm10.dll
-src/python/agros2d.c
-resources_source/python/agros2d.c
+resources_source/python/agros2d.cpp
 src/hermes2d/weakform/*
 src/hermes2d/weakform_factory.h
 data/scripts/test/jac.txt
@@ -44,10 +41,6 @@ data/scripts/test/test_acoustic_planar.py.orig
 jac.txt
 resources/couplings/.project
 resources_source/python/agros2d.cpp
-src/mainwindow.cpp.BACKUP.9065.cpp
-src/mainwindow.cpp.BASE.9065.cpp
-src/mainwindow.cpp.LOCAL.9065.cpp
-src/mainwindow.cpp.REMOTE.9065.cpp
 tmp
 *.obj
 *.dll
@@ -70,6 +63,7 @@ agros2d_pythonlab
 agros2d_solver
 agros2d_remote
 agros2d_pythonlab
+solver_external
 libs/
 plugins/
 resources_source/python/pythonlab.cpp
@@ -84,8 +78,6 @@ tcl
 *.edge
 *.gen
 .project
-resources_source/doc/source/modules/rf_te/
-resources_source/doc/source/modules/rf_tm/
 resources_source/resources.rc
 *.depend
 *.stamp
@@ -117,4 +109,8 @@ CMake.vars
 data/
 cmake_options.texi
 resources/python/jedi/evaluate/compiled/
-agros_grid
+3rdparty/paralution/build/
+DartConfiguration.tcl
+Testing/
+install_manifest.txt
+standalone

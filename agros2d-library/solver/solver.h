@@ -150,10 +150,12 @@ public:
     void solveProblem();
 
     // adaptivity
-    void solveAdaptivity(shared_ptr<SolverDeal::AssembleBase> primal,
-                         shared_ptr<SolverDeal::AssembleBase> dual = nullptr);
+    void solveAdaptivity();
+
+    // steady state
+    void solveSteadyState();
     // transient
-    void solveTransient(shared_ptr<SolverDeal::AssembleBase> primal);
+    void solveTransient();
     inline void set_time(const double new_time) { m_time = new_time; }
     inline double get_time() const { return m_time; }
 
