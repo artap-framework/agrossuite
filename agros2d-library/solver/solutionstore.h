@@ -22,6 +22,10 @@
 
 #include "solutiontypes.h"
 
+#undef signals
+#include <deal.II/hp/fe_collection.h>
+#define signals public
+
 class AGROS_LIBRARY_API SolutionStore
 {
 public:

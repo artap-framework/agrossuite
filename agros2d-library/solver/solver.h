@@ -169,9 +169,6 @@ public:
     inline MultiArray &couplingSource(const QString &fieldID) { return m_couplingSources[fieldID]; }
     inline void setCouplingSource(const QString &fieldID, MultiArray sourceSolution) { m_couplingSources[fieldID] = sourceSolution; }
 
-    static dealii::hp::FECollection<2> *createFECollection(const FieldInfo *fieldInfo);
-    static dealii::hp::MappingCollection<2> *createMappingCollection(const FieldInfo *fieldInfo);
-
     // assemble base class
     virtual shared_ptr<SolverDeal::AssembleBase> createAssembleBase() = 0;
 

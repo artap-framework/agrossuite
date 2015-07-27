@@ -64,8 +64,6 @@ class Material;
 class SceneMaterial;
 class SceneMaterialDialog;
 
-class FieldBlock;
-
 struct SceneViewSettings;
 template <typename Scalar> struct SolutionArray;
 
@@ -73,7 +71,6 @@ class ProgressItemSolve;
 
 class FieldInfo;
 class CouplingInfo;
-
 
 namespace Module
 {

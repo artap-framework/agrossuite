@@ -96,6 +96,15 @@ FieldSelectDialog::FieldSelectDialog(QList<QString> fields, QWidget *parent) : Q
         lstFields->setCurrentRow(0);
         doItemSelected(lstFields->currentItem());
     }
+
+    int w = sizeHint().width();
+    int h = 1.0/2.0 * QApplication::desktop()->screenGeometry().height();
+
+    setMinimumSize(w, h);
+    setMaximumSize(w, h);
+
+    move(QApplication::activeWindow()->pos().x() + (QApplication::activeWindow()->width() - width()) / 2.0,
+         QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
 }
 
 void FieldSelectDialog::doAccept()
@@ -231,12 +240,6 @@ void FieldWidget::createContent()
     fillComboBox();
 
     setLayout(layoutProblem);
-
-    setMinimumSize(sizeHint());
-    setMaximumSize(sizeHint());
-
-    move(QApplication::activeWindow()->pos().x() + (QApplication::activeWindow()->width() - width()) / 2.0,
-         QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
 }
 
 QWidget *FieldWidget::createSolverWidget()
@@ -859,16 +862,15 @@ FieldDialog::FieldDialog(FieldInfo *fieldInfo, QWidget *parent) : QDialog(parent
 
     setLayout(layout);
 
-    // setMaximumSize(sizeHint());
+    setMinimumSize(sizeHint());
+    setMaximumSize(sizeHint());
 
-    QSettings settings;
-    restoreGeometry(settings.value("FieldDialog/Geometry", saveGeometry()).toByteArray());
+    move(QApplication::activeWindow()->pos().x() + (QApplication::activeWindow()->width() - width()) / 2.0,
+         QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
 }
 
 FieldDialog::~FieldDialog()
 {
-    QSettings settings;
-    settings.setValue("FieldDialog/Geometry", saveGeometry());
 }
 
 void FieldDialog::doAccept()

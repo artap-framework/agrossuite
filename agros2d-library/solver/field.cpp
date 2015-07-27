@@ -33,29 +33,6 @@
 
 #include "deal.II/grid/grid_tools.h"
 
-FieldBlock::FieldBlock(FieldInfo *fieldInfo) : m_fieldInfo(fieldInfo)
-{
-
-}
-
-// Field::~Field()
-// {
-//     qDebug() << "Field::~Field()";
-// }
-
-bool FieldBlock::solveInitVariables()
-{
-    if (!Agros2D::scene()->boundaries->filter(m_fieldInfo).evaluateAllVariables())
-        return false;
-
-    if (!Agros2D::scene()->materials->filter(m_fieldInfo).evaluateAllVariables())
-        return false;
-
-    return true;
-}
-
-int FieldInfo::numberIdNext = 0;
-
 FieldInfo::FieldInfo(QString fieldId)
     : m_plugin(NULL), m_numberOfSolutions(0), m_hermesMarkerToAgrosLabelConversion(nullptr), m_labelAreas(nullptr)
 {    
@@ -82,15 +59,12 @@ FieldInfo::FieldInfo(QString fieldId)
 
     // default analysis
     setAnalysisType(analyses().begin().key());
-
-    m_numberId = numberIdNext++;
 }
 
 FieldInfo::~FieldInfo()
 {
     delete m_plugin;
     deleteValuePointerTable();
-    numberIdNext--;
 }
 
 void FieldInfo::deleteValuePointerTable()

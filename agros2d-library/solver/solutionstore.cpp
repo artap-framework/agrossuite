@@ -96,7 +96,7 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
 
         // dof handler
         dealii::hp::DoFHandler<2> doFHandler(triangulation);
-        doFHandler.distribute_dofs(*SolverDeal::createFECollection(solutionID.fieldInfo));
+        doFHandler.distribute_dofs(*ProblemSolver::feCollection(solutionID.fieldInfo));
         QString fnDoF = QString("%1.dof").arg(baseFN);
         std::ifstream ifsDoF(fnDoF.toStdString());
         boost::archive::binary_iarchive sbiDoF(ifsDoF);
@@ -110,7 +110,7 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
         solution.load(sbiSol, 0);
 
         // new multisolution
-        MultiArray msa(&doFHandler, solution);
+        MultiArray msa(&triangulation, &doFHandler, solution);
 
         insertMultiSolutionToCache(solutionID, msa);        
     }
@@ -164,13 +164,8 @@ void SolutionStore::addSolution(FieldSolutionID solutionID, MultiArray multiSolu
     // insert to the cache
     insertMultiSolutionToCache(solutionID, multiSolution);
 
-    //printDebugCacheStatus();
-
     // save run time details to the file
     saveRunTimeDetails();
-
-    // save to the memory info (for debug purposes)
-    // m_memoryInfos[solutionID] = tr1::shared_ptr<MemoryInfo>(new MemoryInfo(multiSolution));
 }
 
 void SolutionStore::removeSolution(FieldSolutionID solutionID, bool saveRunTime)
@@ -256,14 +251,14 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, Multi
     multiSolution.doFHandler()->save(sboDoF, 0);
     // new handler
     dealii::hp::DoFHandler<2> *doFHandler = new dealii::hp::DoFHandler<2>(*triangulation);
-    doFHandler->distribute_dofs(multiSolution.doFHandler()->get_fe());
+    doFHandler->distribute_dofs(*ProblemSolver::feCollection(solutionID.fieldInfo));
     // load
     boost::archive::binary_iarchive sbiDoF(fsDoF);
     doFHandler->load(sbiDoF, 0);
     // cout << doFHandler->memory_consumption() << endl;
 
     // new multisolution
-    MultiArray multiSolutionCopy(doFHandler, multiSolution.solution());
+    MultiArray multiSolutionCopy(triangulation, doFHandler, multiSolution.solution());
 
     assert(!m_multiSolutionDealCache.contains(solutionID));
 

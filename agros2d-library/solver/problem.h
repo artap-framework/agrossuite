@@ -12,7 +12,6 @@ class ProblemSolver;
 class FieldInfo;
 class CouplingInfo;
 
-class FieldBlock;
 class Problem;
 class ProblemConfig;
 class ProblemSetting;

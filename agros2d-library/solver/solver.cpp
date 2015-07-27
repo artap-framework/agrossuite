@@ -115,59 +115,6 @@ const int MAX_NUM_TRANSIENT_ADAPTIVE_ITERS = 20;
 tbb::mutex createCache;
 tbb::mutex resizeCache;
 
-dealii::hp::FECollection<2> *SolverDeal::createFECollection(const FieldInfo *fieldInfo)
-{
-    dealii::hp::FECollection<2> *feCollection = new dealii::hp::FECollection<2>();
-
-    // qDebug() << fieldInfo->name();
-    QMap<int, Module::Space> spaces = fieldInfo->spaces();
-
-    // first position of feCollection, quadratureFormulas and quadratureFormulasFace belongs to NONE space
-    // this will be used for implementation of different meshes
-    std::vector<const dealii::FiniteElement<2> *> fes;
-    std::vector<unsigned int> multiplicities;
-    foreach (int key, spaces.keys())
-    {
-        fes.push_back(new dealii::FE_Nothing<2>());
-        multiplicities.push_back(1);
-    }
-    feCollection->push_back(dealii::FESystem<2>(fes, multiplicities));
-
-    // fe collections
-    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER + 1; degree++)
-    {
-        std::vector<const dealii::FiniteElement<2> *> fes;
-        std::vector<unsigned int> multiplicities;
-
-        foreach (int key, spaces.keys())
-        {
-            Module::Space space = spaces[key];
-            if (space.type() == "h1")
-                fes.push_back(new dealii::FE_Q<2>(degree + space.orderAdjust()));
-            else if (spaces.value(key).type() == "l2")
-                fes.push_back(new dealii::FE_Q<2>(degree + space.orderAdjust())); // fes.push_back(new dealii::FE_DGP<2>(degree + space.orderAdjust()));
-
-            multiplicities.push_back(1);
-        }
-
-        feCollection->push_back(dealii::FESystem<2>(fes, multiplicities));
-    }
-
-    return feCollection;
-}
-
-dealii::hp::MappingCollection<2> *SolverDeal::createMappingCollection(const FieldInfo *fieldInfo)
-{
-    dealii::hp::MappingCollection<2> *mappingCollection = new dealii::hp::MappingCollection<2>();
-
-    for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER + 1; degree++)
-    {
-        mappingCollection->push_back(dealii::MappingQ<2>(1, true));
-    }
-
-    return mappingCollection;
-}
-
 SolverDeal::AssemblyScratchData::AssemblyScratchData(const dealii::hp::FECollection<2> &feCollection,
                                                      const dealii::hp::MappingCollection<2> &mappingCollection,
                                                      const dealii::hp::QCollection<2> &quadratureFormulas,
@@ -445,9 +392,9 @@ void SolverDeal::AssembleBase::solveProblemLinear()
 SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     : m_fieldInfo(fieldInfo),
       // fe collection
-      m_feCollection(createFECollection(m_fieldInfo)),
+      m_feCollection(ProblemSolver::feCollection(m_fieldInfo)),
       // mapping collection
-      m_mappingCollection(SolverDeal::createMappingCollection(m_fieldInfo)),
+      m_mappingCollection(ProblemSolver::mappingCollection(m_fieldInfo)),
       // time
       m_time(0.0)
 {
@@ -464,8 +411,7 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
 
 SolverDeal::~SolverDeal()
 {
-    delete m_mappingCollection;
-    delete m_feCollection;
+    m_assembleCache.clear();
 }
 
 void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> primal,

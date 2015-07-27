@@ -94,14 +94,18 @@ ExamplesDialog::ExamplesDialog(QWidget *parent) : QDialog(parent)
 
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 
-    QSettings settings;
-    restoreGeometry(settings.value("ExamplesDialog/Geometry", saveGeometry()).toByteArray());
+    int w = 3.0/4.0 * QApplication::desktop()->screenGeometry().width();
+    int h = 3.0/4.0 * QApplication::desktop()->screenGeometry().height();
+
+    setMinimumSize(w, h);
+    setMaximumSize(w, h);
+
+    move(QApplication::activeWindow()->pos().x() + (QApplication::activeWindow()->width() - width()) / 2.0,
+         QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
 }
 
 ExamplesDialog::~ExamplesDialog()
 {
-    QSettings settings;
-    settings.setValue("ExamplesDialog/Geometry", saveGeometry());
 }
 
 void ExamplesDialog::doAccept()

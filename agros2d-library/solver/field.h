@@ -60,7 +60,6 @@ public:
     inline PluginInterface *plugin() const { assert(m_plugin); return m_plugin; }
 
     QString fieldId() const { return m_fieldId; }
-    inline int numberId() const { return m_numberId; }
 
     enum Type
     {
@@ -284,30 +283,10 @@ private:
     int* m_hermesMarkerToAgrosLabelConversion;
     double* m_labelAreas;
     double m_frequency;
-
-    // used to assign numbers to individual fields;
-    static int numberIdNext;
-    int m_numberId;
 };
 
 XMLModule::linearity_option findLinearityOption(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType);
 
 ostream& operator<<(ostream& output, FieldInfo& id);
-
-class FieldBlock
-{
-public:
-    FieldBlock(FieldInfo* fieldInfo);
-    bool solveInitVariables();
-
-    FieldInfo* fieldInfo() { return m_fieldInfo; }
-
-    void addCouplingInfo(CouplingInfo *couplingInfo) { m_couplingInfos.append(couplingInfo); }
-    QList<CouplingInfo* > couplingInfos() { return m_couplingInfos; }
-
-private:
-    QList<CouplingInfo* > m_couplingInfos;
-    FieldInfo* m_fieldInfo;
-};
 
 #endif // FIELD_H

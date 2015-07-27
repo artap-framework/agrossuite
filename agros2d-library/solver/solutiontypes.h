@@ -24,6 +24,7 @@
 #include <deal.II/dofs/dof_handler.h>
 #include <deal.II/hp/dof_handler.h>
 #include <deal.II/lac/vector.h>
+#include <deal.II/grid/tria.h>
 #define signals public
 
 #include "util.h"
@@ -40,19 +41,25 @@ class AGROS_LIBRARY_API MultiArray
 public:
     MultiArray();
     MultiArray(dealii::hp::DoFHandler<2> *doFHandler,
+               dealii::Vector<double> &solution);
+    MultiArray(dealii::Triangulation<2> *triangulation,
+               dealii::hp::DoFHandler<2> *doFHandler,
                dealii::Vector<double> &solution)
-        : m_doFHandler(doFHandler), m_solution(solution) {}
+        : m_triangulation(triangulation),
+          m_doFHandler(doFHandler),
+          m_solution(solution) {}
     ~MultiArray();
 
     void clear();
 
     // add next component
-    void append(dealii::hp::DoFHandler<2> *doFHandler, dealii::Vector<double> &solution);
+    void append(dealii::Triangulation<2> *triangulation, dealii::hp::DoFHandler<2> *doFHandler, dealii::Vector<double> &solution);
 
     dealii::hp::DoFHandler<2> *doFHandler() { return m_doFHandler; }
     dealii::Vector<double> &solution() { return m_solution; }
 
 private:
+    dealii::Triangulation<2> *m_triangulation; // must be deleted
     dealii::hp::DoFHandler<2> *m_doFHandler;
     dealii::Vector<double> m_solution;
 };
