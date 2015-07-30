@@ -280,8 +280,8 @@ dealii::hp::FECollection<2> *ProblemSolver::feCollection(const FieldInfo *fieldI
         }
         feCollection->push_back(dealii::FESystem<2>(fes, multiplicities));
 
-        // fe collections
-        for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER + 1; degree++)
+        // fe collections        
+        for (unsigned int degree = 1; degree <= DEALII_MAX_ORDER + 1; degree++)
         {
             std::vector<const dealii::FiniteElement<2> *> fes;
             std::vector<unsigned int> multiplicities;
@@ -317,7 +317,7 @@ dealii::hp::MappingCollection<2> *ProblemSolver::mappingCollection(const FieldIn
     {
         dealii::hp::MappingCollection<2> *mappingCollection = new dealii::hp::MappingCollection<2>();
 
-        for (unsigned int degree = fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER + 1; degree++)
+        for (unsigned int degree = 1; degree <= DEALII_MAX_ORDER + 1; degree++)
             mappingCollection->push_back(dealii::MappingQ<2>(1, true));
 
         m_mappingCollectionCache[fieldInfo->fieldId()] = mappingCollection;

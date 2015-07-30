@@ -22,7 +22,8 @@ class TestAdaptivityElectrostatic(Agros2DTestCase):
         self.electrostatic.polynomial_order = 1
         
         self.electrostatic.adaptivity_type = "hp-adaptivity"
-        self.electrostatic.adaptivity_parameters['tolerance'] = 0.4
+        self.electrostatic.adaptivity_parameters['tolerance'] = 0.5
+        self.electrostatic.adaptivity_parameters['strategy_hp'] = "alternate"
         self.electrostatic.solver = "linear"
         
         # boundaries
@@ -52,11 +53,11 @@ class TestAdaptivityElectrostatic(Agros2DTestCase):
 
     def test_values(self):                
         # values from Comsol
-        local_values = self.electrostatic.local_values(3.278e-2, 4.624e-1)
-        self.value_test("Electrostatic potential", local_values["V"], 547.69)
-        self.value_test("Electric field - r", local_values["Er"], 647.34)
-        self.value_test("Electric field - z", local_values["Ez"], -3083.9)
-        self.value_test("Energy density", local_values["we"], 4.3959E-5)        
+        local_values = self.electrostatic.local_values(5e-2, 5e-1)
+        self.value_test("Electrostatic potential", local_values["V"], 648.638)
+        self.value_test("Electric field - r", local_values["Er"], 1913.123)
+        self.value_test("Electric field - z", local_values["Ez"], -3244.191)
+        self.value_test("Energy density", local_values["we"], 6.279E-5)        
 			
 class TestAdaptivityAcoustic(Agros2DTestCase):
     def setUp(self):  
@@ -448,8 +449,8 @@ if __name__ == '__main__':
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElectrostatic))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityAcoustic))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElectrostatic))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityAcoustic))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityElasticityBracket))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityMagneticProfileConductor))    
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAdaptivityRF_TE))  

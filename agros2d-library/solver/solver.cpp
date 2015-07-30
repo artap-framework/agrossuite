@@ -223,7 +223,8 @@ SolverDeal::AssembleBase::AssembleBase(SolverDeal *solverDeal) :
         //std::cout << "material id " << cell->material_id() - 1 << std::endl;
         if (Agros2D::scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo) != Agros2D::scene()->materials->getNone(m_fieldInfo))
         {
-            cell->set_active_fe_index(1);
+            // set default polynomial order
+            cell->set_active_fe_index(m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt());
         }
     }
 }
@@ -402,11 +403,11 @@ SolverDeal::SolverDeal(const FieldInfo *fieldInfo)
     m_quadratureFormulasFace.push_back(dealii::QGauss<2 - 1>(1));
 
     // Gauss quadrature
-    for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER + 1; degree++)
+    for (unsigned int degree = 1; degree <= DEALII_MAX_ORDER + 1; degree++)
     {
         m_quadratureFormulas.push_back(dealii::QGauss<2>(degree + QUADRATURE_ORDER_INCREASE));
         m_quadratureFormulasFace.push_back(dealii::QGauss<2-1>(degree + QUADRATURE_ORDER_INCREASE));
-    }
+    }    
 }
 
 SolverDeal::~SolverDeal()
@@ -550,7 +551,10 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                 // remove h adaptivity flag
                 cell->clear_refine_flag();
 
-                if ((maxPIncrease == -1) || (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease)
+                std::cout << "refine : " << cell->active() << " : " << cell->active_fe_index();
+                if ((maxPIncrease == -1) ||
+                        (cell->active_fe_index() <= m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) ||
+                        ((cell->active_fe_index() > m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) && (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease))
                 {
                     if (cell->active_fe_index() + 1 < primal->doFHandler.get_fe().size())
                     {
@@ -558,6 +562,20 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                         if (cell->active_fe_index() < DEALII_MAX_ORDER - 1)
                             cell->set_active_fe_index(cell->active_fe_index() + 1);
                     }
+                }
+            }
+
+            if (cell->coarsen_flag_set())
+            {
+                // remove h adaptivity flag
+                cell->clear_coarsen_flag();
+
+                std::cout << "coarse : " << cell->active() << " : " << cell->active_fe_index() << " : "
+                          << (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) << std::endl;
+
+                if ((cell->active_fe_index() > 1))
+                {
+                    cell->set_active_fe_index(cell->active_fe_index() - 1);
                 }
             }
         }
@@ -600,7 +618,9 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
             dealii::hp::DoFHandler<2>::active_cell_iterator cell = primal->doFHandler.begin_active(), endc = primal->doFHandler.end();
             for (unsigned int index = 0; cell != endc; ++cell, ++index)
             {
-                if ((maxPIncrease == -1) || (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease)
+                if ((maxPIncrease == -1) ||
+                        (cell->active_fe_index() <= m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) ||
+                        ((cell->active_fe_index() > m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) && (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease))
                 {
                     if (cell->refine_flag_set() && (smoothnessIndicators(index) > threshold_smoothness)
                             && (cell->active_fe_index() + 1 < primal->doFHandler.get_fe().size()))
@@ -610,6 +630,17 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                         // increase order
                         if (cell->active_fe_index() < DEALII_MAX_ORDER)
                             cell->set_active_fe_index(cell->active_fe_index() + 1);
+                    }
+                }
+
+                if (cell->coarsen_flag_set())
+                {
+                    // remove h adaptivity flag
+                    cell->clear_coarsen_flag();
+
+                    if ((cell->active_fe_index() > 1))
+                    {
+                        cell->set_active_fe_index(cell->active_fe_index() - 1);
                     }
                 }
             }
@@ -629,7 +660,9 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                     // remove h adaptivity flag
                     cell->clear_refine_flag();
 
-                    if ((maxPIncrease == -1) || (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease)
+                    if ((maxPIncrease == -1) ||
+                            (cell->active_fe_index() <= m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) ||
+                            ((cell->active_fe_index() > m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) && (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease))
                     {
                         if (cell->active_fe_index() + 1 < primal->doFHandler.get_fe().size())
                         {
@@ -639,12 +672,25 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                         }
                     }
                 }
+
+                if (cell->coarsen_flag_set())
+                {
+                    // remove h adaptivity flag
+                    cell->clear_coarsen_flag();
+
+                    if ((cell->active_fe_index() > 1))
+                    {
+                        cell->set_active_fe_index(cell->active_fe_index() - 1);
+                    }
+                }
             }
         }
             break;
         default:
             assert(0);
         }
+
+
     }
 
     // maximum number of refinements
@@ -717,7 +763,7 @@ void SolverDeal::solveSteadyState()
                 Agros2D::problem()->calculationMesh().prepare_coarsening_and_refinement();
                 solutionTrans.prepare_for_coarsening_and_refinement(previousSolution);
 
-                prepareGridRefinement(primal, dual);
+                prepareGridRefinement(primal, dual, 2, 2);
 
                 // execute transfer solution
                 Agros2D::problem()->calculationMesh().execute_coarsening_and_refinement();
@@ -1044,17 +1090,6 @@ void SolverDeal::solveTransient()
                     solutionTrans.prepare_for_coarsening_and_refinement(previousSolutions);
 
                     prepareGridRefinement(primal, nullptr, 2, 2);
-
-                    /*
-                    int min_grid_level = 1;
-                    int max_grid_level = 2;
-                    if (m_triangulation->n_levels() > max_grid_level)
-                        for (dealii::Triangulation<2>::active_cell_iterator cell = m_triangulation->begin_active(max_grid_level); cell != m_triangulation->end(); ++cell)
-                            cell->clear_refine_flag();
-                    for (dealii::Triangulation<2>::active_cell_iterator cell = m_triangulation->begin_active(min_grid_level); cell != m_triangulation->end_active(min_grid_level); ++cell)
-                        cell->clear_coarsen_flag();
-
-                    */
 
                     // execute transfer solution
                     Agros2D::problem()->calculationMesh().execute_coarsening_and_refinement();
