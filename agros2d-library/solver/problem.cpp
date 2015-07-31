@@ -47,7 +47,7 @@
 
 #include "mesh/meshgenerator_triangle.h"
 #include "mesh/meshgenerator_cubit.h"
-// #include "mesh/meshgenerator_gmsh.h"
+#include "mesh/meshgenerator_gmsh.h"
 // #include "mesh/meshgenerator_netgen.h"
 
 CalculationThread::CalculationThread() : QThread()
@@ -350,10 +350,10 @@ bool Problem::meshAction(bool emitMeshed)
         meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangle());
         break;
         // case MeshType_GMSH_Triangle:
-    // case MeshType_GMSH_Quad:
-    // case MeshType_GMSH_QuadDelaunay_Experimental:
-        // meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorGMSH());
-        // break;
+    case MeshType_GMSH_Quad:
+    case MeshType_GMSH_QuadDelaunay_Experimental:
+        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorGMSH());
+        break;
         // case MeshType_NETGEN_Triangle:
         // case MeshType_NETGEN_QuadDominated:
         //     meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorNetgen());
@@ -412,7 +412,7 @@ double Problem::timeStepToTotalTime(int timeStepIndex) const
 
 void Problem::setActualTimeStepLength(double timeStep)
 {
-    m_timeStepLengths.append(timeStep);    
+    m_timeStepLengths.append(timeStep);
 }
 
 void Problem::removeLastTimeStepLength()

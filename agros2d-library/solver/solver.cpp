@@ -551,7 +551,6 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                 // remove h adaptivity flag
                 cell->clear_refine_flag();
 
-                std::cout << "refine : " << cell->active() << " : " << cell->active_fe_index();
                 if ((maxPIncrease == -1) ||
                         (cell->active_fe_index() <= m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) ||
                         ((cell->active_fe_index() > m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) && (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) <= maxPIncrease))
@@ -569,9 +568,6 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
             {
                 // remove h adaptivity flag
                 cell->clear_coarsen_flag();
-
-                std::cout << "coarse : " << cell->active() << " : " << cell->active_fe_index() << " : "
-                          << (cell->active_fe_index() - m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()) << std::endl;
 
                 if ((cell->active_fe_index() > 1))
                 {
@@ -701,7 +697,9 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
         {
             // remove h adaptivity flag
             if (cell->level() > maxHIncrease)
+            {
                 cell->clear_refine_flag();
+            }
         }
     }
 }

@@ -40,6 +40,9 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
+#define GMSH_BINARY
+
+#ifndef GMSH_BINARY
 #include "Gmsh.h"
 #include "Context.h"
 #include "GModel.h"
@@ -48,6 +51,7 @@
 #include "GEdgeLoop.h"
 #include "GmshDefines.h"
 #include "MElement.h"
+#endif
 
 MeshGeneratorGMSH::MeshGeneratorGMSH() : MeshGenerator()
 {
@@ -58,30 +62,43 @@ bool MeshGeneratorGMSH::mesh()
     m_isError = !prepare();
 
     // create gmsh files
-    // if (writeToGmshInternal()) // internal
-    if (writeToGmshMeshFile()) // file
+    if (writeToGmshMeshFile())
     {
-        // convert gmsh mesh to hermes mesh
-        // if (!readFromGmshInternal()) // internal
-        if (!readFromGmshMeshFile()) // file
-        {
-            m_isError = true;
-        }
+        // exec GMSH
+        m_process = QSharedPointer<QProcess>(new QProcess());
+        m_process.data()->setStandardOutputFile(tempProblemFileName() + ".gmsh.out");
+        m_process.data()->setStandardErrorFile(tempProblemFileName() + ".gmsh.err");
+        connect(m_process.data(), SIGNAL(error(QProcess::ProcessError)), this, SLOT(meshGmshError(QProcess::ProcessError)));
+        connect(m_process.data(), SIGNAL(finished(int)), this, SLOT(meshGmshCreated(int)));
+
+        QString gmshBinary = "gmsh";
+        if (QFile::exists(QApplication::applicationDirPath() + QDir::separator() + "gmsh.exe"))
+            gmshBinary = "\"" + QApplication::applicationDirPath() + QDir::separator() + "gmsh.exe\"";
+        if (QFile::exists(QApplication::applicationDirPath() + QDir::separator() + "gmsh"))
+            gmshBinary = QApplication::applicationDirPath() + QDir::separator() + "gmsh";
+
+        QString triangleGMSH = "%1 -2 \"%2.geo\"";
+        m_process.data()->start(triangleGMSH.
+                                arg(gmshBinary).
+                                arg(tempProblemFileName()), QIODevice::ReadOnly);
+
+        // execute an event loop to process the request (nearly-synchronous)
+        QEventLoop eventLoop;
+        connect(m_process.data(), SIGNAL(finished(int)), &eventLoop, SLOT(quit()));
+        connect(m_process.data(), SIGNAL(error(QProcess::ProcessError)), &eventLoop, SLOT(quit()));
+        eventLoop.exec();
     }
     else
     {
         m_isError = true;
     }
 
-    //  remove gmsh temp files
-    // QFile::remove(tempProblemFileName() + ".geo");
-    // QFile::remove(tempProblemFileName() + ".msh");
-
     return !m_isError;
 }
 
 bool MeshGeneratorGMSH::writeToGmshInternal()
 {
+#ifndef GMSH_BINARY
     // basic check
     if (Agros2D::scene()->nodes->length() < 3)
     {
@@ -244,11 +261,13 @@ bool MeshGeneratorGMSH::writeToGmshInternal()
     m->writeGEO((tempProblemFileName() + ".geo").toStdString());
     m->writeMSH((tempProblemFileName() + ".msh").toStdString());
 
+#endif
     return true;
 }
 
 bool MeshGeneratorGMSH::readFromGmshInternal()
-{
+{    
+#ifndef GMSH_BINARY
     nodeList.clear();
     edgeList.clear();
     elementList.clear();
@@ -335,6 +354,7 @@ bool MeshGeneratorGMSH::readFromGmshInternal()
     edgeList.clear();
     elementList.clear();
 
+#endif
     return true;
 }
 
@@ -457,7 +477,7 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
                 if (j < Agros2D::scene()->loopsInfo()->loops().at(i).size() - 1)
                     outLoops.append(",");
             }
-            outLoops.append(QString("};\n"));            
+            outLoops.append(QString("};\n"));
         }
     }
     outLoops.append("\n");
@@ -485,8 +505,7 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
     }
 
     // quad mesh
-    // Agros2D::problem()->config()->meshType() == MeshType_GMSH_Quad ||
-    if (Agros2D::problem()->config()->meshType() == MeshType_GMSH_QuadDelaunay_Experimental)
+    if (Agros2D::problem()->config()->meshType() == MeshType_GMSH_Quad || Agros2D::problem()->config()->meshType() == MeshType_GMSH_QuadDelaunay_Experimental)
     {
         outLoops.append(QString("Recombine Surface {"));
         for(int i = 0; i <  surfaces.count(); i++)
@@ -529,6 +548,7 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
     file.waitForBytesWritten(0);
     file.close();
 
+    /*
     // mesh
     // Initialization.
     GmshInitialize();
@@ -560,6 +580,7 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
     // Finalization.
     delete m;
     // GmshFinalize();
+    */
 
     return true;
 }
@@ -637,16 +658,60 @@ bool MeshGeneratorGMSH::readFromGmshMeshFile()
         }
         */
         labelMarkersCheck.insert(marker - 1);
-    }    
+    }
 
     fileGMSH.close();
 
+    this->fillNeighborStructures();
+
     writeTodealii();
 
-    qDebug() << "gmsh 3";
     nodeList.clear();
     edgeList.clear();
     elementList.clear();
 
     return true;
+}
+
+void MeshGeneratorGMSH::meshGmshError(QProcess::ProcessError error)
+{
+    m_isError = true;
+    Agros2D::log()->printError(tr("Mesh generator"), tr("Could not start GMSH"));
+    m_process.data()->kill();
+    m_process.data()->close();
+}
+
+
+void MeshGeneratorGMSH::meshGmshCreated(int exitCode)
+{
+    if (exitCode == 0)
+    {
+        // Agros2D::log()->printDebug(tr("Mesh generator"), tr("Mesh files were created"));
+        // convert gmsh mesh to hermes mesh
+        if (readFromGmshMeshFile())
+        {
+            // Agros2D::log()->printDebug(tr("Mesh generator"), tr("Mesh was converted to Hermes2D mesh file"));
+
+            //  remove gmsh temp files
+            QFile::remove(tempProblemFileName() + ".geo");
+            QFile::remove(tempProblemFileName() + ".msh");
+            QFile::remove(tempProblemFileName() + ".gmsh.out");
+            QFile::remove(tempProblemFileName() + ".gmsh.err");
+        }
+        else
+        {
+            m_isError = true;
+            QFile::remove(Agros2D::problem()->config()->fileName() + ".msh");
+        }
+    }
+    else
+    {
+        m_isError = true;
+        QString errorMessage = readFileContent(tempProblemFileName() + ".gmsh.err");
+        errorMessage.insert(0, "\n");
+        errorMessage.append("\n");
+        Agros2D::log()->printError(tr("Mesh generator"), errorMessage);
+    }
+
+    m_process.data()->close();
 }

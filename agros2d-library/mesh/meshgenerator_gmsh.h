@@ -47,6 +47,10 @@ private:
     // faces
     QMap<SceneLabel *, GFace *> facesMap;
 
+private slots:
+    void meshGmshError(QProcess::ProcessError error);
+    void meshGmshCreated(int exitCode);
+
 public:
     MeshGeneratorGMSH();
 

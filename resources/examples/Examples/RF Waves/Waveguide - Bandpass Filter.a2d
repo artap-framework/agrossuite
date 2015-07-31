@@ -199,7 +199,7 @@
           <field_item field_key="AdaptivityStrategy" field_value="2"/>
           <field_item field_key="AdaptivityStrategyHP" field_value="0"/>
           <field_item field_key="AdaptivityFinePercentage" field_value="30"/>
-          <field_item field_key="AdaptivityCoarsePercentage" field_value="3"/>
+          <field_item field_key="AdaptivityCoarsePercentage" field_value="5"/>
           <field_item field_key="AdaptivityTransientBackSteps" field_value="3"/>
           <field_item field_key="AdaptivityTransientRedoneEach" field_value="5"/>
           <field_item field_key="TransientTimeSkip" field_value="0"/>
@@ -258,7 +258,7 @@
     <item key="View_ScalarDecimalPlace" value="4"/>
     <item key="View_ScalarRangeAuto" value="1"/>
     <item key="View_ScalarRangeMin" value="0"/>
-    <item key="View_ScalarRangeMax" value="3.54824638366699"/>
+    <item key="View_ScalarRangeMax" value="3.64624118804932"/>
     <item key="View_ShowVectorView" value="0"/>
     <item key="View_VectorVariable" value="rf_te_magnetic_field_real"/>
     <item key="View_VectorProportional" value="1"/>

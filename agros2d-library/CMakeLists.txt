@@ -67,7 +67,6 @@ ELSE()
 ENDIF()
 
 SET(SOURCES
-    # mesh/meshgenerator_gmsh.cpp
     # sceneview_vtk2d.cpp
     #moduledialog.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/form_xml.cpp
@@ -97,6 +96,7 @@ SET(SOURCES
     mesh/meshgenerator.cpp
     mesh/meshgenerator_cubit.cpp
     mesh/meshgenerator_triangle.cpp
+    mesh/meshgenerator_gmsh.cpp
     optilab/optilab.cpp
     optilab/optilab_data.cpp
     optilab/optilab_multi.cpp
@@ -167,7 +167,7 @@ SET(SOURCES
     
 SOURCE_GROUP(
   "Source Files\\_Commented Out" FILES 
-  # mesh/meshgenerator_gmsh.cpp
+  mesh/meshgenerator_gmsh.cpp
   # sceneview_vtk2d.cpp
   #moduledialog.cpp
 )
@@ -282,7 +282,7 @@ SOURCE_GROUP(
 )
 
 SET(HEADERS
-  # mesh/meshgenerator_gmsh.h
+  mesh/meshgenerator_gmsh.h
   # sceneview.h
   # sceneview_vtk2d.h
   #moduledialog.h
@@ -379,7 +379,7 @@ SET(HEADERS
   
 SOURCE_GROUP(
   "Header Files\\_Commented Out" FILES 
-  # mesh/meshgenerator_gmsh.h
+  mesh/meshgenerator_gmsh.h
   # sceneview.h
   # sceneview_vtk2d.h
   #moduledialog.h

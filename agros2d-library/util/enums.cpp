@@ -199,8 +199,8 @@ void initLists()
     // meshTypeList.insert(MeshType_Triangle_QuadRoughDivision, "triangle_quad_rough_division");
     // meshTypeList.insert(MeshType_Triangle_QuadJoin, "triangle_quad_join");
     // meshTypeList.insert(MeshType_GMSH_Triangle, "gmsh_triangle");
-    // meshTypeList.insert(MeshType_GMSH_Quad, "gmsh_quad");
-    // meshTypeList.insert(MeshType_GMSH_QuadDelaunay_Experimental, "gmsh_quad_delaunay");
+    meshTypeList.insert(MeshType_GMSH_Quad, "gmsh_quad");
+    meshTypeList.insert(MeshType_GMSH_QuadDelaunay_Experimental, "gmsh_quad_delaunay");
     // meshTypeList.insert(MeshType_NETGEN_Triangle, "netgen_triangle");
     // meshTypeList.insert(MeshType_NETGEN_QuadDominated, "netgen_quaddominated");
     meshTypeList.insert(MeshType_CUBIT, "cubit");
@@ -418,8 +418,8 @@ QString couplingTypeString(CouplingType couplingType)
     {
     case CouplingType_None:
         return QObject::tr("Not used");
-    // case CouplingType_Hard:
-    //     return QObject::tr("Hard");
+        // case CouplingType_Hard:
+        //     return QObject::tr("Hard");
     case CouplingType_Weak:
         return QObject::tr("Weak");
     default:
@@ -548,7 +548,7 @@ QString timeStepMethodString(dealii::TimeStepping::runge_kutta_method timeStepMe
     case dealii::TimeStepping::RK_CLASSIC_FOURTH_ORDER:
         return QObject::tr("Runge-Kutta 4th order (expl.)");
 
-    // implicit methods
+        // implicit methods
     case dealii::TimeStepping::BACKWARD_EULER:
         return QObject::tr("Backward Euler (impl.)");
     case dealii::TimeStepping::IMPLICIT_MIDPOINT:
@@ -558,7 +558,7 @@ QString timeStepMethodString(dealii::TimeStepping::runge_kutta_method timeStepMe
     case dealii::TimeStepping::SDIRK_TWO_STAGES:
         return QObject::tr("SDIRK two stages (impl.)");
 
-    // embedded explicit methods
+        // embedded explicit methods
     case dealii::TimeStepping::HEUN_EULER:
         return QObject::tr("Heun Euler (embed.)");
     case dealii::TimeStepping::BOGACKI_SHAMPINE:
@@ -621,10 +621,10 @@ QString meshTypeString(MeshType meshType)
         //     return QObject::tr("Triangle - quad join");
         // case MeshType_GMSH_Triangle:
         //     return QObject::tr("GMSH (exp.) - triangle");
-        // case MeshType_GMSH_Quad:
-        //     return QObject::tr("GMSH (exp.) - quad");
-        // case MeshType_GMSH_QuadDelaunay_Experimental:
-        //    return QObject::tr("GMSH (exp.) - quad Delaunay");
+    case MeshType_GMSH_Quad:
+        return QObject::tr("GMSH (exp.) - quad");
+    case MeshType_GMSH_QuadDelaunay_Experimental:
+        return QObject::tr("GMSH (exp.) - quad Delaunay");
         // case MeshType_NETGEN_Triangle:
         //     return QObject::tr("NETGEN (exp.) - triangle");
         // case MeshType_NETGEN_QuadDominated:
