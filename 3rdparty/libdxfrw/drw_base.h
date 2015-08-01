@@ -1,7 +1,7 @@
 /******************************************************************************
 **  libDXFrw - Library to read/write DXF files (ascii & binary)              **
 **                                                                           **
-**  Copyright (C) 2011 Rallaz, rallazz@gmail.com                             **
+**  Copyright (C) 2011-2015 José F. Soriano, rallazz@gmail.com               **
 **                                                                           **
 **  This library is free software, licensed under the terms of the GNU       **
 **  General Public License as published by the Free Software Foundation,     **
@@ -13,12 +13,17 @@
 #ifndef DRW_BASE_H
 #define DRW_BASE_H
 
-#define DRW_VERSION "0.5.10"
+#define DRW_VERSION "0.6.1"
 
 #include <string>
+#include <list>
 #include <cmath>
 
-using std::string;
+#ifdef DRW_ASSERTS
+# define drw_assert(a) assert(a)
+#else
+# define drw_assert(a)
+#endif
 
 #define UTF8STRING std::string
 #define DRW_UNUSED(x) (void)x
@@ -42,7 +47,23 @@ using std::string;
 #define M_PIx2      6.283185307179586 // 2*PI
 #define ARAD 57.29577951308232
 
+typedef signed char dint8;              /* 8 bit signed */
+typedef signed short dint16;            /* 16 bit signed */
+typedef signed int dint32;              /* 32 bit signed */
+typedef long long int dint64;           /* 64 bit signed */
+
+typedef unsigned char duint8;           /* 8 bit unsigned */
+typedef unsigned short duint16;         /* 16 bit unsigned */
+typedef unsigned int duint32;           /* 32 bit unsigned */
+typedef unsigned long long int duint64; /* 64 bit unsigned */
+
+typedef float dfloat32;                 /* 32 bit floating point */
+typedef double ddouble64;               /* 64 bit floating point */
+typedef long double ddouble80;          /* 80 bit floating point */
+
+
 namespace DRW {
+
 //! Version numbers for the DXF Format.
 enum Version {
     UNKNOWNV,     /*!< UNKNOWN VERSION. */
@@ -53,7 +74,8 @@ enum Version {
     AC1015,       /*!< ACAD 2000. */
     AC1018,       /*!< ACAD 2004. */
     AC1021,       /*!< ACAD 2007. */
-    AC1024        /*!< ACAD 2010. */
+    AC1024,       /*!< ACAD 2010. */
+    AC1027        /*!< ACAD 2013. */
 };
 
 enum error {
@@ -61,15 +83,64 @@ BAD_NONE,             /*!< No error. */
 BAD_UNKNOWN,          /*!< UNKNOWN. */
 BAD_OPEN,             /*!< error opening file. */
 BAD_VERSION,          /*!< unsupported version. */
+BAD_READ_METADATA,    /*!< error reading matadata. */
 BAD_READ_FILE_HEADER, /*!< error in file header read process. */
 BAD_READ_HEADER,      /*!< error in header vars read process. */
-BAD_READ_OFFSETS,     /*!< error in object map read process. */
+BAD_READ_HANDLES,     /*!< error in object map read process. */
 BAD_READ_CLASSES,     /*!< error in classes read process. */
 BAD_READ_TABLES,      /*!< error in tables read process. */
-BAD_READ_ENTITIES     /*!< error in entities read process. */
+BAD_READ_BLOCKS,      /*!< error in block read process. */
+BAD_READ_ENTITIES,    /*!< error in entities read process. */
+BAD_READ_OBJECTS      /*!< error in objects read process. */
 };
 
-}
+enum DBG_LEVEL {
+    NONE,
+    DEBUG
+};
+
+//! Special codes for colors
+enum ColorCodes {
+    ColorByLayer = 256,
+    ColorByBlock = 0
+};
+
+//! Spaces
+enum Space {
+    ModelSpace = 0,
+    PaperSpace = 1
+};
+
+//! Special kinds of handles
+enum HandleCodes {
+    NoHandle = 0
+};
+
+//! Shadow mode
+enum ShadowMode {
+    CastAndReceieveShadows = 0,
+    CastShadows = 1,
+    ReceiveShadows = 2,
+    IgnoreShadows = 3
+};
+
+//! Special kinds of materials
+enum MaterialCodes {
+    MaterialByLayer = 0
+};
+
+//! Special kinds of plot styles
+enum PlotStyleCodes {
+    DefaultPlotStyle = 0
+};
+
+//! Special kinds of transparencies
+enum TransparencyCodes {
+    Opaque = 0,
+    Transparent = -1
+};
+
+} // namespace DRW
 
 //! Class to handle 3D coordinate point
 /*!
@@ -146,45 +217,88 @@ public:
         COORD,
         INVALID
     };
-
+//TODO: add INT64 support
     DRW_Variant() {
         type = INVALID;
     }
-    ~DRW_Variant() {
-        if (type == COORD)
-            delete content.v;
-    }
-    enum TYPE type;
 
-    void addString(UTF8STRING s) {setType(STRING); data = s; content.s = &data;}
+    DRW_Variant(int c, dint32 i) {
+        code = c; addInt(i);
+    }
+    DRW_Variant(int c, duint32 i) {
+        code = c; addInt(static_cast<dint32>(i));//RLZ: verify if worrk with big numbers
+    }
+    DRW_Variant(int c, double d) {
+        code = c; addDouble(d);
+    }
+    DRW_Variant(int c, UTF8STRING s) {
+        code = c; addString(s);
+    }
+    DRW_Variant(int c, DRW_Coord crd) {
+        code = c; addCoord(crd);
+    }
+    DRW_Variant(const DRW_Variant& d) {
+        code = d.code;
+        type = d.type;
+        content = d.content;
+        if (d.type == COORD) {
+            vdata = d.vdata;
+            content.v = &vdata;
+        }
+        if (d.type == STRING) {
+            sdata = d.sdata;
+            content.s = &sdata;
+        }
+    }
+
+    ~DRW_Variant() {
+    }
+
+    void addString(UTF8STRING s) {setType(STRING); sdata = s; content.s = &sdata;}
     void addInt(int i) {setType(INTEGER); content.i = i;}
     void addDouble(double d) {setType(DOUBLE); content.d = d;}
-    void addCoord(DRW_Coord *v) {setType(COORD); content.v = v;}
-    void setType(enum TYPE t) { if (type == COORD) delete content.v; type = t;}
-    void setCoordX(double d) { if (type == COORD) content.v->x = d;}
-    void setCoordY(double d) { if (type == COORD) content.v->y = d;}
-    void setCoordZ(double d) { if (type == COORD) content.v->z = d;}
+    void addCoord() {setType(COORD); vdata.x=0.0; vdata.y=0.0; vdata.z=0.0; content.v = &vdata;}
+    void addCoord(DRW_Coord v) {setType(COORD); vdata = v; content.v = &vdata;}
+    void setType(enum TYPE t) { type = t;}
+    void setCoordX(double d) { if (type == COORD) vdata.x = d;}
+    void setCoordY(double d) { if (type == COORD) vdata.y = d;}
+    void setCoordZ(double d) { if (type == COORD) vdata.z = d;}
 
 private:
     typedef union {
         UTF8STRING *s;
-        int i;
+        dint32 i;
         double d;
         DRW_Coord *v;
     } DRW_VarContent;
 
 public:
     DRW_VarContent content;
+    enum TYPE type;
+    int code;            /*!< dxf code of this value*/
 
-public:
-    int code;
-//    string version;
-//    string codepage;
 private:
-//    DRW_VarContent content;
-    string data;
+    std::string sdata;
+    DRW_Coord vdata;
 };
 
+//! Class to handle dwg handles
+/*!
+*  Class to handle dwg handles
+*  @author Rallaz
+*/
+class dwgHandle{
+public:
+    dwgHandle(){
+        code=0;
+        size=0;
+        ref=0;
+    }
+    ~dwgHandle(){}
+    duint8 code;
+    duint8 size;
+    duint32 ref;
+};
 
 //! Class to convert between line width and integer
 /*!

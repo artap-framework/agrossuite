@@ -48,6 +48,14 @@ void DxfInterfaceDXFRW::write()
     m_dxf->write(this, DRW::AC1015, false);
 }
 
+void DxfInterfaceDXFRW::writeAppId()
+{
+    DRW_AppId ai;
+    ai.name ="Agros2D";
+
+    m_dxf->writeAppId(&ai);
+}
+
 void DxfInterfaceDXFRW::addLine(const DRW_Line &l)
 {
     if (!m_isBlock)
@@ -231,16 +239,12 @@ void DxfInterfaceDXFRW::writeHeader(DRW_Header& data)
     DRW_Variant *curr = NULL;
 
     curr = new DRW_Variant();
-    curr->addCoord(new DRW_Coord());
-    curr->setCoordX(box.start.x);
-    curr->setCoordY(box.start.y);
+    curr->addCoord(DRW_Coord(box.start.x, box.start.y, 0.0));
     data.vars["$EXTMIN"] = curr;
 
     curr = new DRW_Variant();
-    curr->addCoord(new DRW_Coord());
-    curr->setCoordX(box.end.x);
-    curr->setCoordY(box.end.y);
-    data.vars["$EXTMAX"] =curr;
+    curr->addCoord(DRW_Coord(box.end.x, box.end.y, 0.0));
+    data.vars["$EXTMAX"] = curr;
 }
 
 void DxfInterfaceDXFRW::writeEntities()

@@ -34,6 +34,10 @@ public:
     void read();
     void write();
 
+    /** Called for every AppId entry. */
+    virtual void addAppId(const DRW_AppId& data) {}
+    virtual void writeAppId();
+
     virtual void addArc(const DRW_Arc &a);
     virtual void addLine(const DRW_Line &l);
     virtual void addCircle(const DRW_Circle& c);
