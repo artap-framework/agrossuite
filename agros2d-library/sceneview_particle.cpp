@@ -1145,8 +1145,8 @@ void SceneViewParticleTracing::processParticleTracing()
         m_velocityMin =  numeric_limits<double>::max();
         m_velocityMax = -numeric_limits<double>::max();
 
-        QList<Point3> initialPositionsList;
-        QList<Point3> initialVelocitiesList;
+        QList<Point3> initialPositions;
+        QList<Point3> initialVelocities;
         QList<double> particleCharges;
         QList<double> particleMasses;
 
@@ -1178,26 +1178,33 @@ void SceneViewParticleTracing::processParticleTracing()
                                              (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar) ? 0.0 : -1.0*M_PI) + initialPosition + dp;
                 }
 
-                initialPositionsList.append(initialPosition);
-                initialVelocitiesList.append(initialVelocity);
+                initialPositions.append(initialPosition);
+                initialVelocities.append(initialVelocity);
                 particleCharges.append(Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleConstant).toDouble());
                 particleMasses.append(Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleMass).toDouble());
             }
 
             // position and velocity cache
-            ParticleTracing particleTracing;
-            particleTracing.computeTrajectoryParticles(initialPositionsList,
-                                                       initialVelocitiesList,
-                                                       particleCharges,
-                                                       particleMasses);
+            ParticleTracingForceCustom forceCustom;
+            ParticleTracingForceDrag forceDrag;
+            ParticleTracingForceField forceField(particleCharges);
+            ParticleTracingForceFieldP2P forceFieldP2P(particleCharges, particleMasses);
+
+            ParticleTracing particleTracing(particleMasses);
+            particleTracing.addExternalForce(&forceCustom);
+            particleTracing.addExternalForce(&forceDrag);
+            particleTracing.addExternalForce(&forceField);
+            particleTracing.addExternalForce(&forceFieldP2P);
+
+            particleTracing.computeTrajectoryParticles(initialPositions, initialVelocities);
 
             m_positionsList = particleTracing.positions();
             m_velocitiesList = particleTracing.velocities();
             m_timesList = particleTracing.times();
 
             // velocity min and max value
-            m_velocityMin = particleTracing.velocityMin();
-            m_velocityMax = particleTracing.velocityMax();
+            m_velocityMin = particleTracing.velocityModuleMin();
+            m_velocityMax = particleTracing.velocityModuleMax();
         }
         catch (AgrosException& e)
         {

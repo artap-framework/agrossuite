@@ -28,6 +28,9 @@
 
 #include "solver/solutiontypes.h"
 
+#include "particle_tracing.h"
+#include "particle_forces.h"
+
 class FieldInfo;
 class SceneMaterial;
 
@@ -36,24 +39,26 @@ class ParticleTracing : public QObject
     Q_OBJECT
 
 public:
-    ParticleTracing(QObject *parent=0);
+    ParticleTracing(QList<double> particleMassesList, QObject *parent = 0);
     ~ParticleTracing();
+
+    void inline addExternalForce(ParticleTracingForce *force) { m_forces.append(force); }
 
     void clear();
 
-    void computeTrajectoryParticles(const QList<Point3> initialPositions, const QList<Point3> initialVelocities,
-                                    const QList<double> particleCharges, const QList<double> particleMasses);
+    void computeTrajectoryParticles(const QList<Point3> initialPositions, const QList<Point3> initialVelocities);
 
+    // output
     inline QList<QList<Point3> > positions() const { return m_positionsList; }
     inline QList<QList<Point3> > velocities() const { return m_velocitiesList; }
     inline QList<QList<double> > times() const { return m_timesList; }
 
-    inline double velocityMin() const { return m_velocityMin; }
-    inline double velocityMax() const { return m_velocityMax; }
+    inline double velocityModuleMin() const { return m_velocityModuleMin; }
+    inline double velocityModuleMax() const { return m_velocityModuleMax; }
 
 private:
-    // input
-    QList<double> m_particleChargesList;
+    QList<ParticleTracingForce *> m_forces;
+    // masses
     QList<double> m_particleMassesList;
 
     // output
@@ -61,12 +66,10 @@ private:
     QList<QList<Point3> > m_velocitiesList;
     QList<QList<double> > m_timesList;
 
-    double m_velocityMin;
-    double m_velocityMax;
+    double m_velocityModuleMin;
+    double m_velocityModuleMax;
 
-    QMap<FieldInfo *, FieldSolutionID> m_solutionIDs;
-
-    Point3 force(int particleIndex, Point3 position, Point3 velocity);
+    Point3 force(int particleIndex, const Point3 &position, const Point3 &velocity);
 
     bool newtonEquations(int particleIndex,
                          double step,

@@ -103,6 +103,7 @@ SET(SOURCES
     optilab/optilab_single.cpp
     parser/lex.cpp
     particle/particle_tracing.cpp
+    particle/particle_forces.cpp
     postprocessorview.cpp
     preprocessorview.cpp
     problemdialog.cpp
@@ -242,6 +243,7 @@ SOURCE_GROUP(
   sceneview_geometry_chart.cpp
   sceneview_mesh.cpp
   sceneview_particle.cpp
+  particle_forces.cpp
   sceneview_post.cpp
   sceneview_post2d.cpp
   sceneview_post3d.cpp
@@ -313,6 +315,7 @@ SET(HEADERS
   optilab/optilab_single.h
   parser/lex.h
   particle/particle_tracing.h
+  particle/particle_forces.h
   postprocessorview.h
   preprocessorview.h
   problemdialog.h

@@ -42,19 +42,9 @@
 
 #include <deal.II/grid/grid_tools.h>
 
-ParticleTracing::ParticleTracing(QObject *parent)
-    : QObject(parent)
+ParticleTracing::ParticleTracing(QList<double> particleMassesList, QObject *parent)
+    : QObject(parent), m_particleMassesList(particleMassesList)
 {
-    foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
-    {
-        if(!fieldInfo->plugin()->hasForce(fieldInfo))
-            continue;
-
-        int timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo);
-        int adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, timeStep);
-
-        m_solutionIDs[fieldInfo] = FieldSolutionID(fieldInfo, timeStep, adaptivityStep);
-    }
 }
 
 ParticleTracing::~ParticleTracing()
@@ -74,148 +64,18 @@ void ParticleTracing::clear()
         m_timesList[i].clear();
     m_timesList.clear();
 
-    m_velocityMin =  numeric_limits<double>::max();
-    m_velocityMax = -numeric_limits<double>::max();
+    m_velocityModuleMin =  numeric_limits<double>::max();
+    m_velocityModuleMax = -numeric_limits<double>::max();
 }
 
 // input position, velocity: planar x, y, z, axi r, z, phi
-// ouput x, y, z
-Point3 ParticleTracing::force(int particleIndex,
-                              Point3 position,
-                              Point3 velocity)
+// output x, y, z
+Point3 ParticleTracing::force(int particleIndex, const Point3 &position, const Point3 &velocity)
 {
-    Point3 totalFieldForce;
-    foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
-    {
-        if (!fieldInfo->plugin()->hasForce(fieldInfo))
-            continue;
-
-        Point3 fieldForce;
-
-        // find material
-        SceneMaterial *material = nullptr;
-        SceneLabel *label = SceneLabel::findLabelAtPoint(Point(position.x, position.y));
-        if (label && label->hasMarker(fieldInfo))
-        {
-            material = label->marker(fieldInfo);
-            if (material->isNone())
-                return Point3();
-        }
-        else
-        {
-            // point not found
-            return Point3();
-        }
-
-        try
-        {
-            fieldForce = fieldInfo->plugin()->force(fieldInfo,
-                                                    m_solutionIDs[fieldInfo].timeStep,
-                                                    m_solutionIDs[fieldInfo].adaptivityStep,
-                                                    material, position, velocity)
-                    * m_particleChargesList[particleIndex];
-        }
-        catch (AgrosException e)
-        {
-            qDebug() << "Particle Tracing warning: " << e.what();
-            return Point3();
-        }
-
-        totalFieldForce = totalFieldForce + fieldForce;
-    }
-
-    // particle to particle force
-    Point3 forceP2PElectric;
-    Point3 forceP2PMagnetic;
-    if (Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleP2PElectricForce).toBool() ||
-            Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleP2PMagneticForce).toBool())
-    {
-        for (int i = 0; i < m_positionsList.size(); i++)
-        {
-            if (particleIndex == i)
-                continue;
-
-            int timeLevel = timeToLevel(i, m_timesList[particleIndex].last());
-            Point3 particlePosition = m_positionsList[i].at(timeLevel);
-            Point3 particleVelocity = m_velocitiesList[i].at(timeLevel);
-
-            double distance = 0.0;
-            if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar)
-                distance = Point3(position.x - particlePosition.x,
-                                  position.y - particlePosition.y,
-                                  position.z - particlePosition.z).magnitude();
-            else
-                distance = Point3(position.x * cos(position.z) - particlePosition.x * cos(particlePosition.z),
-                                  position.y - particlePosition.y,
-                                  position.x * sin(position.z) - particlePosition.x * sin(particlePosition.z)).magnitude();
-
-            if (distance > 0)
-            {
-                if (Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleP2PElectricForce).toBool())
-                {
-                    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar)
-                        forceP2PElectric = forceP2PElectric + Point3(
-                                    (position.x - particlePosition.x) / distance,
-                                    (position.y - particlePosition.y) / distance,
-                                    (position.z - particlePosition.z) / distance)
-                                * (m_particleChargesList[particleIndex] * m_particleChargesList[i] / (4 * M_PI * EPS0 * distance * distance));
-                    else
-                        forceP2PElectric = forceP2PElectric + Point3(
-                                    (position.x * cos(position.z) - particlePosition.x * cos(particlePosition.z)) / distance,
-                                    (position.y - particlePosition.y) / distance,
-                                    (position.x * sin(position.z) - particlePosition.x * sin(particlePosition.z)) / distance)
-                                * (m_particleChargesList[particleIndex] * m_particleChargesList[i] / (4 * M_PI * EPS0 * distance * distance));
-                }
-                if (Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleP2PMagneticForce).toBool())
-                {
-                    Point3 r0, v0;
-                    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar)
-                    {
-                        r0 = Point3((position.x - particlePosition.x) / distance,
-                                    (position.y - particlePosition.y) / distance,
-                                    (position.z - particlePosition.z) / distance);
-                        v0 = Point3(velocity.x - particleVelocity.x,
-                                    velocity.y - particleVelocity.y,
-                                    velocity.z - particleVelocity.z);
-                    }
-                    else
-                    {
-                        r0 = Point3((position.x * cos(position.z) - particlePosition.x * cos(particlePosition.z)) / distance,
-                                    (position.y - particlePosition.y) / distance,
-                                    (position.x * sin(position.z) - particlePosition.x * sin(particlePosition.z)) / distance);
-                        // TODO: fix velocity
-                        assert(0);
-                        v0 = Point3(velocity.x * cos(position.z) - particleVelocity.x * cos(particlePosition.z),
-                                    velocity.y - particleVelocity.y,
-                                    velocity.x * sin(position.z) - particleVelocity.x * sin(particlePosition.z));
-                    }
-
-                    forceP2PMagnetic = forceP2PMagnetic + (v0 % v0 % r0)
-                            * (m_particleChargesList[particleIndex] * m_particleChargesList[i] * MU0 / (4 * M_PI * distance * distance));
-
-                }
-            }
-        }
-    }
-
-    // custom force
-    Point3 forceCustom = Point3(Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleCustomForceX).toDouble(),
-                                Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleCustomForceY).toDouble(),
-                                Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleCustomForceZ).toDouble());
-
-    // Drag force
-    Point3 velocityReal = (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar) ?
-                velocity : Point3(velocity.x, velocity.y, position.x * velocity.z);
-    Point3 forceDrag;
-    if (velocityReal.magnitude() > 0.0)
-        forceDrag = velocityReal.normalizePoint() *
-                - 0.5 * Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleDragDensity).toDouble()
-                * velocityReal.magnitude() * velocityReal.magnitude()
-                * Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleDragCoefficient).toDouble()
-                * Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleDragReferenceArea).toDouble();
-
     // Total force
-    Point3 totalForce = totalFieldForce + forceDrag + forceCustom + forceP2PElectric + forceP2PMagnetic;
+    Point3 totalForce;
+    foreach (ParticleTracingForce *force, m_forces)
+        totalForce = totalForce + force->force(particleIndex, position, velocity);
 
     return totalForce;
 }
@@ -274,18 +134,13 @@ int ParticleTracing::timeToLevel(int particleIndex, double time)
                 return i;
 
     assert(0);
+    return 0;
 }
 
-void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPositions, const QList<Point3> initialVelocities,
-                                                 const QList<double> particleCharges, const QList<double> particleMasses)
+void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPositions, const QList<Point3> initialVelocities)
 {
-    assert(initialPositions.size() == initialVelocities.size());
-    assert(initialPositions.size() == particleCharges.size());
-    assert(initialPositions.size() == particleMasses.size());
+    assert(initialPositions.size() == initialVelocities.size());    
     assert(initialPositions.size() == Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt());
-
-    m_particleChargesList = particleCharges;
-    m_particleMassesList = particleMasses;
 
     ButcherTable butcher((ButcherTableType) Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleButcherTableType).toInt());
 
@@ -632,8 +487,8 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
         {
             double velocity = m_velocitiesList[i][j].magnitude();
 
-            if (velocity < m_velocityMin) m_velocityMin = velocity;
-            if (velocity > m_velocityMax) m_velocityMax = velocity;
+            if (velocity < m_velocityModuleMin) m_velocityModuleMin = velocity;
+            if (velocity > m_velocityModuleMax) m_velocityModuleMax = velocity;
         }
     }
 

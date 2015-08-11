@@ -127,8 +127,8 @@ public:
     void setNumShowParticlesAxi(int particles);
 
     // solve
-    void solve(const vector<vector<double> > &initialPositions, const vector<vector<double> > &initialVelocities,
-               const vector<double> &particleCharges, const vector<double> &particleMasses);
+    void solve(const vector<vector<double> > &initialPositionsVector, const vector<vector<double> > &initialVelocitiesVector,
+               const vector<double> &particleChargesVector, const vector<double> &particleMassesVector);
 
     void positions(vector<vector<double> > &x, vector<vector<double> > &y, vector<vector<double> > &z) const;
     void velocities(vector<vector<double> > &vx, vector<vector<double> > &vy, vector<vector<double> > &vz) const;

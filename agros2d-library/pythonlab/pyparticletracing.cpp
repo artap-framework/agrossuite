@@ -21,8 +21,8 @@
 #include "pythonengine_agros.h"
 #include "particle/particle_tracing.h"
 
-void PyParticleTracing::solve(const vector<vector<double> > &initialPositions, const vector<vector<double> > &initialVelocities,
-                              const vector<double> &particleCharges, const vector<double> &particleMasses)
+void PyParticleTracing::solve(const vector<vector<double> > &initialPositionsVector, const vector<vector<double> > &initialVelocitiesVector,
+                              const vector<double> &particleChargesVector, const vector<double> &particleMassesVector)
 {
     if (!Agros2D::problem()->isSolved())
         throw invalid_argument(QObject::tr("Problem is not solved.").toStdString());
@@ -30,14 +30,14 @@ void PyParticleTracing::solve(const vector<vector<double> > &initialPositions, c
     int numberOfParticles = Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt();
 
     // initial position
-    QList<Point3> initialPositionsList;
+    QList<Point3> initialPositions;
     if (initialPositions.empty())
     {
         Point3 initialPosition(Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleStartX).toDouble(),
                                Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleStartY).toDouble(), 0.0);
 
         for (int i = 0; i < numberOfParticles; i++)
-            initialPositionsList.append(initialPosition);
+            initialPositions.append(initialPosition);
     }
     else
     {
@@ -45,18 +45,18 @@ void PyParticleTracing::solve(const vector<vector<double> > &initialPositions, c
             throw invalid_argument(QObject::tr("Number of initial positions is not equal to number of particles.").toStdString());
 
         for (int i = 0; i < initialPositions.size(); i++)
-            initialPositionsList.append(Point3(initialPositions.at(i).at(0), initialPositions.at(i).at(1), 0.0));
+            initialPositions.append(Point3(initialPositionsVector.at(i).at(0), initialPositionsVector.at(i).at(1), 0.0));
     }
 
     // initial velocity
-    QList<Point3> initialVelocitiesList;
+    QList<Point3> initialVelocities;
     if (initialVelocities.empty())
     {
         Point3 initialVelocity(Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleStartVelocityX).toDouble(),
                                Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleStartVelocityY).toDouble(), 0.0);
 
         for (int i = 0; i < numberOfParticles; i++)
-            initialVelocitiesList.append(initialVelocity);
+            initialVelocities.append(initialVelocity);
     }
     else
     {
@@ -64,41 +64,51 @@ void PyParticleTracing::solve(const vector<vector<double> > &initialPositions, c
             throw invalid_argument(QObject::tr("Number of initial velocities is not equal to number of particles.").toStdString());
 
         for (int i = 0; i < initialVelocities.size(); i++)
-            initialVelocitiesList.append(Point3(initialVelocities.at(i).at(0), initialVelocities.at(i).at(1), 0.0));
+            initialVelocities.append(Point3(initialVelocitiesVector.at(i).at(0), initialVelocitiesVector.at(i).at(1), 0.0));
     }
 
     // particle charges
-    QList<double> particleChargesList;
+    QList<double> particleCharges;
     if (particleCharges.empty())
     {
         for (int i = 0; i < numberOfParticles; i++)
-            particleChargesList.append(Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleConstant).toDouble());
+            particleCharges.append(Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleConstant).toDouble());
     }
     else
     {
         if (numberOfParticles != particleCharges.size())
             throw invalid_argument(QObject::tr("Number of particle charges is not equal to number of particles.").toStdString());
 
-        particleChargesList = QList<double>::fromVector(QVector<double>::fromStdVector(particleCharges));
+        particleCharges = QList<double>::fromVector(QVector<double>::fromStdVector(particleChargesVector));
     }
 
     // particle masses
-    QList<double> particleMassesList;
+    QList<double> particleMasses;
     if (particleMasses.empty())
     {
         for (int i = 0; i < numberOfParticles; i++)
-            particleMassesList.append(Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleMass).toDouble());
+            particleMasses.append(Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleMass).toDouble());
     }
     else
     {
         if (numberOfParticles != particleMasses.size())
             throw invalid_argument(QObject::tr("Number of partical masses is not equal to number of particles.").toStdString());
 
-        particleMassesList = QList<double>::fromVector(QVector<double>::fromStdVector(particleMasses));
+        particleMasses = QList<double>::fromVector(QVector<double>::fromStdVector(particleMassesVector));
     }
 
-    ParticleTracing particleTracing;
-    particleTracing.computeTrajectoryParticles(initialPositionsList, initialVelocitiesList, particleChargesList, particleMassesList);
+    ParticleTracingForceCustom forceCustom;
+    ParticleTracingForceDrag forceDrag;
+    ParticleTracingForceField forceField(particleCharges);
+    ParticleTracingForceFieldP2P forceFieldP2P(particleCharges, particleMasses);
+
+    ParticleTracing particleTracing(particleMasses);
+    particleTracing.addExternalForce(&forceCustom);
+    particleTracing.addExternalForce(&forceDrag);
+    particleTracing.addExternalForce(&forceField);
+    particleTracing.addExternalForce(&forceFieldP2P);
+
+    particleTracing.computeTrajectoryParticles(initialPositions, initialVelocities);
 
     m_positions = particleTracing.positions();
     m_velocities = particleTracing.velocities();
