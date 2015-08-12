@@ -115,6 +115,22 @@ protected:
     QMap<QString, double> m_values;
 };
 
+class ForceValue
+{
+public:
+    ForceValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
+        : m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep) {}
+
+    virtual Point3 force(const Point3 &point, const Point3 &velocity) { return Point3(); }
+    virtual bool hasForce() { return false; }
+
+protected:
+    // field info
+    const FieldInfo *m_fieldInfo;
+    int m_timeStep;
+    int m_adaptivityStep;
+};
+
 // plugin interface
 class AGROS_LIBRARY_API PluginInterface
 {
@@ -147,9 +163,7 @@ public:
     // volume integrals
     virtual std::shared_ptr<IntegralValue> volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) = 0;
     // force calculation
-    virtual Point3 force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
-                         SceneMaterial *material, const Point3 &point, const Point3 &velocity) = 0;
-    virtual bool hasForce(const FieldInfo *fieldInfo) = 0;
+    virtual std::shared_ptr<ForceValue> force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) = 0;
 
     // localization
     virtual QString localeName(const QString &name) = 0;

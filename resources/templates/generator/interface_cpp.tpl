@@ -133,15 +133,9 @@ std::shared_ptr<IntegralValue> {{CLASS}}Interface::volumeIntegral(const FieldInf
     return std::shared_ptr<IntegralValue>(new {{CLASS}}VolumeIntegral(fieldInfo, timeStep, adaptivityStep));
 }
 
-Point3 {{CLASS}}Interface::force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
-                                 SceneMaterial *material, const Point3 &point, const Point3 &velocity)
+std::shared_ptr<ForceValue> {{CLASS}}Interface::force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
 {
-    return force{{CLASS}}(fieldInfo, timeStep, adaptivityStep, material, point, velocity);
-}
-
-bool {{CLASS}}Interface::hasForce(const FieldInfo *fieldInfo)
-{
-    return hasForce{{CLASS}}(fieldInfo);
+    return std::shared_ptr<ForceValue>(new {{CLASS}}ForceValue(fieldInfo, timeStep, adaptivityStep));
 }
 
 QString {{CLASS}}Interface::localeName(const QString &name)

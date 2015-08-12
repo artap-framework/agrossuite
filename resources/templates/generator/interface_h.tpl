@@ -63,10 +63,7 @@ virtual std::shared_ptr<IntegralValue> surfaceIntegral(const FieldInfo *fieldInf
 virtual std::shared_ptr<IntegralValue> volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep);
 
 // force calculation
-virtual Point3 force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
-                     SceneMaterial *material, const Point3 &point, const Point3 &velocity);
-virtual bool hasForce(const FieldInfo *fieldInfo);
-
+virtual std::shared_ptr<ForceValue> force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep);
 
 // localization
 virtual QString localeName(const QString &name);

@@ -25,10 +25,27 @@
 #include "util.h"
 #include "solver/field.h"
 
-bool hasForce{{CLASS}}(const FieldInfo *fieldInfo);
+#include "solver/plugin_interface.h"
 
-Point3 force{{CLASS}}(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
-                      SceneMaterial *material, const Point3 &point, const Point3 &velocity = Point3());
+#undef signals
+#include <deal.II/hp/dof_handler.h>
+#include <deal.II/numerics/fe_field_function.h>
+#define signals public
 
+class FieldInfo;
+
+class {{CLASS}}ForceValue : public ForceValue
+{
+public:
+    {{CLASS}}ForceValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep);
+
+    virtual Point3 force(const Point3 &point, const Point3 &velocity);
+    virtual bool hasForce();
+
+private:
+    MultiArray ma;
+    std::shared_ptr<dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > > localvalues;
+    dealii::hp::DoFHandler<2>::active_cell_iterator currentCell;
+};
 
 #endif // {{ID}}_FORCE_H

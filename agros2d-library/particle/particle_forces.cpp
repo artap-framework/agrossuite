@@ -18,6 +18,7 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "particle_forces.h"
+#include "particle_tracing.h"
 
 #include "util.h"
 #include "util/xml.h"
@@ -38,6 +39,12 @@
 #include "solver/plugin_interface.h"
 #include "solver/solutionstore.h"
 #include "solver/problem_config.h"
+
+ParticleTracingForce::ParticleTracingForce(ParticleTracing *particleTracing)
+    : m_particleTracing(particleTracing)
+{
+    particleTracing->addExternalForce(this);
+}
 
 Point3 ParticleTracingForceCustom::force(int particleIndex, const Point3 &position, const Point3 &velocity)
 {
@@ -62,18 +69,16 @@ Point3 ParticleTracingForceDrag::force(int particleIndex, const Point3 &position
     return forceDrag;
 }
 
-ParticleTracingForceField::ParticleTracingForceField(QList<double> particleChargesList)
-    : ParticleTracingForce(), m_particleChargesList(particleChargesList)
+ParticleTracingForceField::ParticleTracingForceField(ParticleTracing *particleTracing,
+                                                     QList<double> particleChargesList)
+    : ParticleTracingForce(particleTracing), m_particleChargesList(particleChargesList)
 {
     foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
     {
-        if(!fieldInfo->plugin()->hasForce(fieldInfo))
-            continue;
-
         int timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo);
         int adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, timeStep);
 
-        m_solutionIDs[fieldInfo] = FieldSolutionID(fieldInfo, timeStep, adaptivityStep);
+        m_forceValue[fieldInfo] = fieldInfo->plugin()->force(fieldInfo, timeStep, adaptivityStep);
     }
 }
 
@@ -83,33 +88,14 @@ Point3 ParticleTracingForceField::force(int particleIndex, const Point3 &positio
 
     foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
     {
-        if (!fieldInfo->plugin()->hasForce(fieldInfo))
+        if (!m_forceValue[fieldInfo]->hasForce())
             continue;
 
         Point3 fieldForce;
 
-        // find material
-        SceneMaterial *material = nullptr;
-        SceneLabel *label = SceneLabel::findLabelAtPoint(Point(position.x, position.y));
-        if (label && label->hasMarker(fieldInfo))
-        {
-            material = label->marker(fieldInfo);
-            if (material->isNone())
-                return Point3();
-        }
-        else
-        {
-            // point not found
-            return Point3();
-        }
-
         try
         {
-            fieldForce = fieldInfo->plugin()->force(fieldInfo,
-                                                    m_solutionIDs[fieldInfo].timeStep,
-                                                    m_solutionIDs[fieldInfo].adaptivityStep,
-                                                    material, position, velocity)
-                    * m_particleChargesList[particleIndex];
+            fieldForce = m_forceValue[fieldInfo]->force(position, velocity) * m_particleChargesList[particleIndex];
         }
         catch (AgrosException e)
         {
@@ -123,8 +109,9 @@ Point3 ParticleTracingForceField::force(int particleIndex, const Point3 &positio
     return totalFieldForce;
 }
 
-ParticleTracingForceFieldP2P::ParticleTracingForceFieldP2P(QList<double> particleChargesList, QList<double> particleMassesList)
-    : ParticleTracingForce(), m_particleChargesList(particleChargesList), m_particleMassesList(particleMassesList)
+ParticleTracingForceFieldP2P::ParticleTracingForceFieldP2P(ParticleTracing *particleTracing,
+                                                           QList<double> particleChargesList, QList<double> particleMassesList)
+    : ParticleTracingForce(particleTracing), m_particleChargesList(particleChargesList), m_particleMassesList(particleMassesList)
 {
 }
 
@@ -133,18 +120,18 @@ Point3 ParticleTracingForceFieldP2P::force(int particleIndex, const Point3 &posi
     // particle to particle force
     Point3 forceP2PElectric;
     Point3 forceP2PMagnetic;
-    /*
+
     if (Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleP2PElectricForce).toBool() ||
             Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleP2PMagneticForce).toBool())
     {
-        for (int i = 0; i < m_positionsList.size(); i++)
+        for (int i = 0; i < m_particleTracing->positions().size(); i++)
         {
             if (particleIndex == i)
                 continue;
 
-            int timeLevel = timeToLevel(i, m_timesList[particleIndex].last());
-            Point3 particlePosition = m_positionsList[i].at(timeLevel);
-            Point3 particleVelocity = m_velocitiesList[i].at(timeLevel);
+            int timeLevel = m_particleTracing->timeToLevel(i, m_particleTracing->times()[particleIndex].last());
+            Point3 particlePosition = m_particleTracing->positions()[i].at(timeLevel);
+            Point3 particleVelocity = m_particleTracing->velocities()[i].at(timeLevel);
 
             double distance = 0.0;
             if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar)
@@ -204,7 +191,6 @@ Point3 ParticleTracingForceFieldP2P::force(int particleIndex, const Point3 &posi
             }
         }
     }
-    */
 
     return (forceP2PElectric + forceP2PMagnetic);
 }

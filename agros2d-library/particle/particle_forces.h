@@ -27,6 +27,7 @@
 #include "util/conf.h"
 
 #include "solver/solutiontypes.h"
+#include "solver/plugin_interface.h"
 
 class FieldInfo;
 class SceneMaterial;
@@ -34,17 +35,21 @@ class SceneMaterial;
 class ParticleTracingForce
 {
 public:
-    ParticleTracingForce() {}
+    ParticleTracingForce(ParticleTracing *m_particleTracing);
+
     virtual ~ParticleTracingForce() {}
 
     virtual Point3 force(int particleIndex, const Point3 &position, const Point3 &velocity) = 0;
+
+protected:
+    ParticleTracing *m_particleTracing;
 };
 
 // custom force
 class ParticleTracingForceCustom : public ParticleTracingForce
 {
 public:
-    ParticleTracingForceCustom() : ParticleTracingForce() {}
+    ParticleTracingForceCustom(ParticleTracing *particleTracing) : ParticleTracingForce(particleTracing) {}
 
     virtual Point3 force(int particleIndex, const Point3 &position, const Point3 &velocity);
 };
@@ -53,7 +58,7 @@ public:
 class ParticleTracingForceDrag : public ParticleTracingForce
 {
 public:
-    ParticleTracingForceDrag() : ParticleTracingForce() {}
+    ParticleTracingForceDrag(ParticleTracing *particleTracing) : ParticleTracingForce(particleTracing) {}
 
     virtual Point3 force(int particleIndex, const Point3 &position, const Point3 &velocity);
 };
@@ -62,12 +67,12 @@ public:
 class ParticleTracingForceField : public ParticleTracingForce
 {
 public:
-    ParticleTracingForceField(QList<double> particleChargesList);
+    ParticleTracingForceField(ParticleTracing *m_particleTracing, QList<double> particleChargesList);
 
     virtual Point3 force(int particleIndex, const Point3 &position, const Point3 &velocity);
 
 private:
-    QMap<FieldInfo *, FieldSolutionID> m_solutionIDs;
+    QMap<FieldInfo *, std::shared_ptr<ForceValue> > m_forceValue;
 
     QList<double> m_particleChargesList;
 };
@@ -76,7 +81,7 @@ private:
 class ParticleTracingForceFieldP2P : public ParticleTracingForce
 {
 public:
-    ParticleTracingForceFieldP2P(QList<double> particleChargesList, QList<double> particleMassesList);
+    ParticleTracingForceFieldP2P(ParticleTracing *m_particleTracing, QList<double> particleChargesList, QList<double> particleMassesList);
 
     virtual Point3 force(int particleIndex, const Point3 &position, const Point3 &velocity);
 

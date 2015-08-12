@@ -1185,16 +1185,11 @@ void SceneViewParticleTracing::processParticleTracing()
             }
 
             // position and velocity cache
-            ParticleTracingForceCustom forceCustom;
-            ParticleTracingForceDrag forceDrag;
-            ParticleTracingForceField forceField(particleCharges);
-            ParticleTracingForceFieldP2P forceFieldP2P(particleCharges, particleMasses);
-
             ParticleTracing particleTracing(particleMasses);
-            particleTracing.addExternalForce(&forceCustom);
-            particleTracing.addExternalForce(&forceDrag);
-            particleTracing.addExternalForce(&forceField);
-            particleTracing.addExternalForce(&forceFieldP2P);
+            ParticleTracingForceCustom forceCustom(&particleTracing);
+            ParticleTracingForceDrag forceDrag(&particleTracing);
+            ParticleTracingForceField forceField(&particleTracing, particleCharges);
+            ParticleTracingForceFieldP2P forceFieldP2P(&particleTracing, particleCharges, particleMasses);
 
             particleTracing.computeTrajectoryParticles(initialPositions, initialVelocities);
 

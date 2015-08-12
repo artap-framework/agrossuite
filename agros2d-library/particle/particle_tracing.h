@@ -52,6 +52,7 @@ public:
     inline QList<QList<Point3> > positions() const { return m_positionsList; }
     inline QList<QList<Point3> > velocities() const { return m_velocitiesList; }
     inline QList<QList<double> > times() const { return m_timesList; }
+    int timeToLevel(int particleIndex, double time);
 
     inline double velocityModuleMin() const { return m_velocityModuleMin; }
     inline double velocityModuleMax() const { return m_velocityModuleMax; }
@@ -76,11 +77,7 @@ private:
                          Point3 position,
                          Point3 velocity,
                          Point3 *newposition,
-                         Point3 *newvelocity);
-
-    int timeToLevel(int particleIndex, double time);
+                         Point3 *newvelocity);    
 };
-
-
 
 #endif /* PARTICLETRACING_H */

@@ -97,16 +97,11 @@ void PyParticleTracing::solve(const vector<vector<double> > &initialPositionsVec
         particleMasses = QList<double>::fromVector(QVector<double>::fromStdVector(particleMassesVector));
     }
 
-    ParticleTracingForceCustom forceCustom;
-    ParticleTracingForceDrag forceDrag;
-    ParticleTracingForceField forceField(particleCharges);
-    ParticleTracingForceFieldP2P forceFieldP2P(particleCharges, particleMasses);
-
     ParticleTracing particleTracing(particleMasses);
-    particleTracing.addExternalForce(&forceCustom);
-    particleTracing.addExternalForce(&forceDrag);
-    particleTracing.addExternalForce(&forceField);
-    particleTracing.addExternalForce(&forceFieldP2P);
+    ParticleTracingForceCustom forceCustom(&particleTracing);
+    ParticleTracingForceDrag forceDrag(&particleTracing);
+    ParticleTracingForceField forceField(&particleTracing, particleCharges);
+    ParticleTracingForceFieldP2P forceFieldP2P(&particleTracing, particleCharges, particleMasses);
 
     particleTracing.computeTrajectoryParticles(initialPositions, initialVelocities);
 

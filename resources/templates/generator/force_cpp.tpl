@@ -27,6 +27,7 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 #include "solver/solutionstore.h"
+#include "solver/solver_utils.h"
 
 #include "solver/plugin_interface.h"
 
@@ -35,11 +36,21 @@
 #include <deal.II/fe/mapping_q1.h>
 #include <deal.II/numerics/fe_field_function.h>
 
-bool hasForce{{CLASS}}(const FieldInfo *fieldInfo)
+{{CLASS}}ForceValue::{{CLASS}}ForceValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
+    : ForceValue(fieldInfo, timeStep, adaptivityStep)
+{
+    FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep);
+    ma = Agros2D::solutionStore()->multiArray(fsid);
+
+    // point values
+    localvalues = std::shared_ptr<dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > >
+            (new dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> >(*ma.doFHandler(), ma.solution()));
+}
+
+bool {{CLASS}}ForceValue::hasForce()
 {
     {{#VARIABLE_SOURCE}}
-    if ((fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
-     && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
     {
         return true;
     }
@@ -48,57 +59,80 @@ bool hasForce{{CLASS}}(const FieldInfo *fieldInfo)
     return false;
 }
 
-Point3 force{{CLASS}}(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
-                      SceneMaterial *material, const Point3 &point, const Point3 &velocity)
+Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
 {
     Point3 res;
 
     if (Agros2D::problem()->isSolved())
     {
-        int numberOfSolutions = fieldInfo->numberOfSolutions();
-
-        FieldSolutionID fsid(fieldInfo, timeStep, adaptivityStep);
-        MultiArray ma = Agros2D::solutionStore()->multiArray(fsid);
-
-        {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
-        {{/VARIABLE_MATERIAL}}
-
-        // update time functions
-        if (fieldInfo->analysisType() == AnalysisType_Transient)
-        {
-            QList<double> times = Agros2D::problem()->timeStepTimes();
-            Module::updateTimeFunctions(times[timeStep]);
-        }
+        int numberOfSolutions = m_fieldInfo->numberOfSolutions();
 
         // set variables
         double x = point.x;
         double y = point.y;
         dealii::Point<2> p(point.x, point.y);
 
+        /*
+        try
+        {
+            std::pair<TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator, dealii::Point<2> > cell
+                    = dealii::GridTools::find_active_cell_around_point(*ProblemSolver::mappingCollection(m_fieldInfo), *ma.doFHandler(), p);
+            currentCell = cell.first;
+
+            localvalues->set_active_cell(currentCell);
+        }
+        catch (const TYPENAME dealii::GridTools::ExcPointNotFound<2> &e)
+        {
+            // do nothing - another cell
+        }
+        */
+
+        // find material
+        SceneMaterial *material = nullptr;
+        SceneLabel *label = SceneLabel::findLabelAtPoint(Point(point.x, point.y));
+        if (label && label->hasMarker(m_fieldInfo))
+        {
+            material = label->marker(m_fieldInfo);
+            if (material->isNone())
+                return Point3();
+        }
+        else
+        {
+            // point not found
+            return Point3();
+        }
+
+        {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
+        {{/VARIABLE_MATERIAL}}
+
+        // update time functions
+        if (m_fieldInfo->analysisType() == AnalysisType_Transient)
+        {
+            QList<double> times = Agros2D::problem()->timeStepTimes();
+            Module::updateTimeFunctions(times[m_timeStep]);
+        }
+
         int k = 0; // only one point
-        std::vector<dealii::Vector<double> > solution_values(1, dealii::Vector<double>(fieldInfo->numberOfSolutions()));
-        std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(1, std::vector<dealii::Tensor<1,2> >(fieldInfo->numberOfSolutions()));
+        std::vector<dealii::Vector<double> > solution_values(1, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+        std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(1, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
 
         for (int i = 0; i < numberOfSolutions; i++)
         {
             // point values
             try
             {
-                if (fieldInfo->analysisType() == AnalysisType_Transient && timeStep == 0)
+                if (m_fieldInfo->analysisType() == AnalysisType_Transient && m_timeStep == 0)
                 {
                     // set variables
-                    solution_values[k][i] = fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble();
+                    solution_values[k][i] = m_fieldInfo->value(FieldInfo::TransientInitialCondition).toDouble();
                     solution_grads[k][i][0] = 0;
                     solution_grads[k][i][1] = 0;
                 }
                 else
                 {
-                    // point values
-                    dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > localvalues(*ma.doFHandler(), ma.solution());
-
                     // set variables
-                    solution_values[k][i] = localvalues.value(p, i);
-                    solution_grads[k][i] = localvalues.gradient(p, i);
+                    solution_values[k][i] = localvalues->value(p, i);
+                    solution_grads[k][i] = localvalues->gradient(p, i);
                 }
             }
             catch (const TYPENAME dealii::GridTools::ExcPointNotFound<2> &e)
@@ -110,7 +144,7 @@ Point3 force{{CLASS}}(const FieldInfo *fieldInfo, int timeStep, int adaptivitySt
         }
 
         {{#VARIABLE_SOURCE}}
-        if ((fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
+        if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
          && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
         {
             res.x = {{EXPRESSION_X}};
