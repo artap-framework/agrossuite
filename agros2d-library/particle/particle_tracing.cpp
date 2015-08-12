@@ -252,7 +252,7 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
 
             int maxStepsRKF = 0;
             while (!stopComputation[particleIndex] && maxStepsRKF < 100)
-            {
+            {                
                 bool butcherOK = true;
 
                 for (int k = 0; k < butcher.get_size(); k++)
@@ -314,12 +314,20 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
                                                       (velocity - newVelocityH).magnitude() :
                                                       (Point3(velocity.x, velocity.y, position.x * velocity.z) - Point3(newVelocityH.x, newVelocityH.y, newPositionH.x * newVelocityH.z)).magnitude());
 
+                    // zero step
+                    if (currentStepLength < EPS_ZERO && currentStepVelocity < EPS_ZERO && newVelocityH.magnitude() < EPS_ZERO)
+                    {
+                        qDebug() << QString("Particle %1: zero step - stop computation.").arg(particleIndex);
+                        stopComputation[particleIndex] = true;
+                        break;
+                    }
+
                     // nearly zero step
                     // qDebug() << "currentTimeStep" << currentTimeStep << "currentStepLength" << currentStepLength << "currentStepVelocity" << currentStepVelocity << "absErrorPos" << absErrorPos << "relErrorPos" << relErrorPos << "absErrorVel" << absErrorVel << "relErrorVel" << relErrorVel;
                     if (currentStepLength < EPS_ZERO && currentStepVelocity < EPS_ZERO)
                     {
                         qDebug() << QString("Particle %1: time step is too short - refused.").arg(particleIndex);
-                        currentTimeStep *= 3.0;
+                        currentTimeStep *= 3.0;                        
                         continue;
                     }
 
@@ -367,6 +375,8 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
                         continue;
                     }
                 }
+
+                maxStepsRKF++;
             }
 
             // check crossing
