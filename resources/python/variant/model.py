@@ -1,28 +1,95 @@
 _empty_svg = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="32" height="32" viewBox="0 0 32 32"></svg>'
 
 import pickle
+import json
 import os
 import warnings
 
-class ModelData(object):
-    """General class collected all model data."""
+class StrictDict(dict):
+    """General class for model data (parameters and variables).
+
+       Class is inherited from builtins dict and implement data type checking.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.update(*args, **kwargs)
+        self._data_types = dict()
+
+    def data_types(self):
+        """Return dictionary with defined data types."""
+        return self._data_types
+
+    def declare(self, name, data_type):
+        """Declare new parameters which will be stored in dictionary.
+
+        Args:
+            name: Parameter name.
+            data_type: Data type of stred value.
+        """
+
+        self._data_types[name] = data_type
+
+    def fulfilled(self):
+        """Check that all items are set.
+
+        Returns:
+            Return True if all defined items in _data_types are set,
+            otherwise return False.
+        """
+
+        for name in self._data_types.keys():
+            if not name in self.keys(): return False
+        return True
+
+    def __setitem__(self, name, value):
+        if not name in self._data_types:
+            raise KeyError('Value with name "{0}" is not declared!'.format(name))
+
+        data_type = self._data_types[name]
+        if (type(value) != data_type and
+            not (data_type == float and type(value) == int)):
+            raise TypeError('Value data type do not correspond with defined data type!')
+
+        self.update({name : value})
+
+class Parameters(StrictDict):
+    """General class for model parameters.
+
+       Class is inherited from StrictDict and implement default values.
+    """
+
+    def declare(self, name, data_type, default=None):
+        """Declare new parameters which will be stored in dictionary.
+
+        Args:
+            name: Parameter name.
+            data_type: Data type of stred value.
+            default: Optional argument declared default value of parameter.
+        """
+
+        if default:
+            if (type(default) != data_type and
+                not (data_type == float and type(default) == int)):
+                raise TypeError('Value data type do not correspond with defined data type!')
+
+            self.update({name : default})
+        self._data_types[name] = data_type
+
+class ModelData:
+    """General class collect all model data.
+
+        Attributes:
+            parameters: Instance of variant Parameters class stored input values for model.
+            variables: Instance of variant StrictDict class stored  output values (results) of model.
+            info: Dictionary stored additional information described model.
+    """
 
     def __init__(self):
-        self.declared_parameters = dict()
-        #self.parameters = dict()
-        self.parameters = lambda : None
+        self.parameters = Parameters()
+        self.variables = StrictDict()
+        self.info = {'_geometry' : _empty_svg}
 
-        self.declared_variables = dict()
-        #self.variables = dict()
-        self.variables = lambda : None
-
-        #self.info = {'_geometry' : _empty_svg}
-        self.info = lambda : None
-        self.info._geometry = _empty_svg
-
-        self.solved = False
-
-class ModelBase(object):
+class ModelBase:
     """General class described model."""
 
     def __init__(self):
@@ -30,190 +97,110 @@ class ModelBase(object):
         self.declare()
 
     @property
-    def data(self):
-        """Return model data."""
-        return self._data
-
-    @property
     def parameters(self):
-        """Return model input parameters."""
+        """Model input parameters."""
         return self._data.parameters
+
+    @parameters.setter
+    def parameters(self, value):
+        raise RuntimeError('Object cannot be overwrite!')
 
     @property
     def variables(self):
-        """Return model output variables."""
+        """Model output variables."""
         return self._data.variables
+
+    @variables.setter
+    def variables(self, value):
+        raise RuntimeError('Object cannot be overwrite!')
 
     @property
     def info(self):
-        """Optional info dictionary."""
+        """Additional information described model."""
         return self._data.info
 
     @info.setter
     def info(self, value):
         self._data.info = value
 
-    @property
+    def data(self):
+        """Return model data."""
+        return self._data
+
     def solved(self):
-        """Solution state of the model (return True if model is solved)."""
-        return self._data.solved
+        """Solution state of the model.
 
-    @solved.setter
-    def solved(self, value):
-        if not value: self._data.variables = lambda : None
-        self._data.solved = value
+        Returns:
+            Return True if declared variables are set, otherwise return False.
+        """
+        return self._data.variables.fulfilled()
 
-    def _check_value_type(self, value, data_type):
-        if (value and type(value) != data_type):
-            if not (data_type == float and type(value) == int):
-                raise TypeError('Data type of value do not correspond with defined data type!')
+    def clear(self):
+        """Clear model output variables."""
+        self._data.variables.clear()
 
     def declare(self):
-        """Method declare model input parameters and ouput variables by ModelInfo class."""
+        """Method for declaration of model parameters and variables.
+
+        class Model(ModelBase):
+            def declare(self):
+                self.parameters.declare('p', float, default=0.0)
+                self.variables.declare('v', float)
+            ...
+        """
         warnings.warn("Method declare() should be overrided!", RuntimeWarning)
-
-    def declare_parameter(self, name, data_type, default=None, description=''):
-        """Declare new model input parameter.
-
-        declare_parameter(name, type, description = '')
-
-        Keyword arguments:
-        name -- parameter name
-        type -- parameter data type
-        default -- parameter default value (default is None)
-        description --- description of parameter (default is empty string)
-        """
-
-        setattr(self.data.parameters, name, default)
-        """
-        self._check_value_type(default, data_type)
-        self._data.declared_parameters[name] = {'type' : data_type, 'default' : default,
-                                                'description' : description}
-
-        if default: self._data.parameters[name] = default
-        """
-
-    def set_parameter(self, name, value):
-        """Set value of model input parameter.
-
-        set_parameter(name, value)
-        """
-
-        setattr(self.data.parameters, name, value)
-
-        """
-        if name not in self._data.declared_parameters.keys():
-            raise KeyError('Parameter with name "{0}" is not declared!'.format(name))
-        self._check_value_type(value, self._data.declared_parameters[name]['type'])
-
-        self._data.parameters[name] = value
-        """
-
-    def get_parameter(self, name):
-        """Return value of model input parameter.
-        
-        get_parameter(name)
-        """
-
-        return getattr(self.data.parameters, name)
-        #return self._data.parameters[name]
-
-    def declare_variable(self, name, data_type, default=None, description=''):
-        """Declare new model output variable.
-
-        add_variable(name, type, description = '')
-
-        Keyword arguments:
-        name -- variable name
-        type -- parameter data type
-        default -- variable default value
-        description --- description of variable (default is empty string)
-        """
-
-        setattr(self.data.variables, name, default)
-        """
-        self._check_value_type(default, data_type)
-        self._data.declared_variables[name] = {'type' : data_type, 'default' : default,
-                                               'description' : description}
-
-        if default: self._data.variables[name] = default
-        """
-
-    def set_variable(self, name, value):
-        """Set value of model ouput variable.
-
-        set_variable(name, value)
-        """
-
-        return setattr(self.data.variables, name, value)
-
-        """
-        if name not in self._data.declared_variables.keys():
-            raise KeyError('Variable with name "{0}" is not declared!'.format(name))
-        self._check_value_type(value, self._data.declared_variables[name]['type'])
-
-        self._data.variables[name] = value
-        """
-
-    def get_variable(self, name):
-        """Return value of model output variable.
-        
-        get_variable(name)
-        """
-
-        return getattr(self.data.variables, name)
-        #return self._data.variables[name]
 
     def create(self):
         """Method creates model from input parameters."""
-        warnings.warn("Method create() should be overrided!", RuntimeWarning)
+        pass
 
     def solve(self):
-        """Method for solution of model."""
+        """Method for solution of model and variables calculation."""
         warnings.warn("Method solve() should be overrided!", RuntimeWarning)
 
-    def process(self):
-        """Method calculate output variables."""
-        warnings.warn("Method process() should be overrided!", RuntimeWarning)
-        
     def load(self, file_name):
-        """Unpickle model and load binary file (marshalling of model object).
+        """Load model data file (marshalling of ModelData object) and unpickle it.
 
-        load(file_name)
-
-        Keyword arguments:
-        file_name -- file name of binary file for read
+        Args:
+            file_name: Name of data file with model data.
         """
 
-        with open(file_name, 'rb') as infile:
-            self._data = pickle.load(infile)
+        with open(file_name, 'r') as infile:
+            data = json.load(infile)
+            self._data.parameters = data['parameters']
+            self._data.variables = data['variables']
+            #self._data = pickle.load(infile)
 
     def save(self, file_name):
-        """Pickle model and save binary file (serialization of model object).
+        """Pickle model data and save to file (serialization of ModelData object).
 
-        save(file_name)
-
-        Keyword arguments:
-        file_name -- file name of binary file for write
+        Args:
+            file_name: Name of new model data file.
         """
 
         directory = os.path.dirname(file_name)
-        if not os.path.isdir(directory):
+        if (directory and not os.path.isdir(directory)):
             os.makedirs(directory)
 
-        with open(file_name, 'wb') as outfile:
-            pickle.dump(self._data, outfile, pickle.HIGHEST_PROTOCOL)
+        # TODO: Use HIGHEST_PROTOCOL
+        with open(file_name, 'w') as outfile:
+            data = {'parameters' : self._data.parameters,
+                    'variables' : self._data.variables}
+
+            json.dump(data, outfile)
+            #pickle.dump(self._data, outfile, 0)
 
     def serialize(self):
-        """Serialize and return model data to string."""
-        return pickle.dumps(self._data, pickle.HIGHEST_PROTOCOL)
+        """Serialize and return model data as string."""
+        # TODO: Use HIGHEST_PROTOCOL
+        return pickle.dumps(self._data, 0)
 
     def deserialize(self, data):
-        """Deserialize and return model data object from string.
-        
-        deserialize(data)
-        """
+        """Deserialize and return ModelData object from string.
 
+        Args:
+            data: String with serialized data.
+        """
         self._data = pickle.loads(data)
 
 if __name__ == '__main__':
@@ -221,13 +208,14 @@ if __name__ == '__main__':
 
     class Model(ModelBase):
         def declare(self):
-            self.declare_parameter('p', float, default = 1.0)
-            self.declare_variable('v', float)
+            self.parameters.declare('p', float, default = 1.0)
+            self.variables.declare('v', float)
 
     model = Model()
-    model.set_parameter('p', 2.0)
-    model.set_variable('v', 2.0)
+    model.parameters['p'] = 2.0
+    model.variables['v'] = 2.0
 
     file_name = '{0}/model.pickle'.format(pythonlab.tempname())
-    #model.save(file_name)
-    #model.load(file_name)
+    model.save(file_name)
+    model.load(file_name)
+    print(model.variables)

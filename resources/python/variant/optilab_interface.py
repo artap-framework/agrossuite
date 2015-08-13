@@ -1,4 +1,4 @@
-from variant.model_dictionary import ModelDictionary
+from variant import ModelDictionary
 from variant.model_postprocessor import ModelPostprocessor
 
 if __name__ != '__main__':
@@ -34,3 +34,19 @@ def _solve_in_agros2d(file_name):
     p = _open_in_agros2d(file_name)
     p.solve()
     p.save(file_name)
+
+"""
+def parameters(self, only_numbers=False):
+    if not only_numbers:
+        return sorted(list(self.model_class().parameters.data_types().keys()))
+    else:
+        return sorted(list(name for name, type in self.model_class().parameters.data_types().items()\
+                            if (type == int or type == float)))
+
+def variables(self, only_numbers=False):
+    if not only_numbers:
+        return sorted(list(self.model_class().variables.data_types().keys()))
+    else:
+        return sorted(list(name for name, type in self.model_class().variables.data_types().items()\
+                            if (type == int or type == float)))
+"""

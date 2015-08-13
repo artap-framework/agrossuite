@@ -1,68 +1,65 @@
-from copy import deepcopy
+class Selector:
+    """General class for individuals selector."""
 
-class SurvivorsSelector:
-    """General class for selection of genoms that should be kept into the new population."""
-
-    def __init__(self, functionals, model_class):
+    def __init__(self, functionals):
         """Initialization of selector.
-        
-        SurvivorsSelector(functionals, model_class)
-        
-        Keyword arguments:
-        functionals -- functionals for optimization
-        model_class -- model class inherited from ModelBase class (default is ModelBase)
+
+        Args:
+            functionals: Functionals for optimization.
+            model_class: Model class inherited from ModelBase.
         """
+        self._functionals = functionals
 
-        self.functionals = functionals
-        self.model_class = model_class
-        self.recomended_population_size = 0
+    def select(population):
+        """Return list of selected individuals from population.
 
-    def select(population, number):
-        """Return list of selected genoms from population.
-        
-        select(population)
-        
-        Keyword arguments:
-        population -- list of considered models
-        number -- number of selected genoms
+        Args:
+            population: List of individuals.
+            number: Number of survival individuals.
         """
-
         pass
 
-class SingleCriteriaSelector(SurvivorsSelector):
-    """Selector of genoms, that should be kept to next generation in the case of single criteria optimization."""
+class ImplicitSingleCriteriaSelector(Selector):
+    """Implicit selector of individuals for single criteria optimization."""
 
     def select(self, population, number):
-        assert not self.functionals.multicriteria()
-        direction = self.functionals.functional().direction_sign()
+        """Return list of selected individuals from population.
+
+        Args:
+            population: List of individuals (models).
+            number: Number of survival individuals.
+        """
+
+        assert not self._functionals.multicriteria()
+        direction = self._functionals.functional().direction_sign()
 
         scores = []
-        for genom in population:
-            scores.append(self.functionals.evaluate(genom))
+        for individual in population:
+            scores.append(self._functionals.evaluate(individual))
         scores.sort(reverse=bool(direction != 1))
 
         priority_tresholds = [scores[number-1],
                               scores[int(number*0.8)-1],
                               scores[int(number*0.5)-1]]
 
-        survivors = []
-        for genom in population:
-            score = self.functionals.evaluate(genom)
+        deceaseds = []
+        for individual in population:
+            score = self._functionals.evaluate(individual)
             priority = 0
             for index in range(len(priority_tresholds)):
                 if direction * score <= direction * priority_tresholds[index]:
                     priority = index + 1
 
-            new_genom = self.model_class()
-            new_genom._data = deepcopy(genom.data)
+            individual.info['priority'] = priority
+            if not bool(priority):
+                deceaseds.append(individual)
 
-            if priority > 0:
-                new_genom.priority = priority
-                survivors.append(new_genom)
+        for deceased in deceaseds:
+            del population[population.index(deceased)]
 
-        return survivors
+        return population
 
-class MultiCriteriaSelector(SurvivorsSelector):
+class ImplicitMultiCriteriaSelector(Selector):
 
     def is_front(self, index, population, direction):
         [sign_f, sign_g] = direction
@@ -83,9 +80,10 @@ class MultiCriteriaSelector(SurvivorsSelector):
 
     def set_priority(self, member, priority):
         if (priority > member.priority):
-            member.priority = priority
+            member.info['priority'] = priority
 
     def select(self, population):
+        """
         assert self.functionals.isMulticriterial()
         sign_f = self.functionals.functional(0).directionSign()
         sign_g = self.functionals.functional(1).directionSign()
@@ -215,26 +213,26 @@ class MultiCriteriaSelector(SurvivorsSelector):
                 survivors.append(population_copy[i])        
                 
         return survivors
+        """
+        return population
 
 if __name__ == '__main__':
-    from variant.model_dictionary import ModelDictionary
-    from variant.optimization import Functionals, Functional
+    from variant.test_functions.quadratic_function import QuadraticFunction
 
-    from variant.test_functions import quadratic_function
+    from variant.dictionary import ModelDictionary
+    from variant.functional import Functionals, Functional
 
-    md = ModelDictionary(quadratic_function.QuadraticFunction)
-    variants = range(1000)
+    md = ModelDictionary()
+    variants = range(10)
     for x in variants:
-        model = quadratic_function.QuadraticFunction()
+        model = QuadraticFunction()
         model.parameters['x'] = x
-        model.population = 0
         md.add_model(model)
 
     md.solve(save=False)
 
     functionals = Functionals([Functional('F', 'min')])
-    selector = SingleCriteriaSelector(functionals, quadratic_function.QuadraticFunction)
-    selector.recomended_population_size = len(variants)
+    selector = ImplicitSingleCriteriaSelector(functionals)
 
-    selected = selector.select(md.models, 0)
+    selected = selector.select(md.models(), int(len(variants)/2))
     print(len(selected))

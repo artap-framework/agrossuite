@@ -1,14 +1,12 @@
-__all__ = ["Modeldata", "ModelBase",
-           "ModelDictionary", "ModelDictionaryExternal",
-           "ModelGenerator", "ModelPostprocessor",
-           "ModelFilter"]
+__all__ = ["ModelBase", "ModelDictionary"]
 
-from variant.model import ModelData
 from variant.model import ModelBase
-from variant.model_dictionary import ModelDictionary
-from variant.model_dictionary import ModelDictionaryExternal
-from variant.model_generator import ModelGenerator
-from variant.model_postprocessor import ModelPostprocessor
-from variant.model_filter import ModelFilter
+from variant.dictionary import ModelDictionary
 
-from variant.optilab_interface import *
+from variant.parameter import Parameters, ContinuousParameter, DiscreteParameter
+from variant.functional import Functionals, Functional
+
+from variant.study import SensitivityAnalysis
+
+# TODO: dont use import *
+#from variant.optilab_interface import *

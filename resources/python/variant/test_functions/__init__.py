@@ -1,7 +1,7 @@
-__all__ = ["quadratic_function", "booths_function", "holder_table_function",
-           "binh_korn_function"]
+__all__ = ["QuadraticFunction", "BoothsFunction", "HolderTableFunction", "BinhKornFunction"]
 
-from variant.test_functions import quadratic_function
-from variant.test_functions import booths_function
-from variant.test_functions import holder_table_function
-from variant.test_functions import binh_korn_function
+from variant.test_functions.quadratic_function import QuadraticFunction
+from variant.test_functions.ackleys_function import AckleysFunction
+from variant.test_functions.booths_function import BoothsFunction
+from variant.test_functions.holder_table_function import HolderTableFunction
+from variant.test_functions.binh_korn_function import BinhKornFunction
