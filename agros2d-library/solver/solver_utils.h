@@ -51,6 +51,7 @@
 #include <deal.II/base/time_stepping.h>
 #define signals public
 
+
 void writeMatioVector(dealii::Vector<double> &vec, const QString &name, const QString &varName);
 void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, const QString &varName);
 
@@ -184,8 +185,15 @@ public:
     static inline QMap<QString, SolverDeal *> solvers() { return m_solverDeal; }
     static inline const SolverDeal *solver(const QString &solver) { assert(m_solverDeal.contains(solver)); return m_solverDeal[solver]; }
 
+    static dealii::hp::FECollection<2> *feCollection(const FieldInfo *fieldInfo);
+    static dealii::hp::MappingCollection<2> *mappingCollection(const FieldInfo *fieldInfo);
+
 private:
     static QMap<QString, SolverDeal *> m_solverDeal;
+
+    static QMap<QString, dealii::hp::FECollection<2> *> m_feCollectionCache;
+    static QMap<QString, std::vector<dealii::FiniteElement<2> *> > m_fesCache;
+    static QMap<QString, dealii::hp::MappingCollection<2> *> m_mappingCollectionCache;
 };
 
 #endif // SOLVER_UTILS_H
