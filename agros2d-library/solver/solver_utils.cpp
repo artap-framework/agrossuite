@@ -46,11 +46,6 @@
 
 #include "matio/matio.h"
 
-#include <deal.II/fe/fe_q.h>
-#include <deal.II/fe/fe_dgp.h>
-#include <deal.II/fe/fe_nothing.h>
-#include <deal.II/fe/mapping_q.h>
-
 void csr2csc(int size, int nnz, double *data, int *ir, int *jc)
 {
     int *tempjc = new int[size + 1];
@@ -99,7 +94,7 @@ void writeMatioVector(dealii::Vector<double> &vec, const QString &name, const QS
 
     matvar_t *matvar = Mat_VarCreate(varName.toStdString().c_str(), MAT_C_DOUBLE, MAT_T_DOUBLE, 2, dims, data, MAT_F_DONT_COPY_DATA);
 
-    Mat_VarWrite(mat, matvar, MAT_COMPRESSION_ZLIB);
+    Mat_VarWrite(mat, matvar, MAT_COMPRESSION_NONE); // MAT_COMPRESSION_ZLIB);
     Mat_VarFree(matvar);
     Mat_Close(mat);
 
@@ -155,7 +150,7 @@ void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, co
 
     matvar_t *matvar = Mat_VarCreate(varName.toStdString().c_str(), MAT_C_SPARSE, MAT_T_DOUBLE, 2, dims, &sparse, MAT_F_DONT_COPY_DATA);
 
-    Mat_VarWrite(mat, matvar, MAT_COMPRESSION_ZLIB);
+    Mat_VarWrite(mat, matvar, MAT_COMPRESSION_ZLIB); // MAT_COMPRESSION_NONE MAT_COMPRESSION_ZLIB);
     Mat_VarFree(matvar);
     Mat_Close(mat);
 
@@ -165,9 +160,6 @@ void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, co
 }
 
 QMap<QString, SolverDeal *> ProblemSolver::m_solverDeal;
-QMap<QString, dealii::hp::FECollection<2> *> ProblemSolver::m_feCollectionCache;
-QMap<QString, std::vector<dealii::FiniteElement<2> *> > ProblemSolver::m_fesCache;
-QMap<QString, dealii::hp::MappingCollection<2> *> ProblemSolver::m_mappingCollectionCache;
 
 ProblemSolver::ProblemSolver()
 {
@@ -176,24 +168,9 @@ ProblemSolver::ProblemSolver()
 void ProblemSolver::clear()
 {
     foreach (QString fieldId, m_solverDeal.keys())
-    {
-        if (m_solverDeal.contains(fieldId))
+        if (m_solverDeal[fieldId])
             delete m_solverDeal[fieldId];
-
-        if (m_fesCache.contains(fieldId))
-            for (unsigned int i = 0; i < m_fesCache[fieldId].size(); i++)
-                delete m_fesCache[fieldId][i];
-
-        if (m_feCollectionCache.contains(fieldId))
-            delete m_feCollectionCache[fieldId];
-
-        if (m_mappingCollectionCache.contains(fieldId))
-            delete m_mappingCollectionCache[fieldId];
-    }
     m_solverDeal.clear();
-    m_fesCache.clear();
-    m_feCollectionCache.clear();
-    m_mappingCollectionCache.clear();    
 }
 
 void ProblemSolver::init()
@@ -256,72 +233,4 @@ void ProblemSolver::solveProblem()
 
         solverDeal->solveProblem();
     }
-}
-
-dealii::hp::FECollection<2> *ProblemSolver::feCollection(const FieldInfo *fieldInfo)
-{
-    if (!m_feCollectionCache.contains(fieldInfo->fieldId()))
-    {
-        dealii::hp::FECollection<2> *feCollection = new dealii::hp::FECollection<2>();
-
-        // qDebug() << fieldInfo->name();
-        QMap<int, Module::Space> spaces = fieldInfo->spaces();
-
-        // first position of feCollection, quadratureFormulas and quadratureFormulasFace belongs to NONE space
-        // this will be used for implementation of different meshes
-        std::vector<const dealii::FiniteElement<2> *> fes;
-        std::vector<unsigned int> multiplicities;
-        foreach (int key, spaces.keys())
-        {
-            dealii::FiniteElement<2> *fe = new dealii::FE_Nothing<2>();
-            fes.push_back(fe);
-            m_fesCache[fieldInfo->fieldId()].push_back(fe);
-            multiplicities.push_back(1);
-        }
-        feCollection->push_back(dealii::FESystem<2>(fes, multiplicities));
-
-        // fe collections        
-        for (unsigned int degree = 1; degree <= DEALII_MAX_ORDER + 1; degree++)
-        {
-            std::vector<const dealii::FiniteElement<2> *> fes;
-            std::vector<unsigned int> multiplicities;
-
-            foreach (int key, spaces.keys())
-            {
-                dealii::FiniteElement<2> *fe = nullptr;
-                Module::Space space = spaces[key];
-
-                if (space.type() == "h1")
-                    fe = new dealii::FE_Q<2>(degree + space.orderAdjust());
-                else if (spaces.value(key).type() == "l2")
-                    fe = new dealii::FE_DGP<2>(degree + space.orderAdjust());
-                    // fe = new dealii::FE_Q<2>(degree + space.orderAdjust());
-
-                fes.push_back(fe);
-                m_fesCache[fieldInfo->fieldId()].push_back(fe);
-                multiplicities.push_back(1);
-            }
-
-            feCollection->push_back(dealii::FESystem<2>(fes, multiplicities));
-        }
-
-        m_feCollectionCache[fieldInfo->fieldId()] = feCollection;
-    }
-
-    return m_feCollectionCache[fieldInfo->fieldId()];
-}
-
-dealii::hp::MappingCollection<2> *ProblemSolver::mappingCollection(const FieldInfo *fieldInfo)
-{
-    if (!m_mappingCollectionCache.contains(fieldInfo->fieldId()))
-    {
-        dealii::hp::MappingCollection<2> *mappingCollection = new dealii::hp::MappingCollection<2>();
-
-        for (unsigned int degree = 1; degree <= DEALII_MAX_ORDER + 1; degree++)
-            mappingCollection->push_back(dealii::MappingQ<2>(1, true));
-
-        m_mappingCollectionCache[fieldInfo->fieldId()] = mappingCollection;
-    }
-
-    return m_mappingCollectionCache[fieldInfo->fieldId()];
 }
