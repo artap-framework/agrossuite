@@ -89,7 +89,6 @@ private slots:
     void doSolveFinished();
 
     void doScriptEditor();
-    void doScriptEditorRunScript(const QString &fileName = "");
     void doOptiLab();
     void doOptions();
     void doTransform();
@@ -168,7 +167,6 @@ private:
     QAction *actPostprocessorView;
 
     QAction *actScriptEditor;
-    QAction *actScriptEditorRunScript;
     // QAction *actOptiLab;
     QAction *actMaterialBrowser;
     QAction *actCreateVideo;

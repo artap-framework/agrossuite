@@ -351,9 +351,6 @@ void MainWindow::createActions()
     actScriptEditor->setShortcut(Qt::Key_F9);
     connect(actScriptEditor, SIGNAL(triggered()), this, SLOT(doScriptEditor()));
 
-    actScriptEditorRunScript = new QAction(icon("script"), tr("Run &script..."), this);
-    connect(actScriptEditorRunScript, SIGNAL(triggered()), this, SLOT(doScriptEditorRunScript()));
-
     // actOptiLab = new QAction(icon("optilab"), tr("OptiLab"), this);
     // actOptiLab->setShortcut(Qt::Key_F10);
     // connect(actOptiLab, SIGNAL(triggered()), this, SLOT(doOptiLab()));
@@ -506,8 +503,6 @@ void MainWindow::createMenus()
 
     QMenu *mnuTools = menuBar()->addMenu(tr("&Tools"));
     mnuTools->addAction(actScriptEditor);
-    mnuTools->addAction(actScriptEditorRunScript);
-    // mnuTools->addAction(actOptiLab);
     mnuTools->addAction(actUnitTests);
     mnuTools->addSeparator();
     mnuTools->addAction(actMaterialBrowser);
@@ -1275,52 +1270,6 @@ void MainWindow::doMaterialBrowser()
 void MainWindow::doScriptEditor()
 {
     scriptEditorDialog->showDialog();
-}
-
-void MainWindow::doScriptEditorRunScript(const QString &fileName)
-{
-    QString fileNameScript;
-    QSettings settings;
-
-    if (fileName.isEmpty())
-    {
-        QString dir = settings.value("General/LastScriptDir").toString();
-
-        // open dialog
-        fileNameScript = QFileDialog::getOpenFileName(this, tr("Open File"), dir, tr("Python script (*.py)"));
-    }
-    else
-    {
-        fileNameScript = fileName;
-    }
-
-    if (QFile::exists(fileNameScript))
-    {
-        consoleView->console()->consoleMessage(tr("Run script: %1\n").
-                                               arg(QFileInfo(fileNameScript).fileName().left(QFileInfo(fileNameScript).fileName().length() - 3)),
-                                               Qt::gray);
-
-        consoleView->console()->connectStdOut();
-        bool successfulRun = currentPythonEngineAgros()->runScript(readFileContent(fileNameScript), fileNameScript);
-        consoleView->console()->disconnectStdOut();
-
-        if (!successfulRun)
-        {
-            ErrorResult result = currentPythonEngineAgros()->parseError();
-            consoleView->console()->stdErr(result.error());
-        }
-
-        consoleView->console()->appendCommandPrompt();
-
-        QFileInfo fileInfo(fileNameScript);
-        if (fileInfo.absoluteDir() != tempProblemDir())
-            settings.setValue("General/LastScriptDir", fileInfo.absolutePath());
-    }
-    else
-    {
-        if (!fileNameScript.isEmpty())
-            QMessageBox::critical(this, tr("File open"), tr("File '%1' doesn't exists.").arg(fileNameScript));
-    }
 }
 
 void MainWindow::doOptiLab()
