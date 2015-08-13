@@ -900,23 +900,6 @@ void SceneViewPreprocessor::paintBackgroundPixmap()
     }
 }
 
-void SceneViewPreprocessor::loadBackgroundImage(const QString &fileName, double x, double y, double w, double h)
-{
-    // delete texture
-    if (m_backgroundTexture != -1)
-    {
-        deleteTexture(m_backgroundTexture);
-        m_backgroundTexture = -1;
-    }
-
-    if (QFile::exists(fileName))
-    {
-        m_backgroundImage.load(fileName);
-        m_backgroundTexture = bindTexture(m_backgroundImage, GL_TEXTURE_2D, GL_RGBA);
-        m_backgroundPosition = QRectF(x, y, w, h);
-    }
-}
-
 void SceneViewPreprocessor::paintGL()
 {
     if (!isVisible()) return;

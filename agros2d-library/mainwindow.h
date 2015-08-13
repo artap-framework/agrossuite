@@ -81,8 +81,7 @@ private slots:
     void doDocumentExportMeshFile();
     void doExportVTKGeometry();
     void doDocumentSaveImage();
-    void doDocumentSaveGeometry();
-    void doLoadBackground();
+    void doDocumentSaveGeometry();    
     void doExamples(const QString &groupName = "");
 
     void doMouseSceneModeChanged(MouseSceneMode mouseSceneMode);
@@ -156,7 +155,6 @@ private:
 
     QAction *actExamples;
     QAction *actExit;
-    QAction *actLoadBackground;
     QActionGroup *actDocumentOpenRecentGroup;
 
     QAction *actHideControlPanel;

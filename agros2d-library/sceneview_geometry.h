@@ -63,8 +63,6 @@ public:
     inline SceneGeometryMode sceneMode() const { return m_sceneMode; }
     void saveGeometryToSvg(const QString &fileName);
 
-    void loadBackgroundImage(const QString &fileName, double x, double y, double w, double h);
-
     virtual QIcon iconView() { return icon("scene-geometry"); }
     virtual QString labelView() { return tr("Geometry editor"); }
 

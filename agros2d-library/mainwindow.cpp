@@ -293,9 +293,6 @@ void MainWindow::createActions()
     actCreateVideo = new QAction(icon("video"), tr("Create &video..."), this);
     connect(actCreateVideo, SIGNAL(triggered()), this, SLOT(doCreateVideo()));
 
-    actLoadBackground = new QAction(tr("Load background..."), this);
-    connect(actLoadBackground, SIGNAL(triggered()), this, SLOT(doLoadBackground()));
-
     actExit = new QAction(icon("application-exit"), tr("E&xit"), this);
     actExit->setShortcut(tr("Ctrl+Q"));
     actExit->setMenuRole(QAction::QuitRole);
@@ -483,8 +480,6 @@ void MainWindow::createMenus()
     mnuView->addAction(actSceneZoomIn);
     mnuView->addAction(actSceneZoomOut);
     mnuView->addAction(actSceneZoomRegion);
-    mnuView->addSeparator();
-    mnuView->addAction(actLoadBackground);
     mnuView->addSeparator();
     mnuView->addMenu(mnuShowPanels);
     mnuView->addSeparator();
@@ -1606,20 +1601,6 @@ void MainWindow::doExportVTKGeometry()
             QSettings settings;
             settings.setValue("General/LastVTKDir", fileInfo.absolutePath());
         }
-    }
-}
-
-void MainWindow::doLoadBackground()
-{
-    ImageLoaderDialog imageLoaderDialog;
-    if (imageLoaderDialog.exec() == QDialog::Accepted)
-    {
-        sceneViewPreprocessor->loadBackgroundImage(imageLoaderDialog.fileName(),
-                                                   imageLoaderDialog.position().x(),
-                                                   imageLoaderDialog.position().y(),
-                                                   imageLoaderDialog.position().width(),
-                                                   imageLoaderDialog.position().height());
-        sceneViewPreprocessor->refresh();
     }
 }
 
