@@ -1,6 +1,5 @@
 _empty_svg = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="32" height="32" viewBox="0 0 32 32"></svg>'
 
-import pickle
 import json
 import os
 import warnings
@@ -159,7 +158,7 @@ class ModelBase:
         warnings.warn("Method solve() should be overrided!", RuntimeWarning)
 
     def load(self, file_name):
-        """Load model data file (marshalling of ModelData object) and unpickle it.
+        """Load model data file.
 
         Args:
             file_name: Name of data file with model data.
@@ -167,12 +166,12 @@ class ModelBase:
 
         with open(file_name, 'r') as infile:
             data = json.load(infile)
-            self._data.parameters = data['parameters']
-            self._data.variables = data['variables']
-            #self._data = pickle.load(infile)
+            self._data.parameters = StrictDict(data['parameters'])
+            self._data.variables = StrictDict(data['variables'])
+            self._data.info = data['info']
 
     def save(self, file_name):
-        """Pickle model data and save to file (serialization of ModelData object).
+        """Save model data to the file.
 
         Args:
             file_name: Name of new model data file.
@@ -182,26 +181,12 @@ class ModelBase:
         if (directory and not os.path.isdir(directory)):
             os.makedirs(directory)
 
-        # TODO: Use HIGHEST_PROTOCOL
         with open(file_name, 'w') as outfile:
             data = {'parameters' : self._data.parameters,
-                    'variables' : self._data.variables}
+                    'variables' : self._data.variables,
+                    'info' : self._data.info}
 
             json.dump(data, outfile)
-            #pickle.dump(self._data, outfile, 0)
-
-    def serialize(self):
-        """Serialize and return model data as string."""
-        # TODO: Use HIGHEST_PROTOCOL
-        return pickle.dumps(self._data, 0)
-
-    def deserialize(self, data):
-        """Deserialize and return ModelData object from string.
-
-        Args:
-            data: String with serialized data.
-        """
-        self._data = pickle.loads(data)
 
 if __name__ == '__main__':
     import pythonlab

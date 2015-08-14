@@ -117,6 +117,10 @@ cdef extern from "../../agros2d-library/pythonlab/pythonengine_agros.h":
     void saveFile(string &file, bool saveWithSolution) except +
     string getScriptFromModel()
 
+    # temp and cache
+    string tempDir()
+    string cacheDir()
+
     # memory
     int appTime()
     void memoryUsage(vector[int] &time, vector[int] &usage)
@@ -162,6 +166,12 @@ def memory_usage():
         usage.append(usage_vector[i])
 
     return time, usage
+
+def tempdir(dir = ""):
+    return "{0}/{1}".format(tempDir().decode(), dir)
+
+def cachedir(dir = ""):
+    return "{0}/{1}".format(cacheDir().decode(), dir)
 
 cdef class __Options__:
     cdef PyOptions *thisptr

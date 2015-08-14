@@ -118,6 +118,9 @@ void openFile(const std::string &file, bool openWithSolution);
 void saveFile(const std::string &file, bool saveWithSolution);
 inline std::string getScriptFromModel() { return createPythonFromModel().toStdString(); }
 
+inline std::string tempDir() { return tempProblemDir().toStdString(); }
+inline std::string cacheDir() { return cacheProblemDir().toStdString(); }
+
 int appTime();
 void memoryUsage(std::vector<int> &time, std::vector<int> &usage);
 

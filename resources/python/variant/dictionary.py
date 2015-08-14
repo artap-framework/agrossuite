@@ -9,9 +9,11 @@ from shutil import make_archive, move
 from time import sleep
 from importlib import machinery
 
+import agros2d
 import os
 import zipfile
 import json
+import time
 
 class ModelDictionary:
     """General class for model collection.
@@ -179,7 +181,7 @@ class ModelDictionary:
         """
         del self._dictionary[name]
 
-    def load(self, data_file):
+    def load_from_file(self, data_file):
         """Clear dictionary and load models from dictionary data file.
 
         Args:
@@ -207,7 +209,19 @@ class ModelDictionary:
 
         self._model_index = len(self._dictionary)-1
 
-    def save(self, data_file, problem_file):
+    def load(self):
+        with open('{0}/problem.desc'.format(self._data_file), 'r') as infile:
+            self._description = json.load(infile)
+        self._model_class = eval(self.description['model_class'])
+        
+        for file_name in sorted(os.listdir(self._data_file)):
+            if not file_name.endswith('data'): continue
+
+            model = self._model_class()
+            model.load('{0}/{1}'.format(self._data_file, file_name))
+            self._dictionary[os.path.splitext(file_name)[0]] = model
+
+    def save_to_file(self, data_file, problem_file):
         """Save all models to dictionary data file (standard extension is .opt).
 
         Args:
@@ -227,6 +241,17 @@ class ModelDictionary:
 
         self._data_file = data_file
         self._problem_file = problem_file
+
+    def save(self):
+        path = agros2d.cachedir('study/{0}'.format(int(time.time())))
+        for name, model in self._dictionary.items():
+            model.save('{0}/{1}.data'.format(path, name))
+
+        description = dict(list(self.description.items()) + [('model_class', self._model_class.__name__)])
+        with open('{0}/problem.desc'.format(path), 'w') as outfile:
+            json.dump(description, outfile)
+
+        self._data_file = path
 
     def solve(self, recalculate=False, save=False):
         """Solve models stored in directory.
@@ -263,7 +288,7 @@ class ModelDictionary:
                         temp_file = '{0}/{1}'.format(archive_temp, os.path.basename(self._data_file).split('.')[0])
                         make_archive(base_name=temp_file, format='zip', root_dir=temp)
                         move('{0}.zip'.format(temp_file), self._data_file)
-    
+
     def clear(self):
         """Clear models dictionary."""
         self._dictionary.clear()
@@ -462,10 +487,13 @@ if __name__ == '__main__':
         md.add_model(model)
 
     data_file = pythonlab.tempname('opt')
-    md.save(data_file, 'test_functions/quadratic_function.py')
-    md.solve(save=True)
+    md.solve(save=False)
+    md.save() #data_file, 'test_functions/quadratic_function.py'
+    print('{0}/{1}'.format(len(md.models()), len(md.models(only_solved=True))))
+    md.load()
     print('{0}/{1}'.format(len(md.models()), len(md.models(only_solved=True))))
 
+    """
     md.criterions.add_criterion(RangeCriterion('75<=F=<80'), [Functional('F'), 50, 80])
     for model in md.models(filter=True):
         print('F={0}'.format(model.variables['F']))
@@ -476,3 +504,4 @@ if __name__ == '__main__':
     #print(md.parameters())
     #print(md.variables())
     #print(md.description)
+    """
