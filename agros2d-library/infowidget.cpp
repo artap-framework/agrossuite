@@ -489,6 +489,21 @@ void InfoWidget::showInfo()
         problemInfo.ShowSection("COUPLING");
     }
 
+    if (Agros2D::problem()->problemParameters().count() > 0)
+    {
+        problemInfo.SetValue("PARAMETERS_MAIN_LABEL", tr("Problem parameters").toStdString());
+
+        QMap<QString, double> problemParameters = Agros2D::problem()->problemParameters();
+        foreach (QString var, problemParameters.keys())
+        {
+            ctemplate::TemplateDictionary *parametersSection = problemInfo.AddSectionDictionary("PARAMETERS_SECTION");
+
+            parametersSection->SetValue("PARAMETERS_VARIABLE_NAME", var.toStdString());
+            parametersSection->SetValue("PARAMETERS_VARIABLE_VALUE", QString::number(problemParameters[var]).toStdString());
+        }
+        problemInfo.ShowSection("PARAMETERS");
+    }
+
     if (Agros2D::problem()->isSolved())
     {
         problemInfo.SetValue("SOLUTION_LABEL", tr("Solution").toStdString());

@@ -143,7 +143,6 @@ public:
     SceneMaterial *getMaterial(FieldInfo *field, const QString &name);
 
     void checkGeometryAssignement();
-    QString checkStartupScript(const QString scriptToCheck);
 
     // OBSOLETE - DO NOT USE *************************************************************
 

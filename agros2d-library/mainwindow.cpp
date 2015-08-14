@@ -340,6 +340,9 @@ void MainWindow::createActions()
     actUnitTests = new QAction(tr("Unit tests..."), this);
     connect(actUnitTests, SIGNAL(triggered()), this, SLOT(doUnitTests()));
 
+    actSweepAnalysis = new QAction(tr("Sweep analysis..."), this);
+    connect(actSweepAnalysis, SIGNAL(triggered()), this, SLOT(doSweepAnalysis()));
+
     actFullScreen = new QAction(icon("view-fullscreen"), tr("Fullscreen mode"), this);
     actFullScreen->setShortcut(QKeySequence(tr("F11")));
     connect(actFullScreen, SIGNAL(triggered()), this, SLOT(doFullScreen()));
@@ -504,6 +507,8 @@ void MainWindow::createMenus()
     QMenu *mnuTools = menuBar()->addMenu(tr("&Tools"));
     mnuTools->addAction(actScriptEditor);
     mnuTools->addAction(actUnitTests);
+    mnuTools->addSeparator();
+    mnuTools->addAction(actSweepAnalysis);
     mnuTools->addSeparator();
     mnuTools->addAction(actMaterialBrowser);
     mnuTools->addSeparator();
@@ -1254,6 +1259,12 @@ void MainWindow::doUnitTests()
     connect(&unit, SIGNAL(openInPythonLab(QString, QString)), scriptEditorDialog, SLOT(doFileOpenAndFind(QString, QString)));
     connect(&unit, SIGNAL(openInPythonLab(QString, QString)), scriptEditorDialog, SLOT(show()));
     unit.exec();
+}
+
+void MainWindow::doSweepAnalysis()
+{
+    // UnitTestsWidget unit(this);
+    // unit.exec();
 }
 
 void MainWindow::doTransform()

@@ -1496,7 +1496,7 @@ void ProblemWidget::startupScriptChanged()
     lblStartupScriptError->clear();
     lblStartupScriptError->setVisible(false);
 
-    QString error = Agros2D::scene()->checkStartupScript(txtStartupScript->toPlainText());
+    QString error = Agros2D::problem()->checkAndApplyStartupScript(txtStartupScript->toPlainText());
 
     // run and check startup script
     if (error.isEmpty())

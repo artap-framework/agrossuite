@@ -44,6 +44,7 @@
 #include "logview.h"
 
 #include "pythonlab/pythonengine.h"
+#include "pythonlab/pythonengine_agros.h"
 
 #include "mesh/meshgenerator_triangle.h"
 #include "mesh/meshgenerator_cubit.h"
@@ -179,6 +180,173 @@ bool Problem::determineIsNonlinear() const
     return false;
 }
 
+QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
+{
+    bool undefinedVariable = false;
+
+    m_problemParameters.clear();
+
+    // run and check startup script
+    if (!scriptToCheck.isEmpty())
+    {
+        currentPythonEngineAgros()->blockSignals(true);
+        currentPythonEngineAgros()->useLocalDict();
+        currentPythonEngineAgros()->runExpression("from math import *");
+
+        // run in local dict
+        // store startup script
+        QString originalStartup = Agros2D::problem()->setting()->value(ProblemSetting::Problem_StartupScript).toString();
+        Agros2D::problem()->setting()->setValue(ProblemSetting::Problem_StartupScript, QString());
+
+        bool successfulRun = currentPythonEngineAgros()->runScript(scriptToCheck);
+
+        if (successfulRun)
+        {
+            double value;
+
+            // check geometry
+            // nodes
+            foreach (SceneNode *node, Agros2D::scene()->nodes->items())
+            {
+                if (node->pointValue().x().isNumber() && node->pointValue().y().isNumber())
+                {
+                    continue;
+                }
+                else
+                {
+                    if (!currentPythonEngineAgros()->runExpression(QString("%1 + %2").
+                                                                   arg(node->pointValue().x().toString()).
+                                                                   arg(node->pointValue().y().toString()),
+                                                                   &value))
+                    {
+                        ErrorResult result = currentPythonEngineAgros()->parseError();
+                        Agros2D::log()->printError(QObject::tr("Startup"), QObject::tr("Node %1: %2").
+                                                   arg(Agros2D::scene()->nodes->items().indexOf(node)).
+                                                   arg(result.error()));
+
+                        undefinedVariable = true;
+                    }
+                }
+            }
+
+            // edges
+            foreach (SceneEdge *edge, Agros2D::scene()->edges->items())
+            {
+                if (edge->angleValue().isNumber())
+                {
+                    continue;
+                }
+                else
+                {
+                    if (!currentPythonEngineAgros()->runExpression(edge->angleValue().toString(), &value))
+                    {
+                        ErrorResult result = currentPythonEngineAgros()->parseError();
+                        Agros2D::log()->printError(QObject::tr("Startup"), QObject::tr("Edge %1: %2").
+                                                   arg(Agros2D::scene()->edges->items().indexOf(edge)).
+                                                   arg(result.error()));
+
+                        undefinedVariable = true;
+                    }
+                }
+            }
+
+            // labels
+            foreach (SceneLabel *label, Agros2D::scene()->labels->items())
+            {
+                if (label->pointValue().x().isNumber() && label->pointValue().y().isNumber())
+                {
+                    continue;
+                }
+                else
+                {
+                    if (!currentPythonEngineAgros()->runExpression(QString("%1 + %2").
+                                                                   arg(label->pointValue().x().toString()).
+                                                                   arg(label->pointValue().y().toString()),
+                                                                   &value))
+                    {
+                        ErrorResult result = currentPythonEngineAgros()->parseError();
+                        Agros2D::log()->printError(QObject::tr("Startup"), QObject::tr("Label %1: %2").
+                                                   arg(Agros2D::scene()->labels->items().indexOf(label)).
+                                                   arg(result.error()));
+
+                        undefinedVariable = true;
+                    }
+                }
+            }
+
+            // check materials
+            foreach (SceneMaterial* material, Agros2D::scene()->materials->items())
+            {
+                foreach (uint key, material->values().keys())
+                {
+                    if (!material->evaluate(key, 0.0))
+                    {
+                        Agros2D::log()->printError(QObject::tr("Marker"), QObject::tr("Material %1: %2").
+                                                   arg(key).arg(material->value(key).data()->toString()));
+                        undefinedVariable = true;
+                    }
+                }
+            }
+
+            // check boundaries
+            foreach (SceneBoundary* boundary, Agros2D::scene()->boundaries->items())
+            {
+                foreach (uint key, boundary->values().keys())
+                {
+                    if (!boundary->evaluate(key, 0.0))
+                    {
+                        Agros2D::log()->printError(QObject::tr("Marker"), QObject::tr("Boundary %1: %2").
+                                                   arg(key).arg(boundary->value(key).data()->toString()));
+                        undefinedVariable = true;
+                    }
+                }
+            }
+        }
+
+        // restore startup script
+        Agros2D::problem()->setting()->setValue(ProblemSetting::Problem_StartupScript, originalStartup);
+
+        QList<PythonVariable> variableList;
+        if (successfulRun)
+            variableList = currentPythonEngineAgros()->variableList();
+
+        currentPythonEngineAgros()->useGlobalDict();
+        currentPythonEngineAgros()->blockSignals(false);
+
+        if (successfulRun)
+        {
+            // run new script
+            currentPythonEngineAgros()->runScript(scriptToCheck);
+            Agros2D::problem()->setting()->setValue(ProblemSetting::Problem_StartupScript, scriptToCheck);
+
+            // fill parameters            
+            foreach (PythonVariable variable, variableList)
+            {
+                if ((variable.type == "int") || (variable.type == "float"))
+                {
+                    m_problemParameters[variable.name] = variable.value.toDouble();
+                }
+            }
+
+            // invalidate fields
+            emit fieldsChanged();
+        }
+        else
+        {
+            ErrorResult result = currentPythonEngineAgros()->parseError();
+            // original script
+            currentPythonEngineAgros()->runScript(Agros2D::problem()->setting()->value(ProblemSetting::Problem_StartupScript).toString());
+
+            return result.error();
+        }
+    }
+
+    if (undefinedVariable)
+        return QObject::tr("Undefined variable");
+    else
+        return QString();
+}
+
 void Problem::clearSolution()
 {
     m_abort = false;
@@ -224,6 +392,9 @@ void Problem::clearFieldsAndConfig()
     // clear config
     m_config->clear();
     m_setting->clear();
+
+    // clear parameters
+    m_problemParameters.clear();
 }
 
 void Problem::addField(FieldInfo *field)

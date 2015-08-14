@@ -61,8 +61,8 @@
 {{/TRANSIENT}}
 </div>
 
-<div class="section">
 {{#COUPLING}}
+<div class="section">
 <h2>{{COUPLING_MAIN_LABEL}}</h2>
 <hr/>
 {{#COUPLING_SECTION}}
@@ -75,6 +75,18 @@
 {{/COUPLING_SECTION}}
 </div>
 {{/COUPLING}}
+
+{{#PARAMETERS}}
+<div class="section">
+<h2>{{PARAMETERS_MAIN_LABEL}}</h2>
+<hr/>
+<table>
+{{#PARAMETERS_SECTION}}
+	<tr><td><b>{{PARAMETERS_VARIABLE_NAME}}</b></td><td>{{PARAMETERS_VARIABLE_VALUE}}</td>
+{{/PARAMETERS_SECTION}}
+</table>
+</div>
+{{/PARAMETERS}}
 
 <td>
 {{#FIELD}}

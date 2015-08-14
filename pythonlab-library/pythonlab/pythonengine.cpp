@@ -326,8 +326,8 @@ void PythonEngine::useLocalDict()
     // Py_INCREF(m_dictLocal);
 
     // init engine extensions
-    PyObject *m = PyModule_Create(&pythonEngineDef);
-    PyDict_SetItemString(PyImport_GetModuleDict(), pythonEngineDef.m_name, m);
+    // PyObject *m = PyModule_Create(&pythonEngineDef);
+    // PyDict_SetItemString(PyImport_GetModuleDict(), pythonEngineDef.m_name, m);
 }
 
 void PythonEngine::useGlobalDict()
@@ -884,7 +884,9 @@ QList<PythonVariable> PythonEngine::variableList()
                 << "vtk_geometry_actor"
                 << "vtk_scalar_actor"
                 << "help"
-                << "__a2d_help__";
+                << "__a2d_help__"
+                << "e" // from math
+                << "pi"; // from math
 
     QStringList filter_type;
     filter_type << "builtin_function_or_method";

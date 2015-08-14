@@ -108,6 +108,10 @@ public:
     bool determineIsNonlinear() const; // slow version
     int numAdaptiveFields() const;
 
+    // check and apply start script
+    QString checkAndApplyStartupScript(const QString scriptToCheck);
+    inline QMap<QString, double> problemParameters() { return m_problemParameters; }
+
     inline QMap<QString, FieldInfo *> fieldInfos() const { return m_fieldInfos; }
     inline FieldInfo *fieldInfo(const QString &fieldId) { assert(m_fieldInfos.contains(fieldId));
                                                           return m_fieldInfos[fieldId]; }
@@ -154,6 +158,9 @@ private:
     ProblemSetting *m_setting;
 
     ProblemSolver *m_solverDeal;
+
+    // problem parameters
+    QMap<QString, double> m_problemParameters;
 
     QMap<QString, FieldInfo *> m_fieldInfos;
     QMap<QPair<FieldInfo *, FieldInfo *>, CouplingInfo *> m_couplingInfos;

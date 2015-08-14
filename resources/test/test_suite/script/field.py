@@ -653,53 +653,6 @@ class TestFieldAdaptivityInfo(Agros2DTestCase):
         with self.assertRaises(RuntimeError):
             self.field.solution_mesh_info()
 
-class TestFieldAdaptivityInfoTransient(Agros2DTestCase):
-    def setUp(self):
-        self.problem = a2d.problem(clear = True)
-        self.problem.time_step_method = "fixed"
-        self.problem.time_method_order = 2
-        self.problem.time_total = 10
-        self.problem.time_steps = 10
-        
-        self.field = a2d.field("heat")
-        self.field.analysis_type = "transient"
-        self.field.transient_initial_condition = 293.15
-        self.field.number_of_refinements = 0
-        self.field.polynomial_order = 1
-        self.field.adaptivity_type = "hp-adaptivity"
-
-        self.field.add_boundary("Neumann", "heat_heat_flux", {"heat_heat_flux" : 0, "heat_convection_heat_transfer_coefficient" : 0,
-                                                              "heat_convection_external_temperature" : 0, "heat_radiation_emissivity" : 0,
-                                                              "heat_radiation_ambient_temperature" : 0})
-        self.field.add_boundary("Dirichlet", "heat_temperature", {"heat_temperature" : { "expression" : "293.15*(time<4) + 393.15*(time>=4)" }})
-
-        self.field.add_material("Material", {"heat_conductivity" : 237, "heat_volume_heat" : 0, "heat_density" : 2700, "heat_specific_heat" : 896})
-
-        geometry = a2d.geometry
-        geometry.add_edge(0.25, 0, 0, 0.25, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
-        geometry.add_edge(0, 0.25, -0.25, 0, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
-        geometry.add_edge(-0.25, 0, 0, -0.25, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
-        geometry.add_edge(0, -0.25, 0.25, 0, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
-        geometry.add_edge(0.05, 0, 0, 0.05, boundaries = {"heat" : "Dirichlet"})
-        geometry.add_edge(0, 0.05, -0.05, 0, boundaries = {"heat" : "Dirichlet"})
-        geometry.add_edge(-0.05, 0, 0, -0.05, boundaries = {"heat" : "Dirichlet"})
-        geometry.add_edge(0, -0.05, 0.05, 0, boundaries = {"heat" : "Dirichlet"})
-
-        geometry.add_label(0, 0, materials = {"heat" : "none"})
-        geometry.add_label(0.15, 0, materials = {"heat" : "Material"})
-        a2d.view.zoom_best_fit()
-
-    def fixme_test_adaptivity_info_transient(self):
-        self.problem.solve()
-        
-        for step in range(self.problem.time_steps):
-            dofs = self.field.adaptivity_info(time_step=step)['dofs']
-
-            if (step < 4):
-                self.assertEqual(len(dofs), 1)
-            else:
-                self.assertNotEqual(len(dofs), 1)
-
 class TestFieldSolverInfo(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
@@ -815,17 +768,17 @@ if __name__ == '__main__':
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestField))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldBoundaries))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldMaterials))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldNewtonSolver))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldMatrixSolver))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivity))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldLocalValues))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldIntegrals))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivityInfo))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestField))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldBoundaries))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldMaterials))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldNewtonSolver))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldMatrixSolver))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivity))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldLocalValues))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldIntegrals))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivityInfo))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivityInfoTransient))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldSolverInfo))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldSolverInfo))
     suite.run(result)
 
 # TODO (Franta) :
