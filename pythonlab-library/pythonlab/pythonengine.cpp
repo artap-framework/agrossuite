@@ -317,28 +317,17 @@ void PythonEngine::useLocalDict()
 {
     m_useGlobalDict = false;
 
-    PyObject *main = PyImport_ImportModule("__main__");
-    Py_INCREF(main);
-    m_dictLocal = PyModule_GetDict(main);
+    if (m_dictLocal)
+        Py_XDECREF(m_dictLocal);
+
+    m_dictLocal = PyDict_New();
+    PyDict_SetItemString(m_dictLocal, "__builtins__", PyEval_GetBuiltins());
     Py_INCREF(m_dictLocal);
-
-    // m_dictLocal = PyDict_New();
-    // Py_INCREF(m_dictLocal);
-
-    // init engine extensions
-    // PyObject *m = PyModule_Create(&pythonEngineDef);
-    // PyDict_SetItemString(PyImport_GetModuleDict(), pythonEngineDef.m_name, m);
 }
 
 void PythonEngine::useGlobalDict()
 {
-    m_useGlobalDict = true;
-
-    if (m_dictLocal)
-    {
-        Py_XDECREF(m_dictLocal);
-        m_dictLocal = NULL;
-    }
+    m_useGlobalDict = true;    
 }
 
 void PythonEngine::abortScript()

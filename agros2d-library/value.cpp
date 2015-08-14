@@ -287,6 +287,13 @@ void Value::parseFromString(const QString &str)
     }
 }
 
+Value Value::parseValueFromString(const QString &str)
+{
+    Value val;
+    val.parseFromString(str);
+    return val;
+}
+
 bool Value::evaluate(double time, const Point &point, double& result) const
 {
     return evaluateExpression(m_text, time, point, result);

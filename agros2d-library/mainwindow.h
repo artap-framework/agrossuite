@@ -168,7 +168,7 @@ private:
     QAction *actPostprocessorView;
 
     QAction *actScriptEditor;
-    // QAction *actOptiLab;
+    QAction *actOptiLab;
     QAction *actMaterialBrowser;
     QAction *actCreateVideo;
     QAction *actUnitTests;
@@ -229,7 +229,7 @@ private:
     LogView *logView;
 
     PythonEditorAgrosDialog *scriptEditorDialog;
-    // OptilabWindow *optilabWindow;
+    OptilabWindow *optilabWindow;
     SceneTransformDialog *sceneTransformDialog;
 
     QSplitter *splitter;

@@ -114,12 +114,10 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // PythonLab
     scriptEditorDialog = new PythonEditorAgrosDialog(currentPythonEngine(), QStringList(), NULL);
     sceneInfoWidget->setRecentScriptFiles(scriptEditorDialog->recentFiles());
-    // collaborationDownloadDialog = new ServerDownloadDialog(this);
     sceneTransformDialog = new SceneTransformDialog(sceneViewPreprocessor, this);
 
     // OptiLab
-    // optilabWindow = new OptilabWindow(scriptEditorDialog);
-    // sceneInfoWidget->setRecentOptilabFiles(optilabWindow->recentFiles());
+    optilabWindow = new OptilabWindow();
 
     createActions();
     createViews();
@@ -231,7 +229,7 @@ MainWindow::~MainWindow()
 
     delete logStdOut;
     delete scriptEditorDialog;
-    // delete optilabWindow;
+    delete optilabWindow;
 }
 
 void MainWindow::createActions()
@@ -354,9 +352,9 @@ void MainWindow::createActions()
     actScriptEditor->setShortcut(Qt::Key_F9);
     connect(actScriptEditor, SIGNAL(triggered()), this, SLOT(doScriptEditor()));
 
-    // actOptiLab = new QAction(icon("optilab"), tr("OptiLab"), this);
-    // actOptiLab->setShortcut(Qt::Key_F10);
-    // connect(actOptiLab, SIGNAL(triggered()), this, SLOT(doOptiLab()));
+    actOptiLab = new QAction(icon("optilab"), tr("OptiLab"), this);
+    actOptiLab->setShortcut(Qt::Key_F10);
+    connect(actOptiLab, SIGNAL(triggered()), this, SLOT(doOptiLab()));
 
     actMaterialBrowser = new QAction(icon(""), tr("Material browser..."), this);
     actMaterialBrowser->setShortcut(QKeySequence(tr("Ctrl+M")));
@@ -700,7 +698,7 @@ void MainWindow::createMain()
     // tlbLeftBar->addAction(Agros2D::problem()->actionSolveAdaptiveStep());
     tlbLeftBar->addSeparator();
     tlbLeftBar->addAction(actScriptEditor);
-    // tlbLeftBar->addAction(actOptiLab);
+    tlbLeftBar->addAction(actOptiLab);
 
     splitter = new QSplitter(Qt::Horizontal, this);
     splitter->addWidget(viewControls);
@@ -947,14 +945,6 @@ void MainWindow::doDocumentOpen(const QString &fileName)
             // python script
             scriptEditorDialog->doFileOpen(fileNameDocument);
             scriptEditorDialog->showDialog();
-            return;
-        }
-
-        if (fileInfo.suffix() == "opt")
-        {
-            // OptiLab
-            // optilabWindow->documentOpen(fileNameDocument);
-            // optilabWindow->showDialog();
             return;
         }
 
@@ -1285,7 +1275,7 @@ void MainWindow::doScriptEditor()
 
 void MainWindow::doOptiLab()
 {
-    // optilabWindow->showDialog();
+    optilabWindow->showDialog();
 }
 
 void MainWindow::doCut()

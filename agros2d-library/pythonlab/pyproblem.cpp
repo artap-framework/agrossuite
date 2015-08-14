@@ -71,7 +71,7 @@ void PyProblem::setMeshType(const std::string &meshType)
 void PyProblem::setFrequency(double frequency)
 {
     if (frequency > 0.0)
-        Agros2D::problem()->config()->setValue(ProblemConfig::Frequency, frequency);
+        Agros2D::problem()->config()->setValue(ProblemConfig::Frequency, QString::number(frequency));
     else
         throw out_of_range(QObject::tr("The frequency must be positive.").toStdString());
 }

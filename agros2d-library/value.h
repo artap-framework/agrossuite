@@ -74,6 +74,7 @@ public:
 
     QString toString() const;
     void parseFromString(const QString &str);
+    static Value parseValueFromString(const QString &str);
 
     inline DataTable table() const { return m_table; }
 

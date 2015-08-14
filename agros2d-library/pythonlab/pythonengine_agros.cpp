@@ -260,7 +260,7 @@ QString createPythonFromModel()
 
     if (Agros2D::problem()->isHarmonic())
         str += QString("problem.frequency = %1\n").
-                arg(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toDouble());
+                arg(Value::parseValueFromString(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toString()).toString());
 
     if (Agros2D::problem()->isTransient())
     {

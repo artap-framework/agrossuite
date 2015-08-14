@@ -137,7 +137,7 @@ void FieldInfo::createValuePointerTable()
     }
 
     // frequency
-    m_frequency = Agros2D::problem()->config()->value(ProblemConfig::Frequency).toDouble();
+    m_frequency = Value::parseValueFromString(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toString()).number();
 }
 
 QList<QWeakPointer<Value> > FieldInfo::valuePointerTable(QString id) const

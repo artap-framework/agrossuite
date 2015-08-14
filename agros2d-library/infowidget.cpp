@@ -217,7 +217,7 @@ void InfoWidget::showInfo()
 
     problemInfo.SetValue("HARMONIC_LABEL", tr("Harmonic analysis").toStdString());
     problemInfo.SetValue("HARMONIC_FREQUENCY_LABEL", tr("Frequency:").toStdString());
-    problemInfo.SetValue("HARMONIC_FREQUENCY", QString::number(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toDouble()).toStdString() + " Hz");
+    problemInfo.SetValue("HARMONIC_FREQUENCY", QString::number(Value::parseValueFromString(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toString()).number()).toStdString() + " Hz");
 
     if (Agros2D::problem()->isTransient())
     {

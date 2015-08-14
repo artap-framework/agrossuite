@@ -248,7 +248,7 @@ private:
 
     // harmonic
     QGroupBox *grpHarmonicAnalysis;
-    LineEditDouble *txtFrequency;
+    ValueLineEdit *txtFrequency;
 
     // transient
     QGroupBox *grpTransientAnalysis;

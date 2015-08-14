@@ -44,7 +44,7 @@ class PyProblem
         void setMeshType(const std::string &meshType);
 
         // frequency
-        inline double getFrequency() const { return Agros2D::problem()->config()->value(ProblemConfig::Frequency).toDouble(); }
+        inline double getFrequency() const { return (Value::parseValueFromString(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toString())).number(); }
         void setFrequency(double frequency);
 
         // time step method

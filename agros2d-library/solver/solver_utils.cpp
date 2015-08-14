@@ -236,7 +236,7 @@ void ProblemSolver::solveProblem()
     {
         // frequency
         // TODO: find some better place, where some values are initialized
-        targetfieldInfo->setFrequency(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toDouble());
+        targetfieldInfo->setFrequency(Value::parseValueFromString(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toString()).number());
 
         SolverDeal *solverDeal = m_solverDeal[targetfieldInfo->fieldId()];
 

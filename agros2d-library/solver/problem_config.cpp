@@ -120,7 +120,7 @@ void ProblemConfig::setDefaultValues()
 {
     m_settingDefault.clear();
 
-    m_settingDefault[Frequency] = 50.0;
+    m_settingDefault[Frequency] = "50"; // class Value
     m_settingDefault[TimeMethod] = TimeStepMethod_Fixed;
     m_settingDefault[TimeMethodTolerance] = 0.05;
     m_settingDefault[TimeInitialStepSize] = 0.0;

@@ -25,39 +25,26 @@
 
 #include "qcustomplot/qcustomplot.h"
 
-class SystemOutputWidget;
-class PythonScriptingConsole;
-class PythonEditorAgrosDialog;
-class OptilabSingle;
-class OptilabMulti;
-
 class OptilabWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    OptilabWindow(PythonEditorAgrosDialog *scriptEditorDialog);
+    OptilabWindow();
     ~OptilabWindow();
 
     void showDialog();
 
-    QStringList *recentFiles() { return &m_recentFiles; }
-
 public slots:
-    void documentNew();
-    void documentOpen(const QString &fileName = "");
-    void documentClose();
+
 
 private slots:
     void openProblemAgros2D();
-    void scriptEditor();
 
     void doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void doItemDoubleClicked(QTreeWidgetItem *item, int column);
 
-    void documentOpenRecent(QAction *action);
-    void doAbout();
-
     void refreshVariants();
+    void loadVariant(const QString &fileName);
 
     void variantOpenInExternalAgros2D();
     void variantSolveInExternalSolver();
@@ -71,46 +58,24 @@ private slots:
     void processSolveFinished(int exitCode);
 
 private:
-    // script editor
-    PythonEditorAgrosDialog *m_scriptEditorDialog;
-
-    QString m_problem;
-
-    QStringList m_recentFiles;
-    QMenu *mnuRecentFiles;
-    QActionGroup *actDocumentOpenRecentGroup;
-
     QTreeWidget *trvVariants;
     QLabel *lblProblems;
 
-    QSplitter *splitter;
-    OptilabSingle *optilabSingle;
-    OptilabMulti *optilabMulti;
+    QWebView *webView;
+    QString m_cascadeStyleSheet;
 
-    QAction *actScriptEditor;
-    QAction *actExit;
-    QAction *actAbout;
-    QAction *actAboutQt;
-    QAction *actDocumentNew;
-    QAction *actDocumentOpen;
-    QAction *actDocumentClose;
+    QSplitter *splitter;
 
     QPushButton *btnOpenInAgros2D;
     QPushButton *btnSolveInAgros2D;
     QPushButton *btnSolveInExternalSolver;
     QPushButton *btnOpenInExternalAgros2D;
 
-    PythonScriptingConsole *console;
+    QAction *actRefresh;
 
     void createActions();
-    void createMenus();
     void createToolBars();
     void createMain();
-
-    void setRecentFiles();
-
-    friend class OptilabSingle;
-    friend class OptilabMulti;
 };
 
 #endif // OPTILABDIALOG_H

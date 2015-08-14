@@ -99,8 +99,6 @@ SET(SOURCES
     mesh/meshgenerator_gmsh.cpp
     optilab/optilab.cpp
     optilab/optilab_data.cpp
-    optilab/optilab_multi.cpp
-    optilab/optilab_single.cpp
     parser/lex.cpp
     particle/particle_tracing.cpp
     particle/particle_forces.cpp
@@ -208,8 +206,6 @@ SOURCE_GROUP(
   "Source Files\\Optilab" FILES 
   optilab/optilab.cpp
   optilab/optilab_data.cpp
-  optilab/optilab_multi.cpp
-  optilab/optilab_single.cpp
 )
 
 SOURCE_GROUP(
@@ -311,8 +307,6 @@ SET(HEADERS
   mesh/meshgenerator_triangle.h
   optilab/optilab.h
   optilab/optilab_data.h
-  optilab/optilab_multi.h
-  optilab/optilab_single.h
   parser/lex.h
   particle/particle_tracing.h
   particle/particle_forces.h

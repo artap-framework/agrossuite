@@ -17,13 +17,7 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-
-#include <Python.h>
-
-
 #include "optilab.h"
-#include "optilab_single.h"
-#include "optilab_multi.h"
 
 #include "util/constants.h"
 #include "gui/lineeditdouble.h"
@@ -36,14 +30,16 @@
 
 #include "pythonlab/pythonengine_agros.h"
 
-OptilabWindow::OptilabWindow(PythonEditorAgrosDialog *scriptEditorDialog) : QMainWindow(),
-    m_scriptEditorDialog(scriptEditorDialog), m_problem("")
+#include "ctemplate/template.h"
+
+#include <QJsonDocument>
+
+OptilabWindow::OptilabWindow() : QMainWindow()
 {
     setWindowTitle(tr("Optilab"));
 
     createActions();
     createToolBars();
-    createMenus();
     createMain();
 
     QSettings settings;
@@ -51,12 +47,6 @@ OptilabWindow::OptilabWindow(PythonEditorAgrosDialog *scriptEditorDialog) : QMai
     splitter->restoreGeometry(settings.value("OptilabWindow/SplitterGeometry").toByteArray());
     restoreGeometry(settings.value("OptilabWindow/Geometry", saveGeometry()).toByteArray());
     restoreState(settings.value("OptilabWindow/State", saveState()).toByteArray());
-    m_recentFiles = settings.value("OptilabWindow/RecentFiles").value<QStringList>();
-
-    // set recent files
-    setRecentFiles();
-
-    optilabSingle->welcomeInfo();
 }
 
 OptilabWindow::~OptilabWindow()
@@ -66,7 +56,6 @@ OptilabWindow::~OptilabWindow()
     settings.setValue("OptilabWindow/State", saveState());
     settings.setValue("OptilabWindow/SplitterState", splitter->saveState());
     settings.setValue("OptilabWindow/SplitterGeometry", splitter->saveGeometry());
-    settings.setValue("OptilabWindow/RecentFiles", m_recentFiles);
 
     removeDirectory(tempProblemDir());
 }
@@ -225,70 +214,9 @@ void OptilabWindow::processSolveFinished(int exitCode)
 
 void OptilabWindow::createActions()
 {
-    actAbout = new QAction(icon("about"), tr("About &Optilab"), this);
-    actAbout->setMenuRole(QAction::AboutRole);
-    connect(actAbout, SIGNAL(triggered()), this, SLOT(doAbout()));
-
-    actAboutQt = new QAction(icon("help-about"), tr("About &Qt"), this);
-    actAboutQt->setMenuRole(QAction::AboutQtRole);
-    connect(actAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-
-    actExit = new QAction(icon("application-exit"), tr("E&xit"), this);
-    actExit->setShortcut(tr("Ctrl+Q"));
-    actExit->setMenuRole(QAction::QuitRole);
-    connect(actExit, SIGNAL(triggered()), this, SLOT(close()));
-
-    actScriptEditor = new QAction(icon("script-python"), tr("PythonLab"), this);
-    actScriptEditor->setShortcut(Qt::Key_F9);
-    connect(actScriptEditor, SIGNAL(triggered()), this, SLOT(scriptEditor()));
-
-    actDocumentNew = new QAction(icon("document-new"), tr("&New..."), this);
-    actDocumentNew->setShortcuts(QKeySequence::New);
-    connect(actDocumentNew, SIGNAL(triggered()), this, SLOT(documentNew()));
-
-    actDocumentOpen = new QAction(icon("document-open"), tr("&Open..."), this);
-    actDocumentOpen->setShortcuts(QKeySequence::Open);
-    connect(actDocumentOpen, SIGNAL(triggered()), this, SLOT(documentOpen()));
-
-    actDocumentOpenRecentGroup = new QActionGroup(this);
-    connect(actDocumentOpenRecentGroup, SIGNAL(triggered(QAction *)), this, SLOT(documentOpenRecent(QAction *)));
-
-    actDocumentClose = new QAction(tr("&Close"), this);
-    actDocumentClose->setShortcuts(QKeySequence::Close);
-    connect(actDocumentClose, SIGNAL(triggered()), this, SLOT(documentClose()));
-
-    // actOpenAgros2D = new QAction(icon("agros2d"), tr("Open Agros2D"), this);
-    // actOpenAgros2D->setEnabled(false);
-    // connect(actOpenAgros2D, SIGNAL(triggered()), this, SLOT(openProblemAgros2D()));
-}
-
-void OptilabWindow::createMenus()
-{
-    menuBar()->clear();
-
-    mnuRecentFiles = new QMenu(tr("&Recent files"), this);
-
-    QMenu *mnuFile = menuBar()->addMenu(tr("&File"));
-    mnuFile->addSeparator();
-    mnuFile->addAction(actDocumentNew);
-    mnuFile->addAction(actDocumentOpen);
-    mnuFile->addMenu(mnuRecentFiles);
-    mnuFile->addAction(actDocumentClose);
-#ifndef Q_WS_MAC
-    mnuFile->addSeparator();
-    mnuFile->addAction(actExit);
-#endif
-
-    QMenu *mnuHelp = menuBar()->addMenu(tr("&Help"));
-#ifndef Q_WS_MAC
-    mnuHelp->addSeparator();
-#else
-    // mnuHelp->addAction(actOptions); // will be added to "Agros2D" MacOSX menu
-    mnuHelp->addAction(actExit);    // will be added to "Agros2D" MacOSX menu
-#endif
-    mnuHelp->addSeparator();
-    mnuHelp->addAction(actAbout);   // will be added to "Agros2D" MacOSX menu
-    mnuHelp->addAction(actAboutQt); // will be added to "Agros2D" MacOSX menu
+    actRefresh = new QAction(icon("reload"), tr("Refresh"), this);
+    // actDocumentSave->setShortcuts(QKeySequence::Save);
+    connect(actRefresh, SIGNAL(triggered()), this, SLOT(refreshVariants()));
 }
 
 void OptilabWindow::createToolBars()
@@ -297,18 +225,6 @@ void OptilabWindow::createToolBars()
 #ifdef Q_WS_MAC
     int iconHeight = 24;
 #endif
-
-    QToolBar *tlbFile = addToolBar(tr("File"));
-    tlbFile->setObjectName("File");
-    tlbFile->setOrientation(Qt::Horizontal);
-    tlbFile->setAllowedAreas(Qt::TopToolBarArea);
-    tlbFile->setMovable(false);
-#ifdef Q_WS_MAC
-    tlbFile->setFixedHeight(iconHeight);
-    tlbFile->setStyleSheet("QToolButton { border: 0px; padding: 0px; margin: 0px; }");
-#endif
-    tlbFile->addAction(actDocumentNew);
-    tlbFile->addAction(actDocumentOpen);
 
     QToolBar *tlbTools = addToolBar(tr("Tools"));
     tlbTools->setObjectName("Tools");
@@ -319,22 +235,31 @@ void OptilabWindow::createToolBars()
     tlbTools->setFixedHeight(iconHeight);
     tlbTools->setStyleSheet("QToolButton { border: 0px; padding: 0px; margin: 0px; }");
 #endif
+    tlbTools->addAction(actRefresh);
     tlbTools->addSeparator();
-    // tlbTools->addAction(actOpenAgros2D);
-    tlbTools->addAction(actScriptEditor);
 }
 
 void OptilabWindow::createMain()
 {
-    console = new PythonScriptingConsole(currentPythonEngine(), this);
+    // problem information
+    webView = new QWebView();
+    webView->page()->setNetworkAccessManager(new QNetworkAccessManager());
+    webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    // connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
 
-    optilabSingle = new OptilabSingle(this);
-    optilabMulti = new OptilabMulti(this);
+    // stylesheet
+    std::string style;
+    ctemplate::TemplateDictionary stylesheet("style");
+    stylesheet.SetValue("FONTFAMILY", htmlFontFamily().toStdString());
+    stylesheet.SetValue("FONTSIZE", (QString("%1").arg(htmlFontSize()).toStdString()));
+
+    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/panels/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
+    m_cascadeStyleSheet = QString::fromStdString(style);
 
     splitter = new QSplitter(this);
     splitter->setOrientation(Qt::Vertical);
-    splitter->addWidget(optilabSingle);
-    splitter->addWidget(optilabMulti);
+    splitter->addWidget(webView);
+    // splitter->addWidget(optilabMulti);
 
     QVBoxLayout *layoutSM = new QVBoxLayout();
     layoutSM->addWidget(splitter);
@@ -350,7 +275,7 @@ void OptilabWindow::createMain()
 
     connect(trvVariants, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
     connect(trvVariants, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
-    connect(trvVariants, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), optilabSingle, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+    // connect(trvVariants, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), optilabSingle, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
     btnOpenInExternalAgros2D = new QPushButton(tr("Open in external Agros2D"));
     btnOpenInExternalAgros2D->setToolTip(tr("Open in external Agros2D"));
@@ -388,7 +313,7 @@ void OptilabWindow::createMain()
     QHBoxLayout *layoutRight = new QHBoxLayout();
     // layoutRight->addWidget(tbxAnalysis);
     layoutRight->addLayout(layoutSM);
-    layoutRight->addWidget(console);
+    //layoutRight->addWidget(console);
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->addLayout(layoutLeft);
@@ -404,16 +329,12 @@ void OptilabWindow::openProblemAgros2D()
 {   
     QProcess process;
 
+    /*
     QString command = QString("\"%1/agros2d\" -s \"%2\"").
             arg(QApplication::applicationDirPath()).
             arg(m_problem);
-
     process.startDetached(command);
-}
-
-void OptilabWindow::scriptEditor()
-{
-    m_scriptEditorDialog->showDialog();
+    */
 }
 
 void OptilabWindow::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
@@ -422,6 +343,8 @@ void OptilabWindow::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
     btnSolveInAgros2D->setEnabled(current);
     btnOpenInExternalAgros2D->setEnabled(current);
     btnSolveInExternalSolver->setEnabled(current);
+
+    loadVariant(current->data(0, Qt::UserRole).toString());
 }
 
 void OptilabWindow::doItemDoubleClicked(QTreeWidgetItem *item, int column)
@@ -430,93 +353,17 @@ void OptilabWindow::doItemDoubleClicked(QTreeWidgetItem *item, int column)
         variantOpenInAgros2D();
 }
 
-void OptilabWindow::documentNew()
-{
-    QSettings settings;
-
-    QString dir = settings.value("General/LastProblemDir", "data").toString();
-    QString fileNameDocument = QFileDialog::getOpenFileName(this, tr("Open file"), dir, tr("OptiLab files (*.opt)"));
-
-    if (!fileNameDocument.isEmpty())
-    {
-
-    }
-}
-
-void OptilabWindow::documentOpen(const QString &fileName)
-{
-    QSettings settings;
-    QString fileNameDocument;
-
-    if (fileName.isEmpty())
-    {
-        QString dir = settings.value("General/LastProblemDir", "data").toString();
-        fileNameDocument = QFileDialog::getOpenFileName(this, tr("Open file"), dir, tr("OptiLab files (*.opt)"));
-    }
-    else
-    {
-        fileNameDocument = fileName;
-    }
-
-    if (fileNameDocument.isEmpty() || !QFile::exists(fileNameDocument))
-        return;
-
-    QFileInfo fileInfo(fileNameDocument);
-    if (fileInfo.suffix() == "opt")
-    {
-        m_problem = fileInfo.absoluteFilePath();
-        settings.setValue("General/LastProblemDir", fileInfo.absolutePath());
-
-        optilabSingle->doItemChanged(NULL, NULL);
-
-        // set recent files
-        setRecentFiles();
-
-        refreshVariants();
-    }
-}
-
-void OptilabWindow::documentOpenRecent(QAction *action)
-{
-    QString fileName = action->text();
-    documentOpen(fileName);
-}
-
-void OptilabWindow::documentClose()
-{
-    m_problem = "";
-
-    // clear listview
-    trvVariants->clear();
-
-    // actOpenAgros2D->setEnabled(false);
-
-    currentPythonEngine()->runExpression("del variant.optilab_interface._optilab_mp; del agros2d_model");
-
-    optilabSingle->welcomeInfo();
-
-    refreshVariants();
-}
-
-void OptilabWindow::doAbout()
-{
-    AboutDialog about(this);
-    about.exec();
-}
-
 void OptilabWindow::showDialog()
 {
     show();
     activateWindow();
-    // txtEditor->setFocus();
+
+    refreshVariants();
 }
 
 void OptilabWindow::refreshVariants()
 {
-    QString str = QString("agros2d_variants = variant.optilab_interface._models_zip('%1')").arg(m_problem);
-    qDebug() << str;
-    currentPythonEngine()->runExpression(str);
-
+    // TODO: more analyses !!
     trvVariants->setUpdatesEnabled(false);
 
     // save current item
@@ -533,42 +380,28 @@ void OptilabWindow::refreshVariants()
     int count = 0;
     int countSolved = 0;
 
-    // extract values
-    PyObject *result = PyDict_GetItemString(currentPythonEngine()->dict(), "agros2d_variants");
-    if (result)
+    QString dir = QString("%1/../analyses/1439554800").arg(cacheProblemDir());
+    QDirIterator it(dir, QStringList() << "*.data", QDir::Files, QDirIterator::NoIteratorFlags);
+    while (it.hasNext())
     {
-        Py_INCREF(result);
-        for (int i = 0; i < PyList_Size(result); i++)
-        {
-            PyObject *d = PyList_GetItem(result, i);
-            Py_INCREF(d);
+        QString fileName = it.next();
 
-            QString name = QString::fromWCharArray(PyUnicode_AsUnicode(PyDict_GetItemString(d, "key")));
-            bool isSolved = PyLong_AsLong(PyDict_GetItemString(d, "solved"));
+        bool isSolved = false;
 
-            QTreeWidgetItem *variantItem = new QTreeWidgetItem(trvVariants->invisibleRootItem());
-            if (isSolved)
-                variantItem->setIcon(0, icon("browser-other"));
-            else
-                variantItem->setIcon(0, icon("browser-class"));
-            variantItem->setText(0, QFileInfo(name).baseName());
-            variantItem->setText(1, QFileInfo(QString("%1/models/%2").
-                                              arg(m_problem).
-                                              arg(name)).lastModified().toString("yyyy-MM-dd hh:mm:ss"));
-            variantItem->setData(0, Qt::UserRole, name);
+        QTreeWidgetItem *variantItem = new QTreeWidgetItem(trvVariants->invisibleRootItem());
+        if (isSolved)
+            variantItem->setIcon(0, icon("browser-other"));
+        else
+            variantItem->setIcon(0, icon("browser-class"));
+        variantItem->setText(0, QFileInfo(fileName).baseName());
+        variantItem->setText(1, QFileInfo(fileName).lastModified().toString("yyyy-MM-dd hh:mm:ss"));
+        variantItem->setData(0, Qt::UserRole, fileName);
 
-            Py_XDECREF(d);
-
-            // increase counter
-            count++;
-            if (isSolved)
-                countSolved++;
-        }
-        Py_XDECREF(result);
+        // increase counter
+        count++;
+        if (isSolved)
+            countSolved++;
     }
-
-    // remove variables
-    currentPythonEngine()->runExpression("del agros2d_variants");
 
     trvVariants->setUpdatesEnabled(true);
 
@@ -584,8 +417,6 @@ void OptilabWindow::refreshVariants()
 
             if (selectedItem == item->data(0, Qt::UserRole).toString())
             {
-                // qDebug() << "selected" << selectedItem;
-
                 item->setSelected(true);
                 trvVariants->setCurrentItem(item);
                 // ensure visible
@@ -596,30 +427,47 @@ void OptilabWindow::refreshVariants()
 
     lblProblems->setText(tr("Solutions: %1/%2").arg(countSolved).arg(count));
 
-    optilabMulti->refreshVariables();
-
     qDebug() << "refresh" << time.elapsed();
 }
 
-void OptilabWindow::setRecentFiles()
+void OptilabWindow::loadVariant(const QString &fileName)
 {
-    // recent files
-    if (!m_problem.isEmpty())
-    {
-        QFileInfo fileInfo(m_problem);
-        if (m_recentFiles.indexOf(fileInfo.absoluteFilePath()) == -1)
-            m_recentFiles.insert(0, fileInfo.absoluteFilePath());
-        else
-            m_recentFiles.move(m_recentFiles.indexOf(fileInfo.absoluteFilePath()), 0);
+    qDebug() << "loadVariant" << fileName;
 
-        while (m_recentFiles.count() > 15) m_recentFiles.removeLast();
+    // template
+    std::string output;
+    ctemplate::TemplateDictionary variant("variant");
+
+    QFile file;
+    file.setFileName(fileName);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QString content = file.readAll();
+    file.close();
+
+    QJsonDocument sd = QJsonDocument::fromJson(content.toUtf8());
+    QJsonObject obj = sd.object();
+
+    QJsonObject parameters = obj.value("parameters").toObject();
+    QJsonObject variables = obj.value("variables").toObject();
+    QJsonObject info = obj.value("info").toObject();
+
+    // TODO: fill template
+    for (QJsonObject::Iterator iter = parameters.begin(); iter != parameters.end (); ++iter)
+    {
+        QJsonValue val = iter.value();
+
+        if (val.isDouble())
+        {
+            qDebug() << iter.key() << val.toDouble();
+        }
     }
 
-    mnuRecentFiles->clear();
-    for (int i = 0; i<m_recentFiles.count(); i++)
-    {
-        QAction *actMenuRecentItem = new QAction(m_recentFiles[i], this);
-        actDocumentOpenRecentGroup->addAction(actMenuRecentItem);
-        mnuRecentFiles->addAction(actMenuRecentItem);
-    }
+    ctemplate::ExpandTemplate(datadir().toStdString() + TEMPLATEROOT.toStdString() + "/panels/optilab_variant.tpl", ctemplate::DO_NOT_STRIP, &variant, &output);
+
+    // setHtml(...) doesn't work
+    // webView->setHtml(QString::fromStdString(info));
+
+    // load(...) works
+    writeStringContent(tempProblemDir() + "/variant.html", QString::fromStdString(output));
+    webView->load(QUrl::fromLocalFile(tempProblemDir() + "/variant.html"));
 }

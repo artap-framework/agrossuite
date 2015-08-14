@@ -34,6 +34,7 @@
 #include "solver/problem_config.h"
 
 #include "gui/lineeditdouble.h"
+#include "gui/valuelineedit.h"
 #include "gui/groupbox.h"
 #include "gui/common.h"
 
@@ -1193,8 +1194,8 @@ void ProblemWidget::createControls()
     grpGeneral->setLayout(layoutGeneral);
 
     // harmonic
-    txtFrequency = new LineEditDouble(0);
-    txtFrequency->setBottom(0.0);
+    txtFrequency = new ValueLineEdit();
+    txtFrequency->setMinimum(0.0);
 
     // harmonic analysis
     QGridLayout *layoutHarmonicAnalysis = new QGridLayout();
@@ -1362,8 +1363,7 @@ void ProblemWidget::updateControls()
 
     // harmonic magnetic
     grpHarmonicAnalysis->setVisible(Agros2D::problem()->isHarmonic());
-    txtFrequency->setValue(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toDouble());
-    // txtFrequency->setEnabled(Agros2D::problem()->isHarmonic());
+    txtFrequency->setValue(Value::parseValueFromString(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toString()));
 
     // transient
     grpTransientAnalysis->setVisible(Agros2D::problem()->isTransient());
@@ -1424,7 +1424,7 @@ void ProblemWidget::changedWithClear()
     Agros2D::problem()->config()->setCoordinateType((CoordinateType) cmbCoordinateType->itemData(cmbCoordinateType->currentIndex()).toInt());
     Agros2D::problem()->config()->setMeshType((MeshType) cmbMeshType->itemData(cmbMeshType->currentIndex()).toInt());
 
-    Agros2D::problem()->config()->setValue(ProblemConfig::Frequency, txtFrequency->value());
+    Agros2D::problem()->config()->setValue(ProblemConfig::Frequency, txtFrequency->value().toString());
     Agros2D::problem()->config()->setValue(ProblemConfig::TimeMethod, (TimeStepMethod) cmbTransientMethod->itemData(cmbTransientMethod->currentIndex()).toInt());
     Agros2D::problem()->config()->setValue(ProblemConfig::TimeOrder, txtTransientOrder->value());
     Agros2D::problem()->config()->setValue(ProblemConfig::TimeMethodTolerance, txtTransientTolerance->value());

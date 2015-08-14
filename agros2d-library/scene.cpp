@@ -1274,7 +1274,7 @@ void Scene::readFromFile21(const QString &fileName)
                                                                                                          meshTypeToStringKey(MeshType_Triangle))));
 
     // harmonic
-    Agros2D::problem()->config()->setValue(ProblemConfig::Frequency, eleProblemInfo.toElement().attribute("frequency", "0").toDouble());
+    Agros2D::problem()->config()->setValue(ProblemConfig::Frequency, eleProblemInfo.toElement().attribute("frequency", "0"));
 
     // transient
     Agros2D::problem()->config()->setValue(ProblemConfig::TimeConstantTimeSteps, eleProblemInfo.toElement().attribute("time_steps", "2").toInt());
