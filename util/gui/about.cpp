@@ -233,11 +233,15 @@ QWidget *AboutDialog::createSysinfo()
     std::map<std::string, std::string> info;
     if (desc->accelerator && desc->backend == OCL)
     {
+#ifndef _MSC_VER
         info = info_ocl();
+#endif
     }
     else if (desc->accelerator && desc->backend == GPU)
     {
-        info = info_gpu();
+#ifndef _MSC_VER
+      info = info_gpu();
+#endif
     }
 
     QGridLayout *layoutGPU = new QGridLayout();

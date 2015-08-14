@@ -661,7 +661,7 @@ QStringList PythonEngine::codeCompletion(const QString& command)
 QStringList PythonEngine::codePyFlakes(const QString& fileName)
 {
     QStringList out;
-
+#ifndef _MSC_VER
     if (!m_isScriptRunning)
     {
         QString exp = QString("result_pyflakes_pythonlab = python_engine_pyflakes_check(\"%1\")").arg(compatibleFilename(fileName));
@@ -695,7 +695,7 @@ QStringList PythonEngine::codePyFlakes(const QString& fileName)
             Py_XDECREF(del);
         }
     }
-
+#endif
     return out;
 }
 
