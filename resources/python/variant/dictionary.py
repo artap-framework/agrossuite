@@ -199,10 +199,11 @@ class ModelDictionary:
                 del self.description['model_class']
 
             for file in sorted(zip_file.namelist()):
-                if not file.endswith('pickle'): continue
+                if not file.endswith('data'): continue
 
                 model = self._model_class()
-                model.deserialize(zip_file.read(file))
+                print(zip_file.read(file))
+                model.deserialize(str(zip_file.read(file)))
                 self._dictionary[os.path.splitext(file)[0]] = model
 
             zip_file.close()
@@ -232,7 +233,7 @@ class ModelDictionary:
 
         with zipfile.ZipFile(data_file, 'w', zipfile.ZIP_DEFLATED) as zip_file:
             for name, model in self._dictionary.items():
-                zip_file.writestr('{0}.pickle'.format(name), model.serialize())
+                zip_file.writestr('{0}.data'.format(name), model.serialize())
 
             description = dict(list(self.description.items()) + [('model_class', self._model_class.__name__)])
             zip_file.writestr('problem.desc', json.dumps(description))
@@ -243,7 +244,7 @@ class ModelDictionary:
         self._problem_file = problem_file
 
     def save(self):
-        path = agros2d.cachedir('study/{0}'.format(int(time.time())))
+        path = agros2d.cachedir('analyses/{0}'.format(int(time.time())))
         for name, model in self._dictionary.items():
             model.save('{0}/{1}.data'.format(path, name))
 
@@ -481,17 +482,18 @@ if __name__ == '__main__':
 
     md = ModelDictionary() #ModelDictionaryExternal()
     md.solver = '{0}/agros2d_solver'.format(pythonlab.datadir())
-    for x in range(100):
+    for x in range(5):
         model = QuadraticFunction()
         model.parameters['x'] = x
         md.add_model(model)
 
     data_file = pythonlab.tempname('opt')
     md.solve(save=False)
-    md.save() #data_file, 'test_functions/quadratic_function.py'
+    md.save() #'test_functions/quadratic_function.py'
     print('{0}/{1}'.format(len(md.models()), len(md.models(only_solved=True))))
     md.load()
     print('{0}/{1}'.format(len(md.models()), len(md.models(only_solved=True))))
+    print(md.models())
 
     """
     md.criterions.add_criterion(RangeCriterion('75<=F=<80'), [Functional('F'), 50, 80])

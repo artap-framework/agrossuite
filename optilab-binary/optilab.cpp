@@ -439,7 +439,6 @@ void OptilabWindow::showDialog()
 
 void OptilabWindow::refreshVariants()
 {
-    // TODO: more analyses !!
     trvVariants->setUpdatesEnabled(false);
 
     // save current item
@@ -456,27 +455,37 @@ void OptilabWindow::refreshVariants()
     int count = 0;
     int countSolved = 0;
 
-    QString dir = QString("%1/../analyses/1439554800").arg(cacheProblemDir());
-    QDirIterator it(dir, QStringList() << "*.data", QDir::Files, QDirIterator::NoIteratorFlags);
-    while (it.hasNext())
+    QString dir = QString("%1/analyses").arg(cacheProblemDir());
+    QDirIterator analysis(dir, QDir::NoDotAndDotDot | QDir::Dirs, QDirIterator::NoIteratorFlags);
+
+    while (analysis.hasNext())
     {
-        QString fileName = it.next();
+        QString dirName = analysis.next();
+        QTreeWidgetItem *analysisItem = new QTreeWidgetItem(trvVariants->invisibleRootItem());
+        analysisItem->setText(0, QFileInfo(dirName).baseName());
 
-        bool isSolved = false;
+        QDirIterator variant(dirName, QStringList() << "*.data", QDir::Files, QDirIterator::NoIteratorFlags);
+        while (variant.hasNext())
+        {
+            QString fileName = variant.next();
+            bool isSolved = false;
 
-        QTreeWidgetItem *variantItem = new QTreeWidgetItem(trvVariants->invisibleRootItem());
-        if (isSolved)
-            variantItem->setIcon(0, icon("browser-other"));
-        else
-            variantItem->setIcon(0, icon("browser-class"));
-        variantItem->setText(0, QFileInfo(fileName).baseName());
-        variantItem->setText(1, QFileInfo(fileName).lastModified().toString("yyyy-MM-dd hh:mm:ss"));
-        variantItem->setData(0, Qt::UserRole, fileName);
+            QTreeWidgetItem *variantItem = new QTreeWidgetItem();
+            if (isSolved)
+                variantItem->setIcon(0, icon("browser-other"));
+            else
+                variantItem->setIcon(0, icon("browser-class"));
+            variantItem->setText(0, QFileInfo(fileName).baseName());
+            variantItem->setText(1, QFileInfo(fileName).lastModified().toString("yyyy-MM-dd hh:mm:ss"));
+            variantItem->setData(0, Qt::UserRole, fileName);
 
-        // increase counter
-        count++;
-        if (isSolved)
-            countSolved++;
+            // increase counter
+            count++;
+            if (isSolved)
+                countSolved++;
+
+            analysisItem->addChild(variantItem);
+        }
     }
 
     trvVariants->setUpdatesEnabled(true);
@@ -527,23 +536,52 @@ void OptilabWindow::loadVariant(const QString &fileName)
     QJsonObject variables = obj.value("variables").toObject();
     QJsonObject info = obj.value("info").toObject();
 
-    // TODO: fill template
+    variant.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
+    variant.SetValue("NAME", QFileInfo(fileName).baseName().toStdString());
+    if (!parameters.isEmpty())
+        variant.SetValue("PARAMETER_LABEL", tr("Parameters:").toStdString());
+    if (!variables.isEmpty())
+        variant.SetValue("VARIABLE_LABEL", tr("Variables:").toStdString());
+    if (!info.isEmpty())
+        variant.SetValue("INFO_LABEL", tr("Informations:").toStdString());
+
     for (QJsonObject::Iterator iter = parameters.begin(); iter != parameters.end (); ++iter)
     {
         QJsonValue val = iter.value();
 
         if (val.isDouble())
         {
-            qDebug() << iter.key() << val.toDouble();
+            ctemplate::TemplateDictionary *parameter = variant.AddSectionDictionary("PARAMETER_SECTION");
+            parameter->SetValue("PARAMETER_LABEL", iter.key().toStdString());
+            parameter->SetValue("PARAMETER_VALUE", QString::number(val.toDouble()).toStdString());
+        }
+    }
+
+    for (QJsonObject::Iterator iter = variables.begin(); iter != variables.end (); ++iter)
+    {
+        QJsonValue val = iter.value();
+
+        if (val.isDouble())
+        {
+            ctemplate::TemplateDictionary *variable = variant.AddSectionDictionary("VARIABLE_SECTION");
+            variable->SetValue("VARIABLE_LABEL", iter.key().toStdString());
+            variable->SetValue("VARIABLE_VALUE", QString::number(val.toDouble()).toStdString());
+        }
+    }
+
+    for (QJsonObject::Iterator iter = info.begin(); iter != info.end (); ++iter)
+    {
+        QJsonValue val = iter.value();
+
+        if (val.isDouble())
+        {
+            ctemplate::TemplateDictionary *info = variant.AddSectionDictionary("INFO_SECTION");
+            info->SetValue("INFO_LABEL", iter.key().toStdString());
+            info->SetValue("INFO_VALUE", QString::number(val.toDouble()).toStdString());
         }
     }
 
     ctemplate::ExpandTemplate(datadir().toStdString() + TEMPLATEROOT.toStdString() + "/panels/optilab_variant.tpl", ctemplate::DO_NOT_STRIP, &variant, &output);
-
-    // setHtml(...) doesn't work
-    // webView->setHtml(QString::fromStdString(info));
-
-    // load(...) works
     writeStringContent(tempProblemDir() + "/variant.html", QString::fromStdString(output));
     webView->load(QUrl::fromLocalFile(tempProblemDir() + "/variant.html"));
 

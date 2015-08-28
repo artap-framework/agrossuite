@@ -188,6 +188,20 @@ class ModelBase:
 
             json.dump(data, outfile)
 
+    def serialize(self):
+        data = {'parameters' : self._data.parameters,
+                'variables' : self._data.variables,
+                'info' : self._data.info}
+
+        return json.dumps(data)
+
+    def deserialize(self, data):
+        data = json.loads(data)
+
+        self._data.parameters = StrictDict(data['parameters'])
+        self._data.variables = StrictDict(data['variables'])
+        self._data.info = data['info']
+
 if __name__ == '__main__':
     import pythonlab
 
