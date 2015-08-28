@@ -46,7 +46,6 @@ class LogDialog;
 
 class ChartWidget;
 class PythonEditorAgrosDialog;
-class OptilabWindow;
 class SceneTransformDialog;
 class SceneViewWidget;
 class LogStdOut;
@@ -89,7 +88,6 @@ private slots:
     void doSolveFinished();
 
     void doScriptEditor();
-    void doOptiLab();
     void doOptions();
     void doTransform();
     void doMaterialBrowser();
@@ -168,7 +166,6 @@ private:
     QAction *actPostprocessorView;
 
     QAction *actScriptEditor;
-    QAction *actOptiLab;
     QAction *actMaterialBrowser;
     QAction *actCreateVideo;
     QAction *actUnitTests;
@@ -229,7 +226,6 @@ private:
     LogView *logView;
 
     PythonEditorAgrosDialog *scriptEditorDialog;
-    OptilabWindow *optilabWindow;
     SceneTransformDialog *sceneTransformDialog;
 
     QSplitter *splitter;

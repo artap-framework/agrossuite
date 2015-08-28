@@ -270,6 +270,7 @@ ADD_SUBDIRECTORY(agros2d-binary)
 ADD_SUBDIRECTORY(agros2d-solver)
 ADD_SUBDIRECTORY(agros2d-generator)
 ADD_SUBDIRECTORY(agros2d-remote)
+ADD_SUBDIRECTORY(optilab-binary)
 ADD_SUBDIRECTORY(solver-external)
 #ADD_SUBDIRECTORY(agros2d-forms)
 

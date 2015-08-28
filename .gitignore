@@ -114,3 +114,5 @@ DartConfiguration.tcl
 Testing/
 install_manifest.txt
 standalone
+*.supp
+optilab

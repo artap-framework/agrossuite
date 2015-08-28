@@ -10,7 +10,7 @@ INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/util)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/pythonlab-library)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty)
 IF(WIN32)
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/ctemplate)
+    INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/ctemplate)
     INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/ctemplate/windows)
 ELSE(WIN32)
     INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/ctemplate/linux)
@@ -97,8 +97,6 @@ SET(SOURCES
     mesh/meshgenerator_cubit.cpp
     mesh/meshgenerator_triangle.cpp
     mesh/meshgenerator_gmsh.cpp
-    optilab/optilab.cpp
-    optilab/optilab_data.cpp
     parser/lex.cpp
     particle/particle_tracing.cpp
     particle/particle_forces.cpp
@@ -203,12 +201,6 @@ SOURCE_GROUP(
 )
 
 SOURCE_GROUP(
-  "Source Files\\Optilab" FILES 
-  optilab/optilab.cpp
-  optilab/optilab_data.cpp
-)
-
-SOURCE_GROUP(
   "Source Files\\PythonLab" FILES 
   pythonlab/pyfield.cpp
   pythonlab/pygeometry.cpp
@@ -305,8 +297,6 @@ SET(HEADERS
   mesh/meshgenerator.h
   mesh/meshgenerator_cubit.h
   mesh/meshgenerator_triangle.h
-  optilab/optilab.h
-  optilab/optilab_data.h
   parser/lex.h
   particle/particle_tracing.h
   particle/particle_forces.h
@@ -402,14 +392,6 @@ SOURCE_GROUP(
   mesh/meshgenerator.h
   mesh/meshgenerator_cubit.h
   mesh/meshgenerator_triangle.h
-)
-
-SOURCE_GROUP(
-  "Header Files\\Optilab" FILES 
-  optilab/optilab.h
-  optilab/optilab_data.h
-  optilab/optilab_multi.h
-  optilab/optilab_single.h
 )
 
 SOURCE_GROUP(

@@ -54,7 +54,6 @@
 #include "chartdialog.h"
 #include "examplesdialog.h"
 #include "solver/solver.h"
-#include "optilab/optilab.h"
 
 #include "util/form_script.h"
 
@@ -115,9 +114,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     scriptEditorDialog = new PythonEditorAgrosDialog(currentPythonEngine(), QStringList(), NULL);
     sceneInfoWidget->setRecentScriptFiles(scriptEditorDialog->recentFiles());
     sceneTransformDialog = new SceneTransformDialog(sceneViewPreprocessor, this);
-
-    // OptiLab
-    optilabWindow = new OptilabWindow();
 
     createActions();
     createViews();
@@ -229,7 +225,6 @@ MainWindow::~MainWindow()
 
     delete logStdOut;
     delete scriptEditorDialog;
-    delete optilabWindow;
 }
 
 void MainWindow::createActions()
@@ -351,10 +346,6 @@ void MainWindow::createActions()
     actScriptEditor = new QAction(icon("script-python"), tr("PythonLab"), this);
     actScriptEditor->setShortcut(Qt::Key_F9);
     connect(actScriptEditor, SIGNAL(triggered()), this, SLOT(doScriptEditor()));
-
-    actOptiLab = new QAction(icon("optilab"), tr("OptiLab"), this);
-    actOptiLab->setShortcut(Qt::Key_F10);
-    connect(actOptiLab, SIGNAL(triggered()), this, SLOT(doOptiLab()));
 
     actMaterialBrowser = new QAction(icon(""), tr("Material browser..."), this);
     actMaterialBrowser->setShortcut(QKeySequence(tr("Ctrl+M")));
@@ -698,7 +689,6 @@ void MainWindow::createMain()
     // tlbLeftBar->addAction(Agros2D::problem()->actionSolveAdaptiveStep());
     tlbLeftBar->addSeparator();
     tlbLeftBar->addAction(actScriptEditor);
-    tlbLeftBar->addAction(actOptiLab);
 
     splitter = new QSplitter(Qt::Horizontal, this);
     splitter->addWidget(viewControls);
@@ -1271,11 +1261,6 @@ void MainWindow::doMaterialBrowser()
 void MainWindow::doScriptEditor()
 {
     scriptEditorDialog->showDialog();
-}
-
-void MainWindow::doOptiLab()
-{
-    optilabWindow->showDialog();
 }
 
 void MainWindow::doCut()

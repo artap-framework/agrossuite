@@ -199,6 +199,8 @@ private:
     friend class CalculationThread;
     friend class PyProblem;
     friend class AgrosSolver;
+    friend class OptilabSolver;
+    friend class OptilabWindow;
 
 private slots:
     void doMeshWithGUI();

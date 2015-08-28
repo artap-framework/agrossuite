@@ -25,14 +25,18 @@
 
 #include "qcustomplot/qcustomplot.h"
 
+class LogWidget;
+class PythonEditorAgrosDialog;
+
 class OptilabWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    OptilabWindow();
+    OptilabWindow(int argc, char *argv[]);
     ~OptilabWindow();
 
     void showDialog();
+    inline void setStartupProblemFilename(const QString& fn) { m_startupProblemFilename = fn; }
 
 public slots:
 
@@ -57,7 +61,11 @@ private slots:
     void processSolveError(QProcess::ProcessError error);
     void processSolveFinished(int exitCode);
 
+    void doScriptEditor();
+
 private:
+    QString m_startupProblemFilename;
+
     QTreeWidget *trvVariants;
     QLabel *lblProblems;
 
@@ -72,6 +80,11 @@ private:
     QPushButton *btnOpenInExternalAgros2D;
 
     QAction *actRefresh;
+    QAction *actScriptEditor;
+
+    LogWidget *logWidget;
+
+    PythonEditorAgrosDialog *scriptEditorDialog;
 
     void createActions();
     void createToolBars();

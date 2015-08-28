@@ -410,7 +410,8 @@ bool PythonEngine::runScript(const QString &script, const QString &fileName)
     if (settings.value("PythonEngine/UserModuleDeleter", true).toBool())
         deleteUserModules();
 
-    runPythonHeader();
+    if (m_useGlobalDict)
+        runPythonHeader();
 
     PyObject *output = NULL;
     if (QFile::exists(fileName))

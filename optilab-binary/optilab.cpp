@@ -25,6 +25,8 @@
 #include "gui/systemoutput.h"
 #include "gui/about.h"
 
+#include "logview.h"
+
 #include <fstream>
 #include <string>
 
@@ -34,9 +36,21 @@
 
 #include <QJsonDocument>
 
-OptilabWindow::OptilabWindow() : QMainWindow()
+OptilabWindow::OptilabWindow(int argc, char *argv[]) : QMainWindow(),
+    logWidget(nullptr)
 {
+    setWindowIcon(icon("optilab"));
     setWindowTitle(tr("Optilab"));
+
+    m_startupProblemFilename = "";
+
+    // python
+
+    // silent mode
+    setSilentMode(true);
+
+    createPythonEngine(argc, argv, new PythonEngineAgros());
+    scriptEditorDialog = new PythonEditorAgrosDialog(currentPythonEngine(), QStringList(), NULL);
 
     createActions();
     createToolBars();
@@ -217,6 +231,10 @@ void OptilabWindow::createActions()
     actRefresh = new QAction(icon("reload"), tr("Refresh"), this);
     // actDocumentSave->setShortcuts(QKeySequence::Save);
     connect(actRefresh, SIGNAL(triggered()), this, SLOT(refreshVariants()));
+
+    actScriptEditor = new QAction(icon("script-python"), tr("PythonLab"), this);
+    actScriptEditor->setShortcut(Qt::Key_F9);
+    connect(actScriptEditor, SIGNAL(triggered()), this, SLOT(doScriptEditor()));
 }
 
 void OptilabWindow::createToolBars()
@@ -310,19 +328,76 @@ void OptilabWindow::createMain()
     layoutLeft->addLayout(layoutButtons);
     layoutLeft->addWidget(lblProblems);
 
-    QHBoxLayout *layoutRight = new QHBoxLayout();
+    // log stdout
+    logWidget = new LogWidget(this);
+    logWidget->setMemoryLabelVisible(true);
+
+    QVBoxLayout *layoutRight = new QVBoxLayout();
     // layoutRight->addWidget(tbxAnalysis);
     layoutRight->addLayout(layoutSM);
-    //layoutRight->addWidget(console);
+    layoutRight->addWidget(logWidget);
 
-    QHBoxLayout *layout = new QHBoxLayout();
-    layout->addLayout(layoutLeft);
-    layout->addLayout(layoutRight, 1);
+    QHBoxLayout *layoutOptilab = new QHBoxLayout();
+    layoutOptilab->addLayout(layoutLeft);
+    layoutOptilab->addLayout(layoutRight, 1);
+
+    // spacing
+    QLabel *spacing = new QLabel;
+    spacing->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    // left toolbar
+    QToolBar *tlbLeftBar = new QToolBar();
+    tlbLeftBar->setOrientation(Qt::Vertical);
+    // fancy layout
+#ifdef Q_WS_WIN
+    int fontSize = 7;
+#endif
+#ifdef Q_WS_X11
+    int fontSize = 8;
+#endif
+    tlbLeftBar->setStyleSheet(QString("QToolBar { border: 1px solid rgba(200, 200, 200, 255); }"
+                                      "QToolBar { background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(70, 70, 70, 255), stop:1 rgba(120, 120, 120, 255)); }"
+                                      "QToolButton { border: 0px; color: rgba(230, 230, 230, 255); font: bold; font-size: %1pt; width: 65px; }"
+                                      "QToolButton:hover { border: 0px; background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(70, 70, 70, 255), stop:0.5 rgba(160, 160, 160, 255), stop:1 rgba(150, 150, 150, 255)); }"
+                                      "QToolButton:checked:hover, QToolButton:checked { border: 0px; color: rgba(30, 30, 30, 255); background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(160, 160, 160, 255), stop:0.5 rgba(220, 220, 220, 255), stop:1 rgba(160, 160, 160, 255)); }").arg(fontSize));
+    // system layout
+    // leftToolBar->setStyleSheet("QToolButton { font: bold; font-size: 8pt; width: 65px; }");
+
+    tlbLeftBar->setIconSize(QSize(32, 32));
+    tlbLeftBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
+    // tlbLeftBar->addAction(problemWidget->actProperties);
+    tlbLeftBar->addWidget(spacing);
+    tlbLeftBar->addSeparator();
+    tlbLeftBar->addAction(actScriptEditor);
+
+    /*
+    splitter = new QSplitter(Qt::Horizontal, this);
+    // splitter->addWidget(viewControls);
+    splitter->addWidget(viewWidget);
+    splitter->setCollapsible(0, false);
+    splitter->setCollapsible(1, false);
+    splitter->setStretchFactor(0, 0);
+    splitter->setStretchFactor(1, 1);
+    QList<int> sizes;
+    sizes << 230 << 0;
+    splitter->setSizes(sizes);
+    */
+
+    QHBoxLayout *layoutMain = new QHBoxLayout();
+    layoutMain->setContentsMargins(0, 0, 0, 0);
+    layoutMain->addWidget(tlbLeftBar);
+    layoutMain->addLayout(layoutOptilab);
 
     QWidget *main = new QWidget();
-    main->setLayout(layout);
+    main->setLayout(layoutMain);
 
     setCentralWidget(main);
+}
+
+void OptilabWindow::doScriptEditor()
+{
+    scriptEditorDialog->showDialog();
 }
 
 void OptilabWindow::openProblemAgros2D()
@@ -344,7 +419,8 @@ void OptilabWindow::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *pre
     btnOpenInExternalAgros2D->setEnabled(current);
     btnSolveInExternalSolver->setEnabled(current);
 
-    loadVariant(current->data(0, Qt::UserRole).toString());
+    if (current)
+        loadVariant(current->data(0, Qt::UserRole).toString());
 }
 
 void OptilabWindow::doItemDoubleClicked(QTreeWidgetItem *item, int column)
@@ -470,4 +546,25 @@ void OptilabWindow::loadVariant(const QString &fileName)
     // load(...) works
     writeStringContent(tempProblemDir() + "/variant.html", QString::fromStdString(output));
     webView->load(QUrl::fromLocalFile(tempProblemDir() + "/variant.html"));
+
+
+    /*
+    QString fn = datadir() + "/data/pokus.a2d";
+    Agros2D::scene()->readFromFile(fn);
+
+    Agros2D::log()->printMessage(tr("Problem"), tr("Problem '%1' successfuly loaded").arg(fn));
+
+    // solve
+    // TODO: asynchronous
+    Agros2D::problem()->solve();
+    msleep(100);
+
+    // save solution
+    while (Agros2D::problem()->isSolving())
+        msleep(10);
+
+    Agros2D::scene()->writeSolutionToFile(fn);
+    */
+
+    // Agros2D::log()->printMessage(tr("Solver"), tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
 }
