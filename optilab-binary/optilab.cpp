@@ -519,6 +519,12 @@ void OptilabWindow::loadVariant(const QString &fileName)
 {
     qDebug() << "loadVariant" << fileName;
 
+    /*
+    import machinery
+    loader = machinery.SourceFileLoader('problem', '{0}/problem.py'.format(temp))
+    loader.load_module().{0}'.format(Capcitor)
+    */
+
     // template
     std::string output;
     ctemplate::TemplateDictionary variant("variant");

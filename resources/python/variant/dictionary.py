@@ -5,7 +5,7 @@ from variant.htcondor import Solver, Process, Job, Connection
 from collections import OrderedDict
 from tempfile import TemporaryDirectory
 from subprocess import Popen, PIPE
-from shutil import make_archive, move
+from shutil import make_archive, move, copy2
 from time import sleep
 from importlib import machinery
 
@@ -213,7 +213,9 @@ class ModelDictionary:
     def load(self):
         with open('{0}/problem.desc'.format(self._data_file), 'r') as infile:
             self._description = json.load(infile)
-        self._model_class = eval(self.description['model_class'])
+
+        loader = machinery.SourceFileLoader('problem', '{0}/problem.py'.format(self._data_file))
+        self._model_class = eval('loader.load_module().{0}'.format(self.description['model_class']))
         
         for file_name in sorted(os.listdir(self._data_file)):
             if not file_name.endswith('data'): continue
@@ -243,16 +245,23 @@ class ModelDictionary:
         self._data_file = data_file
         self._problem_file = problem_file
 
-    def save(self):
+    def save(self, problem_file):
         path = agros2d.cachedir('analyses/{0}'.format(int(time.time())))
         for name, model in self._dictionary.items():
             model.save('{0}/{1}.data'.format(path, name))
 
         description = dict(list(self.description.items()) + [('model_class', self._model_class.__name__)])
+        model = self._model_class()
+        for name, type in model.parameters.data_types().items():
+            description[name] = str(type)
+
         with open('{0}/problem.desc'.format(path), 'w') as outfile:
             json.dump(description, outfile)
 
+        copy2(problem_file, '{0}/problem.py'.format(path))
+
         self._data_file = path
+        self._problem_file = problem_file
 
     def solve(self, recalculate=False, save=False):
         """Solve models stored in directory.
@@ -482,20 +491,18 @@ if __name__ == '__main__':
 
     md = ModelDictionary() #ModelDictionaryExternal()
     md.solver = '{0}/agros2d_solver'.format(pythonlab.datadir())
-    for x in range(5):
+    for x in range(20):
         model = QuadraticFunction()
         model.parameters['x'] = x
         md.add_model(model)
 
     data_file = pythonlab.tempname('opt')
     md.solve(save=False)
-    md.save() #'test_functions/quadratic_function.py'
+    md.save('test_functions/quadratic_function.py')
     print('{0}/{1}'.format(len(md.models()), len(md.models(only_solved=True))))
     md.load()
     print('{0}/{1}'.format(len(md.models()), len(md.models(only_solved=True))))
-    print(md.models())
 
-    """
     md.criterions.add_criterion(RangeCriterion('75<=F=<80'), [Functional('F'), 50, 80])
     for model in md.models(filter=True):
         print('F={0}'.format(model.variables['F']))
@@ -503,7 +510,6 @@ if __name__ == '__main__':
     pythonlab.chart(md.parameter('x'),
                     md.variable('F'), 'x', 'F')
 
-    #print(md.parameters())
-    #print(md.variables())
-    #print(md.description)
-    """
+    print(md.parameters())
+    print(md.variables())
+    print(md.description)
