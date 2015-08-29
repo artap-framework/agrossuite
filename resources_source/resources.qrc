@@ -69,6 +69,7 @@
         <file alias="run.png">images/run.png</file>
         <file alias="run-step.png">images/run-step.png</file>
         <file alias="stop.png">images/stop.png</file>
+        <file alias="zoom.png">images/zoom.png</file>
         <file alias="zoom-fit-best.png">images/zoom-fit-best.png</file>
         <file alias="zoom-in.png">images/zoom-in.png</file>
         <file alias="zoom-out.png">images/zoom-out.png</file>

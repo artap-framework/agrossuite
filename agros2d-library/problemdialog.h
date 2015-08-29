@@ -230,6 +230,7 @@ public:
     ProblemWidget(QWidget *parent = 0);
 
     QAction *actProperties;
+    QToolBar *toolBar;
 
 signals:
     void changed();

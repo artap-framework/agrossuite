@@ -101,6 +101,31 @@ void PreprocessorWidget::createMenu()
 
 void PreprocessorWidget::createControls()
 {
+    // undo framework
+    actUndo = Agros2D::scene()->undoStack()->createUndoAction(this);
+    actUndo->setIcon(icon("edit-undo"));
+    actUndo->setIconText(tr("&Undo"));
+    actUndo->setShortcuts(QKeySequence::Undo);
+
+    actRedo = Agros2D::scene()->undoStack()->createRedoAction(this);
+    actRedo->setIcon(icon("edit-redo"));
+    actRedo->setIconText(tr("&Redo"));
+    actRedo->setShortcuts(QKeySequence::Redo);
+
+    // main toolbar
+    toolBar = new QToolBar();
+    toolBar->addAction(actUndo);
+    toolBar->addAction(actRedo);
+    toolBar->addSeparator();
+    toolBar->addAction(m_sceneViewPreprocessor->actOperateOnNodes);
+    toolBar->addAction(m_sceneViewPreprocessor->actOperateOnEdges);
+    toolBar->addAction(m_sceneViewPreprocessor->actOperateOnLabels);
+    toolBar->addSeparator();
+    toolBar->addAction(m_sceneViewPreprocessor->actSceneViewSelectRegion);
+    toolBar->addAction(Agros2D::scene()->actTransform);
+    toolBar->addSeparator();
+    toolBar->addAction(Agros2D::scene()->actDeleteSelected);
+
     txtViewNodes = new QTextEdit(this);
     txtViewNodes->setReadOnly(true);
     txtViewNodes->setVisible(false);
@@ -134,11 +159,11 @@ void PreprocessorWidget::createControls()
     connect(btnOK, SIGNAL(clicked()), SLOT(doApply()));
 
     QGridLayout *layoutTreeView = new QGridLayout();
-    layoutTreeView->addWidget(trvWidget, 0, 0, 1, 4);
-    layoutTreeView->addWidget(new QLabel(tr("Grid step:")), 1, 0);
-    layoutTreeView->addWidget(txtGridStep, 1, 1);
-    layoutTreeView->addWidget(chkSnapToGrid, 1, 2);
-    layoutTreeView->addWidget(btnOK, 1, 3);
+    layoutTreeView->addWidget(trvWidget, 1, 0, 1, 4);
+    layoutTreeView->addWidget(new QLabel(tr("Grid step:")), 2, 0);
+    layoutTreeView->addWidget(txtGridStep, 2, 1);
+    layoutTreeView->addWidget(chkSnapToGrid, 2, 2);
+    layoutTreeView->addWidget(btnOK, 2, 3);
 
     QWidget *widgetTreeView = new QWidget();
     widgetTreeView->setLayout(layoutTreeView);
@@ -158,6 +183,7 @@ void PreprocessorWidget::createControls()
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->setContentsMargins(2, 2, 2, 3);
+    layoutMain->addWidget(toolBar);
     layoutMain->addWidget(splitter);
 
     setLayout(layoutMain);

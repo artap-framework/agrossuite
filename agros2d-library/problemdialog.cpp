@@ -1167,6 +1167,9 @@ void ProblemWidget::createActions()
 
 void ProblemWidget::createControls()
 {
+    // main toolbar
+    toolBar = new QToolBar();
+
     // fields toolbar
     fieldsToolbar = new FieldsToobar();
     QVBoxLayout *layoutFields = new QVBoxLayout();
@@ -1316,6 +1319,7 @@ void ProblemWidget::createControls()
 
     QVBoxLayout *layout= new QVBoxLayout();
     layout->setContentsMargins(2, 2, 2, 3);
+    layout->addWidget(toolBar);
     layout->addWidget(widgetArea);
 
     setLayout(layout);

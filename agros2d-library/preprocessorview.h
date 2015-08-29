@@ -42,6 +42,11 @@ public:
     PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget *parent = 0);
     ~PreprocessorWidget();
 
+    QAction *actUndo;
+    QAction *actRedo;
+
+    QToolBar *toolBar;
+
 protected:
     void keyPressEvent(QKeyEvent *event);
 

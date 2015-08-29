@@ -44,14 +44,12 @@
 #include "util/constants.h"
 
 PostprocessorWidget::PostprocessorWidget(PostDeal *postDeal,
-                                         SceneViewPreprocessor *sceneGeometry,
                                          SceneViewMesh *sceneMesh,
                                          SceneViewPost2D *scenePost2D,
                                          SceneViewPost3D *scenePost3D,
                                          QWidget *parent) : QWidget(parent)
 {
     m_postDeal = postDeal;
-    m_sceneGeometry = sceneGeometry;
     m_sceneMesh = sceneMesh;
     m_scenePost2D = scenePost2D;
     m_scenePost3D = scenePost3D;
@@ -278,17 +276,42 @@ void PostprocessorWidget::saveAdvanced()
 
 void PostprocessorWidget::createControls()
 {
+    // main toolbar
+    toolBar = new QToolBar();
+    toolBar->addAction(m_scenePost2D->actPostprocessorModeNothing);
+    toolBar->addAction(m_scenePost2D->actPostprocessorModeLocalPointValue);
+    toolBar->addAction(m_scenePost2D->actPostprocessorModeSurfaceIntegral);
+    toolBar->addAction(m_scenePost2D->actPostprocessorModeVolumeIntegral);
+    toolBar->addSeparator();
+    toolBar->addAction(m_scenePost2D->actSelectPoint);
+    toolBar->addAction(m_scenePost2D->actSelectByMarker);
+
     // dialog buttons
     btnOK = new QPushButton(tr("Apply"));
     connect(btnOK, SIGNAL(clicked()), SLOT(doApply()));
+
+    // mesh and polynomial info
+    lblMeshInitial = new QLabel();
+    lblMeshSolution = new QLabel();
+    lblDOFs = new QLabel();
+
+    QGridLayout *layoutInfo = new QGridLayout();
+    layoutInfo->addWidget(new QLabel(tr("Initial mesh:")), 0, 0);
+    layoutInfo->addWidget(lblMeshInitial, 0, 1);
+    layoutInfo->addWidget(new QLabel(tr("Solution mesh:")), 1, 0);
+    layoutInfo->addWidget(lblMeshSolution, 1, 1);
+    layoutInfo->addWidget(new QLabel(tr("Number of DOFs:")), 2, 0);
+    layoutInfo->addWidget(lblDOFs, 2, 1);
 
     basic = controlsBasic();
     advanced = controlsAdvanced();
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->setContentsMargins(2, 2, 2, 3);
+    layoutMain->addWidget(toolBar);
     layoutMain->addWidget(basic);
-    layoutMain->addWidget(advanced, 1);
+    layoutMain->addWidget(advanced, 1);    
+    layoutMain->addLayout(layoutInfo);
     layoutMain->addWidget(btnOK, 0, Qt::AlignRight);
 
     refresh();
@@ -530,6 +553,7 @@ QWidget *PostprocessorWidget::controlsBasic()
     groupPost2d = post2DWidget();
     groupPost3d = post3DWidget();
 
+    // stacked layout
     widgetsLayout = new QStackedLayout();
 
     QVBoxLayout *layoutBasic = new QVBoxLayout();
@@ -986,6 +1010,27 @@ void PostprocessorWidget::refresh()
         groupPost3D->setVisible(true);
         groupPost3DAdvanced->setVisible(!groupPost3D->isCollapsed());
     }
+
+    // mesh and polynomial info
+    lblMeshInitial->setText(QString(tr("%1 nodes, %2 elements").
+                                    arg(Agros2D::problem()->initialMesh().n_used_vertices()).
+                                    arg(Agros2D::problem()->initialMesh().n_active_cells())));
+    lblMeshSolution->setText(QString(tr("%1 nodes, %2 elements").
+                                     arg(Agros2D::problem()->calculationMesh().n_used_vertices()).
+                                     arg(Agros2D::problem()->calculationMesh().n_active_cells())));
+
+    int dofs = 0;
+    if (Agros2D::problem()->isSolved())
+    {
+        MultiArray ma = Agros2D::solutionStore()->multiArray(FieldSolutionID(fieldWidget->selectedField(),
+                                                                             fieldWidget->selectedTimeStep(),
+                                                                             fieldWidget->selectedAdaptivityStep()));
+
+        dofs = ma.doFHandler()->n_dofs();
+    }
+    lblDOFs->setText(tr("%1 DOFs").arg(dofs));
+
+    // lblOrder->setText(Agros2D::problem()->initialMesh().n_used_vertices());
 
     // scalar view
     if (groupPostScalar->isVisible())

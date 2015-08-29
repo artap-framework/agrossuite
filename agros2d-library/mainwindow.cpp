@@ -96,7 +96,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     connect(Agros2D::problem(), SIGNAL(fieldsChanged()), preprocessorWidget, SLOT(refresh()));
     // postprocessor
     postprocessorWidget = new PostprocessorWidget(postDeal,
-                                                  sceneViewPreprocessor,
                                                   sceneViewMesh,
                                                   sceneViewPost2D,
                                                   sceneViewPost3D,
@@ -291,17 +290,6 @@ void MainWindow::createActions()
     actExit->setMenuRole(QAction::QuitRole);
     connect(actExit, SIGNAL(triggered()), this, SLOT(close()));
 
-    // undo framework
-    actUndo = Agros2D::scene()->undoStack()->createUndoAction(this);
-    actUndo->setIcon(icon("edit-undo"));
-    actUndo->setIconText(tr("&Undo"));
-    actUndo->setShortcuts(QKeySequence::Undo);
-
-    actRedo = Agros2D::scene()->undoStack()->createRedoAction(this);
-    actRedo->setIcon(icon("edit-redo"));
-    actRedo->setIconText(tr("&Redo"));
-    actRedo->setShortcuts(QKeySequence::Redo);
-
     actCopy = new QAction(icon("edit-copy"), tr("Copy image to clipboard"), this);
     // actCopy->setShortcuts(QKeySequence::Copy);
     connect(actCopy, SIGNAL(triggered()), this, SLOT(doCopy()));
@@ -435,8 +423,8 @@ void MainWindow::createMenus()
 #endif
 
     QMenu *mnuEdit = menuBar()->addMenu(tr("E&dit"));
-    mnuEdit->addAction(actUndo);
-    mnuEdit->addAction(actRedo);
+    mnuEdit->addAction(preprocessorWidget->actUndo);
+    mnuEdit->addAction(preprocessorWidget->actRedo);
     mnuEdit->addSeparator();
     mnuEdit->addAction(actCopy);
     mnuEdit->addSeparator();
@@ -534,81 +522,25 @@ void MainWindow::createMenus()
 
 void MainWindow::createToolBars()
 {
-    // top toolbar
-#ifdef Q_WS_MAC
-    int iconHeight = 24;
-#endif
+    // main toolbar
+    problemWidget->toolBar->addAction(actDocumentNew);
+    problemWidget->toolBar->addAction(actDocumentOpen);
+    problemWidget->toolBar->addAction(actDocumentSave);
 
-    tlbFile = addToolBar(tr("File"));
-    tlbFile->setObjectName("File");
-    tlbFile->setOrientation(Qt::Horizontal);
-    tlbFile->setAllowedAreas(Qt::TopToolBarArea);
-    tlbFile->setMovable(false);
-#ifdef Q_WS_MAC
-    tlbFile->setFixedHeight(iconHeight);
-    tlbFile->setStyleSheet("QToolButton { border: 0px; padding: 0px; margin: 0px; }");
-#endif
-    tlbFile->addAction(actDocumentNew);
-    tlbFile->addAction(actDocumentOpen);
-    tlbFile->addAction(actDocumentSave);
-    tlbFile->addSeparator();
-    tlbFile->addAction(actHideControlPanel);
+    // zoom toolbar
+    QMenu *menu = new QMenu();
+    menu->addAction(actSceneZoomBestFit);
+    menu->addAction(actSceneZoomRegion);
+    menu->addAction(actSceneZoomIn);
+    menu->addAction(actSceneZoomOut);
 
-    tlbView = addToolBar(tr("View"));
-    tlbView->setObjectName("View");
-    tlbView->setOrientation(Qt::Horizontal);
-    tlbView->setAllowedAreas(Qt::TopToolBarArea);
-    tlbView->setMovable(false);
-#ifdef Q_WS_MAC
-    tlbView->setFixedHeight(iconHeight);
-    tlbView->setStyleSheet("QToolButton { border: 0px; padding: 0px; margin: 0px; }");
-#endif
+    QToolButton *toolButton = new QToolButton();
+    toolButton->setMenu(menu);
+    toolButton->setIcon(icon("zoom"));
+    toolButton->setPopupMode(QToolButton::InstantPopup);
 
-    tlbZoom = addToolBar(tr("Zoom"));
-    tlbZoom->setObjectName("Zoom");
-    tlbZoom->addAction(actSceneZoomBestFit);
-    tlbZoom->addAction(actSceneZoomRegion);
-    tlbZoom->addAction(actSceneZoomIn);
-    tlbZoom->addAction(actSceneZoomOut);
-    tlbZoom->setMovable(false);
-
-    tlbGeometry = addToolBar(tr("Geometry"));
-    tlbGeometry->setObjectName("Geometry");
-    tlbGeometry->setOrientation(Qt::Horizontal);
-    tlbGeometry->setAllowedAreas(Qt::TopToolBarArea);
-    // tlbGeometry->setMovable(false);
-    tlbGeometry->addSeparator();
-    tlbGeometry->addAction(actUndo);
-    tlbGeometry->addAction(actRedo);
-    tlbGeometry->addSeparator();
-    tlbGeometry->addAction(sceneViewPreprocessor->actOperateOnNodes);
-    tlbGeometry->addAction(sceneViewPreprocessor->actOperateOnEdges);
-    tlbGeometry->addAction(sceneViewPreprocessor->actOperateOnLabels);
-    tlbGeometry->addSeparator();
-    tlbGeometry->addAction(sceneViewPreprocessor->actSceneViewSelectRegion);
-    tlbGeometry->addAction(Agros2D::scene()->actTransform);
-    tlbGeometry->addSeparator();
-    tlbGeometry->addAction(Agros2D::scene()->actDeleteSelected);
-    tlbGeometry->setMovable(false);
-
-    tlbPost2D = addToolBar(tr("Postprocessor 2D"));
-    tlbPost2D->setObjectName("Postprocessor 2D");
-    tlbPost2D->setOrientation(Qt::Horizontal);
-    tlbPost2D->setAllowedAreas(Qt::TopToolBarArea);
-    // tlbPost2D->setMovable(false);
-#ifdef Q_WS_MAC
-    tlbPost2D->setFixedHeight(iconHeight);
-    tlbPost2D->setStyleSheet("QToolButton { border: 0px; padding: 0px; margin: 0px; }");
-#endif
-    tlbPost2D->addSeparator();
-    tlbPost2D->addAction(sceneViewPost2D->actPostprocessorModeNothing);
-    tlbPost2D->addAction(sceneViewPost2D->actPostprocessorModeLocalPointValue);
-    tlbPost2D->addAction(sceneViewPost2D->actPostprocessorModeSurfaceIntegral);
-    tlbPost2D->addAction(sceneViewPost2D->actPostprocessorModeVolumeIntegral);
-    tlbPost2D->addSeparator();
-    tlbPost2D->addAction(sceneViewPost2D->actSelectPoint);
-    tlbPost2D->addAction(sceneViewPost2D->actSelectByMarker);
-    tlbPost2D->setMovable(false);
+    preprocessorWidget->toolBar->addSeparator();
+    preprocessorWidget->toolBar->addWidget(toolButton);
 }
 
 void MainWindow::createMain()
@@ -1313,12 +1245,6 @@ void MainWindow::doExecutedScript()
 
 void MainWindow::setEnabledControls(bool state)
 {
-    tlbFile->setEnabled(state);
-    tlbGeometry->setEnabled(state);
-    tlbPost2D->setEnabled(state);
-    tlbView->setEnabled(state);
-    tlbZoom->setEnabled(state);
-
     tabViewLayout->setEnabled(state);
     tabControlsLayout->setEnabled(state);
 
@@ -1353,15 +1279,12 @@ void MainWindow::setControls()
     sceneViewPost3D->actSceneZoomRegion = NULL;
     sceneViewParticleTracing->actSceneZoomRegion = NULL;
 
-    tlbGeometry->setVisible(sceneViewPreprocessor->actSceneModePreprocessor->isChecked());
-    tlbPost2D->setVisible(sceneViewPost2D->actSceneModePost2D->isChecked());
     bool showZoom = sceneViewPreprocessor->actSceneModePreprocessor->isChecked() ||
             sceneViewMesh->actSceneModeMesh->isChecked() ||
             sceneViewPost2D->actSceneModePost2D->isChecked() ||
             sceneViewPost3D->actSceneModePost3D->isChecked() ||
             sceneViewParticleTracing->actSceneModeParticleTracing->isChecked();
 
-    tlbZoom->setVisible(showZoom);
     actSceneZoomIn->setVisible(showZoom);
     actSceneZoomOut->setVisible(showZoom);
     actSceneZoomBestFit->setVisible(showZoom);
@@ -1374,6 +1297,13 @@ void MainWindow::setControls()
     actSceneZoomIn->disconnect();
     actSceneZoomOut->disconnect();
     actSceneZoomBestFit->disconnect();
+
+    sceneViewPost2D->actPostprocessorModeNothing->setEnabled(sceneViewPost2D->actSceneModePost2D->isChecked() && Agros2D::problem()->isSolved());
+    sceneViewPost2D->actPostprocessorModeLocalPointValue->setEnabled(sceneViewPost2D->actSceneModePost2D->isChecked() && Agros2D::problem()->isSolved());
+    sceneViewPost2D->actPostprocessorModeSurfaceIntegral->setEnabled(sceneViewPost2D->actSceneModePost2D->isChecked() && Agros2D::problem()->isSolved());
+    sceneViewPost2D->actPostprocessorModeVolumeIntegral->setEnabled(sceneViewPost2D->actSceneModePost2D->isChecked() && Agros2D::problem()->isSolved());
+    sceneViewPost2D->actSelectPoint->setEnabled(sceneViewPost2D->actSceneModePost2D->isChecked() && Agros2D::problem()->isSolved());
+    sceneViewPost2D->actSelectByMarker->setEnabled(sceneViewPost2D->actSceneModePost2D->isChecked() && Agros2D::problem()->isSolved());
 
     if (problemWidget->actProperties->isChecked())
     {
@@ -1439,11 +1369,6 @@ void MainWindow::setControls()
         // hide transform dialog
         sceneTransformDialog->hide();
     }
-    // if (sceneViewVTK2D->actSceneModeVTK2D->isChecked())
-    // {
-    //     tabViewLayout->setCurrentWidget(sceneViewPostVTK2DWidget);
-    //     tabControlsLayout->setCurrentWidget(postprocessorWidget);
-    // }
     else if (sceneViewChart->actSceneModeChart->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewChartWidget);

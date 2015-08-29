@@ -39,19 +39,19 @@ class PostprocessorWidget : public QWidget
     Q_OBJECT
 
 public:
-    PostprocessorWidget(PostDeal *postDeal,
-                        SceneViewPreprocessor *sceneGeometry,
+    PostprocessorWidget(PostDeal *postDeal,                        
                         SceneViewMesh *sceneMesh,
                         SceneViewPost2D *scenePost2D,
                         SceneViewPost3D *scenePost3D,
                         QWidget *parent);
+
+    QToolBar *toolBar;
 
 private slots:
     void doApply();
 
 private:
     PostDeal *m_postDeal;
-    SceneViewPreprocessor *m_sceneGeometry;
     SceneViewMesh *m_sceneMesh;
     SceneViewPost2D *m_scenePost2D;
     SceneViewPost3D *m_scenePost3D;
@@ -61,6 +61,11 @@ private:
 
     // basic
     PhysicalFieldWidget *fieldWidget;
+
+    // mesh and polynomial info
+    QLabel *lblMeshInitial;
+    QLabel *lblMeshSolution;
+    QLabel *lblDOFs;
 
     // show
     QCheckBox *chkShowInitialMeshView;

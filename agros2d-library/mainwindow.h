@@ -112,7 +112,7 @@ private slots:
     void setControls();
     void clear();
 
-    /// fields adeed or removed, menus need to be modified
+    /// fields added or removed, menus need to be modified
     void doFieldsChanged();
 
 protected:
@@ -129,20 +129,12 @@ private:
     QMenu *mnuProblemAddBoundaryAndMaterial;
     QMenu *mnuCustomForms;
 
-    QToolBar *tlbFile;
-    QToolBar *tlbView;
-    QToolBar *tlbZoom;
-    QToolBar *tlbGeometry;
-    QToolBar *tlbPost2D;
-
     QAction *actDocumentNew;
     QAction *actDocumentOpen;
-    // QAction *actDocumentDownloadFromServer;
     QAction *actDocumentSave;
     QAction *actDocumentSaveSolution;
     QAction *actDocumentDeleteSolution;
     QAction *actDocumentSaveAs;
-    // QAction *actDocumentUploadToServer;
     QAction *actDocumentClose;
     QAction *actDocumentImportDXF;
     QAction *actDocumentExportDXF;
@@ -157,8 +149,6 @@ private:
 
     QAction *actHideControlPanel;
 
-    QAction *actUndo;
-    QAction *actRedo;
     QAction *actCopy;
 
     QAction *actOptions;

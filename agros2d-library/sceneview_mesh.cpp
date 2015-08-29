@@ -442,7 +442,7 @@ void SceneViewMesh::paintOrderColorBar()
 {
     if (!Agros2D::problem()->isSolved() || !Agros2D::problem()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool()) return;
 
-    int minDegree = 11;
+    int minDegree = 100;
     int maxDegree = 1;
     MultiArray ma = m_postDeal->activeMultiSolutionArray();
 

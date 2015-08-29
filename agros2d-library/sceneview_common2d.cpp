@@ -575,7 +575,6 @@ void SceneViewCommon2D::mousePressEvent(QMouseEvent *event)
             {
                 m_zoomRegionPos = m_lastPos;
                 actSceneZoomRegion->setChecked(false);
-                actSceneZoomRegion->setData(true);
                 m_zoomRegion = true;
 
                 return;
@@ -608,17 +607,14 @@ void SceneViewCommon2D::mouseReleaseEvent(QMouseEvent *event)
     if (actSceneZoomRegion)
     {
         actSceneZoomRegion->setChecked(false);
+    }
 
-        if (m_zoomRegion)
-        {
-            Point posStart = transform(Point(m_zoomRegionPos.x(), m_zoomRegionPos.y()));
-            Point posEnd = transform(Point(m_lastPos.x(), m_lastPos.y()));
+    if (m_zoomRegion)
+    {
+        Point posStart = transform(Point(m_zoomRegionPos.x(), m_zoomRegionPos.y()));
+        Point posEnd = transform(Point(m_lastPos.x(), m_lastPos.y()));
 
-            if (actSceneZoomRegion->data().value<bool>())
-                doZoomRegion(Point(qMin(posStart.x, posEnd.x), qMin(posStart.y, posEnd.y)), Point(qMax(posStart.x, posEnd.x), qMax(posStart.y, posEnd.y)));
-
-            actSceneZoomRegion->setData(false);
-        }
+        doZoomRegion(Point(qMin(posStart.x, posEnd.x), qMin(posStart.y, posEnd.y)), Point(qMax(posStart.x, posEnd.x), qMax(posStart.y, posEnd.y)));
     }
 
     m_zoomRegion = false;
