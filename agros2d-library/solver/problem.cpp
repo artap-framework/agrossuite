@@ -185,6 +185,7 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
     bool undefinedVariable = false;
 
     m_problemParameters.clear();
+    QList<PythonVariable> parameterList;
 
     // run and check startup script
     currentPythonEngineAgros()->blockSignals(true);
@@ -200,11 +201,10 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
 
     if (successfulRun)
     {
-        QList<PythonVariable> variableList;
-        if (successfulRun)
-            variableList = currentPythonEngineAgros()->variableList();
+        // fill variable list
+        parameterList = currentPythonEngineAgros()->variableList();
 
-        double value;
+        double value = 0.0;
 
         // check geometry
         // nodes
@@ -316,34 +316,34 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
         Agros2D::problem()->setting()->setValue(ProblemSetting::Problem_StartupScript, originalStartup);
 
         currentPythonEngineAgros()->useGlobalDict();
-        currentPythonEngineAgros()->blockSignals(false);
+        currentPythonEngineAgros()->blockSignals(false);        
+    }
 
-        if (successfulRun)
+    if (successfulRun)
+    {
+        // run new script
+        currentPythonEngineAgros()->runScript(scriptToCheck);
+        Agros2D::problem()->setting()->setValue(ProblemSetting::Problem_StartupScript, scriptToCheck);
+
+        // fill parameters
+        foreach (PythonVariable variable, parameterList)
         {
-            // run new script
-            currentPythonEngineAgros()->runScript(scriptToCheck);
-            Agros2D::problem()->setting()->setValue(ProblemSetting::Problem_StartupScript, scriptToCheck);
-
-            // fill parameters
-            foreach (PythonVariable variable, variableList)
+            if ((variable.type == "int") || (variable.type == "float"))
             {
-                if ((variable.type == "int") || (variable.type == "float"))
-                {
-                    m_problemParameters[variable.name] = variable.value.toDouble();
-                }
+                m_problemParameters[variable.name] = variable.value.toDouble();
             }
-
-            // invalidate fields
-            emit fieldsChanged();
         }
-        else
-        {
-            ErrorResult result = currentPythonEngineAgros()->parseError();
-            // original script
-            currentPythonEngineAgros()->runScript(Agros2D::problem()->setting()->value(ProblemSetting::Problem_StartupScript).toString());
 
-            return result.error();
-        }
+        // invalidate fields
+        emit fieldsChanged();
+    }
+    else
+    {
+        ErrorResult result = currentPythonEngineAgros()->parseError();
+        // original script
+        currentPythonEngineAgros()->runScript(Agros2D::problem()->setting()->value(ProblemSetting::Problem_StartupScript).toString());
+
+        return result.error();
     }
 
     if (undefinedVariable)

@@ -483,9 +483,10 @@ bool PythonEngine::runExpression(const QString &expression, double *value, const
     {
         tbb::mutex::scoped_lock lock(runExpressionMutex);
 
-        PyObject *output = NULL;
-        runPythonHeader();
+        if (m_useGlobalDict)
+            runPythonHeader();
 
+        PyObject *output = NULL;
         if (value)
         {
             // return value

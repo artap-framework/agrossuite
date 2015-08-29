@@ -64,12 +64,12 @@ VariantsWidget::VariantsWidget(QWidget *parent) : QWidget(parent)
     connect(trvVariants, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
     // connect(trvVariants, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), optilabSingle, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
-    btnOpenInExternal = new QPushButton(tr("Open in external Agros2D"));
+    btnOpenInExternal = new QPushButton(tr("Open in Agros2D"));
     btnOpenInExternal->setToolTip(tr("Open in external Agros2D"));
     btnOpenInExternal->setEnabled(false);
     connect(btnOpenInExternal, SIGNAL(clicked()), this, SLOT(variantOpenInExternal()));
 
-    btnSolve = new QPushButton(tr("Solve in Agros2D"));
+    btnSolve = new QPushButton(tr("Solve"));
     btnSolve->setToolTip(tr("Solve in Agros2D"));
     btnSolve->setEnabled(false);
     connect(btnSolve, SIGNAL(clicked()), this, SLOT(variantSolve()));
