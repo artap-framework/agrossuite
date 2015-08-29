@@ -22,11 +22,15 @@
 
 #include "util.h"
 #include "optilab_data.h"
+#include "optilab_analyses.h"
+#include "optilab_variants.h"
 
 #include "qcustomplot/qcustomplot.h"
 
-class LogWidget;
+class InfoWidget;
 class PythonEditorAgrosDialog;
+class PythonScriptingConsoleView;
+class LogView;
 
 class OptilabWindow : public QMainWindow
 {
@@ -39,50 +43,21 @@ public:
     inline void setStartupProblemFilename(const QString& fn) { m_startupProblemFilename = fn; }
 
 public slots:
-
-
-private slots:
-    void openProblemAgros2D();
-
-    void doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void doItemDoubleClicked(QTreeWidgetItem *item, int column);
-
-    void refreshVariants();
-    void loadVariant(const QString &fileName);
-
-    void variantOpenInExternalAgros2D();
-    void variantSolveInExternalSolver();
-
-    void variantOpenInAgros2D();
-    void variantSolveInAgros2D();
-
-    void processOpenError(QProcess::ProcessError error);
-    void processOpenFinished(int exitCode);
-    void processSolveError(QProcess::ProcessError error);
-    void processSolveFinished(int exitCode);
-
     void doScriptEditor();
+    void setControls();
 
 private:
     QString m_startupProblemFilename;
 
-    QTreeWidget *trvVariants;
-    QLabel *lblProblems;
+    QStackedLayout *tabViewLayout;
+    InfoWidget *infoWidget;
+    VariantsWidget *variantsWidget;
+    AnalysesWidget *analysesWidget;
 
-    QWebView *webView;
-    QString m_cascadeStyleSheet;
+    PythonScriptingConsoleView *consoleView;
+    LogView *logView;
 
-    QSplitter *splitter;
-
-    QPushButton *btnOpenInAgros2D;
-    QPushButton *btnSolveInAgros2D;
-    QPushButton *btnSolveInExternalSolver;
-    QPushButton *btnOpenInExternalAgros2D;
-
-    QAction *actRefresh;
     QAction *actScriptEditor;
-
-    LogWidget *logWidget;
 
     PythonEditorAgrosDialog *scriptEditorDialog;
 

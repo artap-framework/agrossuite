@@ -17,11 +17,15 @@ ENDIF(WIN32)
 SET(SOURCES main.cpp
     optilab_solver.cpp
     optilab.cpp
-    optilab_data.cpp)
+    optilab_data.cpp
+    optilab_analyses.cpp
+    optilab_variants.cpp)
 
 SET(HEADERS optilab.h
     optilab_solver.h
-    optilab_data.h)
+    optilab_data.h
+    optilab_analyses.h
+    optilab_variants.h)
 
 IF(WIN32)
   SET(GUI WIN32)

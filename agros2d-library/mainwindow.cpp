@@ -1380,7 +1380,7 @@ void MainWindow::setControls()
         tabViewLayout->setCurrentWidget(sceneViewInfoWidget);
         tabControlsLayout->setCurrentWidget(problemWidget);
     }
-    if (sceneViewPreprocessor->actSceneModePreprocessor->isChecked())
+    else if (sceneViewPreprocessor->actSceneModePreprocessor->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewPreprocessorWidget);
         tabControlsLayout->setCurrentWidget(preprocessorWidget);
@@ -1392,7 +1392,7 @@ void MainWindow::setControls()
         connect(actSceneZoomBestFit, SIGNAL(triggered()), sceneViewPreprocessor, SLOT(doZoomBestFit()));
         sceneViewPreprocessor->actSceneZoomRegion = actSceneZoomRegion;
     }
-    if (sceneViewMesh->actSceneModeMesh->isChecked())
+    else if (sceneViewMesh->actSceneModeMesh->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewMeshWidget);
         tabControlsLayout->setCurrentWidget(postprocessorWidget);
@@ -1402,7 +1402,7 @@ void MainWindow::setControls()
         connect(actSceneZoomBestFit, SIGNAL(triggered()), sceneViewMesh, SLOT(doZoomBestFit()));
         sceneViewMesh->actSceneZoomRegion = actSceneZoomRegion;
     }
-    if (sceneViewPost2D->actSceneModePost2D->isChecked())
+    else if (sceneViewPost2D->actSceneModePost2D->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewPost2DWidget);
         tabControlsLayout->setCurrentWidget(postprocessorWidget);
@@ -1415,7 +1415,7 @@ void MainWindow::setControls()
         // hide transform dialog
         sceneTransformDialog->hide();
     }
-    if (sceneViewPost3D->actSceneModePost3D->isChecked())
+    else if (sceneViewPost3D->actSceneModePost3D->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewPost3DWidget);
         tabControlsLayout->setCurrentWidget(postprocessorWidget);
@@ -1427,7 +1427,7 @@ void MainWindow::setControls()
         // hide transform dialog
         sceneTransformDialog->hide();
     }
-    if (sceneViewParticleTracing->actSceneModeParticleTracing->isChecked())
+    else if (sceneViewParticleTracing->actSceneModeParticleTracing->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewPostParticleTracingWidget);
         tabControlsLayout->setCurrentWidget(particleTracingWidget);
@@ -1444,7 +1444,7 @@ void MainWindow::setControls()
     //     tabViewLayout->setCurrentWidget(sceneViewPostVTK2DWidget);
     //     tabControlsLayout->setCurrentWidget(postprocessorWidget);
     // }
-    if (sceneViewChart->actSceneModeChart->isChecked())
+    else if (sceneViewChart->actSceneModeChart->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewChartWidget);
         tabControlsLayout->setCurrentWidget(chartWidget);
