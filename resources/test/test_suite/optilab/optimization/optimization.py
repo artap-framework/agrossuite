@@ -3,6 +3,7 @@ from test_suite.scenario import Agros2DTestResult
 
 from variant import ModelBase
 
+"""
 from variant.optimization import ContinuousParameter, DiscreteParameter, Parameters
 from variant.optimization import Functional, Functionals
 from variant.optimization import OptimizationMethod
@@ -160,3 +161,5 @@ if __name__ == '__main__':
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFunctionals))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMethod))
     suite.run(result)
+    
+"""

@@ -3,7 +3,7 @@ import pythonlab
 from test_suite.scenario import Agros2DTestCase
 from test_suite.scenario import Agros2DTestResult
 
-from variant import ModelDictionary, ModelDictionaryExternal
+from variant import ModelDictionary # ModelDictionaryExternal
 from variant.test_functions import quadratic_function
 
 class TestModelDictionary(Agros2DTestCase):
@@ -72,6 +72,7 @@ class TestModelDictionary(Agros2DTestCase):
         self.assertEqual(N, len(self.md.solved_models))
         self.assertEqual(N, len(self.md.models))
 
+"""
 class TestModelDictionaryExternal(Agros2DTestCase):
     def setUp(self):
         self.md = ModelDictionaryExternal(quadratic_function.QuadraticFunction)
@@ -93,11 +94,12 @@ class TestModelDictionaryExternal(Agros2DTestCase):
         for a, x in variants:
             model = self.md.find_model_by_parameters({'a' : a, 'b' : 1, 'c' : 1, 'x' : x})
             self.assertEqual(a*x**2 + model.get_parameter('b')*x + model.get_parameter('c'), model.get_variable('F'))
+"""
 
 if __name__ == '__main__':
     import unittest as ut
     suite = ut.TestSuite()
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestModelDictionary))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestModelDictionaryExternal))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestModelDictionaryExternal))
     suite.run(result)

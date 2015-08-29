@@ -1,7 +1,7 @@
 from test_suite.scenario import Agros2DTestCase
 from test_suite.scenario import Agros2DTestResult
 
-from variant import ModelBase, ModelDictionary, ModelPostprocessor
+from variant import ModelBase, ModelDictionary # ModelPostprocessor
 from time import time
 
 class WallisFormula(ModelBase):
@@ -26,6 +26,7 @@ class WallisFormula(ModelBase):
         self.set_variable('pi', 2 * self.f)
         self.set_variable('te', self.elapsed_time)
 
+"""
 class TestModelPostprocessor(Agros2DTestCase):
     @classmethod
     def setUpClass(self):
@@ -38,11 +39,9 @@ class TestModelPostprocessor(Agros2DTestCase):
             self.md.add_model(model)
 
         self.md.solve()
-        """
-        for model in self.md.models:
-            print('n={0:1.1e}; pi={1}'.format(model.get_parameter('n'),
-                                              model.get_variable('pi')))
-        """
+        # for model in self.md.models:
+        #     print('n={0:1.1e}; pi={1}'.format(model.get_parameter('n'),
+        #                                      model.get_variable('pi')))
 
     def test_parameters(self):
         mp = ModelPostprocessor(self.md)
@@ -77,10 +76,11 @@ class TestModelPostprocessor(Agros2DTestCase):
 
         for parameter, values in mp.parameters().items():
             self.assertEqual(len(values), len(self.variants))
+"""
 
 if __name__ == '__main__':
     import unittest as ut
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestModelPostprocessor))
+    # suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestModelPostprocessor))
     suite.run(result)

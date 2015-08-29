@@ -1,5 +1,6 @@
 import random as rnd
 
+""" 
 from test_suite.scenario import Agros2DTestCase
 from test_suite.scenario import Agros2DTestResult
 
@@ -163,3 +164,4 @@ if __name__ == '__main__':
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestBoothsFunctionOptimization))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHolderTableFunction))
     suite.run(result)
+"""
