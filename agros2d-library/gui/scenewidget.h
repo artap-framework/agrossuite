@@ -27,6 +27,8 @@
 class Scene;
 class SceneViewCommon;
 class SceneViewInterface;
+class InfoWidget;
+class PythonEditorDialog;
 
 class SceneViewCommon;
 
@@ -36,6 +38,8 @@ class SceneViewWidget : public QWidget
 public:
    SceneViewWidget(SceneViewCommon *widget, QWidget *parent = 0);
    SceneViewWidget(QWidget *widget, QWidget *parent = 0);
+   SceneViewWidget(InfoWidget *widget, QWidget *parent = 0);
+   SceneViewWidget(PythonEditorDialog *widget, QWidget *parent = 0);
    ~SceneViewWidget();
 
 public slots:

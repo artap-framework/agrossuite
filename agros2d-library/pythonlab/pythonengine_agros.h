@@ -87,25 +87,6 @@ private:
     PythonScriptingConsole *m_console;
 };
 
-class AGROS_LIBRARY_API PythonEditorAgrosDialog : public PythonEditorDialog
-{
-    Q_OBJECT
-public:
-    PythonEditorAgrosDialog(PythonEngine *pythonEngine, QStringList args, QWidget *parent);
-    ~PythonEditorAgrosDialog();
-
-protected:
-    virtual void scriptPrepare();
-    virtual void scriptFinish();
-
-private:
-    QAction *actCreateFromModel;
-    QAction *actConsoleOutput;
-
-private slots:
-    void doCreatePythonFromModel();
-};
-
 // current python engine agros
 AGROS_LIBRARY_API PythonEngineAgros *currentPythonEngineAgros();
 
@@ -123,6 +104,15 @@ inline std::string cacheDir() { return cacheProblemDir().toStdString(); }
 
 int appTime();
 void memoryUsage(std::vector<int> &time, std::vector<int> &usage);
+
+// functions
+char *pyVersion();
+void pyQuit();
+
+char *pyInput(std::string str);
+void pyMessage(std::string str);
+
+std::string pyDatadir(std::string str = "");
 
 struct PyOptions
 {

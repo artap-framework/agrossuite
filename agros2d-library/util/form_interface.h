@@ -24,7 +24,7 @@
 
 #include "util.h"
 
-class PythonScriptingConsoleView;
+class PythonScriptingConsole;
 
 // plugin interface
 class AGROS_LIBRARY_API FormInterface : public QDialog
@@ -48,7 +48,7 @@ protected:
 
 // read forms
 void readCustomForms(QMenu *menu);
-void readCustomScripts(QMenu *menu, PythonScriptingConsoleView *consoleView, QWidget *parent);
+void readCustomScripts(QMenu *menu, PythonScriptingConsole *console, QWidget *parent);
 
 QT_BEGIN_NAMESPACE
 #define FormInterface_IID "org.agros.FormInterface"

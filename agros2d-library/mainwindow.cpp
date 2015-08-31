@@ -82,7 +82,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     sceneViewChart = new ChartView(this);
     sceneViewParticleTracing = new SceneViewParticleTracing(postDeal, this);
     // sceneViewVTK2D = new SceneViewVTK2D(postDeal, this);
-    sceneViewBlank = new QLabel("", this);
 
     // scene - info widget
     sceneInfoWidget = new InfoWidget(sceneViewPreprocessor, this);
@@ -109,16 +108,20 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // problem
     problemWidget = new ProblemWidget(this);
 
+    createViews();
+
     // PythonLab
-    scriptEditorDialog = new PythonEditorAgrosDialog(currentPythonEngine(), QStringList(), NULL);
-    sceneInfoWidget->setRecentScriptFiles(scriptEditorDialog->recentFiles());
-    sceneTransformDialog = new SceneTransformDialog(sceneViewPreprocessor, this);
+    scriptEditor = new PythonEditorDialog(consoleView->console(), this);
+    pythonEditorWidget = scriptEditor->pythonEditorWidget();
 
     createActions();
-    createViews();
     createMenus();
     createToolBars();
     createMain();
+
+    // info
+    sceneInfoWidget->setRecentScriptFiles(scriptEditor->recentFiles());
+    sceneTransformDialog = new SceneTransformDialog(sceneViewPreprocessor, this);
 
     // python engine
     connect(currentPythonEngineAgros(), SIGNAL(startedScript()), this, SLOT(doStartedScript()));
@@ -223,7 +226,6 @@ MainWindow::~MainWindow()
     removeDirectory(tempProblemDir());
 
     delete logStdOut;
-    delete scriptEditorDialog;
 }
 
 void MainWindow::createActions()
@@ -321,9 +323,6 @@ void MainWindow::createActions()
     actUnitTests = new QAction(tr("Unit tests..."), this);
     connect(actUnitTests, SIGNAL(triggered()), this, SLOT(doUnitTests()));
 
-    actSweepAnalysis = new QAction(tr("Sweep analysis..."), this);
-    connect(actSweepAnalysis, SIGNAL(triggered()), this, SLOT(doSweepAnalysis()));
-
     actFullScreen = new QAction(icon("view-fullscreen"), tr("Fullscreen mode"), this);
     actFullScreen->setShortcut(QKeySequence(tr("F11")));
     connect(actFullScreen, SIGNAL(triggered()), this, SLOT(doFullScreen()));
@@ -331,12 +330,7 @@ void MainWindow::createActions()
     actDocumentOpenRecentGroup = new QActionGroup(this);
     connect(actDocumentOpenRecentGroup, SIGNAL(triggered(QAction *)), this, SLOT(doDocumentOpenRecent(QAction *)));
 
-    actScriptEditor = new QAction(icon("script-python"), tr("PythonLab"), this);
-    actScriptEditor->setShortcut(Qt::Key_F9);
-    connect(actScriptEditor, SIGNAL(triggered()), this, SLOT(doScriptEditor()));
-
     actMaterialBrowser = new QAction(icon(""), tr("Material browser..."), this);
-    actMaterialBrowser->setShortcut(QKeySequence(tr("Ctrl+M")));
     connect(actMaterialBrowser, SIGNAL(triggered()), this, SLOT(doMaterialBrowser()));
 
     // zoom actions (geometry, post2d and post3d)
@@ -362,6 +356,7 @@ void MainWindow::createActions()
     actSceneModeGroup->addAction(sceneViewPost3D->actSceneModePost3D);
     actSceneModeGroup->addAction(sceneViewChart->actSceneModeChart);
     actSceneModeGroup->addAction(sceneViewParticleTracing->actSceneModeParticleTracing);
+    actSceneModeGroup->addAction(scriptEditor->actSceneModePythonEditor);
 
     actHideControlPanel = new QAction(icon("showhide"), tr("Show/hide control panel"), this);
     actHideControlPanel->setShortcut(tr("Alt+0"));
@@ -401,7 +396,7 @@ void MainWindow::createMenus()
     // mnuServer->addAction(actDocumentUploadToServer);
     // mnuServer->addAction(actCollaborationServer);
 
-    QMenu *mnuFile = menuBar()->addMenu(tr("&File"));
+    mnuFile = menuBar()->addMenu(tr("&File"));
     mnuFile->addAction(actDocumentNew);
     mnuFile->addAction(actExamples);
     mnuFile->addAction(actDocumentOpen);
@@ -422,7 +417,7 @@ void MainWindow::createMenus()
     mnuFile->addAction(actExit);
 #endif
 
-    QMenu *mnuEdit = menuBar()->addMenu(tr("E&dit"));
+    mnuEdit = menuBar()->addMenu(tr("E&dit"));
     mnuEdit->addAction(preprocessorWidget->actUndo);
     mnuEdit->addAction(preprocessorWidget->actRedo);
     mnuEdit->addSeparator();
@@ -432,43 +427,16 @@ void MainWindow::createMenus()
     mnuEdit->addSeparator();
     mnuEdit->addAction(sceneViewPreprocessor->actSceneViewSelectRegion);
     mnuEdit->addAction(Agros2D::scene()->actTransform);
-#ifdef Q_WS_X11
-    mnuEdit->addSeparator();
-    mnuEdit->addAction(actOptions);
-#endif
 
-    QMenu *mnuShowPanels = new QMenu(tr("Panels"), this);
-    mnuShowPanels->addAction(resultsView->toggleViewAction());
-    mnuShowPanels->addAction(consoleView->toggleViewAction());
-    mnuShowPanels->addAction(logView->toggleViewAction());
-
-    QMenu *mnuView = menuBar()->addMenu(tr("&View"));
-    mnuView->addAction(problemWidget->actProperties);
-    mnuView->addAction(sceneViewPreprocessor->actSceneModePreprocessor);
-    mnuView->addAction(sceneViewMesh->actSceneModeMesh);
-    mnuView->addAction(sceneViewPost2D->actSceneModePost2D);
-    mnuView->addAction(sceneViewPost3D->actSceneModePost3D);
-    mnuView->addAction(sceneViewChart->actSceneModeChart);
-    mnuView->addAction(sceneViewParticleTracing->actSceneModeParticleTracing);
-    mnuView->addSeparator();
-    mnuView->addAction(actHideControlPanel);
-    mnuView->addSeparator();
-    mnuView->addAction(actSceneZoomBestFit);
-    mnuView->addAction(actSceneZoomIn);
-    mnuView->addAction(actSceneZoomOut);
-    mnuView->addAction(actSceneZoomRegion);
-    mnuView->addSeparator();
-    mnuView->addMenu(mnuShowPanels);
-    mnuView->addSeparator();
-    mnuView->addAction(actFullScreen);
-
-    QMenu *mnuProblem = menuBar()->addMenu(tr("&Problem"));
     QMenu *mnuProblemAddGeometry = new QMenu(tr("&Add geometry"), this);
-    mnuProblem->addMenu(mnuProblemAddGeometry);
     mnuProblemAddGeometry->addAction(Agros2D::scene()->actNewNode);
     mnuProblemAddGeometry->addAction(Agros2D::scene()->actNewEdge);
     mnuProblemAddGeometry->addAction(Agros2D::scene()->actNewLabel);
+
     mnuProblemAddBoundaryAndMaterial = new QMenu(tr("&Add boundaries and materials"), this);
+
+    mnuProblem = menuBar()->addMenu(tr("&Problem"));
+    mnuProblem->addMenu(mnuProblemAddGeometry);
     mnuProblem->addMenu(mnuProblemAddBoundaryAndMaterial);
     mnuProblem->addSeparator();
     mnuProblem->addAction(sceneViewPost2D->actPostprocessorModeNothing);
@@ -481,38 +449,31 @@ void MainWindow::createMenus()
     mnuProblem->addAction(Agros2D::problem()->actionMesh());
     mnuProblem->addAction(Agros2D::problem()->actionSolve());
 
-    QMenu *mnuTools = menuBar()->addMenu(tr("&Tools"));
-    mnuTools->addAction(actScriptEditor);
-    mnuTools->addAction(actUnitTests);
-    mnuTools->addSeparator();
-    mnuTools->addAction(actSweepAnalysis);
-    mnuTools->addSeparator();
+    mnuTools = menuBar()->addMenu(tr("&Tools"));
     mnuTools->addAction(actMaterialBrowser);
-    mnuTools->addSeparator();
     mnuTools->addAction(actCreateVideo);
     // read custom forms
     mnuTools->addSeparator();
     mnuCustomForms = new QMenu(tr("Custom forms"), this);
     mnuTools->addMenu(mnuCustomForms);
-    readCustomScripts(mnuCustomForms, consoleView, this);
-    // mnuCustomForms->addSeparator();
-    // readCustomForms(mnuCustomForms);
-#ifdef Q_WS_WIN
-    mnuTools->addSeparator();
-    mnuTools->addAction(actOptions);
-#endif
+    readCustomScripts(mnuCustomForms, consoleView->console(), this);
 
-    QMenu *mnuHelp = menuBar()->addMenu(tr("&Help"));
+    QMenu *mnuShowPanels = new QMenu(tr("Panels"), this);
+    mnuShowPanels->addAction(resultsView->toggleViewAction());
+    mnuShowPanels->addAction(consoleView->toggleViewAction());
+    mnuShowPanels->addAction(logView->toggleViewAction());
+
+    mnuSettings = menuBar()->addMenu(tr("S&ettings"));
+    mnuSettings->addAction(actUnitTests);
+    mnuSettings->addSeparator();
+    mnuSettings->addMenu(mnuShowPanels);
+    mnuSettings->addAction(actHideControlPanel);
+    mnuSettings->addAction(actFullScreen);
+    mnuSettings->addSeparator();
+    mnuSettings->addAction(actOptions);
+
+    mnuHelp = menuBar()->addMenu(tr("&Help"));
     mnuHelp->addAction(actHelp);
-    // mnuHelp->addAction(actOnlineHelp);
-    // mnuHelp->addAction(actHelpShortCut);
-    // mnuHelp->addAction(actCollaborationServer);
-#ifndef Q_WS_MAC
-    mnuHelp->addSeparator();
-#else
-    mnuHelp->addAction(actOptions); // will be added to "Agros2D" MacOSX menu
-    mnuHelp->addAction(actExit);    // will be added to "Agros2D" MacOSX menu
-#endif
     mnuHelp->addSeparator();
     mnuHelp->addAction(actCheckVersion);
     mnuHelp->addSeparator();
@@ -546,7 +507,6 @@ void MainWindow::createToolBars()
 void MainWindow::createMain()
 {
     sceneViewInfoWidget = new SceneViewWidget(sceneInfoWidget, this);
-    sceneViewBlankWidget = new SceneViewWidget(sceneViewBlank, this);
     sceneViewPreprocessorWidget = new SceneViewWidget(sceneViewPreprocessor, this);
     sceneViewMeshWidget = new SceneViewWidget(sceneViewMesh, this);
     sceneViewPost2DWidget = new SceneViewWidget(sceneViewPost2D, this);
@@ -554,11 +514,11 @@ void MainWindow::createMain()
     sceneViewPostParticleTracingWidget = new SceneViewWidget(sceneViewParticleTracing, this);
     // sceneViewPostVTK2DWidget = new SceneViewWidget(sceneViewVTK2D, this);
     sceneViewChartWidget = new SceneViewWidget(sceneViewChart, this);
+    sceneViewPythonEditorWidget = new SceneViewWidget(scriptEditor, this);
 
     tabViewLayout = new QStackedLayout();
     tabViewLayout->setContentsMargins(0, 0, 0, 0);
     tabViewLayout->addWidget(sceneViewInfoWidget);
-    tabViewLayout->addWidget(sceneViewBlankWidget);
     tabViewLayout->addWidget(sceneViewPreprocessorWidget);
     tabViewLayout->addWidget(sceneViewMeshWidget);
     tabViewLayout->addWidget(sceneViewPost2DWidget);
@@ -566,6 +526,7 @@ void MainWindow::createMain()
     tabViewLayout->addWidget(sceneViewPostParticleTracingWidget);
     // tabViewLayout->addWidget(sceneViewPostVTK2DWidget);
     tabViewLayout->addWidget(sceneViewChartWidget);
+    tabViewLayout->addWidget(sceneViewPythonEditorWidget);
 
     QWidget *viewWidget = new QWidget();
     viewWidget->setLayout(tabViewLayout);
@@ -577,6 +538,7 @@ void MainWindow::createMain()
     tabControlsLayout->addWidget(postprocessorWidget);
     tabControlsLayout->addWidget(particleTracingWidget);
     tabControlsLayout->addWidget(chartWidget);
+    tabControlsLayout->addWidget(pythonEditorWidget);
 
     viewControls = new QWidget();
     viewControls->setLayout(tabControlsLayout);
@@ -595,7 +557,7 @@ void MainWindow::createMain()
 #ifdef Q_WS_X11
     int fontSize = 8;
 #endif
-    tlbLeftBar->setStyleSheet(QString("QToolBar { border: 1px solid rgba(200, 200, 200, 255); }"
+    tlbLeftBar->setStyleSheet(QString("QToolBar { border: 1px solid rgba(70, 70, 70, 255); }"
                                       "QToolBar { background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(70, 70, 70, 255), stop:1 rgba(120, 120, 120, 255)); }"
                                       "QToolButton { border: 0px; color: rgba(230, 230, 230, 255); font: bold; font-size: %1pt; width: 65px; }"
                                       "QToolButton:hover { border: 0px; background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(70, 70, 70, 255), stop:0.5 rgba(160, 160, 160, 255), stop:1 rgba(150, 150, 150, 255)); }"
@@ -615,12 +577,12 @@ void MainWindow::createMain()
     tlbLeftBar->addAction(sceneViewParticleTracing->actSceneModeParticleTracing);
     // tlbLeftBar->addAction(sceneViewVTK2D->actSceneModeVTK2D);
     tlbLeftBar->addAction(sceneViewChart->actSceneModeChart);
+    tlbLeftBar->addSeparator();
+    tlbLeftBar->addAction(scriptEditor->actSceneModePythonEditor);
     tlbLeftBar->addWidget(spacing);
     tlbLeftBar->addAction(Agros2D::problem()->actionMesh());
     tlbLeftBar->addAction(Agros2D::problem()->actionSolve());
     // tlbLeftBar->addAction(Agros2D::problem()->actionSolveAdaptiveStep());
-    tlbLeftBar->addSeparator();
-    tlbLeftBar->addAction(actScriptEditor);
 
     splitter = new QSplitter(Qt::Horizontal, this);
     splitter->addWidget(viewControls);
@@ -865,8 +827,8 @@ void MainWindow::doDocumentOpen(const QString &fileName)
         if (fileInfo.suffix() == "py")
         {
             // python script
-            scriptEditorDialog->doFileOpen(fileNameDocument);
-            scriptEditorDialog->showDialog();
+            scriptEditor->doFileOpen(fileNameDocument);
+            scriptEditor->actSceneModePythonEditor->trigger();
             return;
         }
 
@@ -896,7 +858,7 @@ void MainWindow::doDocumentOpenForm(const QString &fileName, const QString &form
     if (!customForm)
     {
         // example form
-        FormScript form(fileName, consoleView, this);
+        FormScript form(fileName, consoleView->console(), this);
         form.showForm(formName);
     }
 }
@@ -1168,15 +1130,9 @@ void MainWindow::doOptions()
 void MainWindow::doUnitTests()
 {
     UnitTestsWidget unit(this);
-    connect(&unit, SIGNAL(openInPythonLab(QString, QString)), scriptEditorDialog, SLOT(doFileOpenAndFind(QString, QString)));
-    connect(&unit, SIGNAL(openInPythonLab(QString, QString)), scriptEditorDialog, SLOT(show()));
+    connect(&unit, SIGNAL(openInPythonLab(QString, QString)), scriptEditor, SLOT(doFileOpenAndFind(QString, QString)));
+    connect(&unit, SIGNAL(openInPythonLab(QString, QString)), scriptEditor, SLOT(show()));
     unit.exec();
-}
-
-void MainWindow::doSweepAnalysis()
-{
-    // UnitTestsWidget unit(this);
-    // unit.exec();
 }
 
 void MainWindow::doTransform()
@@ -1188,11 +1144,6 @@ void MainWindow::doMaterialBrowser()
 {
     MaterialBrowserDialog materialBrowserDialog(this);
     materialBrowserDialog.showDialog(false);
-}
-
-void MainWindow::doScriptEditor()
-{
-    scriptEditorDialog->showDialog();
 }
 
 void MainWindow::doCut()
@@ -1374,6 +1325,31 @@ void MainWindow::setControls()
         tabViewLayout->setCurrentWidget(sceneViewChartWidget);
         tabControlsLayout->setCurrentWidget(chartWidget);
     }
+    else if (scriptEditor->actSceneModePythonEditor->isChecked())
+    {
+        tabViewLayout->setCurrentWidget(sceneViewPythonEditorWidget);
+        tabControlsLayout->setCurrentWidget(scriptEditor->pythonEditorWidget());
+
+        menuBar()->addMenu(scriptEditor->mnuFile);
+    }
+
+    // menu bar
+    menuBar()->clear();
+    if (scriptEditor->actSceneModePythonEditor->isChecked())
+    {
+        menuBar()->addMenu(scriptEditor->mnuFile);
+        menuBar()->addMenu(scriptEditor->mnuEdit);
+        menuBar()->addMenu(scriptEditor->mnuTools);
+    }
+    else
+    {
+        menuBar()->addMenu(mnuFile);
+        menuBar()->addMenu(mnuEdit);
+        menuBar()->addMenu(mnuTools);
+        menuBar()->addMenu(mnuProblem);
+    }
+    menuBar()->addMenu(mnuSettings);
+    menuBar()->addMenu(mnuHelp);
 
     actDocumentExportMeshFile->setEnabled(Agros2D::problem()->isMeshed());
 
@@ -1483,13 +1459,13 @@ void MainWindow::showEvent(QShowEvent *event)
         // consoleView->console()->disconnectStdOut();
 
         // open script
-        scriptEditorDialog->doFileOpen(m_startupScriptFilename);
-        scriptEditorDialog->showDialog();
+        scriptEditor->doFileOpen(m_startupScriptFilename);
+        scriptEditor->actSceneModePythonEditor->trigger();
 
         m_startupScriptFilename = "";
 
         if (m_startupExecute)
-            scriptEditorDialog->doRunPython();
+            scriptEditor->doRunPython();
     }
 }
 

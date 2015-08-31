@@ -26,6 +26,9 @@
 #include "scenemarkerselectdialog.h"
 #include "scenebasicselectdialog.h"
 
+#include "infowidget.h"
+#include "pythonlab/pythonengine_agros.h"
+
 #include "scenebasic.h"
 #include "scenenode.h"
 #include "sceneedge.h"
@@ -52,6 +55,22 @@ SceneViewWidget::SceneViewWidget(QWidget *widget, QWidget *parent) : QWidget(par
 
     iconLeft(icon("scene-info"));
     labelLeft(tr("Info"));
+}
+
+SceneViewWidget::SceneViewWidget(InfoWidget *widget, QWidget *parent) : QWidget(parent)
+{
+    createControls(widget);
+
+    iconLeft(icon("scene-info"));
+    labelLeft(tr("Info"));
+}
+
+SceneViewWidget::SceneViewWidget(PythonEditorDialog *widget, QWidget *parent) : QWidget(parent)
+{
+    createControls(widget);
+
+    iconLeft(icon("pythonlab"));
+    labelLeft(tr("PythonLab"));
 }
 
 SceneViewWidget::~SceneViewWidget()

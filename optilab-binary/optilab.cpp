@@ -45,13 +45,25 @@ OptilabWindow::OptilabWindow(int argc, char *argv[]) : QMainWindow()
     setSilentMode(true);
 
     createPythonEngine(argc, argv, new PythonEngineAgros());
-    scriptEditorDialog = new PythonEditorAgrosDialog(currentPythonEngine(), QStringList(), NULL);
 
     variantsWidget = new VariantsWidget(this);
     analysesWidget = new AnalysesWidget(this);
 
+    consoleView = new PythonScriptingConsoleView(currentPythonEngine(), this);
+    consoleView->setAllowedAreas(Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
+    consoleView->setVisible(false);
+    addDockWidget(Qt::RightDockWidgetArea, consoleView);
+
+    logView = new LogView(this);
+    logView->setAllowedAreas(Qt::RightDockWidgetArea);
+    addDockWidget(Qt::RightDockWidgetArea, logView);
+
+    // PythonLab
+    scriptEditor = new PythonEditorDialog(consoleView->console(), this);
+
     createActions();
     createToolBars();
+    createMenus();
     createMain();
 
     variantsWidget->actVariants->trigger();
@@ -70,20 +82,17 @@ OptilabWindow::~OptilabWindow()
     removeDirectory(tempProblemDir());
 }
 
-void OptilabWindow::doScriptEditor()
-{
-    scriptEditorDialog->showDialog();
-}
-
 void OptilabWindow::createActions()
 {
-    actScriptEditor = new QAction(icon("script-python"), tr("PythonLab"), this);
-    actScriptEditor->setShortcut(Qt::Key_F9);
-    connect(actScriptEditor, SIGNAL(triggered()), this, SLOT(doScriptEditor()));
+    actExit = new QAction(icon("application-exit"), tr("E&xit"), this);
+    actExit->setShortcut(tr("Ctrl+Q"));
+    actExit->setMenuRole(QAction::QuitRole);
+    connect(actExit, SIGNAL(triggered()), this, SLOT(close()));
 
     QActionGroup *actSceneModeGroup = new QActionGroup(this);
     actSceneModeGroup->addAction(variantsWidget->actVariants);
     actSceneModeGroup->addAction(analysesWidget->actAnalyses);
+    actSceneModeGroup->addAction(scriptEditor->actSceneModePythonEditor);
 
     connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), this, SLOT(setControls()));
 }
@@ -109,19 +118,11 @@ void OptilabWindow::createToolBars()
 
 void OptilabWindow::createMain()
 {
-    consoleView = new PythonScriptingConsoleView(currentPythonEngine(), this);
-    consoleView->setAllowedAreas(Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-    consoleView->setVisible(false);
-    addDockWidget(Qt::RightDockWidgetArea, consoleView);
-
-    logView = new LogView(this);
-    logView->setAllowedAreas(Qt::RightDockWidgetArea);
-    addDockWidget(Qt::RightDockWidgetArea, logView);
-
     tabViewLayout = new QStackedLayout();
     tabViewLayout->setContentsMargins(0, 0, 0, 0);
     tabViewLayout->addWidget(variantsWidget);
     tabViewLayout->addWidget(analysesWidget);
+    tabViewLayout->addWidget(scriptEditor);
     tabViewLayout->setCurrentWidget(variantsWidget);
 
     QWidget *viewWidget = new QWidget();
@@ -154,9 +155,9 @@ void OptilabWindow::createMain()
 
     tlbLeftBar->addAction(variantsWidget->actVariants);
     tlbLeftBar->addAction(analysesWidget->actAnalyses);
-    tlbLeftBar->addWidget(spacing);
     tlbLeftBar->addSeparator();
-    tlbLeftBar->addAction(actScriptEditor);
+    tlbLeftBar->addAction(scriptEditor->actSceneModePythonEditor);
+    tlbLeftBar->addWidget(spacing);
 
     QHBoxLayout *layoutMain = new QHBoxLayout();
     layoutMain->setContentsMargins(0, 0, 0, 0);
@@ -167,6 +168,15 @@ void OptilabWindow::createMain()
     main->setLayout(layoutMain);
 
     setCentralWidget(main);
+}
+
+void OptilabWindow::createMenus()
+{
+    mnuFile = menuBar()->addMenu(tr("&File"));
+#ifndef Q_WS_MAC
+    mnuFile->addSeparator();
+    mnuFile->addAction(actExit);
+#endif
 }
 
 void OptilabWindow::showDialog()
@@ -185,4 +195,23 @@ void OptilabWindow::setControls()
     {
         tabViewLayout->setCurrentWidget(analysesWidget);
     }
+    else if (scriptEditor->actSceneModePythonEditor->isChecked())
+    {
+        tabViewLayout->setCurrentWidget(scriptEditor);
+    }
+
+    // menu bar
+    menuBar()->clear();
+    if (scriptEditor->actSceneModePythonEditor->isChecked())
+    {
+        menuBar()->addMenu(scriptEditor->mnuFile);
+        menuBar()->addMenu(scriptEditor->mnuEdit);
+        menuBar()->addMenu(scriptEditor->mnuTools);
+    }
+    else
+    {
+        menuBar()->addMenu(mnuFile);
+    }
+    // menuBar()->addMenu(mnuSettings);
+    // menuBar()->addMenu(mnuHelp);
 }

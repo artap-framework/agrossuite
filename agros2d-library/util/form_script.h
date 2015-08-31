@@ -29,7 +29,7 @@ namespace XMLForm
   class form;
 }
 
-class PythonScriptingConsoleView;
+class PythonScriptingConsole;
 
 class AGROS_LIBRARY_API FormScript : public FormInterface
 {
@@ -38,7 +38,7 @@ class AGROS_LIBRARY_API FormScript : public FormInterface
     Q_INTERFACES(FormInterface)
 
 public:
-    FormScript(const QString &m_fileName = "", PythonScriptingConsoleView *consoleView = NULL, QWidget *parent = 0);
+    FormScript(const QString &m_fileName = "", PythonScriptingConsole *console = NULL, QWidget *parent = 0);
     virtual ~FormScript();
 
     virtual QString formId();
@@ -64,7 +64,7 @@ protected:
 
     QProcess *process;
 
-    PythonScriptingConsoleView *consoleView;
+    PythonScriptingConsole *console;
 
 private:
     QString valueForWidget(XMLForm::form *doc, const QString &objectName, const QString &defaultValue);

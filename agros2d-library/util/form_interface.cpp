@@ -64,7 +64,7 @@ void readCustomForms(QMenu *menu)
     }
 }
 
-void readCustomScripts(QMenu *menu, PythonScriptingConsoleView *consoleView, QWidget *parent)
+void readCustomScripts(QMenu *menu, PythonScriptingConsole *console, QWidget *parent)
 {
     QDir dir(datadir() + "/resources/forms");
 
@@ -77,7 +77,7 @@ void readCustomScripts(QMenu *menu, PythonScriptingConsoleView *consoleView, QWi
         QString fn = QString("%1/%2").arg(dir.absolutePath()).arg(filename);
         if (QFile::exists(fn))
         {
-            FormScript *form = new FormScript(fn, consoleView, parent);
+            FormScript *form = new FormScript(fn, console, parent);
             menu->addAction(form->action());
         }
     }

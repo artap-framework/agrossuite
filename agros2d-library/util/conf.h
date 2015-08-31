@@ -49,7 +49,10 @@ public:
         Config_PostFontPointSize,
         Config_ShowGrid,
         Config_ShowRulers,
-        Config_ShowAxes
+        Config_ShowAxes,
+        Python_UseProfiler,
+        Python_PrintStacktrace,
+        Python_ConsoleOutput
     };
 
     inline QVariant value(Type type) {  return m_setting[type]; }

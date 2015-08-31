@@ -70,7 +70,6 @@ private:
     void createActions();
     void createControls();
     void createMenu();
-    void createToolBar();
 
 private slots:
     void doContextMenu(const QPoint &pos);

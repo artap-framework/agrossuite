@@ -7,7 +7,6 @@ ELSE()
 ENDIF()
 
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/util)
-INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/pythonlab-library)
 INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty)
 IF(WIN32)
     INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/ctemplate)
@@ -52,18 +51,29 @@ endforeach()
 # cython
 # message("Cython files - Agros2D")
 # message("\tcython agros2d.pyx")
+# message("Cython files - PythonLab")
+# message("\tcython -3 pythonlab.pyx")
 add_custom_target(CYTHON_AGROS2D ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.cpp)
+add_custom_target(CYTHON_PYTHONLAB ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.cpp)
 
 IF(WIN32)
   ADD_CUSTOM_COMMAND(
     COMMAND C:/Python34/Scripts/cython ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.pyx
     DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.pyx
     OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.cpp)
+  ADD_CUSTOM_COMMAND(
+    COMMAND C:/Python34/Scripts/cython ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.pyx
+    DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.pyx
+    OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.cpp)
 ELSE()
   ADD_CUSTOM_COMMAND(
     COMMAND cython3 ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.pyx
     DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.pyx
     OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.cpp)
+  ADD_CUSTOM_COMMAND(
+    COMMAND cython ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.pyx
+    DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.pyx
+    OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.cpp)
 ENDIF()
 
 SET(SOURCES
@@ -103,6 +113,12 @@ SET(SOURCES
     postprocessorview.cpp
     preprocessorview.cpp
     problemdialog.cpp
+    pythonlab/pythonconsole.cpp
+    pythonlab/pythoncompleter.cpp
+    pythonlab/pythonhighlighter.cpp
+    pythonlab/pythonengine.cpp
+    pythonlab/pythonbrowser.cpp
+    pythonlab/pythoneditor.cpp
     pythonlab/pyfield.cpp
     pythonlab/pygeometry.cpp
     pythonlab/pyparticletracing.cpp
@@ -202,6 +218,12 @@ SOURCE_GROUP(
 
 SOURCE_GROUP(
   "Source Files\\PythonLab" FILES 
+  pythonlab/pythonconsole.cpp
+  pythonlab/pythoncompleter.cpp
+  pythonlab/pythonhighlighter.cpp
+  pythonlab/pythonengine.cpp
+  pythonlab/pythonbrowser.cpp
+  pythonlab/pythoneditor.cpp
   pythonlab/pyfield.cpp
   pythonlab/pygeometry.cpp
   pythonlab/pyparticletracing.cpp
@@ -303,6 +325,12 @@ SET(HEADERS
   postprocessorview.h
   preprocessorview.h
   problemdialog.h
+  pythonlab/pythonconsole.h
+  pythonlab/pythoncompleter.h
+  pythonlab/pythonhighlighter.h
+  pythonlab/pythonengine.h
+  pythonlab/pythonbrowser.h
+  pythonlab/pythoneditor.h
   pythonlab/pyfield.h
   pythonlab/pygeometry.h
   pythonlab/pyparticletracing.h
@@ -396,6 +424,12 @@ SOURCE_GROUP(
 
 SOURCE_GROUP(
   "Header Files\\PythonLab" FILES 
+  pythonlab/pythonconsole.h
+  pythonlab/pythoncompleter.h
+  pythonlab/pythonhighlighter.h
+  pythonlab/pythonengine.h
+  pythonlab/pythonbrowser.h
+  pythonlab/pythoneditor.h
   pythonlab/pyfield.h
   pythonlab/pygeometry.h
   pythonlab/pyparticletracing.h
@@ -469,8 +503,7 @@ SET(RESOURCES ../resources_source/resources.qrc)
 QT5_ADD_RESOURCES(RESOURCES_RCC ${RESOURCES})
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} ${RESOURCES_RCC})
-ADD_DEPENDENCIES(${PROJECT_NAME} CYTHON_AGROS2D)
-
+ADD_DEPENDENCIES(${PROJECT_NAME} CYTHON_AGROS2D CYTHON_PYTHONLAB)
 
 foreach(LANGFILE ${lang_files})
   GET_FILENAME_COMPONENT(basefile ${LANGFILE} NAME_WE)
@@ -484,5 +517,5 @@ endforeach()
 
 QT5_USE_MODULES(${PROJECT_NAME} Core Widgets Network Xml XmlPatterns WebKit WebKitWidgets Svg UiTools OpenGL)
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_LIBRARIES} ${PYTHONLAB_LIBRARY} ${AGROS_UTIL} ${TRIANGLE_LIBRARY} ${CTEMPLATE_LIBRARY} ${DXFLIB_LIBRARY} ${POLY2TRI_LIBRARY} ${QCUSTOMPLOT_LIBRARY} ${QUAZIP_LIBRARY} ${STB_TRUETYPE_LIBRARY} ${OPENGL_LIBRARIES} ${ZLIB_LIBRARIES} ${ZLIB_LIBRARY} ${XSD_LIBRARY} ${XERCES_LIBRARY} ${DEAL_II_LIBRARIES} ${PYTHON_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${UMFPACK_LIBRARY} ${AMD_LIBRARY} ${MATIO_LIBRARY} ${SuiteSparse_config_LIBRARY} ${PARALUTION_LIBRARY})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_LIBRARIES} ${AGROS_UTIL} ${TRIANGLE_LIBRARY} ${CTEMPLATE_LIBRARY} ${DXFLIB_LIBRARY} ${POLY2TRI_LIBRARY} ${QCUSTOMPLOT_LIBRARY} ${QUAZIP_LIBRARY} ${STB_TRUETYPE_LIBRARY} ${OPENGL_LIBRARIES} ${ZLIB_LIBRARIES} ${ZLIB_LIBRARY} ${XSD_LIBRARY} ${XERCES_LIBRARY} ${DEAL_II_LIBRARIES} ${PYTHON_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${UMFPACK_LIBRARY} ${AMD_LIBRARY} ${MATIO_LIBRARY} ${SuiteSparse_config_LIBRARY} ${PARALUTION_LIBRARY})
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

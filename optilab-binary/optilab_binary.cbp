@@ -5,7 +5,7 @@
       <Option title="optilab_binary" />
       <Option makefile_is_custom="1" />
       <Option compiler="gcc" />
-      <Option virtualFolders="CMake Files\;CMake Files\cmake\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Core\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Gui\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5OpenGL\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Widgets\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5PrintSupport\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Svg\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Network\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5WebKit\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5WebKitWidgets\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Xml\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5XmlPatterns\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5UiTools\;CMake Files\util\;CMake Files\resources_source\;CMake Files\dealii\;CMake Files\dealii\build\;CMake Files\dealii\build\lib\;CMake Files\dealii\build\lib\cmake\;CMake Files\dealii\build\lib\cmake\deal.II\;CMake Files\dealii\build\share\;CMake Files\dealii\build\share\deal.II\;CMake Files\dealii\build\share\deal.II\macros\;CMake Files\3rdparty\;CMake Files\3rdparty\ctemplate\;CMake Files\3rdparty\libdxfrw\;CMake Files\3rdparty\poly2tri\;CMake Files\3rdparty\qcustomplot\;CMake Files\3rdparty\quazip\;CMake Files\3rdparty\stb_truetype\;CMake Files\3rdparty\qtsingleapplication\;CMake Files\3rdparty\matio\;CMake Files\3rdparty\triangle\;CMake Files\pythonlab-library\;CMake Files\pythonlab-binary\;CMake Files\agros2d-library\;CMake Files\agros2d-binary\;CMake Files\agros2d-solver\;CMake Files\agros2d-generator\;CMake Files\agros2d-remote\;CMake Files\optilab-binary\;CMake Files\solver-external\;" />
+      <Option virtualFolders="CMake Files\;CMake Files\cmake\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\usr\;CMake Files\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Core\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Gui\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5OpenGL\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Widgets\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5PrintSupport\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Svg\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Network\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5WebKit\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5WebKitWidgets\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5Xml\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5XmlPatterns\;CMake Files\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\Qt5UiTools\;CMake Files\util\;CMake Files\resources_source\;CMake Files\dealii\;CMake Files\dealii\build\;CMake Files\dealii\build\lib\;CMake Files\dealii\build\lib\cmake\;CMake Files\dealii\build\lib\cmake\deal.II\;CMake Files\dealii\build\share\;CMake Files\dealii\build\share\deal.II\;CMake Files\dealii\build\share\deal.II\macros\;CMake Files\3rdparty\;CMake Files\3rdparty\ctemplate\;CMake Files\3rdparty\libdxfrw\;CMake Files\3rdparty\poly2tri\;CMake Files\3rdparty\qcustomplot\;CMake Files\3rdparty\quazip\;CMake Files\3rdparty\stb_truetype\;CMake Files\3rdparty\qtsingleapplication\;CMake Files\3rdparty\matio\;CMake Files\3rdparty\triangle\;CMake Files\agros2d-library\;CMake Files\agros2d-binary\;CMake Files\agros2d-solver\;CMake Files\agros2d-generator\;CMake Files\agros2d-remote\;CMake Files\optilab-binary\;CMake Files\solver-external\;" />
       <Build>
       <Target title="all">
          <Option working_dir="/home/karban/Projects/agros2d-dealii/optilab-binary" />
@@ -61,7 +61,6 @@
             <Add directory="/home/karban/Projects/agros2d-dealii/dealii/include" />
             <Add directory="/home/karban/Projects/agros2d-dealii/optilab-binary" />
             <Add directory="/home/karban/Projects/agros2d-dealii/pythonlab" />
-            <Add directory="/home/karban/Projects/agros2d-dealii/pythonlab-library" />
             <Add directory="/home/karban/Projects/agros2d-dealii/util" />
             <Add directory="/usr/include/google" />
             <Add directory="/usr/include/python3.4m" />
@@ -131,7 +130,6 @@
             <Add directory="/home/karban/Projects/agros2d-dealii/dealii/include" />
             <Add directory="/home/karban/Projects/agros2d-dealii/optilab-binary" />
             <Add directory="/home/karban/Projects/agros2d-dealii/pythonlab" />
-            <Add directory="/home/karban/Projects/agros2d-dealii/pythonlab-library" />
             <Add directory="/home/karban/Projects/agros2d-dealii/util" />
             <Add directory="/usr/include/google" />
             <Add directory="/usr/include/python3.4m" />
@@ -349,12 +347,6 @@
       <Unit filename="/home/karban/Projects/agros2d-dealii/resources_source/resources.qrc">
           <Option virtualFolder="CMake Files\resources_source\" />
       </Unit>
-      <Unit filename="/home/karban/Projects/agros2d-dealii/resources_source/resources.qrc">
-          <Option virtualFolder="CMake Files\resources_source\" />
-      </Unit>
-      <Unit filename="/home/karban/Projects/agros2d-dealii/resources_source/resources.qrc">
-          <Option virtualFolder="CMake Files\resources_source\" />
-      </Unit>
       <Unit filename="/home/karban/Projects/agros2d-dealii/dealii/build/lib/cmake/deal.II/deal.IIConfigVersion.cmake">
           <Option virtualFolder="CMake Files\dealii\build\lib\cmake\deal.II\" />
       </Unit>
@@ -435,18 +427,6 @@
       </Unit>
       <Unit filename="/home/karban/Projects/agros2d-dealii/3rdparty/triangle/CMakeLists.txt">
           <Option virtualFolder="CMake Files\3rdparty\triangle\" />
-      </Unit>
-      <Unit filename="/home/karban/Projects/agros2d-dealii/pythonlab-library/CMakeLists.txt">
-          <Option virtualFolder="CMake Files\pythonlab-library\" />
-      </Unit>
-      <Unit filename="/home/karban/Projects/agros2d-dealii/pythonlab-library/CMakeLists.txt">
-          <Option virtualFolder="CMake Files\pythonlab-library\" />
-      </Unit>
-      <Unit filename="/home/karban/Projects/agros2d-dealii/pythonlab-binary/CMakeLists.txt">
-          <Option virtualFolder="CMake Files\pythonlab-binary\" />
-      </Unit>
-      <Unit filename="/home/karban/Projects/agros2d-dealii/pythonlab-binary/CMakeLists.txt">
-          <Option virtualFolder="CMake Files\pythonlab-binary\" />
       </Unit>
       <Unit filename="/home/karban/Projects/agros2d-dealii/agros2d-library/CMakeLists.txt">
           <Option virtualFolder="CMake Files\agros2d-library\" />

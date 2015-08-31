@@ -31,8 +31,9 @@
 class PythonEngine;
 class PythonScriptingConsole;
 class PythonScriptingConsoleView;
-class PythonScriptingHistoryView;
-class PythonBrowserView;
+class PythonScriptingHistory;
+class PythonBrowser;
+class PythonEditorDialog;
 
 class SceneView;
 class FileBrowser;
@@ -55,7 +56,7 @@ class ErrorWidget;
     const QFont FONT = QFont("Monaco", 12);
 #endif
 
-class AGROS_PYTHONLAB_API PythonEditorWidget : public QWidget
+class AGROS_PYTHONLAB_API PythonEditorTextEdit : public QWidget
 {
     Q_OBJECT
 public:    
@@ -64,8 +65,8 @@ public:
     SearchWidget *searchWidget;
     QSplitter *splitter;
 
-    PythonEditorWidget(PythonEngine *m_pythonEngine, QWidget *parent);
-    ~PythonEditorWidget();
+    PythonEditorTextEdit(PythonEngine *m_pythonEngine, QWidget *parent);
+    ~PythonEditorTextEdit();
 
     inline QString fileName() { return m_fileName; }
     inline void setFileName(const QString &fileName) { m_fileName = QFileInfo(fileName).absoluteFilePath(); }
@@ -84,11 +85,33 @@ private slots:
     void doHighlightLine(QTreeWidgetItem *item, int role);       
 };
 
-class AGROS_PYTHONLAB_API PythonEditorDialog : public QMainWindow
+class AGROS_PYTHONLAB_API PythonEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    PythonEditorDialog(PythonEngine *pythonEngine, QStringList args, QWidget *parent = 0);
+    PythonEditorWidget(PythonEditorDialog *parent);
+    ~PythonEditorWidget();
+
+    FileBrowser *fileBrowser;
+    PythonScriptingHistory *consoleHistory;
+    PythonBrowser *variableBrowser;
+    QWidget *config;
+
+    QToolBar *toolBar;
+
+private:
+    PythonEditorDialog *pythonEditor;
+
+    QSplitter *splitter;
+
+    void createControls();  
+};
+
+class AGROS_PYTHONLAB_API PythonEditorDialog : public QWidget
+{
+    Q_OBJECT
+public:
+    PythonEditorDialog(PythonScriptingConsole *console, QWidget *parent = 0);
     ~PythonEditorDialog();
 
     void showDialog();
@@ -97,12 +120,19 @@ public:
 
     QStringList *recentFiles() { return &m_recentFiles; }
 
+    QAction *actSceneModePythonEditor;
+    inline PythonEditorWidget *pythonEditorWidget() { return m_pythonEditorWidget; }
+
+    QMenu *mnuFile;
+    QMenu *mnuRecentFiles;
+    QMenu *mnuEdit;
+    QMenu *mnuTools;
+
 public slots:
     void doFileNew();
     void doFileOpen(const QString &file = QString());
     void doFileSave();
     void doFileSaveAs();
-    void doFileSaveConsoleAs();
     void doFileClose();
     void doFileOpenRecent(QAction *action);
     void doFilePrint();
@@ -120,6 +150,7 @@ public slots:
     void doCloseTab(int index);
 
     void doRunPython();
+    void doCreatePythonFromModel();
 
     // message from another app
     void doFileOpenAndFind(const QString &file, const QString &find);
@@ -131,42 +162,25 @@ protected:
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
 
-    virtual void scriptPrepare() {}
-    virtual void scriptFinish() {}
+    virtual void scriptPrepare();
+    virtual void scriptFinish();
 
-protected:
     PythonEngine *pythonEngine;
 
     QStringList m_recentFiles;
 
-    // gui
-    FileBrowser *fileBrowser;
+    // gui    
+    PythonEditorWidget *m_pythonEditorWidget;
     ScriptEditor *txtEditor;
-    PythonScriptingConsoleView *consoleView;
-    PythonScriptingHistoryView *consoleHistoryView;
-    PythonBrowserView *variablesView;
-    QDockWidget *fileBrowserView;
     ErrorWidget *errorWidget;
 
     QLabel *lblCurrentPosition;
-
-    QMenu *mnuFile;
-    QMenu *mnuRecentFiles;
-    QMenu *mnuEdit;
-    QMenu *mnuTools;
-    QMenu *mnuOptions;
-    QMenu *mnuHelp;
-
-    QToolBar *tlbFile;
-    QToolBar *tlbEdit;
-    QToolBar *tlbTools;
-    QToolBar *tlbRun;
+    PythonScriptingConsole *m_console;
 
     QAction *actFileNew;
     QAction *actFileOpen;
     QAction *actFileSave;
     QAction *actFileSaveAs;
-    QAction *actFileSaveConsoleAs;
     QAction *actFileClose;
     QAction *actFilePrint;
     QAction *actExit;
@@ -193,28 +207,26 @@ protected:
     QAction *actReplaceTabsWithSpaces;
     QAction *actCheckPyLint;    
 
-    QAction *actOptionsEnablePyLint;
-    QAction *actOptionsEnablePyFlakes;
-    QAction *actOptionsPrintStacktrace;
-    QAction *actOptionsEnableUseProfiler;
-
     QAction *actHelpOnWord;
     QAction *actGotoDefinition;
     QAction *actPrintSelection;
-    QAction *actAbout;
-    QAction *actAboutQt;
+
+    QAction *actUseProfiler;
+    QAction *actPrintStacktrace;
+    QAction *actConsoleOutput;
+
+    QAction *actCreateFromModel;
 
     QTabWidget *tabWidget;
 
     void createActions();
     void createControls();
-    void createViews();
     void createStatusBar();
 
     void setRecentFiles();
     void setEnabledControls(bool state);
 
-    inline PythonEditorWidget *scriptEditorWidget() { return dynamic_cast<PythonEditorWidget *>(tabWidget->currentWidget()); }
+    inline PythonEditorTextEdit *scriptEditorWidget() { return dynamic_cast<PythonEditorTextEdit *>(tabWidget->currentWidget()); }
 
 private slots:
     void doStopScript();
@@ -226,21 +238,21 @@ private slots:
     void doCurrentDocumentChanged(bool changed);
     void doCurrentPageChanged(int index);
     void doCursorPositionChanged();
-    void doOptionsEnablePyFlakes();
-    void doOptionsEnablePyLint();
-    void doOptionsPrintStacktrace();
-    void doOptionsEnableUseProfiler();
 
     void doStartedScript();
     void doExecutedScript();
 
-    void doAbout();
+    void doPrintStacktrace();
+    void doUseProfiler();
+    void doConsoleOutput();
 
     void printHeading(const QString &message);
     void printMessage(const QString &module, const QString &message);
     void printError(const QString &module, const QString &message);
     void printWarning(const QString &module, const QString &message);
     void printDebug(const QString &module, const QString &message);
+
+    friend class PythonEditorWidget;
 };
 
 class AGROS_PYTHONLAB_API ScriptEditor : public PlainTextEditParenthesis

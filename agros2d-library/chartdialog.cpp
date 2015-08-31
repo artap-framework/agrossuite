@@ -66,7 +66,7 @@ QList<Point> ChartLine::getPoints()
 ChartView::ChartView(QWidget *parent) : QWidget(parent)
 {
     actSceneModeChart = new QAction(icon("chart"), tr("Chart"), this);
-    actSceneModeChart->setShortcut(tr("Ctrl+6"));
+    actSceneModeChart->setShortcut(tr("Ctrl+7"));
     actSceneModeChart->setCheckable(true);
 
     connect(Agros2D::scene(), SIGNAL(cleared()), this, SLOT(setControls()));

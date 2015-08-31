@@ -29,6 +29,7 @@ class SceneViewPost3D;
 class SceneViewPreprocessor;
 class SceneViewMesh;
 class SceneViewParticleTracing;
+class PythonEditorWidget;
 // class SceneViewVTK2D;
 class InfoWidget;
 class SettingsWidget;
@@ -45,7 +46,7 @@ class LogView;
 class LogDialog;
 
 class ChartWidget;
-class PythonEditorAgrosDialog;
+class PythonEditorDialog;
 class SceneTransformDialog;
 class SceneViewWidget;
 class LogStdOut;
@@ -87,13 +88,11 @@ private slots:
 
     void doSolveFinished();
 
-    void doScriptEditor();
     void doOptions();
     void doTransform();
     void doMaterialBrowser();
     void doCreateVideo();
     void doUnitTests();
-    void doSweepAnalysis();
 
     void doHideControlPanel();
     void doFullScreen();
@@ -129,6 +128,13 @@ private:
     QMenu *mnuProblemAddBoundaryAndMaterial;
     QMenu *mnuCustomForms;
 
+    QMenu *mnuFile;
+    QMenu *mnuEdit;
+    QMenu *mnuProblem;
+    QMenu *mnuTools;
+    QMenu *mnuSettings;
+    QMenu *mnuHelp;
+
     QAction *actDocumentNew;
     QAction *actDocumentOpen;
     QAction *actDocumentSave;
@@ -155,11 +161,9 @@ private:
     QAction *actFullScreen;
     QAction *actPostprocessorView;
 
-    QAction *actScriptEditor;
     QAction *actMaterialBrowser;
     QAction *actCreateVideo;
     QAction *actUnitTests;
-    QAction *actSweepAnalysis;
 
     QAction *actHelp;
     QAction *actHelpShortCut;
@@ -187,8 +191,8 @@ private:
     SceneViewWidget *sceneViewPost3DWidget;
     SceneViewWidget *sceneViewPostParticleTracingWidget;
     // SceneViewWidget *sceneViewPostVTK2DWidget;
-    SceneViewWidget *sceneViewBlankWidget;
     SceneViewWidget *sceneViewChartWidget;
+    SceneViewWidget *sceneViewPythonEditorWidget;
 
     PostDeal *postDeal;
 
@@ -201,7 +205,7 @@ private:
     SceneViewParticleTracing *sceneViewParticleTracing;
     // SceneViewVTK2D *sceneViewVTK2D;
     ChartView *sceneViewChart;
-    QWidget *sceneViewBlank;
+    PythonEditorDialog *scriptEditor;
 
     QWidget *viewControls;
     QStackedLayout *tabControlsLayout;
@@ -210,12 +214,12 @@ private:
     PostprocessorWidget *postprocessorWidget;
     ChartWidget *chartWidget;
     ParticleTracingWidget *particleTracingWidget;
+    PythonEditorWidget *pythonEditorWidget;
 
     ResultsView *resultsView;
     PythonScriptingConsoleView *consoleView;
     LogView *logView;
 
-    PythonEditorAgrosDialog *scriptEditorDialog;
     SceneTransformDialog *sceneTransformDialog;
 
     QSplitter *splitter;

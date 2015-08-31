@@ -140,11 +140,11 @@ private:
     PythonScriptingConsole *m_console;
 };
 
-class AGROS_PYTHONLAB_API PythonScriptingHistoryView : public QDockWidget
+class AGROS_PYTHONLAB_API PythonScriptingHistory : public QWidget
 {
     Q_OBJECT
 public:
-    PythonScriptingHistoryView(PythonScriptingConsole *console, QWidget *parent = 0);
+    PythonScriptingHistory(PythonScriptingConsole *console, QWidget *parent = 0);
 
 private slots:
     void historyChanged(const QString &code);

@@ -36,12 +36,10 @@ bool isPythonVariable(const QString& type)
         return false;
 }
 
-PythonBrowserView::PythonBrowserView(PythonEngine *pythonEngine, PythonScriptingConsole *console, QWidget *parent)
-    : QDockWidget(tr("Browser"), parent), pythonEngine(pythonEngine), console(console)
+PythonBrowser::PythonBrowser(PythonScriptingConsole *console, QWidget *parent)
+    : QWidget(parent), console(console)
 {
     setObjectName("BrowserView");
-
-    connect(pythonEngine, SIGNAL(executedScript()), this, SLOT(executed()));
 
     trvBrowser = new QTreeWidget(this);
     trvBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -64,7 +62,7 @@ PythonBrowserView::PythonBrowserView(PythonEngine *pythonEngine, PythonScripting
     classExpanded = true;
     otherExpanded = false;
 
-    executed();
+    // executed();
     trvBrowser->sortItems(0, Qt::AscendingOrder);
 
     connect(trvBrowser, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(executeCommand(QTreeWidgetItem *, int)));
@@ -85,10 +83,16 @@ PythonBrowserView::PythonBrowserView(PythonEngine *pythonEngine, PythonScripting
     mnuContext->addSeparator();
     mnuContext->addAction(actDelete);
 
-    setWidget(trvBrowser);
+    connect(currentPythonEngine(), SIGNAL(executedScript()), this, SLOT(executed()));
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(trvBrowser);
+
+    setLayout(layout);
 }
 
-void PythonBrowserView::doContextMenu(const QPoint &point)
+void PythonBrowser::doContextMenu(const QPoint &point)
 {
     actDelete->setEnabled(false);
     actCopyName->setEnabled(false);
@@ -104,7 +108,7 @@ void PythonBrowserView::doContextMenu(const QPoint &point)
     mnuContext->exec(QCursor::pos());
 }
 
-void PythonBrowserView::executed()
+void PythonBrowser::executed()
 {
     trvBrowser->setUpdatesEnabled(false);
     trvBrowser->setSortingEnabled(false);
@@ -133,7 +137,7 @@ void PythonBrowserView::executed()
     trvClasses->setIcon(0, icon("browser-class"));
     trvClasses->setExpanded(classExpanded);
 
-    QList<PythonVariable> list = pythonEngine->variableList();
+    QList<PythonVariable> list = currentPythonEngine()->variableList();
 
     foreach (PythonVariable variable, list)
     {
@@ -224,7 +228,7 @@ void PythonBrowserView::executed()
     trvBrowser->setUpdatesEnabled(true);
 }
 
-void PythonBrowserView::executeCommand(QTreeWidgetItem *item, int role)
+void PythonBrowser::executeCommand(QTreeWidgetItem *item, int role)
 {
     if (item && !item->text(typePos).isEmpty())
     {
@@ -236,19 +240,19 @@ void PythonBrowserView::executeCommand(QTreeWidgetItem *item, int role)
     }
 }
 
-void PythonBrowserView::copyName()
+void PythonBrowser::copyName()
 {
     if (trvBrowser->currentItem())
         QApplication::clipboard()->setText(trvBrowser->currentItem()->text(namePos));
 }
 
-void PythonBrowserView::copyValue()
+void PythonBrowser::copyValue()
 {
     if (trvBrowser->currentItem())
         QApplication::clipboard()->setText(trvBrowser->currentItem()->text(valuePos));
 }
 
-void PythonBrowserView::deleteVariable()
+void PythonBrowser::deleteVariable()
 {
     if (trvBrowser->currentItem() && isPythonVariable(trvBrowser->currentItem()->text(typePos)))
     {

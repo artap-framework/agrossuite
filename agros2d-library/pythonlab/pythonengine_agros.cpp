@@ -174,66 +174,6 @@ QStringList PythonEngineAgros::testSuiteScenarios()
     return list;
 }
 
-PythonEditorAgrosDialog::PythonEditorAgrosDialog(PythonEngine *pythonEngine, QStringList args, QWidget *parent)
-    : PythonEditorDialog(pythonEngine, args, parent)
-{
-    QSettings settings;
-
-    // add create from model
-    actCreateFromModel = new QAction(icon("script-create"), tr("&Create script from model"), this);
-    actCreateFromModel->setShortcut(QKeySequence(tr("Ctrl+M")));
-    connect(actCreateFromModel, SIGNAL(triggered()), this, SLOT(doCreatePythonFromModel()));
-
-    // console output
-    actConsoleOutput = new QAction(tr("Console output"), this);
-    actConsoleOutput->setCheckable(true);
-    actConsoleOutput->setChecked(settings.value("PythonEditorDialog/ConsoleOutput", true).toBool());
-
-    mnuTools->addSeparator();
-    mnuTools->addAction(actCreateFromModel);
-
-    tlbTools->addSeparator();
-    tlbTools->addAction(actCreateFromModel);
-
-    mnuOptions->addSeparator();
-    mnuOptions->addAction(actConsoleOutput);
-}
-
-PythonEditorAgrosDialog::~PythonEditorAgrosDialog()
-{
-    QSettings settings;
-    settings.setValue("PythonEditorDialog/ConsoleOutput", actConsoleOutput->isChecked());
-}
-
-void PythonEditorAgrosDialog::doCreatePythonFromModel()
-{
-    txtEditor->setPlainText(createPythonFromModel());
-}
-
-void PythonEditorAgrosDialog::scriptPrepare()
-{
-    if (actConsoleOutput->isChecked())
-    {
-        connect(Agros2D::log(), SIGNAL(headingMsg(QString)), this, SLOT(printHeading(QString)));
-        connect(Agros2D::log(), SIGNAL(messageMsg(QString, QString)), this, SLOT(printMessage(QString, QString)));
-        connect(Agros2D::log(), SIGNAL(errorMsg(QString, QString)), this, SLOT(printError(QString, QString)));
-        connect(Agros2D::log(), SIGNAL(warningMsg(QString, QString)), this, SLOT(printWarning(QString, QString)));
-        connect(Agros2D::log(), SIGNAL(debugMsg(QString, QString)), this, SLOT(printDebug(QString, QString)));
-    }
-}
-
-void PythonEditorAgrosDialog::scriptFinish()
-{
-    if (actConsoleOutput->isChecked())
-    {
-        disconnect(Agros2D::log(), SIGNAL(headingMsg(QString)), this, SLOT(printHeading(QString)));
-        disconnect(Agros2D::log(), SIGNAL(messageMsg(QString, QString)), this, SLOT(printMessage(QString, QString)));
-        disconnect(Agros2D::log(), SIGNAL(errorMsg(QString, QString)), this, SLOT(printError(QString, QString)));
-        disconnect(Agros2D::log(), SIGNAL(warningMsg(QString, QString)), this, SLOT(printWarning(QString, QString)));
-        disconnect(Agros2D::log(), SIGNAL(debugMsg(QString, QString)), this, SLOT(printDebug(QString, QString)));
-    }
-}
-
 // *****************************************************************************
 
 // create script from model
@@ -769,6 +709,36 @@ void memoryUsage(std::vector<int> &time, std::vector<int> &usage)
 {
     time = Agros2D::memoryMonitor()->memoryTime().toVector().toStdVector();
     usage = Agros2D::memoryMonitor()->memoryUsage().toVector().toStdVector();
+}
+
+char *pyVersion()
+{
+    return const_cast<char*>(QApplication::applicationVersion().toStdString().c_str());
+}
+
+void pyQuit()
+{
+    // doesn't work without main event loop (run from script)
+    // QApplication::exit(0);
+
+    exit(0);
+}
+
+char *pyInput(std::string str)
+{
+    QString text = QInputDialog::getText(QApplication::activeWindow(), QObject::tr("Script input"), QString::fromStdString(str));
+    return const_cast<char*>(text.toStdString().c_str());
+}
+
+void pyMessage(std::string str)
+{
+    QMessageBox::information(QApplication::activeWindow(), QObject::tr("Script message"), QString::fromStdString(str));
+}
+
+std::string pyDatadir(std::string str)
+{
+    QString path = QFileInfo(datadir() + "/" + QString::fromStdString(str)).absoluteFilePath();
+    return compatibleFilename(path).toStdString();
 }
 
 // ************************************************************************************

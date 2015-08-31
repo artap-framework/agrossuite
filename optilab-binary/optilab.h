@@ -28,7 +28,7 @@
 #include "qcustomplot/qcustomplot.h"
 
 class InfoWidget;
-class PythonEditorAgrosDialog;
+class PythonEditorDialog;
 class PythonScriptingConsoleView;
 class LogView;
 
@@ -43,7 +43,6 @@ public:
     inline void setStartupProblemFilename(const QString& fn) { m_startupProblemFilename = fn; }
 
 public slots:
-    void doScriptEditor();
     void setControls();
 
 private:
@@ -57,12 +56,15 @@ private:
     PythonScriptingConsoleView *consoleView;
     LogView *logView;
 
-    QAction *actScriptEditor;
+    PythonEditorDialog *scriptEditor;
 
-    PythonEditorAgrosDialog *scriptEditorDialog;
+    QAction *actExit;
+
+    QMenu *mnuFile;
 
     void createActions();
     void createToolBars();
+    void createMenus();
     void createMain();
 };
 

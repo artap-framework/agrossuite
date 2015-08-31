@@ -3,16 +3,15 @@
 
 #include "util.h"
 
-class PythonEngine;
 class PythonScriptingConsole;
 
 bool isPythonVariable(const QString& type);
 
-class PythonBrowserView : public QDockWidget
+class PythonBrowser : public QWidget
 {
     Q_OBJECT
 public:
-    PythonBrowserView(PythonEngine *pythonEngine, PythonScriptingConsole *console, QWidget *parent = 0);
+    PythonBrowser(PythonScriptingConsole *console, QWidget *parent = 0);
 
 private slots:
     void executed();
@@ -29,7 +28,6 @@ private:
     QTreeWidgetItem *trvClasses;
     QTreeWidgetItem *trvOther;
 
-    PythonEngine *pythonEngine;
     PythonScriptingConsole *console;
 
     bool variableExpanded;

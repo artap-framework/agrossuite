@@ -45,7 +45,7 @@
 #include "ctemplate/template.h"
 
 InfoWidget::InfoWidget(SceneViewPreprocessor *sceneView, QWidget *parent)
-    : QWidget(parent), m_recentProblemFiles(NULL), m_recentScriptFiles(NULL)
+    : QWidget(parent), m_recentProblemFiles(nullptr), m_recentScriptFiles(nullptr)
 {
     this->m_sceneViewGeometry = sceneView;
 

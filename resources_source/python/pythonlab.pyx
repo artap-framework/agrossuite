@@ -15,7 +15,7 @@ cdef extern from "limits.h":
     int c_DOUBLE_MIN "DOUBLE_MIN"
     int c_DOUBLE_MAX "DOUBLE_MAX"
 
-cdef extern from "../../pythonlab-library/pythonlab_functions.h":
+cdef extern from "../../agros2d-library/pythonlab/pythonengine_agros.h":
     char *pyVersion()
     void pyQuit()
 

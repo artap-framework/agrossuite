@@ -24,6 +24,9 @@
 #include "pythoncompleter.h"
 #include "pythonbrowser.h"
 
+#include "util/global.h"
+#include "util/conf.h"
+
 #include <QtGui>
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QtWidgets>
@@ -204,8 +207,7 @@ void PythonScriptingConsole::executeCode(const QString& code)
         ErrorResult result = pythonEngine->parseError();
         stdErr(result.error());
 
-        QSettings settings;
-        if (settings.value("PythonEditorWidget/PrintStacktrace", true).toBool())
+        if (Agros2D::configComputer()->value(Config::Python_PrintStacktrace).toBool())
         {
             stdErr("\nStacktrace:\n");
             stdErr(result.tracebackToString());
@@ -723,8 +725,8 @@ void PythonScriptingConsoleView::focusInEvent(QFocusEvent *event)
 
 // ***********************************************************************************************
 
-PythonScriptingHistoryView::PythonScriptingHistoryView(PythonScriptingConsole *console, QWidget *parent)
-    : QDockWidget(tr("History"), parent), console(console)
+PythonScriptingHistory::PythonScriptingHistory(PythonScriptingConsole *console, QWidget *parent)
+    : QWidget(parent), console(console)
 {
     setMinimumWidth(280);
     setObjectName("ConsoleHistoryView");
@@ -740,10 +742,14 @@ PythonScriptingHistoryView::PythonScriptingHistoryView(PythonScriptingConsole *c
 
     connect(trvHistory, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(executeCommand(QTreeWidgetItem *, int)));
 
-    setWidget(trvHistory);
+    QHBoxLayout *layout = new QHBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(trvHistory);
+
+    setLayout(layout);
 }
 
-void PythonScriptingHistoryView::historyChanged(const QString &code)
+void PythonScriptingHistory::historyChanged(const QString &code)
 {
     trvHistory->clear();
 
@@ -761,7 +767,7 @@ void PythonScriptingHistoryView::historyChanged(const QString &code)
     }
 }
 
-void PythonScriptingHistoryView::executeCommand(QTreeWidgetItem *item, int role)
+void PythonScriptingHistory::executeCommand(QTreeWidgetItem *item, int role)
 {
     if (item)
     {

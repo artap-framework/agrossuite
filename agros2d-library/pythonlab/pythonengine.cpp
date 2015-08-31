@@ -490,7 +490,7 @@ bool PythonEngine::runExpression(const QString &expression, double *value, const
         if (value)
         {
             // return value
-            QString exp = QString("result_pythonlab = %1").arg(expression);
+            QString exp = QString("python_engine_result = %1").arg(expression);
             if (!commandPre.isEmpty())
                 exp = exp.insert(0, QString("%1; ").arg(commandPre));
             if (!commandPost.isEmpty())
@@ -502,7 +502,7 @@ bool PythonEngine::runExpression(const QString &expression, double *value, const
             if (output)
             {
                 // parse result
-                PyObject *result = PyDict_GetItemString(dict(), "result_pythonlab");
+                PyObject *result = PyDict_GetItemString(dict(), "python_engine_result");
 
                 if (result)
                 {
@@ -527,7 +527,7 @@ bool PythonEngine::runExpression(const QString &expression, double *value, const
                 }
 
                 // speed up?
-                // PyRun_String("del result_pythonlab", Py_single_input, m_dict, m_dict);
+                // PyRun_String("del python_engine_result", Py_single_input, m_dict, m_dict);
             }
         }
         else
@@ -857,10 +857,12 @@ QList<PythonVariable> PythonEngine::variableList()
     QStringList filter_name;
     filter_name << "__builtins__"
                 << "StdoutCatcher"
+                << "python_engine_result"
                 << "python_engine_stdout"
-                << "result_pythonlab"
                 << "python_engine_get_completion_interpreter"
                 << "python_engine_get_completion_script"
+                << "python_engine_code_help"
+                << "python_engine_goto_definition"
                 << "PythonLabRopeProject"
                 << "pythonlab_rope_project"
                 << "python_engine_pyflakes_check"
