@@ -138,7 +138,6 @@ def standalone_package():
     shutil.copy('agros2d', dest + '/agros2d')
     shutil.copy('agros2d_remote', dest + '/agros2d_remote')
     shutil.copy('agros2d_solver', dest + '/agros2d_solver')
-    shutil.copy('agros_pythonlab', dest + '/agros_pythonlab')
     shutil.copytree('resources', dest + '/resources')
     shutil.copytree('libs', dest + '/libs', ignore=ignore_patterns('*.a'))
 
