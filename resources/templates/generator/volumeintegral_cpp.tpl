@@ -185,7 +185,7 @@ void {{CLASS}}VolumeIntegral::calculate()
                                         for (unsigned int k = 0; k < n_face_q_points; ++k)
                                         {
                                             const dealii::Point<2> p = fe_values.quadrature_point(k);
-                                            const dealii::Point<2> normal = fe_values.normal_vector(k);
+                                            const dealii::Tensor<1,2> normal = fe_values.normal_vector(k);
 
                                             m_values[QLatin1String("{{VARIABLE}}")] += fe_values.JxW(k) * ({{EXPRESSION}});
                                         }
