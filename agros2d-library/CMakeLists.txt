@@ -71,7 +71,7 @@ ELSE()
     DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.pyx
     OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.cpp)
   ADD_CUSTOM_COMMAND(
-    COMMAND cython ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.pyx
+    COMMAND cython3 ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.pyx
     DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.pyx
     OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.cpp)
 ENDIF()
