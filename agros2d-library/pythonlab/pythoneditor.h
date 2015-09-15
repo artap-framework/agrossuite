@@ -56,7 +56,7 @@ class ErrorWidget;
     const QFont FONT = QFont("Monaco", 12);
 #endif
 
-class AGROS_PYTHONLAB_API PythonEditorTextEdit : public QWidget
+class AGROS_LIBRARY_API PythonEditorTextEdit : public QWidget
 {
     Q_OBJECT
 public:    
@@ -85,7 +85,7 @@ private slots:
     void doHighlightLine(QTreeWidgetItem *item, int role);       
 };
 
-class AGROS_PYTHONLAB_API PythonEditorWidget : public QWidget
+class AGROS_LIBRARY_API PythonEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
@@ -107,7 +107,7 @@ private:
     void createControls();  
 };
 
-class AGROS_PYTHONLAB_API PythonEditorDialog : public QWidget
+class AGROS_LIBRARY_API PythonEditorDialog : public QWidget
 {
     Q_OBJECT
 public:
@@ -255,7 +255,7 @@ private slots:
     friend class PythonEditorWidget;
 };
 
-class AGROS_PYTHONLAB_API ScriptEditor : public PlainTextEditParenthesis
+class AGROS_LIBRARY_API ScriptEditor : public PlainTextEditParenthesis
 {
     Q_OBJECT
 
@@ -332,7 +332,7 @@ private:
     friend class PythonEditorDialog;
 };
 
-class AGROS_PYTHONLAB_API ScriptEditorLineNumberArea : public QWidget
+class AGROS_LIBRARY_API ScriptEditorLineNumberArea : public QWidget
 {
 public:
     ScriptEditorLineNumberArea(ScriptEditor *editor) : QWidget(editor)
@@ -354,7 +354,7 @@ private:
 
 // ************************************************************************************************************
 
-class AGROS_PYTHONLAB_API SearchWidget: public QWidget
+class AGROS_LIBRARY_API SearchWidget: public QWidget
 {
     Q_OBJECT
 public:
@@ -381,7 +381,7 @@ private:
 
 // ************************************************************************************************************
 
-class AGROS_PYTHONLAB_API ErrorWidget: public QWidget
+class AGROS_LIBRARY_API ErrorWidget: public QWidget
 {
     Q_OBJECT
 public:

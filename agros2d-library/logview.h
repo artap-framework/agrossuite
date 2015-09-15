@@ -110,7 +110,7 @@ private slots:
     void refreshMemory(int usage);
 };
 
-class LogView : public QDockWidget
+class AGROS_LIBRARY_API LogView : public QDockWidget
 {
     Q_OBJECT
 public:

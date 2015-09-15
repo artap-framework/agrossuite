@@ -48,7 +48,7 @@ public:
     QString name;
 };
 
-class AGROS_PYTHONLAB_API PythonEngineProfiler
+class AGROS_LIBRARY_API PythonEngineProfiler
 {
 public:
     PythonEngineProfiler() {}
@@ -132,7 +132,7 @@ private:
     int m_line;
 };
 
-class AGROS_PYTHONLAB_API PythonEngine : public QObject, public PythonEngineProfiler
+class AGROS_LIBRARY_API PythonEngine : public QObject, public PythonEngineProfiler
 {
     Q_OBJECT
 
@@ -210,13 +210,13 @@ private:
 };
 
 // create custom python engine
-AGROS_PYTHONLAB_API void createPythonEngine(int argc, char *argv[], PythonEngine *custom = NULL);
+AGROS_LIBRARY_API void createPythonEngine(int argc, char *argv[], PythonEngine *custom = NULL);
 
 // current python engine
-AGROS_PYTHONLAB_API PythonEngine *currentPythonEngine();
+AGROS_LIBRARY_API PythonEngine *currentPythonEngine();
 
 // silent mode
-AGROS_PYTHONLAB_API void setSilentMode(bool mode);
-AGROS_PYTHONLAB_API bool silentMode();
+AGROS_LIBRARY_API void setSilentMode(bool mode);
+AGROS_LIBRARY_API bool silentMode();
 
 #endif // PYTHONENGINE_H

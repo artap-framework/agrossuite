@@ -42,7 +42,7 @@ class PythonEngine;
 
 #include "util.h"
 
-class AGROS_PYTHONLAB_API PythonScriptingConsole : public QTextEdit
+class AGROS_LIBRARY_API PythonScriptingConsole : public QTextEdit
 {
     Q_OBJECT
 public:
@@ -124,7 +124,7 @@ private:
     QString m_currentPath;
 };
 
-class AGROS_PYTHONLAB_API PythonScriptingConsoleView : public QDockWidget
+class AGROS_LIBRARY_API PythonScriptingConsoleView : public QDockWidget
 {
     Q_OBJECT
 public:
@@ -140,7 +140,7 @@ private:
     PythonScriptingConsole *m_console;
 };
 
-class AGROS_PYTHONLAB_API PythonScriptingHistory : public QWidget
+class AGROS_LIBRARY_API PythonScriptingHistory : public QWidget
 {
     Q_OBJECT
 public:
