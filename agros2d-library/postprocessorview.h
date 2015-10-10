@@ -17,8 +17,8 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#ifndef SCENEVIEWDIALOG_H
-#define SCENEVIEWDIALOG_H
+#ifndef POSTPROCESSORVIEW_H
+#define POSTPROCESSORVIEW_H
 
 #include "util.h"
 
@@ -85,47 +85,5 @@ private slots:
     void doCalculationFinished();
 };
 
-class PostprocessorSceneMeshWidget : public QWidget
-{
-    Q_OBJECT
 
-public:
-    PostprocessorSceneMeshWidget(PostprocessorWidget *postprocessorWidget, SceneViewMesh *sceneMesh, QWidget *parent);
-
-    void load();
-    void save();
-
-private:    
-    SceneViewMesh *m_sceneMesh;
-    PostprocessorWidget *m_postprocessorWidget;
-
-    QWidget *basic;
-
-    // show
-    QCheckBox *chkShowInitialMeshView;
-    QCheckBox *chkShowSolutionMeshView;
-    QCheckBox *chkShowOrderView;
-
-    // polynomial order
-    QCheckBox *chkShowOrderColorbar;
-    QComboBox *cmbOrderPaletteOrder;
-    QCheckBox *chkOrderLabel;
-    QSpinBox *txtOrderComponent;
-
-    void createControls();
-
-    QWidget *groupMesh;
-    QWidget *groupMeshOrder;
-
-signals:
-    void apply();
-
-public slots:
-    void updateControls();
-    void refresh();
-
-private slots:
-    void doField();
-};
-
-#endif // SCENEVIEWDIALOG_H
+#endif // POSTPROCESSORVIEW_H
