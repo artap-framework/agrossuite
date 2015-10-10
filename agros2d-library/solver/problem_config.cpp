@@ -328,41 +328,6 @@ void ProblemSetting::setDefaultValues()
     m_settingDefault[View_SolidViewHide] = QStringList();
 }
 
-void ProblemSetting::load21(QDomElement *config)
-{
-    // default
-    m_setting = m_settingDefault;
-
-    for (int i = 0; i < config->attributes().count(); i++)
-    {
-        QDomNode attribute = config->attributes().item(i);
-
-        Type key = stringKeyToType(attribute.toAttr().name());
-
-        if (m_settingDefault.keys().contains(key))
-        {
-            if (m_settingDefault[key].type() == QVariant::Double)
-                m_setting[key] = attribute.toAttr().value().toDouble();
-            else if (m_settingDefault[key].type() == QVariant::Int)
-                m_setting[key] = attribute.toAttr().value().toInt();
-            else if (m_settingDefault[key].type() == QVariant::Bool)
-                m_setting[key] = (attribute.toAttr().value() == "1");
-            else if (m_settingDefault[key].type() == QVariant::String)
-                m_setting[key] = attribute.toAttr().value();
-            else if (m_settingDefault[key].type() == QVariant::StringList)
-                m_setting[key] = attribute.toAttr().value().split("|");
-            else
-                qDebug() << "Key not found" << attribute.toAttr().name() << attribute.toAttr().value();
-        }
-    }
-}
-
-void ProblemSetting::save21(QDomElement *config)
-{
-    // not implemented
-    // use save(...)
-}
-
 void ProblemSetting::load(XMLProblem::config *configxsd)
 {
     // default

@@ -32,6 +32,7 @@ signals:
 
 public slots:
     void updateControls();
+    void reconnectActions();
 
 public:
     PhysicalFieldWidget(QWidget *parent = 0);

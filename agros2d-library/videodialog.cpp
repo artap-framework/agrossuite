@@ -79,7 +79,7 @@ VideoDialog::~VideoDialog()
 void VideoDialog::showDialog()
 {
     // time steps
-    m_timeLevels = Agros2D::problem()->timeStepLengths();
+    m_timeLevels = Agros2D::computation()->timeStepLengths();
     m_timeSteps = m_timeLevels.count() - 3;
     lblTransientStep->setText(QString("%1 / %2").arg(0).arg(m_timeSteps));
     lblTransientTime->setText(tr("%1 / %2 s").arg(0.0).arg(m_timeLevels.last()));

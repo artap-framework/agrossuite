@@ -23,7 +23,8 @@
 #include "util.h"
 #include "util/enums.h"
 
-class Problem;
+class ProblemPreprocessor;
+class ProblemComputation;
 class Config;
 class SolutionStore;
 class Log;
@@ -46,8 +47,10 @@ private:
     ScriptEngineRemote *m_scriptEngineRemote;
 };
 
-class AGROS_LIBRARY_API Agros2D
+class AGROS_LIBRARY_API Agros2D : public QObject
 {
+    Q_OBJECT
+
 public:
     Agros2D(const Agros2D &);
     Agros2D & operator = (const Agros2D &);
@@ -55,10 +58,20 @@ public:
 
     static void createSingleton();
     static Agros2D* singleton();
-    static inline Scene *scene() { return Agros2D::singleton()->m_scene; }
+
     static inline Config *configComputer() { return Agros2D::singleton()->m_configComputer; }
-    static inline Problem *problem() { return Agros2D::singleton()->m_problem; }
+
+    static inline ProblemPreprocessor *preprocessor() { return Agros2D::singleton()->m_preprocessor; }
+
+    static QString currentComputationDir();
+    static void setCurrentComputation(const QString &problemDir);
+    static inline ProblemComputation *computation() { return Agros2D::singleton()->m_computation; }
+    static inline QMap<QString, ProblemComputation *> computations() { return Agros2D::singleton()->m_computations; }
+    static void addComputation(const QString &problemDir, ProblemComputation *comp);
+    static void removeComputation(const QString &problemDir);
+
     static inline SolutionStore *solutionStore() { return Agros2D::singleton()->m_solutionStore; }
+
     static inline Log *log() { return Agros2D::singleton()->m_log; }
     static inline MemoryMonitor *memoryMonitor() { return Agros2D::singleton()->m_memoryMonitor; }
 
@@ -66,11 +79,20 @@ public:
 
     static void clear();
 
-private:
-    Scene *m_scene;
+signals:
+    void reconnectSlots();
+
+private:    
+    // computer config
     Config *m_configComputer;
-    Problem *m_problem;
+    // preprocessor
+    ProblemPreprocessor *m_preprocessor;
+    // postprocessor
+    ProblemComputation *m_computation;
+    QMap<QString, ProblemComputation *> m_computations;
+    // solution store
     SolutionStore *m_solutionStore;
+    // log and memory monitor
     Log *m_log;
     MemoryMonitor *m_memoryMonitor;
 };

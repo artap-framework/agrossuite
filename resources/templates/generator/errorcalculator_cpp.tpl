@@ -39,7 +39,7 @@ public:
 
     virtual Scalar value(int n, double *wt, Func<Scalar> *u, Func<Scalar> *v, GeomVol<double> *e) const
     {
-        // SceneLabel *label = Agros2D::scene()->labels->at(atoi(m_fieldInfo->initialMesh()->get_element_markers_conversion().get_user_marker(e->elem_marker).marker.c_str()));
+        // SceneLabel *label = Agros2D::problem()->scene()->labels->at(atoi(m_fieldInfo->initialMesh()->get_element_markers_conversion().get_user_marker(e->elem_marker).marker.c_str()));
         // SceneMaterial *material = label->marker(m_fieldInfo);
 
         // {{#VARIABLE_SOURCE}}

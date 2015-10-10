@@ -24,13 +24,14 @@
 #include "scenebasic.h"
 #include "scenemarkerdialog.h"
 
+class Scene;
 class SceneEdgeCommandAdd;
 class SceneEdgeCommandRemove;
 
 class AGROS_LIBRARY_API SceneEdge : public MarkedSceneBasic<SceneBoundary>
 {
 public:
-    SceneEdge(SceneNode *nodeStart, SceneNode *nodeEnd, const Value &angle, int segments = 3, bool isCurvilinear = true);
+    SceneEdge(Scene *scene, SceneNode *nodeStart, SceneNode *nodeEnd, const Value &angle, int segments = 3, bool isCurvilinear = true);
 
     inline SceneNode *nodeStart() const { return m_nodeStart; }
     inline void setNodeStart(SceneNode *nodeStart) { m_nodeStart = nodeStart; computeCenterAndRadius(); }
@@ -68,7 +69,7 @@ public:
 
     int showDialog(QWidget *parent, bool isNew = false);
 
-    static SceneEdge *findClosestEdge(const Point &point);
+    static SceneEdge *findClosestEdge(Scene *scene, const Point &point);
 
     void addMarkersFromStrings(QMap<QString, QString> markers);
 

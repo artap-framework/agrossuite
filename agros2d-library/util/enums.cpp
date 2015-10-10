@@ -232,7 +232,7 @@ void initLists()
     adaptivityEstimatorList.insert(AdaptivityEstimator_Gradient, "gradient");
     adaptivityEstimatorList.insert(AdaptivityEstimator_Uniform, "uniform");
     // adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceSpatialAndOrder, "reference_spatial_and_order");
-    // adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceSpatial, "reference_spatial");
+    adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceSpatial, "reference_spatial");
     adaptivityEstimatorList.insert(AdaptivityEstimator_ReferenceOrder, "reference_order");
 
     // AdaptivityStrategy
@@ -437,9 +437,9 @@ QString physicFieldVariableCompString(PhysicFieldVariableComp physicFieldVariabl
     case PhysicFieldVariableComp_Magnitude:
         return QObject::tr("Magnitude");
     case PhysicFieldVariableComp_X:
-        return Agros2D::problem()->config()->labelX();
+        return Agros2D::preprocessor()->config()->labelX();
     case PhysicFieldVariableComp_Y:
-        return Agros2D::problem()->config()->labelY();
+        return Agros2D::preprocessor()->config()->labelY();
     default:
         return QObject::tr("Undefined");
     }

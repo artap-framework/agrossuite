@@ -294,14 +294,14 @@ void VariantsWidget::loadVariant(const QString &fileName)
 
     /*
     QString fn = datadir() + "/data/pokus.a2d";
-    Agros2D::scene()->readFromFile(fn);
+    Agros2D::problem()->scene()->readFromFile(fn);
 
     Agros2D::log()->printMessage(tr("Problem"), tr("Problem '%1' successfuly loaded").arg(fn));
 
     // solve
     Agros2D::problem()->solve();
 
-    Agros2D::scene()->writeSolutionToFile(fn);
+    Agros2D::problem()->scene()->writeSolutionToFile(fn);
     */
 
     // Agros2D::log()->printMessage(tr("Solver"), tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));

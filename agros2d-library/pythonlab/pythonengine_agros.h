@@ -73,7 +73,6 @@ public slots:
 protected:
     virtual void addCustomExtensions();
     virtual void addCustomFunctions();
-    virtual void runPythonHeader();
 
 private:
     SceneViewPreprocessor *m_sceneViewPreprocessor;

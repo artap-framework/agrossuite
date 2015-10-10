@@ -229,11 +229,6 @@ public:
 
     QList<LinearityType> availableLinearityTypes() const {return m_availableLinearityTypes;}
 
-    void createValuePointerTable();
-    void deleteValuePointerTable();
-
-    QList<QWeakPointer<Value> > valuePointerTable(QString id) const;
-    int hermesMarkerToAgrosLabel(int hermesMarker) const;
     double labelArea(int agrosLabel) const;
     void setFrequency(double f) {m_frequency = f; }
     inline double frequency() const { return m_frequency; }

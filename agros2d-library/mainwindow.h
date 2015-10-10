@@ -86,6 +86,9 @@ private slots:
 
     void doMouseSceneModeChanged(MouseSceneMode mouseSceneMode);
 
+    void doMesh();
+    void doSolve();
+    void doSolveNewComputation();
     void doSolveFinished();
 
     void doOptions();
@@ -113,6 +116,8 @@ private slots:
 
     /// fields added or removed, menus need to be modified
     void doFieldsChanged();
+
+    void reconnectActions();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -165,6 +170,10 @@ private:
     QAction *actCreateVideo;
     QAction *actUnitTests;
 
+    QAction *actMesh;
+    QAction *actSolve;
+    QAction *actSolveNewComputation;
+
     QAction *actHelp;
     QAction *actHelpShortCut;
     QAction *actOnlineHelp;
@@ -172,6 +181,9 @@ private:
     QAction *actCheckVersion;
     QAction *actAbout;
     QAction *actAboutQt;
+
+    QMenu *mnuMesh;
+    QToolButton *btnMesh;
 
     QComboBox *cmbTimeStep;
 
@@ -187,11 +199,11 @@ private:
     SceneViewWidget *sceneViewInfoWidget;
     SceneViewWidget *sceneViewPreprocessorWidget;
     SceneViewWidget *sceneViewMeshWidget;
-    SceneViewWidget *sceneViewPost2DWidget;
-    SceneViewWidget *sceneViewPost3DWidget;
-    SceneViewWidget *sceneViewPostParticleTracingWidget;
+    // SceneViewWidget *sceneViewPost2DWidget;
+    // SceneViewWidget *sceneViewPost3DWidget;
+    // SceneViewWidget *sceneViewPostParticleTracingWidget;
     // SceneViewWidget *sceneViewPostVTK2DWidget;
-    SceneViewWidget *sceneViewChartWidget;
+    // SceneViewWidget *sceneViewChartWidget;
     SceneViewWidget *sceneViewPythonEditorWidget;
 
     PostDeal *postDeal;
@@ -200,11 +212,11 @@ private:
     InfoWidget *sceneInfoWidget;
     SceneViewPreprocessor *sceneViewPreprocessor;
     SceneViewMesh *sceneViewMesh;
-    SceneViewPost2D *sceneViewPost2D;
-    SceneViewPost3D *sceneViewPost3D;
-    SceneViewParticleTracing *sceneViewParticleTracing;
+    // SceneViewPost2D *sceneViewPost2D;
+    // SceneViewPost3D *sceneViewPost3D;
+    // SceneViewParticleTracing *sceneViewParticleTracing;
     // SceneViewVTK2D *sceneViewVTK2D;
-    ChartView *sceneViewChart;
+    // ChartView *sceneViewChart;
     PythonEditorDialog *scriptEditor;
 
     QWidget *viewControls;
@@ -213,7 +225,7 @@ private:
     PreprocessorWidget *preprocessorWidget;
     PostprocessorWidget *postprocessorWidget;
     ChartWidget *chartWidget;
-    ParticleTracingWidget *particleTracingWidget;
+    // ParticleTracingWidget *particleTracingWidget;
     PythonEditorWidget *pythonEditorWidget;
 
     ResultsView *resultsView;

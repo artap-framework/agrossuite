@@ -27,6 +27,7 @@ class ValueLineEdit;
 
 struct Point;
 
+class Scene;
 class SceneBasic;
 template <typename MarkerType> class MarkedSceneBasic;
 template <typename MarkerType> class MarkerContainer;
@@ -35,10 +36,7 @@ class SceneEdge;
 class SceneLabel;
 class Marker;
 class FieldInfo;
-
-// Q_DECLARE_METATYPE(SceneNode *)
-// Q_DECLARE_METATYPE(SceneEdge *)
-// Q_DECLARE_METATYPE(SceneLabel *)
+class Problem;
 
 const int MARKER_IDX_NOT_EXISTING = -1;
 
@@ -46,7 +44,7 @@ class AGROS_LIBRARY_API SceneBasic
 {
 
 public:
-    SceneBasic();
+    SceneBasic(Scene *scene);
 
     void setSelected(bool value = true) { m_isSelected = value; }
     inline bool isSelected() const { return m_isSelected; }
@@ -58,6 +56,12 @@ public:
 
     QVariant variant();
 
+    // parent scene
+    inline Scene *scene() { return m_scene; }
+
+protected:
+    Scene *m_scene;
+
 private:
     bool m_isSelected;
     bool m_isHighlighted;
@@ -67,7 +71,7 @@ template <typename BasicType>
 class AGROS_LIBRARY_API SceneBasicContainer
 {
 public:
-    SceneBasicContainer() : m_data(QList<BasicType* >()) {}
+    SceneBasicContainer() : m_data(QList<BasicType *>()) {}
     ~SceneBasicContainer();
 
     /// items() should be removed step by step from the code.
@@ -89,7 +93,7 @@ public:
     void setHighlighted(bool value = true);
 
 protected:
-    QList<BasicType*> m_data;
+    QList<BasicType *> m_data;
 
     QString containerName;
 };
@@ -102,7 +106,7 @@ template <typename MarkerType>
 class MarkedSceneBasic : public SceneBasic
 {
 public:
-    MarkedSceneBasic() {}
+    MarkedSceneBasic(Scene *scene) : SceneBasic(scene) {}
     ~MarkedSceneBasic() {}
 
     /// gets marker that corresponds to the given field
@@ -131,7 +135,7 @@ public:
     void doFieldsChanged();
 
 private:
-    QMap<const FieldInfo*, MarkerType*> m_markers;
+    QMap<const FieldInfo*, MarkerType*> m_markers;    
 };
 
 

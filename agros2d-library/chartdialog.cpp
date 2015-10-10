@@ -69,11 +69,6 @@ ChartView::ChartView(QWidget *parent) : QWidget(parent)
     actSceneModeChart->setShortcut(tr("Ctrl+7"));
     actSceneModeChart->setCheckable(true);
 
-    connect(Agros2D::scene(), SIGNAL(cleared()), this, SLOT(setControls()));
-    connect(Agros2D::scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
-    connect(Agros2D::problem(), SIGNAL(meshed()), this, SLOT(setControls()));
-    connect(Agros2D::problem(), SIGNAL(solved()), this, SLOT(setControls()));
-
     m_chart = new QCustomPlot(this);
     m_chart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     m_chart->addGraph();
@@ -86,11 +81,22 @@ ChartView::ChartView(QWidget *parent) : QWidget(parent)
     setLayout(layoutMain);
 
     setControls();
+
+    // reconnect computation slots
+    connect(Agros2D::singleton(), SIGNAL(reconnectSlots()), this, SLOT(reconnectActions()));
 }
 
 void ChartView::setControls()
 {
-    actSceneModeChart->setEnabled(Agros2D::problem()->isSolved());
+    actSceneModeChart->setEnabled(Agros2D::computation()->isSolved());
+}
+
+void ChartView::reconnectActions()
+{
+    connect(Agros2D::computation()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
+    connect(Agros2D::computation()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
+    connect(Agros2D::computation(), SIGNAL(meshed()), this, SLOT(setControls()));
+    connect(Agros2D::computation(), SIGNAL(solved()), this, SLOT(setControls()));
 }
 
 // **************************************************************************************************
@@ -98,7 +104,8 @@ void ChartView::setControls()
 ChartWidget::ChartWidget(ChartView *chart,
                          QWidget *parent) : QWidget(parent), m_chart(chart)
 {
-    connect(Agros2D::problem(), SIGNAL(solved()), this, SLOT(updateControls()));
+    // reconnect computation slots
+    connect(Agros2D::singleton(), SIGNAL(reconnectSlots()), this, SLOT(reconnectActions()));
 
     createControls();
 
@@ -111,22 +118,22 @@ ChartWidget::~ChartWidget()
 
 void ChartWidget::updateControls()
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         return;
 
     fieldWidget->updateControls();
 
     // correct labels
-    lblStartX->setText(Agros2D::problem()->config()->labelX() + ":");
-    lblStartY->setText(Agros2D::problem()->config()->labelY() + ":");
-    lblEndX->setText(Agros2D::problem()->config()->labelX() + ":");
-    lblEndY->setText(Agros2D::problem()->config()->labelY() + ":");
-    lblPointX->setText(Agros2D::problem()->config()->labelX() + ":");
-    lblPointY->setText(Agros2D::problem()->config()->labelY() + ":");
-    radHorizontalAxisX->setText(Agros2D::problem()->config()->labelX());
-    radHorizontalAxisY->setText(Agros2D::problem()->config()->labelY());
+    lblStartX->setText(Agros2D::computation()->config()->labelX() + ":");
+    lblStartY->setText(Agros2D::computation()->config()->labelY() + ":");
+    lblEndX->setText(Agros2D::computation()->config()->labelX() + ":");
+    lblEndY->setText(Agros2D::computation()->config()->labelY() + ":");
+    lblPointX->setText(Agros2D::computation()->config()->labelX() + ":");
+    lblPointY->setText(Agros2D::computation()->config()->labelY() + ":");
+    radHorizontalAxisX->setText(Agros2D::computation()->config()->labelX());
+    radHorizontalAxisY->setText(Agros2D::computation()->config()->labelY());
 
-    if (Agros2D::problem()->isTransient())
+    if (Agros2D::computation()->isTransient())
     {
         widTime->setEnabled(true);
     }
@@ -137,17 +144,17 @@ void ChartWidget::updateControls()
         tbxAnalysisType->setCurrentWidget(widGeometry);
     }
 
-    txtStartX->setValue(Agros2D::problem()->setting()->value(ProblemSetting::View_ChartStartX).toDouble());
-    txtStartY->setValue(Agros2D::problem()->setting()->value(ProblemSetting::View_ChartStartY).toDouble());
-    txtEndX->setValue(Agros2D::problem()->setting()->value(ProblemSetting::View_ChartEndX).toDouble());
-    txtEndY->setValue(Agros2D::problem()->setting()->value(ProblemSetting::View_ChartEndY).toDouble());
-    txtTimeX->setValue(Agros2D::problem()->setting()->value(ProblemSetting::View_ChartTimeX).toDouble());
-    txtTimeY->setValue(Agros2D::problem()->setting()->value(ProblemSetting::View_ChartTimeY).toDouble());
-    radHorizontalAxisX->setChecked((ChartAxisType) Agros2D::problem()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_X);
-    radHorizontalAxisY->setChecked((ChartAxisType) Agros2D::problem()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Y);
-    radHorizontalAxisLength->setChecked((ChartAxisType) Agros2D::problem()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Length);
-    txtHorizontalAxisPoints->setValue(Agros2D::problem()->setting()->value(ProblemSetting::View_ChartHorizontalAxisPoints).toInt());
-    chkHorizontalAxisReverse->setChecked(Agros2D::problem()->setting()->value(ProblemSetting::View_ChartHorizontalAxisReverse).toBool());
+    txtStartX->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartStartX).toDouble());
+    txtStartY->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartStartY).toDouble());
+    txtEndX->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartEndX).toDouble());
+    txtEndY->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartEndY).toDouble());
+    txtTimeX->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartTimeX).toDouble());
+    txtTimeY->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartTimeY).toDouble());
+    radHorizontalAxisX->setChecked((ChartAxisType) Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_X);
+    radHorizontalAxisY->setChecked((ChartAxisType) Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Y);
+    radHorizontalAxisLength->setChecked((ChartAxisType) Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Length);
+    txtHorizontalAxisPoints->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxisPoints).toInt());
+    chkHorizontalAxisReverse->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxisReverse).toBool());
 
     createChartLine();
 }
@@ -399,8 +406,8 @@ void ChartWidget::plotGeometry()
     // chart
     QString text;
     if (radHorizontalAxisLength->isChecked()) text = tr("Length (m)");
-    if (radHorizontalAxisX->isChecked()) text = Agros2D::problem()->config()->labelX() + " (m)";
-    if (radHorizontalAxisY->isChecked()) text = Agros2D::problem()->config()->labelY() + " (m)";
+    if (radHorizontalAxisX->isChecked()) text = Agros2D::computation()->config()->labelX() + " (m)";
+    if (radHorizontalAxisY->isChecked()) text = Agros2D::computation()->config()->labelY() + " (m)";
     m_chart->chart()->xAxis->setLabel(text);
     m_chart->chart()->yAxis->setLabel(QString("%1 (%2)").
                                       arg(physicFieldVariable.name()).
@@ -474,7 +481,7 @@ void ChartWidget::plotTime()
     if (physicFieldVariableComp == PhysicFieldVariableComp_Undefined) return;
 
     // time levels
-    QList<double> times = Agros2D::problem()->timeStepTimes();
+    QList<double> times = Agros2D::computation()->timeStepTimes();
 
     // chart
     m_chart->chart()->xAxis->setLabel(tr("time (s)"));
@@ -543,8 +550,8 @@ QStringList ChartWidget::headers()
         else
         {
             // vector variable
-            head.append(variable.shortname() + Agros2D::problem()->config()->labelX().toLower());
-            head.append(variable.shortname() + Agros2D::problem()->config()->labelY().toLower());
+            head.append(variable.shortname() + Agros2D::computation()->config()->labelX().toLower());
+            head.append(variable.shortname() + Agros2D::computation()->config()->labelY().toLower());
             head.append(variable.shortname());
         }
     }
@@ -554,23 +561,23 @@ QStringList ChartWidget::headers()
 
 void ChartWidget::doApply()
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         return;
 
-    Agros2D::problem()->setting()->setValue(ProblemSetting::View_ChartStartX, txtStartX->value());
-    Agros2D::problem()->setting()->setValue(ProblemSetting::View_ChartStartY, txtStartY->value());
-    Agros2D::problem()->setting()->setValue(ProblemSetting::View_ChartEndX, txtEndX->value());
-    Agros2D::problem()->setting()->setValue(ProblemSetting::View_ChartEndY, txtEndY->value());
-    Agros2D::problem()->setting()->setValue(ProblemSetting::View_ChartTimeX, txtTimeX->value());
-    Agros2D::problem()->setting()->setValue(ProblemSetting::View_ChartTimeY, txtTimeY->value());
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartStartX, txtStartX->value());
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartStartY, txtStartY->value());
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartEndX, txtEndX->value());
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartEndY, txtEndY->value());
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartTimeX, txtTimeX->value());
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartTimeY, txtTimeY->value());
     if (radHorizontalAxisX->isChecked())
-        Agros2D::problem()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_X);
+        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_X);
     else if (radHorizontalAxisY->isChecked())
-        Agros2D::problem()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Y);
+        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Y);
     else if (radHorizontalAxisLength->isChecked())
-        Agros2D::problem()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Length);
-    Agros2D::problem()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisReverse, chkHorizontalAxisReverse->isChecked());
-    Agros2D::problem()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisPoints, txtHorizontalAxisPoints->value());
+        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Length);
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisReverse, chkHorizontalAxisReverse->isChecked());
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisPoints, txtHorizontalAxisPoints->value());
 
     if (tbxAnalysisType->currentWidget() == widGeometry)
     {
@@ -630,8 +637,8 @@ void ChartWidget::doFieldVariable(int index)
     else
     {
         cmbFieldVariableComp->addItem(tr("Magnitude"), PhysicFieldVariableComp_Magnitude);
-        cmbFieldVariableComp->addItem(Agros2D::problem()->config()->labelX(), PhysicFieldVariableComp_X);
-        cmbFieldVariableComp->addItem(Agros2D::problem()->config()->labelY(), PhysicFieldVariableComp_Y);
+        cmbFieldVariableComp->addItem(Agros2D::computation()->config()->labelX(), PhysicFieldVariableComp_X);
+        cmbFieldVariableComp->addItem(Agros2D::computation()->config()->labelY(), PhysicFieldVariableComp_Y);
     }
 
     if (cmbFieldVariableComp->currentIndex() == -1)
@@ -689,8 +696,8 @@ void ChartWidget::doExportData()
     else if (tbxAnalysisType->currentWidget() == widTime)
     {
         Point point(txtTimeX->value(), txtTimeY->value());
-        QList<double> times = Agros2D::problem()->timeStepTimes();
-        foreach (int timeStep, Agros2D::problem()->timeStepLengths())
+        QList<double> times = Agros2D::computation()->timeStepTimes();
+        foreach (int timeStep, Agros2D::computation()->timeStepLengths())
         {
             QMap<QString, double> data = getData(point,
                                                  timeStep,
@@ -758,9 +765,9 @@ void ChartWidget::doSaveImage()
 QMap<QString, double> ChartWidget::getData(Point point, int timeStep, int adaptivityStep)
 {
     QMap<QString, double> table;
-    table.insert(Agros2D::problem()->config()->labelX(), point.x);
-    table.insert(Agros2D::problem()->config()->labelY(), point.y);
-    table.insert("t", Agros2D::problem()->timeStepToTotalTime(fieldWidget->selectedTimeStep()));
+    table.insert(Agros2D::computation()->config()->labelX(), point.x);
+    table.insert(Agros2D::computation()->config()->labelY(), point.y);
+    table.insert("t", Agros2D::computation()->timeStepToTotalTime(fieldWidget->selectedTimeStep()));
 
     foreach (Module::LocalVariable variable, fieldWidget->selectedField()->localPointVariables())
     {
@@ -806,4 +813,10 @@ void ChartWidget::createChartLine()
 
     geometryViewer->setChartLine(line);
     geometryViewer->doZoomBestFit();
+}
+
+
+void ChartWidget::reconnectActions()
+{
+    connect(Agros2D::computation(), SIGNAL(solved()), this, SLOT(updateControls()));
 }

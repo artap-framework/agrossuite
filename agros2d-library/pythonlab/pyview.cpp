@@ -32,6 +32,7 @@
 
 SceneViewCommon* PyView::currentSceneViewMode()
 {
+    /*
     if (currentPythonEngineAgros()->sceneViewMesh()->actSceneModeMesh->isChecked())
         return currentPythonEngineAgros()->sceneViewMesh();
     else if (currentPythonEngineAgros()->sceneViewPost2D()->actSceneModePost2D->isChecked())
@@ -40,9 +41,10 @@ SceneViewCommon* PyView::currentSceneViewMode()
         return currentPythonEngineAgros()->sceneViewPost3D();
     else if (currentPythonEngineAgros()->sceneViewParticleTracing()->actSceneModeParticleTracing->isChecked())
         return currentPythonEngineAgros()->sceneViewParticleTracing();
+    */
 
-    // default
-    return currentPythonEngineAgros()->sceneViewPreprocessor();
+    assert(0);
+    return nullptr;
 }
 
 void PyView::saveImageToFile(const std::string &file, int width, int height)
@@ -106,11 +108,11 @@ void PyViewConfig::setFontFamily(Config::Type type, const std::string &family)
 
 void PyViewMeshAndPost::setActiveTimeStep(int timeStep)
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         throw invalid_argument(QObject::tr("Problem is not solved.").toStdString());
 
-    if (timeStep < 0 || timeStep > Agros2D::problem()->timeLastStep())
-        throw out_of_range(QObject::tr("Time step must be in the range from 0 to %1.").arg(Agros2D::problem()->timeLastStep()).toStdString());
+    if (timeStep < 0 || timeStep > Agros2D::computation()->timeLastStep())
+        throw out_of_range(QObject::tr("Time step must be in the range from 0 to %1.").arg(Agros2D::computation()->timeLastStep()).toStdString());
 
     if (silentMode())
         return;
@@ -125,7 +127,7 @@ void PyViewMeshAndPost::setActiveTimeStep(int timeStep)
 
 void PyViewMeshAndPost::setActiveAdaptivityStep(int adaptivityStep)
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     int last_step = Agros2D::solutionStore()->lastAdaptiveStep(currentPythonEngineAgros()->postDeal()->activeViewField(),
@@ -147,7 +149,7 @@ void PyViewMeshAndPost::setActiveAdaptivityStep(int adaptivityStep)
 
 void PyViewMesh::checkExistingMesh()
 {
-    if (!Agros2D::problem()->isMeshed() && !currentPythonEngineAgros()->isScriptRunning())
+    if (!Agros2D::computation()->isMeshed() && !currentPythonEngineAgros()->isScriptRunning())
         throw logic_error(QObject::tr("Problem is not meshed.").toStdString());
 }
 
@@ -156,7 +158,7 @@ void PyViewMesh::setProblemSetting(ProblemSetting::Type type, bool value)
     checkExistingMesh();
 
     if (!silentMode())
-        Agros2D::problem()->setting()->setValue(type, value);
+        Agros2D::computation()->setting()->setValue(type, value);
 }
 
 void PyViewMesh::activate()
@@ -165,7 +167,7 @@ void PyViewMesh::activate()
 
     if (!silentMode())
     {
-        currentPythonEngineAgros()->sceneViewMesh()->actSceneModeMesh->trigger();
+        // currentPythonEngineAgros()->sceneViewMesh()->actSceneModeMesh->trigger();
         currentPythonEngineAgros()->postDeal()->refresh();
     }
 }
@@ -182,13 +184,13 @@ void PyViewMesh::setField(const std::string &fieldId)
 {
     checkExistingMesh();
 
-    if (!Agros2D::problem()->hasField(QString::fromStdString(fieldId)))
-        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(Agros2D::problem()->fieldInfos().keys())).toStdString());
+    if (!Agros2D::computation()->hasField(QString::fromStdString(fieldId)))
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(Agros2D::computation()->fieldInfos().keys())).toStdString());
 
     if (silentMode())
         return;
 
-    FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(QString::fromStdString(fieldId));
+    FieldInfo *fieldInfo = Agros2D::computation()->fieldInfo(QString::fromStdString(fieldId));
 
     currentPythonEngineAgros()->postDeal()->setActiveViewField(fieldInfo);
     currentPythonEngineAgros()->postDeal()->refresh();
@@ -202,7 +204,7 @@ void PyViewMesh::setOrderViewPalette(const std::string &palette)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(paletteOrderTypeStringKeys())).toStdString());
 
     if (!silentMode())
-        Agros2D::problem()->setting()->setValue(ProblemSetting::View_OrderPaletteOrderType, paletteOrderTypeFromStringKey(QString::fromStdString(palette)));
+        Agros2D::computation()->setting()->setValue(ProblemSetting::View_OrderPaletteOrderType, paletteOrderTypeFromStringKey(QString::fromStdString(palette)));
 }
 
 void PyViewMesh::setComponent(int component)
@@ -213,14 +215,14 @@ void PyViewMesh::setComponent(int component)
         throw out_of_range(QObject::tr("Component must be in the range from 1 to %1.").arg(currentPythonEngineAgros()->postDeal()->activeViewField()->numberOfSolutions()).toStdString());
 
     if (!silentMode())
-        Agros2D::problem()->setting()->setValue(ProblemSetting::View_OrderComponent, component);
+        Agros2D::computation()->setting()->setValue(ProblemSetting::View_OrderComponent, component);
 }
 
 // ************************************************************************************
 
 void PyViewPost::checkExistingSolution()
 {
-    if (!Agros2D::problem()->isSolved() && !currentPythonEngineAgros()->isScriptRunning())
+    if (!Agros2D::computation()->isSolved() && !currentPythonEngineAgros()->isScriptRunning())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 }
 
@@ -229,20 +231,20 @@ void PyViewPost::setProblemSetting(ProblemSetting::Type type, bool value)
     checkExistingSolution();
 
     if (!silentMode())
-        Agros2D::problem()->setting()->setValue(type, value);
+        Agros2D::computation()->setting()->setValue(type, value);
 }
 
 void PyViewPost::setField(const std::string &fieldId)
 {
     checkExistingSolution();
 
-    if (!Agros2D::problem()->hasField(QString::fromStdString(fieldId)))
-        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(Agros2D::problem()->fieldInfos().keys())).toStdString());
+    if (!Agros2D::computation()->hasField(QString::fromStdString(fieldId)))
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(Agros2D::computation()->fieldInfos().keys())).toStdString());
 
     if (silentMode())
         return;
 
-    FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(QString::fromStdString(fieldId));
+    FieldInfo *fieldInfo = Agros2D::computation()->fieldInfo(QString::fromStdString(fieldId));
     int timeStep = currentPythonEngineAgros()->postDeal()->activeTimeStep();
     // int timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo);
 
@@ -267,7 +269,7 @@ void PyViewPost::setScalarViewVariable(const std::string &var)
         {
             if (!silentMode())
             {
-                Agros2D::problem()->setting()->setValue(ProblemSetting::View_ScalarVariable, QString::fromStdString(var));
+                Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarVariable, QString::fromStdString(var));
                 return;
             }
         }
@@ -284,7 +286,7 @@ void PyViewPost::setScalarViewVariableComp(const std::string &component)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(physicFieldVariableCompTypeStringKeys())).toStdString());
 
     if (!silentMode())
-        Agros2D::problem()->setting()->setValue(ProblemSetting::View_ScalarVariableComp, physicFieldVariableCompFromStringKey(QString::fromStdString(component)));
+        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarVariableComp, physicFieldVariableCompFromStringKey(QString::fromStdString(component)));
 }
 
 void PyViewPost::setScalarViewPalette(const std::string &palette)
@@ -295,7 +297,7 @@ void PyViewPost::setScalarViewPalette(const std::string &palette)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(paletteTypeStringKeys())).toStdString());
 
     if (!silentMode())
-        Agros2D::problem()->setting()->setValue(ProblemSetting::View_PaletteType, paletteTypeFromStringKey(QString::fromStdString(palette)));
+        Agros2D::computation()->setting()->setValue(ProblemSetting::View_PaletteType, paletteTypeFromStringKey(QString::fromStdString(palette)));
 }
 
 // ************************************************************************************
@@ -306,7 +308,7 @@ void PyViewPost2D::activate()
 
     if (!silentMode())
     {
-        currentPythonEngineAgros()->sceneViewPost2D()->actSceneModePost2D->trigger();
+        // currentPythonEngineAgros()->sceneViewPost2D()->actSceneModePost2D->trigger();
         currentPythonEngineAgros()->postDeal()->refresh();
     }
 }
@@ -334,7 +336,7 @@ void PyViewPost2D::setContourVariable(const std::string &var)
             {
                 if (!silentMode())
                 {
-                    Agros2D::problem()->setting()->setValue(ProblemSetting::View_ContourVariable, QString::fromStdString(var));
+                    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ContourVariable, QString::fromStdString(var));
                     return;
                 }
             }
@@ -370,7 +372,7 @@ void PyViewPost2D::setVectorVariable(const std::string &var)
         {
             if (!silentMode())
             {
-                Agros2D::problem()->setting()->setValue(ProblemSetting::View_VectorVariable, QString::fromStdString(var));
+                Agros2D::computation()->setting()->setValue(ProblemSetting::View_VectorVariable, QString::fromStdString(var));
                 return;
             }
         }
@@ -387,7 +389,7 @@ void PyViewPost2D::setVectorType(const std::string &type)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(vectorTypeStringKeys())).toStdString());
 
     if (!silentMode())
-        Agros2D::problem()->setting()->setValue(ProblemSetting::View_VectorType, vectorTypeFromStringKey(QString::fromStdString(type)));
+        Agros2D::computation()->setting()->setValue(ProblemSetting::View_VectorType, vectorTypeFromStringKey(QString::fromStdString(type)));
 }
 
 void PyViewPost2D::setVectorCenter(const std::string &center)
@@ -398,7 +400,7 @@ void PyViewPost2D::setVectorCenter(const std::string &center)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(vectorCenterStringKeys())).toStdString());
 
     if (!silentMode())
-        Agros2D::problem()->setting()->setValue(ProblemSetting::View_VectorCenter, vectorCenterFromStringKey(QString::fromStdString(center)));
+        Agros2D::computation()->setting()->setValue(ProblemSetting::View_VectorCenter, vectorCenterFromStringKey(QString::fromStdString(center)));
 }
 
 // ************************************************************************************
@@ -428,14 +430,14 @@ void PyViewPost3D::setPost3DMode(const std::string &mode)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(sceneViewPost3DModeStringKeys())).toStdString());
 
     if (!silentMode())
-        Agros2D::problem()->setting()->setValue(ProblemSetting::View_ScalarView3DMode, sceneViewPost3DModeFromStringKey(QString::fromStdString(mode)));
+        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarView3DMode, sceneViewPost3DModeFromStringKey(QString::fromStdString(mode)));
 }
 
 // ************************************************************************************
 
 void PyViewParticleTracing::activate()
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     if (!silentMode())
@@ -447,7 +449,7 @@ void PyViewParticleTracing::activate()
 
 void PyViewParticleTracing::refresh()
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     if (!silentMode())

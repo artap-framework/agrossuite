@@ -215,7 +215,7 @@ bool ValueLineEdit::evaluate(bool quiet)
         {
             Value val = value();
 
-            btnEditTimeDep->setVisible(m_hasTimeDep && Agros2D::problem()->isTransient());
+            btnEditTimeDep->setVisible(m_hasTimeDep && Agros2D::preprocessor()->isTransient());
             btnMaterialDialog->setVisible(!m_isSource && !m_hasNonlin);
 
             if (val.evaluateAndSave())
@@ -339,7 +339,7 @@ void ValueLineEdit::setLayoutValue()
     }
 
     btnDataTableDialog->setVisible(m_hasNonlin);
-    btnEditTimeDep->setVisible(m_hasTimeDep && Agros2D::problem()->isTransient());
+    btnEditTimeDep->setVisible(m_hasTimeDep && Agros2D::preprocessor()->isTransient());
     btnMaterialDialog->setVisible(!m_isSource && !m_hasNonlin);
 }
 

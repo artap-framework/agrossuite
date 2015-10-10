@@ -115,7 +115,6 @@ void MeshGeneratorCubitExternal::meshCubitCreated(int exitCode)
         else
         {
             m_isError = true;
-            QFile::remove(Agros2D::problem()->config()->fileName() + ".msh");
         }
     }
     else
@@ -133,14 +132,14 @@ void MeshGeneratorCubitExternal::meshCubitCreated(int exitCode)
 bool MeshGeneratorCubitExternal::writeToCubit()
 {
     // basic check
-    if (Agros2D::scene()->nodes->length() < 3)
+    if (Agros2D::computation()->scene()->nodes->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(Agros2D::scene()->nodes->length()));
+        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(Agros2D::computation()->scene()->nodes->length()));
         return false;
     }
-    if (Agros2D::scene()->edges->length() < 3)
+    if (Agros2D::computation()->scene()->edges->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(Agros2D::scene()->edges->length()));
+        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(Agros2D::computation()->scene()->edges->length()));
         return false;
     }
 
@@ -155,21 +154,21 @@ bool MeshGeneratorCubitExternal::writeToCubit()
     QString outCommands;
 
     // mesh size
-    RectPoint rect = Agros2D::scene()->boundingBox();
+    RectPoint rect = Agros2D::computation()->scene()->boundingBox();
     double charEdge = 0; // qMax(rect.width(), rect.height()) / 2.0;
 
-    foreach (SceneEdge *edge, Agros2D::scene()->edges->items())
+    foreach (SceneEdge *edge, Agros2D::computation()->scene()->edges->items())
         if (edge->length() > charEdge)
             charEdge = edge->length();
 
     // nodes
     QString outNodes;
     int nodesCount = 0;
-    for (int i = 0; i < Agros2D::scene()->nodes->length(); i++)
+    for (int i = 0; i < Agros2D::computation()->scene()->nodes->length(); i++)
     {
         outNodes += QString("Create Vertex %1\t%2\t0.0\n").
-                arg(Agros2D::scene()->nodes->at(i)->point().x, 0, 'f', 10).
-                arg(Agros2D::scene()->nodes->at(i)->point().y, 0, 'f', 10);
+                arg(Agros2D::computation()->scene()->nodes->at(i)->point().x, 0, 'f', 10).
+                arg(Agros2D::computation()->scene()->nodes->at(i)->point().y, 0, 'f', 10);
         nodesCount++;
     }
 
@@ -177,20 +176,20 @@ bool MeshGeneratorCubitExternal::writeToCubit()
     QString outEdges;
     int edgesCount = 0;
     double minEdge = numeric_limits<double>::max();
-    for (int i = 0; i<Agros2D::scene()->edges->length(); i++)
+    for (int i = 0; i<Agros2D::computation()->scene()->edges->length(); i++)
     {
-        if (Agros2D::scene()->edges->at(i)->isStraight())
+        if (Agros2D::computation()->scene()->edges->at(i)->isStraight())
         {
             // line .. increase edge index to count from 1
             outEdges += QString("Create Curve %1 %2 # straight\n").
-                    arg(Agros2D::scene()->nodes->items().indexOf(Agros2D::scene()->edges->at(i)->nodeStart()) + 1).
-                    arg(Agros2D::scene()->nodes->items().indexOf(Agros2D::scene()->edges->at(i)->nodeEnd()) + 1);
+                    arg(Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeStart()) + 1).
+                    arg(Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeEnd()) + 1);
         }
         else
         {
             // arc
             // add pseudo nodes
-            Point center = Agros2D::scene()->edges->at(i)->center();
+            Point center = Agros2D::computation()->scene()->edges->at(i)->center();
             outNodes += QString("Create Vertex %1\t%2\t0.0\n").
                     arg(center.x, 0, 'f', 10).
                     arg(center.y, 0, 'f', 10);
@@ -198,14 +197,14 @@ bool MeshGeneratorCubitExternal::writeToCubit()
 
             outEdges += QString("Create Curve Arc Center Vertex %1 %2 %3 # curved\n").
                     arg(nodesCount).
-                    arg(Agros2D::scene()->nodes->items().indexOf(Agros2D::scene()->edges->at(i)->nodeStart()) + 1).
-                    arg(Agros2D::scene()->nodes->items().indexOf(Agros2D::scene()->edges->at(i)->nodeEnd()) + 1);
+                    arg(Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeStart()) + 1).
+                    arg(Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeEnd()) + 1);
 
             // arg(nodesCount - 1).
         }
 
-        if (Agros2D::scene()->edges->at(i)->length() < minEdge)
-            minEdge = Agros2D::scene()->edges->at(i)->length();
+        if (Agros2D::computation()->scene()->edges->at(i)->length() < minEdge)
+            minEdge = Agros2D::computation()->scene()->edges->at(i)->length();
 
         outEdges += QString("Nodeset %1 Curve %1\n").arg(edgesCount + 1);
 
@@ -214,7 +213,7 @@ bool MeshGeneratorCubitExternal::writeToCubit()
 
     try
     {
-        Agros2D::scene()->loopsInfo()->processLoops();
+        Agros2D::computation()->scene()->loopsInfo()->processLoops();
     }
     catch (AgrosMeshException& ame)
     {
@@ -226,15 +225,15 @@ bool MeshGeneratorCubitExternal::writeToCubit()
     // loops
     QMap<int, QString> outLoopsLines;
 
-    for(int i = 0; i < Agros2D::scene()->loopsInfo()->loops().size(); i++)
+    for(int i = 0; i < Agros2D::computation()->scene()->loopsInfo()->loops().size(); i++)
     {
-        if (!Agros2D::scene()->loopsInfo()->outsideLoops().contains(i))
+        if (!Agros2D::computation()->scene()->loopsInfo()->outsideLoops().contains(i))
         {
-            for (int j = 0; j < Agros2D::scene()->loopsInfo()->loops().at(i).size(); j++)
+            for (int j = 0; j < Agros2D::computation()->scene()->loopsInfo()->loops().at(i).size(); j++)
             {
-                // if (Agros2D::scene()->loopsInfo()->loops().at(i)[j].reverse)
+                // if (Agros2D::problem()->scene()->loopsInfo()->loops().at(i)[j].reverse)
                 //     outLoops.append("-");
-                outLoopsLines[i+1] += QString("%1 ").arg(Agros2D::scene()->loopsInfo()->loops().at(i)[j].edge + 1);
+                outLoopsLines[i+1] += QString("%1 ").arg(Agros2D::computation()->scene()->loopsInfo()->loops().at(i)[j].edge + 1);
             }
         }
     }
@@ -242,16 +241,16 @@ bool MeshGeneratorCubitExternal::writeToCubit()
     // faces
     QString outLoops;
     int surfaceCount = 0;
-    for (int i = 0; i < Agros2D::scene()->labels->count(); i++)
+    for (int i = 0; i < Agros2D::computation()->scene()->labels->count(); i++)
     {
-        SceneLabel* label = Agros2D::scene()->labels->at(i);
+        SceneLabel* label = Agros2D::computation()->scene()->labels->at(i);
         if (!label->isHole())
         {
             outLoops.append(QString("Create Surface Curve "));
-            for (int j = 0; j < Agros2D::scene()->loopsInfo()->labelLoops()[label].count(); j++)
+            for (int j = 0; j < Agros2D::computation()->scene()->loopsInfo()->labelLoops()[label].count(); j++)
             {
-                // outLoops.append(QString("%1 ").arg(Agros2D::scene()->loopsInfo()->labelLoops()[label][j] + 1));
-                outLoops.append(QString("%1 ").arg(outLoopsLines[Agros2D::scene()->loopsInfo()->labelLoops()[label][j] + 1]));
+                // outLoops.append(QString("%1 ").arg(Agros2D::problem()->scene()->loopsInfo()->labelLoops()[label][j] + 1));
+                outLoops.append(QString("%1 ").arg(outLoopsLines[Agros2D::computation()->scene()->loopsInfo()->labelLoops()[label][j] + 1]));
             }
             outLoops.append(QString("\n"));
 
@@ -351,10 +350,10 @@ bool MeshGeneratorCubitExternal::readLSDynaMeshFormat()
                     {
                         // find real marker
                         Point center = nodeList[i1] + nodeList[i2] + nodeList[i3] + nodeList[i4];
-                        SceneLabel *label = SceneLabel::findClosestLabel(Point(center.x / 4, center.y / 4));
+                        SceneLabel *label = SceneLabel::findClosestLabel(Agros2D::computation()->scene(), Point(center.x / 4, center.y / 4));
                         assert(label);
 
-                        marker = Agros2D::scene()->labels->items().indexOf(label);
+                        marker = Agros2D::computation()->scene()->labels->items().indexOf(label);
                     }
 
                     // fix orientation

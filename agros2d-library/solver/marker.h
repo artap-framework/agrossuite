@@ -24,11 +24,12 @@
 #include "value.h"
 
 class FieldInfo;
+class Scene;
 
 class AGROS_LIBRARY_API Marker
 {
 public:
-    Marker(const FieldInfo *m_fieldInfo, QString m_name);
+    Marker(Scene *scene, const FieldInfo *m_fieldInfo, QString m_name);
     virtual ~Marker();
 
     /// value of one individual variable
@@ -73,29 +74,32 @@ public:
     int isNone() const { return m_isNone;}
     void setNone() { m_isNone = true; }
 
+    // parent scene
+    inline Scene *scene() { return m_scene; }
+
 private:
     QString m_name;
     bool m_isNone;
 
 protected:
     const FieldInfo *m_fieldInfo;
+    Scene *m_scene;
 
 private:
+
     /// variables - the way to customize boundary "template", given by the type parameter
     QMap<uint, QSharedPointer<Value> > m_values;
     QMap<QString, uint> m_valuesHash;
 
     /// we don't want those objects to be copied since we compare pointers
-    Marker(const Marker& );
-    Marker& operator =(const Marker& );
-
+    Marker(Scene *scene, const Marker& );
+    Marker& operator = (const Marker& );
 };
-
 
 class Boundary : public Marker
 {
 public:
-    Boundary(const FieldInfo *m_fieldInfo, QString m_name = "", QString m_type = "",
+    Boundary(Scene *scene, const FieldInfo *m_fieldInfo, QString m_name = "", QString m_type = "",
              QMap<QString, Value> m_values = (QMap<QString, Value>()));
 
     /// get type
@@ -111,11 +115,10 @@ private:
 
 };
 
-
 class Material : public Marker
 {
 public:
-    Material(const FieldInfo *m_fieldInfo, QString m_name,
+    Material(Scene *scene, const FieldInfo *m_fieldInfo, QString m_name,
              QMap<QString, Value> m_values = (QMap<QString, Value>()));
 };
 

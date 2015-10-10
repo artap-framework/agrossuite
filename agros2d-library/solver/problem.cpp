@@ -27,6 +27,7 @@
 
 #include "util/global.h"
 #include "util/constants.h"
+#include "util/xml.h"
 
 #include "field.h"
 #include "solutionstore.h"
@@ -51,6 +52,9 @@
 #include "mesh/meshgenerator_gmsh.h"
 // #include "mesh/meshgenerator_netgen.h"
 
+#include "../3rdparty/quazip/JlCompress.h"
+#include "../resources_source/classes/problem_a2d_31_xml.h"
+
 CalculationThread::CalculationThread() : QThread()
 {
 }
@@ -70,10 +74,10 @@ void CalculationThread::run()
     switch (m_calculationType)
     {
     case CalculationType_Mesh:
-        Agros2D::problem()->mesh(true);
+        Agros2D::computation()->mesh(true);
         break;
     case CalculationType_Solve:
-        Agros2D::problem()->solve(false);
+        Agros2D::computation()->solve(false);
         break;
     case CalculationType_SolveTimeStep:
         assert(0);
@@ -85,58 +89,24 @@ void CalculationThread::run()
 
 Problem::Problem()
 {
-    // m_timeStep = 0;
-    m_lastTimeElapsed = QTime();
-    m_isSolving = false;
-    m_isMeshing = false;
-    m_abort = false;
-    m_isPostprocessingRunning = false;
-
     m_config = new ProblemConfig();
     m_setting = new ProblemSetting();
-    m_calculationThread = new CalculationThread();
+
+    m_scene = new Scene(this);
 
     m_isNonlinear = false;
 
     m_timeStepLengths.append(0.0);
-
-    m_solverDeal = new ProblemSolver();
-
-    actMesh = new QAction(icon("scene-meshgen"), tr("&Mesh area"), this);
-    actMesh->setShortcut(QKeySequence(tr("Alt+W")));
-    connect(actMesh, SIGNAL(triggered()), this, SLOT(doMeshWithGUI()));
-
-    actSolve = new QAction(icon("run"), tr("&Solve"), this);
-    actSolve->setShortcut(QKeySequence(tr("Alt+S")));
-    connect(actSolve, SIGNAL(triggered()), this, SLOT(doSolveWithGUI()));
-
-    connect(m_config, SIGNAL(changed()), this, SLOT(clearSolution()));
 }
 
 Problem::~Problem()
 {
-    clearSolution();
     clearFieldsAndConfig();
 
     delete m_config;
     delete m_setting;
-    delete m_calculationThread;
 
-    delete m_solverDeal;
-}
-
-bool Problem::isMeshed() const
-{
-    if (Agros2D::problem()->initialMesh().n_active_cells() == 0)
-        return false;
-
-    return (m_fieldInfos.size() > 0);
-}
-
-bool Problem::isSolved() const
-{
-    // return (!Agros2D::solutionStore()->isEmpty() && !m_isSolving && !m_isMeshing);
-    return (!Agros2D::solutionStore()->isEmpty());
+    delete m_scene;
 }
 
 int Problem::numAdaptiveFields() const
@@ -194,8 +164,8 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
 
     // run in local dict
     // store startup script
-    QString originalStartup = Agros2D::problem()->setting()->value(ProblemSetting::Problem_StartupScript).toString();
-    Agros2D::problem()->setting()->setValue(ProblemSetting::Problem_StartupScript, QString());
+    QString originalStartup = m_setting->value(ProblemSetting::Problem_StartupScript).toString();
+    m_setting->setValue(ProblemSetting::Problem_StartupScript, QString());
 
     bool successfulRun = currentPythonEngineAgros()->runScript(scriptToCheck);
 
@@ -208,7 +178,7 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
 
         // check geometry
         // nodes
-        foreach (SceneNode *node, Agros2D::scene()->nodes->items())
+        foreach (SceneNode *node, m_scene->nodes->items())
         {
             if (node->pointValue().x().isNumber() && node->pointValue().y().isNumber())
             {
@@ -223,7 +193,7 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
                     Agros2D::log()->printError(QObject::tr("Startup"), QObject::tr("Node %1: %2").
-                                               arg(Agros2D::scene()->nodes->items().indexOf(node)).
+                                               arg(m_scene->nodes->items().indexOf(node)).
                                                arg(result.error()));
 
                     undefinedVariable = true;
@@ -232,7 +202,7 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
         }
 
         // edges
-        foreach (SceneEdge *edge, Agros2D::scene()->edges->items())
+        foreach (SceneEdge *edge, m_scene->edges->items())
         {
             if (edge->angleValue().isNumber())
             {
@@ -244,7 +214,7 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
                     Agros2D::log()->printError(QObject::tr("Startup"), QObject::tr("Edge %1: %2").
-                                               arg(Agros2D::scene()->edges->items().indexOf(edge)).
+                                               arg(m_scene->edges->items().indexOf(edge)).
                                                arg(result.error()));
 
                     undefinedVariable = true;
@@ -253,7 +223,7 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
         }
 
         // labels
-        foreach (SceneLabel *label, Agros2D::scene()->labels->items())
+        foreach (SceneLabel *label, m_scene->labels->items())
         {
             if (label->pointValue().x().isNumber() && label->pointValue().y().isNumber())
             {
@@ -268,7 +238,7 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
                     Agros2D::log()->printError(QObject::tr("Startup"), QObject::tr("Label %1: %2").
-                                               arg(Agros2D::scene()->labels->items().indexOf(label)).
+                                               arg(m_scene->labels->items().indexOf(label)).
                                                arg(result.error()));
 
                     undefinedVariable = true;
@@ -277,7 +247,7 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
         }
 
         // check materials
-        foreach (SceneMaterial* material, Agros2D::scene()->materials->items())
+        foreach (SceneMaterial* material, m_scene->materials->items())
         {
             foreach (uint key, material->values().keys())
             {
@@ -291,7 +261,7 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
         }
 
         // check boundaries
-        foreach (SceneBoundary* boundary, Agros2D::scene()->boundaries->items())
+        foreach (SceneBoundary* boundary, m_scene->boundaries->items())
         {
             foreach (uint key, boundary->values().keys())
             {
@@ -305,25 +275,25 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
         }
 
         // check frequency
-        if (!currentPythonEngineAgros()->runExpression(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toString()))
+        if (!currentPythonEngineAgros()->runExpression(m_config->value(ProblemConfig::Frequency).toString()))
         {
             Agros2D::log()->printError(QObject::tr("Frequency"), QObject::tr("Value: %1").
-                                       arg(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toString()));
+                                       arg(m_config->value(ProblemConfig::Frequency).toString()));
             undefinedVariable = true;
         }
 
         // restore startup script
-        Agros2D::problem()->setting()->setValue(ProblemSetting::Problem_StartupScript, originalStartup);
+        m_setting->setValue(ProblemSetting::Problem_StartupScript, originalStartup);
 
         currentPythonEngineAgros()->useGlobalDict();
-        currentPythonEngineAgros()->blockSignals(false);        
+        currentPythonEngineAgros()->blockSignals(false);
     }
 
     if (successfulRun)
     {
         // run new script
         currentPythonEngineAgros()->runScript(scriptToCheck);
-        Agros2D::problem()->setting()->setValue(ProblemSetting::Problem_StartupScript, scriptToCheck);
+        m_setting->setValue(ProblemSetting::Problem_StartupScript, scriptToCheck);
 
         // fill parameters
         foreach (PythonVariable variable, parameterList)
@@ -333,15 +303,12 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
                 m_problemParameters[variable.name] = variable.value.toDouble();
             }
         }
-
-        // invalidate fields
-        emit fieldsChanged();
     }
     else
     {
         ErrorResult result = currentPythonEngineAgros()->parseError();
         // original script
-        currentPythonEngineAgros()->runScript(Agros2D::problem()->setting()->value(ProblemSetting::Problem_StartupScript).toString());
+        currentPythonEngineAgros()->runScript(m_setting->value(ProblemSetting::Problem_StartupScript).toString());
 
         return result.error();
     }
@@ -352,33 +319,9 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
         return QString();
 }
 
-void Problem::clearSolution()
-{
-    m_abort = false;
-
-    // m_timeStep = 0;
-    m_lastTimeElapsed = QTime();
-    m_timeStepLengths.clear();
-    m_timeStepLengths.append(0.0);
-
-    m_initialMesh.clear();
-    m_initialUnrefinedMesh.clear();
-    m_calculationMesh.clear();
-
-    Agros2D::solutionStore()->clearAll();
-
-    // remove cache
-    removeDirectory(cacheProblemDir());
-
-    emit clearedSolution();
-}
-
 void Problem::clearFieldsAndConfig()
 {
-    clearSolution();
-
-    // clear fields
-    m_solverDeal->clear();
+    Agros2D::solutionStore()->clearAll();
 
     // clear couplings
     foreach (CouplingInfo* couplingInfo, m_couplingInfos)
@@ -400,12 +343,12 @@ void Problem::clearFieldsAndConfig()
 
     // clear parameters
     m_problemParameters.clear();
+
+    emit fileNameChanged(tr("unnamed"));
 }
 
 void Problem::addField(FieldInfo *field)
 {
-    clearSolution();
-
     // remove field
     if (hasField(field->fieldId()))
     {
@@ -424,15 +367,13 @@ void Problem::addField(FieldInfo *field)
 
 void Problem::removeField(FieldInfo *field)
 {
-    clearSolution();
-
     // first remove references to markers of this field from all edges and labels
-    Agros2D::scene()->edges->removeFieldMarkers(field);
-    Agros2D::scene()->labels->removeFieldMarkers(field);
+    m_scene->edges->removeFieldMarkers(field);
+    m_scene->labels->removeFieldMarkers(field);
 
     // then remove them from lists of markers - here they are really deleted
-    Agros2D::scene()->boundaries->removeFieldMarkers(field);
-    Agros2D::scene()->materials->removeFieldMarkers(field);
+    m_scene->boundaries->removeFieldMarkers(field);
+    m_scene->materials->removeFieldMarkers(field);
 
     // remove from the collection
     m_fieldInfos.remove(field->fieldId());
@@ -444,126 +385,709 @@ void Problem::removeField(FieldInfo *field)
     emit fieldsChanged();
 }
 
-bool Problem::mesh(bool emitMeshed)
+void Problem::synchronizeCouplings()
 {
-    bool result = false;
+    bool changed = false;
 
-    // TODO: make global check geometry before mesh() and solve()
-    if (Agros2D::problem()->fieldInfos().count() == 0)
+    // add missing
+    foreach (FieldInfo* sourceField, m_fieldInfos)
     {
-        Agros2D::log()->printError(tr("Mesh"), tr("No fields defined"));
-        return false;
+        foreach (FieldInfo* targetField, m_fieldInfos)
+        {
+            if (sourceField == targetField)
+                continue;
+
+            if (couplingList()->isCouplingAvailable(sourceField, targetField))
+            {
+                QPair<FieldInfo*, FieldInfo*> fieldInfosPair(sourceField, targetField);
+
+                if (!m_couplingInfos.keys().contains(fieldInfosPair))
+                {
+                    m_couplingInfos[fieldInfosPair] = new CouplingInfo(sourceField, targetField);
+                    changed = true;
+                }
+            }
+        }
     }
 
-    m_isMeshing = true;
+    // remove extra
+    foreach (CouplingInfo *couplingInfo, m_couplingInfos)
+    {
+        if (!(m_fieldInfos.contains(couplingInfo->sourceField()->fieldId()) &&
+              m_fieldInfos.contains(couplingInfo->targetField()->fieldId()) &&
+              couplingList()->isCouplingAvailable(couplingInfo->sourceField(), couplingInfo->targetField())))
+        {
+            QPair<FieldInfo *, FieldInfo *> key = QPair<FieldInfo *, FieldInfo *>(couplingInfo->sourceField(), couplingInfo->targetField());
+            m_couplingInfos.remove(key);
+
+            changed = true;
+        }
+    }
+
+    if (changed)
+        emit couplingsChanged();
+}
+
+
+void Problem::readProblemFromFile(const QString &fileName)
+{
+    QSettings settings;
+    QFileInfo fileInfo(fileName);
+    if (fileInfo.absoluteDir() != tempProblemDir() && !fileName.contains("resources/examples"))
+        settings.setValue("General/LastProblemDir", fileInfo.absolutePath());
+
+    Agros2D::log()->printMessage(tr("Problem"), tr("Loading problem from disk: %1.a2d").arg(QFileInfo(fileName).baseName()));
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly))
+        throw AgrosException(tr("File '%1' cannot be opened (%2).").arg(fileName).arg(file.errorString()));
+
+    QDomDocument doc;
+    if (!doc.setContent(&file))
+    {
+        file.close();
+        throw AgrosException(tr("File '%1' is not valid Agros2D data file.").arg(fileName));
+    }
+    file.close();
+
+    double version = doc.documentElement().attribute("version").toDouble();
+
+    m_config->setFileName(fileName);
+    emit fileNameChanged(fileInfo.absoluteFilePath());
 
     try
     {
-        result = meshAction(emitMeshed);
+        if (version == 3.1)
+        {
+            readProblemFromFile31(fileName);
+        }
+        else
+        {
+            QString tempFileName = tempProblemDir() + QString("/%1.a2d").arg(QFileInfo(fileName).baseName());
+            transformProblem(fileName, tempFileName, version);
+            readProblemFromFile31(tempFileName);
+        }
     }
-    catch (AgrosGeometryException& e)
+    catch (AgrosException &e)
     {
-        // this assumes that all the code in Hermes and Agros is exception-safe
-        // todo:  this is almost certainly not the case, at least for Agros. It should be further investigated
-        m_isMeshing = false;
-        Agros2D::log()->printError(tr("Geometry"), QString("%1").arg(e.what()));
-        return false;
+        Agros2D::log()->printError(tr("Problem"), e.toString());
     }
-    catch (AgrosMeshException& e)
+}
+
+void Problem::transformProblem(const QString &fileName, const QString &tempFileName, double version)
+{
+    QString out;
+
+    if (version == 3.1)
     {
-        // this assumes that all the code in Hermes and Agros is exception-safe
-        // todo:  this is almost certainly not the case, at least for Agros. It should be further investigated
-        m_isMeshing = false;
-        Agros2D::log()->printError(tr("Mesh"), QString("%1").arg(e.what()));
-        return false;
+        Agros2D::log()->printMessage(tr("Problem"), tr("Data file was transformed to new version and saved to temp dictionary."));
+        return;
     }
-    catch (AgrosException& e)
+    else if (version == 3.0)
     {
-        // todo: dangerous
-        // catching all other exceptions. This is not safe at all
-        m_isMeshing = false;
-        Agros2D::log()->printWarning(tr("Mesh"), e.what());
-        return false;
+        out = transformXML(fileName, datadir() + "/resources/xslt/problem_a2d_31_xml.xsl");
+        version = 3.1;
     }
-    catch (dealii::ExceptionBase &e)
+    else if (version == 2.1)
     {
-        m_isMeshing = false;
-        Agros2D::log()->printWarning(tr("Mesh (deal.II)"), e.what());
-        return false;
+        out = transformXML(fileName, datadir() + "/resources/xslt/problem_a2d_30_xml.xsl");
+        version = 3.0;
+    }
+    else if (version == 2.0 || version == 0.0)
+    {
+        out = transformXML(fileName, datadir() + "/resources/xslt/problem_a2d_21_xml.xsl");
+        version = 2.1;
+    }
+    else
+        throw AgrosException(tr("It is impossible to transform data file."));
+
+    //qDebug() << out;
+
+    QFile tempFile(tempFileName);
+    if (!tempFile.open(QIODevice::WriteOnly))
+        throw AgrosException(tr("File cannot be saved (%2).").arg(tempFile.errorString()));
+
+    QTextStream(&tempFile) << out;
+    tempFile.close();
+
+    transformProblem(tempFileName, tempFileName, version);
+}
+
+void Problem::writeProblemToFile(const QString &fileName, bool saveLastProblemDir)
+{
+    QSettings settings;
+
+    if (saveLastProblemDir)
+    {
+        QFileInfo fileInfo(fileName);
+        if (fileInfo.absoluteDir() != tempProblemDir())
+        {
+            settings.setValue("General/LastProblemDir", fileInfo.absoluteFilePath());
+            m_config->setFileName(fileName);
+        }
+    }
+
+    try
+    {
+        writeProblemToFile31(fileName);
+        emit fileNameChanged(QFileInfo(fileName).absoluteFilePath());
     }
     catch (...)
     {
-        // todo: dangerous
-        // catching all other exceptions. This is not safe at all
-        m_isMeshing = false;
-        Agros2D::log()->printWarning(tr("Mesh"), tr("An unknown exception occurred and has been ignored"));
-        qDebug() << "Mesh: An unknown exception occurred and has been ignored";
-        return false;
+        // do nothing
     }
-
-    m_isMeshing = false;
-
-    return result;
 }
 
-bool Problem::meshAction(bool emitMeshed)
+void Problem::readProblemFromFile31(const QString &fileName)
+{
+    try
+    {
+        std::unique_ptr<XMLProblem::document> document_xsd = XMLProblem::document_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
+        XMLProblem::document *doc = document_xsd.get();
+
+        clearFieldsAndConfig();
+
+        // clear scene
+        m_scene->clear();
+
+        m_scene->blockSignals(true);
+        m_scene->stopInvalidating(true);
+
+        // coordinate type
+        m_config->setCoordinateType(coordinateTypeFromStringKey(QString::fromStdString(doc->problem().coordinate_type())));
+        // mesh type
+        m_config->setMeshType(meshTypeFromStringKey(QString::fromStdString(doc->problem().mesh_type())));
+
+        // problem config
+        m_config->load(&doc->problem().problem_config());
+        // general config
+        m_setting->load(&doc->config());
+
+        // run script
+        currentPythonEngineAgros()->runScript(m_setting->value(ProblemSetting::Problem_StartupScript).toString());
+
+        // nodes
+        for (unsigned int i = 0; i < doc->geometry().nodes().node().size(); i++)
+        {
+            XMLProblem::node node = doc->geometry().nodes().node().at(i);
+
+            if (node.valuex().present() && node.valuey().present())
+            {
+                Value x = Value(QString::fromStdString(node.valuex().get()));
+                if (!x.isEvaluated())
+                {
+                    ErrorResult result = currentPythonEngineAgros()->parseError();
+                    throw AgrosException(result.error());
+                }
+
+                Value y = Value(QString::fromStdString(node.valuey().get()));
+                if (!y.isEvaluated())
+                {
+                    ErrorResult result = currentPythonEngineAgros()->parseError();
+                    throw AgrosException(result.error());
+                }
+
+                m_scene->addNode(new SceneNode(m_scene, PointValue(x, y)));
+            }
+            else
+            {
+                Point point = Point(node.x(),
+                                    node.y());
+
+                m_scene->addNode(new SceneNode(m_scene, point));
+            }
+        }
+
+        // edges
+        for (unsigned int i = 0; i < doc->geometry().edges().edge().size(); i++)
+        {
+            XMLProblem::edge edge = doc->geometry().edges().edge().at(i);
+
+            SceneNode *nodeFrom = m_scene->nodes->at(edge.start());
+            SceneNode *nodeTo = m_scene->nodes->at(edge.end());
+
+            int segments = 3;
+            int isCurvilinear = 1;
+            if (edge.segments().present())
+                segments = edge.segments().get();
+            if (edge.is_curvilinear().present())
+                isCurvilinear = edge.is_curvilinear().get();
+
+            if (edge.valueangle().present())
+            {
+                Value angle = Value(QString::fromStdString(edge.valueangle().get()));
+                if (!angle.isEvaluated())
+                {
+                    ErrorResult result = currentPythonEngineAgros()->parseError();
+                    throw AgrosException(result.error());
+                }
+                if (angle.number() < 0.0) angle.setNumber(0.0);
+                if (angle.number() > 90.0) angle.setNumber(90.0);
+
+                m_scene->addEdge(new SceneEdge(m_scene, nodeFrom, nodeTo, angle, segments, isCurvilinear));
+            }
+            else
+            {
+                m_scene->addEdge(new SceneEdge(m_scene, nodeFrom, nodeTo, edge.angle(), segments, isCurvilinear));
+            }
+        }
+
+        // labels
+        for (unsigned int i = 0; i < doc->geometry().labels().label().size(); i++)
+        {
+            XMLProblem::label label = doc->geometry().labels().label().at(i);
+
+            if (label.valuex().present() && label.valuey().present())
+            {
+                Value x = Value(QString::fromStdString(label.valuex().get()));
+                if (!x.isEvaluated())
+                {
+                    ErrorResult result = currentPythonEngineAgros()->parseError();
+                    throw AgrosException(result.error());
+                }
+
+                Value y = Value(QString::fromStdString(label.valuey().get()));
+                if (!y.isEvaluated())
+                {
+                    ErrorResult result = currentPythonEngineAgros()->parseError();
+                    throw AgrosException(result.error());
+                }
+
+                m_scene->addLabel(new SceneLabel(m_scene,
+                                                 PointValue(x, y),
+                                                 label.area()));
+            }
+            else
+            {
+                Point point = Point(label.x(),
+                                    label.y());
+
+                m_scene->addLabel(new SceneLabel(m_scene,
+                                                 point,
+                                                 label.area()));
+            }
+        }
+
+        for (unsigned int i = 0; i < doc->problem().fields().field().size(); i++)
+        {
+            XMLProblem::field field = doc->problem().fields().field().at(i);
+
+            FieldInfo *fieldInfo = new FieldInfo(QString::fromStdString(field.field_id()));
+
+            // analysis type
+            fieldInfo->setAnalysisType(analysisTypeFromStringKey(QString::fromStdString(field.analysis_type())));
+            // adaptivity
+            fieldInfo->setAdaptivityType(adaptivityTypeFromStringKey(QString::fromStdString(field.adaptivity_type())));
+            // linearity
+            fieldInfo->setLinearityType(linearityTypeFromStringKey(QString::fromStdString(field.linearity_type())));
+            // matrix solver
+            if (field.matrix_solver().present())
+                fieldInfo->setMatrixSolver(matrixSolverTypeFromStringKey(QString::fromStdString(field.matrix_solver().get())));
+
+            // field config
+            fieldInfo->load(&field.field_config());
+
+            // edge refinement
+            for (unsigned int j = 0; j < field.refinement_edges().refinement_edge().size(); j++)
+            {
+                XMLProblem::refinement_edge edge = field.refinement_edges().refinement_edge().at(j);
+
+                if (edge.refinement_edge_id() != -1)
+                    fieldInfo->setEdgeRefinement(m_scene->edges->items().at(edge.refinement_edge_id()), edge.refinement_edge_number());
+            }
+
+            // label refinement
+            for (unsigned int j = 0; j < field.refinement_labels().refinement_label().size(); j++)
+            {
+                XMLProblem::refinement_label label = field.refinement_labels().refinement_label().at(j);
+
+                if (label.refinement_label_id() != -1)
+                    fieldInfo->setLabelRefinement(m_scene->labels->items().at(label.refinement_label_id()), label.refinement_label_number());
+            }
+
+            // polynomial order
+            for (unsigned int j = 0; j < field.polynomial_orders().polynomial_order().size(); j++)
+            {
+                XMLProblem::polynomial_order order = field.polynomial_orders().polynomial_order().at(j);
+
+                fieldInfo->setLabelPolynomialOrder(m_scene->labels->items().at(order.polynomial_order_id()), order.polynomial_order_number());
+            }
+
+            // boundary conditions
+            for (unsigned int j = 0; j < field.boundaries().boundary().size(); j++)
+            {
+                XMLProblem::boundary boundary = field.boundaries().boundary().at(j);
+
+                // read marker
+                SceneBoundary *bound = new SceneBoundary(m_scene,
+                                                         fieldInfo,
+                                                         QString::fromStdString(boundary.name()),
+                                                         QString::fromStdString(boundary.type()));
+
+                // default values
+                Module::BoundaryType boundaryType = fieldInfo->boundaryType(QString::fromStdString(boundary.type()));
+                foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
+                    bound->setValue(variable.id(), Value());
+
+                for (unsigned int k = 0; k < boundary.boundary_types().boundary_type().size(); k++)
+                {
+                    XMLProblem::boundary_type type = boundary.boundary_types().boundary_type().at(k);
+
+                    Value b = Value(QString::fromStdString(type.value()));
+                    if (!b.isEvaluated())
+                    {
+                        ErrorResult result = currentPythonEngineAgros()->parseError();
+                        throw AgrosException(result.error());
+                    }
+
+                    bound->setValue(QString::fromStdString(type.key()), b);
+                }
+
+                m_scene->addBoundary(bound);
+
+                // add boundary to the edge marker
+                for (unsigned int k = 0; k < boundary.boundary_edges().boundary_edge().size(); k++)
+                {
+                    XMLProblem::boundary_edge edge = boundary.boundary_edges().boundary_edge().at(k);
+
+                    m_scene->edges->at(edge.id())->addMarker(bound);
+                }
+            }
+
+            // materials
+            for (unsigned int j = 0; j < field.materials().material().size(); j++)
+            {
+                XMLProblem::material material = field.materials().material().at(j);
+
+                // read marker
+                SceneMaterial *mat = new SceneMaterial(m_scene,
+                                                       fieldInfo,
+                                                       QString::fromStdString(material.name()));
+
+                // default values
+                foreach (Module::MaterialTypeVariable variable, fieldInfo->materialTypeVariables())
+                {
+                    mat->setValue(variable.id(), Value());
+                }
+
+                for (unsigned int k = 0; k < material.material_types().material_type().size(); k++)
+                {
+                    XMLProblem::material_type type = material.material_types().material_type().at(k);
+
+                    Value m = Value(QString::fromStdString(type.value()));
+                    if (!m.isEvaluated())
+                    {
+                        ErrorResult result = currentPythonEngineAgros()->parseError();
+                        throw AgrosException(result.error());
+                    }
+
+                    mat->setValue(QString::fromStdString(type.key()), m);
+                }
+
+                m_scene->addMaterial(mat);
+
+                // add boundary to the edge marker
+                for (unsigned int k = 0; k < material.material_labels().material_label().size(); k++)
+                {
+                    XMLProblem::material_label label = material.material_labels().material_label().at(k);
+
+                    m_scene->labels->at(label.id())->addMarker(mat);
+                }
+            }
+
+            // add missing none markers
+            m_scene->edges->addMissingFieldMarkers(fieldInfo);
+            m_scene->labels->addMissingFieldMarkers(fieldInfo);
+
+            // add field
+            addField(fieldInfo);
+        }
+
+        // couplings
+        synchronizeCouplings();
+
+        for (unsigned int i = 0; i < doc->problem().couplings().coupling().size(); i++)
+        {
+            XMLProblem::coupling coupling = doc->problem().couplings().coupling().at(i);
+
+            if (hasCoupling(QString::fromStdString(coupling.source_fieldid()),
+                            QString::fromStdString(coupling.target_fieldid())))
+            {
+                CouplingInfo *cpl = couplingInfo(QString::fromStdString(coupling.source_fieldid()),
+                                                 QString::fromStdString(coupling.target_fieldid()));
+                cpl->setCouplingType(couplingTypeFromStringKey(QString::fromStdString(coupling.type())));
+            }
+        }
+
+        // check and apply script (should be ok at this time)
+        QString error = checkAndApplyStartupScript(m_setting->value(ProblemSetting::Problem_StartupScript).toString());
+        assert(error.isEmpty());
+
+        m_scene->stopInvalidating(false);
+        m_scene->blockSignals(false);
+
+        // default values
+        emit m_scene->invalidated();
+        emit m_scene->defaultValues();        
+    }
+    catch (const xml_schema::expected_element& e)
+    {
+        m_scene->blockSignals(false);
+        throw AgrosException(QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.name())));
+    }
+    catch (const xml_schema::expected_attribute& e)
+    {
+        m_scene->blockSignals(false);
+        throw AgrosException(QString("%1: %2").arg(QString::fromStdString(e.what())).arg(QString::fromStdString(e.name())));
+    }
+    catch (const xml_schema::exception& e)
+    {
+        m_scene->blockSignals(false);
+        throw AgrosException(QString::fromStdString(e.what()));
+    }
+    catch (AgrosException e)
+    {
+        m_scene->blockSignals(false);
+        throw e;
+    }
+}
+
+void Problem::writeProblemToFile31(const QString &fileName)
+{
+    double version = 3.1;
+
+    try
+    {
+        XMLProblem::fields fields;
+        // fields
+        foreach (FieldInfo *fieldInfo, fieldInfos())
+        {
+            XMLProblem::refinement_edges refinement_edges;
+            QMapIterator<SceneEdge *, int> edgeIterator(fieldInfo->edgesRefinement());
+            while (edgeIterator.hasNext()) {
+                edgeIterator.next();
+
+                refinement_edges.refinement_edge().push_back(XMLProblem::refinement_edge(m_scene->edges->items().indexOf(edgeIterator.key()),
+                                                                                         edgeIterator.value()));
+            }
+
+            XMLProblem::refinement_labels refinement_labels;
+            QMapIterator<SceneLabel *, int> labelIterator(fieldInfo->labelsRefinement());
+            while (labelIterator.hasNext()) {
+                labelIterator.next();
+
+                refinement_labels.refinement_label().push_back(XMLProblem::refinement_label(m_scene->labels->items().indexOf(labelIterator.key()),
+                                                                                            labelIterator.value()));
+            }
+
+            XMLProblem::polynomial_orders polynomial_orders;
+            QMapIterator<SceneLabel *, int> labelOrderIterator(fieldInfo->labelsPolynomialOrder());
+            while (labelOrderIterator.hasNext()) {
+                labelOrderIterator.next();
+
+                polynomial_orders.polynomial_order().push_back(XMLProblem::polynomial_order(m_scene->labels->items().indexOf(labelOrderIterator.key()),
+                                                                                            labelOrderIterator.value()));
+            }
+
+            XMLProblem::boundaries boundaries;
+            int iboundary = 1;
+            foreach (SceneBoundary *bound, m_scene->boundaries->filter(fieldInfo).items())
+            {
+                // add edges
+                XMLProblem::boundary_edges boundary_edges;
+                foreach (SceneEdge *edge, m_scene->edges->items())
+                    if (edge->hasMarker(bound))
+                        boundary_edges.boundary_edge().push_back(XMLProblem::boundary_edge(m_scene->edges->items().indexOf(edge)));
+
+                XMLProblem::boundary_types boundary_types;
+                const QMap<uint, QSharedPointer<Value> > values = bound->values();
+                for (QMap<uint, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
+                    boundary_types.boundary_type().push_back(XMLProblem::boundary_type(bound->valueName(it.key()).toStdString(), it.value()->toString().toStdString()));
+
+                XMLProblem::boundary boundary(boundary_edges,
+                                              boundary_types,
+                                              (bound->type() == "") ? "none" : bound->type().toStdString(),
+                                              iboundary,
+                                              bound->name().toStdString());
+
+
+                boundaries.boundary().push_back(boundary);
+
+                iboundary++;
+            }
+
+            // materials
+            XMLProblem::materials materials;
+            int imaterial = 1;
+            foreach (SceneMaterial *mat, m_scene->materials->filter(fieldInfo).items())
+            {
+                // add labels
+                XMLProblem::material_labels material_labels;
+                foreach (SceneLabel *label, m_scene->labels->items())
+                    if (label->hasMarker(mat))
+                        material_labels.material_label().push_back(XMLProblem::material_label(m_scene->labels->items().indexOf(label)));
+
+                XMLProblem::material_types material_types;
+                const QMap<uint, QSharedPointer<Value> > values = mat->values();
+                for (QMap<uint, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
+                    material_types.material_type().push_back(XMLProblem::material_type(mat->valueName(it.key()).toStdString(), it.value()->toString().toStdString()));
+
+                XMLProblem::material material(material_labels,
+                                              material_types,
+                                              imaterial,
+                                              mat->name().toStdString());
+
+                materials.material().push_back(material);
+
+                imaterial++;
+            }
+
+            XMLProblem::field_config field_config;
+            fieldInfo->save(&field_config);
+
+            XMLProblem::field field(refinement_edges,
+                                    refinement_labels,
+                                    polynomial_orders,
+                                    boundaries,
+                                    materials,
+                                    field_config,
+                                    fieldInfo->fieldId().toStdString(),
+                                    analysisTypeToStringKey(fieldInfo->analysisType()).toStdString(),
+                                    adaptivityTypeToStringKey(fieldInfo->adaptivityType()).toStdString(),
+                                    linearityTypeToStringKey(fieldInfo->linearityType()).toStdString());
+            field.matrix_solver().set(matrixSolverTypeToStringKey(fieldInfo->matrixSolver()).toStdString());
+
+            fields.field().push_back(field);
+        }
+
+        XMLProblem::couplings couplings;
+        foreach (CouplingInfo *couplingInfo, couplingInfos())
+        {
+            couplings.coupling().push_back(XMLProblem::coupling(couplingInfo->couplingId().toStdString(),
+                                                                couplingTypeToStringKey(couplingInfo->couplingType()).toStdString(),
+                                                                couplingInfo->sourceField()->fieldId().toStdString(),
+                                                                couplingInfo->targetField()->fieldId().toStdString()));
+        }
+
+        XMLProblem::config config;
+        m_setting->save(&config);
+
+        XMLProblem::problem_config problem_config;
+        m_config->save(&problem_config);
+
+        XMLProblem::problem problem(fields,
+                                    couplings,
+                                    problem_config,
+                                    coordinateTypeToStringKey(m_config->coordinateType()).toStdString(),
+                                    meshTypeToStringKey(m_config->meshType()).toStdString());
+
+        // nodes
+        XMLProblem::nodes nodes;
+        int inode = 0;
+        foreach (SceneNode *node, m_scene->nodes->items())
+        {
+            XMLProblem::node nodexml(inode,
+                                     node->point().x,
+                                     node->point().y);
+
+            nodexml.valuex().set(node->pointValue().x().toString().toStdString());
+            nodexml.valuey().set(node->pointValue().y().toString().toStdString());
+
+            nodes.node().push_back(nodexml);
+            inode++;
+        }
+
+        // edges
+        XMLProblem::edges edges;
+        int iedge = 0;
+        foreach (SceneEdge *edge, m_scene->edges->items())
+        {
+            XMLProblem::edge edgexml = XMLProblem::edge(iedge,
+                                                        m_scene->nodes->items().indexOf(edge->nodeStart()),
+                                                        m_scene->nodes->items().indexOf(edge->nodeEnd()),
+                                                        edge->angle());
+
+            edgexml.segments().set(edge->segments());
+            edgexml.is_curvilinear().set(edge->isCurvilinear());
+            edgexml.valueangle().set(edge->angleValue().toString().toStdString());
+
+            edges.edge().push_back(edgexml);
+            iedge++;
+        }
+
+        // labels
+        XMLProblem::labels labels;
+        int ilabel = 0;
+        foreach (SceneLabel *label, m_scene->labels->items())
+        {
+            XMLProblem::label labelxml(ilabel,
+                                       label->point().x,
+                                       label->point().y,
+                                       label->area());
+
+            labelxml.valuex().set(label->pointValue().x().toString().toStdString());
+            labelxml.valuey().set(label->pointValue().y().toString().toStdString());
+
+            labels.label().push_back(labelxml);
+            ilabel++;
+        }
+
+        // geometry
+        XMLProblem::geometry geometry(nodes, edges, labels);
+
+        XMLProblem::document doc(geometry, problem, config, version);
+
+        std::string problem_schema_location("");
+
+        problem_schema_location.append(QString("%1/problem_a2d_31_xml.xsd").arg(QFileInfo(datadir() + XSDROOT).absoluteFilePath()).toStdString());
+        ::xml_schema::namespace_info namespace_info_problem("XMLProblem", problem_schema_location);
+
+        ::xml_schema::namespace_infomap namespace_info_map;
+        namespace_info_map.insert(std::pair<std::basic_string<char>, xml_schema::namespace_info>("problem", namespace_info_problem));
+
+        std::ofstream out(compatibleFilename(fileName).toStdString().c_str());
+        XMLProblem::document_(out, doc, namespace_info_map);
+    }
+    catch (const xml_schema::exception& e)
+    {
+        throw AgrosException(QString::fromStdString(e.what()));
+    }
+}
+
+// computation
+
+ProblemComputation::ProblemComputation() : Problem()
+{
+    // m_timeStep = 0;
+    m_lastTimeElapsed = QTime();
+    m_isSolving = false;
+    m_isMeshing = false;
+    m_abort = false;
+    m_isPostprocessingRunning = false;
+
+    connect(this, SIGNAL(fieldsChanged()), m_scene, SLOT(doFieldsChanged()));
+
+    m_calculationThread = new CalculationThread();
+
+    m_solverDeal = new ProblemSolver();
+
+    connect(m_config, SIGNAL(changed()), this, SLOT(clearSolution()));
+    connect(m_scene, SIGNAL(invalidated()), this, SLOT(clearSolution()));
+
+    // create dir - not good :-(
+    m_problemDir = "sln_" + QUuid::createUuid().toString().remove("{").remove("}");
+    QDir(cacheProblemDir()).mkdir(m_problemDir);
+}
+
+ProblemComputation::~ProblemComputation()
 {
     clearSolution();
 
-    Agros2D::log()->printMessage(QObject::tr("Mesh Generator"), QObject::tr("Initial mesh generation"));
-
-    // check geometry
-    Agros2D::scene()->checkGeometryResult();
-    Agros2D::scene()->checkGeometryAssignement();
-
-    QSharedPointer<MeshGenerator> meshGenerator;
-    switch (config()->meshType())
-    {
-    case MeshType_Triangle:
-        // case MeshType_Triangle_QuadFineDivision:
-        // case MeshType_Triangle_QuadRoughDivision:
-        // case MeshType_Triangle_QuadJoin:
-        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangle());
-        break;
-        // case MeshType_GMSH_Triangle:
-    case MeshType_GMSH_Quad:
-    case MeshType_GMSH_QuadDelaunay_Experimental:
-        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorGMSH());
-        break;
-        // case MeshType_NETGEN_Triangle:
-        // case MeshType_NETGEN_QuadDominated:
-        //     meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorNetgen());
-        //     break;
-    case MeshType_CUBIT:
-        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorCubitExternal());
-        break;
-    default:
-        QMessageBox::critical(QApplication::activeWindow(), "Mesh generator error", QString("Mesh generator '%1' is not supported.").arg(meshTypeString(config()->meshType())));
-        break;
-    }
-
-    // add icon to progress
-    Agros2D::log()->addIcon(icon("scene-meshgen"),
-                            tr("Mesh generator\n%1").arg(meshTypeString(config()->meshType())));
-
-    if (meshGenerator && meshGenerator->mesh())
-    {
-        // load mesh
-        try
-        {
-            readInitialMeshFromFile(emitMeshed, meshGenerator);
-            return true;
-        }
-        catch (AgrosException& e)
-        {
-            throw AgrosMeshException(e.what());
-        }
-    }
-
-    return false;
+    delete m_calculationThread;
+    delete m_solverDeal;
 }
 
-QList<double> Problem::timeStepTimes() const
+QList<double> ProblemComputation::timeStepTimes() const
 {
     QList<double> times;
 
@@ -577,7 +1101,7 @@ QList<double> Problem::timeStepTimes() const
     return times;
 }
 
-double Problem::timeStepToTotalTime(int timeStepIndex) const
+double ProblemComputation::timeStepToTotalTime(int timeStepIndex) const
 {
     double time = 0.0;
     for (int ts = 0; ts <= timeStepIndex; ts++)
@@ -586,17 +1110,17 @@ double Problem::timeStepToTotalTime(int timeStepIndex) const
     return time;
 }
 
-void Problem::setActualTimeStepLength(double timeStep)
+void ProblemComputation::setActualTimeStepLength(double timeStep)
 {
     m_timeStepLengths.append(timeStep);
 }
 
-void Problem::removeLastTimeStepLength()
+void ProblemComputation::removeLastTimeStepLength()
 {
     m_timeStepLengths.removeLast();
 }
 
-void Problem::solveInit()
+void ProblemComputation::solveInit()
 {
     if (fieldInfos().isEmpty())
     {
@@ -605,13 +1129,13 @@ void Problem::solveInit()
     }
 
     // check problem settings
-    if (Agros2D::problem()->isTransient())
+    if (isTransient())
     {
-        if (!(Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble() > 0.0))
+        if (!(m_config->value(ProblemConfig::TimeTotal).toDouble() > 0.0))
             throw AgrosSolverException(tr("Total time is zero"));
-        if (!(Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble() > 0.0))
+        if (!(m_config->value(ProblemConfig::TimeMethodTolerance).toDouble() > 0.0))
             throw AgrosSolverException(tr("Time method tolerance is zero"));
-        if (Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble() < 0.0)
+        if (m_config->value(ProblemConfig::TimeInitialStepSize).toDouble() < 0.0)
             throw AgrosSolverException(tr("Initial step size is negative"));
     }
 
@@ -619,21 +1143,23 @@ void Problem::solveInit()
     Indicator::openProgress();
 
     // control geometry
-    Agros2D::scene()->checkGeometryResult();
-    Agros2D::scene()->checkGeometryAssignement();
+    m_scene->checkGeometryResult();
+    m_scene->checkGeometryAssignement();
 
     // nonlinearity
     m_isNonlinear = determineIsNonlinear();
 
     // save problem
+    /*
     try
     {
-        Agros2D::scene()->writeToFile(tempProblemFileName() + ".a2d", false);
+        Agros2D::preprocessor()->writeProblemToFile(tempProblemFileName() + ".a2d", false);
     }
     catch (AgrosException &e)
     {
         Agros2D::log()->printError(tr("Problem"), e.toString());
     }
+    */
 
     // todo: we should not mesh always, but we would need to refine signals to determine when is it neccesary
     // (whether, e.g., parameters of the mesh have been changed)
@@ -644,13 +1170,13 @@ void Problem::solveInit()
     m_solverDeal->init();
 }
 
-void Problem::doAbortSolve()
+void ProblemComputation::doAbortSolve()
 {
     m_abort = true;
     Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Aborting calculation..."));
 }
 
-void Problem::mesh()
+void ProblemComputation::mesh()
 {
     if (!isPreparedForAction())
         return;
@@ -658,15 +1184,15 @@ void Problem::mesh()
     m_calculationThread->startCalculation(CalculationThread::CalculationType_Mesh);
 }
 
-void Problem::solve()
-{    
+void ProblemComputation::solve()
+{
     if (!isPreparedForAction())
         return;
 
     m_calculationThread->startCalculation(CalculationThread::CalculationType_Solve);
 }
 
-void Problem::solve(bool commandLine)
+void ProblemComputation::solve(bool commandLine)
 {
     if (!isPreparedForAction())
         return;
@@ -674,19 +1200,13 @@ void Problem::solve(bool commandLine)
     // clear solution
     clearSolution();
 
-    //    if (numTransientFields() > 1)
-    //    {
-    //        Agros2D::log()->printError(tr("Solver"), tr("Coupling of more transient fields not possible at the moment."));
-    //        return;
-    //    }
-
     if ((m_fieldInfos.size() > 1) && isTransient() && (numAdaptiveFields() >= 1))
     {
         Agros2D::log()->printError(tr("Solver"), tr("Space adaptivity for transient coupled problems not possible at the moment."));
         return;
     }
 
-    if (Agros2D::problem()->fieldInfos().isEmpty())
+    if (m_fieldInfos.isEmpty())
     {
         Agros2D::log()->printError(tr("Solver"), tr("No fields defined"));
         return;
@@ -710,11 +1230,13 @@ void Problem::solve(bool commandLine)
         Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Elapsed time: %1 s").arg(m_lastTimeElapsed.toString("mm:ss.zzz")));
 
         // delete temp file
+        /*
         if (config()->fileName() == tempProblemFileName() + ".a2d")
         {
             QFile::remove(config()->fileName());
             config()->setFileName("");
         }
+        */
 
         m_abort = false;
         m_isSolving = false;
@@ -801,7 +1323,7 @@ void Problem::solve(bool commandLine)
     }
 }
 
-void Problem::solveAction()
+void ProblemComputation::solveAction()
 {
     // clear solution
     clearSolution();
@@ -812,7 +1334,7 @@ void Problem::solveAction()
     m_solverDeal->solveProblem();
 }
 
-void Problem::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator)
+void ProblemComputation::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator)
 {
     if (!meshGenerator)
     {
@@ -852,7 +1374,7 @@ void Problem::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenera
         emit meshed();
 }
 
-void Problem::propagateBoundaryMarkers()
+void ProblemComputation::propagateBoundaryMarkers()
 {
     dealii::Triangulation<2>::cell_iterator cell_unrefined = m_initialUnrefinedMesh.begin();
     dealii::Triangulation<2>::cell_iterator end_cell_unrefined = m_initialUnrefinedMesh.end();
@@ -872,11 +1394,15 @@ void Problem::propagateBoundaryMarkers()
     }
 }
 
-void Problem::readSolutionsFromFile()
+void ProblemComputation::readSolutionsFromFile()
 {
     Agros2D::log()->printMessage(tr("Problem"), tr("Loading DoFHandlers and Solutions from disk"));
 
-    if (QFile::exists(QString("%1/runtime.xml").arg(cacheProblemDir())))
+    QString fn = QString("%1/%2/runtime.xml").
+            arg(cacheProblemDir()).
+            arg(Agros2D::computation()->problemDir());
+
+    if (QFile::exists(fn))
     {
         // load structure
         Agros2D::solutionStore()->loadRunTimeDetails();
@@ -886,50 +1412,7 @@ void Problem::readSolutionsFromFile()
     }
 }
 
-void Problem::synchronizeCouplings()
-{
-    bool changed = false;
-
-    // add missing
-    foreach (FieldInfo* sourceField, m_fieldInfos)
-    {
-        foreach (FieldInfo* targetField, m_fieldInfos)
-        {
-            if (sourceField == targetField)
-                continue;
-
-            if (couplingList()->isCouplingAvailable(sourceField, targetField))
-            {
-                QPair<FieldInfo*, FieldInfo*> fieldInfosPair(sourceField, targetField);
-
-                if (!m_couplingInfos.keys().contains(fieldInfosPair))
-                {
-                    m_couplingInfos[fieldInfosPair] = new CouplingInfo(sourceField, targetField);
-                    changed = true;
-                }
-            }
-        }
-    }
-
-    // remove extra
-    foreach (CouplingInfo *couplingInfo, m_couplingInfos)
-    {
-        if (!(m_fieldInfos.contains(couplingInfo->sourceField()->fieldId()) &&
-              m_fieldInfos.contains(couplingInfo->targetField()->fieldId()) &&
-              couplingList()->isCouplingAvailable(couplingInfo->sourceField(), couplingInfo->targetField())))
-        {
-            QPair<FieldInfo *, FieldInfo *> key = QPair<FieldInfo *, FieldInfo *>(couplingInfo->sourceField(), couplingInfo->targetField());
-            m_couplingInfos.remove(key);
-
-            changed = true;
-        }
-    }
-
-    if (changed)
-        emit couplingsChanged();
-}
-
-void Problem::doMeshWithGUI()
+void ProblemComputation::meshWithGUI()
 {
     if (!isPreparedForAction())
         return;
@@ -941,7 +1424,7 @@ void Problem::doMeshWithGUI()
     mesh();
 }
 
-void Problem::doSolveWithGUI()
+void ProblemComputation::solveWithGUI()
 {
     if (!isPreparedForAction())
         return;
@@ -951,4 +1434,225 @@ void Problem::doSolveWithGUI()
 
     // solve problem
     solve();
+}
+
+bool ProblemComputation::mesh(bool emitMeshed)
+{
+    bool result = false;
+
+    // TODO: make global check geometry before mesh() and solve()
+    if (m_fieldInfos.count() == 0)
+    {
+        Agros2D::log()->printError(tr("Mesh"), tr("No fields defined"));
+        return false;
+    }
+
+    m_isMeshing = true;
+
+    try
+    {
+        result = meshAction(emitMeshed);
+    }
+    catch (AgrosGeometryException& e)
+    {
+        // this assumes that all the code in Hermes and Agros is exception-safe
+        // todo:  this is almost certainly not the case, at least for Agros. It should be further investigated
+        m_isMeshing = false;
+        Agros2D::log()->printError(tr("Geometry"), QString("%1").arg(e.what()));
+        return false;
+    }
+    catch (AgrosMeshException& e)
+    {
+        // this assumes that all the code in Hermes and Agros is exception-safe
+        // todo:  this is almost certainly not the case, at least for Agros. It should be further investigated
+        m_isMeshing = false;
+        Agros2D::log()->printError(tr("Mesh"), QString("%1").arg(e.what()));
+        return false;
+    }
+    catch (AgrosException& e)
+    {
+        // todo: dangerous
+        // catching all other exceptions. This is not safe at all
+        m_isMeshing = false;
+        Agros2D::log()->printWarning(tr("Mesh"), e.what());
+        return false;
+    }
+    catch (dealii::ExceptionBase &e)
+    {
+        m_isMeshing = false;
+        Agros2D::log()->printWarning(tr("Mesh (deal.II)"), e.what());
+        return false;
+    }
+    catch (...)
+    {
+        // todo: dangerous
+        // catching all other exceptions. This is not safe at all
+        m_isMeshing = false;
+        Agros2D::log()->printWarning(tr("Mesh"), tr("An unknown exception occurred and has been ignored"));
+        qDebug() << "Mesh: An unknown exception occurred and has been ignored";
+        return false;
+    }
+
+    m_isMeshing = false;
+
+    return result;
+}
+
+bool ProblemComputation::meshAction(bool emitMeshed)
+{
+    clearSolution();
+
+    Agros2D::log()->printMessage(QObject::tr("Mesh Generator"), QObject::tr("Initial mesh generation"));
+
+    // check geometry
+    m_scene->checkGeometryResult();
+    m_scene->checkGeometryAssignement();
+
+    QSharedPointer<MeshGenerator> meshGenerator;
+    switch (config()->meshType())
+    {
+    case MeshType_Triangle:
+        // case MeshType_Triangle_QuadFineDivision:
+        // case MeshType_Triangle_QuadRoughDivision:
+        // case MeshType_Triangle_QuadJoin:
+        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangle());
+        break;
+        // case MeshType_GMSH_Triangle:
+    case MeshType_GMSH_Quad:
+    case MeshType_GMSH_QuadDelaunay_Experimental:
+        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorGMSH());
+        break;
+        // case MeshType_NETGEN_Triangle:
+        // case MeshType_NETGEN_QuadDominated:
+        //     meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorNetgen());
+        //     break;
+    case MeshType_CUBIT:
+        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorCubitExternal());
+        break;
+    default:
+        QMessageBox::critical(QApplication::activeWindow(), "Mesh generator error", QString("Mesh generator '%1' is not supported.").arg(meshTypeString(config()->meshType())));
+        break;
+    }
+
+    // add icon to progress
+    Agros2D::log()->addIcon(icon("scene-meshgen"),
+                            tr("Mesh generator\n%1").arg(meshTypeString(config()->meshType())));
+
+    if (meshGenerator && meshGenerator->mesh())
+    {
+        // load mesh
+        try
+        {
+            readInitialMeshFromFile(emitMeshed, meshGenerator);
+            return true;
+        }
+        catch (AgrosException& e)
+        {
+            throw AgrosMeshException(e.what());
+        }
+    }
+
+    return false;
+}
+
+void ProblemComputation::readSolutionFromFile(const QString &fileName)
+{
+    // move to problem
+    assert(0);
+
+    QFileInfo fileInfo(fileName);
+    QString solutionFile = QString("%1/%2.sol").arg(fileInfo.absolutePath()).arg(fileInfo.baseName());
+    if (QFile::exists(solutionFile))
+    {
+        Agros2D::log()->printMessage(tr("Problem"), tr("Loading solution from disk"));
+
+        JlCompress::extractDir(solutionFile, cacheProblemDir());
+
+        // read mesh file
+        try
+        {
+            readInitialMeshFromFile(true);
+        }
+        catch (AgrosException& e)
+        {
+            clearSolution();
+            Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
+        }
+
+        if (isMeshed())
+        {
+            try
+            {
+                readSolutionsFromFile();
+            }
+            catch (AgrosException& e)
+            {
+                clearSolution();
+                Agros2D::log()->printError(tr("Mesh"), e.what());
+            }
+        }
+    }
+}
+
+void ProblemComputation::writeSolutionToFile(const QString &fileName)
+{
+    Agros2D::log()->printMessage(tr("Problem"), tr("Saving solution to disk"));
+
+    QFileInfo fileInfo(fileName);
+    QString solutionFN = QString("%1/%2.sol").arg(fileInfo.absolutePath()).arg(fileInfo.baseName());
+    if (QFile(solutionFN).open(QIODevice::WriteOnly))
+        JlCompress::compressDir(solutionFN, cacheProblemDir());
+    else
+        Agros2D::log()->printError(tr("Solver"), tr("Access denied '%1'").arg(solutionFN));
+}
+
+bool ProblemComputation::isMeshed() const
+{
+    if (m_initialMesh.n_active_cells() == 0)
+        return false;
+
+    return (m_fieldInfos.size() > 0);
+}
+
+bool ProblemComputation::isSolved() const
+{
+    // return (!Agros2D::solutionStore()->isEmpty() && !m_isSolving && !m_isMeshing);
+    return (!Agros2D::solutionStore()->isEmpty());
+}
+
+void ProblemComputation::clearSolution()
+{
+    m_abort = false;
+
+    // m_timeStep = 0;
+    m_lastTimeElapsed = QTime();
+    m_timeStepLengths.clear();
+    m_timeStepLengths.append(0.0);
+
+    m_initialMesh.clear();
+    m_initialUnrefinedMesh.clear();
+    m_calculationMesh.clear();
+
+    Agros2D::solutionStore()->clearAll();
+
+    // remove cache
+    // removeDirectory(cacheProblemDir());
+
+    emit clearedSolution();
+}
+
+// preprocessor
+
+void ProblemPreprocessor::createComputation()
+{
+    ProblemComputation *post = new ProblemComputation();
+    Agros2D::addComputation(post->problemDir(), post);
+    Agros2D::setCurrentComputation(post->problemDir());
+
+    QString fn = QString("%1/%2/problem.a2d").
+            arg(cacheProblemDir()).
+            arg(post->problemDir());
+
+    writeProblemToFile31(fn);
+    post->readProblemFromFile31(fn);
 }

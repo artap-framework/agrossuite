@@ -200,7 +200,7 @@ void ProblemSolver::init()
 {
     clear();
 
-    foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
+    foreach (FieldInfo* fieldInfo, Agros2D::computation()->fieldInfos())
     {
         m_solverDeal[fieldInfo->fieldId()] = fieldInfo->plugin()->solverDeal(fieldInfo);
     }
@@ -208,14 +208,14 @@ void ProblemSolver::init()
 
 void ProblemSolver::solveProblem()
 {
-    QList<FieldInfo *> fieldInfosSorted = Agros2D::problem()->fieldInfos().values();
+    QList<FieldInfo *> fieldInfosSorted = Agros2D::computation()->fieldInfos().values();
 
     // sort fields (very small arrays -> sufficiently fast)
     bool swapped = false;
     do
     {
         swapped = false;
-        foreach (CouplingInfo *couplingInfo, Agros2D::problem()->couplingInfos().values())
+        foreach (CouplingInfo *couplingInfo, Agros2D::computation()->couplingInfos().values())
         {
             if (couplingInfo->couplingType() == CouplingType_Weak)
             {
@@ -236,14 +236,14 @@ void ProblemSolver::solveProblem()
     {
         // frequency
         // TODO: find some better place, where some values are initialized
-        targetfieldInfo->setFrequency(Value::parseValueFromString(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toString()).number());
+        targetfieldInfo->setFrequency(Value::parseValueFromString(Agros2D::computation()->config()->value(ProblemConfig::Frequency).toString()).number());
 
         SolverDeal *solverDeal = m_solverDeal[targetfieldInfo->fieldId()];
 
         // look for coupling sources
         foreach (FieldInfo* sourceFieldInfo, fieldInfosSorted)
         {
-            if (Agros2D::problem()->hasCoupling(sourceFieldInfo, targetfieldInfo))
+            if (Agros2D::computation()->hasCoupling(sourceFieldInfo, targetfieldInfo))
             {
                 FieldSolutionID solutionID(sourceFieldInfo,
                                            Agros2D::solutionStore()->lastTimeStep(sourceFieldInfo),

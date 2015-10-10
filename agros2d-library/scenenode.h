@@ -30,8 +30,8 @@ class QDomElement;
 class SceneNode : public SceneBasic
 {
 public:
-    SceneNode(const Point &point);
-    SceneNode(const PointValue &pointValue);
+    SceneNode(Scene *scene, const Point &point);
+    SceneNode(Scene *scene, const PointValue &pointValue);
 
     inline Point point() const { return m_point.point(); }
     inline PointValue pointValue() const { return m_point; }
@@ -52,7 +52,7 @@ public:
 
     SceneNodeCommandRemove* getRemoveCommand();
 
-    static SceneNode *findClosestNode(const Point &point);
+    static SceneNode *findClosestNode(Scene *scene, const Point &point);
 
 private:
     PointValue m_point;

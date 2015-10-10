@@ -366,12 +366,18 @@ void DifferenceErrorEstimator::estimate_cell(const dealii::SynchronousIterators<
     {
         for (unsigned int l = 0; l < cell_it->get_fe().n_components(); l++)
         {
+            // h1-norm
             value += fe_values.JxW(k) * ((primal_solution_value[k][l] - dual_solution_value[k][l]) * (primal_solution_value[k][l] - dual_solution_value[k][l])
-                                         + (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]) * (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]));
+                                          + (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]) * (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]));
+            // l2-norm
+            // value += fe_values.JxW(k) * ((primal_solution_value[k][l] - dual_solution_value[k][l]) * (primal_solution_value[k][l] - dual_solution_value[k][l]));
+            // h1-seminorm
+            // value += fe_values.JxW(k) * ((primal_solution_gradients[k][l] - dual_solution_gradients[k][l]) * (primal_solution_gradients[k][l] - dual_solution_gradients[k][l]));
         }
     }
 
     *(std_get<1>(cell.iterators)) = value;
+    // *(std_get<1>(cell.iterators)) = log(value);
 }
 
 // ************************************************************************************************************************

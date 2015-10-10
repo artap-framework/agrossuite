@@ -732,9 +732,9 @@ void LoopsInfo::processLoops()
     if (m_loops.size() > 0)
     {
         // qDebug() << "edges loop size" << edgesLoop.size();
-        for (int labelIdx = 0; labelIdx < Agros2D::scene()->labels->count(); labelIdx++)
+        for (int labelIdx = 0; labelIdx < m_scene->labels->count(); labelIdx++)
         {
-            SceneLabel* label = Agros2D::scene()->labels->at(labelIdx);
+            SceneLabel* label = m_scene->labels->at(labelIdx);
             // qDebug() << "label" << labelIdx;
 
             if (!label->isHole())
@@ -860,9 +860,9 @@ void LoopsInfo::processPolygonTriangles(bool force)
                 if ((edge->nodeStart()->numberOfConnectedEdges() > 0) && (edge->nodeEnd()->numberOfConnectedEdges() > 0))
                 {
                     if (m_loops[i][j].reverse)
-                        addEdgePoints(&polyline, SceneEdge(edge->nodeStart(), edge->nodeEnd(), edge->angle()), true);
+                        addEdgePoints(&polyline, SceneEdge(edge->scene(), edge->nodeStart(), edge->nodeEnd(), edge->angle()), true);
                     else
-                        addEdgePoints(&polyline, SceneEdge(edge->nodeStart(), edge->nodeEnd(), edge->angle()));
+                        addEdgePoints(&polyline, SceneEdge(edge->scene(), edge->nodeStart(), edge->nodeEnd(), edge->angle()));
                 }
             }
 

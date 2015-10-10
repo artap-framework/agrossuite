@@ -49,9 +49,9 @@
     {{SPECIAL_FUNCTION_NAME}} = QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}>(new {{SPECIAL_EXT_FUNCTION_FULL_NAME}}(m_fieldInfo, 0));
     {{/SPECIAL_FUNCTION_SOURCE}}
     */
-    m_coordinateType = Agros2D::problem()->config()->coordinateType();
-    m_labels = Agros2D::scene()->labels;
-    m_noneMarker = Agros2D::scene()->materials->getNone(m_fieldInfo);
+    m_coordinateType = Agros2D::computation()->config()->coordinateType();
+    m_labels = Agros2D::computation()->scene()->labels;
+    m_noneMarker = Agros2D::computation()->scene()->materials->getNone(m_fieldInfo);
 }
 
 {{CLASS}}ViewScalarFilter::~{{CLASS}}ViewScalarFilter()
@@ -137,7 +137,7 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_vector (const std::ve
     // SceneLabel *label = m_labels->at(current_cell.first->material_id() - 1);
     SceneLabel *label = m_labels->at(mat_id - 1);
     SceneMaterial *material = label->marker(m_fieldInfo);
-    if(material == Agros2D::scene()->materials->getNone(m_fieldInfo))
+    if(material == Agros2D::computation()->scene()->materials->getNone(m_fieldInfo))
         return;
 
     {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));

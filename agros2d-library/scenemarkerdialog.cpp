@@ -30,14 +30,15 @@
 #include "solver/field.h"
 #include "datatable.h"
 #include "scene.h"
+#include "solver/problem.h"
 #include "scenebasic.h"
 #include "sceneedge.h"
 #include "scenelabel.h"
 
 
-SceneBoundary::SceneBoundary(const FieldInfo *fieldInfo, QString name, QString type,
+SceneBoundary::SceneBoundary(Scene *scene, const FieldInfo *fieldInfo, QString name, QString type,
                              QMap<QString, Value> values)
-    : Boundary(fieldInfo, name, type, values)
+    : Boundary(scene, fieldInfo, name, type, values)
 {
 
 }
@@ -60,15 +61,15 @@ QVariant SceneBoundary::variant()
     return v;
 }
 
-SceneBoundaryNone::SceneBoundaryNone() : SceneBoundary(NULL, "none")
+SceneBoundaryNone::SceneBoundaryNone(Scene *scene) : SceneBoundary(scene, NULL, "none")
 {
 
 }
 
 // *************************************************************************************************************************************
 
-SceneMaterial::SceneMaterial(const FieldInfo *fieldInfo, QString name,
-                             QMap<QString, Value> values) : Material(fieldInfo, name, values)
+SceneMaterial::SceneMaterial(Scene *scene, const FieldInfo *fieldInfo, QString name,
+                             QMap<QString, Value> values) : Material(scene, fieldInfo, name, values)
 {
 
 }
@@ -91,7 +92,7 @@ QVariant SceneMaterial::variant()
     return v;
 }
 
-SceneMaterialNone::SceneMaterialNone() : SceneMaterial(NULL, "none")
+SceneMaterialNone::SceneMaterialNone(Scene *scene) : SceneMaterial(scene, NULL, "none")
 {
 
 }
@@ -447,7 +448,7 @@ void SceneBoundaryDialog::load()
 bool SceneBoundaryDialog::save()
 {
     // find name duplicities
-    foreach (SceneBoundary *boundary, Agros2D::scene()->boundaries->filter(m_boundary->fieldInfo()).items())
+    foreach (SceneBoundary *boundary, m_boundary->scene()->boundaries->filter(m_boundary->fieldInfo()).items())
     {
         if (boundary->name() == txtName->text())
         {
@@ -540,7 +541,7 @@ void SceneMaterialDialog::load()
 bool SceneMaterialDialog::save()
 {
     // find name duplicities
-    foreach (SceneMaterial *material, Agros2D::scene()->materials->filter(m_material->fieldInfo()).items())
+    foreach (SceneMaterial *material, m_material->scene()->materials->filter(m_material->fieldInfo()).items())
     {
         if (material->name() == txtName->text())
         {

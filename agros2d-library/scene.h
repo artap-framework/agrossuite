@@ -95,16 +95,20 @@ signals:
     void cleared();
 
     void defaultValues();
-    void fileNameChanged(const QString &fileName);
 
 public:
-    Scene();
+    Scene(Problem *parentProblem);
     ~Scene();
 
+    // parent problem
+    Problem *parentProblem() { return m_problem; }
+
+    // geometry
     SceneNodeContainer* nodes;
     SceneEdgeContainer* edges;
     SceneLabelContainer* labels;
 
+    // boundaries and materials
     SceneBoundaryContainer *boundaries;
     SceneMaterialContainer *materials;
 
@@ -121,7 +125,6 @@ public:
 
     QAction *actTransform;
 
-    // OBSOLETE - DO NOT USE *************************************************************
     SceneNode *addNode(SceneNode *node);
     SceneNode *getNode(const Point &point);
 
@@ -141,10 +144,6 @@ public:
     void removeMaterial(SceneMaterial *material);
     void setMaterial(SceneMaterial *material); // set label marker to selected labels
     SceneMaterial *getMaterial(FieldInfo *field, const QString &name);
-
-    void checkGeometryAssignement();
-
-    // OBSOLETE - DO NOT USE *************************************************************
 
     void clear();
 
@@ -167,35 +166,25 @@ public:
     QMap<SceneNode *, int> numberOfConnectedNodeEdges() const { return m_numberOfConnectedNodeEdges; }
     QList<SceneEdge *> crossings() const { return m_crossings; }
 
-    inline void invalidate() { emit invalidated(); }
-
+    void importFromDxf(const QString &fileName);
+    void exportToDxf(const QString &fileName);
     void exportVTKGeometry(const QString &fileName);
-
-    void readFromDxf(const QString &fileName);
-    void writeToDxf(const QString &fileName);
-
-    void readFromFile(const QString &fileName);
-    void transformFile(const QString &fileName, const QString &tempFileName, double version);
-    void readFromFile21(const QString &fileName);
-    void readFromFile31(const QString &fileName);
-    void writeToFile(const QString &fileName, bool saveLastProblemDir = false);
-    void writeToFile21(const QString &fileName);
-    void writeToFile31(const QString &fileName);
-
-    void readSolutionFromFile(const QString &fileName);
-    void writeSolutionToFile(const QString &fileName);
 
     void checkNodeConnect(SceneNode *node);
     void checkTwoNodesSameCoordinates();
     void checkGeometryResult();
+    void checkGeometryAssignement();
 
     void addBoundaryAndMaterialMenuItems(QMenu* menu, QWidget* parent);
 
     inline QUndoStack *undoStack() const { return m_undoStack; }
 
     void stopInvalidating(bool sI) { m_stopInvalidating = sI;}
+    inline void invalidate() { emit invalidated(); }
 
 private:
+    Problem *m_problem;
+
     QUndoStack *m_undoStack;
 
     LoopsInfo *m_loopsInfo;

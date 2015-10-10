@@ -81,7 +81,6 @@ public:
 protected:
 
 private:
-    const Problem *m_problem; // pointer to problem
     bool m_isEvaluated;   
 
     // expression

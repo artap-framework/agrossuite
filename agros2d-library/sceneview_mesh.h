@@ -31,7 +31,6 @@ public:
     SceneViewMesh(PostDeal *postDeal, QWidget *parent = 0);
     ~SceneViewMesh();
 
-    QAction *actSceneModeMesh;
     QAction *actExportVTKOrder;
     QAction *actExportVTKMesh;
 
@@ -65,6 +64,7 @@ private:
 
 private slots:
     virtual void refresh();
+    void reconnectActions();
 };
 
 #endif // SCENEVIEWMESH_H

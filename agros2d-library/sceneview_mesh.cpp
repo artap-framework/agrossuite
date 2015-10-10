@@ -46,28 +46,31 @@ SceneViewMesh::SceneViewMesh(PostDeal *postDeal, QWidget *parent)
 {
     createActionsMesh();
 
-    connect(Agros2D::scene(), SIGNAL(cleared()), this, SLOT(clear()));
-
-    connect(Agros2D::scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
     connect(m_postDeal, SIGNAL(processed()), this, SLOT(refresh()));
 
-    connect(Agros2D::scene(), SIGNAL(cleared()), this, SLOT(setControls()));
-    connect(Agros2D::scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
-    connect(Agros2D::problem(), SIGNAL(meshed()), this, SLOT(setControls()));
-    connect(Agros2D::problem(), SIGNAL(solved()), this, SLOT(setControls()));
+    m_isPreprocessor = false;
+
+    // reconnect computation slots
+    connect(Agros2D::singleton(), SIGNAL(reconnectSlots()), this, SLOT(reconnectActions()));
 }
 
 SceneViewMesh::~SceneViewMesh()
 {
 }
 
+void SceneViewMesh::reconnectActions()
+{
+    connect(Agros2D::computation()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
+    connect(Agros2D::computation()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
+    connect(Agros2D::computation(), SIGNAL(meshed()), this, SLOT(setControls()));
+    connect(Agros2D::computation(), SIGNAL(solved()), this, SLOT(setControls()));
+
+    connect(Agros2D::computation()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
+    connect(Agros2D::computation()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
+}
+
 void SceneViewMesh::createActionsMesh()
 {
-    // scene mode
-    actSceneModeMesh = new QAction(iconView(), tr("Mesh"), this);
-    actSceneModeMesh->setShortcut(tr("Ctrl+3"));
-    actSceneModeMesh->setCheckable(true);
-
     actExportVTKOrder = new QAction(tr("Export VTK order..."), this);
     connect(actExportVTKOrder, SIGNAL(triggered()), this, SLOT(exportVTKOrderView()));
 
@@ -89,10 +92,11 @@ void SceneViewMesh::refresh()
 
 void SceneViewMesh::setControls()
 {
-    // actions
-    actSceneModeMesh->setEnabled(Agros2D::problem()->isMeshed());
-    actExportVTKMesh->setEnabled(Agros2D::problem()->isSolved());
-    actExportVTKOrder->setEnabled(Agros2D::problem()->isSolved());
+    if (Agros2D::computation())
+    {
+        actExportVTKMesh->setEnabled(Agros2D::computation()->isSolved());
+        actExportVTKOrder->setEnabled(Agros2D::computation()->isSolved());
+    }
 }
 
 void SceneViewMesh::clear()
@@ -100,7 +104,7 @@ void SceneViewMesh::clear()
     setControls();
 
     SceneViewCommon2D::clear();
-    if (Agros2D::problem()->isMeshed() || Agros2D::problem()->isSolved())
+    if (Agros2D::computation() && Agros2D::computation()->isMeshed() || Agros2D::computation()->isSolved())
         doZoomBestFit();
 }
 
@@ -117,7 +121,7 @@ void SceneViewMesh::exportVTKOrderView(const QString &fileName)
 
 void SceneViewMesh::exportVTK(const QString &fileName, bool exportMeshOnly)
 {
-    if (Agros2D::problem()->isSolved())
+    if (Agros2D::computation()->isSolved())
     {
         QString fn = fileName;
 
@@ -178,24 +182,24 @@ void SceneViewMesh::paintGL()
     QTime time;
 
     // view
-    if (Agros2D::problem()->isSolved() && m_postDeal->isProcessed())
+    if (Agros2D::computation()->isSolved() && m_postDeal->isProcessed())
     {
-        if (Agros2D::problem()->setting()->value(ProblemSetting::View_ShowOrderView).toBool()) paintOrder();
-        if (Agros2D::problem()->setting()->value(ProblemSetting::View_ShowSolutionMeshView).toBool()) paintSolutionMesh();
+        if (Agros2D::computation()->setting()->value(ProblemSetting::View_ShowOrderView).toBool()) paintOrder();
+        if (Agros2D::computation()->setting()->value(ProblemSetting::View_ShowSolutionMeshView).toBool()) paintSolutionMesh();
     }
 
     // initial mesh
-    if (Agros2D::problem()->isMeshed() && m_postDeal->isProcessed())
-        if (Agros2D::problem()->setting()->value(ProblemSetting::View_ShowInitialMeshView).toBool()) paintInitialMesh();
+    if (Agros2D::computation()->isMeshed() && m_postDeal->isProcessed())
+        if (Agros2D::computation()->setting()->value(ProblemSetting::View_ShowInitialMeshView).toBool()) paintInitialMesh();
 
     // geometry
     paintGeometry();
 
-    if (Agros2D::problem()->isSolved() && m_postDeal->isProcessed())
+    if (Agros2D::computation()->isSolved() && m_postDeal->isProcessed())
     {
         // bars
-        if (Agros2D::problem()->setting()->value(ProblemSetting::View_ShowOrderView).toBool()
-                && Agros2D::problem()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool())
+        if (Agros2D::computation()->setting()->value(ProblemSetting::View_ShowOrderView).toBool()
+                && Agros2D::computation()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool())
             paintOrderColorBar();
     }
 
@@ -217,7 +221,7 @@ void SceneViewMesh::paintGeometry()
     loadProjection2d(true);
 
     // edges
-    foreach (SceneEdge *edge, Agros2D::scene()->edges->items())
+    foreach (SceneEdge *edge, Agros2D::computation()->scene()->edges->items())
     {
         glColor3d(COLOREDGE[0], COLOREDGE[1], COLOREDGE[2]);
         glLineWidth(EDGEWIDTH);
@@ -244,19 +248,19 @@ void SceneViewMesh::paintGeometry()
 
 void SceneViewMesh::paintInitialMesh()
 {
-    if (!Agros2D::problem()->isMeshed()) return;
+    if (!Agros2D::computation()->isMeshed()) return;
 
     if (m_arrayInitialMesh.isEmpty())
     {
-        if (Agros2D::problem()->initialMesh().n_active_cells() == 0)
+        if (Agros2D::computation()->initialMesh().n_active_cells() == 0)
             return;
 
         // vertices
-        const std::vector<dealii::Point<2> > &vertices = Agros2D::problem()->initialMesh().get_vertices();
+        const std::vector<dealii::Point<2> > &vertices = Agros2D::computation()->initialMesh().get_vertices();
 
         // faces
-        dealii::Triangulation<2>::active_face_iterator ti = Agros2D::problem()->initialMesh().begin_face();
-        while (ti != Agros2D::problem()->initialMesh().end_face())
+        dealii::Triangulation<2>::active_face_iterator ti = Agros2D::computation()->initialMesh().begin_face();
+        while (ti != Agros2D::computation()->initialMesh().end_face())
         {
             m_arrayInitialMesh.append(QVector2D(vertices[ti->vertex_index(0)][0], vertices[ti->vertex_index(0)][1]));
             m_arrayInitialMesh.append(QVector2D(vertices[ti->vertex_index(1)][0], vertices[ti->vertex_index(1)][1]));
@@ -283,7 +287,7 @@ void SceneViewMesh::paintInitialMesh()
 
 void SceneViewMesh::paintSolutionMesh()
 {
-    if (!Agros2D::problem()->isSolved()) return;
+    if (!Agros2D::computation()->isSolved()) return;
 
     if (m_arraySolutionMesh.isEmpty())
     {
@@ -334,7 +338,7 @@ void SceneViewMesh::paintSolutionMesh()
 
 void SceneViewMesh::paintOrder()
 {
-    if (!Agros2D::problem()->isSolved()) return;
+    if (!Agros2D::computation()->isSolved()) return;
 
     if (m_arrayOrderMesh.isEmpty())
     {
@@ -396,7 +400,7 @@ void SceneViewMesh::paintOrder()
     }
 
     // paint labels
-    if (Agros2D::problem()->setting()->value(ProblemSetting::View_ShowOrderLabel).toBool())
+    if (Agros2D::computation()->setting()->value(ProblemSetting::View_ShowOrderLabel).toBool())
     {
         loadProjectionViewPort();
 
@@ -440,7 +444,7 @@ void SceneViewMesh::paintOrder()
 
 void SceneViewMesh::paintOrderColorBar()
 {
-    if (!Agros2D::problem()->isSolved() || !Agros2D::problem()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool()) return;
+    if (!Agros2D::computation()->isSolved() || !Agros2D::computation()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool()) return;
 
     int minDegree = 100;
     int maxDegree = 1;

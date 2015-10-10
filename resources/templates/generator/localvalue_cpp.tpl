@@ -50,7 +50,7 @@ void {{CLASS}}LocalValue::calculate()
 
     m_values.clear();
 
-    if (Agros2D::problem()->isSolved())
+    if (Agros2D::computation()->isSolved())
     {
         FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep);
         // check existence
@@ -60,13 +60,13 @@ void {{CLASS}}LocalValue::calculate()
         MultiArray ma = Agros2D::solutionStore()->multiArray(fsid);
 
         // update time functions
-        if (!Agros2D::problem()->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
+        if (!Agros2D::computation()->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
         {
-            Module::updateTimeFunctions(Agros2D::problem()->timeStepToTotalTime(m_timeStep));
+            Module::updateTimeFunctions(Agros2D::computation()->timeStepToTotalTime(m_timeStep));
         }
 
         // find marker
-        SceneLabel *label = SceneLabel::findLabelAtPoint(m_point);
+        SceneLabel *label = SceneLabel::findLabelAtPoint(Agros2D::computation()->scene(), m_point);
         if (label && label->hasMarker(m_fieldInfo))
         {
             SceneMaterial *material = label->marker(m_fieldInfo);
@@ -104,7 +104,7 @@ void {{CLASS}}LocalValue::calculate()
                 // expressions
                 {{#VARIABLE_SOURCE}}
                 if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
-                        && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+                        && (Agros2D::computation()->config()->coordinateType() == {{COORDINATE_TYPE}}))
                     m_values[QLatin1String("{{VARIABLE}}")] = LocalPointValue({{EXPRESSION_SCALAR}}, Point({{EXPRESSION_VECTORX}}, {{EXPRESSION_VECTORY}}), material);
                 {{/VARIABLE_SOURCE}}
             }

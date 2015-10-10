@@ -39,91 +39,91 @@ public:
     void setInitialVelocity(const vector<double> &velocity);
 
     // number of particles
-    inline int getNumberOfParticles() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt(); }
+    inline int getNumberOfParticles() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt(); }
     void setNumberOfParticles(int particles);
 
     // starting radius
-    inline double getStartingRadius() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble(); }
+    inline double getStartingRadius() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble(); }
     void setStartingRadius(double radius);
 
     // particle mass
-    inline double getParticleMass() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleMass).toDouble(); }
+    inline double getParticleMass() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMass).toDouble(); }
     void setParticleMass(double mass);
 
     // particle charge
-    inline double getParticleCharge() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleConstant).toDouble(); }
+    inline double getParticleCharge() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleConstant).toDouble(); }
     void setParticleCharge(double charge);
 
     // drag force density
-    inline double getDragForceDensity() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleDragDensity).toDouble(); }
+    inline double getDragForceDensity() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleDragDensity).toDouble(); }
     void setDragForceDensity(double density);
 
     // drag force reference area
-    inline double getDragForceReferenceArea() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleDragReferenceArea).toDouble(); }
+    inline double getDragForceReferenceArea() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleDragReferenceArea).toDouble(); }
     void setDragForceReferenceArea(double area);
 
     // drag force coefficient
-    inline double getDragForceCoefficient() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleDragCoefficient).toDouble(); }
+    inline double getDragForceCoefficient() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleDragCoefficient).toDouble(); }
     void setDragForceCoefficient(double coeff);
 
     // custom force
     void getCustomForce(vector<double> &force) const;
     void setCustomForce(const vector<double> &force);
 
-    inline bool getElectrostaticInteraction() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleP2PElectricForce).toBool(); }
-    void setElectrostaticInteraction(bool interaction) { Agros2D::problem()->setting()->setValue(ProblemSetting::View_ParticleP2PElectricForce, interaction); }
-    inline bool getMagneticInteraction() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleP2PMagneticForce).toBool(); }
-    void setMagneticInteraction(bool interaction) { Agros2D::problem()->setting()->setValue(ProblemSetting::View_ParticleP2PMagneticForce, interaction); }
+    inline bool getElectrostaticInteraction() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleP2PElectricForce).toBool(); }
+    void setElectrostaticInteraction(bool interaction) { Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleP2PElectricForce, interaction); }
+    inline bool getMagneticInteraction() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleP2PMagneticForce).toBool(); }
+    void setMagneticInteraction(bool interaction) { Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleP2PMagneticForce, interaction); }
 
     // butcher table
     std::string getButcherTableType() const
     {
-        return butcherTableTypeToStringKey((ButcherTableType) Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleButcherTableType).toInt()).toStdString();
+        return butcherTableTypeToStringKey((ButcherTableType) Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleButcherTableType).toInt()).toStdString();
     }
     void setButcherTableType(const std::string &tableType);
 
     // relativistic correction
-    inline bool getIncludeRelativisticCorrection() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleIncludeRelativisticCorrection).toBool(); }
-    void setIncludeRelativisticCorrection(bool include) { Agros2D::problem()->setting()->setValue(ProblemSetting::View_ParticleIncludeRelativisticCorrection, include); }
+    inline bool getIncludeRelativisticCorrection() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleIncludeRelativisticCorrection).toBool(); }
+    void setIncludeRelativisticCorrection(bool include) { Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleIncludeRelativisticCorrection, include); }
 
     // get maximum relative error
-    inline double getMaximumRelativeError() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleMaximumRelativeError).toDouble(); }
+    inline double getMaximumRelativeError() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMaximumRelativeError).toDouble(); }
     void setMaximumRelativeError(double error);
 
     // maximum number of steps
-    inline int getMaximumNumberOfSteps() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleMaximumNumberOfSteps).toInt(); }
+    inline int getMaximumNumberOfSteps() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMaximumNumberOfSteps).toInt(); }
     void setMaximumNumberOfSteps(int steps);
 
     // minimum step
-    inline int getMaximumStep() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleMaximumStep).toInt(); }
+    inline int getMaximumStep() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMaximumStep).toInt(); }
     void setMaximumStep(int step);
 
     // reflection on different material
-    inline bool getReflectOnDifferentMaterial() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleReflectOnDifferentMaterial).toBool(); }
-    void setReflectOnDifferentMaterial(bool reflect) { Agros2D::problem()->setting()->setValue(ProblemSetting::View_ParticleReflectOnDifferentMaterial, reflect); }
+    inline bool getReflectOnDifferentMaterial() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleReflectOnDifferentMaterial).toBool(); }
+    void setReflectOnDifferentMaterial(bool reflect) { Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleReflectOnDifferentMaterial, reflect); }
 
     // reflection on boundary
-    inline bool getReflectOnBoundary() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleReflectOnBoundary).toBool(); }
-    void setReflectOnBoundary(bool reflect) { Agros2D::problem()->setting()->setValue(ProblemSetting::View_ParticleReflectOnBoundary, reflect); }
+    inline bool getReflectOnBoundary() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleReflectOnBoundary).toBool(); }
+    void setReflectOnBoundary(bool reflect) { Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleReflectOnBoundary, reflect); }
 
     // coefficient of restitution
-    inline double getCoefficientOfRestitution() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleCoefficientOfRestitution).toDouble(); }
+    inline double getCoefficientOfRestitution() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCoefficientOfRestitution).toDouble(); }
     void setCoefficientOfRestitution(double coeff);
 
     // collor by velocity
-    inline bool getColorByVelocity() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleColorByVelocity).toBool(); }
-    void setColorByVelocity(bool show) { Agros2D::problem()->setting()->setValue(ProblemSetting::View_ParticleColorByVelocity, show); }
+    inline bool getColorByVelocity() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleColorByVelocity).toBool(); }
+    void setColorByVelocity(bool show) { Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleColorByVelocity, show); }
 
     // show points
-    inline bool getShowPoints() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleShowPoints).toBool(); }
-    void setShowPoints(bool show) { Agros2D::problem()->setting()->setValue(ProblemSetting::View_ParticleShowPoints, show); }
+    inline bool getShowPoints() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleShowPoints).toBool(); }
+    void setShowPoints(bool show) { Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleShowPoints, show); }
 
     // blended faces
-    inline bool getShowBlendedFaces() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleShowBlendedFaces).toBool(); }
-    void setShowBlendedFaces(bool show) { Agros2D::problem()->setting()->setValue(ProblemSetting::View_ParticleShowBlendedFaces, show); }
+    inline bool getShowBlendedFaces() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleShowBlendedFaces).toBool(); }
+    void setShowBlendedFaces(bool show) { Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleShowBlendedFaces, show); }
 
     // multiple show particles
-    inline int getNumShowParticlesAxi() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleNumShowParticlesAxi).toInt(); }
+    inline int getNumShowParticlesAxi() const { return Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleNumShowParticlesAxi).toInt(); }
     void setNumShowParticlesAxi(int particles);
 
     // solve

@@ -24,8 +24,8 @@
 #include "solver/field.h"
 #include "solver/problem.h"
 
-Marker::Marker(const FieldInfo *fieldInfo, QString name)
-    : m_fieldInfo(fieldInfo), m_name(name), m_isNone(false)
+Marker::Marker(Scene *scene, const FieldInfo *fieldInfo, QString name)
+    : m_scene(scene), m_fieldInfo(fieldInfo), m_name(name), m_isNone(false)
 {
 }
 
@@ -131,8 +131,8 @@ QString Marker::fieldId()
     return m_fieldInfo->fieldId();
 }
 
-Boundary::Boundary(const FieldInfo *fieldInfo, QString name, QString type,
-                   QMap<QString, Value> values) : Marker(fieldInfo, name)
+Boundary::Boundary(Scene *scene, const FieldInfo *fieldInfo, QString name, QString type,
+                   QMap<QString, Value> values) : Marker(scene, fieldInfo, name)
 {
     // type
     setType(type);
@@ -158,8 +158,8 @@ Boundary::Boundary(const FieldInfo *fieldInfo, QString name, QString type,
     }
 }
 
-Material::Material(const FieldInfo *fieldInfo, QString name,
-                   QMap<QString, Value> values) : Marker(fieldInfo, name)
+Material::Material(Scene *scene, const FieldInfo *fieldInfo, QString name,
+                   QMap<QString, Value> values) : Marker(scene, fieldInfo, name)
 {
     // set values
     foreach(QString id, values.keys())

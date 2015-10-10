@@ -48,23 +48,23 @@ ParticleTracingForce::ParticleTracingForce(ParticleTracing *particleTracing)
 
 Point3 ParticleTracingForceCustom::force(int particleIndex, const Point3 &position, const Point3 &velocity)
 {
-    return Point3(Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleCustomForceX).toDouble(),
-                  Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleCustomForceY).toDouble(),
-                  Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleCustomForceZ).toDouble());
+    return Point3(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCustomForceX).toDouble(),
+                  Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCustomForceY).toDouble(),
+                  Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCustomForceZ).toDouble());
 }
 
 Point3 ParticleTracingForceDrag::force(int particleIndex, const Point3 &position, const Point3 &velocity)
 {
-    Point3 velocityReal = (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar) ?
+    Point3 velocityReal = (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar) ?
                 velocity : Point3(velocity.x, velocity.y, position.x * velocity.z);
 
     Point3 forceDrag;
     if (velocityReal.magnitude() > 0.0)
         forceDrag = velocityReal.normalizePoint() *
-                - 0.5 * Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleDragDensity).toDouble()
+                - 0.5 * Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleDragDensity).toDouble()
                 * velocityReal.magnitude() * velocityReal.magnitude()
-                * Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleDragCoefficient).toDouble()
-                * Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleDragReferenceArea).toDouble();
+                * Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleDragCoefficient).toDouble()
+                * Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleDragReferenceArea).toDouble();
 
     return forceDrag;
 }
@@ -73,7 +73,7 @@ ParticleTracingForceField::ParticleTracingForceField(ParticleTracing *particleTr
                                                      QList<double> particleChargesList)
     : ParticleTracingForce(particleTracing), m_particleChargesList(particleChargesList)
 {
-    foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
+    foreach (FieldInfo* fieldInfo, Agros2D::computation()->fieldInfos())
     {
         int timeStep = Agros2D::solutionStore()->lastTimeStep(fieldInfo);
         int adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, timeStep);
@@ -86,7 +86,7 @@ Point3 ParticleTracingForceField::force(int particleIndex, const Point3 &positio
 {
     Point3 totalFieldForce;
 
-    foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
+    foreach (FieldInfo* fieldInfo, Agros2D::computation()->fieldInfos())
     {
         if (!m_forceValue[fieldInfo]->hasForce())
             continue;
@@ -121,8 +121,8 @@ Point3 ParticleTracingForceFieldP2P::force(int particleIndex, const Point3 &posi
     Point3 forceP2PElectric;
     Point3 forceP2PMagnetic;
 
-    if (Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleP2PElectricForce).toBool() ||
-            Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleP2PMagneticForce).toBool())
+    if (Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleP2PElectricForce).toBool() ||
+            Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleP2PMagneticForce).toBool())
     {
         for (int i = 0; i < m_particleTracing->positions().size(); i++)
         {
@@ -134,7 +134,7 @@ Point3 ParticleTracingForceFieldP2P::force(int particleIndex, const Point3 &posi
             Point3 particleVelocity = m_particleTracing->velocities()[i].at(timeLevel);
 
             double distance = 0.0;
-            if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar)
+            if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar)
                 distance = Point3(position.x - particlePosition.x,
                                   position.y - particlePosition.y,
                                   position.z - particlePosition.z).magnitude();
@@ -145,9 +145,9 @@ Point3 ParticleTracingForceFieldP2P::force(int particleIndex, const Point3 &posi
 
             if (distance > 0)
             {
-                if (Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleP2PElectricForce).toBool())
+                if (Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleP2PElectricForce).toBool())
                 {
-                    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar)
+                    if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar)
                         forceP2PElectric = forceP2PElectric + Point3(
                                     (position.x - particlePosition.x) / distance,
                                     (position.y - particlePosition.y) / distance,
@@ -160,10 +160,10 @@ Point3 ParticleTracingForceFieldP2P::force(int particleIndex, const Point3 &posi
                                     (position.x * sin(position.z) - particlePosition.x * sin(particlePosition.z)) / distance)
                                 * (m_particleChargesList[particleIndex] * m_particleChargesList[i] / (4 * M_PI * EPS0 * distance * distance));
                 }
-                if (Agros2D::problem()->setting()->value(ProblemSetting::View_ParticleP2PMagneticForce).toBool())
+                if (Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleP2PMagneticForce).toBool())
                 {
                     Point3 r0, v0;
-                    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar)
+                    if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar)
                     {
                         r0 = Point3((position.x - particlePosition.x) / distance,
                                     (position.y - particlePosition.y) / distance,

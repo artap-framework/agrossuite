@@ -59,7 +59,7 @@ public:
     class AGROS_LIBRARY_API AssembleBase
     {
     public:
-        AssembleBase(SolverDeal *solverDeal);
+        AssembleBase(SolverDeal *solverDeal, dealii::Triangulation<2> &triangulation);
 
         // current solution
         dealii::hp::DoFHandler<2> doFHandler;
@@ -170,7 +170,7 @@ public:
     inline void setCouplingSource(const QString &fieldID, MultiArray sourceSolution) { m_couplingSources[fieldID] = sourceSolution; }
 
     // assemble base class
-    virtual shared_ptr<SolverDeal::AssembleBase> createAssembleBase() = 0;
+    virtual shared_ptr<SolverDeal::AssembleBase> createAssembleBase(dealii::Triangulation<2> &triangulation) = 0;
 
     // assemble cache
     AssembleCache &assembleCache(tbb::tbb_thread::id thread_id, int dofs_per_cell, int n_q_points);

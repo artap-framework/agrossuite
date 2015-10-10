@@ -24,6 +24,7 @@
 #include "util/global.h"
 #include "solutiontypes.h"
 #include "scene.h"
+#include "problem.h"
 #include "solver.h"
 #include "linear_solver.h"
 
@@ -90,7 +91,7 @@ public:
 
         while (cell_second != this->m_doFHandler->end())
         {
-            if (!Agros2D::scene()->labels->at(cell_second->material_id() - 1)->marker(m_fieldInfo)->isNone())
+            if (!Agros2D::computation()->scene()->labels->at(cell_second->material_id() - 1)->marker(m_fieldInfo)->isNone())
                 break;
             else
             {

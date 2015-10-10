@@ -56,7 +56,7 @@ void {{CLASS}}SurfaceIntegral::calculate()
 {
     m_values.clear();
 
-    if (Agros2D::problem()->isSolved())
+    if (Agros2D::computation()->isSolved())
     {
         FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep);
         // check existence
@@ -66,9 +66,9 @@ void {{CLASS}}SurfaceIntegral::calculate()
         MultiArray ma = Agros2D::solutionStore()->multiArray(fsid);
 
         // update time functions
-        if (!Agros2D::problem()->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
+        if (!Agros2D::computation()->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
         {
-            Module::updateTimeFunctions(Agros2D::problem()->timeStepToTotalTime(m_timeStep));
+            Module::updateTimeFunctions(Agros2D::computation()->timeStepToTotalTime(m_timeStep));
         }
 
         // Gauss quadrature
@@ -78,9 +78,9 @@ void {{CLASS}}SurfaceIntegral::calculate()
 
         dealii::hp::FEFaceValues<2> hp_fe_face_values(ma.doFHandler()->get_fe(), face_quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values);
 
-        for (int iFace = 0; iFace < Agros2D::scene()->edges->count(); iFace++)
+        for (int iFace = 0; iFace < Agros2D::computation()->scene()->edges->count(); iFace++)
         {
-            SceneEdge *edge = Agros2D::scene()->edges->at(iFace);
+            SceneEdge *edge = Agros2D::computation()->scene()->edges->at(iFace);
             if (!edge->isSelected())
                 continue;
 
@@ -88,7 +88,7 @@ void {{CLASS}}SurfaceIntegral::calculate()
             dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(), endc_int = ma.doFHandler()->end();
             for (; cell_int != endc_int; ++cell_int)
             {
-                SceneLabel *label = Agros2D::scene()->labels->at(cell_int->material_id() - 1);
+                SceneLabel *label = Agros2D::computation()->scene()->labels->at(cell_int->material_id() - 1);
                 SceneMaterial *material = label->marker(m_fieldInfo);
 
                 {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
@@ -113,7 +113,7 @@ void {{CLASS}}SurfaceIntegral::calculate()
                         fe_values.get_function_gradients(ma.solution(), solution_grads);
 
                         {{#VARIABLE_SOURCE}}
-                        if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+                        if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::computation()->config()->coordinateType() == {{COORDINATE_TYPE}}))
                         {
                             for (unsigned int k = 0; k < n_face_q_points; ++k)
                             {

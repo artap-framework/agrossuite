@@ -103,7 +103,7 @@ void ResultsView::showPoint(const Point &point)
 
 void ResultsView::showPoint()
 {
-    if (!(Agros2D::problem()->isSolved() && m_postDeal->isProcessed()))
+    if (!(Agros2D::computation()->isSolved() && m_postDeal->isProcessed()))
     {
         showNotSolved();
         return;
@@ -116,15 +116,15 @@ void ResultsView::showPoint()
     localPointValues.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
     localPointValues.SetValue("LABEL", tr("Local point values").toStdString());
 
-    localPointValues.SetValue("LABELX", QString("<i>%1</i>").arg(Agros2D::problem()->config()->labelX().toLower()).toStdString());
-    localPointValues.SetValue("LABELY", QString("<i>%1</i>").arg(Agros2D::problem()->config()->labelY().toLower()).toStdString());
+    localPointValues.SetValue("LABELX", QString("<i>%1</i>").arg(Agros2D::computation()->config()->labelX().toLower()).toStdString());
+    localPointValues.SetValue("LABELY", QString("<i>%1</i>").arg(Agros2D::computation()->config()->labelY().toLower()).toStdString());
     localPointValues.SetValue("POINTX", (QString("%1").arg(m_point.x, 0, 'e', 3)).toStdString());
     localPointValues.SetValue("POINTY", (QString("%1").arg(m_point.y, 0, 'e', 3)).toStdString());
     localPointValues.SetValue("POINT_UNIT", "m");
     localPointValues.SetValue("LABELTIME", QString("<i>t</i>").toStdString());
-    localPointValues.SetValue("TIME", (QString("%1").arg(Agros2D::problem()->timeStepToTotalTime(m_postDeal->activeTimeStep()), 0, 'e', 3)).toStdString());
+    localPointValues.SetValue("TIME", (QString("%1").arg(Agros2D::computation()->timeStepToTotalTime(m_postDeal->activeTimeStep()), 0, 'e', 3)).toStdString());
 
-    foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+    foreach (FieldInfo *fieldInfo, Agros2D::computation()->fieldInfos())
     {
         std::shared_ptr<LocalValue> value = fieldInfo->plugin()->localValue(fieldInfo,
                                                                             m_postDeal->activeTimeStep(),
@@ -158,12 +158,12 @@ void ResultsView::showPoint()
                     itemMagnitude->SetValue("UNIT", variable.unitHtml().toStdString());
                     ctemplate::TemplateDictionary *itemX = field->AddSectionDictionary("ITEM");
                     itemX->SetValue("SHORTNAME", variable.shortnameHtml().toStdString());
-                    itemX->SetValue("PART", Agros2D::problem()->config()->labelX().toLower().toStdString());
+                    itemX->SetValue("PART", Agros2D::computation()->config()->labelX().toLower().toStdString());
                     itemX->SetValue("VALUE", QString("%1").arg(values[variable.id()].vector.x, 0, 'e', 3).toStdString());
                     itemX->SetValue("UNIT", variable.unitHtml().toStdString());
                     ctemplate::TemplateDictionary *itemY = field->AddSectionDictionary("ITEM");
                     itemY->SetValue("SHORTNAME", variable.shortnameHtml().toStdString());
-                    itemY->SetValue("PART", Agros2D::problem()->config()->labelY().toLower().toStdString());
+                    itemY->SetValue("PART", Agros2D::computation()->config()->labelY().toLower().toStdString());
                     itemY->SetValue("VALUE", QString("%1").arg(values[variable.id()].vector.y, 0, 'e', 3).toStdString());
                     itemY->SetValue("UNIT", variable.unitHtml().toStdString());
                 }
@@ -178,7 +178,7 @@ void ResultsView::showPoint()
 
 void ResultsView::showVolumeIntegral()
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
     {
         showNotSolved();
         return;
@@ -192,9 +192,9 @@ void ResultsView::showVolumeIntegral()
     volumeIntegrals.SetValue("LABEL", tr("Volume integrals").toStdString());
 
     volumeIntegrals.SetValue("LABELTIME", QString("<i>t</i>").toStdString());
-    volumeIntegrals.SetValue("TIME", (QString("%1").arg(Agros2D::problem()->timeStepToTotalTime(m_postDeal->activeTimeStep()), 0, 'e', 3)).toStdString());
+    volumeIntegrals.SetValue("TIME", (QString("%1").arg(Agros2D::computation()->timeStepToTotalTime(m_postDeal->activeTimeStep()), 0, 'e', 3)).toStdString());
 
-    foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+    foreach (FieldInfo *fieldInfo, Agros2D::computation()->fieldInfos())
     {
         std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->volumeIntegral(fieldInfo,
                                                                                       m_postDeal->activeTimeStep(),
@@ -223,7 +223,7 @@ void ResultsView::showVolumeIntegral()
 
 void ResultsView::showSurfaceIntegral()
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
     {
         showNotSolved();
         return;
@@ -237,9 +237,9 @@ void ResultsView::showSurfaceIntegral()
     surfaceIntegrals.SetValue("LABEL", tr("Surface integrals").toStdString());
 
     surfaceIntegrals.SetValue("LABELTIME", QString("<i>t</i>").toStdString());
-    surfaceIntegrals.SetValue("TIME", (QString("%1").arg(Agros2D::problem()->timeStepToTotalTime(m_postDeal->activeTimeStep()), 0, 'e', 3)).toStdString());
+    surfaceIntegrals.SetValue("TIME", (QString("%1").arg(Agros2D::computation()->timeStepToTotalTime(m_postDeal->activeTimeStep()), 0, 'e', 3)).toStdString());
 
-    foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+    foreach (FieldInfo *fieldInfo, Agros2D::computation()->fieldInfos())
     {
         std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->surfaceIntegral(fieldInfo,
                                                                                        m_postDeal->activeTimeStep(),
@@ -300,8 +300,8 @@ LocalPointValueDialog::LocalPointValueDialog(Point point, QWidget *parent) : QDi
     connect(txtPointY, SIGNAL(evaluated(bool)), this, SLOT(evaluated(bool)));
 
     QFormLayout *layoutPoint = new QFormLayout();
-    layoutPoint->addRow(Agros2D::problem()->config()->labelX() + " (m):", txtPointX);
-    layoutPoint->addRow(Agros2D::problem()->config()->labelY() + " (m):", txtPointY);
+    layoutPoint->addRow(Agros2D::computation()->config()->labelX() + " (m):", txtPointX);
+    layoutPoint->addRow(Agros2D::computation()->config()->labelY() + " (m):", txtPointY);
 
     // dialog buttons
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);

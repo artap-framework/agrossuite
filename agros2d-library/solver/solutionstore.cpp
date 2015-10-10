@@ -37,15 +37,8 @@
 
 #include "../../resources_source/classes/structure_xml.h"
 
-void SolutionStore::printDebugCacheStatus()
+SolutionStore::SolutionStore()
 {
-    assert(m_multiSolutionCacheIDOrder.size() == m_multiSolutionDealCache.keys().size());
-    qDebug() << "solution store cache status:";
-    foreach(FieldSolutionID fsid, m_multiSolutionCacheIDOrder)
-    {
-        assert(m_multiSolutionDealCache.keys().contains(fsid));
-        qDebug() << fsid.toString();
-    }
 }
 
 SolutionStore::~SolutionStore()
@@ -55,8 +48,9 @@ SolutionStore::~SolutionStore()
 
 QString SolutionStore::baseStoreFileName(FieldSolutionID solutionID) const
 {
-    QString fn = QString("%1/%2").
+    QString fn = QString("%1/%2/%3").
             arg(cacheProblemDir()).
+            arg(Agros2D::computation()->problemDir()).
             arg(solutionID.toString());
 
     return fn;
@@ -69,9 +63,14 @@ void SolutionStore::clearAll()
         removeSolution(sid, false);
 
     // remove runtime
-    QString fn = QString("%1/runtime.xml").arg(cacheProblemDir());
-    if (QFile::exists(fn))
-        QFile::remove(fn);
+    if (Agros2D::computation())
+    {
+        QString fn = QString("%1/%2/runtime.xml").
+                arg(cacheProblemDir()).
+                arg(Agros2D::computation()->problemDir());
+        if (QFile::exists(fn))
+            QFile::remove(fn);
+    }
 
     assert(m_multiSolutions.isEmpty());
     assert(m_multiSolutionRunTimeDetails.isEmpty());
@@ -112,7 +111,7 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
         // new multisolution
         MultiArray msa(&triangulation, &doFHandler, solution);
 
-        insertMultiSolutionToCache(solutionID, msa);        
+        insertMultiSolutionToCache(solutionID, msa);
     }
 
     return m_multiSolutionDealCache[solutionID];
@@ -186,7 +185,8 @@ void SolutionStore::removeSolution(FieldSolutionID solutionID, bool saveRunTime)
     }
 
     // remove old files
-    QFileInfo info(Agros2D::problem()->config()->fileName());
+    /*
+    QFileInfo info(Agros2D::computation()->config()->fileName());
     if (info.exists())
     {
         QString fn = baseStoreFileName(solutionID);
@@ -206,6 +206,7 @@ void SolutionStore::removeSolution(FieldSolutionID solutionID, bool saveRunTime)
                 QFile::remove(fnSolution);
         }
     }
+    */
 
     // save structure to the file
     if (saveRunTime)
@@ -282,7 +283,9 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, Multi
 
 void SolutionStore::loadRunTimeDetails()
 {
-    QString fn = QString("%1/runtime.xml").arg(cacheProblemDir());
+    QString fn = QString("%1/%2/runtime.xml").
+            arg(cacheProblemDir()).
+            arg(Agros2D::computation()->problemDir());
 
     try
     {
@@ -295,10 +298,10 @@ void SolutionStore::loadRunTimeDetails()
             XMLStructure::element_data data = structure->element_data().at(i);
 
             // check field
-            if (!Agros2D::problem()->hasField(QString::fromStdString(data.field_id())))
+            if (!Agros2D::computation()->hasField(QString::fromStdString(data.field_id())))
                 throw AgrosException(QObject::tr("Field '%1' info mismatch.").arg(QString::fromStdString(data.field_id())));
 
-            FieldSolutionID solutionID(Agros2D::problem()->fieldInfo(QString::fromStdString(data.field_id())),
+            FieldSolutionID solutionID(Agros2D::computation()->fieldInfo(QString::fromStdString(data.field_id())),
                                        data.time_step(),
                                        data.adaptivity_step());
             // append multisolution
@@ -309,7 +312,7 @@ void SolutionStore::loadRunTimeDetails()
             {
                 // new time step
                 time_step = data.time_step();
-                Agros2D::problem()->setActualTimeStepLength(data.time_step_length().get());
+                Agros2D::computation()->setActualTimeStepLength(data.time_step_length().get());
             }
 
             SolutionRunTimeDetails::FileName fileNames;
@@ -339,7 +342,9 @@ void SolutionStore::loadRunTimeDetails()
 
 void SolutionStore::saveRunTimeDetails()
 {
-    QString fn = QString("%1/runtime.xml").arg(cacheProblemDir());
+    QString fn = QString("%1/%2/runtime.xml").
+            arg(cacheProblemDir()).
+            arg(Agros2D::computation()->problemDir());
 
     try
     {
@@ -410,5 +415,16 @@ void SolutionStore::multiSolutionRunTimeDetailReplace(FieldSolutionID solutionID
 
     // save structure to the file
     saveRunTimeDetails();
+}
+
+void SolutionStore::printDebugCacheStatus()
+{
+    assert(m_multiSolutionCacheIDOrder.size() == m_multiSolutionDealCache.keys().size());
+    qDebug() << "solution store cache status:";
+    foreach(FieldSolutionID fsid, m_multiSolutionCacheIDOrder)
+    {
+        assert(m_multiSolutionDealCache.keys().contains(fsid));
+        qDebug() << fsid.toString();
+    }
 }
 

@@ -43,9 +43,9 @@ class PyGeometry
         int addLabel(double x, double y, double area, const map<std::string, int> &refinements,
                      const map<std::string, int> &orders, const map<std::string, std::string> &materials);
 
-        inline int nodesCount() const { return Agros2D::scene()->nodes->count(); }
-        inline int edgesCount() const { return Agros2D::scene()->edges->count(); }
-        inline int labelsCount() const { return Agros2D::scene()->labels->count(); }
+        int nodesCount() const;
+        int edgesCount() const;
+        int labelsCount() const;
 
         // modify operations
         void modifyEdge(int index, double angle, int segments, int isCurvilinear, const map<std::string, int> &refinements,

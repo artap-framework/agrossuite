@@ -117,7 +117,6 @@ void MeshGeneratorTriangleExternal::meshTriangleCreated(int exitCode)
         else
         {
             m_isError = true;
-            QFile::remove(Agros2D::problem()->config()->fileName() + ".msh");
         }
     }
     else
@@ -135,14 +134,14 @@ void MeshGeneratorTriangleExternal::meshTriangleCreated(int exitCode)
 bool MeshGeneratorTriangleExternal::writeToTriangle()
 {
     // basic check
-    if (Agros2D::scene()->nodes->length() < 3)
+    if (Agros2D::computation()->scene()->nodes->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(Agros2D::scene()->nodes->length()));
+        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(Agros2D::computation()->scene()->nodes->length()));
         return false;
     }
-    if (Agros2D::scene()->edges->length() < 3)
+    if (Agros2D::computation()->scene()->edges->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(Agros2D::scene()->edges->length()));
+        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(Agros2D::computation()->scene()->edges->length()));
         return false;
     }
 
@@ -163,12 +162,12 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
     // nodes
     QString outNodes;
     int nodesCount = 0;
-    for (int i = 0; i < Agros2D::scene()->nodes->length(); i++)
+    for (int i = 0; i < Agros2D::computation()->scene()->nodes->length(); i++)
     {
         outNodes += QString("%1  %2  %3  %4\n").
                 arg(i).
-                arg(Agros2D::scene()->nodes->at(i)->point().x, 0, 'f', 10).
-                arg(Agros2D::scene()->nodes->at(i)->point().y, 0, 'f', 10).
+                arg(Agros2D::computation()->scene()->nodes->at(i)->point().x, 0, 'f', 10).
+                arg(Agros2D::computation()->scene()->nodes->at(i)->point().y, 0, 'f', 10).
                 arg(0);
         nodesCount++;
     }
@@ -176,15 +175,15 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
     // edges
     QString outEdges;
     int edgesCount = 0;
-    for (int i = 0; i < Agros2D::scene()->edges->length(); i++)
+    for (int i = 0; i < Agros2D::computation()->scene()->edges->length(); i++)
     {
-        if (Agros2D::scene()->edges->at(i)->angle() == 0)
+        if (Agros2D::computation()->scene()->edges->at(i)->angle() == 0)
         {
             // line
             outEdges += QString("%1  %2  %3  %4\n").
                     arg(edgesCount).
-                    arg(Agros2D::scene()->nodes->items().indexOf(Agros2D::scene()->edges->at(i)->nodeStart())).
-                    arg(Agros2D::scene()->nodes->items().indexOf(Agros2D::scene()->edges->at(i)->nodeEnd())).
+                    arg(Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeStart())).
+                    arg(Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeEnd())).
                     arg(i+1);
             edgesCount++;
         }
@@ -192,13 +191,13 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
         {
             // arc
             // add pseudo nodes
-            Point center = Agros2D::scene()->edges->at(i)->center();
-            double radius = Agros2D::scene()->edges->at(i)->radius();
-            double startAngle = atan2(center.y - Agros2D::scene()->edges->at(i)->nodeStart()->point().y,
-                                      center.x - Agros2D::scene()->edges->at(i)->nodeStart()->point().x) - M_PI;
+            Point center = Agros2D::computation()->scene()->edges->at(i)->center();
+            double radius = Agros2D::computation()->scene()->edges->at(i)->radius();
+            double startAngle = atan2(center.y - Agros2D::computation()->scene()->edges->at(i)->nodeStart()->point().y,
+                                      center.x - Agros2D::computation()->scene()->edges->at(i)->nodeStart()->point().x) - M_PI;
 
-            int segments = Agros2D::scene()->edges->at(i)->segments();
-            double theta = deg2rad(Agros2D::scene()->edges->at(i)->angle()) / double(segments);
+            int segments = Agros2D::computation()->scene()->edges->at(i)->segments();
+            double theta = deg2rad(Agros2D::computation()->scene()->edges->at(i)->angle()) / double(segments);
 
             int nodeStartIndex = 0;
             int nodeEndIndex = 0;
@@ -212,12 +211,12 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
                 nodeEndIndex = nodesCount+1;
                 if (j == 0)
                 {
-                    nodeStartIndex = Agros2D::scene()->nodes->items().indexOf(Agros2D::scene()->edges->at(i)->nodeStart());
+                    nodeStartIndex = Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeStart());
                     nodeEndIndex = nodesCount;
                 }
                 if (j == segments - 1)
                 {
-                    nodeEndIndex = Agros2D::scene()->nodes->items().indexOf(Agros2D::scene()->edges->at(i)->nodeEnd());
+                    nodeEndIndex = Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeEnd());
                 }
                 if ((j > 0) && (j < segments))
                 {
@@ -241,19 +240,19 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
 
     // holes
     int holesCount = 0;
-    foreach (SceneLabel *label, Agros2D::scene()->labels->items())
+    foreach (SceneLabel *label, Agros2D::computation()->scene()->labels->items())
         if (label->markersCount() == 0)
             holesCount++;
 
     QString outHoles = QString("%1\n").arg(holesCount);
     holesCount = 0;
-    foreach (SceneLabel *label, Agros2D::scene()->labels->items())
+    foreach (SceneLabel *label, Agros2D::computation()->scene()->labels->items())
     {
         if (label->markersCount() == 0)
         {
             outHoles += QString("%1  %2  %3\n").
                     arg(holesCount).
-                    // arg(Agros2D::scene()->labels->items().indexOf(label) + 1).
+                    // arg(Agros2D::problem()->scene()->labels->items().indexOf(label) + 1).
                     arg(label->point().x, 0, 'f', 10).
                     arg(label->point().y, 0, 'f', 10);
 
@@ -264,7 +263,7 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
     // labels
     QString outLabels;
     int labelsCount = 0;
-    foreach (SceneLabel *label, Agros2D::scene()->labels->items())
+    foreach (SceneLabel *label, Agros2D::computation()->scene()->labels->items())
     {
         if (label->markersCount() > 0)
         {
@@ -273,14 +272,14 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
                     arg(label->point().x, 0, 'f', 10).
                     arg(label->point().y, 0, 'f', 10).
                     // arg(labelsCount + 1). // triangle returns zero region number for areas without marker, markers must start from 1
-                    arg(Agros2D::scene()->labels->items().indexOf(label) + 1).
+                    arg(Agros2D::computation()->scene()->labels->items().indexOf(label) + 1).
                     arg(label->area());
             labelsCount++;
         }
     }
 
     outNodes.insert(0, QString("%1 2 0 1\n").
-                    arg(nodesCount)); // + additional Agros2D::scene()->nodes
+                    arg(nodesCount)); // + additional Agros2D::problem()->scene()->nodes
     out << outNodes;
     outEdges.insert(0, QString("%1 1\n").
                     arg(edgesCount)); // + additional edges
@@ -363,7 +362,7 @@ bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
 
         if (parsedLine.at(3).toInt() > 0)
         {
-            SceneEdge* sceneEdge = Agros2D::scene()->edges->at(parsedLine.at(3).toInt() - 1);
+            SceneEdge* sceneEdge = Agros2D::computation()->scene()->edges->at(parsedLine.at(3).toInt() - 1);
 
             if (sceneEdge->angle() > 0.0 && sceneEdge->isCurvilinear())
             {
@@ -530,7 +529,6 @@ bool MeshGeneratorTriangle::mesh()
         if (!readTriangleMeshFormat())
         {
             m_isError = true;
-            QFile::remove(Agros2D::problem()->config()->fileName() + ".msh");
         }
     }
     else
@@ -544,14 +542,14 @@ bool MeshGeneratorTriangle::mesh()
 bool MeshGeneratorTriangle::writeToTriangle()
 {
     // basic check
-    if (Agros2D::scene()->nodes->length() < 3)
+    if (Agros2D::computation()->scene()->nodes->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(Agros2D::scene()->nodes->length()));
+        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(Agros2D::computation()->scene()->nodes->length()));
         return false;
     }
-    if (Agros2D::scene()->edges->length() < 3)
+    if (Agros2D::computation()->scene()->edges->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(Agros2D::scene()->edges->length()));
+        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(Agros2D::computation()->scene()->edges->length()));
         return false;
     }
 
@@ -560,11 +558,11 @@ bool MeshGeneratorTriangle::writeToTriangle()
     // nodes
     QList<MeshNode> inNodes;
     int nodesCount = 0;
-    for (int i = 0; i<Agros2D::scene()->nodes->length(); i++)
+    for (int i = 0; i<Agros2D::computation()->scene()->nodes->length(); i++)
     {
         inNodes.append(MeshNode(i,
-                                Agros2D::scene()->nodes->at(i)->point().x,
-                                Agros2D::scene()->nodes->at(i)->point().y,
+                                Agros2D::computation()->scene()->nodes->at(i)->point().x,
+                                Agros2D::computation()->scene()->nodes->at(i)->point().y,
                                 0));
         nodesCount++;
     }
@@ -572,12 +570,12 @@ bool MeshGeneratorTriangle::writeToTriangle()
     // edges
     QList<MeshEdge> inEdges;
     int edgesCount = 0;
-    for (int i = 0; i<Agros2D::scene()->edges->length(); i++)
+    for (int i = 0; i<Agros2D::computation()->scene()->edges->length(); i++)
     {
-        if (Agros2D::scene()->edges->at(i)->angle() == 0)
+        if (Agros2D::computation()->scene()->edges->at(i)->angle() == 0)
         {
-            inEdges.append(MeshEdge(Agros2D::scene()->nodes->items().indexOf(Agros2D::scene()->edges->at(i)->nodeStart()),
-                                    Agros2D::scene()->nodes->items().indexOf(Agros2D::scene()->edges->at(i)->nodeEnd()),
+            inEdges.append(MeshEdge(Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeStart()),
+                                    Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeEnd()),
                                     i+1));
 
             edgesCount++;
@@ -586,14 +584,14 @@ bool MeshGeneratorTriangle::writeToTriangle()
         {
             // arc
             // add pseudo nodes
-            Point center = Agros2D::scene()->edges->at(i)->center();
-            double radius = Agros2D::scene()->edges->at(i)->radius();
-            double startAngle = atan2(center.y - Agros2D::scene()->edges->at(i)->nodeStart()->point().y,
-                                      center.x - Agros2D::scene()->edges->at(i)->nodeStart()->point().x) - M_PI;
+            Point center = Agros2D::computation()->scene()->edges->at(i)->center();
+            double radius = Agros2D::computation()->scene()->edges->at(i)->radius();
+            double startAngle = atan2(center.y - Agros2D::computation()->scene()->edges->at(i)->nodeStart()->point().y,
+                                      center.x - Agros2D::computation()->scene()->edges->at(i)->nodeStart()->point().x) - M_PI;
 
             // TODO: REMOVE MULTIPLICATION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            int segments = Agros2D::scene()->edges->at(i)->segments() * 1; // TODO: REMOVE MULTIPLICATION
-            double theta = deg2rad(Agros2D::scene()->edges->at(i)->angle()) / double(segments);
+            int segments = Agros2D::computation()->scene()->edges->at(i)->segments() * 1; // TODO: REMOVE MULTIPLICATION
+            double theta = deg2rad(Agros2D::computation()->scene()->edges->at(i)->angle()) / double(segments);
 
             int nodeStartIndex = 0;
             int nodeEndIndex = 0;
@@ -607,12 +605,12 @@ bool MeshGeneratorTriangle::writeToTriangle()
                 nodeEndIndex = nodesCount + 1;
                 if (j == 0)
                 {
-                    nodeStartIndex = Agros2D::scene()->nodes->items().indexOf(Agros2D::scene()->edges->at(i)->nodeStart());
+                    nodeStartIndex = Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeStart());
                     nodeEndIndex = nodesCount;
                 }
                 if (j == segments - 1)
                 {
-                    nodeEndIndex = Agros2D::scene()->nodes->items().indexOf(Agros2D::scene()->edges->at(i)->nodeEnd());
+                    nodeEndIndex = Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeEnd());
                 }
                 if ((j > 0) && (j < segments))
                 {
@@ -639,14 +637,14 @@ bool MeshGeneratorTriangle::writeToTriangle()
     int labelsCount = 0;
     QList<MeshNode> inHoles;
     int holesCount = 0;
-    foreach (SceneLabel *label, Agros2D::scene()->labels->items())
+    foreach (SceneLabel *label, Agros2D::computation()->scene()->labels->items())
     {
         if (label->markersCount() > 0)
         {
             inLabels.append(MeshLabel(labelsCount,
                                       label->point().x,
                                       label->point().y,
-                                      Agros2D::scene()->labels->items().indexOf(label) + 1,
+                                      Agros2D::computation()->scene()->labels->items().indexOf(label) + 1,
                                       label->area()));
             labelsCount++;
         }
@@ -790,7 +788,7 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
 
         if (triOut.edgemarkerlist[i] > 0)
         {
-            SceneEdge* sceneEdge = Agros2D::scene()->edges->at(triOut.edgemarkerlist[i] - 1);
+            SceneEdge* sceneEdge = Agros2D::computation()->scene()->edges->at(triOut.edgemarkerlist[i] - 1);
 
             if (sceneEdge->angle() > 0.0 && sceneEdge->isCurvilinear())
             {

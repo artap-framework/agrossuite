@@ -29,20 +29,20 @@ struct PyViewClass
 {
     inline int getBoolParameter(const std::string &parameter)
     {
-        ProblemSetting::Type type = Agros2D::problem()->setting()->stringKeyToType(QString::fromStdString(parameter));
-        return Agros2D::problem()->setting()->value(type).toBool();
+        ProblemSetting::Type type = Agros2D::preprocessor()->setting()->stringKeyToType(QString::fromStdString(parameter));
+        return Agros2D::preprocessor()->setting()->value(type).toBool();
     }
 
     inline int getIntParameter(const std::string &parameter)
     {
-        ProblemSetting::Type type = Agros2D::problem()->setting()->stringKeyToType(QString::fromStdString(parameter));
-        return Agros2D::problem()->setting()->value(type).toInt();
+        ProblemSetting::Type type = Agros2D::preprocessor()->setting()->stringKeyToType(QString::fromStdString(parameter));
+        return Agros2D::preprocessor()->setting()->value(type).toInt();
     }
 
     inline double getDoubleParameter(const std::string &parameter)
     {
-        ProblemSetting::Type type = Agros2D::problem()->setting()->stringKeyToType(QString::fromStdString(parameter));
-        return Agros2D::problem()->setting()->value(type).toDouble();
+        ProblemSetting::Type type = Agros2D::preprocessor()->setting()->stringKeyToType(QString::fromStdString(parameter));
+        return Agros2D::preprocessor()->setting()->value(type).toDouble();
     }
 };
 
@@ -65,10 +65,10 @@ struct PyViewConfig : PyViewClass
     template <typename Type>
     void setParameter(const std::string &parameter, Type value)
     {
-        ProblemSetting::Type type = Agros2D::problem()->setting()->stringKeyToType(QString::fromStdString(parameter));
+        ProblemSetting::Type type = Agros2D::preprocessor()->setting()->stringKeyToType(QString::fromStdString(parameter));
 
         if (!silentMode())
-            Agros2D::problem()->setting()->setValue(type, value);
+            Agros2D::preprocessor()->setting()->setValue(type, value);
     }
 
     // fonts
@@ -105,10 +105,10 @@ struct PyViewMesh : PyViewMeshAndPost
     void setParameter(const std::string &parameter, Type value)
     {
         checkExistingMesh();
-        ProblemSetting::Type type = Agros2D::problem()->setting()->stringKeyToType(QString::fromStdString(parameter));
+        ProblemSetting::Type type = Agros2D::preprocessor()->setting()->stringKeyToType(QString::fromStdString(parameter));
 
         if (!silentMode())
-            Agros2D::problem()->setting()->setValue(type, value);
+            Agros2D::preprocessor()->setting()->setValue(type, value);
     }
 
     void checkExistingMesh();
@@ -126,25 +126,25 @@ struct PyViewMesh : PyViewMeshAndPost
 
     // initial mesh
     void setInitialMeshViewShow(bool show) { setProblemSetting(ProblemSetting::View_ShowInitialMeshView, show); }
-    inline bool getInitialMeshViewShow() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ShowInitialMeshView).toBool(); }
+    inline bool getInitialMeshViewShow() const { return Agros2D::preprocessor()->setting()->value(ProblemSetting::View_ShowInitialMeshView).toBool(); }
 
     // solution mesh
     void setSolutionMeshViewShow(bool show) { setProblemSetting(ProblemSetting::View_ShowSolutionMeshView, show); }
-    inline bool getSolutionMeshViewShow() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ShowSolutionMeshView).toBool(); }
+    inline bool getSolutionMeshViewShow() const { return Agros2D::preprocessor()->setting()->value(ProblemSetting::View_ShowSolutionMeshView).toBool(); }
 
     // polynomial order
     void setOrderViewShow(bool show) { setProblemSetting(ProblemSetting::View_ShowOrderView, show); }
-    inline bool getOrderViewShow() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ShowOrderView).toBool(); }
+    inline bool getOrderViewShow() const { return Agros2D::preprocessor()->setting()->value(ProblemSetting::View_ShowOrderView).toBool(); }
 
     // component
     void setComponent(int component);
-    inline int getComponent() { return Agros2D::problem()->setting()->value(ProblemSetting::View_OrderComponent).toInt(); }
+    inline int getComponent() { return Agros2D::preprocessor()->setting()->value(ProblemSetting::View_OrderComponent).toInt(); }
 
     // order pallete
     void setOrderViewPalette(const std::string & palette);
     inline std::string getOrderViewPalette() const
     {
-        return paletteOrderTypeToStringKey((PaletteOrderType) Agros2D::problem()->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt()).toStdString();
+        return paletteOrderTypeToStringKey((PaletteOrderType) Agros2D::preprocessor()->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt()).toStdString();
     }
 };
 
@@ -154,10 +154,10 @@ struct PyViewPost : PyViewMeshAndPost
     void setParameter(const std::string &parameter, Type value)
     {
         checkExistingSolution();
-        ProblemSetting::Type type = Agros2D::problem()->setting()->stringKeyToType(QString::fromStdString(parameter));
+        ProblemSetting::Type type = Agros2D::preprocessor()->setting()->stringKeyToType(QString::fromStdString(parameter));
 
         if (!silentMode())
-            Agros2D::problem()->setting()->setValue(type, value);
+            Agros2D::preprocessor()->setting()->setValue(type, value);
     }
 
     void checkExistingSolution();
@@ -172,18 +172,18 @@ struct PyViewPost : PyViewMeshAndPost
 
     // scalar view variable
     void setScalarViewVariable(const std::string &var);
-    inline std::string getScalarViewVariable() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarVariable).toString().toStdString(); }
+    inline std::string getScalarViewVariable() const { return Agros2D::preprocessor()->setting()->value(ProblemSetting::View_ScalarVariable).toString().toStdString(); }
     void setScalarViewVariableComp(const std::string &component);
     inline std::string getScalarViewVariableComp() const
     {
-        return physicFieldVariableCompToStringKey((PhysicFieldVariableComp) Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt()).toStdString();
+        return physicFieldVariableCompToStringKey((PhysicFieldVariableComp) Agros2D::preprocessor()->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt()).toStdString();
     }
 
     // scalar view palete
     void setScalarViewPalette(const std::string &palette);
     inline std::string getScalarViewPalette() const
     {
-        return paletteTypeToStringKey((PaletteType) Agros2D::problem()->setting()->value(ProblemSetting::View_PaletteType).toInt()).toStdString();
+        return paletteTypeToStringKey((PaletteType) Agros2D::preprocessor()->setting()->value(ProblemSetting::View_PaletteType).toInt()).toStdString();
     }
 };
 
@@ -194,32 +194,32 @@ struct PyViewPost2D : PyViewPost
 
     // scalar view
     void setScalarViewShow(bool show) { setProblemSetting(ProblemSetting::View_ShowScalarView, show); }
-    inline bool getScalarViewShow() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ShowScalarView).toBool(); }
+    inline bool getScalarViewShow() const { return Agros2D::preprocessor()->setting()->value(ProblemSetting::View_ShowScalarView).toBool(); }
     // vtk
     void exportScalarVTK(const std::string &fileName);
 
     // contour view
     void setContourShow(bool show) { setProblemSetting(ProblemSetting::View_ShowContourView, show); }
-    inline bool getContourShow() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ShowContourView).toBool(); }
+    inline bool getContourShow() const { return Agros2D::preprocessor()->setting()->value(ProblemSetting::View_ShowContourView).toBool(); }
     void setContourVariable(const std::string &var);
-    inline std::string getContourVariable() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ContourVariable).toString().toStdString(); }
+    inline std::string getContourVariable() const { return Agros2D::preprocessor()->setting()->value(ProblemSetting::View_ContourVariable).toString().toStdString(); }
     // vtk
     void exportContourVTK(const std::string &fileName);
 
     // vector view
     void setVectorShow(bool show) { setProblemSetting(ProblemSetting::View_ShowVectorView, show); }
-    inline bool getVectorShow() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_ShowVectorView).toBool(); }
+    inline bool getVectorShow() const { return Agros2D::preprocessor()->setting()->value(ProblemSetting::View_ShowVectorView).toBool(); }
     void setVectorVariable(const std::string &var);
-    inline std::string getVectorVariable() const { return Agros2D::problem()->setting()->value(ProblemSetting::View_VectorVariable).toString().toStdString(); }
+    inline std::string getVectorVariable() const { return Agros2D::preprocessor()->setting()->value(ProblemSetting::View_VectorVariable).toString().toStdString(); }
     void setVectorType(const std::string &type);
     inline std::string getVectorType() const
     {
-        return vectorTypeToStringKey((VectorType) Agros2D::problem()->setting()->value(ProblemSetting::View_VectorType).toInt()).toStdString();
+        return vectorTypeToStringKey((VectorType) Agros2D::preprocessor()->setting()->value(ProblemSetting::View_VectorType).toInt()).toStdString();
     }
     void setVectorCenter(const std::string &center);
     inline std::string getVectorCenter() const
     {
-        return vectorCenterToStringKey((VectorCenter) Agros2D::problem()->setting()->value(ProblemSetting::View_VectorCenter).toInt()).toStdString();
+        return vectorCenterToStringKey((VectorCenter) Agros2D::preprocessor()->setting()->value(ProblemSetting::View_VectorCenter).toInt()).toStdString();
     }
 };
 
@@ -232,7 +232,7 @@ struct PyViewPost3D : PyViewPost
     void setPost3DMode(const std::string &mode);
     inline std::string getPost3DMode() const
     {
-        return sceneViewPost3DModeToStringKey((SceneViewPost3DMode) Agros2D::problem()->setting()->value(ProblemSetting::View_ScalarView3DMode).toInt()).toStdString();
+        return sceneViewPost3DModeToStringKey((SceneViewPost3DMode) Agros2D::preprocessor()->setting()->value(ProblemSetting::View_ScalarView3DMode).toInt()).toStdString();
     }
 
 };

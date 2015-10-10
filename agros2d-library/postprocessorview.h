@@ -34,97 +34,77 @@ class FieldInfo;
 class ValueLineEdit;
 class PhysicalFieldWidget;
 
+class PostprocessorSceneMeshWidget;
+
 class PostprocessorWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    PostprocessorWidget(PostDeal *postDeal,                        
-                        SceneViewMesh *sceneMesh,
-                        SceneViewPost2D *scenePost2D,
-                        SceneViewPost3D *scenePost3D,
-                        QWidget *parent);
+    PostprocessorWidget(PostDeal *postDeal,
+                        SceneViewMesh *sceneMesh);
 
-    QToolBar *toolBar;
+    inline PhysicalFieldWidget *fieldWidget() { return m_fieldWidget; }
+    inline PostDeal *postDeal() { return m_postDeal; }
 
-private slots:
+    QAction *actSceneModePost;
+
+signals:
+    void apply();
+
+public slots:
     void doApply();
 
 private:
     PostDeal *m_postDeal;
-    SceneViewMesh *m_sceneMesh;
-    SceneViewPost2D *m_scenePost2D;
-    SceneViewPost3D *m_scenePost3D;
-
-    QWidget *basic;
-    QWidget *advanced;
 
     // basic
-    PhysicalFieldWidget *fieldWidget;
+    PhysicalFieldWidget *m_fieldWidget;
+
+    // toolbar
+    QToolBar *toolBar;
+    QTabWidget *tabWidget;
+    QPushButton *btnOK;
 
     // mesh and polynomial info
     QLabel *lblMeshInitial;
     QLabel *lblMeshSolution;
     QLabel *lblDOFs;
 
+    //
+    PostprocessorSceneMeshWidget *meshWidget;
+
+    void createControls();
+
+    // TMP
+    SceneViewMesh *m_sceneMesh;
+
+private slots:
+    void reconnectActions();
+
+    void doCalculationFinished();
+};
+
+class PostprocessorSceneMeshWidget : public QWidget
+{
+    Q_OBJECT
+
+public:
+    PostprocessorSceneMeshWidget(PostprocessorWidget *postprocessorWidget, SceneViewMesh *sceneMesh, QWidget *parent);
+
+    void load();
+    void save();
+
+private:    
+    SceneViewMesh *m_sceneMesh;
+    PostprocessorWidget *m_postprocessorWidget;
+
+    QWidget *basic;
+
     // show
     QCheckBox *chkShowInitialMeshView;
     QCheckBox *chkShowSolutionMeshView;
-    QCheckBox *chkShowPost2DContourView;
-    QCheckBox *chkShowPost2DScalarView;
     QCheckBox *chkShowOrderView;
-    QCheckBox *chkShowPost2DVectorView;
-
-    QButtonGroup *butPost3DGroup;
-    QRadioButton *radPost3DNone;
-    QRadioButton *radPost3DScalarField3D;
-    QRadioButton *radPost3DScalarField3DSolid;
-    QRadioButton *radPost3DModel;
-    QCheckBox *chkView3DLighting;
-    QDoubleSpinBox *txtView3DAngle;
-    QCheckBox *chkView3DBackground;
-    QDoubleSpinBox *txtView3DHeight;
-    QCheckBox *chkView3DBoundingBox;
-    QCheckBox *chkView3DSolidGeometry;
-
-    // scalar field
-    QComboBox *cmbPostScalarFieldVariable;
-    QComboBox *cmbPostScalarFieldVariableComp;
-    QCheckBox *chkScalarFieldRangeAuto;
-    QLabel *lblScalarFieldRangeMin;
-    QLabel *lblScalarFieldRangeMax;
-    LineEditDouble *txtScalarFieldRangeMin;
-    LineEditDouble *txtScalarFieldRangeMax;
-    QLabel *lblScalarFieldRangeMinError;
-    QLabel *lblScalarFieldRangeMaxError;
-    QCheckBox *chkScalarDeform;
-
-    // vector field
-    QComboBox *cmbPost2DVectorFieldVariable;
-
-    // scalar field
-    QCheckBox *chkShowScalarColorBar;
-    QComboBox *cmbPalette;
-    QCheckBox *chkPaletteFilter;
-    QSpinBox *txtPaletteSteps;
-    QCheckBox *chkScalarFieldRangeLog;
-    LineEditDouble *txtScalarFieldRangeBase;
-    QSpinBox *txtScalarDecimalPlace;
-
-    // contours
-    QComboBox *cmbPost2DContourVariable;
-    QSpinBox *txtContoursCount;
-    QDoubleSpinBox *txtContourWidth;
-    QCheckBox *chkContourDeform;
-
-    // vector field
-    QCheckBox *chkVectorProportional;
-    QCheckBox *chkVectorColor;
-    QSpinBox *txtVectorCount;
-    QDoubleSpinBox *txtVectorScale;
-    QComboBox *cmbVectorType;
-    QComboBox *cmbVectorCenter;
-    QCheckBox *chkVectorDeform;
 
     // polynomial order
     QCheckBox *chkShowOrderColorbar;
@@ -132,54 +112,10 @@ private:
     QCheckBox *chkOrderLabel;
     QSpinBox *txtOrderComponent;
 
-    // solid view - materials
-    QListWidget *lstSolidMaterials;
-
-    // toolbar
-    QToolBox *tbxPostprocessor;
-    QPushButton *btnOK;
-
-    void loadBasic();
-    void loadAdvanced();
-    void saveBasic();
-    void saveAdvanced();
-
     void createControls();
-    QWidget *controlsBasic();
-    QWidget *controlsAdvanced();
 
-    QStackedLayout *widgetsLayout;
     QWidget *groupMesh;
-    QWidget *groupPost2d;
-    QWidget *groupPost3d;
-
     QWidget *groupMeshOrder;
-    CollapsableGroupBoxButton *groupPostScalar;
-    QWidget *groupPostScalarAdvanced;
-    CollapsableGroupBoxButton *groupPostContour;
-    QWidget *groupPostContourAdvanced;
-    CollapsableGroupBoxButton *groupPostVector;
-    QWidget *groupPostVectorAdvanced;
-    CollapsableGroupBoxButton *groupPostSolid;
-    QWidget *groupPostSolidAdvanced;
-    CollapsableGroupBoxButton *groupPost3D;
-    QWidget *groupPost3DAdvanced;
-
-    QWidget *meshWidget();
-    QWidget *post2DWidget();
-    QWidget *post3DWidget();
-
-    QWidget *meshOrderWidget();
-    CollapsableGroupBoxButton *postScalarWidget();
-    QWidget *postScalarAdvancedWidget();
-    CollapsableGroupBoxButton *postContourWidget();
-    QWidget *postContourAdvancedWidget();
-    CollapsableGroupBoxButton *postVectorWidget();
-    QWidget *postVectorAdvancedWidget();
-    CollapsableGroupBoxButton *postSolidWidget();
-    QWidget *postPostSolidAdvancedWidget();
-    CollapsableGroupBoxButton *postPost3DWidget();
-    QWidget *postPost3DAdvancedWidget();
 
 signals:
     void apply();
@@ -190,23 +126,6 @@ public slots:
 
 private slots:
     void doField();
-    void doCalculationFinished();
-    void doScalarFieldVariable(int index);
-    void doScalarFieldRangeAuto(int state);
-    void doPostprocessorGroupClicked(QAbstractButton *button);
-    void doScalarFieldRangeMinChanged();
-    void doScalarFieldRangeMaxChanged();
-    void doPaletteFilter(int state);
-    void doScalarFieldDefault();
-    void doContoursVectorsDefault();
-    void doOrderDefault();
-    void doScalarFieldLog(int state);
-
-    void doScalarFieldExpandCollapse(bool collapsed);
-    void doContourFieldExpandCollapse(bool collapsed);
-    void doVectorFieldExpandCollapse(bool collapsed);
-    void doSolidExpandCollapse(bool collapsed);
-    void doPost3DExpandCollapse(bool collapsed);
 };
 
 #endif // SCENEVIEWDIALOG_H

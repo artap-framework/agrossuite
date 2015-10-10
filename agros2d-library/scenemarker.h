@@ -26,6 +26,8 @@ class SceneBoundary;
 class SceneMaterial;
 class Marker;
 class FieldInfo;
+class Problem;
+class Scene;
 
 template <typename MarkerType>
 class AGROS_LIBRARY_API MarkerContainer
@@ -53,7 +55,8 @@ public:
     /// get marker by name
     MarkerType *get(const QString &name) const;
 
-    static MarkerType *getNone(const FieldInfo *field);
+    /// get none marker
+    MarkerType *getNone(const FieldInfo *field);
 
     /// filter field
     MarkerContainer<MarkerType> filter(const QString &fieldName);
@@ -75,23 +78,14 @@ public:
     void clear();
 
     /// create or delete markers for new or removed field
-    void doFieldsChanged();
+    void doFieldsChanged(Problem *problem);
 
     bool evaluateAllVariables();
 
 protected:
     QList<MarkerType* > data;
-
-    static QMap<const FieldInfo*, MarkerType*> noneMarkers;
+    QMap<const FieldInfo*, MarkerType*> noneMarkers;
 };
-
-//template <typename MarkerType>
-//class UniqueMarkerContainer : public MarkerContainer<MarkerType>
-//{
-//public:
-//    /// If container allready contains marker corresponding to the same field, it is repladded
-//    virtual void add(MarkerType *marker);
-//};
 
 class SceneBoundaryContainer : public MarkerContainer<SceneBoundary>
 {

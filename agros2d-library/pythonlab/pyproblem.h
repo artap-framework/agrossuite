@@ -36,39 +36,39 @@ class PyProblem
         void refresh();
 
         // coordinate type
-        inline std::string getCoordinateType() const { return coordinateTypeToStringKey(Agros2D::problem()->config()->coordinateType()).toStdString(); }
+        inline std::string getCoordinateType() const { return coordinateTypeToStringKey(Agros2D::preprocessor()->config()->coordinateType()).toStdString(); }
         void setCoordinateType(const std::string &coordinateType);
 
         // mesh type
-        inline std::string getMeshType() const { return meshTypeToStringKey(Agros2D::problem()->config()->meshType()).toStdString(); }
+        inline std::string getMeshType() const { return meshTypeToStringKey(Agros2D::preprocessor()->config()->meshType()).toStdString(); }
         void setMeshType(const std::string &meshType);
 
         // frequency
-        inline double getFrequency() const { return (Value::parseValueFromString(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toString())).number(); }
+        inline double getFrequency() const { return (Value::parseValueFromString(Agros2D::preprocessor()->config()->value(ProblemConfig::Frequency).toString())).number(); }
         void setFrequency(double frequency);
 
         // time step method
-        inline std::string getTimeStepMethod() const { return timeStepMethodToStringKey((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()).toStdString(); }
+        inline std::string getTimeStepMethod() const { return timeStepMethodToStringKey((TimeStepMethod) Agros2D::preprocessor()->config()->value(ProblemConfig::TimeMethod).toInt()).toStdString(); }
         void setTimeStepMethod(const std::string &timeStepMethod);
 
         // time method tolerance
-        inline double getTimeMethodTolerance() const { return Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble(); }
+        inline double getTimeMethodTolerance() const { return Agros2D::preprocessor()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble(); }
         void setTimeMethodTolerance(double timeMethodTolerance);
 
         // time method order
-        inline int getTimeMethodOrder() const { return Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt(); }
+        inline int getTimeMethodOrder() const { return Agros2D::preprocessor()->config()->value(ProblemConfig::TimeOrder).toInt(); }
         void setTimeMethodOrder(int timeMethodOrder);
 
         // initial time step
-        inline double getTimeInitialTimeStep() const { return Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble(); }
+        inline double getTimeInitialTimeStep() const { return Agros2D::preprocessor()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble(); }
         void setTimeInitialTimeStep(double timeInitialTimeStep);
 
         // time total
-        inline double getTimeTotal() const { return Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble(); }
+        inline double getTimeTotal() const { return Agros2D::preprocessor()->config()->value(ProblemConfig::TimeTotal).toDouble(); }
         void setTimeTotal(double timeTotal);
 
         // time steps
-        inline int getNumConstantTimeSteps() const { return Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); }
+        inline int getNumConstantTimeSteps() const { return Agros2D::preprocessor()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); }
         void setNumConstantTimeSteps(int timeSteps);
 
         // coupling

@@ -54,11 +54,9 @@ PreprocessorWidget::PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget
     // boundary conditions, materials and geometry information
     createControls();
 
-    connect(Agros2D::scene(), SIGNAL(cleared()), this, SLOT(refresh()));
+    connect(Agros2D::preprocessor()->scene(), SIGNAL(cleared()), this, SLOT(refresh()));
 
-    connect(Agros2D::scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
-    connect(Agros2D::problem(), SIGNAL(solved()), this, SLOT(refresh()));
-    connect(Agros2D::problem(), SIGNAL(timeStepChanged()), this, SLOT(refresh()));
+    connect(Agros2D::preprocessor()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
     connect(currentPythonEngineAgros(), SIGNAL(executedScript()), this, SLOT(refresh()));
 
     connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
@@ -88,11 +86,11 @@ void PreprocessorWidget::createMenu()
 {
     mnuPreprocessor->clear();
 
-    mnuPreprocessor->addAction(Agros2D::scene()->actNewNode);
-    mnuPreprocessor->addAction(Agros2D::scene()->actNewEdge);
-    mnuPreprocessor->addAction(Agros2D::scene()->actNewLabel);
+    mnuPreprocessor->addAction(Agros2D::preprocessor()->scene()->actNewNode);
+    mnuPreprocessor->addAction(Agros2D::preprocessor()->scene()->actNewEdge);
+    mnuPreprocessor->addAction(Agros2D::preprocessor()->scene()->actNewLabel);
     mnuPreprocessor->addSeparator();
-    Agros2D::scene()->addBoundaryAndMaterialMenuItems(mnuPreprocessor, this);
+    Agros2D::preprocessor()->scene()->addBoundaryAndMaterialMenuItems(mnuPreprocessor, this);
     mnuPreprocessor->addSeparator();
     mnuPreprocessor->addAction(actDelete);
     mnuPreprocessor->addSeparator();
@@ -102,12 +100,12 @@ void PreprocessorWidget::createMenu()
 void PreprocessorWidget::createControls()
 {
     // undo framework
-    actUndo = Agros2D::scene()->undoStack()->createUndoAction(this);
+    actUndo = Agros2D::preprocessor()->scene()->undoStack()->createUndoAction(this);
     actUndo->setIcon(icon("edit-undo"));
     actUndo->setIconText(tr("&Undo"));
     actUndo->setShortcuts(QKeySequence::Undo);
 
-    actRedo = Agros2D::scene()->undoStack()->createRedoAction(this);
+    actRedo = Agros2D::preprocessor()->scene()->undoStack()->createRedoAction(this);
     actRedo->setIcon(icon("edit-redo"));
     actRedo->setIconText(tr("&Redo"));
     actRedo->setShortcuts(QKeySequence::Redo);
@@ -122,9 +120,9 @@ void PreprocessorWidget::createControls()
     toolBar->addAction(m_sceneViewPreprocessor->actOperateOnLabels);
     toolBar->addSeparator();
     toolBar->addAction(m_sceneViewPreprocessor->actSceneViewSelectRegion);
-    toolBar->addAction(Agros2D::scene()->actTransform);
+    toolBar->addAction(Agros2D::preprocessor()->scene()->actTransform);
     toolBar->addSeparator();
-    toolBar->addAction(Agros2D::scene()->actDeleteSelected);
+    toolBar->addAction(Agros2D::preprocessor()->scene()->actDeleteSelected);
 
     txtViewNodes = new QTextEdit(this);
     txtViewNodes->setReadOnly(true);
@@ -206,8 +204,8 @@ void PreprocessorWidget::keyPressEvent(QKeyEvent *event)
 
 void PreprocessorWidget::refresh()
 {
-    txtGridStep->setText(QString::number(Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble()));
-    chkSnapToGrid->setChecked(Agros2D::problem()->setting()->value(ProblemSetting::View_SnapToGrid).toBool());
+    txtGridStep->setText(QString::number(Agros2D::preprocessor()->setting()->value(ProblemSetting::View_GridStep).toDouble()));
+    chkSnapToGrid->setChecked(Agros2D::preprocessor()->setting()->value(ProblemSetting::View_SnapToGrid).toBool());
 
     // script speed improvement
     if (currentPythonEngine()->isScriptRunning()) return;
@@ -221,7 +219,7 @@ void PreprocessorWidget::refresh()
     fnt.setBold(true);
 
     // markers
-    foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+    foreach (FieldInfo *fieldInfo, Agros2D::preprocessor()->fieldInfos())
     {
         // field
         QTreeWidgetItem *fieldNode = new QTreeWidgetItem(trvWidget);
@@ -238,13 +236,13 @@ void PreprocessorWidget::refresh()
         materialsNode->setExpanded(true);
 
         QList<QTreeWidgetItem *> listMaterials;
-        foreach (SceneMaterial *material, Agros2D::scene()->materials->filter(fieldInfo).items())
+        foreach (SceneMaterial *material, Agros2D::preprocessor()->scene()->materials->filter(fieldInfo).items())
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(materialsNode);
 
             item->setText(0, material->name());
-            item->setIcon(0, (Agros2D::scene()->labels->haveMarker(material).count() > 0) ? icon("scene-labelmarker") : icon("scene-labelmarker-notused"));
-            if (Agros2D::scene()->labels->haveMarker(material).isEmpty())
+            item->setIcon(0, (Agros2D::preprocessor()->scene()->labels->haveMarker(material).count() > 0) ? icon("scene-labelmarker") : icon("scene-labelmarker-notused"));
+            if (Agros2D::preprocessor()->scene()->labels->haveMarker(material).isEmpty())
                 item->setForeground(0, QBrush(Qt::gray));
             item->setData(0, Qt::UserRole, material->variant());
 
@@ -261,15 +259,15 @@ void PreprocessorWidget::refresh()
         boundaryConditionsNode->setExpanded(true);
 
         QList<QTreeWidgetItem *> listMarkes;
-        foreach (SceneBoundary *boundary, Agros2D::scene()->boundaries->filter(fieldInfo).items())
+        foreach (SceneBoundary *boundary, Agros2D::preprocessor()->scene()->boundaries->filter(fieldInfo).items())
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(boundaryConditionsNode);
 
             Module::BoundaryType boundaryType = fieldInfo->boundaryType(boundary->type());
 
             item->setText(0, QString("%1 (%2)").arg(boundary->name()).arg(boundaryType.name()));
-            item->setIcon(0, (Agros2D::scene()->edges->haveMarker(boundary).count() > 0) ? icon("scene-edgemarker") : icon("scene-edgemarker-notused"));
-            if (Agros2D::scene()->edges->haveMarker(boundary).isEmpty())
+            item->setIcon(0, (Agros2D::preprocessor()->scene()->edges->haveMarker(boundary).count() > 0) ? icon("scene-edgemarker") : icon("scene-edgemarker-notused"));
+            if (Agros2D::preprocessor()->scene()->edges->haveMarker(boundary).isEmpty())
                 item->setForeground(0, QBrush(Qt::gray));
             item->setData(0, Qt::UserRole, boundary->variant());
 
@@ -294,7 +292,7 @@ void PreprocessorWidget::refresh()
 
     QList<QTreeWidgetItem *> listNodes;
     int inode = 0;
-    foreach (SceneNode *node, Agros2D::scene()->nodes->items())
+    foreach (SceneNode *node, Agros2D::preprocessor()->scene()->nodes->items())
     {
         QTreeWidgetItem *item = new QTreeWidgetItem();
 
@@ -320,7 +318,7 @@ void PreprocessorWidget::refresh()
 
     QList<QTreeWidgetItem *> listEdges;
     int iedge = 0;
-    foreach (SceneEdge *edge, Agros2D::scene()->edges->items())
+    foreach (SceneEdge *edge, Agros2D::preprocessor()->scene()->edges->items())
     {
         QTreeWidgetItem *item = new QTreeWidgetItem();
 
@@ -347,7 +345,7 @@ void PreprocessorWidget::refresh()
 
     QList<QTreeWidgetItem *> listLabels;
     int ilabel = 0;
-    foreach (SceneLabel *label, Agros2D::scene()->labels->items())
+    foreach (SceneLabel *label, Agros2D::preprocessor()->scene()->labels->items())
     {
         QTreeWidgetItem *item = new QTreeWidgetItem();
 
@@ -393,8 +391,8 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
     actProperties->setEnabled(false);
     actDelete->setEnabled(false);
 
-    Agros2D::scene()->selectNone();
-    Agros2D::scene()->highlightNone();
+    Agros2D::preprocessor()->scene()->selectNone();
+    Agros2D::preprocessor()->scene()->highlightNone();
 
     if (current)
     {
@@ -421,7 +419,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             // select all edges
             m_sceneViewPreprocessor->actOperateOnEdges->trigger();
 
-            Agros2D::scene()->edges->haveMarker(objectBoundary).setSelected();
+            Agros2D::preprocessor()->scene()->edges->haveMarker(objectBoundary).setSelected();
 
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
@@ -432,7 +430,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             // select all labels
             m_sceneViewPreprocessor->actOperateOnLabels->trigger();
 
-            Agros2D::scene()->labels->haveMarker(objectMaterial).setSelected();
+            Agros2D::preprocessor()->scene()->labels->haveMarker(objectMaterial).setSelected();
 
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
@@ -495,30 +493,30 @@ void PreprocessorWidget::doDelete()
         {
             if (SceneNode *node = dynamic_cast<SceneNode *>(objectBasic))
             {
-                Agros2D::scene()->nodes->remove(node);
+                Agros2D::preprocessor()->scene()->nodes->remove(node);
             }
 
             else if (SceneEdge *edge = dynamic_cast<SceneEdge *>(objectBasic))
             {
-                Agros2D::scene()->edges->remove(edge);
+                Agros2D::preprocessor()->scene()->edges->remove(edge);
             }
 
             else if (SceneLabel *label = dynamic_cast<SceneLabel *>(objectBasic))
             {
-                Agros2D::scene()->labels->remove(label);
+                Agros2D::preprocessor()->scene()->labels->remove(label);
             }
         }
 
         // label marker
         else if (SceneMaterial *objectMaterial = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneMaterial *>())
         {
-            Agros2D::scene()->removeMaterial(objectMaterial);
+            Agros2D::preprocessor()->scene()->removeMaterial(objectMaterial);
         }
 
         // edge marker
         else if (SceneBoundary *objectBoundary = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBoundary *>())
         {
-            Agros2D::scene()->removeBoundary(objectBoundary);
+            Agros2D::preprocessor()->scene()->removeBoundary(objectBoundary);
         }
 
         refresh();
@@ -528,6 +526,6 @@ void PreprocessorWidget::doDelete()
 
 void PreprocessorWidget::doApply()
 {
-    Agros2D::problem()->setting()->setValue(ProblemSetting::View_GridStep, txtGridStep->text().toDouble());
-    Agros2D::problem()->setting()->setValue(ProblemSetting::View_SnapToGrid, chkSnapToGrid->isChecked());
+    Agros2D::preprocessor()->setting()->setValue(ProblemSetting::View_GridStep, txtGridStep->text().toDouble());
+    Agros2D::preprocessor()->setting()->setValue(ProblemSetting::View_SnapToGrid, chkSnapToGrid->isChecked());
 }

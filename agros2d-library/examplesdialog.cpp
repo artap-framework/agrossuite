@@ -314,7 +314,7 @@ void ExamplesDialog::problemInfo(const QString &fileName)
                     Point point = Point(node.x(),
                                         node.y());
 
-                    nodes.append(new SceneNode(point));
+                    nodes.append(new SceneNode(nullptr, point));
                 }
 
                 // edges
@@ -326,7 +326,7 @@ void ExamplesDialog::problemInfo(const QString &fileName)
                     SceneNode *nodeFrom = nodes.at(edge.start());
                     SceneNode *nodeTo = nodes.at(edge.end());
 
-                    edges.append(new SceneEdge(nodeFrom, nodeTo, edge.angle()));
+                    edges.append(new SceneEdge(nullptr, nodeFrom, nodeTo, edge.angle()));
                 }
 
                 // geometry

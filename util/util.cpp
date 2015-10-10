@@ -33,9 +33,7 @@
 #define M_PI_2 1.57079632679489661923	/* pi/2 */
 #endif
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QStandardPaths>
-#endif
 
 const QString LANGUAGEROOT = QString("%1/resources%1lang").arg(QDir::separator());
 
@@ -323,38 +321,25 @@ QString tempProblemDir()
 
 QString cacheProblemDir()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#ifdef Q_WS_X11
     // fast fix for ht condor
     QString cch = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);    
     QDir dirc(cch);
     if (!dirc.exists())
         dirc.mkpath(cch);
+
     // ro system
     if (!dirc.exists())
         cch = tempProblemDir();
 
-    static QString str = QString("%1/cache/%2").
-            arg(cch).
-            arg(QString::number(QCoreApplication::applicationPid()));
-#else
-#ifdef Q_WS_WIN
-    static QString str = QString("%1/agros2d/cache/%2").
-            arg(QDir::temp().absolutePath()).
-            arg(QString::number(QCoreApplication::applicationPid()));
-#else
-    // fast fix for ht condor
-    QString cch = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
-    QDir dirc(cch);
-    if (!dirc.exists())
-        dirc.mkpath(cch);
-    // ro system
-    if (!dirc.exists())
-        cch = tempProblemDir();
-
-    static QString str = QString("%1/cache/%2").
+    static QString str = QString("%1/%2").
             arg(cch).
             arg(QString::number(QCoreApplication::applicationPid()));
 #endif
+#ifdef Q_WS_WIN
+    static QString str = QString("%1/agros2d/%2").
+            arg(QDir::temp().absolutePath()).
+            arg(QString::number(QCoreApplication::applicationPid()));
 #endif
 
     QDir dir(str);
@@ -366,17 +351,13 @@ QString cacheProblemDir()
 
 QString userDataDir()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#ifdef Q_WS_X11
     static QString str = QString("%1/agros2d/").
             arg(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
-#else
+#endif
 #ifdef Q_WS_WIN
     static QString str = QString("%1/agros2d/").
             arg(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
-#else
-    static QString str = QString("%1").
-            arg(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
-#endif
 #endif
 
     QDir dir(str);

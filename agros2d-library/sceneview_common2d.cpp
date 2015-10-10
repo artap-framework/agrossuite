@@ -116,37 +116,37 @@ void SceneViewCommon2D::paintGrid()
     glLineStipple(1, 0x1C47);
     glBegin(GL_LINES);
 
-    if ((((cornerMax.x-cornerMin.x)/Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + (cornerMin.y-cornerMax.y)/Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble()) < 200) &&
-            ((cornerMax.x-cornerMin.x)/Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() > 0) && ((cornerMin.y-cornerMax.y)/Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() > 0))
+    if ((((cornerMax.x-cornerMin.x)/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + (cornerMin.y-cornerMax.y)/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble()) < 200) &&
+            ((cornerMax.x-cornerMin.x)/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() > 0) && ((cornerMin.y-cornerMax.y)/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() > 0))
     {
         // vertical lines
-        for (int i = cornerMin.x/Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() - 1; i < cornerMax.x/Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 1; i++)
+        for (int i = cornerMin.x/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() - 1; i < cornerMax.x/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 1; i++)
         {
             if (i % heavyLine == 0)
                 glColor3d(COLORCROSS[0] * 2.0/3.0, COLORCROSS[1] * 2.0/3.0, COLORCROSS[2] * 2.0/3.0);
             else
                 glColor3d(COLORGRID[0], COLORGRID[1], COLORGRID[2]);
 
-            glVertex2d(i*Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble(), cornerMin.y);
-            glVertex2d(i*Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble(), cornerMax.y);
+            glVertex2d(i*problem()->setting()->value(ProblemSetting::View_GridStep).toDouble(), cornerMin.y);
+            glVertex2d(i*problem()->setting()->value(ProblemSetting::View_GridStep).toDouble(), cornerMax.y);
         }
 
         // horizontal lines
-        for (int i = cornerMax.y/Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() - 1; i < cornerMin.y/Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 1; i++)
+        for (int i = cornerMax.y/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() - 1; i < cornerMin.y/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 1; i++)
         {
             if (i % heavyLine == 0)
                 glColor3d(COLORCROSS[0] * 2.0/3.0, COLORCROSS[1] * 2.0/3.0, COLORCROSS[2] * 2.0/3.0);
             else
                 glColor3d(COLORGRID[0], COLORGRID[1], COLORGRID[2]);
 
-            glVertex2d(cornerMin.x, i*Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble());
-            glVertex2d(cornerMax.x, i*Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble());
+            glVertex2d(cornerMin.x, i*problem()->setting()->value(ProblemSetting::View_GridStep).toDouble());
+            glVertex2d(cornerMax.x, i*problem()->setting()->value(ProblemSetting::View_GridStep).toDouble());
         }
     }
     glEnd();
     glDisable(GL_LINE_STIPPLE);
 
-    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric)
+    if (problem()->config()->coordinateType() == CoordinateType_Axisymmetric)
     {
         drawBlend(cornerMin,
                   Point(0, cornerMax.y),
@@ -160,7 +160,7 @@ void SceneViewCommon2D::paintGrid()
     glVertex2d(0, cornerMin.y);
     glVertex2d(0, cornerMax.y);
     // x axis
-    glVertex2d(((Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric) ? 0 : cornerMin.x), 0);
+    glVertex2d(((problem()->config()->coordinateType() == CoordinateType_Axisymmetric) ? 0 : cornerMin.x), 0);
     glVertex2d(cornerMax.x, 0);
     glEnd();
 }
@@ -211,8 +211,8 @@ void SceneViewCommon2D::paintAxes()
 
     glDisable(GL_POLYGON_OFFSET_FILL);
 
-    printRulersAt(border.x + 38, border.y + 1 - (m_charDataRulers[GLYPH_M].x1 - m_charDataRulers[GLYPH_M].x0) / 2.0, Agros2D::problem()->config()->labelX());
-    printRulersAt(border.x + 1 - (m_charDataRulers[GLYPH_M].x1 - m_charDataRulers[GLYPH_M].x0) / 2.0, border.y + 38, Agros2D::problem()->config()->labelY());
+    printRulersAt(border.x + 38, border.y + 1 - (m_charDataRulers[GLYPH_M].x1 - m_charDataRulers[GLYPH_M].x0) / 2.0, problem()->config()->labelX());
+    printRulersAt(border.x + 1 - (m_charDataRulers[GLYPH_M].x1 - m_charDataRulers[GLYPH_M].x0) / 2.0, border.y + 38, problem()->config()->labelY());
 }
 
 void SceneViewCommon2D::paintRulers()
@@ -222,7 +222,7 @@ void SceneViewCommon2D::paintRulers()
     Point cornerMin = transform(Point(0, 0));
     Point cornerMax = transform(Point(width(), height()));
 
-    double gridStep = Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
+    double gridStep = problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
     if (gridStep < EPS_ZERO)
         return;
 
@@ -476,7 +476,7 @@ void SceneViewCommon2D::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Escape:
     {
         m_nodeLast = NULL;
-        Agros2D::scene()->selectNone();
+        problem()->scene()->selectNone();
         emit mousePressed();
         updateGL();
     }
@@ -487,7 +487,7 @@ void SceneViewCommon2D::keyPressEvent(QKeyEvent *event)
         if ((event->modifiers() & Qt::ShiftModifier) && (event->modifiers() & Qt::ControlModifier))
         {
             Point p = transform(Point(m_lastPos.x(), m_lastPos.y()));
-            Agros2D::scene()->doNewNode(p);
+            problem()->scene()->doNewNode(p);
         }
     }
         break;
@@ -497,7 +497,7 @@ void SceneViewCommon2D::keyPressEvent(QKeyEvent *event)
         if ((event->modifiers() & Qt::ShiftModifier) && (event->modifiers() & Qt::ControlModifier))
         {
             Point p = transform(Point(m_lastPos.x(), m_lastPos.y()));
-            Agros2D::scene()->doNewLabel(p);
+            problem()->scene()->doNewLabel(p);
         }
     }
         break;

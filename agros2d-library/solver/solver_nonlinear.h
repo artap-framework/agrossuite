@@ -31,7 +31,7 @@
 class AGROS_LIBRARY_API AssembleNonlinear : public SolverDeal::AssembleBase
 {
 public:
-    AssembleNonlinear(SolverDeal *solverDeal) : SolverDeal::AssembleBase(solverDeal)
+    AssembleNonlinear(SolverDeal *solverDeal, dealii::Triangulation<2> &triangulation) : SolverDeal::AssembleBase(solverDeal, triangulation)
     {}
 
     virtual void solve();

@@ -186,7 +186,7 @@ void FormScript::showWidget()
                 widget->clear();
 
                 int i = 0;
-                foreach (SceneNode *node, Agros2D::scene()->nodes->items())
+                foreach (SceneNode *node, Agros2D::preprocessor()->scene()->nodes->items())
                 {
                     QListWidgetItem *item = new QListWidgetItem(widget);
 
@@ -216,7 +216,7 @@ void FormScript::showWidget()
                 widget->clear();
 
                 int i = 0;
-                foreach (SceneEdge *edge, Agros2D::scene()->edges->items())
+                foreach (SceneEdge *edge, Agros2D::preprocessor()->scene()->edges->items())
                 {
                     QListWidgetItem *item = new QListWidgetItem(widget);
 
@@ -247,7 +247,7 @@ void FormScript::showWidget()
                 widget->clear();
 
                 int i = 0;
-                foreach (SceneLabel *label, Agros2D::scene()->labels->items())
+                foreach (SceneLabel *label, Agros2D::preprocessor()->scene()->labels->items())
                 {
                     QListWidgetItem *item = new QListWidgetItem(widget);
 
@@ -288,7 +288,7 @@ void FormScript::showWidget()
 
                 widget->clear();
 
-                foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+                foreach (FieldInfo *fieldInfo, Agros2D::preprocessor()->fieldInfos())
                 {
                     QTreeWidgetItem *itemField = new QTreeWidgetItem(widget);
 
@@ -331,7 +331,7 @@ void FormScript::showWidget()
 
                 widget->clear();
 
-                foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+                foreach (FieldInfo *fieldInfo, Agros2D::preprocessor()->fieldInfos())
                 {
                     QTreeWidgetItem *itemField = new QTreeWidgetItem(widget);
 
@@ -375,7 +375,7 @@ void FormScript::showWidget()
 
                 widget->clear();
 
-                foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+                foreach (FieldInfo *fieldInfo, Agros2D::preprocessor()->fieldInfos())
                 {
                     QTreeWidgetItem *itemField = new QTreeWidgetItem(widget);
 

@@ -167,6 +167,9 @@ private slots:
 
     void tryClose();
     void showHide();
+
+public slots:
+    void reconnectActions();
 };
 
 class AGROS_LIBRARY_API LogStdOut : public QObject

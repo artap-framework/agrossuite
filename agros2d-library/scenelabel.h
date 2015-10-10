@@ -31,8 +31,8 @@ class FieldInfo;
 class AGROS_LIBRARY_API SceneLabel : public MarkedSceneBasic<SceneMaterial>
 {
 public:
-    SceneLabel(const Point &point, double area);
-    SceneLabel(const PointValue &pointValue, double area);
+    SceneLabel(Scene *scene, const Point &point, double area);
+    SceneLabel(Scene *scene, const PointValue &pointValue, double area);
 
     inline virtual SceneMaterial* marker(const FieldInfo *fieldInfo) { return MarkedSceneBasic<SceneMaterial>::marker(fieldInfo); }
 
@@ -53,8 +53,8 @@ public:
 
     int showDialog(QWidget *parent, bool isNew = false);
 
-    static SceneLabel *findClosestLabel(const Point &point);
-    static SceneLabel *findLabelAtPoint(const Point &point);
+    static SceneLabel *findClosestLabel(Scene *scene, const Point &point);
+    static SceneLabel *findLabelAtPoint(Scene *scene, const Point &point);
 
     void addMarkersFromStrings(QMap<QString, QString> markers);
 

@@ -327,7 +327,7 @@ void PythonEngine::useLocalDict()
 
 void PythonEngine::useGlobalDict()
 {
-    m_useGlobalDict = true;    
+    m_useGlobalDict = true;
 }
 
 void PythonEngine::abortScript()
@@ -397,79 +397,77 @@ void PythonEngine::deleteUserModules()
 
 bool PythonEngine::runScript(const QString &script, const QString &fileName)
 {
-    m_isScriptRunning = true;
-
-    PyGILState_STATE gstate = PyGILState_Ensure();
-
-    emit startedScript();
-
     bool successfulRun = false;
 
-    QSettings settings;
-    // enable user module deleter
-    if (settings.value("PythonEngine/UserModuleDeleter", true).toBool())
-        deleteUserModules();
-
-    if (m_useGlobalDict)
-        runPythonHeader();
-
-    PyObject *output = NULL;
-    if (QFile::exists(fileName))
     {
-        QString str = QString("from os import chdir; chdir(u'" + QFileInfo(fileName).absolutePath() + "')");
+        tbb::mutex::scoped_lock lock(runScriptMutex);
+
+        m_isScriptRunning = true;
+
+        // PyGILState_STATE gstate = PyGILState_Ensure();
+
+        emit startedScript();
+
+        QSettings settings;
+        // enable user module deleter
+        if (settings.value("PythonEngine/UserModuleDeleter", true).toBool())
+            deleteUserModules();
+
+        PyObject *output = NULL;
+        if (QFile::exists(fileName))
         {
-            tbb::mutex::scoped_lock lock(runScriptMutex);
+            QString str = QString("from os import chdir; chdir(u'" + QFileInfo(fileName).absolutePath() + "')");
 
             PyObject *import = PyRun_String(str.toLatin1().data(), Py_single_input, dict(), dict());
             Py_XDECREF(import);
         }
-    }
 
-    // compile
-    PyObject *code = Py_CompileString(script.toLatin1().data(), fileName.toLatin1().data(), Py_file_input);
-    // run
-    if (m_useProfiler)
-    {
-        setProfilerFileName(fileName);
-        startProfiler();
-    }
-
-    if (code) output = PyEval_EvalCode(code, dict(), dict());
-    
-    if (m_useProfiler)
-        finishProfiler();
-
-    if (output)
-    {
-        successfulRun = true;
-        Py_XDECREF(output);
-    }
-    else
-    {
-        // error traceback
-        Py_XDECREF(errorType);
-        Py_XDECREF(errorValue);
-        Py_XDECREF(errorTraceback);
-        PyErr_Fetch(&errorType, &errorValue, &errorTraceback);
-        if (errorTraceback)
+        // compile
+        PyObject *code = Py_CompileString(script.toLatin1().data(), fileName.toLatin1().data(), Py_file_input);
+        // run
+        if (m_useProfiler)
         {
-            successfulRun = false;
+            setProfilerFileName(fileName);
+            startProfiler();
+        }
 
-            ErrorResult result = parseError(false);
-            if (!result.error().isEmpty())
+        if (code) output = PyEval_EvalCode(code, dict(), dict());
+
+        if (m_useProfiler)
+            finishProfiler();
+
+        if (output)
+        {
+            successfulRun = true;
+            Py_XDECREF(output);
+        }
+        else
+        {
+            // error traceback
+            Py_XDECREF(errorType);
+            Py_XDECREF(errorValue);
+            Py_XDECREF(errorTraceback);
+            PyErr_Fetch(&errorType, &errorValue, &errorTraceback);
+            if (errorTraceback)
             {
-                qDebug() << "Error:\n" << result.error();
-                qDebug() << "Traceback:\n" << result.tracebackToString();
+                successfulRun = false;
+
+                ErrorResult result = parseError(false);
+                if (!result.error().isEmpty())
+                {
+                    qDebug() << "Error:\n" << result.error();
+                    qDebug() << "Traceback:\n" << result.tracebackToString();
+                }
             }
         }
+
+        Py_XDECREF(code);
+
+        m_isScriptRunning = false;
+
+        // release the thread, no Python API allowed beyond this point
+        // PyGILState_Release(gstate);
     }
-
-    Py_XDECREF(code);
-
-    m_isScriptRunning = false;
-
-    // release the thread, no Python API allowed beyond this point
-    PyGILState_Release(gstate);
 
     emit executedScript();
 
@@ -482,9 +480,6 @@ bool PythonEngine::runExpression(const QString &expression, double *value, const
 
     {
         tbb::mutex::scoped_lock lock(runExpressionMutex);
-
-        if (m_useGlobalDict)
-            runPythonHeader();
 
         PyObject *output = NULL;
         if (value)
@@ -571,8 +566,6 @@ bool PythonEngine::runExpressionConsole(const QString &expression)
 
 QStringList PythonEngine::codeCompletionScript(const QString& code, int row, int column, const QString& fileName)
 {
-    runPythonHeader();
-
     QString fn = "";
     if (QFile::exists(fileName))
         fn = fileName;
@@ -588,8 +581,6 @@ QStringList PythonEngine::codeCompletionScript(const QString& code, int row, int
 
 QStringList PythonEngine::codeCompletionInterpreter(const QString& code)
 {
-    runPythonHeader();
-
     QString exp = QString("result_jedi_pythonlab = python_engine_get_completion_interpreter(\"%1\")").
             arg(code);
 
@@ -599,8 +590,6 @@ QStringList PythonEngine::codeCompletionInterpreter(const QString& code)
 QStringList PythonEngine::codeCompletion(const QString& command)
 {
     QStringList out;
-
-    runPythonHeader();
 
     {
         tbb::mutex::scoped_lock lock(codeCompletionMutex);

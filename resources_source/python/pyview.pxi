@@ -544,4 +544,4 @@ cdef class __View__:
     def zoom_region(self, x1, y1, x2, y2):
         self.thisptr.zoomRegion(x1, y1, x2, y2)
 
-view = __View__()
+# view = __View__()

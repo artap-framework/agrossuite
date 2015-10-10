@@ -77,19 +77,24 @@ PhysicalFieldWidget::PhysicalFieldWidget(QWidget *parent) : QWidget(parent)
 
     setLayout(layoutMain);
 
-    connect(Agros2D::problem(), SIGNAL(meshed()), this, SLOT(updateControls()));
-    connect(Agros2D::problem(), SIGNAL(solved()), this, SLOT(updateControls()));
+    // reconnect computation slots
+    connect(Agros2D::singleton(), SIGNAL(reconnectSlots()), this, SLOT(reconnectActions()));
 }
 
 PhysicalFieldWidget::~PhysicalFieldWidget()
 {
+}
 
+void PhysicalFieldWidget::reconnectActions()
+{
+    connect(Agros2D::computation(), SIGNAL(meshed()), this, SLOT(updateControls()));
+    connect(Agros2D::computation(), SIGNAL(solved()), this, SLOT(updateControls()));
 }
 
 FieldInfo* PhysicalFieldWidget::selectedField()
 {
-    if (Agros2D::problem()->hasField(cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString()))
-        return Agros2D::problem()->fieldInfo(cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString());
+    if (Agros2D::computation()->hasField(cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString()))
+        return Agros2D::computation()->fieldInfo(cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString());
     else
         return NULL;
 }
@@ -100,7 +105,7 @@ void PhysicalFieldWidget::selectField(const FieldInfo* fieldInfo)
     {
         cmbFieldInfo->setCurrentIndex(cmbFieldInfo->findData(fieldInfo->fieldId()));
 
-        if (Agros2D::problem()->isSolved())
+        if (Agros2D::computation()->isSolved())
         {
             fillComboBoxTimeStep(fieldInfo, cmbTimeStep);
             doTimeStep(-1);
@@ -138,7 +143,7 @@ void PhysicalFieldWidget::selectAdaptivityStep(int adaptivityStep)
 
 void PhysicalFieldWidget::updateControls()
 {
-    if (Agros2D::problem()->isMeshed())
+    if (Agros2D::computation() && Agros2D::computation()->isMeshed())
     {
         fillComboBoxFieldInfo(cmbFieldInfo);
         doFieldInfo(cmbFieldInfo->currentIndex());
@@ -153,12 +158,12 @@ void PhysicalFieldWidget::updateControls()
 void PhysicalFieldWidget::doFieldInfo(int index)
 {
     QString fieldName = cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString();
-    if (Agros2D::problem()->hasField(fieldName))
+    if (Agros2D::computation() && Agros2D::computation()->hasField(fieldName))
     {
-        FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(fieldName);
-        if (Agros2D::problem()->isSolved())
+        FieldInfo *fieldInfo = Agros2D::computation()->fieldInfo(fieldName);
+        if (Agros2D::computation()->isSolved())
         {
-            fillComboBoxTimeStep(fieldInfo, cmbTimeStep);            
+            fillComboBoxTimeStep(fieldInfo, cmbTimeStep);
         }
         else
         {
@@ -182,7 +187,7 @@ void PhysicalFieldWidget::doFieldInfo(int index)
 
 void PhysicalFieldWidget::doTimeStep(int index)
 {
-    if (Agros2D::problem()->isSolved())
+    if (Agros2D::computation() && Agros2D::computation()->isSolved())
     {
         fillComboBoxAdaptivityStep(selectedField(), selectedTimeStep(), cmbAdaptivityStep);
         if ((cmbAdaptivityStep->currentIndex() >= cmbAdaptivityStep->count()) || (cmbAdaptivityStep->currentIndex() < 0))
@@ -192,7 +197,7 @@ void PhysicalFieldWidget::doTimeStep(int index)
     }
     else
     {
-        cmbAdaptivityStep->clear();        
+        cmbAdaptivityStep->clear();
     }
 
     grpTime->setVisible(cmbTimeStep->count() >= 1);

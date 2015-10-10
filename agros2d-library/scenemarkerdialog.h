@@ -42,7 +42,7 @@ namespace Module
 class SceneBoundary : public Boundary
 {
 public:
-    SceneBoundary(const FieldInfo *fieldInfo, QString m_name = "", QString m_type = "",
+    SceneBoundary(Scene *scene, const FieldInfo *fieldInfo, QString m_name = "", QString m_type = "",
                   QMap<QString, Value> m_values = (QMap<QString, Value>()));
 
     int showDialog(QWidget *parent);
@@ -53,7 +53,7 @@ public:
 class SceneBoundaryNone : public SceneBoundary
 {
 public:
-    SceneBoundaryNone();
+    SceneBoundaryNone(Scene *scene);
 
     QString script() { return ""; }
     int showDialog(QWidget *parent) { return 0; }
@@ -140,7 +140,7 @@ private slots:
 class SceneMaterial : public Material
 {
 public:
-    SceneMaterial(const FieldInfo *fieldInfo, QString m_name,
+    SceneMaterial(Scene *scene, const FieldInfo *fieldInfo, QString m_name,
                   QMap<QString, Value> m_values = (QMap<QString, Value>()));
 
     int showDialog(QWidget *parent);
@@ -151,7 +151,7 @@ public:
 class SceneMaterialNone : public SceneMaterial
 {
 public:
-    SceneMaterialNone();
+    SceneMaterialNone(Scene *scene);
 
     QString script() { return ""; }
     QMap<QString, QString> data() { return QMap<QString, QString>(); }

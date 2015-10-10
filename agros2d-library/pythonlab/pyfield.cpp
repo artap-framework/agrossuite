@@ -31,9 +31,9 @@ PyField::PyField(std::string fieldId)
 
     if (modules.keys().contains(id))
     {
-        if (Agros2D::problem()->hasField(id))
+        if (Agros2D::preprocessor()->hasField(id))
         {
-            m_fieldInfo = Agros2D::problem()->fieldInfo(id);
+            m_fieldInfo = Agros2D::preprocessor()->fieldInfo(id);
         }
         else
         {
@@ -46,7 +46,7 @@ PyField::PyField(std::string fieldId)
                 throw invalid_argument(QObject::tr("Invalid field id. Plugin %1 cannot be loaded").arg(id).toStdString());
             }
 
-            Agros2D::problem()->addField(m_fieldInfo);
+            Agros2D::preprocessor()->addField(m_fieldInfo);
         }
     }
     else
@@ -223,7 +223,7 @@ void PyField::addBoundary(const std::string &name, const std::string &type,
                           const map<std::string, std::string> &expressions)
 {
     // check boundaries with same name
-    foreach (SceneBoundary *boundary, Agros2D::scene()->boundaries->filter(m_fieldInfo->fieldId()).items())
+    foreach (SceneBoundary *boundary, Agros2D::preprocessor()->scene()->boundaries->filter(m_fieldInfo->fieldId()).items())
     {
         if (boundary->name() == QString::fromStdString(name))
             throw invalid_argument(QObject::tr("Boundary condition '%1' already exists.").arg(QString::fromStdString(name)).toStdString());
@@ -256,14 +256,14 @@ void PyField::addBoundary(const std::string &name, const std::string &type,
             throw invalid_argument(QObject::tr("Wrong parameter '%1'.").arg(QString::fromStdString((*i).first)).toStdString());
     }
 
-    Agros2D::scene()->addBoundary(new SceneBoundary(m_fieldInfo, QString::fromStdString(name), QString::fromStdString(type), values));
+    Agros2D::preprocessor()->scene()->addBoundary(new SceneBoundary(Agros2D::preprocessor()->scene(), m_fieldInfo, QString::fromStdString(name), QString::fromStdString(type), values));
 }
 
 void PyField::modifyBoundary(const std::string &name, const std::string &type,
                              const map<std::string, double> &parameters,
                              const map<std::string, std::string> &expressions)
 {
-    SceneBoundary *sceneBoundary = Agros2D::scene()->getBoundary(m_fieldInfo, QString::fromStdString(name));
+    SceneBoundary *sceneBoundary = Agros2D::preprocessor()->scene()->getBoundary(m_fieldInfo, QString::fromStdString(name));
     if (sceneBoundary == NULL)
         throw invalid_argument(QObject::tr("Boundary condition '%1' doesn't exists.").arg(QString::fromStdString(name)).toStdString());
 
@@ -304,11 +304,11 @@ void PyField::modifyBoundary(const std::string &name, const std::string &type,
 
 void PyField::removeBoundary(const std::string &name)
 {
-    SceneBoundary *sceneBoundary = Agros2D::scene()->getBoundary(m_fieldInfo, QString::fromStdString(name));
+    SceneBoundary *sceneBoundary = Agros2D::preprocessor()->scene()->getBoundary(m_fieldInfo, QString::fromStdString(name));
     if (sceneBoundary == NULL)
         throw invalid_argument(QObject::tr("Boundary condition '%1' doesn't exists.").arg(QString::fromStdString(name)).toStdString());
 
-    Agros2D::scene()->removeBoundary(sceneBoundary);
+    Agros2D::preprocessor()->scene()->removeBoundary(sceneBoundary);
 }
 
 void PyField::addMaterial(const std::string &name, const map<std::string, double> &parameters,
@@ -318,7 +318,7 @@ void PyField::addMaterial(const std::string &name, const map<std::string, double
                           const map<string, map<string, string> > &settings_map)
 {
     // check materials with same name
-    foreach (SceneMaterial *material, Agros2D::scene()->materials->filter(m_fieldInfo->fieldId()).items())
+    foreach (SceneMaterial *material, Agros2D::preprocessor()->scene()->materials->filter(m_fieldInfo->fieldId()).items())
     {
         if (material->name() == QString::fromStdString(name))
             throw invalid_argument(QObject::tr("Material '%1' already exists.").arg(QString::fromStdString(name)).toStdString());
@@ -416,7 +416,7 @@ void PyField::addMaterial(const std::string &name, const map<std::string, double
             throw invalid_argument(QObject::tr("Wrong parameter '%1'.").arg(QString::fromStdString((*i).first)).toStdString());
     }
 
-    Agros2D::scene()->addMaterial(new SceneMaterial(m_fieldInfo, QString::fromStdString(name), values));
+    Agros2D::preprocessor()->scene()->addMaterial(new SceneMaterial(Agros2D::preprocessor()->scene(), m_fieldInfo, QString::fromStdString(name), values));
 }
 
 void PyField::modifyMaterial(const std::string &name, const map<std::string, double> &parameters,
@@ -425,7 +425,7 @@ void PyField::modifyMaterial(const std::string &name, const map<std::string, dou
                              const map<std::string, vector<double> > &nonlin_y,
                              const map<string, map<string, string> > &settings_map)
 {
-    SceneMaterial *sceneMaterial = Agros2D::scene()->getMaterial(m_fieldInfo, QString::fromStdString(name));
+    SceneMaterial *sceneMaterial = Agros2D::preprocessor()->scene()->getMaterial(m_fieldInfo, QString::fromStdString(name));
 
     if (sceneMaterial == NULL)
         throw invalid_argument(QObject::tr("Material '%1' doesn't exists.").arg(QString::fromStdString(name)).toStdString());
@@ -516,18 +516,18 @@ void PyField::modifyMaterial(const std::string &name, const map<std::string, dou
 
 void PyField::removeMaterial(const std::string &name)
 {
-    SceneMaterial *sceneMaterial = Agros2D::scene()->getMaterial(m_fieldInfo, QString::fromStdString(name));
+    SceneMaterial *sceneMaterial = Agros2D::preprocessor()->scene()->getMaterial(m_fieldInfo, QString::fromStdString(name));
     if (sceneMaterial == NULL)
         throw invalid_argument(QObject::tr("Material '%1' doesn't exists.").arg(QString::fromStdString(name)).toStdString());
 
-    Agros2D::scene()->removeMaterial(sceneMaterial);
+    Agros2D::preprocessor()->scene()->removeMaterial(sceneMaterial);
 }
 
 void PyField::localValues(double x, double y, int timeStep, int adaptivityStep, map<std::string, double> &results) const
 {
     map<std::string, double> values;
 
-    if (Agros2D::problem()->isSolved())
+    if (Agros2D::computation()->isSolved())
     {
         Point point(x, y);
 
@@ -550,8 +550,8 @@ void PyField::localValues(double x, double y, int timeStep, int adaptivityStep, 
             else
             {
                 values[variable.shortname().toStdString()] = it.value().vector.magnitude();
-                values[variable.shortname().toStdString() + Agros2D::problem()->config()->labelX().toLower().toStdString()] = it.value().vector.x;
-                values[variable.shortname().toStdString() + Agros2D::problem()->config()->labelY().toLower().toStdString()] = it.value().vector.y;
+                values[variable.shortname().toStdString() + Agros2D::computation()->config()->labelX().toLower().toStdString()] = it.value().vector.x;
+                values[variable.shortname().toStdString() + Agros2D::computation()->config()->labelY().toLower().toStdString()] = it.value().vector.y;
             }
         }
     }
@@ -568,32 +568,32 @@ void PyField::surfaceIntegrals(const vector<int> &edges, int timeStep, int adapt
 {
     map<std::string, double> values;
 
-    if (Agros2D::problem()->isSolved())
+    if (Agros2D::computation()->isSolved())
     {
-        Agros2D::scene()->selectNone();
+        Agros2D::computation()->scene()->selectNone();
 
         if (!edges.empty())
         {
             for (vector<int>::const_iterator it = edges.begin(); it != edges.end(); ++it)
             {
-                if ((*it >= 0) && (*it < Agros2D::scene()->edges->length()))
+                if ((*it >= 0) && (*it < Agros2D::computation()->scene()->edges->length()))
                 {
-                    Agros2D::scene()->edges->at(*it)->setSelected(true);
+                    Agros2D::computation()->scene()->edges->at(*it)->setSelected(true);
                 }
                 else
                 {
-                    throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::scene()->edges->length()-1).toStdString());
+                    throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::computation()->scene()->edges->length()-1).toStdString());
                     results = values;
                     return;
                 }
             }
 
-            if (!silentMode() && !Agros2D::problem()->isSolving())
+            if (!silentMode() && !Agros2D::computation()->isSolving())
                 currentPythonEngineAgros()->sceneViewPost2D()->updateGL();
         }
         else
         {
-            Agros2D::scene()->selectAll(SceneGeometryMode_OperateOnEdges);
+            Agros2D::computation()->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
         }
 
         // set time and adaptivity step if -1 (default parameter - last steps), check steps
@@ -624,19 +624,19 @@ void PyField::volumeIntegrals(const vector<int> &labels, int timeStep, int adapt
 {
     map<std::string, double> values;
 
-    if (Agros2D::problem()->isSolved())
+    if (Agros2D::computation()->isSolved())
     {
-        Agros2D::scene()->selectNone();
+        Agros2D::computation()->scene()->selectNone();
 
         if (!labels.empty())
         {
             for (vector<int>::const_iterator it = labels.begin(); it != labels.end(); ++it)
             {
-                if ((*it >= 0) && (*it < Agros2D::scene()->labels->length()))
+                if ((*it >= 0) && (*it < Agros2D::computation()->scene()->labels->length()))
                 {
-                    if (Agros2D::scene()->labels->at(*it)->marker(m_fieldInfo) != Agros2D::scene()->materials->getNone(m_fieldInfo))
+                    if (Agros2D::computation()->scene()->labels->at(*it)->marker(m_fieldInfo) != Agros2D::preprocessor()->scene()->materials->getNone(m_fieldInfo))
                     {
-                        Agros2D::scene()->labels->at(*it)->setSelected(true);
+                        Agros2D::computation()->scene()->labels->at(*it)->setSelected(true);
                     }
                     else
                     {
@@ -645,18 +645,18 @@ void PyField::volumeIntegrals(const vector<int> &labels, int timeStep, int adapt
                 }
                 else
                 {
-                    throw out_of_range(QObject::tr("Label index must be between 0 and '%1'.").arg(Agros2D::scene()->labels->length()-1).toStdString());
+                    throw out_of_range(QObject::tr("Label index must be between 0 and '%1'.").arg(Agros2D::computation()->scene()->labels->length()-1).toStdString());
                     results = values;
                     return;
                 }
             }
 
-            if (!silentMode() && !Agros2D::problem()->isSolving())
+            if (!silentMode() && !Agros2D::computation()->isSolving())
                 currentPythonEngineAgros()->sceneViewPost2D()->updateGL();
         }
         else
         {
-            Agros2D::scene()->selectAll(SceneGeometryMode_OperateOnLabels);
+            Agros2D::computation()->scene()->selectAll(SceneGeometryMode_OperateOnLabels);
         }
 
         // set time and adaptivity step if -1 (default parameter - last steps), check steps
@@ -685,17 +685,17 @@ void PyField::volumeIntegrals(const vector<int> &labels, int timeStep, int adapt
 
 void PyField::initialMeshInfo(map<std::string, int> &info) const
 {
-    if (!Agros2D::problem()->isMeshed())
+    if (!Agros2D::computation()->isMeshed())
         throw logic_error(QObject::tr("Problem is not meshed.").toStdString());
 
     // todo: initial mesh the same for all fields
-    info["nodes"] = Agros2D::problem()->initialMesh().n_used_vertices();
-    info["elements"] = Agros2D::problem()->initialMesh().n_active_cells();
+    info["nodes"] = Agros2D::computation()->initialMesh().n_used_vertices();
+    info["elements"] = Agros2D::computation()->initialMesh().n_active_cells();
 }
 
 void PyField::solutionMeshInfo(int timeStep, int adaptivityStep, map<std::string, int> &info) const
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     // set time and adaptivity step if -1 (default parameter - last steps), check steps
@@ -714,7 +714,7 @@ void PyField::solverInfo(int timeStep, int adaptivityStep,
                          vector<double> &solutionsChange, vector<double> &residual,
                          vector<double> &dampingCoeff, int &jacobianCalculations) const
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     // step if -1 (default parameter - last steps)
@@ -737,7 +737,7 @@ void PyField::solverInfo(int timeStep, int adaptivityStep,
 
 void PyField::adaptivityInfo(int timeStep, vector<double> &error, vector<int> &dofs) const
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     if (m_fieldInfo->adaptivityType() == AdaptivityMethod_None)
@@ -759,8 +759,8 @@ int PyField::getTimeStep(int timeStep) const
 {
     if (timeStep == -1)
         timeStep = Agros2D::solutionStore()->lastTimeStep(m_fieldInfo);
-    else if (timeStep < 0 || timeStep >= Agros2D::problem()->timeStepLengths().length() - 1)
-        throw out_of_range(QObject::tr("Time step must be in the range from 0 to %1.").arg(Agros2D::problem()->timeStepLengths().length() - 1).toStdString());
+    else if (timeStep < 0 || timeStep >= Agros2D::computation()->timeStepLengths().length() - 1)
+        throw out_of_range(QObject::tr("Time step must be in the range from 0 to %1.").arg(Agros2D::computation()->timeStepLengths().length() - 1).toStdString());
 
 
     return timeStep;

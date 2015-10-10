@@ -26,14 +26,14 @@
 #include "parser/lex.h"
 
 Value::Value(double value)
-    : m_isEvaluated(true), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(Agros2D::problem())
+    : m_isEvaluated(true), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable())
 {
     m_text = QString::number(value);
     m_number = value;
 }
 
 Value::Value(double value, std::vector<double> x, std::vector<double> y, DataTableType type, bool splineFirstDerivatives, bool extrapolateConstant)
-    : m_isEvaluated(true), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(Agros2D::problem())
+    : m_isEvaluated(true), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable())
 {
     assert(x.size() == y.size());
 
@@ -46,14 +46,14 @@ Value::Value(double value, std::vector<double> x, std::vector<double> y, DataTab
 }
 
 Value::Value(const QString &value)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(Agros2D::problem())
+    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable())
 {
     parseFromString(value.isEmpty() ? "0" : value);
     evaluateAndSave();
 }
 
 Value::Value(const QString &value, std::vector<double> x, std::vector<double> y, DataTableType type, bool splineFirstDerivatives, bool extrapolateConstant)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(Agros2D::problem())
+    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable())
 {
     assert(x.size() == y.size());
 
@@ -66,7 +66,7 @@ Value::Value(const QString &value, std::vector<double> x, std::vector<double> y,
 }
 
 Value::Value(const QString &value, const DataTable &table)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(table), m_problem(Agros2D::problem())
+    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(table)
 {
     parseFromString(value.isEmpty() ? "0" : value);
 }
@@ -75,13 +75,11 @@ Value::Value(const Value &origin)
 {
     *this = origin;
     evaluateAndSave();
-//    qDebug() << "Copy Value" << this->m_text << ", " << this->m_number;
+    //    qDebug() << "Copy Value" << this->m_text << ", " << this->m_number;
 }
 
 Value& Value::operator =(const Value &origin)
 {
-    m_problem = origin.m_problem;
-
     m_text = origin.m_text;
     m_time = origin.m_time;
     m_point = origin.m_point;
@@ -92,7 +90,7 @@ Value& Value::operator =(const Value &origin)
     evaluateAndSave();
 
     return *this;
-//    qDebug() << "operator= Value" << this->m_text << ", " << this->m_number;
+    //    qDebug() << "operator= Value" << this->m_text << ", " << this->m_number;
 }
 
 Value::~Value()
@@ -195,7 +193,7 @@ double Value::numberAtTimeAndPoint(double time, const Point &point) const
 
 double Value::numberFromTable(double key) const
 {    
-    if (m_problem->isNonlinear() && hasTable())
+    if (hasTable())
         return m_table.value(key);
     else
         return number();
@@ -203,7 +201,7 @@ double Value::numberFromTable(double key) const
 
 double Value::derivativeFromTable(double key) const
 {
-    if (m_problem->isNonlinear() && hasTable())
+    if (hasTable())
         return m_table.derivative(key);
     else
         return 0.0;
@@ -236,16 +234,9 @@ void Value::setText(const QString &str)
         {
             if (token.toString() == "time")
                 m_isTimeDependent = true;
-            if (m_problem->config()->coordinateType() == CoordinateType_Planar)
-            {
-                if (token.toString() == "x" || token.toString() == "y")
-                    m_isCoordinateDependent = true;
-            }
-            else
-            {
-                if (token.toString() == "r" || token.toString() == "z")
-                    m_isCoordinateDependent = true;
-            }
+
+            if (token.toString() == "x" || token.toString() == "y" || token.toString() == "r" || token.toString() == "z")
+                m_isCoordinateDependent = true;
         }
     }
 
@@ -334,16 +325,8 @@ bool Value::evaluateExpression(const QString &expression, double time, const Poi
 
     if (m_isCoordinateDependent && !m_isTimeDependent)
     {
-        if (m_problem->config()->coordinateType() == CoordinateType_Planar)
-        {
-            commandPre = QString("x = %1; y = %2").arg(point.x).arg(point.y);
-            commandPost = QString("del x; del y");
-        }
-        else
-        {
-            commandPre = QString("r = %1; z = %2").arg(point.x).arg(point.y);
-            commandPost = QString("del r; del z");
-        }
+        commandPre = QString("x = %1; y = %2; r = %1; z = %2").arg(point.x).arg(point.y);
+        commandPost = QString("del x; del y; del r; del z");
     }
     else if (m_isTimeDependent && !m_isCoordinateDependent)
     {
@@ -352,16 +335,8 @@ bool Value::evaluateExpression(const QString &expression, double time, const Poi
     }
     else if (m_isCoordinateDependent && m_isTimeDependent)
     {
-        if (m_problem->config()->coordinateType() == CoordinateType_Planar)
-        {
-            commandPre = QString("time = %1; x = %2; y = %3").arg(time).arg(point.x).arg(point.y);
-            commandPost = QString("del time; del x; del y");
-        }
-        else
-        {
-            commandPre = QString("time = %1; r = %2; z = %3").arg(time).arg(point.x).arg(point.y);
-            commandPost = QString("del time; del r; del z");
-        }
+        commandPre = QString("time = %1; x = %2; y = %3; r = %2; z = %3").arg(time).arg(point.x).arg(point.y);
+        commandPost = QString("del time; del x; del y; del r; del z");
     }
 
     // eval expression

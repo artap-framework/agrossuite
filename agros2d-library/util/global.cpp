@@ -129,8 +129,8 @@ void clearAgros2DCache()
         if (fileInfo.isDir())
         {
             // process doesn't exists
-            // if (!SystemUtils::isProcessRunning(fileInfo.fileName().toInt()))
-            //     removeDirectory(fileInfo.absoluteFilePath());
+            if (!SystemUtils::isProcessRunning(fileInfo.fileName().toInt()))
+                removeDirectory(fileInfo.absoluteFilePath());
         }
     }
 
@@ -142,11 +142,14 @@ Agros2D::Agros2D()
 {
     clearAgros2DCache();
 
-    m_problem = new Problem();
-    m_scene = new Scene();
+    // preprocessor
+    m_preprocessor = new ProblemPreprocessor();
 
-    QObject::connect(m_problem, SIGNAL(fieldsChanged()), m_scene, SLOT(doFieldsChanged()));
-    QObject::connect(m_scene, SIGNAL(invalidated()), m_problem, SLOT(clearSolution()));
+    // postprocessor
+    m_computation = nullptr;
+    // TODO: not needed
+    //m_computation = new ProblemComputation();
+    //m_computations[m_computation->problemDir()] = m_computation;
 
     initLists();
 
@@ -167,9 +170,13 @@ Agros2D::Agros2D()
 }
 
 void Agros2D::clear()
-{
-    delete m_singleton.data()->m_scene;
-    delete m_singleton.data()->m_problem;
+{    
+    delete m_singleton.data()->m_preprocessor;
+    m_singleton.data()->m_computation = nullptr;
+    for (int i = 0; i < m_singleton.data()->m_computations.count(); i++)
+        delete m_singleton.data()->m_computations.values().at(i);
+    m_singleton.data()->m_computations.clear();
+
     delete m_singleton.data()->m_configComputer;
     delete m_singleton.data()->m_solutionStore;
     delete m_singleton.data()->m_log;
@@ -178,6 +185,43 @@ void Agros2D::clear()
     // remove temp and cache plugins
     removeDirectory(cacheProblemDir());
     removeDirectory(tempProblemDir());
+}
+
+QString Agros2D::currentComputationDir()
+{
+    return Agros2D::singleton()->m_computations.key(Agros2D::singleton()->m_computation);
+}
+
+void Agros2D::setCurrentComputation(const QString &problemDir)
+{
+    assert(Agros2D::singleton()->m_computations.contains(problemDir));
+    Agros2D::singleton()->m_computation = Agros2D::singleton()->m_computations[problemDir];
+
+    emit Agros2D::singleton()->reconnectSlots();
+}
+
+void Agros2D::addComputation(const QString &problemDir, ProblemComputation *comp)
+{
+    Agros2D::singleton()->m_computations[problemDir] = comp;
+}
+
+void Agros2D::removeComputation(const QString &problemDir)
+{
+    Agros2D::singleton()->m_computations.remove(problemDir);
+    removeDirectory(QString("%1/%2").arg(cacheProblemDir(), problemDir));
+
+    if (Agros2D::singleton()->m_computations.count() > 0)
+    {
+        Agros2D::singleton()->m_computation = Agros2D::singleton()->m_computations.last();
+    }
+    else
+    {
+        // TODO: not needed
+        Agros2D::singleton()->m_computation = new ProblemComputation();
+        Agros2D::singleton()->m_computations[Agros2D::singleton()->m_computation->problemDir()] = Agros2D::singleton()->m_computation;
+    }
+
+    emit Agros2D::singleton()->reconnectSlots();
 }
 
 void Agros2D::createSingleton()

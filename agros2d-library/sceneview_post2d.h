@@ -44,8 +44,6 @@ public:
     SceneViewPost2D(PostDeal *postDeal, QWidget *parent = 0);
     ~SceneViewPost2D();
 
-    QAction *actSceneModePost2D;
-
     QAction *actSelectPoint;
     QAction *actSelectByMarker;
 
@@ -103,6 +101,8 @@ private slots:
     virtual void clearGLLists();
 
     void setControls();
+
+    void reconnectActions();
 };
 
 #endif // SCENEVIEWPOST2D_H

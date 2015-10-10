@@ -87,6 +87,8 @@ private:
 private slots:
     void doApply();
     void doParticleDefault();
+
+    void reconnectActions();
 };
 
 class SceneViewParticleTracing : public SceneViewCommon3D
@@ -138,7 +140,10 @@ private slots:
     virtual void refresh();
     virtual void clearGLLists();
     void clearParticleLists();
+
     void setControls();
+
+    void reconnectActions();
 };
 
 #endif // SCENEVIEWPARTICLETRACING_H

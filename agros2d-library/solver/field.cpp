@@ -64,99 +64,6 @@ FieldInfo::FieldInfo(QString fieldId)
 FieldInfo::~FieldInfo()
 {
     delete m_plugin;
-    deleteValuePointerTable();
-}
-
-void FieldInfo::deleteValuePointerTable()
-{
-    if(m_hermesMarkerToAgrosLabelConversion)
-        delete[] m_hermesMarkerToAgrosLabelConversion;
-
-    m_hermesMarkerToAgrosLabelConversion = nullptr;
-
-    if(m_labelAreas)
-        delete[] m_labelAreas;
-
-    m_labelAreas = nullptr;
-
-    m_valuePointersTable.clear();
-}
-
-void FieldInfo::createValuePointerTable()
-{
-    deleteValuePointerTable();
-    // first create hermes marker to agros label conversion
-    assert(!m_hermesMarkerToAgrosLabelConversion);
-
-    int num = Agros2D::scene()->labels->count();
-    m_hermesMarkerToAgrosLabelConversion = new int[num+1];
-    m_labelAreas = new double[num+1];
-
-    for(int i = 0; i < num+1; i++)
-    {
-        m_hermesMarkerToAgrosLabelConversion[i] = LABEL_OUTSIDE_FIELD;
-        m_labelAreas[i] = LABEL_OUTSIDE_FIELD;
-    }
-
-    for(int labelIndex = 0; labelIndex < num; labelIndex++)
-    {
-        if(!Agros2D::scene()->labels->at(labelIndex)->marker(this)->isNone())
-        {
-            /*
-            Mesh::MarkersConversion::IntValid intValid = initialMesh()->get_element_markers_conversion().get_internal_marker(QString::number(labelIndex).toStdString());
-            assert(intValid.valid);
-            assert(intValid.marker <= num);
-            assert(m_hermesMarkerToAgrosLabelConversion[intValid.marker] == LABEL_OUTSIDE_FIELD);
-            m_hermesMarkerToAgrosLabelConversion[intValid.marker] = labelIndex;           
-            m_labelAreas[labelIndex] = initialMesh()->get_marker_area(intValid.marker);
-            */
-        }
-    }
-
-
-    // values tables
-    int labelsSize = Agros2D::scene()->labels->length();
-    for(int labelNum = 0; labelNum < labelsSize; labelNum++)
-    {
-        SceneMaterial* material = Agros2D::scene()->labels->at(labelNum)->marker(this);
-        if(!material->isNone())
-        {
-            foreach(Module::MaterialTypeVariable variable, materialTypeVariables())
-            {
-                if(! m_valuePointersTable.contains(variable.id()))
-                {
-                    m_valuePointersTable[variable.id()] = QList<QWeakPointer<Value> >();
-                    for(int i = 0; i < labelsSize; i++)
-                        m_valuePointersTable[variable.id()].push_back(QWeakPointer<Value>());
-                }
-
-                assert(m_valuePointersTable[variable.id()][labelNum] == nullptr);
-                m_valuePointersTable[variable.id()][labelNum] = material->value(variable.id());
-            }
-        }
-    }
-
-    // frequency
-    m_frequency = Value::parseValueFromString(Agros2D::problem()->config()->value(ProblemConfig::Frequency).toString()).number();
-}
-
-QList<QWeakPointer<Value> > FieldInfo::valuePointerTable(QString id) const
-{
-    assert(!m_valuePointersTable.isEmpty());
-
-    // This may happen if, e.g., some special function is cosntructed in volumeintegral and some of its dependencies does not exist in given analysis
-    // In such a case, constructed special function should never been actualy used, so null pointer wil not be dereferenced
-    // This is not very safe (previously we had assert here), but has been done due to efficiency reasons.
-    if(!m_valuePointersTable.contains(id))
-        return QList<QWeakPointer<Value> >();
-
-    return m_valuePointersTable[id];
-}
-
-int FieldInfo::hermesMarkerToAgrosLabel(int hermesMarker) const
-{
-    assert(m_hermesMarkerToAgrosLabelConversion);
-    return m_hermesMarkerToAgrosLabelConversion[hermesMarker];
 }
 
 double FieldInfo::labelArea(int agrosLabel) const
@@ -287,25 +194,25 @@ void FieldInfo::refineMesh(dealii::Triangulation<2> *mesh)
 
     /*
     // refine mesh - boundary
-    foreach (SceneEdge *edge, Agros2D::scene()->edges->items())
+    foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
     {
         if (edgeRefinement(edge) > 0)
         {
-            mesh->refine_towards_boundary(QString::number(Agros2D::scene()->edges->items().indexOf(edge)).toStdString(),
+            mesh->refine_towards_boundary(QString::number(Agros2D::problem()->scene()->edges->items().indexOf(edge)).toStdString(),
                                           edgeRefinement(edge));
         }
     }
 
     // refine mesh - elements
-    foreach (SceneLabel *label, Agros2D::scene()->labels->items())
+    foreach (SceneLabel *label, Agros2D::problem()->scene()->labels->items())
     {
         if (!label->marker(this)->isNone())
         {
             if (labelRefinement(label) > 0)
-                mesh->refine_in_area(QString::number(Agros2D::scene()->labels->items().indexOf(label)).toStdString(),
+                mesh->refine_in_area(QString::number(Agros2D::problem()->scene()->labels->items().indexOf(label)).toStdString(),
                                      labelRefinement(label));
             else if (value(FieldInfo::SpaceNumberOfRefinements).toInt() > 0)
-                mesh->refine_in_area(QString::number(Agros2D::scene()->labels->items().indexOf(label)).toStdString(),
+                mesh->refine_in_area(QString::number(Agros2D::problem()->scene()->labels->items().indexOf(label)).toStdString(),
                                      value(FieldInfo::SpaceNumberOfRefinements).toInt());
         }
     }
@@ -474,7 +381,7 @@ QList<Module::MaterialTypeVariable> FieldInfo::materialTypeVariables() const
                     if (variable.id().toStdString() == qty.id())
                     {
                         QString nonlinearExpression;
-                        if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar && qty.nonlinearity_planar().present())
+                        if (Agros2D::preprocessor()->config()->coordinateType() == CoordinateType_Planar && qty.nonlinearity_planar().present())
                             nonlinearExpression = QString::fromStdString(qty.nonlinearity_planar().get());
                         else
                             if (qty.nonlinearity_axi().present())
@@ -606,10 +513,13 @@ Module::Force FieldInfo::force() const
     {
         XMLModule::expression exp = force.expression().at(i);
         if (exp.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
-            return Module::Force((Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar) ? QString::fromStdString(exp.planar_x().get()) : QString::fromStdString(exp.axi_r().get()),
-                                 (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar) ? QString::fromStdString(exp.planar_y().get()) : QString::fromStdString(exp.axi_z().get()),
-                                 (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar) ? QString::fromStdString(exp.planar_z().get()) : QString::fromStdString(exp.axi_phi().get()));
+            return Module::Force((Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar) ? QString::fromStdString(exp.planar_x().get()) : QString::fromStdString(exp.axi_r().get()),
+                                 (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar) ? QString::fromStdString(exp.planar_y().get()) : QString::fromStdString(exp.axi_z().get()),
+                                 (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar) ? QString::fromStdString(exp.planar_z().get()) : QString::fromStdString(exp.axi_phi().get()));
     }
+
+    assert(0);
+    return Module::Force();
 }
 
 // material and boundary user interface
@@ -624,6 +534,7 @@ Module::DialogUI FieldInfo::materialUI() const
     }
 
     assert(0);
+    return Module::DialogUI();
 }
 
 Module::DialogUI FieldInfo::boundaryUI() const
@@ -655,7 +566,7 @@ QList<Module::LocalVariable> FieldInfo::localPointVariables() const
             {
                 variables.append(Module::LocalVariable(this,
                                                        lv,
-                                                       Agros2D::problem()->config()->coordinateType(),
+                                                       Agros2D::computation()->config()->coordinateType(),
                                                        analysisType()));
             }
         }
@@ -698,7 +609,7 @@ QList<Module::Integral> FieldInfo::surfaceIntegrals() const
             XMLModule::expression exp = sur.expression().at(i);
             if (exp.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
             {
-                if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar)
+                if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar)
                     expr = QString::fromStdString(exp.planar().get()).trimmed();
                 else
                     expr = QString::fromStdString(exp.axi().get()).trimmed();
@@ -738,7 +649,7 @@ QList<Module::Integral> FieldInfo::volumeIntegrals() const
             XMLModule::expression exp = vol.expression().at(i);
             if (exp.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
             {
-                if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar)
+                if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar)
                     expr = QString::fromStdString(exp.planar().get()).trimmed();
                 else
                     expr = QString::fromStdString(exp.axi().get()).trimmed();

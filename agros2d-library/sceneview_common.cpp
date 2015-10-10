@@ -53,7 +53,8 @@ SceneViewCommon::SceneViewCommon(QWidget *parent)
       m_textureLabelRulersName(""),
       m_textureLabelPostName(""),
       m_textureLabelRulersSize(0),
-      m_textureLabelPostSize(0)
+      m_textureLabelPostSize(0),
+      m_isPreprocessor(true)
 {
     m_mainWindow = (QMainWindow *) parent;
 
@@ -71,15 +72,16 @@ SceneViewCommon::~SceneViewCommon()
 {
 }
 
+Problem *SceneViewCommon::problem()
+{
+    if (m_isPreprocessor)
+        return Agros2D::preprocessor();
+    else
+        return Agros2D::computation();
+}
+
 void SceneViewCommon::createActions()
 {
-    // material
-    actMaterialGroup = new QActionGroup(this);
-    connect(actMaterialGroup, SIGNAL(triggered(QAction *)), this, SLOT(doMaterialGroup(QAction *)));
-
-    // boundary
-    actBoundaryGroup = new QActionGroup(this);
-    connect(actBoundaryGroup, SIGNAL(triggered(QAction *)), this, SLOT(doBoundaryGroup(QAction *)));
 }
 
 void SceneViewCommon::initializeGL()
@@ -291,9 +293,11 @@ void SceneViewCommon::closeEvent(QCloseEvent *event)
 
 void SceneViewCommon::doZoomBestFit()
 {
-    RectPoint rect = Agros2D::scene()->boundingBox();
-
-    doZoomRegion(rect.start, rect.end);
+    if (problem())
+    {
+        RectPoint rect = problem()->scene()->boundingBox();
+        doZoomRegion(rect.start, rect.end);
+    }
 }
 
 void SceneViewCommon::doZoomIn()
@@ -312,18 +316,6 @@ void SceneViewCommon::refresh()
 
     paintGL();
     updateGL();
-}
-
-void SceneViewCommon::doMaterialGroup(QAction *action)
-{
-    if (SceneMaterial *material = action->data().value<SceneMaterial *>())
-        Agros2D::scene()->setMaterial(material);
-}
-
-void SceneViewCommon::doBoundaryGroup(QAction *action)
-{
-    if (SceneBoundary *boundary = action->data().value<SceneBoundary *>())
-        Agros2D::scene()->setBoundary(boundary);
 }
 
 void SceneViewCommon::drawArc(const Point &point, double r, double startAngle, double arcAngle, int segments) const

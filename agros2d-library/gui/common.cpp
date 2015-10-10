@@ -66,7 +66,7 @@ void fillComboBoxFieldInfo(QComboBox *cmbFieldInfo)
     // clear combo
     cmbFieldInfo->blockSignals(true);
     cmbFieldInfo->clear();
-    foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+    foreach (FieldInfo *fieldInfo, Agros2D::preprocessor()->fieldInfos())
         cmbFieldInfo->addItem(fieldInfo->name(), fieldInfo->fieldId());
 
     cmbFieldInfo->setCurrentIndex(cmbFieldInfo->findData(fieldId));
@@ -141,10 +141,10 @@ void fillComboBoxVectorVariable(FieldInfo *fieldInfo, QComboBox *cmbFieldVariabl
 
 void fillComboBoxTimeStep(const FieldInfo* fieldInfo, QComboBox *cmbTimeStep)
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         return;
 
-    QList<double> times = Agros2D::problem()->timeStepTimes();
+    QList<double> times = Agros2D::computation()->timeStepTimes();
 
     cmbTimeStep->blockSignals(true);
 
@@ -183,7 +183,7 @@ void fillComboBoxTimeStep(const FieldInfo* fieldInfo, QComboBox *cmbTimeStep)
 
 void fillComboBoxAdaptivityStep(FieldInfo* fieldInfo, int timeStep, QComboBox *cmbAdaptivityStep)
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         return;
 
     cmbAdaptivityStep->blockSignals(true);

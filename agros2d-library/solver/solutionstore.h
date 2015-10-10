@@ -29,6 +29,7 @@
 class AGROS_LIBRARY_API SolutionStore
 {
 public:
+    SolutionStore();
     ~SolutionStore();
 
     class SolutionRunTimeDetails
@@ -108,9 +109,11 @@ public:
     void multiSolutionRunTimeDetailReplace(FieldSolutionID solutionID, SolutionRunTimeDetails runTime);
 
     inline bool isEmpty() const { return m_multiSolutions.isEmpty(); }
-    void clearAll();
 
     void printDebugCacheStatus();
+
+public slots:
+    void clearAll();
 
 private:
     QList<FieldSolutionID> m_multiSolutions;

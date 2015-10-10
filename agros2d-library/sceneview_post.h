@@ -156,6 +156,8 @@ private slots:
 
     void problemMeshed();
     void problemSolved();
+
+    void reconnectActions();
 };
 
 class SceneViewPostInterface : public SceneViewCommon

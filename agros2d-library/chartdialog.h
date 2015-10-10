@@ -70,6 +70,9 @@ public:
 public slots:
     void setControls();
 
+private slots:
+    void reconnectActions();
+
 private:
     QCustomPlot *m_chart;
 };
@@ -154,6 +157,8 @@ private slots:
     QMap<QString, double> getData(Point point, int timeStep, int adaptivityStep);
 
     void createChartLine();
+
+    void reconnectActions();
 };
 
 #endif // CHARTDIALOG_H

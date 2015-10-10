@@ -60,22 +60,6 @@ void MarkerContainer<MarkerType>::removeFieldMarkers(const FieldInfo* fieldInfo)
     }
 }
 
-
-template <typename MarkerType>
-MarkerType* MarkerContainer<MarkerType>::getNone(const FieldInfo* field)
-{
-    if (!noneMarkers.contains(field))
-    {
-        MarkerType *marker = new MarkerType(field, "none");
-        marker->setNone();
-        noneMarkers[field] = marker;
-
-        return marker;
-    }
-
-    return noneMarkers[field];
-}
-
 template <typename MarkerType>
 MarkerType *MarkerContainer<MarkerType>::at(int i) const
 {
@@ -128,11 +112,12 @@ MarkerType* MarkerContainer<MarkerType>::getSingleOrNull()
 }
 
 template <typename MarkerType>
-void MarkerContainer<MarkerType>::doFieldsChanged()
+void MarkerContainer<MarkerType>::doFieldsChanged(Problem *problem)
 {
-    foreach(const FieldInfo* fieldInfo, noneMarkers.keys())
+    foreach (const FieldInfo* fieldInfo, noneMarkers.keys())
     {
-        if (!Agros2D::problem()->fieldInfos().values().contains(const_cast<FieldInfo*>(fieldInfo))){
+        if (!problem->fieldInfos().values().contains(const_cast<FieldInfo *>(fieldInfo)))
+        {
             delete noneMarkers[fieldInfo];
             noneMarkers.remove(fieldInfo);
             removeFieldMarkers(fieldInfo);
@@ -152,20 +137,20 @@ bool MarkerContainer<MarkerType>::evaluateAllVariables()
     return true;
 }
 
-//template <typename MarkerType>
-//void UniqueMarkerContainer<MarkerType>::add(MarkerType *marker)
-//{
-//    // add check corresponding to the same field ???
-//    if (MarkerType *existingMarker = get(QString::fromStdString(marker->getName())))
-//        this->data.replace(this->data.indexOf(existingMarker), marker);
-//    else
-//        this->data.append(marker);
-//}
-
-
 template <typename MarkerType>
-QMap<const FieldInfo*, MarkerType*> MarkerContainer<MarkerType>::noneMarkers;
+MarkerType* MarkerContainer<MarkerType>::getNone(const FieldInfo* field)
+{
+    if (!noneMarkers.contains(field))
+    {
+        MarkerType *marker = new MarkerType(nullptr, field, "none");
+        marker->setNone();
+        noneMarkers[field] = marker;
 
+        return marker;
+    }
+
+    return noneMarkers[field];
+}
 
 template class MarkerContainer<SceneBoundary>;
 template class MarkerContainer<SceneMaterial>;

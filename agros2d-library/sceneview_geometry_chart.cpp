@@ -45,6 +45,8 @@ SceneViewPreprocessorChart::SceneViewPreprocessorChart(QWidget *parent)
     : SceneViewCommon2D(NULL, parent)
 {
     setMinimumSize(100, 50);
+
+    m_isPreprocessor = false;
 }
 
 SceneViewPreprocessorChart::~SceneViewPreprocessorChart()
@@ -72,13 +74,13 @@ void SceneViewPreprocessorChart::doZoomRegion(const Point &start, const Point &e
 
 void SceneViewPreprocessorChart::refresh()
 {
-    if (Agros2D::problem()->isSolved())
+    if (Agros2D::computation()->isSolved())
         SceneViewCommon::refresh();
 }
 
 void SceneViewPreprocessorChart::clear()
 {
-    if (Agros2D::problem()->isSolved())
+    if (Agros2D::computation()->isSolved())
         doZoomBestFit();
 }
 
@@ -107,7 +109,7 @@ void SceneViewPreprocessorChart::paintGeometry()
     loadProjection2d(true);
 
     // edges
-    foreach (SceneEdge *edge, Agros2D::scene()->edges->items())
+    foreach (SceneEdge *edge, Agros2D::computation()->scene()->edges->items())
     {
         glColor3d(COLOREDGE[0], COLOREDGE[1], COLOREDGE[2]);
         glLineWidth(1.0);
@@ -134,7 +136,7 @@ void SceneViewPreprocessorChart::paintChartLine()
 {
     loadProjection2d(true);
 
-    RectPoint rect = Agros2D::scene()->boundingBox();
+    RectPoint rect = Agros2D::computation()->scene()->boundingBox();
     double dm = qMax(rect.width(), rect.height()) / 25.0;
 
     glColor3d(1.0, 0.1, 0.1);

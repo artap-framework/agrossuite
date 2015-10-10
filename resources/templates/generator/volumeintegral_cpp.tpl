@@ -57,7 +57,7 @@ void {{CLASS}}VolumeIntegral::calculate()
 {
     m_values.clear();
 
-    if (Agros2D::problem()->isSolved())
+    if (Agros2D::computation()->isSolved())
     {
         FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep);
         // check existence
@@ -67,9 +67,9 @@ void {{CLASS}}VolumeIntegral::calculate()
         MultiArray ma = Agros2D::solutionStore()->multiArray(fsid);
 
         // update time functions
-        if (!Agros2D::problem()->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
+        if (!Agros2D::computation()->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
         {
-            Module::updateTimeFunctions(Agros2D::problem()->timeStepToTotalTime(m_timeStep));
+            Module::updateTimeFunctions(Agros2D::computation()->timeStepToTotalTime(m_timeStep));
         }
 
         // Gauss quadrature - volume
@@ -90,9 +90,9 @@ void {{CLASS}}VolumeIntegral::calculate()
         QList<int> surroundings;
         if ({{INTEGRAL_COUNT_EGGSHELL}} > 0)
         {
-            for (int iFace = 0; iFace < Agros2D::scene()->edges->count(); iFace++)
+            for (int iFace = 0; iFace < Agros2D::computation()->scene()->edges->count(); iFace++)
             {
-                SceneEdge *edge = Agros2D::scene()->edges->at(iFace);
+                SceneEdge *edge = Agros2D::computation()->scene()->edges->at(iFace);
 
                 if ((edge->leftLabelIdx() != MARKER_IDX_NOT_EXISTING) && (edge->rightLabelIdx() == MARKER_IDX_NOT_EXISTING))
                 {
@@ -113,9 +113,9 @@ void {{CLASS}}VolumeIntegral::calculate()
             }
         }
 
-        for (int iLabel = 0; iLabel < Agros2D::scene()->labels->count(); iLabel++)
+        for (int iLabel = 0; iLabel < Agros2D::computation()->scene()->labels->count(); iLabel++)
         {
-            SceneLabel *label = Agros2D::scene()->labels->at(iLabel);
+            SceneLabel *label = Agros2D::computation()->scene()->labels->at(iLabel);
             SceneMaterial *material = label->marker(m_fieldInfo);
             if (material->isNone())
                 continue;
@@ -145,7 +145,7 @@ void {{CLASS}}VolumeIntegral::calculate()
 
                         // expressions
                         {{#VARIABLE_SOURCE}}
-                        if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+                        if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::computation()->config()->coordinateType() == {{COORDINATE_TYPE}}))
                         {
                             for (unsigned int k = 0; k < n_q_points; ++k)
                             {
@@ -180,7 +180,7 @@ void {{CLASS}}VolumeIntegral::calculate()
 
                                     // expressions
                                     {{#VARIABLE_SOURCE_EGGSHELL}}
-                                    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+                                    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::computation()->config()->coordinateType() == {{COORDINATE_TYPE}}))
                                     {
                                         for (unsigned int k = 0; k < n_face_q_points; ++k)
                                         {

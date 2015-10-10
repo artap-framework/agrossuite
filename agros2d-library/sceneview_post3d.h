@@ -62,7 +62,10 @@ private:
 private slots:
     virtual void refresh();
     virtual void clearGLLists();
+
     void setControls();
+
+    void reconnectActions();
 };
 
 #endif // SCENEVIEWPOST3D_H

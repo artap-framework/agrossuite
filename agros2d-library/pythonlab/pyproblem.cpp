@@ -31,16 +31,16 @@ PyProblem::PyProblem(bool clearProblem)
 
 void PyProblem::clear()
 {
-    Agros2D::scene()->clear();
+    Agros2D::preprocessor()->scene()->clear();
 }
 
 void PyProblem::clearSolution()
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    Agros2D::problem()->clearSolution();
-    Agros2D::scene()->invalidate();
+    Agros2D::computation()->clearSolution();
+    Agros2D::computation()->scene()->invalidate();
 
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actSceneModePreprocessor->trigger();
@@ -48,14 +48,14 @@ void PyProblem::clearSolution()
 
 void PyProblem::refresh()
 {
-    Agros2D::scene()->invalidate();
+    Agros2D::preprocessor()->scene()->invalidate();
     currentPythonEngineAgros()->postDeal()->refresh();
 }
 
 void PyProblem::setCoordinateType(const std::string &coordinateType)
 {
     if (coordinateTypeStringKeys().contains(QString::fromStdString(coordinateType)))
-        Agros2D::problem()->config()->setCoordinateType(coordinateTypeFromStringKey(QString::fromStdString(coordinateType)));
+        Agros2D::preprocessor()->config()->setCoordinateType(coordinateTypeFromStringKey(QString::fromStdString(coordinateType)));
     else
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(coordinateTypeStringKeys())).toStdString());
 }
@@ -63,7 +63,7 @@ void PyProblem::setCoordinateType(const std::string &coordinateType)
 void PyProblem::setMeshType(const std::string &meshType)
 {
     if (meshTypeStringKeys().contains(QString::fromStdString(meshType)))
-        Agros2D::problem()->config()->setMeshType(meshTypeFromStringKey(QString::fromStdString(meshType)));
+        Agros2D::preprocessor()->config()->setMeshType(meshTypeFromStringKey(QString::fromStdString(meshType)));
     else
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(meshTypeStringKeys())).toStdString());
 }
@@ -71,7 +71,7 @@ void PyProblem::setMeshType(const std::string &meshType)
 void PyProblem::setFrequency(double frequency)
 {
     if (frequency > 0.0)
-        Agros2D::problem()->config()->setValue(ProblemConfig::Frequency, QString::number(frequency));
+        Agros2D::preprocessor()->config()->setValue(ProblemConfig::Frequency, QString::number(frequency));
     else
         throw out_of_range(QObject::tr("The frequency must be positive.").toStdString());
 }
@@ -79,7 +79,7 @@ void PyProblem::setFrequency(double frequency)
 void PyProblem::setTimeStepMethod(const std::string &timeStepMethod)
 {
     if (timeStepMethodStringKeys().contains(QString::fromStdString(timeStepMethod)))
-        Agros2D::problem()->config()->setValue(ProblemConfig::TimeMethod, (dealii::TimeStepping::runge_kutta_method) timeStepMethodFromStringKey(QString::fromStdString(timeStepMethod)));
+        Agros2D::preprocessor()->config()->setValue(ProblemConfig::TimeMethod, (dealii::TimeStepping::runge_kutta_method) timeStepMethodFromStringKey(QString::fromStdString(timeStepMethod)));
     else
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(timeStepMethodStringKeys())).toStdString());
 }
@@ -87,7 +87,7 @@ void PyProblem::setTimeStepMethod(const std::string &timeStepMethod)
 void PyProblem::setTimeMethodTolerance(double timeMethodTolerance)
 {
     if (timeMethodTolerance > 0.0)
-        Agros2D::problem()->config()->setValue(ProblemConfig::TimeMethodTolerance, timeMethodTolerance);
+        Agros2D::preprocessor()->config()->setValue(ProblemConfig::TimeMethodTolerance, timeMethodTolerance);
     else
         throw out_of_range(QObject::tr("The time method tolerance must be positive.").toStdString());
 }
@@ -95,7 +95,7 @@ void PyProblem::setTimeMethodTolerance(double timeMethodTolerance)
 void PyProblem::setTimeMethodOrder(int timeMethodOrder)
 {
     if (timeMethodOrder >= 1 && timeMethodOrder <= 3)
-        Agros2D::problem()->config()->setValue(ProblemConfig::TimeOrder, timeMethodOrder);
+        Agros2D::preprocessor()->config()->setValue(ProblemConfig::TimeOrder, timeMethodOrder);
     else
         throw out_of_range(QObject::tr("Number of time method order must be greater than 1.").toStdString());
 }
@@ -103,7 +103,7 @@ void PyProblem::setTimeMethodOrder(int timeMethodOrder)
 void PyProblem::setTimeInitialTimeStep(double timeInitialTimeStep)
 {
     if (timeInitialTimeStep > 0.0)
-        Agros2D::problem()->config()->setValue(ProblemConfig::TimeInitialStepSize, timeInitialTimeStep);
+        Agros2D::preprocessor()->config()->setValue(ProblemConfig::TimeInitialStepSize, timeInitialTimeStep);
     else
         throw out_of_range(QObject::tr("Initial time step must be positive.").toStdString());
 }
@@ -111,7 +111,7 @@ void PyProblem::setTimeInitialTimeStep(double timeInitialTimeStep)
 void PyProblem::setNumConstantTimeSteps(int timeSteps)
 {
     if (timeSteps >= 1)
-        Agros2D::problem()->config()->setValue(ProblemConfig::TimeConstantTimeSteps, timeSteps);
+        Agros2D::preprocessor()->config()->setValue(ProblemConfig::TimeConstantTimeSteps, timeSteps);
     else
         throw out_of_range(QObject::tr("Number of time steps must be greater than 1.").toStdString());
 }
@@ -119,7 +119,7 @@ void PyProblem::setNumConstantTimeSteps(int timeSteps)
 void PyProblem::setTimeTotal(double timeTotal)
 {
     if (timeTotal >= 0.0)
-        Agros2D::problem()->config()->setValue(ProblemConfig::TimeTotal, timeTotal);
+        Agros2D::preprocessor()->config()->setValue(ProblemConfig::TimeTotal, timeTotal);
     else
         throw out_of_range(QObject::tr("The total time must be positive.").toStdString());
 }
@@ -131,9 +131,9 @@ std::string PyProblem::getCouplingType(const std::string &sourceField, const std
 
     checkExistingFields(source, target);
 
-    if (Agros2D::problem()->hasCoupling(source, target))
+    if (Agros2D::preprocessor()->hasCoupling(source, target))
     {
-        CouplingInfo *couplingInfo = Agros2D::problem()->couplingInfo(source, target);
+        CouplingInfo *couplingInfo = Agros2D::preprocessor()->couplingInfo(source, target);
         return couplingTypeToStringKey(couplingInfo->couplingType()).toStdString();
     }
     else
@@ -147,9 +147,9 @@ void PyProblem::setCouplingType(const std::string &sourceField, const std::strin
 
     checkExistingFields(source, target);
 
-    if (Agros2D::problem()->hasCoupling(source, target))
+    if (Agros2D::preprocessor()->hasCoupling(source, target))
     {
-        CouplingInfo *couplingInfo = Agros2D::problem()->couplingInfo(source, target);
+        CouplingInfo *couplingInfo = Agros2D::preprocessor()->couplingInfo(source, target);
         if (couplingTypeStringKeys().contains(QString::fromStdString(type)))
             couplingInfo->setCouplingType(couplingTypeFromStringKey(QString::fromStdString(type)));
         else
@@ -161,68 +161,68 @@ void PyProblem::setCouplingType(const std::string &sourceField, const std::strin
 
 void PyProblem::checkExistingFields(const QString &sourceField, const QString &targetField) const
 {
-    if (Agros2D::problem()->fieldInfos().isEmpty())
+    if (Agros2D::preprocessor()->fieldInfos().isEmpty())
         throw logic_error(QObject::tr("No fields are defined.").toStdString());
 
-    if (!Agros2D::problem()->fieldInfos().contains(sourceField))
+    if (!Agros2D::preprocessor()->fieldInfos().contains(sourceField))
         throw logic_error(QObject::tr("Source field '%1' is not defined.").arg(sourceField).toStdString());
 
-    if (!Agros2D::problem()->fieldInfos().contains(targetField))
+    if (!Agros2D::preprocessor()->fieldInfos().contains(targetField))
         throw logic_error(QObject::tr("Target field '%1' is not defined.").arg(targetField).toStdString());
 }
 
 void PyProblem::mesh()
 {
-    Agros2D::scene()->invalidate();
-    Agros2D::scene()->loopsInfo()->processPolygonTriangles(true);
-    Agros2D::problem()->mesh(true);
+    // Agros2D::computation()->scene()->invalidate();
+    Agros2D::computation()->scene()->loopsInfo()->processPolygonTriangles(true);
+    Agros2D::computation()->mesh(true);
 
-    if (!Agros2D::problem()->isMeshed())
+    if (!Agros2D::computation()->isMeshed())
         throw logic_error(QObject::tr("Problem is not meshed.").toStdString());
 }
 
 void PyProblem::solve()
 {
-    Agros2D::scene()->invalidate();
-    Agros2D::scene()->loopsInfo()->processPolygonTriangles(true);
-    Agros2D::problem()->solve(false);
+    // Agros2D::computation()->scene()->invalidate();
+    Agros2D::computation()->scene()->loopsInfo()->processPolygonTriangles(true);
+    Agros2D::computation()->solve(false);
 
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 }
 
 double PyProblem::timeElapsed() const
 {
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    double time = Agros2D::problem()->timeElapsed().hour()*3600 + Agros2D::problem()->timeElapsed().minute()*60 +
-                  Agros2D::problem()->timeElapsed().second() + Agros2D::problem()->timeElapsed().msec() * 1e-3;
+    double time = Agros2D::computation()->timeElapsed().hour()*3600 + Agros2D::computation()->timeElapsed().minute()*60 +
+                  Agros2D::computation()->timeElapsed().second() + Agros2D::computation()->timeElapsed().msec() * 1e-3;
     return time;
 }
 
 void PyProblem::timeStepsLength(vector<double> &steps) const
 {
-    if (!Agros2D::problem()->isTransient())
+    if (!Agros2D::computation()->isTransient())
         throw logic_error(QObject::tr("Problem is not transient.").toStdString());
 
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    QList<double> timeStepLengths = Agros2D::problem()->timeStepLengths();
+    QList<double> timeStepLengths = Agros2D::computation()->timeStepLengths();
     for (int i = 0; i < timeStepLengths.size(); i++)
         steps.push_back(timeStepLengths.at(i));
 }
 
 void PyProblem::timeStepsTimes(vector<double> &times) const
 {
-    if (!Agros2D::problem()->isTransient())
+    if (!Agros2D::computation()->isTransient())
         throw logic_error(QObject::tr("Problem is not transient.").toStdString());
 
-    if (!Agros2D::problem()->isSolved())
+    if (!Agros2D::computation()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    QList<double> timeStepTimes = Agros2D::problem()->timeStepTimes();
+    QList<double> timeStepTimes = Agros2D::computation()->timeStepTimes();
     for (int i = 0; i < timeStepTimes.size(); i++)
         times.push_back(timeStepTimes.at(i));
 }

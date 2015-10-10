@@ -212,7 +212,7 @@ void MeshGenerator::moveNodesOnCurvedEdges()
         if (edge.marker == -1)
             continue;
 
-        if (!(Agros2D::scene()->edges->at(edge.marker)->angle() > 0.0 && Agros2D::scene()->edges->at(edge.marker)->isCurvilinear()))
+        if (!(Agros2D::computation()->scene()->edges->at(edge.marker)->angle() > 0.0 && Agros2D::computation()->scene()->edges->at(edge.marker)->isCurvilinear()))
             continue;
 
         // Only boundary now.
@@ -222,15 +222,15 @@ void MeshGenerator::moveNodesOnCurvedEdges()
             if (edge.marker != -1)
             {
                 // curve
-                if (Agros2D::scene()->edges->at(edge.marker)->angle() > 0.0 &&
-                    Agros2D::scene()->edges->at(edge.marker)->isCurvilinear())
+                if (Agros2D::computation()->scene()->edges->at(edge.marker)->angle() > 0.0 &&
+                    Agros2D::computation()->scene()->edges->at(edge.marker)->isCurvilinear())
                 {
                     // Nodes.
                     Point* node[2] = { &nodeList[edge.node[0]], &nodeList[edge.node[1]] };
                     // Center
-                    Point center = Agros2D::scene()->edges->at(edge.marker)->center();
+                    Point center = Agros2D::computation()->scene()->edges->at(edge.marker)->center();
                     // Radius
-                    double radius = Agros2D::scene()->edges->at(edge.marker)->radius();
+                    double radius = Agros2D::computation()->scene()->edges->at(edge.marker)->radius();
 
                     // First node handling
                     double pointAngle1 = atan2(center.y - node[0]->y, center.x - node[0]->x) - M_PI;
@@ -254,7 +254,7 @@ void MeshGenerator::moveNodesOnCurvedEdges()
         if (edge.marker == -1)
             continue;
 
-        if (!(Agros2D::scene()->edges->at(edge.marker)->angle() > 0.0 && Agros2D::scene()->edges->at(edge.marker)->isCurvilinear()))
+        if (!(Agros2D::computation()->scene()->edges->at(edge.marker)->angle() > 0.0 && Agros2D::computation()->scene()->edges->at(edge.marker)->isCurvilinear()))
             continue;
 
         // Boundary has been taken care of.
@@ -265,15 +265,15 @@ void MeshGenerator::moveNodesOnCurvedEdges()
         if (edge.marker != -1)
         {
             // curve
-            if (Agros2D::scene()->edges->at(edge.marker)->angle() > 0.0 &&
-                Agros2D::scene()->edges->at(edge.marker)->isCurvilinear())
+            if (Agros2D::computation()->scene()->edges->at(edge.marker)->angle() > 0.0 &&
+                Agros2D::computation()->scene()->edges->at(edge.marker)->isCurvilinear())
             {
                 // Nodes.
                 Point* node[2] = { &nodeList[edge.node[0]], &nodeList[edge.node[1]] };
                 // Center
-                Point center = Agros2D::scene()->edges->at(edge.marker)->center();
+                Point center = Agros2D::computation()->scene()->edges->at(edge.marker)->center();
                 // Radius
-                double radius = Agros2D::scene()->edges->at(edge.marker)->radius();
+                double radius = Agros2D::computation()->scene()->edges->at(edge.marker)->radius();
 
                 // Handle the nodes recursively using moveNode()
                 for (int inode = 0; inode < 2; inode++)
@@ -356,7 +356,7 @@ void MeshGenerator::writeTodealii()
             MeshEdge edge = edgeList[edge_i];
             if (edge.marker != -1)
             {
-                SceneEdge* sceneEdge = Agros2D::scene()->edges->at(edge.marker);
+                SceneEdge* sceneEdge = Agros2D::computation()->scene()->edges->at(edge.marker);
                 if (sceneEdge->angle() > 0.0 && sceneEdge->isCurvilinear())
                 {
                     dealii::types::manifold_id edgeManifoldId = edge_i + 1;
@@ -385,7 +385,7 @@ void MeshGenerator::writeTodealii()
         for (int element_i = 0; element_i < elementList.count(); element_i++)
         {
             MeshElement element = elementList[element_i];
-            if (element.isUsed && (!Agros2D::scene()->labels->at(element.marker)->isHole()))
+            if (element.isUsed && (!Agros2D::computation()->scene()->labels->at(element.marker)->isHole()))
             {
                 dealii::types::manifold_id elementManifoldId = maxEdgeMarker + element_i;
                 if (element.isTriangle())
@@ -441,10 +441,10 @@ void MeshGenerator::writeTodealii()
             }
             // todo: co je hranice?
             // todo: kde to deal potrebuje? Kdyz si okrajove podminky resim sam...
-//            if (Agros2D::scene()->edges->at(edgeList[edge_i].marker)->marker(fieldInfo) == SceneBoundaryContainer::getNone(fieldInfo))
+//            if (Agros2D::problem()->scene()->edges->at(edgeList[edge_i].marker)->marker(fieldInfo) == SceneBoundaryContainer::getNone(fieldInfo))
 //                continue;
 
-//            if (Agros2D::scene()->edges->at(edgeList[edge_i].marker)->marker(Agros2D::problem()->fieldInfo("current"))== SceneBoundaryContainer::getNone(Agros2D::problem()->fieldInfo("current")))
+//            if (Agros2D::problem()->scene()->edges->at(edgeList[edge_i].marker)->marker(Agros2D::problem()->fieldInfo("current"))== SceneBoundaryContainer::getNone(Agros2D::problem()->fieldInfo("current")))
 //                continue;
 
 
@@ -523,7 +523,7 @@ void MeshGenerator::writeTodealii()
         }
 
         // save to disk
-        QString fnMesh = QString("%1/%2_initial.msh").arg(cacheProblemDir()).arg("mesh");
+        QString fnMesh = QString("%1/%2/mesh_initial.msh").arg(cacheProblemDir()).arg(Agros2D::computation()->problemDir());
         std::ofstream ofsMesh(fnMesh.toStdString());
         boost::archive::binary_oarchive sbMesh(ofsMesh);
         m_triangulation.save(sbMesh, 0);
@@ -533,7 +533,7 @@ bool MeshGenerator::prepare()
 {
     try
     {
-        Agros2D::scene()->loopsInfo()->processLoops();
+        Agros2D::computation()->scene()->loopsInfo()->processLoops();
     }
     catch (AgrosMeshException& ame)
     {

@@ -32,10 +32,9 @@
 
 #include "solver/problem.h"
 
-SceneBasic::SceneBasic()
+SceneBasic::SceneBasic(Scene *scene) : m_scene(scene), m_isHighlighted(false)
 {
-    setSelected(false);
-    m_isHighlighted = false;
+    setSelected(false);   
 }
 
 QVariant SceneBasic::variant()
@@ -60,7 +59,7 @@ MarkerType* MarkedSceneBasic<MarkerType>::marker(const FieldInfo* field)
 template <typename MarkerType>
 MarkerType* MarkedSceneBasic<MarkerType>::marker(QString fieldId)
 {
-    return marker(Agros2D::problem()->fieldInfo(fieldId));
+    return marker(m_scene->parentProblem()->fieldInfo(fieldId));
 }
 
 
@@ -76,8 +75,21 @@ int MarkedSceneBasic<MarkerType>::markersCount()
     int count = 0;
 
     foreach (MarkerType* marker, m_markers)
-        if (marker != MarkerContainer<MarkerType>::getNone(marker->fieldInfo()))
-            count++;
+    {
+        if (typeid(MarkerType) == typeid(SceneBoundary))
+        {
+            if (marker != (MarkerType*) m_scene->boundaries->getNone(marker->fieldInfo()))
+                count++;
+        }
+        else if (typeid(MarkerType) == typeid(SceneMaterial))
+        {
+            if (marker != (MarkerType*) m_scene->materials->getNone(marker->fieldInfo()))
+                count++;
+        }
+        else
+            assert(0);
+
+    }
 
     return count;
 }
@@ -103,7 +115,7 @@ void MarkedSceneBasic<MarkerType>::putMarkersToList(MarkerContainer<MarkerType>*
 template <typename MarkerType>
 void MarkedSceneBasic<MarkerType>::removeMarker(QString field)
 {
-    removeMarker(Agros2D::problem()->fieldInfo(field));
+    removeMarker(m_scene->parentProblem()->fieldInfo(field));
 }
 
 template <typename MarkerType>
@@ -112,7 +124,14 @@ void MarkedSceneBasic<MarkerType>::removeMarker(MarkerType* marker)
     foreach (MarkerType* item, m_markers)
     {
         if (item == marker)
-            m_markers.insert(marker->fieldInfo(), MarkerContainer<MarkerType>::getNone(marker->fieldInfo()));
+        {
+            if (typeid(MarkerType) == typeid(SceneBoundary))
+                m_markers.insert(marker->fieldInfo(), (MarkerType*) m_scene->boundaries->getNone(marker->fieldInfo()));
+            else if (typeid(MarkerType) == typeid(SceneMaterial))
+                m_markers.insert(marker->fieldInfo(), (MarkerType*) m_scene->materials->getNone(marker->fieldInfo()));
+            else
+                assert(0);
+        }
     }
 }
 
@@ -128,19 +147,18 @@ void MarkedSceneBasic<MarkerType>::doFieldsChanged()
 {
     foreach (MarkerType* marker, m_markers)
     {
-        if(! Agros2D::problem()->fieldInfos().contains(marker->fieldId()))
+        if (!m_scene->parentProblem()->fieldInfos().contains(marker->fieldId()))
             removeMarker(marker);
     }
 
-    foreach (FieldInfo* fieldInfo, Agros2D::problem()->fieldInfos())
+    foreach (FieldInfo* fieldInfo, m_scene->parentProblem()->fieldInfos())
     {
-        if(! m_markers.contains(fieldInfo)){
-            if(typeid(MarkerType) == typeid(SceneBoundary))
-                m_markers[fieldInfo] = (MarkerType*)Agros2D::scene()->boundaries->getNone(fieldInfo);
-
+        if (!m_markers.contains(fieldInfo))
+        {
+            if (typeid(MarkerType) == typeid(SceneBoundary))
+                m_markers[fieldInfo] = (MarkerType*) m_scene->boundaries->getNone(fieldInfo);
             else if (typeid(MarkerType) == typeid(SceneMaterial))
-                m_markers[fieldInfo] = (MarkerType*)Agros2D::scene()->materials->getNone(fieldInfo);
-
+                m_markers[fieldInfo] = (MarkerType*) m_scene->materials->getNone(fieldInfo);
             else
                 assert(0);
         }
@@ -259,7 +277,14 @@ void MarkedSceneBasicContainer<MarkerType, MarkedSceneBasicType>::addMissingFiel
     foreach(MarkedSceneBasicType* item, this->m_data)
     {
         if (!item->hasMarker(fieldInfo))
-            item->addMarker(MarkerContainer<MarkerType>::getNone(fieldInfo));
+        {
+            if (typeid(MarkerType) == typeid(SceneBoundary))
+                item->addMarker((MarkerType*) item->scene()->boundaries->getNone(fieldInfo));
+            else if (typeid(MarkerType) == typeid(SceneMaterial))
+                item->addMarker((MarkerType*) item->scene()->materials->getNone(fieldInfo));
+            else
+                assert(0);
+        }
     }
 }
 

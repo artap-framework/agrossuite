@@ -38,6 +38,8 @@ class SceneLabel;
 
 class SceneViewInterface;
 
+class Problem;
+
 namespace Module
 {
     class LocalVariable;
@@ -88,8 +90,9 @@ protected:
     bool m_zoomRegion;
     QPointF m_zoomRegionPos;
 
-    QActionGroup *actMaterialGroup;
-    QActionGroup *actBoundaryGroup;
+    // problem (preprocessor vs. computation)
+    bool m_isPreprocessor;
+    Problem *problem();
 
     void createActions();
 
@@ -125,9 +128,6 @@ protected:
     inline double aspect() const { return (double) width() / (double) height(); }
 
 private slots:
-    void doMaterialGroup(QAction *action);
-    void doBoundaryGroup(QAction *action);
-
 #if QT_VERSION > 0x050100
     void messageLogged(QOpenGLDebugMessage message);
 #endif

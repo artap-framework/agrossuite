@@ -50,7 +50,7 @@
 bool {{CLASS}}ForceValue::hasForce()
 {
     {{#VARIABLE_SOURCE}}
-    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::computation()->config()->coordinateType() == {{COORDINATE_TYPE}}))
     {
         return true;
     }
@@ -63,7 +63,7 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
 {
     Point3 res;
 
-    if (Agros2D::problem()->isSolved())
+    if (Agros2D::computation()->isSolved())
     {
         int numberOfSolutions = m_fieldInfo->numberOfSolutions();
 
@@ -89,7 +89,7 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
 
         // find material
         SceneMaterial *material = nullptr;
-        SceneLabel *label = SceneLabel::findLabelAtPoint(Point(point.x, point.y));
+        SceneLabel *label = SceneLabel::findLabelAtPoint(Agros2D::computation()->scene(), Point(point.x, point.y));
         if (label && label->hasMarker(m_fieldInfo))
         {
             material = label->marker(m_fieldInfo);
@@ -108,7 +108,7 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
         // update time functions
         if (m_fieldInfo->analysisType() == AnalysisType_Transient)
         {
-            QList<double> times = Agros2D::problem()->timeStepTimes();
+            QList<double> times = Agros2D::computation()->timeStepTimes();
             Module::updateTimeFunctions(times[m_timeStep]);
         }
 
@@ -145,7 +145,7 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
 
         {{#VARIABLE_SOURCE}}
         if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
-         && (Agros2D::problem()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+         && (Agros2D::computation()->config()->coordinateType() == {{COORDINATE_TYPE}}))
         {
             res.x = {{EXPRESSION_X}};
             res.y = {{EXPRESSION_Y}};

@@ -17,6 +17,8 @@ class ProblemConfig;
 class ProblemSetting;
 class PyProblem;
 
+class ProblemComputation;
+
 class CalculationThread : public QThread
 {
    Q_OBJECT
@@ -44,21 +46,12 @@ signals:
 
 private:
     CalculationType m_calculationType;
-
 };
 
-
-/// intented as central for solution process
-/// shielded from gui and QT
-/// holds data describing individual fields, means of coupling and solutions
 class AGROS_LIBRARY_API Problem : public QObject
 {
     Q_OBJECT
-
 signals:
-    void timeStepChanged();
-    void meshed();
-    void solved();
 
     /// emited when an field is added or removed. Menus need to adjusted
     void fieldsChanged();
@@ -66,40 +59,21 @@ signals:
     /// emited when an field is added or removed. Menus need to adjusted
     void couplingsChanged();
 
-    void clearedSolution();
+    void fileNameChanged(const QString &fileName);
 
 public slots:
-    // clear problem
-    void clearSolution();
     void clearFieldsAndConfig();
-    void doAbortSolve();
 
 public:
     Problem();
-    ~Problem();
+    virtual ~Problem();
 
     inline ProblemConfig *config() const { return m_config; }
     inline ProblemSetting *setting() const { return m_setting; }
-
-    // void createStructure();
-
-    // mesh
-    void mesh();
-    // solve
-    void solve();
+    inline Scene *scene() { return m_scene; }
 
     // check geometry
     bool checkGeometry();
-
-    bool isSolved() const;
-    bool isSolving() const { return m_isSolving; }
-    bool isMeshed() const;
-    bool isMeshing() const { return m_isMeshing; }
-    bool isAborted() const { return m_abort; }
-    bool isPreparedForAction() const { return !isMeshing() && !isSolving() && !m_isPostprocessingRunning; }
-
-    inline QAction *actionMesh() { return actMesh; }
-    inline QAction *actionSolve() { return actSolve; }    
 
     bool isTransient() const;
     int numTransientFields() const;
@@ -129,6 +103,68 @@ public:
     inline bool hasCoupling(FieldInfo *sourceField, FieldInfo *targetField) { return (m_couplingInfos.contains(QPair<FieldInfo*, FieldInfo* >(sourceField, targetField))); }
     inline bool hasCoupling(const QString &sourceFieldId, const QString &targetFieldId) { return hasCoupling(fieldInfo(sourceFieldId), fieldInfo(targetFieldId)); }
 
+    void readProblemFromFile(const QString &fileName);
+    void readProblemFromFile31(const QString &fileName);
+    void transformProblem(const QString &fileName, const QString &tempFileName, double version);
+
+    void writeProblemToFile(const QString &fileName, bool saveLastProblemDir = false);
+    void writeProblemToFile31(const QString &fileName);
+
+protected:
+    Scene *m_scene;
+
+    ProblemConfig *m_config;
+    ProblemSetting *m_setting;
+
+    // problem parameters
+    QMap<QString, double> m_problemParameters;
+
+    QMap<QString, FieldInfo *> m_fieldInfos;
+    QMap<QPair<FieldInfo *, FieldInfo *>, CouplingInfo *> m_couplingInfos;
+
+    // determined in create structure to speed up the calculation
+    bool m_isNonlinear;
+
+    // transient analysis
+    QList<double> m_timeStepLengths;
+
+    friend class CalculationThread;
+    friend class PyProblem;
+    friend class AgrosSolver;
+    friend class OptilabSolver;
+    friend class OptilabWindow;
+    friend class ProblemPreprocessor;
+    friend class ProblemComputation;
+};
+
+class AGROS_LIBRARY_API ProblemPreprocessor : public Problem
+{
+    Q_OBJECT
+
+public:
+    void createComputation();
+};
+
+class AGROS_LIBRARY_API ProblemComputation : public Problem
+{
+    Q_OBJECT
+
+public:
+    ProblemComputation();
+    virtual ~ProblemComputation();
+
+    // mesh
+    void mesh();
+    // solve
+    void solve();
+
+    bool isSolved() const;
+    bool isSolving() const { return m_isSolving; }
+    bool isMeshed() const;
+    bool isMeshing() const { return m_isMeshing; }
+    bool isAborted() const { return m_abort; }
+    bool isPreparedForAction() const { return !isMeshing() && !isSolving() && !m_isPostprocessingRunning; }
+
     inline QTime timeElapsed() const { return m_lastTimeElapsed; }
 
     void setActualTimeStepLength(double timeStep);
@@ -153,17 +189,41 @@ public:
 
     void setIsPostprocessingRunning(bool pr = true) { m_isPostprocessingRunning = pr; }
 
-private:
-    ProblemConfig *m_config;
-    ProblemSetting *m_setting;
+    bool mesh(bool emitMeshed);
+    bool meshAction(bool emitMeshed);
+    void solveInit();
+    void solve(bool commandLine);
+    void solveAction(); // called by solve, can throw SolverException
+
+    void meshWithGUI();
+    void solveWithGUI();
+
+    void readSolutionFromFile(const QString &fileName);
+    void writeSolutionToFile(const QString &fileName);
+
+    inline QString problemDir() { return m_problemDir; }
+
+signals:
+    void meshed();
+    void solved();
+
+     void clearedSolution();
+
+public slots:
+    // clear problem
+    void clearSolution();
+    void doAbortSolve();
+
+protected:
+    bool m_isSolving;
+    bool m_isMeshing;
+    bool m_abort;
+
+    bool m_isPostprocessingRunning;
+
+    CalculationThread *m_calculationThread;
 
     ProblemSolver *m_solverDeal;
-
-    // problem parameters
-    QMap<QString, double> m_problemParameters;
-
-    QMap<QString, FieldInfo *> m_fieldInfos;
-    QMap<QPair<FieldInfo *, FieldInfo *>, CouplingInfo *> m_couplingInfos;
 
     // initial mesh
     dealii::Triangulation<2> m_initialMesh;
@@ -173,38 +233,8 @@ private:
 
     QTime m_lastTimeElapsed;
 
-    bool m_isSolving;
-    bool m_isMeshing;
-    bool m_abort;
-
-    bool m_isPostprocessingRunning;
-
-    CalculationThread *m_calculationThread;
-
-    QAction *actMesh;
-    QAction *actSolve;
-
-    // determined in create structure to speed up the calculation
-    bool m_isNonlinear;
-
-    // transient analysis
-    QList<double> m_timeStepLengths;
-
-    bool mesh(bool emitMeshed);
-    bool meshAction(bool emitMeshed);
-    void solveInit();
-    void solve(bool commandLine);
-    void solveAction(); // called by solve, can throw SolverException
-
-    friend class CalculationThread;
-    friend class PyProblem;
-    friend class AgrosSolver;
-    friend class OptilabSolver;
-    friend class OptilabWindow;
-
-private slots:
-    void doMeshWithGUI();
-    void doSolveWithGUI();
+    // problem dir in cache
+    QString m_problemDir;
 };
 
 #endif // PROBLEM_H

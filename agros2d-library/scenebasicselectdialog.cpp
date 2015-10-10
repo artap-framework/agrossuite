@@ -26,6 +26,7 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 #include "sceneview_common.h"
+#include "solver/problem.h"
 #include "solver/module.h"
 
 SceneBasicSelectDialog::SceneBasicSelectDialog(SceneViewCommon *sceneView, QWidget *parent) : QDialog(parent)
@@ -45,11 +46,11 @@ void SceneBasicSelectDialog::createControls()
 {
     // edge
     lstEdges = new QListWidget(this);
-    for (int i = 1; i < Agros2D::scene()->edges->length(); i++)
+    for (int i = 1; i < Agros2D::preprocessor()->scene()->edges->length(); i++)
     {
         QListWidgetItem *item = new QListWidgetItem(lstEdges);
         item->setText(QString::number(i));
-        if (Agros2D::scene()->edges->at(i)->isSelected())
+        if (Agros2D::preprocessor()->scene()->edges->at(i)->isSelected())
             item->setCheckState(Qt::Checked);
         else
             item->setCheckState(Qt::Unchecked);
@@ -80,10 +81,10 @@ void SceneBasicSelectDialog::createControls()
 
 void SceneBasicSelectDialog::doAccept()
 {
-    Agros2D::scene()->selectNone();
+    Agros2D::preprocessor()->scene()->selectNone();
     for (int i = 0; i < lstEdges->count(); i++)
     {
-        Agros2D::scene()->edges->at(i)->setSelected(lstEdges->item(i)->checkState() == Qt::Checked);
+        Agros2D::preprocessor()->scene()->edges->at(i)->setSelected(lstEdges->item(i)->checkState() == Qt::Checked);
     }
     m_sceneView->refresh();
     accept();

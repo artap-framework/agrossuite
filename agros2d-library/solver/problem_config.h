@@ -70,7 +70,6 @@ public:
     inline MeshType meshType() const { return m_meshType; }
     void setMeshType(const MeshType meshType) { m_meshType = meshType; emit changed(); }
 
-
     void load(XMLProblem::problem_config *configxsd);
     void save(XMLProblem::problem_config *configxsd);
 
@@ -113,9 +112,6 @@ class ProblemSetting : public QObject
     Q_OBJECT
 
 public:
-    ProblemSetting();
-    ~ProblemSetting();
-
     enum Type
     {
         Unknown,
@@ -204,8 +200,9 @@ public:
         View_SolidViewHide
     };
 
-    void load21(QDomElement *config);
-    void save21(QDomElement *config);
+    ProblemSetting();
+    ~ProblemSetting();
+
     void load(XMLProblem::config *configxsd);
     void save(XMLProblem::config *configxsd);
 
