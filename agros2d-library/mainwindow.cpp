@@ -77,7 +77,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // scene
     sceneViewPreprocessor = new SceneViewPreprocessor(this);
     sceneViewMesh = new SceneViewMesh(postDeal, this);
-    // sceneViewPost2D = new SceneViewPost2D(postDeal, this);
+    sceneViewPost2D = new SceneViewPost2D(postDeal, this);
     // sceneViewPost3D = new SceneViewPost3D(postDeal, this);
     // sceneViewChart = new ChartView(this);
     // sceneViewParticleTracing = new SceneViewParticleTracing(postDeal, this);
@@ -94,8 +94,12 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     preprocessorWidget = new PreprocessorWidget(sceneViewPreprocessor, this);
     connect(Agros2D::preprocessor(), SIGNAL(fieldsChanged()), preprocessorWidget, SLOT(refresh()));
     // postprocessor
-    postprocessorWidget = new PostprocessorWidget(postDeal, sceneViewMesh);    
+    postprocessorWidget = new PostprocessorWidget(postDeal,
+                                                  sceneViewMesh,
+                                                  sceneViewPost2D);
     connect(postprocessorWidget, SIGNAL(apply()), postDeal, SLOT(refresh()));
+    connect(postprocessorWidget, SIGNAL(apply()), this, SLOT(setControls()));
+    connect(postprocessorWidget, SIGNAL(modeChanged()), this, SLOT(setControls()));
     currentPythonEngineAgros()->setpostDeal(postDeal);
 
     // particle tracing
@@ -132,8 +136,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     connect(Agros2D::preprocessor(), SIGNAL(fileNameChanged(QString)), this, SLOT(doSetWindowTitle(QString)));
     connect(Agros2D::preprocessor()->scene()->actTransform, SIGNAL(triggered()), this, SLOT(doTransform()));
 
-    connect(Agros2D::preprocessor()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
-    connect(postprocessorWidget, SIGNAL(apply()), this, SLOT(setControls()));
+    connect(Agros2D::preprocessor()->scene(), SIGNAL(cleared()), this, SLOT(clear()));    
     connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), this, SLOT(setControls()));
     connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), sceneViewPreprocessor, SLOT(refresh()));
 
@@ -152,11 +155,10 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     currentPythonEngineAgros()->setSceneViewMesh(sceneViewMesh);
 
     // postprocessor 2d
-    // connect(sceneViewPost2D, SIGNAL(mousePressed()), resultsView, SLOT(doShowResults()));
-    // connect(sceneViewPost2D, SIGNAL(mousePressed(const Point &)), resultsView, SLOT(showPoint(const Point &)));
-    // connect(sceneViewPost2D, SIGNAL(postprocessorModeGroupChanged(SceneModePostprocessor)), resultsView, SLOT(doPostprocessorModeGroupChanged(SceneModePostprocessor)));
-    // connect(sceneViewPost2D, SIGNAL(postprocessorModeGroupChanged(SceneModePostprocessor)), this, SLOT(doPostprocessorModeGroupChanged(SceneModePostprocessor)));
-    // currentPythonEngineAgros()->setSceneViewPost2D(sceneViewPost2D);
+    connect(sceneViewPost2D, SIGNAL(mousePressed()), resultsView, SLOT(doShowResults()));
+    connect(sceneViewPost2D, SIGNAL(mousePressed(const Point &)), resultsView, SLOT(showPoint(const Point &)));
+    connect(sceneViewPost2D, SIGNAL(postprocessorModeGroupChanged(SceneModePostprocessor)), resultsView, SLOT(doPostprocessorModeGroupChanged(SceneModePostprocessor)));
+    currentPythonEngineAgros()->setSceneViewPost2D(sceneViewPost2D);
 
     // postprocessor 3d
     // currentPythonEngineAgros()->setSceneViewPost3D(sceneViewPost3D);
@@ -516,7 +518,7 @@ void MainWindow::createMain()
     sceneViewInfoWidget = new SceneViewWidget(sceneInfoWidget, this);
     sceneViewPreprocessorWidget = new SceneViewWidget(sceneViewPreprocessor, this);
     sceneViewMeshWidget = new SceneViewWidget(sceneViewMesh, this);
-    // sceneViewPost2DWidget = new SceneViewWidget(sceneViewPost2D, this);
+    sceneViewPost2DWidget = new SceneViewWidget(sceneViewPost2D, this);
     // sceneViewPost3DWidget = new SceneViewWidget(sceneViewPost3D, this);
     // sceneViewPostParticleTracingWidget = new SceneViewWidget(sceneViewParticleTracing, this);
     // sceneViewPostVTK2DWidget = new SceneViewWidget(sceneViewVTK2D, this);
@@ -528,7 +530,7 @@ void MainWindow::createMain()
     tabViewLayout->addWidget(sceneViewInfoWidget);
     tabViewLayout->addWidget(sceneViewPreprocessorWidget);
     tabViewLayout->addWidget(sceneViewMeshWidget);
-    // tabViewLayout->addWidget(sceneViewPost2DWidget);
+    tabViewLayout->addWidget(sceneViewPost2DWidget);
     // tabViewLayout->addWidget(sceneViewPost3DWidget);
     // tabViewLayout->addWidget(sceneViewPostParticleTracingWidget);
     // tabViewLayout->addWidget(sceneViewPostVTK2DWidget);
@@ -1258,9 +1260,6 @@ void MainWindow::setControls()
 
     sceneViewPreprocessor->actSceneZoomRegion = NULL;
     sceneViewMesh->actSceneZoomRegion = NULL;
-    // sceneViewPost2D->actSceneZoomRegion = NULL;
-    // sceneViewPost3D->actSceneZoomRegion = NULL;
-    // sceneViewParticleTracing->actSceneZoomRegion = NULL;
 
     bool showZoom = sceneViewPreprocessor->actSceneModePreprocessor->isChecked() || postprocessorWidget->actSceneModePost->isChecked();
 
@@ -1302,7 +1301,17 @@ void MainWindow::setControls()
     }
     else if (postprocessorWidget->actSceneModePost->isChecked())
     {
-        tabViewLayout->setCurrentWidget(sceneViewMeshWidget);
+        switch (postprocessorWidget->mode())
+        {
+        case PostprocessorWidgetMode_Mesh:
+            tabViewLayout->setCurrentWidget(sceneViewMeshWidget);
+            break;
+        case PostprocessorWidgetMode_Post2D:
+            tabViewLayout->setCurrentWidget(sceneViewPost2DWidget);
+            break;
+        default:
+            break;
+        }
         tabControlsLayout->setCurrentWidget(postprocessorWidget);
 
         connect(actSceneZoomIn, SIGNAL(triggered()), sceneViewMesh, SLOT(doZoomIn()));

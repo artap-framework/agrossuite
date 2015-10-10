@@ -55,9 +55,6 @@ private:
 
     void createControls();
 
-    QWidget *groupMesh;
-    QWidget *groupMeshOrder;
-
 signals:
     void apply();
 

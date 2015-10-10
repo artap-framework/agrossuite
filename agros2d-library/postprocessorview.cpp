@@ -19,6 +19,7 @@
 
 #include "postprocessorview.h"
 #include "postprocessorview_mesh.h"
+#include "postprocessorview_post2d.h"
 
 #include "util/global.h"
 
@@ -45,13 +46,21 @@
 #include "util/constants.h"
 
 PostprocessorWidget::PostprocessorWidget(PostDeal *postDeal,
-                                         SceneViewMesh *sceneMesh) : m_postDeal(postDeal), m_sceneMesh(sceneMesh)
+                                         SceneViewMesh *sceneMesh,
+                                         SceneViewPost2D *scenePost2D)
+    : m_postDeal(postDeal)
 {
     // scene mode
     actSceneModePost = new QAction(icon("scene-post2d"), tr("Postprocessor"), this);
     actSceneModePost->setShortcut(tr("Ctrl+3"));
     actSceneModePost->setCheckable(true);
     actSceneModePost->setEnabled(false);
+
+    m_fieldWidget = new PhysicalFieldWidget(this);
+    // connect(m_fieldWidget, SIGNAL(fieldChanged()), this, SLOT(doField()));
+
+    meshWidget = new PostprocessorSceneMeshWidget(this, sceneMesh, this);
+    post2DWidget = new PostprocessorScenePost2DWidget(this, scenePost2D, this);
 
     createControls();
 
@@ -62,20 +71,7 @@ PostprocessorWidget::PostprocessorWidget(PostDeal *postDeal,
 }
 
 void PostprocessorWidget::createControls()
-{
-    m_fieldWidget = new PhysicalFieldWidget(this);
-    // connect(m_fieldWidget, SIGNAL(fieldChanged()), this, SLOT(doField()));
-
-    // main toolbar
-    toolBar = new QToolBar();
-    // toolBar->addAction(m_scenePost2D->actPostprocessorModeNothing);
-    // toolBar->addAction(m_scenePost2D->actPostprocessorModeLocalPointValue);
-    // toolBar->addAction(m_scenePost2D->actPostprocessorModeSurfaceIntegral);
-    // toolBar->addAction(m_scenePost2D->actPostprocessorModeVolumeIntegral);
-    toolBar->addSeparator();
-    // toolBar->addAction(m_scenePost2D->actSelectPoint);
-    // toolBar->addAction(m_scenePost2D->actSelectByMarker);
-
+{    
     // dialog buttons
     btnOK = new QPushButton(tr("Apply"));
     connect(btnOK, SIGNAL(clicked()), SLOT(doApply()));
@@ -93,14 +89,13 @@ void PostprocessorWidget::createControls()
     layoutInfo->addWidget(new QLabel(tr("Number of DOFs:")), 2, 0);
     layoutInfo->addWidget(lblDOFs, 2, 1);
 
-    meshWidget = new PostprocessorSceneMeshWidget(this, m_sceneMesh, this);
-
     tabWidget = new QTabWidget();
     tabWidget->addTab(meshWidget, icon("scene-mesh"), tr("Mesh"));
+    tabWidget->addTab(post2DWidget, icon("scene-post2d"), tr("2D"));
+    connect(tabWidget, SIGNAL(currentChanged(int)), SIGNAL(modeChanged()));
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->setContentsMargins(2, 2, 2, 3);
-    layoutMain->addWidget(toolBar);
+    layoutMain->setContentsMargins(2, 2, 2, 3);    
     layoutMain->addWidget(m_fieldWidget);
     layoutMain->addWidget(tabWidget);
     // layoutMain->addStretch(1);
@@ -122,6 +117,11 @@ void PostprocessorWidget::doApply()
     {
         meshWidget->save();
         meshWidget->updateControls();
+    }
+    else if (tabWidget->currentWidget() == post2DWidget)
+    {
+        post2DWidget->save();
+        post2DWidget->updateControls();
     }
 
     // refresh
@@ -176,4 +176,12 @@ void PostprocessorWidget::doCalculationFinished()
 
     if ((Agros2D::computation()->isMeshed() && !Agros2D::computation()->isSolving()) || Agros2D::computation()->isSolved())
         emit apply();
+}
+
+PostprocessorWidgetMode PostprocessorWidget::mode()
+{
+    if (tabWidget->currentWidget() == meshWidget)
+        return PostprocessorWidgetMode_Mesh;
+    else if (tabWidget->currentWidget() == post2DWidget)
+        return PostprocessorWidgetMode_Post2D;
 }

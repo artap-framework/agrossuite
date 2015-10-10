@@ -35,6 +35,16 @@ class ValueLineEdit;
 class PhysicalFieldWidget;
 
 class PostprocessorSceneMeshWidget;
+class PostprocessorScenePost2DWidget;
+
+enum PostprocessorWidgetMode
+{
+    PostprocessorWidgetMode_Mesh,
+    PostprocessorWidgetMode_Post2D,
+    PostprocessorWidgetMode_Post3D,
+    PostprocessorWidgetMode_Chart,
+    PostprocessorWidgetMode_ParticleTracing
+};
 
 class PostprocessorWidget : public QWidget
 {
@@ -42,15 +52,19 @@ class PostprocessorWidget : public QWidget
 
 public:
     PostprocessorWidget(PostDeal *postDeal,
-                        SceneViewMesh *sceneMesh);
+                        SceneViewMesh *sceneMesh,
+                        SceneViewPost2D *scenePost2D);
 
     inline PhysicalFieldWidget *fieldWidget() { return m_fieldWidget; }
     inline PostDeal *postDeal() { return m_postDeal; }
+
+    PostprocessorWidgetMode mode();
 
     QAction *actSceneModePost;
 
 signals:
     void apply();
+    void modeChanged();
 
 public slots:
     void doApply();
@@ -58,11 +72,8 @@ public slots:
 private:
     PostDeal *m_postDeal;
 
-    // basic
     PhysicalFieldWidget *m_fieldWidget;
 
-    // toolbar
-    QToolBar *toolBar;
     QTabWidget *tabWidget;
     QPushButton *btnOK;
 
@@ -73,11 +84,9 @@ private:
 
     //
     PostprocessorSceneMeshWidget *meshWidget;
+    PostprocessorScenePost2DWidget *post2DWidget;
 
     void createControls();
-
-    // TMP
-    SceneViewMesh *m_sceneMesh;
 
 private slots:
     void reconnectActions();

@@ -86,15 +86,11 @@ private:
     int m_listVectors;
     int m_listScalarField;
 
-    // QVector<QVector2D> m_arrayScalarField;
-    // QVector<QVector3D> m_arrayScalarFieldColors;
-
     void createActionsPost2D();
 
     void exportVTK(const QString &fileName, const QString &variable, PhysicFieldVariableComp physicFieldVariableComp);
 
 private slots:
-    void showGroup(QAction *action);
     void selectedPoint(const Point &p);
 
     virtual void refresh();

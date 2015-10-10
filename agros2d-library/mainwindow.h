@@ -199,7 +199,7 @@ private:
     SceneViewWidget *sceneViewInfoWidget;
     SceneViewWidget *sceneViewPreprocessorWidget;
     SceneViewWidget *sceneViewMeshWidget;
-    // SceneViewWidget *sceneViewPost2DWidget;
+    SceneViewWidget *sceneViewPost2DWidget;
     // SceneViewWidget *sceneViewPost3DWidget;
     // SceneViewWidget *sceneViewPostParticleTracingWidget;
     // SceneViewWidget *sceneViewPostVTK2DWidget;
@@ -212,7 +212,7 @@ private:
     InfoWidget *sceneInfoWidget;
     SceneViewPreprocessor *sceneViewPreprocessor;
     SceneViewMesh *sceneViewMesh;
-    // SceneViewPost2D *sceneViewPost2D;
+    SceneViewPost2D *sceneViewPost2D;
     // SceneViewPost3D *sceneViewPost3D;
     // SceneViewParticleTracing *sceneViewParticleTracing;
     // SceneViewVTK2D *sceneViewVTK2D;

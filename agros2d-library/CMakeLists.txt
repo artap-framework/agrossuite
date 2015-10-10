@@ -112,6 +112,7 @@ SET(SOURCES
     particle/particle_forces.cpp
     postprocessorview.cpp
     postprocessorview_mesh.cpp
+    postprocessorview_post2d.cpp
     preprocessorview.cpp
     problemdialog.cpp
     pythonlab/pythonconsole.cpp
@@ -325,6 +326,7 @@ SET(HEADERS
   particle/particle_forces.h
   postprocessorview.h
   postprocessorview_mesh.h
+  postprocessorview_post2d.h
   preprocessorview.h
   problemdialog.h
   pythonlab/pythonconsole.h

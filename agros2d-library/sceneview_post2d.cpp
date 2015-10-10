@@ -934,11 +934,6 @@ void SceneViewPost2D::doPostprocessorModeGroup(QAction *action)
     updateGL();
 }
 
-void SceneViewPost2D::showGroup(QAction *action)
-{
-    refresh();
-}
-
 void SceneViewPost2D::selectedPoint(const Point &p)
 {
     m_selectedPoint = p;
