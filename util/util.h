@@ -70,14 +70,6 @@
 #endif
 
 // DLL build
-#ifdef AGROS_PYTHONLAB_DLL
-#define AGROS_PYTHONLAB_API __declspec(dllexport)
-// DLL usage
-#else
-#define AGROS_PYTHONLAB_API __declspec(dllimport)
-#endif
-
-// DLL build
 #ifdef AGROS_UTIL_DLL
 #define AGROS_UTIL_API __declspec(dllexport)
 // DLL usage
@@ -87,7 +79,7 @@
 #else
 // linux
 #define AGROS_UTIL_API
-#define AGROS_PYTHONLAB_API
+#define AGROS_LIBRARY_API
 #define AGROS_LIBRARY_API
 #endif
 
