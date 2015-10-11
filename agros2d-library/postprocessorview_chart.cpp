@@ -1,0 +1,778 @@
+// This file is part of Agros.
+//
+// Agros is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+//
+// Agros is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Agros.  If not, see <http://www.gnu.org/licenses/>.
+//
+//
+// University of West Bohemia, Pilsen, Czech Republic
+// Email: info@agros2d.org, home page: http://agros2d.org/
+
+#include "postprocessorview_chart.h"
+#include "postprocessorview.h"
+
+#include "chartdialog.h"
+
+#include "util/global.h"
+
+#include "gui/lineeditdouble.h"
+#include "gui/groupbox.h"
+#include "gui/common.h"
+#include "gui/physicalfield.h"
+
+#include "scene.h"
+#include "scenemarker.h"
+#include "sceneview_geometry_chart.h"
+#include "pythonlab/pythonengine_agros.h"
+
+#include "solver/module.h"
+
+#include "solver/field.h"
+#include "solver/problem.h"
+#include "solver/problem_config.h"
+#include "solver/solutionstore.h"
+
+#include "util/constants.h"
+
+#include "qcustomplot/qcustomplot.h"
+
+QList<Point> ChartLine::getPoints()
+{
+    if (numberOfPoints == 0)
+        return QList<Point>();
+
+    QList<Point> points;
+    points.reserve(numberOfPoints);
+
+    double dx = (end.x - start.x) / (numberOfPoints - 1);
+    double dy = (end.y - start.y) / (numberOfPoints - 1);
+
+    for (int i = 0; i < numberOfPoints; i++)
+        if (reverse)
+            points.insert(0, Point(start.x + i*dx, start.y + i*dy));
+        else
+            points.append(Point(start.x + i*dx, start.y + i*dy));
+
+    return points;
+}
+
+// **************************************************************************************************
+
+PostprocessorSceneChartWidget::PostprocessorSceneChartWidget(PostprocessorWidget *postprocessorWidget, ChartView *sceneChart)
+    : PostprocessorSceneWidget(postprocessorWidget), m_sceneChart(sceneChart)
+{
+    setWindowIcon(icon("chart"));
+    setObjectName("PostprocessorChartWidget");
+
+    createControls();
+
+    connect(postprocessorWidget->fieldWidget(), SIGNAL(fieldChanged()), this, SLOT(doField()));
+}
+
+void PostprocessorSceneChartWidget::load()
+{
+    txtStartX->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartStartX).toDouble());
+    txtStartY->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartStartY).toDouble());
+    txtEndX->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartEndX).toDouble());
+    txtEndY->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartEndY).toDouble());
+    txtTimeX->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartTimeX).toDouble());
+    txtTimeY->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartTimeY).toDouble());
+    radHorizontalAxisX->setChecked((ChartAxisType) Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_X);
+    radHorizontalAxisY->setChecked((ChartAxisType) Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Y);
+    radHorizontalAxisLength->setChecked((ChartAxisType) Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Length);
+    txtHorizontalAxisPoints->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxisPoints).toInt());
+    chkHorizontalAxisReverse->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxisReverse).toBool());
+
+    if (tbxAnalysisType->currentWidget() == widGeometry)
+    {
+        plotGeometry();
+    }
+
+    if (tbxAnalysisType->currentWidget() == widTime)
+    {
+        plotTime();
+    }
+
+    // rescale axis
+    double min = numeric_limits<double>::max();
+    double max = - numeric_limits<double>::max();
+    for (int i = 0; i < m_sceneChart->chart()->graph(0)->data()->values().count(); i++)
+    {
+        double value = m_sceneChart->chart()->graph(0)->data()->values().at(i).value;
+        if (value < min) min = value;
+        if (value > max) max = value;
+    }
+
+    if ((max - min) < EPS_ZERO)
+    {
+        m_sceneChart->chart()->graph(0)->valueAxis()->setRange(min - 1, min + 1);
+        m_sceneChart->chart()->graph(0)->keyAxis()->setRange(m_sceneChart->chart()->graph(0)->data()->keys().first(),
+                                                             m_sceneChart->chart()->graph(0)->data()->keys().last());
+    }
+    else
+    {
+        m_sceneChart->chart()->rescaleAxes();
+    }
+    m_sceneChart->chart()->replot(QCustomPlot::rpQueued);
+
+
+    btnSaveImage->setEnabled(m_sceneChart->chart()->graph()->data()->size() > 0);
+    btnExportData->setEnabled(m_sceneChart->chart()->graph()->data()->size() > 0);
+}
+
+void PostprocessorSceneChartWidget::save()
+{
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartStartX, txtStartX->value());
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartStartY, txtStartY->value());
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartEndX, txtEndX->value());
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartEndY, txtEndY->value());
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartTimeX, txtTimeX->value());
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartTimeY, txtTimeY->value());
+    if (radHorizontalAxisX->isChecked())
+        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_X);
+    else if (radHorizontalAxisY->isChecked())
+        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Y);
+    else if (radHorizontalAxisLength->isChecked())
+        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Length);
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisReverse, chkHorizontalAxisReverse->isChecked());
+    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisPoints, txtHorizontalAxisPoints->value());
+
+    createChartLine();
+}
+
+void PostprocessorSceneChartWidget::createControls()
+{
+    // variable
+    cmbFieldVariable = new QComboBox();
+    connect(cmbFieldVariable, SIGNAL(currentIndexChanged(int)), this, SLOT(doFieldVariable(int)));
+
+    // component
+    cmbFieldVariableComp = new QComboBox();
+
+    QFormLayout *layoutVariable = new QFormLayout();
+    layoutVariable->addRow(tr("Variable:"), cmbFieldVariable);
+    layoutVariable->addRow(tr("Component:"), cmbFieldVariableComp);
+
+    QGroupBox *grpVariable = new QGroupBox(tr("Variable"));
+    grpVariable->setLayout(layoutVariable);
+
+    // viewer
+    geometryViewer = new SceneViewPreprocessorChart(this);
+    geometryViewer->setMinimumHeight(150);
+    // geometryViewer->setMaximumHeight(150);
+
+    QVBoxLayout *layoutChart = new QVBoxLayout();
+    layoutChart->addWidget(geometryViewer);
+
+    QGroupBox *grpChart = new QGroupBox(tr("Line preview"));
+    grpChart->setLayout(layoutChart);
+
+    btnSaveImage = new QPushButton();
+    btnSaveImage->setDefault(false);
+    btnSaveImage->setEnabled(false);
+    btnSaveImage->setText(tr("Save image"));
+    connect(btnSaveImage, SIGNAL(clicked()), this, SLOT(doSaveImage()));
+
+    btnExportData = new QPushButton();
+    btnExportData->setDefault(false);
+    btnExportData->setEnabled(false);
+    btnExportData->setText(tr("Export"));
+    connect(btnExportData, SIGNAL(clicked()), this, SLOT(doExportData()));
+
+    // geometry
+    lblStartX = new QLabel("X:");
+    lblStartY = new QLabel("Y:");
+    lblEndX = new QLabel("X:");
+    lblEndY = new QLabel("Y:");
+
+    txtStartX = new LineEditDouble(0.0);
+    txtStartY = new LineEditDouble(0.0);
+    connect(txtStartX, SIGNAL(textChanged(QString)), this, SLOT(createChartLine()));
+    connect(txtStartY, SIGNAL(textChanged(QString)), this, SLOT(createChartLine()));
+
+    txtEndX = new LineEditDouble(0.0);
+    txtEndY = new LineEditDouble(0.0);
+    connect(txtEndX, SIGNAL(textChanged(QString)), this, SLOT(createChartLine()));
+    connect(txtEndY, SIGNAL(textChanged(QString)), this, SLOT(createChartLine()));
+
+    // start
+    QGridLayout *layoutStart = new QGridLayout();
+    layoutStart->addWidget(lblStartX, 0, 0);
+    layoutStart->addWidget(txtStartX, 0, 1);
+    layoutStart->addWidget(lblStartY, 0, 2);
+    layoutStart->addWidget(txtStartY, 0, 3);
+
+    QGroupBox *grpStart = new QGroupBox(tr("Start"));
+    grpStart->setLayout(layoutStart);
+
+    // end
+    QGridLayout *layoutEnd = new QGridLayout();
+    layoutEnd->addWidget(lblEndX, 0, 0);
+    layoutEnd->addWidget(txtEndX, 0, 1);
+    layoutEnd->addWidget(lblEndY, 0, 2);
+    layoutEnd->addWidget(txtEndY, 0, 3);
+
+    QGroupBox *grpEnd = new QGroupBox(tr("End"));
+    grpEnd->setLayout(layoutEnd);
+
+    // x - axis
+    radHorizontalAxisLength = new QRadioButton(tr("Length"));
+    radHorizontalAxisLength->setChecked(true);
+    radHorizontalAxisX = new QRadioButton("X");
+    radHorizontalAxisY = new QRadioButton("Y");
+
+    QButtonGroup *axisGroup = new QButtonGroup();
+    axisGroup->addButton(radHorizontalAxisLength);
+    axisGroup->addButton(radHorizontalAxisX);
+    axisGroup->addButton(radHorizontalAxisY);
+
+    /*
+    connect(radAxisLength, SIGNAL(clicked()), this, SLOT(doPlot()));
+    connect(radAxisX, SIGNAL(clicked()), this, SLOT(doPlot()));
+    connect(radAxisY, SIGNAL(clicked()), this, SLOT(doPlot()));
+    */
+
+    // axis
+    QHBoxLayout *layoutAxis = new QHBoxLayout();
+    layoutAxis->addWidget(radHorizontalAxisLength);
+    layoutAxis->addWidget(radHorizontalAxisX);
+    layoutAxis->addWidget(radHorizontalAxisY);
+
+    QGroupBox *grpAxis = new QGroupBox(tr("Horizontal axis"));
+    grpAxis->setLayout(layoutAxis);
+
+    // axis points and time step
+    txtHorizontalAxisPoints = new QSpinBox(this);
+    txtHorizontalAxisPoints->setMinimum(2);
+    txtHorizontalAxisPoints->setMaximum(500);
+    txtHorizontalAxisPoints->setValue(200);
+    chkHorizontalAxisReverse = new QCheckBox(tr("Reverse"));
+    //connect(chkAxisPointsReverse, SIGNAL(clicked()), this, SLOT(doPlot()));
+
+    // timestep
+    QGridLayout *layoutAxisPointsAndTimeStep = new QGridLayout();
+    layoutAxisPointsAndTimeStep->setColumnStretch(1, 1);
+    layoutAxisPointsAndTimeStep->addWidget(new QLabel(tr("Points:")), 0, 0);
+    layoutAxisPointsAndTimeStep->addWidget(txtHorizontalAxisPoints, 0, 1);
+    layoutAxisPointsAndTimeStep->addWidget(chkHorizontalAxisReverse, 1, 0, 1, 2);
+
+    QGroupBox *grpAxisPointsAndTimeStep = new QGroupBox(tr("Points and time step"), this);
+    grpAxisPointsAndTimeStep->setLayout(layoutAxisPointsAndTimeStep);
+
+    // time
+    lblPointX = new QLabel("X:");
+    lblPointY = new QLabel("Y:");
+
+    txtTimeX = new LineEditDouble(0.0);
+    txtTimeY = new LineEditDouble(0.0);
+    connect(txtTimeX, SIGNAL(textChanged(QString)), this, SLOT(createChartLine()));
+    connect(txtTimeY, SIGNAL(textChanged(QString)), this, SLOT(createChartLine()));
+
+    QGridLayout *layoutTime = new QGridLayout();
+    layoutTime->addWidget(lblPointX, 0, 0);
+    layoutTime->addWidget(txtTimeX, 0, 1);
+    layoutTime->addWidget(lblPointY, 1, 0);
+    layoutTime->addWidget(txtTimeY, 1, 1);
+
+    QGroupBox *grpTime = new QGroupBox(tr("Point"));
+    grpTime->setLayout(layoutTime);
+
+    // button bar
+    QHBoxLayout *layoutButton = new QHBoxLayout();
+    layoutButton->setContentsMargins(2, 0, 0, 0);
+    layoutButton->addStretch();
+    layoutButton->addWidget(btnSaveImage);
+    layoutButton->addWidget(btnExportData);
+
+    QWidget *widButton = new QWidget();
+    widButton->setLayout(layoutButton);
+
+    // controls geometry
+    widGeometry = new QWidget();
+    QVBoxLayout *controlsGeometryLayout = new QVBoxLayout();
+    widGeometry->setLayout(controlsGeometryLayout);
+    controlsGeometryLayout->addWidget(grpStart);
+    controlsGeometryLayout->addWidget(grpEnd);
+    controlsGeometryLayout->addWidget(grpAxis);
+    controlsGeometryLayout->addWidget(grpAxisPointsAndTimeStep);
+    controlsGeometryLayout->addStretch();
+
+    // controls time
+    widTime = new QWidget();
+    QVBoxLayout *controlsTimeLayout = new QVBoxLayout();
+    widTime->setLayout(controlsTimeLayout);
+    controlsTimeLayout->addWidget(grpTime);
+    controlsTimeLayout->addStretch();
+
+    tbxAnalysisType = new QTabWidget();
+    tbxAnalysisType->addTab(widGeometry, icon(""), tr("Geometry"));
+    tbxAnalysisType->addTab(widTime, icon(""), tr("Time"));
+
+    // controls
+    QVBoxLayout *controlsLayout = new QVBoxLayout();
+    controlsLayout->setContentsMargins(0, 0, 0, 0);
+    controlsLayout->addWidget(grpVariable);
+    controlsLayout->addWidget(tbxAnalysisType, 1);
+    controlsLayout->addWidget(grpChart, 1);
+    // controlsLayout->addStretch(1);
+
+    QWidget *widget = new QWidget(this);
+    widget->setLayout(controlsLayout);
+
+    QScrollArea *widgetArea = new QScrollArea();
+    widgetArea->setFrameShape(QFrame::NoFrame);
+    widgetArea->setWidgetResizable(true);
+    widgetArea->setWidget(widget);
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->setContentsMargins(2, 2, 2, 3);
+    layout->addWidget(widgetArea);
+    layout->addWidget(widButton);
+
+    setLayout(layout);
+}
+
+void PostprocessorSceneChartWidget::doField()
+{
+    fillComboBoxScalarVariable(m_postprocessorWidget->fieldWidget()->selectedField(), cmbFieldVariable);
+    doFieldVariable(cmbFieldVariable->currentIndex());
+
+    load();
+}
+
+void PostprocessorSceneChartWidget::doFieldVariable(int index)
+{
+    if (!m_postprocessorWidget->fieldWidget()->selectedField())
+        return;
+
+    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->fieldWidget()->selectedField()->localVariable(cmbFieldVariable->itemData(index).toString());
+
+    cmbFieldVariableComp->clear();
+    if (physicFieldVariable.isScalar())
+    {
+        cmbFieldVariableComp->addItem(tr("Scalar"), PhysicFieldVariableComp_Scalar);
+    }
+    else
+    {
+        cmbFieldVariableComp->addItem(tr("Magnitude"), PhysicFieldVariableComp_Magnitude);
+        cmbFieldVariableComp->addItem(Agros2D::computation()->config()->labelX(), PhysicFieldVariableComp_X);
+        cmbFieldVariableComp->addItem(Agros2D::computation()->config()->labelY(), PhysicFieldVariableComp_Y);
+    }
+
+    if (cmbFieldVariableComp->currentIndex() == -1)
+        cmbFieldVariableComp->setCurrentIndex(0);
+}
+
+void PostprocessorSceneChartWidget::refresh()
+{
+}
+
+void PostprocessorSceneChartWidget::updateControls()
+{
+    if (Agros2D::computation()->isMeshed())
+    {
+        if (Agros2D::computation()->isSolved())
+        {
+            // correct labels
+            lblStartX->setText(Agros2D::computation()->config()->labelX() + ":");
+            lblStartY->setText(Agros2D::computation()->config()->labelY() + ":");
+            lblEndX->setText(Agros2D::computation()->config()->labelX() + ":");
+            lblEndY->setText(Agros2D::computation()->config()->labelY() + ":");
+            lblPointX->setText(Agros2D::computation()->config()->labelX() + ":");
+            lblPointY->setText(Agros2D::computation()->config()->labelY() + ":");
+            radHorizontalAxisX->setText(Agros2D::computation()->config()->labelX());
+            radHorizontalAxisY->setText(Agros2D::computation()->config()->labelY());
+
+            if (Agros2D::computation()->isTransient())
+            {
+                widTime->setEnabled(true);
+            }
+            else
+            {
+                widTime->setEnabled(false);
+                widGeometry->setEnabled(true);
+                tbxAnalysisType->setCurrentWidget(widGeometry);
+            }
+
+            load();
+        }
+    }
+
+    refresh();
+}
+
+QVector<double> PostprocessorSceneChartWidget::horizontalAxisValues(ChartLine *chartLine)
+{
+    QList<Point> points = chartLine->getPoints();
+    QVector<double> xval;
+
+    if (radHorizontalAxisLength->isChecked())
+    {
+        for (int i = 0; i < points.length(); i++)
+        {
+            if (i == 0)
+                xval.append(0.0);
+            else
+                xval.append(xval.at(i-1) + (points.at(i) - points.at(i-1)).magnitude());
+        }
+    }
+    else if (radHorizontalAxisX->isChecked())
+    {
+        foreach (Point point, points)
+            xval.append(point.x);
+    }
+    else if (radHorizontalAxisY->isChecked())
+    {
+        foreach (Point point, points)
+            xval.append(point.y);
+    }
+
+    return xval;
+}
+
+void PostprocessorSceneChartWidget::plotGeometry()
+{
+    // variable
+    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->fieldWidget()->selectedField()->localVariable(cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
+
+    // variable component
+    PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) cmbFieldVariableComp->itemData(cmbFieldVariableComp->currentIndex()).toInt();
+    if (physicFieldVariableComp == PhysicFieldVariableComp_Undefined) return;
+
+    // number of points
+    int count = txtHorizontalAxisPoints->value();
+
+    // chart
+    QString text;
+    if (radHorizontalAxisLength->isChecked()) text = tr("Length (m)");
+    if (radHorizontalAxisX->isChecked()) text = Agros2D::computation()->config()->labelX() + " (m)";
+    if (radHorizontalAxisY->isChecked()) text = Agros2D::computation()->config()->labelY() + " (m)";
+    m_sceneChart->chart()->xAxis->setLabel(text);
+    m_sceneChart->chart()->yAxis->setLabel(QString("%1 (%2)").
+                                           arg(physicFieldVariable.name()).
+                                           arg(physicFieldVariable.unit()));
+
+    // table
+    QStringList head = headers();
+
+    // values
+    ChartLine chartLine(Point(txtStartX->value(), txtStartY->value()),
+                        Point(txtEndX->value(), txtEndY->value()),
+                        count);
+    createChartLine();
+
+    QList<Point> points = chartLine.getPoints();
+    QVector<double> xval = horizontalAxisValues(&chartLine);
+    QVector<double> yval;
+
+    foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables())
+    {
+        if (physicFieldVariable.id() != variable.id()) continue;
+
+        foreach (Point point, points)
+        {
+            std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->fieldWidget()->selectedField()->plugin()->localValue(m_postprocessorWidget->fieldWidget()->selectedField(),
+                                                                                                                                 m_postprocessorWidget->fieldWidget()->selectedTimeStep(),
+                                                                                                                                 m_postprocessorWidget->fieldWidget()->selectedAdaptivityStep(),
+                                                                                                                                 point);
+            QMap<QString, LocalPointValue> values = localValue->values();
+
+            if (variable.isScalar())
+            {
+                yval.append(values[variable.id()].scalar);
+            }
+            else
+            {
+                if (physicFieldVariableComp == PhysicFieldVariableComp_X)
+                    yval.append(values[variable.id()].vector.x);
+                else if (physicFieldVariableComp == PhysicFieldVariableComp_Y)
+                    yval.append(values[variable.id()].vector.y);
+                else
+                    yval.append(values[variable.id()].vector.magnitude());
+            }
+        }
+    }
+
+    assert(xval.count() == yval.count());
+
+    // reverse x axis
+    if (chkHorizontalAxisReverse->isChecked())
+    {
+        for (int i = 0; i < points.length() / 2; i++)
+        {
+            double tmp = yval[i];
+            yval[i] = yval[points.length() - i - 1];
+            yval[points.length() - i - 1] = tmp;
+        }
+    }
+
+
+    m_sceneChart->chart()->graph(0)->setData(xval, yval);
+}
+
+void PostprocessorSceneChartWidget::plotTime()
+{
+    // variable
+    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->fieldWidget()->selectedField()->localVariable(cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
+
+    // variable comp
+    PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) cmbFieldVariableComp->itemData(cmbFieldVariableComp->currentIndex()).toInt();
+    if (physicFieldVariableComp == PhysicFieldVariableComp_Undefined) return;
+
+    // time levels
+    QList<double> times = Agros2D::computation()->timeStepTimes();
+
+    // chart
+    m_sceneChart->chart()->xAxis->setLabel(tr("time (s)"));
+    m_sceneChart->chart()->yAxis->setLabel(QString("%1 (%2)").
+                                           arg(physicFieldVariable.name()).
+                                           arg(physicFieldVariable.unit()));
+
+    // table
+    QVector<double> xval;
+    QVector<double> yval;
+
+    createChartLine();
+
+    for (int step = 0; step < times.count(); step++)
+    {
+        foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables())
+        {
+            if (physicFieldVariable.id() != variable.id()) continue;
+
+            int adaptiveStep = Agros2D::solutionStore()->lastAdaptiveStep(m_postprocessorWidget->fieldWidget()->selectedField(), step);
+            FieldSolutionID fsid(m_postprocessorWidget->fieldWidget()->selectedField(), step, adaptiveStep);
+            bool stepIsAvailable = Agros2D::solutionStore()->contains(fsid);
+
+            if (stepIsAvailable)
+            {
+                // change time level
+                xval.append(times.at(step));
+
+                Point point(txtTimeX->value(), txtTimeY->value());
+                std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->fieldWidget()->selectedField()->plugin()->localValue(m_postprocessorWidget->fieldWidget()->selectedField(),
+                                                                                                                                     step,
+                                                                                                                                     adaptiveStep,
+                                                                                                                                     point);
+                QMap<QString, LocalPointValue> values = localValue->values();
+
+                if (variable.isScalar())
+                    yval.append(values[variable.id()].scalar);
+                else
+                {
+                    if (physicFieldVariableComp == PhysicFieldVariableComp_X)
+                        yval.append(values[variable.id()].vector.x);
+                    else if (physicFieldVariableComp == PhysicFieldVariableComp_Y)
+                        yval.append(values[variable.id()].vector.y);
+                    else
+                        yval.append(values[variable.id()].vector.magnitude());
+                }
+            }
+        }
+    }
+
+    m_sceneChart->chart()->graph(0)->setData(xval, yval);
+}
+
+QStringList PostprocessorSceneChartWidget::headers()
+{
+    QStringList head;
+    head << "x" << "y" << "t";
+
+    foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables())
+    {
+        if (variable.isScalar())
+        {
+            // scalar variable
+            head.append(variable.shortname());
+        }
+        else
+        {
+            // vector variable
+            head.append(variable.shortname() + Agros2D::computation()->config()->labelX().toLower());
+            head.append(variable.shortname() + Agros2D::computation()->config()->labelY().toLower());
+            head.append(variable.shortname());
+        }
+    }
+
+    return head;
+}
+
+void PostprocessorSceneChartWidget::doExportData()
+{
+    QSettings settings;
+    QString dir = settings.value("General/LastDataDir").toString();
+
+    QString selectedFilter;
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export data to file"), dir, tr("CSV files (*.csv)"), &selectedFilter);
+    if (fileName.isEmpty())
+    {
+        cerr << "Incorrect file name." << endl;
+        return;
+    }
+
+    QFileInfo fileInfo(fileName);
+
+    // open file for write
+    if (fileInfo.suffix().isEmpty())
+        fileName = fileName + ".csv";
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        cerr << "Could not create " + fileName.toStdString() + " file." << endl;
+        return;
+    }
+    QTextStream out(&file);
+
+    QMap<QString, QList<double> > table;
+    if (tbxAnalysisType->currentWidget() == widGeometry)
+    {
+        ChartLine *chartLine = new ChartLine(Point(txtStartX->value(), txtStartY->value()),
+                                             Point(txtEndX->value(), txtEndY->value()),
+                                             txtHorizontalAxisPoints->value());
+
+        foreach (Point point, chartLine->getPoints())
+        {
+            QMap<QString, double> data = getData(point,
+                                                 m_postprocessorWidget->fieldWidget()->selectedTimeStep(),
+                                                 m_postprocessorWidget->fieldWidget()->selectedAdaptivityStep());
+            foreach (QString key, data.keys())
+            {
+                QList<double> *values = &table.operator [](key);
+                values->append(data.value(key));
+            }
+        }
+
+        delete chartLine;
+    }
+    else if (tbxAnalysisType->currentWidget() == widTime)
+    {
+        Point point(txtTimeX->value(), txtTimeY->value());
+        QList<double> times = Agros2D::computation()->timeStepTimes();
+        foreach (int timeStep, Agros2D::computation()->timeStepLengths())
+        {
+            QMap<QString, double> data = getData(point,
+                                                 timeStep,
+                                                 Agros2D::solutionStore()->lastAdaptiveStep(m_postprocessorWidget->fieldWidget()->selectedField(), timeStep));
+            foreach (QString key, data.keys())
+            {
+                QList<double> *values = &table.operator [](key);
+                values->append(data.value(key));
+            }
+        }
+    }
+
+    if (table.values().size() > 0)
+    {
+        // csv
+        // headers
+        foreach(QString key, table.keys())
+            out << key << ";";
+        out << "\n";
+
+        // values
+        for (int i = 0; i < table.values().first().size(); i++)
+        {
+            foreach(QString key, table.keys())
+                out << QString::number(table.value(key).at(i)) << ";";
+            out << endl;
+        }
+
+        if (fileInfo.absoluteDir() != tempProblemDir())
+            settings.setValue("General/LastDataDir", fileInfo.absolutePath());
+
+        file.close();
+    }
+}
+
+void PostprocessorSceneChartWidget::doSaveImage()
+{
+    QSettings settings;
+    QString dir = settings.value("General/LastDataDir").toString();
+
+    QString selectedFilter;
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save image"), dir, tr("PNG files (*.png)"), &selectedFilter);
+    if (fileName.isEmpty())
+    {
+        cerr << "Incorrect file name." << endl;
+        return;
+    }
+
+    QFileInfo fileInfo(fileName);
+
+    // open file for write
+    if (fileInfo.suffix().isEmpty())
+        fileName = fileName + ".png";
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        cerr << "Could not create " + fileName.toStdString() + " file." << endl;
+        return;
+    }
+
+    m_sceneChart->chart()->savePng(fileName, 1024, 768);
+}
+
+QMap<QString, double> PostprocessorSceneChartWidget::getData(Point point, int timeStep, int adaptivityStep)
+{
+    QMap<QString, double> table;
+    table.insert(Agros2D::computation()->config()->labelX(), point.x);
+    table.insert(Agros2D::computation()->config()->labelY(), point.y);
+    table.insert("t", Agros2D::computation()->timeStepToTotalTime(m_postprocessorWidget->fieldWidget()->selectedTimeStep()));
+
+    foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables())
+    {
+        std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->fieldWidget()->selectedField()->plugin()->localValue(m_postprocessorWidget->fieldWidget()->selectedField(),
+                                                                                                                             timeStep,
+                                                                                                                             adaptivityStep,
+                                                                                                                             point);
+        QMap<QString, LocalPointValue> values = localValue->values();
+
+        if (variable.isScalar())
+        {
+            table.insert(variable.shortname(), values[variable.id()].scalar);
+        }
+        else
+        {
+            table.insert(QString(variable.shortname()), values[variable.id()].vector.magnitude());
+            table.insert(QString(variable.shortname() + "x"), values[variable.id()].vector.x);
+            table.insert(QString(variable.shortname() + "y"), values[variable.id()].vector.y);
+        }
+    }
+
+    return table;
+}
+
+void PostprocessorSceneChartWidget::createChartLine()
+{
+    ChartLine line;
+
+    if (tbxAnalysisType->currentWidget() == widGeometry)
+    {
+        line = ChartLine(Point(txtStartX->value(), txtStartY->value()),
+                         Point(txtEndX->value(), txtEndY->value()),
+                         txtHorizontalAxisPoints->value(),
+                         chkHorizontalAxisReverse->isChecked());
+    }
+    if (tbxAnalysisType->currentWidget() == widTime)
+    {
+        line = ChartLine(Point(txtTimeX->value(), txtTimeY->value()),
+                         Point(txtTimeX->value(), txtTimeY->value()),
+                         0.0,
+                         0);
+    }
+
+    geometryViewer->setChartLine(line);
+    geometryViewer->doZoomBestFit();
+}

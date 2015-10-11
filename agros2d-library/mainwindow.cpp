@@ -79,7 +79,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     sceneViewMesh = new SceneViewMesh(postDeal, this);
     sceneViewPost2D = new SceneViewPost2D(postDeal, this);
     // sceneViewPost3D = new SceneViewPost3D(postDeal, this);
-    // sceneViewChart = new ChartView(this);
+    sceneViewChart = new ChartView(this);
     // sceneViewParticleTracing = new SceneViewParticleTracing(postDeal, this);
     // sceneViewVTK2D = new SceneViewVTK2D(postDeal, this);
 
@@ -96,7 +96,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // postprocessor
     postprocessorWidget = new PostprocessorWidget(postDeal,
                                                   sceneViewMesh,
-                                                  sceneViewPost2D);
+                                                  sceneViewPost2D,
+                                                  sceneViewChart);
     connect(postprocessorWidget, SIGNAL(apply()), postDeal, SLOT(refresh()));
     connect(postprocessorWidget, SIGNAL(apply()), this, SLOT(setControls()));
     connect(postprocessorWidget, SIGNAL(modeChanged()), this, SLOT(setControls()));
@@ -105,8 +106,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // particle tracing
     // particleTracingWidget = new ParticleTracingWidget(sceneViewParticleTracing, this);
 
-    // chart
-    // chartWidget = new ChartWidget(sceneViewChart, this);
 
     // problem
     problemWidget = new ProblemWidget(this);
@@ -522,7 +521,7 @@ void MainWindow::createMain()
     // sceneViewPost3DWidget = new SceneViewWidget(sceneViewPost3D, this);
     // sceneViewPostParticleTracingWidget = new SceneViewWidget(sceneViewParticleTracing, this);
     // sceneViewPostVTK2DWidget = new SceneViewWidget(sceneViewVTK2D, this);
-    // sceneViewChartWidget = new SceneViewWidget(sceneViewChart, this);
+    sceneViewChartWidget = new SceneViewWidget(sceneViewChart, this);
     sceneViewPythonEditorWidget = new SceneViewWidget(scriptEditor, this);
 
     tabViewLayout = new QStackedLayout();
@@ -534,7 +533,7 @@ void MainWindow::createMain()
     // tabViewLayout->addWidget(sceneViewPost3DWidget);
     // tabViewLayout->addWidget(sceneViewPostParticleTracingWidget);
     // tabViewLayout->addWidget(sceneViewPostVTK2DWidget);
-    // tabViewLayout->addWidget(sceneViewChartWidget);
+    tabViewLayout->addWidget(sceneViewChartWidget);
     tabViewLayout->addWidget(sceneViewPythonEditorWidget);
 
     QWidget *viewWidget = new QWidget();
@@ -1131,14 +1130,7 @@ void MainWindow::doSolveFinished()
         postprocessorWidget->actSceneModePost->trigger();
     }
 
-    /*
-    if (Agros2D::computation()->isSolved() && !currentPythonEngine()->isScriptRunning())
-    {
-        sceneViewPost2D->actSceneModePost2D->trigger();
-    }
-    */
-
-    // show local point values
+    // show empty results
     resultsView->showEmpty();
 }
 
@@ -1309,6 +1301,9 @@ void MainWindow::setControls()
         case PostprocessorWidgetMode_Post2D:
             tabViewLayout->setCurrentWidget(sceneViewPost2DWidget);
             break;
+        case PostprocessorWidgetMode_Chart:
+            tabViewLayout->setCurrentWidget(sceneViewChartWidget);
+            break;
         default:
             break;
         }
@@ -1320,19 +1315,6 @@ void MainWindow::setControls()
         sceneViewMesh->actSceneZoomRegion = actSceneZoomRegion;
     }
     /*
-    else if (sceneViewPost2D->actSceneModePost2D->isChecked())
-    {
-        tabViewLayout->setCurrentWidget(sceneViewPost2DWidget);
-        tabControlsLayout->setCurrentWidget(postprocessorWidget);
-
-        connect(actSceneZoomIn, SIGNAL(triggered()), sceneViewPost2D, SLOT(doZoomIn()));
-        connect(actSceneZoomOut, SIGNAL(triggered()), sceneViewPost2D, SLOT(doZoomOut()));
-        connect(actSceneZoomBestFit, SIGNAL(triggered()), sceneViewPost2D, SLOT(doZoomBestFit()));
-        sceneViewPost2D->actSceneZoomRegion = actSceneZoomRegion;
-
-        // hide transform dialog
-        sceneTransformDialog->hide();
-    }
     else if (sceneViewPost3D->actSceneModePost3D->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewPost3DWidget);
@@ -1345,11 +1327,7 @@ void MainWindow::setControls()
         // hide transform dialog
         sceneTransformDialog->hide();
     }
-    else if (sceneViewChart->actSceneModeChart->isChecked())
-    {
-        tabViewLayout->setCurrentWidget(sceneViewChartWidget);
-        tabControlsLayout->setCurrentWidget(chartWidget);
-    }
+
     else if (sceneViewParticleTracing->actSceneModeParticleTracing->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewPostParticleTracingWidget);
@@ -1367,8 +1345,6 @@ void MainWindow::setControls()
     {
         tabViewLayout->setCurrentWidget(sceneViewPythonEditorWidget);
         tabControlsLayout->setCurrentWidget(scriptEditor->pythonEditorWidget());
-
-        menuBar()->addMenu(scriptEditor->mnuFile);
     }
 
     // menu bar

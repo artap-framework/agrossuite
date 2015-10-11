@@ -36,6 +36,7 @@ class PhysicalFieldWidget;
 
 class PostprocessorSceneMeshWidget;
 class PostprocessorScenePost2DWidget;
+class PostprocessorSceneChartWidget;
 
 enum PostprocessorWidgetMode
 {
@@ -53,7 +54,8 @@ class PostprocessorWidget : public QWidget
 public:
     PostprocessorWidget(PostDeal *postDeal,
                         SceneViewMesh *sceneMesh,
-                        SceneViewPost2D *scenePost2D);
+                        SceneViewPost2D *scenePost2D,
+                        ChartView *sceneChart);
 
     inline PhysicalFieldWidget *fieldWidget() { return m_fieldWidget; }
     inline PostDeal *postDeal() { return m_postDeal; }
@@ -82,9 +84,9 @@ private:
     QLabel *lblMeshSolution;
     QLabel *lblDOFs;
 
-    //
     PostprocessorSceneMeshWidget *meshWidget;
     PostprocessorScenePost2DWidget *post2DWidget;
+    PostprocessorSceneChartWidget *chartWidget;
 
     void createControls();
 
@@ -92,6 +94,20 @@ private slots:
     void reconnectActions();
 
     void doCalculationFinished();
+};
+
+class PostprocessorSceneWidget : public QWidget
+{
+    Q_OBJECT
+
+public:
+    PostprocessorSceneWidget(PostprocessorWidget *postprocessorWidget)
+        : QWidget(postprocessorWidget), m_postprocessorWidget(postprocessorWidget)
+    {
+    }
+
+protected:
+    PostprocessorWidget *m_postprocessorWidget;
 };
 
 

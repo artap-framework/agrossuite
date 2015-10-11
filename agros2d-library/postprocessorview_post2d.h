@@ -21,26 +21,25 @@
 #define POSTPROCESSORVIEW_POST2D_H
 
 #include "util.h"
+#include "postprocessorview.h"
 
 class PostDeal;
 class SceneViewPost2D;
-class PostprocessorWidget;
 class LineEditDouble;
 class CollapsableGroupBoxButton;
 
-class PostprocessorScenePost2DWidget : public QWidget
+class PostprocessorScenePost2DWidget : public PostprocessorSceneWidget
 {
     Q_OBJECT
 
 public:
-    PostprocessorScenePost2DWidget(PostprocessorWidget *postprocessorWidget, SceneViewPost2D *scenePost2D, QWidget *parent);
+    PostprocessorScenePost2DWidget(PostprocessorWidget *postprocessorWidget, SceneViewPost2D *scenePost2D);
 
     void load();
     void save();
 
 private:    
     SceneViewPost2D *m_scenePost2D;
-    PostprocessorWidget *m_postprocessorWidget;
 
     // toolbar
     QToolBar *toolBar;

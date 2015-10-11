@@ -20,6 +20,7 @@
 #include "postprocessorview.h"
 #include "postprocessorview_mesh.h"
 #include "postprocessorview_post2d.h"
+#include "postprocessorview_chart.h"
 
 #include "util/global.h"
 
@@ -47,7 +48,8 @@
 
 PostprocessorWidget::PostprocessorWidget(PostDeal *postDeal,
                                          SceneViewMesh *sceneMesh,
-                                         SceneViewPost2D *scenePost2D)
+                                         SceneViewPost2D *scenePost2D,
+                                         ChartView *sceneChart)
     : m_postDeal(postDeal)
 {
     // scene mode
@@ -59,8 +61,9 @@ PostprocessorWidget::PostprocessorWidget(PostDeal *postDeal,
     m_fieldWidget = new PhysicalFieldWidget(this);
     // connect(m_fieldWidget, SIGNAL(fieldChanged()), this, SLOT(doField()));
 
-    meshWidget = new PostprocessorSceneMeshWidget(this, sceneMesh, this);
-    post2DWidget = new PostprocessorScenePost2DWidget(this, scenePost2D, this);
+    meshWidget = new PostprocessorSceneMeshWidget(this, sceneMesh);
+    post2DWidget = new PostprocessorScenePost2DWidget(this, scenePost2D);
+    chartWidget = new PostprocessorSceneChartWidget(this, sceneChart);
 
     createControls();
 
@@ -92,6 +95,7 @@ void PostprocessorWidget::createControls()
     tabWidget = new QTabWidget();
     tabWidget->addTab(meshWidget, icon("scene-mesh"), tr("Mesh"));
     tabWidget->addTab(post2DWidget, icon("scene-post2d"), tr("2D"));
+    tabWidget->addTab(chartWidget, icon("chart"), tr("Chart"));
     connect(tabWidget, SIGNAL(currentChanged(int)), SIGNAL(modeChanged()));
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
@@ -122,6 +126,11 @@ void PostprocessorWidget::doApply()
     {
         post2DWidget->save();
         post2DWidget->updateControls();
+    }
+    else if (tabWidget->currentWidget() == chartWidget)
+    {
+        chartWidget->save();
+        chartWidget->updateControls();
     }
 
     // refresh
@@ -184,4 +193,8 @@ PostprocessorWidgetMode PostprocessorWidget::mode()
         return PostprocessorWidgetMode_Mesh;
     else if (tabWidget->currentWidget() == post2DWidget)
         return PostprocessorWidgetMode_Post2D;
+    else if (tabWidget->currentWidget() == chartWidget)
+        return PostprocessorWidgetMode_Chart;
+    else
+        assert(0);
 }

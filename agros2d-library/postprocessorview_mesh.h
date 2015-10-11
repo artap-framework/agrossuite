@@ -21,24 +21,23 @@
 #define POSTPROCESSORVIEW_MESH_H
 
 #include "util.h"
+#include "postprocessorview.h"
 
 class PostDeal;
 class SceneViewMesh;
-class PostprocessorWidget;
 
-class PostprocessorSceneMeshWidget : public QWidget
+class PostprocessorSceneMeshWidget : public PostprocessorSceneWidget
 {
     Q_OBJECT
 
 public:
-    PostprocessorSceneMeshWidget(PostprocessorWidget *postprocessorWidget, SceneViewMesh *sceneMesh, QWidget *parent);
+    PostprocessorSceneMeshWidget(PostprocessorWidget *postprocessorWidget, SceneViewMesh *sceneMesh);
 
     void load();
     void save();
 
 private:    
     SceneViewMesh *m_sceneMesh;
-    PostprocessorWidget *m_postprocessorWidget;
 
     QWidget *basic;
 

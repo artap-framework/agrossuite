@@ -23,7 +23,7 @@
 #include "util.h"
 
 #include "sceneview_common2d.h"
-#include "chartdialog.h"
+#include "postprocessorview_chart.h"
 
 class SceneViewPreprocessorChart : public SceneViewCommon2D
 {

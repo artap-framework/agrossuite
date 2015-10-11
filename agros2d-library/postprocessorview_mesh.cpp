@@ -44,11 +44,11 @@
 
 #include "util/constants.h"
 
-PostprocessorSceneMeshWidget::PostprocessorSceneMeshWidget(PostprocessorWidget *postprocessorWidget, SceneViewMesh *sceneMesh, QWidget *parent)
-    : m_postprocessorWidget(postprocessorWidget), m_sceneMesh(sceneMesh), QWidget(parent)
+PostprocessorSceneMeshWidget::PostprocessorSceneMeshWidget(PostprocessorWidget *postprocessorWidget, SceneViewMesh *sceneMesh)
+    : PostprocessorSceneWidget(postprocessorWidget), m_sceneMesh(sceneMesh)
 {
     setWindowIcon(icon("scene-properties"));
-    setObjectName("PostprocessorView");
+    setObjectName("PostprocessorMeshWidget");
 
     createControls();
 

@@ -44,11 +44,11 @@
 
 #include "util/constants.h"
 
-PostprocessorScenePost2DWidget::PostprocessorScenePost2DWidget(PostprocessorWidget *postprocessorWidget, SceneViewPost2D *scenePost2D, QWidget *parent)
-    : m_postprocessorWidget(postprocessorWidget), m_scenePost2D(scenePost2D), QWidget(parent)
+PostprocessorScenePost2DWidget::PostprocessorScenePost2DWidget(PostprocessorWidget *postprocessorWidget, SceneViewPost2D *scenePost2D)
+    : PostprocessorSceneWidget(postprocessorWidget), m_scenePost2D(scenePost2D)
 {
     setWindowIcon(icon("scene-properties"));
-    setObjectName("PostprocessorView");
+    setObjectName("PostprocessorPost2DWidget");
 
     createControls();
 

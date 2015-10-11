@@ -203,7 +203,7 @@ private:
     // SceneViewWidget *sceneViewPost3DWidget;
     // SceneViewWidget *sceneViewPostParticleTracingWidget;
     // SceneViewWidget *sceneViewPostVTK2DWidget;
-    // SceneViewWidget *sceneViewChartWidget;
+    SceneViewWidget *sceneViewChartWidget;
     SceneViewWidget *sceneViewPythonEditorWidget;
 
     PostDeal *postDeal;
@@ -216,7 +216,7 @@ private:
     // SceneViewPost3D *sceneViewPost3D;
     // SceneViewParticleTracing *sceneViewParticleTracing;
     // SceneViewVTK2D *sceneViewVTK2D;
-    // ChartView *sceneViewChart;
+    ChartView *sceneViewChart;
     PythonEditorDialog *scriptEditor;
 
     QWidget *viewControls;

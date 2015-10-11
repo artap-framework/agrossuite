@@ -35,35 +35,12 @@ class PhysicalFieldWidget;
 class SceneViewPreprocessorChart;
 class QCustomPlot;
 
-// definition of chart line
-struct ChartLine
-{
-    Point start;
-    Point end;
-    int numberOfPoints;
-    bool reverse;
-
-    ChartLine() : start(Point()), end(Point()), numberOfPoints(0), reverse(false) {}
-
-    ChartLine(Point start, Point end, int numberOfPoints = 200, bool reverse = false)
-    {
-        this->start = start;
-        this->end = end;
-        this->numberOfPoints = numberOfPoints;
-        this->reverse = reverse;
-    }
-
-    QList<Point> getPoints();
-};
-
 class ChartView : public QWidget
 {
     Q_OBJECT
 
 public:
     ChartView(QWidget *parent = 0);
-
-    QAction *actSceneModeChart;
 
     inline QCustomPlot *chart() { return m_chart; }
 
@@ -75,90 +52,6 @@ private slots:
 
 private:
     QCustomPlot *m_chart;
-};
-
-class ChartWidget : public QWidget
-{
-    Q_OBJECT
-
-public slots:
-    void doApply();
-    void updateControls();
-
-public:
-    ChartWidget(ChartView *chart,
-                        QWidget *parent = 0);
-    ~ChartWidget();
-
-private:
-    // variable widget
-    SceneViewPreprocessorChart *geometryViewer;
-
-    QTabWidget* tbxAnalysisType;
-
-    // buttons
-    QPushButton *btnOK;
-    QPushButton *btnSaveImage;
-    QPushButton *btnExportData;
-
-    // geometry
-    QLabel *lblStartX;
-    QLabel *lblStartY;
-    QLabel *lblEndX;
-    QLabel *lblEndY;
-
-    LineEditDouble *txtStartX;
-    LineEditDouble *txtStartY;
-    LineEditDouble *txtEndX;
-    LineEditDouble *txtEndY;
-
-    QRadioButton *radHorizontalAxisLength;
-    QRadioButton *radHorizontalAxisX;
-    QRadioButton *radHorizontalAxisY;
-
-    QSpinBox *txtHorizontalAxisPoints;
-    QCheckBox *chkHorizontalAxisReverse;
-
-    // time
-    QLabel *lblPointX;
-    QLabel *lblPointY;
-    LineEditDouble *txtTimeX;
-    LineEditDouble *txtTimeY;
-
-    PhysicalFieldWidget *fieldWidget;
-
-    QComboBox *cmbFieldVariable;
-    QComboBox *cmbFieldVariableComp;
-
-    QWidget *widGeometry;
-    QWidget *widTime;
-
-    ChartView *m_chart;
-
-    void createControls();
-
-    QVector<double> horizontalAxisValues(ChartLine *chartLine);
-
-    void plotGeometry();
-    void plotTime();
-
-    void fillTableRow(LocalValue *localValue, double time, int row);
-
-    QStringList headers();
-    void addValue(LocalValue *localPointValue, double time, double *yval, int i, int N,
-                  PhysicFieldVariableComp physicFieldVariableComp,
-                  Module::LocalVariable *physicFieldVariable);
-
-private slots:
-    void doField();
-    void doFieldVariable(int index);
-    void doExportData();
-    void doSaveImage();
-    QMap<QString, double> getData(Point point, int timeStep, int adaptivityStep);
-
-    void createChartLine();
-
-    void reconnectActions();
 };
 
 #endif // CHARTDIALOG_H
