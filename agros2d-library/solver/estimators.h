@@ -388,13 +388,13 @@ private:
                                     const shared_ptr<SolverDeal::AssembleBase> dual_solver,
                                     const dealii::Vector<double> &primal_solution,
                                     const dealii::Vector<double> &dual_weights) :
-            cell_data (dual_solver->solverDeal->mappingCollection(),
-                       dual_solver->solverDeal->feCollection(),
-                       dual_solver->solverDeal->quadratureFormulas(),
+            cell_data (dual_solver->solverDeal()->mappingCollection(),
+                       dual_solver->solverDeal()->feCollection(),
+                       dual_solver->solverDeal()->quadratureFormulas(),
                        std::shared_ptr<dealii::ZeroFunction<dim> >(new dealii::ZeroFunction<dim>())), // primal_solver.rhs_function), // TODO: rhs
-            face_data (dual_solver->solverDeal->mappingCollection(),
-                       dual_solver->solverDeal->feCollection(),
-                       dual_solver->solverDeal->quadratureFormulasFace()),
+            face_data (dual_solver->solverDeal()->mappingCollection(),
+                       dual_solver->solverDeal()->feCollection(),
+                       dual_solver->solverDeal()->quadratureFormulasFace()),
             primal_solution(primal_solution),
             dual_weights(dual_weights)
         {

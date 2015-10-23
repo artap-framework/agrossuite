@@ -51,8 +51,8 @@
 
 #include "pythonlab/pythonengine.h"
 
-PostDataOut::PostDataOut(FieldInfo *fieldInfo) : dealii::DataOut<2, dealii::hp::DoFHandler<2> >(),
-    m_fieldInfo(fieldInfo)
+PostDataOut::PostDataOut(FieldInfo *fieldInfo, ProblemComputation *parentProblem) : dealii::DataOut<2, dealii::hp::DoFHandler<2> >(),
+    m_problem(parentProblem), m_fieldInfo(fieldInfo)
 {
 }
 
@@ -88,7 +88,7 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
     double dmult = 0.0;
     if (deform)
     {
-        RectPoint rect = Agros2D::computation()->scene()->boundingBox();
+        RectPoint rect = m_problem->scene()->boundingBox();
         dmult = qMax(rect.width(), rect.height()) / maxDeform / 15.0;
     }
 
@@ -168,7 +168,7 @@ dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
     DataOut<2>::cell_iterator cell = this->dofs->begin_active();
     while (cell != this->dofs->end())
     {
-        if (!Agros2D::computation()->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
+        if (!m_problem->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
             break;
         else
             cell++;
@@ -184,7 +184,7 @@ dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_
     DataOut<2>::cell_iterator cell = dealii::DataOut<2, dealii::hp::DoFHandler<2> >::next_cell(old_cell);
     while (cell != this->dofs->end())
     {
-        if (!Agros2D::computation()->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
+        if (!m_problem->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
             break;
         else
             cell++;
@@ -195,14 +195,17 @@ dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_
 
 // ************************************************************************************************************************
 
-PostDeal::PostDeal() :
-    m_activeViewField(NULL),
+PostDeal::PostDeal(ProblemComputation *parentProblem) :
+    m_computation(parentProblem),
+    m_activeViewField(nullptr),
     m_activeTimeStep(NOT_FOUND_SO_FAR),
     m_activeAdaptivityStep(NOT_FOUND_SO_FAR),
     m_isProcessed(false)
 {
-    // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(reconnectSlots()), this, SLOT(reconnectActions()));
+    connect(m_computation->scene(), SIGNAL(cleared()), this, SLOT(clear()));
+    connect(m_computation, SIGNAL(clearedSolution()), this, SLOT(clearView()));
+    // connect(m_problem, SIGNAL(fieldsChanged()), this, SLOT(clear()));
+
 }
 
 PostDeal::~PostDeal()
@@ -210,107 +213,102 @@ PostDeal::~PostDeal()
     clear();
 }
 
-void PostDeal::reconnectActions()
-{
-    connect(Agros2D::computation()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
-    connect(Agros2D::computation(), SIGNAL(clearedSolution()), this, SLOT(clearView()));
-    // connect(Agros2D::computation(), SIGNAL(fieldsChanged()), this, SLOT(clear()));
-
-    connect(Agros2D::computation(), SIGNAL(meshed()), this, SLOT(problemMeshed()));
-    connect(Agros2D::computation(), SIGNAL(solved()), this, SLOT(problemSolved()));
-}
-
 void PostDeal::processRangeContour()
 {
-    if (Agros2D::computation()->isSolved() && m_activeViewField && (Agros2D::computation()->setting()->value(ProblemSetting::View_ShowContourView).toBool()))
+    if (m_computation->isSolved() && m_activeViewField && (m_computation->setting()->value(ProblemSetting::View_ShowContourView).toBool()))
     {
         bool contains = false;
-        foreach (Module::LocalVariable variable, m_activeViewField->viewScalarVariables())
+        foreach (Module::LocalVariable variable, m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
         {
-            if (variable.id() == Agros2D::computation()->setting()->value(ProblemSetting::View_ContourVariable).toString())
+            if (variable.id() == m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString())
             {
                 contains = true;
                 break;
             }
         }
 
-        Agros2D::log()->printMessage(tr("Post View"), tr("Contour view (%1)").arg(Agros2D::computation()->setting()->value(ProblemSetting::View_ContourVariable).toString()));
+        Agros2D::log()->printMessage(tr("Post View"), tr("Contour view (%1)").arg(m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString()));
 
-        QString variableName = Agros2D::computation()->setting()->value(ProblemSetting::View_ContourVariable).toString();
-        Module::LocalVariable variable = m_activeViewField->localVariable(variableName);
+        QString variableName = m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString();
+        Module::LocalVariable variable = m_activeViewField->localVariable(m_computation->config()->coordinateType(), variableName);
 
         m_contourValues.clear();
 
         std::shared_ptr<PostDataOut> data_out;
 
         if (variable.isScalar())
-            data_out = viewScalarFilter(m_activeViewField->localVariable(Agros2D::computation()->setting()->value(ProblemSetting::View_ContourVariable).toString()),
+            data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                                         m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString()),
                                         PhysicFieldVariableComp_Scalar);
 
         else
-            data_out = viewScalarFilter(m_activeViewField->localVariable(Agros2D::computation()->setting()->value(ProblemSetting::View_ContourVariable).toString()),
+            data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                                         m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString()),
                                         PhysicFieldVariableComp_Magnitude);
 
-        data_out->compute_nodes(m_contourValues, (m_activeViewField->hasDeformableShape() && Agros2D::computation()->setting()->value(ProblemSetting::View_DeformContour).toBool()));
+        data_out->compute_nodes(m_contourValues, (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(ProblemSetting::View_DeformContour).toBool()));
     }
 }
 
 void PostDeal::processRangeScalar()
 {
-    if (Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarRangeAuto).toBool())
+    if (m_computation->setting()->value(ProblemSetting::View_ScalarRangeAuto).toBool())
     {
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarRangeMin, 0.0);
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarRangeMax, 0.0);
+        m_computation->setting()->setValue(ProblemSetting::View_ScalarRangeMin, 0.0);
+        m_computation->setting()->setValue(ProblemSetting::View_ScalarRangeMax, 0.0);
     }
 
-    if ((Agros2D::computation()->isSolved()) && (m_activeViewField)
-            && ((Agros2D::computation()->setting()->value(ProblemSetting::View_ShowScalarView).toBool())
-                || (((SceneViewPost3DMode) Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D)))
+    if ((m_computation->isSolved()) && (m_activeViewField)
+            && ((m_computation->setting()->value(ProblemSetting::View_ShowScalarView).toBool())
+                || (((SceneViewPost3DMode) m_computation->setting()->value(ProblemSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D)))
     {
         bool contains = false;
-        foreach (Module::LocalVariable variable, m_activeViewField->viewScalarVariables())
+        foreach (Module::LocalVariable variable, m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
         {
-            if (variable.id() == Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarVariable).toString())
+            if (variable.id() == m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString())
             {
                 contains = true;
                 break;
             }
         }
 
-        Agros2D::log()->printMessage(tr("Post View"), tr("Scalar view (%1)").arg(Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarVariable).toString()));
+        Agros2D::log()->printMessage(tr("Post View"), tr("Scalar view (%1)").arg(m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString()));
 
-        std::shared_ptr<PostDataOut> data_out = viewScalarFilter(m_activeViewField->localVariable(Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarVariable).toString()),
-                                                                 (PhysicFieldVariableComp) Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt());
-        data_out->compute_nodes(m_scalarValues, (m_activeViewField->hasDeformableShape() && Agros2D::computation()->setting()->value(ProblemSetting::View_DeformContour).toBool()));
+        std::shared_ptr<PostDataOut> data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                                                                  m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString()),
+                                                                 (PhysicFieldVariableComp) m_computation->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt());
+        data_out->compute_nodes(m_scalarValues, (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(ProblemSetting::View_DeformContour).toBool()));
 
-        if (Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarRangeAuto).toBool())
+        if (m_computation->setting()->value(ProblemSetting::View_ScalarRangeAuto).toBool())
         {
-            Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarRangeMin, data_out->min());
-            Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarRangeMax, data_out->max());
+            m_computation->setting()->setValue(ProblemSetting::View_ScalarRangeMin, data_out->min());
+            m_computation->setting()->setValue(ProblemSetting::View_ScalarRangeMax, data_out->max());
         }
     }
 }
 
 void PostDeal::processRangeVector()
 {
-    if ((Agros2D::computation()->isSolved()) && (m_activeViewField) && (Agros2D::computation()->setting()->value(ProblemSetting::View_ShowVectorView).toBool()))
+    if ((m_computation->isSolved()) && (m_activeViewField) && (m_computation->setting()->value(ProblemSetting::View_ShowVectorView).toBool()))
     {
         bool contains = false;
-        foreach (Module::LocalVariable variable, m_activeViewField->viewVectorVariables())
+        foreach (Module::LocalVariable variable, m_activeViewField->viewVectorVariables(m_computation->config()->coordinateType()))
         {
-            if (variable.id() == Agros2D::computation()->setting()->value(ProblemSetting::View_VectorVariable).toString())
+            if (variable.id() == m_computation->setting()->value(ProblemSetting::View_VectorVariable).toString())
             {
                 contains = true;
                 break;
             }
         }
 
-        Agros2D::log()->printMessage(tr("Post View"), tr("Vector view (%1)").arg(Agros2D::computation()->setting()->value(ProblemSetting::View_VectorVariable).toString()));
+        Agros2D::log()->printMessage(tr("Post View"), tr("Vector view (%1)").arg(m_computation->setting()->value(ProblemSetting::View_VectorVariable).toString()));
 
-        std::shared_ptr<PostDataOut> data_outX = viewScalarFilter(m_activeViewField->localVariable(Agros2D::computation()->setting()->value(ProblemSetting::View_VectorVariable).toString()),
+        std::shared_ptr<PostDataOut> data_outX = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                                                                   m_computation->setting()->value(ProblemSetting::View_VectorVariable).toString()),
                                                                   PhysicFieldVariableComp_X);
 
-        std::shared_ptr<PostDataOut> data_outY = viewScalarFilter(m_activeViewField->localVariable(Agros2D::computation()->setting()->value(ProblemSetting::View_VectorVariable).toString()),
+        std::shared_ptr<PostDataOut> data_outY = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                                                                   m_computation->setting()->value(ProblemSetting::View_VectorVariable).toString()),
                                                                   PhysicFieldVariableComp_Y);
 
         data_outX->compute_nodes(m_vectorXValues);
@@ -330,15 +328,15 @@ void PostDeal::clearView()
 
 void PostDeal::refresh()
 {
-    Agros2D::computation()->setIsPostprocessingRunning();
+    m_computation->setIsPostprocessingRunning();
     clearView();
 
-    if (Agros2D::computation()->isSolved())
+    if (m_computation->isSolved())
         processSolved();
 
     m_isProcessed = true;
     emit processed();
-    Agros2D::computation()->setIsPostprocessingRunning(false);
+    m_computation->setIsPostprocessingRunning(false);
 }
 
 void PostDeal::clear()
@@ -354,7 +352,7 @@ void PostDeal::problemMeshed()
 {
     if (!m_activeViewField)
     {
-        setActiveViewField(Agros2D::computation()->fieldInfos().begin().value());
+        setActiveViewField(m_computation->fieldInfos().begin().value());
     }
 }
 
@@ -362,11 +360,11 @@ void PostDeal::problemSolved()
 {
     if (!m_activeViewField)
     {
-        setActiveViewField(Agros2D::computation()->fieldInfos().begin().value());
+        setActiveViewField(m_computation->fieldInfos().begin().value());
     }
 
     // time step
-    int lastTimeStep = Agros2D::solutionStore()->lastTimeStep(m_activeViewField);
+    int lastTimeStep = m_computation->solutionStore()->lastTimeStep(m_activeViewField);
 
     if (m_activeTimeStep == NOT_FOUND_SO_FAR || activeTimeStep() > lastTimeStep)
     {
@@ -374,7 +372,7 @@ void PostDeal::problemSolved()
     }
 
     // adaptive step
-    int lastAdaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(m_activeViewField, m_activeTimeStep);
+    int lastAdaptivityStep = m_computation->solutionStore()->lastAdaptiveStep(m_activeViewField, m_activeTimeStep);
 
     setActiveAdaptivityStep(lastAdaptivityStep);
 }
@@ -382,14 +380,14 @@ void PostDeal::problemSolved()
 void PostDeal::processSolved()
 {
     // update time functions
-    if (Agros2D::computation()->isTransient())
-        Module::updateTimeFunctions(Agros2D::computation()->timeStepToTotalTime(activeTimeStep()));
+    if (m_computation->isTransient())
+        Module::updateTimeFunctions(m_computation, m_computation->timeStepToTotalTime(activeTimeStep()));
 
-    FieldSolutionID fsid(activeViewField(), activeTimeStep(), activeAdaptivityStep());
-    if (Agros2D::solutionStore()->contains(fsid))
+    FieldSolutionID fsid(activeViewField()->fieldId(), activeTimeStep(), activeAdaptivityStep());
+    if (m_computation->solutionStore()->contains(fsid))
     {
         /*
-        MultiArray<double> ma = Agros2D::solutionStore()->multiArray(fsid);
+        MultiArray<double> ma = m_computation->solutionStore()->multiArray(fsid);
         if (ma.spaces().empty())
             return;
         if (ma.solutions().empty())
@@ -413,22 +411,22 @@ std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable ph
     // time.start();
 
     // update time functions
-    if (Agros2D::computation()->isTransient())
-        Module::updateTimeFunctions(Agros2D::computation()->timeStepToTotalTime(activeTimeStep()));
+    if (m_computation->isTransient())
+        Module::updateTimeFunctions(m_computation, m_computation->timeStepToTotalTime(activeTimeStep()));
 
-    MultiArray ma = activeMultiSolutionArray();
-
-    std::shared_ptr<dealii::DataPostprocessorScalar<2> > post = activeViewField()->plugin()->filter(activeViewField(),
+    std::shared_ptr<dealii::DataPostprocessorScalar<2> > post = activeViewField()->plugin()->filter(m_computation,
+                                                                                                    activeViewField(),
                                                                                                     activeTimeStep(),
                                                                                                     activeAdaptivityStep(),
-                                                                                                    &ma,
                                                                                                     physicFieldVariable.id(),
                                                                                                     physicFieldVariableComp);
 
     // This effectively deallocates the previous pointer.
     this->m_post = post;
 
-    std::shared_ptr<PostDataOut> data_out = std::shared_ptr<PostDataOut>(new PostDataOut(activeViewField()));
+    MultiArray ma = activeMultiSolutionArray();
+
+    std::shared_ptr<PostDataOut> data_out = std::shared_ptr<PostDataOut>(new PostDataOut(activeViewField(), m_computation));
     data_out->attach_dof_handler(*ma.doFHandler());
     data_out->add_data_vector(ma.solution(), *post);
     // deform shape
@@ -462,41 +460,41 @@ void PostDeal::setActiveViewField(FieldInfo* fieldInfo)
         setActiveAdaptivityStep(NOT_FOUND_SO_FAR);
 
         // set default variables
-        Module::LocalVariable scalarVariable = m_activeViewField->defaultViewScalarVariable();
-        Module::LocalVariable vectorVariable = m_activeViewField->defaultViewVectorVariable();
+        Module::LocalVariable scalarVariable = m_activeViewField->defaultViewScalarVariable(m_computation->config()->coordinateType());
+        Module::LocalVariable vectorVariable = m_activeViewField->defaultViewVectorVariable(m_computation->config()->coordinateType());
 
         QString scalarVariableDefault = scalarVariable.id();
         PhysicFieldVariableComp scalarVariableCompDefault = scalarVariable.isScalar() ? PhysicFieldVariableComp_Scalar : PhysicFieldVariableComp_Magnitude;
         QString contourVariableDefault = scalarVariable.id();
         QString vectorVariableDefault = vectorVariable.id();
 
-        foreach (Module::LocalVariable local, m_activeViewField->viewScalarVariables())
+        foreach (Module::LocalVariable local, m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
         {
-            if (Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarVariable).toString() == local.id())
+            if (m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString() == local.id())
             {
-                scalarVariableDefault = Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarVariable).toString();
-                scalarVariableCompDefault = (PhysicFieldVariableComp) Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt();
+                scalarVariableDefault = m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString();
+                scalarVariableCompDefault = (PhysicFieldVariableComp) m_computation->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt();
             }
-            if (Agros2D::computation()->setting()->value(ProblemSetting::View_ContourVariable).toString() == local.id())
+            if (m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString() == local.id())
             {
-                contourVariableDefault = Agros2D::computation()->setting()->value(ProblemSetting::View_ContourVariable).toString();
+                contourVariableDefault = m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString();
             }
         }
-        foreach (Module::LocalVariable local, m_activeViewField->viewScalarVariables())
+        foreach (Module::LocalVariable local, m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
         {
-            if (Agros2D::computation()->setting()->value(ProblemSetting::View_VectorVariable).toString() == local.id())
+            if (m_computation->setting()->value(ProblemSetting::View_VectorVariable).toString() == local.id())
             {
-                vectorVariableDefault = Agros2D::computation()->setting()->value(ProblemSetting::View_VectorVariable).toString();
+                vectorVariableDefault = m_computation->setting()->value(ProblemSetting::View_VectorVariable).toString();
             }
         }
 
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarVariable, scalarVariableDefault);
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarVariableComp, scalarVariableCompDefault);
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ContourVariable, contourVariableDefault);
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_VectorVariable, vectorVariableDefault);
+        m_computation->setting()->setValue(ProblemSetting::View_ScalarVariable, scalarVariableDefault);
+        m_computation->setting()->setValue(ProblemSetting::View_ScalarVariableComp, scalarVariableCompDefault);
+        m_computation->setting()->setValue(ProblemSetting::View_ContourVariable, contourVariableDefault);
+        m_computation->setting()->setValue(ProblemSetting::View_VectorVariable, vectorVariableDefault);
 
         // order component
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_OrderComponent, 1);
+        m_computation->setting()->setValue(ProblemSetting::View_OrderComponent, 1);
     }
 }
 
@@ -512,18 +510,17 @@ void PostDeal::setActiveAdaptivityStep(int as)
 
 MultiArray PostDeal::activeMultiSolutionArray()
 {
-    FieldSolutionID fsid(activeViewField(), activeTimeStep(), activeAdaptivityStep());
-    if (Agros2D::solutionStore()->contains(fsid))
-        return Agros2D::solutionStore()->multiArray(fsid);
+    FieldSolutionID fsid(activeViewField()->fieldId(), activeTimeStep(), activeAdaptivityStep());
+    if (m_computation->solutionStore()->contains(fsid))
+        return m_computation->solutionStore()->multiArray(fsid);
     else
         assert(0);
 }
 
 // ************************************************************************************************
 
-SceneViewPostInterface::SceneViewPostInterface(PostDeal *postDeal, QWidget *parent)
+SceneViewPostInterface::SceneViewPostInterface(QWidget *parent)
     : SceneViewCommon(parent),
-      m_postDeal(postDeal),
       m_textureScalar(0)
 {
 }
@@ -537,7 +534,7 @@ void SceneViewPostInterface::initializeGL()
 
 const double* SceneViewPostInterface::paletteColor(double x) const
 {
-    switch ((PaletteType) Agros2D::computation()->setting()->value(ProblemSetting::View_PaletteType).toInt())
+    switch ((PaletteType) m_computation->setting()->value(ProblemSetting::View_PaletteType).toInt())
     {
     case Palette_Agros2D:
     {
@@ -662,14 +659,14 @@ const double* SceneViewPostInterface::paletteColor(double x) const
     }
         break;
     default:
-        qWarning() << QString("Undefined: %1.").arg(((PaletteType) Agros2D::computation()->setting()->value(ProblemSetting::View_PaletteType).toInt()));
+        qWarning() << QString("Undefined: %1.").arg(((PaletteType) m_computation->setting()->value(ProblemSetting::View_PaletteType).toInt()));
         return NULL;
     }
 }
 
 const double* SceneViewPostInterface::paletteColorOrder(int n) const
 {
-    switch ((PaletteOrderType) Agros2D::computation()->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt())
+    switch ((PaletteOrderType) m_computation->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt())
     {
     case PaletteOrder_Agros:
         return paletteOrderAgros[n];
@@ -700,15 +697,15 @@ const double* SceneViewPostInterface::paletteColorOrder(int n) const
     case PaletteOrder_BWDesc:
         return paletteOrderBWDesc[n];
     default:
-        qWarning() << QString("Undefined: %1.").arg(Agros2D::computation()->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt());
+        qWarning() << QString("Undefined: %1.").arg(m_computation->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt());
         return NULL;
     }
 }
 
 void SceneViewPostInterface::paletteCreate()
 {
-    int paletteSteps = Agros2D::computation()->setting()->value(ProblemSetting::View_PaletteFilter).toBool()
-            ? 100 : Agros2D::computation()->setting()->value(ProblemSetting::View_PaletteSteps).toInt();
+    int paletteSteps = m_computation->setting()->value(ProblemSetting::View_PaletteFilter).toBool()
+            ? 100 : m_computation->setting()->value(ProblemSetting::View_PaletteSteps).toInt();
 
     unsigned char palette[256][3];
     for (int i = 0; i < paletteSteps; i++)
@@ -728,7 +725,7 @@ void SceneViewPostInterface::paletteCreate()
 
     glBindTexture(GL_TEXTURE_1D, m_textureScalar);
     glTexParameteri(GL_TEXTURE_1D, GL_GENERATE_MIPMAP, GL_TRUE);
-    if (Agros2D::computation()->setting()->value(ProblemSetting::View_PaletteFilter).toBool())
+    if (m_computation->setting()->value(ProblemSetting::View_PaletteFilter).toBool())
     {
 #ifdef Q_WS_WIN
         glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -750,7 +747,7 @@ void SceneViewPostInterface::paletteCreate()
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 
     // adjust palette
-    if (Agros2D::computation()->setting()->value(ProblemSetting::View_PaletteFilter).toBool())
+    if (m_computation->setting()->value(ProblemSetting::View_PaletteFilter).toBool())
     {
         m_texScale = (double) (paletteSteps-1) / 256.0;
         m_texShift = 0.5 / 256.0;
@@ -764,7 +761,7 @@ void SceneViewPostInterface::paletteCreate()
 
 void SceneViewPostInterface::paintScalarFieldColorBar(double min, double max)
 {
-    if (!Agros2D::computation()->isSolved() || !Agros2D::computation()->setting()->value(ProblemSetting::View_ShowScalarColorBar).toBool()) return;
+    if (!m_computation->isSolved() || !m_computation->setting()->value(ProblemSetting::View_ShowScalarColorBar).toBool()) return;
 
     loadProjectionViewPort();
 
@@ -773,7 +770,7 @@ void SceneViewPostInterface::paintScalarFieldColorBar(double min, double max)
 
     // dimensions
     int textWidth = (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0)
-            * (QString::number(-1.0, 'e', Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt()).length() + 1);
+            * (QString::number(-1.0, 'e', m_computation->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt()).length() + 1);
     int textHeight = 2 * (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0);
     Point scaleSize = Point(45.0 + textWidth, 20*textHeight); // height() - 20.0
     Point scaleBorder = Point(10.0, (Agros2D::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
@@ -844,25 +841,26 @@ void SceneViewPostInterface::paintScalarFieldColorBar(double min, double max)
     for (int i = 1; i < numTicks+1; i++)
     {
         double value = 0.0;
-        if (!Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarRangeLog).toBool())
+        if (!m_computation->setting()->value(ProblemSetting::View_ScalarRangeLog).toBool())
             value = min + (double) (i-1) / (numTicks-1) * (max - min);
         else
-            value = min + (double) pow((double) Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarRangeBase).toInt(),
-                                       ((i-1) / (numTicks-1)))/Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarRangeBase).toInt() * (max - min);
+            value = min + (double) pow((double) m_computation->setting()->value(ProblemSetting::View_ScalarRangeBase).toInt(),
+                                       ((i-1) / (numTicks-1)))/m_computation->setting()->value(ProblemSetting::View_ScalarRangeBase).toInt() * (max - min);
 
         if (fabs(value) < EPS_ZERO) value = 0.0;
         double tickY = (scaleSize.y - 60.0) / (numTicks - 1.0);
 
         printPostAt(scaleLeft + 33.0 + ((value >= 0.0) ? (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) : 0.0),
                     scaleBorder.y + 10.0 + (i-1)*tickY - textHeight / 4.0,
-                    QString::number(value, 'e', Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt()));
+                    QString::number(value, 'e', m_computation->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt()));
     }
 
     // variable
-    Module::LocalVariable localVariable = postDeal()->activeViewField()->localVariable(Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarVariable).toString());
+    Module::LocalVariable localVariable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),
+                                                                                                      m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString());
     QString str = QString("%1 (%2)").
-            arg(Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarVariable).toString().isEmpty() ? "" : localVariable.shortname()).
-            arg(Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarVariable).toString().isEmpty() ? "" : localVariable.unit());
+            arg(m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString().isEmpty() ? "" : localVariable.shortname()).
+            arg(m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString().isEmpty() ? "" : localVariable.unit());
 
     printPostAt(scaleLeft + scaleSize.x / 2.0 - (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) * str.count() / 2.0,
                 scaleBorder.y + scaleSize.y - 20.0,

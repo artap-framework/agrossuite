@@ -28,13 +28,11 @@ class SceneViewPost2D;
 class SceneViewPost3D;
 class SceneViewPreprocessor;
 class SceneViewMesh;
-class SceneViewParticleTracing;
 class PythonEditorWidget;
 // class SceneViewVTK2D;
 class InfoWidget;
 class SettingsWidget;
 class ProblemWidget;
-class ParticleTracingWidget;
 class ResultsView;
 class VolumeIntegralValueView;
 class SurfaceIntegralValueView;
@@ -43,14 +41,12 @@ class PostprocessorWidget;
 class PythonScriptingConsoleView;
 class TooltipView;
 class LogView;
-class LogDialog;
 
-class ChartWidget;
 class PythonEditorDialog;
 class SceneTransformDialog;
 class SceneViewWidget;
 class LogStdOut;
-class ChartView;
+class ProblemComputation;
 
 class AGROS_LIBRARY_API MainWindow : public QMainWindow
 {
@@ -117,7 +113,7 @@ private slots:
     /// fields added or removed, menus need to be modified
     void doFieldsChanged();
 
-    void reconnectActions();
+    void connectComputation(QSharedPointer<ProblemComputation> computation);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -201,22 +197,16 @@ private:
     SceneViewWidget *sceneViewMeshWidget;
     SceneViewWidget *sceneViewPost2DWidget;
     // SceneViewWidget *sceneViewPost3DWidget;
-    // SceneViewWidget *sceneViewPostParticleTracingWidget;
+    SceneViewWidget *sceneViewPostParticleTracingWidget;
     // SceneViewWidget *sceneViewPostVTK2DWidget;
     SceneViewWidget *sceneViewChartWidget;
     SceneViewWidget *sceneViewPythonEditorWidget;
 
-    PostDeal *postDeal;
-
     QStackedLayout *tabViewLayout;
     InfoWidget *sceneInfoWidget;
     SceneViewPreprocessor *sceneViewPreprocessor;
-    SceneViewMesh *sceneViewMesh;
-    SceneViewPost2D *sceneViewPost2D;
-    // SceneViewPost3D *sceneViewPost3D;
-    // SceneViewParticleTracing *sceneViewParticleTracing;
+    // SceneViewPost3D *sceneViewPost3D;    
     // SceneViewVTK2D *sceneViewVTK2D;
-    ChartView *sceneViewChart;
     PythonEditorDialog *scriptEditor;
 
     QWidget *viewControls;
@@ -224,7 +214,6 @@ private:
     ProblemWidget *problemWidget;
     PreprocessorWidget *preprocessorWidget;
     PostprocessorWidget *postprocessorWidget;
-    ChartWidget *chartWidget;
     // ParticleTracingWidget *particleTracingWidget;
     PythonEditorWidget *pythonEditorWidget;
 
@@ -241,6 +230,9 @@ private:
     QString m_startupProblemFilename;
     QString m_startupScriptFilename;
     bool m_startupExecute;
+
+    // TODO: remove
+    QSharedPointer<ProblemComputation> m_computation;
 
     void setRecentFiles();
 

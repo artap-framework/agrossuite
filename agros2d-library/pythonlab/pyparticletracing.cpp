@@ -97,7 +97,7 @@ void PyParticleTracing::solve(const vector<vector<double> > &initialPositionsVec
         particleMasses = QList<double>::fromVector(QVector<double>::fromStdVector(particleMassesVector));
     }
 
-    ParticleTracing particleTracing(particleMasses);
+    ParticleTracing particleTracing(Agros2D::computation().data(), particleMasses);
     ParticleTracingForceCustom forceCustom(&particleTracing);
     ParticleTracingForceDrag forceDrag(&particleTracing);
     ParticleTracingForceField forceField(&particleTracing, particleCharges);

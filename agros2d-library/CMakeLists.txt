@@ -114,6 +114,7 @@ SET(SOURCES
     postprocessorview_mesh.cpp
     postprocessorview_post2d.cpp
     postprocessorview_chart.cpp
+    postprocessorview_particletracing.cpp
     preprocessorview.cpp
     problemdialog.cpp
     pythonlab/pythonconsole.cpp
@@ -329,6 +330,7 @@ SET(HEADERS
   postprocessorview_mesh.h
   postprocessorview_post2d.h
   postprocessorview_chart.h
+  postprocessorview_particletracing.h
   preprocessorview.h
   problemdialog.h
   pythonlab/pythonconsole.h

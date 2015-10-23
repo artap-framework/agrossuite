@@ -145,15 +145,7 @@ Agros2D::Agros2D()
     // preprocessor
     m_preprocessor = new ProblemPreprocessor();
 
-    // postprocessor
-    m_computation = nullptr;
-    // TODO: not needed
-    //m_computation = new ProblemComputation();
-    //m_computations[m_computation->problemDir()] = m_computation;
-
     initLists();
-
-    m_solutionStore = new SolutionStore();
 
     m_configComputer = new Config();
     m_configComputer->load();
@@ -172,13 +164,9 @@ Agros2D::Agros2D()
 void Agros2D::clear()
 {    
     delete m_singleton.data()->m_preprocessor;
-    m_singleton.data()->m_computation = nullptr;
-    for (int i = 0; i < m_singleton.data()->m_computations.count(); i++)
-        delete m_singleton.data()->m_computations.values().at(i);
     m_singleton.data()->m_computations.clear();
 
-    delete m_singleton.data()->m_configComputer;
-    delete m_singleton.data()->m_solutionStore;
+    delete m_singleton.data()->m_configComputer;   
     delete m_singleton.data()->m_log;
     delete m_singleton.data()->m_memoryMonitor;
 
@@ -197,36 +185,34 @@ void Agros2D::setCurrentComputation(const QString &problemDir)
     assert(Agros2D::singleton()->m_computations.contains(problemDir));
     Agros2D::singleton()->m_computation = Agros2D::singleton()->m_computations[problemDir];
 
-    emit Agros2D::singleton()->reconnectSlots();
+    // connect computation
+    emit Agros2D::singleton()->connectComputation(Agros2D::singleton()->m_computation);
 }
 
-void Agros2D::addComputation(const QString &problemDir, ProblemComputation *comp)
+void Agros2D::addComputation(const QString &problemDir, QSharedPointer<ProblemComputation> comp)
 {
     Agros2D::singleton()->m_computations[problemDir] = comp;
 }
 
 void Agros2D::removeComputation(const QString &problemDir)
 {
+    assert(Agros2D::singleton()->m_computations.contains(problemDir));
+
     Agros2D::singleton()->m_computations.remove(problemDir);
     removeDirectory(QString("%1/%2").arg(cacheProblemDir(), problemDir));
 
     if (Agros2D::singleton()->m_computations.count() > 0)
     {
         Agros2D::singleton()->m_computation = Agros2D::singleton()->m_computations.last();
-    }
-    else
-    {
-        // TODO: not needed
-        Agros2D::singleton()->m_computation = new ProblemComputation();
-        Agros2D::singleton()->m_computations[Agros2D::singleton()->m_computation->problemDir()] = Agros2D::singleton()->m_computation;
-    }
 
-    emit Agros2D::singleton()->reconnectSlots();
+        // connect computation
+        emit Agros2D::singleton()->connectComputation(Agros2D::singleton()->m_computation);
+    }    
 }
 
 void Agros2D::createSingleton()
 {
-    m_singleton = QSharedPointer<Agros2D>(new Agros2D());
+    m_singleton = QSharedPointer<Agros2D>(new Agros2D());    
 }
 
 Agros2D *Agros2D::singleton()
@@ -234,8 +220,13 @@ Agros2D *Agros2D::singleton()
     return m_singleton.data();
 }
 
+static QMap<QString, PluginInterface *> plugins;
 PluginInterface *Agros2D::loadPlugin(const QString &pluginName)
 {
+    if (plugins.contains(pluginName))
+        return plugins[pluginName];
+
+    // load new plugin
     QPluginLoader *loader = NULL;
 
 #ifdef Q_WS_X11
@@ -264,8 +255,8 @@ PluginInterface *Agros2D::loadPlugin(const QString &pluginName)
 
     assert(loader->instance());
     PluginInterface *plugin = qobject_cast<PluginInterface *>(loader->instance());
+    plugins[pluginName] = plugin;
 
-    // loader->unload();
     delete loader;
 
     return plugin;

@@ -42,15 +42,23 @@
 #include "solver/problem_config.h"
 
 SceneViewPreprocessorChart::SceneViewPreprocessorChart(QWidget *parent)
-    : SceneViewCommon2D(NULL, parent)
+    : SceneViewCommon2D(parent)
 {
     setMinimumSize(100, 50);
 
     m_isPreprocessor = false;
+
+    // reconnect computation slots
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
 }
 
 SceneViewPreprocessorChart::~SceneViewPreprocessorChart()
 {
+}
+
+void SceneViewPreprocessorChart::connectComputation(QSharedPointer<ProblemComputation> computation)
+{
+    m_computation = computation;
 }
 
 void SceneViewPreprocessorChart::doZoomRegion(const Point &start, const Point &end)
@@ -74,13 +82,13 @@ void SceneViewPreprocessorChart::doZoomRegion(const Point &start, const Point &e
 
 void SceneViewPreprocessorChart::refresh()
 {
-    if (Agros2D::computation()->isSolved())
+    if (!m_computation.isNull() && m_computation->isSolved())
         SceneViewCommon::refresh();
 }
 
 void SceneViewPreprocessorChart::clear()
 {
-    if (Agros2D::computation()->isSolved())
+    if (!m_computation.isNull() && m_computation->isSolved())
         doZoomBestFit();
 }
 
@@ -106,10 +114,13 @@ void SceneViewPreprocessorChart::paintGL()
 
 void SceneViewPreprocessorChart::paintGeometry()
 {
+    if (m_computation.isNull())
+        return;
+
     loadProjection2d(true);
 
     // edges
-    foreach (SceneEdge *edge, Agros2D::computation()->scene()->edges->items())
+    foreach (SceneEdge *edge, m_computation->scene()->edges->items())
     {
         glColor3d(COLOREDGE[0], COLOREDGE[1], COLOREDGE[2]);
         glLineWidth(1.0);
@@ -134,9 +145,12 @@ void SceneViewPreprocessorChart::paintGeometry()
 
 void SceneViewPreprocessorChart::paintChartLine()
 {
+    if (m_computation.isNull())
+        return;
+
     loadProjection2d(true);
 
-    RectPoint rect = Agros2D::computation()->scene()->boundingBox();
+    RectPoint rect = m_computation->scene()->boundingBox();
     double dm = qMax(rect.width(), rect.height()) / 25.0;
 
     glColor3d(1.0, 0.1, 0.1);

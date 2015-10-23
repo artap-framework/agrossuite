@@ -37,8 +37,8 @@
 
 #include "../../resources_source/classes/structure_xml.h"
 
-SolutionStore::SolutionStore()
-{
+SolutionStore::SolutionStore(ProblemComputation *parentProblem) : m_computation(parentProblem)
+{    
 }
 
 SolutionStore::~SolutionStore()
@@ -46,11 +46,12 @@ SolutionStore::~SolutionStore()
     clearAll();
 }
 
+
 QString SolutionStore::baseStoreFileName(FieldSolutionID solutionID) const
 {
     QString fn = QString("%1/%2/%3").
             arg(cacheProblemDir()).
-            arg(Agros2D::computation()->problemDir()).
+            arg(m_computation->problemDir()).
             arg(solutionID.toString());
 
     return fn;
@@ -63,14 +64,11 @@ void SolutionStore::clearAll()
         removeSolution(sid, false);
 
     // remove runtime
-    if (Agros2D::computation())
-    {
-        QString fn = QString("%1/%2/runtime.xml").
-                arg(cacheProblemDir()).
-                arg(Agros2D::computation()->problemDir());
-        if (QFile::exists(fn))
-            QFile::remove(fn);
-    }
+    QString fn = QString("%1/%2/runtime.xml").
+            arg(cacheProblemDir()).
+            arg(m_computation->problemDir());
+    if (QFile::exists(fn))
+        QFile::remove(fn);
 
     assert(m_multiSolutions.isEmpty());
     assert(m_multiSolutionRunTimeDetails.isEmpty());
@@ -95,7 +93,7 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
 
         // dof handler
         dealii::hp::DoFHandler<2> doFHandler(triangulation);
-        doFHandler.distribute_dofs(*ProblemSolver::feCollection(solutionID.fieldInfo));
+        doFHandler.distribute_dofs(*m_computation->problemSolver()->feCollection(m_computation->fieldInfo(solutionID.fieldId)));
         QString fnDoF = QString("%1.dof").arg(baseFN);
         std::ifstream ifsDoF(fnDoF.toStdString());
         boost::archive::binary_iarchive sbiDoF(ifsDoF);
@@ -186,7 +184,7 @@ void SolutionStore::removeSolution(FieldSolutionID solutionID, bool saveRunTime)
 
     // remove old files
     /*
-    QFileInfo info(Agros2D::computation()->config()->fileName());
+    QFileInfo info(m_computation->config()->fileName());
     if (info.exists())
     {
         QString fn = baseStoreFileName(solutionID);
@@ -218,7 +216,7 @@ int SolutionStore::lastTimeStep(const FieldInfo *fieldInfo) const
     int timeStep = NOT_FOUND_SO_FAR;
     foreach (FieldSolutionID sid, m_multiSolutions)
     {
-        if((sid.fieldInfo == fieldInfo) && (sid.timeStep > timeStep))
+        if((sid.fieldId == fieldInfo->fieldId()) && (sid.timeStep > timeStep))
             timeStep = sid.timeStep;
     }
 
@@ -233,7 +231,7 @@ int SolutionStore::lastAdaptiveStep(const FieldInfo *fieldInfo, int timeStep) co
     int adaptiveStep = NOT_FOUND_SO_FAR;
     foreach (FieldSolutionID sid, m_multiSolutions)
     {
-        if ((sid.fieldInfo == fieldInfo) && (sid.timeStep == timeStep) && (sid.adaptivityStep > adaptiveStep))
+        if ((sid.fieldId == fieldInfo->fieldId()) && (sid.timeStep == timeStep) && (sid.adaptivityStep > adaptiveStep))
             adaptiveStep = sid.adaptivityStep;
     }
 
@@ -252,7 +250,7 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, Multi
     multiSolution.doFHandler()->save(sboDoF, 0);
     // new handler
     dealii::hp::DoFHandler<2> *doFHandler = new dealii::hp::DoFHandler<2>(*triangulation);
-    doFHandler->distribute_dofs(*ProblemSolver::feCollection(solutionID.fieldInfo));
+    doFHandler->distribute_dofs(*m_computation->problemSolver()->feCollection(m_computation->fieldInfo(solutionID.fieldId)));
     // load
     boost::archive::binary_iarchive sbiDoF(fsDoF);
     doFHandler->load(sbiDoF, 0);
@@ -285,7 +283,7 @@ void SolutionStore::loadRunTimeDetails()
 {
     QString fn = QString("%1/%2/runtime.xml").
             arg(cacheProblemDir()).
-            arg(Agros2D::computation()->problemDir());
+            arg(m_computation->problemDir());
 
     try
     {
@@ -298,10 +296,10 @@ void SolutionStore::loadRunTimeDetails()
             XMLStructure::element_data data = structure->element_data().at(i);
 
             // check field
-            if (!Agros2D::computation()->hasField(QString::fromStdString(data.field_id())))
+            if (!m_computation->hasField(QString::fromStdString(data.field_id())))
                 throw AgrosException(QObject::tr("Field '%1' info mismatch.").arg(QString::fromStdString(data.field_id())));
 
-            FieldSolutionID solutionID(Agros2D::computation()->fieldInfo(QString::fromStdString(data.field_id())),
+            FieldSolutionID solutionID(QString::fromStdString(data.field_id()),
                                        data.time_step(),
                                        data.adaptivity_step());
             // append multisolution
@@ -312,7 +310,7 @@ void SolutionStore::loadRunTimeDetails()
             {
                 // new time step
                 time_step = data.time_step();
-                Agros2D::computation()->setActualTimeStepLength(data.time_step_length().get());
+                m_computation->setActualTimeStepLength(data.time_step_length().get());
             }
 
             SolutionRunTimeDetails::FileName fileNames;
@@ -344,7 +342,7 @@ void SolutionStore::saveRunTimeDetails()
 {
     QString fn = QString("%1/%2/runtime.xml").
             arg(cacheProblemDir()).
-            arg(Agros2D::computation()->problemDir());
+            arg(m_computation->problemDir());
 
     try
     {
@@ -354,7 +352,7 @@ void SolutionStore::saveRunTimeDetails()
             SolutionRunTimeDetails str = m_multiSolutionRunTimeDetails[solutionID];
 
             XMLStructure::files files;
-            for (int solutionIndex = 0; solutionIndex < solutionID.fieldInfo->numberOfSolutions(); solutionIndex++)
+            for (int solutionIndex = 0; solutionIndex < m_computation->fieldInfo(solutionID.fieldId)->numberOfSolutions(); solutionIndex++)
             {
                 files.file().push_back(XMLStructure::file(solutionIndex,
                                                           str.fileNames().meshFileName().toStdString(),
@@ -378,7 +376,7 @@ void SolutionStore::saveRunTimeDetails()
             XMLStructure::element_data data(files,
                                             newton_residuals,
                                             newton_damping_coefficients,
-                                            solutionID.fieldInfo->fieldId().toStdString(),
+                                            solutionID.fieldId.toStdString(),
                                             solutionID.timeStep,
                                             solutionID.adaptivityStep);
 

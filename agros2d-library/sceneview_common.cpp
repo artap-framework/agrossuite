@@ -74,10 +74,11 @@ SceneViewCommon::~SceneViewCommon()
 
 Problem *SceneViewCommon::problem()
 {
+    // TODO: better!!!
     if (m_isPreprocessor)
         return Agros2D::preprocessor();
     else
-        return Agros2D::computation();
+        return Agros2D::computation().data();
 }
 
 void SceneViewCommon::createActions()

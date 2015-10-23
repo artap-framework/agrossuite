@@ -18,6 +18,8 @@ class ProblemSetting;
 class PyProblem;
 
 class ProblemComputation;
+class PostDeal;
+class SolutionStore;
 
 class CalculationThread : public QThread
 {
@@ -31,12 +33,9 @@ public:
         CalculationType_SolveTimeStep
     };
 
-    CalculationThread();
+    CalculationThread(ProblemComputation *parentProblem);
 
     void startCalculation(CalculationType type);
-
-//public slots:
-//    void stopRunning();
 
 protected:
    virtual void run();
@@ -46,6 +45,7 @@ signals:
 
 private:
     CalculationType m_calculationType;
+    ProblemComputation *m_computation;
 };
 
 class AGROS_LIBRARY_API Problem : public QObject
@@ -62,7 +62,7 @@ signals:
     void fileNameChanged(const QString &fileName);
 
 public slots:
-    void clearFieldsAndConfig();
+    virtual void clearFieldsAndConfig();
 
 public:
     Problem();
@@ -131,8 +131,6 @@ protected:
     friend class CalculationThread;
     friend class PyProblem;
     friend class AgrosSolver;
-    friend class OptilabSolver;
-    friend class OptilabWindow;
     friend class ProblemPreprocessor;
     friend class ProblemComputation;
 };
@@ -142,7 +140,10 @@ class AGROS_LIBRARY_API ProblemPreprocessor : public Problem
     Q_OBJECT
 
 public:
-    void createComputation();
+    void createComputation(bool newComputation = false);
+
+public slots:
+    virtual void clearFieldsAndConfig();
 };
 
 class AGROS_LIBRARY_API ProblemComputation : public Problem
@@ -157,6 +158,10 @@ public:
     void mesh();
     // solve
     void solve();
+
+    inline PostDeal *postDeal() { return m_postDeal; }
+    inline ProblemSolver *problemSolver() { return m_problemSolver; }
+    inline SolutionStore *solutionStore() { return m_solutionStore; }
 
     bool isSolved() const;
     bool isSolving() const { return m_isSolving; }
@@ -209,10 +214,10 @@ signals:
 
      void clearedSolution();
 
-public slots:
-    // clear problem
+public slots:    
     void clearSolution();
     void doAbortSolve();
+    virtual void clearFieldsAndConfig();
 
 protected:
     bool m_isSolving;
@@ -221,20 +226,25 @@ protected:
 
     bool m_isPostprocessingRunning;
 
-    CalculationThread *m_calculationThread;
-
-    ProblemSolver *m_solverDeal;
-
     // initial mesh
     dealii::Triangulation<2> m_initialMesh;
     dealii::Triangulation<2> m_initialUnrefinedMesh;
     // calculation mesh - at the present moment we do not use multimesh
     dealii::Triangulation<2> m_calculationMesh;
 
+    // solution store
+    SolutionStore *m_solutionStore;
+
     QTime m_lastTimeElapsed;
 
     // problem dir in cache
     QString m_problemDir;
+
+    CalculationThread *m_calculationThread;
+
+    // post deal
+    ProblemSolver *m_problemSolver;
+    PostDeal *m_postDeal;
 };
 
 #endif // PROBLEM_H

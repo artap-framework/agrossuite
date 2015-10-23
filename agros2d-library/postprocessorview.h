@@ -27,16 +27,21 @@ class SceneViewPreprocessor;
 class SceneViewMesh;
 class SceneViewPost2D;
 class SceneViewPost3D;
-class ChartView;
+class SceneViewParticleTracing;
+class SceneViewChart;
 class LineEditDouble;
 class CollapsableGroupBoxButton;
 class FieldInfo;
 class ValueLineEdit;
 class PhysicalFieldWidget;
+class ProblemComputation;
 
 class PostprocessorSceneMeshWidget;
 class PostprocessorScenePost2DWidget;
 class PostprocessorSceneChartWidget;
+class PostprocessorSceneParticleTracingWidget;
+
+class PostprocessorSceneWidget;
 
 enum PostprocessorWidgetMode
 {
@@ -52,15 +57,18 @@ class PostprocessorWidget : public QWidget
     Q_OBJECT
 
 public:
-    PostprocessorWidget(PostDeal *postDeal,
-                        SceneViewMesh *sceneMesh,
-                        SceneViewPost2D *scenePost2D,
-                        ChartView *sceneChart);
+    PostprocessorWidget();
 
     inline PhysicalFieldWidget *fieldWidget() { return m_fieldWidget; }
-    inline PostDeal *postDeal() { return m_postDeal; }
 
     PostprocessorWidgetMode mode();
+
+    inline SceneViewMesh *sceneViewMesh() { return m_sceneViewMesh; }
+    inline SceneViewPost2D *sceneViewPost2D() { return m_sceneViewPost2D; }
+    inline SceneViewParticleTracing *sceneViewParticleTracing() { return m_sceneViewParticleTracing; }
+    inline SceneViewChart *sceneViewChart() { return m_sceneViewChart; }
+
+    inline QSharedPointer<ProblemComputation> computation() { return m_computation; }
 
     QAction *actSceneModePost;
 
@@ -69,29 +77,37 @@ signals:
     void modeChanged();
 
 public slots:
+    void refresh();
     void doApply();
 
 private:
-    PostDeal *m_postDeal;
-
     PhysicalFieldWidget *m_fieldWidget;
+    QSharedPointer<ProblemComputation> m_computation;
 
     QTabWidget *tabWidget;
-    QPushButton *btnOK;
+    QPushButton *btnApply;
 
     // mesh and polynomial info
     QLabel *lblMeshInitial;
     QLabel *lblMeshSolution;
     QLabel *lblDOFs;
 
-    PostprocessorSceneMeshWidget *meshWidget;
-    PostprocessorScenePost2DWidget *post2DWidget;
-    PostprocessorSceneChartWidget *chartWidget;
+    PostprocessorSceneMeshWidget *m_meshWidget;
+    PostprocessorScenePost2DWidget *m_post2DWidget;
+    PostprocessorSceneChartWidget *m_chartWidget;
+    PostprocessorSceneParticleTracingWidget *m_particleTracingWidget;
+
+    SceneViewMesh *m_sceneViewMesh;
+    SceneViewPost2D *m_sceneViewPost2D;
+    SceneViewParticleTracing *m_sceneViewParticleTracing;
+    SceneViewChart *m_sceneViewChart;
 
     void createControls();
 
+    friend class PostprocessorSceneWidget;
+
 private slots:
-    void reconnectActions();
+    void connectComputation(QSharedPointer<ProblemComputation> computation);
 
     void doCalculationFinished();
 };

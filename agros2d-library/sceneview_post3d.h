@@ -34,7 +34,7 @@ public slots:
     virtual void clear();
 
 public:
-    SceneViewPost3D(PostDeal *postDeal, QWidget *parent = 0);
+    SceneViewPost3D(QWidget *parent = 0);
     ~SceneViewPost3D();
 
     QAction *actSceneModePost3D;
@@ -65,7 +65,7 @@ private slots:
 
     void setControls();
 
-    void reconnectActions();
+    void connectComputation(QSharedPointer<ProblemComputation> computation);
 };
 
 #endif // SCENEVIEWPOST3D_H

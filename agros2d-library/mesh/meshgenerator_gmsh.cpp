@@ -53,7 +53,8 @@
 #include "MElement.h"
 #endif
 
-MeshGeneratorGMSH::MeshGeneratorGMSH() : MeshGenerator()
+MeshGeneratorGMSH::MeshGeneratorGMSH(ProblemComputation *computation)
+    : MeshGenerator(computation)
 {
 }
 
@@ -362,14 +363,14 @@ bool MeshGeneratorGMSH::readFromGmshInternal()
 bool MeshGeneratorGMSH::writeToGmshMeshFile()
 {
     // basic check
-    if (Agros2D::computation()->scene()->nodes->length() < 3)
+    if (m_computation->scene()->nodes->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(Agros2D::computation()->scene()->nodes->length()));
+        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_computation->scene()->nodes->length()));
         return false;
     }
-    if (Agros2D::computation()->scene()->edges->length() < 3)
+    if (m_computation->scene()->edges->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(Agros2D::computation()->scene()->edges->length()));
+        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_computation->scene()->edges->length()));
         return false;
     }
 
@@ -384,22 +385,22 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
     QString outCommands;
 
     // mesh size
-    RectPoint rect = Agros2D::computation()->scene()->boundingBox();
+    RectPoint rect = m_computation->scene()->boundingBox();
     double charEdge = 0; // qMax(rect.width(), rect.height()) / 2.0;
 
-    foreach (SceneEdge *edge, Agros2D::computation()->scene()->edges->items())
+    foreach (SceneEdge *edge, m_computation->scene()->edges->items())
         if (edge->length() > charEdge)
             charEdge = edge->length();
 
     // nodes
     QString outNodes;
     int nodesCount = 0;
-    for (int i = 0; i < Agros2D::computation()->scene()->nodes->length(); i++)
+    for (int i = 0; i < m_computation->scene()->nodes->length(); i++)
     {
         // find the longest line connected to the node
         double longestLength = numeric_limits<double>::max();
         double shortestLength = numeric_limits<double>::max();
-        foreach (SceneEdge *edge, Agros2D::computation()->scene()->nodes->at(i)->connectedEdges())
+        foreach (SceneEdge *edge, m_computation->scene()->nodes->at(i)->connectedEdges())
         {
             if (edge->length() > longestLength)
                 longestLength = edge->length();
@@ -409,8 +410,8 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
 
         outNodes += QString("Point(%1) = {%2, %3, 0, %4};\n").
                 arg(i).
-                arg(Agros2D::computation()->scene()->nodes->at(i)->point().x, 0, 'f', 10).
-                arg(Agros2D::computation()->scene()->nodes->at(i)->point().y, 0, 'f', 10).
+                arg(m_computation->scene()->nodes->at(i)->point().x, 0, 'f', 10).
+                arg(m_computation->scene()->nodes->at(i)->point().y, 0, 'f', 10).
                 arg(shortestLength / longestLength < 0.15 ? shortestLength * 3 : longestLength / 5);
         nodesCount++;
     }
@@ -418,22 +419,22 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
     // edges
     QString outEdges;
     int edgesCount = 0;
-    for (int i = 0; i<Agros2D::computation()->scene()->edges->length(); i++)
+    for (int i = 0; i<m_computation->scene()->edges->length(); i++)
     {
-        if (Agros2D::computation()->scene()->edges->at(i)->angle() == 0)
+        if (m_computation->scene()->edges->at(i)->angle() == 0)
         {
             // line .. increase edge index to count from 1
             outEdges += QString("Line(%1) = {%2, %3};\n").
                     arg(edgesCount+1).
-                    arg(Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeStart())).
-                    arg(Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeEnd()));
+                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeStart())).
+                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeEnd()));
             edgesCount++;
         }
         else
         {
             // arc
             // add pseudo nodes
-            Point center = Agros2D::computation()->scene()->edges->at(i)->center();
+            Point center = m_computation->scene()->edges->at(i)->center();
             outNodes += QString("Point(%1) = {%2, %3, 0};\n").
                     arg(nodesCount).
                     arg(center.x, 0, 'f', 10).
@@ -442,19 +443,19 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
 
             outEdges += QString("Circle(%1) = {%2, %3, %4};\n").
                     arg(edgesCount+1).
-                    arg(Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeStart())).
+                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeStart())).
                     arg(nodesCount - 1).
-                    arg(Agros2D::computation()->scene()->nodes->items().indexOf(Agros2D::computation()->scene()->edges->at(i)->nodeEnd()));
+                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeEnd()));
 
             edgesCount++;
         }
-        if (Agros2D::computation()->scene()->edges->at(i)->markersCount() > 0)
+        if (m_computation->scene()->edges->at(i)->markersCount() > 0)
             outCommands.append(QString("Physical Line(%1) = {%1};\n").arg(edgesCount));
     }
 
     try
     {
-        Agros2D::computation()->scene()->loopsInfo()->processLoops();
+        m_computation->scene()->loopsInfo()->processLoops();
     }
     catch (AgrosMeshException& ame)
     {
@@ -464,17 +465,17 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
     }
 
     QString outLoops;
-    for(int i = 0; i < Agros2D::computation()->scene()->loopsInfo()->loops().size(); i++)
+    for(int i = 0; i < m_computation->scene()->loopsInfo()->loops().size(); i++)
     {
-        if (!Agros2D::computation()->scene()->loopsInfo()->outsideLoops().contains(i))
+        if (!m_computation->scene()->loopsInfo()->outsideLoops().contains(i))
         {
             outLoops.append(QString("Line Loop(%1) = {").arg(i+1));
-            for(int j = 0; j < Agros2D::computation()->scene()->loopsInfo()->loops().at(i).size(); j++)
+            for(int j = 0; j < m_computation->scene()->loopsInfo()->loops().at(i).size(); j++)
             {
-                if (Agros2D::computation()->scene()->loopsInfo()->loops().at(i)[j].reverse)
+                if (m_computation->scene()->loopsInfo()->loops().at(i)[j].reverse)
                     outLoops.append("-");
-                outLoops.append(QString("%1").arg(Agros2D::computation()->scene()->loopsInfo()->loops().at(i)[j].edge + 1));
-                if (j < Agros2D::computation()->scene()->loopsInfo()->loops().at(i).size() - 1)
+                outLoops.append(QString("%1").arg(m_computation->scene()->loopsInfo()->loops().at(i)[j].edge + 1));
+                if (j < m_computation->scene()->loopsInfo()->loops().at(i).size() - 1)
                     outLoops.append(",");
             }
             outLoops.append(QString("};\n"));
@@ -484,18 +485,18 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
 
     QList<int> surfaces;
     int surfaceCount = 0;
-    for (int i = 0; i < Agros2D::computation()->scene()->labels->count(); i++)
+    for (int i = 0; i < m_computation->scene()->labels->count(); i++)
     {
         surfaceCount++;
-        SceneLabel* label = Agros2D::computation()->scene()->labels->at(i);
+        SceneLabel* label = m_computation->scene()->labels->at(i);
         if(!label->isHole())
         {
             surfaces.push_back(surfaceCount);
             outLoops.append(QString("Plane Surface(%1) = {").arg(surfaceCount));
-            for (int j = 0; j < Agros2D::computation()->scene()->loopsInfo()->labelLoops()[label].count(); j++)
+            for (int j = 0; j < m_computation->scene()->loopsInfo()->labelLoops()[label].count(); j++)
             {
-                outLoops.append(QString("%1").arg(Agros2D::computation()->scene()->loopsInfo()->labelLoops()[label][j]+1));
-                if (j < Agros2D::computation()->scene()->loopsInfo()->labelLoops()[label].count() - 1)
+                outLoops.append(QString("%1").arg(m_computation->scene()->loopsInfo()->labelLoops()[label][j]+1));
+                if (j < m_computation->scene()->loopsInfo()->labelLoops()[label].count() - 1)
                     outLoops.append(",");
             }
             outLoops.append(QString("};\n"));
@@ -505,7 +506,7 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
     }
 
     // quad mesh
-    if (Agros2D::computation()->config()->meshType() == MeshType_GMSH_Quad || Agros2D::computation()->config()->meshType() == MeshType_GMSH_QuadDelaunay_Experimental)
+    if (m_computation->config()->meshType() == MeshType_GMSH_Quad || m_computation->config()->meshType() == MeshType_GMSH_QuadDelaunay_Experimental)
     {
         outLoops.append(QString("Recombine Surface {"));
         for(int i = 0; i <  surfaces.count(); i++)
@@ -530,7 +531,7 @@ bool MeshGeneratorGMSH::writeToGmshMeshFile()
     //     outCommands.append(QString("Mesh.Algorithm = 1;\n"));
     //     outCommands.append(QString("Mesh.SubdivisionAlgorithm = 1;\n"));
     // }
-    if (Agros2D::computation()->config()->meshType() == MeshType_GMSH_QuadDelaunay_Experimental)
+    if (m_computation->config()->meshType() == MeshType_GMSH_QuadDelaunay_Experimental)
     {
         outCommands.append(QString("Mesh.Algorithm = 8;\n"));
         outCommands.append(QString("Mesh.SubdivisionAlgorithm = 1;\n"));

@@ -58,155 +58,6 @@ void addTreeWidgetItemValue(QTreeWidgetItem *parent, const QString &name, const 
     item->setTextAlignment(2, Qt::AlignLeft);
 }
 
-void fillComboBoxFieldInfo(QComboBox *cmbFieldInfo)
-{
-    // store variable
-    QString fieldId = cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString();
-
-    // clear combo
-    cmbFieldInfo->blockSignals(true);
-    cmbFieldInfo->clear();
-    foreach (FieldInfo *fieldInfo, Agros2D::preprocessor()->fieldInfos())
-        cmbFieldInfo->addItem(fieldInfo->name(), fieldInfo->fieldId());
-
-    cmbFieldInfo->setCurrentIndex(cmbFieldInfo->findData(fieldId));
-    if (cmbFieldInfo->currentIndex() == -1)
-        cmbFieldInfo->setCurrentIndex(0);
-    cmbFieldInfo->blockSignals(false);
-}
-
-void fillComboBoxScalarVariable(FieldInfo *fieldInfo, QComboBox *cmbFieldVariable)
-{
-    // if (!Agros2D::problem()->isSolved())
-    //     return;
-
-    // store variable
-    QString physicFieldVariable = cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString();
-
-    // clear combo
-    cmbFieldVariable->blockSignals(true);
-    cmbFieldVariable->clear();
-    foreach (Module::LocalVariable variable, fieldInfo->viewScalarVariables())
-        cmbFieldVariable->addItem(variable.name(),
-                                  variable.id());
-
-    cmbFieldVariable->setCurrentIndex(cmbFieldVariable->findData(physicFieldVariable));
-    if (cmbFieldVariable->currentIndex() == -1)
-        cmbFieldVariable->setCurrentIndex(0);
-    cmbFieldVariable->blockSignals(false);
-}
-
-void fillComboBoxContourVariable(FieldInfo *fieldInfo, QComboBox *cmbFieldVariable)
-{
-    // if (!Agros2D::problem()->isSolved())
-    //     return;
-
-    // store variable
-    QString physicFieldVariable = cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString();
-
-    // clear combo
-    cmbFieldVariable->blockSignals(true);
-    cmbFieldVariable->clear();
-    foreach (Module::LocalVariable variable, fieldInfo->viewScalarVariables())
-        cmbFieldVariable->addItem(variable.name(),
-                                  variable.id());
-
-
-    cmbFieldVariable->setCurrentIndex(cmbFieldVariable->findData(physicFieldVariable));
-    if (cmbFieldVariable->currentIndex() == -1)
-        cmbFieldVariable->setCurrentIndex(0);
-    cmbFieldVariable->blockSignals(false);
-}
-
-void fillComboBoxVectorVariable(FieldInfo *fieldInfo, QComboBox *cmbFieldVariable)
-{
-    // if (!Agros2D::problem()->isSolved())
-    //     return;
-
-    // store variable
-    QString physicFieldVariable = cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString();
-
-    // clear combo
-    cmbFieldVariable->blockSignals(true);
-    cmbFieldVariable->clear();
-    foreach (Module::LocalVariable variable, fieldInfo->viewVectorVariables())
-        cmbFieldVariable->addItem(variable.name(),
-                                  variable.id());
-
-    cmbFieldVariable->setCurrentIndex(cmbFieldVariable->findData(physicFieldVariable));
-    if (cmbFieldVariable->currentIndex() == -1)
-        cmbFieldVariable->setCurrentIndex(0);
-    cmbFieldVariable->blockSignals(false);
-}
-
-void fillComboBoxTimeStep(const FieldInfo* fieldInfo, QComboBox *cmbTimeStep)
-{
-    if (!Agros2D::computation()->isSolved())
-        return;
-
-    QList<double> times = Agros2D::computation()->timeStepTimes();
-
-    cmbTimeStep->blockSignals(true);
-
-    // store variable
-    int timeStep = cmbTimeStep->currentIndex();
-    if (timeStep == -1)
-        timeStep = times.count() - 1;
-
-    // clear combo
-    cmbTimeStep->clear();
-
-    // qDebug() << fieldInfo->name();
-    int selectedIndex = -1;
-    for (int step = 0; step < times.length(); step++)
-    {        
-        bool stepIsAvailable = Agros2D::solutionStore()->contains(FieldSolutionID(fieldInfo, step, Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, step)));
-        if (!stepIsAvailable)
-            continue;
-
-        if (step == 0)
-            cmbTimeStep->addItem(QObject::tr("Initial step"), 0.0);
-        else
-            cmbTimeStep->addItem(QObject::tr("%1 s (step: %2)").arg(QString::number(times[step], 'e', 2)).arg(step), step);
-
-        if (step == timeStep)
-            selectedIndex = cmbTimeStep->count() - 1;
-    }
-
-    if (selectedIndex != -1)
-        cmbTimeStep->setCurrentIndex(selectedIndex);
-    if (cmbTimeStep->count() > 0 && cmbTimeStep->currentIndex() == -1)
-        cmbTimeStep->setCurrentIndex(0);
-
-    cmbTimeStep->blockSignals(false);
-}
-
-void fillComboBoxAdaptivityStep(FieldInfo* fieldInfo, int timeStep, QComboBox *cmbAdaptivityStep)
-{
-    if (!Agros2D::computation()->isSolved())
-        return;
-
-    cmbAdaptivityStep->blockSignals(true);
-
-    int lastAdaptiveStep = Agros2D::solutionStore()->lastAdaptiveStep(fieldInfo, timeStep);
-
-    // store variable
-    int adaptivityStep = cmbAdaptivityStep->currentIndex();
-    if (adaptivityStep == -1)
-        adaptivityStep = lastAdaptiveStep;
-
-    // clear combo
-    cmbAdaptivityStep->clear();
-
-    for (int step = 0; step <= lastAdaptiveStep; step++)
-    {
-        cmbAdaptivityStep->addItem(QString::number(step + 1), step);
-    }
-
-    cmbAdaptivityStep->setCurrentIndex(adaptivityStep);
-    cmbAdaptivityStep->blockSignals(false);
-}
-
 void fillComboBoxFonts(QComboBox *cmbFonts)
 {
     // read fonts
@@ -242,3 +93,66 @@ int columnMinimumWidth()
         return 110;
 }
 
+void fillComboBoxScalarVariable(CoordinateType coordinateType, FieldInfo *fieldInfo, QComboBox *cmbFieldVariable)
+{
+    // if (!Agros2D::problem()->isSolved())
+    //     return;
+
+    // store variable
+    QString physicFieldVariable = cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString();
+
+    // clear combo
+    cmbFieldVariable->blockSignals(true);
+    cmbFieldVariable->clear();
+    foreach (Module::LocalVariable variable, fieldInfo->viewScalarVariables(coordinateType))
+        cmbFieldVariable->addItem(variable.name(),
+                                  variable.id());
+
+    cmbFieldVariable->setCurrentIndex(cmbFieldVariable->findData(physicFieldVariable));
+    if (cmbFieldVariable->currentIndex() == -1)
+        cmbFieldVariable->setCurrentIndex(0);
+    cmbFieldVariable->blockSignals(false);
+}
+
+void fillComboBoxContourVariable(CoordinateType coordinateType, FieldInfo *fieldInfo, QComboBox *cmbFieldVariable)
+{
+    // if (!Agros2D::problem()->isSolved())
+    //     return;
+
+    // store variable
+    QString physicFieldVariable = cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString();
+
+    // clear combo
+    cmbFieldVariable->blockSignals(true);
+    cmbFieldVariable->clear();
+    foreach (Module::LocalVariable variable, fieldInfo->viewScalarVariables(coordinateType))
+        cmbFieldVariable->addItem(variable.name(),
+                                  variable.id());
+
+
+    cmbFieldVariable->setCurrentIndex(cmbFieldVariable->findData(physicFieldVariable));
+    if (cmbFieldVariable->currentIndex() == -1)
+        cmbFieldVariable->setCurrentIndex(0);
+    cmbFieldVariable->blockSignals(false);
+}
+
+void fillComboBoxVectorVariable(CoordinateType coordinateType, FieldInfo *fieldInfo, QComboBox *cmbFieldVariable)
+{
+    // if (!Agros2D::problem()->isSolved())
+    //     return;
+
+    // store variable
+    QString physicFieldVariable = cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString();
+
+    // clear combo
+    cmbFieldVariable->blockSignals(true);
+    cmbFieldVariable->clear();
+    foreach (Module::LocalVariable variable, fieldInfo->viewVectorVariables(coordinateType))
+        cmbFieldVariable->addItem(variable.name(),
+                                  variable.id());
+
+    cmbFieldVariable->setCurrentIndex(cmbFieldVariable->findData(physicFieldVariable));
+    if (cmbFieldVariable->currentIndex() == -1)
+        cmbFieldVariable->setCurrentIndex(0);
+    cmbFieldVariable->blockSignals(false);
+}

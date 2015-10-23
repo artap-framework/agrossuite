@@ -52,20 +52,23 @@ PostprocessorScenePost2DWidget::PostprocessorScenePost2DWidget(PostprocessorWidg
 
     createControls();
 
-    connect(postprocessorWidget->fieldWidget(), SIGNAL(fieldChanged()), this, SLOT(doField()));
+    connect(postprocessorWidget->fieldWidget(), SIGNAL(fieldChanged()), this, SLOT(refresh()));
 }
 
 void PostprocessorScenePost2DWidget::load()
 {
-    chkShowPost2DContourView->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ShowContourView).toBool());
-    chkShowPost2DVectorView->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ShowVectorView).toBool());
-    chkShowPost2DScalarView->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ShowScalarView).toBool());
+    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+        return;
+
+    chkShowPost2DContourView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowContourView).toBool());
+    chkShowPost2DVectorView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowVectorView).toBool());
+    chkShowPost2DScalarView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowScalarView).toBool());
 
     // contour field
-    cmbPost2DContourVariable->setCurrentIndex(cmbPost2DContourVariable->findData(Agros2D::computation()->setting()->value(ProblemSetting::View_ContourVariable).toString()));
+    cmbPost2DContourVariable->setCurrentIndex(cmbPost2DContourVariable->findData(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ContourVariable).toString()));
     if (cmbPost2DContourVariable->count() > 0 && cmbPost2DContourVariable->itemData(cmbPost2DContourVariable->currentIndex()) != QVariant::Invalid)
     {
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ContourVariable,
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ContourVariable,
                                                     cmbPost2DContourVariable->itemData(cmbPost2DContourVariable->currentIndex()).toString());
     }
     if (cmbPost2DContourVariable->currentIndex() == -1 && cmbPost2DContourVariable->count() > 0)
@@ -75,14 +78,14 @@ void PostprocessorScenePost2DWidget::load()
     }
 
     // scalar field
-    cmbPostScalarFieldVariable->setCurrentIndex(cmbPostScalarFieldVariable->findData(Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarVariable).toString()));
+    cmbPostScalarFieldVariable->setCurrentIndex(cmbPostScalarFieldVariable->findData(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarVariable).toString()));
     if (cmbPostScalarFieldVariable->count() > 0 && cmbPostScalarFieldVariable->itemData(cmbPostScalarFieldVariable->currentIndex()) != QVariant::Invalid)
     {
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarVariable, cmbPostScalarFieldVariable->itemData(cmbPostScalarFieldVariable->currentIndex()).toString());
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarVariable, cmbPostScalarFieldVariable->itemData(cmbPostScalarFieldVariable->currentIndex()).toString());
         doScalarFieldVariable(cmbPostScalarFieldVariable->currentIndex());
 
-        cmbPostScalarFieldVariableComp->setCurrentIndex(cmbPostScalarFieldVariableComp->findData((PhysicFieldVariableComp) Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt()));
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarVariableComp, (PhysicFieldVariableComp) cmbPostScalarFieldVariableComp->itemData(cmbPostScalarFieldVariableComp->currentIndex()).toInt());
+        cmbPostScalarFieldVariableComp->setCurrentIndex(cmbPostScalarFieldVariableComp->findData((PhysicFieldVariableComp) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt()));
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarVariableComp, (PhysicFieldVariableComp) cmbPostScalarFieldVariableComp->itemData(cmbPostScalarFieldVariableComp->currentIndex()).toInt());
     }
     if (cmbPostScalarFieldVariable->currentIndex() == -1 && cmbPostScalarFieldVariable->count() > 0)
     {
@@ -93,8 +96,9 @@ void PostprocessorScenePost2DWidget::load()
     // vector field
     if (cmbPost2DVectorFieldVariable->count() > 0 && cmbPost2DVectorFieldVariable->itemData(cmbPost2DVectorFieldVariable->currentIndex()) != QVariant::Invalid)
     {
-        cmbPost2DVectorFieldVariable->setCurrentIndex(cmbPost2DVectorFieldVariable->findData(Agros2D::computation()->setting()->value(ProblemSetting::View_VectorVariable).toString()));
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_VectorVariable, cmbPost2DVectorFieldVariable->itemData(cmbPost2DVectorFieldVariable->currentIndex()).toString());
+        cmbPost2DVectorFieldVariable->setCurrentIndex(cmbPost2DVectorFieldVariable->findData(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorVariable).toString()));
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorVariable,
+                                                                  cmbPost2DVectorFieldVariable->itemData(cmbPost2DVectorFieldVariable->currentIndex()).toString());
     }
     if (cmbPost2DVectorFieldVariable->currentIndex() == -1 && cmbPost2DVectorFieldVariable->count() > 0)
     {
@@ -103,84 +107,84 @@ void PostprocessorScenePost2DWidget::load()
     }
 
     // scalar field
-    chkShowScalarColorBar->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ShowScalarColorBar).toBool());
-    cmbPalette->setCurrentIndex(cmbPalette->findData((PaletteType) Agros2D::computation()->setting()->value(ProblemSetting::View_PaletteType).toInt()));
-    chkPaletteFilter->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_PaletteFilter).toBool());
+    chkShowScalarColorBar->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowScalarColorBar).toBool());
+    cmbPalette->setCurrentIndex(cmbPalette->findData((PaletteType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_PaletteType).toInt()));
+    chkPaletteFilter->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_PaletteFilter).toBool());
     doPaletteFilter(chkPaletteFilter->checkState());
-    txtPaletteSteps->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_PaletteSteps).toInt());
-    chkScalarDeform->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_DeformScalar).toBool());
+    txtPaletteSteps->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_PaletteSteps).toInt());
+    chkScalarDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformScalar).toBool());
 
     // contours
-    txtContoursCount->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ContoursCount).toInt());
-    txtContourWidth->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ContoursWidth).toDouble());
-    chkContourDeform->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_DeformContour).toBool());
+    txtContoursCount->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ContoursCount).toInt());
+    txtContourWidth->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ContoursWidth).toDouble());
+    chkContourDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformContour).toBool());
 
     // vector field
-    chkVectorProportional->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_VectorProportional).toBool());
-    chkVectorColor->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_VectorColor).toBool());
-    txtVectorCount->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_VectorCount).toInt());
+    chkVectorProportional->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorProportional).toBool());
+    chkVectorColor->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorColor).toBool());
+    txtVectorCount->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorCount).toInt());
     txtVectorCount->setToolTip(tr("Width and height of bounding box over vector count."));
-    txtVectorScale->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_VectorScale).toDouble());
-    cmbVectorType->setCurrentIndex(cmbVectorType->findData((VectorType) Agros2D::computation()->setting()->value(ProblemSetting::View_VectorType).toInt()));
-    cmbVectorCenter->setCurrentIndex(cmbVectorCenter->findData((VectorCenter) Agros2D::computation()->setting()->value(ProblemSetting::View_VectorCenter).toInt()));
-    chkVectorDeform->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_DeformVector).toBool());
+    txtVectorScale->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorScale).toDouble());
+    cmbVectorType->setCurrentIndex(cmbVectorType->findData((VectorType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorType).toInt()));
+    cmbVectorCenter->setCurrentIndex(cmbVectorCenter->findData((VectorCenter) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorCenter).toInt()));
+    chkVectorDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformVector).toBool());
 
     // advanced
     // scalar field
-    chkScalarFieldRangeLog->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarRangeLog).toBool());
+    chkScalarFieldRangeLog->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeLog).toBool());
     doScalarFieldLog(chkScalarFieldRangeLog->checkState());
-    txtScalarFieldRangeBase->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarRangeBase).toDouble());
-    txtScalarDecimalPlace->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt());
-    chkScalarFieldRangeAuto->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarRangeAuto).toBool());
+    txtScalarFieldRangeBase->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeBase).toDouble());
+    txtScalarDecimalPlace->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt());
+    chkScalarFieldRangeAuto->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeAuto).toBool());
     doScalarFieldRangeAuto(chkScalarFieldRangeAuto->checkState());
-    txtScalarFieldRangeMin->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarRangeMin).toDouble());
-    txtScalarFieldRangeMax->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarRangeMax).toDouble());
+    txtScalarFieldRangeMin->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeMin).toDouble());
+    txtScalarFieldRangeMax->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeMax).toDouble());
 }
 
 void PostprocessorScenePost2DWidget::save()
 {
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ShowContourView, chkShowPost2DContourView->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ShowScalarView, chkShowPost2DScalarView->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ShowVectorView, chkShowPost2DVectorView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowContourView, chkShowPost2DContourView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowScalarView, chkShowPost2DScalarView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowVectorView, chkShowPost2DVectorView->isChecked());
 
     // contour field
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ContourVariable, cmbPost2DContourVariable->itemData(cmbPost2DContourVariable->currentIndex()).toString());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ContourVariable, cmbPost2DContourVariable->itemData(cmbPost2DContourVariable->currentIndex()).toString());
 
     // scalar field
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarVariable, cmbPostScalarFieldVariable->itemData(cmbPostScalarFieldVariable->currentIndex()).toString());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarVariableComp, (PhysicFieldVariableComp) cmbPostScalarFieldVariableComp->itemData(cmbPostScalarFieldVariableComp->currentIndex()).toInt());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarRangeAuto, chkScalarFieldRangeAuto->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarRangeMin, txtScalarFieldRangeMin->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarRangeMax, txtScalarFieldRangeMax->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarVariable, cmbPostScalarFieldVariable->itemData(cmbPostScalarFieldVariable->currentIndex()).toString());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarVariableComp, (PhysicFieldVariableComp) cmbPostScalarFieldVariableComp->itemData(cmbPostScalarFieldVariableComp->currentIndex()).toInt());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeAuto, chkScalarFieldRangeAuto->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeMin, txtScalarFieldRangeMin->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeMax, txtScalarFieldRangeMax->value());
 
     // vector field
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_VectorVariable, cmbPost2DVectorFieldVariable->itemData(cmbPost2DVectorFieldVariable->currentIndex()).toString());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorVariable, cmbPost2DVectorFieldVariable->itemData(cmbPost2DVectorFieldVariable->currentIndex()).toString());
 
     // scalar field
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ShowScalarColorBar, chkShowScalarColorBar->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_PaletteType, (PaletteType) cmbPalette->itemData(cmbPalette->currentIndex()).toInt());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_PaletteFilter, chkPaletteFilter->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_PaletteSteps, txtPaletteSteps->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_DeformScalar, chkScalarDeform->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowScalarColorBar, chkShowScalarColorBar->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_PaletteType, (PaletteType) cmbPalette->itemData(cmbPalette->currentIndex()).toInt());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_PaletteFilter, chkPaletteFilter->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_PaletteSteps, txtPaletteSteps->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_DeformScalar, chkScalarDeform->isChecked());
 
     // contours
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ContoursCount, txtContoursCount->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ContoursWidth, txtContourWidth->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_DeformContour, chkContourDeform->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ContoursCount, txtContoursCount->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ContoursWidth, txtContourWidth->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_DeformContour, chkContourDeform->isChecked());
 
     // vector field
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_VectorProportional, chkVectorProportional->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_VectorColor, chkVectorColor->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_VectorCount, txtVectorCount->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_VectorScale, txtVectorScale->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_VectorType, (VectorType) cmbVectorType->itemData(cmbVectorType->currentIndex()).toInt());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_VectorCenter, (VectorCenter) cmbVectorCenter->itemData(cmbVectorCenter->currentIndex()).toInt());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_DeformVector, chkVectorDeform->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorProportional, chkVectorProportional->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorColor, chkVectorColor->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorCount, txtVectorCount->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorScale, txtVectorScale->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorType, (VectorType) cmbVectorType->itemData(cmbVectorType->currentIndex()).toInt());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorCenter, (VectorCenter) cmbVectorCenter->itemData(cmbVectorCenter->currentIndex()).toInt());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_DeformVector, chkVectorDeform->isChecked());
 
     // scalar view
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarRangeLog, chkScalarFieldRangeLog->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarRangeBase, txtScalarFieldRangeBase->text().toDouble());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ScalarDecimalPlace, txtScalarDecimalPlace->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeLog, chkScalarFieldRangeLog->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeBase, txtScalarFieldRangeBase->text().toDouble());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarDecimalPlace, txtScalarDecimalPlace->value());
 }
 
 void PostprocessorScenePost2DWidget::createControls()
@@ -509,31 +513,15 @@ QWidget *PostprocessorScenePost2DWidget::postVectorAdvancedWidget()
     return vectorWidget;
 }
 
-void PostprocessorScenePost2DWidget::doField()
-{
-    fillComboBoxScalarVariable(m_postprocessorWidget->fieldWidget()->selectedField(), cmbPostScalarFieldVariable);
-    fillComboBoxContourVariable(m_postprocessorWidget->fieldWidget()->selectedField(), cmbPost2DContourVariable);
-    fillComboBoxVectorVariable(m_postprocessorWidget->fieldWidget()->selectedField(), cmbPost2DVectorFieldVariable);
-    doScalarFieldVariable(cmbPostScalarFieldVariable->currentIndex());
-
-    load();
-}
-
 void PostprocessorScenePost2DWidget::refresh()
 {
-}
+    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+        return;
 
-void PostprocessorScenePost2DWidget::updateControls()
-{
-    if (Agros2D::computation()->isMeshed())
-    {
-        if (Agros2D::computation()->isSolved())
-        {
-            load();
-        }
-    }
-
-    refresh();
+    fillComboBoxScalarVariable(m_postprocessorWidget->computation()->config()->coordinateType(), m_postprocessorWidget->fieldWidget()->selectedField(), cmbPostScalarFieldVariable);
+    fillComboBoxContourVariable(m_postprocessorWidget->computation()->config()->coordinateType(), m_postprocessorWidget->fieldWidget()->selectedField(), cmbPost2DContourVariable);
+    fillComboBoxVectorVariable(m_postprocessorWidget->computation()->config()->coordinateType(), m_postprocessorWidget->fieldWidget()->selectedField(), cmbPost2DVectorFieldVariable);
+    doScalarFieldVariable(cmbPostScalarFieldVariable->currentIndex());
 }
 
 void PostprocessorScenePost2DWidget::doScalarFieldExpandCollapse(bool collapsed)
@@ -554,28 +542,28 @@ void PostprocessorScenePost2DWidget::doVectorFieldExpandCollapse(bool collapsed)
 /*
 void PostprocessorScenePost2DWidget::doScalarFieldDefault()
 {
-    cmbPalette->setCurrentIndex(cmbPalette->findData((PaletteType) Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_PaletteType).toInt()));
-    chkPaletteFilter->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_PaletteFilter).toBool());
-    txtPaletteSteps->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_PaletteSteps).toInt());
-    chkShowScalarColorBar->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ShowScalarColorBar).toBool());
-    chkScalarFieldRangeLog->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ScalarRangeLog).toBool());
-    txtScalarFieldRangeBase->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ScalarRangeBase).toInt());
-    txtScalarDecimalPlace->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ScalarDecimalPlace).toInt());
-    chkScalarDeform->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_DeformScalar).toBool());
+    cmbPalette->setCurrentIndex(cmbPalette->findData((PaletteType) computation()->setting()->defaultValue(ProblemSetting::View_PaletteType).toInt()));
+    chkPaletteFilter->setChecked(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_PaletteFilter).toBool());
+    txtPaletteSteps->setValue(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_PaletteSteps).toInt());
+    chkShowScalarColorBar->setChecked(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_ShowScalarColorBar).toBool());
+    chkScalarFieldRangeLog->setChecked(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_ScalarRangeLog).toBool());
+    txtScalarFieldRangeBase->setValue(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_ScalarRangeBase).toInt());
+    txtScalarDecimalPlace->setValue(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_ScalarDecimalPlace).toInt());
+    chkScalarDeform->setChecked(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_DeformScalar).toBool());
 }
 
 void PostprocessorScenePost2DWidget::doContoursVectorsDefault()
 {
-    txtContoursCount->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ContoursCount).toInt());
-    chkContourDeform->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_DeformContour).toBool());
+    txtContoursCount->setValue(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_ContoursCount).toInt());
+    chkContourDeform->setChecked(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_DeformContour).toBool());
 
-    chkVectorProportional->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_VectorProportional).toBool());
-    chkVectorColor->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_VectorColor).toBool());
-    txtVectorCount->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_VectorCount).toInt());
-    txtVectorScale->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_VectorScale).toDouble());
-    cmbVectorType->setCurrentIndex(cmbVectorType->findData((VectorType) Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_VectorType).toInt()));
-    cmbVectorCenter->setCurrentIndex(cmbVectorCenter->findData((VectorCenter) Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_VectorCenter).toInt()));
-    chkVectorDeform->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_DeformVector).toBool());
+    chkVectorProportional->setChecked(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_VectorProportional).toBool());
+    chkVectorColor->setChecked(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_VectorColor).toBool());
+    txtVectorCount->setValue(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_VectorCount).toInt());
+    txtVectorScale->setValue(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_VectorScale).toDouble());
+    cmbVectorType->setCurrentIndex(cmbVectorType->findData((VectorType) computation()->setting()->defaultValue(ProblemSetting::View_VectorType).toInt()));
+    cmbVectorCenter->setCurrentIndex(cmbVectorCenter->findData((VectorCenter) computation()->setting()->defaultValue(ProblemSetting::View_VectorCenter).toInt()));
+    chkVectorDeform->setChecked(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_DeformVector).toBool());
 }
 */
 
@@ -631,7 +619,7 @@ void PostprocessorScenePost2DWidget::doScalarFieldVariable(int index)
         QString variableName(cmbPostScalarFieldVariable->itemData(index).toString());
 
         QString fieldName = m_postprocessorWidget->fieldWidget()->selectedField()->fieldId();
-        Module::LocalVariable physicFieldVariable = Agros2D::computation()->fieldInfo(fieldName)->localVariable(variableName);
+        Module::LocalVariable physicFieldVariable = m_postprocessorWidget->computation()->fieldInfo(fieldName)->localVariable(m_postprocessorWidget->computation()->config()->coordinateType(), variableName);
 
         // component
         cmbPostScalarFieldVariableComp->clear();
@@ -642,8 +630,8 @@ void PostprocessorScenePost2DWidget::doScalarFieldVariable(int index)
         else
         {
             cmbPostScalarFieldVariableComp->addItem(tr("Magnitude"), PhysicFieldVariableComp_Magnitude);
-            cmbPostScalarFieldVariableComp->addItem(Agros2D::computation()->config()->labelX(), PhysicFieldVariableComp_X);
-            cmbPostScalarFieldVariableComp->addItem(Agros2D::computation()->config()->labelY(), PhysicFieldVariableComp_Y);
+            cmbPostScalarFieldVariableComp->addItem(m_postprocessorWidget->computation()->config()->labelX(), PhysicFieldVariableComp_X);
+            cmbPostScalarFieldVariableComp->addItem(m_postprocessorWidget->computation()->config()->labelY(), PhysicFieldVariableComp_Y);
         }
 
         cmbPostScalarFieldVariableComp->setCurrentIndex(cmbPostScalarFieldVariableComp->findData(scalarFieldVariableComp));

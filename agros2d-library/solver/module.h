@@ -23,6 +23,7 @@
 #include "form_info.h"
 
 class BDF2Table;
+class ProblemComputation;
 
 inline double tern(bool condition, double a, double b)
 {
@@ -415,7 +416,7 @@ private:
     QMap<QString, QList<Module::DialogRow> > m_groups;
 };
 
-AGROS_LIBRARY_API void updateTimeFunctions(double time);
+AGROS_LIBRARY_API void updateTimeFunctions(ProblemComputation *computation, double time);
 
 // available modules
 AGROS_LIBRARY_API QMap<QString, QString> availableModules();

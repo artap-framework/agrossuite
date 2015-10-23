@@ -31,6 +31,8 @@
 #include <deal.II/grid/tria.h>
 #define signals public
 
+class ProblemComputation;
+
 namespace XMLSubdomains
 {
     class domain;
@@ -41,7 +43,7 @@ class AGROS_LIBRARY_API MeshGenerator : public QObject
     Q_OBJECT
 
 public:
-    MeshGenerator();
+    MeshGenerator(ProblemComputation *computation);
 
     virtual ~MeshGenerator();
 
@@ -221,6 +223,9 @@ protected:
     QSharedPointer<QProcess> m_process;
 
     dealii::Triangulation<2> m_triangulation;
+
+    // computation
+    ProblemComputation *m_computation;
 };
 
 #endif //MESHGENERATOR_H

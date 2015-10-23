@@ -32,15 +32,14 @@ class LocalValue;
 class FieldInfo;
 class SceneViewPost2D;
 class PhysicalFieldWidget;
-class SceneViewPreprocessorChart;
 class QCustomPlot;
 
-class ChartView : public QWidget
+class SceneViewChart : public QWidget
 {
     Q_OBJECT
 
 public:
-    ChartView(QWidget *parent = 0);
+    SceneViewChart(QWidget *parent = 0);
 
     inline QCustomPlot *chart() { return m_chart; }
 
@@ -48,10 +47,12 @@ public slots:
     void setControls();
 
 private slots:
-    void reconnectActions();
+    void connectComputation(QSharedPointer<ProblemComputation> computation);
 
 private:
     QCustomPlot *m_chart;
+
+    QSharedPointer<ProblemComputation> m_computation;
 };
 
 #endif // CHARTDIALOG_H

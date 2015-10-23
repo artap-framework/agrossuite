@@ -236,7 +236,8 @@ LogView::LogView(QWidget *parent) : QDockWidget(tr("Application log"), parent)
 
 // *******************************************************************************************************
 
-LogDialog::LogDialog(QWidget *parent, const QString &title) : QDialog(parent),
+LogDialog::LogDialog(ProblemComputation *computation, const QString &title) : QDialog(QApplication::activeWindow()),
+    m_computation(computation),
     m_nonlinearChart(NULL), m_nonlinearErrorGraph(NULL), m_nonlinearProgress(NULL),
     m_adaptivityChart(NULL), m_adaptivityErrorGraph(NULL), m_adaptivityDOFsGraph(NULL), m_adaptivityProgress(NULL),
     m_timeChart(NULL), m_timeTimeStepGraph(NULL), m_timeProgress(NULL),
@@ -249,6 +250,19 @@ LogDialog::LogDialog(QWidget *parent, const QString &title) : QDialog(parent),
     setAttribute(Qt::WA_DeleteOnClose);
     
     createControls();
+
+    connect(btnAbort, SIGNAL(clicked()), m_computation, SLOT(doAbortSolve()));
+    connect(m_computation, SIGNAL(meshed()), this, SLOT(close()));
+    connect(m_computation, SIGNAL(solved()), this, SLOT(close()));
+
+    m_timeChart->setVisible(m_computation->isTransient());
+    m_timeProgress->setVisible(m_computation->isTransient());
+
+    m_nonlinearChart->setVisible(m_computation->isNonlinear());
+    m_nonlinearProgress->setVisible(m_computation->isNonlinear());
+
+    m_adaptivityChart->setVisible(m_computation->numAdaptiveFields() > 0);
+    m_adaptivityProgress->setVisible(m_computation->numAdaptiveFields() > 0);
     
     int w = 2.0/3.0 * QApplication::desktop()->screenGeometry().width();
     int h = 2.0/3.0 * QApplication::desktop()->screenGeometry().height();
@@ -257,26 +271,19 @@ LogDialog::LogDialog(QWidget *parent, const QString &title) : QDialog(parent),
     setMaximumSize(w, h);
     
     move(QApplication::activeWindow()->pos().x() + (QApplication::activeWindow()->width() - width()) / 2.0,
-         QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
-
-    // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(reconnectSlots()), this, SLOT(reconnectActions()));
-
-    // default
-    if (Agros2D::computation())
-        reconnectActions();
+         QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);    
 }
 
 void LogDialog::closeEvent(QCloseEvent *e)
 {
-    if (Agros2D::computation()->isMeshing() || Agros2D::computation()->isSolving())
+    if (m_computation->isMeshing() || m_computation->isSolving())
         e->ignore();
 }
 
 void LogDialog::reject()
 {
-    if (Agros2D::computation()->isMeshing() || Agros2D::computation()->isSolving())
-        Agros2D::computation()->doAbortSolve();
+    if (m_computation->isMeshing() || m_computation->isSolving())
+        m_computation->doAbortSolve();
     else
         close();
 }
@@ -486,29 +493,13 @@ void LogDialog::createControls()
     
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(m_progress, 0);
-    // if (Agros2D::computation()->numAdaptiveFields() > 0 || Agros2D::computation()->determineIsNonlinear() || Agros2D::computation()->isTransient())
+    // if (m_computation->numAdaptiveFields() > 0 || m_computation->determineIsNonlinear() || m_computation->isTransient())
     layout->addLayout(layoutHorizontal, 4);
     layout->addWidget(m_logWidget, 1);
     layout->addStretch();
     layout->addLayout(layoutStatus);
     
     setLayout(layout);
-}
-
-void LogDialog::reconnectActions()
-{
-    connect(btnAbort, SIGNAL(clicked()), Agros2D::computation(), SLOT(doAbortSolve()));
-    connect(Agros2D::computation(), SIGNAL(meshed()), this, SLOT(close()));
-    connect(Agros2D::computation(), SIGNAL(solved()), this, SLOT(close()));
-    
-    m_timeChart->setVisible(Agros2D::computation()->isTransient());
-    m_timeProgress->setVisible(Agros2D::computation()->isTransient());
-
-    m_nonlinearChart->setVisible(Agros2D::computation()->isNonlinear());
-    m_nonlinearProgress->setVisible(Agros2D::computation()->isNonlinear());
-    
-    m_adaptivityChart->setVisible(Agros2D::computation()->numAdaptiveFields() > 0);
-    m_adaptivityProgress->setVisible(Agros2D::computation()->numAdaptiveFields() > 0);
 }
 
 void LogDialog::printError(const QString &module, const QString &message)
@@ -551,7 +542,7 @@ void LogDialog::updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeSt
     
     for (int i = 0; i < adaptivityStep; i++)
     {
-        SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(fieldInfo, timeStep, i));
+        SolutionStore::SolutionRunTimeDetails runTime = m_computation->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(fieldInfo->fieldId(), timeStep, i));
         
         adaptiveSteps.append(i + 1);
         adaptiveDOFs.append(runTime.DOFs());
@@ -575,7 +566,7 @@ void LogDialog::updateTransientChartInfo(double actualTime)
         return;
     
     QVector<double> timeSteps;
-    QVector<double> timeLengths = Agros2D::computation()->timeStepLengths().toVector();
+    QVector<double> timeLengths = m_computation->timeStepLengths().toVector();
     QVector<double> timeTotal;
     double maximum = 0.0;
     for (int i = 0; i < timeLengths.size(); i++)
@@ -597,7 +588,7 @@ void LogDialog::updateTransientChartInfo(double actualTime)
     m_timeChart->replot(QCustomPlot::rpImmediate);
     
     // progress bar
-    m_timeProgress->setValue((10000.0 * actualTime / Agros2D::computation()->config()->value(ProblemConfig::TimeTotal).toDouble()));
+    m_timeProgress->setValue((10000.0 * actualTime / m_computation->config()->value(ProblemConfig::TimeTotal).toDouble()));
 }
 
 void LogDialog::addIcon(const QIcon &icn, const QString &label)
@@ -619,7 +610,7 @@ void LogDialog::addIcon(const QIcon &icn, const QString &label)
 
 void LogDialog::tryClose()
 {
-    if (Agros2D::computation()->isSolving())
+    if (m_computation->isSolving())
         Agros2D::log()->printError(tr("Solver"), tr("Solution is being aborted."));
     else
         close();

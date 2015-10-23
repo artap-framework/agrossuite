@@ -52,34 +52,37 @@ PostprocessorSceneMeshWidget::PostprocessorSceneMeshWidget(PostprocessorWidget *
 
     createControls();
 
-    connect(postprocessorWidget->fieldWidget(), SIGNAL(fieldChanged()), this, SLOT(doField()));
+    connect(postprocessorWidget->fieldWidget(), SIGNAL(fieldChanged()), this, SLOT(refresh()));
 }
 
 void PostprocessorSceneMeshWidget::load()
 {
+    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+        return;
+
     // show
-    chkShowInitialMeshView->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ShowInitialMeshView).toBool());
-    chkShowSolutionMeshView->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ShowSolutionMeshView).toBool());
-    chkShowOrderView->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ShowOrderView).toBool());
-    txtOrderComponent->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_OrderComponent).toInt());
+    chkShowInitialMeshView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowInitialMeshView).toBool());
+    chkShowSolutionMeshView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowSolutionMeshView).toBool());
+    chkShowOrderView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderView).toBool());
+    txtOrderComponent->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_OrderComponent).toInt());
 
     // order view
-    chkShowOrderColorbar->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool());
-    cmbOrderPaletteOrder->setCurrentIndex(cmbOrderPaletteOrder->findData((PaletteOrderType) Agros2D::computation()->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt()));
-    chkOrderLabel->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ShowOrderLabel).toBool());
+    chkShowOrderColorbar->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool());
+    cmbOrderPaletteOrder->setCurrentIndex(cmbOrderPaletteOrder->findData((PaletteOrderType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt()));
+    chkOrderLabel->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderLabel).toBool());
 }
 
 void PostprocessorSceneMeshWidget::save()
 {
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ShowInitialMeshView, chkShowInitialMeshView->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ShowSolutionMeshView, chkShowSolutionMeshView->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ShowOrderView, chkShowOrderView->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_OrderComponent, txtOrderComponent->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowInitialMeshView, chkShowInitialMeshView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowSolutionMeshView, chkShowSolutionMeshView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderView, chkShowOrderView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_OrderComponent, txtOrderComponent->value());
 
     // order view
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ShowOrderColorBar, chkShowOrderColorbar->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_OrderPaletteOrderType, (PaletteOrderType) cmbOrderPaletteOrder->itemData(cmbOrderPaletteOrder->currentIndex()).toInt());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ShowOrderLabel, chkOrderLabel->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderColorBar, chkShowOrderColorbar->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_OrderPaletteOrderType, (PaletteOrderType) cmbOrderPaletteOrder->itemData(cmbOrderPaletteOrder->currentIndex()).toInt());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderLabel, chkOrderLabel->isChecked());
 }
 
 void PostprocessorSceneMeshWidget::createControls()
@@ -152,31 +155,15 @@ void PostprocessorSceneMeshWidget::createControls()
     setLayout(layoutMain);
 }
 
-void PostprocessorSceneMeshWidget::doField()
-{
-    txtOrderComponent->setMaximum(m_postprocessorWidget->fieldWidget()->selectedField()->numberOfSolutions());
-
-    load();
-}
-
 void PostprocessorSceneMeshWidget::refresh()
 {
+    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+        return;
+
     // mesh and order
-    chkShowInitialMeshView->setEnabled(Agros2D::computation()->isMeshed());
-    chkShowSolutionMeshView->setEnabled(Agros2D::computation()->isSolved());
-    chkShowOrderView->setEnabled(Agros2D::computation()->isSolved());
-    txtOrderComponent->setEnabled(Agros2D::computation()->isSolved() && (chkShowOrderView->isChecked() || chkShowSolutionMeshView->isChecked()));
-}
-
-void PostprocessorSceneMeshWidget::updateControls()
-{
-    if (Agros2D::computation()->isMeshed())
-    {
-        if (Agros2D::computation()->isSolved())
-        {
-            load();
-        }
-    }
-
-    refresh();
+    chkShowInitialMeshView->setEnabled(m_postprocessorWidget->computation()->isMeshed());
+    chkShowSolutionMeshView->setEnabled(m_postprocessorWidget->computation()->isSolved());
+    chkShowOrderView->setEnabled(m_postprocessorWidget->computation()->isSolved());
+    txtOrderComponent->setEnabled(m_postprocessorWidget->computation()->isSolved() && (chkShowOrderView->isChecked() || chkShowSolutionMeshView->isChecked()));
+    txtOrderComponent->setMaximum(m_postprocessorWidget->fieldWidget()->selectedField()->numberOfSolutions());
 }

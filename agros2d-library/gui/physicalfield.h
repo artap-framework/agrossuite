@@ -32,12 +32,11 @@ signals:
 
 public slots:
     void updateControls();
-    void reconnectActions();
+    void connectComputation(QSharedPointer<ProblemComputation> computation);
 
 public:
     PhysicalFieldWidget(QWidget *parent = 0);
     ~PhysicalFieldWidget();
-
 
     FieldInfo *selectedField();
     void selectField(const FieldInfo *fieldInfo);
@@ -47,6 +46,11 @@ public:
     void selectAdaptivityStep(int adaptivityStep);
 
 private:
+    // computations
+    QGroupBox *grpComputation;
+    QComboBox *cmbComputation;
+
+    // field
     QComboBox *cmbFieldInfo;
 
     // transient
@@ -62,9 +66,12 @@ private:
     QString m_currentFieldName;
     AnalysisType m_currentAnalysisType;
 
+    QSharedPointer<ProblemComputation> m_computation;
+
 public slots:
-    void doFieldInfo(int index);
-    void doTimeStep(int index);
+    void doComputation(int index = -1);
+    void doFieldInfo(int index = -1);
+    void doTimeStep(int index = -1);
 };
 
 #endif // GUI_PHYSICALFIELD_H

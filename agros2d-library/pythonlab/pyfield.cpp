@@ -535,13 +535,15 @@ void PyField::localValues(double x, double y, int timeStep, int adaptivityStep, 
         timeStep = getTimeStep(timeStep);
         adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-        std::shared_ptr<LocalValue> value = m_fieldInfo->plugin()->localValue(m_fieldInfo, timeStep, adaptivityStep, point);
+        assert(0);
+        std::shared_ptr<LocalValue> value; // = m_fieldInfo->plugin()->localValue(m_computation, m_fieldInfo, timeStep, adaptivityStep, point);
         QMapIterator<QString, LocalPointValue> it(value->values());
         while (it.hasNext())
         {
             it.next();
 
-            Module::LocalVariable variable = m_fieldInfo->localVariable(it.key());
+            assert(0);
+            Module::LocalVariable variable; // = m_fieldInfo->localVariable(it.key());
 
             if (variable.isScalar())
             {
@@ -600,13 +602,15 @@ void PyField::surfaceIntegrals(const vector<int> &edges, int timeStep, int adapt
         timeStep = getTimeStep(timeStep);
         adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-        std::shared_ptr<IntegralValue> integral = m_fieldInfo->plugin()->surfaceIntegral(m_fieldInfo, timeStep, adaptivityStep);
+        assert(0);
+        std::shared_ptr<IntegralValue> integral; // = m_fieldInfo->plugin()->surfaceIntegral(m_computation, m_fieldInfo, timeStep, adaptivityStep);
         QMapIterator<QString, double> it(integral->values());
         while (it.hasNext())
         {
             it.next();
 
-            Module::Integral integral = m_fieldInfo->surfaceIntegral(it.key());
+            assert(0);
+            Module::Integral integral; // = m_fieldInfo->surfaceIntegral(it.key());
 
             values[integral.shortname().toStdString()] = it.value();
         }
@@ -663,13 +667,15 @@ void PyField::volumeIntegrals(const vector<int> &labels, int timeStep, int adapt
         timeStep = getTimeStep(timeStep);
         adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-        std::shared_ptr<IntegralValue> integral = m_fieldInfo->plugin()->volumeIntegral(m_fieldInfo, timeStep, adaptivityStep);
+        assert(0);
+        std::shared_ptr<IntegralValue> integral; // = m_fieldInfo->plugin()->volumeIntegral(m_computation, m_fieldInfo, timeStep, adaptivityStep);
         QMapIterator<QString, double> it(integral->values());
         while (it.hasNext())
         {
             it.next();
 
-            Module::Integral integral = m_fieldInfo->volumeIntegral(it.key());
+            assert(0);
+            Module::Integral integral; // = m_fieldInfo->volumeIntegral(it.key());
 
             values[integral.shortname().toStdString()] = it.value();
 
@@ -703,7 +709,7 @@ void PyField::solutionMeshInfo(int timeStep, int adaptivityStep, map<std::string
     adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
     // TODO: (Franta) time and adaptivity step in gui vs. implementation
-    MultiArray ma = Agros2D::solutionStore()->multiArray(FieldSolutionID(m_fieldInfo, timeStep, adaptivityStep));
+    MultiArray ma = Agros2D::computation()->solutionStore()->multiArray(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptivityStep));
 
     info["nodes"] = ma.doFHandler()->get_tria().n_used_vertices();
     info["elements"] = ma.doFHandler()->get_tria().n_active_cells();
@@ -721,7 +727,7 @@ void PyField::solverInfo(int timeStep, int adaptivityStep,
     timeStep = getTimeStep(timeStep);
     adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-    SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo, timeStep, adaptivityStep));
+    SolutionStore::SolutionRunTimeDetails runTime = Agros2D::computation()->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptivityStep));
 
     for (int i = 0; i < runTime.relativeChangeOfSolutions().size(); i++)
         solutionsChange.push_back(runTime.relativeChangeOfSolutions().at(i));
@@ -746,10 +752,10 @@ void PyField::adaptivityInfo(int timeStep, vector<double> &error, vector<int> &d
     // set time step if -1 (default parameter - last steps)
     timeStep = getTimeStep(timeStep);
 
-    int adaptivitySteps = Agros2D::solutionStore()->lastAdaptiveStep(m_fieldInfo, timeStep) + 1;    
+    int adaptivitySteps = Agros2D::computation()->solutionStore()->lastAdaptiveStep(m_fieldInfo, timeStep) + 1;
     for (int i = 0; i < adaptivitySteps; i++)
     {
-        SolutionStore::SolutionRunTimeDetails runTime = Agros2D::solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo, timeStep, i));
+        SolutionStore::SolutionRunTimeDetails runTime = Agros2D::computation()->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, i));
         error.push_back(runTime.adaptivityError());
         dofs.push_back(runTime.DOFs());
     }
@@ -758,7 +764,7 @@ void PyField::adaptivityInfo(int timeStep, vector<double> &error, vector<int> &d
 int PyField::getTimeStep(int timeStep) const
 {
     if (timeStep == -1)
-        timeStep = Agros2D::solutionStore()->lastTimeStep(m_fieldInfo);
+        timeStep = Agros2D::computation()->solutionStore()->lastTimeStep(m_fieldInfo);
     else if (timeStep < 0 || timeStep >= Agros2D::computation()->timeStepLengths().length() - 1)
         throw out_of_range(QObject::tr("Time step must be in the range from 0 to %1.").arg(Agros2D::computation()->timeStepLengths().length() - 1).toStdString());
 
@@ -769,7 +775,7 @@ int PyField::getTimeStep(int timeStep) const
 int PyField::getAdaptivityStep(int adaptivityStep, int timeStep) const
 {
     if (adaptivityStep == -1)
-        adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(m_fieldInfo, timeStep);
+        adaptivityStep = Agros2D::computation()->solutionStore()->lastAdaptiveStep(m_fieldInfo, timeStep);
     else if (adaptivityStep < 0 || adaptivityStep > m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt() - 1)
         throw out_of_range(QObject::tr("Adaptivity step is out of range. (0 to %1).").arg(m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt() - 1).toStdString());
 

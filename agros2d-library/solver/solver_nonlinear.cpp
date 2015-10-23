@@ -102,7 +102,7 @@ const int MAX_NUM_NONLIN_ITERS = 100;
 
 void AssembleNonlinear::solve()
 {
-    Agros2D::computation()->propagateBoundaryMarkers();
+    m_computation->propagateBoundaryMarkers();
     solveProblemNonLinear();
 }
 
@@ -161,7 +161,7 @@ void AssembleNonlinear::solveProblemNonLinearPicard()
 
     int iteration = 0;
     bool criteriaReached = false;
-    while ((iteration < MAX_NUM_NONLIN_ITERS) && !criteriaReached && !Agros2D::computation()->isAborted())
+    while ((iteration < MAX_NUM_NONLIN_ITERS) && !criteriaReached && !m_computation->isAborted())
     {
         SolverAgros::Phase phase = SolverAgros::Phase_Solving;
 
@@ -273,7 +273,7 @@ void AssembleNonlinear::solveProblemNonLinearNewton()
     int iteration = 0;
     int numReusedJacobian = 0;
     bool criteriaReached = false;
-    while ((iteration < MAX_NUM_NONLIN_ITERS) && !criteriaReached && !Agros2D::computation()->isAborted())
+    while ((iteration < MAX_NUM_NONLIN_ITERS) && !criteriaReached && !m_computation->isAborted())
     {
         SolverAgros::Phase phase = SolverAgros::Phase_Solving;
 

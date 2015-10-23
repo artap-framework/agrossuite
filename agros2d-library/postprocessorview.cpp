@@ -21,6 +21,7 @@
 #include "postprocessorview_mesh.h"
 #include "postprocessorview_post2d.h"
 #include "postprocessorview_chart.h"
+#include "postprocessorview_particletracing.h"
 
 #include "util/global.h"
 
@@ -35,6 +36,8 @@
 #include "sceneview_mesh.h"
 #include "sceneview_post2d.h"
 #include "sceneview_post3d.h"
+#include "chartdialog.h"
+
 #include "pythonlab/pythonengine_agros.h"
 
 #include "solver/module.h"
@@ -46,11 +49,7 @@
 
 #include "util/constants.h"
 
-PostprocessorWidget::PostprocessorWidget(PostDeal *postDeal,
-                                         SceneViewMesh *sceneMesh,
-                                         SceneViewPost2D *scenePost2D,
-                                         ChartView *sceneChart)
-    : m_postDeal(postDeal)
+PostprocessorWidget::PostprocessorWidget()
 {
     // scene mode
     actSceneModePost = new QAction(icon("scene-post2d"), tr("Postprocessor"), this);
@@ -59,25 +58,35 @@ PostprocessorWidget::PostprocessorWidget(PostDeal *postDeal,
     actSceneModePost->setEnabled(false);
 
     m_fieldWidget = new PhysicalFieldWidget(this);
-    // connect(m_fieldWidget, SIGNAL(fieldChanged()), this, SLOT(doField()));
+    connect(m_fieldWidget, SIGNAL(fieldChanged()), this, SLOT(refresh()));
 
-    meshWidget = new PostprocessorSceneMeshWidget(this, sceneMesh);
-    post2DWidget = new PostprocessorScenePost2DWidget(this, scenePost2D);
-    chartWidget = new PostprocessorSceneChartWidget(this, sceneChart);
+    m_sceneViewMesh = new SceneViewMesh(this);
+    m_meshWidget = new PostprocessorSceneMeshWidget(this, m_sceneViewMesh);
+
+    m_sceneViewPost2D = new SceneViewPost2D(this);
+    m_post2DWidget = new PostprocessorScenePost2DWidget(this, m_sceneViewPost2D);
+
+    m_sceneViewChart = new SceneViewChart(this);
+    m_chartWidget = new PostprocessorSceneChartWidget(this, m_sceneViewChart);
+
+    m_sceneViewParticleTracing = new SceneViewParticleTracing(this);
+    m_particleTracingWidget = new PostprocessorSceneParticleTracingWidget(this, m_sceneViewParticleTracing);
+
+    // sceneViewPost3D = new SceneViewPost3D(postDeal, this);
 
     createControls();
 
     connect(currentPythonEngine(), SIGNAL(executedScript()), this, SLOT(doCalculationFinished()));
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(reconnectSlots()), this, SLOT(reconnectActions()));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
 }
 
 void PostprocessorWidget::createControls()
 {    
     // dialog buttons
-    btnOK = new QPushButton(tr("Apply"));
-    connect(btnOK, SIGNAL(clicked()), SLOT(doApply()));
+    btnApply = new QPushButton(tr("Apply"));
+    connect(btnApply, SIGNAL(clicked()), SLOT(doApply()));
 
     // mesh and polynomial info
     lblMeshInitial = new QLabel();
@@ -93,18 +102,19 @@ void PostprocessorWidget::createControls()
     layoutInfo->addWidget(lblDOFs, 2, 1);
 
     tabWidget = new QTabWidget();
-    tabWidget->addTab(meshWidget, icon("scene-mesh"), tr("Mesh"));
-    tabWidget->addTab(post2DWidget, icon("scene-post2d"), tr("2D"));
-    tabWidget->addTab(chartWidget, icon("chart"), tr("Chart"));
+    tabWidget->addTab(m_meshWidget, icon("scene-mesh"), tr("Mesh"));
+    tabWidget->addTab(m_post2DWidget, icon("scene-post2d"), tr("2D"));
+    tabWidget->addTab(m_chartWidget, icon("chart"), tr("Chart"));
+    tabWidget->addTab(m_particleTracingWidget, icon("scene-particle"), tr("PT"));
     connect(tabWidget, SIGNAL(currentChanged(int)), SIGNAL(modeChanged()));
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->setContentsMargins(2, 2, 2, 3);    
+    layoutMain->setContentsMargins(2, 2, 2, 3);
     layoutMain->addWidget(m_fieldWidget);
     layoutMain->addWidget(tabWidget);
     // layoutMain->addStretch(1);
     layoutMain->addLayout(layoutInfo);
-    layoutMain->addWidget(btnOK, 0, Qt::AlignRight);
+    layoutMain->addWidget(btnApply, 0, Qt::AlignRight);
 
     setLayout(layoutMain);
 }
@@ -113,24 +123,31 @@ void PostprocessorWidget::doApply()
 {
     m_fieldWidget->updateControls();
 
-    m_postDeal->setActiveViewField(m_fieldWidget->selectedField());
-    m_postDeal->setActiveTimeStep(m_fieldWidget->selectedTimeStep());
-    m_postDeal->setActiveAdaptivityStep(m_fieldWidget->selectedAdaptivityStep());
+    if (m_computation->isSolved())
+    {
+        m_computation->postDeal()->setActiveViewField(fieldWidget()->selectedField());
+        m_computation->postDeal()->setActiveTimeStep(fieldWidget()->selectedTimeStep());
+        m_computation->postDeal()->setActiveAdaptivityStep(fieldWidget()->selectedAdaptivityStep());
+    }
 
-    if (tabWidget->currentWidget() == meshWidget)
+    // PostprocessorSceneWidget *widget = qobject_cast<PostprocessorSceneWidget>(tabWidget->currentWidget());
+    // widget->save();
+
+    if (tabWidget->currentWidget() == m_meshWidget)
     {
-        meshWidget->save();
-        meshWidget->updateControls();
+        m_meshWidget->save();
     }
-    else if (tabWidget->currentWidget() == post2DWidget)
+    else if (tabWidget->currentWidget() == m_post2DWidget)
     {
-        post2DWidget->save();
-        post2DWidget->updateControls();
+        m_post2DWidget->save();
     }
-    else if (tabWidget->currentWidget() == chartWidget)
+    else if (tabWidget->currentWidget() == m_chartWidget)
     {
-        chartWidget->save();
-        chartWidget->updateControls();
+        m_chartWidget->save();
+    }
+    else if (tabWidget->currentWidget() == m_particleTracingWidget)
+    {
+        m_particleTracingWidget->save();
     }
 
     // refresh
@@ -139,62 +156,93 @@ void PostprocessorWidget::doApply()
     activateWindow();
 }
 
-void PostprocessorWidget::reconnectActions()
+void PostprocessorWidget::refresh()
 {
-    connect(Agros2D::computation(), SIGNAL(meshed()), this, SLOT(doCalculationFinished()));
-    connect(Agros2D::computation(), SIGNAL(solved()), this, SLOT(doCalculationFinished()));
-}
-
-void PostprocessorWidget::doCalculationFinished()
-{
-    if (!Agros2D::computation())
-        return;
-
-    if (currentPythonEngine()->isScriptRunning())
-        return;
-
-    actSceneModePost->setEnabled(Agros2D::computation()->isMeshed());
-
-    if (Agros2D::computation()->isSolved())
-    {
-        m_fieldWidget->selectField(m_postDeal->activeViewField());
-        m_fieldWidget->selectTimeStep(m_postDeal->activeTimeStep());
-        m_fieldWidget->selectAdaptivityStep(m_postDeal->activeAdaptivityStep());
-    }
-
     // mesh and polynomial info
     int dofs = 0;
-    if (Agros2D::computation()->isMeshed())
+    if (m_computation->isMeshed())
     {
         lblMeshInitial->setText(QString(tr("%1 nodes, %2 elements").
-                                        arg(Agros2D::computation()->initialMesh().n_used_vertices()).
-                                        arg(Agros2D::computation()->initialMesh().n_active_cells())));
+                                        arg(m_computation->initialMesh().n_used_vertices()).
+                                        arg(m_computation->initialMesh().n_active_cells())));
         lblMeshSolution->setText(QString(tr("%1 nodes, %2 elements").
-                                         arg(Agros2D::computation()->calculationMesh().n_used_vertices()).
-                                         arg(Agros2D::computation()->calculationMesh().n_active_cells())));
+                                         arg(m_computation->calculationMesh().n_used_vertices()).
+                                         arg(m_computation->calculationMesh().n_active_cells())));
     }
-    if (Agros2D::computation()->isSolved())
+
+    if (m_computation->isSolved() && m_fieldWidget->selectedField())
     {
-        MultiArray ma = Agros2D::solutionStore()->multiArray(FieldSolutionID(m_fieldWidget->selectedField(),
-                                                                             m_fieldWidget->selectedTimeStep(),
-                                                                             m_fieldWidget->selectedAdaptivityStep()));
+        MultiArray ma = m_computation->solutionStore()->multiArray(FieldSolutionID(m_fieldWidget->selectedField()->fieldId(),
+                                                                                   m_fieldWidget->selectedTimeStep(),
+                                                                                   m_fieldWidget->selectedAdaptivityStep()));
 
         dofs = ma.doFHandler()->n_dofs();
     }
     lblDOFs->setText(tr("%1 DOFs").arg(dofs));
 
-    if ((Agros2D::computation()->isMeshed() && !Agros2D::computation()->isSolving()) || Agros2D::computation()->isSolved())
+    m_meshWidget->load();
+    m_post2DWidget->load();
+    m_chartWidget->load();
+}
+
+void PostprocessorWidget::connectComputation(QSharedPointer<ProblemComputation> computation)
+{
+    if (!m_computation.isNull())
+    {
+        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doCalculationFinished()));
+        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(doCalculationFinished()));
+        disconnect(this, SIGNAL(apply()), m_computation.data()->postDeal(), SLOT(refresh()));
+    }
+
+    m_computation = computation;
+
+    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doCalculationFinished()));
+    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(doCalculationFinished()));
+    connect(this, SIGNAL(apply()), m_computation.data()->postDeal(), SLOT(refresh()));
+
+    refresh();
+}
+
+void PostprocessorWidget::doCalculationFinished()
+{
+    if (!m_computation)
+        return;
+
+    if (currentPythonEngine()->isScriptRunning())
+        return;
+
+    actSceneModePost->setEnabled(m_computation->isMeshed());
+
+    if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
+    {
+        m_fieldWidget->selectField(m_computation->postDeal()->activeViewField());
+        m_fieldWidget->selectTimeStep(m_computation->postDeal()->activeTimeStep());
+        m_fieldWidget->selectAdaptivityStep(m_computation->postDeal()->activeAdaptivityStep());
+    }
+
+    m_meshWidget->refresh();
+    m_meshWidget->load();
+    m_post2DWidget->refresh();
+    m_post2DWidget->load();
+    m_chartWidget->refresh();
+    m_chartWidget->load();
+    m_particleTracingWidget->refresh();
+    m_particleTracingWidget->load();
+
+    if ((m_computation->isMeshed() && !m_computation->isSolving()) || m_computation->isSolved())
         emit apply();
 }
 
 PostprocessorWidgetMode PostprocessorWidget::mode()
 {
-    if (tabWidget->currentWidget() == meshWidget)
+    if (tabWidget->currentWidget() == m_meshWidget)
         return PostprocessorWidgetMode_Mesh;
-    else if (tabWidget->currentWidget() == post2DWidget)
+    else if (tabWidget->currentWidget() == m_post2DWidget)
         return PostprocessorWidgetMode_Post2D;
-    else if (tabWidget->currentWidget() == chartWidget)
+    else if (tabWidget->currentWidget() == m_chartWidget)
         return PostprocessorWidgetMode_Chart;
+    else if (tabWidget->currentWidget() == m_particleTracingWidget)
+        return PostprocessorWidgetMode_ParticleTracing;
     else
         assert(0);
 }

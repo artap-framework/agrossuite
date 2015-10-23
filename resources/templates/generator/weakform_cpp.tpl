@@ -75,22 +75,22 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleSystem(const dealii::Vector
     source_begin = doFHandler.begin_active();
     source_end = doFHandler.end();
     // coupling sources{{#COUPLING_SOURCE}}
-    if (Agros2D::computation()->hasField("{{COUPLING_SOURCE_ID}}"))
+    if (m_computation->hasField("{{COUPLING_SOURCE_ID}}"))
     {
-        source_begin = solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").doFHandler()->begin_active();
-        source_end = solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").doFHandler()->end();
+        source_begin = m_solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").doFHandler()->begin_active();
+        source_end = m_solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").doFHandler()->end();
 
         // cell_and_source_begin = dealii::SynchronousIterators<IteratorTuple>(IteratorTuple(doFHandler.begin_active(),
-        //                                                                                   solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").doFHandler()->begin_active()));
+        //                                                                                   m_solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").doFHandler()->begin_active()));
         // cell_and_source_end = dealii::SynchronousIterators<IteratorTuple>(IteratorTuple(doFHandler.end(),
-        //                                                                                 solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").doFHandler()->end()));
+        //                                                                                 m_solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").doFHandler()->end()));
     }
     {{/COUPLING_SOURCE}}
 
     // Fix the beginning cells wrt. subdomains.
     while (cell_begin != doFHandler.end())
     {
-        if (!Agros2D::computation()->scene()->labels->at(cell_begin->material_id() - 1)->marker(m_fieldInfo)->isNone())
+        if (!m_computation->scene()->labels->at(cell_begin->material_id() - 1)->marker(m_fieldInfo)->isNone())
             break;
         else
         {
@@ -110,12 +110,15 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleSystem(const dealii::Vector
     //     dealii::WorkStream::run(cell_and_source_begin,
     //                             cell_and_source_end,
 
-    dealii::WorkStream::run(DoubleCellIterator(source_begin, cell_begin, doFHandler, m_fieldInfo),
-                            DoubleCellIterator(source_end, cell_end, doFHandler, m_fieldInfo),
+    dealii::WorkStream::run(DoubleCellIterator(source_begin, cell_begin, doFHandler, m_computation, m_fieldInfo),
+                            DoubleCellIterator(source_end, cell_end, doFHandler, m_computation, m_fieldInfo),
                             *this,
                             &SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem,
                             &SolverDeal{{CLASS}}::Assemble{{CLASS}}::copyLocalToGlobal,
-                            AssemblyScratchData(solverDeal->feCollection(), solverDeal->mappingCollection(), solverDeal->quadratureFormulas(), solverDeal->quadratureFormulasFace(),
+                            AssemblyScratchData(m_solverDeal->feCollection(),
+                                                m_solverDeal->mappingCollection(),
+                                                m_solverDeal->quadratureFormulas(),
+                                                m_solverDeal->quadratureFormulasFace(),
                                                 solutionNonlinearPrevious,
                                                 assembleMatrix,
                                                 assembleRHS),
@@ -127,7 +130,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
                                               AssemblyScratchData &scratch_data,
                                               AssemblyCopyData &copy_data)
 {
-    double actualTime = solverDeal->get_time();
+    double actualTime = m_solverDeal->get_time();
 
     const TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = iter.cell_second;
     // const TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = std::get<0>(iter.iterators);
@@ -135,21 +138,21 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
     // coupling sources{{#COUPLING_SOURCE}}
     dealii::hp::DoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}};
     const SolverDeal *{{COUPLING_SOURCE_ID}}_solver = nullptr;
-    if (Agros2D::computation()->hasField("{{COUPLING_SOURCE_ID}}"))
+    if (m_computation->hasField("{{COUPLING_SOURCE_ID}}"))
     {
-        {{COUPLING_SOURCE_ID}}_solver = ProblemSolver::solver("{{COUPLING_SOURCE_ID}}");
+        {{COUPLING_SOURCE_ID}}_solver = m_computation->problemSolver()->solver("{{COUPLING_SOURCE_ID}}");
         cell_{{COUPLING_SOURCE_ID}} = iter.cell_first;
         // cell_{{COUPLING_SOURCE_ID}} = std::get<1>(iter.iterators);
     }
     {{/COUPLING_SOURCE}}
 
-    CoordinateType coordinateType = Agros2D::computation()->config()->coordinateType();
+    CoordinateType coordinateType = m_computation->config()->coordinateType();
     bool isTransient = (m_fieldInfo->analysisType() == AnalysisType_Transient);
 
     // materials
-    SceneMaterial *material = Agros2D::computation()->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo);
+    SceneMaterial *material = m_computation->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo);
 
-    if (material != Agros2D::computation()->scene()->materials->getNone(m_fieldInfo))
+    if (material != m_computation->scene()->materials->getNone(m_fieldInfo))
     {
         const unsigned int dofs_per_cell = cell->get_fe().dofs_per_cell;
 
@@ -174,7 +177,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
         std::vector<int> components(dofs_per_cell);
 
         // volume value and grad cache
-        AssembleCache &cache = solverDeal->assembleCache(tbb::this_tbb_thread::get_id(), dofs_per_cell, n_q_points);
+        AssembleCache &cache = m_solverDeal->assembleCache(tbb::this_tbb_thread::get_id(), dofs_per_cell, n_q_points);
 
         if (scratch_data.solutionNonlinearPrevious.size() > 0)
         {
@@ -191,10 +194,10 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
         double {{VARIABLE_SHORT}} = 0.0;{{/COUPLING_VARIABLES}}
 
         SceneMaterial *{{COUPLING_SOURCE_ID}}_material = nullptr;
-        if (Agros2D::computation()->hasField("{{COUPLING_SOURCE_ID}}"))
+        if (m_computation->hasField("{{COUPLING_SOURCE_ID}}"))
         {            
-            {{COUPLING_SOURCE_ID}}_fieldInfo = Agros2D::computation()->fieldInfo("{{COUPLING_SOURCE_ID}}");
-            {{COUPLING_SOURCE_ID}}_material = Agros2D::computation()->scene()->labels->at(cell->material_id() - 1)->marker({{COUPLING_SOURCE_ID}}_fieldInfo);
+            {{COUPLING_SOURCE_ID}}_fieldInfo = m_computation->fieldInfo("{{COUPLING_SOURCE_ID}}");
+            {{COUPLING_SOURCE_ID}}_material = m_computation->scene()->labels->at(cell->material_id() - 1)->marker({{COUPLING_SOURCE_ID}}_fieldInfo);
 
             // todo: we probably do not need to initialize everything
             dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values({{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadratureFormulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
@@ -204,10 +207,10 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
             {{COUPLING_SOURCE_ID}}_value = std::vector<dealii::Vector<double> >({{COUPLING_SOURCE_ID}}_fe_values.n_quadrature_points, dealii::Vector<double>({{COUPLING_SOURCE_ID}}_fieldInfo->numberOfSolutions()));
             {{COUPLING_SOURCE_ID}}_grad = std::vector<std::vector<dealii::Tensor<1,2> > >({{COUPLING_SOURCE_ID}}_fe_values.n_quadrature_points, std::vector<dealii::Tensor<1,2> >({{COUPLING_SOURCE_ID}}_fieldInfo->numberOfSolutions()));
 
-            {{COUPLING_SOURCE_ID}}_fe_values.get_function_values(solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").solution(), {{COUPLING_SOURCE_ID}}_value);
-            {{COUPLING_SOURCE_ID}}_fe_values.get_function_gradients(solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").solution(), {{COUPLING_SOURCE_ID}}_grad);
+            {{COUPLING_SOURCE_ID}}_fe_values.get_function_values(m_solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").solution(), {{COUPLING_SOURCE_ID}}_value);
+            {{COUPLING_SOURCE_ID}}_fe_values.get_function_gradients(m_solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").solution(), {{COUPLING_SOURCE_ID}}_grad);
 
-            if ({{COUPLING_SOURCE_ID}}_material != Agros2D::computation()->scene()->materials->getNone({{COUPLING_SOURCE_ID}}_fieldInfo))
+            if ({{COUPLING_SOURCE_ID}}_material != m_computation->scene()->materials->getNone({{COUPLING_SOURCE_ID}}_fieldInfo))
             {
                 const QMap<uint, QSharedPointer<Value> > {{COUPLING_SOURCE_ID}}_materialValues = {{COUPLING_SOURCE_ID}}_material->values();
                 //{{COUPLING_SOURCE_ID}} variables for individual source analysis types{{#COUPLING_VARIABLES_ANALYSIS_TYPE}}
@@ -240,8 +243,8 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
         {
             if(cell->face(face)->user_index() > 0 )
             {
-                SceneBoundary *boundary = Agros2D::computation()->scene()->edges->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
-                if (boundary != Agros2D::computation()->scene()->boundaries->getNone(m_fieldInfo))
+                SceneBoundary *boundary = m_computation->scene()->edges->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
+                if (boundary != m_computation->scene()->boundaries->getNone(m_fieldInfo))
                 {
                     scratch_data.hp_fe_face_values.reinit(cell, face);
 
@@ -362,7 +365,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
                         copy_data.cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
                     }{{/FORM_EXPRESSION_VECTOR}}
                     {{#COUPLING_SOURCE}}
-                    if({{COUPLING_SOURCE_ID}}_fieldInfo && ({{COUPLING_SOURCE_ID}}_material != Agros2D::computation()->scene()->materials->getNone({{COUPLING_SOURCE_ID}}_fieldInfo)))
+                    if({{COUPLING_SOURCE_ID}}_fieldInfo && ({{COUPLING_SOURCE_ID}}_material != m_computation->scene()->materials->getNone({{COUPLING_SOURCE_ID}}_fieldInfo)))
                     {{{#COUPLING_FORMS_ANALYSIS_TYPE}}
                         if({{COUPLING_SOURCE_ID}}_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
                         {{{#FORM_EXPRESSION_COUPLING_VECTOR}}
@@ -399,17 +402,17 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
                 qCollection.push_back(dealii::Quadrature<2 - 1>(unit_support_points));
             }
         }
-        dealii::hp::FEFaceValues<2> hp_fe_face_values(solverDeal->mappingCollection(), solverDeal->feCollection(), qCollection, dealii::update_quadrature_points);
+        dealii::hp::FEFaceValues<2> hp_fe_face_values(m_solverDeal->mappingCollection(), m_solverDeal->feCollection(), qCollection, dealii::update_quadrature_points);
         
         // boundaries
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
         {
             if(cell->face(face)->user_index() > 0 )
             {
-                SceneBoundary *boundary = Agros2D::computation()->scene()->edges->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
+                SceneBoundary *boundary = m_computation->scene()->edges->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
                 const QMap<uint, QSharedPointer<Value> > boundaryValues = boundary->values();
 
-                if (boundary != Agros2D::computation()->scene()->boundaries->getNone(m_fieldInfo))
+                if (boundary != m_computation->scene()->boundaries->getNone(m_fieldInfo))
                 {
                     {{#SURFACE_SOURCE}}
                     // {{BOUNDARY_ID}}
@@ -472,8 +475,8 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
 
 void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleDirichlet(bool calculateDirichletLiftValue)
 {
-    double actualTime = solverDeal->get_time();
-    CoordinateType coordinateType = Agros2D::computation()->config()->coordinateType();
+    double actualTime = m_solverDeal->get_time();
+    CoordinateType coordinateType = m_computation->config()->coordinateType();
 
     // prepare QCollection
     dealii::hp::FECollection<2> feCollection(doFHandler.get_fe());
@@ -498,12 +501,12 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleDirichlet(bool calculateDir
     }
 
     // hp face values
-    dealii::hp::FEFaceValues<2> hp_fe_face_values(solverDeal->mappingCollection(), feCollection, qCollection, dealii::update_quadrature_points);
+    dealii::hp::FEFaceValues<2> hp_fe_face_values(m_solverDeal->mappingCollection(), feCollection, qCollection, dealii::update_quadrature_points);
 
     dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
     for(; cell != endc; ++cell)
     {
-        if (Agros2D::computation()->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo) == Agros2D::computation()->scene()->materials->getNone(m_fieldInfo))
+        if (m_computation->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo) == m_computation->scene()->materials->getNone(m_fieldInfo))
             continue;
         
         // boundaries
@@ -511,8 +514,8 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleDirichlet(bool calculateDir
         {
             if (cell->face(face)->user_index() > 0)
             {
-                SceneBoundary *boundary = Agros2D::computation()->scene()->edges->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
-                if (boundary != Agros2D::computation()->scene()->boundaries->getNone(m_fieldInfo))
+                SceneBoundary *boundary = m_computation->scene()->edges->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
+                if (boundary != m_computation->scene()->boundaries->getNone(m_fieldInfo))
                 {
                     const dealii::FiniteElement<2> &fe = cell->get_fe();
 

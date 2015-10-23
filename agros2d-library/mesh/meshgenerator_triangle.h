@@ -31,34 +31,33 @@ extern "C"
 class MeshGeneratorTriangleExternal : public MeshGenerator
 {
     Q_OBJECT
+public:
+    MeshGeneratorTriangleExternal(ProblemComputation *computation);
+
+    virtual bool mesh();
 
 private slots:
     void meshTriangleError(QProcess::ProcessError error);
     void meshTriangleCreated(int exitCode);
     bool writeToTriangle();
     bool readTriangleMeshFormat();
-
-public:
-    MeshGeneratorTriangleExternal();
-
-    virtual bool mesh();
 };
 
 class MeshGeneratorTriangle : public MeshGenerator
 {
     Q_OBJECT
 
+public:
+    MeshGeneratorTriangle(ProblemComputation *computation);
+
+    virtual bool mesh();
+
 private slots:
     bool writeToTriangle();
     bool readTriangleMeshFormat();
 
-public:
-    MeshGeneratorTriangle();
-
-    virtual bool mesh();
-
 private:
-    struct triangulateio triOut;
+    struct triangulateio triOut;    
 };
 
 

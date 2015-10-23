@@ -42,12 +42,14 @@ virtual ~{{CLASS}}Interface();
 inline virtual QString fieldId() { return "{{ID}}"; }
 
 // solver deal
-virtual SolverDeal *solverDeal(const FieldInfo *fieldInfo);
+virtual SolverDeal *solverDeal(ProblemComputation *computation, const FieldInfo *fieldInfo);
 
 // postprocessor
 // filter
-virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
-                                                                    MultiArray *ma,
+virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(ProblemComputation *computation,
+                                                                    const FieldInfo *fieldInfo,
+                                                                    int timeStep,
+                                                                    int adaptivityStep,
                                                                     const QString &variable,
                                                                     PhysicFieldVariableComp physicFieldVariableComp);
 
@@ -56,14 +58,27 @@ virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(const FieldI
 //                                                                   const QString &calculator, CalculatedErrorType errorType);
 
 // local values
-virtual std::shared_ptr<LocalValue> localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, const Point &point);
+virtual std::shared_ptr<LocalValue> localValue(ProblemComputation *computation,
+                                               const FieldInfo *fieldInfo,
+                                               int timeStep,
+                                               int adaptivityStep,
+                                               const Point &point);
 // surface integrals
-virtual std::shared_ptr<IntegralValue> surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep);
+virtual std::shared_ptr<IntegralValue> surfaceIntegral(ProblemComputation *computation,
+                                                       const FieldInfo *fieldInfo,
+                                                       int timeStep,
+                                                       int adaptivityStep);
 // volume integrals
-virtual std::shared_ptr<IntegralValue> volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep);
+virtual std::shared_ptr<IntegralValue> volumeIntegral(ProblemComputation *computation,
+                                                      const FieldInfo *fieldInfo,
+                                                      int timeStep,
+                                                      int adaptivityStep);
 
 // force calculation
-virtual std::shared_ptr<ForceValue> force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep);
+virtual std::shared_ptr<ForceValue> force(ProblemComputation *computation,
+                                          const FieldInfo *fieldInfo,
+                                          int timeStep,
+                                          int adaptivityStep);
 
 // localization
 virtual QString localeName(const QString &name);

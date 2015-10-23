@@ -27,6 +27,7 @@ template <typename Scalar> class SceneSolution;
 template <typename Scalar> class ViewScalarFilter;
 
 class FieldInfo;
+class SceneMarkerSelectDialog;
 
 class SceneViewPost2D : public SceneViewCommon2D
 {
@@ -41,7 +42,7 @@ public slots:
     void exportVTKContourView(const QString &fileName = QString());
 
 public:
-    SceneViewPost2D(PostDeal *postDeal, QWidget *parent = 0);
+    SceneViewPost2D(QWidget *parent = 0);
     ~SceneViewPost2D();
 
     QAction *actSelectPoint;
@@ -90,6 +91,8 @@ private:
 
     void exportVTK(const QString &fileName, const QString &variable, PhysicFieldVariableComp physicFieldVariableComp);
 
+    friend class SceneMarkerSelectDialog;
+
 private slots:
     void selectedPoint(const Point &p);
 
@@ -98,7 +101,7 @@ private slots:
 
     void setControls();
 
-    void reconnectActions();
+    void connectComputation(QSharedPointer<ProblemComputation> computation);
 };
 
 #endif // SCENEVIEWPOST2D_H

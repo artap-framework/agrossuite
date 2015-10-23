@@ -29,7 +29,7 @@
 QString FieldSolutionID::toString()
 {
     QString str = QString("%1_%2_%3").
-            arg(fieldInfo->fieldId()).
+            arg(fieldId).
             arg(timeStep).
             arg(adaptivityStep);
 

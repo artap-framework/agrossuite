@@ -202,30 +202,30 @@ public:
     Module::BoundaryTypeVariable boundaryTypeVariable(const QString &id) const;
 
     // force
-    Module::Force force() const;
+    Module::Force force(CoordinateType coordinateType) const;
 
     // material and boundary user interface
     Module::DialogUI materialUI() const;
     Module::DialogUI boundaryUI() const;
 
     // local point variables
-    QList<Module::LocalVariable> localPointVariables() const;
+    QList<Module::LocalVariable> localPointVariables(CoordinateType coordinateType) const;
     // view scalar and vector variables
-    QList<Module::LocalVariable> viewScalarVariables() const;
-    QList<Module::LocalVariable> viewVectorVariables() const;
+    QList<Module::LocalVariable> viewScalarVariables(CoordinateType coordinateType) const;
+    QList<Module::LocalVariable> viewVectorVariables(CoordinateType coordinateType) const;
     // surface integrals
-    QList<Module::Integral> surfaceIntegrals() const;
+    QList<Module::Integral> surfaceIntegrals(CoordinateType coordinateType) const;
     // volume integrals
-    QList<Module::Integral> volumeIntegrals() const;
+    QList<Module::Integral> volumeIntegrals(CoordinateType coordinateType) const;
 
     // variable by name
-    Module::LocalVariable localVariable(const QString &id) const;
-    Module::Integral surfaceIntegral(const QString &id) const;
-    Module::Integral volumeIntegral(const QString &id) const;
+    Module::LocalVariable localVariable(CoordinateType coordinateType, const QString &id) const;
+    Module::Integral surfaceIntegral(CoordinateType coordinateType, const QString &id) const;
+    Module::Integral volumeIntegral(CoordinateType coordinateType, const QString &id) const;
 
     // default variables
-    Module::LocalVariable defaultViewScalarVariable() const;
-    Module::LocalVariable defaultViewVectorVariable() const;
+    Module::LocalVariable defaultViewScalarVariable(CoordinateType coordinateType) const;
+    Module::LocalVariable defaultViewVectorVariable(CoordinateType coordinateType) const;
 
     QList<LinearityType> availableLinearityTypes() const {return m_availableLinearityTypes;}
 

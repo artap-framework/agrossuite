@@ -47,8 +47,11 @@
 
 #include <deal.II/numerics/vector_tools.h>
 
-{{CLASS}}VolumeIntegral::{{CLASS}}VolumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
-    : IntegralValue(fieldInfo, timeStep, adaptivityStep)
+{{CLASS}}VolumeIntegral::{{CLASS}}VolumeIntegral(ProblemComputation *computation,
+                                                 const FieldInfo *fieldInfo,
+                                                 int timeStep,
+                                                 int adaptivityStep)
+    : IntegralValue(computation, fieldInfo, timeStep, adaptivityStep)
 {
     calculate();
 }
@@ -57,19 +60,19 @@ void {{CLASS}}VolumeIntegral::calculate()
 {
     m_values.clear();
 
-    if (Agros2D::computation()->isSolved())
+    if (m_computation->isSolved())
     {
-        FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep);
+        FieldSolutionID fsid(m_fieldInfo->fieldId(), m_timeStep, m_adaptivityStep);
         // check existence
-        if (!Agros2D::solutionStore()->contains(fsid))
+        if (!m_computation->solutionStore()->contains(fsid))
             return;
 
-        MultiArray ma = Agros2D::solutionStore()->multiArray(fsid);
+        MultiArray ma = m_computation->solutionStore()->multiArray(fsid);
 
         // update time functions
-        if (!Agros2D::computation()->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
+        if (!m_computation->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
         {
-            Module::updateTimeFunctions(Agros2D::computation()->timeStepToTotalTime(m_timeStep));
+            Module::updateTimeFunctions(m_computation, m_computation->timeStepToTotalTime(m_timeStep));
         }
 
         // Gauss quadrature - volume
@@ -90,9 +93,9 @@ void {{CLASS}}VolumeIntegral::calculate()
         QList<int> surroundings;
         if ({{INTEGRAL_COUNT_EGGSHELL}} > 0)
         {
-            for (int iFace = 0; iFace < Agros2D::computation()->scene()->edges->count(); iFace++)
+            for (int iFace = 0; iFace < m_computation->scene()->edges->count(); iFace++)
             {
-                SceneEdge *edge = Agros2D::computation()->scene()->edges->at(iFace);
+                SceneEdge *edge = m_computation->scene()->edges->at(iFace);
 
                 if ((edge->leftLabelIdx() != MARKER_IDX_NOT_EXISTING) && (edge->rightLabelIdx() == MARKER_IDX_NOT_EXISTING))
                 {
@@ -113,9 +116,9 @@ void {{CLASS}}VolumeIntegral::calculate()
             }
         }
 
-        for (int iLabel = 0; iLabel < Agros2D::computation()->scene()->labels->count(); iLabel++)
+        for (int iLabel = 0; iLabel < m_computation->scene()->labels->count(); iLabel++)
         {
-            SceneLabel *label = Agros2D::computation()->scene()->labels->at(iLabel);
+            SceneLabel *label = m_computation->scene()->labels->at(iLabel);
             SceneMaterial *material = label->marker(m_fieldInfo);
             if (material->isNone())
                 continue;
@@ -145,7 +148,7 @@ void {{CLASS}}VolumeIntegral::calculate()
 
                         // expressions
                         {{#VARIABLE_SOURCE}}
-                        if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::computation()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+                        if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
                         {
                             for (unsigned int k = 0; k < n_q_points; ++k)
                             {
@@ -180,7 +183,7 @@ void {{CLASS}}VolumeIntegral::calculate()
 
                                     // expressions
                                     {{#VARIABLE_SOURCE_EGGSHELL}}
-                                    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::computation()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+                                    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
                                     {
                                         for (unsigned int k = 0; k < n_face_q_points; ++k)
                                         {

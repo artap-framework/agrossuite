@@ -48,6 +48,10 @@ protected:
 
 private:
     ChartLine m_chartLine;
+    QSharedPointer<ProblemComputation> m_computation;
+
+private slots:
+    void connectComputation(QSharedPointer<ProblemComputation> computation);
 };
 
 #endif // SCENEVIEWGEOMETRYCHART_H

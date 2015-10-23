@@ -67,7 +67,7 @@ QList<Point> ChartLine::getPoints()
 
 // **************************************************************************************************
 
-PostprocessorSceneChartWidget::PostprocessorSceneChartWidget(PostprocessorWidget *postprocessorWidget, ChartView *sceneChart)
+PostprocessorSceneChartWidget::PostprocessorSceneChartWidget(PostprocessorWidget *postprocessorWidget, SceneViewChart *sceneChart)
     : PostprocessorSceneWidget(postprocessorWidget), m_sceneChart(sceneChart)
 {
     setWindowIcon(icon("chart"));
@@ -75,22 +75,27 @@ PostprocessorSceneChartWidget::PostprocessorSceneChartWidget(PostprocessorWidget
 
     createControls();
 
-    connect(postprocessorWidget->fieldWidget(), SIGNAL(fieldChanged()), this, SLOT(doField()));
+    connect(postprocessorWidget->fieldWidget(), SIGNAL(fieldChanged()), this, SLOT(refresh()));
 }
 
 void PostprocessorSceneChartWidget::load()
 {
-    txtStartX->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartStartX).toDouble());
-    txtStartY->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartStartY).toDouble());
-    txtEndX->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartEndX).toDouble());
-    txtEndY->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartEndY).toDouble());
-    txtTimeX->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartTimeX).toDouble());
-    txtTimeY->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartTimeY).toDouble());
-    radHorizontalAxisX->setChecked((ChartAxisType) Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_X);
-    radHorizontalAxisY->setChecked((ChartAxisType) Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Y);
-    radHorizontalAxisLength->setChecked((ChartAxisType) Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Length);
-    txtHorizontalAxisPoints->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxisPoints).toInt());
-    chkHorizontalAxisReverse->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxisReverse).toBool());
+    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+        return;
+
+    txtStartX->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartStartX).toDouble());
+    txtStartY->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartStartY).toDouble());
+    txtEndX->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartEndX).toDouble());
+    txtEndY->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartEndY).toDouble());
+    txtTimeX->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartTimeX).toDouble());
+    txtTimeY->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartTimeY).toDouble());
+    radHorizontalAxisX->setChecked((ChartAxisType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_X);
+    radHorizontalAxisY->setChecked((ChartAxisType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Y);
+    radHorizontalAxisLength->setChecked((ChartAxisType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Length);
+    txtHorizontalAxisPoints->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxisPoints).toInt());
+    chkHorizontalAxisReverse->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxisReverse).toBool());
+
+    return;
 
     if (tbxAnalysisType->currentWidget() == widGeometry)
     {
@@ -131,20 +136,20 @@ void PostprocessorSceneChartWidget::load()
 
 void PostprocessorSceneChartWidget::save()
 {
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartStartX, txtStartX->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartStartY, txtStartY->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartEndX, txtEndX->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartEndY, txtEndY->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartTimeX, txtTimeX->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartTimeY, txtTimeY->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartStartX, txtStartX->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartStartY, txtStartY->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartEndX, txtEndX->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartEndY, txtEndY->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartTimeX, txtTimeX->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartTimeY, txtTimeY->value());
     if (radHorizontalAxisX->isChecked())
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_X);
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_X);
     else if (radHorizontalAxisY->isChecked())
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Y);
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Y);
     else if (radHorizontalAxisLength->isChecked())
-        Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Length);
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisReverse, chkHorizontalAxisReverse->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisPoints, txtHorizontalAxisPoints->value());
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Length);
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisReverse, chkHorizontalAxisReverse->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisPoints, txtHorizontalAxisPoints->value());
 
     createChartLine();
 }
@@ -341,20 +346,12 @@ void PostprocessorSceneChartWidget::createControls()
     setLayout(layout);
 }
 
-void PostprocessorSceneChartWidget::doField()
-{
-    fillComboBoxScalarVariable(m_postprocessorWidget->fieldWidget()->selectedField(), cmbFieldVariable);
-    doFieldVariable(cmbFieldVariable->currentIndex());
-
-    load();
-}
-
 void PostprocessorSceneChartWidget::doFieldVariable(int index)
 {
-    if (!m_postprocessorWidget->fieldWidget()->selectedField())
+    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
         return;
 
-    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->fieldWidget()->selectedField()->localVariable(cmbFieldVariable->itemData(index).toString());
+    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->fieldWidget()->selectedField()->localVariable(m_postprocessorWidget->computation()->config()->coordinateType(), cmbFieldVariable->itemData(index).toString());
 
     cmbFieldVariableComp->clear();
     if (physicFieldVariable.isScalar())
@@ -364,8 +361,8 @@ void PostprocessorSceneChartWidget::doFieldVariable(int index)
     else
     {
         cmbFieldVariableComp->addItem(tr("Magnitude"), PhysicFieldVariableComp_Magnitude);
-        cmbFieldVariableComp->addItem(Agros2D::computation()->config()->labelX(), PhysicFieldVariableComp_X);
-        cmbFieldVariableComp->addItem(Agros2D::computation()->config()->labelY(), PhysicFieldVariableComp_Y);
+        cmbFieldVariableComp->addItem(m_postprocessorWidget->computation()->config()->labelX(), PhysicFieldVariableComp_X);
+        cmbFieldVariableComp->addItem(m_postprocessorWidget->computation()->config()->labelY(), PhysicFieldVariableComp_Y);
     }
 
     if (cmbFieldVariableComp->currentIndex() == -1)
@@ -374,40 +371,32 @@ void PostprocessorSceneChartWidget::doFieldVariable(int index)
 
 void PostprocessorSceneChartWidget::refresh()
 {
-}
+    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+        return;
 
-void PostprocessorSceneChartWidget::updateControls()
-{
-    if (Agros2D::computation()->isMeshed())
+    fillComboBoxScalarVariable(m_postprocessorWidget->computation()->config()->coordinateType(), m_postprocessorWidget->fieldWidget()->selectedField(), cmbFieldVariable);
+    doFieldVariable(cmbFieldVariable->currentIndex());
+
+    // correct labels
+    lblStartX->setText(m_postprocessorWidget->computation()->config()->labelX() + ":");
+    lblStartY->setText(m_postprocessorWidget->computation()->config()->labelY() + ":");
+    lblEndX->setText(m_postprocessorWidget->computation()->config()->labelX() + ":");
+    lblEndY->setText(m_postprocessorWidget->computation()->config()->labelY() + ":");
+    lblPointX->setText(m_postprocessorWidget->computation()->config()->labelX() + ":");
+    lblPointY->setText(m_postprocessorWidget->computation()->config()->labelY() + ":");
+    radHorizontalAxisX->setText(m_postprocessorWidget->computation()->config()->labelX());
+    radHorizontalAxisY->setText(m_postprocessorWidget->computation()->config()->labelY());
+
+    if (m_postprocessorWidget->computation()->isTransient())
     {
-        if (Agros2D::computation()->isSolved())
-        {
-            // correct labels
-            lblStartX->setText(Agros2D::computation()->config()->labelX() + ":");
-            lblStartY->setText(Agros2D::computation()->config()->labelY() + ":");
-            lblEndX->setText(Agros2D::computation()->config()->labelX() + ":");
-            lblEndY->setText(Agros2D::computation()->config()->labelY() + ":");
-            lblPointX->setText(Agros2D::computation()->config()->labelX() + ":");
-            lblPointY->setText(Agros2D::computation()->config()->labelY() + ":");
-            radHorizontalAxisX->setText(Agros2D::computation()->config()->labelX());
-            radHorizontalAxisY->setText(Agros2D::computation()->config()->labelY());
-
-            if (Agros2D::computation()->isTransient())
-            {
-                widTime->setEnabled(true);
-            }
-            else
-            {
-                widTime->setEnabled(false);
-                widGeometry->setEnabled(true);
-                tbxAnalysisType->setCurrentWidget(widGeometry);
-            }
-
-            load();
-        }
+        widTime->setEnabled(true);
     }
-
-    refresh();
+    else
+    {
+        widTime->setEnabled(false);
+        widGeometry->setEnabled(true);
+        tbxAnalysisType->setCurrentWidget(widGeometry);
+    }
 }
 
 QVector<double> PostprocessorSceneChartWidget::horizontalAxisValues(ChartLine *chartLine)
@@ -442,7 +431,7 @@ QVector<double> PostprocessorSceneChartWidget::horizontalAxisValues(ChartLine *c
 void PostprocessorSceneChartWidget::plotGeometry()
 {
     // variable
-    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->fieldWidget()->selectedField()->localVariable(cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
+    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->fieldWidget()->selectedField()->localVariable(m_postprocessorWidget->computation()->config()->coordinateType(), cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
 
     // variable component
     PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) cmbFieldVariableComp->itemData(cmbFieldVariableComp->currentIndex()).toInt();
@@ -454,8 +443,8 @@ void PostprocessorSceneChartWidget::plotGeometry()
     // chart
     QString text;
     if (radHorizontalAxisLength->isChecked()) text = tr("Length (m)");
-    if (radHorizontalAxisX->isChecked()) text = Agros2D::computation()->config()->labelX() + " (m)";
-    if (radHorizontalAxisY->isChecked()) text = Agros2D::computation()->config()->labelY() + " (m)";
+    if (radHorizontalAxisX->isChecked()) text = m_postprocessorWidget->computation()->config()->labelX() + " (m)";
+    if (radHorizontalAxisY->isChecked()) text = m_postprocessorWidget->computation()->config()->labelY() + " (m)";
     m_sceneChart->chart()->xAxis->setLabel(text);
     m_sceneChart->chart()->yAxis->setLabel(QString("%1 (%2)").
                                            arg(physicFieldVariable.name()).
@@ -474,13 +463,14 @@ void PostprocessorSceneChartWidget::plotGeometry()
     QVector<double> xval = horizontalAxisValues(&chartLine);
     QVector<double> yval;
 
-    foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables())
+    foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables(m_postprocessorWidget->computation()->config()->coordinateType()))
     {
         if (physicFieldVariable.id() != variable.id()) continue;
 
         foreach (Point point, points)
         {
-            std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->fieldWidget()->selectedField()->plugin()->localValue(m_postprocessorWidget->fieldWidget()->selectedField(),
+            std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->fieldWidget()->selectedField()->plugin()->localValue(m_postprocessorWidget->computation().data(),
+                                                                                                                                 m_postprocessorWidget->fieldWidget()->selectedField(),
                                                                                                                                  m_postprocessorWidget->fieldWidget()->selectedTimeStep(),
                                                                                                                                  m_postprocessorWidget->fieldWidget()->selectedAdaptivityStep(),
                                                                                                                                  point);
@@ -522,14 +512,14 @@ void PostprocessorSceneChartWidget::plotGeometry()
 void PostprocessorSceneChartWidget::plotTime()
 {
     // variable
-    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->fieldWidget()->selectedField()->localVariable(cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
+    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->fieldWidget()->selectedField()->localVariable(m_postprocessorWidget->computation()->config()->coordinateType(), cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
 
     // variable comp
     PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) cmbFieldVariableComp->itemData(cmbFieldVariableComp->currentIndex()).toInt();
     if (physicFieldVariableComp == PhysicFieldVariableComp_Undefined) return;
 
     // time levels
-    QList<double> times = Agros2D::computation()->timeStepTimes();
+    QList<double> times = m_postprocessorWidget->computation()->timeStepTimes();
 
     // chart
     m_sceneChart->chart()->xAxis->setLabel(tr("time (s)"));
@@ -545,13 +535,13 @@ void PostprocessorSceneChartWidget::plotTime()
 
     for (int step = 0; step < times.count(); step++)
     {
-        foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables())
+        foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables(m_postprocessorWidget->computation()->config()->coordinateType()))
         {
             if (physicFieldVariable.id() != variable.id()) continue;
 
-            int adaptiveStep = Agros2D::solutionStore()->lastAdaptiveStep(m_postprocessorWidget->fieldWidget()->selectedField(), step);
-            FieldSolutionID fsid(m_postprocessorWidget->fieldWidget()->selectedField(), step, adaptiveStep);
-            bool stepIsAvailable = Agros2D::solutionStore()->contains(fsid);
+            int adaptiveStep = m_postprocessorWidget->computation()->solutionStore()->lastAdaptiveStep(m_postprocessorWidget->fieldWidget()->selectedField(), step);
+            FieldSolutionID fsid(m_postprocessorWidget->fieldWidget()->selectedField()->fieldId(), step, adaptiveStep);
+            bool stepIsAvailable = m_postprocessorWidget->computation()->solutionStore()->contains(fsid);
 
             if (stepIsAvailable)
             {
@@ -559,7 +549,8 @@ void PostprocessorSceneChartWidget::plotTime()
                 xval.append(times.at(step));
 
                 Point point(txtTimeX->value(), txtTimeY->value());
-                std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->fieldWidget()->selectedField()->plugin()->localValue(m_postprocessorWidget->fieldWidget()->selectedField(),
+                std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->fieldWidget()->selectedField()->plugin()->localValue(m_postprocessorWidget->computation().data(),
+                                                                                                                                     m_postprocessorWidget->fieldWidget()->selectedField(),
                                                                                                                                      step,
                                                                                                                                      adaptiveStep,
                                                                                                                                      point);
@@ -588,7 +579,7 @@ QStringList PostprocessorSceneChartWidget::headers()
     QStringList head;
     head << "x" << "y" << "t";
 
-    foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables())
+    foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables(m_postprocessorWidget->computation()->config()->coordinateType()))
     {
         if (variable.isScalar())
         {
@@ -598,8 +589,8 @@ QStringList PostprocessorSceneChartWidget::headers()
         else
         {
             // vector variable
-            head.append(variable.shortname() + Agros2D::computation()->config()->labelX().toLower());
-            head.append(variable.shortname() + Agros2D::computation()->config()->labelY().toLower());
+            head.append(variable.shortname() + m_postprocessorWidget->computation()->config()->labelX().toLower());
+            head.append(variable.shortname() + m_postprocessorWidget->computation()->config()->labelY().toLower());
             head.append(variable.shortname());
         }
     }
@@ -658,12 +649,12 @@ void PostprocessorSceneChartWidget::doExportData()
     else if (tbxAnalysisType->currentWidget() == widTime)
     {
         Point point(txtTimeX->value(), txtTimeY->value());
-        QList<double> times = Agros2D::computation()->timeStepTimes();
-        foreach (int timeStep, Agros2D::computation()->timeStepLengths())
+        QList<double> times = m_postprocessorWidget->computation()->timeStepTimes();
+        foreach (int timeStep, m_postprocessorWidget->computation()->timeStepLengths())
         {
             QMap<QString, double> data = getData(point,
                                                  timeStep,
-                                                 Agros2D::solutionStore()->lastAdaptiveStep(m_postprocessorWidget->fieldWidget()->selectedField(), timeStep));
+                                                 m_postprocessorWidget->computation()->solutionStore()->lastAdaptiveStep(m_postprocessorWidget->fieldWidget()->selectedField(), timeStep));
             foreach (QString key, data.keys())
             {
                 QList<double> *values = &table.operator [](key);
@@ -727,13 +718,14 @@ void PostprocessorSceneChartWidget::doSaveImage()
 QMap<QString, double> PostprocessorSceneChartWidget::getData(Point point, int timeStep, int adaptivityStep)
 {
     QMap<QString, double> table;
-    table.insert(Agros2D::computation()->config()->labelX(), point.x);
-    table.insert(Agros2D::computation()->config()->labelY(), point.y);
-    table.insert("t", Agros2D::computation()->timeStepToTotalTime(m_postprocessorWidget->fieldWidget()->selectedTimeStep()));
+    table.insert(m_postprocessorWidget->computation()->config()->labelX(), point.x);
+    table.insert(m_postprocessorWidget->computation()->config()->labelY(), point.y);
+    table.insert("t", m_postprocessorWidget->computation()->timeStepToTotalTime(m_postprocessorWidget->fieldWidget()->selectedTimeStep()));
 
-    foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables())
+    foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables(m_postprocessorWidget->computation()->config()->coordinateType()))
     {
-        std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->fieldWidget()->selectedField()->plugin()->localValue(m_postprocessorWidget->fieldWidget()->selectedField(),
+        std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->fieldWidget()->selectedField()->plugin()->localValue(m_postprocessorWidget->computation().data(),
+                                                                                                                             m_postprocessorWidget->fieldWidget()->selectedField(),
                                                                                                                              timeStep,
                                                                                                                              adaptivityStep,
                                                                                                                              point);

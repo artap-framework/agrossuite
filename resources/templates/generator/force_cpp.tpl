@@ -36,11 +36,14 @@
 #include <deal.II/fe/mapping_q1.h>
 #include <deal.II/numerics/fe_field_function.h>
 
-{{CLASS}}ForceValue::{{CLASS}}ForceValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
-    : ForceValue(fieldInfo, timeStep, adaptivityStep)
+{{CLASS}}ForceValue::{{CLASS}}ForceValue(ProblemComputation *computation,
+                                         const FieldInfo *fieldInfo,
+                                         int timeStep,
+                                         int adaptivityStep)
+    : ForceValue(computation, fieldInfo, timeStep, adaptivityStep)
 {
-    FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep);
-    ma = Agros2D::solutionStore()->multiArray(fsid);
+    FieldSolutionID fsid(m_fieldInfo->fieldId(), m_timeStep, m_adaptivityStep);
+    ma = m_computation->solutionStore()->multiArray(fsid);
 
     // point values
     localvalues = std::shared_ptr<dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > >
@@ -50,7 +53,7 @@
 bool {{CLASS}}ForceValue::hasForce()
 {
     {{#VARIABLE_SOURCE}}
-    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (Agros2D::computation()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
     {
         return true;
     }
@@ -63,7 +66,7 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
 {
     Point3 res;
 
-    if (Agros2D::computation()->isSolved())
+    if (m_computation->isSolved())
     {
         int numberOfSolutions = m_fieldInfo->numberOfSolutions();
 
@@ -89,7 +92,7 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
 
         // find material
         SceneMaterial *material = nullptr;
-        SceneLabel *label = SceneLabel::findLabelAtPoint(Agros2D::computation()->scene(), Point(point.x, point.y));
+        SceneLabel *label = SceneLabel::findLabelAtPoint(m_computation->scene(), Point(point.x, point.y));
         if (label && label->hasMarker(m_fieldInfo))
         {
             material = label->marker(m_fieldInfo);
@@ -108,8 +111,8 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
         // update time functions
         if (m_fieldInfo->analysisType() == AnalysisType_Transient)
         {
-            QList<double> times = Agros2D::computation()->timeStepTimes();
-            Module::updateTimeFunctions(times[m_timeStep]);
+            QList<double> times = m_computation->timeStepTimes();
+            Module::updateTimeFunctions(m_computation, times[m_timeStep]);
         }
 
         int k = 0; // only one point
@@ -145,7 +148,7 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
 
         {{#VARIABLE_SOURCE}}
         if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
-         && (Agros2D::computation()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+         && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
         {
             res.x = {{EXPRESSION_X}};
             res.y = {{EXPRESSION_Y}};

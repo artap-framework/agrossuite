@@ -54,15 +54,8 @@ private:
 
     void createControls();
 
-signals:
-    void apply();
-
 public slots:
-    void updateControls();
     void refresh();
-
-private slots:
-    void doField();
 };
 
 #endif // POSTPROCESSORVIEW_MESH_H

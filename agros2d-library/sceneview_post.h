@@ -35,6 +35,7 @@ class MultiArray;
 
 class ParticleTracing;
 class FieldInfo;
+class ProblemComputation;
 
 struct PostTriangle
 {
@@ -57,7 +58,7 @@ struct PostTriangle
 class PostDataOut : public dealii::DataOut<2, dealii::hp::DoFHandler<2> >
 {
 public:
-    PostDataOut(FieldInfo *fieldInfo);
+    PostDataOut(FieldInfo *fieldInfo, ProblemComputation *parentProblem);
 
     void compute_nodes(QList<PostTriangle> &values, bool deform = false);
 
@@ -76,6 +77,7 @@ private:
     double m_min;
     double m_max;
 
+    ProblemComputation *m_problem;
     const FieldInfo *m_fieldInfo;
 
     void compute_node(dealii::Point<2> &node, const dealii::DataOutBase::Patch<2> *patch,
@@ -88,7 +90,7 @@ class PostDeal : public QObject
     Q_OBJECT
 
 public:
-    PostDeal();
+    PostDeal(ProblemComputation *parentProblem);
     ~PostDeal();
 
     // contour
@@ -118,6 +120,9 @@ public:
 
     inline bool isProcessed() const { return m_isProcessed; }
 
+    void problemMeshed();
+    void problemSolved();
+
 signals:
     void processed();
 
@@ -127,6 +132,8 @@ public slots:
     void clearView();
 
 private:
+    ProblemComputation *m_computation;
+
     bool m_isProcessed;
 
     // contour
@@ -153,11 +160,6 @@ private slots:
     void processRangeVector();
 
     virtual void clearGLLists() {}
-
-    void problemMeshed();
-    void problemSolved();
-
-    void reconnectActions();
 };
 
 class SceneViewPostInterface : public SceneViewCommon
@@ -165,17 +167,15 @@ class SceneViewPostInterface : public SceneViewCommon
     Q_OBJECT
 
 public:
-    SceneViewPostInterface(PostDeal *postDeal, QWidget *parent = 0);
-
-    inline PostDeal *postDeal() { assert(m_postDeal); return m_postDeal; }
+    SceneViewPostInterface(QWidget *parent = 0);
 
 protected:
+    QSharedPointer<ProblemComputation> m_computation;
+
     double m_texScale;
     double m_texShift;
 
     GLuint m_textureScalar;
-
-    PostDeal *m_postDeal;
 
     virtual void initializeGL();
 

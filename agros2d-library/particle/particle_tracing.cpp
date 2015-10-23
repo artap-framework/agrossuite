@@ -42,8 +42,8 @@
 
 #include <deal.II/grid/grid_tools.h>
 
-ParticleTracing::ParticleTracing(QList<double> particleMassesList, QObject *parent)
-    : QObject(parent), m_particleMassesList(particleMassesList)
+ParticleTracing::ParticleTracing(ProblemComputation *computation, QList<double> particleMassesList, QObject *parent)
+    : QObject(parent), m_computation(computation), m_particleMassesList(particleMassesList)
 {
 }
 
@@ -89,9 +89,9 @@ bool ParticleTracing::newtonEquations(int particleIndex,
 {
     // relativistic correction
     double mass = m_particleMassesList[particleIndex];
-    if (Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleIncludeRelativisticCorrection).toBool())
+    if (m_computation->setting()->value(ProblemSetting::View_ParticleIncludeRelativisticCorrection).toBool())
     {
-        Point3 velocityReal = (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar) ?
+        Point3 velocityReal = (m_computation->config()->coordinateType() == CoordinateType_Planar) ?
                     velocity : Point3(velocity.x, velocity.y, position.x * velocity.z);
 
         mass = mass / (sqrt(1.0 - (velocityReal.magnitude() * velocityReal.magnitude()) / (SPEEDOFLIGHT * SPEEDOFLIGHT)));
@@ -100,7 +100,7 @@ bool ParticleTracing::newtonEquations(int particleIndex,
     // Total acceleration
     Point3 totalAccel = force(particleIndex, position, velocity) / mass;
 
-    if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar)
+    if (m_computation->config()->coordinateType() == CoordinateType_Planar)
     {
         // position
         *newposition = velocity * step;
@@ -140,24 +140,24 @@ int ParticleTracing::timeToLevel(int particleIndex, double time)
 void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPositions, const QList<Point3> initialVelocities)
 {
     assert(initialPositions.size() == initialVelocities.size());    
-    assert(initialPositions.size() == Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt());
+    assert(initialPositions.size() == m_computation->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt());
 
-    ButcherTable butcher((ButcherTableType) Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleButcherTableType).toInt());
+    ButcherTable butcher((ButcherTableType) m_computation->setting()->value(ProblemSetting::View_ParticleButcherTableType).toInt());
 
     clear();
 
-    int numberOfParticles = Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt();
+    int numberOfParticles = m_computation->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt();
 
     QTime timePart;
     timePart.start();
 
-    RectPoint bound = Agros2D::computation()->scene()->boundingBox();
+    RectPoint bound = m_computation->scene()->boundingBox();
 
-    double maxStep = (Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMaximumStep).toDouble() > 0.0)
-            ? Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMaximumStep).toDouble() :
+    double maxStep = (m_computation->setting()->value(ProblemSetting::View_ParticleMaximumStep).toDouble() > 0.0)
+            ? m_computation->setting()->value(ProblemSetting::View_ParticleMaximumStep).toDouble() :
               min(bound.width(), bound.height()) / 80.0;
-    double relErrorMax = (Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMaximumRelativeError).toDouble() > 0.0)
-            ? Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMaximumRelativeError).toDouble() : 1e-6;
+    double relErrorMax = (m_computation->setting()->value(ProblemSetting::View_ParticleMaximumRelativeError).toDouble() > 0.0)
+            ? m_computation->setting()->value(ProblemSetting::View_ParticleMaximumRelativeError).toDouble() : 1e-6;
     double relErrorMin = 1e-3;
 
     // given velocity
@@ -209,7 +209,7 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
         for (int particleIndex = 0; particleIndex < numberOfParticles; particleIndex++)
         {
             // stop on number of steps
-            if (numberOfSteps[particleIndex] > Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMaximumNumberOfSteps).toInt() - 1)
+            if (numberOfSteps[particleIndex] > m_computation->setting()->value(ProblemSetting::View_ParticleMaximumNumberOfSteps).toInt() - 1)
                 stopComputation[particleIndex] = true;
 
             // stop on time steps
@@ -237,7 +237,7 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
             // initial position and velocity
             Point3 position = m_positionsList[particleIndex].last();
             Point3 velocity = m_velocitiesList[particleIndex].last();
-            if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Axisymmetric)
+            if (m_computation->config()->coordinateType() == CoordinateType_Axisymmetric)
                 velocity.z = velocity.z / position.x; // v_phi = omega * r
             double currentTimeStep = timeStep[particleIndex];
             // qDebug() << currentTimeStep;
@@ -269,8 +269,8 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
                         }
                     }
 
-                    if ((Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleIncludeRelativisticCorrection).toBool())
-                            && ((Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar
+                    if ((m_computation->setting()->value(ProblemSetting::View_ParticleIncludeRelativisticCorrection).toBool())
+                            && ((m_computation->config()->coordinateType() == CoordinateType_Planar
                                  ? vel.magnitude() : Point3(vel.x, vel.y, pos.x * vel.z).magnitude()) > SPEEDOFLIGHT))
                     {
                         // decrease time step
@@ -306,11 +306,11 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
                     double relErrorPos = fabs(absErrorPos / newPositionH.magnitude());
                     double absErrorVel = fabs(newVelocityH.magnitude() - newVelocityL.magnitude());
                     double relErrorVel = fabs(absErrorVel / newVelocityH.magnitude());
-                    double currentStepLength = ((Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar) ?
+                    double currentStepLength = ((m_computation->config()->coordinateType() == CoordinateType_Planar) ?
                                                     (position - newPositionH).magnitude() :
                                                     (Point3(position.x * cos(position.z), position.x * sin(position.z), position.y)
                                                      - Point3(newPositionH.x * cos(newPositionH.z), newPositionH.x * sin(newPositionH.z), newPositionH.y)).magnitude());
-                    double currentStepVelocity = ((Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar) ?
+                    double currentStepVelocity = ((m_computation->config()->coordinateType() == CoordinateType_Planar) ?
                                                       (velocity - newVelocityH).magnitude() :
                                                       (Point3(velocity.x, velocity.y, position.x * velocity.z) - Point3(newVelocityH.x, newVelocityH.y, newPositionH.x * newVelocityH.z)).magnitude());
 
@@ -381,7 +381,7 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
 
             // check crossing
             QMap<SceneEdge *, Point> intersections;
-            foreach (SceneEdge *edge, Agros2D::computation()->scene()->edges->items())
+            foreach (SceneEdge *edge, m_computation->scene()->edges->items())
             {
                 QList<Point> incts = intersection(Point(position.x, position.y), Point(newPositionH.x, newPositionH.y),
                                                   Point(), 0.0, 0.0,
@@ -409,13 +409,13 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
             if (crossingEdge && distance > EPS_ZERO)
             {
                 bool impact = false;
-                foreach (FieldInfo* fieldInfo, Agros2D::computation()->fieldInfos())
+                foreach (FieldInfo* fieldInfo, m_computation->fieldInfos())
                 {
-                    if ((Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCoefficientOfRestitution).toDouble() < EPS_ZERO) || // no reflection
-                            (crossingEdge->marker(fieldInfo) == Agros2D::computation()->scene()->boundaries->getNone(fieldInfo)
-                             && !Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleReflectOnDifferentMaterial).toBool()) || // inner edge
-                            (crossingEdge->marker(fieldInfo) != Agros2D::computation()->scene()->boundaries->getNone(fieldInfo)
-                             && !Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleReflectOnBoundary).toBool())) // boundary
+                    if ((m_computation->setting()->value(ProblemSetting::View_ParticleCoefficientOfRestitution).toDouble() < EPS_ZERO) || // no reflection
+                            (crossingEdge->marker(fieldInfo) == m_computation->scene()->boundaries->getNone(fieldInfo)
+                             && !m_computation->setting()->value(ProblemSetting::View_ParticleReflectOnDifferentMaterial).toBool()) || // inner edge
+                            (crossingEdge->marker(fieldInfo) != m_computation->scene()->boundaries->getNone(fieldInfo)
+                             && !m_computation->setting()->value(ProblemSetting::View_ParticleReflectOnBoundary).toBool())) // boundary
                         impact = true;
                 }
 
@@ -459,8 +459,8 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
 
                     // velocity in the direction of output vector
                     Point3 oldv = newVelocityH;
-                    newVelocityH.x = vectout.x * Point(oldv.x, oldv.y).magnitude() * Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCoefficientOfRestitution).toDouble();
-                    newVelocityH.y = vectout.y * Point(oldv.x, oldv.y).magnitude() * Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCoefficientOfRestitution).toDouble();
+                    newVelocityH.x = vectout.x * Point(oldv.x, oldv.y).magnitude() * m_computation->setting()->value(ProblemSetting::View_ParticleCoefficientOfRestitution).toDouble();
+                    newVelocityH.y = vectout.y * Point(oldv.x, oldv.y).magnitude() * m_computation->setting()->value(ProblemSetting::View_ParticleCoefficientOfRestitution).toDouble();
 
                     // set new timestep
                     currentTimeStep = currentTimeStep * ratio;
@@ -477,7 +477,7 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
             m_positionsList[particleIndex].append(position);
 
             // velocities in planar and axisymmetric arrangement
-            if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar)
+            if (m_computation->config()->coordinateType() == CoordinateType_Planar)
                 m_velocitiesList[particleIndex].append(velocity);
             else
                 m_velocitiesList[particleIndex].append(Point3(velocity.x, velocity.y, position.x * velocity.z)); // v_phi = omega * r

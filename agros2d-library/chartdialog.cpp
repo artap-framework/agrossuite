@@ -42,7 +42,7 @@
 #include "qcustomplot/qcustomplot.h"
 
 
-ChartView::ChartView(QWidget *parent) : QWidget(parent)
+SceneViewChart::SceneViewChart(QWidget *parent) : QWidget(parent)
 {
     m_chart = new QCustomPlot(this);
     m_chart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
@@ -58,17 +58,27 @@ ChartView::ChartView(QWidget *parent) : QWidget(parent)
     setControls();
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(reconnectSlots()), this, SLOT(reconnectActions()));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
 }
 
-void ChartView::setControls()
+void SceneViewChart::setControls()
 {    
 }
 
-void ChartView::reconnectActions()
-{
-    connect(Agros2D::computation()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
-    connect(Agros2D::computation()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
-    connect(Agros2D::computation(), SIGNAL(meshed()), this, SLOT(setControls()));
-    connect(Agros2D::computation(), SIGNAL(solved()), this, SLOT(setControls()));
+void SceneViewChart::connectComputation(QSharedPointer<ProblemComputation> computation)
+{        
+    if (!m_computation.isNull())
+    {
+        disconnect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
+        disconnect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
+        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
+        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
+    }
+
+    m_computation = computation;
+
+    connect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
+    connect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
+    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
+    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
 }

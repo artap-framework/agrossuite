@@ -107,16 +107,10 @@ private:
     CollapsableGroupBoxButton *postVectorWidget();
     QWidget *postVectorAdvancedWidget();
 
-signals:
-    void apply();
-
 public slots:
-    void updateControls();
     void refresh();
 
 private slots:
-    void doField();
-
     void doScalarFieldVariable(int index);
     void doScalarFieldRangeAuto(int state);
     void doScalarFieldRangeMinChanged();

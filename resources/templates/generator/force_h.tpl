@@ -37,7 +37,10 @@ class FieldInfo;
 class {{CLASS}}ForceValue : public ForceValue
 {
 public:
-    {{CLASS}}ForceValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep);
+    {{CLASS}}ForceValue(ProblemComputation *computation,
+                        const FieldInfo *fieldInfo,
+                        int timeStep,
+                        int adaptivityStep);
 
     virtual Point3 force(const Point3 &point, const Point3 &velocity);
     virtual bool hasForce();

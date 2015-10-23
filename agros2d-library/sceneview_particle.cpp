@@ -46,419 +46,81 @@
 #include "solver/field.h"
 #include "solver/problem_config.h"
 
-ParticleTracingWidget::ParticleTracingWidget(SceneViewParticleTracing *sceneView, QWidget *parent): QWidget(parent)
-{
-    this->m_sceneViewParticleTracing = sceneView;
+    /*
+    cmbParticleButcherTableType->setCurrentIndex(cmbParticleButcherTableType->findData(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleButcherTableType).toInt()));
+    txtParticleNumberOfParticles->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleNumberOfParticles).toInt());
+    txtParticleStartingRadius->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleStartingRadius).toDouble());
+    chkParticleIncludeRelativisticCorrection->setChecked(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleIncludeRelativisticCorrection).toBool());
+    txtParticleMass->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleMass).toDouble());
+    txtParticleConstant->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleConstant).toDouble());
+    txtParticlePointX->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleStartX).toDouble());
+    txtParticlePointY->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleStartY).toDouble());
+    txtParticleVelocityX->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleStartVelocityX).toDouble());
+    txtParticleVelocityY->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleStartVelocityY).toDouble());
+    chkParticleReflectOnDifferentMaterial->setChecked(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleReflectOnDifferentMaterial).toBool());
+    chkParticleReflectOnBoundary->setChecked(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleReflectOnBoundary).toBool());
+    txtParticleCoefficientOfRestitution->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleCoefficientOfRestitution).toDouble());
+    txtParticleCustomForceX->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleCustomForceX).toDouble());
+    txtParticleCustomForceY->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleCustomForceY).toDouble());
+    txtParticleCustomForceZ->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleCustomForceZ).toDouble());
+    txtParticleMaximumRelativeError->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleMaximumRelativeError).toDouble());
+    txtParticleMaximumSteps->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleMaximumStep).toDouble());
+    txtParticleMaximumNumberOfSteps->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleMaximumNumberOfSteps).toInt());
+    chkParticleColorByVelocity->setChecked(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleColorByVelocity).toBool());
+    chkParticleShowPoints->setChecked(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleShowPoints).toBool());
+    chkParticleShowBlendedFaces->setChecked(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleShowBlendedFaces).toBool());
+    txtParticleNumShowParticleAxi->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleNumShowParticlesAxi).toInt());
+    txtParticleDragDensity->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleDragDensity).toDouble());
+    txtParticleDragReferenceArea->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleDragReferenceArea).toDouble());
+    txtParticleDragCoefficient->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleDragCoefficient).toDouble());
+    chkParticleP2PElectricForce->setChecked(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleP2PElectricForce).toBool());
+    chkParticleP2PMagneticForce->setChecked(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleP2PMagneticForce).toBool());
+    */
 
-    setMinimumWidth(160);
-    setObjectName("ParticleTracingView");
 
-    createControls();
-
-    connect(currentPythonEngineAgros(), SIGNAL(executedScript()), this, SLOT(updateControls()));
-
-    // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(reconnectSlots()), this, SLOT(reconnectActions()));
-}
-
-ParticleTracingWidget::~ParticleTracingWidget()
-{
-}
-
-void ParticleTracingWidget::reconnectActions()
-{
-    connect(Agros2D::computation()->scene(), SIGNAL(cleared()), this, SLOT(refresh()));
-
-    updateControls();
-}
-
-void ParticleTracingWidget::createControls()
-{
-    // particle tracing
-    cmbParticleButcherTableType = new QComboBox(this);
-    foreach (QString key, butcherTableTypeStringKeys())
-        cmbParticleButcherTableType->addItem(butcherTableTypeString(butcherTableTypeFromStringKey(key)), butcherTableTypeFromStringKey(key));
-
-    chkParticleIncludeRelativisticCorrection = new QCheckBox(tr("Relativistic correction"));
-    txtParticleNumberOfParticles = new QSpinBox(this);
-    txtParticleNumberOfParticles->setMinimum(1);
-    txtParticleNumberOfParticles->setMaximum(200);
-    txtParticleStartingRadius = new LineEditDouble(0);
-    txtParticleStartingRadius->setBottom(0.0);
-    txtParticleMass = new LineEditDouble(0);
-    txtParticleMass->setBottom(0.0);
-    txtParticleConstant = new LineEditDouble(0);
-    lblParticlePointX = new QLabel();
-    lblParticlePointY = new QLabel();
-    txtParticlePointX = new LineEditDouble(0);
-    txtParticlePointY = new LineEditDouble(0);
-    lblParticleVelocityX = new QLabel();
-    lblParticleVelocityY = new QLabel();
-    txtParticleVelocityX = new LineEditDouble(0);
-    txtParticleVelocityY = new LineEditDouble(0);
-    lblParticleCustomForceX = new QLabel();
-    lblParticleCustomForceY = new QLabel();
-    lblParticleCustomForceZ = new QLabel();
-    txtParticleCustomForceX = new LineEditDouble(0);
-    txtParticleCustomForceY = new LineEditDouble(0);
-    txtParticleCustomForceZ = new LineEditDouble(0);
-    txtParticleMaximumRelativeError = new LineEditDouble(0);
-    txtParticleMaximumRelativeError->setBottom(0.0);
-    txtParticleMaximumSteps = new LineEditDouble(0);
-    txtParticleMaximumSteps->setBottom(0.0);
-    chkParticleReflectOnDifferentMaterial = new QCheckBox(tr("Reflection on different material"));
-    chkParticleReflectOnBoundary = new QCheckBox(tr("Reflection on boundary"));
-    txtParticleCoefficientOfRestitution = new LineEditDouble(0);
-    txtParticleCoefficientOfRestitution->setBottom(0.0);
-    txtParticleCoefficientOfRestitution->setTop(1.0);
-    chkParticleColorByVelocity = new QCheckBox(tr("Line color is controlled by velocity"));
-    chkParticleShowPoints = new QCheckBox(tr("Show points"));
-    chkParticleShowBlendedFaces = new QCheckBox(tr("Show blended faces"));
-    txtParticleNumShowParticleAxi = new QSpinBox();
-    txtParticleNumShowParticleAxi->setMinimum(1);
-    txtParticleNumShowParticleAxi->setMaximum(500);
-    txtParticleMaximumNumberOfSteps = new QSpinBox();
-    txtParticleMaximumNumberOfSteps->setMinimum(10);
-    txtParticleMaximumNumberOfSteps->setMaximum(100000);
-    txtParticleMaximumNumberOfSteps->setSingleStep(10);
-    txtParticleDragDensity = new LineEditDouble(0);
-    txtParticleDragDensity->setBottom(0.0);
-    txtParticleDragCoefficient = new LineEditDouble(0);
-    txtParticleDragCoefficient->setBottom(0.0);
-    txtParticleDragReferenceArea = new LineEditDouble(0);
-    txtParticleDragReferenceArea->setBottom(0.0);
-    lblParticleMotionEquations = new QLabel();
-    chkParticleP2PElectricForce = new QCheckBox(tr("Electrostatic interaction"));
-    chkParticleP2PMagneticForce = new QCheckBox(tr("Magnetic interaction"));
-
-    // initial particle position
-    QGridLayout *gridLayoutGeneral = new QGridLayout();
-    gridLayoutGeneral->addWidget(new QLabel(tr("Equations:")), 0, 0);
-    gridLayoutGeneral->addWidget(lblParticleMotionEquations, 1, 0, 1, 2);
-    gridLayoutGeneral->addWidget(new QLabel(tr("Number of particles:")), 2, 0);
-    gridLayoutGeneral->addWidget(txtParticleNumberOfParticles, 2, 1);
-    gridLayoutGeneral->addWidget(new QLabel(tr("Particles dispersion (m):")), 3, 0);
-    gridLayoutGeneral->addWidget(txtParticleStartingRadius, 3, 1);
-    gridLayoutGeneral->addWidget(new QLabel(tr("Mass (kg):")), 4, 0);
-    gridLayoutGeneral->addWidget(txtParticleMass, 4, 1);
-
-    QGroupBox *grpGeneral = new QGroupBox(tr("General"));
-    grpGeneral->setLayout(gridLayoutGeneral);
-
-    // QPushButton *btnParticleDefault = new QPushButton(tr("Default"));
-    // connect(btnParticleDefault, SIGNAL(clicked()), this, SLOT(doParticleDefault()));
-
-    // initial particle position
-    QGridLayout *gridLayoutInitialPosition = new QGridLayout();
-    gridLayoutInitialPosition->addWidget(lblParticlePointX, 0, 0);
-    gridLayoutInitialPosition->addWidget(txtParticlePointX, 0, 1);
-    gridLayoutInitialPosition->addWidget(lblParticlePointY, 1, 0);
-    gridLayoutInitialPosition->addWidget(txtParticlePointY, 1, 1);
-
-    QGroupBox *grpInitialPosition = new QGroupBox(tr("Initial particle position"));
-    grpInitialPosition->setLayout(gridLayoutInitialPosition);
-
-    // initial particle velocity
-    QGridLayout *gridLayoutInitialVelocity = new QGridLayout();
-    gridLayoutInitialVelocity->addWidget(lblParticleVelocityX, 0, 0);
-    gridLayoutInitialVelocity->addWidget(txtParticleVelocityX, 0, 1);
-    gridLayoutInitialVelocity->addWidget(lblParticleVelocityY, 1, 0);
-    gridLayoutInitialVelocity->addWidget(txtParticleVelocityY, 1, 1);
-
-    QGroupBox *grpInitialVelocity = new QGroupBox(tr("Initial particle velocity"));
-    grpInitialVelocity->setLayout(gridLayoutInitialVelocity);
-
-    // reflection
-    QGridLayout *gridLayoutReflection = new QGridLayout();
-    gridLayoutReflection->setContentsMargins(5, 5, 0, 0);
-    gridLayoutReflection->setColumnMinimumWidth(0, columnMinimumWidth());
-    gridLayoutReflection->setColumnStretch(1, 1);
-    gridLayoutReflection->addWidget(chkParticleReflectOnDifferentMaterial, 0, 0, 1, 2);
-    gridLayoutReflection->addWidget(chkParticleReflectOnBoundary, 1, 0, 1, 2);
-    gridLayoutReflection->addWidget(new QLabel(tr("Coefficient of restitution (-):")), 2, 0);
-    gridLayoutReflection->addWidget(txtParticleCoefficientOfRestitution, 2, 1);
-    gridLayoutReflection->addWidget(new QLabel(""), 10, 0);
-    gridLayoutReflection->setRowStretch(10, 1);
-
-    QGroupBox *grpReflection = new QGroupBox(tr("Reflection"));
-    grpReflection->setLayout(gridLayoutReflection);
-
-    // Lorentz force
-    QGridLayout *gridLayoutLorentzForce = new QGridLayout();
-    gridLayoutLorentzForce->addWidget(new QLabel(tr("Equation:")), 0, 0);
-    gridLayoutLorentzForce->addWidget(new QLabel(QString("<i><b>F</b></i><sub>L</sub> = <i>Q</i> (<i><b>E</b></i> + <i><b>v</b></i> x <i><b>B</b></i>)")), 0, 1);
-    gridLayoutLorentzForce->addWidget(new QLabel(tr("Charge (C):")), 1, 0);
-    gridLayoutLorentzForce->addWidget(txtParticleConstant, 1, 1);
-
-    QGroupBox *grpLorentzForce = new QGroupBox(tr("Lorentz force"));
-    grpLorentzForce->setLayout(gridLayoutLorentzForce);
-
-    // drag force
-    QGridLayout *gridLayoutDragForce = new QGridLayout();
-    gridLayoutDragForce->setColumnMinimumWidth(0, columnMinimumWidth());
-    gridLayoutDragForce->setColumnStretch(1, 1);
-    gridLayoutDragForce->addWidget(new QLabel(tr("Equation:")), 0, 0);
-    gridLayoutDragForce->addWidget(new QLabel(QString("<i><b>F</b></i><sub>D</sub> = - &frac12; <i>&rho;</i> <i>v</i><sup>2</sup> <i>C</i><sub>D</sub> <i>S</i> &sdot; <i><b>v</b></i><sub>0</sub>")), 0, 1);
-    gridLayoutDragForce->addWidget(new QLabel(tr("Density (kg/m<sup>3</sup>):")), 1, 0);
-    gridLayoutDragForce->addWidget(txtParticleDragDensity, 1, 1);
-    gridLayoutDragForce->addWidget(new QLabel(tr("Reference area (m<sup>2</sup>):")), 2, 0);
-    gridLayoutDragForce->addWidget(txtParticleDragReferenceArea, 2, 1);
-    gridLayoutDragForce->addWidget(new QLabel(tr("Coefficient (-):")), 3, 0);
-    gridLayoutDragForce->addWidget(txtParticleDragCoefficient, 3, 1);
-
-    QGroupBox *grpDragForce = new QGroupBox(tr("Drag force"));
-    grpDragForce->setLayout(gridLayoutDragForce);
-
-    // custom force
-    QGridLayout *gridCustomForce = new QGridLayout();
-    gridCustomForce->addWidget(lblParticleCustomForceX, 0, 0);
-    gridCustomForce->addWidget(txtParticleCustomForceX, 0, 1);
-    gridCustomForce->addWidget(lblParticleCustomForceY, 1, 0);
-    gridCustomForce->addWidget(txtParticleCustomForceY, 1, 1);
-    gridCustomForce->addWidget(lblParticleCustomForceZ, 2, 0);
-    gridCustomForce->addWidget(txtParticleCustomForceZ, 2, 1);
-
-    QGroupBox *grpCustomForce = new QGroupBox(tr("Custom force"));
-    grpCustomForce->setLayout(gridCustomForce);
-
-    // particle to particle
-    QGridLayout *gridP2PForce = new QGridLayout();
-    gridP2PForce->addWidget(chkParticleP2PElectricForce, 0, 0);
-    gridP2PForce->addWidget(chkParticleP2PMagneticForce, 1, 0);
-
-    QGroupBox *grpP2PForce = new QGroupBox(tr("Particle to particle"));
-    grpP2PForce->setLayout(gridP2PForce);
-
-    // forces
-    QVBoxLayout *layoutForces = new QVBoxLayout();
-    layoutForces->setContentsMargins(5, 5, 0, 0);
-    layoutForces->addWidget(grpLorentzForce);
-    layoutForces->addWidget(grpDragForce);
-    layoutForces->addWidget(grpCustomForce);
-    layoutForces->addWidget(grpP2PForce);
-    layoutForces->addStretch(1);
-
-    QWidget *widgetForces = new QWidget(this);
-    widgetForces->setLayout(layoutForces);
-
-    // solver
-    QGridLayout *gridLayoutSolver = new QGridLayout();
-    gridLayoutSolver->addWidget(new QLabel(tr("Butcher tableau:")), 0, 0);
-    gridLayoutSolver->addWidget(cmbParticleButcherTableType, 0, 1);
-    gridLayoutSolver->addWidget(chkParticleIncludeRelativisticCorrection, 1, 0);
-    gridLayoutSolver->addWidget(new QLabel(QString("<i>m</i><sub>p</sub> = m / (1 - v<sup>2</sup>/c<sup>2</sup>)<sup>1/2</sup>")), 1, 1);
-    gridLayoutSolver->addWidget(new QLabel(tr("Max. relative error (%):")), 2, 0);
-    gridLayoutSolver->addWidget(txtParticleMaximumRelativeError, 2, 1);
-    gridLayoutSolver->addWidget(new QLabel(tr("Max. step (m):")), 3, 0);
-    gridLayoutSolver->addWidget(txtParticleMaximumSteps, 3, 1);
-    gridLayoutSolver->addWidget(new QLabel(tr("Max. number of steps:")), 4, 0);
-    gridLayoutSolver->addWidget(txtParticleMaximumNumberOfSteps, 4, 1);
-    gridLayoutSolver->addWidget(new QLabel(""), 10, 0);
-    gridLayoutSolver->setRowStretch(10, 1);
-
-    QGroupBox *grpSolver = new QGroupBox(tr("Solver"));
-    grpSolver->setLayout(gridLayoutSolver);
-
-    // settings
-    QGridLayout *gridLayoutSettings = new QGridLayout();
-    gridLayoutSettings->setColumnStretch(1, 1);
-    gridLayoutSettings->setContentsMargins(5, 5, 0, 0);
-    gridLayoutSettings->addWidget(chkParticleColorByVelocity, 2, 0, 1, 2);
-    gridLayoutSettings->addWidget(chkParticleShowPoints, 3, 0, 1, 2);
-    gridLayoutSettings->addWidget(chkParticleShowBlendedFaces, 4, 0, 1, 2);
-    gridLayoutSettings->addWidget(new QLabel(tr("Show particle multiple times:")), 5, 0);
-    gridLayoutSettings->addWidget(txtParticleNumShowParticleAxi, 5, 1);
-    //gridLayoutSettings->addWidget(new QLabel(""), 10, 0);
-    gridLayoutSettings->setRowStretch(10, 1);
-
-    QGroupBox *grpSettings = new QGroupBox(tr("Settings"));
-    grpSettings->setLayout(gridLayoutSettings);
-
-    // tab widget
-    QToolBox *tbxWorkspace = new QToolBox();
-    tbxWorkspace->addItem(widgetForces, icon(""), tr("Forces"));
-    tbxWorkspace->addItem(grpReflection, icon(""), tr("Reflection"));
-    tbxWorkspace->addItem(grpSolver, icon(""), tr("Solver"));
-    tbxWorkspace->addItem(grpSettings, icon(""), tr("Settings"));
-
-    QVBoxLayout *layoutParticle = new QVBoxLayout();
-    layoutParticle->setContentsMargins(2, 2, 2, 3);
-    layoutParticle->addWidget(grpGeneral);
-    layoutParticle->addWidget(grpInitialPosition);
-    layoutParticle->addWidget(grpInitialVelocity);
-    layoutParticle->addWidget(tbxWorkspace);
-
-    QWidget *widget = new QWidget(this);
-    widget->setLayout(layoutParticle);
-
-    QScrollArea *widgetArea = new QScrollArea();
-    widgetArea->setContentsMargins(0, 0, 0, 0);
-    widgetArea->setFrameShape(QFrame::NoFrame);
-    widgetArea->setWidgetResizable(true);
-    widgetArea->setWidget(widget);
-
-    // dialog buttons
-    QPushButton *btnOK = new QPushButton(tr("Apply"));
-    connect(btnOK, SIGNAL(clicked()), SLOT(doApply()));
-
-    QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->setContentsMargins(2, 2, 2, 3);
-    layoutMain->addWidget(widgetArea, 1);
-    layoutMain->addWidget(btnOK, 0, Qt::AlignRight);
-
-    setLayout(layoutMain);
-}
-
-void ParticleTracingWidget::updateControls()
-{
-    if (Agros2D::computation())
-    {
-        // particle tracing
-        cmbParticleButcherTableType->setCurrentIndex(cmbParticleButcherTableType->findData(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleButcherTableType).toInt()));
-        chkParticleIncludeRelativisticCorrection->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleIncludeRelativisticCorrection).toBool());
-        txtParticleNumberOfParticles->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt());
-        txtParticleStartingRadius->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble());
-        txtParticleMass->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMass).toDouble());
-        txtParticleConstant->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleConstant).toDouble());
-        txtParticlePointX->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartX).toDouble());
-        txtParticlePointY->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartY).toDouble());
-        txtParticleVelocityX->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartVelocityX).toDouble());
-        txtParticleVelocityY->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartVelocityY).toDouble());
-        chkParticleReflectOnDifferentMaterial->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleReflectOnDifferentMaterial).toBool());
-        chkParticleReflectOnBoundary->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleReflectOnBoundary).toBool());
-        txtParticleCoefficientOfRestitution->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCoefficientOfRestitution).toDouble());
-        txtParticleCustomForceX->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCustomForceX).toDouble());
-        txtParticleCustomForceY->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCustomForceY).toDouble());
-        txtParticleCustomForceZ->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCustomForceZ).toDouble());
-        txtParticleMaximumRelativeError->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMaximumRelativeError).toDouble());
-        txtParticleMaximumSteps->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMaximumStep).toDouble());
-        txtParticleMaximumNumberOfSteps->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMaximumNumberOfSteps).toInt());
-        chkParticleColorByVelocity->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleColorByVelocity).toBool());
-        chkParticleShowPoints->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleShowPoints).toBool());
-        chkParticleShowBlendedFaces->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleShowBlendedFaces).toBool());
-        txtParticleNumShowParticleAxi->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleNumShowParticlesAxi).toInt());
-        txtParticleNumShowParticleAxi->setEnabled(Agros2D::computation()->config()->coordinateType() == CoordinateType_Axisymmetric);
-        txtParticleDragDensity->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleDragDensity).toDouble());
-        txtParticleDragReferenceArea->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleDragReferenceArea).toDouble());
-        txtParticleDragCoefficient->setValue(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleDragCoefficient).toDouble());
-        chkParticleP2PElectricForce->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleP2PElectricForce).toBool());
-        chkParticleP2PMagneticForce->setChecked(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleP2PMagneticForce).toBool());
-
-        lblParticlePointX->setText(QString("%1 (m):").arg(Agros2D::computation()->config()->labelX()));
-        lblParticlePointY->setText(QString("%1 (m):").arg(Agros2D::computation()->config()->labelY()));
-        lblParticleVelocityX->setText(QString("%1 (m/s):").arg(Agros2D::computation()->config()->labelX()));
-        lblParticleVelocityY->setText(QString("%1 (m/s):").arg(Agros2D::computation()->config()->labelY()));
-        lblParticleCustomForceX->setText(QString("%1 (N):").arg(Agros2D::computation()->config()->labelX()));
-        lblParticleCustomForceY->setText(QString("%1 (N):").arg(Agros2D::computation()->config()->labelY()));
-        lblParticleCustomForceZ->setText(QString("%1 (N):").arg(Agros2D::computation()->config()->labelZ()));
-
-        if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar)
-            lblParticleMotionEquations->setText(QString("<i>x</i>\" = <i>F</i><sub>x</sub> / <i>m</i>, &nbsp; <i>y</i>\" = <i>F</i><sub>y</sub> / <i>m</i>, &nbsp; <i>z</i>\" = <i>F</i><sub>z</sub> / <i>m</i>"));
-        else
-            lblParticleMotionEquations->setText(QString("<i>r</i>\" = <i>F</i><sub>r</sub> / <i>m</i> + <i>r</i> (<i>&phi;</i>')<sup>2</sup>, &nbsp; <i>z</i>\" = <i>F</i><sub>z</sub> / <i>m</i><br /><i>&phi;</i>\" = <i>F</i><sub>&phi;</sub> / <i>m</i> - 2<i>r</i> <i>r</i>' <i>&phi;</i>' / <i>r</i>"));
-    }
-}
-
-void ParticleTracingWidget::doParticleDefault()
-{
-    cmbParticleButcherTableType->setCurrentIndex(cmbParticleButcherTableType->findData(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleButcherTableType).toInt()));
-    txtParticleNumberOfParticles->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleNumberOfParticles).toInt());
-    txtParticleStartingRadius->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleStartingRadius).toDouble());
-    chkParticleIncludeRelativisticCorrection->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleIncludeRelativisticCorrection).toBool());
-    txtParticleMass->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleMass).toDouble());
-    txtParticleConstant->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleConstant).toDouble());
-    txtParticlePointX->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleStartX).toDouble());
-    txtParticlePointY->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleStartY).toDouble());
-    txtParticleVelocityX->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleStartVelocityX).toDouble());
-    txtParticleVelocityY->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleStartVelocityY).toDouble());
-    chkParticleReflectOnDifferentMaterial->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleReflectOnDifferentMaterial).toBool());
-    chkParticleReflectOnBoundary->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleReflectOnBoundary).toBool());
-    txtParticleCoefficientOfRestitution->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleCoefficientOfRestitution).toDouble());
-    txtParticleCustomForceX->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleCustomForceX).toDouble());
-    txtParticleCustomForceY->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleCustomForceY).toDouble());
-    txtParticleCustomForceZ->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleCustomForceZ).toDouble());
-    txtParticleMaximumRelativeError->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleMaximumRelativeError).toDouble());
-    txtParticleMaximumSteps->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleMaximumStep).toDouble());
-    txtParticleMaximumNumberOfSteps->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleMaximumNumberOfSteps).toInt());
-    chkParticleColorByVelocity->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleColorByVelocity).toBool());
-    chkParticleShowPoints->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleShowPoints).toBool());
-    chkParticleShowBlendedFaces->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleShowBlendedFaces).toBool());
-    txtParticleNumShowParticleAxi->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleNumShowParticlesAxi).toInt());
-    txtParticleDragDensity->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleDragDensity).toDouble());
-    txtParticleDragReferenceArea->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleDragReferenceArea).toDouble());
-    txtParticleDragCoefficient->setValue(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleDragCoefficient).toDouble());
-    chkParticleP2PElectricForce->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleP2PElectricForce).toBool());
-    chkParticleP2PMagneticForce->setChecked(Agros2D::computation()->setting()->defaultValue(ProblemSetting::View_ParticleP2PMagneticForce).toBool());
-}
-
-void ParticleTracingWidget::refresh()
-{
-
-}
-
-void ParticleTracingWidget::doApply()
-{
-    // particle tracing
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleButcherTableType, (ButcherTableType) cmbParticleButcherTableType->itemData(cmbParticleButcherTableType->currentIndex()).toInt());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleIncludeRelativisticCorrection, chkParticleIncludeRelativisticCorrection->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleNumberOfParticles, txtParticleNumberOfParticles->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleStartingRadius, txtParticleStartingRadius->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleMass, txtParticleMass->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleConstant, txtParticleConstant->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleStartX, txtParticlePointX->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleStartY, txtParticlePointY->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleStartVelocityX, txtParticleVelocityX->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleStartVelocityY, txtParticleVelocityY->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleReflectOnDifferentMaterial, chkParticleReflectOnDifferentMaterial->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleReflectOnBoundary, chkParticleReflectOnBoundary->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleCoefficientOfRestitution, txtParticleCoefficientOfRestitution->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleCustomForceX, txtParticleCustomForceX->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleCustomForceY, txtParticleCustomForceY->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleCustomForceZ, txtParticleCustomForceZ->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleMaximumRelativeError, txtParticleMaximumRelativeError->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleMaximumStep, txtParticleMaximumSteps->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleMaximumNumberOfSteps, txtParticleMaximumNumberOfSteps->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleColorByVelocity, chkParticleColorByVelocity->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleShowPoints, chkParticleShowPoints->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleShowBlendedFaces, chkParticleShowBlendedFaces->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleNumShowParticlesAxi, txtParticleNumShowParticleAxi->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleDragDensity, txtParticleDragDensity->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleDragCoefficient, txtParticleDragCoefficient->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleDragReferenceArea, txtParticleDragReferenceArea->value());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleP2PElectricForce, chkParticleP2PElectricForce->isChecked());
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleP2PMagneticForce, chkParticleP2PMagneticForce->isChecked());
-
-    m_sceneViewParticleTracing->processParticleTracing();
-}
 
 // *************************************************************************************************
 
-SceneViewParticleTracing::SceneViewParticleTracing(PostDeal *postDeal, QWidget *parent)
-    : SceneViewCommon3D(postDeal, parent),
+SceneViewParticleTracing::SceneViewParticleTracing(QWidget *parent)
+    : SceneViewCommon3D(parent),
       m_listParticleTracing(-1)
 {
     createActionsParticleTracing();
 
-    connect(m_postDeal, SIGNAL(processed()), this, SLOT(refresh()));
-
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(reconnectSlots()), this, SLOT(reconnectActions()));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
 }
 
 SceneViewParticleTracing::~SceneViewParticleTracing()
 {
 }
 
-void SceneViewParticleTracing::reconnectActions()
+void SceneViewParticleTracing::connectComputation(QSharedPointer<ProblemComputation> computation)
 {
-    connect(Agros2D::computation()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
-    connect(Agros2D::computation()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
-    connect(Agros2D::computation(), SIGNAL(meshed()), this, SLOT(setControls()));
-    connect(Agros2D::computation(), SIGNAL(solved()), this, SLOT(setControls()));
+    if (!m_computation.isNull())
+    {
+        disconnect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
+        disconnect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
+        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
+        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
 
-    connect(Agros2D::computation()->scene(), SIGNAL(defaultValues()), this, SLOT(clear()));
-    connect(Agros2D::computation()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
-    connect(Agros2D::computation()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
+        disconnect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
+        disconnect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
+
+        disconnect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+    }
+
+    m_computation = computation;
+
+    connect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
+    connect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
+    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
+    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
+
+    connect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
+    connect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
+
+    connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
 }
 
 void SceneViewParticleTracing::createActionsParticleTracing()
@@ -484,18 +146,18 @@ void SceneViewParticleTracing::paintGL()
     // gradient background
     paintBackground();
 
-    if (Agros2D::computation()->isSolved())
+    if (m_computation->isSolved())
     {
         // todo: what is better?
         //paintGeometrySurface(Agros2D::problem()->configView()->particleShowBlendedFaces);
-        if(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleShowBlendedFaces).toBool())
+        if(m_computation->setting()->value(ProblemSetting::View_ParticleShowBlendedFaces).toBool())
             paintGeometrySurface(true);
 
         paintGeometryOutline();
         paintParticleTracing();
 
         // bars
-        if (Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleColorByVelocity).toInt())
+        if (m_computation->setting()->value(ProblemSetting::View_ParticleColorByVelocity).toInt())
             paintParticleTracingColorBar(m_velocityMin, m_velocityMax);
     }
 
@@ -512,14 +174,14 @@ void SceneViewParticleTracing::resizeGL(int w, int h)
 
 void SceneViewParticleTracing::paintGeometryOutline()
 {
-    if (!Agros2D::computation()->isSolved()) return;
+    if (!m_computation->isSolved()) return;
     if (!particleTracingIsPrepared()) return;
 
     loadProjection3d(true, false);
 
-    RectPoint rect = Agros2D::computation()->scene()->boundingBox();
+    RectPoint rect = m_computation->scene()->boundingBox();
     double max = qMax(rect.width(), rect.height());
-    double depth = max / Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarView3DHeight).toDouble();
+    double depth = max / m_computation->setting()->value(ProblemSetting::View_ScalarView3DHeight).toDouble();
 
     glPushMatrix();
 
@@ -539,10 +201,10 @@ void SceneViewParticleTracing::paintGeometryOutline()
     glColor3d(0.0, 0.0, 0.0);
     glLineWidth(1.3);
 
-    if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar)
+    if (m_computation->config()->coordinateType() == CoordinateType_Planar)
     {
         // depth
-        foreach (SceneEdge *edge, Agros2D::computation()->scene()->edges->items())
+        foreach (SceneEdge *edge, m_computation->scene()->edges->items())
         {
             glBegin(GL_LINES);
             if (edge->isStraight())
@@ -557,7 +219,7 @@ void SceneViewParticleTracing::paintGeometryOutline()
         }
 
         // length
-        foreach (SceneEdge *edge, Agros2D::computation()->scene()->edges->items())
+        foreach (SceneEdge *edge, m_computation->scene()->edges->items())
         {
             glBegin(GL_LINES);
             if (edge->isStraight())
@@ -603,7 +265,7 @@ void SceneViewParticleTracing::paintGeometryOutline()
     else
     {
         // top
-        foreach (SceneEdge *edge, Agros2D::computation()->scene()->edges->items())
+        foreach (SceneEdge *edge, m_computation->scene()->edges->items())
         {
             for (int j = 0; j <= 360; j = j + 90)
             {
@@ -644,7 +306,7 @@ void SceneViewParticleTracing::paintGeometryOutline()
         }
 
         // side
-        foreach (SceneNode *node, Agros2D::computation()->scene()->nodes->items())
+        foreach (SceneNode *node, m_computation->scene()->nodes->items())
         {
             int count = 29.0;
             double step = 360.0/count;
@@ -669,14 +331,14 @@ void SceneViewParticleTracing::paintGeometryOutline()
 
 void SceneViewParticleTracing::paintGeometrySurface(bool blend)
 {
-    if (!Agros2D::computation()->isSolved()) return;
+    if (!m_computation->isSolved()) return;
     if (!particleTracingIsPrepared()) return;
 
     loadProjection3d(true, false);
 
-    RectPoint rect = Agros2D::computation()->scene()->boundingBox();
+    RectPoint rect = m_computation->scene()->boundingBox();
     double max = qMax(rect.width(), rect.height());
-    double depth = max / Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarView3DHeight).toDouble();
+    double depth = max / m_computation->setting()->value(ProblemSetting::View_ScalarView3DHeight).toDouble();
 
     glPushMatrix();
 
@@ -705,10 +367,10 @@ void SceneViewParticleTracing::paintGeometrySurface(bool blend)
     }
 
     // surfaces
-    if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar)
+    if (m_computation->config()->coordinateType() == CoordinateType_Planar)
     {
         glBegin(GL_TRIANGLES);
-        QMapIterator<SceneLabel*, QList<LoopsInfo::Triangle> > i(Agros2D::computation()->scene()->loopsInfo()->polygonTriangles());
+        QMapIterator<SceneLabel*, QList<LoopsInfo::Triangle> > i(m_computation->scene()->loopsInfo()->polygonTriangles());
         while (i.hasNext())
         {
             i.next();
@@ -731,7 +393,7 @@ void SceneViewParticleTracing::paintGeometrySurface(bool blend)
         glEnd();
 
         // length
-        foreach (SceneEdge *edge, Agros2D::computation()->scene()->edges->items())
+        foreach (SceneEdge *edge, m_computation->scene()->edges->items())
         {
             glBegin(GL_TRIANGLE_STRIP);
             if (edge->isStraight())
@@ -771,7 +433,7 @@ void SceneViewParticleTracing::paintGeometrySurface(bool blend)
     else
     {
         glBegin(GL_TRIANGLES);
-        QMapIterator<SceneLabel*, QList<LoopsInfo::Triangle> > i(Agros2D::computation()->scene()->loopsInfo()->polygonTriangles());
+        QMapIterator<SceneLabel*, QList<LoopsInfo::Triangle> > i(m_computation->scene()->loopsInfo()->polygonTriangles());
         while (i.hasNext())
         {
             i.next();
@@ -791,7 +453,7 @@ void SceneViewParticleTracing::paintGeometrySurface(bool blend)
         glEnd();
 
         // length
-        foreach (SceneEdge *edge, Agros2D::computation()->scene()->edges->items())
+        foreach (SceneEdge *edge, m_computation->scene()->edges->items())
         {
             int count = 29.0;
             double step = 360.0/count;
@@ -848,7 +510,7 @@ void SceneViewParticleTracing::paintGeometrySurface(bool blend)
 
 void SceneViewParticleTracing::paintParticleTracing()
 {
-    if (!Agros2D::computation()->isSolved()) return;
+    if (!m_computation->isSolved()) return;
     if (!particleTracingIsPrepared()) return;
 
     loadProjection3d(true, false);
@@ -858,9 +520,9 @@ void SceneViewParticleTracing::paintParticleTracing()
         m_listParticleTracing = glGenLists(1);
         glNewList(m_listParticleTracing, GL_COMPILE);
 
-        RectPoint rect = Agros2D::computation()->scene()->boundingBox();
+        RectPoint rect = m_computation->scene()->boundingBox();
         double max = qMax(rect.width(), rect.height());
-        double depth = max / Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarView3DHeight).toDouble();
+        double depth = max / m_computation->setting()->value(ProblemSetting::View_ScalarView3DHeight).toDouble();
 
         glPushMatrix();
 
@@ -889,7 +551,7 @@ void SceneViewParticleTracing::paintParticleTracing()
         glEnable(GL_POINT_SMOOTH);
 
         // particle visualization
-        for (int k = 0; k < Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt(); k++)
+        for (int k = 0; k < m_computation->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt(); k++)
         {
             // starting point
             /*
@@ -908,14 +570,14 @@ void SceneViewParticleTracing::paintParticleTracing()
                       rand() / double(RAND_MAX));
 
             // lines
-            if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar)
+            if (m_computation->config()->coordinateType() == CoordinateType_Planar)
             {
                 glLineWidth(1.5 * EDGEWIDTH);
 
                 glBegin(GL_LINES);
                 for (int i = 0; i < m_positionsList[k].length() - 1; i++)
                 {
-                    if (Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleColorByVelocity).toBool())
+                    if (m_computation->setting()->value(ProblemSetting::View_ParticleColorByVelocity).toBool())
                         glColor3d(1.0 - 0.8 * (m_velocitiesList[k][i].magnitude() - velocityMin) / (velocityMax - velocityMin),
                                   1.0 - 0.8 * (m_velocitiesList[k][i].magnitude() - velocityMin) / (velocityMax - velocityMin),
                                   1.0 - 0.8 * (m_velocitiesList[k][i].magnitude() - velocityMin) / (velocityMax - velocityMin));
@@ -930,7 +592,7 @@ void SceneViewParticleTracing::paintParticleTracing()
                 glEnd();
 
                 // points
-                if (Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleShowPoints).toBool())
+                if (m_computation->setting()->value(ProblemSetting::View_ParticleShowPoints).toBool())
                 {
                     glColor3d(0.0, 0.0, 0.0);
                     glPointSize(NODESIZE);
@@ -947,16 +609,16 @@ void SceneViewParticleTracing::paintParticleTracing()
             }
             else
             {
-                double stepAngle = 360.0 / Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleNumShowParticlesAxi).toInt();
+                double stepAngle = 360.0 / m_computation->setting()->value(ProblemSetting::View_ParticleNumShowParticlesAxi).toInt();
 
-                for (int l = 0; l < Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleNumShowParticlesAxi).toInt(); l++)
+                for (int l = 0; l < m_computation->setting()->value(ProblemSetting::View_ParticleNumShowParticlesAxi).toInt(); l++)
                 {
                     glLineWidth(1.5 * EDGEWIDTH);
 
                     glBegin(GL_LINES);
                     for (int i = 0; i < m_positionsList[k].length() - 1; i++)
                     {
-                        if (Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleColorByVelocity).toBool())
+                        if (m_computation->setting()->value(ProblemSetting::View_ParticleColorByVelocity).toBool())
                             glColor3d(1.0 - 0.8 * (m_velocitiesList[k][i].magnitude() - velocityMin) / (velocityMax - velocityMin),
                                       1.0 - 0.8 * (m_velocitiesList[k][i].magnitude() - velocityMin) / (velocityMax - velocityMin),
                                       1.0 - 0.8 * (m_velocitiesList[k][i].magnitude() - velocityMin) / (velocityMax - velocityMin));
@@ -972,7 +634,7 @@ void SceneViewParticleTracing::paintParticleTracing()
                     glEnd();
 
                     // points
-                    if (Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleShowPoints).toBool())
+                    if (m_computation->setting()->value(ProblemSetting::View_ParticleShowPoints).toBool())
                     {
                         glColor3d(0.0, 0.0, 0.0);
                         glPointSize(NODESIZE);
@@ -1006,7 +668,7 @@ void SceneViewParticleTracing::paintParticleTracing()
 
 void SceneViewParticleTracing::paintParticleTracingColorBar(double min, double max)
 {
-    if (!Agros2D::computation()->isSolved()) return;
+    if (!m_computation->isSolved()) return;
 
     loadProjectionViewPort();
 
@@ -1014,7 +676,7 @@ void SceneViewParticleTracing::paintParticleTracingColorBar(double min, double m
     glTranslated(-width() / 2.0, -height() / 2.0, 0.0);
 
     // dimensions
-    int textWidth = (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) * (QString::number(-1.0, 'e', Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt()).length() + 1);
+    int textWidth = (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) * (QString::number(-1.0, 'e', m_computation->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt()).length() + 1);
     int textHeight = 2 * (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0);
     Point scaleSize = Point(45.0 + textWidth, 20*textHeight); // contextHeight() - 20.0
     Point scaleBorder = Point(10.0, (Agros2D::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
@@ -1082,7 +744,7 @@ void SceneViewParticleTracing::paintParticleTracingColorBar(double min, double m
 
         printPostAt(scaleLeft + 33.0 + ((value >= 0.0) ? (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) : 0.0),
                     scaleBorder.y + 10.0 + (i-1)*tickY - textHeight / 4.0,
-                    QString::number(value, 'e', Agros2D::computation()->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt()));
+                    QString::number(value, 'e', m_computation->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt()));
     }
 
     // variable
@@ -1106,18 +768,18 @@ void SceneViewParticleTracing::refresh()
 
     setControls();
 
-    if (Agros2D::computation()->isSolved())
+    if (m_computation->isSolved())
         SceneViewCommon::refresh();
 }
 
 void SceneViewParticleTracing::setControls()
 {
-    if (Agros2D::computation())
+    if (m_computation)
     {
-        actSceneModeParticleTracing->setEnabled(Agros2D::computation()->isSolved());
-        actSetProjectionXY->setEnabled(Agros2D::computation()->isSolved());
-        actSetProjectionXZ->setEnabled(Agros2D::computation()->isSolved());
-        actSetProjectionYZ->setEnabled(Agros2D::computation()->isSolved());
+        actSceneModeParticleTracing->setEnabled(m_computation->isSolved());
+        actSetProjectionXY->setEnabled(m_computation->isSolved());
+        actSetProjectionXZ->setEnabled(m_computation->isSolved());
+        actSetProjectionYZ->setEnabled(m_computation->isSolved());
     }
 }
 
@@ -1126,7 +788,7 @@ void SceneViewParticleTracing::clear()
     clearParticleLists();
 
     SceneViewCommon3D::clear();
-    if (Agros2D::computation() && Agros2D::computation()->isSolved())
+    if (m_computation && m_computation->isSolved())
         doZoomBestFit();
 }
 
@@ -1156,7 +818,7 @@ void SceneViewParticleTracing::processParticleTracing()
 
     clearParticleLists();
 
-    if (Agros2D::computation()->isSolved())
+    if (m_computation->isSolved())
     {
         Agros2D::log()->printMessage(tr("Post View"), tr("Particle view"));
 
@@ -1170,40 +832,40 @@ void SceneViewParticleTracing::processParticleTracing()
 
         try
         {
-            for (int k = 0; k < Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt(); k++)
+            for (int k = 0; k < m_computation->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt(); k++)
             {
                 // initial position
                 Point3 initialPosition;
-                initialPosition.x = Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartX).toDouble();
-                initialPosition.y = Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartY).toDouble();
+                initialPosition.x = m_computation->setting()->value(ProblemSetting::View_ParticleStartX).toDouble();
+                initialPosition.y = m_computation->setting()->value(ProblemSetting::View_ParticleStartY).toDouble();
                 initialPosition.z = 0.0;
 
                 // initial velocity
                 Point3 initialVelocity;
-                initialVelocity.x = Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartVelocityX).toDouble();
-                initialVelocity.y = Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartVelocityY).toDouble();
+                initialVelocity.x = m_computation->setting()->value(ProblemSetting::View_ParticleStartVelocityX).toDouble();
+                initialVelocity.y = m_computation->setting()->value(ProblemSetting::View_ParticleStartVelocityY).toDouble();
                 initialVelocity.z = 0.0;
 
                 // random point
                 if (k > 0)
                 {
-                    Point3 dp(rand() * (Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble()) / RAND_MAX,
-                              rand() * (Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble()) / RAND_MAX,
-                              (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar) ? 0.0 : rand() * 2.0*M_PI / RAND_MAX);
+                    Point3 dp(rand() * (m_computation->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble()) / RAND_MAX,
+                              rand() * (m_computation->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble()) / RAND_MAX,
+                              (m_computation->config()->coordinateType() == CoordinateType_Planar) ? 0.0 : rand() * 2.0*M_PI / RAND_MAX);
 
-                    initialPosition = Point3(-Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble() / 2,
-                                             -Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble() / 2,
-                                             (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar) ? 0.0 : -1.0*M_PI) + initialPosition + dp;
+                    initialPosition = Point3(-m_computation->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble() / 2,
+                                             -m_computation->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble() / 2,
+                                             (m_computation->config()->coordinateType() == CoordinateType_Planar) ? 0.0 : -1.0*M_PI) + initialPosition + dp;
                 }
 
                 initialPositions.append(initialPosition);
                 initialVelocities.append(initialVelocity);
-                particleCharges.append(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleConstant).toDouble());
-                particleMasses.append(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMass).toDouble());
+                particleCharges.append(m_computation->setting()->value(ProblemSetting::View_ParticleConstant).toDouble());
+                particleMasses.append(m_computation->setting()->value(ProblemSetting::View_ParticleMass).toDouble());
             }
 
             // position and velocity cache
-            ParticleTracing particleTracing(particleMasses);
+            ParticleTracing particleTracing(m_computation.data(), particleMasses);
             ParticleTracingForceCustom forceCustom(&particleTracing);
             ParticleTracingForceDrag forceDrag(&particleTracing);
             ParticleTracingForceField forceField(&particleTracing, particleCharges);
@@ -1236,7 +898,7 @@ void SceneViewParticleTracing::processParticleTracing()
             return;
         }
 
-        for (int k = 0; k < Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt(); k++)
+        for (int k = 0; k < m_computation->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt(); k++)
             Agros2D::log()->printMessage(tr("Particle Tracing"), tr("Particle %1: %2 steps, final time %3 s").
                                          arg(k + 1).
                                          arg(m_timesList[k].count()).

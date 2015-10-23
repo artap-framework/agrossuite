@@ -26,10 +26,13 @@
 #include <deal.II/hp/fe_collection.h>
 #define signals public
 
-class AGROS_LIBRARY_API SolutionStore
+class ProblemComputation;
+
+class AGROS_LIBRARY_API SolutionStore : public QObject
 {
+    Q_OBJECT
 public:
-    SolutionStore();
+    SolutionStore(ProblemComputation *parentProblem);
     ~SolutionStore();
 
     class SolutionRunTimeDetails
@@ -116,6 +119,8 @@ public slots:
     void clearAll();
 
 private:
+    ProblemComputation *m_computation;
+
     QList<FieldSolutionID> m_multiSolutions;
     QMap<FieldSolutionID, SolutionRunTimeDetails> m_multiSolutionRunTimeDetails;
     QMap<FieldSolutionID, MultiArray> m_multiSolutionDealCache;

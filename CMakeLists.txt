@@ -93,7 +93,6 @@ SET(AGROS_SOLVER agros2d_solver)
 SET(AGROS_GENERATOR agros2d_generator)
 SET(AGROS_BINARY agros2d_binary)
 SET(AGROS_REMOTE agros2d_remote)
-SET(OPTILAB_BINARY optilab_binary)
 SET(CTEMPLATE_LIBRARY agros2d_3dparty_ctemplate)
 SET(DXFLIB_LIBRARY agros2d_3dparty_dxflib)
 SET(POLY2TRI_LIBRARY agros2d_3dparty_poly2tri)
@@ -266,7 +265,6 @@ ADD_SUBDIRECTORY(agros2d-binary)
 ADD_SUBDIRECTORY(agros2d-solver)
 ADD_SUBDIRECTORY(agros2d-generator)
 ADD_SUBDIRECTORY(agros2d-remote)
-ADD_SUBDIRECTORY(optilab-binary)
 ADD_SUBDIRECTORY(solver-external)
 #ADD_SUBDIRECTORY(agros2d-forms)
 
@@ -331,8 +329,6 @@ set(info #resources/modules/acoustic.xml
          resources/templates/generator/coupling_interface_h.tpl
          resources/templates/generator/filter_cpp.tpl
          resources/templates/generator/filter_h.tpl
-         resources/templates/generator/errorcalculator_cpp.tpl
-         resources/templates/generator/errorcalculator_h.tpl
          resources/templates/generator/force_cpp.tpl
          resources/templates/generator/force_h.tpl
          resources/templates/generator/localvalue_h.tpl

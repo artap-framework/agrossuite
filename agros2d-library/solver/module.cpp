@@ -541,6 +541,8 @@ Module::DialogRow Module::DialogUI::dialogRow(const QString &id)
         foreach (Module::DialogRow row, rows)
             if (row.id() == id)
                 return row;
+
+    assert(0);
 }
 
 void Module::DialogUI::clear()
@@ -550,17 +552,17 @@ void Module::DialogUI::clear()
 
 // ***********************************************************************************************
 
-AGROS_LIBRARY_API void Module::updateTimeFunctions(double time)
+AGROS_LIBRARY_API void Module::updateTimeFunctions(ProblemComputation *computation, double time)
 {
     // update materials
-    foreach (SceneMaterial *material, Agros2D::computation()->scene()->materials->items())
+    foreach (SceneMaterial *material, computation->scene()->materials->items())
         if (material->fieldInfo())
             foreach (Module::MaterialTypeVariable variable, material->fieldInfo()->materialTypeVariables())
                 if (variable.isTimeDep() && material->fieldInfo()->analysisType() == AnalysisType_Transient)
                     material->evaluate(variable.id(), time);
 
     // update boundaries
-    foreach (SceneBoundary *boundary, Agros2D::computation()->scene()->boundaries->items())
+    foreach (SceneBoundary *boundary, computation->scene()->boundaries->items())
         if (boundary->fieldInfo())
             foreach (Module::BoundaryType boundaryType, boundary->fieldInfo()->boundaryTypes())
                 foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())

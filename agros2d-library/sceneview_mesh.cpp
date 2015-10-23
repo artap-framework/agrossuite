@@ -41,32 +41,49 @@
 #include <deal.II/dofs/dof_handler.h>
 #include <deal.II/hp/dof_handler.h>
 
-SceneViewMesh::SceneViewMesh(PostDeal *postDeal, QWidget *parent)
-    : SceneViewCommon2D(postDeal, parent)
+SceneViewMesh::SceneViewMesh(QWidget *parent)
+    : SceneViewCommon2D(parent)
 {
     createActionsMesh();
-
-    connect(m_postDeal, SIGNAL(processed()), this, SLOT(refresh()));
 
     m_isPreprocessor = false;
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(reconnectSlots()), this, SLOT(reconnectActions()));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
 }
 
 SceneViewMesh::~SceneViewMesh()
 {
 }
 
-void SceneViewMesh::reconnectActions()
+void SceneViewMesh::connectComputation(QSharedPointer<ProblemComputation> computation)
 {
-    connect(Agros2D::computation()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
-    connect(Agros2D::computation()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
-    connect(Agros2D::computation(), SIGNAL(meshed()), this, SLOT(setControls()));
-    connect(Agros2D::computation(), SIGNAL(solved()), this, SLOT(setControls()));
+    if (!m_computation.isNull())
+    {
+        disconnect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
+        disconnect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
+        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
+        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
 
-    connect(Agros2D::computation()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
-    connect(Agros2D::computation()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
+        disconnect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
+        disconnect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
+
+        disconnect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+    }
+
+    m_computation = computation;
+
+    connect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
+    connect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
+    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
+    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
+
+    connect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
+    connect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
+
+    connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+
+    refresh();
 }
 
 void SceneViewMesh::createActionsMesh()
@@ -92,10 +109,10 @@ void SceneViewMesh::refresh()
 
 void SceneViewMesh::setControls()
 {
-    if (Agros2D::computation())
+    if (m_computation)
     {
-        actExportVTKMesh->setEnabled(Agros2D::computation()->isSolved());
-        actExportVTKOrder->setEnabled(Agros2D::computation()->isSolved());
+        actExportVTKMesh->setEnabled(m_computation->isSolved());
+        actExportVTKOrder->setEnabled(m_computation->isSolved());
     }
 }
 
@@ -104,7 +121,7 @@ void SceneViewMesh::clear()
     setControls();
 
     SceneViewCommon2D::clear();
-    if (Agros2D::computation() && Agros2D::computation()->isMeshed() || Agros2D::computation()->isSolved())
+    if (m_computation && m_computation->isMeshed())
         doZoomBestFit();
 }
 
@@ -121,7 +138,7 @@ void SceneViewMesh::exportVTKOrderView(const QString &fileName)
 
 void SceneViewMesh::exportVTK(const QString &fileName, bool exportMeshOnly)
 {
-    if (Agros2D::computation()->isSolved())
+    if (m_computation->isSolved())
     {
         QString fn = fileName;
 
@@ -182,24 +199,24 @@ void SceneViewMesh::paintGL()
     QTime time;
 
     // view
-    if (Agros2D::computation()->isSolved() && m_postDeal->isProcessed())
+    if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
     {
-        if (Agros2D::computation()->setting()->value(ProblemSetting::View_ShowOrderView).toBool()) paintOrder();
-        if (Agros2D::computation()->setting()->value(ProblemSetting::View_ShowSolutionMeshView).toBool()) paintSolutionMesh();
+        if (m_computation->setting()->value(ProblemSetting::View_ShowOrderView).toBool()) paintOrder();
+        if (m_computation->setting()->value(ProblemSetting::View_ShowSolutionMeshView).toBool()) paintSolutionMesh();
     }
 
     // initial mesh
-    if (Agros2D::computation()->isMeshed() && m_postDeal->isProcessed())
-        if (Agros2D::computation()->setting()->value(ProblemSetting::View_ShowInitialMeshView).toBool()) paintInitialMesh();
+    if (m_computation->isMeshed() && m_computation->postDeal()->isProcessed())
+        if (m_computation->setting()->value(ProblemSetting::View_ShowInitialMeshView).toBool()) paintInitialMesh();
 
     // geometry
     paintGeometry();
 
-    if (Agros2D::computation()->isSolved() && m_postDeal->isProcessed())
+    if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
     {
         // bars
-        if (Agros2D::computation()->setting()->value(ProblemSetting::View_ShowOrderView).toBool()
-                && Agros2D::computation()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool())
+        if (m_computation->setting()->value(ProblemSetting::View_ShowOrderView).toBool()
+                && m_computation->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool())
             paintOrderColorBar();
     }
 
@@ -221,7 +238,7 @@ void SceneViewMesh::paintGeometry()
     loadProjection2d(true);
 
     // edges
-    foreach (SceneEdge *edge, Agros2D::computation()->scene()->edges->items())
+    foreach (SceneEdge *edge, m_computation->scene()->edges->items())
     {
         glColor3d(COLOREDGE[0], COLOREDGE[1], COLOREDGE[2]);
         glLineWidth(EDGEWIDTH);
@@ -248,19 +265,19 @@ void SceneViewMesh::paintGeometry()
 
 void SceneViewMesh::paintInitialMesh()
 {
-    if (!Agros2D::computation()->isMeshed()) return;
+    if (!m_computation->isMeshed()) return;
 
     if (m_arrayInitialMesh.isEmpty())
     {
-        if (Agros2D::computation()->initialMesh().n_active_cells() == 0)
+        if (m_computation->initialMesh().n_active_cells() == 0)
             return;
 
         // vertices
-        const std::vector<dealii::Point<2> > &vertices = Agros2D::computation()->initialMesh().get_vertices();
+        const std::vector<dealii::Point<2> > &vertices = m_computation->initialMesh().get_vertices();
 
         // faces
-        dealii::Triangulation<2>::active_face_iterator ti = Agros2D::computation()->initialMesh().begin_face();
-        while (ti != Agros2D::computation()->initialMesh().end_face())
+        dealii::Triangulation<2>::active_face_iterator ti = m_computation->initialMesh().begin_face();
+        while (ti != m_computation->initialMesh().end_face())
         {
             m_arrayInitialMesh.append(QVector2D(vertices[ti->vertex_index(0)][0], vertices[ti->vertex_index(0)][1]));
             m_arrayInitialMesh.append(QVector2D(vertices[ti->vertex_index(1)][0], vertices[ti->vertex_index(1)][1]));
@@ -287,17 +304,17 @@ void SceneViewMesh::paintInitialMesh()
 
 void SceneViewMesh::paintSolutionMesh()
 {
-    if (!Agros2D::computation()->isSolved()) return;
+    if (!m_computation->isSolved()) return;
 
     if (m_arraySolutionMesh.isEmpty())
     {
-        MultiArray ma = m_postDeal->activeMultiSolutionArray();
+        MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
 
         // TODO: components and level
         // activeMultiSolutionArray().spaces().at(comp)
         // int comp = Agros2D::problem()->setting()->value(ProblemSetting::View_OrderComponent).toInt() - 1;
 
-        // for (int level = 0; level <= m_postDeal->activeAdaptivityStep(); level++)
+        // for (int level = 0; level <= m_computation->postDeal()->activeAdaptivityStep(); level++)
         for (int level = 0; level <= ma.doFHandler()->get_tria().n_levels() - 1; level++)
         {
             dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
@@ -338,11 +355,11 @@ void SceneViewMesh::paintSolutionMesh()
 
 void SceneViewMesh::paintOrder()
 {
-    if (!Agros2D::computation()->isSolved()) return;
+    if (!m_computation->isSolved()) return;
 
     if (m_arrayOrderMesh.isEmpty())
     {
-        MultiArray ma = m_postDeal->activeMultiSolutionArray();
+        MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
 
         for (int level = 0; level <= ma.doFHandler()->get_tria().n_levels() - 1; level++)
         {
@@ -400,14 +417,14 @@ void SceneViewMesh::paintOrder()
     }
 
     // paint labels
-    if (Agros2D::computation()->setting()->value(ProblemSetting::View_ShowOrderLabel).toBool())
+    if (m_computation->setting()->value(ProblemSetting::View_ShowOrderLabel).toBool())
     {
         loadProjectionViewPort();
 
         glScaled(2.0 / width(), 2.0 / height(), 1.0);
         glTranslated(-width() / 2.0, -height() / 2.0, 0.0);
 
-        MultiArray ma = m_postDeal->activeMultiSolutionArray();
+        MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
 
         for (int level = 0; level <= ma.doFHandler()->get_tria().n_levels() - 1; level++)
         {
@@ -444,11 +461,11 @@ void SceneViewMesh::paintOrder()
 
 void SceneViewMesh::paintOrderColorBar()
 {
-    if (!Agros2D::computation()->isSolved() || !Agros2D::computation()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool()) return;
+    if (!m_computation->isSolved() || !m_computation->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool()) return;
 
     int minDegree = 100;
     int maxDegree = 1;
-    MultiArray ma = m_postDeal->activeMultiSolutionArray();
+    MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
 
     int level = 0;
     dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end();

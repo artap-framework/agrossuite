@@ -28,7 +28,7 @@ class SceneViewMesh : public SceneViewCommon2D
     Q_OBJECT
 
 public:
-    SceneViewMesh(PostDeal *postDeal, QWidget *parent = 0);
+    SceneViewMesh(QWidget *parent = 0);
     ~SceneViewMesh();
 
     QAction *actExportVTKOrder;
@@ -64,7 +64,7 @@ private:
 
 private slots:
     virtual void refresh();
-    void reconnectActions();
+    void connectComputation(QSharedPointer<ProblemComputation> computation);
 };
 
 #endif // SCENEVIEWMESH_H

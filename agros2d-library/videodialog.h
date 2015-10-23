@@ -26,20 +26,21 @@ class PostDeal;
 class LineEditDouble;
 class SceneViewPostInterface;
 class FieldInfo;
+class ProblemComputation;
 
 class VideoDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    VideoDialog(SceneViewPostInterface *sceneViewInterface, PostDeal *postDeal, QWidget *parent = 0);
+    VideoDialog(SceneViewPostInterface *sceneViewInterface, ProblemComputation *computation, QWidget *parent = 0);
     ~VideoDialog();
 
     void showDialog();
 
 private:
     SceneViewPostInterface *m_sceneViewInterface;
-    PostDeal *m_postDeal;
+    ProblemComputation *m_computation;
 
     int m_timeSteps;
     int m_timeStepStore;

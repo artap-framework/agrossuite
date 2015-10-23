@@ -37,9 +37,12 @@
 #include <deal.II/numerics/fe_field_function.h>
 
 
-{{CLASS}}LocalValue::{{CLASS}}LocalValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
+{{CLASS}}LocalValue::{{CLASS}}LocalValue(ProblemComputation *computation,
+                                         const FieldInfo *fieldInfo,
+                                         int timeStep,
+                                         int adaptivityStep,
                                          const Point &point)
-    : LocalValue(fieldInfo, timeStep, adaptivityStep, point)
+    : LocalValue(computation, fieldInfo, timeStep, adaptivityStep, point)
 {
     calculate();
 }
@@ -50,23 +53,23 @@ void {{CLASS}}LocalValue::calculate()
 
     m_values.clear();
 
-    if (Agros2D::computation()->isSolved())
+    if (m_computation->isSolved())
     {
-        FieldSolutionID fsid(m_fieldInfo, m_timeStep, m_adaptivityStep);
+        FieldSolutionID fsid(m_fieldInfo->fieldId(), m_timeStep, m_adaptivityStep);
         // check existence
-        if (!Agros2D::solutionStore()->contains(fsid))
+        if (!m_computation->solutionStore()->contains(fsid))
             return;
 
-        MultiArray ma = Agros2D::solutionStore()->multiArray(fsid);
+        MultiArray ma = m_computation->solutionStore()->multiArray(fsid);
 
         // update time functions
-        if (!Agros2D::computation()->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
+        if (!m_computation->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
         {
-            Module::updateTimeFunctions(Agros2D::computation()->timeStepToTotalTime(m_timeStep));
+            Module::updateTimeFunctions(m_computation, m_computation->timeStepToTotalTime(m_timeStep));
         }
 
         // find marker
-        SceneLabel *label = SceneLabel::findLabelAtPoint(Agros2D::computation()->scene(), m_point);
+        SceneLabel *label = SceneLabel::findLabelAtPoint(m_computation->scene(), m_point);
         if (label && label->hasMarker(m_fieldInfo))
         {
             SceneMaterial *material = label->marker(m_fieldInfo);
@@ -104,7 +107,7 @@ void {{CLASS}}LocalValue::calculate()
                 // expressions
                 {{#VARIABLE_SOURCE}}
                 if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
-                        && (Agros2D::computation()->config()->coordinateType() == {{COORDINATE_TYPE}}))
+                        && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
                     m_values[QLatin1String("{{VARIABLE}}")] = LocalPointValue({{EXPRESSION_SCALAR}}, Point({{EXPRESSION_VECTORX}}, {{EXPRESSION_VECTORY}}), material);
                 {{/VARIABLE_SOURCE}}
             }

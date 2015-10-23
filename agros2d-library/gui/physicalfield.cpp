@@ -25,20 +25,139 @@
 #include "solver/problem.h"
 #include "solver/solutionstore.h"
 #include "solver/field.h"
+#include "solver/problem.h"
+
+void fillComboBoxComputation(QComboBox *cmbComputation)
+{
+    // store variable
+    QString computationId = cmbComputation->itemData(cmbComputation->currentIndex()).toString();
+    int itemsCount = cmbComputation->count();
+
+    // clear combo
+    cmbComputation->blockSignals(true);
+    cmbComputation->clear();
+    foreach (QSharedPointer<ProblemComputation> problem, Agros2D::computations())
+    {
+        QDateTime time = QDateTime::fromString(problem->problemDir(), "yyyy-MM-dd-hh-mm-ss-zzz");
+        cmbComputation->addItem(time.toString("dd.MM.yyyy hh:mm:ss.zzz"), problem->problemDir());
+    }
+
+    // refresh only, no new computation
+    if (itemsCount == cmbComputation->count())
+        cmbComputation->setCurrentIndex(cmbComputation->findData(computationId));
+    else if (cmbComputation->count() > 0)
+        cmbComputation->setCurrentIndex(cmbComputation->count() - 1);
+
+    if (cmbComputation->currentIndex() == -1)
+        cmbComputation->setCurrentIndex(0);
+    cmbComputation->blockSignals(false);
+}
+
+void fillComboBoxFieldInfo(QComboBox *cmbFieldInfo, QSharedPointer<ProblemComputation> problem)
+{
+    // store variable
+    QString fieldId = cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString();
+
+    // clear combo
+    cmbFieldInfo->blockSignals(true);
+    cmbFieldInfo->clear();
+    foreach (FieldInfo *fieldInfo, problem->fieldInfos())
+        cmbFieldInfo->addItem(fieldInfo->name(), fieldInfo->fieldId());
+
+    cmbFieldInfo->setCurrentIndex(cmbFieldInfo->findData(fieldId));
+    if (cmbFieldInfo->currentIndex() == -1)
+        cmbFieldInfo->setCurrentIndex(0);
+    cmbFieldInfo->blockSignals(false);
+}
+
+void fillComboBoxTimeStep(const FieldInfo* fieldInfo, QComboBox *cmbTimeStep, QSharedPointer<ProblemComputation> computation)
+{
+    if (!computation->isSolved())
+        return;
+
+    QList<double> times = computation->timeStepTimes();
+
+    cmbTimeStep->blockSignals(true);
+
+    // store variable
+    int timeStep = cmbTimeStep->currentIndex();
+    if (timeStep == -1)
+        timeStep = times.count() - 1;
+
+    // clear combo
+    cmbTimeStep->clear();
+
+    // qDebug() << fieldInfo->name();
+    int selectedIndex = -1;
+    for (int step = 0; step < times.length(); step++)
+    {
+        bool stepIsAvailable = computation->solutionStore()->contains(FieldSolutionID(fieldInfo->fieldId(),
+                                                                                                 step,
+                                                                                                 computation->solutionStore()->lastAdaptiveStep(fieldInfo, step)));
+        if (!stepIsAvailable)
+            continue;
+
+        if (step == 0)
+            cmbTimeStep->addItem(QObject::tr("Initial step"), 0.0);
+        else
+            cmbTimeStep->addItem(QObject::tr("%1 s (step: %2)").arg(QString::number(times[step], 'e', 2)).arg(step), step);
+
+        if (step == timeStep)
+            selectedIndex = cmbTimeStep->count() - 1;
+    }
+
+    if (selectedIndex != -1)
+        cmbTimeStep->setCurrentIndex(selectedIndex);
+    if (cmbTimeStep->count() > 0 && cmbTimeStep->currentIndex() == -1)
+        cmbTimeStep->setCurrentIndex(0);
+
+    cmbTimeStep->blockSignals(false);
+}
+
+void fillComboBoxAdaptivityStep(FieldInfo* fieldInfo, int timeStep, QComboBox *cmbAdaptivityStep, QSharedPointer<ProblemComputation> computation)
+{
+    if (!computation->isSolved())
+        return;
+
+    cmbAdaptivityStep->blockSignals(true);
+
+    int lastAdaptiveStep = computation->solutionStore()->lastAdaptiveStep(fieldInfo, timeStep);
+
+    // store variable
+    int adaptivityStep = cmbAdaptivityStep->currentIndex();
+    if (adaptivityStep == -1)
+        adaptivityStep = lastAdaptiveStep;
+
+    // clear combo
+    cmbAdaptivityStep->clear();
+
+    for (int step = 0; step <= lastAdaptiveStep; step++)
+    {
+        cmbAdaptivityStep->addItem(QString::number(step + 1), step);
+    }
+
+    cmbAdaptivityStep->setCurrentIndex(adaptivityStep);
+    cmbAdaptivityStep->blockSignals(false);
+}
 
 PhysicalFieldWidget::PhysicalFieldWidget(QWidget *parent) : QWidget(parent)
 {
+    cmbComputation = new QComboBox();
+    connect(cmbComputation, SIGNAL(currentIndexChanged(int)), this, SLOT(doComputation(int)));
+
     cmbFieldInfo = new QComboBox();
     connect(cmbFieldInfo, SIGNAL(currentIndexChanged(int)), this, SLOT(doFieldInfo(int)));
 
-    QGridLayout *layoutField = new QGridLayout();
-    layoutField->setColumnMinimumWidth(0, columnMinimumWidth());
-    layoutField->setColumnStretch(1, 1);
-    layoutField->addWidget(new QLabel(tr("Physical field:")), 0, 0);
-    layoutField->addWidget(cmbFieldInfo, 0, 1);
+    QGridLayout *layoutComputation = new QGridLayout();
+    layoutComputation->setColumnMinimumWidth(0, columnMinimumWidth());
+    layoutComputation->setColumnStretch(1, 1);
+    layoutComputation->addWidget(new QLabel(tr("Computation:")), 0, 0);
+    layoutComputation->addWidget(cmbComputation, 0, 1);
+    layoutComputation->addWidget(new QLabel(tr("Physical field:")), 1, 0);
+    layoutComputation->addWidget(cmbFieldInfo, 1, 1);
 
-    QGroupBox *grpField = new QGroupBox(tr("Postprocessor settings"), this);
-    grpField->setLayout(layoutField);
+    grpComputation = new QGroupBox(tr("Postprocessor settings"), this);
+    grpComputation->setLayout(layoutComputation);
 
     // transient
     lblTimeStep = new QLabel(tr("Time step:"));
@@ -71,32 +190,40 @@ PhysicalFieldWidget::PhysicalFieldWidget(QWidget *parent) : QWidget(parent)
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->setContentsMargins(0, 0, 0, 0);
-    layoutMain->addWidget(grpField);
+    layoutMain->addWidget(grpComputation);
     layoutMain->addWidget(grpTime);
     layoutMain->addWidget(grpAdaptivity);
 
     setLayout(layoutMain);
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(reconnectSlots()), this, SLOT(reconnectActions()));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
 }
 
 PhysicalFieldWidget::~PhysicalFieldWidget()
 {
 }
 
-void PhysicalFieldWidget::reconnectActions()
+void PhysicalFieldWidget::connectComputation(QSharedPointer<ProblemComputation> computation)
 {
-    connect(Agros2D::computation(), SIGNAL(meshed()), this, SLOT(updateControls()));
-    connect(Agros2D::computation(), SIGNAL(solved()), this, SLOT(updateControls()));
+    if (!m_computation.isNull())
+    {
+        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(updateControls()));
+        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(updateControls()));
+    }
+
+    m_computation = computation;
+
+    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(updateControls()));
+    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(updateControls()));
 }
 
 FieldInfo* PhysicalFieldWidget::selectedField()
 {
-    if (Agros2D::computation()->hasField(cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString()))
-        return Agros2D::computation()->fieldInfo(cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString());
+    if (m_computation->hasField(cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString()))
+        return m_computation->fieldInfo(cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString());
     else
-        return NULL;
+        return nullptr;
 }
 
 void PhysicalFieldWidget::selectField(const FieldInfo* fieldInfo)
@@ -105,10 +232,10 @@ void PhysicalFieldWidget::selectField(const FieldInfo* fieldInfo)
     {
         cmbFieldInfo->setCurrentIndex(cmbFieldInfo->findData(fieldInfo->fieldId()));
 
-        if (Agros2D::computation()->isSolved())
+        if (m_computation->isSolved())
         {
-            fillComboBoxTimeStep(fieldInfo, cmbTimeStep);
-            doTimeStep(-1);
+            fillComboBoxTimeStep(fieldInfo, cmbTimeStep, m_computation);
+            doTimeStep();
         }
     }
 }
@@ -143,53 +270,81 @@ void PhysicalFieldWidget::selectAdaptivityStep(int adaptivityStep)
 
 void PhysicalFieldWidget::updateControls()
 {
-    if (Agros2D::computation() && Agros2D::computation()->isMeshed())
+    qDebug() << "PhysicalFieldWidget::updateControls()";
+
+    if (Agros2D::computations().count() > 0)
     {
-        fillComboBoxFieldInfo(cmbFieldInfo);
-        doFieldInfo(cmbFieldInfo->currentIndex());
+        fillComboBoxComputation(cmbComputation);
+    }
+    else
+    {
+        cmbComputation->clear();
+    }
+
+    doComputation();
+}
+
+void PhysicalFieldWidget::doComputation(int index)
+{
+    if (Agros2D::computations().count() > 0)
+    {
+        // set current computation
+        Agros2D::setCurrentComputation(cmbComputation->itemData(cmbComputation->currentIndex()).toString());
+        if (m_computation && m_computation->isMeshed())
+        {
+            fillComboBoxFieldInfo(cmbFieldInfo, m_computation);
+        }
+        else
+        {
+            cmbFieldInfo->clear();
+        }
     }
     else
     {
         cmbFieldInfo->clear();
-        doFieldInfo(cmbFieldInfo->currentIndex());
     }
+
+    doFieldInfo();
 }
 
 void PhysicalFieldWidget::doFieldInfo(int index)
 {
     QString fieldName = cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString();
-    if (Agros2D::computation() && Agros2D::computation()->hasField(fieldName))
+    if (m_computation && m_computation->hasField(fieldName))
     {
-        FieldInfo *fieldInfo = Agros2D::computation()->fieldInfo(fieldName);
-        if (Agros2D::computation()->isSolved())
+        FieldInfo *fieldInfo = m_computation->fieldInfo(fieldName);
+        if (m_computation->isSolved())
         {
-            fillComboBoxTimeStep(fieldInfo, cmbTimeStep);
+            fillComboBoxTimeStep(fieldInfo, cmbTimeStep, m_computation);
         }
         else
         {
             cmbTimeStep->clear();
         }
-        doTimeStep(-1);
+
+        doTimeStep();
 
         if ((m_currentFieldName != fieldName) || (m_currentAnalysisType != fieldInfo->analysisType()))
+        {
             emit fieldChanged();
+        }
 
         // set current field name
         m_currentFieldName = fieldName;
-        m_currentAnalysisType = fieldInfo->analysisType();
+        m_currentAnalysisType = fieldInfo->analysisType();        
     }
     else
     {
         cmbTimeStep->clear();
-        doTimeStep(-1);
+        doTimeStep();
     }
 }
 
 void PhysicalFieldWidget::doTimeStep(int index)
 {
-    if (Agros2D::computation() && Agros2D::computation()->isSolved())
+    if (m_computation && m_computation->isSolved())
     {
-        fillComboBoxAdaptivityStep(selectedField(), selectedTimeStep(), cmbAdaptivityStep);
+        fillComboBoxAdaptivityStep(selectedField(), selectedTimeStep(), cmbAdaptivityStep, m_computation);
         if ((cmbAdaptivityStep->currentIndex() >= cmbAdaptivityStep->count()) || (cmbAdaptivityStep->currentIndex() < 0))
         {
             cmbAdaptivityStep->setCurrentIndex(cmbAdaptivityStep->count() - 1);
@@ -200,7 +355,8 @@ void PhysicalFieldWidget::doTimeStep(int index)
         cmbAdaptivityStep->clear();
     }
 
+    grpComputation->setVisible(cmbFieldInfo->count() >= 1);
     grpTime->setVisible(cmbTimeStep->count() >= 1);
-    grpAdaptivity->setVisible(cmbAdaptivityStep->count() > 1);
+    grpAdaptivity->setVisible(cmbAdaptivityStep->count() >= 1);
 }
 

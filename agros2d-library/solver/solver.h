@@ -59,7 +59,7 @@ public:
     class AGROS_LIBRARY_API AssembleBase
     {
     public:
-        AssembleBase(SolverDeal *solverDeal, dealii::Triangulation<2> &triangulation);
+        AssembleBase(ProblemComputation *computation, SolverDeal *solverDeal, dealii::Triangulation<2> &triangulation);
 
         // current solution
         dealii::hp::DoFHandler<2> doFHandler;
@@ -106,10 +106,14 @@ public:
                                dealii::Vector<double> &sln,
                                bool reuseDecomposition = false);
 
-        SolverDeal *solverDeal;
+        inline SolverDeal *solverDeal() { return m_solverDeal; }
+
+
     protected:
         // local references
+        ProblemComputation *m_computation;
         const FieldInfo *m_fieldInfo;
+        SolverDeal *m_solverDeal;
 
         // transient mass matrix
         dealii::SparseMatrix<double> transientMassMatrix;
@@ -143,7 +147,7 @@ public:
         int n_q_points;
     };
 
-    SolverDeal(const FieldInfo *fieldInfo);
+    SolverDeal(ProblemComputation *computation, const FieldInfo *fieldInfo);
     virtual ~SolverDeal();
 
     // solve problem
@@ -214,6 +218,7 @@ protected:
     };
 
     // local reference
+    ProblemComputation *m_computation;
     const FieldInfo *m_fieldInfo;
 
     // assembling

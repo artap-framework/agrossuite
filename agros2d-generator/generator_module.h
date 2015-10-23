@@ -43,8 +43,6 @@ public:
     void generatePluginWeakFormFiles();
     void generatePluginDocumentationFiles();
     void generatePluginEquations();
-    void generatePluginErrorCalculator();
-
 
 private:
     std::unique_ptr<XMLModule::module> module_xsd;

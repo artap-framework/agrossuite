@@ -33,10 +33,13 @@ class SceneLabelContainer;
 class {{CLASS}}ViewScalarFilter : public dealii::DataPostprocessorScalar<2>
 {
 public:
-    {{CLASS}}ViewScalarFilter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
-                     MultiArray *ma,
-                     const QString &variable,
-                     PhysicFieldVariableComp physicFieldVariableComp);
+    {{CLASS}}ViewScalarFilter(ProblemComputation *computation,
+                              const FieldInfo *fieldInfo,
+                              int timeStep,
+                              int adaptivityStep,
+                              const QString &variable,
+                              PhysicFieldVariableComp physicFieldVariableComp);
+
     virtual ~{{CLASS}}ViewScalarFilter();    
 
     virtual void compute_derived_quantities_scalar (const std::vector<double> &uh,
@@ -57,10 +60,11 @@ public:
 protected:
 
 private:
+    ProblemComputation *m_computation;
     const FieldInfo *m_fieldInfo;
     int m_timeStep;
     int m_adaptivityStep;
-    MultiArray *ma;
+    MultiArray m_ma;
 
     SceneLabelContainer *m_labels;
     SceneMaterial *m_noneMarker;

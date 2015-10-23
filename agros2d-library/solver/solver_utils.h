@@ -64,13 +64,14 @@ public:
     DoubleCellIterator(const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_first,
                        const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_second,
                        const dealii::hp::DoFHandler<2> &doFHandler,
+                       ProblemComputation *computation,
                        const FieldInfo *fieldInfo) :
-        cell_first(cell_first), cell_second(cell_second), m_fieldInfo(fieldInfo), m_doFHandler(&doFHandler)
+        cell_first(cell_first), cell_second(cell_second), m_doFHandler(&doFHandler), m_computation(computation), m_fieldInfo(fieldInfo)
     {
     }
 
     DoubleCellIterator(const DoubleCellIterator &dci) :
-        cell_first(dci.cell_first), cell_second(dci.cell_second), m_fieldInfo(dci.m_fieldInfo), m_doFHandler(dci.m_doFHandler)
+        cell_first(dci.cell_first), cell_second(dci.cell_second), m_doFHandler(dci.m_doFHandler), m_computation(dci.m_computation), m_fieldInfo(dci.m_fieldInfo)
     {
     }
 
@@ -78,8 +79,9 @@ public:
     {
         cell_first = ehi.cell_first;
         cell_second = ehi.cell_second;
-        m_fieldInfo = ehi.m_fieldInfo;
         m_doFHandler = ehi.m_doFHandler;
+        m_computation = ehi.m_computation;
+        m_fieldInfo = ehi.m_fieldInfo;
 
         return *this;
     }
@@ -91,7 +93,7 @@ public:
 
         while (cell_second != this->m_doFHandler->end())
         {
-            if (!Agros2D::computation()->scene()->labels->at(cell_second->material_id() - 1)->marker(m_fieldInfo)->isNone())
+            if (!m_computation->scene()->labels->at(cell_second->material_id() - 1)->marker(m_fieldInfo)->isNone())
                 break;
             else
             {
@@ -110,6 +112,7 @@ public:
         return tmp;   // return old value
     }
     const FieldInfo *m_fieldInfo;
+    ProblemComputation *m_computation;
     const dealii::hp::DoFHandler<2> *m_doFHandler;
 };
 
@@ -178,23 +181,25 @@ protected:
 class AGROS_LIBRARY_API ProblemSolver
 {
 public:
-    ProblemSolver();
+    ProblemSolver(ProblemComputation *parentProblem);
 
-    static void init();
-    static void clear();
-    static void solveProblem();
-    static inline QMap<QString, SolverDeal *> solvers() { return m_solverDeal; }
-    static inline const SolverDeal *solver(const QString &solver) { assert(m_solverDeal.contains(solver)); return m_solverDeal[solver]; }
+    void init();
+    void clear();
+    void solveProblem();
+    inline QMap<QString, SolverDeal *> solvers() { return m_solverDeal; }
+    inline const SolverDeal *solver(const QString &solver) { assert(m_solverDeal.contains(solver)); return m_solverDeal[solver]; }
 
-    static dealii::hp::FECollection<2> *feCollection(const FieldInfo *fieldInfo);
-    static dealii::hp::MappingCollection<2> *mappingCollection(const FieldInfo *fieldInfo);
+    dealii::hp::FECollection<2> *feCollection(const FieldInfo *fieldInfo);
+    dealii::hp::MappingCollection<2> *mappingCollection(const FieldInfo *fieldInfo);
 
 private:
-    static QMap<QString, SolverDeal *> m_solverDeal;
+    ProblemComputation *m_computation;
 
-    static QMap<QString, dealii::hp::FECollection<2> *> m_feCollectionCache;
-    static QMap<QString, std::vector<dealii::FiniteElement<2> *> > m_fesCache;
-    static QMap<QString, dealii::hp::MappingCollection<2> *> m_mappingCollectionCache;
+    QMap<QString, SolverDeal *> m_solverDeal;
+
+    QMap<QString, dealii::hp::FECollection<2> *> m_feCollectionCache;
+    QMap<QString, std::vector<dealii::FiniteElement<2> *> > m_fesCache;
+    QMap<QString, dealii::hp::MappingCollection<2> *> m_mappingCollectionCache;
 };
 
 #endif // SOLVER_UTILS_H

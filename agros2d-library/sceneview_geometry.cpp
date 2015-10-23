@@ -43,7 +43,7 @@
 #include "solver/problem_config.h"
 
 SceneViewPreprocessor::SceneViewPreprocessor(QWidget *parent)
-    : SceneViewCommon2D(NULL, parent),
+    : SceneViewCommon2D(parent),
       m_sceneMode(SceneGeometryMode_OperateOnNodes),
       m_snapToGrid(true),
       m_selectRegion(false),

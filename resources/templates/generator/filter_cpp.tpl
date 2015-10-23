@@ -26,7 +26,7 @@
 
 #include "solver/problem.h"
 #include "solver/problem_config.h"
-
+#include "solver/solutionstore.h"
 #include "solver/plugin_interface.h"
 
 #include <deal.II/grid/tria.h>
@@ -34,14 +34,19 @@
 #include <deal.II/fe/mapping_q1.h>
 #include <deal.II/numerics/fe_field_function.h>
 
-{{CLASS}}ViewScalarFilter::{{CLASS}}ViewScalarFilter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
-                                                     MultiArray *ma,
+{{CLASS}}ViewScalarFilter::{{CLASS}}ViewScalarFilter(ProblemComputation *computation,
+                                                     const FieldInfo *fieldInfo,
+                                                     int timeStep,
+                                                     int adaptivityStep,
                                                      const QString &variable,
                                                      PhysicFieldVariableComp physicFieldVariableComp)
     : dealii::DataPostprocessorScalar<2>("Field",  dealii::update_values | dealii::update_gradients | dealii::update_hessians | dealii::update_q_points),
-      m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep),
-      ma(ma), m_variable(variable), m_physicFieldVariableComp(physicFieldVariableComp)
+      m_computation(computation), m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep),
+      m_variable(variable), m_physicFieldVariableComp(physicFieldVariableComp)
 {
+    FieldSolutionID fsid(fieldInfo->fieldId(), timeStep, adaptivityStep);
+    m_ma = m_computation->solutionStore()->multiArray(fsid);
+
     m_variableHash = qHash(m_variable);
     /*
     {{#SPECIAL_FUNCTION_SOURCE}}
@@ -49,9 +54,9 @@
     {{SPECIAL_FUNCTION_NAME}} = QSharedPointer<{{SPECIAL_EXT_FUNCTION_FULL_NAME}}>(new {{SPECIAL_EXT_FUNCTION_FULL_NAME}}(m_fieldInfo, 0));
     {{/SPECIAL_FUNCTION_SOURCE}}
     */
-    m_coordinateType = Agros2D::computation()->config()->coordinateType();
-    m_labels = Agros2D::computation()->scene()->labels;
-    m_noneMarker = Agros2D::computation()->scene()->materials->getNone(m_fieldInfo);
+    m_coordinateType = m_computation->config()->coordinateType();
+    m_labels = m_computation->scene()->labels;
+    m_noneMarker = m_computation->scene()->materials->getNone(m_fieldInfo);
 }
 
 {{CLASS}}ViewScalarFilter::~{{CLASS}}ViewScalarFilter()
@@ -137,7 +142,7 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_vector (const std::ve
     // SceneLabel *label = m_labels->at(current_cell.first->material_id() - 1);
     SceneLabel *label = m_labels->at(mat_id - 1);
     SceneMaterial *material = label->marker(m_fieldInfo);
-    if(material == Agros2D::computation()->scene()->materials->getNone(m_fieldInfo))
+    if(material == m_computation->scene()->materials->getNone(m_fieldInfo))
         return;
 
     {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));

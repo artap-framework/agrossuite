@@ -49,7 +49,7 @@ void PyProblem::clearSolution()
 void PyProblem::refresh()
 {
     Agros2D::preprocessor()->scene()->invalidate();
-    currentPythonEngineAgros()->postDeal()->refresh();
+    // Agros2D::computation()->refresh();
 }
 
 void PyProblem::setCoordinateType(const std::string &coordinateType)

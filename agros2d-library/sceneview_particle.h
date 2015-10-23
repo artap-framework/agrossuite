@@ -23,74 +23,6 @@
 #include "util.h"
 #include "sceneview_common3d.h"
 
-template <typename Scalar> class SceneSolution;
-template <typename Scalar> class ViewScalarFilter;
-
-class SceneViewParticleTracing;
-class LineEditDouble;
-
-class ParticleTracingWidget : public QWidget
-{
-    Q_OBJECT
-
-public slots:
-    void refresh();
-    void updateControls();
-
-public:
-    ParticleTracingWidget(SceneViewParticleTracing *sceneView, QWidget *parent = 0);
-    ~ParticleTracingWidget();
-
-private:
-    SceneViewParticleTracing *m_sceneViewParticleTracing;
-
-    // particle tracing
-    QComboBox *cmbParticleButcherTableType;
-    QCheckBox *chkParticleIncludeRelativisticCorrection;
-    QSpinBox *txtParticleNumberOfParticles;
-    LineEditDouble *txtParticleStartingRadius;
-    LineEditDouble *txtParticleMass;
-    LineEditDouble *txtParticleConstant;
-    LineEditDouble *txtParticlePointX;
-    LineEditDouble *txtParticlePointY;
-    QLabel *lblParticlePointX;
-    QLabel *lblParticlePointY;
-    QLabel *lblParticleVelocityX;
-    QLabel *lblParticleVelocityY;
-    LineEditDouble *txtParticleVelocityX;
-    LineEditDouble *txtParticleVelocityY;
-    QCheckBox *chkParticleReflectOnDifferentMaterial;
-    QCheckBox *chkParticleReflectOnBoundary;
-    LineEditDouble *txtParticleCoefficientOfRestitution;
-    QLabel *lblParticleMotionEquations;
-    QLabel *lblParticleCustomForceX;
-    QLabel *lblParticleCustomForceY;
-    QLabel *lblParticleCustomForceZ;
-    LineEditDouble *txtParticleCustomForceX;
-    LineEditDouble *txtParticleCustomForceY;
-    LineEditDouble *txtParticleCustomForceZ;
-    QCheckBox *chkParticleColorByVelocity;
-    QCheckBox *chkParticleShowPoints;
-    QCheckBox *chkParticleShowBlendedFaces;
-    QSpinBox *txtParticleNumShowParticleAxi;
-    LineEditDouble *txtParticleMaximumRelativeError;
-    LineEditDouble *txtParticleMaximumSteps;
-    QSpinBox *txtParticleMaximumNumberOfSteps;
-    LineEditDouble *txtParticleDragDensity;
-    LineEditDouble *txtParticleDragCoefficient;
-    LineEditDouble *txtParticleDragReferenceArea;
-    QCheckBox *chkParticleP2PElectricForce;
-    QCheckBox *chkParticleP2PMagneticForce;
-
-    void createControls();
-
-private slots:
-    void doApply();
-    void doParticleDefault();
-
-    void reconnectActions();
-};
-
 class SceneViewParticleTracing : public SceneViewCommon3D
 {
     Q_OBJECT
@@ -100,7 +32,7 @@ public slots:
     void processParticleTracing();
 
 public:
-    SceneViewParticleTracing(PostDeal *postDeal, QWidget *parent = 0);
+    SceneViewParticleTracing(QWidget *parent = 0);
     ~SceneViewParticleTracing();
 
     QAction *actSceneModeParticleTracing;
@@ -143,7 +75,7 @@ private slots:
 
     void setControls();
 
-    void reconnectActions();
+    void connectComputation(QSharedPointer<ProblemComputation> computation);
 };
 
 #endif // SCENEVIEWPARTICLETRACING_H

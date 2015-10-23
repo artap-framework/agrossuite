@@ -24,12 +24,15 @@
 
 #include "util.h"
 #include "util/constants.h"
-
 #include "util/global.h"
+
 #include "scene.h"
 #include "scenenode.h"
 #include "sceneedge.h"
 #include "scenelabel.h"
+
+#include "solver/problem.h"
+#include "solver/problem_config.h"
 
 #include "pythonlab/pythonengine_agros.h"
 
@@ -300,7 +303,7 @@ void FormScript::showWidget()
 
                     widget->addTopLevelItem(itemField);
 
-                    foreach (Module::LocalVariable variable, fieldInfo->localPointVariables())
+                    foreach (Module::LocalVariable variable, fieldInfo->localPointVariables(Agros2D::preprocessor()->config()->coordinateType()))
                     {
                         QTreeWidgetItem *item = new QTreeWidgetItem(itemField);
 
@@ -343,7 +346,7 @@ void FormScript::showWidget()
 
                     widget->addTopLevelItem(itemField);
 
-                    foreach (Module::Integral variable, fieldInfo->surfaceIntegrals())
+                    foreach (Module::Integral variable, fieldInfo->surfaceIntegrals(Agros2D::preprocessor()->config()->coordinateType()))
                     {
                         QTreeWidgetItem *item = new QTreeWidgetItem(itemField);
 
@@ -387,7 +390,7 @@ void FormScript::showWidget()
 
                     widget->addTopLevelItem(itemField);
 
-                    foreach (Module::Integral variable, fieldInfo->volumeIntegrals())
+                    foreach (Module::Integral variable, fieldInfo->volumeIntegrals(Agros2D::preprocessor()->config()->coordinateType()))
                     {
                         QTreeWidgetItem *item = new QTreeWidgetItem(itemField);
 

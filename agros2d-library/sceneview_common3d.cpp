@@ -39,8 +39,8 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-SceneViewCommon3D::SceneViewCommon3D(PostDeal *postDeal, QWidget *parent)
-    : SceneViewPostInterface(postDeal, parent)
+SceneViewCommon3D::SceneViewCommon3D(QWidget *parent)
+    : SceneViewPostInterface(parent)
 {
     createActions();
     createMenu();

@@ -55,7 +55,7 @@
 #include "../3rdparty/quazip/JlCompress.h"
 #include "../resources_source/classes/problem_a2d_31_xml.h"
 
-CalculationThread::CalculationThread() : QThread()
+CalculationThread::CalculationThread(ProblemComputation *parentProblem) : QThread(), m_computation(parentProblem)
 {
 }
 
@@ -74,10 +74,10 @@ void CalculationThread::run()
     switch (m_calculationType)
     {
     case CalculationType_Mesh:
-        Agros2D::computation()->mesh(true);
+        m_computation->mesh(true);
         break;
     case CalculationType_Solve:
-        Agros2D::computation()->solve(false);
+        m_computation->solve(false);
         break;
     case CalculationType_SolveTimeStep:
         assert(0);
@@ -321,8 +321,6 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
 
 void Problem::clearFieldsAndConfig()
 {
-    Agros2D::solutionStore()->clearAll();
-
     // clear couplings
     foreach (CouplingInfo* couplingInfo, m_couplingInfos)
         delete couplingInfo;
@@ -342,9 +340,7 @@ void Problem::clearFieldsAndConfig()
     m_setting->clear();
 
     // clear parameters
-    m_problemParameters.clear();
-
-    emit fileNameChanged(tr("unnamed"));
+    m_problemParameters.clear();    
 }
 
 void Problem::addField(FieldInfo *field)
@@ -820,15 +816,15 @@ void Problem::readProblemFromFile31(const QString &fileName)
         }
 
         // check and apply script (should be ok at this time)
-        QString error = checkAndApplyStartupScript(m_setting->value(ProblemSetting::Problem_StartupScript).toString());
-        assert(error.isEmpty());
+        // QString error = checkAndApplyStartupScript(m_setting->value(ProblemSetting::Problem_StartupScript).toString());
+        // assert(error.isEmpty());
 
         m_scene->stopInvalidating(false);
         m_scene->blockSignals(false);
 
         // default values
         emit m_scene->invalidated();
-        emit m_scene->defaultValues();        
+        emit m_scene->defaultValues();
     }
     catch (const xml_schema::expected_element& e)
     {
@@ -1067,15 +1063,18 @@ ProblemComputation::ProblemComputation() : Problem()
 
     connect(this, SIGNAL(fieldsChanged()), m_scene, SLOT(doFieldsChanged()));
 
-    m_calculationThread = new CalculationThread();
+    m_calculationThread = new CalculationThread(this);
 
-    m_solverDeal = new ProblemSolver();
+    m_problemSolver = new ProblemSolver(this);
+    m_postDeal = new PostDeal(this);
+    m_solutionStore = new SolutionStore(this);
 
     connect(m_config, SIGNAL(changed()), this, SLOT(clearSolution()));
     connect(m_scene, SIGNAL(invalidated()), this, SLOT(clearSolution()));
 
-    // create dir - not good :-(
-    m_problemDir = "sln_" + QUuid::createUuid().toString().remove("{").remove("}");
+    // create dir
+    QDateTime time(QDateTime::currentDateTime());
+    m_problemDir = QString("%1").arg(time.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
     QDir(cacheProblemDir()).mkdir(m_problemDir);
 }
 
@@ -1084,7 +1083,9 @@ ProblemComputation::~ProblemComputation()
     clearSolution();
 
     delete m_calculationThread;
-    delete m_solverDeal;
+    delete m_problemSolver;
+    delete m_postDeal;
+    delete m_solutionStore;
 }
 
 QList<double> ProblemComputation::timeStepTimes() const
@@ -1167,7 +1168,7 @@ void ProblemComputation::solveInit()
         throw AgrosSolverException(tr("Could not create mesh"));
 
     // dealii - new concept without Blocks (not necessary)
-    m_solverDeal->init();
+    m_problemSolver->init();
 }
 
 void ProblemComputation::doAbortSolve()
@@ -1240,6 +1241,9 @@ void ProblemComputation::solve(bool commandLine)
 
         m_abort = false;
         m_isSolving = false;
+
+        // refresh post deal
+        m_postDeal->problemSolved();
 
         if (!commandLine)
         {
@@ -1331,7 +1335,7 @@ void ProblemComputation::solveAction()
     solveInit();
     assert(isMeshed());
 
-    m_solverDeal->solveProblem();
+    m_problemSolver->solveProblem();
 }
 
 void ProblemComputation::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator)
@@ -1339,7 +1343,7 @@ void ProblemComputation::readInitialMeshFromFile(bool emitMeshed, QSharedPointer
     if (!meshGenerator)
     {
         // load initial mesh file
-        QString fnMesh = QString("%1/%2_initial.msh").arg(cacheProblemDir()).arg("mesh"/*fieldInfo->fieldId()*/);
+        QString fnMesh = QString("%1/%2/mesh_initial.msh").arg(cacheProblemDir()).arg(problemDir());
         std::ifstream ifsMesh(fnMesh.toStdString());
         boost::archive::binary_iarchive sbiMesh(ifsMesh);
         m_initialMesh.load(sbiMesh, 0);
@@ -1400,12 +1404,12 @@ void ProblemComputation::readSolutionsFromFile()
 
     QString fn = QString("%1/%2/runtime.xml").
             arg(cacheProblemDir()).
-            arg(Agros2D::computation()->problemDir());
+            arg(problemDir());
 
     if (QFile::exists(fn))
     {
         // load structure
-        Agros2D::solutionStore()->loadRunTimeDetails();
+        m_solutionStore->loadRunTimeDetails();
 
         // emit solve
         emit solved();
@@ -1417,7 +1421,7 @@ void ProblemComputation::meshWithGUI()
     if (!isPreparedForAction())
         return;
 
-    LogDialog *logDialog = new LogDialog(QApplication::activeWindow(), tr("Mesh"));
+    LogDialog *logDialog = new LogDialog(this, tr("Mesh"));
     logDialog->show();
 
     // create mesh
@@ -1429,7 +1433,7 @@ void ProblemComputation::solveWithGUI()
     if (!isPreparedForAction())
         return;
 
-    LogDialog *logDialog = new LogDialog(QApplication::activeWindow(), tr("Solver"));
+    LogDialog *logDialog = new LogDialog(this, tr("Solver"));
     logDialog->show();
 
     // solve problem
@@ -1441,7 +1445,7 @@ bool ProblemComputation::mesh(bool emitMeshed)
     bool result = false;
 
     // TODO: make global check geometry before mesh() and solve()
-    if (m_fieldInfos.count() == 0)
+    if (m_fieldInfos.isEmpty())
     {
         Agros2D::log()->printError(tr("Mesh"), tr("No fields defined"));
         return false;
@@ -1495,6 +1499,9 @@ bool ProblemComputation::mesh(bool emitMeshed)
 
     m_isMeshing = false;
 
+    // refreh post
+    m_postDeal->problemMeshed();
+
     return result;
 }
 
@@ -1515,19 +1522,19 @@ bool ProblemComputation::meshAction(bool emitMeshed)
         // case MeshType_Triangle_QuadFineDivision:
         // case MeshType_Triangle_QuadRoughDivision:
         // case MeshType_Triangle_QuadJoin:
-        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangle());
+        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorTriangle(this));
         break;
         // case MeshType_GMSH_Triangle:
     case MeshType_GMSH_Quad:
     case MeshType_GMSH_QuadDelaunay_Experimental:
-        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorGMSH());
+        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorGMSH(this));
         break;
         // case MeshType_NETGEN_Triangle:
         // case MeshType_NETGEN_QuadDominated:
         //     meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorNetgen());
         //     break;
     case MeshType_CUBIT:
-        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorCubitExternal());
+        meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorCubitExternal(this));
         break;
     default:
         QMessageBox::critical(QApplication::activeWindow(), "Mesh generator error", QString("Mesh generator '%1' is not supported.").arg(meshTypeString(config()->meshType())));
@@ -1617,7 +1624,7 @@ bool ProblemComputation::isMeshed() const
 bool ProblemComputation::isSolved() const
 {
     // return (!Agros2D::solutionStore()->isEmpty() && !m_isSolving && !m_isMeshing);
-    return (!Agros2D::solutionStore()->isEmpty());
+    return (!m_solutionStore->isEmpty());
 }
 
 void ProblemComputation::clearSolution()
@@ -1632,8 +1639,7 @@ void ProblemComputation::clearSolution()
     m_initialMesh.clear();
     m_initialUnrefinedMesh.clear();
     m_calculationMesh.clear();
-
-    Agros2D::solutionStore()->clearAll();
+    m_solutionStore->clearAll();
 
     // remove cache
     // removeDirectory(cacheProblemDir());
@@ -1641,13 +1647,28 @@ void ProblemComputation::clearSolution()
     emit clearedSolution();
 }
 
+void ProblemComputation::clearFieldsAndConfig()
+{
+    m_solutionStore->clearAll();
+
+    Problem::clearFieldsAndConfig();
+}
+
 // preprocessor
 
-void ProblemPreprocessor::createComputation()
+void ProblemPreprocessor::createComputation(bool newComputation)
 {
-    ProblemComputation *post = new ProblemComputation();
-    Agros2D::addComputation(post->problemDir(), post);
-    Agros2D::setCurrentComputation(post->problemDir());
+    QSharedPointer<ProblemComputation> post;
+    if (newComputation || Agros2D::computations().isEmpty())
+    {
+        post = QSharedPointer<ProblemComputation>(new ProblemComputation());
+        Agros2D::addComputation(post->problemDir(), post);
+        Agros2D::setCurrentComputation(post->problemDir());
+    }
+    else
+    {
+        post = Agros2D::computation();
+    }
 
     QString fn = QString("%1/%2/problem.a2d").
             arg(cacheProblemDir()).
@@ -1655,4 +1676,12 @@ void ProblemPreprocessor::createComputation()
 
     writeProblemToFile31(fn);
     post->readProblemFromFile31(fn);
+}
+
+
+void ProblemPreprocessor::clearFieldsAndConfig()
+{
+    Problem::clearFieldsAndConfig();
+
+    emit fileNameChanged(tr("unnamed"));
 }

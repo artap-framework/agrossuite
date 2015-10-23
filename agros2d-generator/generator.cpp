@@ -326,7 +326,6 @@ void Agros2DGenerator::generateModule(const QString &moduleId)
     generator.deleteWeakFormOutput();
     generator.generatePluginFilterFiles();
     generator.generatePluginForceFiles();
-    generator.generatePluginErrorCalculator();
     generator.generatePluginLocalPointFiles();
     generator.generatePluginSurfaceIntegralFiles();
     generator.generatePluginVolumeIntegralFiles();

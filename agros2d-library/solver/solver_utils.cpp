@@ -164,12 +164,7 @@ void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, co
     delete [] ir;
 }
 
-QMap<QString, SolverDeal *> ProblemSolver::m_solverDeal;
-QMap<QString, dealii::hp::FECollection<2> *> ProblemSolver::m_feCollectionCache;
-QMap<QString, std::vector<dealii::FiniteElement<2> *> > ProblemSolver::m_fesCache;
-QMap<QString, dealii::hp::MappingCollection<2> *> ProblemSolver::m_mappingCollectionCache;
-
-ProblemSolver::ProblemSolver()
+ProblemSolver::ProblemSolver(ProblemComputation *parentProblem) : m_computation(parentProblem)
 {
 }
 
@@ -200,22 +195,22 @@ void ProblemSolver::init()
 {
     clear();
 
-    foreach (FieldInfo* fieldInfo, Agros2D::computation()->fieldInfos())
+    foreach (FieldInfo* fieldInfo, m_computation->fieldInfos())
     {
-        m_solverDeal[fieldInfo->fieldId()] = fieldInfo->plugin()->solverDeal(fieldInfo);
+        m_solverDeal[fieldInfo->fieldId()] = fieldInfo->plugin()->solverDeal(m_computation, fieldInfo);
     }
 }
 
 void ProblemSolver::solveProblem()
 {
-    QList<FieldInfo *> fieldInfosSorted = Agros2D::computation()->fieldInfos().values();
+    QList<FieldInfo *> fieldInfosSorted = m_computation->fieldInfos().values();
 
     // sort fields (very small arrays -> sufficiently fast)
     bool swapped = false;
     do
     {
         swapped = false;
-        foreach (CouplingInfo *couplingInfo, Agros2D::computation()->couplingInfos().values())
+        foreach (CouplingInfo *couplingInfo, m_computation->couplingInfos().values())
         {
             if (couplingInfo->couplingType() == CouplingType_Weak)
             {
@@ -236,20 +231,20 @@ void ProblemSolver::solveProblem()
     {
         // frequency
         // TODO: find some better place, where some values are initialized
-        targetfieldInfo->setFrequency(Value::parseValueFromString(Agros2D::computation()->config()->value(ProblemConfig::Frequency).toString()).number());
+        targetfieldInfo->setFrequency(Value::parseValueFromString(m_computation->config()->value(ProblemConfig::Frequency).toString()).number());
 
         SolverDeal *solverDeal = m_solverDeal[targetfieldInfo->fieldId()];
 
         // look for coupling sources
         foreach (FieldInfo* sourceFieldInfo, fieldInfosSorted)
         {
-            if (Agros2D::computation()->hasCoupling(sourceFieldInfo, targetfieldInfo))
+            if (m_computation->hasCoupling(sourceFieldInfo, targetfieldInfo))
             {
-                FieldSolutionID solutionID(sourceFieldInfo,
-                                           Agros2D::solutionStore()->lastTimeStep(sourceFieldInfo),
-                                           Agros2D::solutionStore()->lastAdaptiveStep(sourceFieldInfo));
+                FieldSolutionID solutionID(sourceFieldInfo->fieldId(),
+                                           m_computation->solutionStore()->lastTimeStep(sourceFieldInfo),
+                                           m_computation->solutionStore()->lastAdaptiveStep(sourceFieldInfo));
 
-                MultiArray sourceSolution = Agros2D::solutionStore()->multiArray(solutionID);
+                MultiArray sourceSolution = m_computation->solutionStore()->multiArray(solutionID);
                 solverDeal->setCouplingSource(sourceFieldInfo->fieldId(), sourceSolution);
             }
         }

@@ -97,45 +97,39 @@ static XMLModule::module *module_module = NULL;
 {
 }
 
-SolverDeal *{{CLASS}}Interface::solverDeal(const FieldInfo *fieldInfo)
+SolverDeal *{{CLASS}}Interface::solverDeal(ProblemComputation *computation, const FieldInfo *fieldInfo)
 {
-    return new SolverDeal{{CLASS}}(fieldInfo);
+    return new SolverDeal{{CLASS}}(computation, fieldInfo);
 }
 
-/*
-ErrorCalculator<double> *{{CLASS}}Interface::errorCalculator(const FieldInfo *fieldInfo,
-                                                                               const QString &calculator, CalculatedErrorType errorType)
-{
-    return new {{CLASS}}ErrorCalculator<double>(fieldInfo, calculator, errorType);
-}
-*/
-
-std::shared_ptr<dealii::DataPostprocessorScalar<2> > {{CLASS}}Interface::filter(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep,
-                                                                                MultiArray *ma,
+std::shared_ptr<dealii::DataPostprocessorScalar<2> > {{CLASS}}Interface::filter(ProblemComputation *computation,
+                                                                                const FieldInfo *fieldInfo,
+                                                                                int timeStep,
+                                                                                int adaptivityStep,
                                                                                 const QString &variable,
                                                                                 PhysicFieldVariableComp physicFieldVariableComp)
 {
-    return std::shared_ptr<dealii::DataPostprocessorScalar<2> >(new {{CLASS}}ViewScalarFilter(fieldInfo, timeStep, adaptivityStep, ma, variable, physicFieldVariableComp));
+    return std::shared_ptr<dealii::DataPostprocessorScalar<2> >(new {{CLASS}}ViewScalarFilter(computation, fieldInfo, timeStep, adaptivityStep, variable, physicFieldVariableComp));
 }
 
-std::shared_ptr<LocalValue>{{CLASS}}Interface::localValue(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, const Point &point)
+std::shared_ptr<LocalValue>{{CLASS}}Interface::localValue(ProblemComputation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, const Point &point)
 {
-    return std::shared_ptr<LocalValue>(new {{CLASS}}LocalValue(fieldInfo, timeStep, adaptivityStep, point));
+    return std::shared_ptr<LocalValue>(new {{CLASS}}LocalValue(computation, fieldInfo, timeStep, adaptivityStep, point));
 }
 
-std::shared_ptr<IntegralValue> {{CLASS}}Interface::surfaceIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
+std::shared_ptr<IntegralValue> {{CLASS}}Interface::surfaceIntegral(ProblemComputation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
 {
-    return std::shared_ptr<IntegralValue>(new {{CLASS}}SurfaceIntegral(fieldInfo, timeStep, adaptivityStep));
+    return std::shared_ptr<IntegralValue>(new {{CLASS}}SurfaceIntegral(computation, fieldInfo, timeStep, adaptivityStep));
 }
 
-std::shared_ptr<IntegralValue> {{CLASS}}Interface::volumeIntegral(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
+std::shared_ptr<IntegralValue> {{CLASS}}Interface::volumeIntegral(ProblemComputation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
 {
-    return std::shared_ptr<IntegralValue>(new {{CLASS}}VolumeIntegral(fieldInfo, timeStep, adaptivityStep));
+    return std::shared_ptr<IntegralValue>(new {{CLASS}}VolumeIntegral(computation, fieldInfo, timeStep, adaptivityStep));
 }
 
-std::shared_ptr<ForceValue> {{CLASS}}Interface::force(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
+std::shared_ptr<ForceValue> {{CLASS}}Interface::force(ProblemComputation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
 {
-    return std::shared_ptr<ForceValue>(new {{CLASS}}ForceValue(fieldInfo, timeStep, adaptivityStep));
+    return std::shared_ptr<ForceValue>(new {{CLASS}}ForceValue(computation, fieldInfo, timeStep, adaptivityStep));
 }
 
 QString {{CLASS}}Interface::localeName(const QString &name)

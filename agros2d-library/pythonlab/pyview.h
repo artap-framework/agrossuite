@@ -92,11 +92,17 @@ struct PyViewMeshAndPost : PyViewClass
 {
     // time step
     void setActiveTimeStep(int timeStep);
-    inline int getActiveTimeStep() const { return currentPythonEngineAgros()->postDeal()->activeTimeStep(); }
+    inline int getActiveTimeStep() const {
+        assert(0);
+        // return Agros2D::computation()->activeTimeStep();
+    }
 
     // adaptivity step
     void setActiveAdaptivityStep(int adaptivityStep);
-    inline int getActiveAdaptivityStep() const { return currentPythonEngineAgros()->postDeal()->activeAdaptivityStep(); }
+    inline int getActiveAdaptivityStep() const {
+        assert(0);
+        // return Agros2D::computation()->activeAdaptivityStep();
+    }
 };
 
 struct PyViewMesh : PyViewMeshAndPost
@@ -121,7 +127,7 @@ struct PyViewMesh : PyViewMeshAndPost
     void setField(const std::string &fieldId);
     inline std::string getField() const
     {
-        return currentPythonEngineAgros()->postDeal()->activeViewField()->fieldId().toStdString();
+        return Agros2D::computation()->postDeal()->activeViewField()->fieldId().toStdString();
     }
 
     // initial mesh
@@ -167,7 +173,7 @@ struct PyViewPost : PyViewMeshAndPost
     void setField(const std::string &fieldId);
     inline std::string getField() const
     {
-        return currentPythonEngineAgros()->postDeal()->activeViewField()->fieldId().toStdString();
+        return Agros2D::computation()->postDeal()->activeViewField()->fieldId().toStdString();
     }
 
     // scalar view variable

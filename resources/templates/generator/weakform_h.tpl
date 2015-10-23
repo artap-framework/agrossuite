@@ -34,7 +34,7 @@ public:
     class Assemble{{CLASS}} : public AssembleNonlinear
     {
     public:
-        Assemble{{CLASS}}(SolverDeal *solverDeal, dealii::Triangulation<2> &triangulation) : AssembleNonlinear(solverDeal, triangulation) {}
+        Assemble{{CLASS}}(ProblemComputation *computation, SolverDeal *solverDeal, dealii::Triangulation<2> &triangulation) : AssembleNonlinear(computation, solverDeal, triangulation) {}
 
         virtual void assembleSystem(const dealii::Vector<double> &solutionNonlinearPrevious,
                                     bool assembleMatrix = true,
@@ -49,11 +49,11 @@ public:
         virtual void copyLocalToGlobal(const AssemblyCopyData &copy_data);
     };
 
-    SolverDeal{{CLASS}}(const FieldInfo *fieldInfo) : SolverDeal(fieldInfo) {}
+    SolverDeal{{CLASS}}(ProblemComputation *computation, const FieldInfo *fieldInfo) : SolverDeal(computation, fieldInfo) {}
 
     virtual shared_ptr<SolverDeal::AssembleBase> createAssembleBase(dealii::Triangulation<2> &triangulation)
     {
-        return shared_ptr<SolverDeal::AssembleBase>(new SolverDeal{{CLASS}}::Assemble{{CLASS}}(this, triangulation));
+        return shared_ptr<SolverDeal::AssembleBase>(new SolverDeal{{CLASS}}::Assemble{{CLASS}}(m_computation, this, triangulation));
     }
 };
 

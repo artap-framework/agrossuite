@@ -25,7 +25,7 @@
 #include "solver/plugin_interface.h"
 
 class PostDeal;
-class ChartView;
+class SceneViewChart;
 class SceneViewPreprocessorChart;
 class LocalValue;
 
@@ -55,13 +55,13 @@ class PostprocessorSceneChartWidget : public PostprocessorSceneWidget
     Q_OBJECT
 
 public:
-    PostprocessorSceneChartWidget(PostprocessorWidget *postprocessorWidget, ChartView *sceneChart);
+    PostprocessorSceneChartWidget(PostprocessorWidget *postprocessorWidget, SceneViewChart *sceneChart);
 
     void load();
     void save();
 
 private:    
-    ChartView *m_sceneChart;
+    SceneViewChart *m_sceneChart;
 
     // variable widget
     SceneViewPreprocessorChart *geometryViewer;
@@ -117,15 +117,10 @@ private:
                   PhysicFieldVariableComp physicFieldVariableComp,
                   Module::LocalVariable *physicFieldVariable);
 
-signals:
-    void apply();
-
 public slots:
-    void updateControls();
     void refresh();
 
 private slots:
-    void doField();
     void doFieldVariable(int index);
 
     void doExportData();

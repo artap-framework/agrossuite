@@ -21,19 +21,17 @@
 #define GUI_COMMON_H
 
 #include "util.h"
+#include "util/enums.h"
 
 class FieldInfo;
 
 void readPixmap(QLabel *lblEquation, const QString &name);
 QLabel *createLabel(const QString &label, const QString &toolTip = "");
-void fillComboBoxFieldInfo(QComboBox *cmbFieldInfo);
-void fillComboBoxContourVariable(FieldInfo *fieldInfo, QComboBox *cmbFieldVariable);
-void fillComboBoxScalarVariable(FieldInfo *fieldInfo, QComboBox *cmbFieldVariable);
-void fillComboBoxVectorVariable(FieldInfo *fieldInfo, QComboBox *cmbFieldVariable);
-void fillComboBoxTimeStep(const FieldInfo *fieldInfo, QComboBox *cmbFieldVariable);
-void fillComboBoxAdaptivityStep(FieldInfo* fieldInfo, int timeStep, QComboBox *cmbFieldVariable);
 void addTreeWidgetItemValue(QTreeWidgetItem *parent, const QString &name, const QString &text, const QString &unit);
 void fillComboBoxFonts(QComboBox *cmbFonts);
+void fillComboBoxScalarVariable(CoordinateType coordinateType, FieldInfo *fieldInfo, QComboBox *cmbFieldVariable);
+void fillComboBoxContourVariable(CoordinateType coordinateType, FieldInfo *fieldInfo, QComboBox *cmbFieldVariable);
+void fillComboBoxVectorVariable(CoordinateType coordinateType, FieldInfo *fieldInfo, QComboBox *cmbFieldVariable);
 
 inline QString htmlFontFamily() { return QApplication::font().family(); }
 #ifdef Q_WS_WIN

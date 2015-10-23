@@ -56,8 +56,6 @@ public:
     inline SceneViewPost3D *sceneViewPost3D() { assert(m_sceneViewPost3D); return m_sceneViewPost3D; }
     inline void setSceneViewParticleTracing(SceneViewParticleTracing *sceneViewParticleTracing) { assert(sceneViewParticleTracing); m_sceneViewParticleTracing = sceneViewParticleTracing; }
     inline SceneViewParticleTracing *sceneViewParticleTracing() { assert(m_sceneViewParticleTracing); return m_sceneViewParticleTracing; }
-    inline void setpostDeal(PostDeal *postDeal) { assert(postDeal); m_postDeal = postDeal; }
-    inline PostDeal *postDeal() { assert(m_postDeal); return m_postDeal; }
 
     inline void setConsole(PythonScriptingConsole *console) { m_console = console; }
     inline void resetConsole() { m_console = NULL; }

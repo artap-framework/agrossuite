@@ -72,15 +72,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     createPythonEngine(argc, argv, new PythonEngineAgros());
 
-    postDeal = new PostDeal();
-
     // scene
     sceneViewPreprocessor = new SceneViewPreprocessor(this);
-    sceneViewMesh = new SceneViewMesh(postDeal, this);
-    sceneViewPost2D = new SceneViewPost2D(postDeal, this);
-    // sceneViewPost3D = new SceneViewPost3D(postDeal, this);
-    sceneViewChart = new ChartView(this);
-    // sceneViewParticleTracing = new SceneViewParticleTracing(postDeal, this);
     // sceneViewVTK2D = new SceneViewVTK2D(postDeal, this);
 
     // scene - info widget
@@ -94,22 +87,13 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     preprocessorWidget = new PreprocessorWidget(sceneViewPreprocessor, this);
     connect(Agros2D::preprocessor(), SIGNAL(fieldsChanged()), preprocessorWidget, SLOT(refresh()));
     // postprocessor
-    postprocessorWidget = new PostprocessorWidget(postDeal,
-                                                  sceneViewMesh,
-                                                  sceneViewPost2D,
-                                                  sceneViewChart);
-    connect(postprocessorWidget, SIGNAL(apply()), postDeal, SLOT(refresh()));
+    postprocessorWidget = new PostprocessorWidget();
+
     connect(postprocessorWidget, SIGNAL(apply()), this, SLOT(setControls()));
     connect(postprocessorWidget, SIGNAL(modeChanged()), this, SLOT(setControls()));
-    currentPythonEngineAgros()->setpostDeal(postDeal);
-
-    // particle tracing
-    // particleTracingWidget = new ParticleTracingWidget(sceneViewParticleTracing, this);
-
 
     // problem
     problemWidget = new ProblemWidget(this);
-    connect(problemWidget, SIGNAL(changed()), postDeal, SLOT(refresh()));
 
     createViews();
 
@@ -135,7 +119,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     connect(Agros2D::preprocessor(), SIGNAL(fileNameChanged(QString)), this, SLOT(doSetWindowTitle(QString)));
     connect(Agros2D::preprocessor()->scene()->actTransform, SIGNAL(triggered()), this, SLOT(doTransform()));
 
-    connect(Agros2D::preprocessor()->scene(), SIGNAL(cleared()), this, SLOT(clear()));    
+    connect(Agros2D::preprocessor()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
     connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), this, SLOT(setControls()));
     connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), sceneViewPreprocessor, SLOT(refresh()));
 
@@ -146,21 +130,10 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     connect(currentPythonEngine(), SIGNAL(executedScript()), Agros2D::preprocessor()->scene()->loopsInfo(), SLOT(processPolygonTriangles()));
     currentPythonEngineAgros()->setSceneViewPreprocessor(sceneViewPreprocessor);
 
-    // particle tracing
-    // currentPythonEngineAgros()->setSceneViewParticleTracing(sceneViewParticleTracing);
-
-    // mesh
-    connect(Agros2D::preprocessor()->scene(), SIGNAL(cleared()), sceneViewMesh, SLOT(clear()));
-    currentPythonEngineAgros()->setSceneViewMesh(sceneViewMesh);
-
     // postprocessor 2d
-    connect(sceneViewPost2D, SIGNAL(mousePressed()), resultsView, SLOT(doShowResults()));
-    connect(sceneViewPost2D, SIGNAL(mousePressed(const Point &)), resultsView, SLOT(showPoint(const Point &)));
-    connect(sceneViewPost2D, SIGNAL(postprocessorModeGroupChanged(SceneModePostprocessor)), resultsView, SLOT(doPostprocessorModeGroupChanged(SceneModePostprocessor)));
-    currentPythonEngineAgros()->setSceneViewPost2D(sceneViewPost2D);
-
-    // postprocessor 3d
-    // currentPythonEngineAgros()->setSceneViewPost3D(sceneViewPost3D);
+    connect(postprocessorWidget->sceneViewPost2D(), SIGNAL(mousePressed()), resultsView, SLOT(doShowResults()));
+    connect(postprocessorWidget->sceneViewPost2D(), SIGNAL(mousePressed(const Point &)), resultsView, SLOT(showPoint(const Point &)));
+    connect(postprocessorWidget->sceneViewPost2D(), SIGNAL(postprocessorModeGroupChanged(SceneModePostprocessor)), resultsView, SLOT(doPostprocessorModeGroupChanged(SceneModePostprocessor)));
 
     // info
     connect(problemWidget, SIGNAL(changed()), sceneInfoWidget, SLOT(refresh()));
@@ -169,13 +142,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     connect(Agros2D::preprocessor(), SIGNAL(fieldsChanged()), this, SLOT(doFieldsChanged()));
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(reconnectSlots()), this, SLOT(reconnectActions()));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
 
     sceneViewPreprocessor->clear();
-    sceneViewMesh->clear();
-    // sceneViewPost2D->clear();
-    // sceneViewPost3D->clear();
-    // sceneViewParticleTracing->clear();
 
     QSettings settings;
     recentFiles = settings.value("MainWindow/RecentFiles").value<QStringList>();
@@ -335,7 +304,8 @@ void MainWindow::createActions()
     actSolve->setShortcut(QKeySequence(tr("Alt+S")));
     connect(actSolve, SIGNAL(triggered()), this, SLOT(doSolve()));
 
-    actSolveNewComputation = new QAction(icon("run"), tr("&Solve as new result"), this);
+    actSolveNewComputation = new QAction(icon("run"), tr("&Solve new"), this);
+    actSolveNewComputation->setShortcut(QKeySequence(tr("Alt+Shift+S")));
     connect(actSolveNewComputation, SIGNAL(triggered()), this, SLOT(doSolveNewComputation()));
 
     // zoom actions (geometry, post2d and post3d)
@@ -372,12 +342,22 @@ void MainWindow::doFieldsChanged()
     Agros2D::preprocessor()->scene()->addBoundaryAndMaterialMenuItems(mnuProblemAddBoundaryAndMaterial, this);
 }
 
-void MainWindow::reconnectActions()
+void MainWindow::connectComputation(QSharedPointer<ProblemComputation> computation)
 {
-    connect(Agros2D::computation(), SIGNAL(meshed()), this, SLOT(setControls()));
-    connect(Agros2D::computation(), SIGNAL(solved()), this, SLOT(setControls()));
-    connect(Agros2D::computation(), SIGNAL(meshed()), this, SLOT(doSolveFinished()));
-    connect(Agros2D::computation(), SIGNAL(solved()), this, SLOT(doSolveFinished()));    
+    if (!m_computation.isNull())
+    {
+        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
+        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
+        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doSolveFinished()));
+        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(doSolveFinished()));
+    }
+
+    m_computation = computation;
+
+    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
+    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
+    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doSolveFinished()));
+    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(doSolveFinished()));
 }
 
 void MainWindow::createMenus()
@@ -394,8 +374,8 @@ void MainWindow::createMenus()
     mnuFileImportExport->addAction(actDocumentSaveGeometry);
     mnuFileImportExport->addSeparator();
     mnuFileImportExport->addAction(actExportVTKGeometry);
-    mnuFileImportExport->addAction(sceneViewMesh->actExportVTKMesh);
-    mnuFileImportExport->addAction(sceneViewMesh->actExportVTKOrder);
+    mnuFileImportExport->addAction(postprocessorWidget->sceneViewMesh()->actExportVTKMesh);
+    mnuFileImportExport->addAction(postprocessorWidget->sceneViewMesh()->actExportVTKOrder);
     // mnuFileImportExport->addAction(sceneViewPost2D->actExportVTKScalar);
     // mnuFileImportExport->addAction(sceneViewPost2D->actExportVTKContours);
 
@@ -447,15 +427,9 @@ void MainWindow::createMenus()
     mnuProblem->addMenu(mnuProblemAddGeometry);
     mnuProblem->addMenu(mnuProblemAddBoundaryAndMaterial);
     mnuProblem->addSeparator();
-    // mnuProblem->addAction(sceneViewPost2D->actPostprocessorModeNothing);
-    // mnuProblem->addAction(sceneViewPost2D->actPostprocessorModeLocalPointValue);
-    // mnuProblem->addAction(sceneViewPost2D->actPostprocessorModeSurfaceIntegral);
-    // mnuProblem->addAction(sceneViewPost2D->actPostprocessorModeVolumeIntegral);
-    // mnuProblem->addAction(sceneViewPost2D->actSelectPoint);
-    // mnuProblem->addAction(sceneViewPost2D->actSelectByMarker);
-    mnuProblem->addSeparator();
     mnuProblem->addAction(actMesh);
     mnuProblem->addAction(actSolve);
+    mnuProblem->addAction(actSolveNewComputation);
 
     mnuTools = menuBar()->addMenu(tr("&Tools"));
     mnuTools->addAction(actMaterialBrowser);
@@ -516,12 +490,12 @@ void MainWindow::createMain()
 {
     sceneViewInfoWidget = new SceneViewWidget(sceneInfoWidget, this);
     sceneViewPreprocessorWidget = new SceneViewWidget(sceneViewPreprocessor, this);
-    sceneViewMeshWidget = new SceneViewWidget(sceneViewMesh, this);
-    sceneViewPost2DWidget = new SceneViewWidget(sceneViewPost2D, this);
+    sceneViewMeshWidget = new SceneViewWidget(postprocessorWidget->sceneViewMesh(), this);
+    sceneViewPost2DWidget = new SceneViewWidget(postprocessorWidget->sceneViewPost2D(), this);
     // sceneViewPost3DWidget = new SceneViewWidget(sceneViewPost3D, this);
-    // sceneViewPostParticleTracingWidget = new SceneViewWidget(sceneViewParticleTracing, this);
+    sceneViewPostParticleTracingWidget = new SceneViewWidget(postprocessorWidget->sceneViewParticleTracing(), this);
     // sceneViewPostVTK2DWidget = new SceneViewWidget(sceneViewVTK2D, this);
-    sceneViewChartWidget = new SceneViewWidget(sceneViewChart, this);
+    sceneViewChartWidget = new SceneViewWidget(postprocessorWidget->sceneViewChart(), this);
     sceneViewPythonEditorWidget = new SceneViewWidget(scriptEditor, this);
 
     tabViewLayout = new QStackedLayout();
@@ -531,7 +505,7 @@ void MainWindow::createMain()
     tabViewLayout->addWidget(sceneViewMeshWidget);
     tabViewLayout->addWidget(sceneViewPost2DWidget);
     // tabViewLayout->addWidget(sceneViewPost3DWidget);
-    // tabViewLayout->addWidget(sceneViewPostParticleTracingWidget);
+    tabViewLayout->addWidget(sceneViewPostParticleTracingWidget);
     // tabViewLayout->addWidget(sceneViewPostVTK2DWidget);
     tabViewLayout->addWidget(sceneViewChartWidget);
     tabViewLayout->addWidget(sceneViewPythonEditorWidget);
@@ -544,8 +518,6 @@ void MainWindow::createMain()
     tabControlsLayout->addWidget(problemWidget);
     tabControlsLayout->addWidget(preprocessorWidget);
     tabControlsLayout->addWidget(postprocessorWidget);
-    // tabControlsLayout->addWidget(particleTracingWidget);
-    // tabControlsLayout->addWidget(chartWidget);
     tabControlsLayout->addWidget(pythonEditorWidget);
 
     viewControls = new QWidget();
@@ -620,7 +592,7 @@ void MainWindow::createViews()
     logView->setAllowedAreas(Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, logView);
 
-    resultsView = new ResultsView(postDeal, this);
+    resultsView = new ResultsView(this);
     resultsView->setAllowedAreas(Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, resultsView);
 
@@ -747,7 +719,7 @@ void MainWindow::doDocumentNew()
 
             problemWidget->actProperties->trigger();
             sceneViewPreprocessor->doZoomBestFit();
-            sceneViewMesh->doZoomBestFit();
+            // sceneViewMesh->doZoomBestFit();
             // sceneViewPost2D->doZoomBestFit();
             // sceneViewPost3D->doZoomBestFit();
             // sceneViewParticleTracing->doZoomBestFit();
@@ -792,11 +764,11 @@ void MainWindow::doDocumentOpen(const QString &fileName)
                 setRecentFiles();
 
                 // load solution
-                // Agros2D::computation()->readSolutionFromFile(fileNameDocument);
+                // m_computation->readSolutionFromFile(fileNameDocument);
 
                 problemWidget->actProperties->trigger();
                 sceneViewPreprocessor->doZoomBestFit();
-                sceneViewMesh->doZoomBestFit();
+                // sceneViewMesh->doZoomBestFit();
                 // sceneViewPost2D->doZoomBestFit();
                 // sceneViewPost3D->doZoomBestFit();
                 // sceneViewParticleTracing->doZoomBestFit();
@@ -895,7 +867,7 @@ void MainWindow::doDocumentSaveSolution()
 {
     if (QFile::exists(Agros2D::preprocessor()->config()->fileName()))
     {
-        Agros2D::computation()->writeSolutionToFile(Agros2D::preprocessor()->config()->fileName());
+        m_computation->writeSolutionToFile(Agros2D::preprocessor()->config()->fileName());
         setControls();
     }
 }
@@ -966,11 +938,6 @@ void MainWindow::doDocumentClose()
     problemWidget->actProperties->trigger();
     sceneViewPreprocessor->actOperateOnNodes->trigger();
     sceneViewPreprocessor->doZoomBestFit();
-    sceneViewMesh->doZoomBestFit();
-    // sceneViewPost2D->doZoomBestFit();
-    // sceneViewPost3D->doZoomBestFit();
-    // sceneViewParticleTracing->doZoomBestFit();
-    // sceneViewVTK2D->doZoomBestFit();
 }
 
 void MainWindow::doDocumentImportDXF()
@@ -1080,11 +1047,25 @@ void MainWindow::doExamples(const QString &groupName)
 
 void MainWindow::doCreateVideo()
 {
-    assert(0);
+    VideoDialog *videoDialog = nullptr;
 
-    VideoDialog *videoDialog = NULL;
+    switch (postprocessorWidget->mode())
+    {
+    case PostprocessorWidgetMode_Mesh:
+        videoDialog = new VideoDialog(postprocessorWidget->sceneViewMesh(), postprocessorWidget->computation().data(), this);
+        break;
+    case PostprocessorWidgetMode_Post2D:
+        videoDialog = new VideoDialog(postprocessorWidget->sceneViewMesh(), postprocessorWidget->computation().data(), this);
+        break;
+    case PostprocessorWidgetMode_Chart:
+        videoDialog = new VideoDialog(postprocessorWidget->sceneViewMesh(), postprocessorWidget->computation().data(), this);
+        break;
+    default:
+        break;
+    }
+
     // if (sceneViewMesh->actSceneModeMesh->isChecked())
-    //     videoDialog = new VideoDialog(sceneViewMesh, postDeal, this);
+    //
     // else if (sceneViewPost2D->actSceneModePost2D->isChecked())
     //     videoDialog = new VideoDialog(sceneViewPost2D, postDeal, this);
     // else if (sceneViewPost3D->actSceneModePost3D->isChecked())
@@ -1100,32 +1081,30 @@ void MainWindow::doCreateVideo()
 void MainWindow::doMesh()
 {
     // create computation from preprocessor
-    if (!Agros2D::computation())
-        Agros2D::preprocessor()->createComputation();
+    Agros2D::preprocessor()->createComputation(false);
 
-    Agros2D::computation()->meshWithGUI();
+    m_computation->meshWithGUI();
 }
 
 void MainWindow::doSolve()
 {
     // create computation from preprocessor
-    if (!Agros2D::computation())
-        Agros2D::preprocessor()->createComputation();
+    Agros2D::preprocessor()->createComputation(false);
 
-    Agros2D::computation()->solveWithGUI();
+    m_computation->solveWithGUI();
 }
 
 void MainWindow::doSolveNewComputation()
 {
     // create computation from preprocessor
-    Agros2D::preprocessor()->createComputation();
+    Agros2D::preprocessor()->createComputation(true);
 
-    Agros2D::computation()->solveWithGUI();
+    m_computation->solveWithGUI();
 }
 
 void MainWindow::doSolveFinished()
 {
-    if (Agros2D::computation()->isMeshed() && !currentPythonEngine()->isScriptRunning())
+    if (m_computation->isMeshed() && !currentPythonEngine()->isScriptRunning())
     {
         postprocessorWidget->actSceneModePost->trigger();
     }
@@ -1148,7 +1127,7 @@ void MainWindow::doOptions()
     if (configDialog.exec())
     {
         sceneViewPreprocessor->refresh();
-        postDeal->refresh();
+        // postDeal->refresh();
         // setControls();
     }
 }
@@ -1242,7 +1221,8 @@ void MainWindow::setControls()
     setUpdatesEnabled(false);
     setEnabled(true);
 
-    actDocumentSaveSolution->setEnabled(Agros2D::computation()->isSolved());
+    if (!m_computation.isNull())
+        actDocumentSaveSolution->setEnabled(m_computation->isSolved());
 
     QFileInfo fileInfo(Agros2D::preprocessor()->config()->fileName());
     actDocumentDeleteSolution->setEnabled(!Agros2D::preprocessor()->config()->fileName().isEmpty() && QFile::exists(QString("%1/%2.sol").arg(fileInfo.absolutePath()).arg(fileInfo.baseName())));
@@ -1251,7 +1231,7 @@ void MainWindow::setControls()
     Agros2D::preprocessor()->scene()->actTransform->setEnabled(false);
 
     sceneViewPreprocessor->actSceneZoomRegion = NULL;
-    sceneViewMesh->actSceneZoomRegion = NULL;
+    // sceneViewMesh->actSceneZoomRegion = NULL;
 
     bool showZoom = sceneViewPreprocessor->actSceneModePreprocessor->isChecked() || postprocessorWidget->actSceneModePost->isChecked();
 
@@ -1266,13 +1246,6 @@ void MainWindow::setControls()
     actSceneZoomIn->disconnect();
     actSceneZoomOut->disconnect();
     actSceneZoomBestFit->disconnect();
-
-    // sceneViewPost2D->actPostprocessorModeNothing->setEnabled(sceneViewPost2D->actSceneModePost2D->isChecked() && Agros2D::computation()->isSolved());
-    // sceneViewPost2D->actPostprocessorModeLocalPointValue->setEnabled(sceneViewPost2D->actSceneModePost2D->isChecked() && Agros2D::computation()->isSolved());
-    // sceneViewPost2D->actPostprocessorModeSurfaceIntegral->setEnabled(sceneViewPost2D->actSceneModePost2D->isChecked() && Agros2D::computation()->isSolved());
-    // sceneViewPost2D->actPostprocessorModeVolumeIntegral->setEnabled(sceneViewPost2D->actSceneModePost2D->isChecked() && Agros2D::computation()->isSolved());
-    // sceneViewPost2D->actSelectPoint->setEnabled(sceneViewPost2D->actSceneModePost2D->isChecked() && Agros2D::computation()->isSolved());
-    // sceneViewPost2D->actSelectByMarker->setEnabled(sceneViewPost2D->actSceneModePost2D->isChecked() && Agros2D::computation()->isSolved());
 
     if (problemWidget->actProperties->isChecked())
     {
@@ -1296,23 +1269,44 @@ void MainWindow::setControls()
         switch (postprocessorWidget->mode())
         {
         case PostprocessorWidgetMode_Mesh:
+        {
             tabViewLayout->setCurrentWidget(sceneViewMeshWidget);
+
+            connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewMesh(), SLOT(doZoomIn()));
+            connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewMesh(), SLOT(doZoomOut()));
+            connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewMesh(), SLOT(doZoomBestFit()));
+            postprocessorWidget->sceneViewMesh()->actSceneZoomRegion = actSceneZoomRegion;
+        }
             break;
         case PostprocessorWidgetMode_Post2D:
+        {
             tabViewLayout->setCurrentWidget(sceneViewPost2DWidget);
+
+            connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomIn()));
+            connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomOut()));
+            connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomBestFit()));
+            postprocessorWidget->sceneViewPost2D()->actSceneZoomRegion = actSceneZoomRegion;
+        }
             break;
         case PostprocessorWidgetMode_Chart:
             tabViewLayout->setCurrentWidget(sceneViewChartWidget);
+            break;
+        case PostprocessorWidgetMode_ParticleTracing:
+        {
+            tabViewLayout->setCurrentWidget(sceneViewPostParticleTracingWidget);
+
+            // connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomIn()));
+            // connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomOut()));
+            // connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomBestFit()));
+            // postprocessorWidget->sceneViewPost2D()->actSceneZoomRegion = actSceneZoomRegion;
+        }
             break;
         default:
             break;
         }
         tabControlsLayout->setCurrentWidget(postprocessorWidget);
 
-        connect(actSceneZoomIn, SIGNAL(triggered()), sceneViewMesh, SLOT(doZoomIn()));
-        connect(actSceneZoomOut, SIGNAL(triggered()), sceneViewMesh, SLOT(doZoomOut()));
-        connect(actSceneZoomBestFit, SIGNAL(triggered()), sceneViewMesh, SLOT(doZoomBestFit()));
-        sceneViewMesh->actSceneZoomRegion = actSceneZoomRegion;
+
     }
     /*
     else if (sceneViewPost3D->actSceneModePost3D->isChecked())
@@ -1365,8 +1359,8 @@ void MainWindow::setControls()
     menuBar()->addMenu(mnuSettings);
     menuBar()->addMenu(mnuHelp);
 
-    if (Agros2D::computation())
-        actDocumentExportMeshFile->setEnabled(Agros2D::computation()->isMeshed());
+    if (!m_computation.isNull())
+        actDocumentExportMeshFile->setEnabled(m_computation->isMeshed());
 
     // postprocessorWidget->updateControls();
 
@@ -1401,7 +1395,7 @@ void MainWindow::doHideControlPanel()
 
 void MainWindow::doDocumentExportMeshFile()
 {
-    if (Agros2D::computation()->isMeshed())
+    if (m_computation->isMeshed())
     {
         QSettings settings;
         QString dir = settings.value("General/LastMeshDir").toString();
@@ -1442,7 +1436,7 @@ void MainWindow::doExportVTKGeometry()
     if (!fn.endsWith(".vtk"))
         fn.append(".vtk");
 
-    Agros2D::computation()->scene()->exportVTKGeometry(fn);
+    m_computation->scene()->exportVTKGeometry(fn);
 
     if (!fn.isEmpty())
     {

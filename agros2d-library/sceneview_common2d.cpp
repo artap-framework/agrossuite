@@ -40,8 +40,8 @@
 
 #include "util/constants.h"
 
-SceneViewCommon2D::SceneViewCommon2D(PostDeal *postDeal, QWidget *parent)
-    : SceneViewPostInterface(postDeal, parent)
+SceneViewCommon2D::SceneViewCommon2D(QWidget *parent)
+    : SceneViewPostInterface(parent)
 {
     connect(this, SIGNAL(mouseMoved(Point)), this, SLOT(updatePosition(Point)));
 }

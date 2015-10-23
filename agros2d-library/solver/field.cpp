@@ -34,7 +34,7 @@
 #include "deal.II/grid/grid_tools.h"
 
 FieldInfo::FieldInfo(QString fieldId)
-    : m_plugin(NULL), m_numberOfSolutions(0), m_hermesMarkerToAgrosLabelConversion(nullptr), m_labelAreas(nullptr)
+    : m_plugin(nullptr), m_numberOfSolutions(0), m_hermesMarkerToAgrosLabelConversion(nullptr), m_labelAreas(nullptr)
 {    
     assert(!fieldId.isEmpty());
     m_fieldId = fieldId;
@@ -63,7 +63,7 @@ FieldInfo::FieldInfo(QString fieldId)
 
 FieldInfo::~FieldInfo()
 {
-    delete m_plugin;
+    // delete m_plugin;
 }
 
 double FieldInfo::labelArea(int agrosLabel) const
@@ -505,7 +505,7 @@ Module::BoundaryType FieldInfo::boundaryType(const QString &id) const
 }
 
 // force
-Module::Force FieldInfo::force() const
+Module::Force FieldInfo::force(CoordinateType coordinateType) const
 {
     // force
     XMLModule::force force = m_plugin->module()->postprocessor().force();
@@ -513,9 +513,9 @@ Module::Force FieldInfo::force() const
     {
         XMLModule::expression exp = force.expression().at(i);
         if (exp.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
-            return Module::Force((Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar) ? QString::fromStdString(exp.planar_x().get()) : QString::fromStdString(exp.axi_r().get()),
-                                 (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar) ? QString::fromStdString(exp.planar_y().get()) : QString::fromStdString(exp.axi_z().get()),
-                                 (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar) ? QString::fromStdString(exp.planar_z().get()) : QString::fromStdString(exp.axi_phi().get()));
+            return Module::Force((coordinateType == CoordinateType_Planar) ? QString::fromStdString(exp.planar_x().get()) : QString::fromStdString(exp.axi_r().get()),
+                                 (coordinateType == CoordinateType_Planar) ? QString::fromStdString(exp.planar_y().get()) : QString::fromStdString(exp.axi_z().get()),
+                                 (coordinateType == CoordinateType_Planar) ? QString::fromStdString(exp.planar_z().get()) : QString::fromStdString(exp.axi_phi().get()));
     }
 
     assert(0);
@@ -551,7 +551,7 @@ Module::DialogUI FieldInfo::boundaryUI() const
 }
 
 // local point variables
-QList<Module::LocalVariable> FieldInfo::localPointVariables() const
+QList<Module::LocalVariable> FieldInfo::localPointVariables(CoordinateType coordinateType) const
 {
     // local variables
     QList<Module::LocalVariable> variables;
@@ -566,7 +566,7 @@ QList<Module::LocalVariable> FieldInfo::localPointVariables() const
             {
                 variables.append(Module::LocalVariable(this,
                                                        lv,
-                                                       Agros2D::computation()->config()->coordinateType(),
+                                                       coordinateType,
                                                        analysisType()));
             }
         }
@@ -576,18 +576,18 @@ QList<Module::LocalVariable> FieldInfo::localPointVariables() const
 }
 
 // view scalar variables
-QList<Module::LocalVariable> FieldInfo::viewScalarVariables() const
+QList<Module::LocalVariable> FieldInfo::viewScalarVariables(CoordinateType coordinateType) const
 {
     // scalar variables = local variables
-    return localPointVariables();
+    return localPointVariables(coordinateType);
 }
 
 // view vector variables
-QList<Module::LocalVariable> FieldInfo::viewVectorVariables() const
+QList<Module::LocalVariable> FieldInfo::viewVectorVariables(CoordinateType coordinateType) const
 {
     // vector variables
     QList<Module::LocalVariable> variables;
-    foreach (Module::LocalVariable var, localPointVariables())
+    foreach (Module::LocalVariable var, localPointVariables(coordinateType))
         if (!var.isScalar())
             variables.append(var);
 
@@ -595,7 +595,7 @@ QList<Module::LocalVariable> FieldInfo::viewVectorVariables() const
 }
 
 // surface integrals
-QList<Module::Integral> FieldInfo::surfaceIntegrals() const
+QList<Module::Integral> FieldInfo::surfaceIntegrals(CoordinateType coordinateType) const
 {
     // surface integrals
     QList<Module::Integral> surfaceIntegrals;
@@ -609,7 +609,7 @@ QList<Module::Integral> FieldInfo::surfaceIntegrals() const
             XMLModule::expression exp = sur.expression().at(i);
             if (exp.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
             {
-                if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar)
+                if (coordinateType == CoordinateType_Planar)
                     expr = QString::fromStdString(exp.planar().get()).trimmed();
                 else
                     expr = QString::fromStdString(exp.axi().get()).trimmed();
@@ -637,7 +637,7 @@ QList<Module::Integral> FieldInfo::surfaceIntegrals() const
 }
 
 // volume integrals
-QList<Module::Integral> FieldInfo::volumeIntegrals() const
+QList<Module::Integral> FieldInfo::volumeIntegrals(CoordinateType coordinateType) const
 {
     // volume integrals
     QList<Module::Integral> volumeIntegrals;
@@ -649,7 +649,7 @@ QList<Module::Integral> FieldInfo::volumeIntegrals() const
             XMLModule::expression exp = vol.expression().at(i);
             if (exp.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
             {
-                if (Agros2D::computation()->config()->coordinateType() == CoordinateType_Planar)
+                if (coordinateType == CoordinateType_Planar)
                     expr = QString::fromStdString(exp.planar().get()).trimmed();
                 else
                     expr = QString::fromStdString(exp.axi().get()).trimmed();
@@ -677,9 +677,9 @@ QList<Module::Integral> FieldInfo::volumeIntegrals() const
 }
 
 // variable by name
-Module::LocalVariable FieldInfo::localVariable(const QString &id) const
+Module::LocalVariable FieldInfo::localVariable(CoordinateType coordinateType, const QString &id) const
 {
-    foreach (Module::LocalVariable var, localPointVariables())
+    foreach (Module::LocalVariable var, localPointVariables(coordinateType))
         if (var.id() == id)
             return var;
 
@@ -687,9 +687,9 @@ Module::LocalVariable FieldInfo::localVariable(const QString &id) const
     return Module::LocalVariable();
 }
 
-Module::Integral FieldInfo::surfaceIntegral(const QString &id) const
+Module::Integral FieldInfo::surfaceIntegral(CoordinateType coordinateType, const QString &id) const
 {
-    foreach (Module::Integral var, surfaceIntegrals())
+    foreach (Module::Integral var, surfaceIntegrals(coordinateType))
         if (var.id() == id)
             return var;
 
@@ -697,9 +697,9 @@ Module::Integral FieldInfo::surfaceIntegral(const QString &id) const
     assert(0);
 }
 
-Module::Integral FieldInfo::volumeIntegral(const QString &id) const
+Module::Integral FieldInfo::volumeIntegral(CoordinateType coordinateType, const QString &id) const
 {
-    foreach (Module::Integral var, volumeIntegrals())
+    foreach (Module::Integral var, volumeIntegrals(coordinateType))
         if (var.id() == id)
             return var;
 
@@ -708,22 +708,22 @@ Module::Integral FieldInfo::volumeIntegral(const QString &id) const
 }
 
 // default variables
-Module::LocalVariable FieldInfo::defaultViewScalarVariable() const
+Module::LocalVariable FieldInfo::defaultViewScalarVariable(CoordinateType coordinateType) const
 {
     // scalar variables default
     foreach (XMLModule::default_ def, m_plugin->module()->postprocessor().view().scalar_view().default_())
         if (def.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
-            return localVariable(QString::fromStdString(def.id()));
+            return localVariable(coordinateType, QString::fromStdString(def.id()));
 
     assert(0);
 }
 
-Module::LocalVariable FieldInfo::defaultViewVectorVariable() const
+Module::LocalVariable FieldInfo::defaultViewVectorVariable(CoordinateType coordinateType) const
 {
     // vector variables default
     foreach (XMLModule::default_ def, m_plugin->module()->postprocessor().view().vector_view().default_())
         if (def.analysistype() == analysisTypeToStringKey(analysisType()).toStdString())
-            return(localVariable(QString::fromStdString(def.id())));
+            return(localVariable(coordinateType, QString::fromStdString(def.id())));
 
     assert(0);
 }

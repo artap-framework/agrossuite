@@ -36,8 +36,8 @@
 
 #include <ctemplate/template.h>
 
-ResultsView::ResultsView(PostDeal *postDeal, QWidget *parent)
-    : QDockWidget(tr("Results view"), parent), m_postDeal(postDeal)
+ResultsView::ResultsView(QWidget *parent)
+    : QDockWidget(tr("Results view"), parent)
 {
     setObjectName("ResultsView");
 
@@ -45,8 +45,6 @@ ResultsView::ResultsView(PostDeal *postDeal, QWidget *parent)
     webView->page()->setNetworkAccessManager(new QNetworkAccessManager());
 
     createActions();
-
-    connect(postDeal, SIGNAL(processed()), this, SLOT(doShowResults()));
 
     // stylesheet
     std::string style;
@@ -66,6 +64,9 @@ ResultsView::ResultsView(PostDeal *postDeal, QWidget *parent)
     widget->setLayout(layout);
 
     setWidget(widget);
+
+    // reconnect computation slots
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
 }
 
 void ResultsView::createActions()
@@ -73,6 +74,18 @@ void ResultsView::createActions()
     QAction *copyAction = webView->pageAction(QWebPage::Copy);
     copyAction->setShortcut(QKeySequence::Copy);
     webView->addAction(copyAction);
+}
+
+void ResultsView::connectComputation(QSharedPointer<ProblemComputation> computation)
+{
+    if (!m_computation.isNull())
+    {
+        connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(doShowResults()));
+    }
+
+    m_computation = computation;
+
+    connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(doShowResults()));
 }
 
 void ResultsView::doPostprocessorModeGroupChanged(SceneModePostprocessor sceneModePostprocessor)
@@ -103,7 +116,7 @@ void ResultsView::showPoint(const Point &point)
 
 void ResultsView::showPoint()
 {
-    if (!(Agros2D::computation()->isSolved() && m_postDeal->isProcessed()))
+    if (!(m_computation->isSolved() && m_computation->postDeal()->isProcessed()))
     {
         showNotSolved();
         return;
@@ -116,19 +129,20 @@ void ResultsView::showPoint()
     localPointValues.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
     localPointValues.SetValue("LABEL", tr("Local point values").toStdString());
 
-    localPointValues.SetValue("LABELX", QString("<i>%1</i>").arg(Agros2D::computation()->config()->labelX().toLower()).toStdString());
-    localPointValues.SetValue("LABELY", QString("<i>%1</i>").arg(Agros2D::computation()->config()->labelY().toLower()).toStdString());
+    localPointValues.SetValue("LABELX", QString("<i>%1</i>").arg(m_computation->config()->labelX().toLower()).toStdString());
+    localPointValues.SetValue("LABELY", QString("<i>%1</i>").arg(m_computation->config()->labelY().toLower()).toStdString());
     localPointValues.SetValue("POINTX", (QString("%1").arg(m_point.x, 0, 'e', 3)).toStdString());
     localPointValues.SetValue("POINTY", (QString("%1").arg(m_point.y, 0, 'e', 3)).toStdString());
     localPointValues.SetValue("POINT_UNIT", "m");
     localPointValues.SetValue("LABELTIME", QString("<i>t</i>").toStdString());
-    localPointValues.SetValue("TIME", (QString("%1").arg(Agros2D::computation()->timeStepToTotalTime(m_postDeal->activeTimeStep()), 0, 'e', 3)).toStdString());
+    localPointValues.SetValue("TIME", (QString("%1").arg(m_computation->timeStepToTotalTime(m_computation->postDeal()->activeTimeStep()), 0, 'e', 3)).toStdString());
 
-    foreach (FieldInfo *fieldInfo, Agros2D::computation()->fieldInfos())
+    foreach (FieldInfo *fieldInfo, m_computation->fieldInfos())
     {
-        std::shared_ptr<LocalValue> value = fieldInfo->plugin()->localValue(fieldInfo,
-                                                                            m_postDeal->activeTimeStep(),
-                                                                            m_postDeal->activeAdaptivityStep(),                                                                            
+        std::shared_ptr<LocalValue> value = fieldInfo->plugin()->localValue(m_computation.data(),
+                                                                            fieldInfo,
+                                                                            m_computation->postDeal()->activeTimeStep(),
+                                                                            m_computation->postDeal()->activeAdaptivityStep(),
                                                                             m_point);
         QMap<QString, LocalPointValue> values = value->values();
 
@@ -137,7 +151,7 @@ void ResultsView::showPoint()
             ctemplate::TemplateDictionary *field = localPointValues.AddSectionDictionary("FIELD");
             field->SetValue("FIELDNAME", fieldInfo->name().toStdString());
 
-            foreach (Module::LocalVariable variable, fieldInfo->localPointVariables())
+            foreach (Module::LocalVariable variable, fieldInfo->localPointVariables(m_computation->config()->coordinateType()))
             {
                 if (variable.isScalar())
                 {
@@ -158,12 +172,12 @@ void ResultsView::showPoint()
                     itemMagnitude->SetValue("UNIT", variable.unitHtml().toStdString());
                     ctemplate::TemplateDictionary *itemX = field->AddSectionDictionary("ITEM");
                     itemX->SetValue("SHORTNAME", variable.shortnameHtml().toStdString());
-                    itemX->SetValue("PART", Agros2D::computation()->config()->labelX().toLower().toStdString());
+                    itemX->SetValue("PART", m_computation->config()->labelX().toLower().toStdString());
                     itemX->SetValue("VALUE", QString("%1").arg(values[variable.id()].vector.x, 0, 'e', 3).toStdString());
                     itemX->SetValue("UNIT", variable.unitHtml().toStdString());
                     ctemplate::TemplateDictionary *itemY = field->AddSectionDictionary("ITEM");
                     itemY->SetValue("SHORTNAME", variable.shortnameHtml().toStdString());
-                    itemY->SetValue("PART", Agros2D::computation()->config()->labelY().toLower().toStdString());
+                    itemY->SetValue("PART", m_computation->config()->labelY().toLower().toStdString());
                     itemY->SetValue("VALUE", QString("%1").arg(values[variable.id()].vector.y, 0, 'e', 3).toStdString());
                     itemY->SetValue("UNIT", variable.unitHtml().toStdString());
                 }
@@ -178,7 +192,7 @@ void ResultsView::showPoint()
 
 void ResultsView::showVolumeIntegral()
 {
-    if (!Agros2D::computation()->isSolved())
+    if (!m_computation->isSolved())
     {
         showNotSolved();
         return;
@@ -192,20 +206,21 @@ void ResultsView::showVolumeIntegral()
     volumeIntegrals.SetValue("LABEL", tr("Volume integrals").toStdString());
 
     volumeIntegrals.SetValue("LABELTIME", QString("<i>t</i>").toStdString());
-    volumeIntegrals.SetValue("TIME", (QString("%1").arg(Agros2D::computation()->timeStepToTotalTime(m_postDeal->activeTimeStep()), 0, 'e', 3)).toStdString());
+    volumeIntegrals.SetValue("TIME", (QString("%1").arg(m_computation->timeStepToTotalTime(m_computation->postDeal()->activeTimeStep()), 0, 'e', 3)).toStdString());
 
-    foreach (FieldInfo *fieldInfo, Agros2D::computation()->fieldInfos())
+    foreach (FieldInfo *fieldInfo, m_computation->fieldInfos())
     {
-        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->volumeIntegral(fieldInfo,
-                                                                                      m_postDeal->activeTimeStep(),
-                                                                                      m_postDeal->activeAdaptivityStep());
+        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->volumeIntegral(m_computation.data(),
+                                                                                      fieldInfo,
+                                                                                      m_computation->postDeal()->activeTimeStep(),
+                                                                                      m_computation->postDeal()->activeAdaptivityStep());
         QMap<QString, double> values = integral->values();
         if (values.size() > 0)
         {
             ctemplate::TemplateDictionary *field = volumeIntegrals.AddSectionDictionary("FIELD");
             field->SetValue("FIELDNAME", fieldInfo->name().toStdString());
 
-            foreach (Module::Integral integral, fieldInfo->volumeIntegrals())
+            foreach (Module::Integral integral, fieldInfo->volumeIntegrals(m_computation->config()->coordinateType()))
             {
                 ctemplate::TemplateDictionary *item = field->AddSectionDictionary("ITEM");
                 item->SetValue("NAME", integral.name().toStdString());
@@ -223,7 +238,7 @@ void ResultsView::showVolumeIntegral()
 
 void ResultsView::showSurfaceIntegral()
 {
-    if (!Agros2D::computation()->isSolved())
+    if (!m_computation->isSolved())
     {
         showNotSolved();
         return;
@@ -237,19 +252,20 @@ void ResultsView::showSurfaceIntegral()
     surfaceIntegrals.SetValue("LABEL", tr("Surface integrals").toStdString());
 
     surfaceIntegrals.SetValue("LABELTIME", QString("<i>t</i>").toStdString());
-    surfaceIntegrals.SetValue("TIME", (QString("%1").arg(Agros2D::computation()->timeStepToTotalTime(m_postDeal->activeTimeStep()), 0, 'e', 3)).toStdString());
+    surfaceIntegrals.SetValue("TIME", (QString("%1").arg(m_computation->timeStepToTotalTime(m_computation->postDeal()->activeTimeStep()), 0, 'e', 3)).toStdString());
 
-    foreach (FieldInfo *fieldInfo, Agros2D::computation()->fieldInfos())
+    foreach (FieldInfo *fieldInfo, m_computation->fieldInfos())
     {
-        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->surfaceIntegral(fieldInfo,
-                                                                                       m_postDeal->activeTimeStep(),
-                                                                                       m_postDeal->activeAdaptivityStep());
+        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->surfaceIntegral(m_computation.data(),
+                                                                                       fieldInfo,
+                                                                                       m_computation->postDeal()->activeTimeStep(),
+                                                                                       m_computation->postDeal()->activeAdaptivityStep());
         QMap<QString, double> values = integral->values();
         {
             ctemplate::TemplateDictionary *field = surfaceIntegrals.AddSectionDictionary("FIELD");
             field->SetValue("FIELDNAME", fieldInfo->name().toStdString());
 
-            foreach (Module::Integral integral, fieldInfo->surfaceIntegrals())
+            foreach (Module::Integral integral, fieldInfo->surfaceIntegrals(m_computation->config()->coordinateType()))
             {
                 ctemplate::TemplateDictionary *item = field->AddSectionDictionary("ITEM");
                 item->SetValue("NAME", integral.name().toStdString());
@@ -284,7 +300,7 @@ void ResultsView::showNotSolved()
     webView->setHtml(QString::fromStdString(results));
 }
 
-LocalPointValueDialog::LocalPointValueDialog(Point point, QWidget *parent) : QDialog(parent)
+LocalPointValueDialog::LocalPointValueDialog(Point point, ProblemComputation *computation, QWidget *parent) : QDialog(parent)
 {
     setWindowIcon(icon("scene-node"));
     setWindowTitle(tr("Local point value"));
@@ -300,8 +316,8 @@ LocalPointValueDialog::LocalPointValueDialog(Point point, QWidget *parent) : QDi
     connect(txtPointY, SIGNAL(evaluated(bool)), this, SLOT(evaluated(bool)));
 
     QFormLayout *layoutPoint = new QFormLayout();
-    layoutPoint->addRow(Agros2D::computation()->config()->labelX() + " (m):", txtPointX);
-    layoutPoint->addRow(Agros2D::computation()->config()->labelY() + " (m):", txtPointY);
+    layoutPoint->addRow(computation->config()->labelX() + " (m):", txtPointX);
+    layoutPoint->addRow(computation->config()->labelY() + " (m):", txtPointY);
 
     // dialog buttons
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);

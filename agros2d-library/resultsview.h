@@ -31,6 +31,7 @@ class ValueLineEdit;
 class SceneMaterial;
 class Solution;
 class PostDeal;
+class ProblemComputation;
 
 class ResultsView : public QDockWidget
 {
@@ -48,13 +49,12 @@ public slots:
     void showSurfaceIntegral();
 
 public:
-    ResultsView(PostDeal *postDeal, QWidget *parent = 0);
+    ResultsView(QWidget *parent = 0);
 
     QPushButton *btnSelectMarker;
 
 private:
     Point m_point;
-    PostDeal *m_postDeal;
 
     SceneModePostprocessor m_sceneModePostprocessor;
     QString m_cascadeStyleSheet;
@@ -62,14 +62,19 @@ private:
     QAction *actPoint;
     QWebView *webView;
 
+    QSharedPointer<ProblemComputation> m_computation;
+
     void createActions();
+
+private slots:
+    void connectComputation(QSharedPointer<ProblemComputation> computation);
 };
 
 class LocalPointValueDialog : public QDialog
 {
     Q_OBJECT
 public:
-    LocalPointValueDialog(Point point, QWidget *parent = 0);
+    LocalPointValueDialog(Point point, ProblemComputation *computation, QWidget *parent = 0);
 
     Point point();
 

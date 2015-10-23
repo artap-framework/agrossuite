@@ -124,7 +124,7 @@ class AGROS_LIBRARY_API LogDialog : public QDialog
 {
     Q_OBJECT
 public:
-    LogDialog(QWidget *parent = 0, const QString &title = tr("Progress..."));
+    LogDialog(ProblemComputation *computation, const QString &title = tr("Progress..."));
     ~LogDialog();
 
 protected:
@@ -154,6 +154,8 @@ private:
 
     QListWidget *m_progress;
 
+    ProblemComputation *m_computation;
+
     void createControls();
 
 private slots:    
@@ -167,9 +169,6 @@ private slots:
 
     void tryClose();
     void showHide();
-
-public slots:
-    void reconnectActions();
 };
 
 class AGROS_LIBRARY_API LogStdOut : public QObject

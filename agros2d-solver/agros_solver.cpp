@@ -82,9 +82,10 @@ void AgrosSolver::solveProblem()
         Agros2D::log()->printMessage(tr("Problem"), tr("Problem '%1' successfuly loaded").arg(m_fileName));
 
         // solve
-        Agros2D::computation()->solve(true);
+        assert(0);
+        // Agros2D::xcomputation()->solve(true);
         // save solution
-        Agros2D::computation()->writeSolutionToFile(m_fileName);
+        // Agros2D::xcomputation()->writeSolutionToFile(m_fileName);
 
         Agros2D::log()->printMessage(tr("Solver"), tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
 
