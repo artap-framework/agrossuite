@@ -33,6 +33,9 @@ class FieldInfo;
 class SceneViewPost2D;
 class PhysicalFieldWidget;
 class QCustomPlot;
+class QCPBars;
+class QCPItemTracer;
+class QCPItemText;
 class ChartLine;
 
 class SceneViewChart : public QWidget
@@ -51,6 +54,7 @@ public slots:
 
 private slots:
     void connectComputation(QSharedPointer<ProblemComputation> computation);
+    void chartMouseMoved(QMouseEvent *event);
 
 private:
     QCustomPlot *m_chart;
@@ -63,6 +67,8 @@ private:
 
     QMap<QString, double> getData(Point point, int timeStep, int adaptivityStep);
     QStringList headers();
+
+    QCPItemText *tracerText;
 };
 
 #endif // CHARTDIALOG_H

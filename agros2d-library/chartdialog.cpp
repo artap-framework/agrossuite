@@ -43,11 +43,33 @@
 
 SceneViewChart::SceneViewChart(QWidget *parent) : QWidget(parent)
 {
+    QPen chartPen;
+    chartPen.setColor(QColor(129, 17, 19));
+    chartPen.setWidthF(2);
+
     m_chart = new QCustomPlot(this);
     m_chart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     m_chart->addGraph();
+    m_chart->setCursor(QCursor(Qt::CrossCursor));
 
     m_chart->graph(0)->setLineStyle(QCPGraph::lsLine);
+    m_chart->graph(0)->setPen(chartPen);
+
+    QPen tracerPen;
+    tracerPen.setWidth(0);
+    // tracerPen.setBrush(Qt::NoBrush);
+    tracerPen.setColor(Qt::darkGreen);
+
+    tracerText = new QCPItemText(m_chart);
+    m_chart->addItem(tracerText);
+    tracerText->position->setType(QCPItemPosition::ptPlotCoords);
+    tracerText->setFont(QFont(font().family(), 12));
+    tracerText->setPositionAlignment(Qt::AlignLeft);
+    tracerText->setPadding(QMargins(10, 10, 10, 10));
+    tracerText->setPen(tracerPen);
+    tracerText->setText("(-, -)");
+
+    connect(m_chart, SIGNAL(mouseMove(QMouseEvent *)), this, SLOT(chartMouseMoved(QMouseEvent*)));
 
     QHBoxLayout *layoutMain = new QHBoxLayout();
     layoutMain->addWidget(m_chart);
@@ -58,6 +80,18 @@ SceneViewChart::SceneViewChart(QWidget *parent) : QWidget(parent)
 
     // reconnect computation slots
     connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
+}
+
+void SceneViewChart::chartMouseMoved(QMouseEvent *event)
+{
+    // coord of mouse
+    double x = m_chart->xAxis->pixelToCoord(event->pos().x());
+    double y = m_chart->yAxis->pixelToCoord(event->pos().y());
+
+    QString str = QString("(%1, %2)").arg(QString::number(x)).arg(QString::number(y));
+    tracerText->setText(str);
+    tracerText->position->setCoords(x, y);
+    m_chart->replot();
 }
 
 void SceneViewChart::refresh()
