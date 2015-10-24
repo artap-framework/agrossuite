@@ -46,6 +46,8 @@ protected:
     virtual void paintGL();
     virtual void resizeGL(int w, int h);
 
+    virtual Problem *problem();
+
     void paintGeometryOutline();
     void paintGeometrySurface(bool blend = false);
     void paintParticleTracing();

@@ -202,12 +202,17 @@ enum PaletteOrderType
     PaletteOrder_BWDesc = 13
 };
 
-
 enum ChartAxisType
 {
     ChartAxis_X = 0,
     ChartAxis_Y = 1,
     ChartAxis_Length = 2
+};
+
+enum ChartMode
+{
+    ChartMode_Geometry = 0,
+    ChartMode_Time = 1
 };
 
 enum SceneViewPost3DMode

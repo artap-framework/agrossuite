@@ -63,8 +63,6 @@ SceneViewPost2D::SceneViewPost2D(QWidget *parent)
 
     connect(this, SIGNAL(mousePressed(Point)), this, SLOT(selectedPoint(Point)));
 
-    m_isPreprocessor = false;
-
     // reconnect computation slots
     connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
 }
@@ -73,32 +71,25 @@ SceneViewPost2D::~SceneViewPost2D()
 {
 }
 
+Problem *SceneViewPost2D::problem()
+{
+    return static_cast<Problem *>(m_computation.data());
+}
+
 void SceneViewPost2D::connectComputation(QSharedPointer<ProblemComputation> computation)
 {
     if (!m_computation.isNull())
     {
-        disconnect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
-        disconnect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
         disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
         disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-
-        disconnect(m_computation.data()->scene(), SIGNAL(defaultValues()), this, SLOT(clear()));
-        disconnect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
-        disconnect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
 
         disconnect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
     }
 
     m_computation = computation;
 
-    connect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
-    connect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
     connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
     connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-
-    connect(m_computation.data()->scene(), SIGNAL(defaultValues()), this, SLOT(clear()));
-    connect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
-    connect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
 
     connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
 }

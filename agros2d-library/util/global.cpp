@@ -210,6 +210,18 @@ void Agros2D::removeComputation(const QString &problemDir)
     }    
 }
 
+void Agros2D::clearComputations()
+{
+    foreach (QSharedPointer<ProblemComputation> computation, Agros2D::singleton()->m_computations)
+    {
+        Agros2D::singleton()->m_computations.remove(computation->problemDir());
+        removeDirectory(QString("%1/%2").arg(cacheProblemDir(), computation->problemDir()));
+    }
+
+    // connect computation
+    emit Agros2D::singleton()->connectComputation(QSharedPointer<ProblemComputation>(new ProblemComputation()));
+}
+
 void Agros2D::createSingleton()
 {
     m_singleton = QSharedPointer<Agros2D>(new Agros2D());    

@@ -67,12 +67,13 @@ public:
     static void setCurrentComputation(const QString &problemDir);
     static inline QSharedPointer<ProblemComputation> computation()
     {
-        qWarning() << "deprecated - method will be removed!";
+        qWarning() << "Agros2D::computation() deprecated - method will be removed!";
         return Agros2D::singleton()->m_computation;
     }
     static inline QMap<QString, QSharedPointer<ProblemComputation> > computations() { return Agros2D::singleton()->m_computations; }
     static void addComputation(const QString &problemDir, QSharedPointer<ProblemComputation> comp);
     static void removeComputation(const QString &problemDir);
+    static void clearComputations();
 
     static inline Log *log() { return Agros2D::singleton()->m_log; }
     static inline MemoryMonitor *memoryMonitor() { return Agros2D::singleton()->m_memoryMonitor; }

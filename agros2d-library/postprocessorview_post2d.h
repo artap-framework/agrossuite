@@ -35,9 +35,6 @@ class PostprocessorScenePost2DWidget : public PostprocessorSceneWidget
 public:
     PostprocessorScenePost2DWidget(PostprocessorWidget *postprocessorWidget, SceneViewPost2D *scenePost2D);
 
-    void load();
-    void save();
-
 private:    
     SceneViewPost2D *m_scenePost2D;
 
@@ -108,7 +105,9 @@ private:
     QWidget *postVectorAdvancedWidget();
 
 public slots:
-    void refresh();
+    virtual void refresh();
+    virtual void load();
+    virtual void save();
 
 private slots:
     void doScalarFieldVariable(int index);

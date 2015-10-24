@@ -43,7 +43,6 @@ SceneViewCommon3D::SceneViewCommon3D(QWidget *parent)
     : SceneViewPostInterface(parent)
 {
     createActions();
-    createMenu();
 }
 
 SceneViewCommon3D::~SceneViewCommon3D()
@@ -53,26 +52,14 @@ SceneViewCommon3D::~SceneViewCommon3D()
 void SceneViewCommon3D::createActions()
 {
     // projection
-    actSetProjectionXY = new QAction(tr("Projection to %1%2").arg(problem()->config()->labelX()).arg(problem()->config()->labelY()), this);
+    actSetProjectionXY = new QAction(this);
     connect(actSetProjectionXY, SIGNAL(triggered()), this, SLOT(doSetProjectionXY()));
 
-    actSetProjectionXZ = new QAction(tr("Projection to %1%2").arg(problem()->config()->labelX()).arg(problem()->config()->labelZ()), this);
+    actSetProjectionXZ = new QAction(this);
     connect(actSetProjectionXZ, SIGNAL(triggered()), this, SLOT(doSetProjectionXZ()));
 
-    actSetProjectionYZ = new QAction(tr("Projection to %1%2").arg(problem()->config()->labelY()).arg(problem()->config()->labelZ()), this);
-    connect(actSetProjectionYZ, SIGNAL(triggered()), this, SLOT(doSetProjectionYZ()));
-}
-
-void SceneViewCommon3D::createMenu()
-{
-    QMenu *mnuView = new QMenu(tr("View"), this);
-
-    mnuView->addAction(actSetProjectionXY);
-    mnuView->addAction(actSetProjectionXZ);
-    mnuView->addAction(actSetProjectionYZ);
-
-    mnuView3D = new QMenu(this);
-    mnuView3D->addMenu(mnuView);
+    actSetProjectionYZ = new QAction(this);
+    connect(actSetProjectionYZ, SIGNAL(triggered()), this, SLOT(doSetProjectionYZ()));    
 }
 
 void SceneViewCommon3D::clear()
@@ -409,6 +396,19 @@ void SceneViewCommon3D::wheelEvent(QWheelEvent *event)
 
 void SceneViewCommon3D::contextMenuEvent(QContextMenuEvent *event)
 {
+    actSetProjectionXY->setText(tr("Projection to %1%2").arg(problem()->config()->labelX()).arg(problem()->config()->labelY()));
+    actSetProjectionXZ->setText(tr("Projection to %1%2").arg(problem()->config()->labelX()).arg(problem()->config()->labelZ()));
+    actSetProjectionYZ->setText(tr("Projection to %1%2").arg(problem()->config()->labelY()).arg(problem()->config()->labelZ()));
+
+    QMenu *mnuView = new QMenu(tr("View"), this);
+
+    mnuView->addAction(actSetProjectionXY);
+    mnuView->addAction(actSetProjectionXZ);
+    mnuView->addAction(actSetProjectionYZ);
+
+    QMenu *mnuView3D = new QMenu(this);
+    mnuView3D->addMenu(mnuView);
+
     mnuView3D->exec(event->globalPos());
 }
 

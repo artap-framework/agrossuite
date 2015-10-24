@@ -91,8 +91,7 @@ protected:
     QPointF m_zoomRegionPos;
 
     // problem (preprocessor vs. computation)
-    bool m_isPreprocessor;
-    Problem *problem();
+    virtual Problem *problem() = 0;
 
     void createActions();
 

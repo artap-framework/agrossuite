@@ -117,13 +117,15 @@ class PostprocessorSceneWidget : public QWidget
     Q_OBJECT
 
 public:
-    PostprocessorSceneWidget(PostprocessorWidget *postprocessorWidget)
-        : QWidget(postprocessorWidget), m_postprocessorWidget(postprocessorWidget)
-    {
-    }
+    PostprocessorSceneWidget(PostprocessorWidget *postprocessorWidget);
 
 protected:
     PostprocessorWidget *m_postprocessorWidget;
+
+public slots:
+    virtual void load() = 0;
+    virtual void save() = 0;
+    virtual void refresh() = 0;
 };
 
 

@@ -53,8 +53,7 @@ SceneViewCommon::SceneViewCommon(QWidget *parent)
       m_textureLabelRulersName(""),
       m_textureLabelPostName(""),
       m_textureLabelRulersSize(0),
-      m_textureLabelPostSize(0),
-      m_isPreprocessor(true)
+      m_textureLabelPostSize(0)
 {
     m_mainWindow = (QMainWindow *) parent;
 
@@ -70,15 +69,6 @@ SceneViewCommon::SceneViewCommon(QWidget *parent)
 
 SceneViewCommon::~SceneViewCommon()
 {
-}
-
-Problem *SceneViewCommon::problem()
-{
-    // TODO: better!!!
-    if (m_isPreprocessor)
-        return Agros2D::preprocessor();
-    else
-        return Agros2D::computation().data();
 }
 
 void SceneViewCommon::createActions()

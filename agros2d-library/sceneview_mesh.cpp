@@ -46,8 +46,6 @@ SceneViewMesh::SceneViewMesh(QWidget *parent)
 {
     createActionsMesh();
 
-    m_isPreprocessor = false;
-
     // reconnect computation slots
     connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
 }
@@ -56,30 +54,25 @@ SceneViewMesh::~SceneViewMesh()
 {
 }
 
+Problem *SceneViewMesh::problem()
+{
+    return static_cast<Problem *>(m_computation.data());
+}
+
 void SceneViewMesh::connectComputation(QSharedPointer<ProblemComputation> computation)
 {
     if (!m_computation.isNull())
     {
-        disconnect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
-        disconnect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
         disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
         disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-
-        disconnect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
-        disconnect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
 
         disconnect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
     }
 
     m_computation = computation;
 
-    connect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(setControls()));
-    connect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(setControls()));
     connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
     connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-
-    connect(m_computation.data()->scene(), SIGNAL(cleared()), this, SLOT(clear()));
-    connect(m_computation.data()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
 
     connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
 
@@ -109,7 +102,7 @@ void SceneViewMesh::refresh()
 
 void SceneViewMesh::setControls()
 {
-    if (m_computation)
+    if (!m_computation.isNull())
     {
         actExportVTKMesh->setEnabled(m_computation->isSolved());
         actExportVTKOrder->setEnabled(m_computation->isSolved());

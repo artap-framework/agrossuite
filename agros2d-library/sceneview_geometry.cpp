@@ -51,12 +51,15 @@ SceneViewPreprocessor::SceneViewPreprocessor(QWidget *parent)
 {
     createActionsGeometry();
     createMenuGeometry();
-
-    m_isPreprocessor = true;
 }
 
 SceneViewPreprocessor::~SceneViewPreprocessor()
 {
+}
+
+Problem *SceneViewPreprocessor::problem()
+{
+    return static_cast<Problem *>(Agros2D::preprocessor());
 }
 
 void SceneViewPreprocessor::createActionsGeometry()

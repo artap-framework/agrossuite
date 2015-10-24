@@ -33,9 +33,6 @@ class PostprocessorSceneMeshWidget : public PostprocessorSceneWidget
 public:
     PostprocessorSceneMeshWidget(PostprocessorWidget *postprocessorWidget, SceneViewMesh *sceneMesh);
 
-    void load();
-    void save();
-
 private:    
     SceneViewMesh *m_sceneMesh;
 
@@ -55,7 +52,9 @@ private:
     void createControls();
 
 public slots:
-    void refresh();
+    virtual void refresh();
+    virtual void load();
+    virtual void save();
 };
 
 #endif // POSTPROCESSORVIEW_MESH_H

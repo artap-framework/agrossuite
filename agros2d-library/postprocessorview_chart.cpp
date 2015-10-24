@@ -74,84 +74,6 @@ PostprocessorSceneChartWidget::PostprocessorSceneChartWidget(PostprocessorWidget
     setObjectName("PostprocessorChartWidget");
 
     createControls();
-
-    connect(postprocessorWidget->fieldWidget(), SIGNAL(fieldChanged()), this, SLOT(refresh()));
-}
-
-void PostprocessorSceneChartWidget::load()
-{
-    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
-        return;
-
-    txtStartX->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartStartX).toDouble());
-    txtStartY->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartStartY).toDouble());
-    txtEndX->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartEndX).toDouble());
-    txtEndY->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartEndY).toDouble());
-    txtTimeX->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartTimeX).toDouble());
-    txtTimeY->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartTimeY).toDouble());
-    radHorizontalAxisX->setChecked((ChartAxisType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_X);
-    radHorizontalAxisY->setChecked((ChartAxisType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Y);
-    radHorizontalAxisLength->setChecked((ChartAxisType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Length);
-    txtHorizontalAxisPoints->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxisPoints).toInt());
-    chkHorizontalAxisReverse->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxisReverse).toBool());
-
-    return;
-
-    if (tbxAnalysisType->currentWidget() == widGeometry)
-    {
-        plotGeometry();
-    }
-
-    if (tbxAnalysisType->currentWidget() == widTime)
-    {
-        plotTime();
-    }
-
-    // rescale axis
-    double min = numeric_limits<double>::max();
-    double max = - numeric_limits<double>::max();
-    for (int i = 0; i < m_sceneChart->chart()->graph(0)->data()->values().count(); i++)
-    {
-        double value = m_sceneChart->chart()->graph(0)->data()->values().at(i).value;
-        if (value < min) min = value;
-        if (value > max) max = value;
-    }
-
-    if ((max - min) < EPS_ZERO)
-    {
-        m_sceneChart->chart()->graph(0)->valueAxis()->setRange(min - 1, min + 1);
-        m_sceneChart->chart()->graph(0)->keyAxis()->setRange(m_sceneChart->chart()->graph(0)->data()->keys().first(),
-                                                             m_sceneChart->chart()->graph(0)->data()->keys().last());
-    }
-    else
-    {
-        m_sceneChart->chart()->rescaleAxes();
-    }
-    m_sceneChart->chart()->replot(QCustomPlot::rpQueued);
-
-
-    btnSaveImage->setEnabled(m_sceneChart->chart()->graph()->data()->size() > 0);
-    btnExportData->setEnabled(m_sceneChart->chart()->graph()->data()->size() > 0);
-}
-
-void PostprocessorSceneChartWidget::save()
-{
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartStartX, txtStartX->value());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartStartY, txtStartY->value());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartEndX, txtEndX->value());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartEndY, txtEndY->value());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartTimeX, txtTimeX->value());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartTimeY, txtTimeY->value());
-    if (radHorizontalAxisX->isChecked())
-        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_X);
-    else if (radHorizontalAxisY->isChecked())
-        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Y);
-    else if (radHorizontalAxisLength->isChecked())
-        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Length);
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisReverse, chkHorizontalAxisReverse->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisPoints, txtHorizontalAxisPoints->value());
-
-    createChartLine();
 }
 
 void PostprocessorSceneChartWidget::createControls()
@@ -185,13 +107,13 @@ void PostprocessorSceneChartWidget::createControls()
     btnSaveImage->setDefault(false);
     btnSaveImage->setEnabled(false);
     btnSaveImage->setText(tr("Save image"));
-    connect(btnSaveImage, SIGNAL(clicked()), this, SLOT(doSaveImage()));
+    connect(btnSaveImage, SIGNAL(clicked()), m_sceneChart, SLOT(doSaveImage()));
 
     btnExportData = new QPushButton();
     btnExportData->setDefault(false);
     btnExportData->setEnabled(false);
     btnExportData->setText(tr("Export"));
-    connect(btnExportData, SIGNAL(clicked()), this, SLOT(doExportData()));
+    connect(btnExportData, SIGNAL(clicked()), m_sceneChart, SLOT(doExportData()));
 
     // geometry
     lblStartX = new QLabel("X:");
@@ -324,7 +246,7 @@ void PostprocessorSceneChartWidget::createControls()
 
     // controls
     QVBoxLayout *controlsLayout = new QVBoxLayout();
-    controlsLayout->setContentsMargins(0, 0, 0, 0);
+    // controlsLayout->setContentsMargins(0, 0, 0, 0);
     controlsLayout->addWidget(grpVariable);
     controlsLayout->addWidget(tbxAnalysisType, 1);
     controlsLayout->addWidget(grpChart, 1);
@@ -369,6 +291,29 @@ void PostprocessorSceneChartWidget::doFieldVariable(int index)
         cmbFieldVariableComp->setCurrentIndex(0);
 }
 
+void PostprocessorSceneChartWidget::createChartLine()
+{
+    ChartLine line;
+
+    if (tbxAnalysisType->currentWidget() == widGeometry)
+    {
+        line = ChartLine(Point(txtStartX->value(), txtStartY->value()),
+                         Point(txtEndX->value(), txtEndY->value()),
+                         txtHorizontalAxisPoints->value(),
+                         chkHorizontalAxisReverse->isChecked());
+    }
+    if (tbxAnalysisType->currentWidget() == widTime)
+    {
+        line = ChartLine(Point(txtTimeX->value(), txtTimeY->value()),
+                         Point(txtTimeX->value(), txtTimeY->value()),
+                         0.0,
+                         0);
+    }
+
+    geometryViewer->setChartLine(line);
+    geometryViewer->doZoomBestFit();
+}
+
 void PostprocessorSceneChartWidget::refresh()
 {
     if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
@@ -399,372 +344,69 @@ void PostprocessorSceneChartWidget::refresh()
     }
 }
 
-QVector<double> PostprocessorSceneChartWidget::horizontalAxisValues(ChartLine *chartLine)
+void PostprocessorSceneChartWidget::load()
 {
-    QList<Point> points = chartLine->getPoints();
-    QVector<double> xval;
+    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+        return;
 
-    if (radHorizontalAxisLength->isChecked())
+    txtStartX->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartStartX).toDouble());
+    txtStartY->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartStartY).toDouble());
+    txtEndX->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartEndX).toDouble());
+    txtEndY->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartEndY).toDouble());
+    txtTimeX->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartTimeX).toDouble());
+    txtTimeY->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartTimeY).toDouble());
+    radHorizontalAxisX->setChecked((ChartAxisType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_X);
+    radHorizontalAxisY->setChecked((ChartAxisType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Y);
+    radHorizontalAxisLength->setChecked((ChartAxisType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxis).toInt() == ChartAxis_Length);
+    txtHorizontalAxisPoints->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxisPoints).toInt());
+    chkHorizontalAxisReverse->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartHorizontalAxisReverse).toBool());
+
+    cmbFieldVariable->setCurrentIndex(cmbFieldVariable->findData(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartVariable).toString()));
+    if (cmbFieldVariable->count() > 0 && cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()) != QVariant::Invalid)
     {
-        for (int i = 0; i < points.length(); i++)
-        {
-            if (i == 0)
-                xval.append(0.0);
-            else
-                xval.append(xval.at(i-1) + (points.at(i) - points.at(i-1)).magnitude());
-        }
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartVariable, cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
+        doFieldVariable(cmbFieldVariable->currentIndex());
+
+        cmbFieldVariableComp->setCurrentIndex(cmbFieldVariableComp->findData((PhysicFieldVariableComp) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartVariableComp).toInt()));
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartVariableComp, (PhysicFieldVariableComp) cmbFieldVariableComp->itemData(cmbFieldVariableComp->currentIndex()).toInt());
     }
-    else if (radHorizontalAxisX->isChecked())
+    if (cmbFieldVariable->currentIndex() == -1 && cmbFieldVariable->count() > 0)
     {
-        foreach (Point point, points)
-            xval.append(point.x);
+        // set first variable
+        cmbFieldVariable->setCurrentIndex(0);
     }
+
+    if ((ChartMode) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartMode).toInt() == ChartMode_Geometry)
+        tbxAnalysisType->setCurrentWidget(widGeometry);
+    else if ((ChartMode) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ChartMode).toInt() == ChartMode_Time)
+        tbxAnalysisType->setCurrentWidget(widTime);
+
+    btnSaveImage->setEnabled(m_sceneChart->chart()->graph()->data()->size() > 0);
+    btnExportData->setEnabled(m_sceneChart->chart()->graph()->data()->size() > 0);
+}
+
+void PostprocessorSceneChartWidget::save()
+{
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartStartX, txtStartX->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartStartY, txtStartY->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartEndX, txtEndX->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartEndY, txtEndY->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartTimeX, txtTimeX->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartTimeY, txtTimeY->value());
+    if (radHorizontalAxisX->isChecked())
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_X);
     else if (radHorizontalAxisY->isChecked())
-    {
-        foreach (Point point, points)
-            xval.append(point.y);
-    }
-
-    return xval;
-}
-
-void PostprocessorSceneChartWidget::plotGeometry()
-{
-    // variable
-    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->fieldWidget()->selectedField()->localVariable(m_postprocessorWidget->computation()->config()->coordinateType(), cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
-
-    // variable component
-    PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) cmbFieldVariableComp->itemData(cmbFieldVariableComp->currentIndex()).toInt();
-    if (physicFieldVariableComp == PhysicFieldVariableComp_Undefined) return;
-
-    // number of points
-    int count = txtHorizontalAxisPoints->value();
-
-    // chart
-    QString text;
-    if (radHorizontalAxisLength->isChecked()) text = tr("Length (m)");
-    if (radHorizontalAxisX->isChecked()) text = m_postprocessorWidget->computation()->config()->labelX() + " (m)";
-    if (radHorizontalAxisY->isChecked()) text = m_postprocessorWidget->computation()->config()->labelY() + " (m)";
-    m_sceneChart->chart()->xAxis->setLabel(text);
-    m_sceneChart->chart()->yAxis->setLabel(QString("%1 (%2)").
-                                           arg(physicFieldVariable.name()).
-                                           arg(physicFieldVariable.unit()));
-
-    // table
-    QStringList head = headers();
-
-    // values
-    ChartLine chartLine(Point(txtStartX->value(), txtStartY->value()),
-                        Point(txtEndX->value(), txtEndY->value()),
-                        count);
-    createChartLine();
-
-    QList<Point> points = chartLine.getPoints();
-    QVector<double> xval = horizontalAxisValues(&chartLine);
-    QVector<double> yval;
-
-    foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables(m_postprocessorWidget->computation()->config()->coordinateType()))
-    {
-        if (physicFieldVariable.id() != variable.id()) continue;
-
-        foreach (Point point, points)
-        {
-            std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->fieldWidget()->selectedField()->plugin()->localValue(m_postprocessorWidget->computation().data(),
-                                                                                                                                 m_postprocessorWidget->fieldWidget()->selectedField(),
-                                                                                                                                 m_postprocessorWidget->fieldWidget()->selectedTimeStep(),
-                                                                                                                                 m_postprocessorWidget->fieldWidget()->selectedAdaptivityStep(),
-                                                                                                                                 point);
-            QMap<QString, LocalPointValue> values = localValue->values();
-
-            if (variable.isScalar())
-            {
-                yval.append(values[variable.id()].scalar);
-            }
-            else
-            {
-                if (physicFieldVariableComp == PhysicFieldVariableComp_X)
-                    yval.append(values[variable.id()].vector.x);
-                else if (physicFieldVariableComp == PhysicFieldVariableComp_Y)
-                    yval.append(values[variable.id()].vector.y);
-                else
-                    yval.append(values[variable.id()].vector.magnitude());
-            }
-        }
-    }
-
-    assert(xval.count() == yval.count());
-
-    // reverse x axis
-    if (chkHorizontalAxisReverse->isChecked())
-    {
-        for (int i = 0; i < points.length() / 2; i++)
-        {
-            double tmp = yval[i];
-            yval[i] = yval[points.length() - i - 1];
-            yval[points.length() - i - 1] = tmp;
-        }
-    }
-
-
-    m_sceneChart->chart()->graph(0)->setData(xval, yval);
-}
-
-void PostprocessorSceneChartWidget::plotTime()
-{
-    // variable
-    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->fieldWidget()->selectedField()->localVariable(m_postprocessorWidget->computation()->config()->coordinateType(), cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
-
-    // variable comp
-    PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) cmbFieldVariableComp->itemData(cmbFieldVariableComp->currentIndex()).toInt();
-    if (physicFieldVariableComp == PhysicFieldVariableComp_Undefined) return;
-
-    // time levels
-    QList<double> times = m_postprocessorWidget->computation()->timeStepTimes();
-
-    // chart
-    m_sceneChart->chart()->xAxis->setLabel(tr("time (s)"));
-    m_sceneChart->chart()->yAxis->setLabel(QString("%1 (%2)").
-                                           arg(physicFieldVariable.name()).
-                                           arg(physicFieldVariable.unit()));
-
-    // table
-    QVector<double> xval;
-    QVector<double> yval;
-
-    createChartLine();
-
-    for (int step = 0; step < times.count(); step++)
-    {
-        foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables(m_postprocessorWidget->computation()->config()->coordinateType()))
-        {
-            if (physicFieldVariable.id() != variable.id()) continue;
-
-            int adaptiveStep = m_postprocessorWidget->computation()->solutionStore()->lastAdaptiveStep(m_postprocessorWidget->fieldWidget()->selectedField(), step);
-            FieldSolutionID fsid(m_postprocessorWidget->fieldWidget()->selectedField()->fieldId(), step, adaptiveStep);
-            bool stepIsAvailable = m_postprocessorWidget->computation()->solutionStore()->contains(fsid);
-
-            if (stepIsAvailable)
-            {
-                // change time level
-                xval.append(times.at(step));
-
-                Point point(txtTimeX->value(), txtTimeY->value());
-                std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->fieldWidget()->selectedField()->plugin()->localValue(m_postprocessorWidget->computation().data(),
-                                                                                                                                     m_postprocessorWidget->fieldWidget()->selectedField(),
-                                                                                                                                     step,
-                                                                                                                                     adaptiveStep,
-                                                                                                                                     point);
-                QMap<QString, LocalPointValue> values = localValue->values();
-
-                if (variable.isScalar())
-                    yval.append(values[variable.id()].scalar);
-                else
-                {
-                    if (physicFieldVariableComp == PhysicFieldVariableComp_X)
-                        yval.append(values[variable.id()].vector.x);
-                    else if (physicFieldVariableComp == PhysicFieldVariableComp_Y)
-                        yval.append(values[variable.id()].vector.y);
-                    else
-                        yval.append(values[variable.id()].vector.magnitude());
-                }
-            }
-        }
-    }
-
-    m_sceneChart->chart()->graph(0)->setData(xval, yval);
-}
-
-QStringList PostprocessorSceneChartWidget::headers()
-{
-    QStringList head;
-    head << "x" << "y" << "t";
-
-    foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables(m_postprocessorWidget->computation()->config()->coordinateType()))
-    {
-        if (variable.isScalar())
-        {
-            // scalar variable
-            head.append(variable.shortname());
-        }
-        else
-        {
-            // vector variable
-            head.append(variable.shortname() + m_postprocessorWidget->computation()->config()->labelX().toLower());
-            head.append(variable.shortname() + m_postprocessorWidget->computation()->config()->labelY().toLower());
-            head.append(variable.shortname());
-        }
-    }
-
-    return head;
-}
-
-void PostprocessorSceneChartWidget::doExportData()
-{
-    QSettings settings;
-    QString dir = settings.value("General/LastDataDir").toString();
-
-    QString selectedFilter;
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Export data to file"), dir, tr("CSV files (*.csv)"), &selectedFilter);
-    if (fileName.isEmpty())
-    {
-        cerr << "Incorrect file name." << endl;
-        return;
-    }
-
-    QFileInfo fileInfo(fileName);
-
-    // open file for write
-    if (fileInfo.suffix().isEmpty())
-        fileName = fileName + ".csv";
-
-    QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        cerr << "Could not create " + fileName.toStdString() + " file." << endl;
-        return;
-    }
-    QTextStream out(&file);
-
-    QMap<QString, QList<double> > table;
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Y);
+    else if (radHorizontalAxisLength->isChecked())
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxis, ChartAxis_Length);
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisReverse, chkHorizontalAxisReverse->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartHorizontalAxisPoints, txtHorizontalAxisPoints->value());
     if (tbxAnalysisType->currentWidget() == widGeometry)
-    {
-        ChartLine *chartLine = new ChartLine(Point(txtStartX->value(), txtStartY->value()),
-                                             Point(txtEndX->value(), txtEndY->value()),
-                                             txtHorizontalAxisPoints->value());
-
-        foreach (Point point, chartLine->getPoints())
-        {
-            QMap<QString, double> data = getData(point,
-                                                 m_postprocessorWidget->fieldWidget()->selectedTimeStep(),
-                                                 m_postprocessorWidget->fieldWidget()->selectedAdaptivityStep());
-            foreach (QString key, data.keys())
-            {
-                QList<double> *values = &table.operator [](key);
-                values->append(data.value(key));
-            }
-        }
-
-        delete chartLine;
-    }
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartMode, ChartMode_Geometry);
     else if (tbxAnalysisType->currentWidget() == widTime)
-    {
-        Point point(txtTimeX->value(), txtTimeY->value());
-        QList<double> times = m_postprocessorWidget->computation()->timeStepTimes();
-        foreach (int timeStep, m_postprocessorWidget->computation()->timeStepLengths())
-        {
-            QMap<QString, double> data = getData(point,
-                                                 timeStep,
-                                                 m_postprocessorWidget->computation()->solutionStore()->lastAdaptiveStep(m_postprocessorWidget->fieldWidget()->selectedField(), timeStep));
-            foreach (QString key, data.keys())
-            {
-                QList<double> *values = &table.operator [](key);
-                values->append(data.value(key));
-            }
-        }
-    }
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartMode, ChartMode_Time);
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartVariable, cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ChartVariableComp, (PhysicFieldVariableComp) cmbFieldVariableComp->itemData(cmbFieldVariableComp->currentIndex()).toInt());
 
-    if (table.values().size() > 0)
-    {
-        // csv
-        // headers
-        foreach(QString key, table.keys())
-            out << key << ";";
-        out << "\n";
-
-        // values
-        for (int i = 0; i < table.values().first().size(); i++)
-        {
-            foreach(QString key, table.keys())
-                out << QString::number(table.value(key).at(i)) << ";";
-            out << endl;
-        }
-
-        if (fileInfo.absoluteDir() != tempProblemDir())
-            settings.setValue("General/LastDataDir", fileInfo.absolutePath());
-
-        file.close();
-    }
-}
-
-void PostprocessorSceneChartWidget::doSaveImage()
-{
-    QSettings settings;
-    QString dir = settings.value("General/LastDataDir").toString();
-
-    QString selectedFilter;
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save image"), dir, tr("PNG files (*.png)"), &selectedFilter);
-    if (fileName.isEmpty())
-    {
-        cerr << "Incorrect file name." << endl;
-        return;
-    }
-
-    QFileInfo fileInfo(fileName);
-
-    // open file for write
-    if (fileInfo.suffix().isEmpty())
-        fileName = fileName + ".png";
-
-    QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        cerr << "Could not create " + fileName.toStdString() + " file." << endl;
-        return;
-    }
-
-    m_sceneChart->chart()->savePng(fileName, 1024, 768);
-}
-
-QMap<QString, double> PostprocessorSceneChartWidget::getData(Point point, int timeStep, int adaptivityStep)
-{
-    QMap<QString, double> table;
-    table.insert(m_postprocessorWidget->computation()->config()->labelX(), point.x);
-    table.insert(m_postprocessorWidget->computation()->config()->labelY(), point.y);
-    table.insert("t", m_postprocessorWidget->computation()->timeStepToTotalTime(m_postprocessorWidget->fieldWidget()->selectedTimeStep()));
-
-    foreach (Module::LocalVariable variable, m_postprocessorWidget->fieldWidget()->selectedField()->localPointVariables(m_postprocessorWidget->computation()->config()->coordinateType()))
-    {
-        std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->fieldWidget()->selectedField()->plugin()->localValue(m_postprocessorWidget->computation().data(),
-                                                                                                                             m_postprocessorWidget->fieldWidget()->selectedField(),
-                                                                                                                             timeStep,
-                                                                                                                             adaptivityStep,
-                                                                                                                             point);
-        QMap<QString, LocalPointValue> values = localValue->values();
-
-        if (variable.isScalar())
-        {
-            table.insert(variable.shortname(), values[variable.id()].scalar);
-        }
-        else
-        {
-            table.insert(QString(variable.shortname()), values[variable.id()].vector.magnitude());
-            table.insert(QString(variable.shortname() + "x"), values[variable.id()].vector.x);
-            table.insert(QString(variable.shortname() + "y"), values[variable.id()].vector.y);
-        }
-    }
-
-    return table;
-}
-
-void PostprocessorSceneChartWidget::createChartLine()
-{
-    ChartLine line;
-
-    if (tbxAnalysisType->currentWidget() == widGeometry)
-    {
-        line = ChartLine(Point(txtStartX->value(), txtStartY->value()),
-                         Point(txtEndX->value(), txtEndY->value()),
-                         txtHorizontalAxisPoints->value(),
-                         chkHorizontalAxisReverse->isChecked());
-    }
-    if (tbxAnalysisType->currentWidget() == widTime)
-    {
-        line = ChartLine(Point(txtTimeX->value(), txtTimeY->value()),
-                         Point(txtTimeX->value(), txtTimeY->value()),
-                         0.0,
-                         0);
-    }
-
-    geometryViewer->setChartLine(line);
-    geometryViewer->doZoomBestFit();
+    createChartLine();
 }

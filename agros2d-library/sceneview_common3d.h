@@ -50,10 +50,6 @@ protected:
     Point m_offset3d; // offset
     Point3 m_rotation3d; // rotation
 
-    QMenu *mnuView3D;
-
-    void createMenu();
-
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
     void mousePressEvent(QMouseEvent *event);

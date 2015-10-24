@@ -48,6 +48,8 @@ protected:
     virtual void paintGL();
     virtual void resizeGL(int w, int h);
 
+    virtual Problem *problem();
+
     void paintScalarField3D(); // paint scalar field 3d surface
     void paintScalarField3DSolid(); // paint scalar field 3d solid
 

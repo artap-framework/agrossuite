@@ -341,6 +341,9 @@ void Problem::clearFieldsAndConfig()
 
     // clear parameters
     m_problemParameters.clear();    
+
+    // clear scene
+    m_scene->clear();
 }
 
 void Problem::addField(FieldInfo *field)
@@ -1650,6 +1653,7 @@ void ProblemComputation::clearSolution()
 void ProblemComputation::clearFieldsAndConfig()
 {
     m_solutionStore->clearAll();
+    m_postDeal->clear();
 
     Problem::clearFieldsAndConfig();
 }

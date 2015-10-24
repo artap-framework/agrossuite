@@ -43,6 +43,8 @@ protected:
     void paintGL();
     virtual void doZoomRegion(const Point &start, const Point &end);
 
+    virtual Problem *problem();
+
     void paintChartLine();
     void paintGeometry(); // paint nodes, edges and labels
 

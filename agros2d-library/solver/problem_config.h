@@ -197,6 +197,9 @@ public:
         View_ChartHorizontalAxis,
         View_ChartHorizontalAxisReverse,
         View_ChartHorizontalAxisPoints,
+        View_ChartVariable,
+        View_ChartVariableComp,
+        View_ChartMode,
         View_SolidViewHide
     };
 

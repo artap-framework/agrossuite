@@ -416,10 +416,6 @@ void Scene::clear()
 
     m_undoStack->clear();
 
-    // clear problem
-    if (Agros2D::singleton() && this->parentProblem())
-        this->parentProblem()->clearFieldsAndConfig();
-
     // geometry
     nodes->clear();
     edges->clear();

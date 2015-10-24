@@ -160,7 +160,6 @@ private:
 
     QAction *actOptions;
     QAction *actFullScreen;
-    QAction *actPostprocessorView;
 
     QAction *actMaterialBrowser;
     QAction *actCreateVideo;

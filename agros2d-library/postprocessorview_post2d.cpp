@@ -51,140 +51,6 @@ PostprocessorScenePost2DWidget::PostprocessorScenePost2DWidget(PostprocessorWidg
     setObjectName("PostprocessorPost2DWidget");
 
     createControls();
-
-    connect(postprocessorWidget->fieldWidget(), SIGNAL(fieldChanged()), this, SLOT(refresh()));
-}
-
-void PostprocessorScenePost2DWidget::load()
-{
-    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
-        return;
-
-    chkShowPost2DContourView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowContourView).toBool());
-    chkShowPost2DVectorView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowVectorView).toBool());
-    chkShowPost2DScalarView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowScalarView).toBool());
-
-    // contour field
-    cmbPost2DContourVariable->setCurrentIndex(cmbPost2DContourVariable->findData(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ContourVariable).toString()));
-    if (cmbPost2DContourVariable->count() > 0 && cmbPost2DContourVariable->itemData(cmbPost2DContourVariable->currentIndex()) != QVariant::Invalid)
-    {
-        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ContourVariable,
-                                                    cmbPost2DContourVariable->itemData(cmbPost2DContourVariable->currentIndex()).toString());
-    }
-    if (cmbPost2DContourVariable->currentIndex() == -1 && cmbPost2DContourVariable->count() > 0)
-    {
-        // set first variable
-        cmbPost2DContourVariable->setCurrentIndex(0);
-    }
-
-    // scalar field
-    cmbPostScalarFieldVariable->setCurrentIndex(cmbPostScalarFieldVariable->findData(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarVariable).toString()));
-    if (cmbPostScalarFieldVariable->count() > 0 && cmbPostScalarFieldVariable->itemData(cmbPostScalarFieldVariable->currentIndex()) != QVariant::Invalid)
-    {
-        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarVariable, cmbPostScalarFieldVariable->itemData(cmbPostScalarFieldVariable->currentIndex()).toString());
-        doScalarFieldVariable(cmbPostScalarFieldVariable->currentIndex());
-
-        cmbPostScalarFieldVariableComp->setCurrentIndex(cmbPostScalarFieldVariableComp->findData((PhysicFieldVariableComp) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt()));
-        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarVariableComp, (PhysicFieldVariableComp) cmbPostScalarFieldVariableComp->itemData(cmbPostScalarFieldVariableComp->currentIndex()).toInt());
-    }
-    if (cmbPostScalarFieldVariable->currentIndex() == -1 && cmbPostScalarFieldVariable->count() > 0)
-    {
-        // set first variable
-        cmbPostScalarFieldVariable->setCurrentIndex(0);
-    }
-
-    // vector field
-    if (cmbPost2DVectorFieldVariable->count() > 0 && cmbPost2DVectorFieldVariable->itemData(cmbPost2DVectorFieldVariable->currentIndex()) != QVariant::Invalid)
-    {
-        cmbPost2DVectorFieldVariable->setCurrentIndex(cmbPost2DVectorFieldVariable->findData(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorVariable).toString()));
-        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorVariable,
-                                                                  cmbPost2DVectorFieldVariable->itemData(cmbPost2DVectorFieldVariable->currentIndex()).toString());
-    }
-    if (cmbPost2DVectorFieldVariable->currentIndex() == -1 && cmbPost2DVectorFieldVariable->count() > 0)
-    {
-        // set first variable
-        cmbPost2DVectorFieldVariable->setCurrentIndex(0);
-    }
-
-    // scalar field
-    chkShowScalarColorBar->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowScalarColorBar).toBool());
-    cmbPalette->setCurrentIndex(cmbPalette->findData((PaletteType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_PaletteType).toInt()));
-    chkPaletteFilter->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_PaletteFilter).toBool());
-    doPaletteFilter(chkPaletteFilter->checkState());
-    txtPaletteSteps->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_PaletteSteps).toInt());
-    chkScalarDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformScalar).toBool());
-
-    // contours
-    txtContoursCount->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ContoursCount).toInt());
-    txtContourWidth->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ContoursWidth).toDouble());
-    chkContourDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformContour).toBool());
-
-    // vector field
-    chkVectorProportional->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorProportional).toBool());
-    chkVectorColor->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorColor).toBool());
-    txtVectorCount->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorCount).toInt());
-    txtVectorCount->setToolTip(tr("Width and height of bounding box over vector count."));
-    txtVectorScale->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorScale).toDouble());
-    cmbVectorType->setCurrentIndex(cmbVectorType->findData((VectorType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorType).toInt()));
-    cmbVectorCenter->setCurrentIndex(cmbVectorCenter->findData((VectorCenter) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorCenter).toInt()));
-    chkVectorDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformVector).toBool());
-
-    // advanced
-    // scalar field
-    chkScalarFieldRangeLog->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeLog).toBool());
-    doScalarFieldLog(chkScalarFieldRangeLog->checkState());
-    txtScalarFieldRangeBase->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeBase).toDouble());
-    txtScalarDecimalPlace->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt());
-    chkScalarFieldRangeAuto->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeAuto).toBool());
-    doScalarFieldRangeAuto(chkScalarFieldRangeAuto->checkState());
-    txtScalarFieldRangeMin->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeMin).toDouble());
-    txtScalarFieldRangeMax->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeMax).toDouble());
-}
-
-void PostprocessorScenePost2DWidget::save()
-{
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowContourView, chkShowPost2DContourView->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowScalarView, chkShowPost2DScalarView->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowVectorView, chkShowPost2DVectorView->isChecked());
-
-    // contour field
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ContourVariable, cmbPost2DContourVariable->itemData(cmbPost2DContourVariable->currentIndex()).toString());
-
-    // scalar field
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarVariable, cmbPostScalarFieldVariable->itemData(cmbPostScalarFieldVariable->currentIndex()).toString());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarVariableComp, (PhysicFieldVariableComp) cmbPostScalarFieldVariableComp->itemData(cmbPostScalarFieldVariableComp->currentIndex()).toInt());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeAuto, chkScalarFieldRangeAuto->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeMin, txtScalarFieldRangeMin->value());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeMax, txtScalarFieldRangeMax->value());
-
-    // vector field
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorVariable, cmbPost2DVectorFieldVariable->itemData(cmbPost2DVectorFieldVariable->currentIndex()).toString());
-
-    // scalar field
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowScalarColorBar, chkShowScalarColorBar->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_PaletteType, (PaletteType) cmbPalette->itemData(cmbPalette->currentIndex()).toInt());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_PaletteFilter, chkPaletteFilter->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_PaletteSteps, txtPaletteSteps->value());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_DeformScalar, chkScalarDeform->isChecked());
-
-    // contours
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ContoursCount, txtContoursCount->value());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ContoursWidth, txtContourWidth->value());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_DeformContour, chkContourDeform->isChecked());
-
-    // vector field
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorProportional, chkVectorProportional->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorColor, chkVectorColor->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorCount, txtVectorCount->value());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorScale, txtVectorScale->value());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorType, (VectorType) cmbVectorType->itemData(cmbVectorType->currentIndex()).toInt());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorCenter, (VectorCenter) cmbVectorCenter->itemData(cmbVectorCenter->currentIndex()).toInt());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_DeformVector, chkVectorDeform->isChecked());
-
-    // scalar view
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeLog, chkScalarFieldRangeLog->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeBase, txtScalarFieldRangeBase->text().toDouble());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarDecimalPlace, txtScalarDecimalPlace->value());
 }
 
 void PostprocessorScenePost2DWidget::createControls()
@@ -513,17 +379,6 @@ QWidget *PostprocessorScenePost2DWidget::postVectorAdvancedWidget()
     return vectorWidget;
 }
 
-void PostprocessorScenePost2DWidget::refresh()
-{
-    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
-        return;
-
-    fillComboBoxScalarVariable(m_postprocessorWidget->computation()->config()->coordinateType(), m_postprocessorWidget->fieldWidget()->selectedField(), cmbPostScalarFieldVariable);
-    fillComboBoxContourVariable(m_postprocessorWidget->computation()->config()->coordinateType(), m_postprocessorWidget->fieldWidget()->selectedField(), cmbPost2DContourVariable);
-    fillComboBoxVectorVariable(m_postprocessorWidget->computation()->config()->coordinateType(), m_postprocessorWidget->fieldWidget()->selectedField(), cmbPost2DVectorFieldVariable);
-    doScalarFieldVariable(cmbPostScalarFieldVariable->currentIndex());
-}
-
 void PostprocessorScenePost2DWidget::doScalarFieldExpandCollapse(bool collapsed)
 {
     groupPostScalarAdvanced->setVisible(!collapsed);
@@ -654,4 +509,147 @@ void PostprocessorScenePost2DWidget::doScalarFieldRangeAuto(int state)
 void PostprocessorScenePost2DWidget::doPaletteFilter(int state)
 {
     txtPaletteSteps->setEnabled(!chkPaletteFilter->isChecked());
+}
+
+void PostprocessorScenePost2DWidget::refresh()
+{
+    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+        return;
+
+    fillComboBoxScalarVariable(m_postprocessorWidget->computation()->config()->coordinateType(), m_postprocessorWidget->fieldWidget()->selectedField(), cmbPostScalarFieldVariable);
+    fillComboBoxContourVariable(m_postprocessorWidget->computation()->config()->coordinateType(), m_postprocessorWidget->fieldWidget()->selectedField(), cmbPost2DContourVariable);
+    fillComboBoxVectorVariable(m_postprocessorWidget->computation()->config()->coordinateType(), m_postprocessorWidget->fieldWidget()->selectedField(), cmbPost2DVectorFieldVariable);
+    doScalarFieldVariable(cmbPostScalarFieldVariable->currentIndex());
+}
+
+void PostprocessorScenePost2DWidget::load()
+{
+    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+        return;
+
+    chkShowPost2DContourView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowContourView).toBool());
+    chkShowPost2DVectorView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowVectorView).toBool());
+    chkShowPost2DScalarView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowScalarView).toBool());
+
+    // contour field
+    cmbPost2DContourVariable->setCurrentIndex(cmbPost2DContourVariable->findData(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ContourVariable).toString()));
+    if (cmbPost2DContourVariable->count() > 0 && cmbPost2DContourVariable->itemData(cmbPost2DContourVariable->currentIndex()) != QVariant::Invalid)
+    {
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ContourVariable,
+                                                    cmbPost2DContourVariable->itemData(cmbPost2DContourVariable->currentIndex()).toString());
+    }
+    if (cmbPost2DContourVariable->currentIndex() == -1 && cmbPost2DContourVariable->count() > 0)
+    {
+        // set first variable
+        cmbPost2DContourVariable->setCurrentIndex(0);
+    }
+
+    // scalar field
+    cmbPostScalarFieldVariable->setCurrentIndex(cmbPostScalarFieldVariable->findData(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarVariable).toString()));
+    if (cmbPostScalarFieldVariable->count() > 0 && cmbPostScalarFieldVariable->itemData(cmbPostScalarFieldVariable->currentIndex()) != QVariant::Invalid)
+    {
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarVariable, cmbPostScalarFieldVariable->itemData(cmbPostScalarFieldVariable->currentIndex()).toString());
+        doScalarFieldVariable(cmbPostScalarFieldVariable->currentIndex());
+
+        cmbPostScalarFieldVariableComp->setCurrentIndex(cmbPostScalarFieldVariableComp->findData((PhysicFieldVariableComp) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt()));
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarVariableComp, (PhysicFieldVariableComp) cmbPostScalarFieldVariableComp->itemData(cmbPostScalarFieldVariableComp->currentIndex()).toInt());
+    }
+    if (cmbPostScalarFieldVariable->currentIndex() == -1 && cmbPostScalarFieldVariable->count() > 0)
+    {
+        // set first variable
+        cmbPostScalarFieldVariable->setCurrentIndex(0);
+    }
+
+    // vector field
+    if (cmbPost2DVectorFieldVariable->count() > 0 && cmbPost2DVectorFieldVariable->itemData(cmbPost2DVectorFieldVariable->currentIndex()) != QVariant::Invalid)
+    {
+        cmbPost2DVectorFieldVariable->setCurrentIndex(cmbPost2DVectorFieldVariable->findData(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorVariable).toString()));
+        m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorVariable,
+                                                                  cmbPost2DVectorFieldVariable->itemData(cmbPost2DVectorFieldVariable->currentIndex()).toString());
+    }
+    if (cmbPost2DVectorFieldVariable->currentIndex() == -1 && cmbPost2DVectorFieldVariable->count() > 0)
+    {
+        // set first variable
+        cmbPost2DVectorFieldVariable->setCurrentIndex(0);
+    }
+
+    // scalar field
+    chkShowScalarColorBar->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowScalarColorBar).toBool());
+    cmbPalette->setCurrentIndex(cmbPalette->findData((PaletteType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_PaletteType).toInt()));
+    chkPaletteFilter->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_PaletteFilter).toBool());
+    doPaletteFilter(chkPaletteFilter->checkState());
+    txtPaletteSteps->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_PaletteSteps).toInt());
+    chkScalarDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformScalar).toBool());
+
+    // contours
+    txtContoursCount->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ContoursCount).toInt());
+    txtContourWidth->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ContoursWidth).toDouble());
+    chkContourDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformContour).toBool());
+
+    // vector field
+    chkVectorProportional->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorProportional).toBool());
+    chkVectorColor->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorColor).toBool());
+    txtVectorCount->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorCount).toInt());
+    txtVectorCount->setToolTip(tr("Width and height of bounding box over vector count."));
+    txtVectorScale->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorScale).toDouble());
+    cmbVectorType->setCurrentIndex(cmbVectorType->findData((VectorType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorType).toInt()));
+    cmbVectorCenter->setCurrentIndex(cmbVectorCenter->findData((VectorCenter) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorCenter).toInt()));
+    chkVectorDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformVector).toBool());
+
+    // advanced
+    // scalar field
+    chkScalarFieldRangeLog->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeLog).toBool());
+    doScalarFieldLog(chkScalarFieldRangeLog->checkState());
+    txtScalarFieldRangeBase->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeBase).toDouble());
+    txtScalarDecimalPlace->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt());
+    chkScalarFieldRangeAuto->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeAuto).toBool());
+    doScalarFieldRangeAuto(chkScalarFieldRangeAuto->checkState());
+    txtScalarFieldRangeMin->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeMin).toDouble());
+    txtScalarFieldRangeMax->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarRangeMax).toDouble());
+}
+
+void PostprocessorScenePost2DWidget::save()
+{
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowContourView, chkShowPost2DContourView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowScalarView, chkShowPost2DScalarView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowVectorView, chkShowPost2DVectorView->isChecked());
+
+    // contour field
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ContourVariable, cmbPost2DContourVariable->itemData(cmbPost2DContourVariable->currentIndex()).toString());
+
+    // scalar field
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarVariable, cmbPostScalarFieldVariable->itemData(cmbPostScalarFieldVariable->currentIndex()).toString());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarVariableComp, (PhysicFieldVariableComp) cmbPostScalarFieldVariableComp->itemData(cmbPostScalarFieldVariableComp->currentIndex()).toInt());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeAuto, chkScalarFieldRangeAuto->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeMin, txtScalarFieldRangeMin->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeMax, txtScalarFieldRangeMax->value());
+
+    // vector field
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorVariable, cmbPost2DVectorFieldVariable->itemData(cmbPost2DVectorFieldVariable->currentIndex()).toString());
+
+    // scalar field
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowScalarColorBar, chkShowScalarColorBar->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_PaletteType, (PaletteType) cmbPalette->itemData(cmbPalette->currentIndex()).toInt());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_PaletteFilter, chkPaletteFilter->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_PaletteSteps, txtPaletteSteps->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_DeformScalar, chkScalarDeform->isChecked());
+
+    // contours
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ContoursCount, txtContoursCount->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ContoursWidth, txtContourWidth->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_DeformContour, chkContourDeform->isChecked());
+
+    // vector field
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorProportional, chkVectorProportional->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorColor, chkVectorColor->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorCount, txtVectorCount->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorScale, txtVectorScale->value());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorType, (VectorType) cmbVectorType->itemData(cmbVectorType->currentIndex()).toInt());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_VectorCenter, (VectorCenter) cmbVectorCenter->itemData(cmbVectorCenter->currentIndex()).toInt());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_DeformVector, chkVectorDeform->isChecked());
+
+    // scalar view
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeLog, chkScalarFieldRangeLog->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarRangeBase, txtScalarFieldRangeBase->text().toDouble());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarDecimalPlace, txtScalarDecimalPlace->value());
 }

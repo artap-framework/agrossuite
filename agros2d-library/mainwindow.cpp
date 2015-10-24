@@ -539,11 +539,11 @@ void MainWindow::createMain()
 #endif
     tlbLeftBar->setStyleSheet(QString("QToolBar { border: 1px solid rgba(70, 70, 70, 255); }"
                                       "QToolBar { background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(70, 70, 70, 255), stop:1 rgba(120, 120, 120, 255)); }"
-                                      "QToolButton { border: 0px; color: rgba(230, 230, 230, 255); font: bold; font-size: %1pt; width: 65px; }"
+                                      "QToolButton { border: 0px; color: rgba(230, 230, 230, 255); font: bold; font-size: %1pt; width: 70px; }"
                                       "QToolButton:hover { border: 0px; background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(70, 70, 70, 255), stop:0.5 rgba(160, 160, 160, 255), stop:1 rgba(150, 150, 150, 255)); }"
                                       "QToolButton:checked:hover, QToolButton:checked { border: 0px; color: rgba(30, 30, 30, 255); background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(160, 160, 160, 255), stop:0.5 rgba(220, 220, 220, 255), stop:1 rgba(160, 160, 160, 255)); }").arg(fontSize));
     // system layout
-    // leftToolBar->setStyleSheet("QToolButton { font: bold; font-size: 8pt; width: 65px; }");
+    // leftToolBar->setStyleSheet("QToolButton { font: bold; font-size: 8pt; width: 70px; }");
 
     tlbLeftBar->setIconSize(QSize(32, 32));
     tlbLeftBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -567,7 +567,7 @@ void MainWindow::createMain()
     splitter->setStretchFactor(0, 0);
     splitter->setStretchFactor(1, 1);
     QList<int> sizes;
-    sizes << 230 << 0;
+    sizes << 235 << 0;
     splitter->setSizes(sizes);
 
     QHBoxLayout *layoutMain = new QHBoxLayout();
@@ -707,7 +707,10 @@ void MainWindow::doDocumentNew()
     FieldSelectDialog dialog(QList<QString>(), this);
     if (dialog.showDialog() == QDialog::Accepted)
     {
-        Agros2D::preprocessor()->scene()->clear();
+        // clear all computations
+        Agros2D::clearComputations();
+
+        // clear preprocessor
         Agros2D::preprocessor()->clearFieldsAndConfig();
 
         // add field
@@ -718,12 +721,7 @@ void MainWindow::doDocumentNew()
             Agros2D::preprocessor()->addField(fieldInfo);
 
             problemWidget->actProperties->trigger();
-            sceneViewPreprocessor->doZoomBestFit();
-            // sceneViewMesh->doZoomBestFit();
-            // sceneViewPost2D->doZoomBestFit();
-            // sceneViewPost3D->doZoomBestFit();
-            // sceneViewParticleTracing->doZoomBestFit();
-            // sceneViewVTK2D->doZoomBestFit();
+            sceneViewPreprocessor->doZoomBestFit();            
         }
         catch (AgrosPluginException& e)
         {
@@ -754,6 +752,9 @@ void MainWindow::doDocumentOpen(const QString &fileName)
 
     if (QFile::exists(fileNameDocument))
     {
+        // clear all computations
+        Agros2D::clearComputations();
+
         QFileInfo fileInfo(fileNameDocument);
         if (fileInfo.suffix() == "a2d")
         {
@@ -768,11 +769,6 @@ void MainWindow::doDocumentOpen(const QString &fileName)
 
                 problemWidget->actProperties->trigger();
                 sceneViewPreprocessor->doZoomBestFit();
-                // sceneViewMesh->doZoomBestFit();
-                // sceneViewPost2D->doZoomBestFit();
-                // sceneViewPost3D->doZoomBestFit();
-                // sceneViewParticleTracing->doZoomBestFit();
-                // sceneViewVTK2D->doZoomBestFit();
 
                 return;
             }
@@ -804,6 +800,7 @@ void MainWindow::doDocumentOpen(const QString &fileName)
             // python script
             scriptEditor->doFileOpen(fileNameDocument);
             scriptEditor->actSceneModePythonEditor->trigger();
+
             return;
         }
 

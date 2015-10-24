@@ -217,16 +217,6 @@ void PostDeal::processRangeContour()
 {
     if (m_computation->isSolved() && m_activeViewField && (m_computation->setting()->value(ProblemSetting::View_ShowContourView).toBool()))
     {
-        bool contains = false;
-        foreach (Module::LocalVariable variable, m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
-        {
-            if (variable.id() == m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString())
-            {
-                contains = true;
-                break;
-            }
-        }
-
         Agros2D::log()->printMessage(tr("Post View"), tr("Contour view (%1)").arg(m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString()));
 
         QString variableName = m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString();
@@ -262,16 +252,6 @@ void PostDeal::processRangeScalar()
             && ((m_computation->setting()->value(ProblemSetting::View_ShowScalarView).toBool())
                 || (((SceneViewPost3DMode) m_computation->setting()->value(ProblemSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D)))
     {
-        bool contains = false;
-        foreach (Module::LocalVariable variable, m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
-        {
-            if (variable.id() == m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString())
-            {
-                contains = true;
-                break;
-            }
-        }
-
         Agros2D::log()->printMessage(tr("Post View"), tr("Scalar view (%1)").arg(m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString()));
 
         std::shared_ptr<PostDataOut> data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
@@ -386,14 +366,6 @@ void PostDeal::processSolved()
     FieldSolutionID fsid(activeViewField()->fieldId(), activeTimeStep(), activeAdaptivityStep());
     if (m_computation->solutionStore()->contains(fsid))
     {
-        /*
-        MultiArray<double> ma = m_computation->solutionStore()->multiArray(fsid);
-        if (ma.spaces().empty())
-            return;
-        if (ma.solutions().empty())
-            return;
-        */
-
         // add icon to progress
         Agros2D::log()->addIcon(icon("scene-post2d"), tr("Postprocessor"));
 

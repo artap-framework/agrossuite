@@ -47,6 +47,8 @@ public slots:
 protected:
     virtual void paintGL();
 
+    virtual Problem *problem();
+
     void paintGeometry();
 
     void paintInitialMesh();

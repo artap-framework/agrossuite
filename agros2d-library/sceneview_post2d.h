@@ -67,6 +67,8 @@ protected:
     virtual void paintGL();
     virtual void resizeGL(int w, int h);
 
+    virtual Problem *problem();
+
     void paintGeometry(); // paint edges
 
     void paintScalarField(); // paint scalar field surface

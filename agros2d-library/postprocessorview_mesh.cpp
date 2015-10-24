@@ -50,39 +50,7 @@ PostprocessorSceneMeshWidget::PostprocessorSceneMeshWidget(PostprocessorWidget *
     setWindowIcon(icon("scene-properties"));
     setObjectName("PostprocessorMeshWidget");
 
-    createControls();
-
-    connect(postprocessorWidget->fieldWidget(), SIGNAL(fieldChanged()), this, SLOT(refresh()));
-}
-
-void PostprocessorSceneMeshWidget::load()
-{
-    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
-        return;
-
-    // show
-    chkShowInitialMeshView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowInitialMeshView).toBool());
-    chkShowSolutionMeshView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowSolutionMeshView).toBool());
-    chkShowOrderView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderView).toBool());
-    txtOrderComponent->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_OrderComponent).toInt());
-
-    // order view
-    chkShowOrderColorbar->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool());
-    cmbOrderPaletteOrder->setCurrentIndex(cmbOrderPaletteOrder->findData((PaletteOrderType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt()));
-    chkOrderLabel->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderLabel).toBool());
-}
-
-void PostprocessorSceneMeshWidget::save()
-{
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowInitialMeshView, chkShowInitialMeshView->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowSolutionMeshView, chkShowSolutionMeshView->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderView, chkShowOrderView->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_OrderComponent, txtOrderComponent->value());
-
-    // order view
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderColorBar, chkShowOrderColorbar->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_OrderPaletteOrderType, (PaletteOrderType) cmbOrderPaletteOrder->itemData(cmbOrderPaletteOrder->currentIndex()).toInt());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderLabel, chkOrderLabel->isChecked());
+    createControls();    
 }
 
 void PostprocessorSceneMeshWidget::createControls()
@@ -166,4 +134,34 @@ void PostprocessorSceneMeshWidget::refresh()
     chkShowOrderView->setEnabled(m_postprocessorWidget->computation()->isSolved());
     txtOrderComponent->setEnabled(m_postprocessorWidget->computation()->isSolved() && (chkShowOrderView->isChecked() || chkShowSolutionMeshView->isChecked()));
     txtOrderComponent->setMaximum(m_postprocessorWidget->fieldWidget()->selectedField()->numberOfSolutions());
+}
+
+void PostprocessorSceneMeshWidget::load()
+{
+    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+        return;
+
+    // show
+    chkShowInitialMeshView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowInitialMeshView).toBool());
+    chkShowSolutionMeshView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowSolutionMeshView).toBool());
+    chkShowOrderView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderView).toBool());
+    txtOrderComponent->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_OrderComponent).toInt());
+
+    // order view
+    chkShowOrderColorbar->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool());
+    cmbOrderPaletteOrder->setCurrentIndex(cmbOrderPaletteOrder->findData((PaletteOrderType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt()));
+    chkOrderLabel->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderLabel).toBool());
+}
+
+void PostprocessorSceneMeshWidget::save()
+{
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowInitialMeshView, chkShowInitialMeshView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowSolutionMeshView, chkShowSolutionMeshView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderView, chkShowOrderView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_OrderComponent, txtOrderComponent->value());
+
+    // order view
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderColorBar, chkShowOrderColorbar->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_OrderPaletteOrderType, (PaletteOrderType) cmbOrderPaletteOrder->itemData(cmbOrderPaletteOrder->currentIndex()).toInt());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderLabel, chkOrderLabel->isChecked());
 }

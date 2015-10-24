@@ -57,9 +57,6 @@ class PostprocessorSceneChartWidget : public PostprocessorSceneWidget
 public:
     PostprocessorSceneChartWidget(PostprocessorWidget *postprocessorWidget, SceneViewChart *sceneChart);
 
-    void load();
-    void save();
-
 private:    
     SceneViewChart *m_sceneChart;
 
@@ -105,27 +102,13 @@ private:
 
     void createControls();
 
-    QVector<double> horizontalAxisValues(ChartLine *chartLine);
-
-    void plotGeometry();
-    void plotTime();
-
-    void fillTableRow(LocalValue *localValue, double time, int row);
-
-    QStringList headers();
-    void addValue(LocalValue *localPointValue, double time, double *yval, int i, int N,
-                  PhysicFieldVariableComp physicFieldVariableComp,
-                  Module::LocalVariable *physicFieldVariable);
-
 public slots:
-    void refresh();
+    virtual void refresh();
+    virtual void load();
+    virtual void save();
 
 private slots:
     void doFieldVariable(int index);
-
-    void doExportData();
-    void doSaveImage();
-    QMap<QString, double> getData(Point point, int timeStep, int adaptivityStep);
 
     void createChartLine();
 };

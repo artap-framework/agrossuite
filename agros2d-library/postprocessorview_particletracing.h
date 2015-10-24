@@ -36,9 +36,6 @@ class PostprocessorSceneParticleTracingWidget : public PostprocessorSceneWidget
 public:
     PostprocessorSceneParticleTracingWidget(PostprocessorWidget *postprocessorWidget, SceneViewParticleTracing *sceneParticleTracing);
 
-    void load();
-    void save();
-
 private:    
     SceneViewPost2D *m_scenePost2D;
 
@@ -85,9 +82,9 @@ private:
     void createControls();
 
 public slots:
-    void refresh();
-
-private slots:
+    virtual void refresh();
+    virtual void load();
+    virtual void save();
 };
 
 #endif // POSTPROCESSORVIEW_PARTICLETRACING_H

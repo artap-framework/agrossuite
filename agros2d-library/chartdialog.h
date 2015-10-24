@@ -33,6 +33,7 @@ class FieldInfo;
 class SceneViewPost2D;
 class PhysicalFieldWidget;
 class QCustomPlot;
+class ChartLine;
 
 class SceneViewChart : public QWidget
 {
@@ -44,7 +45,9 @@ public:
     inline QCustomPlot *chart() { return m_chart; }
 
 public slots:
-    void setControls();
+    void refresh();
+    void doSaveImage();
+    void doExportData();
 
 private slots:
     void connectComputation(QSharedPointer<ProblemComputation> computation);
@@ -53,6 +56,13 @@ private:
     QCustomPlot *m_chart;
 
     QSharedPointer<ProblemComputation> m_computation;
+
+    QVector<double> horizontalAxisValues(ChartLine *chartLine);
+    void plotGeometry();
+    void plotTime();
+
+    QMap<QString, double> getData(Point point, int timeStep, int adaptivityStep);
+    QStringList headers();
 };
 
 #endif // CHARTDIALOG_H

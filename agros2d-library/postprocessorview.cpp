@@ -121,8 +121,6 @@ void PostprocessorWidget::createControls()
 
 void PostprocessorWidget::doApply()
 {
-    m_fieldWidget->updateControls();
-
     if (m_computation->isSolved())
     {
         m_computation->postDeal()->setActiveViewField(fieldWidget()->selectedField());
@@ -133,6 +131,7 @@ void PostprocessorWidget::doApply()
     // PostprocessorSceneWidget *widget = qobject_cast<PostprocessorSceneWidget>(tabWidget->currentWidget());
     // widget->save();
 
+    // save settings
     if (tabWidget->currentWidget() == m_meshWidget)
     {
         m_meshWidget->save();
@@ -150,6 +149,9 @@ void PostprocessorWidget::doApply()
         m_particleTracingWidget->save();
     }
 
+    // update field widget
+    m_fieldWidget->updateControls();
+
     // refresh
     emit apply();
 
@@ -158,6 +160,12 @@ void PostprocessorWidget::doApply()
 
 void PostprocessorWidget::refresh()
 {
+    actSceneModePost->setEnabled(m_computation->isMeshed());
+    tabWidget->setTabEnabled(0, m_computation->isMeshed());
+    tabWidget->setTabEnabled(1, m_computation->isSolved());
+    tabWidget->setTabEnabled(2, m_computation->isSolved());
+    tabWidget->setTabEnabled(3, m_computation->isSolved());
+
     // mesh and polynomial info
     int dofs = 0;
     if (m_computation->isMeshed())
@@ -183,6 +191,7 @@ void PostprocessorWidget::refresh()
     m_meshWidget->load();
     m_post2DWidget->load();
     m_chartWidget->load();
+    m_particleTracingWidget->load();
 }
 
 void PostprocessorWidget::connectComputation(QSharedPointer<ProblemComputation> computation)
@@ -245,4 +254,10 @@ PostprocessorWidgetMode PostprocessorWidget::mode()
         return PostprocessorWidgetMode_ParticleTracing;
     else
         assert(0);
+}
+
+PostprocessorSceneWidget::PostprocessorSceneWidget(PostprocessorWidget *postprocessorWidget)
+    : QWidget(postprocessorWidget), m_postprocessorWidget(postprocessorWidget)
+{
+    connect(postprocessorWidget->fieldWidget(), SIGNAL(fieldChanged()), this, SLOT(refresh()));
 }

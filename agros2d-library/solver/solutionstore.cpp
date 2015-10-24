@@ -183,28 +183,19 @@ void SolutionStore::removeSolution(FieldSolutionID solutionID, bool saveRunTime)
     }
 
     // remove old files
-    /*
-    QFileInfo info(m_computation->config()->fileName());
-    if (info.exists())
-    {
-        QString fn = baseStoreFileName(solutionID);
+    QString baseFN = baseStoreFileName(solutionID);
 
-        for (int solutionIndex = 0; solutionIndex < solutionID.fieldInfo->numberOfSolutions(); solutionIndex++)
-        {
-            QString fnMesh = QString("%1_%2.msh").arg(fn).arg(solutionIndex);
-            if (QFile::exists(fnMesh))
-                QFile::remove(fnMesh);
+    QString fnMesh = QString("%1.msh").arg(baseFN);
+    if (QFile::exists(fnMesh))
+        QFile::remove(fnMesh);
 
-            QString fnSpace = QString("%1_%2.spc").arg(fn).arg(solutionIndex);
-            if (QFile::exists(fnSpace))
-                QFile::remove(fnSpace);
+    QString fnSpace = QString("%1.dof").arg(baseFN);
+    if (QFile::exists(fnSpace))
+        QFile::remove(fnSpace);
 
-            QString fnSolution = QString("%1_%2.sln").arg(fn).arg(solutionIndex);
-            if (QFile::exists(fnSolution))
-                QFile::remove(fnSolution);
-        }
-    }
-    */
+    QString fnSolution = QString("%1.sol").arg(baseFN);
+    if (QFile::exists(fnSolution))
+        QFile::remove(fnSolution);
 
     // save structure to the file
     if (saveRunTime)
