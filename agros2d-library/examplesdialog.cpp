@@ -304,41 +304,8 @@ void ExamplesDialog::problemInfo(const QString &fileName)
                 problemInfo.SetValue("COORDINATE_TYPE_LABEL", tr("Coordinate type:").toStdString());
                 problemInfo.SetValue("COORDINATE_TYPE", coordinateTypeString(coordinateTypeFromStringKey(QString::fromStdString(doc->problem().coordinate_type()))).toStdString());
 
-                // nodes
-                QList<SceneNode *> nodes;
-                // nodes
-                for (unsigned int i = 0; i < doc->geometry().nodes().node().size(); i++)
-                {
-                    XMLProblem::node node = doc->geometry().nodes().node().at(i);
-
-                    Point point = Point(node.x(),
-                                        node.y());
-
-                    nodes.append(new SceneNode(nullptr, point));
-                }
-
-                // edges
-                QList<SceneEdge *> edges;
-                for (unsigned int i = 0; i < doc->geometry().edges().edge().size(); i++)
-                {
-                    XMLProblem::edge edge = doc->geometry().edges().edge().at(i);
-
-                    SceneNode *nodeFrom = nodes.at(edge.start());
-                    SceneNode *nodeTo = nodes.at(edge.end());
-
-                    edges.append(new SceneEdge(nullptr, nodeFrom, nodeTo, edge.angle()));
-                }
-
                 // geometry
-                QString geometry = generateSvgGeometry(edges);
-
-                // cleanup
-                foreach (SceneNode *node, nodes)
-                    delete node;
-                nodes.clear();
-                foreach (SceneEdge *edge, edges)
-                    delete edge;
-                edges.clear();
+                QString geometry = problemSvgGeometry(&doc->geometry());
 
                 problemInfo.SetValue("GEOMETRY_LABEL", tr("Geometry").toStdString());
                 problemInfo.SetValue("GEOMETRY_NODES_LABEL", tr("Nodes:").toStdString());
@@ -412,6 +379,95 @@ void ExamplesDialog::problemInfo(const QString &fileName)
         writeStringContent(tempProblemDir() + "/example.html", QString::fromStdString(info));
         webView->load(QUrl::fromLocalFile(tempProblemDir() + "/example.html"));
     }
+}
+
+QString ExamplesDialog::problemSvgGeometry(XMLProblem::geometry *geometry)
+{
+    // SVG
+    QString str;
+
+    Point min( numeric_limits<double>::max(),  numeric_limits<double>::max());
+    Point max(-numeric_limits<double>::max(), -numeric_limits<double>::max());
+
+    // nodes
+    QList<Point> points;
+    for (unsigned int i = 0; i < geometry->nodes().node().size(); i++)
+    {
+        XMLProblem::node node = geometry->nodes().node().at(i);
+        Point p(node.x(), node.y());
+        points.append(p);
+
+        min.x = qMin(min.x, p.x);
+        max.x = qMax(max.x, p.x);
+        min.y = qMin(min.y, p.y);
+        max.y = qMax(max.y, p.y);
+    }
+
+    // bounding box
+    RectPoint boundingBox(min, max);
+
+    double size = 180;
+    double stroke_width = qMax(boundingBox.width(), boundingBox.height()) / size / 2.0;
+
+    str += QString("<svg width=\"%1px\" height=\"%2px\" viewBox=\"%3 %4 %5 %6\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">\n").
+            arg(size).
+            arg(size).
+            arg(boundingBox.start.x).
+            arg(0).
+            arg(boundingBox.width()).
+            arg(boundingBox.height());
+
+    str += QString("<g stroke=\"black\" stroke-width=\"%1\" fill=\"none\">\n").arg(stroke_width);
+
+    // edges
+    for (unsigned int i = 0; i < geometry->edges().edge().size(); i++)
+    {
+        XMLProblem::edge edge = geometry->edges().edge().at(i);
+
+        Point start = points[edge.start()];
+        Point end = points[edge.end()];
+
+        if (edge.angle() > 0.0)
+        {
+            Point center = centerPoint(start, end, edge.angle());
+            double radius = (center - start).magnitude();
+            double startAngle = atan2(center.y - start.y, center.x - start.x) / M_PI*180.0 - 180.0;
+
+            int segments = edge.angle() / 5.0;
+            if (segments < 2) segments = 2;
+            double theta = edge.angle() / double(segments - 1);
+
+            for (int i = 0; i < segments-1; i++)
+            {
+                double arc1 = (startAngle + i*theta)/180.0*M_PI;
+                double arc2 = (startAngle + (i+1)*theta)/180.0*M_PI;
+
+                double x1 = radius * fastcos(arc1);
+                double y1 = radius * fastsin(arc1);
+                double x2 = radius * fastcos(arc2);
+                double y2 = radius * fastsin(arc2);
+
+                str += QString("<line x1=\"%1\" y1=\"%2\" x2=\"%3\" y2=\"%4\" />\n").
+                        arg(center.x + x1).
+                        arg(boundingBox.end.y - (center.y + y1)).
+                        arg(center.x + x2).
+                        arg(boundingBox.end.y - (center.y + y2));
+            }
+        }
+        else
+        {
+            str += QString("<line x1=\"%1\" y1=\"%2\" x2=\"%3\" y2=\"%4\" />\n").
+                    arg(start.x).
+                    arg(boundingBox.end.y - start.y).
+                    arg(end.x).
+                    arg(boundingBox.end.y - end.y);
+        }
+    }
+
+    str += "</g>\n";
+    str += "</svg>\n";
+
+    return str;
 }
 
 QList<QIcon> ExamplesDialog::problemIcons(const QString &fileName)

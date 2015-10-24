@@ -22,6 +22,10 @@
 
 #include "util.h"
 
+namespace XMLProblem {
+    class geometry;
+}
+
 class ExamplesDialog : public QDialog
 {
     Q_OBJECT
@@ -57,6 +61,7 @@ private:
     void readProblems();
     int readProblems(QDir dir, QTreeWidgetItem *parentItem);
     void problemInfo(const QString &fileName);
+    QString problemSvgGeometry(XMLProblem::geometry *geometry);
     QList<QIcon> problemIcons(const QString &fileName);
 };
 
