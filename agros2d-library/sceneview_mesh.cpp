@@ -114,8 +114,7 @@ void SceneViewMesh::clear()
     setControls();
 
     SceneViewCommon2D::clear();
-    if (m_computation && m_computation->isMeshed())
-        doZoomBestFit();
+    doZoomBestFit();
 }
 
 void SceneViewMesh::exportVTKMesh(const QString &fileName)

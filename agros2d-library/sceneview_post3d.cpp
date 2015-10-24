@@ -848,6 +848,5 @@ void SceneViewPost3D::setControls()
 void SceneViewPost3D::clear()
 {
     SceneViewCommon3D::clear();
-    if (m_computation && m_computation->isSolved())
-        doZoomBestFit();
+    doZoomBestFit();
 }

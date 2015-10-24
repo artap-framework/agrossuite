@@ -783,8 +783,7 @@ void SceneViewParticleTracing::clear()
     clearParticleLists();
 
     SceneViewCommon3D::clear();
-    if (m_computation && m_computation->isSolved())
-        doZoomBestFit();
+    doZoomBestFit();
 }
 
 void SceneViewParticleTracing::clearParticleLists()

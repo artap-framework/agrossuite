@@ -289,6 +289,10 @@ void SceneViewCommon::doZoomBestFit()
         RectPoint rect = problem()->scene()->boundingBox();
         doZoomRegion(rect.start, rect.end);
     }
+    else
+    {
+        doZoomRegion(Point(-0.5, -0.5), Point(0.5, 0.5));
+    }
 }
 
 void SceneViewCommon::doZoomIn()

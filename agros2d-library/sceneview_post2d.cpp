@@ -842,8 +842,7 @@ void SceneViewPost2D::clear()
     setControls();
 
     SceneViewCommon2D::clear();
-    if (m_computation && m_computation->isSolved())
-        SceneViewCommon::refresh();
+    doZoomBestFit();
 }
 
 void SceneViewPost2D::exportVTKScalarView(const QString &fileName)

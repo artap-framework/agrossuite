@@ -60,18 +60,10 @@ SceneViewChart::SceneViewChart(QWidget *parent) : QWidget(parent)
     // tracerPen.setBrush(Qt::NoBrush);
     tracerPen.setColor(Qt::darkGreen);
 
-    tracerText = new QCPItemText(m_chart);
-    m_chart->addItem(tracerText);
-    tracerText->position->setType(QCPItemPosition::ptPlotCoords);
-    tracerText->setFont(QFont(font().family(), 12));
-    tracerText->setPositionAlignment(Qt::AlignLeft);
-    tracerText->setPadding(QMargins(10, 10, 10, 10));
-    tracerText->setPen(tracerPen);
-    tracerText->setText("(-, -)");
-
     connect(m_chart, SIGNAL(mouseMove(QMouseEvent *)), this, SLOT(chartMouseMoved(QMouseEvent*)));
 
     QHBoxLayout *layoutMain = new QHBoxLayout();
+    layoutMain->setContentsMargins(0, 0, 0, 0);
     layoutMain->addWidget(m_chart);
 
     setLayout(layoutMain);
@@ -88,16 +80,18 @@ void SceneViewChart::chartMouseMoved(QMouseEvent *event)
     double x = m_chart->xAxis->pixelToCoord(event->pos().x());
     double y = m_chart->yAxis->pixelToCoord(event->pos().y());
 
-    QString str = QString("(%1, %2)").arg(QString::number(x)).arg(QString::number(y));
-    tracerText->setText(str);
-    tracerText->position->setCoords(x, y);
-    m_chart->replot();
+    emit labelRight(tr("Position: [%1; %2]").arg(x, 8, 'e', 5).arg(y, 8, 'e', 5));
 }
 
 void SceneViewChart::refresh()
 {
     if (m_computation.isNull())
-        return;
+        return;    
+
+    Module::LocalVariable physicFieldVariable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),
+                                                                                                            m_computation->setting()->value(ProblemSetting::View_ChartVariable).toString());
+
+    emit labelCenter(physicFieldVariable.name());
 
     if ((ChartMode) m_computation->setting()->value(ProblemSetting::View_ChartMode).toInt() == ChartMode_Geometry)
         plotGeometry();

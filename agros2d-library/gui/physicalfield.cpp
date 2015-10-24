@@ -355,8 +355,7 @@ void PhysicalFieldWidget::doTimeStep(int index)
         cmbAdaptivityStep->clear();
     }
 
-    grpComputation->setVisible(cmbFieldInfo->count() >= 1);
-    grpTime->setVisible(cmbTimeStep->count() >= 1);
-    grpAdaptivity->setVisible(cmbAdaptivityStep->count() >= 1);
+    grpTime->setVisible(cmbTimeStep->count() > 1);
+    grpAdaptivity->setVisible(cmbAdaptivityStep->count() > 1);
 }
 

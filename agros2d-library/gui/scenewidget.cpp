@@ -25,6 +25,7 @@
 #include "scenemarkerdialog.h"
 #include "scenemarkerselectdialog.h"
 #include "scenebasicselectdialog.h"
+#include "chartdialog.h"
 
 #include "infowidget.h"
 #include "pythonlab/pythonengine_agros.h"
@@ -44,6 +45,17 @@ SceneViewWidget::SceneViewWidget(SceneViewCommon *widget, QWidget *parent) : QWi
 
     iconLeft(widget->iconView());
     labelLeft(widget->labelView());
+
+    connect(widget, SIGNAL(labelCenter(QString)), this, SLOT(labelCenter(QString)));
+    connect(widget, SIGNAL(labelRight(QString)), this, SLOT(labelRight(QString)));
+}
+
+SceneViewWidget::SceneViewWidget(SceneViewChart *widget, QWidget *parent) : QWidget(parent)
+{
+    createControls(widget);
+
+    iconLeft(icon("chart"));
+    labelLeft(tr("Chart"));
 
     connect(widget, SIGNAL(labelCenter(QString)), this, SLOT(labelCenter(QString)));
     connect(widget, SIGNAL(labelRight(QString)), this, SLOT(labelRight(QString)));

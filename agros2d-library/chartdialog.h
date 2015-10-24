@@ -47,6 +47,10 @@ public:
 
     inline QCustomPlot *chart() { return m_chart; }
 
+signals:
+    void labelRight(const QString &right);
+    void labelCenter(const QString &center);
+
 public slots:
     void refresh();
     void doSaveImage();
@@ -67,8 +71,6 @@ private:
 
     QMap<QString, double> getData(Point point, int timeStep, int adaptivityStep);
     QStringList headers();
-
-    QCPItemText *tracerText;
 };
 
 #endif // CHARTDIALOG_H

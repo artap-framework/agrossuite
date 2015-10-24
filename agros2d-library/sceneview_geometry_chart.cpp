@@ -91,8 +91,7 @@ void SceneViewPreprocessorChart::refresh()
 
 void SceneViewPreprocessorChart::clear()
 {
-    if (!m_computation.isNull() && m_computation->isSolved())
-        doZoomBestFit();
+    doZoomBestFit();
 }
 
 void SceneViewPreprocessorChart::setChartLine(ChartLine chartLine)
