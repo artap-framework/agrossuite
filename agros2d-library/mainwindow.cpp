@@ -492,9 +492,8 @@ void MainWindow::createMain()
     sceneViewPreprocessorWidget = new SceneViewWidget(sceneViewPreprocessor, this);
     sceneViewMeshWidget = new SceneViewWidget(postprocessorWidget->sceneViewMesh(), this);
     sceneViewPost2DWidget = new SceneViewWidget(postprocessorWidget->sceneViewPost2D(), this);
-    // sceneViewPost3DWidget = new SceneViewWidget(sceneViewPost3D, this);
-    sceneViewPostParticleTracingWidget = new SceneViewWidget(postprocessorWidget->sceneViewParticleTracing(), this);
-    // sceneViewPostVTK2DWidget = new SceneViewWidget(sceneViewVTK2D, this);
+    sceneViewPost3DWidget = new SceneViewWidget(postprocessorWidget->sceneViewPost3D(), this);
+    sceneViewPostParticleTracingWidget = new SceneViewWidget(postprocessorWidget->sceneViewParticleTracing(), this);    
     sceneViewChartWidget = new SceneViewWidget(postprocessorWidget->sceneViewChart(), this);
     sceneViewPythonEditorWidget = new SceneViewWidget(scriptEditor, this);
 
@@ -504,9 +503,8 @@ void MainWindow::createMain()
     tabViewLayout->addWidget(sceneViewPreprocessorWidget);
     tabViewLayout->addWidget(sceneViewMeshWidget);
     tabViewLayout->addWidget(sceneViewPost2DWidget);
-    // tabViewLayout->addWidget(sceneViewPost3DWidget);
+    tabViewLayout->addWidget(sceneViewPost3DWidget);
     tabViewLayout->addWidget(sceneViewPostParticleTracingWidget);
-    // tabViewLayout->addWidget(sceneViewPostVTK2DWidget);
     tabViewLayout->addWidget(sceneViewChartWidget);
     tabViewLayout->addWidget(sceneViewPythonEditorWidget);
 
@@ -539,11 +537,11 @@ void MainWindow::createMain()
 #endif
     tlbLeftBar->setStyleSheet(QString("QToolBar { border: 1px solid rgba(70, 70, 70, 255); }"
                                       "QToolBar { background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(70, 70, 70, 255), stop:1 rgba(120, 120, 120, 255)); }"
-                                      "QToolButton { border: 0px; color: rgba(230, 230, 230, 255); font: bold; font-size: %1pt; width: 70px; }"
+                                      "QToolButton { border: 0px; color: rgba(230, 230, 230, 255); font: bold; font-size: %1pt; width: 75px; }"
                                       "QToolButton:hover { border: 0px; background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(70, 70, 70, 255), stop:0.5 rgba(160, 160, 160, 255), stop:1 rgba(150, 150, 150, 255)); }"
                                       "QToolButton:checked:hover, QToolButton:checked { border: 0px; color: rgba(30, 30, 30, 255); background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(160, 160, 160, 255), stop:0.5 rgba(220, 220, 220, 255), stop:1 rgba(160, 160, 160, 255)); }").arg(fontSize));
     // system layout
-    // leftToolBar->setStyleSheet("QToolButton { font: bold; font-size: 8pt; width: 70px; }");
+    // leftToolBar->setStyleSheet("QToolButton { font: bold; font-size: 8pt; width: 75px; }");
 
     tlbLeftBar->setIconSize(QSize(32, 32));
     tlbLeftBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -567,7 +565,7 @@ void MainWindow::createMain()
     splitter->setStretchFactor(0, 0);
     splitter->setStretchFactor(1, 1);
     QList<int> sizes;
-    sizes << 235 << 0;
+    sizes << 240 << 0;
     splitter->setSizes(sizes);
 
     QHBoxLayout *layoutMain = new QHBoxLayout();
@@ -1285,6 +1283,16 @@ void MainWindow::setControls()
             postprocessorWidget->sceneViewPost2D()->actSceneZoomRegion = actSceneZoomRegion;
         }
             break;
+
+        case PostprocessorWidgetMode_Post3D:
+        {
+            tabViewLayout->setCurrentWidget(sceneViewPost3DWidget);
+
+            connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewPost3D(), SLOT(doZoomIn()));
+            connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewPost3D(), SLOT(doZoomOut()));
+            connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewPost3D(), SLOT(doZoomBestFit()));
+        }
+            break;
         case PostprocessorWidgetMode_Chart:
             tabViewLayout->setCurrentWidget(sceneViewChartWidget);
             break;
@@ -1292,9 +1300,9 @@ void MainWindow::setControls()
         {
             tabViewLayout->setCurrentWidget(sceneViewPostParticleTracingWidget);
 
-            // connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomIn()));
-            // connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomOut()));
-            // connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewPost2D(), SLOT(doZoomBestFit()));
+            connect(actSceneZoomIn, SIGNAL(triggered()), postprocessorWidget->sceneViewParticleTracing(), SLOT(doZoomIn()));
+            connect(actSceneZoomOut, SIGNAL(triggered()), postprocessorWidget->sceneViewParticleTracing(), SLOT(doZoomOut()));
+            connect(actSceneZoomBestFit, SIGNAL(triggered()), postprocessorWidget->sceneViewParticleTracing(), SLOT(doZoomBestFit()));
             // postprocessorWidget->sceneViewPost2D()->actSceneZoomRegion = actSceneZoomRegion;
         }
             break;

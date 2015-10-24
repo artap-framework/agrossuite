@@ -20,6 +20,7 @@
 #include "postprocessorview.h"
 #include "postprocessorview_mesh.h"
 #include "postprocessorview_post2d.h"
+#include "postprocessorview_post3d.h"
 #include "postprocessorview_chart.h"
 #include "postprocessorview_particletracing.h"
 
@@ -66,6 +67,9 @@ PostprocessorWidget::PostprocessorWidget()
     m_sceneViewPost2D = new SceneViewPost2D(this);
     m_post2DWidget = new PostprocessorScenePost2DWidget(this, m_sceneViewPost2D);
 
+    m_sceneViewPost3D = new SceneViewPost3D(this);
+    m_post3DWidget = new PostprocessorScenePost3DWidget(this, m_sceneViewPost3D);
+
     m_sceneViewChart = new SceneViewChart(this);
     m_chartWidget = new PostprocessorSceneChartWidget(this, m_sceneViewChart);
 
@@ -104,6 +108,7 @@ void PostprocessorWidget::createControls()
     tabWidget = new QTabWidget();
     tabWidget->addTab(m_meshWidget, icon("scene-mesh"), tr("Mesh"));
     tabWidget->addTab(m_post2DWidget, icon("scene-post2d"), tr("2D"));
+    tabWidget->addTab(m_post3DWidget, icon("scene-post3d"), tr("3D"));
     tabWidget->addTab(m_chartWidget, icon("chart"), tr("Chart"));
     tabWidget->addTab(m_particleTracingWidget, icon("scene-particle"), tr("PT"));
     connect(tabWidget, SIGNAL(currentChanged(int)), SIGNAL(modeChanged()));
@@ -140,6 +145,10 @@ void PostprocessorWidget::doApply()
     {
         m_post2DWidget->save();
     }
+    else if (tabWidget->currentWidget() == m_post3DWidget)
+    {
+        m_post3DWidget->save();
+    }
     else if (tabWidget->currentWidget() == m_chartWidget)
     {
         m_chartWidget->save();
@@ -165,6 +174,7 @@ void PostprocessorWidget::refresh()
     tabWidget->setTabEnabled(1, m_computation->isSolved());
     tabWidget->setTabEnabled(2, m_computation->isSolved());
     tabWidget->setTabEnabled(3, m_computation->isSolved());
+    tabWidget->setTabEnabled(4, m_computation->isSolved());
 
     // mesh and polynomial info
     int dofs = 0;
@@ -190,6 +200,7 @@ void PostprocessorWidget::refresh()
 
     m_meshWidget->load();
     m_post2DWidget->load();
+    m_post3DWidget->load();
     m_chartWidget->load();
     m_particleTracingWidget->load();
 }
@@ -233,10 +244,18 @@ void PostprocessorWidget::doCalculationFinished()
     m_meshWidget->load();
     m_post2DWidget->refresh();
     m_post2DWidget->load();
+    m_post3DWidget->refresh();
+    m_post3DWidget->load();
     m_chartWidget->refresh();
     m_chartWidget->load();
     m_particleTracingWidget->refresh();
     m_particleTracingWidget->load();
+
+    // default widget
+    if (m_computation->isMeshed() && !m_computation->isSolved())
+        tabWidget->setCurrentWidget(m_meshWidget);
+    else if (m_computation->isSolved())
+        tabWidget->setCurrentWidget(m_post2DWidget);
 
     if ((m_computation->isMeshed() && !m_computation->isSolving()) || m_computation->isSolved())
         emit apply();
@@ -248,6 +267,8 @@ PostprocessorWidgetMode PostprocessorWidget::mode()
         return PostprocessorWidgetMode_Mesh;
     else if (tabWidget->currentWidget() == m_post2DWidget)
         return PostprocessorWidgetMode_Post2D;
+    else if (tabWidget->currentWidget() == m_post3DWidget)
+        return PostprocessorWidgetMode_Post3D;
     else if (tabWidget->currentWidget() == m_chartWidget)
         return PostprocessorWidgetMode_Chart;
     else if (tabWidget->currentWidget() == m_particleTracingWidget)

@@ -113,6 +113,7 @@ SET(SOURCES
     postprocessorview.cpp
     postprocessorview_mesh.cpp
     postprocessorview_post2d.cpp
+    postprocessorview_post3d.cpp
     postprocessorview_chart.cpp
     postprocessorview_particletracing.cpp
     preprocessorview.cpp
@@ -329,6 +330,7 @@ SET(HEADERS
   postprocessorview.h
   postprocessorview_mesh.h
   postprocessorview_post2d.h
+  postprocessorview_post3d.h
   postprocessorview_chart.h
   postprocessorview_particletracing.h
   preprocessorview.h

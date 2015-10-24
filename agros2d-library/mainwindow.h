@@ -195,17 +195,14 @@ private:
     SceneViewWidget *sceneViewPreprocessorWidget;
     SceneViewWidget *sceneViewMeshWidget;
     SceneViewWidget *sceneViewPost2DWidget;
-    // SceneViewWidget *sceneViewPost3DWidget;
+    SceneViewWidget *sceneViewPost3DWidget;
     SceneViewWidget *sceneViewPostParticleTracingWidget;
-    // SceneViewWidget *sceneViewPostVTK2DWidget;
     SceneViewWidget *sceneViewChartWidget;
     SceneViewWidget *sceneViewPythonEditorWidget;
 
     QStackedLayout *tabViewLayout;
     InfoWidget *sceneInfoWidget;
     SceneViewPreprocessor *sceneViewPreprocessor;
-    // SceneViewPost3D *sceneViewPost3D;    
-    // SceneViewVTK2D *sceneViewVTK2D;
     PythonEditorDialog *scriptEditor;
 
     QWidget *viewControls;
@@ -213,7 +210,6 @@ private:
     ProblemWidget *problemWidget;
     PreprocessorWidget *preprocessorWidget;
     PostprocessorWidget *postprocessorWidget;
-    // ParticleTracingWidget *particleTracingWidget;
     PythonEditorWidget *pythonEditorWidget;
 
     ResultsView *resultsView;

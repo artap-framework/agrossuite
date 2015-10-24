@@ -38,6 +38,7 @@ class ProblemComputation;
 
 class PostprocessorSceneMeshWidget;
 class PostprocessorScenePost2DWidget;
+class PostprocessorScenePost3DWidget;
 class PostprocessorSceneChartWidget;
 class PostprocessorSceneParticleTracingWidget;
 
@@ -65,6 +66,7 @@ public:
 
     inline SceneViewMesh *sceneViewMesh() { return m_sceneViewMesh; }
     inline SceneViewPost2D *sceneViewPost2D() { return m_sceneViewPost2D; }
+    inline SceneViewPost3D *sceneViewPost3D() { return m_sceneViewPost3D; }
     inline SceneViewParticleTracing *sceneViewParticleTracing() { return m_sceneViewParticleTracing; }
     inline SceneViewChart *sceneViewChart() { return m_sceneViewChart; }
 
@@ -94,11 +96,13 @@ private:
 
     PostprocessorSceneMeshWidget *m_meshWidget;
     PostprocessorScenePost2DWidget *m_post2DWidget;
+    PostprocessorScenePost3DWidget *m_post3DWidget;
     PostprocessorSceneChartWidget *m_chartWidget;
     PostprocessorSceneParticleTracingWidget *m_particleTracingWidget;
 
     SceneViewMesh *m_sceneViewMesh;
     SceneViewPost2D *m_sceneViewPost2D;
+    SceneViewPost3D *m_sceneViewPost3D;
     SceneViewParticleTracing *m_sceneViewParticleTracing;
     SceneViewChart *m_sceneViewChart;
 
