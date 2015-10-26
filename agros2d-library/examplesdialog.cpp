@@ -36,6 +36,7 @@
 
 #include "ctemplate/template.h"
 
+#include "../3rdparty/quazip/JlCompress.h"
 #include "../resources_source/classes/problem_a2d_31_xml.h"
 
 ExamplesDialog::ExamplesDialog(QWidget *parent) : QDialog(parent)
@@ -223,7 +224,7 @@ int ExamplesDialog::readProblems(QDir dir, QTreeWidgetItem *parentItem)
             // increase counter
             count += numberOfProblems;
         }
-        else if (fileInfo.suffix() == "a2d")
+        else if (fileInfo.suffix() == "ags" || fileInfo.suffix() == "a2d")
         {
             QList<QIcon> icons = problemIcons(fileInfo.absoluteFilePath());
 
@@ -292,7 +293,20 @@ void ExamplesDialog::problemInfo(const QString &fileName)
         problemInfo.SetValue("NAME", fileInfo.baseName().toStdString());
 
         QString templateName;
-        if (fileInfo.suffix() == "a2d")
+
+        if (fileInfo.suffix() == "ags")
+        {
+            // extract problem.a2d file to temp
+            QStringList lst;
+            lst << "problem.a2d";
+            JlCompress::extractFiles(fileInfo.absoluteFilePath(), lst, tempProblemDir());
+
+            QString fn = QString("%1/%2").arg(tempProblemDir()).arg("problem.a2d");
+            this->problemInfo(fn);
+            QFile::remove(fn);
+            return;
+        }
+        else if (fileInfo.suffix() == "a2d")
         {
             templateName = "example_problem.tpl";
 
@@ -476,8 +490,20 @@ QList<QIcon> ExamplesDialog::problemIcons(const QString &fileName)
 
     if (QFile::exists(fileName))
     {
+        QString tmpFile = fileName;
+
+        if (QFileInfo(fileName).suffix() == "ags")
+        {
+            // extract problem.a2d file to temp
+            QStringList lst;
+            lst << "problem.a2d";
+            JlCompress::extractFiles(QFileInfo(fileName).absoluteFilePath(), lst, tempProblemDir());
+
+            tmpFile = QString("%1/%2").arg(tempProblemDir()).arg("problem.a2d");
+        }
+
         // open file
-        QFile file(fileName);
+        QFile file(tmpFile);
 
         QDomDocument doc;
         if (!doc.setContent(&file))

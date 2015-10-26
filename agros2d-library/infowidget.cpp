@@ -141,10 +141,14 @@ void InfoWidget::showWelcome()
     {
         for (int i = 0; i < qMin(10, m_recentProblemFiles->count()); i++)
         {
+            QFileInfo fileInfo(m_recentProblemFiles->at(i));
+            if (!QFile::exists(fileInfo.absoluteFilePath()))
+                continue;
+
             ctemplate::TemplateDictionary *recent = problemInfo.AddSectionDictionary("RECENT_PROBLEM_SECTION");
             recent->SetValue("PROBLEM_FILENAME", QUrl::fromUserInput(m_recentProblemFiles->at(i)).toString().toStdString());
-            recent->SetValue("PROBLEM_FILENAME_LABEL", QFileInfo(m_recentProblemFiles->at(i)).absolutePath().replace("/", "/&thinsp;").toStdString());
-            recent->SetValue("PROBLEM_BASE", QFileInfo(m_recentProblemFiles->at(i)).baseName().toStdString());
+            recent->SetValue("PROBLEM_FILENAME_LABEL", fileInfo.absolutePath().replace("/", "/&thinsp;").toStdString());
+            recent->SetValue("PROBLEM_BASE", fileInfo.baseName().toStdString());
         }
     }
 
@@ -154,10 +158,14 @@ void InfoWidget::showWelcome()
     {
         for (int i = 0; i < qMin(7, m_recentScriptFiles->count()); i++)
         {
+            QFileInfo fileInfo(m_recentScriptFiles->at(i));
+            if (!QFile::exists(fileInfo.absoluteFilePath()))
+                continue;
+
             ctemplate::TemplateDictionary *recent = problemInfo.AddSectionDictionary("RECENT_SCRIPT_SECTION");
             recent->SetValue("SCRIPT_FILENAME", QUrl::fromUserInput(m_recentScriptFiles->at(i)).toString().toStdString());
-            recent->SetValue("SCRIPT_FILENAME_LABEL", QFileInfo(m_recentScriptFiles->at(i)).absolutePath().replace("/", "/&thinsp;").toStdString());
-            recent->SetValue("SCRIPT_BASE", QFileInfo(m_recentScriptFiles->at(i)).baseName().toStdString());
+            recent->SetValue("SCRIPT_FILENAME_LABEL", fileInfo.absolutePath().replace("/", "/&thinsp;").toStdString());
+            recent->SetValue("SCRIPT_BASE", fileInfo.baseName().toStdString());
         }
     }
 

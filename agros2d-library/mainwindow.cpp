@@ -739,7 +739,7 @@ void MainWindow::doDocumentOpen(const QString &fileName)
     {
         QString dir = settings.value("General/LastProblemDir", "data").toString();
 
-        fileNameDocument = QFileDialog::getOpenFileName(this, tr("Open file"), dir, tr("Agros2D files (*.a2d *.py);;Agros2D data files (*.a2d);;Python script (*.py)"));
+        fileNameDocument = QFileDialog::getOpenFileName(this, tr("Open file"), dir, tr("Agros2D files (*.ags *.a2d *.py);;Agros2D data files (*.ags);;Python script (*.py);;Agros2D data files - deprecated (*.a2d)"));
     }
     else
     {
@@ -754,12 +754,12 @@ void MainWindow::doDocumentOpen(const QString &fileName)
         Agros2D::clearComputations();
 
         QFileInfo fileInfo(fileNameDocument);
-        if (fileInfo.suffix() == "a2d")
+        if (fileInfo.suffix() == "ags")
         {
             try
             {
                 // load problem
-                Agros2D::preprocessor()->readProblemFromFile(fileNameDocument);
+                Agros2D::preprocessor()->readProblemFromArchive(fileNameDocument);
                 setRecentFiles();
 
                 // load solution
@@ -792,8 +792,28 @@ void MainWindow::doDocumentOpen(const QString &fileName)
                 return;
             }
         }
+        else if (fileInfo.suffix() == "a2d")
+        {
+            QSettings settings;
+            QFileInfo fileInfo(fileName);
+            // if (fileInfo.absoluteDir() != tempProblemDir() && !fileName.contains("resources/examples"))
+            settings.setValue("General/LastProblemDir", fileInfo.absolutePath());
 
-        if (fileInfo.suffix() == "py")
+            // copy file to cache
+            QFile::copy(fileNameDocument, QString("%1/problem.a2d").arg(cacheProblemDir()));
+            // open file
+            Agros2D::preprocessor()->readProblemFromFile(QString("%1/problem.a2d").arg(cacheProblemDir()));
+            // set filename
+            QString fn = QString("%1/%2.ags").arg(fileInfo.absolutePath()).arg(fileInfo.baseName());
+            Agros2D::preprocessor()->config()->setFileName(fn);
+            emit Agros2D::preprocessor()->fileNameChanged(fn);
+
+            problemWidget->actProperties->trigger();
+            sceneViewPreprocessor->doZoomBestFit();
+
+            return;
+        }
+        else if (fileInfo.suffix() == "py")
         {
             // python script
             scriptEditor->doFileOpen(fileNameDocument);
@@ -845,7 +865,9 @@ void MainWindow::doDocumentSave()
     {
         try
         {
-            Agros2D::preprocessor()->writeProblemToFile(Agros2D::preprocessor()->config()->fileName(), true);
+            // Agros2D::preprocessor()->writeProblemToFile(Agros2D::preprocessor()->config()->fileName(), true);
+            // write to archive
+            Agros2D::preprocessor()->writeProblemToArchive(Agros2D::preprocessor()->config()->fileName());
         }
         catch (AgrosException &e)
         {
@@ -890,15 +912,15 @@ void MainWindow::doDocumentSaveAs()
     QSettings settings;
     QString dir = settings.value("General/LastProblemDir", "data").toString();
 
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save file"), dir, tr("Agros2D files (*.a2d)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save file"), dir, tr("Agros2D files (*.ags)"));
     if (!fileName.isEmpty())
     {
         QFileInfo fileInfo(fileName);
-        if (fileInfo.suffix() != "a2d") fileName += ".a2d";
+        if (fileInfo.suffix() != "ags") fileName += ".ags";
 
         try
         {
-            Agros2D::preprocessor()->writeProblemToFile(fileName, true);
+            Agros2D::preprocessor()->writeProblemToArchive(fileName);
             setRecentFiles();
         }
         catch (AgrosException &e)
@@ -911,22 +933,6 @@ void MainWindow::doDocumentSaveAs()
 
 void MainWindow::doDocumentClose()
 {
-    // WILL BE FIXED
-    /*
-    while (!Agros2D::problem()->scene()->undoStack()->isClean())
-    {
-        QMessageBox::StandardButton ret;
-        ret = QMessageBox::warning(this, tr("Application"), tr("Problem has been modified.\nDo you want to save your changes?"),
-                                   QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-        if (ret == QMessageBox::Save)
-            doDocumentSave();
-        else if (ret == QMessageBox::Discard)
-            break;
-        else if (ret == QMessageBox::Cancel)
-            return;
-    }
-    */
-
     Agros2D::preprocessor()->scene()->clear();
     Agros2D::preprocessor()->clearFieldsAndConfig();
 
@@ -1028,7 +1034,7 @@ void MainWindow::doExamples(const QString &groupName)
         {
             QFileInfo fileInfo(examples.selectedFilename());
 
-            if (fileInfo.suffix() == "a2d" || fileInfo.suffix() == "py")
+            if (fileInfo.suffix() == "ags" || fileInfo.suffix() == "a2d" || fileInfo.suffix() == "py")
             {
                 doDocumentOpen(examples.selectedFilename());
             }

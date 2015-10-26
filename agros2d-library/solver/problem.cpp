@@ -340,7 +340,7 @@ void Problem::clearFieldsAndConfig()
     m_setting->clear();
 
     // clear parameters
-    m_problemParameters.clear();    
+    m_problemParameters.clear();
 
     // clear scene
     m_scene->clear();
@@ -427,14 +427,28 @@ void Problem::synchronizeCouplings()
         emit couplingsChanged();
 }
 
+void Problem::readProblemFromArchive(const QString &fileName)
+{
+        QSettings settings;
+        QFileInfo fileInfo(fileName);
+        if (fileInfo.absoluteDir() != tempProblemDir() && !fileName.contains("resources/examples"))
+            settings.setValue("General/LastProblemDir", fileInfo.absolutePath());
+
+    JlCompress::extractDir(fileName, cacheProblemDir());
+
+    QString problem = QString("%1/problem.a2d").arg(cacheProblemDir());
+    if (QFile::exists(problem))
+    {
+        readProblemFromFile(problem);
+
+        QString fn = QFileInfo(fileName).absoluteFilePath();
+        m_config->setFileName(fn);
+        emit fileNameChanged(fn);
+    }
+}
 
 void Problem::readProblemFromFile(const QString &fileName)
 {
-    QSettings settings;
-    QFileInfo fileInfo(fileName);
-    if (fileInfo.absoluteDir() != tempProblemDir() && !fileName.contains("resources/examples"))
-        settings.setValue("General/LastProblemDir", fileInfo.absolutePath());
-
     Agros2D::log()->printMessage(tr("Problem"), tr("Loading problem from disk: %1.a2d").arg(QFileInfo(fileName).baseName()));
 
     QFile file(fileName);
@@ -450,9 +464,6 @@ void Problem::readProblemFromFile(const QString &fileName)
     file.close();
 
     double version = doc.documentElement().attribute("version").toDouble();
-
-    m_config->setFileName(fileName);
-    emit fileNameChanged(fileInfo.absoluteFilePath());
 
     try
     {
@@ -470,70 +481,6 @@ void Problem::readProblemFromFile(const QString &fileName)
     catch (AgrosException &e)
     {
         Agros2D::log()->printError(tr("Problem"), e.toString());
-    }
-}
-
-void Problem::transformProblem(const QString &fileName, const QString &tempFileName, double version)
-{
-    QString out;
-
-    if (version == 3.1)
-    {
-        Agros2D::log()->printMessage(tr("Problem"), tr("Data file was transformed to new version and saved to temp dictionary."));
-        return;
-    }
-    else if (version == 3.0)
-    {
-        out = transformXML(fileName, datadir() + "/resources/xslt/problem_a2d_31_xml.xsl");
-        version = 3.1;
-    }
-    else if (version == 2.1)
-    {
-        out = transformXML(fileName, datadir() + "/resources/xslt/problem_a2d_30_xml.xsl");
-        version = 3.0;
-    }
-    else if (version == 2.0 || version == 0.0)
-    {
-        out = transformXML(fileName, datadir() + "/resources/xslt/problem_a2d_21_xml.xsl");
-        version = 2.1;
-    }
-    else
-        throw AgrosException(tr("It is impossible to transform data file."));
-
-    //qDebug() << out;
-
-    QFile tempFile(tempFileName);
-    if (!tempFile.open(QIODevice::WriteOnly))
-        throw AgrosException(tr("File cannot be saved (%2).").arg(tempFile.errorString()));
-
-    QTextStream(&tempFile) << out;
-    tempFile.close();
-
-    transformProblem(tempFileName, tempFileName, version);
-}
-
-void Problem::writeProblemToFile(const QString &fileName, bool saveLastProblemDir)
-{
-    QSettings settings;
-
-    if (saveLastProblemDir)
-    {
-        QFileInfo fileInfo(fileName);
-        if (fileInfo.absoluteDir() != tempProblemDir())
-        {
-            settings.setValue("General/LastProblemDir", fileInfo.absoluteFilePath());
-            m_config->setFileName(fileName);
-        }
-    }
-
-    try
-    {
-        writeProblemToFile31(fileName);
-        emit fileNameChanged(QFileInfo(fileName).absoluteFilePath());
-    }
-    catch (...)
-    {
-        // do nothing
     }
 }
 
@@ -848,6 +795,76 @@ void Problem::readProblemFromFile31(const QString &fileName)
     {
         m_scene->blockSignals(false);
         throw e;
+    }
+}
+
+void Problem::transformProblem(const QString &fileName, const QString &tempFileName, double version)
+{
+    QString out;
+
+    if (version == 3.1)
+    {
+        Agros2D::log()->printMessage(tr("Problem"), tr("Data file was transformed to new version and saved to temp dictionary."));
+        return;
+    }
+    else if (version == 3.0)
+    {
+        out = transformXML(fileName, datadir() + "/resources/xslt/problem_a2d_31_xml.xsl");
+        version = 3.1;
+    }
+    else if (version == 2.1)
+    {
+        out = transformXML(fileName, datadir() + "/resources/xslt/problem_a2d_30_xml.xsl");
+        version = 3.0;
+    }
+    else if (version == 2.0 || version == 0.0)
+    {
+        out = transformXML(fileName, datadir() + "/resources/xslt/problem_a2d_21_xml.xsl");
+        version = 2.1;
+    }
+    else
+        throw AgrosException(tr("It is impossible to transform data file."));
+
+    //qDebug() << out;
+
+    QFile tempFile(tempFileName);
+    if (!tempFile.open(QIODevice::WriteOnly))
+        throw AgrosException(tr("File cannot be saved (%2).").arg(tempFile.errorString()));
+
+    QTextStream(&tempFile) << out;
+    tempFile.close();
+
+    transformProblem(tempFileName, tempFileName, version);
+}
+
+void Problem::writeProblemToArchive(const QString &fileName)
+{
+    QSettings settings;
+
+    QFileInfo fileInfo(fileName);
+    if (fileInfo.absoluteDir() != tempProblemDir())
+    {
+        settings.setValue("General/LastProblemDir", fileInfo.absoluteFilePath());
+        m_config->setFileName(fileName);
+    }
+
+    QFileInfo fileInfoProblem(QString("%1/problem.a2d").arg(cacheProblemDir()));
+
+    QStringList lst;
+    lst << fileInfoProblem.absoluteFilePath();
+    if (JlCompress::compressFiles(fileName, lst))
+        emit fileNameChanged(QFileInfo(fileName).absoluteFilePath());
+}
+
+void Problem::writeProblemToFile(const QString &fileName, bool saveLastProblemDir)
+{
+    try
+    {
+        writeProblemToFile31(fileName);
+    }
+    catch (...)
+    {
+        // do nothing
     }
 }
 

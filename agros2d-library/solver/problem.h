@@ -103,10 +103,12 @@ public:
     inline bool hasCoupling(FieldInfo *sourceField, FieldInfo *targetField) { return (m_couplingInfos.contains(QPair<FieldInfo*, FieldInfo* >(sourceField, targetField))); }
     inline bool hasCoupling(const QString &sourceFieldId, const QString &targetFieldId) { return hasCoupling(fieldInfo(sourceFieldId), fieldInfo(targetFieldId)); }
 
+    void readProblemFromArchive(const QString &fileName);
     void readProblemFromFile(const QString &fileName);
     void readProblemFromFile31(const QString &fileName);
     void transformProblem(const QString &fileName, const QString &tempFileName, double version);
 
+    void writeProblemToArchive(const QString &fileName);
     void writeProblemToFile(const QString &fileName, bool saveLastProblemDir = false);
     void writeProblemToFile31(const QString &fileName);
 
