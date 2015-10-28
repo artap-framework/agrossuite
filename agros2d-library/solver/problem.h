@@ -59,7 +59,6 @@ signals:
     /// emited when an field is added or removed. Menus need to adjusted
     void couplingsChanged();
 
-    void fileNameChanged(const QString &fileName);
 
 public slots:
     virtual void clearFieldsAndConfig();
@@ -103,14 +102,11 @@ public:
     inline bool hasCoupling(FieldInfo *sourceField, FieldInfo *targetField) { return (m_couplingInfos.contains(QPair<FieldInfo*, FieldInfo* >(sourceField, targetField))); }
     inline bool hasCoupling(const QString &sourceFieldId, const QString &targetFieldId) { return hasCoupling(fieldInfo(sourceFieldId), fieldInfo(targetFieldId)); }
 
-    void readProblemFromArchive(const QString &fileName);
-    void readProblemFromFile(const QString &fileName);
-    void readProblemFromFile31(const QString &fileName);
+    void readProblemFromA2D(const QString &fileName);
+    void readProblemFromA2D31(const QString &fileName);
     void transformProblem(const QString &fileName, const QString &tempFileName, double version);
 
-    void writeProblemToArchive(const QString &fileName);
-    void writeProblemToFile(const QString &fileName, bool saveLastProblemDir = false);
-    void writeProblemToFile31(const QString &fileName);
+    void writeProblemToA2D(const QString &fileName);
 
 protected:
     Scene *m_scene;
@@ -143,6 +139,13 @@ class AGROS_LIBRARY_API ProblemPreprocessor : public Problem
 
 public:
     void createComputation(bool newComputation = false);
+
+    void readProblemFromArchive(const QString &fileName);
+    void writeProblemToArchive(const QString &fileName);
+    void readProblemFromFile(const QString &fileName);
+
+signals:
+    void fileNameChanged(const QString &fileName);
 
 public slots:
     virtual void clearFieldsAndConfig();

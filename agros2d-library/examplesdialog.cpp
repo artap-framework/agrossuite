@@ -234,6 +234,8 @@ int ExamplesDialog::readProblems(QDir dir, QTreeWidgetItem *parentItem)
             else
                 exampleProblemItem->setIcon(0, icon("fields/empty"));
             exampleProblemItem->setText(0, fileInfo.baseName());
+            if (fileInfo.suffix() == "a2d")
+                exampleProblemItem->setTextColor(0, QColor(Qt::blue)); // TODO: only marker - remove
             exampleProblemItem->setData(0, Qt::UserRole, fileInfo.absoluteFilePath());
 
             // increase counter

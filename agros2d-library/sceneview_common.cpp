@@ -53,7 +53,10 @@ SceneViewCommon::SceneViewCommon(QWidget *parent)
       m_textureLabelRulersName(""),
       m_textureLabelPostName(""),
       m_textureLabelRulersSize(0),
-      m_textureLabelPostSize(0)
+      m_textureLabelPostSize(0),
+      m_lastPos(QPoint()),
+      m_zoomRegion(false),
+      m_zoomRegionPos(QPointF())
 {
     m_mainWindow = (QMainWindow *) parent;
 

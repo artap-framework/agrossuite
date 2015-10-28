@@ -427,29 +427,9 @@ void Problem::synchronizeCouplings()
         emit couplingsChanged();
 }
 
-void Problem::readProblemFromArchive(const QString &fileName)
+void Problem::readProblemFromA2D(const QString &fileName)
 {
-        QSettings settings;
-        QFileInfo fileInfo(fileName);
-        if (fileInfo.absoluteDir() != tempProblemDir() && !fileName.contains("resources/examples"))
-            settings.setValue("General/LastProblemDir", fileInfo.absolutePath());
-
-    JlCompress::extractDir(fileName, cacheProblemDir());
-
-    QString problem = QString("%1/problem.a2d").arg(cacheProblemDir());
-    if (QFile::exists(problem))
-    {
-        readProblemFromFile(problem);
-
-        QString fn = QFileInfo(fileName).absoluteFilePath();
-        m_config->setFileName(fn);
-        emit fileNameChanged(fn);
-    }
-}
-
-void Problem::readProblemFromFile(const QString &fileName)
-{
-    Agros2D::log()->printMessage(tr("Problem"), tr("Loading problem from disk: %1.a2d").arg(QFileInfo(fileName).baseName()));
+    Agros2D::log()->printMessage(tr("Problem"), tr("Loading problem from disk: %1").arg(QFileInfo(fileName).baseName()));
 
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly))
@@ -469,13 +449,13 @@ void Problem::readProblemFromFile(const QString &fileName)
     {
         if (version == 3.1)
         {
-            readProblemFromFile31(fileName);
+            readProblemFromA2D31(fileName);
         }
         else
         {
             QString tempFileName = tempProblemDir() + QString("/%1.a2d").arg(QFileInfo(fileName).baseName());
             transformProblem(fileName, tempFileName, version);
-            readProblemFromFile31(tempFileName);
+            readProblemFromA2D31(tempFileName);
         }
     }
     catch (AgrosException &e)
@@ -484,14 +464,12 @@ void Problem::readProblemFromFile(const QString &fileName)
     }
 }
 
-void Problem::readProblemFromFile31(const QString &fileName)
+void Problem::readProblemFromA2D31(const QString &fileName)
 {
     try
     {
         std::unique_ptr<XMLProblem::document> document_xsd = XMLProblem::document_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
         XMLProblem::document *doc = document_xsd.get();
-
-        clearFieldsAndConfig();
 
         // clear scene
         m_scene->clear();
@@ -837,38 +815,7 @@ void Problem::transformProblem(const QString &fileName, const QString &tempFileN
     transformProblem(tempFileName, tempFileName, version);
 }
 
-void Problem::writeProblemToArchive(const QString &fileName)
-{
-    QSettings settings;
-
-    QFileInfo fileInfo(fileName);
-    if (fileInfo.absoluteDir() != tempProblemDir())
-    {
-        settings.setValue("General/LastProblemDir", fileInfo.absoluteFilePath());
-        m_config->setFileName(fileName);
-    }
-
-    QFileInfo fileInfoProblem(QString("%1/problem.a2d").arg(cacheProblemDir()));
-
-    QStringList lst;
-    lst << fileInfoProblem.absoluteFilePath();
-    if (JlCompress::compressFiles(fileName, lst))
-        emit fileNameChanged(QFileInfo(fileName).absoluteFilePath());
-}
-
-void Problem::writeProblemToFile(const QString &fileName, bool saveLastProblemDir)
-{
-    try
-    {
-        writeProblemToFile31(fileName);
-    }
-    catch (...)
-    {
-        // do nothing
-    }
-}
-
-void Problem::writeProblemToFile31(const QString &fileName)
+void Problem::writeProblemToA2D(const QString &fileName)
 {
     double version = 3.1;
 
@@ -1695,14 +1642,107 @@ void ProblemPreprocessor::createComputation(bool newComputation)
             arg(cacheProblemDir()).
             arg(post->problemDir());
 
-    writeProblemToFile31(fn);
-    post->readProblemFromFile31(fn);
+    writeProblemToA2D(fn);
+    post->readProblemFromA2D31(fn);
 }
 
 
 void ProblemPreprocessor::clearFieldsAndConfig()
 {
     Problem::clearFieldsAndConfig();
+    QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
 
     emit fileNameChanged(tr("unnamed"));
+}
+
+void ProblemPreprocessor::readProblemFromArchive(const QString &fileName)
+{
+    QSettings settings;
+    QFileInfo fileInfo(fileName);
+    if (fileInfo.absoluteDir() != tempProblemDir() && !fileName.contains("resources/examples"))
+        settings.setValue("General/LastProblemDir", fileInfo.absolutePath());
+
+    JlCompress::extractDir(fileName, cacheProblemDir());
+
+    QString problem = QString("%1/problem.a2d").arg(cacheProblemDir());
+    if (QFile::exists(problem))
+    {
+        readProblemFromA2D(problem);
+
+        QString fn = QFileInfo(fileName).absoluteFilePath();
+        m_config->setFileName(fn);
+        emit fileNameChanged(fn);
+    }
+}
+
+void ProblemPreprocessor::writeProblemToArchive(const QString &fileName)
+{
+    QSettings settings;
+    QFileInfo fileInfo(fileName);
+    if (fileInfo.absoluteDir() != tempProblemDir())
+    {
+        settings.setValue("General/LastProblemDir", fileInfo.absoluteFilePath());
+        m_config->setFileName(fileName);
+    }
+
+    QFileInfo fileInfoProblem(QString("%1/problem.a2d").arg(cacheProblemDir()));
+
+    QStringList lst;
+    lst << fileInfoProblem.absoluteFilePath();
+    if (JlCompress::compressFiles(fileName, lst))
+        emit fileNameChanged(QFileInfo(fileName).absoluteFilePath());
+}
+
+void ProblemPreprocessor::readProblemFromFile(const QString &fileName)
+{
+    QFileInfo fileInfo(fileName);
+
+    // set filename
+    QString fn = fileName;
+
+    try
+    {
+        // clear all computations
+        Agros2D::clearComputations();
+
+        // load problem
+        if (fileInfo.suffix() == "ags")
+        {
+            readProblemFromArchive(fileName);
+        }
+        // deprecated
+        else if (fileInfo.suffix() == "a2d")
+        {
+            Agros2D::log()->printWarning(tr("Problem"), tr("A2D file is deprecated."));
+
+            // copy file to cache
+            QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
+            QFile::copy(fileName, QString("%1/problem.a2d").arg(cacheProblemDir()));
+
+            // open file
+            readProblemFromA2D(QString("%1/problem.a2d").arg(cacheProblemDir()));
+
+            // set filename
+            fn = QString("%1/%2.ags").arg(fileInfo.absolutePath()).arg(fileInfo.baseName());
+
+            m_config->setFileName(fn);
+            emit fileNameChanged(fn);
+            // writeProblemToArchive(fn); // only for automatic convert
+        }
+    }
+    catch (AgrosModuleException& e)
+    {
+        clearFieldsAndConfig();
+        Agros2D::log()->printError(tr("Problem"), e.toString());
+    }
+    catch (AgrosPluginException& e)
+    {
+        clearFieldsAndConfig();
+        Agros2D::log()->printError(tr("Problem"), e.toString());
+    }
+    catch (AgrosException &e)
+    {
+        clearFieldsAndConfig();
+        Agros2D::log()->printError(tr("Problem"), e.toString());
+    }
 }

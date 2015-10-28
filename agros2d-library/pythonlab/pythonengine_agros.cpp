@@ -652,10 +652,10 @@ void openFile(const std::string &file, bool openWithSolution)
 {
     try
     {
-        Agros2D::preprocessor()->readProblemFromFile(QString::fromStdString(file));
+        Agros2D::preprocessor()->readProblemFromArchive(QString::fromStdString(file));
 
-        if (openWithSolution)
-            Agros2D::computation()->readSolutionFromFile(QString::fromStdString(file));
+        // if (openWithSolution)
+        //    Agros2D::computation()->readSolutionFromFile(QString::fromStdString(file));
     }
     catch (AgrosException &e)
     {
@@ -667,10 +667,10 @@ void saveFile(const std::string &file, bool saveWithSolution)
 {
     try
     {
-        Agros2D::preprocessor()->writeProblemToFile(QString::fromStdString(file), false);
+        Agros2D::preprocessor()->writeProblemToArchive(QString::fromStdString(file));
 
-        if (saveWithSolution || silentMode())
-            Agros2D::computation()->writeSolutionToFile(QString::fromStdString(file));
+        // if (saveWithSolution || silentMode())
+        //    Agros2D::computation()->writeSolutionToFile(QString::fromStdString(file));
     }
     catch (AgrosException &e)
     {

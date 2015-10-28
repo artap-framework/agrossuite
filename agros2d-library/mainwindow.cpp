@@ -493,7 +493,7 @@ void MainWindow::createMain()
     sceneViewMeshWidget = new SceneViewWidget(postprocessorWidget->sceneViewMesh(), this);
     sceneViewPost2DWidget = new SceneViewWidget(postprocessorWidget->sceneViewPost2D(), this);
     sceneViewPost3DWidget = new SceneViewWidget(postprocessorWidget->sceneViewPost3D(), this);
-    sceneViewPostParticleTracingWidget = new SceneViewWidget(postprocessorWidget->sceneViewParticleTracing(), this);    
+    sceneViewPostParticleTracingWidget = new SceneViewWidget(postprocessorWidget->sceneViewParticleTracing(), this);
     sceneViewChartWidget = new SceneViewWidget(postprocessorWidget->sceneViewChart(), this);
     sceneViewPythonEditorWidget = new SceneViewWidget(scriptEditor, this);
 
@@ -719,7 +719,7 @@ void MainWindow::doDocumentNew()
             Agros2D::preprocessor()->addField(fieldInfo);
 
             problemWidget->actProperties->trigger();
-            sceneViewPreprocessor->doZoomBestFit();            
+            sceneViewPreprocessor->doZoomBestFit();
         }
         catch (AgrosPluginException& e)
         {
@@ -750,63 +750,19 @@ void MainWindow::doDocumentOpen(const QString &fileName)
 
     if (QFile::exists(fileNameDocument))
     {
-        // clear all computations
-        Agros2D::clearComputations();
-
         QFileInfo fileInfo(fileNameDocument);
-        if (fileInfo.suffix() == "ags")
-        {
-            try
-            {
-                // load problem
-                Agros2D::preprocessor()->readProblemFromArchive(fileNameDocument);
-                setRecentFiles();
-
-                // load solution
-                // m_computation->readSolutionFromFile(fileNameDocument);
-
-                problemWidget->actProperties->trigger();
-                sceneViewPreprocessor->doZoomBestFit();
-
-                return;
-            }
-            catch(AgrosModuleException& e)
-            {
-                Agros2D::preprocessor()->scene()->clear();
-
-                Agros2D::log()->printError(tr("Problem"), e.toString());
-                return;
-            }
-            catch(AgrosPluginException& e)
-            {
-                Agros2D::preprocessor()->scene()->clear();
-
-                Agros2D::log()->printError(tr("Problem"), e.toString());
-                return;
-            }
-            catch (AgrosException &e)
-            {
-                Agros2D::preprocessor()->scene()->clear();
-
-                Agros2D::log()->printError(tr("Problem"), e.toString());
-                return;
-            }
-        }
-        else if (fileInfo.suffix() == "a2d")
+        if (fileInfo.suffix() == "ags" || fileInfo.suffix() == "a2d")
         {
             QSettings settings;
             QFileInfo fileInfo(fileName);
             // if (fileInfo.absoluteDir() != tempProblemDir() && !fileName.contains("resources/examples"))
             settings.setValue("General/LastProblemDir", fileInfo.absolutePath());
 
-            // copy file to cache
-            QFile::copy(fileNameDocument, QString("%1/problem.a2d").arg(cacheProblemDir()));
-            // open file
-            Agros2D::preprocessor()->readProblemFromFile(QString("%1/problem.a2d").arg(cacheProblemDir()));
-            // set filename
-            QString fn = QString("%1/%2.ags").arg(fileInfo.absolutePath()).arg(fileInfo.baseName());
-            Agros2D::preprocessor()->config()->setFileName(fn);
-            emit Agros2D::preprocessor()->fileNameChanged(fn);
+            Agros2D::preprocessor()->readProblemFromFile(fileNameDocument);
+            setRecentFiles();
+
+            // load solution
+            // m_computation->readSolutionFromFile(fileNameDocument);
 
             problemWidget->actProperties->trigger();
             sceneViewPreprocessor->doZoomBestFit();
@@ -865,7 +821,6 @@ void MainWindow::doDocumentSave()
     {
         try
         {
-            // Agros2D::preprocessor()->writeProblemToFile(Agros2D::preprocessor()->config()->fileName(), true);
             // write to archive
             Agros2D::preprocessor()->writeProblemToArchive(Agros2D::preprocessor()->config()->fileName());
         }
@@ -1108,6 +1063,10 @@ void MainWindow::doSolveFinished()
     if (m_computation->isMeshed() && !currentPythonEngine()->isScriptRunning())
     {
         postprocessorWidget->actSceneModePost->trigger();
+        postprocessorWidget->sceneViewMesh()->doZoomBestFit();
+        postprocessorWidget->sceneViewPost2D()->doZoomBestFit();
+        postprocessorWidget->sceneViewPost3D()->doZoomBestFit();
+        postprocessorWidget->sceneViewParticleTracing()->doZoomBestFit();
     }
 
     // show empty results
