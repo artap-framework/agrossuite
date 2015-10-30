@@ -165,10 +165,10 @@ void PyPreprocessor::setCouplingType(const std::string &sourceField, const std::
 }
 
 PyComputation::PyComputation() : PyProblem(false)
-{
-    m_problem = QSharedPointer<Problem>(Agros2D::preprocessor());
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this,
-            SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
+{    
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
+
+    Agros2D::preprocessor()->createComputation(false);
 }
 
 void PyComputation::connectComputation(QSharedPointer<ProblemComputation> computation)
