@@ -126,7 +126,7 @@ void SceneViewChart::refresh()
 }
 
 void SceneViewChart::connectComputation(QSharedPointer<ProblemComputation> computation)
-{        
+{
     if (!m_computation.isNull())
     {
         disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(refresh()));

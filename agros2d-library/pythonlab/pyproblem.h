@@ -26,71 +26,68 @@
 
 class PyProblem
 {
-    public:
-        PyProblem(bool clearProblem);
-        ~PyProblem() {}
+public:
+    PyProblem(bool clearProblem);
+    ~PyProblem() {}
 
-        // clear and refresh
-        void clear();
-        void clearSolution();
-        void refresh();
+    void clear();
+    void refresh();
 
-        // coordinate type
-        inline std::string getCoordinateType() const { return coordinateTypeToStringKey(Agros2D::preprocessor()->config()->coordinateType()).toStdString(); }
-        void setCoordinateType(const std::string &coordinateType);
+    inline std::string getCoordinateType() const { return coordinateTypeToStringKey(m_problem->config()->coordinateType()).toStdString(); }
+    inline std::string getMeshType() const { return meshTypeToStringKey(m_problem->config()->meshType()).toStdString(); }
+    inline double getFrequency() const { return (Value::parseValueFromString(m_problem->config()->value(ProblemConfig::Frequency).toString())).number(); }
+    inline std::string getTimeStepMethod() const { return timeStepMethodToStringKey((TimeStepMethod) m_problem->config()->value(ProblemConfig::TimeMethod).toInt()).toStdString(); }
+    inline double getTimeMethodTolerance() const { return m_problem->config()->value(ProblemConfig::TimeMethodTolerance).toDouble(); }
+    inline int getTimeMethodOrder() const { return m_problem->config()->value(ProblemConfig::TimeOrder).toInt(); }
+    inline double getTimeInitialTimeStep() const { return m_problem->config()->value(ProblemConfig::TimeInitialStepSize).toDouble(); }
+    inline double getTimeTotal() const { return m_problem->config()->value(ProblemConfig::TimeTotal).toDouble(); }
+    inline int getNumConstantTimeSteps() const { return m_problem->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); }
+    std::string getCouplingType(const std::string &sourceField, const std::string &targetField) const;
 
-        // mesh type
-        inline std::string getMeshType() const { return meshTypeToStringKey(Agros2D::preprocessor()->config()->meshType()).toStdString(); }
-        void setMeshType(const std::string &meshType);
+protected:
+    void checkExistingFields(const QString &sourceField, const QString &targetField) const;
+    QSharedPointer<Problem> m_problem;
+};
 
-        // frequency
-        inline double getFrequency() const { return (Value::parseValueFromString(Agros2D::preprocessor()->config()->value(ProblemConfig::Frequency).toString())).number(); }
-        void setFrequency(double frequency);
+class PyPreprocessor : public PyProblem
+{
+public:
+    PyPreprocessor(bool clearProblem);
+    ~PyPreprocessor() {}
 
-        // time step method
-        inline std::string getTimeStepMethod() const { return timeStepMethodToStringKey((TimeStepMethod) Agros2D::preprocessor()->config()->value(ProblemConfig::TimeMethod).toInt()).toStdString(); }
-        void setTimeStepMethod(const std::string &timeStepMethod);
+    void setCoordinateType(const std::string &coordinateType);
+    void setMeshType(const std::string &meshType);
+    void setFrequency(double frequency);
+    void setTimeStepMethod(const std::string &timeStepMethod);
+    void setTimeMethodTolerance(double timeMethodTolerance);
+    void setTimeMethodOrder(int timeMethodOrder);
+    void setTimeInitialTimeStep(double timeInitialTimeStep);
+    void setTimeTotal(double timeTotal);
+    void setNumConstantTimeSteps(int timeSteps);
+    void setCouplingType(const std::string &sourceField, const std::string &targetField, const std::string &type);
+};
 
-        // time method tolerance
-        inline double getTimeMethodTolerance() const { return Agros2D::preprocessor()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble(); }
-        void setTimeMethodTolerance(double timeMethodTolerance);
+class PyComputation : public QObject, public PyProblem
+{
+    Q_OBJECT
 
-        // time method order
-        inline int getTimeMethodOrder() const { return Agros2D::preprocessor()->config()->value(ProblemConfig::TimeOrder).toInt(); }
-        void setTimeMethodOrder(int timeMethodOrder);
+public:
+    PyComputation();
+    ~PyComputation() {}
 
-        // initial time step
-        inline double getTimeInitialTimeStep() const { return Agros2D::preprocessor()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble(); }
-        void setTimeInitialTimeStep(double timeInitialTimeStep);
+    void clearSolution();
 
-        // time total
-        inline double getTimeTotal() const { return Agros2D::preprocessor()->config()->value(ProblemConfig::TimeTotal).toDouble(); }
-        void setTimeTotal(double timeTotal);
+    void mesh();
+    void solve();
 
-        // time steps
-        inline int getNumConstantTimeSteps() const { return Agros2D::preprocessor()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); }
-        void setNumConstantTimeSteps(int timeSteps);
+    double timeElapsed() const;
+    void timeStepsLength(vector<double> &steps) const;
+    void timeStepsTimes(vector<double> &times) const;
 
-        // coupling
-        std::string getCouplingType(const std::string &sourceField, const std::string &targetField) const;
-        void setCouplingType(const std::string &sourceField, const std::string &targetField, const std::string &type);
-
-        // mesh and solve
-        void mesh();
-        void solve();        
-
-        // time elapsed
-        double timeElapsed() const;
-
-        // time steps
-        void timeStepsLength(vector<double> &steps) const;
-        void timeStepsTimes(vector<double> &times) const;
-
-        // solution vector
-
-
-private:
-        void checkExistingFields(const QString &sourceField, const QString &targetField) const;
+private slots:
+    void connectComputation(QSharedPointer<ProblemComputation> computation);
+protected:
+    QSharedPointer<ProblemComputation> m_computation;
 };
 
 #endif // PYTHONLABPROBLEM_H
