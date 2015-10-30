@@ -31,7 +31,8 @@ PyProblem::PyProblem(bool clearProblem)
 
 void PyProblem::clear()
 {
-    m_problem->scene()->clear();
+    // m_problem->scene()->clear();
+    m_problem->clearFieldsAndConfig();
 }
 
 void PyProblem::refresh()
@@ -164,16 +165,11 @@ void PyPreprocessor::setCouplingType(const std::string &sourceField, const std::
         throw logic_error(QObject::tr("Coupling '%1' + '%2' doesn't exists.").arg(source).arg(target).toStdString());
 }
 
-PyComputation::PyComputation() : PyProblem(false)
+PyComputation::PyComputation(bool newComputation) : PyProblem(false)
 {    
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
-
-    Agros2D::preprocessor()->createComputation(false);
-}
-
-void PyComputation::connectComputation(QSharedPointer<ProblemComputation> computation)
-{
-    m_computation = computation;
+    Agros2D::preprocessor()->createComputation(newComputation);
+    // TODO: better!
+    m_computation = Agros2D::computation();
 }
 
 void PyComputation::mesh()

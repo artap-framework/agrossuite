@@ -36,7 +36,7 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         void setCouplingType(string &sourceField, string &targetField, string &type) except +
 
     cdef cppclass PyComputation:
-        PyComputation()
+        PyComputation(bool new_computation)
 
         void clearSolution() except +
 
@@ -152,8 +152,8 @@ cdef class __Problem__:
 cdef class __Computation__:
     cdef PyComputation *thisptr
 
-    def __cinit__(self):
-        self.thisptr = new PyComputation()
+    def __cinit__(self, new_computation = False):
+        self.thisptr = new PyComputation(new_computation)
 
     def __dealloc__(self):
         del self.thisptr
@@ -203,5 +203,5 @@ def problem(clear = False):
         __problem__.time_callback = None
     return __problem__
 
-def computation():
-    return __Computation__()
+def computation(new_computation = False):
+    return __Computation__(new_computation)

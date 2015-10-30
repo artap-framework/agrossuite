@@ -72,7 +72,7 @@ class PyComputation : public QObject, public PyProblem
     Q_OBJECT
 
 public:
-    PyComputation();
+    PyComputation(bool newComputation = false);
     ~PyComputation() {}
 
     void clearSolution();
@@ -84,8 +84,6 @@ public:
     void timeStepsLength(vector<double> &steps) const;
     void timeStepsTimes(vector<double> &times) const;
 
-private slots:
-    void connectComputation(QSharedPointer<ProblemComputation> computation);
 protected:
     QSharedPointer<ProblemComputation> m_computation;
 };
