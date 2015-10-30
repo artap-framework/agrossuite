@@ -153,8 +153,7 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
 {
     bool undefinedVariable = false;
 
-    m_problemParameters.clear();
-    QList<PythonVariable> parameterList;
+    Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>().clear();
 
     // run and check startup script
     currentPythonEngineAgros()->blockSignals(true);
@@ -162,17 +161,10 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
     currentPythonEngineAgros()->runExpression("from math import *");
 
     // run in local dict
-    // store startup script
-    QString originalStartup = m_setting->value(ProblemSetting::Problem_StartupScript).toString();
-    m_setting->setValue(ProblemSetting::Problem_StartupScript, QString());
-
     bool successfulRun = currentPythonEngineAgros()->runScript(scriptToCheck);
 
     if (successfulRun)
     {
-        // fill variable list
-        parameterList = currentPythonEngineAgros()->variableList();
-
         double value = 0.0;
 
         // check geometry
@@ -282,32 +274,17 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
         }
 
         // restore startup script
-        m_setting->setValue(ProblemSetting::Problem_StartupScript, originalStartup);
-
         currentPythonEngineAgros()->useGlobalDict();
         currentPythonEngineAgros()->blockSignals(false);
     }
 
     if (successfulRun)
     {
-        // run new script
-        currentPythonEngineAgros()->runScript(scriptToCheck);
-        m_setting->setValue(ProblemSetting::Problem_StartupScript, scriptToCheck);
-
-        // fill parameters
-        foreach (PythonVariable variable, parameterList)
-        {
-            if ((variable.type == "int") || (variable.type == "float"))
-            {
-                m_problemParameters[variable.name] = variable.value.toDouble();
-            }
-        }
+        // m_problemParameters[variable.name] = variable.value.toDouble();
     }
     else
     {
         ErrorResult result = currentPythonEngineAgros()->parseError();
-        // original script
-        currentPythonEngineAgros()->runScript(m_setting->value(ProblemSetting::Problem_StartupScript).toString());
 
         return result.error();
     }
@@ -337,9 +314,6 @@ void Problem::clearFieldsAndConfig()
     // clear config
     m_config->clear();
     m_setting->clear();
-
-    // clear parameters
-    m_problemParameters.clear();
 
     // clear scene
     m_scene->clear();
@@ -485,9 +459,6 @@ void Problem::readProblemFromA2D31(const QString &fileName)
         m_config->load(&doc->problem().problem_config());
         // general config
         m_setting->load(&doc->config());
-
-        // run script
-        currentPythonEngineAgros()->runScript(m_setting->value(ProblemSetting::Problem_StartupScript).toString());
 
         // nodes
         for (unsigned int i = 0; i < doc->geometry().nodes().node().size(); i++)
@@ -741,10 +712,6 @@ void Problem::readProblemFromA2D31(const QString &fileName)
                 cpl->setCouplingType(couplingTypeFromStringKey(QString::fromStdString(coupling.type())));
             }
         }
-
-        // check and apply script (should be ok at this time)
-        // QString error = checkAndApplyStartupScript(m_setting->value(ProblemSetting::Problem_StartupScript).toString());
-        // assert(error.isEmpty());
 
         m_scene->stopInvalidating(false);
         m_scene->blockSignals(false);

@@ -41,6 +41,8 @@
 
 ProblemConfig::ProblemConfig(QWidget *parent) : QObject(parent)
 {
+    qRegisterMetaType<ParametersType>("ParametersType");
+
     setStringKeys();
     setDefaultValues();
 
@@ -100,7 +102,7 @@ void ProblemConfig::save(XMLProblem::problem_config *configxsd)
             configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_setting[key].toStringList().join("|").toStdString()));
         else if (m_settingDefault[key].type() == QVariant::Bool)
             configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toInt()).toStdString()));
-        else
+        else if (m_settingDefault[key].type() == QVariant::String)
             configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_setting[key].toString().toStdString()));
     }
 }
@@ -114,6 +116,7 @@ void ProblemConfig::setStringKeys()
     m_settingKey[TimeOrder] = "TimeOrder";
     m_settingKey[TimeConstantTimeSteps] = "TimeSteps";
     m_settingKey[TimeTotal] = "TimeTotal";
+    m_settingKey[Parameters] = "Parameters";
 }
 
 void ProblemConfig::setDefaultValues()
@@ -127,6 +130,7 @@ void ProblemConfig::setDefaultValues()
     m_settingDefault[TimeOrder] = 2;
     m_settingDefault[TimeConstantTimeSteps] = 10;
     m_settingDefault[TimeTotal] = 10.0;
+    m_settingDefault[Parameters] = QVariant::fromValue(ParametersType());
 }
 
 // ********************************************************************************************
@@ -154,7 +158,6 @@ void ProblemSetting::clear()
 
 void ProblemSetting::setStringKeys()
 {
-    m_settingKey[Problem_StartupScript] = "Problem_StartupScript";
     m_settingKey[View_GridStep] = "View_GridStep";
     m_settingKey[View_SnapToGrid] = "View_SnapToGrid";
     m_settingKey[View_ScalarView3DMode] = "View_ScalarView3DMode";
@@ -246,7 +249,6 @@ void ProblemSetting::setDefaultValues()
 {
     m_settingDefault.clear();
 
-    m_settingDefault[Problem_StartupScript] = QString();
     m_settingDefault[View_SnapToGrid] = true;
     m_settingDefault[View_GridStep] = 0.05;
     m_settingDefault[View_ScalarView3DMode] = SceneViewPost3DMode_None;

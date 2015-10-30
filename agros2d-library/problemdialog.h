@@ -268,10 +268,12 @@ private:
     QGroupBox *grpCouplings;
 
     // startup script
-    CollapsableGroupBoxButton *grpStartupScript;
-    QWidget *widStartupScript;
-    ScriptEditor *txtStartupScript;
-    QLabel *lblStartupScriptError;
+    QGroupBox *grpParameters;
+    QWidget *widParameters;
+    QListWidget *trvParameters;
+    QLabel *lblParametersError;
+    QPushButton *btnParametersRemove;
+    QPushButton *btnParametersAdd;
 
     void createActions();
     void createControls();
@@ -281,8 +283,7 @@ private:
 private slots:
     void transientChanged();
     void changedWithClear();
-    void startupScriptCollapse(bool collapsed);
-    void startupScriptChanged();
+    void parametersChanged();
 };
 
 #endif // PROBLEMDIALOG_H

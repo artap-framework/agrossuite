@@ -83,7 +83,6 @@ public:
 
     // check and apply start script
     QString checkAndApplyStartupScript(const QString scriptToCheck);
-    inline QMap<QString, double> problemParameters() { return m_problemParameters; }
 
     inline QMap<QString, FieldInfo *> fieldInfos() const { return m_fieldInfos; }
     inline FieldInfo *fieldInfo(const QString &fieldId) { assert(m_fieldInfos.contains(fieldId));
@@ -113,9 +112,6 @@ protected:
 
     ProblemConfig *m_config;
     ProblemSetting *m_setting;
-
-    // problem parameters
-    QMap<QString, double> m_problemParameters;
 
     QMap<QString, FieldInfo *> m_fieldInfos;
     QMap<QPair<FieldInfo *, FieldInfo *>, CouplingInfo *> m_couplingInfos;

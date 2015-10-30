@@ -1263,37 +1263,39 @@ void ProblemWidget::createControls()
     grpCouplings->setLayout(layoutCouplings);
 
     // startup script
-    txtStartupScript = new ScriptEditor(currentPythonEngine(), this);
-    txtStartupScript->setLineNumbersVisible(false);
-    lblStartupScriptError = new QLabel();
+    trvParameters = new QListWidget(this);
+    lblParametersError = new QLabel();
 
-    QPalette palette = lblStartupScriptError->palette();
+    QPalette palette = lblParametersError->palette();
     palette.setColor(QPalette::WindowText, QColor(Qt::red));
-    lblStartupScriptError->setPalette(palette);
-    lblStartupScriptError->setVisible(false);
+    lblParametersError->setPalette(palette);
+    lblParametersError->setVisible(false);
 
-    QPushButton *btnStartupScriptApply = new QPushButton(tr("Apply"));
-    connect(btnStartupScriptApply, SIGNAL(clicked()), this, SLOT(startupScriptChanged()));
+    QPushButton *btnParametersApply = new QPushButton(tr("Apply"));
+    connect(btnParametersApply, SIGNAL(clicked()), this, SLOT(parametersChanged()));
 
-    QHBoxLayout *layoutStartupScriptButton = new QHBoxLayout();
-    layoutStartupScriptButton->addStretch(1);
-    layoutStartupScriptButton->addWidget(btnStartupScriptApply);
+    btnParametersAdd = new QPushButton(tr("Add"));
+    btnParametersRemove = new QPushButton(tr("Remove"));
 
-    QVBoxLayout *layoutStartupScriptWidget = new QVBoxLayout();
-    layoutStartupScriptWidget->addWidget(txtStartupScript);
-    layoutStartupScriptWidget->addWidget(lblStartupScriptError);
-    layoutStartupScriptWidget->addLayout(layoutStartupScriptButton);
+    QHBoxLayout *layoutParametersButton = new QHBoxLayout();
+    layoutParametersButton->addWidget(btnParametersAdd);
+    layoutParametersButton->addWidget(btnParametersRemove);
+    layoutParametersButton->addStretch(1);
+    layoutParametersButton->addWidget(btnParametersApply);
 
-    widStartupScript = new QWidget();
-    widStartupScript->setLayout(layoutStartupScriptWidget);
+    QVBoxLayout *layoutParametersWidget = new QVBoxLayout();
+    layoutParametersWidget->addWidget(trvParameters);
+    layoutParametersWidget->addWidget(lblParametersError);
+    layoutParametersWidget->addLayout(layoutParametersButton);
+
+    widParameters = new QWidget();
+    widParameters->setLayout(layoutParametersWidget);
 
     QVBoxLayout *layoutStartupScript = new QVBoxLayout();
-    layoutStartupScript->addWidget(widStartupScript);
+    layoutStartupScript->addWidget(widParameters);
 
-    grpStartupScript = new CollapsableGroupBoxButton(tr("Script"));
-    connect(grpStartupScript, SIGNAL(collapseEvent(bool)), this, SLOT(startupScriptCollapse(bool)));
-    grpStartupScript->setCollapsed(true);
-    grpStartupScript->setLayout(layoutStartupScript);
+    grpParameters = new QGroupBox(tr("Parameters"));
+    grpParameters->setLayout(layoutStartupScript);
 
     // problem widget
     QVBoxLayout *layoutArea = new QVBoxLayout();
@@ -1303,7 +1305,7 @@ void ProblemWidget::createControls()
     layoutArea->addWidget(grpCouplings);
     layoutArea->addWidget(grpHarmonicAnalysis);
     layoutArea->addWidget(grpTransientAnalysis);
-    layoutArea->addWidget(grpStartupScript, 1);
+    layoutArea->addWidget(grpParameters, 1);
     // layoutArea->addStretch(1);
 
     QWidget *widget = new QWidget(this);
@@ -1352,7 +1354,7 @@ void ProblemWidget::updateControls()
     chkTransientInitialStepSize->disconnect();
     txtTransientInitialStepSize->disconnect();
     txtTransientSteps->disconnect();
-    txtStartupScript->disconnect();
+    trvParameters->disconnect();
 
     // main
     cmbCoordinateType->setCurrentIndex(cmbCoordinateType->findData(Agros2D::preprocessor()->config()->coordinateType()));
@@ -1390,8 +1392,7 @@ void ProblemWidget::updateControls()
     transientChanged();
 
     // startup script
-    txtStartupScript->setPlainText(Agros2D::preprocessor()->setting()->value(ProblemSetting::Problem_StartupScript).toString());
-    grpStartupScript->setCollapsed(txtStartupScript->toPlainText().trimmed().isEmpty());
+    // trvParameters->setPlainText(Agros2D::preprocessor()->setting()->value(ProblemSetting::Problem_StartupScript).toString());
 
     // connect signals
     connect(cmbCoordinateType, SIGNAL(currentIndexChanged(int)), this, SLOT(changedWithClear()));
@@ -1487,17 +1488,12 @@ void ProblemWidget::transientChanged()
     }
 }
 
-void ProblemWidget::startupScriptCollapse(bool collapsed)
+void ProblemWidget::parametersChanged()
 {
-    widStartupScript->setVisible(!collapsed);
-}
+    lblParametersError->clear();
+    lblParametersError->setVisible(false);
 
-void ProblemWidget::startupScriptChanged()
-{
-    lblStartupScriptError->clear();
-    lblStartupScriptError->setVisible(false);
-
-    QString error = Agros2D::preprocessor()->checkAndApplyStartupScript(txtStartupScript->toPlainText());
+    QString error = ""; // Agros2D::preprocessor()->checkAndApplyStartupScript(trvParameters->toPlainText());
 
     // run and check startup script
     if (error.isEmpty())
@@ -1506,7 +1502,7 @@ void ProblemWidget::startupScriptChanged()
     }
     else
     {
-        lblStartupScriptError->setText(QObject::tr("Error: %1").arg(error));
-        lblStartupScriptError->setVisible(true);
+        lblParametersError->setText(QObject::tr("Error: %1").arg(error));
+        lblParametersError->setVisible(true);
     }
 }

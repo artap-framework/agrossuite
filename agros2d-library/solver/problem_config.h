@@ -35,6 +35,9 @@ namespace XMLProblem
     class problem_config;
 }
 
+typedef QMap<QString, double> ParametersType;
+Q_DECLARE_METATYPE(ParametersType)
+
 class ProblemConfig : public QObject
 {
     Q_OBJECT
@@ -48,7 +51,8 @@ public:
         TimeInitialStepSize,
         TimeOrder,
         TimeConstantTimeSteps,
-        TimeTotal
+        TimeTotal,
+        Parameters
     };
 
     ProblemConfig(QWidget *parent = 0);
@@ -114,8 +118,7 @@ class ProblemSetting : public QObject
 public:
     enum Type
     {
-        Unknown,
-        Problem_StartupScript,
+        Unknown,        
         View_GridStep,
         View_SnapToGrid,
         View_ScalarView3DMode,

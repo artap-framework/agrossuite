@@ -163,12 +163,14 @@ QString createPythonFromModel()
     str += "import agros2d as a2d\n\n";
 
     // startup script
+    /*
     if (!Agros2D::preprocessor()->setting()->value(ProblemSetting::Problem_StartupScript).toString().trimmed().isEmpty())
     {
         str += "# startup script\n";
         str += Agros2D::preprocessor()->setting()->value(ProblemSetting::Problem_StartupScript).toString();
         str += "\n\n";
     }
+    */
 
     // model
     str += "# problem\n";
