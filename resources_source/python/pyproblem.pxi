@@ -1,9 +1,8 @@
 cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
-    cdef cppclass PyProblem:
-        PyProblem(bool clear)
+    cdef cppclass PyPreprocessor:
+        PyPreprocessor(bool clear)
 
         void clear()
-        void clearSolution() except +
         void refresh()
 
         string getCoordinateType()
@@ -36,6 +35,11 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         string getCouplingType(string &sourceField, string &targetField) except +
         void setCouplingType(string &sourceField, string &targetField, string &type) except +
 
+    cdef cppclass PyComputation:
+        PyComputation()
+
+        void clearSolution() except +
+
         void mesh() except +
         void solve() except +
 
@@ -44,11 +48,11 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         void timeStepsTimes(vector[double] &times) except +
 
 cdef class __Problem__:
-    cdef PyProblem *thisptr
+    cdef PyPreprocessor *thisptr
     cdef object time_callback
 
     def __cinit__(self, clear = False):
-        self.thisptr = new PyProblem(clear)
+        self.thisptr = new PyPreprocessor(clear)
         self.time_callback = None
 
     def __dealloc__(self):
@@ -57,10 +61,6 @@ cdef class __Problem__:
     def clear(self):
         """Clear problem."""
         self.thisptr.clear()
-
-    def clear_solution(self):
-        """Clear solution."""
-        self.thisptr.clearSolution()
 
     def refresh(self):
         """Refresh preprocessor and postprocessor."""
@@ -149,6 +149,19 @@ cdef class __Problem__:
         """
         self.thisptr.setCouplingType(source_field.encode(), target_field.encode(), type.encode())
 
+cdef class __Computation__:
+    cdef PyComputation *thisptr
+
+    def __cinit__(self):
+        self.thisptr = new PyComputation()
+
+    def __dealloc__(self):
+        del self.thisptr
+
+    def clear_solution(self):
+        """Clear solution."""
+        self.thisptr.clearSolution()
+
     def mesh(self):
         """Area discretization."""
         self.thisptr.mesh()
@@ -189,3 +202,6 @@ def problem(clear = False):
         __problem__.clear()
         __problem__.time_callback = None
     return __problem__
+
+def computation():
+    return __Computation__()
