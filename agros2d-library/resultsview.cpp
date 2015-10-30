@@ -85,7 +85,10 @@ void ResultsView::connectComputation(QSharedPointer<ProblemComputation> computat
 
     m_computation = computation;
 
-    connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(doShowResults()));
+    if (!m_computation.isNull())
+    {
+        connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(doShowResults()));
+    }
 }
 
 void ResultsView::doPostprocessorModeGroupChanged(SceneModePostprocessor sceneModePostprocessor)

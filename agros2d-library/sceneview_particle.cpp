@@ -46,7 +46,7 @@
 #include "solver/field.h"
 #include "solver/problem_config.h"
 
-    /*
+/*
     cmbParticleButcherTableType->setCurrentIndex(cmbParticleButcherTableType->findData(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleButcherTableType).toInt()));
     txtParticleNumberOfParticles->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleNumberOfParticles).toInt());
     txtParticleStartingRadius->setValue(m_computation->setting()->defaultValue(ProblemSetting::View_ParticleStartingRadius).toDouble());
@@ -106,16 +106,17 @@ void SceneViewParticleTracing::connectComputation(QSharedPointer<ProblemComputat
     {
         disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
         disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-
         disconnect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
     }
 
     m_computation = computation;
 
-    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
-    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-
-    connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+    if (!m_computation.isNull())
+    {
+        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
+        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
+        connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+    }
 }
 
 void SceneViewParticleTracing::createActionsParticleTracing()

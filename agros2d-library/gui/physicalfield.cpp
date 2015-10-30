@@ -92,8 +92,8 @@ void fillComboBoxTimeStep(const FieldInfo* fieldInfo, QComboBox *cmbTimeStep, QS
     for (int step = 0; step < times.length(); step++)
     {
         bool stepIsAvailable = computation->solutionStore()->contains(FieldSolutionID(fieldInfo->fieldId(),
-                                                                                                 step,
-                                                                                                 computation->solutionStore()->lastAdaptiveStep(fieldInfo, step)));
+                                                                                      step,
+                                                                                      computation->solutionStore()->lastAdaptiveStep(fieldInfo, step)));
         if (!stepIsAvailable)
             continue;
 
@@ -214,8 +214,11 @@ void PhysicalFieldWidget::connectComputation(QSharedPointer<ProblemComputation> 
 
     m_computation = computation;
 
-    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(updateControls()));
-    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(updateControls()));
+    if (!m_computation.isNull())
+    {
+        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(updateControls()));
+        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(updateControls()));
+    }
 }
 
 FieldInfo* PhysicalFieldWidget::selectedField()
@@ -331,7 +334,7 @@ void PhysicalFieldWidget::doFieldInfo(int index)
 
         // set current field name
         m_currentFieldName = fieldName;
-        m_currentAnalysisType = fieldInfo->analysisType();        
+        m_currentAnalysisType = fieldInfo->analysisType();
     }
     else
     {

@@ -68,9 +68,8 @@ private slots:
     void doDocumentOpenForm(const QString &fileName, const QString &formName);
     void doDocumentOpenRecent(QAction *action);
     void doDocumentSave();
-    void doDocumentSaveAs();
-    void doDocumentSaveSolution();
-    void doDocumentDeleteSolution();
+    void doDocumentSaveAs();    
+    void doDeleteSolution();
     void doDocumentClose();
     void doDocumentImportDXF();
     void doDocumentExportDXF();
@@ -138,9 +137,7 @@ private:
 
     QAction *actDocumentNew;
     QAction *actDocumentOpen;
-    QAction *actDocumentSave;
-    QAction *actDocumentSaveSolution;
-    QAction *actDocumentDeleteSolution;
+    QAction *actDocumentSave;    
     QAction *actDocumentSaveAs;
     QAction *actDocumentClose;
     QAction *actDocumentImportDXF;
@@ -168,6 +165,7 @@ private:
     QAction *actMesh;
     QAction *actSolve;
     QAction *actSolveNewComputation;
+    QAction *actDeleteSolution;
 
     QAction *actHelp;
     QAction *actHelpShortCut;

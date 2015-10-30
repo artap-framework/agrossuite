@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
             if (QFile::exists(QString::fromStdString(problemArg.getValue())))
             {
                 QFileInfo info(QString::fromStdString(problemArg.getValue()));
-                if (info.suffix() == "a2d")
+                if (info.suffix() == "ags")
                 {
                     w.setStartupProblemFilename(QString::fromStdString(problemArg.getValue()));
 

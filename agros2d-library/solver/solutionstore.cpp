@@ -64,11 +64,13 @@ void SolutionStore::clearAll()
         removeSolution(sid, false);
 
     // remove runtime
+    /*
     QString fn = QString("%1/%2/runtime.xml").
             arg(cacheProblemDir()).
             arg(m_computation->problemDir());
     if (QFile::exists(fn))
         QFile::remove(fn);
+    */
 
     assert(m_multiSolutions.isEmpty());
     assert(m_multiSolutionRunTimeDetails.isEmpty());

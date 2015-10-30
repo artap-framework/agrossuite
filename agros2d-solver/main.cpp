@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
             if (QFile::exists(QString::fromStdString(problemArg.getValue())))
             {
                 QFileInfo info(QString::fromStdString(problemArg.getValue()));
-                if (info.suffix() == "a2d")
+                if (info.suffix() == "ags")
                 {
                     a.setFileName(QString::fromStdString(problemArg.getValue()));
                     QTimer::singleShot(0, &a, SLOT(solveProblem()));

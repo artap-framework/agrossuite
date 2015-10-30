@@ -144,6 +144,7 @@ Agros2D::Agros2D()
 
     // preprocessor
     m_preprocessor = new ProblemPreprocessor();
+    m_computation = QSharedPointer<ProblemComputation>(nullptr);
 
     initLists();
 
@@ -204,10 +205,14 @@ void Agros2D::removeComputation(const QString &problemDir)
     if (Agros2D::singleton()->m_computations.count() > 0)
     {
         Agros2D::singleton()->m_computation = Agros2D::singleton()->m_computations.last();
+    }
+    else
+    {
+        Agros2D::singleton()->m_computation = QSharedPointer<ProblemComputation>(nullptr);
+    }
 
-        // connect computation
-        emit Agros2D::singleton()->connectComputation(Agros2D::singleton()->m_computation);
-    }    
+    // connect computation
+    emit Agros2D::singleton()->connectComputation(Agros2D::singleton()->m_computation);
 }
 
 void Agros2D::clearComputations()
@@ -219,7 +224,7 @@ void Agros2D::clearComputations()
     }
 
     // connect computation
-    emit Agros2D::singleton()->connectComputation(QSharedPointer<ProblemComputation>(new ProblemComputation()));
+    emit Agros2D::singleton()->connectComputation(QSharedPointer<ProblemComputation>(nullptr));
 }
 
 void Agros2D::createSingleton()

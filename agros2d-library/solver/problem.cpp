@@ -39,7 +39,6 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 #include "weak_form.h"
-//#include "module.h"
 #include "coupling.h"
 #include "solver.h"
 #include "logview.h"
@@ -1019,7 +1018,7 @@ void Problem::writeProblemToA2D(const QString &fileName)
 
 // computation
 
-ProblemComputation::ProblemComputation() : Problem()
+ProblemComputation::ProblemComputation(const QString &problemDir) : Problem()
 {
     // m_timeStep = 0;
     m_lastTimeElapsed = QTime();
@@ -1039,9 +1038,19 @@ ProblemComputation::ProblemComputation() : Problem()
     connect(m_config, SIGNAL(changed()), this, SLOT(clearSolution()));
     connect(m_scene, SIGNAL(invalidated()), this, SLOT(clearSolution()));
 
+    if (problemDir.isEmpty())
+    {
+        // new dir
+        QDateTime time(QDateTime::currentDateTime());
+        m_problemDir = QString("%1").arg(time.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
+    }
+    else
+    {
+        // existing dir
+        m_problemDir = problemDir;
+    }
+
     // create dir
-    QDateTime time(QDateTime::currentDateTime());
-    m_problemDir = QString("%1").arg(time.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
     QDir(cacheProblemDir()).mkdir(m_problemDir);
 }
 
@@ -1529,57 +1538,6 @@ bool ProblemComputation::meshAction(bool emitMeshed)
     return false;
 }
 
-void ProblemComputation::readSolutionFromFile(const QString &fileName)
-{
-    // move to problem
-    assert(0);
-
-    QFileInfo fileInfo(fileName);
-    QString solutionFile = QString("%1/%2.sol").arg(fileInfo.absolutePath()).arg(fileInfo.baseName());
-    if (QFile::exists(solutionFile))
-    {
-        Agros2D::log()->printMessage(tr("Problem"), tr("Loading solution from disk"));
-
-        JlCompress::extractDir(solutionFile, cacheProblemDir());
-
-        // read mesh file
-        try
-        {
-            readInitialMeshFromFile(true);
-        }
-        catch (AgrosException& e)
-        {
-            clearSolution();
-            Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
-        }
-
-        if (isMeshed())
-        {
-            try
-            {
-                readSolutionsFromFile();
-            }
-            catch (AgrosException& e)
-            {
-                clearSolution();
-                Agros2D::log()->printError(tr("Mesh"), e.what());
-            }
-        }
-    }
-}
-
-void ProblemComputation::writeSolutionToFile(const QString &fileName)
-{
-    Agros2D::log()->printMessage(tr("Problem"), tr("Saving solution to disk"));
-
-    QFileInfo fileInfo(fileName);
-    QString solutionFN = QString("%1/%2.sol").arg(fileInfo.absolutePath()).arg(fileInfo.baseName());
-    if (QFile(solutionFN).open(QIODevice::WriteOnly))
-        JlCompress::compressDir(solutionFN, cacheProblemDir());
-    else
-        Agros2D::log()->printError(tr("Solver"), tr("Access denied '%1'").arg(solutionFN));
-}
-
 bool ProblemComputation::isMeshed() const
 {
     if (m_initialMesh.n_active_cells() == 0)
@@ -1643,9 +1601,9 @@ void ProblemPreprocessor::createComputation(bool newComputation)
             arg(post->problemDir());
 
     writeProblemToA2D(fn);
+    post->clearFieldsAndConfig();
     post->readProblemFromA2D31(fn);
 }
-
 
 void ProblemPreprocessor::clearFieldsAndConfig()
 {
@@ -1673,9 +1631,69 @@ void ProblemPreprocessor::readProblemFromArchive(const QString &fileName)
         m_config->setFileName(fn);
         emit fileNameChanged(fn);
     }
+
+    // read solutions
+    QDirIterator it(cacheProblemDir(), QDir::Dirs, QDirIterator::NoIteratorFlags);
+    while (it.hasNext())
+    {
+        QString dir = it.next();
+
+        // skip . and ..
+        QFileInfo fileInfo(dir);
+        if (fileInfo.fileName() == "." || fileInfo.fileName() == "..")
+            continue;
+
+        QString problemDir = fileInfo.fileName();
+
+        QString fn = QString("%1/%2/problem.a2d").
+                arg(cacheProblemDir()).
+                arg(problemDir);
+
+        if (QFile::exists(fn))
+        {
+            QSharedPointer<ProblemComputation> post = QSharedPointer<ProblemComputation>(new ProblemComputation(problemDir));
+            Agros2D::addComputation(post->problemDir(), post);
+
+            post->readProblemFromA2D31(fn);            
+        }
+    }
+
+    // set last computation
+    if (Agros2D::computations().count() > 0)
+    {
+        QSharedPointer<ProblemComputation> post = Agros2D::computations().last();
+
+        Agros2D::setCurrentComputation(post->problemDir());
+
+        Agros2D::log()->printMessage(tr("Problem"), tr("Loading solution from disk"));
+
+        // read mesh file
+        try
+        {
+            post->readInitialMeshFromFile(true);
+        }
+        catch (AgrosException& e)
+        {
+            post->clearSolution();
+            Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
+        }
+
+        if (post->isMeshed())
+        {
+            try
+            {
+                post->readSolutionsFromFile();
+            }
+            catch (AgrosException& e)
+            {
+                post->clearSolution();
+                Agros2D::log()->printError(tr("Mesh"), e.what());
+            }
+        }
+    }
 }
 
-void ProblemPreprocessor::writeProblemToArchive(const QString &fileName)
+void ProblemPreprocessor::writeProblemToArchive(const QString &fileName, bool saveWithSolution)
 {
     QSettings settings;
     QFileInfo fileInfo(fileName);
@@ -1687,10 +1705,19 @@ void ProblemPreprocessor::writeProblemToArchive(const QString &fileName)
 
     QFileInfo fileInfoProblem(QString("%1/problem.a2d").arg(cacheProblemDir()));
 
-    QStringList lst;
-    lst << fileInfoProblem.absoluteFilePath();
-    if (JlCompress::compressFiles(fileName, lst))
-        emit fileNameChanged(QFileInfo(fileName).absoluteFilePath());
+    if (saveWithSolution)
+    {
+        // whole directory
+        JlCompress::compressDir(fileName, cacheProblemDir());
+    }
+    else
+    {
+        // only problem file
+        QStringList lst;
+        lst << fileInfoProblem.absoluteFilePath();
+        if (JlCompress::compressFiles(fileName, lst))
+            emit fileNameChanged(QFileInfo(fileName).absoluteFilePath());
+    }
 }
 
 void ProblemPreprocessor::readProblemFromFile(const QString &fileName)

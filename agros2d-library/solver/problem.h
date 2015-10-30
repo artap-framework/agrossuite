@@ -141,7 +141,7 @@ public:
     void createComputation(bool newComputation = false);
 
     void readProblemFromArchive(const QString &fileName);
-    void writeProblemToArchive(const QString &fileName);
+    void writeProblemToArchive(const QString &fileName, bool saveWithSolution = false);
     void readProblemFromFile(const QString &fileName);
 
 signals:
@@ -156,7 +156,7 @@ class AGROS_LIBRARY_API ProblemComputation : public Problem
     Q_OBJECT
 
 public:
-    ProblemComputation();
+    ProblemComputation(const QString &problemDir = "");
     virtual ~ProblemComputation();
 
     // mesh
@@ -207,9 +207,6 @@ public:
 
     void meshWithGUI();
     void solveWithGUI();
-
-    void readSolutionFromFile(const QString &fileName);
-    void writeSolutionToFile(const QString &fileName);
 
     inline QString problemDir() { return m_problemDir; }
 

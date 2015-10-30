@@ -169,7 +169,11 @@ void PostprocessorWidget::doApply()
 
 void PostprocessorWidget::refresh()
 {
-    actSceneModePost->setEnabled(m_computation->isMeshed());
+    actSceneModePost->setEnabled(m_computation && m_computation->isMeshed());
+
+    if (m_computation.isNull())
+        return;
+
     tabWidget->setTabEnabled(0, m_computation->isMeshed());
     tabWidget->setTabEnabled(1, m_computation->isSolved());
     tabWidget->setTabEnabled(2, m_computation->isSolved());
@@ -216,9 +220,12 @@ void PostprocessorWidget::connectComputation(QSharedPointer<ProblemComputation> 
 
     m_computation = computation;
 
-    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doCalculationFinished()));
-    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(doCalculationFinished()));
-    connect(this, SIGNAL(apply()), m_computation.data()->postDeal(), SLOT(refresh()));
+    if (!m_computation.isNull())
+    {
+        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doCalculationFinished()));
+        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(doCalculationFinished()));
+        connect(this, SIGNAL(apply()), m_computation.data()->postDeal(), SLOT(refresh()));        
+    }    
 
     refresh();
 }

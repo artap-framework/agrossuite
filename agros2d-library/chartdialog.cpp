@@ -86,7 +86,7 @@ void SceneViewChart::chartMouseMoved(QMouseEvent *event)
 void SceneViewChart::refresh()
 {
     if (m_computation.isNull())
-        return;    
+        return;
 
     Module::LocalVariable physicFieldVariable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),
                                                                                                             m_computation->setting()->value(ProblemSetting::View_ChartVariable).toString());
@@ -137,10 +137,13 @@ void SceneViewChart::connectComputation(QSharedPointer<ProblemComputation> compu
 
     m_computation = computation;
 
-    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(refresh()));
-    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(refresh()));
+    if (!m_computation.isNull())
+    {
+        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(refresh()));
+        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(refresh()));
 
-    connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+        connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+    }
 }
 
 QVector<double> SceneViewChart::horizontalAxisValues(ChartLine *chartLine)

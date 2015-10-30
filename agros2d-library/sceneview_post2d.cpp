@@ -82,16 +82,17 @@ void SceneViewPost2D::connectComputation(QSharedPointer<ProblemComputation> comp
     {
         disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
         disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-
         disconnect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
     }
 
     m_computation = computation;
 
-    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
-    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-
-    connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+    if (!m_computation.isNull())
+    {
+        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
+        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
+        connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+    }
 }
 
 void SceneViewPost2D::createActionsPost2D()

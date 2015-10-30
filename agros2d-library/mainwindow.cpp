@@ -209,10 +209,8 @@ void MainWindow::createActions()
     actDocumentSave->setShortcuts(QKeySequence::Save);
     connect(actDocumentSave, SIGNAL(triggered()), this, SLOT(doDocumentSave()));
 
-    actDocumentSaveSolution = new QAction(icon(""), tr("Save solution"), this);
-    connect(actDocumentSaveSolution, SIGNAL(triggered()), this, SLOT(doDocumentSaveSolution()));
-    actDocumentDeleteSolution = new QAction(icon(""), tr("Delete solution"), this);
-    connect(actDocumentDeleteSolution, SIGNAL(triggered()), this, SLOT(doDocumentDeleteSolution()));
+    actDeleteSolution = new QAction(icon(""), tr("Delete solution"), this);
+    connect(actDeleteSolution, SIGNAL(triggered()), this, SLOT(doDeleteSolution()));
 
     actDocumentSaveAs = new QAction(icon("document-save-as"), tr("Save &As..."), this);
     actDocumentSaveAs->setShortcuts(QKeySequence::SaveAs);
@@ -354,10 +352,13 @@ void MainWindow::connectComputation(QSharedPointer<ProblemComputation> computati
 
     m_computation = computation;
 
-    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
-    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-    connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doSolveFinished()));
-    connect(m_computation.data(), SIGNAL(solved()), this, SLOT(doSolveFinished()));
+    if (!m_computation.isNull())
+    {
+        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
+        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
+        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doSolveFinished()));
+        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(doSolveFinished()));
+    }
 }
 
 void MainWindow::createMenus()
@@ -393,8 +394,7 @@ void MainWindow::createMenus()
     mnuFile->addAction(actDocumentSave);
     mnuFile->addAction(actDocumentSaveAs);
     mnuFile->addSeparator();
-    mnuFile->addAction(actDocumentSaveSolution);
-    mnuFile->addAction(actDocumentDeleteSolution);
+    mnuFile->addAction(actDeleteSolution);
     mnuFile->addSeparator();
     mnuFile->addMenu(mnuFileImportExport);
     // mnuFile->addMenu(mnuServer);
@@ -753,11 +753,6 @@ void MainWindow::doDocumentOpen(const QString &fileName)
         QFileInfo fileInfo(fileNameDocument);
         if (fileInfo.suffix() == "ags" || fileInfo.suffix() == "a2d")
         {
-            QSettings settings;
-            QFileInfo fileInfo(fileName);
-            // if (fileInfo.absoluteDir() != tempProblemDir() && !fileName.contains("resources/examples"))
-            settings.setValue("General/LastProblemDir", fileInfo.absolutePath());
-
             Agros2D::preprocessor()->readProblemFromFile(fileNameDocument);
             setRecentFiles();
 
@@ -822,7 +817,7 @@ void MainWindow::doDocumentSave()
         try
         {
             // write to archive
-            Agros2D::preprocessor()->writeProblemToArchive(Agros2D::preprocessor()->config()->fileName());
+            Agros2D::preprocessor()->writeProblemToArchive(Agros2D::preprocessor()->config()->fileName(), true);
         }
         catch (AgrosException &e)
         {
@@ -835,31 +830,13 @@ void MainWindow::doDocumentSave()
     }
 }
 
-void MainWindow::doDocumentSaveSolution()
+void MainWindow::doDeleteSolution()
 {
-    if (QFile::exists(Agros2D::preprocessor()->config()->fileName()))
-    {
-        m_computation->writeSolutionToFile(Agros2D::preprocessor()->config()->fileName());
-        setControls();
-    }
-}
+    // clear all computations
+    Agros2D::clearComputations();
 
-void MainWindow::doDocumentDeleteSolution()
-{
-    QFileInfo fileInfo(Agros2D::preprocessor()->config()->fileName());
-    QString solutionFN = QString("%1/%2.sol").arg(fileInfo.absolutePath()).arg(fileInfo.baseName());
-
-    if (QFile::exists(Agros2D::preprocessor()->config()->fileName()))
-    {
-        if (!QFile(solutionFN).remove())
-            Agros2D::log()->printError(tr("Solution"), tr("Access denied '%1'").arg(solutionFN));
-
-        setControls();
-    }
-    else
-    {
-        Agros2D::log()->printError(tr("Solution"), tr("Solution '%1' doesn't exists.").arg(solutionFN));
-    }
+    problemWidget->actProperties->trigger();
+    sceneViewPreprocessor->doZoomBestFit();
 }
 
 void MainWindow::doDocumentSaveAs()
@@ -875,7 +852,7 @@ void MainWindow::doDocumentSaveAs()
 
         try
         {
-            Agros2D::preprocessor()->writeProblemToArchive(fileName);
+            Agros2D::preprocessor()->writeProblemToArchive(fileName, true);
             setRecentFiles();
         }
         catch (AgrosException &e)
@@ -888,12 +865,13 @@ void MainWindow::doDocumentSaveAs()
 
 void MainWindow::doDocumentClose()
 {
-    Agros2D::preprocessor()->scene()->clear();
+    // clear all computations
+    Agros2D::clearComputations();
+
+    // clear preprocessor
     Agros2D::preprocessor()->clearFieldsAndConfig();
 
     problemWidget->actProperties->trigger();
-    sceneViewPreprocessor->actOperateOnNodes->trigger();
-    sceneViewPreprocessor->doZoomBestFit();
 }
 
 void MainWindow::doDocumentImportDXF()
@@ -1181,11 +1159,7 @@ void MainWindow::setControls()
     setUpdatesEnabled(false);
     setEnabled(true);
 
-    if (!m_computation.isNull())
-        actDocumentSaveSolution->setEnabled(m_computation->isSolved());
-
-    QFileInfo fileInfo(Agros2D::preprocessor()->config()->fileName());
-    actDocumentDeleteSolution->setEnabled(!Agros2D::preprocessor()->config()->fileName().isEmpty() && QFile::exists(QString("%1/%2.sol").arg(fileInfo.absolutePath()).arg(fileInfo.baseName())));
+    actDeleteSolution->setEnabled(Agros2D::computations().count() > 0);
 
     // set controls
     Agros2D::preprocessor()->scene()->actTransform->setEnabled(false);
