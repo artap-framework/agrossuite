@@ -65,7 +65,9 @@ private:
     void createActionsMesh();
 
 private slots:
-    virtual void refresh();
+    virtual void refresh();   
+    virtual void clearGLLists();
+
     void connectComputation(QSharedPointer<ProblemComputation> computation);
 };
 

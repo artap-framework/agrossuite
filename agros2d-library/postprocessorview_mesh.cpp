@@ -107,6 +107,7 @@ void PostprocessorSceneMeshWidget::createControls()
     QVBoxLayout *widgetsLayout = new QVBoxLayout();
     widgetsLayout->addWidget(grpShowMesh);
     widgetsLayout->addWidget(grpShowOrder);
+    widgetsLayout->addStretch(1);
 
     QWidget *widget = new QWidget(this);
     widget->setLayout(widgetsLayout);
@@ -117,8 +118,8 @@ void PostprocessorSceneMeshWidget::createControls()
     widgetArea->setWidget(widget);
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->addWidget(widgetArea);
-    layoutMain->addStretch(1);
+    layoutMain->setContentsMargins(0, 0, 0, 0);
+    layoutMain->addWidget(widgetArea, 1);
 
     setLayout(layoutMain);
 }

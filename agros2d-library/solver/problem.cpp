@@ -1374,24 +1374,6 @@ void ProblemComputation::propagateBoundaryMarkers()
     }
 }
 
-void ProblemComputation::readSolutionsFromFile()
-{
-    Agros2D::log()->printMessage(tr("Problem"), tr("Loading DoFHandlers and Solutions from disk"));
-
-    QString fn = QString("%1/%2/runtime.xml").
-            arg(cacheProblemDir()).
-            arg(problemDir());
-
-    if (QFile::exists(fn))
-    {
-        // load structure
-        m_solutionStore->loadRunTimeDetails();
-
-        // emit solve
-        emit solved();
-    }
-}
-
 void ProblemComputation::meshWithGUI()
 {
     if (!isPreparedForAction())
@@ -1654,7 +1636,33 @@ void ProblemPreprocessor::readProblemFromArchive(const QString &fileName)
             QSharedPointer<ProblemComputation> post = QSharedPointer<ProblemComputation>(new ProblemComputation(problemDir));
             Agros2D::addComputation(post->problemDir(), post);
 
-            post->readProblemFromA2D31(fn);            
+            Agros2D::log()->printMessage(tr("Problem"), tr("Loading solution from disk: %1").arg(problemDir));
+
+            post->readProblemFromA2D31(fn);
+
+            // read mesh file
+            try
+            {
+                post->readInitialMeshFromFile(true);
+            }
+            catch (AgrosException& e)
+            {
+                post->clearSolution();
+                Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
+            }
+
+            if (post->isMeshed())
+            {
+                try
+                {
+                    post->solutionStore()->loadRunTimeDetails();
+                }
+                catch (AgrosException& e)
+                {
+                    post->clearSolution();
+                    Agros2D::log()->printError(tr("Mesh"), e.what());
+                }
+            }
         }
     }
 
@@ -1664,32 +1672,7 @@ void ProblemPreprocessor::readProblemFromArchive(const QString &fileName)
         QSharedPointer<ProblemComputation> post = Agros2D::computations().last();
 
         Agros2D::setCurrentComputation(post->problemDir());
-
-        Agros2D::log()->printMessage(tr("Problem"), tr("Loading solution from disk"));
-
-        // read mesh file
-        try
-        {
-            post->readInitialMeshFromFile(true);
-        }
-        catch (AgrosException& e)
-        {
-            post->clearSolution();
-            Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
-        }
-
-        if (post->isMeshed())
-        {
-            try
-            {
-                post->readSolutionsFromFile();
-            }
-            catch (AgrosException& e)
-            {
-                post->clearSolution();
-                Agros2D::log()->printError(tr("Mesh"), e.what());
-            }
-        }
+        emit post->solved();
     }
 }
 

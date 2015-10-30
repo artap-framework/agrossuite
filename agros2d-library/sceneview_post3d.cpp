@@ -97,6 +97,8 @@ void SceneViewPost3D::connectComputation(QSharedPointer<ProblemComputation> comp
         connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
         connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+
+        clearGLLists();
     }
 }
 
@@ -831,13 +833,13 @@ void SceneViewPost3D::refresh()
 
     setControls();
 
-    if (m_computation->isSolved())
+    if (!m_computation.isNull() && m_computation->isSolved())
         SceneViewCommon::refresh();
 }
 
 void SceneViewPost3D::setControls()
 {
-    if (m_computation)
+    if (!m_computation.isNull())
     {
         actSceneModePost3D->setEnabled(m_computation->isSolved());
         actSetProjectionXY->setEnabled(m_computation->isSolved());
@@ -848,6 +850,8 @@ void SceneViewPost3D::setControls()
 
 void SceneViewPost3D::clear()
 {
+    setControls();
+
     SceneViewCommon3D::clear();
     doZoomBestFit();
 }

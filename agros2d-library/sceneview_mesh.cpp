@@ -75,6 +75,8 @@ void SceneViewMesh::connectComputation(QSharedPointer<ProblemComputation> comput
         connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
         connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+
+        clearGLLists();
     }
 
     refresh();
@@ -91,14 +93,19 @@ void SceneViewMesh::createActionsMesh()
 
 void SceneViewMesh::refresh()
 {
-    m_arrayInitialMesh.clear();
-    m_arraySolutionMesh.clear();
-    m_arrayOrderMesh.clear();
-    m_arrayOrderMeshColor.clear();
+    clearGLLists();
 
     setControls();
 
     SceneViewCommon::refresh();
+}
+
+void SceneViewMesh::clearGLLists()
+{
+    m_arrayInitialMesh.clear();
+    m_arraySolutionMesh.clear();
+    m_arrayOrderMesh.clear();
+    m_arrayOrderMeshColor.clear();
 }
 
 void SceneViewMesh::setControls()

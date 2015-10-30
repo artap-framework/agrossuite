@@ -139,18 +139,18 @@ private:
     QPushButton *btnShowHide;
 
     QCustomPlot *m_nonlinearChart;
-    QCPGraph *m_nonlinearErrorGraph;
     QProgressBar *m_nonlinearProgress;
+    QCPGraph *m_nonlinearErrorGraph;
 
     QCustomPlot *m_adaptivityChart;
+    QProgressBar *m_adaptivityProgress;
     QCPGraph *m_adaptivityErrorGraph;
     QCPGraph *m_adaptivityDOFsGraph;
-    QProgressBar *m_adaptivityProgress;
 
     QCustomPlot *m_timeChart;
+    QProgressBar *m_timeProgress;
     QCPGraph *m_timeTimeStepGraph;
     QCPGraph *m_timeTimeTotalGraph;
-    QProgressBar *m_timeProgress;
 
     QListWidget *m_progress;
 

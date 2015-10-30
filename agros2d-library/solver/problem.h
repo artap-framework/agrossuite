@@ -189,7 +189,6 @@ public:
 
     // read initial meshes and solution
     void readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator = QSharedPointer<MeshGenerator>(nullptr));
-    void readSolutionsFromFile();
 
     inline const dealii::Triangulation<2> &initialMesh() const { return m_initialMesh; }
     inline dealii::Triangulation<2> &calculationMesh() { return m_calculationMesh; }

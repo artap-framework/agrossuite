@@ -86,7 +86,7 @@ void PostprocessorScenePost2DWidget::createControls()
     widgetArea->setWidget(widget);
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->setContentsMargins(2, 2, 2, 3);
+    layoutMain->setContentsMargins(0, 0, 0, 0);
     layoutMain->addWidget(toolBar);
     layoutMain->addWidget(widgetArea, 1);
 

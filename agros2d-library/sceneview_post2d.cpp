@@ -92,7 +92,11 @@ void SceneViewPost2D::connectComputation(QSharedPointer<ProblemComputation> comp
         connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
         connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+
+        clearGLLists();
     }
+
+    refresh();
 }
 
 void SceneViewPost2D::createActionsPost2D()
@@ -820,13 +824,13 @@ void SceneViewPost2D::refresh()
 
     setControls();
 
-    if (m_computation->isSolved())
+    if (!m_computation.isNull() && m_computation->isSolved())
         SceneViewCommon2D::refresh();
 }
 
 void SceneViewPost2D::setControls()
 {
-    if (m_computation)
+    if (!m_computation.isNull())
     {
         actPostprocessorModeGroup->setEnabled(m_computation->isSolved());
         actSelectByMarker->setEnabled(m_computation->isSolved() && (actPostprocessorModeSurfaceIntegral->isChecked() || actPostprocessorModeVolumeIntegral->isChecked()));
@@ -838,6 +842,7 @@ void SceneViewPost2D::setControls()
 
 void SceneViewPost2D::clear()
 {
+    actPostprocessorModeNothing->setChecked(true);
     actPostprocessorModeNothing->trigger();
 
     setControls();

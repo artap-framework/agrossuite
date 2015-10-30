@@ -100,9 +100,6 @@ void PostprocessorSceneChartWidget::createControls()
     QVBoxLayout *layoutChart = new QVBoxLayout();
     layoutChart->addWidget(geometryViewer);
 
-    QGroupBox *grpChart = new QGroupBox(tr("Line preview"));
-    grpChart->setLayout(layoutChart);
-
     btnSaveImage = new QPushButton();
     btnSaveImage->setDefault(false);
     btnSaveImage->setEnabled(false);
@@ -162,12 +159,6 @@ void PostprocessorSceneChartWidget::createControls()
     axisGroup->addButton(radHorizontalAxisX);
     axisGroup->addButton(radHorizontalAxisY);
 
-    /*
-    connect(radAxisLength, SIGNAL(clicked()), this, SLOT(doPlot()));
-    connect(radAxisX, SIGNAL(clicked()), this, SLOT(doPlot()));
-    connect(radAxisY, SIGNAL(clicked()), this, SLOT(doPlot()));
-    */
-
     // axis
     QHBoxLayout *layoutAxis = new QHBoxLayout();
     layoutAxis->addWidget(radHorizontalAxisLength);
@@ -183,7 +174,6 @@ void PostprocessorSceneChartWidget::createControls()
     txtHorizontalAxisPoints->setMaximum(500);
     txtHorizontalAxisPoints->setValue(200);
     chkHorizontalAxisReverse = new QCheckBox(tr("Reverse"));
-    //connect(chkAxisPointsReverse, SIGNAL(clicked()), this, SLOT(doPlot()));
 
     // timestep
     QGridLayout *layoutAxisPointsAndTimeStep = new QGridLayout();
@@ -246,11 +236,9 @@ void PostprocessorSceneChartWidget::createControls()
 
     // controls
     QVBoxLayout *controlsLayout = new QVBoxLayout();
-    // controlsLayout->setContentsMargins(0, 0, 0, 0);
     controlsLayout->addWidget(grpVariable);
     controlsLayout->addWidget(tbxAnalysisType, 1);
-    controlsLayout->addWidget(grpChart, 1);
-    // controlsLayout->addStretch(1);
+    controlsLayout->addLayout(layoutChart, 1);
 
     QWidget *widget = new QWidget(this);
     widget->setLayout(controlsLayout);
@@ -260,12 +248,12 @@ void PostprocessorSceneChartWidget::createControls()
     widgetArea->setWidgetResizable(true);
     widgetArea->setWidget(widget);
 
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->setContentsMargins(2, 2, 2, 3);
-    layout->addWidget(widgetArea);
-    layout->addWidget(widButton);
+    QVBoxLayout *layoutMain = new QVBoxLayout();
+    layoutMain->setContentsMargins(0, 0, 0, 0);
+    layoutMain->addWidget(widgetArea);
+    layoutMain->addWidget(widButton);
 
-    setLayout(layout);
+    setLayout(layoutMain);
 }
 
 void PostprocessorSceneChartWidget::doFieldVariable(int index)

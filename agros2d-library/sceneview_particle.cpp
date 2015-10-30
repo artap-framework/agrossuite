@@ -116,7 +116,11 @@ void SceneViewParticleTracing::connectComputation(QSharedPointer<ProblemComputat
         connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
         connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+
+        clearGLLists();
     }
+
+    refresh();
 }
 
 void SceneViewParticleTracing::createActionsParticleTracing()
@@ -756,6 +760,8 @@ void SceneViewParticleTracing::clearGLLists()
     if (m_listParticleTracing != -1) glDeleteLists(m_listParticleTracing, 1);
 
     m_listParticleTracing = -1;
+
+    clearParticleLists();
 }
 
 void SceneViewParticleTracing::refresh()
@@ -764,13 +770,13 @@ void SceneViewParticleTracing::refresh()
 
     setControls();
 
-    if (m_computation->isSolved())
+    if (!m_computation.isNull() && m_computation->isSolved())
         SceneViewCommon::refresh();
 }
 
 void SceneViewParticleTracing::setControls()
 {
-    if (m_computation)
+    if (!m_computation.isNull())
     {
         actSceneModeParticleTracing->setEnabled(m_computation->isSolved());
         actSetProjectionXY->setEnabled(m_computation->isSolved());
@@ -782,6 +788,8 @@ void SceneViewParticleTracing::setControls()
 void SceneViewParticleTracing::clear()
 {
     clearParticleLists();
+
+    setControls();
 
     SceneViewCommon3D::clear();
     doZoomBestFit();
