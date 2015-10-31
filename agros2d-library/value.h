@@ -130,4 +130,6 @@ private:
     Value m_y;
 };
 
+Q_DECLARE_METATYPE(Value)
+
 #endif // VALUE_H

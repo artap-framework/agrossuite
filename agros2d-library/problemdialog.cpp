@@ -373,7 +373,7 @@ QWidget *FieldWidget::createAdaptivityWidget()
     foreach (QString type, adaptivityStrategyHPStringKeys())
         if (adaptivityStrategyHPFromStringKey(type) != AdaptivityStrategyHP_Undefined)
             cmbAdaptivityStrategyHP->addItem(adaptivityStrategyHPString(adaptivityStrategyHPFromStringKey(type)),
-                                           adaptivityStrategyHPFromStringKey(type));
+                                             adaptivityStrategyHPFromStringKey(type));
     connect(cmbAdaptivityStrategyHP, SIGNAL(currentIndexChanged(int)), this, SLOT(doAdaptivityStrategyHPChanged(int)));
 
     txtAdaptivityFineFraction = new QSpinBox(this);
@@ -1262,20 +1262,42 @@ void ProblemWidget::createControls()
     grpCouplings = new QGroupBox(tr("Couplings"));
     grpCouplings->setLayout(layoutCouplings);
 
-    // startup script
-    trvParameters = new QListWidget(this);
+    // parameters
+    trvParameters = new QTreeWidget(this);
+    trvParameters->setMouseTracking(true);
+    trvParameters->setColumnCount(2);
+    trvParameters->setIndentation(15);
+    trvParameters->setMinimumWidth(220);
+
+    QStringList headers;
+    headers << tr("Name") << tr("Value");
+    trvParameters->setHeaderLabels(headers);
+
+    connect(trvParameters, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(parameterChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+
     lblParametersError = new QLabel();
+
+    txtParameterName = new QLineEdit();
+    connect(txtParameterName, SIGNAL(textChanged(QString)), this, SLOT(parameterNameTextChanged(QString)));
+    txtParameterValue = new LineEditDouble();
+
+    QGridLayout *layoutParametersEdit = new QGridLayout();
+    layoutParametersEdit->addWidget(new QLabel(tr("Name")), 0, 0);
+    layoutParametersEdit->addWidget(txtParameterName, 0, 1);
+    layoutParametersEdit->addWidget(new QLabel(tr("Value")), 1, 0);
+    layoutParametersEdit->addWidget(txtParameterValue, 1, 1);
 
     QPalette palette = lblParametersError->palette();
     palette.setColor(QPalette::WindowText, QColor(Qt::red));
     lblParametersError->setPalette(palette);
     lblParametersError->setVisible(false);
 
-    QPushButton *btnParametersApply = new QPushButton(tr("Apply"));
-    connect(btnParametersApply, SIGNAL(clicked()), this, SLOT(parametersChanged()));
-
+    btnParametersApply = new QPushButton(tr("Apply"));
+    connect(btnParametersApply, SIGNAL(clicked()), this, SLOT(parametersApply()));
     btnParametersAdd = new QPushButton(tr("Add"));
+    connect(btnParametersAdd, SIGNAL(clicked()), this, SLOT(parameterAdded()));
     btnParametersRemove = new QPushButton(tr("Remove"));
+    connect(btnParametersRemove, SIGNAL(clicked()), this, SLOT(parameterRemoved()));
 
     QHBoxLayout *layoutParametersButton = new QHBoxLayout();
     layoutParametersButton->addWidget(btnParametersAdd);
@@ -1286,16 +1308,11 @@ void ProblemWidget::createControls()
     QVBoxLayout *layoutParametersWidget = new QVBoxLayout();
     layoutParametersWidget->addWidget(trvParameters);
     layoutParametersWidget->addWidget(lblParametersError);
+    layoutParametersWidget->addLayout(layoutParametersEdit);
     layoutParametersWidget->addLayout(layoutParametersButton);
 
-    widParameters = new QWidget();
-    widParameters->setLayout(layoutParametersWidget);
-
-    QVBoxLayout *layoutStartupScript = new QVBoxLayout();
-    layoutStartupScript->addWidget(widParameters);
-
-    grpParameters = new QGroupBox(tr("Parameters"));
-    grpParameters->setLayout(layoutStartupScript);
+    QGroupBox *grpParameters = new QGroupBox(tr("Parameters"));
+    grpParameters->setLayout(layoutParametersWidget);
 
     // problem widget
     QVBoxLayout *layoutArea = new QVBoxLayout();
@@ -1354,7 +1371,6 @@ void ProblemWidget::updateControls()
     chkTransientInitialStepSize->disconnect();
     txtTransientInitialStepSize->disconnect();
     txtTransientSteps->disconnect();
-    trvParameters->disconnect();
 
     // main
     cmbCoordinateType->setCurrentIndex(cmbCoordinateType->findData(Agros2D::preprocessor()->config()->coordinateType()));
@@ -1366,7 +1382,7 @@ void ProblemWidget::updateControls()
 
     // harmonic magnetic
     grpHarmonicAnalysis->setVisible(Agros2D::preprocessor()->isHarmonic());
-    txtFrequency->setValue(Value::parseValueFromString(Agros2D::preprocessor()->config()->value(ProblemConfig::Frequency).toString()));
+    txtFrequency->setValue(Agros2D::preprocessor()->config()->value(ProblemConfig::Frequency).value<Value>());
 
     // transient
     grpTransientAnalysis->setVisible(Agros2D::preprocessor()->isTransient());
@@ -1391,8 +1407,8 @@ void ProblemWidget::updateControls()
 
     transientChanged();
 
-    // startup script
-    // trvParameters->setPlainText(Agros2D::preprocessor()->setting()->value(ProblemSetting::Problem_StartupScript).toString());
+    // reload parameters
+    reloadParameters();
 
     // connect signals
     connect(cmbCoordinateType, SIGNAL(currentIndexChanged(int)), this, SLOT(changedWithClear()));
@@ -1413,9 +1429,6 @@ void ProblemWidget::updateControls()
     connect(txtTransientSteps, SIGNAL(valueChanged(int)), this, SLOT(transientChanged()));
     connect(txtTransientTimeTotal, SIGNAL(textChanged(QString)), this, SLOT(transientChanged()));
     connect(txtTransientOrder, SIGNAL(valueChanged(int)), this, SLOT(transientChanged()));
-
-    // startup
-    // connect(txtStartupScript, SIGNAL(textChanged()), this, SLOT(changedWithClear()));
 }
 
 void ProblemWidget::changedWithClear()
@@ -1426,7 +1439,7 @@ void ProblemWidget::changedWithClear()
     Agros2D::preprocessor()->config()->setCoordinateType((CoordinateType) cmbCoordinateType->itemData(cmbCoordinateType->currentIndex()).toInt());
     Agros2D::preprocessor()->config()->setMeshType((MeshType) cmbMeshType->itemData(cmbMeshType->currentIndex()).toInt());
 
-    Agros2D::preprocessor()->config()->setValue(ProblemConfig::Frequency, txtFrequency->value().toString());
+    Agros2D::preprocessor()->config()->setValue(ProblemConfig::Frequency, txtFrequency->value());
     Agros2D::preprocessor()->config()->setValue(ProblemConfig::TimeMethod, (TimeStepMethod) cmbTransientMethod->itemData(cmbTransientMethod->currentIndex()).toInt());
     Agros2D::preprocessor()->config()->setValue(ProblemConfig::TimeOrder, txtTransientOrder->value());
     Agros2D::preprocessor()->config()->setValue(ProblemConfig::TimeMethodTolerance, txtTransientTolerance->value());
@@ -1488,21 +1501,172 @@ void ProblemWidget::transientChanged()
     }
 }
 
-void ProblemWidget::parametersChanged()
+void ProblemWidget::parameterSelect(const QString &key)
+{
+    txtParameterName->clear();
+    txtParameterName->setEnabled(trvParameters->currentItem());
+    txtParameterValue->clear();
+    txtParameterValue->setEnabled(trvParameters->currentItem());
+    btnParametersRemove->setEnabled(trvParameters->currentItem());
+    btnParametersApply->setEnabled(trvParameters->currentItem());
+
+    if (key.isEmpty())
+        return;
+
+    // select current item
+    for (int i = 0; i < trvParameters->topLevelItemCount(); i++)
+    {
+        if (trvParameters->topLevelItem(i)->data(0, Qt::UserRole).toString() == key)
+        {
+            trvParameters->setCurrentItem(trvParameters->topLevelItem(i));
+            parameterChanged(trvParameters->topLevelItem(i), nullptr);
+            break;
+        }
+    }
+}
+
+void ProblemWidget::reloadParameters()
+{
+    trvParameters->blockSignals(true);
+
+    // parameters
+    QString selectedItem = "";
+    if (trvParameters->currentItem())
+        selectedItem = trvParameters->currentItem()->data(0, Qt::UserRole).toString();
+
+    trvParameters->clear();
+    ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    foreach (QString key, parameters.keys())
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem(trvParameters);
+        item->setText(0, key);
+        item->setText(1, QString::number(parameters[key]));
+        item->setData(0, Qt::UserRole, key);
+
+        trvParameters->addTopLevelItem(item);
+    }
+
+    trvParameters->blockSignals(false);
+
+    parameterSelect(selectedItem);
+
+    // if not selected -> select first
+    if (trvParameters->topLevelItemCount() > 0 && !trvParameters->currentItem())
+        trvParameters->setCurrentItem(trvParameters->topLevelItem(0));
+}
+
+void ProblemWidget::parametersApply()
 {
     lblParametersError->clear();
     lblParametersError->setVisible(false);
 
-    QString error = ""; // Agros2D::preprocessor()->checkAndApplyStartupScript(trvParameters->toPlainText());
-
-    // run and check startup script
-    if (error.isEmpty())
+    if (trvParameters->currentItem() && !txtParameterName->text().isEmpty())
     {
+        // TODO: check existance
+        ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+        QString key = trvParameters->currentItem()->data(0, Qt::UserRole).toString();
+        // parameters.remove(key);
+
+        parameters[txtParameterName->text()] = txtParameterValue->value();
+
+        Agros2D::preprocessor()->config()->setValue(ProblemConfig::Parameters, parameters);
+        reloadParameters();
+
+        parameterSelect(txtParameterName->text());
+
         changedWithClear();
     }
-    else
+}
+
+void ProblemWidget::parameterAdded()
+{
+    ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+
+    QString key = "untitled";
+    if (parameters.contains(key))
     {
-        lblParametersError->setText(QObject::tr("Error: %1").arg(error));
-        lblParametersError->setVisible(true);
+        for (int i = 0; i < 100; i++)
+            if (!parameters.contains(key + QString::number(i)))
+            {
+                key += QString::number(i);
+                break;
+            }
+    }
+
+    parameters[key] = 0;
+    Agros2D::preprocessor()->config()->setValue(ProblemConfig::Parameters, parameters);
+
+    reloadParameters();
+    parameterSelect(key);
+}
+
+void ProblemWidget::parameterRemoved()
+{
+    if (trvParameters->currentItem())
+    {
+        ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+        QString key = trvParameters->currentItem()->data(0, Qt::UserRole).toString();
+        parameters.remove(key);
+
+        Agros2D::preprocessor()->config()->setValue(ProblemConfig::Parameters, parameters);
+        reloadParameters();
+    }
+}
+
+void ProblemWidget::parameterChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
+{
+    txtParameterName->clear();
+    txtParameterName->setEnabled(trvParameters->currentItem());
+    txtParameterValue->clear();
+    txtParameterValue->setEnabled(trvParameters->currentItem());
+    btnParametersRemove->setEnabled(trvParameters->currentItem());
+    btnParametersApply->setEnabled(trvParameters->currentItem());
+
+    if (trvParameters->currentItem())
+    {
+        ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+
+        QString key = trvParameters->currentItem()->data(0, Qt::UserRole).toString();
+
+        txtParameterName->setText(key);
+        txtParameterValue->setValue(parameters[key]);
+
+        parameterNameTextChanged(key);
+    }
+}
+
+void ProblemWidget::parameterNameTextChanged(const QString &str)
+{
+    lblParametersError->setVisible(false);
+    btnParametersApply->setEnabled(true);
+
+    if (trvParameters->currentItem())
+    {
+        ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+
+        if (str.isEmpty())
+        {
+            btnParametersApply->setEnabled(false);
+            return;
+        }
+
+        if ((str != trvParameters->currentItem()->data(0, Qt::UserRole).toString()) && parameters.contains(str))
+        {
+            lblParametersError->setText(QObject::tr("Key already exists."));
+            lblParametersError->setVisible(true);
+
+            btnParametersApply->setEnabled(false);
+            return;
+        }
+
+        QRegExp expr("(^[a-zA-Z][a-zA-Z0-9_]*)|(^[_][a-zA-Z0-9_]+)");
+        if (!expr.exactMatch(str))
+        {
+            lblParametersError->setText(QObject::tr("Invalid variable name."));
+            lblParametersError->setVisible(true);
+
+            btnParametersApply->setEnabled(false);
+            return;
+        }
     }
 }

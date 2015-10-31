@@ -212,7 +212,7 @@ void InfoWidget::showInfo()
 
     problemInfo.SetValue("HARMONIC_LABEL", tr("Harmonic analysis").toStdString());
     problemInfo.SetValue("HARMONIC_FREQUENCY_LABEL", tr("Frequency:").toStdString());
-    problemInfo.SetValue("HARMONIC_FREQUENCY", QString::number(Value::parseValueFromString(Agros2D::preprocessor()->config()->value(ProblemConfig::Frequency).toString()).number()).toStdString() + " Hz");
+    problemInfo.SetValue("HARMONIC_FREQUENCY", Agros2D::preprocessor()->config()->value(ProblemConfig::Frequency).value<Value>().toString().toStdString() + " Hz");
 
     if (Agros2D::preprocessor()->isTransient())
     {
@@ -483,21 +483,6 @@ void InfoWidget::showInfo()
             couplingSection->SetValue("COUPLING_TYPE", QString("%1").arg(couplingTypeString(couplingInfo->couplingType())).toStdString());
         }
         problemInfo.ShowSection("COUPLING");
-    }
-
-    ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
-    if (parameters.count() > 0)
-    {
-        problemInfo.SetValue("PARAMETERS_MAIN_LABEL", tr("Problem parameters").toStdString());
-
-        foreach (QString var, parameters.keys())
-        {
-            ctemplate::TemplateDictionary *parametersSection = problemInfo.AddSectionDictionary("PARAMETERS_SECTION");
-
-            parametersSection->SetValue("PARAMETERS_VARIABLE_NAME", var.toStdString());
-            parametersSection->SetValue("PARAMETERS_VARIABLE_VALUE", QString::number(parameters[var]).toStdString());
-        }
-        problemInfo.ShowSection("PARAMETERS");
     }
 
     /*

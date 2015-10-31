@@ -149,11 +149,9 @@ bool Problem::determineIsNonlinear() const
     return false;
 }
 
-QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
+QString Problem::checkAndApplyParameters(ParametersType parameters)
 {
     bool undefinedVariable = false;
-
-    Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>().clear();
 
     // run and check startup script
     currentPythonEngineAgros()->blockSignals(true);
@@ -161,7 +159,7 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
     currentPythonEngineAgros()->runExpression("from math import *");
 
     // run in local dict
-    bool successfulRun = currentPythonEngineAgros()->runScript(scriptToCheck);
+    bool successfulRun = applyParameters(parameters);
 
     if (successfulRun)
     {
@@ -266,10 +264,10 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
         }
 
         // check frequency
-        if (!currentPythonEngineAgros()->runExpression(m_config->value(ProblemConfig::Frequency).toString()))
+        if (!currentPythonEngineAgros()->runExpression(m_config->value(ProblemConfig::Frequency).value<Value>().toString()))
         {
             Agros2D::log()->printError(QObject::tr("Frequency"), QObject::tr("Value: %1").
-                                       arg(m_config->value(ProblemConfig::Frequency).toString()));
+                                       arg(m_config->value(ProblemConfig::Frequency).value<Value>().toString()));
             undefinedVariable = true;
         }
 
@@ -279,8 +277,8 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
     }
 
     if (successfulRun)
-    {
-        // m_problemParameters[variable.name] = variable.value.toDouble();
+    {        
+        m_config->setValue(ProblemConfig::Parameters, parameters);
     }
     else
     {
@@ -293,6 +291,36 @@ QString Problem::checkAndApplyStartupScript(const QString scriptToCheck)
         return QObject::tr("Undefined variable");
     else
         return QString();
+}
+
+// TODO: temporary (move from global to local)
+bool Problem::applyParameters(ParametersType parameters)
+{
+    if (parameters.isEmpty())
+        return true;
+
+    QString command = "";
+    foreach (QString key, parameters.keys())
+        command += QString("%1 = %2; ").arg(key).arg(parameters[key]);
+
+    qDebug() << "applyParameters: " << command;
+
+    return currentPythonEngineAgros()->runExpression(command);
+}
+
+// TODO: temporary (move from global to local)
+bool Problem::removeParameters(ParametersType parameters)
+{
+    if (parameters.isEmpty())
+        return true;
+
+    QString command = "";
+    foreach (QString key, parameters.keys())
+        command += QString("del %1; ").arg(key);
+
+    qDebug() << "removeParameters: " << command;
+
+    return currentPythonEngineAgros()->runExpression(command);
 }
 
 void Problem::clearFieldsAndConfig()
@@ -459,6 +487,9 @@ void Problem::readProblemFromA2D31(const QString &fileName)
         m_config->load(&doc->problem().problem_config());
         // general config
         m_setting->load(&doc->config());
+
+        // apply parameters
+        applyParameters(m_config->value(ProblemConfig::Parameters).value<ParametersType>());
 
         // nodes
         for (unsigned int i = 0; i < doc->geometry().nodes().node().size(); i++)
@@ -712,6 +743,9 @@ void Problem::readProblemFromA2D31(const QString &fileName)
                 cpl->setCouplingType(couplingTypeFromStringKey(QString::fromStdString(coupling.type())));
             }
         }
+
+        // apply and check parameters
+        checkAndApplyParameters(m_config->value(ProblemConfig::Parameters).value<ParametersType>());
 
         m_scene->stopInvalidating(false);
         m_scene->blockSignals(false);
@@ -1654,6 +1688,7 @@ void ProblemPreprocessor::writeProblemToArchive(const QString &fileName, bool sa
     }
 
     QFileInfo fileInfoProblem(QString("%1/problem.a2d").arg(cacheProblemDir()));
+    writeProblemToA2D(fileInfoProblem.absoluteFilePath());
 
     if (saveWithSolution)
     {

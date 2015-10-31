@@ -35,7 +35,7 @@ public:
 
     inline std::string getCoordinateType() const { return coordinateTypeToStringKey(m_problem->config()->coordinateType()).toStdString(); }
     inline std::string getMeshType() const { return meshTypeToStringKey(m_problem->config()->meshType()).toStdString(); }
-    inline double getFrequency() const { return (Value::parseValueFromString(m_problem->config()->value(ProblemConfig::Frequency).toString())).number(); }
+    inline double getFrequency() const { return m_problem->config()->value(ProblemConfig::Frequency).value<Value>().number(); }
     inline std::string getTimeStepMethod() const { return timeStepMethodToStringKey((TimeStepMethod) m_problem->config()->value(ProblemConfig::TimeMethod).toInt()).toStdString(); }
     inline double getTimeMethodTolerance() const { return m_problem->config()->value(ProblemConfig::TimeMethodTolerance).toDouble(); }
     inline int getTimeMethodOrder() const { return m_problem->config()->value(ProblemConfig::TimeOrder).toInt(); }

@@ -231,7 +231,7 @@ void ProblemSolver::solveProblem()
     {
         // frequency
         // TODO: find some better place, where some values are initialized
-        targetfieldInfo->setFrequency(Value::parseValueFromString(m_computation->config()->value(ProblemConfig::Frequency).toString()).number());
+        targetfieldInfo->setFrequency(m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number());
 
         SolverDeal *solverDeal = m_solverDeal[targetfieldInfo->fieldId()];
 

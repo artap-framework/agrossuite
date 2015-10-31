@@ -323,8 +323,8 @@ QString cacheProblemDir()
 {
 #ifdef Q_WS_X11
     // fast fix for ht condor
-    QString cch = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);    
-    QDir dirc(cch);
+    static QString cch = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    static QDir dirc(cch);
     if (!dirc.exists())
         dirc.mkpath(cch);
 
@@ -342,7 +342,7 @@ QString cacheProblemDir()
             arg(QString::number(QCoreApplication::applicationPid()));
 #endif
 
-    QDir dir(str);
+    static QDir dir(str);
     if (!dir.exists())
         dir.mkpath(str);
 
@@ -360,7 +360,7 @@ QString userDataDir()
             arg(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
 #endif
 
-    QDir dir(str);
+    static QDir dir(str);
     if (!dir.exists())
         dir.mkpath(str);
 

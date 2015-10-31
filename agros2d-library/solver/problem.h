@@ -4,6 +4,7 @@
 #include "util.h"
 #include "value.h"
 #include "solutiontypes.h"
+#include "problem_config.h"
 
 #include "mesh/meshgenerator.h"
 
@@ -71,9 +72,6 @@ public:
     inline ProblemSetting *setting() const { return m_setting; }
     inline Scene *scene() { return m_scene; }
 
-    // check geometry
-    bool checkGeometry();
-
     bool isTransient() const;
     int numTransientFields() const;
     bool isHarmonic() const;
@@ -82,7 +80,10 @@ public:
     int numAdaptiveFields() const;
 
     // check and apply start script
-    QString checkAndApplyStartupScript(const QString scriptToCheck);
+    QString checkAndApplyParameters(ParametersType parameters);
+    // TODO: temporary
+    bool applyParameters(ParametersType parameters);
+    bool removeParameters(ParametersType parameters);
 
     inline QMap<QString, FieldInfo *> fieldInfos() const { return m_fieldInfos; }
     inline FieldInfo *fieldInfo(const QString &fieldId) { assert(m_fieldInfos.contains(fieldId));

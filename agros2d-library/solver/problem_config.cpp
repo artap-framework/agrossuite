@@ -42,6 +42,7 @@
 ProblemConfig::ProblemConfig(QWidget *parent) : QObject(parent)
 {
     qRegisterMetaType<ParametersType>("ParametersType");
+    qRegisterMetaType<Value>("Value");
 
     setStringKeys();
     setDefaultValues();
@@ -88,8 +89,39 @@ void ProblemConfig::load(XMLProblem::problem_config *configxsd)
                 m_setting[key] = (QString::fromStdString(configxsd->problem_item().at(i).problem_value()) == "1");
             else if (m_settingDefault[key].type() == QVariant::String)
                 m_setting[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value());
+            else if (m_settingDefault[key].type() == QVariant::StringList)
+                m_setting[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value()).split("|");
             else
-                qDebug() << "Key not found" << QString::fromStdString(configxsd->problem_item().at(i).problem_key()) << QString::fromStdString(configxsd->problem_item().at(i).problem_value());
+            {
+                if (m_setting[key].canConvert<Value>())
+                    m_setting[key] = QVariant::fromValue(Value(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
+                else if (m_setting[key].canConvert<ParametersType>())
+                {
+                    QString str = QString::fromStdString(configxsd->problem_item().at(i).problem_value());
+                    QStringList strKeysAndValues = str.split(":");
+                    QStringList strKeys = (strKeysAndValues[0].size() > 0) ? strKeysAndValues[0].split("|") : QStringList();
+                    QStringList strValues = (strKeysAndValues[1].size() > 0) ? strKeysAndValues[1].split("|") : QStringList();
+                    assert(strKeys.count() == strValues.count());
+
+                    ParametersType parameters;
+                    for (int i = 0; i < strKeys.count(); i++)
+                        parameters[strKeys[i]] = strValues[i].toDouble();
+                    /*
+                    parameters["R1"] = 0.01;
+                    parameters["R2"] = 0.03;
+                    parameters["R3"] = 0.05;
+                    parameters["R4"] = 0.06;
+                    parameters["L"] = 0.08;
+                    parameters["RB"] = 0.2;
+                    parameters["U"] = 10;
+                    parameters["eps1"] = 3;
+                    parameters["eps2"] = 4;
+                    */
+                    m_setting[key] = QVariant::fromValue(parameters);
+                }
+                else
+                    qDebug() << "Key not found" << QString::fromStdString(configxsd->problem_item().at(i).problem_key()) << QString::fromStdString(configxsd->problem_item().at(i).problem_value());
+            }
         }
     }
 }
@@ -104,6 +136,34 @@ void ProblemConfig::save(XMLProblem::problem_config *configxsd)
             configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toInt()).toStdString()));
         else if (m_settingDefault[key].type() == QVariant::String)
             configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_setting[key].toString().toStdString()));
+        else if (m_settingDefault[key].type() == QVariant::Int)
+            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toInt()).toStdString()));
+        else if (m_settingDefault[key].type() == QVariant::Double)
+            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toDouble()).toStdString()));
+        else
+        {
+            if (m_setting[key].canConvert<Value>())
+                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_setting[key].value<Value>().toString().toStdString()));
+            else if (m_setting[key].canConvert<ParametersType>())
+            {
+                assert(m_setting[key].value<ParametersType>().keys().count() == m_setting[key].value<ParametersType>().values().count());
+
+                QString outKeys;
+                QString outValues;
+                int cnt = m_setting[key].value<ParametersType>().keys().count();
+                QList<QString> keys = m_setting[key].value<ParametersType>().keys();
+                QList<double> values = m_setting[key].value<ParametersType>().values();
+                for (int i = 0; i < cnt; i++)
+                {
+                    outKeys += keys[i] + ((i < cnt - 1) ? "|" : "");
+                    outValues += QString::number(values[i]) + ((i < cnt - 1) ? "|" : "");
+                }
+
+                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString("%1:%2").arg(outKeys).arg(outValues).toStdString()));
+            }
+            else
+                assert(0);
+        }
     }
 }
 
@@ -123,7 +183,7 @@ void ProblemConfig::setDefaultValues()
 {
     m_settingDefault.clear();
 
-    m_settingDefault[Frequency] = "50"; // class Value
+    m_settingDefault[Frequency] = QVariant::fromValue(Value(50));
     m_settingDefault[TimeMethod] = TimeStepMethod_Fixed;
     m_settingDefault[TimeMethodTolerance] = 0.05;
     m_settingDefault[TimeInitialStepSize] = 0.0;
@@ -242,7 +302,7 @@ void ProblemSetting::setStringKeys()
     m_settingKey[View_ChartVariable] = "View_ChartVariable";
     m_settingKey[View_ChartVariableComp] = "View_ChartVariableComp";
     m_settingKey[View_ChartMode] = "View_ChartMode";
-    m_settingKey[View_SolidViewHide] = "View_SolidViewHide";    
+    m_settingKey[View_SolidViewHide] = "View_SolidViewHide";
 }
 
 void ProblemSetting::setDefaultValues()

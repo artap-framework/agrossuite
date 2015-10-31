@@ -85,6 +85,8 @@ public:
     inline void setValue(Type type, double value, bool emitChanged = true) {  m_setting[type] = value; emit changed(); if (emitChanged) emit changed(); }
     inline void setValue(Type type, bool value, bool emitChanged = true) {  m_setting[type] = value; emit changed(); if (emitChanged) emit changed(); }
     inline void setValue(Type type, const QString &value, bool emitChanged = true) { m_setting[type] = value; emit changed(); if (emitChanged) emit changed(); }
+    inline void setValue(Type type, Value value, bool emitChanged = true) { m_setting[type] = QVariant::fromValue(value); emit changed(); if (emitChanged) emit changed(); }
+    inline void setValue(Type type, ParametersType parameters, bool emitChanged = true) { m_setting[type] = QVariant::fromValue(parameters); emit changed(); if (emitChanged) emit changed(); }
 
     inline QVariant defaultValue(Type type) {  return m_settingDefault[type]; }
 
