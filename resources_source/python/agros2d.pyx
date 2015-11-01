@@ -19,11 +19,12 @@ cdef extern from "<string>" namespace "std":
         string(char *)
         char * c_str()
 
-# Parametrs class
+# Parameters class
 class __Parameters__(dict):
-    def __init__(self, get_method, set_method):
+    def __init__(self, get_method, set_method, check_set = True):
         self.get = get_method
         self.set = set_method
+        self.check_set = check_set
         dict.__init__(self, self.get())
 
     def __update__(self):
@@ -36,8 +37,9 @@ class __Parameters__(dict):
         return dict.__getitem__(self, key)
 
     def __setitem__(self, key, value):
-        if (not key in self):
-            raise KeyError("Invalid key. Valid keys: {0}".format(self.keys()))
+        if (self.check_set):
+            if (not key in self):
+                raise KeyError("Invalid key. Valid keys: {0}".format(self.keys()))
 
         dict.__setitem__(self, key, value)
         self.set(dict(self))

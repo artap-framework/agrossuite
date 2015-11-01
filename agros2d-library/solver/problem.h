@@ -8,6 +8,8 @@
 
 #include "mesh/meshgenerator.h"
 
+#include "pythonlab/pythonengine.h"
+
 class ProblemSolver;
 
 class FieldInfo;
@@ -123,11 +125,15 @@ protected:
     // transient analysis
     QList<double> m_timeStepLengths;
 
+    // private local dict
+    PyObject *m_dictLocal;
+
     friend class CalculationThread;
     friend class PyProblem;
     friend class AgrosSolver;
     friend class ProblemPreprocessor;
     friend class ProblemComputation;
+    friend class Scene;
 };
 
 class AGROS_LIBRARY_API ProblemPreprocessor : public Problem

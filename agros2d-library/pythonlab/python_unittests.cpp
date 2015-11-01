@@ -195,7 +195,7 @@ void UnitTestsWidget::readTestsSettingsFromScenario(QAction *action)
     currentPythonEngine()->runExpression(QString("from test_suite.tests import test; agros2d_scenario = test('%1')").arg(action->data().toString()));
 
     // extract values
-    PyObject *result = PyDict_GetItemString(currentPythonEngine()->dict(), "agros2d_scenario");
+    PyObject *result = PyDict_GetItemString(currentPythonEngine()->globalDict(), "agros2d_scenario");
     if (result)
     {
         Py_INCREF(result);
@@ -310,7 +310,7 @@ void UnitTestsWidget::runTestFromSuite(const QString &module, const QString &cls
     bool successfulRun = currentPythonEngine()->runScript(str);
     if (successfulRun)
     {
-        PyObject *result = PyDict_GetItemString(currentPythonEngine()->dict(), "agros2d_result_report");
+        PyObject *result = PyDict_GetItemString(currentPythonEngine()->globalDict(), "agros2d_result_report");
         if (result)
         {
             Py_INCREF(result);
@@ -522,7 +522,7 @@ void UnitTestsWidget::readTestsFromSuite()
     currentPythonEngine()->runExpression(QString("import test_suite; from test_suite.scenario import find_all_tests; agros2d_tests = find_all_tests()"));
 
     // extract values
-    PyObject *result = PyDict_GetItemString(currentPythonEngine()->dict(), "agros2d_tests");
+    PyObject *result = PyDict_GetItemString(currentPythonEngine()->globalDict(), "agros2d_tests");
     if (result)
     {
         QTreeWidgetItem *moduleItem = NULL;

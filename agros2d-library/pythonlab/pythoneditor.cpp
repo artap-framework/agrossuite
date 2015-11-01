@@ -775,6 +775,8 @@ void PythonEditorDialog::doRunPython()
     m_console->appendCommandPrompt();
 
     scriptFinish();
+
+    txtEditor->setFocus();
 }
 
 void PythonEditorDialog::doStopScript()
@@ -796,8 +798,6 @@ void PythonEditorDialog::doStartedScript()
 
     actRunPython->setEnabled(false);
     actStopPython->setEnabled(true);
-
-    // QApplication::processEvents();
 }
 
 void PythonEditorDialog::doExecutedScript()
@@ -809,9 +809,7 @@ void PythonEditorDialog::doExecutedScript()
     actRunPython->setEnabled(true);
     actStopPython->setEnabled(false);
 
-    actSceneModePythonEditor->trigger();
-
-    if (txtEditor->isVisible())
+    if (actSceneModePythonEditor->isChecked())
     {
         txtEditor->setFocus();
     }

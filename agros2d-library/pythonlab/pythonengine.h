@@ -147,7 +147,7 @@ signals:
 
 public:
     PythonEngine() : errorType(NULL), errorValue(NULL), errorTraceback(NULL), m_useProfiler(false),
-        m_useGlobalDict(true), m_dictLocal(NULL), m_dictGlobal(NULL) {}
+        m_useGlobalDict(true), m_dictTemporary(NULL), m_dictGlobal(NULL) {}
     ~PythonEngine();
 
     void init(int argc, char *argv[]);
@@ -176,16 +176,17 @@ public:
     inline void useProfiler(bool use = true) { m_useProfiler = use; }
     inline bool isProfiler() const { return m_useProfiler; }
 
-    void useLocalDict();
+    void useTemporaryDict();
     void useGlobalDict();
 
-    inline PyObject *dict() { return m_useGlobalDict ? m_dictGlobal : m_dictLocal; }
+    inline PyObject *globalDict() { return m_useGlobalDict ? m_dictGlobal : m_dictTemporary; }
+    inline PyObject *localDict() { return globalDict(); } // same as global dict
 
 public slots:
     virtual void abortScript();
 
 protected:
-    PyObject *m_dictLocal;
+    PyObject *m_dictTemporary;
     PyObject *m_dictGlobal;
 
     bool m_isScriptRunning;

@@ -40,6 +40,31 @@ void PyProblem::refresh()
     m_problem->scene()->invalidate();
 }
 
+double PyProblem::getParameter(std::string key) const
+{
+    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+
+    if (parameters.contains(QString::fromStdString(key)))
+        return parameters[QString::fromStdString(key)];
+    else
+    {
+        QString str;
+        foreach (QString k, parameters.keys())
+            str += k + ", ";
+        if (str.length() > 0)
+            str = str.left(str.length() - 2);
+
+        throw logic_error(QObject::tr("Invalid argument. Valid keys: %1").arg(str).toStdString());
+    }
+}
+
+void PyProblem::getParameters(std::vector<std::string> &keys) const
+{
+    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+
+    foreach (QString key, parameters.keys())
+        keys.push_back(key.toStdString());
+}
 
 std::string PyProblem::getCouplingType(const std::string &sourceField, const std::string &targetField) const
 {
@@ -128,6 +153,14 @@ void PyPreprocessor::setTimeInitialTimeStep(double timeInitialTimeStep)
         m_problem->config()->setValue(ProblemConfig::TimeInitialStepSize, timeInitialTimeStep);
     else
         throw out_of_range(QObject::tr("Initial time step must be positive.").toStdString());
+}
+
+void PyPreprocessor::setParameter(std::string key, double value)
+{
+    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    parameters[QString::fromStdString(key)] = value;
+
+    Agros2D::preprocessor()->config()->setValue(ProblemConfig::Parameters, parameters);
 }
 
 void PyPreprocessor::setNumConstantTimeSteps(int timeSteps)

@@ -95,7 +95,7 @@ void PythonEngineAgros::materialValues(const QString &function, double from, dou
     runExpression(QString("agros2d_material_values = agros2d_material_eval(%1)").arg(keysVector));
 
     // extract values
-    PyObject *result = PyDict_GetItemString(dict(), "agros2d_material_values");
+    PyObject *result = PyDict_GetItemString(globalDict(), "agros2d_material_values");
     if (result)
     {
         Py_INCREF(result);
@@ -125,7 +125,7 @@ QStringList PythonEngineAgros::testSuiteScenarios()
     if (successfulRun)
     {
         // extract values
-        PyObject *result = PyDict_GetItemString(currentPythonEngine()->dict(), "agros2d_scenarios");
+        PyObject *result = PyDict_GetItemString(currentPythonEngine()->globalDict(), "agros2d_scenarios");
         if (result)
         {
             Py_INCREF(result);
@@ -177,6 +177,13 @@ QString createPythonFromModel()
     str += QString("problem = a2d.problem(clear = True)\n");
     str += QString("problem.coordinate_type = \"%1\"\n").arg(coordinateTypeToStringKey(Agros2D::preprocessor()->config()->coordinateType()));
     str += QString("problem.mesh_type = \"%1\"\n").arg(meshTypeToStringKey(Agros2D::preprocessor()->config()->meshType()));
+
+    // parameters
+    ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    foreach (QString key, parameters.keys())
+        str += QString("problem.parameters[\"%1\"] = %2\n").arg(key).arg(parameters[key]);
+    if (parameters.count() > 0)
+        str += "\n";
 
     if (Agros2D::preprocessor()->isHarmonic())
         str += QString("problem.frequency = %1\n").

@@ -80,7 +80,7 @@ PostprocessorWidget::PostprocessorWidget()
 
     createControls();
 
-    connect(currentPythonEngine(), SIGNAL(executedScript()), this, SLOT(doCalculationFinished()));
+    // connect(currentPythonEngine(), SIGNAL(executedScript()), this, SLOT(doCalculationFinished()));
 
     // reconnect computation slots
     connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));

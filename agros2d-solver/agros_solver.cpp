@@ -29,8 +29,6 @@
 AgrosSolver::AgrosSolver(int &argc, char **argv)
     : AgrosApplication(argc, argv), m_log(NULL), m_enableLog(false)
 {    
-    createPythonEngine(argc, argv, new PythonEngineAgros());
-
     checkForNewVersion(true, true);
 }
 

@@ -32,6 +32,10 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         double getTimeInitialTimeStep()
         void setTimeInitialTimeStep(double timeInitialTimeStep) except +
 
+        void getParameters(vector[string] &keys)
+        double getParameter(string &key) except +
+        void setParameter(string &key, double value)
+
         string getCouplingType(string &sourceField, string &targetField) except +
         void setCouplingType(string &sourceField, string &targetField, string &type) except +
 
@@ -50,10 +54,14 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
 cdef class __Problem__:
     cdef PyPreprocessor *thisptr
     cdef object time_callback
+    cdef object parameters
 
     def __cinit__(self, clear = False):
         self.thisptr = new PyPreprocessor(clear)
         self.time_callback = None
+        self.parameters = __Parameters__(self.__get_parameters__,
+                                         self.__set_parameters__, 
+                                         False)
 
     def __dealloc__(self):
         del self.thisptr
@@ -120,6 +128,24 @@ cdef class __Problem__:
         def __set__(self, time_initial_time_step):
             self.thisptr.setTimeInitialTimeStep(time_initial_time_step)
 
+    property parameters:
+        def __get__(self):
+            return self.parameters.get_parameters()
+
+    def __get_parameters__(self):
+        cdef vector[string] params_vector
+        self.thisptr.getParameters(params_vector)
+
+        params = dict()
+        for i in range(params_vector.size()):
+            params[(<string>params_vector[i]).decode()] = self.thisptr.getParameter(params_vector[i])
+
+        return params
+
+    def __set_parameters__(self, params):
+        for key in params:
+            self.thisptr.setParameter(key.encode(), <double>params[key])
+        
     property time_callback:
         def __get__(self):
             return self.time_callback

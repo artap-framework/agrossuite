@@ -155,7 +155,7 @@ QString Problem::checkAndApplyParameters(ParametersType parameters)
 
     // run and check startup script
     currentPythonEngineAgros()->blockSignals(true);
-    currentPythonEngineAgros()->useLocalDict();
+    currentPythonEngineAgros()->useTemporaryDict();
     currentPythonEngineAgros()->runExpression("from math import *");
 
     // run in local dict
@@ -303,9 +303,12 @@ bool Problem::applyParameters(ParametersType parameters)
     foreach (QString key, parameters.keys())
         command += QString("%1 = %2; ").arg(key).arg(parameters[key]);
 
-    qDebug() << "applyParameters: " << command;
+    // qDebug() << "applyParameters: " << command;
 
-    return currentPythonEngineAgros()->runExpression(command);
+    bool successfulRun = currentPythonEngineAgros()->runExpression(command);
+    // qDebug() << successfulRun;
+
+    return successfulRun;
 }
 
 // TODO: temporary (move from global to local)
@@ -318,9 +321,12 @@ bool Problem::removeParameters(ParametersType parameters)
     foreach (QString key, parameters.keys())
         command += QString("del %1; ").arg(key);
 
-    qDebug() << "removeParameters: " << command;
+    // qDebug() << "removeParameters: " << command;
 
-    return currentPythonEngineAgros()->runExpression(command);
+    bool successfulRun = currentPythonEngineAgros()->runExpression(command);
+    // qDebug() << successfulRun;
+
+    return successfulRun;
 }
 
 void Problem::clearFieldsAndConfig()
@@ -745,7 +751,7 @@ void Problem::readProblemFromA2D31(const QString &fileName)
         }
 
         // apply and check parameters
-        checkAndApplyParameters(m_config->value(ProblemConfig::Parameters).value<ParametersType>());
+        // checkAndApplyParameters(m_config->value(ProblemConfig::Parameters).value<ParametersType>());
 
         m_scene->stopInvalidating(false);
         m_scene->blockSignals(false);
@@ -818,6 +824,9 @@ void Problem::transformProblem(const QString &fileName, const QString &tempFileN
 void Problem::writeProblemToA2D(const QString &fileName)
 {
     double version = 3.1;
+
+    // apply parameters
+    applyParameters(m_config->value(ProblemConfig::Parameters).value<ParametersType>());
 
     try
     {
