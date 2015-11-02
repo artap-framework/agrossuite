@@ -26,7 +26,6 @@
 #include "{{ID}}_localvalue.h"
 #include "{{ID}}_surfaceintegral.h"
 #include "{{ID}}_volumeintegral.h"
-#include "{{ID}}_errorcalculator.h"
 
 #include "util.h"
 #include "util/global.h"
