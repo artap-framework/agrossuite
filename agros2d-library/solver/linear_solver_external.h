@@ -65,15 +65,16 @@ protected slots:
     void processFinished(int exitCode);
 };
 
-//class AgrosExternalSolverMUMPS : public AgrosExternalSolverExternal
-//{
-//public:
-//    AgrosExternalSolverMUMPS(dealii::SparseMatrix<double> &system_matrix,
-// dealii::Vector<double> &system_rhs);
+class AgrosExternalSolverMUMPS : public AgrosExternalSolverExternal
+{
+public:
+    AgrosExternalSolverMUMPS(dealii::SparseMatrix<double> *system_matrix,
+                             dealii::Vector<double> *system_rhs)
+        : AgrosExternalSolverExternal(system_matrix, system_rhs) {}
 
-//    virtual void setSolverCommand();
-//    virtual void free();
-//};
+    virtual void setSolverCommand();
+    virtual void free() {}
+};
 
 class AgrosExternalSolverUMFPack : public AgrosExternalSolverExternal
 {
@@ -83,7 +84,7 @@ public:
         : AgrosExternalSolverExternal(system_matrix, system_rhs) {}
 
     virtual void setSolverCommand();
-    virtual void free();
+    virtual void free() {}
 };
 
 #endif // SOLVER_EXTERNAL_H

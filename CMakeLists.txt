@@ -102,9 +102,6 @@ SET(STB_TRUETYPE_LIBRARY agros2d_3dparty_stb_truetype)
 SET(QTSINGLEAPPLICATION_LIBRARY agros2d_3dparty_qtsingleapplication)
 SET(MATIO_LIBRARY agros2d_3dparty_matio)
 SET(TRIANGLE_LIBRARY agros2d_3dparty_triangle)
-SET(AGROS_GRID agros_grid)
-
-SET(AGROS_SOLVER_EXTERNAL solver_external)
 
 # xerces
 find_package(XSD 4.0 REQUIRED)
@@ -265,7 +262,6 @@ ADD_SUBDIRECTORY(agros2d-binary)
 ADD_SUBDIRECTORY(agros2d-solver)
 ADD_SUBDIRECTORY(agros2d-generator)
 ADD_SUBDIRECTORY(agros2d-remote)
-ADD_SUBDIRECTORY(solver-external)
 #ADD_SUBDIRECTORY(agros2d-forms)
 
 message("\nAgros2D Configuration results")

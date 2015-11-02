@@ -52,15 +52,18 @@ void AgrosExternalSolverExternal::solve(const dealii::Vector<double> *initial_gu
 {
     m_initial_guess = initial_guess;
 
-    fileMatrix = QString("%1/solver_matrix").arg(cacheProblemDir());
-    fileMatrixPattern = QString("%1/solver_matrix_pattern").arg(cacheProblemDir());
-    fileRHS = QString("%1/solver_rhs").arg(cacheProblemDir());
-    fileInitial = QString("%1/solver_initial").arg(cacheProblemDir());
-    fileSln = QString("%1/solver_sln").arg(cacheProblemDir());
+    QDateTime datetime(QDateTime::currentDateTime());
+    QString tm = QString("%1").arg(datetime.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
+
+    fileMatrix = QString("%1/solver-%2.matrix").arg(cacheProblemDir()).arg(tm);
+    fileMatrixPattern = QString("%1/solver-%2.matrix_pattern").arg(cacheProblemDir()).arg(tm);
+    fileRHS = QString("%1/solver-%2.rhs").arg(cacheProblemDir()).arg(tm);
+    fileInitial = QString("%1/solver-%2.initial").arg(cacheProblemDir()).arg(tm);
+    fileSln = QString("%1/solver-%2.sln").arg(cacheProblemDir()).arg(tm);
 
     // write matrix and rhs to disk
-    // QTime time;
-    // time.start();
+    QTime time;
+    time.start();
     std::ofstream writeMatrix(fileMatrix.toStdString());
     m_system_matrix->block_write(writeMatrix);
     writeMatrix.close();
@@ -68,13 +71,13 @@ void AgrosExternalSolverExternal::solve(const dealii::Vector<double> *initial_gu
     std::ofstream writeMatrixSparsityPattern(fileMatrixPattern.toStdString());
     m_system_matrix->get_sparsity_pattern().block_write(writeMatrixSparsityPattern);
     writeMatrixSparsityPattern.close();
-    // qDebug() << "process_matrix_output" << time.elapsed();
+    qDebug() << "External solver: process_matrix_output = " << time.elapsed();
 
-    // time.start();
+    time.start();
     std::ofstream writeRHS(fileRHS.toStdString());
     m_system_rhs->block_write(writeRHS);
     writeRHS.close();
-    // qDebug() << "process_vector_output" << time.elapsed();
+    qDebug() << "External solver: process_vector_output = " << time.elapsed();
 
     // write initial guess to disk
     if (m_initial_guess)
@@ -92,6 +95,7 @@ void AgrosExternalSolverExternal::solve(const dealii::Vector<double> *initial_gu
     connect(m_process, SIGNAL(finished(int)), this, SLOT(processFinished(int)));
 
     setSolverCommand();
+    time.start();
     m_process->start(command);
 
     // execute an event loop to process the request (nearly-synchronous)
@@ -99,6 +103,7 @@ void AgrosExternalSolverExternal::solve(const dealii::Vector<double> *initial_gu
     QObject::connect(m_process, SIGNAL(finished(int)), &eventLoop, SLOT(quit()));
     QObject::connect(m_process, SIGNAL(error(QProcess::ProcessError)), &eventLoop, SLOT(quit()));
     eventLoop.exec();
+    qDebug() << "External solver: solution = " << time.elapsed();
 
     if (QFile::exists(fileSln))
     {
@@ -107,7 +112,6 @@ void AgrosExternalSolverExternal::solve(const dealii::Vector<double> *initial_gu
         readSln.close();
     }
 
-    QFile::remove(command);
     if (m_initial_guess)
         QFile::remove(fileInitial);
     QFile::remove(fileMatrix);
@@ -152,9 +156,9 @@ void AgrosExternalSolverExternal::processFinished(int exitCode)
     }
 }
 
-void AgrosExternalSolverUMFPack::setSolverCommand()
+void AgrosExternalSolverMUMPS::setSolverCommand()
 {
-    command = QString("\"%1/solver_external\" -o umfpack -m \"%2\" -p \"%3\" -r \"%4\" -s \"%5\"").
+    command = QString("\"%1/solver_external_MUMPS\" -m \"%2\" -p \"%3\" -r \"%4\" -s \"%5\"").
             arg(QApplication::applicationDirPath()).
             arg(fileMatrix).
             arg(fileMatrixPattern).
@@ -162,7 +166,12 @@ void AgrosExternalSolverUMFPack::setSolverCommand()
             arg(fileSln);
 }
 
-void AgrosExternalSolverUMFPack::free()
+void AgrosExternalSolverUMFPack::setSolverCommand()
 {
-
+    command = QString("\"%1/solver_external_UMFPACK\" -m \"%2\" -p \"%3\" -r \"%4\" -s \"%5\"").
+            arg(QApplication::applicationDirPath()).
+            arg(fileMatrix).
+            arg(fileMatrixPattern).
+            arg(fileRHS).
+            arg(fileSln);
 }

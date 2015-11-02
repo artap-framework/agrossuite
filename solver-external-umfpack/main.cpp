@@ -21,6 +21,7 @@
 #include <deal.II/lac/full_matrix.h>
 #include <deal.II/lac/sparse_matrix.h>
 #include <deal.II/lac/sparse_direct.h>
+#include <deal.II/base/timer.h>
 
 #include <streambuf>
 #include <iostream>
@@ -35,16 +36,14 @@ int main(int argc, char *argv[])
     try
     {
         // command line info
-        TCLAP::CmdLine cmd("Solver UMFPACK", ' ');
+        TCLAP::CmdLine cmd("External solver - UMFPACK", ' ');
 
-        TCLAP::ValueArg<std::string> solverArg("o", "solver", "Solver", true, "", "string");
         TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
         TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
         TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
         TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", true, "", "string");
         TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
 
-        cmd.add(solverArg);
         cmd.add(matrixArg);
         cmd.add(matrixPatternArg);
         cmd.add(rhsArg);
@@ -53,6 +52,9 @@ int main(int argc, char *argv[])
 
         // parse the argv array.
         cmd.parse(argc, argv);
+
+        dealii::Timer timer;
+        timer.start();
 
         dealii::SparsityPattern system_matrix_pattern;
         std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
@@ -70,17 +72,17 @@ int main(int argc, char *argv[])
         system_rhs.block_read(readRHS);
         readRHS.close();
 
-        dealii::Vector<double> solution(system_rhs.size());
-        if (solverArg.getValue() == "umfpack")
-        {
-            dealii::SparseDirectUMFPACK direct;
-            direct.initialize(system_matrix);
-            direct.vmult(solution, system_rhs);
-        }
+        dealii::Vector<double> solution(system_rhs.size());        
+        dealii::SparseDirectUMFPACK direct;
+        direct.initialize(system_matrix);
+        direct.vmult(solution, system_rhs);
 
         std::ofstream writeSln(solutionArg.getValue());
         solution.block_write(writeSln);
         writeSln.close();
+
+        timer.stop();
+        std::cout << "UMFPACK: total time: " << timer() << std::endl;
     }
     catch (TCLAP::ArgException &e)
     {

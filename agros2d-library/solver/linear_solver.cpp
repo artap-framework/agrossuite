@@ -113,6 +113,18 @@ void SolverLinearSolver::solveExternalUMFPACK(dealii::SparseMatrix<double> &syst
     sln = ext.solution();
 }
 
+void SolverLinearSolver::solveExternalMUMPS(dealii::SparseMatrix<double> &system,
+                                            dealii::Vector<double> &rhs,
+                                            dealii::Vector<double> &sln)
+{
+    Agros2D::log()->printDebug(QObject::tr("Solver"),
+                               QObject::tr("Direct solver - MUMPS (external)"));
+
+    AgrosExternalSolverMUMPS ext(&system, &rhs);
+    ext.solve();
+    sln = ext.solution();
+}
+
 void SolverLinearSolver::solvedealii(dealii::SparseMatrix<double> &system,
                                      dealii::Vector<double> &rhs,
                                      dealii::Vector<double> &sln)
