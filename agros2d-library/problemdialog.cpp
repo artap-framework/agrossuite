@@ -1411,19 +1411,19 @@ void ProblemWidget::updateControls()
     reloadParameters();
 
     // connect signals
-    connect(cmbCoordinateType, SIGNAL(currentIndexChanged(int)), this, SLOT(changedWithClear()));
-    connect(cmbMeshType, SIGNAL(currentIndexChanged(int)), this, SLOT(changedWithClear()));
+    connect(cmbCoordinateType, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
+    connect(cmbMeshType, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
 
-    connect(txtFrequency, SIGNAL(textChanged(QString)), this, SLOT(changedWithClear()));
+    connect(txtFrequency, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
 
     // transient
-    connect(cmbTransientMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(changedWithClear()));
-    connect(txtTransientSteps, SIGNAL(valueChanged(int)), this, SLOT(changedWithClear()));
-    connect(txtTransientTimeTotal, SIGNAL(textChanged(QString)), this, SLOT(changedWithClear()));
-    connect(txtTransientOrder, SIGNAL(valueChanged(int)), this, SLOT(changedWithClear()));
-    connect(txtTransientTolerance, SIGNAL(textChanged(QString)), this, SLOT(changedWithClear()));
-    connect(chkTransientInitialStepSize, SIGNAL(stateChanged(int)), this, SLOT(changedWithClear()));
-    connect(txtTransientInitialStepSize, SIGNAL(textChanged(QString)), this, SLOT(changedWithClear()));
+    connect(cmbTransientMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
+    connect(txtTransientSteps, SIGNAL(valueChanged(int)), this, SLOT(saveConfig()));
+    connect(txtTransientTimeTotal, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    connect(txtTransientOrder, SIGNAL(valueChanged(int)), this, SLOT(saveConfig()));
+    connect(txtTransientTolerance, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
+    connect(chkTransientInitialStepSize, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
+    connect(txtTransientInitialStepSize, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
 
     connect(cmbTransientMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(transientChanged()));
     connect(txtTransientSteps, SIGNAL(valueChanged(int)), this, SLOT(transientChanged()));
@@ -1431,7 +1431,7 @@ void ProblemWidget::updateControls()
     connect(txtTransientOrder, SIGNAL(valueChanged(int)), this, SLOT(transientChanged()));
 }
 
-void ProblemWidget::changedWithClear()
+void ProblemWidget::saveConfig()
 {
     // save properties
     Agros2D::preprocessor()->config()->blockSignals(true);
@@ -1548,6 +1548,7 @@ void ProblemWidget::reloadParameters()
 
     trvParameters->blockSignals(false);
 
+    // select current parameter
     parameterSelect(selectedItem);
 
     // if not selected -> select first
@@ -1562,19 +1563,30 @@ void ProblemWidget::parametersApply()
 
     if (trvParameters->currentItem() && !txtParameterName->text().isEmpty())
     {
-        // TODO: check existance
-        ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
-        QString key = trvParameters->currentItem()->data(0, Qt::UserRole).toString();
-        // parameters.remove(key);
+        // check parameter name
+        try
+        {
+            Agros2D::preprocessor()->config()->checkParameterName(txtParameterName->text());
+        }
+        catch (AgrosException &e)
+        {
+            lblParametersError->setText(e.toString());
+            lblParametersError->setVisible(true);
 
+            btnParametersApply->setEnabled(false);
+            return;
+        }
+
+        ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
         parameters[txtParameterName->text()] = txtParameterValue->value();
 
-        Agros2D::preprocessor()->config()->setValue(ProblemConfig::Parameters, parameters);
-        reloadParameters();
+        if (Agros2D::preprocessor()->checkAndApplyParameters(parameters))
+        {
+            reloadParameters();
+            parameterSelect(txtParameterName->text());
 
-        parameterSelect(txtParameterName->text());
-
-        changedWithClear();
+            Agros2D::preprocessor()->scene()->invalidate();
+        }
     }
 }
 
@@ -1586,18 +1598,35 @@ void ProblemWidget::parameterAdded()
     if (parameters.contains(key))
     {
         for (int i = 0; i < 100; i++)
+        {
             if (!parameters.contains(key + QString::number(i)))
             {
                 key += QString::number(i);
                 break;
             }
+        }
     }
 
-    parameters[key] = 0;
-    Agros2D::preprocessor()->config()->setValue(ProblemConfig::Parameters, parameters);
+    parameters[key] = 0.0;
 
-    reloadParameters();
-    parameterSelect(key);
+    try
+    {
+        Agros2D::preprocessor()->config()->checkParameterName(key);
+        Agros2D::preprocessor()->config()->setValue(ProblemConfig::Parameters, parameters);
+
+        reloadParameters();
+        parameterSelect(key);
+
+        Agros2D::preprocessor()->scene()->invalidate();
+    }
+    catch (AgrosException &e)
+    {
+        lblParametersError->setText(e.toString());
+        lblParametersError->setVisible(true);
+
+        btnParametersApply->setEnabled(false);
+        return;
+    }
 }
 
 void ProblemWidget::parameterRemoved()
@@ -1608,8 +1637,12 @@ void ProblemWidget::parameterRemoved()
         QString key = trvParameters->currentItem()->data(0, Qt::UserRole).toString();
         parameters.remove(key);
 
-        Agros2D::preprocessor()->config()->setValue(ProblemConfig::Parameters, parameters);
-        reloadParameters();
+        if (Agros2D::preprocessor()->checkAndApplyParameters(parameters))
+        {
+            reloadParameters();
+
+            Agros2D::preprocessor()->scene()->invalidate();
+        }
     }
 }
 
@@ -1659,10 +1692,13 @@ void ProblemWidget::parameterNameTextChanged(const QString &str)
             return;
         }
 
-        QRegExp expr("(^[a-zA-Z][a-zA-Z0-9_]*)|(^[_][a-zA-Z0-9_]+)");
-        if (!expr.exactMatch(str))
+        try
         {
-            lblParametersError->setText(QObject::tr("Invalid variable name."));
+            Agros2D::preprocessor()->config()->checkParameterName(str);
+        }
+        catch (AgrosException &e)
+        {
+            lblParametersError->setText(e.toString());
             lblParametersError->setVisible(true);
 
             btnParametersApply->setEnabled(false);

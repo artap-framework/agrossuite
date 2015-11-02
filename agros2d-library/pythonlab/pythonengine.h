@@ -178,6 +178,7 @@ public:
 
     void useTemporaryDict();
     void useGlobalDict();
+    inline bool isTemporaryDictUsed() { return !m_useGlobalDict; }
 
     inline PyObject *globalDict() { return m_useGlobalDict ? m_dictGlobal : m_dictTemporary; }
     inline PyObject *localDict() { return globalDict(); } // same as global dict

@@ -286,7 +286,7 @@ private:
 
 private slots:
     void transientChanged();
-    void changedWithClear();
+    void saveConfig();
 
     void parametersApply();
     void parameterRemoved();

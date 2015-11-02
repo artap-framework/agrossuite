@@ -81,11 +81,8 @@ public:
     bool determineIsNonlinear() const; // slow version
     int numAdaptiveFields() const;
 
-    // check and apply start script
-    QString checkAndApplyParameters(ParametersType parameters);
-    // TODO: temporary
-    bool applyParameters(ParametersType parameters);
-    bool removeParameters(ParametersType parameters);
+    // check and apply parameters
+    bool checkAndApplyParameters(ParametersType parameters, bool apply = true);
 
     inline QMap<QString, FieldInfo *> fieldInfos() const { return m_fieldInfos; }
     inline FieldInfo *fieldInfo(const QString &fieldId) { assert(m_fieldInfos.contains(fieldId));
@@ -134,6 +131,9 @@ protected:
     friend class ProblemPreprocessor;
     friend class ProblemComputation;
     friend class Scene;
+
+private:
+    bool applyParametersInternal();
 };
 
 class AGROS_LIBRARY_API ProblemPreprocessor : public Problem

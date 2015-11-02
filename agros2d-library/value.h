@@ -35,12 +35,24 @@ class AGROS_LIBRARY_API Value
 public:
     Value(double value = 0.0);
     Value(double value,
-          std::vector<double> x, std::vector<double> y, DataTableType type = DataTableType_PiecewiseLinear, bool splineFirstDerivatives = true, bool extrapolateConstant = true);
+          std::vector<double> x,
+          std::vector<double> y,
+          DataTableType type = DataTableType_PiecewiseLinear,
+          bool splineFirstDerivatives = true,
+          bool extrapolateConstant = true);
 
     Value(const QString &value);
     Value(const QString &value,
-          std::vector<double> x, std::vector<double> y, DataTableType type = DataTableType_PiecewiseLinear, bool splineFirstDerivatives = true, bool extrapolateConstant = true);
-    Value(const QString &value, const DataTable &table);
+          Problem *problem);
+    Value(const QString &value,
+          std::vector<double> x,
+          std::vector<double> y,
+          DataTableType type = DataTableType_PiecewiseLinear,
+          bool splineFirstDerivatives = true,
+          bool extrapolateConstant = true);
+    Value(const QString &value,
+          const DataTable &table,
+          Problem *problem);
 
     Value(const Value& origin);
     Value& operator=(const Value& origin);
@@ -78,10 +90,11 @@ public:
 
     inline DataTable table() const { return m_table; }
 
-protected:
-
 private:
     bool m_isEvaluated;   
+
+    // problem
+    Problem *m_problem;
 
     // expression
     double m_number;

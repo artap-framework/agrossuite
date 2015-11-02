@@ -312,7 +312,7 @@ QString tempProblemDir()
             arg(QString::number(QCoreApplication::applicationPid()));
 #endif
 
-    QDir dir(str);
+    static QDir dir(str);
     if (!dir.exists())
         dir.mkpath(str);
 

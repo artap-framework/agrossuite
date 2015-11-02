@@ -73,14 +73,12 @@ InfoWidget::InfoWidget(SceneViewPreprocessor *sceneView, QWidget *parent)
     setLayout(layoutMain);
 
     connect(Agros2D::preprocessor()->scene(), SIGNAL(cleared()), this, SLOT(refresh()));
+    connect(Agros2D::preprocessor()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
 
     connect(Agros2D::preprocessor(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
     connect(Agros2D::preprocessor(), SIGNAL(couplingsChanged()), this, SLOT(refresh()));
 
     connect(currentPythonEngineAgros(), SIGNAL(executedScript()), this, SLOT(refresh()));
-
-    // connect(Agros2D::preprocessor(), SIGNAL(meshed()), this, SLOT(refresh()));
-    // connect(Agros2D::preprocessor(), SIGNAL(solved()), this, SLOT(refresh()));
 
     refresh();
 }

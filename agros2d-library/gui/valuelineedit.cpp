@@ -34,7 +34,7 @@
 
 
 ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, bool isBool, QString id, QString onlyIf, QString onlyIfNot, bool isSource)
-    : QWidget(parent), m_hasTimeDep(hasTimeDep), m_hasNonlin(hasNonlin),
+    : QWidget(parent), m_hasTimeDep(hasTimeDep), m_hasNonlin(hasNonlin), m_problem(nullptr),
       m_minimum(-numeric_limits<double>::max()),
       m_minimumSharp(-numeric_limits<double>::max()),
       m_maximum(numeric_limits<double>::max()),
@@ -44,11 +44,9 @@ ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, b
       m_onlyIf(onlyIf),
       m_onlyIfNot(onlyIfNot),
       m_isSource(isSource),
-      txtLineEdit(NULL),
-      chkCheckBox(NULL)
+      txtLineEdit(nullptr),
+      chkCheckBox(nullptr)
 {
-    //isBool = false;
-
     // create controls
     if (isBool)
     {
@@ -151,7 +149,7 @@ double ValueLineEdit::number()
 
 void ValueLineEdit::setValue(const Value &value)
 {
-    if(m_isBool)
+    if (m_isBool)
     {
         if(value.number() == 0)
             chkCheckBox->setChecked(false);
@@ -164,6 +162,7 @@ void ValueLineEdit::setValue(const Value &value)
     {
         txtLineEdit->setText(value.text());
         m_table = value.table();
+        m_problem = value.m_problem;
     }
     setLayoutValue();
     evaluate();
@@ -171,10 +170,10 @@ void ValueLineEdit::setValue(const Value &value)
 
 Value ValueLineEdit::value()
 {
-    if(m_isBool)
+    if (m_isBool)
         return Value(int(chkCheckBox->isChecked()));
     else
-        return Value(txtLineEdit->text(), m_table);
+        return Value(txtLineEdit->text(), m_table, m_problem);
 }
 
 void ValueLineEdit::doCheckBoxStateChanged()
@@ -314,7 +313,7 @@ bool ValueLineEdit::checkCondition(double value)
 
 void ValueLineEdit::setLayoutValue()
 {
-    if(m_isBool)
+    if (m_isBool)
         return;
 
     txtLineEdit->setVisible(false);

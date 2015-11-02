@@ -149,182 +149,161 @@ bool Problem::determineIsNonlinear() const
     return false;
 }
 
-QString Problem::checkAndApplyParameters(ParametersType parameters)
+bool Problem::checkAndApplyParameters(ParametersType parameters, bool apply)
 {
-    bool undefinedVariable = false;
+    // store original parameters
+    ParametersType parametersOriginal = m_config->value(ProblemConfig::Parameters).value<ParametersType>();
 
-    // run and check startup script
-    currentPythonEngineAgros()->blockSignals(true);
-    currentPythonEngineAgros()->useTemporaryDict();
-    currentPythonEngineAgros()->runExpression("from math import *");
+    // set new parameters
+    m_config->setValue(ProblemConfig::Parameters, parameters);
 
-    // run in local dict
-    bool successfulRun = applyParameters(parameters);
+    // apply new parameters
+    bool successfulRun = applyParametersInternal();
 
-    if (successfulRun)
+    // restore original parameters
+    if (!successfulRun || !apply)
     {
-        double value = 0.0;
+        m_config->setValue(ProblemConfig::Parameters, parametersOriginal);
 
-        // check geometry
-        // nodes
-        foreach (SceneNode *node, m_scene->nodes->items())
-        {
-            if (node->pointValue().x().isNumber() && node->pointValue().y().isNumber())
-            {
-                continue;
-            }
-            else
-            {
-                if (!currentPythonEngineAgros()->runExpression(QString("%1 + %2").
-                                                               arg(node->pointValue().x().toString()).
-                                                               arg(node->pointValue().y().toString()),
-                                                               &value))
-                {
-                    ErrorResult result = currentPythonEngineAgros()->parseError();
-                    Agros2D::log()->printError(QObject::tr("Startup"), QObject::tr("Node %1: %2").
-                                               arg(m_scene->nodes->items().indexOf(node)).
-                                               arg(result.error()));
-
-                    undefinedVariable = true;
-                }
-            }
-        }
-
-        // edges
-        foreach (SceneEdge *edge, m_scene->edges->items())
-        {
-            if (edge->angleValue().isNumber())
-            {
-                continue;
-            }
-            else
-            {
-                if (!currentPythonEngineAgros()->runExpression(edge->angleValue().toString(), &value))
-                {
-                    ErrorResult result = currentPythonEngineAgros()->parseError();
-                    Agros2D::log()->printError(QObject::tr("Startup"), QObject::tr("Edge %1: %2").
-                                               arg(m_scene->edges->items().indexOf(edge)).
-                                               arg(result.error()));
-
-                    undefinedVariable = true;
-                }
-            }
-        }
-
-        // labels
-        foreach (SceneLabel *label, m_scene->labels->items())
-        {
-            if (label->pointValue().x().isNumber() && label->pointValue().y().isNumber())
-            {
-                continue;
-            }
-            else
-            {
-                if (!currentPythonEngineAgros()->runExpression(QString("%1 + %2").
-                                                               arg(label->pointValue().x().toString()).
-                                                               arg(label->pointValue().y().toString()),
-                                                               &value))
-                {
-                    ErrorResult result = currentPythonEngineAgros()->parseError();
-                    Agros2D::log()->printError(QObject::tr("Startup"), QObject::tr("Label %1: %2").
-                                               arg(m_scene->labels->items().indexOf(label)).
-                                               arg(result.error()));
-
-                    undefinedVariable = true;
-                }
-            }
-        }
-
-        // check materials
-        foreach (SceneMaterial* material, m_scene->materials->items())
-        {
-            foreach (uint key, material->values().keys())
-            {
-                if (!material->evaluate(key, 0.0))
-                {
-                    Agros2D::log()->printError(QObject::tr("Marker"), QObject::tr("Material %1: %2").
-                                               arg(key).arg(material->value(key).data()->toString()));
-                    undefinedVariable = true;
-                }
-            }
-        }
-
-        // check boundaries
-        foreach (SceneBoundary* boundary, m_scene->boundaries->items())
-        {
-            foreach (uint key, boundary->values().keys())
-            {
-                if (!boundary->evaluate(key, 0.0))
-                {
-                    Agros2D::log()->printError(QObject::tr("Marker"), QObject::tr("Boundary %1: %2").
-                                               arg(key).arg(boundary->value(key).data()->toString()));
-                    undefinedVariable = true;
-                }
-            }
-        }
-
-        // check frequency
-        if (!currentPythonEngineAgros()->runExpression(m_config->value(ProblemConfig::Frequency).value<Value>().toString()))
-        {
-            Agros2D::log()->printError(QObject::tr("Frequency"), QObject::tr("Value: %1").
-                                       arg(m_config->value(ProblemConfig::Frequency).value<Value>().toString()));
-            undefinedVariable = true;
-        }
-
-        // restore startup script
-        currentPythonEngineAgros()->useGlobalDict();
-        currentPythonEngineAgros()->blockSignals(false);
+        // apply original parameters
+        applyParametersInternal();
     }
-
-    if (successfulRun)
-    {        
-        m_config->setValue(ProblemConfig::Parameters, parameters);
-    }
-    else
-    {
-        ErrorResult result = currentPythonEngineAgros()->parseError();
-
-        return result.error();
-    }
-
-    if (undefinedVariable)
-        return QObject::tr("Undefined variable");
-    else
-        return QString();
-}
-
-// TODO: temporary (move from global to local)
-bool Problem::applyParameters(ParametersType parameters)
-{
-    if (parameters.isEmpty())
-        return true;
-
-    QString command = "";
-    foreach (QString key, parameters.keys())
-        command += QString("%1 = %2; ").arg(key).arg(parameters[key]);
-
-    // qDebug() << "applyParameters: " << command;
-
-    bool successfulRun = currentPythonEngineAgros()->runExpression(command);
-    // qDebug() << successfulRun;
 
     return successfulRun;
 }
 
-// TODO: temporary (move from global to local)
-bool Problem::removeParameters(ParametersType parameters)
+// apply parameters from m_config
+bool Problem::applyParametersInternal()
 {
-    if (parameters.isEmpty())
-        return true;
+    bool successfulRun = true;
 
-    QString command = "";
-    foreach (QString key, parameters.keys())
-        command += QString("del %1; ").arg(key);
+    // check and apply parameters
+    currentPythonEngineAgros()->blockSignals(true);
 
-    // qDebug() << "removeParameters: " << command;
+    // check geometry
+    // nodes
+    foreach (SceneNode *node, m_scene->nodes->items())
+    {
+        if (node->pointValue().x().isNumber() && node->pointValue().y().isNumber())
+        {
+            continue;
+        }
+        else
+        {
+            if (!node->pointValue().x().evaluateAtTime(0.0))
+            {
+                ErrorResult result = currentPythonEngineAgros()->parseError();
+                Agros2D::log()->printError(QObject::tr("Parameters"), QObject::tr("Node %1%2: %3").
+                                           arg(m_scene->nodes->items().indexOf(node)).
+                                           arg(m_config->labelX()).
+                                           arg(result.error()));
 
-    bool successfulRun = currentPythonEngineAgros()->runExpression(command);
-    // qDebug() << successfulRun;
+                successfulRun = false;
+            }
+            if (!node->pointValue().y().evaluateAtTime(0.0))
+            {
+                ErrorResult result = currentPythonEngineAgros()->parseError();
+                Agros2D::log()->printError(QObject::tr("Parameters"), QObject::tr("Node %1%2: %3").
+                                           arg(m_scene->nodes->items().indexOf(node)).
+                                           arg(m_config->labelY()).
+                                           arg(result.error()));
+
+                successfulRun = false;
+            }
+        }
+    }
+
+    // edges
+    foreach (SceneEdge *edge, m_scene->edges->items())
+    {
+        if (edge->angleValue().isNumber())
+        {
+            continue;
+        }
+        else
+        {
+            if (!edge->angleValue().evaluateAtTime(0.0))
+            {
+                ErrorResult result = currentPythonEngineAgros()->parseError();
+                Agros2D::log()->printError(QObject::tr("Parameters"), QObject::tr("Edge %1: %2").
+                                           arg(m_scene->edges->items().indexOf(edge)).
+                                           arg(result.error()));
+
+                successfulRun = false;
+            }
+        }
+    }
+
+    // labels
+    foreach (SceneLabel *label, m_scene->labels->items())
+    {
+        if (label->pointValue().x().isNumber() && label->pointValue().y().isNumber())
+        {
+            continue;
+        }
+        else
+        {
+            if (!label->pointValue().x().evaluateAtTime(0.0))
+            {
+                ErrorResult result = currentPythonEngineAgros()->parseError();
+                Agros2D::log()->printError(QObject::tr("Parameters"), QObject::tr("Label %1%2: %3").
+                                           arg(m_scene->labels->items().indexOf(label)).
+                                           arg(m_config->labelX()).
+                                           arg(result.error()));
+
+                successfulRun = false;
+            }
+            if (!label->pointValue().y().evaluateAtTime(0.0))
+            {
+                ErrorResult result = currentPythonEngineAgros()->parseError();
+                Agros2D::log()->printError(QObject::tr("Parameters"), QObject::tr("Label %1%2: %3").
+                                           arg(m_scene->labels->items().indexOf(label)).
+                                           arg(m_config->labelY()).
+                                           arg(result.error()));
+
+                successfulRun = false;
+            }
+        }
+    }
+
+    // check materials
+    foreach (SceneMaterial* material, m_scene->materials->items())
+    {
+        foreach (uint key, material->values().keys())
+        {
+            if (!material->evaluate(key, 0.0))
+            {
+                Agros2D::log()->printError(QObject::tr("Marker"), QObject::tr("Material %1: %2").
+                                           arg(key).arg(material->value(key).data()->toString()));
+                successfulRun = false;
+            }
+        }
+    }
+
+    // check boundaries
+    foreach (SceneBoundary* boundary, m_scene->boundaries->items())
+    {
+        foreach (uint key, boundary->values().keys())
+        {
+            if (!boundary->evaluate(key, 0.0))
+            {
+                Agros2D::log()->printError(QObject::tr("Marker"), QObject::tr("Boundary %1: %2").
+                                           arg(key).arg(boundary->value(key).data()->toString()));
+                successfulRun = false;
+            }
+        }
+    }
+
+    // check frequency
+    if (!m_config->value(ProblemConfig::Frequency).value<Value>().evaluateAtTime(0.0))
+    {
+        Agros2D::log()->printError(QObject::tr("Frequency"), QObject::tr("Value: %1").
+                                   arg(m_config->value(ProblemConfig::Frequency).value<Value>().toString()));
+        successfulRun = false;
+    }
+
+    // restore parameters
+    currentPythonEngineAgros()->blockSignals(false);
 
     return successfulRun;
 }
@@ -494,9 +473,6 @@ void Problem::readProblemFromA2D31(const QString &fileName)
         // general config
         m_setting->load(&doc->config());
 
-        // apply parameters
-        applyParameters(m_config->value(ProblemConfig::Parameters).value<ParametersType>());
-
         // nodes
         for (unsigned int i = 0; i < doc->geometry().nodes().node().size(); i++)
         {
@@ -504,14 +480,14 @@ void Problem::readProblemFromA2D31(const QString &fileName)
 
             if (node.valuex().present() && node.valuey().present())
             {
-                Value x = Value(QString::fromStdString(node.valuex().get()));
+                Value x = Value(QString::fromStdString(node.valuex().get()), this);
                 if (!x.isEvaluated())
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
                     throw AgrosException(result.error());
                 }
 
-                Value y = Value(QString::fromStdString(node.valuey().get()));
+                Value y = Value(QString::fromStdString(node.valuey().get()), this);
                 if (!y.isEvaluated())
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -546,7 +522,7 @@ void Problem::readProblemFromA2D31(const QString &fileName)
 
             if (edge.valueangle().present())
             {
-                Value angle = Value(QString::fromStdString(edge.valueangle().get()));
+                Value angle = Value(QString::fromStdString(edge.valueangle().get()), this);
                 if (!angle.isEvaluated())
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -570,14 +546,14 @@ void Problem::readProblemFromA2D31(const QString &fileName)
 
             if (label.valuex().present() && label.valuey().present())
             {
-                Value x = Value(QString::fromStdString(label.valuex().get()));
+                Value x = Value(QString::fromStdString(label.valuex().get()), this);
                 if (!x.isEvaluated())
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
                     throw AgrosException(result.error());
                 }
 
-                Value y = Value(QString::fromStdString(label.valuey().get()));
+                Value y = Value(QString::fromStdString(label.valuey().get()), this);
                 if (!y.isEvaluated())
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -664,7 +640,7 @@ void Problem::readProblemFromA2D31(const QString &fileName)
                 {
                     XMLProblem::boundary_type type = boundary.boundary_types().boundary_type().at(k);
 
-                    Value b = Value(QString::fromStdString(type.value()));
+                    Value b = Value(QString::fromStdString(type.value()), this);
                     if (!b.isEvaluated())
                     {
                         ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -705,7 +681,7 @@ void Problem::readProblemFromA2D31(const QString &fileName)
                 {
                     XMLProblem::material_type type = material.material_types().material_type().at(k);
 
-                    Value m = Value(QString::fromStdString(type.value()));
+                    Value m = Value(QString::fromStdString(type.value()), this);
                     if (!m.isEvaluated())
                     {
                         ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -749,9 +725,6 @@ void Problem::readProblemFromA2D31(const QString &fileName)
                 cpl->setCouplingType(couplingTypeFromStringKey(QString::fromStdString(coupling.type())));
             }
         }
-
-        // apply and check parameters
-        // checkAndApplyParameters(m_config->value(ProblemConfig::Parameters).value<ParametersType>());
 
         m_scene->stopInvalidating(false);
         m_scene->blockSignals(false);
@@ -824,9 +797,6 @@ void Problem::transformProblem(const QString &fileName, const QString &tempFileN
 void Problem::writeProblemToA2D(const QString &fileName)
 {
     double version = 3.1;
-
-    // apply parameters
-    applyParameters(m_config->value(ProblemConfig::Parameters).value<ParametersType>());
 
     try
     {

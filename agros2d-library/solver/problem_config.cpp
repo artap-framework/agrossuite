@@ -193,6 +193,38 @@ void ProblemConfig::setDefaultValues()
     m_settingDefault[Parameters] = QVariant::fromValue(ParametersType());
 }
 
+// parameters
+void ProblemConfig::addParameter(const QString &key, double val)
+{
+    ParametersType parameters = value(ProblemConfig::Parameters).value<ParametersType>();
+
+    try
+    {
+        checkParameterName(key);
+        parameters[key] = val;
+        setValue(ProblemConfig::Parameters, parameters);
+    }
+    catch (AgrosException &e)
+    {
+        // raise exception
+        throw e.toString();
+    }
+}
+
+void ProblemConfig::checkParameterName(const QString &key)
+{
+    // time, x, y, r, z
+    if (key == "time" || key == "x" || key == "y" || key == "r" || key == "z")
+        throw AgrosException(tr("Variable is keyword: %1.").arg(key));
+
+    // variable name
+    QRegExp expr("(^[a-zA-Z][a-zA-Z0-9_]*)|(^[_][a-zA-Z0-9_]+)");
+    if (!expr.exactMatch(key))
+    {
+        throw AgrosException(tr("Invalid variable name: %1.").arg(key));
+    }
+}
+
 // ********************************************************************************************
 
 ProblemSetting::ProblemSetting()

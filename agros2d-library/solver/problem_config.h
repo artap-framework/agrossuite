@@ -63,6 +63,7 @@ public:
 
     void clear();
 
+    // filename
     inline QString fileName() const { return m_fileName; }
     void setFileName(const QString &fileName) { m_fileName = fileName; }
 
@@ -74,6 +75,7 @@ public:
     inline MeshType meshType() const { return m_meshType; }
     void setMeshType(const MeshType meshType) { m_meshType = meshType; emit changed(); }
 
+    // load and save
     void load(XMLProblem::problem_config *configxsd);
     void save(XMLProblem::problem_config *configxsd);
 
@@ -89,6 +91,10 @@ public:
     inline void setValue(Type type, ParametersType parameters, bool emitChanged = true) { m_setting[type] = QVariant::fromValue(parameters); emit changed(); if (emitChanged) emit changed(); }
 
     inline QVariant defaultValue(Type type) {  return m_settingDefault[type]; }
+
+    // parameters
+    void addParameter(const QString &key, double val);
+    void checkParameterName(const QString &key);
 
     inline double constantTimeStepLength() { return value(ProblemConfig::TimeTotal).toDouble() / value(ProblemConfig::TimeConstantTimeSteps).toInt(); }
     double initialTimeStepLength();

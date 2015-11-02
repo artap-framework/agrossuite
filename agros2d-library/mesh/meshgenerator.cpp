@@ -492,13 +492,13 @@ void MeshGenerator::writeTodealii()
             {
                 for(int neigh_i = 0; neigh_i < dealii::GeometryInfo<2>::faces_per_cell; neigh_i++)
                 {
-                    if(cell->face(neigh_i)->boundary_indicator() == dealii::numbers::internal_face_boundary_id)
+                    if(cell->face(neigh_i)->boundary_id() == dealii::numbers::internal_face_boundary_id)
                     {
                         cell->face(neigh_i)->set_user_index(0);
                     }
                     else
                     {
-                        cell->face(neigh_i)->set_user_index((int)cell->face(neigh_i)->boundary_indicator());
+                        cell->face(neigh_i)->set_user_index((int)cell->face(neigh_i)->boundary_id());
                         //std::cout << "cell cell_idx: " << cell_idx << ", face  " << neigh_i << " set to " << (int) cell->face(neigh_i)->boundary_indicator() << " -> value " << cell->face(neigh_i)->user_index() << std::endl;
                     }
 

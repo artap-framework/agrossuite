@@ -26,14 +26,14 @@
 #include "parser/lex.h"
 
 Value::Value(double value)
-    : m_isEvaluated(true), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable())
+    : m_isEvaluated(true), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(nullptr)
 {
     m_text = QString::number(value);
     m_number = value;
 }
 
 Value::Value(double value, std::vector<double> x, std::vector<double> y, DataTableType type, bool splineFirstDerivatives, bool extrapolateConstant)
-    : m_isEvaluated(true), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable())
+    : m_isEvaluated(true), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(nullptr)
 {
     assert(x.size() == y.size());
 
@@ -46,14 +46,21 @@ Value::Value(double value, std::vector<double> x, std::vector<double> y, DataTab
 }
 
 Value::Value(const QString &value)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable())
+    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(nullptr)
+{
+    parseFromString(value.isEmpty() ? "0" : value);
+    evaluateAndSave();
+}
+
+Value::Value(const QString &value, Problem *problem)
+    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(problem)
 {
     parseFromString(value.isEmpty() ? "0" : value);
     evaluateAndSave();
 }
 
 Value::Value(const QString &value, std::vector<double> x, std::vector<double> y, DataTableType type, bool splineFirstDerivatives, bool extrapolateConstant)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable())
+    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(nullptr)
 {
     assert(x.size() == y.size());
 
@@ -65,8 +72,8 @@ Value::Value(const QString &value, std::vector<double> x, std::vector<double> y,
     evaluateAndSave();
 }
 
-Value::Value(const QString &value, const DataTable &table)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(table)
+Value::Value(const QString &value, const DataTable &table, Problem *problem)
+    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(table), m_problem(problem)
 {
     parseFromString(value.isEmpty() ? "0" : value);
 }
@@ -86,6 +93,7 @@ Value& Value::operator =(const Value &origin)
     m_isTimeDependent = origin.m_isTimeDependent;
     m_isCoordinateDependent = origin.m_isCoordinateDependent;
     m_table = origin.m_table;
+    m_problem = origin.m_problem;
 
     evaluateAndSave();
 
@@ -326,24 +334,50 @@ bool Value::evaluateExpression(const QString &expression, double time, const Poi
     if (m_isCoordinateDependent && !m_isTimeDependent)
     {
         commandPre = QString("x = %1; y = %2; r = %1; z = %2").arg(point.x).arg(point.y);
-        commandPost = QString("del x; del y; del r; del z");
+        // commandPost = QString("del x; del y; del r; del z");
     }
     else if (m_isTimeDependent && !m_isCoordinateDependent)
     {
         commandPre = QString("time = %1").arg(time);
-        commandPost = QString("del time");
+        // commandPost = QString("del time");
     }
     else if (m_isCoordinateDependent && m_isTimeDependent)
     {
         commandPre = QString("time = %1; x = %2; y = %3; r = %2; z = %3").arg(time).arg(point.x).arg(point.y);
-        commandPost = QString("del time; del x; del y; del r; del z");
+        // commandPost = QString("del time; del x; del y; del r; del z");
     }
 
+    // problem
+    if (m_problem)
+    {
+        ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+
+        foreach (QString key, parameters.keys())
+        {
+            if (commandPre.isEmpty())
+                commandPre += QString("%1 = %2").arg(key).arg(parameters[key]);
+            else
+                commandPre += QString("; %1 = %2").arg(key).arg(parameters[key]);
+        }
+    }
+
+    // temporary dict
+    currentPythonEngineAgros()->useTemporaryDict();
+
     // eval expression
-    bool successfulRun = currentPythonEngineAgros()->runExpression(expression, &evaluationResult, commandPre, commandPost);
+    bool successfulRun = currentPythonEngineAgros()->runExpression(expression,
+                                                                   &evaluationResult,
+                                                                   commandPre,
+                                                                   commandPost);
+
+    // global dict
+    currentPythonEngineAgros()->useGlobalDict();
 
     if (!signalBlocked)
         currentPythonEngineAgros()->blockSignals(false);
+
+    if (!successfulRun)
+        qDebug() << successfulRun;
 
     return successfulRun;
 }

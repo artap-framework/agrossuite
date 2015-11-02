@@ -101,6 +101,7 @@ private:
     bool m_hasTimeDep;
     bool m_hasNonlin;
     DataTable m_table;
+    Problem *m_problem;
     QString m_title;
     QString m_labelX;
     QString m_labelY;
