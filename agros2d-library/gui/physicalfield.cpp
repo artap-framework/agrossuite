@@ -273,8 +273,6 @@ void PhysicalFieldWidget::selectAdaptivityStep(int adaptivityStep)
 
 void PhysicalFieldWidget::updateControls()
 {
-    qDebug() << "PhysicalFieldWidget::updateControls()";
-
     if (Agros2D::computations().count() > 0)
     {
         fillComboBoxComputation(cmbComputation);
