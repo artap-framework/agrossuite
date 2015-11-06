@@ -37,129 +37,128 @@ int main(int argc, char *argv[])
 {
     try
     {
-        // command line info
-        TCLAP::CmdLine cmd("External solver - MUMPS", ' ');
-
-        TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
-        TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
-        TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
-        TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", true, "", "string");
-        TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
-
-        cmd.add(matrixArg);
-        cmd.add(matrixPatternArg);
-        cmd.add(rhsArg);
-        cmd.add(solutionArg);
-        cmd.add(initialArg);
-
-        // parse the argv array.
-        cmd.parse(argc, argv);
-
-        // dealii::Timer timer;
-        // timer.start();
-
-        SparsityPatternRW system_matrix_pattern;
-        std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
-        system_matrix_pattern.block_read(readMatrixSparsityPattern);
-        readMatrixSparsityPattern.close();
-
-        SparseMatrixRW system_matrix;
-        std::ifstream readMatrix(matrixArg.getValue());
-        // system_matrix.reinit(system_matrix_pattern);
-        system_matrix.block_read(readMatrix);
-        readMatrix.close();
-
-        VectorRW system_rhs;
-        std::ifstream readRHS(rhsArg.getValue());
-        system_rhs.block_read(readRHS);
-        readRHS.close();
-
-        DMUMPS_STRUC_C id;
-
-        // number of unknowns
-        int n = system_matrix_pattern.rows;
-
-        // number of nonzero elements in matrix
-        int nz = system_matrix.max_len;
-
-        // representation of the matrix and rhs
-        double *a = system_matrix.val;
-        double *rhs = system_rhs.val;
-
-        // matrix indices pointing to the row and column dimensions
-        int *irn = new int[nz];
-        int *jcn = new int[nz];
-
-        int index = 0;
-
-        // loop over the elements of the matrix row by row
-        for (int row = 0; row < system_matrix_pattern.cols; ++row)
-        {
-            std::size_t col_start = system_matrix_pattern.rowstart[row];
-            std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
-
-            for (int i = col_start; i < col_end; i++)
-            {
-                a[index] = system_matrix.val[i];
-                irn[index] = row + 1;
-                jcn[index] = system_matrix_pattern.colnums[i] + 1;
-
-                ++index;
-            }
-        }
-
-        int myid, ierr;
+        int rank, ierr;
         ierr = MPI_Init(&argc, &argv);
-        ierr = MPI_Comm_rank(MPI_COMM_WORLD, &myid);
+        ierr = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-        /* Initialize a MUMPS instance. Use MPI_COMM_WORLD */
+        std::cout << "Rank " << rank << " started." << std::endl;
+
+        // time
+        MPI_Barrier(MPI_COMM_WORLD);
+        double start = MPI_Wtime();
+
+        // initialize a MUMPS instance. Use MPI_COMM_WORLD
+        DMUMPS_STRUC_C id;
         id.job = JOB_INIT;
         id.par = 1;
         id.sym = 0;
         id.comm_fortran = USE_COMM_WORLD;
         dmumps_c(&id);
 
-        /* Define the problem on the host */
-        if (myid == 0)
+        // define the problem on the host
+        SparsityPatternRW system_matrix_pattern;
+        SparseMatrixRW system_matrix;
+        VectorRW system_rhs;
+        std::string slnFileName;
+        if (rank == 0)
         {
-            id.n = n;
-            id.nz = nz;
-            id.irn = irn;
-            id.jcn = jcn;
-            id.a = a;
-            id.rhs = rhs;
+            // command line info
+            TCLAP::CmdLine cmd("External solver - MUMPS", ' ');
+
+            TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
+            TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
+            TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
+            TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", true, "", "string");
+            TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
+
+            cmd.add(matrixArg);
+            cmd.add(matrixPatternArg);
+            cmd.add(rhsArg);
+            cmd.add(solutionArg);
+            cmd.add(initialArg);
+
+            // parse the argv array.
+            cmd.parse(argc, argv);
+
+            slnFileName = solutionArg.getValue();
+
+            std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
+            system_matrix_pattern.block_read(readMatrixSparsityPattern);
+            readMatrixSparsityPattern.close();
+
+            std::ifstream readMatrix(matrixArg.getValue());
+            // system_matrix.reinit(system_matrix_pattern);
+            system_matrix.block_read(readMatrix);
+            readMatrix.close();
+
+            std::ifstream readRHS(rhsArg.getValue());
+            system_rhs.block_read(readRHS);
+            readRHS.close();
+
+            // number of unknowns
+            id.n = system_matrix_pattern.rows;
+
+            // number of nonzero elements in matrix
+            id.nz = system_matrix.max_len;
+
+            // representation of the matrix and rhs
+            id.a = system_matrix.val;
+            id.rhs = system_rhs.val;
+
+            // matrix indices pointing to the row and column dimensions
+            id.irn = new int[id.nz];
+            id.jcn = new int[id.nz];
+            int index = 0;
+
+            // loop over the elements of the matrix row by row
+            for (int row = 0; row < system_matrix_pattern.cols; ++row)
+            {
+                std::size_t col_start = system_matrix_pattern.rowstart[row];
+                std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
+
+                for (int i = col_start; i < col_end; i++)
+                {
+                    id.a[index] = system_matrix.val[i];
+                    id.irn[index] = row + 1;
+                    id.jcn[index] = system_matrix_pattern.colnums[i] + 1;
+
+                    ++index;
+                }
+            }
         }
 
-        /* No outputs */
+        // no outputs
         id.icntl[0] = -1;
         id.icntl[1] = -1;
         id.icntl[2] = -1;
         id.icntl[3] =  0;
 
-        /* Call the MUMPS package. */
+        // call the MUMPS package.
         id.job = 6;
         dmumps_c(&id);
         id.job = JOB_END;
-        dmumps_c(&id); /* Terminate instance */
+        dmumps_c(&id); // Terminate instance
 
-        if (myid == 0)
+        if (rank == 0)
         {
-            VectorRW solution(system_rhs.max_len);
-
-            for (int row = 0; row < system_rhs.max_len; row++)
-                solution[row] = rhs[row];
-
-            std::ofstream writeSln(solutionArg.getValue());
-            solution.block_write(writeSln);
+            // system_rhs (solution)
+            std::ofstream writeSln(slnFileName);
+            system_rhs.block_write(writeSln);
             writeSln.close();
+
+            delete [] id.irn;
+            delete [] id.jcn;
         }
+
+        MPI_Barrier(MPI_COMM_WORLD);
+        double end = MPI_Wtime();
+
         ierr = MPI_Finalize();
 
-        delete [] irn;
-        delete [] jcn;
-
-        // timer.stop();
-        // std::cout << "MUMPS: total time: " << myid << " : " << timer() << std::endl;
+        if (rank == 0)
+        {
+             std::cout << "Total time: " << rank << " : " << (end - start) << std::endl;
+        }
     }
     catch (TCLAP::ArgException &e)
     {
