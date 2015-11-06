@@ -96,6 +96,7 @@ public:
         LinearSolverIterPARALUTIONDoublePrecision,
         LinearSolverIterToleranceAbsolute,
         LinearSolverIterIters,        
+        LinearSolverExternalName,
         TimeUnit
     };
 

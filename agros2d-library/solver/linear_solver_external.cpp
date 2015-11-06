@@ -28,6 +28,7 @@
 #include "field.h"
 #include "problem.h"
 #include "solver/problem_config.h"
+#include "solver/solver_utils.h"
 #include "scene.h"
 #include "sceneedge.h"
 #include "scenelabel.h"
@@ -42,13 +43,13 @@
 
 #include "pythonlab/pythonengine.h"
 
-AgrosExternalSolverExternal::AgrosExternalSolverExternal(const dealii::SparseMatrix<double> *system_matrix,
-                                                         const dealii::Vector<double> *system_rhs)
+AgrosExternalSolver::AgrosExternalSolver(const dealii::SparseMatrix<double> *system_matrix,
+                                         const dealii::Vector<double> *system_rhs)
     : m_system_matrix(system_matrix), m_system_rhs(system_rhs), m_initial_guess(NULL)
 {
 }
 
-void AgrosExternalSolverExternal::solve(const dealii::Vector<double> *initial_guess)
+void AgrosExternalSolver::solve(const dealii::Vector<double> *initial_guess)
 {
     m_initial_guess = initial_guess;
 
@@ -62,8 +63,6 @@ void AgrosExternalSolverExternal::solve(const dealii::Vector<double> *initial_gu
     fileSln = QString("%1/solver-%2.sln").arg(cacheProblemDir()).arg(tm);
 
     // write matrix and rhs to disk
-    QTime time;
-    time.start();
     std::ofstream writeMatrix(fileMatrix.toStdString());
     m_system_matrix->block_write(writeMatrix);
     writeMatrix.close();
@@ -71,13 +70,10 @@ void AgrosExternalSolverExternal::solve(const dealii::Vector<double> *initial_gu
     std::ofstream writeMatrixSparsityPattern(fileMatrixPattern.toStdString());
     m_system_matrix->get_sparsity_pattern().block_write(writeMatrixSparsityPattern);
     writeMatrixSparsityPattern.close();
-    qDebug() << "External solver: process_matrix_output = " << time.elapsed();
 
-    time.start();
     std::ofstream writeRHS(fileRHS.toStdString());
     m_system_rhs->block_write(writeRHS);
     writeRHS.close();
-    qDebug() << "External solver: process_vector_output = " << time.elapsed();
 
     // write initial guess to disk
     if (m_initial_guess)
@@ -87,6 +83,14 @@ void AgrosExternalSolverExternal::solve(const dealii::Vector<double> *initial_gu
         writeInitial.close();
     }
 
+    // fill command template
+    QString command = m_commandTemplate.
+            arg(QApplication::applicationDirPath()).
+            arg(fileMatrix).
+            arg(fileMatrixPattern).
+            arg(fileRHS).
+            arg(fileSln);
+
     // exec
     m_process = new QProcess();
     m_process->setStandardOutputFile(tempProblemDir() + "/solver.out");
@@ -94,8 +98,6 @@ void AgrosExternalSolverExternal::solve(const dealii::Vector<double> *initial_gu
     connect(m_process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(processError(QProcess::ProcessError)));
     connect(m_process, SIGNAL(finished(int)), this, SLOT(processFinished(int)));
 
-    setSolverCommand();
-    time.start();
     m_process->start(command);
 
     // execute an event loop to process the request (nearly-synchronous)
@@ -103,7 +105,6 @@ void AgrosExternalSolverExternal::solve(const dealii::Vector<double> *initial_gu
     QObject::connect(m_process, SIGNAL(finished(int)), &eventLoop, SLOT(quit()));
     QObject::connect(m_process, SIGNAL(error(QProcess::ProcessError)), &eventLoop, SLOT(quit()));
     eventLoop.exec();
-    qDebug() << "External solver: solution = " << time.elapsed();
 
     if (QFile::exists(fileSln))
     {
@@ -123,18 +124,18 @@ void AgrosExternalSolverExternal::solve(const dealii::Vector<double> *initial_gu
     QFile::remove(tempProblemDir() + "/solver.err");
 }
 
-void AgrosExternalSolverExternal::solve()
+void AgrosExternalSolver::solve()
 {
     solve(nullptr);
 }
 
-void AgrosExternalSolverExternal::processError(QProcess::ProcessError error)
+void AgrosExternalSolver::processError(QProcess::ProcessError error)
 {
     Agros2D::log()->printError(tr("Solver"), tr("Could not start external solver"));
     m_process->kill();
 }
 
-void AgrosExternalSolverExternal::processFinished(int exitCode)
+void AgrosExternalSolver::processFinished(int exitCode)
 {
     QString solverOutputMessage = readFileContent(tempProblemDir() + "/solver.out");
     if (!solverOutputMessage.isEmpty())
@@ -154,24 +155,4 @@ void AgrosExternalSolverExternal::processFinished(int exitCode)
         errorMessage.append("\n");
         Agros2D::log()->printError(tr("External solver"), errorMessage);
     }
-}
-
-void AgrosExternalSolverMUMPS::setSolverCommand()
-{
-    command = QString("\"%1/solver_external_MUMPS\" -m \"%2\" -p \"%3\" -r \"%4\" -s \"%5\"").
-            arg(QApplication::applicationDirPath()).
-            arg(fileMatrix).
-            arg(fileMatrixPattern).
-            arg(fileRHS).
-            arg(fileSln);
-}
-
-void AgrosExternalSolverUMFPack::setSolverCommand()
-{
-    command = QString("\"%1/solver_external_UMFPACK\" -m \"%2\" -p \"%3\" -r \"%4\" -s \"%5\"").
-            arg(QApplication::applicationDirPath()).
-            arg(fileMatrix).
-            arg(fileMatrixPattern).
-            arg(fileRHS).
-            arg(fileSln);
 }

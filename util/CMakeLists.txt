@@ -21,11 +21,12 @@ SET(SOURCES util.cpp
     indicators/indicator_unity.cpp)
 
 SET(HEADERS util.h 
+    sparse_io.h
     util/checkversion.h 
     util/point.h 
     util/system_utils.h 
     util/spline.h
-    util/table.cpp
+    util/table.h
     gui/about.h 
     gui/filebrowser.h 
     gui/lineeditdouble.h 

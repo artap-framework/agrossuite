@@ -17,19 +17,16 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include <deal.II/lac/vector.h>
-#include <deal.II/lac/full_matrix.h>
-#include <deal.II/lac/sparse_matrix.h>
-#include <deal.II/lac/sparse_direct.h>
-#include <deal.II/base/timer.h>
-
 #include <streambuf>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <fstream>
 
+#include <umfpack.h>
+
 #include "../3rdparty/tclap/CmdLine.h"
+#include "../util/sparse_io.h"
 
 int main(int argc, char *argv[])
 {
@@ -53,36 +50,136 @@ int main(int argc, char *argv[])
         // parse the argv array.
         cmd.parse(argc, argv);
 
-        dealii::Timer timer;
-        timer.start();
-
-        dealii::SparsityPattern system_matrix_pattern;
+        SparsityPatternRW system_matrix_pattern;
         std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
         system_matrix_pattern.block_read(readMatrixSparsityPattern);
         readMatrixSparsityPattern.close();
 
-        dealii::SparseMatrix<double> system_matrix;
+        SparseMatrixRW system_matrix;
         std::ifstream readMatrix(matrixArg.getValue());
-        system_matrix.reinit(system_matrix_pattern);
         system_matrix.block_read(readMatrix);
         readMatrix.close();
 
-        dealii::Vector<double> system_rhs;
+        VectorRW system_rhs;
         std::ifstream readRHS(rhsArg.getValue());
         system_rhs.block_read(readRHS);
         readRHS.close();
 
-        dealii::Vector<double> solution(system_rhs.size());        
-        dealii::SparseDirectUMFPACK direct;
-        direct.initialize(system_matrix);
-        direct.vmult(solution, system_rhs);
+        VectorRW solution(system_rhs.max_len);
 
-        std::ofstream writeSln(solutionArg.getValue());
-        solution.block_write(writeSln);
-        writeSln.close();
+        // number of unknowns
+        int n = system_matrix_pattern.rows;
 
-        timer.stop();
-        std::cout << "UMFPACK: total time: " << timer() << std::endl;
+        // number of nonzero elements in matrix
+        int nz = system_matrix.max_len;
+
+        // representation of the matrix and rhs
+        double *a = system_matrix.val;
+
+        // matrix indices pointing to the row and column dimensions
+        int *irn = new int[nz];
+        int *jcn = new int[nz];
+
+        int index = 0;
+
+        // loop over the elements of the matrix row by row
+        for (int row = 0; row < system_matrix_pattern.cols; ++row)
+        {
+            std::size_t col_start = system_matrix_pattern.rowstart[row];
+            std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
+
+            for (int i = col_start; i < col_end; i++)
+            {
+                a[index] = system_matrix.val[i];
+                irn[index] = row + 0;
+                jcn[index] = system_matrix_pattern.colnums[i] + 0;
+
+                ++index;
+            }
+        }
+
+        int *Ap = new int[n+1];
+        int *Ai = new int[nz];
+        double *Ax = new double[nz];
+
+        // reporting
+        double Info[UMFPACK_INFO];
+        double Control[UMFPACK_CONTROL];
+        // Control[UMFPACK_PRL] = 6;
+
+        int statusTripletToCol = umfpack_di_triplet_to_col (n, n, nz, irn, jcn, a, Ap, Ai, Ax, (int *) NULL);
+
+        if (statusTripletToCol != UMFPACK_OK)
+        {
+            std::cout << "UMFPACK triplet to col: " << statusTripletToCol << std::endl;
+            exit(1);
+        }
+
+        delete [] irn;
+        delete [] jcn;
+
+        // umfpack_di_report_matrix(system_matrix_pattern.rows, system_matrix_pattern.cols, Ap, Ai, Ax, 1, Control);
+
+        // factorizing symbolically
+        void *symbolic;
+        int statusSymbolic = umfpack_di_symbolic(system_matrix_pattern.rows,
+                                                 system_matrix_pattern.cols,
+                                                 Ap, Ai, Ax,
+                                                 &symbolic, Control, Info);
+
+        if (statusSymbolic == UMFPACK_OK)
+        {
+            // LU factorization of matrix
+            void *numeric;
+            int statusNumeric = umfpack_di_numeric(Ap, Ai, Ax,
+                                                   symbolic, &numeric, Control, Info);
+
+            //  free the memory associated with the symbolic factorization.
+            if (symbolic)
+                umfpack_di_free_symbolic (&symbolic);
+
+            if (statusNumeric == UMFPACK_OK)
+            {
+                //  solve the linear system.
+                int statusSolve = umfpack_di_solve(UMFPACK_A, Ap, Ai, Ax,
+                                                   solution.val, system_rhs.val, numeric, Control, Info);
+
+                // free the memory associated with the numeric factorization.
+                if (numeric)
+                    umfpack_di_free_numeric(&numeric);
+
+                if (statusSolve == UMFPACK_OK)
+                {
+                    // umfpack_di_report_vector (n, solution.val, Control) ;
+
+                    std::ofstream writeSln(solutionArg.getValue());
+                    solution.block_write(writeSln);
+                    writeSln.close();
+
+                    delete [] Ap;
+                    delete [] Ai;
+                    delete [] Ax;
+                }
+                else
+                {
+                    std::cout << "UMFPACK numeric error: " << statusNumeric << std::endl;
+                    exit(1);
+                }
+            }
+            else
+            {
+                std::cout << "UMFPACK numeric error: " << statusNumeric << std::endl;
+                exit(1);
+            }
+        }
+        else
+        {
+            umfpack_di_report_info(Control, Info);
+            umfpack_di_report_status(Control, statusSymbolic);
+
+            std::cout << "UMFPACK symbolic factorization: " << statusSymbolic << std::endl;
+            exit(1);
+        }
     }
     catch (TCLAP::ArgException &e)
     {

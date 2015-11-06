@@ -464,13 +464,14 @@ QWidget *FieldWidget::createLinearSolverWidget()
     cmbIterLinearSolverDealIIMethod = new QComboBox();
     cmbIterLinearSolverDealIIPreconditioner = new QComboBox();
     cmbIterLinearSolverPARALUTIONMethod = new QComboBox();
-    cmbIterLinearSolverPARALUTIONPreconditioner= new QComboBox();
+    cmbIterLinearSolverPARALUTIONPreconditioner = new QComboBox();
     chkIterLinearSolverPARALUTIONDoublePrecision = new QCheckBox(tr("Use double precision"));
     txtIterLinearSolverToleranceAbsolute = new LineEditDouble(1e-15);
     txtIterLinearSolverToleranceAbsolute->setBottom(0.0);
     txtIterLinearSolverIters = new QSpinBox();
     txtIterLinearSolverIters->setMinimum(1);
     txtIterLinearSolverIters->setMaximum(10000);
+    cmbExternalLinearSolverCommand = new QComboBox();
 
     QGridLayout *iterSolverDealIILayout = new QGridLayout();
     iterSolverDealIILayout->addWidget(new QLabel(tr("Method:")), 0, 0);
@@ -491,6 +492,14 @@ QWidget *FieldWidget::createLinearSolverWidget()
     QGroupBox *iterSolverPARALUTIONGroup = new QGroupBox(tr("PARALUTION"));
     iterSolverPARALUTIONGroup->setLayout(iterSolverPARALUTIONLayout);
 
+
+    QGridLayout *iterSolverExternalLayout = new QGridLayout();
+    iterSolverExternalLayout->addWidget(new QLabel(tr("Command:")), 0, 0);
+    iterSolverExternalLayout->addWidget(cmbExternalLinearSolverCommand, 0, 1);
+
+    QGroupBox *iterSolverExternalGroup = new QGroupBox(tr("External (out of core)"));
+    iterSolverExternalGroup->setLayout(iterSolverExternalLayout);
+
     QGridLayout *iterSolverLayout = new QGridLayout();
     iterSolverLayout->addWidget(new QLabel(tr("Absolute tolerance:")), 0, 0);
     iterSolverLayout->addWidget(txtIterLinearSolverToleranceAbsolute, 0, 1);
@@ -501,6 +510,7 @@ QWidget *FieldWidget::createLinearSolverWidget()
     iterSolverGroup->setLayout(iterSolverLayout);
 
     QVBoxLayout *layoutLinearSolver = new QVBoxLayout();
+    layoutLinearSolver->addWidget(iterSolverExternalGroup);
     layoutLinearSolver->addWidget(iterSolverDealIIGroup);
     layoutLinearSolver->addWidget(iterSolverPARALUTIONGroup);
     layoutLinearSolver->addWidget(iterSolverGroup);
@@ -556,6 +566,32 @@ void FieldWidget::fillComboBox()
     cmbIterLinearSolverPARALUTIONPreconditioner->clear();
     foreach (QString type, iterLinearSolverPARALUTIONPreconditionerStringKeys())
         cmbIterLinearSolverPARALUTIONPreconditioner->addItem(iterLinearSolverPARALUTIONPreconditionerString(iterLinearSolverPARALUTIONPreconditionerFromStringKey(type)), iterLinearSolverPARALUTIONPreconditionerFromStringKey(type));
+
+    // read from files
+    cmbExternalLinearSolverCommand->clear();
+    QDirIterator itDir(QString("%1/libs/").arg(datadir()), QStringList() << "*.ext", QDir::Files);
+    while (itDir.hasNext())
+    {
+        QString fileName = QFileInfo(itDir.next()).fileName();
+        qDebug() << fileName;
+
+        // read command parameters
+        QFile f(QString("%1/libs/%2").arg(datadir()).arg(fileName));
+        if (f.open(QFile::ReadOnly | QFile::Text))
+        {
+            QTextStream in(&f);
+
+            QStringList commandContent = in.readAll().split("\n");
+
+            // command at second line
+            QString name = commandContent.at(0);
+            // QString command = commandContent.at(1);
+
+            cmbExternalLinearSolverCommand->addItem(name, fileName);
+        }
+    }
+    if (cmbExternalLinearSolverCommand->count() > 0)
+        cmbExternalLinearSolverCommand->setCurrentIndex(0);
 }
 
 void FieldWidget::load()
@@ -608,6 +644,8 @@ void FieldWidget::load()
     cmbIterLinearSolverPARALUTIONMethod->setCurrentIndex((IterSolverPARALUTION) cmbIterLinearSolverPARALUTIONMethod->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONMethod).toInt()));
     cmbIterLinearSolverPARALUTIONPreconditioner->setCurrentIndex((PreconditionerPARALUTION) cmbIterLinearSolverPARALUTIONPreconditioner->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONPreconditioner).toInt()));
     chkIterLinearSolverPARALUTIONDoublePrecision->setChecked(m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONDoublePrecision).toBool());
+    // external solver
+    cmbExternalLinearSolverCommand->setCurrentIndex(cmbExternalLinearSolverCommand->findData(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()));
 
     doAnalysisTypeChanged(cmbAnalysisType->currentIndex());
 }
@@ -657,6 +695,8 @@ bool FieldWidget::save()
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterPARALUTIONMethod, cmbIterLinearSolverPARALUTIONMethod->itemData(cmbIterLinearSolverPARALUTIONMethod->currentIndex()).toInt());
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterPARALUTIONPreconditioner, cmbIterLinearSolverPARALUTIONPreconditioner->itemData(cmbIterLinearSolverPARALUTIONPreconditioner->currentIndex()).toInt());
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterPARALUTIONDoublePrecision, chkIterLinearSolverPARALUTIONDoublePrecision->isChecked());
+    // external solver
+    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalName, cmbExternalLinearSolverCommand->itemData(cmbExternalLinearSolverCommand->currentIndex()).toString());
 
     return true;
 }
@@ -784,7 +824,7 @@ void FieldWidget::doLinearSolverChanged(int index)
     cmbIterLinearSolverPARALUTIONMethod->setEnabled(solverType == SOLVER_PARALUTION);
     cmbIterLinearSolverPARALUTIONPreconditioner->setEnabled(solverType == SOLVER_PARALUTION);
     chkIterLinearSolverPARALUTIONDoublePrecision->setEnabled(solverType == SOLVER_PARALUTION);
-
+    cmbExternalLinearSolverCommand->setEnabled(solverType == SOLVER_EXTERNAL);
 }
 
 void FieldWidget::doNonlinearDampingChanged(int index)

@@ -30,24 +30,23 @@
 #include <deal.II/lac/sparse_matrix.h>
 #define signals public
 
-class AgrosExternalSolverExternal : public QObject
+class AgrosExternalSolver : public QObject
 {
     Q_OBJECT
 
 public:
-    AgrosExternalSolverExternal(const dealii::SparseMatrix<double> *system_matrix,
+    AgrosExternalSolver(const dealii::SparseMatrix<double> *system_matrix,
                                 const dealii::Vector<double> *system_rhs);
+
+    void setCommandTemplate(const QString &commandTemplate) { m_commandTemplate = commandTemplate; }
+
     void solve();
     void solve(const dealii::Vector<double> *initial_guess);
 
     dealii::Vector<double> &solution() { return m_solution; }
 
-    virtual void setSolverCommand() = 0;
-
 protected:
     QProcess *m_process;
-
-    QString command;
 
     QString fileMatrix;
     QString fileMatrixPattern;
@@ -60,31 +59,12 @@ protected:
     dealii::Vector<double> m_solution;
     const dealii::Vector<double> *m_initial_guess;
 
+    QString m_commandTemplate;
+
 protected slots:
     void processError(QProcess::ProcessError error);
     void processFinished(int exitCode);
 };
 
-class AgrosExternalSolverMUMPS : public AgrosExternalSolverExternal
-{
-public:
-    AgrosExternalSolverMUMPS(dealii::SparseMatrix<double> *system_matrix,
-                             dealii::Vector<double> *system_rhs)
-        : AgrosExternalSolverExternal(system_matrix, system_rhs) {}
-
-    virtual void setSolverCommand();
-    virtual void free() {}
-};
-
-class AgrosExternalSolverUMFPack : public AgrosExternalSolverExternal
-{
-public:
-    AgrosExternalSolverUMFPack(const dealii::SparseMatrix<double> *system_matrix,
-                               const dealii::Vector<double> *system_rhs)
-        : AgrosExternalSolverExternal(system_matrix, system_rhs) {}
-
-    virtual void setSolverCommand();
-    virtual void free() {}
-};
 
 #endif // SOLVER_EXTERNAL_H

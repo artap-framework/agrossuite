@@ -720,7 +720,7 @@ QString matrixSolverTypeString(MatrixSolverType matrixSolverType)
     case SOLVER_MUMPS:
         return QObject::tr("MUMPS");
     case SOLVER_EXTERNAL:
-        return QObject::tr("UMFPACK (out of core)");
+        return QObject::tr("External (out of core)");
     default:
         std::cerr << "Matrix solver type '" + QString::number(matrixSolverType).toStdString() + "' is not implemented. matrixSolverTypeString(MatrixSolverType matrixSolverType)" << endl;
         throw;

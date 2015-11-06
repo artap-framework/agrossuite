@@ -287,8 +287,7 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
         break;
     }
     case SOLVER_EXTERNAL:
-        // linearSolver.solveExternalUMFPACK(system, rhs, sln);
-        linearSolver.solveExternalMUMPS(system, rhs, sln);
+        linearSolver.solveExternal(system, rhs, sln);
         break;
     default:
         Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Solver '%1' is not supported.").arg(m_fieldInfo->matrixSolver()));

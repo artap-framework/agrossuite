@@ -101,26 +101,27 @@ void SolverLinearSolver::solveUMFPACK(dealii::SparseMatrix<double> &system,
     direct_solver.vmult(sln, rhs);
 }
 
-void SolverLinearSolver::solveExternalUMFPACK(dealii::SparseMatrix<double> &system,
-                                              dealii::Vector<double> &rhs,
-                                              dealii::Vector<double> &sln)
+void SolverLinearSolver::solveExternal(dealii::SparseMatrix<double> &system,
+                                       dealii::Vector<double> &rhs,
+                                       dealii::Vector<double> &sln)
 {
+    // read command parameters
+    QFile f(QString("%1/libs/%2").arg(datadir()).arg(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()));
+    if (!f.open(QFile::ReadOnly | QFile::Text))
+        throw AgrosSolverException(QObject::tr("Cannot not open external command file."));
+    QTextStream in(&f);
+    // command at second line
+    QStringList commandContent = in.readAll().split("\n");
+
+    // command at second line
+    QString name = commandContent.at(0);
+    QString command = commandContent.at(1);
+
     Agros2D::log()->printDebug(QObject::tr("Solver"),
-                               QObject::tr("Direct solver - UMFPACK (external)"));
+                               QObject::tr("External solver - %1").arg(name));
 
-    AgrosExternalSolverUMFPack ext(&system, &rhs);
-    ext.solve();
-    sln = ext.solution();
-}
-
-void SolverLinearSolver::solveExternalMUMPS(dealii::SparseMatrix<double> &system,
-                                            dealii::Vector<double> &rhs,
-                                            dealii::Vector<double> &sln)
-{
-    Agros2D::log()->printDebug(QObject::tr("Solver"),
-                               QObject::tr("Direct solver - MUMPS (external)"));
-
-    AgrosExternalSolverMUMPS ext(&system, &rhs);
+    AgrosExternalSolver ext(&system, &rhs);
+    ext.setCommandTemplate(command);
     ext.solve();
     sln = ext.solution();
 }

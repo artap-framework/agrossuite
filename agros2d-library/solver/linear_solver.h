@@ -62,13 +62,9 @@ public:
                       dealii::Vector<double> &sln,
                       bool reuseDecomposition = false);
 
-    void solveExternalUMFPACK(dealii::SparseMatrix<double> &system,
+    void solveExternal(dealii::SparseMatrix<double> &system,
                               dealii::Vector<double> &rhs,
                               dealii::Vector<double> &sln);
-
-    void solveExternalMUMPS(dealii::SparseMatrix<double> &system,
-                            dealii::Vector<double> &rhs,
-                            dealii::Vector<double> &sln);
 
     void solvedealii(dealii::SparseMatrix<double> &system,
                      dealii::Vector<double> &rhs,

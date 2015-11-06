@@ -20,14 +20,6 @@
 #include "mpi/mpi.h"
 #include "dmumps_c.h"
 
-#define DEAL_II_WITH_MPI
-
-#include <deal.II/lac/vector.h>
-#include <deal.II/lac/full_matrix.h>
-#include <deal.II/lac/sparse_matrix.h>
-#include <deal.II/lac/sparse_direct.h>
-#include <deal.II/base/timer.h>
-
 #include <streambuf>
 #include <iostream>
 #include <sstream>
@@ -39,6 +31,7 @@
 #define USE_COMM_WORLD -987654
 
 #include "../../3rdparty/tclap/CmdLine.h"
+#include "../util/sparse_io.h"
 
 int main(int argc, char *argv[])
 {
@@ -62,59 +55,57 @@ int main(int argc, char *argv[])
         // parse the argv array.
         cmd.parse(argc, argv);
 
-        dealii::Timer timer;
-        timer.start();
+        // dealii::Timer timer;
+        // timer.start();
 
-        dealii::SparsityPattern system_matrix_pattern;
+        SparsityPatternRW system_matrix_pattern;
         std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
         system_matrix_pattern.block_read(readMatrixSparsityPattern);
         readMatrixSparsityPattern.close();
 
-        dealii::SparseMatrix<double> system_matrix;
+        SparseMatrixRW system_matrix;
         std::ifstream readMatrix(matrixArg.getValue());
-        system_matrix.reinit(system_matrix_pattern);
+        // system_matrix.reinit(system_matrix_pattern);
         system_matrix.block_read(readMatrix);
         readMatrix.close();
 
-        dealii::Vector<double> system_rhs;
+        VectorRW system_rhs;
         std::ifstream readRHS(rhsArg.getValue());
         system_rhs.block_read(readRHS);
         readRHS.close();
 
         DMUMPS_STRUC_C id;
+
         // number of unknowns
-        int n = system_matrix.n();
+        int n = system_matrix_pattern.rows;
 
         // number of nonzero elements in matrix
-        int nz = system_matrix.n_actually_nonzero_elements();
+        int nz = system_matrix.max_len;
 
         // representation of the matrix and rhs
-        double *a = new double[nz];
-        double *rhs = new double[nz];
+        double *a = system_matrix.val;
+        double *rhs = system_rhs.val;
 
         // matrix indices pointing to the row and column dimensions
-        // respectively of the matrix representation above (a): ie. a[k] is
-        // the matrix element (irn[k], jcn[k])
         int *irn = new int[nz];
         int *jcn = new int[nz];
 
         int index = 0;
 
-        // loop over the elements of the matrix row by row, as suggested in
-        // the documentation of the sparse matrix iterator class
-        for (int row = 0; row < system_matrix.m(); ++row)
+        // loop over the elements of the matrix row by row
+        for (int row = 0; row < system_matrix_pattern.cols; ++row)
         {
-            for (typename dealii::SparseMatrix<double>::const_iterator ptr = system_matrix.begin(row); ptr != system_matrix.end (row); ++ptr)
+            std::size_t col_start = system_matrix_pattern.rowstart[row];
+            std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
+
+            for (int i = col_start; i < col_end; i++)
             {
-                if (std::abs (ptr->value ()) > 0.0)
-                {
-                    a[index]   = ptr->value ();
-                    irn[index] = row + 1;
-                    jcn[index] = ptr->column () + 1;
-                    ++index;
-                }
+                a[index] = system_matrix.val[i];
+                irn[index] = row + 1;
+                jcn[index] = system_matrix_pattern.colnums[i] + 1;
+
+                ++index;
             }
-            rhs[row] = system_rhs[row];
         }
 
         int myid, ierr;
@@ -153,12 +144,10 @@ int main(int argc, char *argv[])
 
         if (myid == 0)
         {
-            dealii::Vector<double> solution(system_rhs.size());
+            VectorRW solution(system_rhs.max_len);
 
-            for (int row = 0; row < system_matrix.m(); ++row)
-            {
+            for (int row = 0; row < system_rhs.max_len; row++)
                 solution[row] = rhs[row];
-            }
 
             std::ofstream writeSln(solutionArg.getValue());
             solution.block_write(writeSln);
@@ -166,13 +155,11 @@ int main(int argc, char *argv[])
         }
         ierr = MPI_Finalize();
 
-        delete [] a;
-        delete [] rhs;
         delete [] irn;
         delete [] jcn;
 
-        timer.stop();
-        std::cout << "MUMPS: total time: " << myid << " : " << timer() << std::endl;
+        // timer.stop();
+        // std::cout << "MUMPS: total time: " << myid << " : " << timer() << std::endl;
     }
     catch (TCLAP::ArgException &e)
     {

@@ -116,7 +116,6 @@ public:
     const dealii::hp::DoFHandler<2> *m_doFHandler;
 };
 
-
 inline bool operator==(const DoubleCellIterator& a, const DoubleCellIterator& b)
 {
     // is it ok? should be () && () ??
