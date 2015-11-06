@@ -448,12 +448,14 @@ void PythonEditorDialog::scriptFinish()
     }
 }
 
+/*
 void PythonEditorDialog::showDialog()
 {
     show();
     activateWindow();
     txtEditor->setFocus();
 }
+*/
 
 void PythonEditorDialog::createActions()
 {

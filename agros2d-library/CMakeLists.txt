@@ -118,6 +118,7 @@ SET(SOURCES
     postprocessorview_particletracing.cpp
     preprocessorview.cpp
     problemdialog.cpp
+    optilab/optilab.cpp
     pythonlab/pythonconsole.cpp
     pythonlab/pythoncompleter.cpp
     pythonlab/pythonhighlighter.cpp
@@ -335,6 +336,7 @@ SET(HEADERS
   postprocessorview_particletracing.h
   preprocessorview.h
   problemdialog.h
+  optilab/optilab.h
   pythonlab/pythonconsole.h
   pythonlab/pythoncompleter.h
   pythonlab/pythonhighlighter.h

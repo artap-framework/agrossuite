@@ -114,7 +114,6 @@ public:
     PythonEditorDialog(PythonScriptingConsole *console, QWidget *parent = 0);
     ~PythonEditorDialog();
 
-    void showDialog();
     void closeTabs();
     bool isScriptModified();
 

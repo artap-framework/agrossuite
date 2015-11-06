@@ -43,6 +43,7 @@
 #include "confdialog.h"
 #include "pythonlab/pythonengine_agros.h"
 #include "pythonlab/python_unittests.h"
+#include "optilab/optilab.h"
 #include "videodialog.h"
 #include "problemdialog.h"
 #include "resultsview.h"
@@ -99,7 +100,9 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     // PythonLab
     scriptEditor = new PythonEditorDialog(consoleView->console(), this);
-    pythonEditorWidget = scriptEditor->pythonEditorWidget();
+
+    // OptiLab
+    optiLab = new OptiLab(this);
 
     createActions();
     createMenus();
@@ -325,6 +328,7 @@ void MainWindow::createActions()
     actSceneModeGroup->addAction(sceneViewPreprocessor->actSceneModePreprocessor);
     actSceneModeGroup->addAction(postprocessorWidget->actSceneModePost);
     actSceneModeGroup->addAction(scriptEditor->actSceneModePythonEditor);
+    actSceneModeGroup->addAction(optiLab->actSceneModeOptiLab);
 
     actHideControlPanel = new QAction(icon("showhide"), tr("Show/hide control panel"), this);
     actHideControlPanel->setShortcut(tr("Alt+0"));
@@ -496,6 +500,7 @@ void MainWindow::createMain()
     sceneViewPostParticleTracingWidget = new SceneViewWidget(postprocessorWidget->sceneViewParticleTracing(), this);
     sceneViewChartWidget = new SceneViewWidget(postprocessorWidget->sceneViewChart(), this);
     sceneViewPythonEditorWidget = new SceneViewWidget(scriptEditor, this);
+    sceneViewOptilabWidget = new SceneViewWidget(optiLab, this);
 
     tabViewLayout = new QStackedLayout();
     tabViewLayout->setContentsMargins(0, 0, 0, 0);
@@ -507,6 +512,7 @@ void MainWindow::createMain()
     tabViewLayout->addWidget(sceneViewPostParticleTracingWidget);
     tabViewLayout->addWidget(sceneViewChartWidget);
     tabViewLayout->addWidget(sceneViewPythonEditorWidget);
+    tabViewLayout->addWidget(sceneViewOptilabWidget);
 
     QWidget *viewWidget = new QWidget();
     viewWidget->setLayout(tabViewLayout);
@@ -516,7 +522,8 @@ void MainWindow::createMain()
     tabControlsLayout->addWidget(problemWidget);
     tabControlsLayout->addWidget(preprocessorWidget);
     tabControlsLayout->addWidget(postprocessorWidget);
-    tabControlsLayout->addWidget(pythonEditorWidget);
+    tabControlsLayout->addWidget(optiLab->optiLabWidget());
+    tabControlsLayout->addWidget(scriptEditor->pythonEditorWidget());
 
     viewControls = new QWidget();
     viewControls->setLayout(tabControlsLayout);
@@ -551,6 +558,7 @@ void MainWindow::createMain()
     tlbLeftBar->addAction(sceneViewPreprocessor->actSceneModePreprocessor);
     tlbLeftBar->addAction(postprocessorWidget->actSceneModePost);
     tlbLeftBar->addSeparator();
+    tlbLeftBar->addAction(optiLab->actSceneModeOptiLab);
     tlbLeftBar->addAction(scriptEditor->actSceneModePythonEditor);
     tlbLeftBar->addWidget(spacing);
     tlbLeftBar->addAction(actMesh);
@@ -1252,33 +1260,11 @@ void MainWindow::setControls()
 
 
     }
-    /*
-    else if (sceneViewPost3D->actSceneModePost3D->isChecked())
+    else if (optiLab->actSceneModeOptiLab->isChecked())
     {
-        tabViewLayout->setCurrentWidget(sceneViewPost3DWidget);
-        tabControlsLayout->setCurrentWidget(postprocessorWidget);
-
-        connect(actSceneZoomIn, SIGNAL(triggered()), sceneViewPost3D, SLOT(doZoomIn()));
-        connect(actSceneZoomOut, SIGNAL(triggered()), sceneViewPost3D, SLOT(doZoomOut()));
-        connect(actSceneZoomBestFit, SIGNAL(triggered()), sceneViewPost3D, SLOT(doZoomBestFit()));
-
-        // hide transform dialog
-        sceneTransformDialog->hide();
+        tabViewLayout->setCurrentWidget(sceneViewOptilabWidget);
+        tabControlsLayout->setCurrentWidget(optiLab->optiLabWidget());
     }
-
-    else if (sceneViewParticleTracing->actSceneModeParticleTracing->isChecked())
-    {
-        tabViewLayout->setCurrentWidget(sceneViewPostParticleTracingWidget);
-        tabControlsLayout->setCurrentWidget(particleTracingWidget);
-
-        connect(actSceneZoomIn, SIGNAL(triggered()), sceneViewParticleTracing, SLOT(doZoomIn()));
-        connect(actSceneZoomOut, SIGNAL(triggered()), sceneViewParticleTracing, SLOT(doZoomOut()));
-        connect(actSceneZoomBestFit, SIGNAL(triggered()), sceneViewParticleTracing, SLOT(doZoomBestFit()));
-
-        // hide transform dialog
-        sceneTransformDialog->hide();
-    }
-    */
     else if (scriptEditor->actSceneModePythonEditor->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewPythonEditorWidget);

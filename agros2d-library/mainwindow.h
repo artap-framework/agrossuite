@@ -28,8 +28,7 @@ class SceneViewPost2D;
 class SceneViewPost3D;
 class SceneViewPreprocessor;
 class SceneViewMesh;
-class PythonEditorWidget;
-// class SceneViewVTK2D;
+class OptiLab;
 class InfoWidget;
 class SettingsWidget;
 class ProblemWidget;
@@ -197,18 +196,19 @@ private:
     SceneViewWidget *sceneViewPostParticleTracingWidget;
     SceneViewWidget *sceneViewChartWidget;
     SceneViewWidget *sceneViewPythonEditorWidget;
+    SceneViewWidget *sceneViewOptilabWidget;
 
     QStackedLayout *tabViewLayout;
     InfoWidget *sceneInfoWidget;
     SceneViewPreprocessor *sceneViewPreprocessor;
     PythonEditorDialog *scriptEditor;
+    OptiLab *optiLab;
 
     QWidget *viewControls;
     QStackedLayout *tabControlsLayout;
     ProblemWidget *problemWidget;
     PreprocessorWidget *preprocessorWidget;
     PostprocessorWidget *postprocessorWidget;
-    PythonEditorWidget *pythonEditorWidget;
 
     ResultsView *resultsView;
     PythonScriptingConsoleView *consoleView;

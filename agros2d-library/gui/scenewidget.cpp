@@ -29,6 +29,7 @@
 
 #include "infowidget.h"
 #include "pythonlab/pythonengine_agros.h"
+#include "optilab/optilab.h"
 
 #include "scenebasic.h"
 #include "scenenode.h"
@@ -83,6 +84,14 @@ SceneViewWidget::SceneViewWidget(PythonEditorDialog *widget, QWidget *parent) : 
 
     iconLeft(icon("pythonlab"));
     labelLeft(tr("PythonLab"));
+}
+
+SceneViewWidget::SceneViewWidget(OptiLab *widget, QWidget *parent) : QWidget(parent)
+{
+    createControls(widget);
+
+    iconLeft(icon("optilab"));
+    labelLeft(tr("OptiLab"));
 }
 
 SceneViewWidget::~SceneViewWidget()
