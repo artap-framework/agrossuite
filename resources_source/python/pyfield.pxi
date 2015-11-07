@@ -72,28 +72,7 @@ cdef extern from "../../agros2d-library/pythonlab/pyfield.h":
                             map[string, vector[double]] &nonlin_y,
                             map[string, map[string, string]] &settings) except +
         void removeMaterial(string &name) except +
-
-        void solve()
-
-        void localValues(double x, double y, int timeStep, int adaptivityStep,
-                         map[string, double] &results) except +
-        void surfaceIntegrals(vector[int], int timeStep, int adaptivityStep,
-                              map[string, double] &results) except +
-        void volumeIntegrals(vector[int], int timeStep, int adaptivityStep,
-                             map[string, double] &results) except +
-
-        void initialMeshInfo(map[string , int] &info) except +
-        void solutionMeshInfo(int timeStep, int adaptivityStep, map[string , int] &info) except +
-
-        void solverInfo(int timeStep, int adaptivityStep, 
-                        vector[double] &solution_change, vector[double] &residual,
-                        vector[double] &dampingCoeff, int &jacobianCalculations) except +
-
-        void adaptivityInfo(int timeStep, vector[double] &error, vector[int] &dofs) except +
-
-        string filenameMatrix(int timeStep, int adaptivityStep) except +
-        string filenameRHS(int timeStep, int adaptivityStep) except +
-        string filenameSLN(int timeStep, int adaptivityStep) except +        
+    
 
 cdef map[string, double] get_parameters_map(parameters):
     cdef map[string, double] parameters_map
@@ -200,7 +179,7 @@ cdef class __Field__:
     cdef object matrix_solver_parameters
     cdef object solver_parameters
     cdef object adaptivity_parameters
-    cdef object adaptivity_callback
+    cdef object _adaptivity_callback
 
     def __cinit__(self, field_id):
         self.thisptr = new PyField(field_id.encode())
@@ -210,7 +189,7 @@ cdef class __Field__:
                                                 self.__set_solver_parameters__)
         self.adaptivity_parameters = __Parameters__(self.__get_adaptivity_parameters__,
                                                     self.__set_adaptivity_parameters__)
-        self.adaptivity_callback = None
+        self._adaptivity_callback = None
 
     def __dealloc__(self):
         del self.thisptr
@@ -240,9 +219,9 @@ cdef class __Field__:
 
     property adaptivity_callback:
         def __get__(self):
-            return self.adaptivity_callback
+            return self._adaptivity_callback
         def __set__(self, callback):
-            self.adaptivity_callback = callback
+            self._adaptivity_callback = callback
 
     def __get_solver_parameters__(self):
         return {'residual' : self.thisptr.getDoubleParameter(b'NonlinearResidualNorm'),
@@ -499,208 +478,3 @@ cdef class __Field__:
         name -- material name
         """
         self.thisptr.removeMaterial(name.encode())
-
-    # local values
-    def local_values(self, x, y, time_step = None, adaptivity_step = None):
-        """Compute local values in point and return dictionary with results.
-
-        local_values(x, y, time_step = None, adaptivity_step = None)
-
-        Keyword arguments:
-        x -- x or r coordinate of point
-        y -- y or z coordinate of point
-        time_step -- time step (default is None - use last time step)
-        adaptivity_step -- adaptivity step (default is None - use adaptive step)        
-        """
-        out = dict()
-        cdef map[string, double] results
-
-        self.thisptr.localValues(x, y,
-                                 int(-1 if time_step is None else time_step),
-                                 int(-1 if adaptivity_step is None else adaptivity_step),
-                                 results)
-        it = results.begin()
-        while it != results.end():
-            out[deref(it).first.decode()] = deref(it).second
-            incr(it)
-
-        return out
-
-    # surface integrals
-    def surface_integrals(self, edges = [], time_step = None, adaptivity_step = None):
-        """Compute surface integrals on edges and return dictionary with results.
-
-        surface_integrals(edges = [], time_step = None, adaptivity_step = None)
-
-        Keyword arguments:
-        edges -- list of edges (default is [] - compute integrals on all edges)
-        time_step -- time step (default is None - use last time step)
-        adaptivity_step -- adaptivity step (default is None - use adaptive step)        
-        """
-        cdef vector[int] edges_vector
-        for i in edges:
-            edges_vector.push_back(i)
-
-        out = dict()
-        cdef map[string, double] results
-
-        self.thisptr.surfaceIntegrals(edges_vector,
-                                      int(-1 if time_step is None else time_step),
-                                      int(-1 if adaptivity_step is None else adaptivity_step),
-                                      results)
-        it = results.begin()
-        while it != results.end():
-            out[deref(it).first.decode()] = deref(it).second
-            incr(it)
-
-        return out
-
-    # volume integrals
-    def volume_integrals(self, labels = [], time_step = None, adaptivity_step = None):
-        """Compute volume integrals on labels and return dictionary with results.
-
-        volume_integrals(labels = [], time_step = None, adaptivity_step = None)
-
-        Keyword arguments:
-        labels -- list of labels (default is [] - compute integrals on all labels)
-        time_step -- time step (default is None - use last time step)
-        adaptivity_step -- adaptivity step (default is None - use adaptive step)        
-        """
-        cdef vector[int] labels_vector
-        for i in labels:
-            labels_vector.push_back(i)
-
-        out = dict()
-        cdef map[string, double] results
-
-        self.thisptr.volumeIntegrals(labels_vector,
-                                     int(-1 if time_step is None else time_step),
-                                     int(-1 if adaptivity_step is None else adaptivity_step),
-                                     results)
-        it = results.begin()
-        while it != results.end():
-            out[deref(it).first.decode()] = deref(it).second
-            incr(it)
-
-        return out
-
-    # mesh info
-    def initial_mesh_info(self):
-        """Return dictionary with initial mesh info."""
-        info = dict()
-        cdef map[string, int] info_map
-
-        self.thisptr.initialMeshInfo(info_map)
-        it = info_map.begin()
-        while it != info_map.end():
-            info[deref(it).first.decode()] = deref(it).second
-            incr(it)
-
-        return info
-
-    def solution_mesh_info(self, time_step = None, adaptivity_step = None):
-        """Return dictionary with solution mesh info.
-
-        solution_mesh_info(time_step = None, adaptivity_step = None)
-
-        Keyword arguments:
-        time_step -- time step (default is None - use last time step)
-        adaptivity_step -- adaptivity step (default is None - use adaptive step)
-        """
-        info = dict()
-        cdef map[string, int] info_map
-
-        self.thisptr.solutionMeshInfo(int(-1 if time_step is None else time_step),
-                                      int(-1 if adaptivity_step is None else adaptivity_step),
-                                      info_map)
-
-        it = info_map.begin()
-        while it != info_map.end():
-            info[deref(it).first.decode()] = deref(it).second
-            incr(it)
-
-        return info
-
-    # solver info
-    def solver_info(self, time_step = None, adaptivity_step = None):
-        """Return dictionary with solver info.
-
-        solver_info(time_step = None, adaptivity_step = None)
-
-        Keyword arguments:
-        time_step -- time step (default is None - use last time step)
-        adaptivity_step -- adaptivity step (default is None - use adaptive step)
-        """
-        cdef vector[double] solution_change_vector
-        cdef vector[double] residual_vector
-        cdef vector[double] damping_vector
-        cdef int jacobian_calculations
-        jacobian_calculations = -1
-        self.thisptr.solverInfo(int(-1 if time_step is None else time_step),
-                                int(-1 if adaptivity_step is None else adaptivity_step),
-                                solution_change_vector, residual_vector, 
-                                damping_vector, jacobian_calculations)
-
-        solution_change = list()
-        for i in range(solution_change_vector.size()):
-            solution_change.append(solution_change_vector[i])
-
-        residual = list()
-        for i in range(residual_vector.size()):
-            residual.append(residual_vector[i])
-
-        damping = list()
-        for i in range(damping_vector.size()):
-            damping.append(damping_vector[i])
-
-        return {'solution_change' : solution_change, 'residual' : residual, 'damping' : damping, 'jacobian_calculations' : jacobian_calculations}
-
-    # adaptivity info
-    def adaptivity_info(self, time_step = None):
-        """Return dictionary with adaptivity process info.
-
-        adaptivity_info(time_step = None)
-
-        Keyword arguments:
-        time_step -- time step (default is None - use last time step)
-        """
-        cdef vector[double] error_vector
-        cdef vector[int] dofs_vector
-        self.thisptr.adaptivityInfo(int(-1 if time_step is None else time_step),
-                                    error_vector, dofs_vector)
-
-        error = list()
-        for i in range(error_vector.size()):
-            error.append(error_vector[i])
-
-        dofs = list()
-        for i in range(dofs_vector.size()):
-            dofs.append(dofs_vector[i])
-
-        return {'error' : error, 'dofs' : dofs}
-
-    # filename - matrix
-    def filename_matrix(self, time_step = None, adaptivity_step = None):
-        return self.thisptr.filenameMatrix(int(-1 if time_step is None else time_step),
-                                           int(-1 if adaptivity_step is None else adaptivity_step)).decode()
-
-    # filename - rhs
-    def filename_rhs(self, time_step = None, adaptivity_step = None):
-        return self.thisptr.filenameRHS(int(-1 if time_step is None else time_step),
-                                        int(-1 if adaptivity_step is None else adaptivity_step)).decode()
-                                        
-    # filename - sln
-    def filename_sln(self, time_step = None, adaptivity_step = None):
-        return self.thisptr.filenameSLN(int(-1 if time_step is None else time_step),
-                                        int(-1 if adaptivity_step is None else adaptivity_step)).decode()
-                                                                                
-__fields__ = {}
-def field(field_id):
-    if (not field_id in __fields__):
-        __fields__[field_id] = __Field__(field_id)
-
-    return __fields__[field_id]
-
-def __remove_field__(field_id):
-    if (field_id in __fields__):
-        del __fields__[field_id]

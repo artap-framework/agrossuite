@@ -225,7 +225,7 @@ cdef class __Geometry__:
         self.add_edge((x0)-radius, y0, x0, (y0)-radius, boundaries=boundaries, angle=90)
 
         if (materials != None):
-            geometry.add_label(x0, y0, materials=materials)
+            self.add_label(x0, y0, materials=materials)
 
     def add_semicircle(self, x0, y0, radius, boundaries = {}, materials = None):
         """Add semicircle by center point of full circle and radius.
@@ -387,5 +387,3 @@ cdef class __Geometry__:
     def export_svg_image(self):
         """Export geometry in SVG format."""
         return self.thisptr.exportSVG().decode()
-
-geometry = __Geometry__()

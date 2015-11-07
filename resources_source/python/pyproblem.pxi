@@ -49,11 +49,14 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
 cdef class __ProblemBase__:
     cdef PyProblemBase *base
     cdef object _time_callback
-    cdef object parameters
+    cdef object _geometry
+    cdef object _fields
 
     def __cinit__(self):
         self.base = new PyProblemBase()
         self._time_callback = None
+        self._geometry = __Geometry__()
+        self._fields = dict()
 
     def __dealloc__(self):
         del self.base
@@ -62,8 +65,25 @@ cdef class __ProblemBase__:
         """Refresh preprocessor and postprocessor."""
         self.base.refresh()
 
+    def geometry(self):
+        """Get geometry object."""
+        return self._geometry
+
+    def field(self, field_id):
+        """Add new field to problem and return Field() object.
+
+        field(field_id)
+
+        Keyword arguments:
+        field_id -- field keyword 
+        """
+
+        if (not field_id in self._fields):
+            self._fields[field_id] = __Field__(field_id)
+        return self._fields[field_id]
+
     def _unauthorized(self):
-        raise Exception("Parameter can not be changed.")
+        raise Exception("Value can not be changed.")
 
     def _get_coordinate_type(self):
         return self.base.getCoordinateType().decode()
@@ -120,8 +140,8 @@ cdef class __Problem__(__ProblemBase__):
     cdef PyProblem *problem
 
     def __cinit__(self, clear = False):
-        self.problem = new PyProblem(clear)
         __ProblemBase__.__init__(self)
+        self.problem = new PyProblem(clear)
 
     def __dealloc__(self):
         del self.problem
@@ -187,8 +207,8 @@ cdef class __Computation__(__ProblemBase__):
     cdef PyComputation *computation
 
     def __cinit__(self, new_computation = False):
-        self.computation = new PyComputation(new_computation)
         __ProblemBase__.__init__(self)
+        self.computation = new PyComputation(new_computation)
 
     def __dealloc__(self):
         del self.computation

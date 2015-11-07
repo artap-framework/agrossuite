@@ -107,11 +107,11 @@ cdef map[string, string] dictionary_to_string_map(dictionary):
     return string_map
 
 # wrappers
-include "pyproblem.pxi"
-include "pyfield.pxi"
 include "pygeometry.pxi"
-include "pyview.pxi"
+include "pyfield.pxi"
+include "pyproblem.pxi"
 include "pyparticletracing.pxi"
+#include "pyview.pxi"
 
 cdef extern from "../../agros2d-library/pythonlab/pythonengine_agros.h":
     # open and save
