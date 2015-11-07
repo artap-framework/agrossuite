@@ -23,24 +23,12 @@
 #include "sceneview_post2d.h"
 #include "solver/coupling.h"
 
-PyProblem::PyProblem(bool clearProblem)
-{
-    if (clearProblem)
-        clear();
-}
-
-void PyProblem::clear()
-{
-    // m_problem->scene()->clear();
-    m_problem->clearFieldsAndConfig();
-}
-
-void PyProblem::refresh()
+void PyProblemBase::refresh()
 {
     m_problem->scene()->invalidate();
 }
 
-double PyProblem::getParameter(std::string key) const
+double PyProblemBase::getParameter(std::string key) const
 {
     ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
 
@@ -58,7 +46,7 @@ double PyProblem::getParameter(std::string key) const
     }
 }
 
-void PyProblem::getParameters(std::vector<std::string> &keys) const
+void PyProblemBase::getParameters(std::vector<std::string> &keys) const
 {
     ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
 
@@ -66,7 +54,7 @@ void PyProblem::getParameters(std::vector<std::string> &keys) const
         keys.push_back(key.toStdString());
 }
 
-std::string PyProblem::getCouplingType(const std::string &sourceField, const std::string &targetField) const
+std::string PyProblemBase::getCouplingType(const std::string &sourceField, const std::string &targetField) const
 {
     QString source = QString::fromStdString(sourceField);
     QString target = QString::fromStdString(targetField);
@@ -82,7 +70,7 @@ std::string PyProblem::getCouplingType(const std::string &sourceField, const std
         throw logic_error(QObject::tr("Coupling '%1' + '%2' doesn't exists.").arg(source).arg(target).toStdString());
 }
 
-void PyProblem::checkExistingFields(const QString &sourceField, const QString &targetField) const
+void PyProblemBase::checkExistingFields(const QString &sourceField, const QString &targetField) const
 {
     if (m_problem->fieldInfos().isEmpty())
         throw logic_error(QObject::tr("No fields are defined.").toStdString());
@@ -94,12 +82,23 @@ void PyProblem::checkExistingFields(const QString &sourceField, const QString &t
         throw logic_error(QObject::tr("Target field '%1' is not defined.").arg(targetField).toStdString());
 }
 
-PyPreprocessor::PyPreprocessor(bool clearProblem) : PyProblem(clearProblem)
+PyProblem::PyProblem(bool clearProblem) : PyProblemBase()
 {
+    if (clearProblem)
+    {
+        clear();
+    }
+
     m_problem = QSharedPointer<Problem>(Agros2D::preprocessor());
 }
 
-void PyPreprocessor::setCoordinateType(const std::string &coordinateType)
+void PyProblem::clear()
+{
+    // m_problem->scene()->clear();
+    m_problem->clearFieldsAndConfig();
+}
+
+void PyProblem::setCoordinateType(const std::string &coordinateType)
 {
     if (coordinateTypeStringKeys().contains(QString::fromStdString(coordinateType)))
         m_problem->config()->setCoordinateType(coordinateTypeFromStringKey(QString::fromStdString(coordinateType)));
@@ -107,7 +106,7 @@ void PyPreprocessor::setCoordinateType(const std::string &coordinateType)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(coordinateTypeStringKeys())).toStdString());
 }
 
-void PyPreprocessor::setMeshType(const std::string &meshType)
+void PyProblem::setMeshType(const std::string &meshType)
 {
     if (meshTypeStringKeys().contains(QString::fromStdString(meshType)))
         m_problem->config()->setMeshType(meshTypeFromStringKey(QString::fromStdString(meshType)));
@@ -115,7 +114,7 @@ void PyPreprocessor::setMeshType(const std::string &meshType)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(meshTypeStringKeys())).toStdString());
 }
 
-void PyPreprocessor::setFrequency(double frequency)
+void PyProblem::setFrequency(double frequency)
 {
     if (frequency > 0.0)
         m_problem->config()->setValue(ProblemConfig::Frequency, QString::number(frequency));
@@ -123,7 +122,7 @@ void PyPreprocessor::setFrequency(double frequency)
         throw out_of_range(QObject::tr("The frequency must be positive.").toStdString());
 }
 
-void PyPreprocessor::setTimeStepMethod(const std::string &timeStepMethod)
+void PyProblem::setTimeStepMethod(const std::string &timeStepMethod)
 {
     if (timeStepMethodStringKeys().contains(QString::fromStdString(timeStepMethod)))
         m_problem->config()->setValue(ProblemConfig::TimeMethod, (dealii::TimeStepping::runge_kutta_method) timeStepMethodFromStringKey(QString::fromStdString(timeStepMethod)));
@@ -131,7 +130,7 @@ void PyPreprocessor::setTimeStepMethod(const std::string &timeStepMethod)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(timeStepMethodStringKeys())).toStdString());
 }
 
-void PyPreprocessor::setTimeMethodTolerance(double timeMethodTolerance)
+void PyProblem::setTimeMethodTolerance(double timeMethodTolerance)
 {
     if (timeMethodTolerance > 0.0)
         m_problem->config()->setValue(ProblemConfig::TimeMethodTolerance, timeMethodTolerance);
@@ -139,7 +138,7 @@ void PyPreprocessor::setTimeMethodTolerance(double timeMethodTolerance)
         throw out_of_range(QObject::tr("The time method tolerance must be positive.").toStdString());
 }
 
-void PyPreprocessor::setTimeMethodOrder(int timeMethodOrder)
+void PyProblem::setTimeMethodOrder(int timeMethodOrder)
 {
     if (timeMethodOrder >= 1 && timeMethodOrder <= 3)
         m_problem->config()->setValue(ProblemConfig::TimeOrder, timeMethodOrder);
@@ -147,7 +146,7 @@ void PyPreprocessor::setTimeMethodOrder(int timeMethodOrder)
         throw out_of_range(QObject::tr("Number of time method order must be greater than 1.").toStdString());
 }
 
-void PyPreprocessor::setTimeInitialTimeStep(double timeInitialTimeStep)
+void PyProblem::setTimeInitialTimeStep(double timeInitialTimeStep)
 {
     if (timeInitialTimeStep > 0.0)
         m_problem->config()->setValue(ProblemConfig::TimeInitialStepSize, timeInitialTimeStep);
@@ -155,7 +154,7 @@ void PyPreprocessor::setTimeInitialTimeStep(double timeInitialTimeStep)
         throw out_of_range(QObject::tr("Initial time step must be positive.").toStdString());
 }
 
-void PyPreprocessor::setParameter(std::string key, double value)
+void PyProblem::setParameter(std::string key, double value)
 {
     ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
     parameters[QString::fromStdString(key)] = value;
@@ -163,7 +162,7 @@ void PyPreprocessor::setParameter(std::string key, double value)
     Agros2D::preprocessor()->config()->setValue(ProblemConfig::Parameters, parameters);
 }
 
-void PyPreprocessor::setNumConstantTimeSteps(int timeSteps)
+void PyProblem::setNumConstantTimeSteps(int timeSteps)
 {
     if (timeSteps >= 1)
         m_problem->config()->setValue(ProblemConfig::TimeConstantTimeSteps, timeSteps);
@@ -171,7 +170,7 @@ void PyPreprocessor::setNumConstantTimeSteps(int timeSteps)
         throw out_of_range(QObject::tr("Number of time steps must be greater than 1.").toStdString());
 }
 
-void PyPreprocessor::setTimeTotal(double timeTotal)
+void PyProblem::setTimeTotal(double timeTotal)
 {
     if (timeTotal >= 0.0)
         m_problem->config()->setValue(ProblemConfig::TimeTotal, timeTotal);
@@ -179,7 +178,7 @@ void PyPreprocessor::setTimeTotal(double timeTotal)
         throw out_of_range(QObject::tr("The total time must be positive.").toStdString());
 }
 
-void PyPreprocessor::setCouplingType(const std::string &sourceField, const std::string &targetField, const std::string &type)
+void PyProblem::setCouplingType(const std::string &sourceField, const std::string &targetField, const std::string &type)
 {
     QString source = QString::fromStdString(sourceField);
     QString target = QString::fromStdString(targetField);
@@ -198,7 +197,7 @@ void PyPreprocessor::setCouplingType(const std::string &sourceField, const std::
         throw logic_error(QObject::tr("Coupling '%1' + '%2' doesn't exists.").arg(source).arg(target).toStdString());
 }
 
-PyComputation::PyComputation(bool newComputation) : PyProblem(false)
+PyComputation::PyComputation(bool newComputation) : PyProblemBase()
 {    
     Agros2D::preprocessor()->createComputation(newComputation);
     // TODO: better!

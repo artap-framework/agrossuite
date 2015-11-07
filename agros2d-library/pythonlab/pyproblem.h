@@ -24,13 +24,12 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-class PyProblem
+class PyProblemBase
 {
 public:
-    PyProblem(bool clearProblem);
-    ~PyProblem() {}
+    PyProblemBase() {}
+    ~PyProblemBase() {}
 
-    void clear();
     void refresh();
 
     inline std::string getCoordinateType() const { return coordinateTypeToStringKey(m_problem->config()->coordinateType()).toStdString(); }
@@ -51,11 +50,13 @@ protected:
     QSharedPointer<Problem> m_problem;
 };
 
-class PyPreprocessor : public PyProblem
+class PyProblem : public PyProblemBase
 {
 public:
-    PyPreprocessor(bool clearProblem);
-    ~PyPreprocessor() {}
+    PyProblem(bool clearProblem);
+    ~PyProblem() {}
+
+    void clear();
 
     void setCoordinateType(const std::string &coordinateType);
     void setMeshType(const std::string &meshType);
@@ -70,7 +71,7 @@ public:
     void setCouplingType(const std::string &sourceField, const std::string &targetField, const std::string &type);
 };
 
-class PyComputation : public QObject, public PyProblem
+class PyComputation : public QObject, public PyProblemBase
 {
     Q_OBJECT
 
