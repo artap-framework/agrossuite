@@ -85,16 +85,13 @@ void PyProblemBase::checkExistingFields(const QString &sourceField, const QStrin
 PyProblem::PyProblem(bool clearProblem) : PyProblemBase()
 {
     if (clearProblem)
-    {
         clear();
-    }
 
     m_problem = QSharedPointer<Problem>(Agros2D::preprocessor());
 }
 
 void PyProblem::clear()
 {
-    // m_problem->scene()->clear();
     m_problem->clearFieldsAndConfig();
 }
 
@@ -200,38 +197,42 @@ void PyProblem::setCouplingType(const std::string &sourceField, const std::strin
 PyComputation::PyComputation(bool newComputation) : PyProblemBase()
 {    
     Agros2D::preprocessor()->createComputation(newComputation);
+
     // TODO: better!
     m_computation = Agros2D::computation();
 }
 
+void PyComputation::clear()
+{
+    if (!m_computation->isSolved())
+        throw logic_error(QObject::tr("Problem is not solved.").toStdString());
+
+    m_computation->clearSolution();
+    m_computation->scene()->invalidate();
+
+    if (!silentMode())
+        currentPythonEngineAgros()->sceneViewPreprocessor()->actSceneModePreprocessor->trigger();
+}
+
+
 void PyComputation::mesh()
 {
-    // Agros2D::computation()->scene()->invalidate();
-    /*
-    Agros2D::computation()->scene()->loopsInfo()->processPolygonTriangles(true);
-    Agros2D::computation()->mesh(true);
-
-    if (!Agros2D::computation()->isMeshed())
-        throw logic_error(QObject::tr("Problem is not meshed.").toStdString());
-    */
-
-    //Agros2D::preprocessor()->createComputation(false);
+    m_computation->scene()->invalidate();
+    m_computation->scene()->loopsInfo()->processPolygonTriangles(true);
     m_computation->mesh(true);
+
+    if (!m_computation->isMeshed())
+        throw logic_error(QObject::tr("Problem is not meshed.").toStdString());
 }
 
 void PyComputation::solve()
 {
-    // Agros2D::computation()->scene()->invalidate();
-    /*
-    Agros2D::computation()->scene()->loopsInfo()->processPolygonTriangles(true);
-    Agros2D::computation()->solve(false);
-
-    if (!Agros2D::computation()->isSolved())
-        throw logic_error(QObject::tr("Problem is not solved.").toStdString());
-    */
-
-    //Agros2D::preprocessor()->createComputation(false);
+    m_computation->scene()->invalidate();
+    m_computation->scene()->loopsInfo()->processPolygonTriangles(true);
     m_computation->solve();
+
+    if (!m_computation->isSolved())
+        throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 }
 
 double PyComputation::timeElapsed() const
@@ -239,8 +240,8 @@ double PyComputation::timeElapsed() const
     if (!m_computation->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    double time = m_computation->timeElapsed().hour()*3600 + Agros2D::computation()->timeElapsed().minute()*60 +
-                  m_computation->timeElapsed().second() + Agros2D::computation()->timeElapsed().msec() * 1e-3;
+    double time = m_computation->timeElapsed().hour()*3600 + m_computation->timeElapsed().minute()*60 +
+                  m_computation->timeElapsed().second() + m_computation->timeElapsed().msec() * 1e-3;
     return time;
 }
 
@@ -268,16 +269,4 @@ void PyComputation::timeStepsTimes(vector<double> &times) const
     QList<double> timeStepTimes = m_computation->timeStepTimes();
     for (int i = 0; i < timeStepTimes.size(); i++)
         times.push_back(timeStepTimes.at(i));
-}
-
-void PyComputation::clearSolution()
-{
-    if (!m_computation->isSolved())
-        throw logic_error(QObject::tr("Problem is not solved.").toStdString());
-
-    m_computation->clearSolution();
-    m_computation->scene()->invalidate();
-
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actSceneModePreprocessor->trigger();
 }

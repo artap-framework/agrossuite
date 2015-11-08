@@ -110,6 +110,7 @@ cdef map[string, string] dictionary_to_string_map(dictionary):
 include "pygeometry.pxi"
 include "pyfield.pxi"
 include "pyproblem.pxi"
+include "pycomputation.pxi"
 include "pyparticletracing.pxi"
 #include "pyview.pxi"
 

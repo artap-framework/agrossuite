@@ -76,10 +76,10 @@ class PyComputation : public QObject, public PyProblemBase
     Q_OBJECT
 
 public:
-    PyComputation(bool newComputation = false);
+    PyComputation(bool newComputation);
     ~PyComputation() {}
 
-    void clearSolution();
+    void clear();
 
     void mesh();
     void solve();
