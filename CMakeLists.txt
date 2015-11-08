@@ -343,9 +343,6 @@ set(info #resources/modules/acoustic.xml
          resources/templates/generator/equations.tpl
          resources/templates/generator/equations.tex
          resources/templates/panels/empty.tpl
-         resources/templates/panels/example_form.tpl
-         resources/templates/panels/example_problem.tpl
-         resources/templates/panels/example_python.tpl
          resources/templates/panels/integrals.tpl
          resources/templates/panels/local_point_values.tpl
          resources/templates/panels/material.tpl
