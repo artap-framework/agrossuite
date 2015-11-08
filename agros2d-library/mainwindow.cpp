@@ -36,7 +36,7 @@
 #include "sceneview_particle.h"
 // #include "sceneview_vtk2d.h"
 #include "logview.h"
-#include "infowidget.h"
+#include "gui/infowidget.h"
 #include "preprocessorview.h"
 #include "postprocessorview.h"
 #include "chartdialog.h"
@@ -78,7 +78,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // sceneViewVTK2D = new SceneViewVTK2D(postDeal, this);
 
     // scene - info widget
-    sceneInfoWidget = new InfoWidget(sceneViewPreprocessor, this);
+    sceneInfoWidget = new InfoWidget(this);
     sceneInfoWidget->setRecentProblemFiles(&recentFiles);
     connect(sceneInfoWidget, SIGNAL(open(QString)), this, SLOT(doDocumentOpen(QString)));
     connect(sceneInfoWidget, SIGNAL(openForm(QString, QString)), this, SLOT(doDocumentOpenForm(QString, QString)));
@@ -1023,25 +1023,22 @@ void MainWindow::doCreateVideo()
 void MainWindow::doMesh()
 {
     // create computation from preprocessor
-    Agros2D::preprocessor()->createComputation(false);
-
-    m_computation->meshWithGUI();
+    QSharedPointer<ProblemComputation> computation = Agros2D::preprocessor()->createComputation(false);
+    computation->meshWithGUI();
 }
 
 void MainWindow::doSolve()
 {
     // create computation from preprocessor
-    Agros2D::preprocessor()->createComputation(false);
-
-    m_computation->solveWithGUI();
+    QSharedPointer<ProblemComputation> computation = Agros2D::preprocessor()->createComputation(false, true);
+    computation->solveWithGUI();
 }
 
 void MainWindow::doSolveNewComputation()
 {
     // create computation from preprocessor
-    Agros2D::preprocessor()->createComputation(true);
-
-    m_computation->solveWithGUI();
+    QSharedPointer<ProblemComputation> computation = Agros2D::preprocessor()->createComputation(true, true);
+    computation->solveWithGUI();
 }
 
 void MainWindow::doSolveFinished()

@@ -28,12 +28,30 @@
 
 class SceneViewPreprocessor;
 
-class InfoWidget : public QWidget
+class InfoWidgetGeneral : public QWidget
 {
     Q_OBJECT
 
 public:
-    InfoWidget(SceneViewPreprocessor *sceneView, QWidget *parent = 0);
+    InfoWidgetGeneral(QWidget *parent = 0);
+    ~InfoWidgetGeneral();
+
+protected:
+    QString m_cascadeStyleSheet;
+    QWebView *webView;
+
+public slots:
+    void clear();
+    void showProblemInfo(Problem *problem);
+    void showPythonInfo(const QString &fileName);
+};
+
+class InfoWidget : public InfoWidgetGeneral
+{
+    Q_OBJECT
+
+public:
+    InfoWidget(QWidget *parent = 0);
     ~InfoWidget();
 
     inline void setRecentProblemFiles(QStringList *recentProblemFiles) { m_recentProblemFiles = recentProblemFiles; }
@@ -45,21 +63,14 @@ signals:
     void examples(const QString &groupName);
 
 public slots:
-    void refresh();
+    virtual void refresh();
 
 private:
-    SceneViewPreprocessor *m_sceneViewGeometry;
-    QString m_cascadeStyleSheet;
-
-    QWebView *webView;
-
     QStringList *m_recentProblemFiles;
     QStringList *m_recentScriptFiles;
 
 private slots:
     void showWelcome();
-    void showInfo();
-
     void linkClicked(const QUrl &url);
 };
 

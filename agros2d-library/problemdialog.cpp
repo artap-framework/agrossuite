@@ -1619,6 +1619,9 @@ void ProblemWidget::parametersApply()
 
         ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
         parameters[txtParameterName->text()] = txtParameterValue->value();
+        // remove old parameter
+        if (txtParameterName->text() != trvParameters->currentItem()->data(0, Qt::UserRole).toString())
+            parameters.remove(trvParameters->currentItem()->data(0, Qt::UserRole).toString());
 
         if (Agros2D::preprocessor()->checkAndApplyParameters(parameters))
         {

@@ -141,7 +141,9 @@ class AGROS_LIBRARY_API ProblemPreprocessor : public Problem
     Q_OBJECT
 
 public:
-    void createComputation(bool newComputation = false);
+    ProblemPreprocessor();
+
+    QSharedPointer<ProblemComputation> createComputation(bool newComputation = false, bool setCurrentComputation = true);
 
     void readProblemFromArchive(const QString &fileName);
     void writeProblemToArchive(const QString &fileName, bool saveWithSolution = false);
@@ -152,6 +154,7 @@ signals:
 
 public slots:
     virtual void clearFieldsAndConfig();
+    inline void doFileNameChanged(const QString &name) { m_config->setFileName(name); }
 };
 
 class AGROS_LIBRARY_API ProblemComputation : public Problem
@@ -163,9 +166,9 @@ public:
     virtual ~ProblemComputation();
 
     // mesh
-    void mesh();
+    void meshThread();
     // solve
-    void solve();
+    void solveThread();
 
     inline PostDeal *postDeal() { return m_postDeal; }
     inline ProblemSolver *problemSolver() { return m_problemSolver; }
@@ -202,10 +205,7 @@ public:
     void setIsPostprocessingRunning(bool pr = true) { m_isPostprocessingRunning = pr; }
 
     bool mesh(bool emitMeshed);
-    bool meshAction(bool emitMeshed);
-    void solveInit();
-    void solve(bool commandLine);
-    void solveAction(); // called by solve, can throw SolverException
+    void solve();
 
     void meshWithGUI();
     void solveWithGUI();
@@ -215,8 +215,6 @@ public:
 signals:
     void meshed();
     void solved();
-
-     void clearedSolution();
 
 public slots:    
     void clearSolution();
@@ -249,6 +247,10 @@ protected:
     // post deal
     ProblemSolver *m_problemSolver;
     PostDeal *m_postDeal;
+
+    void solveInit(); // called by solve, can throw SolverException
+    void solveAction(); // called by solve, can throw SolverException
+    bool meshAction(bool emitMeshed);
 };
 
 #endif // PROBLEM_H

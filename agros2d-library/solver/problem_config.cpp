@@ -194,7 +194,7 @@ void ProblemConfig::setDefaultValues()
 }
 
 // parameters
-void ProblemConfig::addParameter(const QString &key, double val)
+void ProblemConfig::setParameter(const QString &key, double val)
 {
     ParametersType parameters = value(ProblemConfig::Parameters).value<ParametersType>();
 

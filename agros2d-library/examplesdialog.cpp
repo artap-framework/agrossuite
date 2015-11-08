@@ -28,13 +28,12 @@
 
 #include "gui/lineeditdouble.h"
 #include "gui/common.h"
+#include "gui/infowidget.h"
 
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
 #include "solver/module.h"
-
-#include "ctemplate/template.h"
 
 #include "../3rdparty/quazip/JlCompress.h"
 #include "../resources_source/classes/problem_a2d_31_xml.h"
@@ -48,22 +47,6 @@ ExamplesDialog::ExamplesDialog(QWidget *parent) : QDialog(parent)
     m_selectedFormFilename = "";
     m_expandedGroup = "";
 
-    // problem information
-    webView = new QWebView();
-    webView->page()->setNetworkAccessManager(new QNetworkAccessManager());
-    webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-
-    connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
-
-    // stylesheet
-    std::string style;
-    ctemplate::TemplateDictionary stylesheet("style");
-    stylesheet.SetValue("FONTFAMILY", htmlFontFamily().toStdString());
-    stylesheet.SetValue("FONTSIZE", (QString("%1").arg(htmlFontSize()).toStdString()));
-
-    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/panels/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
-    m_cascadeStyleSheet = QString::fromStdString(style);
-
     lstProblems = new QTreeWidget(this);
     lstProblems->setMouseTracking(true);
     lstProblems->setColumnCount(1);
@@ -75,9 +58,12 @@ ExamplesDialog::ExamplesDialog(QWidget *parent) : QDialog(parent)
     connect(lstProblems, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
     connect(lstProblems, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
+    m_infoWidget = new InfoWidgetGeneral(this);
+    // connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
+
     QHBoxLayout *layoutSurface = new QHBoxLayout();
     layoutSurface->addWidget(lstProblems);
-    layoutSurface->addWidget(webView, 1);
+    layoutSurface->addWidget(m_infoWidget, 1);
 
     QWidget *widget = new QWidget();
     widget->setLayout(layoutSurface);
@@ -134,7 +120,7 @@ int ExamplesDialog::showDialog(const QString &expandedGroup)
 
 void ExamplesDialog::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
-    webView->setHtml("");
+    m_infoWidget->clear();
 
     if (current)
     {
@@ -156,6 +142,7 @@ void ExamplesDialog::doItemDoubleClicked(QTreeWidgetItem *item, int column)
     }
 }
 
+/*
 void ExamplesDialog::linkClicked(const QUrl &url)
 {
     QString search = "/open?";
@@ -175,6 +162,7 @@ void ExamplesDialog::linkClicked(const QUrl &url)
         accept();
     }
 }
+*/
 
 void ExamplesDialog::readProblems()
 {
@@ -280,22 +268,6 @@ void ExamplesDialog::problemInfo(const QString &fileName)
     {
         QFileInfo fileInfo(fileName);
 
-        // template
-        std::string info;
-        ctemplate::TemplateDictionary problemInfo("info");
-
-        // problem info
-        problemInfo.SetValue("AGROS2D", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/panels/agros2d_logo.png").absolutePath()).toStdString());
-
-        problemInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
-        problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT + "/panels")).toString().toStdString());
-        problemInfo.SetValue("BASIC_INFORMATION_LABEL", tr("Basic informations").toStdString());
-
-        problemInfo.SetValue("NAME_LABEL", tr("Name:").toStdString());
-        problemInfo.SetValue("NAME", fileInfo.baseName().toStdString());
-
-        QString templateName;
-
         if (fileInfo.suffix() == "ags")
         {
             // extract problem.a2d file to temp
@@ -310,180 +282,33 @@ void ExamplesDialog::problemInfo(const QString &fileName)
         }
         else if (fileInfo.suffix() == "a2d")
         {
-            templateName = "example_problem.tpl";
+            QSharedPointer<ProblemComputation> computation = QSharedPointer<ProblemComputation>(new ProblemComputation(""));
+            computation->readProblemFromA2D31(fileName);
+            m_infoWidget->showProblemInfo(computation.data());
 
-            try
+            // details
+            /*
+            QString detailsFilename(QString("%1/%2/index.html").arg(fileInfo.absolutePath()).arg(fileInfo.baseName()));
+            if (QFile::exists(detailsFilename))
             {
-                std::unique_ptr<XMLProblem::document> document_xsd = XMLProblem::document_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
-                XMLProblem::document *doc = document_xsd.get();
+                // replace current path in index.html
+                QString detail = readFileContent(detailsFilename);
+                detail = detail.replace("{{DIR}}", QString("%1/%2").arg(QUrl::fromLocalFile(fileInfo.absolutePath()).toString()).arg(fileInfo.baseName()));
+                detail = detail.replace("{{RESOURCES}}", QUrl::fromLocalFile(QString("%1/resources/").arg(QDir(datadir()).absolutePath())).toString());
 
-                problemInfo.SetValue("COORDINATE_TYPE_LABEL", tr("Coordinate type:").toStdString());
-                problemInfo.SetValue("COORDINATE_TYPE", coordinateTypeString(coordinateTypeFromStringKey(QString::fromStdString(doc->problem().coordinate_type()))).toStdString());
-
-                // geometry
-                QString geometry = problemSvgGeometry(&doc->geometry());
-
-                problemInfo.SetValue("GEOMETRY_LABEL", tr("Geometry").toStdString());
-                problemInfo.SetValue("GEOMETRY_NODES_LABEL", tr("Nodes:").toStdString());
-                problemInfo.SetValue("GEOMETRY_NODES", QString::number(doc->geometry().nodes().node().size()).toStdString());
-                problemInfo.SetValue("GEOMETRY_EDGES_LABEL", tr("Edges:").toStdString());
-                problemInfo.SetValue("GEOMETRY_EDGES", QString::number(doc->geometry().edges().edge().size()).toStdString());
-                problemInfo.SetValue("GEOMETRY_LABELS_LABEL", tr("Labels:").toStdString());
-                problemInfo.SetValue("GEOMETRY_LABELS", QString::number(doc->geometry().labels().label().size()).toStdString());
-                problemInfo.SetValue("GEOMETRY_SVG", geometry.toStdString());
-
-                problemInfo.SetValue("PHYSICAL_FIELD_MAIN_LABEL", tr("Physical fields").toStdString());
-
-                // fields
-                for (unsigned int i = 0; i < doc->problem().fields().field().size(); i++)
-                {
-                    XMLProblem::field field = doc->problem().fields().field().at(i);
-
-                    ctemplate::TemplateDictionary *fieldInfo = problemInfo.AddSectionDictionary("FIELD_SECTION");
-
-                    fieldInfo->SetValue("PHYSICAL_FIELD_LABEL", Module::availableModules()[QString::fromStdString(field.field_id())].toStdString());
-
-                    // fieldInfo->SetValue("ANALYSIS_TYPE_LABEL", tr("Analysis:").toStdString());
-                    // fieldInfo->SetValue("ANALYSIS_TYPE", analysisTypeString(analysisTypeFromStringKey(QString::fromStdString(field.analysis_type()))).toStdString());
-
-                    fieldInfo->SetValue("LINEARITY_TYPE_LABEL", tr("Solver:").toStdString());
-                    fieldInfo->SetValue("LINEARITY_TYPE", linearityTypeString(linearityTypeFromStringKey(QString::fromStdString(field.linearity_type()))).toStdString());
-
-                    problemInfo.ShowSection("FIELD");
-                }
+                problemInfo.SetValue("PROBLEM_DETAILS", detail.toStdString());
             }
-            catch (...)
-            {
-                qDebug() << "Unknown exception catched in ExampleDialog";
-            }
+            */
         }
         else if (fileInfo.suffix() == "py")
         {
-            templateName = "example_python.tpl";
-
-            // python
-            if (QFile::exists(fileName))
-            {
-                // replace current path in index.html
-                QString python = readFileContent(fileName   );
-                problemInfo.SetValue("PROBLEM_PYTHON", python.toStdString());
-            }
+            m_infoWidget->showPythonInfo(fileName);
         }
         else if (fileInfo.suffix() == "ui")
         {
-            templateName = "example_form.tpl";
-        }
-
-        // details
-        QString detailsFilename(QString("%1/%2/index.html").arg(fileInfo.absolutePath()).arg(fileInfo.baseName()));
-        if (QFile::exists(detailsFilename))
-        {
-            // replace current path in index.html
-            QString detail = readFileContent(detailsFilename);
-            detail = detail.replace("{{DIR}}", QString("%1/%2").arg(QUrl::fromLocalFile(fileInfo.absolutePath()).toString()).arg(fileInfo.baseName()));
-            detail = detail.replace("{{RESOURCES}}", QUrl::fromLocalFile(QString("%1/resources/").arg(QDir(datadir()).absolutePath())).toString());
-
-            problemInfo.SetValue("PROBLEM_DETAILS", detail.toStdString());
-        }
-
-        ctemplate::ExpandTemplate(datadir().toStdString() + TEMPLATEROOT.toStdString() + "/panels/" + templateName.toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
-
-        // setHtml(...) doesn't work
-        // webView->setHtml(QString::fromStdString(info));
-
-        // load(...) works
-        writeStringContent(tempProblemDir() + "/example.html", QString::fromStdString(info));
-        webView->load(QUrl::fromLocalFile(tempProblemDir() + "/example.html"));
-    }
-}
-
-QString ExamplesDialog::problemSvgGeometry(XMLProblem::geometry *geometry)
-{
-    // SVG
-    QString str;
-
-    Point min( numeric_limits<double>::max(),  numeric_limits<double>::max());
-    Point max(-numeric_limits<double>::max(), -numeric_limits<double>::max());
-
-    // nodes
-    QList<Point> points;
-    for (unsigned int i = 0; i < geometry->nodes().node().size(); i++)
-    {
-        XMLProblem::node node = geometry->nodes().node().at(i);
-        Point p(node.x(), node.y());
-        points.append(p);
-
-        min.x = qMin(min.x, p.x);
-        max.x = qMax(max.x, p.x);
-        min.y = qMin(min.y, p.y);
-        max.y = qMax(max.y, p.y);
-    }
-
-    // bounding box
-    RectPoint boundingBox(min, max);
-
-    double size = 180;
-    double stroke_width = qMax(boundingBox.width(), boundingBox.height()) / size / 2.0;
-
-    str += QString("<svg width=\"%1px\" height=\"%2px\" viewBox=\"%3 %4 %5 %6\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">\n").
-            arg(size).
-            arg(size).
-            arg(boundingBox.start.x).
-            arg(0).
-            arg(boundingBox.width()).
-            arg(boundingBox.height());
-
-    str += QString("<g stroke=\"black\" stroke-width=\"%1\" fill=\"none\">\n").arg(stroke_width);
-
-    // edges
-    for (unsigned int i = 0; i < geometry->edges().edge().size(); i++)
-    {
-        XMLProblem::edge edge = geometry->edges().edge().at(i);
-
-        Point start = points[edge.start()];
-        Point end = points[edge.end()];
-
-        if (edge.angle() > 0.0)
-        {
-            Point center = centerPoint(start, end, edge.angle());
-            double radius = (center - start).magnitude();
-            double startAngle = atan2(center.y - start.y, center.x - start.x) / M_PI*180.0 - 180.0;
-
-            int segments = edge.angle() / 5.0;
-            if (segments < 2) segments = 2;
-            double theta = edge.angle() / double(segments - 1);
-
-            for (int i = 0; i < segments-1; i++)
-            {
-                double arc1 = (startAngle + i*theta)/180.0*M_PI;
-                double arc2 = (startAngle + (i+1)*theta)/180.0*M_PI;
-
-                double x1 = radius * fastcos(arc1);
-                double y1 = radius * fastsin(arc1);
-                double x2 = radius * fastcos(arc2);
-                double y2 = radius * fastsin(arc2);
-
-                str += QString("<line x1=\"%1\" y1=\"%2\" x2=\"%3\" y2=\"%4\" />\n").
-                        arg(center.x + x1).
-                        arg(boundingBox.end.y - (center.y + y1)).
-                        arg(center.x + x2).
-                        arg(boundingBox.end.y - (center.y + y2));
-            }
-        }
-        else
-        {
-            str += QString("<line x1=\"%1\" y1=\"%2\" x2=\"%3\" y2=\"%4\" />\n").
-                    arg(start.x).
-                    arg(boundingBox.end.y - start.y).
-                    arg(end.x).
-                    arg(boundingBox.end.y - end.y);
+            // templateName = "example_form.tpl";
         }
     }
-
-    str += "</g>\n";
-    str += "</svg>\n";
-
-    return str;
 }
 
 QList<QIcon> ExamplesDialog::problemIcons(const QString &fileName)

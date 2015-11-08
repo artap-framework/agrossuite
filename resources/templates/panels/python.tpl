@@ -100,22 +100,10 @@
 
 
 <img style="float: right; margin-right: 10px; margin-top: 12px;" src="{{AGROS2D}}" /> 
-<h1>{{NAME}}</h1>
-<div>
-<table class="heading">
-<tr>
-	<td><b>{{COORDINATE_TYPE_LABEL}}</b></td><td>{{COORDINATE_TYPE}}</td>
-</tr>
-<tr>
-	<td><b>{{MESH_TYPE_LABEL}}</b></td><td>{{MESH_TYPE}}</td>
-</tr>
-</table>
-<p>{{DESCRIPTION}}</p>
-</div>
 
 {{PROBLEM_DETAILS}}
 
-<h2>Script</h2>
+<h1>Script</h1>
 <pre><code data-language="python">{{PROBLEM_PYTHON}}</code></pre>
 
 <div class="cleaner"></div>

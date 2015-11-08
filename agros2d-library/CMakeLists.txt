@@ -98,7 +98,7 @@ SET(SOURCES
     gui/valuedatatabledialog.cpp
     gui/valuelineedit.cpp
     gui/valuetimedialog.cpp
-    infowidget.cpp
+    gui/infowidget.cpp
     logview.cpp
     mainwindow.cpp
     materialbrowserdialog.cpp
@@ -317,7 +317,7 @@ SET(HEADERS
   gui/valuedatatabledialog.h
   gui/valuelineedit.h
   gui/valuetimedialog.h
-  infowidget.h
+  gui/infowidget.h
   logview.h
   mainwindow.h
   materialbrowserdialog.h

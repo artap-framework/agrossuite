@@ -26,6 +26,7 @@
 #include "gui/textedit.h"
 
 class OptiLab;
+class InfoWidgetGeneral;
 
 class AGROS_LIBRARY_API OptiLabWidget : public QWidget
 {
@@ -35,7 +36,19 @@ public:
     ~OptiLabWidget();
 
 private:
+    QTreeWidget *trvComputations;
+
     void createControls();
+
+signals:
+    void computationSelected(const QString &key);
+
+private slots:
+    void computationChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);
+    void computationSelect(const QString &key);
+
+    void refresh();
+    void test();
 };
 
 class OptiLab : public QWidget
@@ -51,9 +64,11 @@ public:
 signals:
 
 public slots:
+    void computationSelected(const QString &key);
 
 private:
     OptiLabWidget *m_optiLabWidget;
+    InfoWidgetGeneral *m_infoWidget;
 
     void createControls();
 };

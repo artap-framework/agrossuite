@@ -76,7 +76,7 @@ void CalculationThread::run()
         m_computation->mesh(true);
         break;
     case CalculationType_Solve:
-        m_computation->solve(false);
+        m_computation->solve();
         break;
     case CalculationType_SolveTimeStep:
         assert(0);
@@ -1106,18 +1106,6 @@ void ProblemComputation::solveInit()
     // nonlinearity
     m_isNonlinear = determineIsNonlinear();
 
-    // save problem
-    /*
-    try
-    {
-        Agros2D::preprocessor()->writeProblemToFile(tempProblemFileName() + ".a2d", false);
-    }
-    catch (AgrosException &e)
-    {
-        Agros2D::log()->printError(tr("Problem"), e.toString());
-    }
-    */
-
     // todo: we should not mesh always, but we would need to refine signals to determine when is it neccesary
     // (whether, e.g., parameters of the mesh have been changed)
     if (!mesh(false))
@@ -1133,7 +1121,31 @@ void ProblemComputation::doAbortSolve()
     Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Aborting calculation..."));
 }
 
-void ProblemComputation::mesh()
+void ProblemComputation::meshWithGUI()
+{
+    if (!isPreparedForAction())
+        return;
+
+    LogDialog *logDialog = new LogDialog(this, tr("Mesh"));
+    logDialog->show();
+
+    // create mesh
+    meshThread();
+}
+
+void ProblemComputation::solveWithGUI()
+{
+    if (!isPreparedForAction())
+        return;
+
+    LogDialog *logDialog = new LogDialog(this, tr("Solver"));
+    logDialog->show();
+
+    // solve problem
+    solveThread();
+}
+
+void ProblemComputation::meshThread()
 {
     if (!isPreparedForAction())
         return;
@@ -1141,7 +1153,7 @@ void ProblemComputation::mesh()
     m_calculationThread->startCalculation(CalculationThread::CalculationType_Mesh);
 }
 
-void ProblemComputation::solve()
+void ProblemComputation::solveThread()
 {
     if (!isPreparedForAction())
         return;
@@ -1149,7 +1161,7 @@ void ProblemComputation::solve()
     m_calculationThread->startCalculation(CalculationThread::CalculationType_Solve);
 }
 
-void ProblemComputation::solve(bool commandLine)
+void ProblemComputation::solve()
 {
     if (!isPreparedForAction())
         return;
@@ -1186,28 +1198,16 @@ void ProblemComputation::solve(bool commandLine)
         // elapsed time
         Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Elapsed time: %1 s").arg(m_lastTimeElapsed.toString("mm:ss.zzz")));
 
-        // delete temp file
-        /*
-        if (config()->fileName() == tempProblemFileName() + ".a2d")
-        {
-            QFile::remove(config()->fileName());
-            config()->setFileName("");
-        }
-        */
-
         m_abort = false;
         m_isSolving = false;
 
         // refresh post deal
         m_postDeal->problemSolved();
 
-        if (!commandLine)
-        {
-            emit solved();
+        emit solved();
 
-            // close indicator progress
-            Indicator::closeProgress();
-        }
+        // close indicator progress
+        Indicator::closeProgress();
     }
     /*
     catch (Exceptions::NonlinearException &e)
@@ -1292,90 +1292,6 @@ void ProblemComputation::solveAction()
     assert(isMeshed());
 
     m_problemSolver->solveProblem();
-}
-
-void ProblemComputation::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator)
-{
-    if (!meshGenerator)
-    {
-        // load initial mesh file
-        QString fnMesh = QString("%1/%2/mesh_initial.msh").arg(cacheProblemDir()).arg(problemDir());
-        std::ifstream ifsMesh(fnMesh.toStdString());
-        boost::archive::binary_iarchive sbiMesh(ifsMesh);
-        m_initialMesh.load(sbiMesh, 0);
-
-        Agros2D::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from disk"));
-    }
-    else
-    {
-        m_initialMesh.copy_triangulation(meshGenerator->triangulation());
-        Agros2D::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from memory"));
-    }
-
-    int max_num_refinements = 0;
-    foreach (FieldInfo *fieldInfo, m_fieldInfos)
-    {
-        // refine mesh
-        // TODO: at the present moment, not possible to refine independently
-        max_num_refinements = std::max(max_num_refinements, fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt());
-    }
-
-    // this is just a workaround for the problem in deal user data are not preserved on faces after refinement
-    m_initialUnrefinedMesh.copy_triangulation(m_initialMesh);
-
-    m_calculationMesh.copy_triangulation(m_initialMesh);
-    m_calculationMesh.refine_global(max_num_refinements);
-    //propagateBoundaryMarkers();
-
-    // nonlinearity
-    m_isNonlinear = determineIsNonlinear();
-
-    if (emitMeshed)
-        emit meshed();
-}
-
-void ProblemComputation::propagateBoundaryMarkers()
-{
-    dealii::Triangulation<2>::cell_iterator cell_unrefined = m_initialUnrefinedMesh.begin();
-    dealii::Triangulation<2>::cell_iterator end_cell_unrefined = m_initialUnrefinedMesh.end();
-    dealii::Triangulation<2>::cell_iterator cell_initial = m_initialMesh.begin();
-    dealii::Triangulation<2>::cell_iterator cell_calculation = m_calculationMesh.begin();
-
-    for (int idx = 0; cell_unrefined != end_cell_unrefined; ++cell_initial, ++cell_calculation, ++cell_unrefined, ++idx)   // loop over all cells, not just active ones
-    {
-        for (int f=0; f < dealii::GeometryInfo<2>::faces_per_cell; f++)
-        {
-            if (cell_unrefined->face(f)->user_index() != 0)
-            {
-                cell_initial->face(f)->recursively_set_user_index(cell_unrefined->face(f)->user_index());
-                cell_calculation->face(f)->recursively_set_user_index(cell_unrefined->face(f)->user_index());
-            }
-        }
-    }
-}
-
-void ProblemComputation::meshWithGUI()
-{
-    if (!isPreparedForAction())
-        return;
-
-    LogDialog *logDialog = new LogDialog(this, tr("Mesh"));
-    logDialog->show();
-
-    // create mesh
-    mesh();
-}
-
-void ProblemComputation::solveWithGUI()
-{
-    if (!isPreparedForAction())
-        return;
-
-    LogDialog *logDialog = new LogDialog(this, tr("Solver"));
-    logDialog->show();
-
-    // solve problem
-    solve();
 }
 
 bool ProblemComputation::mesh(bool emitMeshed)
@@ -1500,6 +1416,66 @@ bool ProblemComputation::meshAction(bool emitMeshed)
     return false;
 }
 
+void ProblemComputation::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator)
+{
+    if (!meshGenerator)
+    {
+        // load initial mesh file
+        QString fnMesh = QString("%1/%2/mesh_initial.msh").arg(cacheProblemDir()).arg(problemDir());
+        std::ifstream ifsMesh(fnMesh.toStdString());
+        boost::archive::binary_iarchive sbiMesh(ifsMesh);
+        m_initialMesh.load(sbiMesh, 0);
+
+        Agros2D::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from disk"));
+    }
+    else
+    {
+        m_initialMesh.copy_triangulation(meshGenerator->triangulation());
+        Agros2D::log()->printDebug(tr("Mesh Generator"), tr("Reading initial mesh from memory"));
+    }
+
+    int max_num_refinements = 0;
+    foreach (FieldInfo *fieldInfo, m_fieldInfos)
+    {
+        // refine mesh
+        // TODO: at the present moment, not possible to refine independently
+        max_num_refinements = std::max(max_num_refinements, fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt());
+    }
+
+    // this is just a workaround for the problem in deal user data are not preserved on faces after refinement
+    m_initialUnrefinedMesh.copy_triangulation(m_initialMesh);
+
+    m_calculationMesh.copy_triangulation(m_initialMesh);
+    m_calculationMesh.refine_global(max_num_refinements);
+    //propagateBoundaryMarkers();
+
+    // nonlinearity
+    m_isNonlinear = determineIsNonlinear();
+
+    if (emitMeshed)
+        emit meshed();
+}
+
+void ProblemComputation::propagateBoundaryMarkers()
+{
+    dealii::Triangulation<2>::cell_iterator cell_unrefined = m_initialUnrefinedMesh.begin();
+    dealii::Triangulation<2>::cell_iterator end_cell_unrefined = m_initialUnrefinedMesh.end();
+    dealii::Triangulation<2>::cell_iterator cell_initial = m_initialMesh.begin();
+    dealii::Triangulation<2>::cell_iterator cell_calculation = m_calculationMesh.begin();
+
+    for (int idx = 0; cell_unrefined != end_cell_unrefined; ++cell_initial, ++cell_calculation, ++cell_unrefined, ++idx)   // loop over all cells, not just active ones
+    {
+        for (int f=0; f < dealii::GeometryInfo<2>::faces_per_cell; f++)
+        {
+            if (cell_unrefined->face(f)->user_index() != 0)
+            {
+                cell_initial->face(f)->recursively_set_user_index(cell_unrefined->face(f)->user_index());
+                cell_calculation->face(f)->recursively_set_user_index(cell_unrefined->face(f)->user_index());
+            }
+        }
+    }
+}
+
 bool ProblemComputation::isMeshed() const
 {
     if (m_initialMesh.n_active_cells() == 0)
@@ -1527,11 +1503,6 @@ void ProblemComputation::clearSolution()
     m_initialUnrefinedMesh.clear();
     m_calculationMesh.clear();
     m_solutionStore->clearAll();
-
-    // remove cache
-    // removeDirectory(cacheProblemDir());
-
-    emit clearedSolution();
 }
 
 void ProblemComputation::clearFieldsAndConfig()
@@ -1544,27 +1515,36 @@ void ProblemComputation::clearFieldsAndConfig()
 
 // preprocessor
 
-void ProblemPreprocessor::createComputation(bool newComputation)
+ProblemPreprocessor::ProblemPreprocessor() : Problem()
 {
-    QSharedPointer<ProblemComputation> post;
+    connect(this, SIGNAL(fileNameChanged(QString)), this, SLOT(doFileNameChanged(QString)));
+}
+
+QSharedPointer<ProblemComputation> ProblemPreprocessor::createComputation(bool newComputation, bool setCurrentComputation)
+{
+    QSharedPointer<ProblemComputation> computation;
     if (newComputation || Agros2D::computations().isEmpty())
     {
-        post = QSharedPointer<ProblemComputation>(new ProblemComputation());
-        Agros2D::addComputation(post->problemDir(), post);
-        Agros2D::setCurrentComputation(post->problemDir());
+        computation = QSharedPointer<ProblemComputation>(new ProblemComputation());
+        Agros2D::addComputation(computation->problemDir(), computation);
+
+        if (setCurrentComputation)
+            Agros2D::setCurrentComputation(computation->problemDir());
     }
     else
     {
-        post = Agros2D::computation();
+        computation = Agros2D::computation();
+        computation->clearFieldsAndConfig();
     }
 
     QString fn = QString("%1/%2/problem.a2d").
             arg(cacheProblemDir()).
-            arg(post->problemDir());
+            arg(computation->problemDir());
 
-    writeProblemToA2D(fn);
-    post->clearFieldsAndConfig();
-    post->readProblemFromA2D31(fn);
+    writeProblemToA2D(fn);    
+    computation->readProblemFromA2D31(fn);
+
+    return computation;
 }
 
 void ProblemPreprocessor::clearFieldsAndConfig()

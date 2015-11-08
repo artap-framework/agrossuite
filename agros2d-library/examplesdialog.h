@@ -22,6 +22,8 @@
 
 #include "util.h"
 
+class InfoWidgetGeneral;
+
 namespace XMLProblem {
     class geometry;
 }
@@ -44,11 +46,10 @@ private slots:
     void doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void doItemDoubleClicked(QTreeWidgetItem *item, int column);
 
-    void linkClicked(const QUrl &url);
+    // void linkClicked(const QUrl &url);
 
 private:
-    QWebView *webView;
-    QString m_cascadeStyleSheet;
+    InfoWidgetGeneral *m_infoWidget;
 
     QTreeWidget *lstProblems;
     QString m_selectedFilename;

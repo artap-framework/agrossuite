@@ -232,7 +232,7 @@ void PyComputation::solve()
     */
 
     //Agros2D::preprocessor()->createComputation(false);
-    m_computation->solve(true);
+    m_computation->solve();
 }
 
 double PyComputation::timeElapsed() const

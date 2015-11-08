@@ -93,7 +93,7 @@ public:
     inline QVariant defaultValue(Type type) {  return m_settingDefault[type]; }
 
     // parameters
-    void addParameter(const QString &key, double val);
+    void setParameter(const QString &key, double val);
     void checkParameterName(const QString &key);
 
     inline double constantTimeStepLength() { return value(ProblemConfig::TimeTotal).toDouble() / value(ProblemConfig::TimeConstantTimeSteps).toInt(); }

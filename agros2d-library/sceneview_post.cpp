@@ -203,9 +203,7 @@ PostDeal::PostDeal(ProblemComputation *parentProblem) :
     m_isProcessed(false)
 {
     connect(m_computation->scene(), SIGNAL(cleared()), this, SLOT(clear()));
-    connect(m_computation, SIGNAL(clearedSolution()), this, SLOT(clearView()));
     // connect(m_problem, SIGNAL(fieldsChanged()), this, SLOT(clear()));
-
 }
 
 PostDeal::~PostDeal()
