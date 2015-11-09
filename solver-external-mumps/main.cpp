@@ -41,11 +41,11 @@ int main(int argc, char *argv[])
         ierr = MPI_Init(&argc, &argv);
         ierr = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-        std::cout << "Rank " << rank << " started." << std::endl;
+        // std::cout << "Rank " << rank << " started." << std::endl;
 
         // time
         MPI_Barrier(MPI_COMM_WORLD);
-        double start = MPI_Wtime();
+        double startTotal = MPI_Wtime();
 
         // initialize a MUMPS instance. Use MPI_COMM_WORLD
         DMUMPS_STRUC_C id;
@@ -95,6 +95,8 @@ int main(int argc, char *argv[])
             system_rhs.block_read(readRHS);
             readRHS.close();
 
+            std::cout << "Matrix size: " << system_rhs.max_len << std::endl;
+
             // number of unknowns
             id.n = system_matrix_pattern.rows;
 
@@ -125,6 +127,11 @@ int main(int argc, char *argv[])
                     ++index;
                 }
             }
+
+            // MPI_Barrier(MPI_COMM_WORLD);
+            double end = MPI_Wtime();
+
+            std::cout << "Read matrix: " << (end - startTotal) << std::endl;
         }
 
         // no outputs
@@ -133,11 +140,19 @@ int main(int argc, char *argv[])
         id.icntl[2] = -1;
         id.icntl[3] =  0;
 
+        // MPI_Barrier(MPI_COMM_WORLD);
+        // double start = MPI_Wtime();
+
         // call the MUMPS package.
         id.job = 6;
         dmumps_c(&id);
         id.job = JOB_END;
         dmumps_c(&id); // Terminate instance
+
+        MPI_Barrier(MPI_COMM_WORLD);
+        double end = MPI_Wtime();
+
+        // std::cout << "Rank time: " << rank << " : " << (end - start) << std::endl;
 
         if (rank == 0)
         {
@@ -148,17 +163,11 @@ int main(int argc, char *argv[])
 
             delete [] id.irn;
             delete [] id.jcn;
-        }
 
-        MPI_Barrier(MPI_COMM_WORLD);
-        double end = MPI_Wtime();
+            std::cout << "Total time: " << (end - startTotal) << std::endl;
+        }
 
         ierr = MPI_Finalize();
-
-        if (rank == 0)
-        {
-             std::cout << "Total time: " << rank << " : " << (end - start) << std::endl;
-        }
     }
     catch (TCLAP::ArgException &e)
     {
