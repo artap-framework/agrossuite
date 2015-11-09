@@ -23,13 +23,21 @@
 #include <string>
 #include <fstream>
 
-#include "viennacl/scalar.hpp"
 #include "viennacl/compressed_matrix.hpp"
-#include "viennacl/coordinate_matrix.hpp"
 #include "viennacl/matrix.hpp"
 #include "viennacl/vector.hpp"
+
+// solvers
+#include "viennacl/linalg/cg.hpp"
+#include "viennacl/linalg/mixed_precision_cg.hpp"
 #include "viennacl/linalg/bicgstab.hpp"
+#include "viennacl/linalg/gmres.hpp"
+
+// preconditioners
 #include "viennacl/linalg/ilu.hpp"
+
+// amg
+#include "viennacl/linalg/amg.hpp"
 
 #include <boost/numeric/ublas/matrix_sparse.hpp>
 
@@ -51,12 +59,16 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
         TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", true, "", "string");
         TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
+        TCLAP::ValueArg<std::string> preconditionerArg("c", "preconditioner", "Preconditioner", false, "", "string");
+        TCLAP::ValueArg<std::string> solverArg("l", "solver", "Solver", false, "", "string");
 
         cmd.add(matrixArg);
         cmd.add(matrixPatternArg);
         cmd.add(rhsArg);
         cmd.add(solutionArg);
         cmd.add(initialArg);
+        cmd.add(preconditionerArg);
+        cmd.add(solverArg);
 
         // parse the argv array.
         cmd.parse(argc, argv);
@@ -109,15 +121,41 @@ int main(int argc, char *argv[])
         system_matrix_pattern.clear();
         system_rhs.clear();
 
+        viennacl::vector<ScalarType> vcl_sln;
+
         // incomplete LU factorization with threshold
+        // if (preconditionerArg.getValue() == "ILUT" || preconditionerArg.getValue() == "") // default
+
+        /*
+        // ilut
         viennacl::linalg::ilut_tag ilut_config(20, 1e-4, true);
-        viennacl::linalg::ilut_precond<viennacl::compressed_matrix<ScalarType> > vcl_ilut(vcl_matrix, ilut_config);
+        viennacl::linalg::ilut_precond<viennacl::compressed_matrix<ScalarType> > ilut_precond(vcl_matrix, ilut_config);
 
-        // cg flags
-        viennacl::linalg::bicgstab_tag custom_cg(1e-9, 1000);
+        // bicgstab
+        viennacl::linalg::bicgstab_tag custom_bicgstab(1e-9, 1000);
+        vcl_sln = viennacl::linalg::solve(vcl_matrix, vcl_rhs, custom_bicgstab, ilut_precond);
+        std::cout << "BiCGStab: iters: " << custom_bicgstab.iters() << ", error: " << custom_bicgstab.error() << std::endl;
+        */
 
-        viennacl::vector<ScalarType> vcl_sln = viennacl::linalg::solve(vcl_matrix, vcl_rhs, custom_cg, vcl_ilut);
-        std::cout << "Iters: " << custom_cg.iters() << ", error: " << custom_cg.error() << std::endl;
+        // viennacl::context host_ctx(viennacl::MAIN_MEMORY);
+        // viennacl::context target_ctx(viennacl::CUDA_MEMORY);
+
+        viennacl::linalg::amg_tag custom_amg;
+        // custom_amg.set_coarsening_method(viennacl::linalg::AMG_COARSENING_METHOD_ONEPASS);
+        // custom_amg.set_interpolation_method(viennacl::linalg::AMG_INTERPOLATION_METHOD_DIRECT);
+        // custom_amg.set_strong_connection_threshold(0.25);
+        // custom_amg.set_jacobi_weight(0.67);
+        // custom_amg.set_presmooth_steps(1);
+        // custom_amg.set_postsmooth_steps(1);
+        // custom_amg.set_setup_context(host_ctx);    // run setup on host
+        // custom_amg.set_target_context(target_ctx); // run solver cycles on device
+
+        viennacl::linalg::amg_precond<viennacl::compressed_matrix<ScalarType> > amg_precond(vcl_matrix, custom_amg);
+        amg_precond.setup();
+        vcl_sln = viennacl::linalg::solve(vcl_matrix, vcl_rhs, viennacl::linalg::bicgstab_tag(), amg_precond);
+        std::cout << "AMG: coarse_levels: " << custom_amg.get_coarse_levels()
+                  << ", presmooth_steps: " << custom_amg.get_presmooth_steps()
+                  << ", postsmooth_steps: " << custom_amg.get_postsmooth_steps() << std::endl;
 
         // write solution
         VectorRW solution(n);

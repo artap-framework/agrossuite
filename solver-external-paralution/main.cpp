@@ -45,12 +45,16 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
         TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", true, "", "string");
         TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
+        TCLAP::ValueArg<std::string> preconditionerArg("c", "preconditioner", "Preconditioner", false, "", "string");
+        TCLAP::ValueArg<std::string> solverArg("l", "solver", "Solver", false, "", "string");
 
         cmd.add(matrixArg);
         cmd.add(matrixPatternArg);
         cmd.add(rhsArg);
         cmd.add(solutionArg);
         cmd.add(initialArg);
+        cmd.add(preconditionerArg);
+        cmd.add(solverArg);
 
         // parse the argv array.
         cmd.parse(argc, argv);
@@ -140,22 +144,35 @@ int main(int argc, char *argv[])
 
         // preconditioner
         Preconditioner<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType> *p = nullptr;
-        // p = new Jacobi<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        // p = new MultiColoredGS<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        // p = new MultiColoredSGS<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        p = new ILU<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        // p = new MultiColoredILU<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        // p = new MultiElimination<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        // p = new FSAI<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        if (preconditionerArg.getValue() == "Jacobi" || preconditionerArg.getValue() == "") // default
+            p = new Jacobi<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else if (preconditionerArg.getValue() == "MultiColoredGS")
+            p = new MultiColoredGS<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else if (preconditionerArg.getValue() == "MultiColoredSGS")
+            p = new MultiColoredSGS<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else if (preconditionerArg.getValue() == "ILU")
+            p = new ILU<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else if (preconditionerArg.getValue() == "MultiColoredILU")
+            p = new MultiColoredILU<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else if (preconditionerArg.getValue() == "MultiElimination")
+            p = new MultiElimination<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else if (preconditionerArg.getValue() == "FSAI")
+            p = new FSAI<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
 
         // solver
         IterativeLinearSolver<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *ls = nullptr;
-        // ls = new CG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        ls = new BiCGStab<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        // ls = new GMRES<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        // ls = new FGMRES<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        // ls = new CR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        // ls = new IDR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        if (solverArg.getValue() == "BiCGStab" || solverArg.getValue() == "") // default
+            ls = new BiCGStab<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else if (solverArg.getValue() == "CG")
+            ls = new CG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else if (solverArg.getValue() == "GMRES")
+            ls = new GMRES<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else if (solverArg.getValue() == "FGMRES")
+            ls = new FGMRES<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else if (solverArg.getValue() == "CR")
+            ls = new CR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else if (solverArg.getValue() == "IDR")
+            ls = new IDR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
 
         ls->Init(1e-13, 1e-9, 1e8, 1000);
 
