@@ -116,7 +116,7 @@ public:
     void printDebugCacheStatus();
 
 public slots:
-    void clearAll();
+    void clear();
 
 private:
     ProblemComputation *m_computation;

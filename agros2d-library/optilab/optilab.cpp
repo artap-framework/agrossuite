@@ -20,6 +20,8 @@
 #include "optilab.h"
 #include "util/global.h"
 #include "solver/problem.h"
+#include "solver/resultstore.h"
+#include "solver/plugin_interface.h"
 #include "gui/infowidget.h"
 
 OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent)
@@ -109,6 +111,16 @@ void OptiLabWidget::test()
         Agros2D::preprocessor()->config()->setParameter("R3", param);
         QSharedPointer<ProblemComputation> computation = Agros2D::preprocessor()->createComputation(true, false);
         computation->solve();
+
+        FieldInfo *fieldInfo = computation->fieldInfo("electrostatic");
+        computation->scene()->labels->setSelected(true);
+        std::shared_ptr<IntegralValue> values = fieldInfo->plugin()->volumeIntegral(computation.data(),
+                                                                                    fieldInfo,
+                                                                                    0,
+                                                                                    0);
+
+        QMap<QString, double> integrals = values->values();
+        computation->resultStore()->setResult("C", integrals["electrostatic_energy"]);
     }
 
     refresh();

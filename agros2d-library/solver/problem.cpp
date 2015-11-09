@@ -31,6 +31,7 @@
 
 #include "field.h"
 #include "solutionstore.h"
+#include "resultstore.h"
 
 #include "scene.h"
 #include "scenemarker.h"
@@ -1014,6 +1015,7 @@ ProblemComputation::ProblemComputation(const QString &problemDir) : Problem()
     m_problemSolver = new ProblemSolver(this);
     m_postDeal = new PostDeal(this);
     m_solutionStore = new SolutionStore(this);
+    m_resultStore = new ResultStore(this);
 
     connect(m_config, SIGNAL(changed()), this, SLOT(clearSolution()));
     connect(m_scene, SIGNAL(invalidated()), this, SLOT(clearSolution()));
@@ -1042,6 +1044,7 @@ ProblemComputation::~ProblemComputation()
     delete m_problemSolver;
     delete m_postDeal;
     delete m_solutionStore;
+    delete m_resultStore;
 }
 
 QList<double> ProblemComputation::timeStepTimes() const
@@ -1502,12 +1505,13 @@ void ProblemComputation::clearSolution()
     m_initialMesh.clear();
     m_initialUnrefinedMesh.clear();
     m_calculationMesh.clear();
-    m_solutionStore->clearAll();
+    m_solutionStore->clear();
+    m_resultStore->clear();
 }
 
 void ProblemComputation::clearFieldsAndConfig()
 {
-    m_solutionStore->clearAll();
+    m_solutionStore->clear();
     m_postDeal->clear();
 
     Problem::clearFieldsAndConfig();
@@ -1593,33 +1597,33 @@ void ProblemPreprocessor::readProblemFromArchive(const QString &fileName)
 
         if (QFile::exists(fn))
         {
-            QSharedPointer<ProblemComputation> post = QSharedPointer<ProblemComputation>(new ProblemComputation(problemDir));
-            Agros2D::addComputation(post->problemDir(), post);
+            QSharedPointer<ProblemComputation> computation = QSharedPointer<ProblemComputation>(new ProblemComputation(problemDir));
+            Agros2D::addComputation(computation->problemDir(), computation);
 
             Agros2D::log()->printMessage(tr("Problem"), tr("Loading solution from disk: %1").arg(problemDir));
 
-            post->readProblemFromA2D31(fn);
+            computation->readProblemFromA2D31(fn);
 
             // read mesh file
             try
             {
-                post->readInitialMeshFromFile(true);
+                computation->readInitialMeshFromFile(true);
             }
             catch (AgrosException& e)
             {
-                post->clearSolution();
+                computation->clearSolution();
                 Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
             }
 
-            if (post->isMeshed())
+            if (computation->isMeshed())
             {
                 try
                 {
-                    post->solutionStore()->loadRunTimeDetails();
+                    computation->solutionStore()->loadRunTimeDetails();
                 }
                 catch (AgrosException& e)
                 {
-                    post->clearSolution();
+                    computation->clearSolution();
                     Agros2D::log()->printError(tr("Mesh"), e.what());
                 }
             }

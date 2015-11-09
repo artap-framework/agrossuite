@@ -43,7 +43,7 @@ SolutionStore::SolutionStore(ProblemComputation *parentProblem) : m_computation(
 
 SolutionStore::~SolutionStore()
 {
-    clearAll();
+    clear();
 }
 
 
@@ -57,7 +57,7 @@ QString SolutionStore::baseStoreFileName(FieldSolutionID solutionID) const
     return fn;
 }
 
-void SolutionStore::clearAll()
+void SolutionStore::clear()
 {
     // fast remove of all files
     foreach (FieldSolutionID sid, m_multiSolutions)
