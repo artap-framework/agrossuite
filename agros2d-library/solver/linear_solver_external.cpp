@@ -56,11 +56,11 @@ void AgrosExternalSolver::solve(const dealii::Vector<double> *initial_guess)
     QDateTime datetime(QDateTime::currentDateTime());
     QString tm = QString("%1").arg(datetime.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
 
-    fileMatrix = QString("%1/solver-%2.matrix").arg(cacheProblemDir()).arg(tm);
-    fileMatrixPattern = QString("%1/solver-%2.matrix_pattern").arg(cacheProblemDir()).arg(tm);
-    fileRHS = QString("%1/solver-%2.rhs").arg(cacheProblemDir()).arg(tm);
-    fileInitial = QString("%1/solver-%2.initial").arg(cacheProblemDir()).arg(tm);
-    fileSln = QString("%1/solver-%2.sln").arg(cacheProblemDir()).arg(tm);
+    QString fileMatrix = QString("%1/solver-%2.matrix").arg(cacheProblemDir()).arg(tm);
+    QString fileMatrixPattern = QString("%1/solver-%2.matrix_pattern").arg(cacheProblemDir()).arg(tm);
+    QString fileRHS = QString("%1/solver-%2.rhs").arg(cacheProblemDir()).arg(tm);
+    QString fileInitial = QString("%1/solver-%2.initial").arg(cacheProblemDir()).arg(tm);
+    QString fileSln = QString("%1/solver-%2.sln").arg(cacheProblemDir()).arg(tm);
 
     // write matrix and rhs to disk
     std::ofstream writeMatrix(fileMatrix.toStdString());

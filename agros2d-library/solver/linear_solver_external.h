@@ -48,12 +48,6 @@ public:
 protected:
     QProcess *m_process;
 
-    QString fileMatrix;
-    QString fileMatrixPattern;
-    QString fileRHS;
-    QString fileInitial;
-    QString fileSln;
-
     const dealii::SparseMatrix<double> *m_system_matrix;
     const dealii::Vector<double> *m_system_rhs;
     dealii::Vector<double> m_solution;
