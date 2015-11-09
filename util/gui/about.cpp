@@ -23,11 +23,6 @@
 #include "../util/checkversion.h"
 #include "../util/system_utils.h"
 
-#include "paralution.hpp"
-#include "paralution/src/utils/info.hpp"
-
-using namespace paralution;
-
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent)
 {
     setWindowModality(Qt::ApplicationModal);
@@ -168,6 +163,7 @@ QWidget *AboutDialog::createLibraries()
                                          "<b>UMFPACK:</b> unsymmetric multifrontal sparse LU factorization package (<a href=\"http://www.cise.ufl.edu/research/sparse/umfpack/\">UMFPACK</a>)<br/>"
                                          "<b>MUMPS:</b> A MUltifrontal Massively Parallel sparse direct Solver (<a href=\"http://graal.ens-lyon.fr/MUMPS/\">MUMPS</a>)<br/>"
                                          "<b>PARALUTION:</b> Sparse iterative solvers on multi-core CPU and GPU devices (<a href=\"http://www.paralution.com/\">PARALUTION</a>)<br/>"
+                                         "<b>ViennaCL:</b> Linear algebra library for computations on many-core architectures (GPUs, MIC) and multi-core CPUs (<a href=\"http://viennacl.sourceforge.net/\">ViennaCL</a>)<br/>"
                                          ));
     labelContent->setWordWrap(true);
     labelContent->setOpenExternalLinks(true);
@@ -227,51 +223,9 @@ QWidget *AboutDialog::createSysinfo()
     QGroupBox *grpSystem = new QGroupBox(tr("System"));
     grpSystem->setLayout(layoutSystem);
 
-    // gpu
-    paralution::Paralution_Backend_Descriptor *desc = paralution::_get_backend_descriptor();
-
-    std::map<std::string, std::string> info;
-    if (desc->accelerator && desc->backend == OCL)
-    {
-#ifndef _MSC_VER
-        info = info_ocl();
-#endif
-    }
-    else if (desc->accelerator && desc->backend == GPU)
-    {
-#ifndef _MSC_VER
-      info = info_gpu();
-#endif
-    }
-
-    QGridLayout *layoutGPU = new QGridLayout();
-    layoutGPU->addWidget(new QLabel(tr("Accelerator backend:")), 0, 0);
-    layoutGPU->addWidget(new QLabel(QString("%1 (%2)").arg(QString::fromStdString(_paralution_backend_name[desc->backend]))
-                         .arg(desc->accelerator ? tr("enabled") : tr("disabled"))), 0, 1);
-
-    if (desc->accelerator)
-    {
-        layoutGPU->addWidget(new QLabel(tr("Platform:")), 1, 0);
-        layoutGPU->addWidget(new QLabel(QString::fromStdString(info["platform"])), 1, 1);
-        layoutGPU->addWidget(new QLabel(tr("Device:")), 2, 0);
-        layoutGPU->addWidget(new QLabel(QString::fromStdString(info["device"])), 2, 1);
-        layoutGPU->addWidget(new QLabel(tr("Type:")), 3, 0);
-        layoutGPU->addWidget(new QLabel(QString::fromStdString(info["type"])), 3, 1);
-        layoutGPU->addWidget(new QLabel(tr("Memory:")), 4, 0);
-        layoutGPU->addWidget(new QLabel(QString::fromStdString(info["memory"]) + " MB"), 4, 1);
-        layoutGPU->addWidget(new QLabel(tr("Clock rate:")), 5, 0);
-        layoutGPU->addWidget(new QLabel(QString::fromStdString(info["clock_rate"]) + " Hz"), 5, 1);
-        layoutGPU->addWidget(new QLabel(tr("Version:")), 6, 0);
-        layoutGPU->addWidget(new QLabel(QString::fromStdString(info["version"])), 6, 1);
-    }
-
-    QGroupBox *grpGPU = new QGroupBox(tr("GPU"));
-    grpGPU->setLayout(layoutGPU);
-
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(grpOS);
     layout->addWidget(grpSystem);
-    layout->addWidget(grpGPU);
     layout->addStretch(1);
 
     QWidget *widget = new QWidget();

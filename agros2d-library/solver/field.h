@@ -91,12 +91,11 @@ public:
         TransientInitialCondition,
         LinearSolverIterDealIIMethod,
         LinearSolverIterDealIIPreconditioner,
-        LinearSolverIterPARALUTIONMethod,
-        LinearSolverIterPARALUTIONPreconditioner,
-        LinearSolverIterPARALUTIONDoublePrecision,
         LinearSolverIterToleranceAbsolute,
         LinearSolverIterIters,        
         LinearSolverExternalName,
+        LinearSolverExternalCommandPre,
+        LinearSolverExternalCommandPost,
         TimeUnit
     };
 

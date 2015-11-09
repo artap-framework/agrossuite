@@ -31,6 +31,17 @@ public:
     SparseMatrixRW();
     ~SparseMatrixRW();
 
+    void clear()
+    {
+        max_len = 0;
+
+        if (val)
+        {
+            delete [] val;
+            val = nullptr;
+        }
+    }
+
     std::size_t max_len;
     double *val;
 
@@ -86,8 +97,7 @@ inline SparseMatrixRW::SparseMatrixRW() : max_len(0), val(nullptr)
 
 inline SparseMatrixRW::~SparseMatrixRW()
 {
-    if (val)
-        delete [] val;
+    clear();
 }
 
 class SparsityPatternRW
@@ -95,6 +105,29 @@ class SparsityPatternRW
 public:
     SparsityPatternRW();
     ~SparsityPatternRW();
+
+    void clear()
+    {
+        max_dim = 0;
+        rows = 0;
+        cols = 0;
+        max_vec_len = 0;
+        max_row_length = 0;
+
+        compressed = false;
+        store_diagonal_first_in_row = false;
+
+        if (rowstart)
+        {
+            delete [] rowstart;
+            rowstart = nullptr;
+        }
+        if (colnums)
+        {
+            delete [] colnums;
+            colnums = nullptr;
+        }
+    }
 
     unsigned int max_dim;
     unsigned int rows;
@@ -185,10 +218,7 @@ inline SparsityPatternRW::SparsityPatternRW() : max_dim(0), rows(0), cols(0), ma
 
 inline SparsityPatternRW::~SparsityPatternRW()
 {
-    if (rowstart)
-        delete [] rowstart;
-    if (colnums)
-        delete [] colnums;
+    clear();
 }
 
 class VectorRW
@@ -197,6 +227,17 @@ public:
     VectorRW();
     VectorRW(std::size_t len);
     ~VectorRW();
+
+    inline void clear()
+    {
+        max_len = 0;
+
+        if (val)
+        {
+            delete [] val;
+            val = nullptr;
+        }
+    }
 
     std::size_t max_len;
     double *val;
@@ -259,12 +300,14 @@ inline VectorRW::VectorRW() : max_len(0), val(nullptr)
 inline VectorRW::VectorRW(std::size_t len) : max_len(len), val(nullptr)
 {
     val = new double[len];
+
+    // zeroes
+    memset(val, 0, sizeof(double) * len);
 }
 
 inline VectorRW::~VectorRW()
 {
-    if (val)
-        delete [] val;
+    clear();
 }
 
 void csr2csc(int size, int nnz, double *data, int *ir, int *jc)

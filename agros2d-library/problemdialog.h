@@ -154,10 +154,9 @@ private:
     QSpinBox *txtIterLinearSolverIters;
     QComboBox *cmbIterLinearSolverDealIIMethod;
     QComboBox *cmbIterLinearSolverDealIIPreconditioner;
-    QComboBox *cmbIterLinearSolverPARALUTIONMethod;
-    QComboBox *cmbIterLinearSolverPARALUTIONPreconditioner;
-    QCheckBox *chkIterLinearSolverPARALUTIONDoublePrecision;
     QComboBox *cmbExternalLinearSolverCommand;
+    QLineEdit *txtExternalLinearSolverCommandPre;
+    QLineEdit *txtExternalLinearSolverCommandPost;
 
     // equation
     // LaTeXViewer *equationLaTeX;

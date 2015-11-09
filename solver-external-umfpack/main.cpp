@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
         int nz = system_matrix.max_len;
 
         // representation of the matrix and rhs
-        double *a = system_matrix.val;
+        double *a = new double[nz];
 
         // matrix indices pointing to the row and column dimensions
         int *irn = new int[nz];
@@ -90,13 +90,16 @@ int main(int argc, char *argv[])
 
             for (int i = col_start; i < col_end; i++)
             {
-                a[index] = system_matrix.val[i];
                 irn[index] = row + 0;
                 jcn[index] = system_matrix_pattern.colnums[i] + 0;
+                a[index] = system_matrix.val[i];
 
                 ++index;
             }
         }
+
+        system_matrix.clear();
+        system_matrix_pattern.clear();
 
         int *Ap = new int[n+1];
         int *Ai = new int[nz];
@@ -117,13 +120,13 @@ int main(int argc, char *argv[])
 
         delete [] irn;
         delete [] jcn;
+        delete [] a;
 
         // umfpack_di_report_matrix(system_matrix_pattern.rows, system_matrix_pattern.cols, Ap, Ai, Ax, 1, Control);
 
         // factorizing symbolically
         void *symbolic;
-        int statusSymbolic = umfpack_di_symbolic(system_matrix_pattern.rows,
-                                                 system_matrix_pattern.cols,
+        int statusSymbolic = umfpack_di_symbolic(n, n,
                                                  Ap, Ai, Ax,
                                                  &symbolic, Control, Info);
 
@@ -155,6 +158,8 @@ int main(int argc, char *argv[])
                     std::ofstream writeSln(solutionArg.getValue());
                     solution.block_write(writeSln);
                     writeSln.close();
+
+                    system_rhs.clear();
 
                     delete [] Ap;
                     delete [] Ai;

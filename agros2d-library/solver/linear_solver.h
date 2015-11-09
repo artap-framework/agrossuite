@@ -47,8 +47,6 @@
 #include <deal.II/lac/sparse_direct.h>
 #include <deal.II/numerics/solution_transfer.h>
 #include <deal.II/base/time_stepping.h>
-
-#include <paralution.hpp>
 #define signals public
 
 class AGROS_LIBRARY_API SolverLinearSolver
@@ -69,15 +67,6 @@ public:
     void solvedealii(dealii::SparseMatrix<double> &system,
                      dealii::Vector<double> &rhs,
                      dealii::Vector<double> &sln);
-
-    void solvePARALUTIONFloat(dealii::SparseMatrix<double> &system,
-                              dealii::Vector<double> &rhs,
-                              dealii::Vector<double> &sln,
-                              dealii::SparsityPattern &sparsity_pattern);
-    void solvePARALUTIONDouble(dealii::SparseMatrix<double> &system,
-                               dealii::Vector<double> &rhs,
-                               dealii::Vector<double> &sln,
-                               dealii::SparsityPattern &sparsity_pattern);
 
 private:
     // local reference

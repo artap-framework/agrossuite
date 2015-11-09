@@ -103,6 +103,12 @@ int main(int argc, char *argv[])
 
         copy(ublas_matrix, vcl_matrix);
 
+        // clear ublas_matrix and other structures
+        ublas_matrix.clear();
+        system_matrix.clear();
+        system_matrix_pattern.clear();
+        system_rhs.clear();
+
         // incomplete LU factorization with threshold
         viennacl::linalg::ilut_tag ilut_config(20, 1e-4, true);
         viennacl::linalg::ilut_precond<viennacl::compressed_matrix<ScalarType> > vcl_ilut(vcl_matrix, ilut_config);
@@ -114,11 +120,9 @@ int main(int argc, char *argv[])
         std::cout << "Iters: " << custom_cg.iters() << ", error: " << custom_cg.error() << std::endl;
 
         // write solution
-        VectorRW solution(system_rhs.max_len);
-        for (int row = 0; row < system_matrix_pattern.cols; ++row)
-        {
+        VectorRW solution(n);
+        for (int row = 0; row < n; ++row)
             solution.val[row] = vcl_sln(row);
-        }
 
         std::ofstream writeSln(solutionArg.getValue());
         solution.block_write(writeSln);

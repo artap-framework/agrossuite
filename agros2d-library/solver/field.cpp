@@ -797,14 +797,12 @@ void FieldInfo::setStringKeys()
     m_settingKey[TransientInitialCondition] = "TransientInitialCondition";
     m_settingKey[LinearSolverIterDealIIMethod] = "LinearSolverIterDealIIMethod";
     m_settingKey[LinearSolverIterDealIIPreconditioner] = "LinearSolverIterDealIIPreconditioner";
-    m_settingKey[LinearSolverIterPARALUTIONMethod] = "LinearSolverIterPARALUTIONMethod";
-    m_settingKey[LinearSolverIterPARALUTIONDoublePrecision] = "LinearSolverIterPARALUTIONDoublePrecision";
-    m_settingKey[LinearSolverIterPARALUTIONPreconditioner] = "LinearSolverIterPARALUTIONPreconditioner";
     m_settingKey[LinearSolverIterToleranceAbsolute] = "LinearSolverIterToleranceAbsolute";
     m_settingKey[LinearSolverIterIters] = "LinearSolverIterIters";
     m_settingKey[LinearSolverExternalName] = "LinearSolverExternalName";
+    m_settingKey[LinearSolverExternalCommandPre] = "LinearSolverExternalCommandPre";
+    m_settingKey[LinearSolverExternalCommandPost] = "LinearSolverExternalCommandPost";
     m_settingKey[TimeUnit] = "TimeUnit";
-
 }
 
 void FieldInfo::setDefaultValues()
@@ -838,11 +836,10 @@ void FieldInfo::setDefaultValues()
     m_settingDefault[TransientInitialCondition] = 0.0;
     m_settingDefault[LinearSolverIterDealIIMethod] = IterSolverDealII_BiCGStab;
     m_settingDefault[LinearSolverIterDealIIPreconditioner] = PreconditionerDealII_SSOR;
-    m_settingDefault[LinearSolverIterPARALUTIONMethod] = IterSolverPARALUTION_BiCGStab;
-    m_settingDefault[LinearSolverIterPARALUTIONPreconditioner] = PreconditionerPARALUTION_Jacobi;
-    m_settingDefault[LinearSolverIterPARALUTIONDoublePrecision] = true;
     m_settingDefault[LinearSolverIterToleranceAbsolute] = 1e-16;
     m_settingDefault[LinearSolverIterIters] = 1000;
     m_settingDefault[LinearSolverExternalName] = "";
+    m_settingDefault[LinearSolverExternalCommandPre] = "";
+    m_settingDefault[LinearSolverExternalCommandPost] = "";
     m_settingDefault[TimeUnit] = "s";
 }

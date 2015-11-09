@@ -91,7 +91,6 @@
 #include "bdf2.h"
 
 #include "pythonlab/pythonengine.h"
-#include "solver/paralution_dealii.hpp"
 
 #include <functional>
 #include <typeinfo>

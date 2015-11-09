@@ -463,15 +463,14 @@ QWidget *FieldWidget::createLinearSolverWidget()
 {
     cmbIterLinearSolverDealIIMethod = new QComboBox();
     cmbIterLinearSolverDealIIPreconditioner = new QComboBox();
-    cmbIterLinearSolverPARALUTIONMethod = new QComboBox();
-    cmbIterLinearSolverPARALUTIONPreconditioner = new QComboBox();
-    chkIterLinearSolverPARALUTIONDoublePrecision = new QCheckBox(tr("Use double precision"));
     txtIterLinearSolverToleranceAbsolute = new LineEditDouble(1e-15);
     txtIterLinearSolverToleranceAbsolute->setBottom(0.0);
     txtIterLinearSolverIters = new QSpinBox();
     txtIterLinearSolverIters->setMinimum(1);
     txtIterLinearSolverIters->setMaximum(10000);
     cmbExternalLinearSolverCommand = new QComboBox();
+    txtExternalLinearSolverCommandPre = new QLineEdit();
+    txtExternalLinearSolverCommandPost = new QLineEdit();
 
     QGridLayout *iterSolverDealIILayout = new QGridLayout();
     iterSolverDealIILayout->addWidget(new QLabel(tr("Method:")), 0, 0);
@@ -482,23 +481,16 @@ QWidget *FieldWidget::createLinearSolverWidget()
     QGroupBox *iterSolverDealIIGroup = new QGroupBox(tr("deal.II"));
     iterSolverDealIIGroup->setLayout(iterSolverDealIILayout);
 
-    QGridLayout *iterSolverPARALUTIONLayout = new QGridLayout();
-    iterSolverPARALUTIONLayout->addWidget(new QLabel(tr("Method:")), 0, 0);
-    iterSolverPARALUTIONLayout->addWidget(cmbIterLinearSolverPARALUTIONMethod, 0, 1);
-    iterSolverPARALUTIONLayout->addWidget(new QLabel(tr("Preconditioner:")), 1, 0);
-    iterSolverPARALUTIONLayout->addWidget(cmbIterLinearSolverPARALUTIONPreconditioner, 1, 1);
-    iterSolverPARALUTIONLayout->addWidget(chkIterLinearSolverPARALUTIONDoublePrecision, 2, 1);
+    QGridLayout *externalSolverLayout = new QGridLayout();
+    externalSolverLayout->addWidget(new QLabel(tr("Solver:")), 0, 0);
+    externalSolverLayout->addWidget(cmbExternalLinearSolverCommand, 0, 1);
+    externalSolverLayout->addWidget(new QLabel(tr("Command pre:")), 1, 0);
+    externalSolverLayout->addWidget(txtExternalLinearSolverCommandPre, 1, 1);
+    externalSolverLayout->addWidget(new QLabel(tr("Command post:")), 2, 0);
+    externalSolverLayout->addWidget(txtExternalLinearSolverCommandPost, 2, 1);
 
-    QGroupBox *iterSolverPARALUTIONGroup = new QGroupBox(tr("PARALUTION"));
-    iterSolverPARALUTIONGroup->setLayout(iterSolverPARALUTIONLayout);
-
-
-    QGridLayout *iterSolverExternalLayout = new QGridLayout();
-    iterSolverExternalLayout->addWidget(new QLabel(tr("Command:")), 0, 0);
-    iterSolverExternalLayout->addWidget(cmbExternalLinearSolverCommand, 0, 1);
-
-    QGroupBox *iterSolverExternalGroup = new QGroupBox(tr("External (out of core)"));
-    iterSolverExternalGroup->setLayout(iterSolverExternalLayout);
+    QGroupBox *externalSolverGroup = new QGroupBox(tr("External (out of core)"));
+    externalSolverGroup->setLayout(externalSolverLayout);
 
     QGridLayout *iterSolverLayout = new QGridLayout();
     iterSolverLayout->addWidget(new QLabel(tr("Absolute tolerance:")), 0, 0);
@@ -510,10 +502,9 @@ QWidget *FieldWidget::createLinearSolverWidget()
     iterSolverGroup->setLayout(iterSolverLayout);
 
     QVBoxLayout *layoutLinearSolver = new QVBoxLayout();
-    layoutLinearSolver->addWidget(iterSolverExternalGroup);
     layoutLinearSolver->addWidget(iterSolverDealIIGroup);
-    layoutLinearSolver->addWidget(iterSolverPARALUTIONGroup);
     layoutLinearSolver->addWidget(iterSolverGroup);
+    layoutLinearSolver->addWidget(externalSolverGroup);
     layoutLinearSolver->addStretch();
 
     QWidget *widLinearSolver = new QWidget(this);
@@ -558,14 +549,6 @@ void FieldWidget::fillComboBox()
     cmbIterLinearSolverDealIIPreconditioner->clear();
     foreach (QString type, iterLinearSolverDealIIPreconditionerStringKeys())
         cmbIterLinearSolverDealIIPreconditioner->addItem(iterLinearSolverDealIIPreconditionerString(iterLinearSolverDealIIPreconditionerFromStringKey(type)), iterLinearSolverDealIIPreconditionerFromStringKey(type));
-
-    cmbIterLinearSolverPARALUTIONMethod->clear();
-    foreach (QString method, iterLinearSolverPARALUTIONMethodStringKeys())
-        cmbIterLinearSolverPARALUTIONMethod->addItem(iterLinearSolverPARALUTIONMethodString(iterLinearSolverPARALUTIONMethodFromStringKey(method)), iterLinearSolverPARALUTIONMethodFromStringKey(method));
-
-    cmbIterLinearSolverPARALUTIONPreconditioner->clear();
-    foreach (QString type, iterLinearSolverPARALUTIONPreconditionerStringKeys())
-        cmbIterLinearSolverPARALUTIONPreconditioner->addItem(iterLinearSolverPARALUTIONPreconditionerString(iterLinearSolverPARALUTIONPreconditionerFromStringKey(type)), iterLinearSolverPARALUTIONPreconditionerFromStringKey(type));
 
     // read from files
     cmbExternalLinearSolverCommand->clear();
@@ -641,11 +624,10 @@ void FieldWidget::load()
     txtIterLinearSolverIters->setValue(m_fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt());
     cmbIterLinearSolverDealIIMethod->setCurrentIndex((IterSolverDealII) cmbIterLinearSolverDealIIMethod->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()));
     cmbIterLinearSolverDealIIPreconditioner->setCurrentIndex((PreconditionerDealII) cmbIterLinearSolverDealIIPreconditioner->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
-    cmbIterLinearSolverPARALUTIONMethod->setCurrentIndex((IterSolverPARALUTION) cmbIterLinearSolverPARALUTIONMethod->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONMethod).toInt()));
-    cmbIterLinearSolverPARALUTIONPreconditioner->setCurrentIndex((PreconditionerPARALUTION) cmbIterLinearSolverPARALUTIONPreconditioner->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONPreconditioner).toInt()));
-    chkIterLinearSolverPARALUTIONDoublePrecision->setChecked(m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONDoublePrecision).toBool());
     // external solver
     cmbExternalLinearSolverCommand->setCurrentIndex(cmbExternalLinearSolverCommand->findData(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()));
+    txtExternalLinearSolverCommandPre->setText(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandPre).toString());
+    txtExternalLinearSolverCommandPost->setText(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandPost).toString());
 
     doAnalysisTypeChanged(cmbAnalysisType->currentIndex());
 }
@@ -692,11 +674,10 @@ bool FieldWidget::save()
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterIters, txtIterLinearSolverIters->value());
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterDealIIMethod, cmbIterLinearSolverDealIIMethod->itemData(cmbIterLinearSolverDealIIMethod->currentIndex()).toInt());
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterDealIIPreconditioner, cmbIterLinearSolverDealIIPreconditioner->itemData(cmbIterLinearSolverDealIIPreconditioner->currentIndex()).toInt());
-    m_fieldInfo->setValue(FieldInfo::LinearSolverIterPARALUTIONMethod, cmbIterLinearSolverPARALUTIONMethod->itemData(cmbIterLinearSolverPARALUTIONMethod->currentIndex()).toInt());
-    m_fieldInfo->setValue(FieldInfo::LinearSolverIterPARALUTIONPreconditioner, cmbIterLinearSolverPARALUTIONPreconditioner->itemData(cmbIterLinearSolverPARALUTIONPreconditioner->currentIndex()).toInt());
-    m_fieldInfo->setValue(FieldInfo::LinearSolverIterPARALUTIONDoublePrecision, chkIterLinearSolverPARALUTIONDoublePrecision->isChecked());
     // external solver
     m_fieldInfo->setValue(FieldInfo::LinearSolverExternalName, cmbExternalLinearSolverCommand->itemData(cmbExternalLinearSolverCommand->currentIndex()).toString());
+    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalCommandPre, txtExternalLinearSolverCommandPre->text());
+    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalCommandPost, txtExternalLinearSolverCommandPost->text());
 
     return true;
 }
@@ -821,10 +802,9 @@ void FieldWidget::doLinearSolverChanged(int index)
     txtIterLinearSolverIters->setEnabled(isIterative);
     cmbIterLinearSolverDealIIMethod->setEnabled(solverType == SOLVER_DEALII);
     cmbIterLinearSolverDealIIPreconditioner->setEnabled(solverType == SOLVER_DEALII);
-    cmbIterLinearSolverPARALUTIONMethod->setEnabled(solverType == SOLVER_PARALUTION);
-    cmbIterLinearSolverPARALUTIONPreconditioner->setEnabled(solverType == SOLVER_PARALUTION);
-    chkIterLinearSolverPARALUTIONDoublePrecision->setEnabled(solverType == SOLVER_PARALUTION);
     cmbExternalLinearSolverCommand->setEnabled(solverType == SOLVER_EXTERNAL);
+    txtExternalLinearSolverCommandPre->setEnabled(solverType == SOLVER_EXTERNAL);
+    txtExternalLinearSolverCommandPost->setEnabled(solverType == SOLVER_EXTERNAL);
 }
 
 void FieldWidget::doNonlinearDampingChanged(int index)

@@ -265,7 +265,6 @@ enum MatrixSolverType
     SOLVER_MUMPS = 4,
     SOLVER_EXTERNAL = 8,
     SOLVER_DEALII,
-    SOLVER_PARALUTION,
     SOLVER_EMPTY = 100
 };
 
@@ -301,28 +300,6 @@ enum PreconditionerDealII
     PreconditionerDealII_PSOR = 7,
     PreconditionerDealII_LACSolver = 8,
     PreconditionerDealII_Chebyshev = 9
-};
-
-enum IterSolverPARALUTION
-{
-    IterSolverPARALUTION_CG = 0,
-    IterSolverPARALUTION_BiCGStab = 1,
-    IterSolverPARALUTION_GMRES = 2,
-    IterSolverPARALUTION_FGMRES = 3,
-    IterSolverPARALUTION_CR = 4,
-    IterSolverPARALUTION_IDR = 5
-};
-
-enum PreconditionerPARALUTION
-{
-    PreconditionerPARALUTION_None = 0,
-    PreconditionerPARALUTION_Jacobi = 1,
-    PreconditionerPARALUTION_MultiColoredGS = 2,
-    PreconditionerPARALUTION_MultiColoredSGS = 3,
-    PreconditionerPARALUTION_ILU = 4,
-    PreconditionerPARALUTION_MultiColoredILU = 5,
-    PreconditionerPARALUTION_MultiElimination = 6,
-    PreconditionerPARALUTION_FSAI = 7
 };
 
 enum MatrixExportFormat
@@ -510,17 +487,5 @@ AGROS_LIBRARY_API QString iterLinearSolverDealIIPreconditionerString(Preconditio
 AGROS_LIBRARY_API QStringList iterLinearSolverDealIIPreconditionerStringKeys();
 AGROS_LIBRARY_API QString iterLinearSolverDealIIPreconditionerToStringKey(PreconditionerDealII type);
 AGROS_LIBRARY_API PreconditionerDealII iterLinearSolverDealIIPreconditionerFromStringKey(const QString &type);
-
-// iterative solver - method - PARALUTION
-AGROS_LIBRARY_API QString iterLinearSolverPARALUTIONMethodString(IterSolverPARALUTION type);
-AGROS_LIBRARY_API QStringList iterLinearSolverPARALUTIONMethodStringKeys();
-AGROS_LIBRARY_API QString iterLinearSolverPARALUTIONMethodToStringKey(IterSolverPARALUTION type);
-AGROS_LIBRARY_API IterSolverPARALUTION iterLinearSolverPARALUTIONMethodFromStringKey(const QString &type);
-
-// iterative solver - preconditioner - PARALUTION
-AGROS_LIBRARY_API QString iterLinearSolverPARALUTIONPreconditionerString(PreconditionerPARALUTION type);
-AGROS_LIBRARY_API QStringList iterLinearSolverPARALUTIONPreconditionerStringKeys();
-AGROS_LIBRARY_API QString iterLinearSolverPARALUTIONPreconditionerToStringKey(PreconditionerPARALUTION type);
-AGROS_LIBRARY_API PreconditionerPARALUTION iterLinearSolverPARALUTIONPreconditionerFromStringKey(const QString &type);
 
 #endif // UTIL_ENUMS_H

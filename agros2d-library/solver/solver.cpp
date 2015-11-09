@@ -92,7 +92,6 @@
 #include "bdf2.h"
 
 #include "pythonlab/pythonengine.h"
-#include "solver/paralution_dealii.hpp"
 
 #include <functional>
 #include <typeinfo>
@@ -101,8 +100,6 @@
 #include <boost/archive/tmpdir.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
-
-using namespace paralution;
 
 // todo: find better place
 // todo: what for curved elements?
@@ -278,14 +275,6 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
     case SOLVER_DEALII:
         linearSolver.solvedealii(system, rhs, sln);
         break;
-    case SOLVER_PARALUTION:
-    {
-        if (m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONDoublePrecision).toBool())
-            linearSolver.solvePARALUTIONDouble(system, rhs, sln, sparsityPattern);
-        else
-            linearSolver.solvePARALUTIONFloat(system, rhs, sln, sparsityPattern);
-        break;
-    }
     case SOLVER_EXTERNAL:
         linearSolver.solveExternal(system, rhs, sln);
         break;

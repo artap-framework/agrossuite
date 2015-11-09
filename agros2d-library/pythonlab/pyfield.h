@@ -100,17 +100,6 @@ class PyField
         }
         void setLinearSolverDealIIPreconditioner(const std::string &linearSolverPreconditioner);
 
-        // matrix solver - iterative PARALUTION
-        inline std::string getLinearSolverPARALUTIONMethod() const {
-             return iterLinearSolverPARALUTIONMethodToStringKey((IterSolverPARALUTION) m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONMethod).toInt()).toStdString();
-        }
-        void setLinearSolverPARALUTIONMethod(const std::string &linearSolverMethod);
-
-        inline std::string getLinearSolverPARALUTIONPreconditioner() const {
-            return iterLinearSolverPARALUTIONPreconditionerToStringKey((PreconditionerPARALUTION) m_fieldInfo->value(FieldInfo::LinearSolverIterPARALUTIONPreconditioner).toInt()).toStdString();
-        }
-        void setLinearSolverPARALUTIONPreconditioner(const std::string &linearSolverPreconditioner);
-
         // number of refinements
         inline int getNumberOfRefinements() const { return m_fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt(); }
         void setNumberOfRefinements(int numberOfRefinements);
