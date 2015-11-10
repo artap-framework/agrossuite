@@ -487,10 +487,10 @@ QWidget *FieldWidget::createLinearSolverWidget()
     iterSolverDealIILayout->addWidget(cmbIterLinearSolverDealIIMethod, 0, 1);
     iterSolverDealIILayout->addWidget(new QLabel(tr("Preconditioner:")), 1, 0);
     iterSolverDealIILayout->addWidget(cmbIterLinearSolverDealIIPreconditioner, 1, 1);
-    iterSolverDealIILayout->addWidget(new QLabel(tr("Absolute tolerance:")), 0, 0);
-    iterSolverDealIILayout->addWidget(txtIterLinearSolverToleranceAbsolute, 0, 1);
-    iterSolverDealIILayout->addWidget(new QLabel(tr("Maximum number of iterations:")), 1, 0);
-    iterSolverDealIILayout->addWidget(txtIterLinearSolverIters, 1, 1);
+    iterSolverDealIILayout->addWidget(new QLabel(tr("Absolute tolerance:")), 2, 0);
+    iterSolverDealIILayout->addWidget(txtIterLinearSolverToleranceAbsolute, 2, 1);
+    iterSolverDealIILayout->addWidget(new QLabel(tr("Maximum number of iterations:")), 3, 0);
+    iterSolverDealIILayout->addWidget(txtIterLinearSolverIters, 3, 1);
 
     QGroupBox *iterSolverDealIIGroup = new QGroupBox(tr("deal.II"));
     iterSolverDealIIGroup->setLayout(iterSolverDealIILayout);
