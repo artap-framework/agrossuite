@@ -117,7 +117,9 @@ void SolverLinearSolver::solveExternal(dealii::SparseMatrix<double> &system,
                                QObject::tr("External solver - %1").arg(name));
 
     AgrosExternalSolver ext(&system, &rhs);
-    ext.setCommandTemplate(command);
+    ext.setCommand(command);
+    ext.setCommandEnvironment(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandEnvironment).toString());
+    ext.setCommandParameters(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandParameters).toString());
     ext.solve();
     sln = ext.solution();
 }

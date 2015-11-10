@@ -61,6 +61,8 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
         TCLAP::ValueArg<std::string> preconditionerArg("c", "preconditioner", "Preconditioner", false, "", "string");
         TCLAP::ValueArg<std::string> solverArg("l", "solver", "Solver", false, "", "string");
+        TCLAP::ValueArg<double> relTolArg("t", "rel_tol", "Relative tolerance", false, 1e-9, "double");
+        TCLAP::ValueArg<int> maxIterArg("x", "max_iter", "Maximum number of iterations", false, 1000, "int");
 
         cmd.add(matrixArg);
         cmd.add(matrixPatternArg);
@@ -69,6 +71,8 @@ int main(int argc, char *argv[])
         cmd.add(initialArg);
         cmd.add(preconditionerArg);
         cmd.add(solverArg);
+        cmd.add(relTolArg);
+        cmd.add(maxIterArg);
 
         // parse the argv array.
         cmd.parse(argc, argv);
@@ -121,25 +125,27 @@ int main(int argc, char *argv[])
         system_matrix_pattern.clear();
         system_rhs.clear();
 
+        // tolerances
+        double relTol = relTolArg.getValue();
+        int maxIter = maxIterArg.getValue();
+
         viennacl::vector<ScalarType> vcl_sln;
 
         // incomplete LU factorization with threshold
         // if (preconditionerArg.getValue() == "ILUT" || preconditionerArg.getValue() == "") // default
 
-        /*
         // ilut
         viennacl::linalg::ilut_tag ilut_config(20, 1e-4, true);
         viennacl::linalg::ilut_precond<viennacl::compressed_matrix<ScalarType> > ilut_precond(vcl_matrix, ilut_config);
 
         // bicgstab
-        viennacl::linalg::bicgstab_tag custom_bicgstab(1e-9, 1000);
+        viennacl::linalg::bicgstab_tag custom_bicgstab(relTol, maxIter);
         vcl_sln = viennacl::linalg::solve(vcl_matrix, vcl_rhs, custom_bicgstab, ilut_precond);
         std::cout << "BiCGStab: iters: " << custom_bicgstab.iters() << ", error: " << custom_bicgstab.error() << std::endl;
-        */
 
         // viennacl::context host_ctx(viennacl::MAIN_MEMORY);
         // viennacl::context target_ctx(viennacl::CUDA_MEMORY);
-
+        /*
         viennacl::linalg::amg_tag custom_amg;
         // custom_amg.set_coarsening_method(viennacl::linalg::AMG_COARSENING_METHOD_ONEPASS);
         // custom_amg.set_interpolation_method(viennacl::linalg::AMG_INTERPOLATION_METHOD_DIRECT);
@@ -156,7 +162,7 @@ int main(int argc, char *argv[])
         std::cout << "AMG: coarse_levels: " << custom_amg.get_coarse_levels()
                   << ", presmooth_steps: " << custom_amg.get_presmooth_steps()
                   << ", postsmooth_steps: " << custom_amg.get_postsmooth_steps() << std::endl;
-
+        */
         // write solution
         VectorRW solution(n);
         for (int row = 0; row < n; ++row)
@@ -165,6 +171,8 @@ int main(int argc, char *argv[])
         std::ofstream writeSln(solutionArg.getValue());
         solution.block_write(writeSln);
         writeSln.close();
+
+        exit(0);
     }
     catch (TCLAP::ArgException &e)
     {

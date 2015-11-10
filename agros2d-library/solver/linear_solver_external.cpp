@@ -83,13 +83,16 @@ void AgrosExternalSolver::solve(const dealii::Vector<double> *initial_guess)
         writeInitial.close();
     }
 
-    // fill command template
-    QString command = m_commandTemplate.
+    // fill command template   
+    QString command = QString("%1 \"%2/libs/%3\" -m \"%4\" -p \"%5\" -r \"%6\" -s \"%7\" %8").
+            arg(m_commandEnvironment).
             arg(QApplication::applicationDirPath()).
+            arg(m_command).
             arg(fileMatrix).
             arg(fileMatrixPattern).
             arg(fileRHS).
-            arg(fileSln);
+            arg(fileSln).
+            arg(m_commandParameters);
 
     // exec
     m_process = new QProcess();
@@ -142,7 +145,7 @@ void AgrosExternalSolver::processFinished(int exitCode)
     {
         solverOutputMessage.insert(0, "\n");
         solverOutputMessage.append("\n");
-        Agros2D::log()->printError(tr("External solver"), solverOutputMessage);
+        Agros2D::log()->printWarning(tr("External solver"), solverOutputMessage);
     }
 
     if (exitCode == 0)

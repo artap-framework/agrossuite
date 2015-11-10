@@ -1,4 +1,4 @@
-PROJECT(solver_external_MUMPS C CXX)
+PROJECT(solver_MUMPS C CXX)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/../dealii/cmake)
 
@@ -26,9 +26,10 @@ INCLUDE_DIRECTORIES(${MUMPS_INCLUDE_DIR})
 
 SET(SOURCES main.cpp)
 
-file(WRITE "${CMAKE_HOME_DIRECTORY}/../libs/${PROJECT_NAME}_seq.ext" "MUMPS - seq (external)\n\"%1/libs/solver_external_MUMPS\" -m \"%2\" -p \"%3\" -r \"%4\" -s \"%5\"")
-file(WRITE "${CMAKE_HOME_DIRECTORY}/../libs/${PROJECT_NAME}_mpi.ext" "MUMPS - mpi (external)\nmpirun -np 4 \"%1/libs/solver_external_MUMPS\" -m \"%2\" -p \"%3\" -r \"%4\" -s \"%5\"")
-#file(WRITE "${CMAKE_HOME_DIRECTORY}/../libs/${PROJECT_NAME}_mpi.ext" "MUMPS - mpi (external)\nmpirun -np 30 --host localhost,147.228.82.30 \"%1/libs/solver_external_MUMPS\" -m \"%2\" -p \"%3\" -r \"%4\" -s \"%5\"")
+file(WRITE "${CMAKE_HOME_DIRECTORY}/../libs/${PROJECT_NAME}.ext"
+"MUMPS\n\
+solver_MUMPS\n\
+")
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MPI_LIBRARIES} ${MUMPS_LIBRARIES} ${LAPACK_LIBRARIES} gfortran)

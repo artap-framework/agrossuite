@@ -1,4 +1,4 @@
-PROJECT(solver_external_PARALUTION C CXX)
+PROJECT(solver_PARALUTION C CXX)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/../dealii/cmake)
 
@@ -23,7 +23,14 @@ message(${PARALUTION_INCLUDE_DIR})
 
 SET(SOURCES main.cpp)
 
-file(WRITE "${CMAKE_HOME_DIRECTORY}/../libs/${PROJECT_NAME}.ext" "PARALUTION - bicgstab (external)\n\"%1/libs/solver_external_PARALUTION\" -m \"%2\" -p \"%3\" -r \"%4\" -s \"%5\"")
+file(WRITE "${CMAKE_HOME_DIRECTORY}/../libs/${PROJECT_NAME}.ext"
+"PARALUTION\n\
+solver_PARALUTION\n\
+<b>-c</b> or <b>--preconditioner</b> (<i>string</i>) : Jacobi, MultiColoredGS, MultiColoredSGS, ILU, MultiColoredILU, MultiElimination, FSAI<br/>\
+<b>-l</b> or <b>--solver</b> (<i>string</i>) : BiCGStab, CG, GMRES, FGMRES, CR, IDR<br/>\
+<b>-x</b> or <b>--max_iter</b> (<i>int</i>)<br/>\
+<b>-t</b> or <b>--rel_tol</b> (<i>double</i>)<br/>\
+<b>-a</b> or <b>--abs_tol</b> (<i>double</i>)")
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PARALUTION_LIBRARY})

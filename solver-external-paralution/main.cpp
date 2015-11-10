@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     try
     {
         // command line info
-        TCLAP::CmdLine cmd("External solver - UMFPACK", ' ');
+        TCLAP::CmdLine cmd("External solver - PARALUTION", ' ');
 
         TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
         TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
@@ -47,6 +47,9 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
         TCLAP::ValueArg<std::string> preconditionerArg("c", "preconditioner", "Preconditioner", false, "", "string");
         TCLAP::ValueArg<std::string> solverArg("l", "solver", "Solver", false, "", "string");
+        TCLAP::ValueArg<double> absTolArg("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double");
+        TCLAP::ValueArg<double> relTolArg("t", "rel_tol", "Relative tolerance", false, 1e-9, "double");
+        TCLAP::ValueArg<int> maxIterArg("x", "max_iter", "Maximum number of iterations", false, 1000, "int");
 
         cmd.add(matrixArg);
         cmd.add(matrixPatternArg);
@@ -55,6 +58,9 @@ int main(int argc, char *argv[])
         cmd.add(initialArg);
         cmd.add(preconditionerArg);
         cmd.add(solverArg);
+        cmd.add(absTolArg);
+        cmd.add(relTolArg);
+        cmd.add(maxIterArg);
 
         // parse the argv array.
         cmd.parse(argc, argv);
@@ -158,6 +164,8 @@ int main(int argc, char *argv[])
             p = new MultiElimination<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
         else if (preconditionerArg.getValue() == "FSAI")
             p = new FSAI<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else
+            std::cerr << "Preconditioner '" << preconditionerArg.getValue() << "' not found." << std::endl;
 
         // solver
         IterativeLinearSolver<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *ls = nullptr;
@@ -173,8 +181,15 @@ int main(int argc, char *argv[])
             ls = new CR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
         else if (solverArg.getValue() == "IDR")
             ls = new IDR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else
+            std::cerr << "Solver '" << solverArg.getValue() << "' not found." << std::endl;
 
-        ls->Init(1e-13, 1e-9, 1e8, 1000);
+        // tolerances
+        double absTol = absTolArg.getValue();
+        double relTol = relTolArg.getValue();
+        int maxIter = maxIterArg.getValue();
+
+        ls->Init(absTol, relTol, 1e8, maxIter);
 
         ls->SetOperator(mat_paralution);
         ls->SetPreconditioner(*p);
@@ -208,6 +223,8 @@ int main(int argc, char *argv[])
 
         // stop PARALUTION
         paralution::stop_paralution();
+
+        exit(0);
     }
     catch (TCLAP::ArgException &e)
     {

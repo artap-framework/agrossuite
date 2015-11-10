@@ -469,14 +469,28 @@ QWidget *FieldWidget::createLinearSolverWidget()
     txtIterLinearSolverIters->setMinimum(1);
     txtIterLinearSolverIters->setMaximum(10000);
     cmbExternalLinearSolverCommand = new QComboBox();
-    txtExternalLinearSolverCommandPre = new QLineEdit();
-    txtExternalLinearSolverCommandPost = new QLineEdit();
+    connect(cmbExternalLinearSolverCommand, SIGNAL(currentIndexChanged(int)), this, SLOT(doExternalSolverChanged(int)));
+    txtExternalLinearSolverCommandEnvironment = new QLineEdit();
+    txtExternalLinearSolverCommandParameters = new QLineEdit();
+    lblExternalLinearSolverHint = new QLabel();
+    lblExternalLinearSolverHint->setWordWrap(false);
+    lblExternalLinearSolverHint->setTextFormat(Qt::RichText);
+    QFont fnt = lblExternalLinearSolverHint->font();
+    fnt.setPointSize(fnt.pointSize() - 2);
+    lblExternalLinearSolverHint->setFont(fnt);
+    QPalette palette = lblExternalLinearSolverHint->palette();
+    palette.setColor(QPalette::WindowText, QColor(Qt::darkBlue));
+    lblExternalLinearSolverHint->setPalette(palette);
 
     QGridLayout *iterSolverDealIILayout = new QGridLayout();
     iterSolverDealIILayout->addWidget(new QLabel(tr("Method:")), 0, 0);
     iterSolverDealIILayout->addWidget(cmbIterLinearSolverDealIIMethod, 0, 1);
     iterSolverDealIILayout->addWidget(new QLabel(tr("Preconditioner:")), 1, 0);
     iterSolverDealIILayout->addWidget(cmbIterLinearSolverDealIIPreconditioner, 1, 1);
+    iterSolverDealIILayout->addWidget(new QLabel(tr("Absolute tolerance:")), 0, 0);
+    iterSolverDealIILayout->addWidget(txtIterLinearSolverToleranceAbsolute, 0, 1);
+    iterSolverDealIILayout->addWidget(new QLabel(tr("Maximum number of iterations:")), 1, 0);
+    iterSolverDealIILayout->addWidget(txtIterLinearSolverIters, 1, 1);
 
     QGroupBox *iterSolverDealIIGroup = new QGroupBox(tr("deal.II"));
     iterSolverDealIIGroup->setLayout(iterSolverDealIILayout);
@@ -484,26 +498,17 @@ QWidget *FieldWidget::createLinearSolverWidget()
     QGridLayout *externalSolverLayout = new QGridLayout();
     externalSolverLayout->addWidget(new QLabel(tr("Solver:")), 0, 0);
     externalSolverLayout->addWidget(cmbExternalLinearSolverCommand, 0, 1);
-    externalSolverLayout->addWidget(new QLabel(tr("Command pre:")), 1, 0);
-    externalSolverLayout->addWidget(txtExternalLinearSolverCommandPre, 1, 1);
-    externalSolverLayout->addWidget(new QLabel(tr("Command post:")), 2, 0);
-    externalSolverLayout->addWidget(txtExternalLinearSolverCommandPost, 2, 1);
+    externalSolverLayout->addWidget(new QLabel(tr("Environment:")), 1, 0);
+    externalSolverLayout->addWidget(txtExternalLinearSolverCommandEnvironment, 1, 1);
+    externalSolverLayout->addWidget(new QLabel(tr("Parameters:")), 2, 0);
+    externalSolverLayout->addWidget(txtExternalLinearSolverCommandParameters, 2, 1);
+    externalSolverLayout->addWidget(lblExternalLinearSolverHint, 3, 0, 1, 2);
 
     QGroupBox *externalSolverGroup = new QGroupBox(tr("External (out of core)"));
     externalSolverGroup->setLayout(externalSolverLayout);
 
-    QGridLayout *iterSolverLayout = new QGridLayout();
-    iterSolverLayout->addWidget(new QLabel(tr("Absolute tolerance:")), 0, 0);
-    iterSolverLayout->addWidget(txtIterLinearSolverToleranceAbsolute, 0, 1);
-    iterSolverLayout->addWidget(new QLabel(tr("Maximum number of iterations:")), 1, 0);
-    iterSolverLayout->addWidget(txtIterLinearSolverIters, 1, 1);
-
-    QGroupBox *iterSolverGroup = new QGroupBox(tr("Iterative solver"));
-    iterSolverGroup->setLayout(iterSolverLayout);
-
     QVBoxLayout *layoutLinearSolver = new QVBoxLayout();
     layoutLinearSolver->addWidget(iterSolverDealIIGroup);
-    layoutLinearSolver->addWidget(iterSolverGroup);
     layoutLinearSolver->addWidget(externalSolverGroup);
     layoutLinearSolver->addStretch();
 
@@ -556,7 +561,6 @@ void FieldWidget::fillComboBox()
     while (itDir.hasNext())
     {
         QString fileName = QFileInfo(itDir.next()).fileName();
-        qDebug() << fileName;
 
         // read command parameters
         QFile f(QString("%1/libs/%2").arg(datadir()).arg(fileName));
@@ -568,7 +572,6 @@ void FieldWidget::fillComboBox()
 
             // command at second line
             QString name = commandContent.at(0);
-            // QString command = commandContent.at(1);
 
             cmbExternalLinearSolverCommand->addItem(name, fileName);
         }
@@ -626,8 +629,8 @@ void FieldWidget::load()
     cmbIterLinearSolverDealIIPreconditioner->setCurrentIndex((PreconditionerDealII) cmbIterLinearSolverDealIIPreconditioner->findData(m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
     // external solver
     cmbExternalLinearSolverCommand->setCurrentIndex(cmbExternalLinearSolverCommand->findData(m_fieldInfo->value(FieldInfo::LinearSolverExternalName).toString()));
-    txtExternalLinearSolverCommandPre->setText(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandPre).toString());
-    txtExternalLinearSolverCommandPost->setText(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandPost).toString());
+    txtExternalLinearSolverCommandEnvironment->setText(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandEnvironment).toString());
+    txtExternalLinearSolverCommandParameters->setText(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandParameters).toString());
 
     doAnalysisTypeChanged(cmbAnalysisType->currentIndex());
 }
@@ -676,8 +679,8 @@ bool FieldWidget::save()
     m_fieldInfo->setValue(FieldInfo::LinearSolverIterDealIIPreconditioner, cmbIterLinearSolverDealIIPreconditioner->itemData(cmbIterLinearSolverDealIIPreconditioner->currentIndex()).toInt());
     // external solver
     m_fieldInfo->setValue(FieldInfo::LinearSolverExternalName, cmbExternalLinearSolverCommand->itemData(cmbExternalLinearSolverCommand->currentIndex()).toString());
-    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalCommandPre, txtExternalLinearSolverCommandPre->text());
-    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalCommandPost, txtExternalLinearSolverCommandPost->text());
+    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalCommandEnvironment, txtExternalLinearSolverCommandEnvironment->text());
+    m_fieldInfo->setValue(FieldInfo::LinearSolverExternalCommandParameters, txtExternalLinearSolverCommandParameters->text());
 
     return true;
 }
@@ -803,8 +806,9 @@ void FieldWidget::doLinearSolverChanged(int index)
     cmbIterLinearSolverDealIIMethod->setEnabled(solverType == SOLVER_DEALII);
     cmbIterLinearSolverDealIIPreconditioner->setEnabled(solverType == SOLVER_DEALII);
     cmbExternalLinearSolverCommand->setEnabled(solverType == SOLVER_EXTERNAL);
-    txtExternalLinearSolverCommandPre->setEnabled(solverType == SOLVER_EXTERNAL);
-    txtExternalLinearSolverCommandPost->setEnabled(solverType == SOLVER_EXTERNAL);
+    txtExternalLinearSolverCommandEnvironment->setEnabled(solverType == SOLVER_EXTERNAL);
+    txtExternalLinearSolverCommandParameters->setEnabled(solverType == SOLVER_EXTERNAL);
+    // lblExternalLinearSolverHint->clear();
 }
 
 void FieldWidget::doNonlinearDampingChanged(int index)
@@ -845,6 +849,26 @@ void FieldWidget::doNonlinearResidual(int state)
 void FieldWidget::doNonlinearRelativeChangeOfSolutions(int state)
 {
     txtNonlinearRelativeChangeOfSolutions->setEnabled(((LinearityType) cmbLinearityType->itemData(cmbLinearityType->currentIndex()).toInt() != LinearityType_Linear) && chkNonlinearRelativeChangeOfSolutions->isChecked());
+}
+
+void FieldWidget::doExternalSolverChanged(int index)
+{
+    if (cmbExternalLinearSolverCommand->currentIndex() != -1)
+    {
+        QString fileName = QFileInfo(cmbExternalLinearSolverCommand->itemData(cmbExternalLinearSolverCommand->currentIndex()).toString()).fileName();
+
+        // read command parameters
+        QFile f(QString("%1/libs/%2").arg(datadir()).arg(fileName));
+        if (f.open(QFile::ReadOnly | QFile::Text))
+        {
+            QTextStream in(&f);
+
+            QStringList commandContent = in.readAll().split("\n");
+
+            // hint at third line
+            lblExternalLinearSolverHint->setText(commandContent.at(2));
+        }
+    }
 }
 
 // ********************************************************************************************

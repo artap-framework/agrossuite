@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
             system_rhs.block_read(readRHS);
             readRHS.close();
 
-            std::cout << "Matrix size: " << system_rhs.max_len << std::endl;
+            // std::cout << "Matrix size: " << system_rhs.max_len << std::endl;
 
             // number of unknowns
             id.n = system_matrix_pattern.rows;
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
             // MPI_Barrier(MPI_COMM_WORLD);
             double end = MPI_Wtime();
 
-            std::cout << "Read matrix: " << (end - startTotal) << std::endl;
+            // std::cout << "Read matrix: " << (end - startTotal) << std::endl;
         }
 
         // no outputs
@@ -164,10 +164,12 @@ int main(int argc, char *argv[])
             delete [] id.irn;
             delete [] id.jcn;
 
-            std::cout << "Total time: " << (end - startTotal) << std::endl;
+            // std::cout << "Total time: " << (end - startTotal) << std::endl;
         }
 
         ierr = MPI_Finalize();
+
+        exit(0);
     }
     catch (TCLAP::ArgException &e)
     {

@@ -94,8 +94,8 @@ public:
         LinearSolverIterToleranceAbsolute,
         LinearSolverIterIters,        
         LinearSolverExternalName,
-        LinearSolverExternalCommandPre,
-        LinearSolverExternalCommandPost,
+        LinearSolverExternalCommandEnvironment,
+        LinearSolverExternalCommandParameters,
         TimeUnit
     };
 

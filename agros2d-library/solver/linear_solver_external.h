@@ -38,7 +38,9 @@ public:
     AgrosExternalSolver(const dealii::SparseMatrix<double> *system_matrix,
                                 const dealii::Vector<double> *system_rhs);
 
-    void setCommandTemplate(const QString &commandTemplate) { m_commandTemplate = commandTemplate; }
+    void setCommand(const QString &command) { m_command = command; }
+    void setCommandEnvironment(const QString &command) { m_commandEnvironment = command; }
+    void setCommandParameters(const QString &command) { m_commandParameters = command; }
 
     void solve();
     void solve(const dealii::Vector<double> *initial_guess);
@@ -53,12 +55,13 @@ protected:
     dealii::Vector<double> m_solution;
     const dealii::Vector<double> *m_initial_guess;
 
-    QString m_commandTemplate;
+    QString m_command;
+    QString m_commandEnvironment;
+    QString m_commandParameters;
 
 protected slots:
     void processError(QProcess::ProcessError error);
     void processFinished(int exitCode);
 };
-
 
 #endif // SOLVER_EXTERNAL_H

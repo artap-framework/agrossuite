@@ -155,8 +155,9 @@ private:
     QComboBox *cmbIterLinearSolverDealIIMethod;
     QComboBox *cmbIterLinearSolverDealIIPreconditioner;
     QComboBox *cmbExternalLinearSolverCommand;
-    QLineEdit *txtExternalLinearSolverCommandPre;
-    QLineEdit *txtExternalLinearSolverCommandPost;
+    QLineEdit *txtExternalLinearSolverCommandEnvironment;
+    QLineEdit *txtExternalLinearSolverCommandParameters;
+    QLabel *lblExternalLinearSolverHint;
 
     // equation
     // LaTeXViewer *equationLaTeX;
@@ -181,6 +182,8 @@ private slots:
     void doAdaptivityTolerance(int state);
     void doNonlinearResidual(int state);
     void doNonlinearRelativeChangeOfSolutions(int state);
+
+    void doExternalSolverChanged(int index);
 };
 
 class FieldDialog : public QDialog

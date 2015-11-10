@@ -675,7 +675,7 @@ QString matrixSolverTypeString(MatrixSolverType matrixSolverType)
     case SOLVER_UMFPACK:
         return QObject::tr("UMFPACK");
     case SOLVER_DEALII:
-        return QObject::tr("deal.II");
+        return QObject::tr("deal.II (iter.)");
     case SOLVER_MUMPS:
         return QObject::tr("MUMPS");
     case SOLVER_EXTERNAL:

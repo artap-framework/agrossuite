@@ -1,4 +1,4 @@
-PROJECT(solver_external_ViennaCL C CXX)
+PROJECT(solver_ViennaCL C CXX)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/../dealii/cmake)
 
@@ -23,7 +23,13 @@ INCLUDE_DIRECTORIES(${UMFPACK_INCLUDE_DIRS})
 
 SET(SOURCES main.cpp)
 
-file(WRITE "${CMAKE_HOME_DIRECTORY}/../libs/${PROJECT_NAME}.ext" "ViennaCL - bicgstab (external)\n\"%1/libs/solver_external_ViennaCL\" -m \"%2\" -p \"%3\" -r \"%4\" -s \"%5\"")
+file(WRITE "${CMAKE_HOME_DIRECTORY}/../libs/${PROJECT_NAME}.ext"
+"ViennaCL\n\
+solver_ViennaCL\n\
+<b>-c</b> or <b>--preconditioner</b> (<i>string</i>) : ilut<br/>\
+<b>-l</b> or <b>--solver</b> (<i>string</i>) : bicgstab<br/>\
+<b>-x</b> or <b>--max_iter</b> (<i>int</i>)<br/>\
+<b>-t</b> or <b>--rel_tol</b> (<i>double</i>)")
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME})

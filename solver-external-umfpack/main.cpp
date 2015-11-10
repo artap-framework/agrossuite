@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 
         if (statusTripletToCol != UMFPACK_OK)
         {
-            std::cout << "UMFPACK triplet to col: " << statusTripletToCol << std::endl;
+            std::cerr << "UMFPACK triplet to col: " << statusTripletToCol << std::endl;
             exit(1);
         }
 
@@ -164,16 +164,18 @@ int main(int argc, char *argv[])
                     delete [] Ap;
                     delete [] Ai;
                     delete [] Ax;
+
+                    exit(0);
                 }
                 else
                 {
-                    std::cout << "UMFPACK numeric error: " << statusNumeric << std::endl;
+                    std::cerr << "UMFPACK numeric error: " << statusNumeric << std::endl;
                     exit(1);
                 }
             }
             else
             {
-                std::cout << "UMFPACK numeric error: " << statusNumeric << std::endl;
+                std::cerr << "UMFPACK numeric error: " << statusNumeric << std::endl;
                 exit(1);
             }
         }
@@ -182,7 +184,7 @@ int main(int argc, char *argv[])
             umfpack_di_report_info(Control, Info);
             umfpack_di_report_status(Control, statusSymbolic);
 
-            std::cout << "UMFPACK symbolic factorization: " << statusSymbolic << std::endl;
+            std::cerr << "UMFPACK symbolic factorization: " << statusSymbolic << std::endl;
             exit(1);
         }
     }
