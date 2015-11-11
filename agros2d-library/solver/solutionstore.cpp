@@ -35,7 +35,81 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 
-#include "../../resources_source/classes/structure_xml.h"
+SolutionStore::SolutionRunTimeDetails::SolutionRunTimeDetails()
+{
+    setStringKeys();
+    setDefaultValues();
+
+    clear();
+}
+
+bool SolutionStore::SolutionRunTimeDetails::load(QJsonObject &results)
+{
+    // default
+    m_runtime = m_runtimeDefault;
+
+    // results
+    foreach (QString keyRes, results.keys())
+    {
+        Type key = stringKeyToType(keyRes);
+
+        if (m_runtimeDefault.keys().contains(key))
+        {
+            if (m_runtimeDefault[key].type() == QVariant::Double)
+                m_runtime[key] = results[keyRes].toDouble();
+            else if (m_runtimeDefault[key].type() == QVariant::Int)
+                m_runtime[key] = results[keyRes].toInt();
+            else if (m_runtimeDefault[key].type() == QVariant::Bool)
+                m_runtime[key] = results[keyRes].toBool();
+            else if (m_runtimeDefault[key].type() == QVariant::String)
+                m_runtime[key] = results[keyRes].toString();
+            else
+                qDebug() << "Key not found" << keyRes << results[keyRes].toString();
+        }
+    }
+}
+
+bool SolutionStore::SolutionRunTimeDetails::save(QJsonObject &results)
+{
+    foreach (Type key, m_runtime.keys())
+    {
+        if (m_runtimeDefault[key].type() == QVariant::Bool)
+            results[typeToStringKey(key)] = m_runtime[key].toBool();
+        else if (m_runtimeDefault[key].type() == QVariant::String)
+            results[typeToStringKey(key)] = m_runtime[key].toString();
+        else if (m_runtimeDefault[key].type() == QVariant::Int)
+            results[typeToStringKey(key)] = m_runtime[key].toInt();
+        else if (m_runtimeDefault[key].type() == QVariant::Double)
+            results[typeToStringKey(key)] = m_runtime[key].toDouble();
+        else
+            assert(0);
+    }
+}
+
+void SolutionStore::SolutionRunTimeDetails::clear()
+{
+    setDefaultValues();
+
+    m_runtime = m_runtimeDefault;
+}
+
+void SolutionStore::SolutionRunTimeDetails::setStringKeys()
+{
+    m_runtimeKey[TimeStepLength] = "TimeStepLength";
+    m_runtimeKey[AdaptivityError] = "AdaptivityError";
+    m_runtimeKey[DOFs] = "DOFs";
+}
+
+void SolutionStore::SolutionRunTimeDetails::setDefaultValues()
+{
+    m_runtimeDefault.clear();
+
+    m_runtimeDefault[TimeStepLength] = 0.0;
+    m_runtimeDefault[AdaptivityError] = 0.0;
+    m_runtimeDefault[DOFs] = 0;
+}
+
+// *******************************************************************************************************************************
 
 SolutionStore::SolutionStore(ProblemComputation *parentProblem) : m_computation(parentProblem)
 {    
@@ -63,9 +137,12 @@ void SolutionStore::clear()
     foreach (FieldSolutionID sid, m_multiSolutions)
         removeSolution(sid, false);
 
+    // clear results
+    m_results.clear();
+
     // remove runtime
     /*
-    QString fn = QString("%1/%2/runtime.xml").
+    QString fn = QString("%1/%2/runtime.json").
             arg(cacheProblemDir()).
             arg(m_computation->problemDir());
     if (QFile::exists(fn))
@@ -89,6 +166,8 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
         // triangulation
         dealii::Triangulation<2> triangulation;
         QString fnMesh = QString("%1.msh").arg(baseFN);
+        if (!QFile::exists(fnMesh))
+            assert(0); // return MultiArray();
         std::ifstream ifsMesh(fnMesh.toStdString());
         boost::archive::binary_iarchive sbiMesh(ifsMesh);
         triangulation.load(sbiMesh, 0);
@@ -97,6 +176,8 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
         dealii::hp::DoFHandler<2> doFHandler(triangulation);
         doFHandler.distribute_dofs(*m_computation->problemSolver()->feCollection(m_computation->fieldInfo(solutionID.fieldId)));
         QString fnDoF = QString("%1.dof").arg(baseFN);
+        if (!QFile::exists(fnDoF))
+            assert(0); // return MultiArray();
         std::ifstream ifsDoF(fnDoF.toStdString());
         boost::archive::binary_iarchive sbiDoF(ifsDoF);
         doFHandler.load(sbiDoF, 0);
@@ -104,6 +185,8 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
         // solution vector
         dealii::Vector<double> solution;
         QString fnSol = QString("%1.sol").arg(baseFN);
+        if (!QFile::exists(fnSol))
+            assert(0); // return MultiArray();
         std::ifstream ifsSol(fnSol.toStdString());
         boost::archive::binary_iarchive sbiSol(ifsSol);
         solution.load(sbiSol, 0);
@@ -128,31 +211,24 @@ void SolutionStore::addSolution(FieldSolutionID solutionID, MultiArray multiSolu
     // assert(!m_multiSolutions.contains(solutionID));
     assert(solutionID.timeStep >= 0);
     assert(solutionID.adaptivityStep >= 0);
+
     // save soloution
-
-    SolutionRunTimeDetails::FileName fileNames;
-
     QString baseFN = baseStoreFileName(solutionID);
 
     QString fnMesh = QString("%1.msh").arg(baseFN);
-    fileNames.setMeshFileName(QFileInfo(fnMesh).fileName());
     std::ofstream ofsMesh(fnMesh.toStdString());
     boost::archive::binary_oarchive sbMesh(ofsMesh);
     multiSolution.doFHandler()->get_tria().save(sbMesh, 0);
 
     QString fnDoF = QString("%1.dof").arg(baseFN);
-    fileNames.setDoFFileName(QFileInfo(fnDoF).fileName());
     std::ofstream ofsDoF(fnDoF.toStdString());
     boost::archive::binary_oarchive sbDoF(ofsDoF);
     multiSolution.doFHandler()->save(sbDoF, 0);
 
     QString fnSol = QString("%1.sol").arg(baseFN);
-    fileNames.setSolutionFileName(QFileInfo(fnSol).fileName());
     std::ofstream ofsSol(fnSol.toStdString());
     boost::archive::binary_oarchive sbSol(ofsSol);
     multiSolution.solution().save(sbSol, 0);
-
-    runTime.setFileNames(fileNames);
 
     // append multisolution
     m_multiSolutions.append(solutionID);
@@ -274,148 +350,96 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, Multi
 
 void SolutionStore::loadRunTimeDetails()
 {
-    QString fn = QString("%1/%2/runtime.xml").
-            arg(cacheProblemDir()).
-            arg(m_computation->problemDir());
+    QString fnJSON = QString("%1/%2/runtime.json").arg(cacheProblemDir()).arg(m_computation->problemDir());
+    QFile file(fnJSON);
 
-    try
+    if (!file.open(QIODevice::ReadOnly))
     {
-        std::unique_ptr<XMLStructure::structure> structure_xsd = XMLStructure::structure_(compatibleFilename(fn).toStdString(), xml_schema::flags::dont_validate);
-        XMLStructure::structure *structure = structure_xsd.get();
-
-        int time_step = 0;
-        for (unsigned int i = 0; i < structure->element_data().size(); i++)
-        {
-            XMLStructure::element_data data = structure->element_data().at(i);
-
-            // check field
-            if (!m_computation->hasField(QString::fromStdString(data.field_id())))
-                throw AgrosException(QObject::tr("Field '%1' info mismatch.").arg(QString::fromStdString(data.field_id())));
-
-            FieldSolutionID solutionID(QString::fromStdString(data.field_id()),
-                                       data.time_step(),
-                                       data.adaptivity_step());
-            // append multisolution
-            m_multiSolutions.append(solutionID);
-
-            // define transient time step
-            if (data.time_step() > time_step)
-            {
-                // new time step
-                time_step = data.time_step();
-                m_computation->setActualTimeStepLength(data.time_step_length().get());
-            }
-
-            SolutionRunTimeDetails::FileName fileNames;
-            for (int j = 0; j < data.files().file().size(); j++)
-            {
-                XMLStructure::file file = data.files().file().at(j);
-
-                fileNames = SolutionRunTimeDetails::FileName(QString::fromStdString(file.mesh_filename()),
-                                                             QString::fromStdString(file.dof_filename()),
-                                                             QString::fromStdString(file.solution_filename()));
-            }
-
-            SolutionRunTimeDetails runTime(data.time_step_length().get(),
-                                           data.adaptivity_error().get(),
-                                           data.dofs().get());
-            runTime.setFileNames(fileNames);
-
-            // append run time details
-            m_multiSolutionRunTimeDetails.insert(solutionID, runTime);
-        }
+        qWarning("Couldn't open result file.");
+        return;
     }
-    catch (const xml_schema::exception& e)
+
+    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+
+    QJsonObject storeJson = doc.object();
+
+    // solutions
+    int time_step = 0;
+    QJsonArray solutionsJson = storeJson[SOLUTIONS].toArray();
+    for (int i = 0; i < solutionsJson.size(); i++)
     {
-        std::cerr << e << std::endl;
+        QJsonObject solutionJson = solutionsJson[i].toObject();
+        QJsonObject runtimeJson = solutionJson[RUNTIME].toObject();
+        SolutionRunTimeDetails runTime;
+        runTime.load(runtimeJson);
+
+        FieldSolutionID solutionID(solutionJson[FIELDID].toString(),
+                                   solutionJson[TIMESTEP].toInt(),
+                                   solutionJson[ADAPTIVITYSTEP].toInt());
+        // append multisolution
+        m_multiSolutions.append(solutionID);
+
+        // define transient time step
+        if (solutionJson[TIMESTEP].toInt() > time_step)
+        {
+            // new time step
+            time_step = solutionJson[TIMESTEP].toInt();
+            m_computation->setActualTimeStepLength(runTime.value(SolutionStore::SolutionRunTimeDetails::TimeStepLength).toDouble());
+        }
+
+        // append run time details
+        m_multiSolutionRunTimeDetails.insert(solutionID, runTime);
+    }
+
+    // results
+    QJsonObject resultsJson = storeJson[RESULTS].toObject();
+    foreach (QString key, resultsJson.keys())
+    {
+        m_results[key] = resultsJson[key].toDouble();
     }
 }
 
 void SolutionStore::saveRunTimeDetails()
 {
-    QString fn = QString("%1/%2/runtime.xml").
-            arg(cacheProblemDir()).
-            arg(m_computation->problemDir());
+    QString fnJSON = QString("%1/%2/runtime.json").arg(cacheProblemDir()).arg(m_computation->problemDir());
+    QFile file(fnJSON);
 
-    try
+    if (!file.open(QIODevice::WriteOnly))
     {
-        XMLStructure::structure structure;
-        foreach (FieldSolutionID solutionID, m_multiSolutions)
-        {
-            SolutionRunTimeDetails str = m_multiSolutionRunTimeDetails[solutionID];
-
-            XMLStructure::files files;
-            for (int solutionIndex = 0; solutionIndex < m_computation->fieldInfo(solutionID.fieldId)->numberOfSolutions(); solutionIndex++)
-            {
-                files.file().push_back(XMLStructure::file(solutionIndex,
-                                                          str.fileNames().meshFileName().toStdString(),
-                                                          str.fileNames().doFFileName().toStdString(),
-                                                          str.fileNames().solutionFileName().toStdString()));
-            }
-
-            XMLStructure::newton_residuals newton_residuals;
-            for (int iteration = 0; iteration < str.newtonResidual().size(); iteration++)
-            {
-                newton_residuals.residual().push_back(str.newtonResidual().at(iteration));
-            }
-
-            XMLStructure::newton_damping_coefficients newton_damping_coefficients;
-            for (int iteration = 0; iteration < str.nonlinearDamping().size(); iteration++)
-            {
-                newton_damping_coefficients.damping_coefficient().push_back(str.nonlinearDamping().at(iteration));
-            }
-
-            // solution id
-            XMLStructure::element_data data(files,
-                                            newton_residuals,
-                                            newton_damping_coefficients,
-                                            solutionID.fieldId.toStdString(),
-                                            solutionID.timeStep,
-                                            solutionID.adaptivityStep);
-
-            // properties
-            data.time_step_length().set(str.timeStepLength());
-            data.adaptivity_error().set(str.adaptivityError());
-            data.dofs().set(str.DOFs());
-            data.jacobian_calculations().set(str.jacobianCalculations());
-
-            structure.element_data().push_back(data);
-        }
-
-        std::string mesh_schema_location("");
-
-        mesh_schema_location.append(QString("%1/structure_xml.xsd").arg(QFileInfo(datadir() + XSDROOT).absoluteFilePath()).toStdString());
-        ::xml_schema::namespace_info namespace_info_mesh("XMLStructure", mesh_schema_location);
-
-        ::xml_schema::namespace_infomap namespace_info_map;
-        namespace_info_map.insert(std::pair<std::basic_string<char>, xml_schema::namespace_info>("structure", namespace_info_mesh));
-
-        std::ofstream out(compatibleFilename(fn).toStdString().c_str());
-        XMLStructure::structure_(out, structure, namespace_info_map);
+        qWarning("Couldn't open result file.");
+        return;
     }
-    catch (const xml_schema::exception& e)
+
+    // root object
+    QJsonObject storeJson;
+
+    // solution
+    QJsonArray solutionsJson;
+    foreach (FieldSolutionID solutionID, m_multiSolutions)
     {
-        std::cerr << e << std::endl;
+        QJsonObject runtimeJson;
+        SolutionRunTimeDetails runTime = m_multiSolutionRunTimeDetails[solutionID];
+        runTime.save(runtimeJson);
+
+        QJsonObject solutionJson;
+        solutionJson[FIELDID] = solutionID.fieldId;
+        solutionJson[TIMESTEP] = solutionID.timeStep;
+        solutionJson[ADAPTIVITYSTEP] = solutionID.adaptivityStep;
+        solutionJson[RUNTIME] = runtimeJson;
+
+        solutionsJson.append(solutionJson);
     }
-}
+    storeJson[SOLUTIONS] = solutionsJson;
 
-void SolutionStore::multiSolutionRunTimeDetailReplace(FieldSolutionID solutionID, SolutionRunTimeDetails runTime)
-{
-    assert(m_multiSolutionRunTimeDetails.contains(solutionID));
-    m_multiSolutionRunTimeDetails[solutionID] = runTime;
-
-    // save structure to the file
-    saveRunTimeDetails();
-}
-
-void SolutionStore::printDebugCacheStatus()
-{
-    assert(m_multiSolutionCacheIDOrder.size() == m_multiSolutionDealCache.keys().size());
-    qDebug() << "solution store cache status:";
-    foreach(FieldSolutionID fsid, m_multiSolutionCacheIDOrder)
+    // results
+    QJsonObject resultsJson;
+    for (QMap<QString, double>::const_iterator i = m_results.constBegin(); i != m_results.constEnd(); ++i)
     {
-        assert(m_multiSolutionDealCache.keys().contains(fsid));
-        qDebug() << fsid.toString();
+        resultsJson[i.key()] = i.value();
     }
-}
+    storeJson[RESULTS] = resultsJson;
 
+    // save to file
+    QJsonDocument doc(storeJson);
+    file.write(doc.toJson());
+}

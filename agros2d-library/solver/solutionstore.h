@@ -38,62 +38,39 @@ public:
     class SolutionRunTimeDetails
     {
     public:
-        class FileName
+        enum Type
         {
-        public:
-            FileName(QString meshFileName = "", QString doFFileName = "", QString solutionFileName = "")
-                : m_meshFileName(meshFileName), m_DoFFileName(doFFileName), m_solutionFileName(solutionFileName) {}
-
-            inline QString meshFileName() const { return m_meshFileName; }
-            inline void setMeshFileName(const QString &value) { m_meshFileName = value; }
-            inline QString doFFileName() const { return m_DoFFileName; }
-            inline void setDoFFileName(const QString &value) { m_DoFFileName = value; }
-            inline QString solutionFileName() const { return m_solutionFileName; }
-            inline void setSolutionFileName(const QString &value) { m_solutionFileName = value; }
-
-        private:
-            QString m_meshFileName;
-            QString m_DoFFileName;
-            QString m_solutionFileName;
+            TimeStepLength,
+            AdaptivityError,
+            DOFs
         };
 
-        SolutionRunTimeDetails(double time_step_length = 0, double error = 0, int DOFs = 0)
-            : m_timeStepLength(time_step_length), m_adaptivityError(error), m_DOFs(DOFs) {}
-        ~SolutionRunTimeDetails()
-        {
-            m_relativeChangeOfSolutions.clear();
-            m_newtonResidual.clear();
-            m_nonlinearDamping.clear();
-        }
+        SolutionRunTimeDetails();
+        ~SolutionRunTimeDetails() {}
 
-        inline double timeStepLength() const { return m_timeStepLength; }
-        inline void setTimeStepLength(double value) { m_timeStepLength = value; }
-        inline double adaptivityError() const { return m_adaptivityError; }
-        inline void setAdaptivityError(double value) { m_adaptivityError = value; }
-        inline int DOFs() const { return m_DOFs; }
-        inline void setDOFs(int value) { m_DOFs = value; }
-        inline int jacobianCalculations() const { return m_jacobianCalculations; }
-        inline void setJacobianCalculations(int value) { m_jacobianCalculations = value; }
-        inline FileName fileNames() const { return m_fileNames; }
-        inline void setFileNames(FileName value) { m_fileNames = value; }
-        inline QVector<double> relativeChangeOfSolutions() const { return m_relativeChangeOfSolutions; }
-        inline void setRelativeChangeOfSolutions(QVector<double> value) { m_relativeChangeOfSolutions = value; }
-        inline QVector<double> newtonResidual() const { return m_newtonResidual; }
-        inline void setNewtonResidual(QVector<double> value) { m_newtonResidual = value; }
-        inline QVector<double> nonlinearDamping() const { return m_nonlinearDamping; }
-        inline void setNonlinearDamping(QVector<double> value) { m_nonlinearDamping = value; }
+        void clear();
+
+        bool load(QJsonObject &results);
+        bool save(QJsonObject &results);
+
+        inline QString typeToStringKey(Type type) { return m_runtimeKey[type]; }
+        inline Type stringKeyToType(const QString &key) { return m_runtimeKey.key(key); }
+
+        inline QVariant value(Type type) const { return m_runtime[type]; }
+        inline void setValue(Type type, int value) {  m_runtime[type] = value; }
+        inline void setValue(Type type, double value) {  m_runtime[type] = value; }
+        inline void setValue(Type type, bool value) {  m_runtime[type] = value; }
+        inline void setValue(Type type, const QString &value) { m_runtime[type] = value; }
+
+        inline QVariant defaultValue(Type type) {  return m_runtimeDefault[type]; }
 
     private:
-        double m_timeStepLength;
-        double m_adaptivityError;
-        int m_DOFs;
-        int m_jacobianCalculations;
+        QMap<Type, QVariant> m_runtime;
+        QMap<Type, QVariant> m_runtimeDefault;
+        QMap<Type, QString> m_runtimeKey;
 
-        FileName m_fileNames;
-
-        QVector<double> m_relativeChangeOfSolutions;
-        QVector<double> m_newtonResidual;
-        QVector<double> m_nonlinearDamping;
+        void setDefaultValues();
+        void setStringKeys();
     };
 
     bool contains(FieldSolutionID solutionID) const;
@@ -107,13 +84,15 @@ public:
     int lastTimeStep(const FieldInfo *fieldInfo) const;
 
     void loadRunTimeDetails();
-
+    void saveRunTimeDetails();
     SolutionRunTimeDetails multiSolutionRunTimeDetail(FieldSolutionID solutionID) const { assert(m_multiSolutionRunTimeDetails.contains(solutionID)); return m_multiSolutionRunTimeDetails[solutionID]; }
-    void multiSolutionRunTimeDetailReplace(FieldSolutionID solutionID, SolutionRunTimeDetails runTime);
 
     inline bool isEmpty() const { return m_multiSolutions.isEmpty(); }
 
-    void printDebugCacheStatus();
+    inline QMap<QString, double> results() { return m_results; }
+    inline bool hasResults() const { return !m_results.isEmpty(); }
+    inline void setResult(QString key, double value) { m_results[key] = value; }
+    inline void removeResult(QString key) { m_results.remove(key); }
 
 public slots:
     void clear();
@@ -125,12 +104,19 @@ private:
     QMap<FieldSolutionID, SolutionRunTimeDetails> m_multiSolutionRunTimeDetails;
     QMap<FieldSolutionID, MultiArray> m_multiSolutionDealCache;
     QList<FieldSolutionID> m_multiSolutionCacheIDOrder;
+    QMap<QString, double> m_results;
 
     void insertMultiSolutionToCache(FieldSolutionID solutionID, MultiArray multiArray);
 
     QString baseStoreFileName(FieldSolutionID solutionID) const;
 
-    void saveRunTimeDetails();
+    // consts
+    const QString RESULTS = "results";
+    const QString SOLUTIONS = "solutions";
+    const QString FIELDID = "fieldid";
+    const QString TIMESTEP = "timestep";
+    const QString ADAPTIVITYSTEP = "adaptivitystep";
+    const QString RUNTIME = "runtime";
 };
 
 #endif // SOLUTIONSTORE_H

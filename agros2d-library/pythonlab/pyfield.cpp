@@ -709,6 +709,9 @@ void PyField::solverInfo(int timeStep, int adaptivityStep,
     timeStep = getTimeStep(timeStep);
     adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
+    // TODO
+    assert(0);
+    /*
     SolutionStore::SolutionRunTimeDetails runTime = Agros2D::computation()->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptivityStep));
 
     for (int i = 0; i < runTime.relativeChangeOfSolutions().size(); i++)
@@ -721,6 +724,7 @@ void PyField::solverInfo(int timeStep, int adaptivityStep,
         dampingCoeff.push_back(runTime.nonlinearDamping().at(i));
 
     jacobianCalculations = runTime.jacobianCalculations();
+    */
 }
 
 void PyField::adaptivityInfo(int timeStep, vector<double> &error, vector<int> &dofs) const
@@ -738,8 +742,9 @@ void PyField::adaptivityInfo(int timeStep, vector<double> &error, vector<int> &d
     for (int i = 0; i < adaptivitySteps; i++)
     {
         SolutionStore::SolutionRunTimeDetails runTime = Agros2D::computation()->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, i));
-        error.push_back(runTime.adaptivityError());
-        dofs.push_back(runTime.DOFs());
+
+        error.push_back(runTime.value(SolutionStore::SolutionRunTimeDetails::AdaptivityError).toDouble());
+        dofs.push_back(runTime.value(SolutionStore::SolutionRunTimeDetails::DOFs).toInt());
     }
 }
 

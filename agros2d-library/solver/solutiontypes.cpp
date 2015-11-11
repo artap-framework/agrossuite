@@ -69,3 +69,8 @@ void MultiArray::append(dealii::Triangulation<2> *triangulation, dealii::hp::DoF
     m_doFHandler = doFHandler;
     m_solution = solution;
 }
+
+bool MultiArray::isNull()
+{
+    return ((m_triangulation == nullptr) && (m_doFHandler == nullptr) && (m_solution.size() == 0));
+}

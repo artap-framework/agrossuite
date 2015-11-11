@@ -81,7 +81,6 @@ SET(SOURCES
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/material_xml.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/module_xml.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp
-    ${CMAKE_HOME_DIRECTORY}/resources_source/classes/structure_xml.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/test_xml.cpp
     chartdialog.cpp
     confdialog.cpp
@@ -162,7 +161,6 @@ SET(SOURCES
     solver/problem.cpp
     solver/problem_config.cpp
     solver/solutionstore.cpp
-    solver/resultstore.cpp
     solver/solutiontypes.cpp
     solver/solver.cpp
     solver/solver_utils.cpp
@@ -196,7 +194,6 @@ SOURCE_GROUP(
   ${CMAKE_HOME_DIRECTORY}/resources_source/classes/material_xml.cpp
   ${CMAKE_HOME_DIRECTORY}/resources_source/classes/module_xml.cpp
   ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp
-  ${CMAKE_HOME_DIRECTORY}/resources_source/classes/structure_xml.cpp
   ${CMAKE_HOME_DIRECTORY}/resources_source/classes/test_xml.cpp
 )
 
@@ -276,7 +273,6 @@ SOURCE_GROUP(
   solver/problem.cpp
   solver/problem_config.cpp
   solver/solutionstore.cpp
-  solver/resultstore.cpp
   solver/solutiontypes.cpp
   solver/solver.cpp
   solver/solver_utils.cpp
@@ -383,7 +379,6 @@ SET(HEADERS
   solver/problem.h
   solver/problem_config.h
   solver/solutionstore.h
-  solver/resultstore.h
   solver/solutiontypes.h
   solver/solver.h
   solver/solver_utils.h
@@ -489,8 +484,7 @@ SOURCE_GROUP(
   solver/plugin_interface.h
   solver/problem.h
   solver/problem_config.h
-  solver/solutionstore.h
-  solver/resultstore.h
+  solver/solutionstore.h  
   solver/solutiontypes.h
   solver/solver.h
   solver/solver_utils.h

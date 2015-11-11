@@ -539,8 +539,8 @@ void LogDialog::updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeSt
         SolutionStore::SolutionRunTimeDetails runTime = m_computation->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(fieldInfo->fieldId(), timeStep, i));
         
         adaptiveSteps.append(i + 1);
-        adaptiveDOFs.append(runTime.DOFs());
-        adaptiveError.append(runTime.adaptivityError());
+        adaptiveDOFs.append(runTime.value(SolutionStore::SolutionRunTimeDetails::DOFs).toInt());
+        adaptiveError.append(runTime.value(SolutionStore::SolutionRunTimeDetails::AdaptivityError).toDouble());
     }
     
     m_adaptivityErrorGraph->setData(adaptiveSteps, adaptiveError);

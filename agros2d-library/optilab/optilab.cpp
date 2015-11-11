@@ -20,8 +20,8 @@
 #include "optilab.h"
 #include "util/global.h"
 #include "solver/problem.h"
-#include "solver/resultstore.h"
 #include "solver/plugin_interface.h"
+#include "solver/solutionstore.h"
 #include "gui/infowidget.h"
 
 OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent)
@@ -120,7 +120,9 @@ void OptiLabWidget::test()
                                                                                     0);
 
         QMap<QString, double> integrals = values->values();
-        computation->resultStore()->setResult("C", integrals["electrostatic_energy"]);
+        computation->solutionStore()->setResult("We", integrals["electrostatic_energy"]);
+        computation->solutionStore()->setResult("V", integrals["electrostatic_volume"]);
+        computation->solutionStore()->saveRunTimeDetails();
     }
 
     refresh();

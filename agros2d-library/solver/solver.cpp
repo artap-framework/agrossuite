@@ -720,7 +720,10 @@ void SolverDeal::solveSteadyState()
         primal->solve();
 
         FieldSolutionID solutionID(m_fieldInfo->fieldId(), m_computation->timeLastStep(), 0);
-        SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, primal->doFHandler.n_dofs());        
+        SolutionStore::SolutionRunTimeDetails runTime;
+        runTime.setValue(SolutionStore::SolutionRunTimeDetails::TimeStepLength, 0.0);
+        runTime.setValue(SolutionStore::SolutionRunTimeDetails::AdaptivityError, 0.0);
+        runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
         m_computation->solutionStore()->addSolution(solutionID, MultiArray(&primal->doFHandler, primal->solution), runTime);
     }
     else
@@ -789,7 +792,10 @@ void SolverDeal::solveSteadyState()
             }
 
             FieldSolutionID solutionID(m_fieldInfo->fieldId(), m_computation->timeLastStep(), adaptiveStep);
-            SolutionStore::SolutionRunTimeDetails runTime(0.0, relChangeSol, primal->doFHandler.n_dofs());
+            SolutionStore::SolutionRunTimeDetails runTime;
+            runTime.setValue(SolutionStore::SolutionRunTimeDetails::TimeStepLength, 0.0);
+            runTime.setValue(SolutionStore::SolutionRunTimeDetails::AdaptivityError, relChangeSol);
+            runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
             m_computation->solutionStore()->addSolution(solutionID, MultiArray(&primal->doFHandler, primal->solution), runTime);
 
             if (adaptiveStep > 0)
@@ -842,7 +848,10 @@ void SolverDeal::solveTransient()
     assert(m_computation->timeLastStep() == 0);
 
     FieldSolutionID solutionID(m_fieldInfo->fieldId(), 0, 0);
-    SolutionStore::SolutionRunTimeDetails runTime(0.0, 0.0, primal->doFHandler.n_dofs());
+    SolutionStore::SolutionRunTimeDetails runTime;
+    runTime.setValue(SolutionStore::SolutionRunTimeDetails::TimeStepLength, 0.0);
+    runTime.setValue(SolutionStore::SolutionRunTimeDetails::AdaptivityError, 0.0);
+    runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
     m_computation->solutionStore()->addSolution(solutionID, MultiArray(&primal->doFHandler, initialSolution), runTime);
 
     // Python callback
@@ -1048,7 +1057,10 @@ void SolverDeal::solveTransient()
                 Agros2D::log()->updateTransientChartInfo(m_time);
 
                 solutionID = FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptiveStep);
-                SolutionStore::SolutionRunTimeDetails runTime(actualTimeStep, relChangeSol, primal->doFHandler.n_dofs());
+                SolutionStore::SolutionRunTimeDetails runTime;
+                runTime.setValue(SolutionStore::SolutionRunTimeDetails::TimeStepLength, actualTimeStep);
+                runTime.setValue(SolutionStore::SolutionRunTimeDetails::AdaptivityError, relChangeSol);
+                runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
                 m_computation->solutionStore()->addSolution(solutionID, MultiArray(&primal->doFHandler, primal->solution), runTime);
 
                 // Python callback

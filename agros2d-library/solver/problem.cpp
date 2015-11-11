@@ -31,7 +31,6 @@
 
 #include "field.h"
 #include "solutionstore.h"
-#include "resultstore.h"
 
 #include "scene.h"
 #include "scenemarker.h"
@@ -1015,7 +1014,6 @@ ProblemComputation::ProblemComputation(const QString &problemDir) : Problem()
     m_problemSolver = new ProblemSolver(this);
     m_postDeal = new PostDeal(this);
     m_solutionStore = new SolutionStore(this);
-    m_resultStore = new ResultStore(this);
 
     connect(m_config, SIGNAL(changed()), this, SLOT(clearSolution()));
     connect(m_scene, SIGNAL(invalidated()), this, SLOT(clearSolution()));
@@ -1044,7 +1042,6 @@ ProblemComputation::~ProblemComputation()
     delete m_problemSolver;
     delete m_postDeal;
     delete m_solutionStore;
-    delete m_resultStore;
 }
 
 QList<double> ProblemComputation::timeStepTimes() const
@@ -1506,7 +1503,6 @@ void ProblemComputation::clearSolution()
     m_initialUnrefinedMesh.clear();
     m_calculationMesh.clear();
     m_solutionStore->clear();
-    m_resultStore->clear();
 }
 
 void ProblemComputation::clearFieldsAndConfig()
@@ -1604,6 +1600,9 @@ void ProblemPreprocessor::readProblemFromArchive(const QString &fileName)
 
             computation->readProblemFromA2D31(fn);
 
+            // read results
+            computation->solutionStore()->loadRunTimeDetails();
+
             // read mesh file
             try
             {
@@ -1615,6 +1614,7 @@ void ProblemPreprocessor::readProblemFromArchive(const QString &fileName)
                 Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
             }
 
+            /*
             if (computation->isMeshed())
             {
                 try
@@ -1627,13 +1627,16 @@ void ProblemPreprocessor::readProblemFromArchive(const QString &fileName)
                     Agros2D::log()->printError(tr("Mesh"), e.what());
                 }
             }
+            */
         }
     }
 
     // set last computation
     if (Agros2D::computations().count() > 0)
     {
-        QSharedPointer<ProblemComputation> post = Agros2D::computations().last();
+        QSharedPointer<ProblemComputation> post = Agros2D::computation();
+        if (post.isNull())
+            post = Agros2D::computations().last();
 
         Agros2D::setCurrentComputation(post->problemDir());
         emit post->solved();

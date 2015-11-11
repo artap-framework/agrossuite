@@ -193,7 +193,6 @@ public:
     inline PostDeal *postDeal() { return m_postDeal; }
     inline ProblemSolver *problemSolver() { return m_problemSolver; }
     inline SolutionStore *solutionStore() { return m_solutionStore; }
-    inline ResultStore *resultStore() { return m_resultStore; }
 
     bool isSolved() const;
     bool isSolving() const { return m_isSolving; }
@@ -257,8 +256,6 @@ protected:
 
     // solution store
     SolutionStore *m_solutionStore;
-    // result store
-    ResultStore *m_resultStore;
 
     QTime m_lastTimeElapsed;
 

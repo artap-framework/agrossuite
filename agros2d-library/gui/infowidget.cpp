@@ -149,14 +149,29 @@ void InfoWidgetGeneral::showProblemInfo(Problem *problem)
 
     // parameters
     ParametersType parameters = problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
-    problemInfo.SetValue("PARAMETERS_MAIN_LABEL", tr("Problem parameters").toStdString());
-
+    problemInfo.SetValue("PARAMETERS_MAIN_LABEL", tr("Parameters").toStdString());
     foreach (QString key, parameters.keys())
     {
         ctemplate::TemplateDictionary *parametersSection = problemInfo.AddSectionDictionary("PARAMETERS_SECTION");
 
         parametersSection->SetValue("PARAMETERS_VARIABLE_NAME", key.toStdString());
         parametersSection->SetValue("PARAMETERS_VARIABLE_VALUE", QString::number(parameters[key]).toStdString());
+    }
+
+    // results (only for computation)
+    if (ProblemComputation *computation = dynamic_cast<ProblemComputation *>(problem))
+    {
+        QMap<QString, double> results = computation->solutionStore()->results();
+        problemInfo.SetValue("RESULTS_MAIN_LABEL", tr("Results").toStdString());
+        foreach (QString key, results.keys())
+        {
+            ctemplate::TemplateDictionary *resultsSection = problemInfo.AddSectionDictionary("RESULTS_SECTION");
+
+            resultsSection->SetValue("RESULTS_VARIABLE_NAME", key.toStdString());
+            resultsSection->SetValue("RESULTS_VARIABLE_VALUE", QString::number(results[key]).toStdString());
+        }
+
+        problemInfo.ShowSection("RESULTS");
     }
 
     // fields

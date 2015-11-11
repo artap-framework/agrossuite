@@ -58,6 +58,8 @@ public:
     dealii::hp::DoFHandler<2> *doFHandler() { return m_doFHandler; }
     dealii::Vector<double> &solution() { return m_solution; }
 
+    bool isNull();
+
 private:
     dealii::Triangulation<2> *m_triangulation; // must be deleted
     dealii::hp::DoFHandler<2> *m_doFHandler;

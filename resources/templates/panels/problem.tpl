@@ -91,7 +91,7 @@
 {{/COUPLING}}
 
 <!-- parameters -->
-<td style="width: 15%;">
+<td style="width: 25%;">
 <div class="section">
 <h2>{{PARAMETERS_MAIN_LABEL}}</h2>
 <hr/>
@@ -100,11 +100,20 @@
     <tr><td><b>{{PARAMETERS_VARIABLE_NAME}}</b></td><td>{{PARAMETERS_VARIABLE_VALUE}}</td>
 {{/PARAMETERS_SECTION}}
 </table>
+{{#RESULTS}}
+<h2>{{RESULTS_MAIN_LABEL}}</h2>
+<hr/>
+<table>
+{{#RESULTS_SECTION}}
+    <tr><td><b>{{RESULTS_VARIABLE_NAME}}</b></td><td>{{RESULTS_VARIABLE_VALUE}}</td>
+{{/RESULTS_SECTION}}
+</table>
+{{/RESULTS}}
 </div>
 </td>
 
 <!-- fields -->
-<td style="width: 40%;">
+<td style="width: 30%;">
 {{#FIELD}}
 {{#FIELD_SECTION}}
 <div class="section">

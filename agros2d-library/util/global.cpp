@@ -38,6 +38,8 @@
 
 #include "util/system_utils.h"
 
+#include "boost/archive/archive_exception.hpp"
+
 AgrosApplication::AgrosApplication(int& argc, char ** argv) : QApplication(argc, argv), m_scriptEngineRemote(NULL)
 {
     setlocale (LC_NUMERIC, "C");
@@ -86,6 +88,11 @@ bool AgrosApplication::notify(QObject *receiver, QEvent *event)
     catch (dealii::ExceptionBase &e)
     {
         qCritical() << "deal.II exception thrown: " << e.what();
+        throw;
+    }
+    catch (boost::archive::archive_exception &e)
+    {
+        qCritical() << "boost exception thrown: " << e.what();
         throw;
     }
     catch (std::exception &e)

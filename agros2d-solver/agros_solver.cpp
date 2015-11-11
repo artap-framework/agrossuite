@@ -35,7 +35,10 @@ AgrosSolver::AgrosSolver(int &argc, char **argv)
 AgrosSolver::~AgrosSolver()
 {
     if (m_log)
+    {
         delete m_log;
+        m_log = nullptr;
+    }
 }
 
 // reimplemented from QApplication so we can throw exceptions in slots
