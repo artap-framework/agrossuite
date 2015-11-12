@@ -32,14 +32,14 @@ Source: agros2d_util.dll; DestDir: {app}; DestName: agros2d_util.dll
 Source: agros2d_pythonlab_library.dll; DestDir: {app}; DestName: agros2d_pythonlab_library.dll
 Source: agros_pythonlab.exe; DestDir: {app}; DestName: PythonLab.exe
 Source: agros2d_library.dll; DestDir: {app}; DestName: agros2d_library.dll
-Source: libs\*.dll; DestDir: {app}/libs
+Source: libs\*.dll; DestDir: {app}\libs
 Source: agros2d.exe; DestDir: {app}; DestName: Agros2D.exe
 ;Source: agros2d_solver.exe; DestDir: {app}; DestName: Solver.exe
 ;Source: agros2d_remote.exe; DestDir: {app}; DestName: Remote.exe
 ;Source: solver_external.exe; DestDir: {app}; DestName: Solver_External.exe
 Source: resources\images\agros2d.ico; DestDir: {app}; DestName: Agros2D.ico
 Source: resources\*; DestDir: {app}/resources; Flags: recursesubdirs
-Source: ..\agros2d-win32-new\*; DestDir: {app}; Flags: recursesubdirs
+Source: ..\agros2d-win32-new-release\*; DestDir: {app}; Flags: recursesubdirs
 ; VC++ 2013 runtime
 Source: "..\vcredist_x86.exe"; DestDir: {tmp}; Flags: deleteafterinstall
 
