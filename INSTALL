@@ -21,18 +21,21 @@ sudo apt-get install qt5-default qmlscene libqt5opengl5-dev qttools5-dev-tools q
 You can use defines WITH_UNITY (support for Unity application launcher) for Ubuntu 11.04 and higher.
 This defines needs package libunity-dev.
 
+To initialise dealii submodule of the Agros2D repository, go to the main agros2d folder and issue following commands:
+
+git submodule init
+git submodule update
+
 Compilation
 ===========
 
 In the first step of compilation, you have to generate makefiles and compile the code by issuing the following commands:
 
 Linux:
-cp CMake.vars.example.Linux CMake.vars
 
 cmake .
 make 
 
-cd dealii
 mkdir build
 cd build
 cmake ..
