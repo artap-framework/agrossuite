@@ -36,6 +36,7 @@ Linux:
 cmake .
 make 
 
+cd dealii
 mkdir build
 cd build
 cmake ..
