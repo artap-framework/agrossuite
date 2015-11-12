@@ -49,7 +49,7 @@ bool SolutionStore::SolutionRunTimeDetails::load(QJsonObject &results)
     m_runtime = m_runtimeDefault;
 
     // results
-    foreach (QString keyRes, results.keys())
+    foreach(QString keyRes, results.keys())
     {
         Type key = stringKeyToType(keyRes);
 
@@ -64,14 +64,19 @@ bool SolutionStore::SolutionRunTimeDetails::load(QJsonObject &results)
             else if (m_runtimeDefault[key].type() == QVariant::String)
                 m_runtime[key] = results[keyRes].toString();
             else
+            {
                 qDebug() << "Key not found" << keyRes << results[keyRes].toString();
+                return false;
+            }
         }
     }
+
+    return true;
 }
 
 bool SolutionStore::SolutionRunTimeDetails::save(QJsonObject &results)
 {
-    foreach (Type key, m_runtime.keys())
+    foreach(Type key, m_runtime.keys())
     {
         if (m_runtimeDefault[key].type() == QVariant::Bool)
             results[typeToStringKey(key)] = m_runtime[key].toBool();
@@ -82,8 +87,13 @@ bool SolutionStore::SolutionRunTimeDetails::save(QJsonObject &results)
         else if (m_runtimeDefault[key].type() == QVariant::Double)
             results[typeToStringKey(key)] = m_runtime[key].toDouble();
         else
+        {
             assert(0);
+            return false;
+        }
     }
+
+    return true;
 }
 
 void SolutionStore::SolutionRunTimeDetails::clear()
@@ -112,7 +122,7 @@ void SolutionStore::SolutionRunTimeDetails::setDefaultValues()
 // *******************************************************************************************************************************
 
 SolutionStore::SolutionStore(ProblemComputation *parentProblem) : m_computation(parentProblem)
-{    
+{
 }
 
 SolutionStore::~SolutionStore()
@@ -124,9 +134,9 @@ SolutionStore::~SolutionStore()
 QString SolutionStore::baseStoreFileName(FieldSolutionID solutionID) const
 {
     QString fn = QString("%1/%2/%3").
-            arg(cacheProblemDir()).
-            arg(m_computation->problemDir()).
-            arg(solutionID.toString());
+        arg(cacheProblemDir()).
+        arg(m_computation->problemDir()).
+        arg(solutionID.toString());
 
     return fn;
 }
@@ -134,7 +144,7 @@ QString SolutionStore::baseStoreFileName(FieldSolutionID solutionID) const
 void SolutionStore::clear()
 {
     // fast remove of all files
-    foreach (FieldSolutionID sid, m_multiSolutions)
+    foreach(FieldSolutionID sid, m_multiSolutions)
         removeSolution(sid, false);
 
     // clear results
@@ -143,10 +153,10 @@ void SolutionStore::clear()
     // remove runtime
     /*
     QString fn = QString("%1/%2/runtime.json").
-            arg(cacheProblemDir()).
-            arg(m_computation->problemDir());
+    arg(cacheProblemDir()).
+    arg(m_computation->problemDir());
     if (QFile::exists(fn))
-        QFile::remove(fn);
+    QFile::remove(fn);
     */
 
     assert(m_multiSolutions.isEmpty());
@@ -155,7 +165,7 @@ void SolutionStore::clear()
 }
 
 MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
-{    
+{
     assert(m_multiSolutions.contains(solutionID));
 
     if (!m_multiSolutionDealCache.contains(solutionID))
@@ -283,9 +293,9 @@ void SolutionStore::removeSolution(FieldSolutionID solutionID, bool saveRunTime)
 int SolutionStore::lastTimeStep(const FieldInfo *fieldInfo) const
 {
     int timeStep = NOT_FOUND_SO_FAR;
-    foreach (FieldSolutionID sid, m_multiSolutions)
+    foreach(FieldSolutionID sid, m_multiSolutions)
     {
-        if((sid.fieldId == fieldInfo->fieldId()) && (sid.timeStep > timeStep))
+        if ((sid.fieldId == fieldInfo->fieldId()) && (sid.timeStep > timeStep))
             timeStep = sid.timeStep;
     }
 
@@ -298,7 +308,7 @@ int SolutionStore::lastAdaptiveStep(const FieldInfo *fieldInfo, int timeStep) co
         timeStep = lastTimeStep(fieldInfo);
 
     int adaptiveStep = NOT_FOUND_SO_FAR;
-    foreach (FieldSolutionID sid, m_multiSolutions)
+    foreach(FieldSolutionID sid, m_multiSolutions)
     {
         if ((sid.fieldId == fieldInfo->fieldId()) && (sid.timeStep == timeStep) && (sid.adaptivityStep > adaptiveStep))
             adaptiveStep = sid.adaptivityStep;
@@ -333,7 +343,7 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, Multi
     // flush cache
     if (m_multiSolutionDealCache.count() > Agros2D::configComputer()->value(Config::Config_CacheSize).toInt())
     {
-        assert(! m_multiSolutionCacheIDOrder.empty());
+        assert(!m_multiSolutionCacheIDOrder.empty());
         FieldSolutionID idRemove = m_multiSolutionCacheIDOrder[0];
         m_multiSolutionCacheIDOrder.removeFirst();
 
@@ -374,8 +384,8 @@ void SolutionStore::loadRunTimeDetails()
         runTime.load(runtimeJson);
 
         FieldSolutionID solutionID(solutionJson[FIELDID].toString(),
-                                   solutionJson[TIMESTEP].toInt(),
-                                   solutionJson[ADAPTIVITYSTEP].toInt());
+            solutionJson[TIMESTEP].toInt(),
+            solutionJson[ADAPTIVITYSTEP].toInt());
         // append multisolution
         m_multiSolutions.append(solutionID);
 
@@ -393,7 +403,7 @@ void SolutionStore::loadRunTimeDetails()
 
     // results
     QJsonObject resultsJson = storeJson[RESULTS].toObject();
-    foreach (QString key, resultsJson.keys())
+    foreach(QString key, resultsJson.keys())
     {
         m_results[key] = resultsJson[key].toDouble();
     }
@@ -415,7 +425,7 @@ void SolutionStore::saveRunTimeDetails()
 
     // solution
     QJsonArray solutionsJson;
-    foreach (FieldSolutionID solutionID, m_multiSolutions)
+    foreach(FieldSolutionID solutionID, m_multiSolutions)
     {
         QJsonObject runtimeJson;
         SolutionRunTimeDetails runTime = m_multiSolutionRunTimeDetails[solutionID];
