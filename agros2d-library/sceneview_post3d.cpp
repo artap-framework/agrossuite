@@ -172,7 +172,7 @@ void SceneViewPost3D::paintGL()
 
 void SceneViewPost3D::resizeGL(int w, int h)
 {
-    if (m_computation->isSolved())
+    if (m_computation && m_computation->isSolved())
     {
         paletteCreate();
     }
