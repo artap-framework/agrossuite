@@ -462,20 +462,19 @@ void PySolution::volumeIntegrals(const vector<int> &labels, int timeStep, int ad
     results = values;
 }
 
-/*
 void PySolution::initialMeshInfo(map<std::string, int> &info) const
 {
-    if (!Agros2D::computation()->isMeshed())
+    if (!m_computation->isMeshed())
         throw logic_error(QObject::tr("Problem is not meshed.").toStdString());
 
     // todo: initial mesh the same for all fields
-    info["nodes"] = Agros2D::computation()->initialMesh().n_used_vertices();
-    info["elements"] = Agros2D::computation()->initialMesh().n_active_cells();
+    info["nodes"] = m_computation->initialMesh().n_used_vertices();
+    info["elements"] = m_computation->initialMesh().n_active_cells();
 }
 
 void PySolution::solutionMeshInfo(int timeStep, int adaptivityStep, map<std::string, int> &info) const
 {
-    if (!Agros2D::computation()->isSolved())
+    if (!m_computation->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     // set time and adaptivity step if -1 (default parameter - last steps), check steps
@@ -483,7 +482,7 @@ void PySolution::solutionMeshInfo(int timeStep, int adaptivityStep, map<std::str
     adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
     // TODO: (Franta) time and adaptivity step in gui vs. implementation
-    MultiArray ma = Agros2D::computation()->solutionStore()->multiArray(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptivityStep));
+    MultiArray ma = m_computation->solutionStore()->multiArray(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptivityStep));
 
     info["nodes"] = ma.doFHandler()->get_tria().n_used_vertices();
     info["elements"] = ma.doFHandler()->get_tria().n_active_cells();
@@ -494,14 +493,14 @@ void PySolution::solverInfo(int timeStep, int adaptivityStep,
                          vector<double> &solutionsChange, vector<double> &residual,
                          vector<double> &dampingCoeff, int &jacobianCalculations) const
 {
-    if (!Agros2D::computation()->isSolved())
+    if (!m_computation->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     // step if -1 (default parameter - last steps)
     timeStep = getTimeStep(timeStep);
     adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-    SolutionStore::SolutionRunTimeDetails runTime = Agros2D::computation()->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptivityStep));
+    SolutionStore::SolutionRunTimeDetails runTime = m_computation->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptivityStep));
 
     for (int i = 0; i < runTime.relativeChangeOfSolutions().size(); i++)
         solutionsChange.push_back(runTime.relativeChangeOfSolutions().at(i));
@@ -517,7 +516,7 @@ void PySolution::solverInfo(int timeStep, int adaptivityStep,
 
 void PySolution::adaptivityInfo(int timeStep, vector<double> &error, vector<int> &dofs) const
 {
-    if (!Agros2D::computation()->isSolved())
+    if (!m_computation->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     if (m_fieldInfo->adaptivityType() == AdaptivityMethod_None)
@@ -526,10 +525,10 @@ void PySolution::adaptivityInfo(int timeStep, vector<double> &error, vector<int>
     // set time step if -1 (default parameter - last steps)
     timeStep = getTimeStep(timeStep);
 
-    int adaptivitySteps = Agros2D::computation()->solutionStore()->lastAdaptiveStep(m_fieldInfo, timeStep) + 1;
+    int adaptivitySteps = m_computation->solutionStore()->lastAdaptiveStep(m_fieldInfo, timeStep) + 1;
     for (int i = 0; i < adaptivitySteps; i++)
     {
-        SolutionStore::SolutionRunTimeDetails runTime = Agros2D::computation()->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, i));
+        SolutionStore::SolutionRunTimeDetails runTime = m_computation->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, i));
         error.push_back(runTime.adaptivityError());
         dofs.push_back(runTime.DOFs());
     }
@@ -576,4 +575,3 @@ std::string PySolution::filenameSLN(int timeStep, int adaptivityStep) const
     else
         throw logic_error(QObject::tr("RHS file does not exist.").toStdString());
 }
-*/
