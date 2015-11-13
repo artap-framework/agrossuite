@@ -351,14 +351,8 @@ QString cacheProblemDir()
 
 QString userDataDir()
 {
-#ifdef Q_WS_X11
     static QString str = QString("%1/agros2d/").
             arg(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
-#endif
-#ifdef Q_WS_WIN
-    static QString str = QString("%1/agros2d/").
-            arg(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
-#endif
 
     QDir dir(str);
     if (!dir.exists() && !str.isEmpty())

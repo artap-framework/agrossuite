@@ -15,6 +15,7 @@
 #ifndef GOOGLE_CTEMPLATE_WINDOWS_CONFIG_H_
 #define GOOGLE_CTEMPLATE_WINDOWS_CONFIG_H_
 
+#define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
 /* Namespace for Google classes */
 #define GOOGLE_NAMESPACE  ctemplate
 
