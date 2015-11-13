@@ -502,6 +502,7 @@ void PySolution::solverInfo(int timeStep, int adaptivityStep,
 
     SolutionStore::SolutionRunTimeDetails runTime = m_computation->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptivityStep));
 
+    /*
     for (int i = 0; i < runTime.relativeChangeOfSolutions().size(); i++)
         solutionsChange.push_back(runTime.relativeChangeOfSolutions().at(i));
 
@@ -510,8 +511,8 @@ void PySolution::solverInfo(int timeStep, int adaptivityStep,
 
     for (int i = 0; i < runTime.nonlinearDamping().size(); i++)
         dampingCoeff.push_back(runTime.nonlinearDamping().at(i));
-
     jacobianCalculations = runTime.jacobianCalculations();
+     */
 }
 
 void PySolution::adaptivityInfo(int timeStep, vector<double> &error, vector<int> &dofs) const
@@ -529,8 +530,10 @@ void PySolution::adaptivityInfo(int timeStep, vector<double> &error, vector<int>
     for (int i = 0; i < adaptivitySteps; i++)
     {
         SolutionStore::SolutionRunTimeDetails runTime = m_computation->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, i));
+        /*
         error.push_back(runTime.adaptivityError());
         dofs.push_back(runTime.DOFs());
+        */
     }
 }
 
