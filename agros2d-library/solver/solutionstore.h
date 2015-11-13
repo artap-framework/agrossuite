@@ -103,13 +103,6 @@ private:
     void insertMultiSolutionToCache(FieldSolutionID solutionID, MultiArray multiArray);
 
     QString baseStoreFileName(FieldSolutionID solutionID) const;
-
-    // consts    
-    const QString SOLUTIONS = "solutions";
-    const QString FIELDID = "fieldid";
-    const QString TIMESTEP = "timestep";
-    const QString ADAPTIVITYSTEP = "adaptivitystep";
-    const QString RUNTIME = "runtime";
 };
 
 #endif // SOLUTIONSTORE_H

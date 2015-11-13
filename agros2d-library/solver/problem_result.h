@@ -43,10 +43,6 @@ public:
 private:
     QMap<QString, double> m_results;
     QMap<QString, QVariant> m_info;
-
-    // consts
-    const QString RESULTS = "results";
-    const QString INFO = "info";
 };
 
 #endif // PROBLEM_CONFIG_H

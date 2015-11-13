@@ -19,6 +19,10 @@
 
 #include "problem_result.h"
 
+// consts
+const QString RESULTS = "results";
+const QString INFO = "info";
+
 ProblemResult::ProblemResult()
 {
     clear();

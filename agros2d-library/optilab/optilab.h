@@ -71,6 +71,9 @@ public:
     void addStudy(Study *study);
     inline QList<Study *> studies() { return m_studies; }
 
+    void loadStudies();
+    void saveStudies();
+
 signals:
 
 public slots:

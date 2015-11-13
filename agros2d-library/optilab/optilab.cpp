@@ -31,6 +31,9 @@
 
 #include "gui/infowidget.h"
 
+// consts
+const QString STUDIES = "studies";
+
 OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(parent)
 {
     createControls();
@@ -174,6 +177,8 @@ void OptiLabWidget::testSweep()
     // solve
     analysis->solve();
 
+    m_optilab->saveStudies();
+
     refresh();
 }
 
@@ -195,6 +200,8 @@ void OptiLabWidget::testOptimization()
 
     // solve
     analysis->solve();
+
+    m_optilab->saveStudies();
 
     refresh();
 }
@@ -231,9 +238,19 @@ OptiLab::~OptiLab()
     clear();
 }
 
+void OptiLab::createControls()
+{
+    m_infoWidget = new InfoWidgetGeneral(this);
+
+    QHBoxLayout *layoutLab = new QHBoxLayout();
+    layoutLab->addWidget(m_infoWidget);
+
+    setLayout(layoutLab);
+}
+
 void OptiLab::addStudy(Study *study)
 {
-    m_studies.append(study);
+    m_studies.append(study);    
 }
 
 void OptiLab::clear()
@@ -244,14 +261,40 @@ void OptiLab::clear()
     m_studies.clear();
 }
 
-void OptiLab::createControls()
+void OptiLab::loadStudies()
 {
-    m_infoWidget = new InfoWidgetGeneral(this);
 
-    QHBoxLayout *layoutLab = new QHBoxLayout();
-    layoutLab->addWidget(m_infoWidget);
+}
 
-    setLayout(layoutLab);
+void OptiLab::saveStudies()
+{
+    QString fn = QString("%1/studies.json").arg(cacheProblemDir());
+
+    QFile file(fn);
+
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        qWarning("Couldn't open studies file.");
+        return;
+    }
+
+    // root object
+    QJsonObject rootJson;
+
+    // results
+    QJsonArray studiesJson;
+    foreach (Study *study, m_studies)
+    {
+        QJsonObject studyJson;
+        study->save(studyJson);
+
+        studiesJson.append(studyJson);
+    }
+    rootJson[STUDIES] = studiesJson;
+
+    // save to file
+    QJsonDocument doc(rootJson);
+    file.write(doc.toJson());
 }
 
 void OptiLab::computationSelected(const QString &key)

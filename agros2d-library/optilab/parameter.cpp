@@ -25,6 +25,12 @@
 #include "solver/problem_result.h"
 #include "solver/solutionstore.h"
 
+// consts
+const QString NAME = "name";
+const QString VALUES = "values";
+const QString LOWER_BOUND = "lower_bound";
+const QString UPPER_BOUND = "upper_bound";
+
 Parameter::Parameter(const QString &name) :
     m_name(name), m_values(QList<double>()), m_lowerBound(0.0), m_upperBound(1.0)
 {
@@ -45,6 +51,26 @@ void Parameter::clear()
 {
     m_name = "";
     m_values.clear();
+}
+
+void Parameter::load(QJsonObject &object)
+{
+
+}
+
+void Parameter::save(QJsonObject &object)
+{
+    object[NAME] = m_name;
+    object[LOWER_BOUND] = m_lowerBound;
+    object[UPPER_BOUND] = m_upperBound;
+
+    // values
+    QJsonArray valuesJson;
+    foreach (double value, m_values)
+    {
+        valuesJson.append(value);
+    }
+    object[VALUES] = valuesJson;
 }
 
 QString Parameter::toString() const

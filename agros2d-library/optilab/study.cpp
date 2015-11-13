@@ -29,6 +29,10 @@
 
 #include "scene.h"
 
+const QString NAME = "name";
+const QString COMPUTATIONS = "computations";
+const QString PARAMETERS = "parameters";
+
 Study::Study()
 {
 
@@ -42,6 +46,35 @@ Study::~Study()
 void Study::clear()
 {
     m_resultExpressions.clear();
+}
+
+void Study::load(QJsonObject &object)
+{
+
+}
+
+void Study::save(QJsonObject &object)
+{
+    object[NAME] = name();
+
+    // computations
+    QJsonArray computationsJson;
+    foreach (QSharedPointer<ProblemComputation> computation, m_computations)
+    {
+        computationsJson.append(computation->problemDir());
+    }
+    object[COMPUTATIONS] = computationsJson;
+
+    // parameters
+    QJsonArray parametersJson;
+    foreach (Parameter parameter, m_parameters)
+    {
+        QJsonObject parameterJson;
+        parameter.save(parameterJson);
+
+        parametersJson.append(parameterJson);
+    }
+    object[PARAMETERS] = parametersJson;
 }
 
 // ********************************************************************************
@@ -86,6 +119,16 @@ void StudySweepAnalysis::solve()
 
         computation->saveResults();
     }
+}
+
+void StudySweepAnalysis::load(QJsonObject &object)
+{
+    Study::load(object);
+}
+
+void StudySweepAnalysis::save(QJsonObject &object)
+{
+    Study::save(object);
 }
 
 // ********************************************************************************
@@ -164,4 +207,14 @@ void StudyGoldenSectionSearch::solve()
 
         // qDebug() << fabs(xL-xR);
     }
+}
+
+void StudyGoldenSectionSearch::load(QJsonObject &object)
+{
+    Study::load(object);
+}
+
+void StudyGoldenSectionSearch::save(QJsonObject &object)
+{
+    Study::save(object);
 }

@@ -37,6 +37,9 @@ public:
     virtual void solve() = 0;
     virtual QString name() = 0;
 
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
     inline QMap<QString, QString> resultExpressions() { return m_resultExpressions; }
     QList<QSharedPointer<ProblemComputation> > computations() { return m_computations; }
 
@@ -60,7 +63,10 @@ public:
     virtual QString name() { return "Sweep analysis"; } // TODO: user defined
 
     void setParameter(Parameter parameter) { m_parameters.append(parameter); assert(m_parameters.size() == 1); }
-    void solve();
+    virtual void solve();
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
 };
 
 // a strictly unimodal function
@@ -76,6 +82,9 @@ public:
     void setFunctional() { qDebug() << "not implemented"; }
 
     void solve();
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
 
 protected:
     double m_tolerance;

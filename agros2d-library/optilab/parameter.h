@@ -33,6 +33,9 @@ public:
 
     void clear();
 
+    void load(QJsonObject &object);
+    void save(QJsonObject &object);
+
     inline QString name() { return m_name; }
 
     inline void addValue(double value) { m_values.append(value); }

@@ -35,6 +35,13 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 
+// consts
+const QString SOLUTIONS = "solutions";
+const QString FIELDID = "fieldid";
+const QString TIMESTEP = "timestep";
+const QString ADAPTIVITYSTEP = "adaptivitystep";
+const QString RUNTIME = "runtime";
+
 SolutionStore::SolutionRunTimeDetails::SolutionRunTimeDetails()
 {
     setStringKeys();
