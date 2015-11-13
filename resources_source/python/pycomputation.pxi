@@ -1,6 +1,7 @@
 cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
     cdef cppclass PyComputation:
         PyComputation(bool newComputation)
+        void setComputation(string &computation) except +
 
         void clear() except +
 
@@ -14,8 +15,8 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
     cdef cppclass PySolution:
         PySolution()
 
-        void computation(PyComputation *computation)
-        void field(string &fieldId) except +
+        void setComputation(PyComputation *computation)
+        void setField(string &fieldId) except +
 
         void localValues(double x, double y, int timeStep, int adaptivityStep,
                          map[string, double] &results) except +
@@ -72,8 +73,8 @@ cdef class __Computation__(__ProblemBase__):
 
         if (not field_id in self._solutions):
             solution = __Solution__()
-            solution._solution.computation(self._computation)
-            solution._solution.field(field_id.encode())
+            solution._solution.setComputation(self._computation)
+            solution._solution.setField(field_id.encode())
 
             self._solutions[field_id] = solution
 
@@ -311,3 +312,8 @@ cdef class __Solution__:
     def filename_sln(self, time_step = None, adaptivity_step = None):
         return self._solution.filenameSLN(int(-1 if time_step is None else time_step),
                                           int(-1 if adaptivity_step is None else adaptivity_step)).decode()
+
+def computation(computation):
+    existing_computation = __Computation__(False)
+    existing_computation._computation.setComputation(computation.encode())
+    return existing_computation

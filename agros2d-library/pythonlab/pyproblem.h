@@ -79,7 +79,9 @@ class PyComputation : public QObject, public PyProblemBase
 public:
     PyComputation(bool newComputation);
     ~PyComputation() {}
-    QSharedPointer<ProblemComputation> computation();
+
+    void setComputation(const std::string &computation);
+    QSharedPointer<ProblemComputation> getComputation();
 
     void clear();
 
@@ -102,8 +104,8 @@ public:
     PySolution() {}
     ~PySolution() {}
 
-    void computation(PyComputation *computation);
-    void field(const std::string &fieldId);
+    void setComputation(PyComputation *computation);
+    void setField(const std::string &fieldId);
 
     // local values, integrals
     void localValues(double x, double y, int timeStep, int adaptivityStep,

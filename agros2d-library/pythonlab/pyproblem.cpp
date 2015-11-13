@@ -196,14 +196,18 @@ void PyProblem::setCouplingType(const std::string &sourceField, const std::strin
 }
 
 PyComputation::PyComputation(bool newComputation) : PyProblemBase()
-{    
+{
     Agros2D::preprocessor()->createComputation(newComputation);
-
-    // TODO: better!
     m_computation = Agros2D::computation();
 }
 
-QSharedPointer<ProblemComputation> PyComputation::computation()
+void PyComputation::setComputation(const string &computation)
+{
+    QMap<QString, QSharedPointer<ProblemComputation> > computations = Agros2D::computations();
+    m_computation = computations[QString::fromStdString(computation)];
+}
+
+QSharedPointer<ProblemComputation> PyComputation::getComputation()
 {
     return m_computation;
 }
@@ -277,12 +281,12 @@ void PyComputation::timeStepsTimes(vector<double> &times) const
         times.push_back(timeStepTimes.at(i));
 }
 
-void PySolution::computation(PyComputation *computation)
+void PySolution::setComputation(PyComputation *computation)
 {
-    m_computation = computation->computation();
+    m_computation = computation->getComputation();
 }
 
-void PySolution::field(const std::string &fieldId)
+void PySolution::setField(const std::string &fieldId)
 {
     QString id = QString::fromStdString(fieldId);
     if (m_computation->hasField(id))
