@@ -211,7 +211,7 @@ if __name__ == '__main__':
     genetic = Genetic(HolderTableFunction, parameters, functionals)
 
     # stopping criterion
-    #genetic.criterions.add_criterion(ValueCriterion('Exact soluton'), [Functional('F'), -19.2085, 1])
+    genetic.criterions.add_criterion(ValueCriterion('Exact soluton'), [Functional('F'), -19.2085, 1])
 
     # sensitivity analysis
     genetic.sensitivity = True

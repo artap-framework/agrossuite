@@ -29,7 +29,7 @@ class Study:
         self._calculators = Calculators()
         if calculators: self.calculators = calculators
 
-        self._criterions = Criterions()
+        self._calculators = Criterions()
         if criterions: self.criterions = criterions
 
     @property

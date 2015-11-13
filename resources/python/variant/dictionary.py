@@ -5,15 +5,13 @@ from variant.htcondor import Solver, Process, Job, Connection
 from collections import OrderedDict
 from tempfile import TemporaryDirectory
 from subprocess import Popen, PIPE
-from shutil import make_archive, move, copy2
+from shutil import make_archive, move
 from time import sleep
 from importlib import machinery
 
-import agros2d
 import os
 import zipfile
 import json
-import time
 
 class ModelDictionary:
     """General class for model collection.
@@ -181,7 +179,7 @@ class ModelDictionary:
         """
         del self._dictionary[name]
 
-    def load_from_file(self, data_file):
+    def load(self, data_file):
         """Clear dictionary and load models from dictionary data file.
 
         Args:
@@ -199,32 +197,17 @@ class ModelDictionary:
                 del self.description['model_class']
 
             for file in sorted(zip_file.namelist()):
-                if not file.endswith('data'): continue
+                if not file.endswith('pickle'): continue
 
                 model = self._model_class()
-                print(zip_file.read(file))
-                model.deserialize(str(zip_file.read(file)))
+                model.deserialize(zip_file.read(file))
                 self._dictionary[os.path.splitext(file)[0]] = model
 
             zip_file.close()
 
         self._model_index = len(self._dictionary)-1
 
-    def load(self):
-        with open('{0}/problem.desc'.format(self._data_file), 'r') as infile:
-            self._description = json.load(infile)
-
-        loader = machinery.SourceFileLoader('problem', '{0}/problem.py'.format(self._data_file))
-        self._model_class = eval('loader.load_module().{0}'.format(self.description['model_class']))
-        
-        for file_name in sorted(os.listdir(self._data_file)):
-            if not file_name.endswith('data'): continue
-
-            model = self._model_class()
-            model.load('{0}/{1}'.format(self._data_file, file_name))
-            self._dictionary[os.path.splitext(file_name)[0]] = model
-
-    def save_to_file(self, data_file, problem_file):
+    def save(self, data_file, problem_file):
         """Save all models to dictionary data file (standard extension is .opt).
 
         Args:
@@ -235,7 +218,7 @@ class ModelDictionary:
 
         with zipfile.ZipFile(data_file, 'w', zipfile.ZIP_DEFLATED) as zip_file:
             for name, model in self._dictionary.items():
-                zip_file.writestr('{0}.data'.format(name), model.serialize())
+                zip_file.writestr('{0}.pickle'.format(name), model.serialize())
 
             description = dict(list(self.description.items()) + [('model_class', self._model_class.__name__)])
             zip_file.writestr('problem.desc', json.dumps(description))
@@ -243,24 +226,6 @@ class ModelDictionary:
             zip_file.close()
 
         self._data_file = data_file
-        self._problem_file = problem_file
-
-    def save(self, problem_file):
-        path = agros2d.cachedir('analyses/{0}'.format(int(time.time())))
-        for name, model in self._dictionary.items():
-            model.save('{0}/{1}.data'.format(path, name))
-
-        description = dict(list(self.description.items()) + [('model_class', self._model_class.__name__)])
-        model = self._model_class()
-        for name, type in model.parameters.data_types().items():
-            description[name] = str(type)
-
-        with open('{0}/problem.desc'.format(path), 'w') as outfile:
-            json.dump(description, outfile)
-
-        copy2(problem_file, '{0}/problem.py'.format(path))
-
-        self._data_file = path
         self._problem_file = problem_file
 
     def solve(self, recalculate=False, save=False):
@@ -298,7 +263,7 @@ class ModelDictionary:
                         temp_file = '{0}/{1}'.format(archive_temp, os.path.basename(self._data_file).split('.')[0])
                         make_archive(base_name=temp_file, format='zip', root_dir=temp)
                         move('{0}.zip'.format(temp_file), self._data_file)
-
+    
     def clear(self):
         """Clear models dictionary."""
         self._dictionary.clear()
@@ -491,16 +456,14 @@ if __name__ == '__main__':
 
     md = ModelDictionary() #ModelDictionaryExternal()
     md.solver = '{0}/agros2d_solver'.format(pythonlab.datadir())
-    for x in range(20):
+    for x in range(100):
         model = QuadraticFunction()
         model.parameters['x'] = x
         md.add_model(model)
 
     data_file = pythonlab.tempname('opt')
-    md.solve(save=False)
-    md.save('test_functions/quadratic_function.py')
-    print('{0}/{1}'.format(len(md.models()), len(md.models(only_solved=True))))
-    md.load()
+    md.save(data_file, 'test_functions/quadratic_function.py')
+    md.solve(save=True)
     print('{0}/{1}'.format(len(md.models()), len(md.models(only_solved=True))))
 
     md.criterions.add_criterion(RangeCriterion('75<=F=<80'), [Functional('F'), 50, 80])
@@ -510,6 +473,6 @@ if __name__ == '__main__':
     pythonlab.chart(md.parameter('x'),
                     md.variable('F'), 'x', 'F')
 
-    print(md.parameters())
-    print(md.variables())
-    print(md.description)
+    #print(md.parameters())
+    #print(md.variables())
+    #print(md.description)

@@ -22,6 +22,7 @@
 #include "sceneview_geometry.h"
 #include "sceneview_post2d.h"
 #include "solver/coupling.h"
+#include "solver/solutionstore.h"
 
 void PyProblemBase::refresh()
 {
@@ -202,6 +203,11 @@ PyComputation::PyComputation(bool newComputation) : PyProblemBase()
     m_computation = Agros2D::computation();
 }
 
+QSharedPointer<ProblemComputation> PyComputation::computation()
+{
+    return m_computation;
+}
+
 void PyComputation::clear()
 {
     if (!m_computation->isSolved())
@@ -270,3 +276,318 @@ void PyComputation::timeStepsTimes(vector<double> &times) const
     for (int i = 0; i < timeStepTimes.size(); i++)
         times.push_back(timeStepTimes.at(i));
 }
+
+void PySolution::computation(PyComputation *computation)
+{
+    m_computation = computation->computation();
+}
+
+void PySolution::field(const std::string &fieldId)
+{
+    QString id = QString::fromStdString(fieldId);
+    if (m_computation->hasField(id))
+        m_fieldInfo = m_computation->fieldInfo(id);
+    else
+        throw invalid_argument(QObject::tr("Invalid field id. Field %1 is not defined.").arg(id).toStdString());
+}
+
+int PySolution::getTimeStep(int timeStep) const
+{
+    if (timeStep == -1)
+        timeStep = m_computation->solutionStore()->lastTimeStep(m_fieldInfo);
+    else if (timeStep < 0 || timeStep >= m_computation->timeStepLengths().length() - 1)
+        throw out_of_range(QObject::tr("Time step must be in the range from 0 to %1.").arg(m_computation->timeStepLengths().length() - 1).toStdString());
+
+
+    return timeStep;
+}
+
+int PySolution::getAdaptivityStep(int adaptivityStep, int timeStep) const
+{
+    if (adaptivityStep == -1)
+        adaptivityStep = m_computation->solutionStore()->lastAdaptiveStep(m_fieldInfo, timeStep);
+    else if (adaptivityStep < 0 || adaptivityStep > m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt() - 1)
+        throw out_of_range(QObject::tr("Adaptivity step is out of range. (0 to %1).").arg(m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt() - 1).toStdString());
+
+    return adaptivityStep;
+}
+
+void PySolution::localValues(double x, double y, int timeStep, int adaptivityStep, map<std::string, double> &results) const
+{
+    map<std::string, double> values;
+
+    if (m_computation->isSolved())
+    {
+        Point point(x, y);
+
+        // set time and adaptivity step if -1 (default parameter - last steps), check steps
+        timeStep = getTimeStep(timeStep);
+        adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
+
+        std::shared_ptr<LocalValue> value = m_fieldInfo->plugin()->localValue(m_computation.data(), m_fieldInfo, timeStep, adaptivityStep, point);
+        QMapIterator<QString, LocalPointValue> it(value->values());
+        while (it.hasNext())
+        {
+            it.next();
+
+            Module::LocalVariable variable = m_fieldInfo->localVariable(m_computation->config()->coordinateType(), it.key());
+
+            if (variable.isScalar())
+            {
+                values[variable.shortname().toStdString()] = it.value().scalar;
+            }
+            else
+            {
+                values[variable.shortname().toStdString()] = it.value().vector.magnitude();
+                values[variable.shortname().toStdString() + m_computation->config()->labelX().toLower().toStdString()] = it.value().vector.x;
+                values[variable.shortname().toStdString() + m_computation->config()->labelY().toLower().toStdString()] = it.value().vector.y;
+            }
+        }
+    }
+    else
+    {
+        throw logic_error(QObject::tr("Problem is not solved.").toStdString());
+    }
+
+    results = values;
+}
+
+/*
+void PySolution::surfaceIntegrals(const vector<int> &edges, int timeStep, int adaptivityStep,
+                               map<std::string, double> &results) const
+{
+    map<std::string, double> values;
+
+    if (Agros2D::computation()->isSolved())
+    {
+        Agros2D::computation()->scene()->selectNone();
+
+        if (!edges.empty())
+        {
+            for (vector<int>::const_iterator it = edges.begin(); it != edges.end(); ++it)
+            {
+                if ((*it >= 0) && (*it < Agros2D::computation()->scene()->edges->length()))
+                {
+                    Agros2D::computation()->scene()->edges->at(*it)->setSelected(true);
+                }
+                else
+                {
+                    throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::computation()->scene()->edges->length()-1).toStdString());
+                    results = values;
+                    return;
+                }
+            }
+
+            if (!silentMode() && !Agros2D::computation()->isSolving())
+                currentPythonEngineAgros()->sceneViewPost2D()->updateGL();
+        }
+        else
+        {
+            Agros2D::computation()->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
+        }
+
+        // set time and adaptivity step if -1 (default parameter - last steps), check steps
+        timeStep = getTimeStep(timeStep);
+        adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
+
+        assert(0);
+        std::shared_ptr<IntegralValue> integral; // = m_fieldInfo->plugin()->surfaceIntegral(m_computation, m_fieldInfo, timeStep, adaptivityStep);
+        QMapIterator<QString, double> it(integral->values());
+        while (it.hasNext())
+        {
+            it.next();
+
+            assert(0);
+            Module::Integral integral; // = m_fieldInfo->surfaceIntegral(it.key());
+
+            values[integral.shortname().toStdString()] = it.value();
+        }
+    }
+    else
+    {
+        throw logic_error(QObject::tr("Problem is not solved.").toStdString());
+    }
+
+    results = values;
+}
+
+void PySolution::volumeIntegrals(const vector<int> &labels, int timeStep, int adaptivityStep,
+                              map<std::string, double> &results) const
+{
+    map<std::string, double> values;
+
+    if (Agros2D::computation()->isSolved())
+    {
+        Agros2D::computation()->scene()->selectNone();
+
+        if (!labels.empty())
+        {
+            for (vector<int>::const_iterator it = labels.begin(); it != labels.end(); ++it)
+            {
+                if ((*it >= 0) && (*it < Agros2D::computation()->scene()->labels->length()))
+                {
+                    if (Agros2D::computation()->scene()->labels->at(*it)->marker(m_fieldInfo) != Agros2D::preprocessor()->scene()->materials->getNone(m_fieldInfo))
+                    {
+                        Agros2D::computation()->scene()->labels->at(*it)->setSelected(true);
+                    }
+                    else
+                    {
+                        throw out_of_range(QObject::tr("Label with index '%1' is 'none'.").arg(*it).toStdString());
+                    }
+                }
+                else
+                {
+                    throw out_of_range(QObject::tr("Label index must be between 0 and '%1'.").arg(Agros2D::computation()->scene()->labels->length()-1).toStdString());
+                    results = values;
+                    return;
+                }
+            }
+
+            if (!silentMode() && !Agros2D::computation()->isSolving())
+                currentPythonEngineAgros()->sceneViewPost2D()->updateGL();
+        }
+        else
+        {
+            Agros2D::computation()->scene()->selectAll(SceneGeometryMode_OperateOnLabels);
+        }
+
+        // set time and adaptivity step if -1 (default parameter - last steps), check steps
+        timeStep = getTimeStep(timeStep);
+        adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
+
+        assert(0);
+        std::shared_ptr<IntegralValue> integral; // = m_fieldInfo->plugin()->volumeIntegral(m_computation, m_fieldInfo, timeStep, adaptivityStep);
+        QMapIterator<QString, double> it(integral->values());
+        while (it.hasNext())
+        {
+            it.next();
+
+            assert(0);
+            Module::Integral integral; // = m_fieldInfo->volumeIntegral(it.key());
+
+            values[integral.shortname().toStdString()] = it.value();
+
+        }
+    }
+    else
+    {
+        throw logic_error(QObject::tr("Problem is not solved.").toStdString());
+    }
+
+    results = values;
+}
+
+void PySolution::initialMeshInfo(map<std::string, int> &info) const
+{
+    if (!Agros2D::computation()->isMeshed())
+        throw logic_error(QObject::tr("Problem is not meshed.").toStdString());
+
+    // todo: initial mesh the same for all fields
+    info["nodes"] = Agros2D::computation()->initialMesh().n_used_vertices();
+    info["elements"] = Agros2D::computation()->initialMesh().n_active_cells();
+}
+
+void PySolution::solutionMeshInfo(int timeStep, int adaptivityStep, map<std::string, int> &info) const
+{
+    if (!Agros2D::computation()->isSolved())
+        throw logic_error(QObject::tr("Problem is not solved.").toStdString());
+
+    // set time and adaptivity step if -1 (default parameter - last steps), check steps
+    timeStep = getTimeStep(timeStep);
+    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
+
+    // TODO: (Franta) time and adaptivity step in gui vs. implementation
+    MultiArray ma = Agros2D::computation()->solutionStore()->multiArray(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptivityStep));
+
+    info["nodes"] = ma.doFHandler()->get_tria().n_used_vertices();
+    info["elements"] = ma.doFHandler()->get_tria().n_active_cells();
+    info["dofs"] = ma.doFHandler()->n_dofs();
+}
+
+void PySolution::solverInfo(int timeStep, int adaptivityStep,
+                         vector<double> &solutionsChange, vector<double> &residual,
+                         vector<double> &dampingCoeff, int &jacobianCalculations) const
+{
+    if (!Agros2D::computation()->isSolved())
+        throw logic_error(QObject::tr("Problem is not solved.").toStdString());
+
+    // step if -1 (default parameter - last steps)
+    timeStep = getTimeStep(timeStep);
+    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
+
+    SolutionStore::SolutionRunTimeDetails runTime = Agros2D::computation()->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptivityStep));
+
+    for (int i = 0; i < runTime.relativeChangeOfSolutions().size(); i++)
+        solutionsChange.push_back(runTime.relativeChangeOfSolutions().at(i));
+
+    for (int i = 0; i < runTime.newtonResidual().size(); i++)
+        residual.push_back(runTime.newtonResidual().at(i));
+
+    for (int i = 0; i < runTime.nonlinearDamping().size(); i++)
+        dampingCoeff.push_back(runTime.nonlinearDamping().at(i));
+
+    jacobianCalculations = runTime.jacobianCalculations();
+}
+
+void PySolution::adaptivityInfo(int timeStep, vector<double> &error, vector<int> &dofs) const
+{
+    if (!Agros2D::computation()->isSolved())
+        throw logic_error(QObject::tr("Problem is not solved.").toStdString());
+
+    if (m_fieldInfo->adaptivityType() == AdaptivityMethod_None)
+        throw logic_error(QObject::tr("Solution is not adaptive.").toStdString());
+
+    // set time step if -1 (default parameter - last steps)
+    timeStep = getTimeStep(timeStep);
+
+    int adaptivitySteps = Agros2D::computation()->solutionStore()->lastAdaptiveStep(m_fieldInfo, timeStep) + 1;
+    for (int i = 0; i < adaptivitySteps; i++)
+    {
+        SolutionStore::SolutionRunTimeDetails runTime = Agros2D::computation()->solutionStore()->multiSolutionRunTimeDetail(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, i));
+        error.push_back(runTime.adaptivityError());
+        dofs.push_back(runTime.DOFs());
+    }
+}
+
+std::string PySolution::filenameMatrix(int timeStep, int adaptivityStep) const
+{
+    timeStep = getTimeStep(timeStep);
+    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
+
+    qDebug() << "TODO: add time and adaptive step";
+    // QString name = QString("%1/%2_%3_%4_matrix.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+    QString name = QString("%1/%2_matrix.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
+    if (QFile::exists(name))
+        return name.toStdString();
+    else
+        throw logic_error(QObject::tr("Matrix file does not exist.").toStdString());
+}
+
+std::string PySolution::filenameRHS(int timeStep, int adaptivityStep) const
+{
+    timeStep = getTimeStep(timeStep);
+    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
+
+    qDebug() << "TODO: add time and adaptive step";
+    // QString name = QString("%1/%2_%3_%4_RHS").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+    QString name = QString("%1/%2_rhs.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
+    if (QFile::exists(name))
+        return name.toStdString();
+    else
+        throw logic_error(QObject::tr("RHS file does not exist.").toStdString());
+}
+
+std::string PySolution::filenameSLN(int timeStep, int adaptivityStep) const
+{
+    timeStep = getTimeStep(timeStep);
+    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
+
+    qDebug() << "TODO: add time and adaptive step";
+    // QString name = QString("%1/%2_%3_%4_RHS").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+    QString name = QString("%1/%2_sln.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
+    if (QFile::exists(name))
+        return name.toStdString();
+    else
+        throw logic_error(QObject::tr("RHS file does not exist.").toStdString());
+}
+*/

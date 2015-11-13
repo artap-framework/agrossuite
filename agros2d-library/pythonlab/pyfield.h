@@ -138,36 +138,8 @@ class PyField
                             const map<std::string, map<std::string, std::string> > &settings_map);
         void removeMaterial(const std::string &name);
 
-        // local values, integrals
-        void localValues(double x, double y, int timeStep, int adaptivityStep,
-                         map<std::string, double> &results) const;
-        void surfaceIntegrals(const vector<int> &edges, int timeStep, int adaptivityStep,
-                              map<std::string, double> &results) const;
-        void volumeIntegrals(const vector<int> &labels, int timeStep, int adaptivityStep,
-                             map<std::string, double> &results) const;
-
-        // mesh info
-        void initialMeshInfo(map<std::string, int> &info) const;
-        void solutionMeshInfo(int timeStep, int adaptivityStep, map<std::string, int> &info) const;
-
-        // solver info
-        void solverInfo(int timeStep, int adaptivityStep,
-                        vector<double> &solutionsChange, vector<double> &residual,
-                        vector<double> &dampingCoeff, int &jacobianCalculations) const;
-
-        // adaptivity info
-        void adaptivityInfo(int timeStep, vector<double> &error, vector<int> &dofs) const;
-
-        // matrix and RHS
-        std::string filenameMatrix(int timeStep, int adaptivityStep) const;
-        std::string filenameRHS(int timeStep, int adaptivityStep) const;
-        std::string filenameSLN(int timeStep, int adaptivityStep) const;
-
 private:
     FieldInfo *m_fieldInfo;
-
-    int getTimeStep(int timeStep) const;
-    int getAdaptivityStep(int adaptivityStep, int timeStep) const;
 };
 
 #endif // PYTHONLABFIELD_H

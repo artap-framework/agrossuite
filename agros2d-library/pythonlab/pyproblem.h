@@ -23,6 +23,7 @@
 #include "util/global.h"
 #include "solver/problem.h"
 #include "solver/problem_config.h"
+#include "solver/plugin_interface.h"
 
 class PyProblemBase
 {
@@ -78,6 +79,7 @@ class PyComputation : public QObject, public PyProblemBase
 public:
     PyComputation(bool newComputation);
     ~PyComputation() {}
+    QSharedPointer<ProblemComputation> computation();
 
     void clear();
 
@@ -90,6 +92,50 @@ public:
 
 protected:
     QSharedPointer<ProblemComputation> m_computation;
+};
+
+class PySolution : public QObject
+{
+    Q_OBJECT
+
+public:
+    PySolution() {}
+    ~PySolution() {}
+
+    void computation(PyComputation *computation);
+    void field(const std::string &fieldId);
+
+    // local values, integrals
+    void localValues(double x, double y, int timeStep, int adaptivityStep,
+                     map<std::string, double> &results) const;
+    void surfaceIntegrals(const vector<int> &edges, int timeStep, int adaptivityStep,
+                          map<std::string, double> &results) const;
+    void volumeIntegrals(const vector<int> &labels, int timeStep, int adaptivityStep,
+                         map<std::string, double> &results) const;
+
+    // mesh info
+    void initialMeshInfo(map<std::string, int> &info) const;
+    void solutionMeshInfo(int timeStep, int adaptivityStep, map<std::string, int> &info) const;
+
+    // solver info
+    void solverInfo(int timeStep, int adaptivityStep,
+                    vector<double> &solutionsChange, vector<double> &residual,
+                    vector<double> &dampingCoeff, int &jacobianCalculations) const;
+
+    // adaptivity info
+    void adaptivityInfo(int timeStep, vector<double> &error, vector<int> &dofs) const;
+
+    // matrix and RHS
+    std::string filenameMatrix(int timeStep, int adaptivityStep) const;
+    std::string filenameRHS(int timeStep, int adaptivityStep) const;
+    std::string filenameSLN(int timeStep, int adaptivityStep) const;
+
+private:
+    QSharedPointer<ProblemComputation> m_computation;
+    FieldInfo *m_fieldInfo;
+
+    int getTimeStep(int timeStep) const;
+    int getAdaptivityStep(int adaptivityStep, int timeStep) const;
 };
 
 #endif // PYTHONLABPROBLEM_H
