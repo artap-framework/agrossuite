@@ -120,7 +120,6 @@ SolutionStore::~SolutionStore()
     clear();
 }
 
-
 QString SolutionStore::baseStoreFileName(FieldSolutionID solutionID) const
 {
     QString fn = QString("%1/%2/%3").
@@ -137,17 +136,12 @@ void SolutionStore::clear()
     foreach (FieldSolutionID sid, m_multiSolutions)
         removeSolution(sid, false);
 
-    // clear results
-    m_results.clear();
-
     // remove runtime
-    /*
     QString fn = QString("%1/%2/runtime.json").
             arg(cacheProblemDir()).
             arg(m_computation->problemDir());
     if (QFile::exists(fn))
         QFile::remove(fn);
-    */
 
     assert(m_multiSolutions.isEmpty());
     assert(m_multiSolutionRunTimeDetails.isEmpty());
@@ -390,13 +384,6 @@ void SolutionStore::loadRunTimeDetails()
         // append run time details
         m_multiSolutionRunTimeDetails.insert(solutionID, runTime);
     }
-
-    // results
-    QJsonObject resultsJson = storeJson[RESULTS].toObject();
-    foreach (QString key, resultsJson.keys())
-    {
-        m_results[key] = resultsJson[key].toDouble();
-    }
 }
 
 void SolutionStore::saveRunTimeDetails()
@@ -430,14 +417,6 @@ void SolutionStore::saveRunTimeDetails()
         solutionsJson.append(solutionJson);
     }
     storeJson[SOLUTIONS] = solutionsJson;
-
-    // results
-    QJsonObject resultsJson;
-    for (QMap<QString, double>::const_iterator i = m_results.constBegin(); i != m_results.constEnd(); ++i)
-    {
-        resultsJson[i.key()] = i.value();
-    }
-    storeJson[RESULTS] = resultsJson;
 
     // save to file
     QJsonDocument doc(storeJson);

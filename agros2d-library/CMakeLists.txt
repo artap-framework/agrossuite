@@ -116,6 +116,8 @@ SET(SOURCES
     preprocessorview.cpp
     problemdialog.cpp
     optilab/optilab.cpp
+    optilab/study.cpp
+    optilab/parameter.cpp
     pythonlab/pythonconsole.cpp
     pythonlab/pythoncompleter.cpp
     pythonlab/pythonhighlighter.cpp
@@ -160,6 +162,7 @@ SET(SOURCES
     solver/plugin_interface.cpp
     solver/problem.cpp
     solver/problem_config.cpp
+    solver/problem_result.cpp
     solver/solutionstore.cpp
     solver/solutiontypes.cpp
     solver/solver.cpp
@@ -272,6 +275,7 @@ SOURCE_GROUP(
   solver/plugin_interface.cpp
   solver/problem.cpp
   solver/problem_config.cpp
+  solver/problem_result.cpp
   solver/solutionstore.cpp
   solver/solutiontypes.cpp
   solver/solver.cpp
@@ -333,6 +337,8 @@ SET(HEADERS
   preprocessorview.h
   problemdialog.h
   optilab/optilab.h
+  optilab/study.h
+  optilab/parameter.h
   pythonlab/pythonconsole.h
   pythonlab/pythoncompleter.h
   pythonlab/pythonhighlighter.h
@@ -378,6 +384,7 @@ SET(HEADERS
   solver/plugin_interface.h
   solver/problem.h
   solver/problem_config.h
+  solver/problem_result.h
   solver/solutionstore.h
   solver/solutiontypes.h
   solver/solver.h
@@ -484,6 +491,7 @@ SOURCE_GROUP(
   solver/plugin_interface.h
   solver/problem.h
   solver/problem_config.h
+  solver/problem_result.h
   solver/solutionstore.h  
   solver/solutiontypes.h
   solver/solver.h

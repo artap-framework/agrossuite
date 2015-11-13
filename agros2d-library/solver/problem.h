@@ -42,7 +42,7 @@ class PyProblem;
 class ProblemComputation;
 class PostDeal;
 class SolutionStore;
-class ResultStore;
+class ProblemResult;
 
 class CalculationThread : public QThread
 {
@@ -81,7 +81,6 @@ signals:
 
     /// emited when an field is added or removed. Menus need to adjusted
     void couplingsChanged();
-
 
 public slots:
     virtual void clearFieldsAndConfig();
@@ -193,6 +192,7 @@ public:
     inline PostDeal *postDeal() { return m_postDeal; }
     inline ProblemSolver *problemSolver() { return m_problemSolver; }
     inline SolutionStore *solutionStore() { return m_solutionStore; }
+    inline ProblemResult *result() const { return m_result; }
 
     bool isSolved() const;
     bool isSolving() const { return m_isSolving; }
@@ -200,6 +200,10 @@ public:
     bool isMeshing() const { return m_isMeshing; }
     bool isAborted() const { return m_abort; }
     bool isPreparedForAction() const { return !isMeshing() && !isSolving() && !m_isPostprocessingRunning; }
+
+    // results
+    bool loadResults();
+    bool saveResults();
 
     inline QTime timeElapsed() const { return m_lastTimeElapsed; }
 
@@ -238,6 +242,7 @@ signals:
 
 public slots:    
     void clearSolution();
+    void clearResults();
     void doAbortSolve();
     virtual void clearFieldsAndConfig();
 
@@ -253,6 +258,7 @@ protected:
     dealii::Triangulation<2> m_initialUnrefinedMesh;
     // calculation mesh - at the present moment we do not use multimesh
     dealii::Triangulation<2> m_calculationMesh;
+    ProblemResult *m_result;
 
     // solution store
     SolutionStore *m_solutionStore;

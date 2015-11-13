@@ -36,6 +36,8 @@
 #include "solver/solutionstore.h"
 #include "solver/plugin_interface.h"
 
+#include "optilab/study.h"
+
 #include "util/system_utils.h"
 
 #include "boost/archive/archive_exception.hpp"

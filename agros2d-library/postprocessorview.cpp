@@ -264,7 +264,7 @@ void PostprocessorWidget::doCalculationFinished()
     else if (m_computation->isSolved())
         tabWidget->setCurrentWidget(m_post2DWidget);
 
-    if ((m_computation->isMeshed() && !m_computation->isSolving()) || m_computation->isSolved())
+    if (m_computation->isMeshed() || m_computation->isSolved())
         emit apply();
 }
 

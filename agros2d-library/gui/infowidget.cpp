@@ -40,6 +40,7 @@
 
 #include "solver/problem.h"
 #include "solver/problem_config.h"
+#include "solver/problem_result.h"
 #include "solver/solutionstore.h"
 
 #include "ctemplate/template.h"
@@ -161,7 +162,7 @@ void InfoWidgetGeneral::showProblemInfo(Problem *problem)
     // results (only for computation)
     if (ProblemComputation *computation = dynamic_cast<ProblemComputation *>(problem))
     {
-        QMap<QString, double> results = computation->solutionStore()->results();
+        QMap<QString, double> results = computation->result()->results();
         problemInfo.SetValue("RESULTS_MAIN_LABEL", tr("Results").toStdString());
         foreach (QString key, results.keys())
         {

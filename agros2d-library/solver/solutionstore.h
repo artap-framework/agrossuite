@@ -89,11 +89,6 @@ public:
 
     inline bool isEmpty() const { return m_multiSolutions.isEmpty(); }
 
-    inline QMap<QString, double> results() { return m_results; }
-    inline bool hasResults() const { return !m_results.isEmpty(); }
-    inline void setResult(QString key, double value) { m_results[key] = value; }
-    inline void removeResult(QString key) { m_results.remove(key); }
-
 public slots:
     void clear();
 
@@ -104,14 +99,12 @@ private:
     QMap<FieldSolutionID, SolutionRunTimeDetails> m_multiSolutionRunTimeDetails;
     QMap<FieldSolutionID, MultiArray> m_multiSolutionDealCache;
     QList<FieldSolutionID> m_multiSolutionCacheIDOrder;
-    QMap<QString, double> m_results;
 
     void insertMultiSolutionToCache(FieldSolutionID solutionID, MultiArray multiArray);
 
     QString baseStoreFileName(FieldSolutionID solutionID) const;
 
-    // consts
-    const QString RESULTS = "results";
+    // consts    
     const QString SOLUTIONS = "solutions";
     const QString FIELDID = "fieldid";
     const QString TIMESTEP = "timestep";

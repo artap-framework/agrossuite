@@ -101,6 +101,9 @@ void SceneViewCommon2D::loadProjection2d(bool setScene)
 
 void SceneViewCommon2D::paintGrid()
 {
+    if (!problem())
+        return;
+
     loadProjection2d(true);
 
     Point cornerMin = transform(Point(0, 0));
@@ -167,6 +170,9 @@ void SceneViewCommon2D::paintGrid()
 
 void SceneViewCommon2D::paintAxes()
 {
+    if (!problem())
+        return;
+
     loadProjectionViewPort();
 
     glScaled(2.0 / width(), 2.0 / height(), 1.0);
@@ -217,6 +223,9 @@ void SceneViewCommon2D::paintAxes()
 
 void SceneViewCommon2D::paintRulers()
 {
+    if (!problem())
+        return;
+
     loadProjection2d(true);
 
     Point cornerMin = transform(Point(0, 0));
@@ -476,9 +485,12 @@ void SceneViewCommon2D::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Escape:
     {
         m_nodeLast = NULL;
-        problem()->scene()->selectNone();
-        emit mousePressed();
-        updateGL();
+        if (problem())
+        {
+            problem()->scene()->selectNone();
+            emit mousePressed();
+            updateGL();
+        }
     }
         break;
     case Qt::Key_N:
@@ -486,8 +498,11 @@ void SceneViewCommon2D::keyPressEvent(QKeyEvent *event)
         // add node with coordinates under mouse pointer
         if ((event->modifiers() & Qt::ShiftModifier) && (event->modifiers() & Qt::ControlModifier))
         {
-            Point p = transform(Point(m_lastPos.x(), m_lastPos.y()));
-            problem()->scene()->doNewNode(p);
+            if (problem())
+            {
+                Point p = transform(Point(m_lastPos.x(), m_lastPos.y()));
+                problem()->scene()->doNewNode(p);
+            }
         }
     }
         break;
@@ -496,8 +511,11 @@ void SceneViewCommon2D::keyPressEvent(QKeyEvent *event)
         // add label with coordinates under mouse pointer
         if ((event->modifiers() & Qt::ShiftModifier) && (event->modifiers() & Qt::ControlModifier))
         {
-            Point p = transform(Point(m_lastPos.x(), m_lastPos.y()));
-            problem()->scene()->doNewLabel(p);
+            if (problem())
+            {
+                Point p = transform(Point(m_lastPos.x(), m_lastPos.y()));
+                problem()->scene()->doNewLabel(p);
+            }
         }
     }
         break;

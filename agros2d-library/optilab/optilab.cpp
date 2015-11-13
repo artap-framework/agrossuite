@@ -18,13 +18,20 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "optilab.h"
+#include "parameter.h"
+#include "study.h"
 #include "util/global.h"
+
+#include "study.h"
+
 #include "solver/problem.h"
+#include "solver/problem_result.h"
 #include "solver/plugin_interface.h"
 #include "solver/solutionstore.h"
+
 #include "gui/infowidget.h"
 
-OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent)
+OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(parent)
 {
     createControls();
 }
@@ -36,6 +43,15 @@ OptiLabWidget::~OptiLabWidget()
 
 void OptiLabWidget::createControls()
 {
+    cmbStudies = new QComboBox(this);
+    connect(cmbStudies, SIGNAL(currentIndexChanged(int)), this, SLOT(studyChanged(int)));
+
+    QVBoxLayout *layoutStudies = new QVBoxLayout();
+    layoutStudies->addWidget(cmbStudies);
+
+    QGroupBox *grpStudies = new QGroupBox(tr("Studies"));
+    grpStudies->setLayout(layoutStudies);
+
     // parameters
     trvComputations = new QTreeWidget(this);
     trvComputations->setMouseTracking(true);
@@ -45,7 +61,7 @@ void OptiLabWidget::createControls()
     trvComputations->setColumnWidth(0, 220);
 
     QStringList headers;
-    headers << tr("Computation") << tr("Solved");
+    headers << tr("Computation") << tr("State");
     trvComputations->setHeaderLabels(headers);
 
     connect(trvComputations, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(computationChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
@@ -53,16 +69,20 @@ void OptiLabWidget::createControls()
     QPushButton *btnComputationsRefresh = new QPushButton(tr("Refresh"));
     connect(btnComputationsRefresh, SIGNAL(clicked()), this, SLOT(refresh()));
 
-    QPushButton *btnTEST = new QPushButton(tr("TEST"));
-    connect(btnTEST, SIGNAL(clicked()), this, SLOT(test()));
+    QPushButton *btnTESTSWEEP = new QPushButton(tr("TEST SWEEP"));
+    connect(btnTESTSWEEP, SIGNAL(clicked()), this, SLOT(testSweep()));
+    QPushButton *btnTESTOPT = new QPushButton(tr("TEST OPT."));
+    connect(btnTESTOPT, SIGNAL(clicked()), this, SLOT(testOptimization()));
 
     QHBoxLayout *layoutParametersButton = new QHBoxLayout();
     layoutParametersButton->addWidget(btnComputationsRefresh);
     layoutParametersButton->addStretch(1);
-    layoutParametersButton->addWidget(btnTEST);
+    layoutParametersButton->addWidget(btnTESTSWEEP);
+    layoutParametersButton->addWidget(btnTESTOPT);
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(2, 2, 2, 3);
+    layout->addWidget(grpStudies);
     layout->addWidget(trvComputations);
     layout->addLayout(layoutParametersButton);
 
@@ -71,7 +91,38 @@ void OptiLabWidget::createControls()
 
 void OptiLabWidget::refresh()
 {
-    QMap<QString, QSharedPointer<ProblemComputation> > computations = Agros2D::computations();
+    // fill studies
+    cmbStudies->blockSignals(true);
+
+    QString selectedItem = "";
+    if (cmbStudies->currentIndex() != -1)
+        selectedItem = cmbStudies->currentText();
+
+    cmbStudies->clear();
+    foreach (Study *study, m_optilab->studies())
+    {
+        cmbStudies->addItem(study->name());
+    }
+
+    cmbStudies->blockSignals(false);
+
+    if (cmbStudies->count() > 0)
+    {
+        if (!selectedItem.isEmpty())
+            cmbStudies->setCurrentText(selectedItem);
+        else
+            cmbStudies->setCurrentIndex(0);
+
+        studyChanged(cmbStudies->currentIndex());
+    }
+}
+
+void OptiLabWidget::studyChanged(int index)
+{
+    // study
+    Study *study = m_optilab->studies().at(cmbStudies->currentIndex());
+
+    QList<QSharedPointer<ProblemComputation> > computations = study->computations();
 
     trvComputations->blockSignals(true);
 
@@ -81,12 +132,12 @@ void OptiLabWidget::refresh()
         selectedItem = trvComputations->currentItem()->data(0, Qt::UserRole).toString();
 
     trvComputations->clear();
-    foreach (QString key, computations.keys())
+    foreach (QSharedPointer<ProblemComputation> computation, computations)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(trvComputations);
-        item->setText(0, key);
-        item->setText(1, (computations[key]->isSolved() ? tr("solved") : "-"));
-        item->setData(0, Qt::UserRole, key);
+        item->setText(0, computation->problemDir());
+        item->setText(1, (computation->isSolved() ? tr("solved") : "-"));
+        item->setData(0, Qt::UserRole, computation->problemDir());
 
         trvComputations->addTopLevelItem(item);
     }
@@ -101,29 +152,49 @@ void OptiLabWidget::refresh()
         trvComputations->setCurrentItem(trvComputations->topLevelItem(0));
 }
 
-void OptiLabWidget::test()
+void OptiLabWidget::testSweep()
 {
-    QList<double> params;
-    params << 0.05 << 0.065 << 0.055 << 0.06;
+    // sweep analysis
+    StudySweepAnalysis *analysis = new StudySweepAnalysis();
 
-    foreach (double param, params)
-    {
-        Agros2D::preprocessor()->config()->setParameter("R3", param);
-        QSharedPointer<ProblemComputation> computation = Agros2D::preprocessor()->createComputation(true, false);
-        computation->solve();
+    // add to list
+    m_optilab->addStudy(analysis);
 
-        FieldInfo *fieldInfo = computation->fieldInfo("electrostatic");
-        computation->scene()->labels->setSelected(true);
-        std::shared_ptr<IntegralValue> values = fieldInfo->plugin()->volumeIntegral(computation.data(),
-                                                                                    fieldInfo,
-                                                                                    0,
-                                                                                    0);
+    // only one parameter
+    // QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
+    // analysis->setParameter(Parameter::fromList("R3", params));
+    // analysis->setParameter(Parameter::fromValue("R3", 0.06));
+    analysis->setParameter(Parameter::fromRandom("R3", 0.05, 0.07, 4));
+    // analysis->setParameter(Parameter::fromLinspace("R3", 0.05, 0.07, 3));
 
-        QMap<QString, double> integrals = values->values();
-        computation->solutionStore()->setResult("We", integrals["electrostatic_energy"]);
-        computation->solutionStore()->setResult("V", integrals["electrostatic_volume"]);
-        computation->solutionStore()->saveRunTimeDetails();
-    }
+    // add expressions
+    analysis->addExpression("We", "TODO");
+    analysis->addExpression("V", "TODO");
+
+    // solve
+    analysis->solve();
+
+    refresh();
+}
+
+void OptiLabWidget::testOptimization()
+{
+    // sweep analysis
+    StudyGoldenSectionSearch *analysis = new StudyGoldenSectionSearch(1e-4);
+
+    // add to list
+    m_optilab->addStudy(analysis);
+
+    // only one parameter
+    analysis->setParameter(Parameter("R3", 0.05, 0.07));
+    analysis->setFunctional(); // TODO
+
+    // add expressions
+    analysis->addExpression("We", "TODO");
+    analysis->addExpression("V", "TODO");
+
+    // solve
+    analysis->solve();
 
     refresh();
 }
@@ -157,7 +228,20 @@ OptiLab::OptiLab(QWidget *parent) : QWidget(parent)
 
 OptiLab::~OptiLab()
 {
+    clear();
+}
 
+void OptiLab::addStudy(Study *study)
+{
+    m_studies.append(study);
+}
+
+void OptiLab::clear()
+{
+    for (int i = 0; i < m_studies.size(); i++)
+        delete m_studies[i];
+
+    m_studies.clear();
 }
 
 void OptiLab::createControls()
