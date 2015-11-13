@@ -204,7 +204,11 @@ PyComputation::PyComputation(bool newComputation) : PyProblemBase()
 void PyComputation::setComputation(const string &computation)
 {
     QMap<QString, QSharedPointer<ProblemComputation> > computations = Agros2D::computations();
-    m_computation = computations[QString::fromStdString(computation)];
+    QString key = QString::fromStdString(computation);
+    if (computations.contains(key))
+        m_computation = computations[key];
+    else
+        throw logic_error(QObject::tr("Computation '%1' does not exists.").arg(key).toStdString());
 }
 
 QSharedPointer<ProblemComputation> PyComputation::getComputation()
