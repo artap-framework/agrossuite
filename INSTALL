@@ -43,12 +43,12 @@ cmake ..
 make
 cd ../../
 
-cd 3rdparty/paralution
+cd solver-external-paralution
 mkdir build
 cd build
 cmake ..
 make
-cd ../../..
+cd ../..
 
 Windows:
 
