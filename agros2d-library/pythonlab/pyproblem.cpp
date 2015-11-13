@@ -329,7 +329,6 @@ void PySolution::localValues(double x, double y, int timeStep, int adaptivitySte
         while (it.hasNext())
         {
             it.next();
-
             Module::LocalVariable variable = m_fieldInfo->localVariable(m_computation->config()->coordinateType(), it.key());
 
             if (variable.isScalar())
@@ -352,54 +351,49 @@ void PySolution::localValues(double x, double y, int timeStep, int adaptivitySte
     results = values;
 }
 
-/*
 void PySolution::surfaceIntegrals(const vector<int> &edges, int timeStep, int adaptivityStep,
                                map<std::string, double> &results) const
 {
     map<std::string, double> values;
 
-    if (Agros2D::computation()->isSolved())
+    if (m_computation->isSolved())
     {
-        Agros2D::computation()->scene()->selectNone();
+        m_computation->scene()->selectNone();
 
         if (!edges.empty())
         {
             for (vector<int>::const_iterator it = edges.begin(); it != edges.end(); ++it)
             {
-                if ((*it >= 0) && (*it < Agros2D::computation()->scene()->edges->length()))
+                if ((*it >= 0) && (*it < m_computation->scene()->edges->length()))
                 {
-                    Agros2D::computation()->scene()->edges->at(*it)->setSelected(true);
+                    m_computation->scene()->edges->at(*it)->setSelected(true);
                 }
                 else
                 {
-                    throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::computation()->scene()->edges->length()-1).toStdString());
+                    throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(m_computation->scene()->edges->length()-1).toStdString());
                     results = values;
                     return;
                 }
             }
 
-            if (!silentMode() && !Agros2D::computation()->isSolving())
+            if (!silentMode() && !m_computation->isSolving())
                 currentPythonEngineAgros()->sceneViewPost2D()->updateGL();
         }
         else
         {
-            Agros2D::computation()->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
+            m_computation->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
         }
 
         // set time and adaptivity step if -1 (default parameter - last steps), check steps
         timeStep = getTimeStep(timeStep);
         adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-        assert(0);
-        std::shared_ptr<IntegralValue> integral; // = m_fieldInfo->plugin()->surfaceIntegral(m_computation, m_fieldInfo, timeStep, adaptivityStep);
+        std::shared_ptr<IntegralValue> integral = m_fieldInfo->plugin()->surfaceIntegral(m_computation.data(), m_fieldInfo, timeStep, adaptivityStep);
         QMapIterator<QString, double> it(integral->values());
         while (it.hasNext())
         {
             it.next();
-
-            assert(0);
-            Module::Integral integral; // = m_fieldInfo->surfaceIntegral(it.key());
-
+            Module::Integral integral = m_fieldInfo->surfaceIntegral(m_computation->config()->coordinateType(), it.key());
             values[integral.shortname().toStdString()] = it.value();
         }
     }
@@ -416,57 +410,48 @@ void PySolution::volumeIntegrals(const vector<int> &labels, int timeStep, int ad
 {
     map<std::string, double> values;
 
-    if (Agros2D::computation()->isSolved())
+    if (m_computation->isSolved())
     {
-        Agros2D::computation()->scene()->selectNone();
+        m_computation->scene()->selectNone();
 
         if (!labels.empty())
         {
             for (vector<int>::const_iterator it = labels.begin(); it != labels.end(); ++it)
             {
-                if ((*it >= 0) && (*it < Agros2D::computation()->scene()->labels->length()))
+                if ((*it >= 0) && (*it < m_computation->scene()->labels->length()))
                 {
-                    if (Agros2D::computation()->scene()->labels->at(*it)->marker(m_fieldInfo) != Agros2D::preprocessor()->scene()->materials->getNone(m_fieldInfo))
-                    {
-                        Agros2D::computation()->scene()->labels->at(*it)->setSelected(true);
-                    }
+                    if (m_computation->scene()->labels->at(*it)->marker(m_fieldInfo) != m_computation->scene()->materials->getNone(m_fieldInfo))
+                        m_computation->scene()->labels->at(*it)->setSelected(true);
                     else
-                    {
                         throw out_of_range(QObject::tr("Label with index '%1' is 'none'.").arg(*it).toStdString());
-                    }
                 }
                 else
                 {
-                    throw out_of_range(QObject::tr("Label index must be between 0 and '%1'.").arg(Agros2D::computation()->scene()->labels->length()-1).toStdString());
+                    throw out_of_range(QObject::tr("Label index must be between 0 and '%1'.").arg(m_computation->scene()->labels->length()-1).toStdString());
                     results = values;
                     return;
                 }
             }
 
-            if (!silentMode() && !Agros2D::computation()->isSolving())
+            if (!silentMode() && !m_computation->isSolving())
                 currentPythonEngineAgros()->sceneViewPost2D()->updateGL();
         }
         else
         {
-            Agros2D::computation()->scene()->selectAll(SceneGeometryMode_OperateOnLabels);
+            m_computation->scene()->selectAll(SceneGeometryMode_OperateOnLabels);
         }
 
         // set time and adaptivity step if -1 (default parameter - last steps), check steps
         timeStep = getTimeStep(timeStep);
         adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-        assert(0);
-        std::shared_ptr<IntegralValue> integral; // = m_fieldInfo->plugin()->volumeIntegral(m_computation, m_fieldInfo, timeStep, adaptivityStep);
+        std::shared_ptr<IntegralValue> integral = m_fieldInfo->plugin()->volumeIntegral(m_computation.data(), m_fieldInfo, timeStep, adaptivityStep);
         QMapIterator<QString, double> it(integral->values());
         while (it.hasNext())
         {
             it.next();
-
-            assert(0);
-            Module::Integral integral; // = m_fieldInfo->volumeIntegral(it.key());
-
+            Module::Integral integral = m_fieldInfo->volumeIntegral(m_computation->config()->coordinateType(), it.key());
             values[integral.shortname().toStdString()] = it.value();
-
         }
     }
     else
@@ -477,6 +462,7 @@ void PySolution::volumeIntegrals(const vector<int> &labels, int timeStep, int ad
     results = values;
 }
 
+/*
 void PySolution::initialMeshInfo(map<std::string, int> &info) const
 {
     if (!Agros2D::computation()->isMeshed())
