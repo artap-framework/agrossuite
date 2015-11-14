@@ -21,6 +21,7 @@
 
 #include "util/constants.h"
 #include "util/global.h"
+#include "gui/parameterdialog.h"
 #include "solver/problem_config.h"
 
 #include "scene.h"
@@ -38,6 +39,19 @@
 
 #include "solver/problem.h"
 #include "ctemplate/template.h"
+
+enum PreprocessorType
+{
+    Undefined = 0,
+    GeometryNode,
+    GeometryEdge,
+    GeometryLabel,
+    Material,
+    Boundary,
+    Study,
+    Parameter,
+    Functional
+};
 
 PreprocessorWidget::PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget *parent): QWidget(parent)
 {
@@ -71,6 +85,7 @@ PreprocessorWidget::~PreprocessorWidget()
     QSettings settings;
     settings.setValue("PreprocessorWidget/SplitterState", splitter->saveState());
     settings.setValue("PreprocessorWidget/SplitterGeometry", splitter->saveGeometry());
+    settings.setValue("PreprocessorWidget/TreeColumnWidth", trvWidget->columnWidth(0));
 }
 
 void PreprocessorWidget::createActions()
@@ -80,6 +95,9 @@ void PreprocessorWidget::createActions()
 
     actDelete = new QAction(icon("scene-delete"), tr("&Delete"), this);
     connect(actDelete, SIGNAL(triggered()), this, SLOT(doDelete()));
+
+    actNewParameter = new QAction(icon(""), tr("New parameter"), this);
+    connect(actNewParameter, SIGNAL(triggered()), this, SLOT(doNewParameter()));
 }
 
 void PreprocessorWidget::createMenu()
@@ -92,6 +110,8 @@ void PreprocessorWidget::createMenu()
     mnuPreprocessor->addSeparator();
     Agros2D::preprocessor()->scene()->addBoundaryAndMaterialMenuItems(mnuPreprocessor, this);
     mnuPreprocessor->addSeparator();
+    mnuPreprocessor->addAction(actNewParameter);
+    mnuPreprocessor->addSeparator();
     mnuPreprocessor->addAction(actDelete);
     mnuPreprocessor->addSeparator();
     mnuPreprocessor->addAction(actProperties);
@@ -99,6 +119,8 @@ void PreprocessorWidget::createMenu()
 
 void PreprocessorWidget::createControls()
 {
+    QSettings settings;
+
     // undo framework
     actUndo = Agros2D::preprocessor()->scene()->undoStack()->createUndoAction(this);
     actUndo->setIcon(icon("edit-undo"));
@@ -142,12 +164,16 @@ void PreprocessorWidget::createControls()
     loadTooltip(SceneGeometryMode_OperateOnNodes);
 
     trvWidget = new QTreeWidget(this);
-    trvWidget->setHeaderHidden(true);
+    trvWidget->setHeaderHidden(false);
     trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     trvWidget->setMouseTracking(true);
-    trvWidget->setColumnCount(1);
-    trvWidget->setColumnWidth(0, 150);
-    trvWidget->setIndentation(12);
+    trvWidget->setColumnCount(2);
+    trvWidget->setColumnWidth(0, settings.value("PreprocessorWidget/TreeColumnWidth", 200).toInt());
+    // trvWidget->setIndentation(15);
+
+    QStringList headers;
+    headers << tr("Name") << tr("Value");
+    trvWidget->setHeaderLabels(headers);
 
     txtGridStep = new QLineEdit("0.1");
     txtGridStep->setValidator(new QDoubleValidator(txtGridStep));
@@ -186,7 +212,6 @@ void PreprocessorWidget::createControls()
 
     setLayout(layoutMain);
 
-    QSettings settings;
     splitter->restoreState(settings.value("PreprocessorWidget/SplitterState").toByteArray());
     splitter->restoreGeometry(settings.value("PreprocessorWidget/SplitterGeometry").toByteArray());
 }
@@ -245,6 +270,7 @@ void PreprocessorWidget::refresh()
             if (Agros2D::preprocessor()->scene()->labels->haveMarker(material).isEmpty())
                 item->setForeground(0, QBrush(Qt::gray));
             item->setData(0, Qt::UserRole, material->variant());
+            item->setData(1, Qt::UserRole, Material);
 
             listMaterials.append(item);
         }
@@ -265,11 +291,13 @@ void PreprocessorWidget::refresh()
 
             Module::BoundaryType boundaryType = fieldInfo->boundaryType(boundary->type());
 
-            item->setText(0, QString("%1 (%2)").arg(boundary->name()).arg(boundaryType.name()));
+            item->setText(0, boundary->name());
+            item->setText(1, boundaryType.name());
             item->setIcon(0, (Agros2D::preprocessor()->scene()->edges->haveMarker(boundary).count() > 0) ? icon("scene-edgemarker") : icon("scene-edgemarker-notused"));
             if (Agros2D::preprocessor()->scene()->edges->haveMarker(boundary).isEmpty())
                 item->setForeground(0, QBrush(Qt::gray));
             item->setData(0, Qt::UserRole, boundary->variant());
+            item->setData(1, Qt::UserRole, Boundary);
 
             listMarkes.append(item);
         }
@@ -296,12 +324,14 @@ void PreprocessorWidget::refresh()
     {
         QTreeWidgetItem *item = new QTreeWidgetItem();
 
-        item->setText(0, QString("%1 - [%2; %3]").
-                      arg(inode).
+        item->setText(0, QString("%1").
+                      arg(inode));
+        item->setText(1, QString("[%1; %2]").
                       arg(node->point().x, 0, 'e', 2).
                       arg(node->point().y, 0, 'e', 2));
         item->setIcon(0, icon("scene-node"));
         item->setData(0, Qt::UserRole, node->variant());
+        item->setData(1, Qt::UserRole, GeometryNode);
 
         listNodes.append(item);
 
@@ -322,13 +352,15 @@ void PreprocessorWidget::refresh()
     {
         QTreeWidgetItem *item = new QTreeWidgetItem();
 
-        item->setText(0, QString("%1 - %2 m").
-                      arg(iedge).
+        item->setText(0, QString("%1").
+                      arg(iedge));
+        item->setText(1, QString("%1 m").
                       arg((edge->angle() < EPS_ZERO) ?
                               (edge->nodeEnd()->point() - edge->nodeStart()->point()).magnitude() :
                               edge->radius() * edge->angle() / 180.0 * M_PI, 0, 'e', 2));
         item->setIcon(0, icon("scene-edge"));
         item->setData(0, Qt::UserRole, edge->variant());
+        item->setData(1, Qt::UserRole, GeometryEdge);
 
         listEdges.append(item);
 
@@ -349,18 +381,58 @@ void PreprocessorWidget::refresh()
     {
         QTreeWidgetItem *item = new QTreeWidgetItem();
 
-        item->setText(0, QString("%1 - [%2; %3]").
-                      arg(ilabel).
+        item->setText(0, QString("%1").
+                      arg(ilabel));
+        item->setText(1, QString("[%1; %2]").
                       arg(label->point().x, 0, 'e', 2).
                       arg(label->point().y, 0, 'e', 2));
         item->setIcon(0, icon("scene-label"));
         item->setData(0, Qt::UserRole, label->variant());
+        item->setData(1, Qt::UserRole, GeometryLabel);
 
         listLabels.append(item);
 
         ilabel++;
     }
     labelsNode->addChildren(listLabels);
+
+    // parameters
+    QTreeWidgetItem *optilabNode = new QTreeWidgetItem(trvWidget);
+    optilabNode->setText(0, tr("OptiLab"));
+    optilabNode->setFont(0, fnt);
+    optilabNode->setExpanded(true);
+
+    QTreeWidgetItem *studiesNode = new QTreeWidgetItem(optilabNode);
+    studiesNode->setText(0, tr("Studies"));
+    // labelsNode->setIcon(0, icon("scenelabel"));
+    studiesNode->setFont(0, fnt);
+    studiesNode->setExpanded(true);
+
+    QTreeWidgetItem *parametersNode = new QTreeWidgetItem(optilabNode);
+    parametersNode->setText(0, tr("Parameters"));
+    // labelsNode->setIcon(0, icon("scenelabel"));
+    parametersNode->setFont(0, fnt);
+    parametersNode->setExpanded(true);
+
+    QList<QTreeWidgetItem *> listParameters;
+    ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    foreach (QString key, parameters.keys())
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem();
+        item->setText(0, key);
+        item->setText(1, QString::number(parameters[key]));
+        item->setData(0, Qt::UserRole, key);
+        item->setData(1, Qt::UserRole, Parameter);
+
+        listParameters.append(item);
+    }
+    parametersNode->addChildren(listParameters);
+
+    QTreeWidgetItem *functionalsNode = new QTreeWidgetItem(optilabNode);
+    functionalsNode->setText(0, tr("Functionals"));
+    // labelsNode->setIcon(0, icon("scenelabel"));
+    functionalsNode->setFont(0, fnt);
+    functionalsNode->setExpanded(true);
 
     setUpdatesEnabled(true);
     blockSignals(false);
@@ -396,9 +468,12 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
 
     if (current)
     {
-        if (SceneBasic *objectBasic = current->data(0, Qt::UserRole).value<SceneBasic *>())
+        PreprocessorType type = (PreprocessorType) trvWidget->currentItem()->data(1, Qt::UserRole).toInt();
+
+        if (type == GeometryNode || type == GeometryEdge || type == GeometryLabel)
         {
             // geometry
+            SceneBasic *objectBasic = current->data(0, Qt::UserRole).value<SceneBasic *>();
             m_sceneViewPreprocessor->actSceneModePreprocessor->trigger();
 
             if (dynamic_cast<SceneNode *>(objectBasic))
@@ -413,10 +488,11 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
-        else if (SceneBoundary *objectBoundary = current->data(0, Qt::UserRole).value<SceneBoundary *>())
+        else if (type == Boundary)
         {
             // edge marker
             // select all edges
+            SceneBoundary *objectBoundary = current->data(0, Qt::UserRole).value<SceneBoundary *>();
             m_sceneViewPreprocessor->actOperateOnEdges->trigger();
 
             Agros2D::preprocessor()->scene()->edges->haveMarker(objectBoundary).setSelected();
@@ -424,14 +500,21 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
-        else if (SceneMaterial *objectMaterial = current->data(0, Qt::UserRole).value<SceneMaterial *>())
+        else if (type == Material)
         {
             // label marker
             // select all labels
+            SceneMaterial *objectMaterial = current->data(0, Qt::UserRole).value<SceneMaterial *>();
             m_sceneViewPreprocessor->actOperateOnLabels->trigger();
 
             Agros2D::preprocessor()->scene()->labels->haveMarker(objectMaterial).setSelected();
 
+            actProperties->setEnabled(true);
+            actDelete->setEnabled(true);
+        }
+        else if (type == Parameter)
+        {
+            // parameter
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
@@ -449,37 +532,50 @@ void PreprocessorWidget::doProperties()
 {
     if (trvWidget->currentItem())
     {
-        // geometry
-        if (SceneBasic *objectBasic = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBasic *>())
+        PreprocessorType type = (PreprocessorType) trvWidget->currentItem()->data(1, Qt::UserRole).toInt();
+
+        if (type == GeometryNode || type == GeometryEdge || type == GeometryLabel)
         {
+            // geometry
+            SceneBasic *objectBasic = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBasic *>();
             if (objectBasic->showDialog(this) == QDialog::Accepted)
             {
                 m_sceneViewPreprocessor->refresh();
                 refresh();
             }
-            return;
         }
-
-        // edge marker
-        if (SceneBoundary *objectBoundary = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBoundary *>())
+        else if (type == Boundary)
         {
+            // edge marker
+            SceneBoundary *objectBoundary = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBoundary *>();
+
             if (objectBoundary->showDialog(this) == QDialog::Accepted)
             {
                 m_sceneViewPreprocessor->refresh();
                 refresh();
             }
-            return;
         }
-
-        // label marker
-        if (SceneMaterial *objectMaterial = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneMaterial *>())
+        else if (type == Material)
         {
+            // label marker
+            SceneMaterial *objectMaterial = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneMaterial *>();
             if (objectMaterial->showDialog(this) == QDialog::Accepted)
             {
                 m_sceneViewPreprocessor->refresh();
                 refresh();
             }
-            return;
+        }
+        else if (type == Parameter)
+        {
+            // parameter
+            QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
+
+            ParameterDialog dialog(key, this);
+            if (dialog.exec() == QDialog::Accepted)
+            {
+                m_sceneViewPreprocessor->refresh();
+                refresh();
+            }
         }
     }
 }
@@ -488,9 +584,13 @@ void PreprocessorWidget::doDelete()
 {
     if (trvWidget->currentItem())
     {
-        // scene objects
-        if (SceneBasic *objectBasic = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBasic*>())
+        PreprocessorType type = (PreprocessorType) trvWidget->currentItem()->data(1, Qt::UserRole).toInt();
+
+        if (type == GeometryNode || type == GeometryEdge || type == GeometryLabel)
         {
+            // scene objects
+            SceneBasic *objectBasic = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBasic*>();
+
             if (SceneNode *node = dynamic_cast<SceneNode *>(objectBasic))
             {
                 Agros2D::preprocessor()->scene()->nodes->remove(node);
@@ -506,21 +606,40 @@ void PreprocessorWidget::doDelete()
                 Agros2D::preprocessor()->scene()->labels->remove(label);
             }
         }
-
-        // label marker
-        else if (SceneMaterial *objectMaterial = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneMaterial *>())
+        else if (type == Material)
         {
+            // label marker
+            SceneMaterial *objectMaterial = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneMaterial *>();
             Agros2D::preprocessor()->scene()->removeMaterial(objectMaterial);
         }
-
-        // edge marker
-        else if (SceneBoundary *objectBoundary = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBoundary *>())
+        else if (type == Boundary)
         {
+            // edge marker
+            SceneBoundary *objectBoundary = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBoundary *>();
             Agros2D::preprocessor()->scene()->removeBoundary(objectBoundary);
+        }
+        else if (type == Parameter)
+        {
+            // parameter
+            QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
+            ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+            parameters.remove(key);
+
+            Agros2D::preprocessor()->checkAndApplyParameters(parameters);
         }
 
         refresh();
         m_sceneViewPreprocessor->refresh();
+    }
+}
+
+void PreprocessorWidget::doNewParameter()
+{
+    ParameterDialog dialog(this);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        m_sceneViewPreprocessor->refresh();
+        refresh();
     }
 }
 

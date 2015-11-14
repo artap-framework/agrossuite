@@ -240,7 +240,6 @@ signals:
 
 public slots:
     void updateControls();
-    void reloadParameters();
 
 private:
     QDialogButtonBox *buttonBox;
@@ -271,31 +270,14 @@ private:
     // couplings
     QGroupBox *grpCouplings;
 
-    // startup script
-    QTreeWidget *trvParameters;
-    QLabel *lblParametersError;
-    QPushButton *btnParametersRemove;
-    QPushButton *btnParametersAdd;
-    QPushButton *btnParametersApply;
-    QLineEdit *txtParameterName;
-    LineEditDouble *txtParameterValue;
-
     void createActions();
     void createControls();
 
     void fillComboBox();
 
-    void parameterSelect(const QString &key);
-
 private slots:
     void transientChanged();
     void saveConfig();
-
-    void parametersApply();
-    void parameterRemoved();
-    void parameterAdded();
-    void parameterChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);    
-    void parameterNameTextChanged(const QString &str);
 };
 
 #endif // PROBLEMDIALOG_H

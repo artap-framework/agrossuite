@@ -35,8 +35,10 @@ class PreprocessorWidget : public QWidget
 public slots:    
     void refresh();
     void loadTooltip(SceneGeometryMode sceneMode);
+
     void doProperties();
     void doDelete();
+    void doNewParameter();
 
 public:
     PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget *parent = 0);
@@ -61,6 +63,7 @@ private:
 
     QAction *actProperties;
     QAction *actDelete;
+    QAction *actNewParameter;
     
     QMenu *mnuPreprocessor;
 
