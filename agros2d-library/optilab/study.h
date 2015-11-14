@@ -23,6 +23,7 @@
 #include <QWidget>
 
 #include "util.h"
+#include "util/enums.h"
 #include "parameter.h"
 #include "functional.h"
 
@@ -38,7 +39,8 @@ public:
     ~Studies();
 
     void addStudy(Study *study);
-    inline QList<Study *> studies() { return m_studies; }
+    void removeStudy(Study *study);
+    inline QList<Study *> items() { return m_studies; }
 
     void loadStudies();
     void saveStudies();
@@ -64,9 +66,10 @@ public:
     Study();
     virtual ~Study();
 
+    virtual StudyType type() = 0;
+
     void clear();
     virtual void solve() = 0;
-    virtual QString name() = 0;
 
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
@@ -94,7 +97,7 @@ class StudySweepAnalysis : public Study
 public:
     StudySweepAnalysis();
 
-    virtual QString name() { return "Sweep analysis"; } // TODO: user defined
+    virtual inline StudyType type() { return StudyType_SweepAnalysis; }
 
     void setParameter(Parameter parameter) { m_parameters.append(parameter); assert(m_parameters.size() == 1); }
     virtual void solve();
@@ -109,7 +112,7 @@ class StudyGoldenSectionSearch : public Study
 public:
     StudyGoldenSectionSearch(double tolerance = 1e-4);
 
-    virtual QString name() { return "Golden section search"; } // TODO: user defined
+    virtual inline StudyType type() { return StudyType_GoldenSectionSearch; }
 
     void setParameter(Parameter parameter) { m_parameters.append(parameter); assert(m_parameters.size() == 1); }
 

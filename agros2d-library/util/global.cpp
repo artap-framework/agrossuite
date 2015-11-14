@@ -150,7 +150,6 @@ Agros2D::Agros2D()
     // preprocessor
     m_preprocessor = new ProblemPreprocessor();
     m_computation = QSharedPointer<ProblemComputation>(nullptr);
-    m_studies = new Studies();
 
     initLists();
 
@@ -168,7 +167,6 @@ void Agros2D::clear()
 {    
     delete m_singleton.data()->m_preprocessor;
     m_singleton.data()->m_computations.clear();
-    delete m_singleton.data()->m_studies;
 
     delete m_singleton.data()->m_configComputer;   
     delete m_singleton.data()->m_log;

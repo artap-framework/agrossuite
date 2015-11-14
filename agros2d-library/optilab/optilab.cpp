@@ -35,7 +35,7 @@ OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(paren
 {
     createControls();
 
-    connect(Agros2D::studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
+    connect(Agros2D::preprocessor()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
 }
 
 OptiLabWidget::~OptiLabWidget()
@@ -96,9 +96,9 @@ void OptiLabWidget::refresh()
         selectedItem = cmbStudies->currentText();
 
     cmbStudies->clear();
-    foreach (Study *study, Agros2D::studies()->studies())
+    foreach (Study *study, Agros2D::preprocessor()->studies()->items())
     {
-        cmbStudies->addItem(study->name());
+        cmbStudies->addItem(studyTypeString(study->type()));
     }
 
     cmbStudies->blockSignals(false);
@@ -117,7 +117,7 @@ void OptiLabWidget::refresh()
 void OptiLabWidget::studyChanged(int index)
 {
     // study
-    Study *study = Agros2D::studies()->studies().at(cmbStudies->currentIndex());
+    Study *study = Agros2D::preprocessor()->studies()->items().at(cmbStudies->currentIndex());
 
     QList<QSharedPointer<ProblemComputation> > computations = study->computations();
 
@@ -155,7 +155,7 @@ void OptiLabWidget::testSweep()
     StudySweepAnalysis *analysis = new StudySweepAnalysis();
 
     // add to list
-    Agros2D::studies()->addStudy(analysis);
+    Agros2D::preprocessor()->studies()->addStudy(analysis);
 
     // only one parameter
     // QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
@@ -170,8 +170,6 @@ void OptiLabWidget::testSweep()
 
     // solve
     analysis->solve();
-
-    Agros2D::studies()->saveStudies();
 }
 
 void OptiLabWidget::testOptimization()
@@ -180,7 +178,7 @@ void OptiLabWidget::testOptimization()
     StudyGoldenSectionSearch *analysis = new StudyGoldenSectionSearch(1e-4);
 
     // add to list
-    Agros2D::studies()->addStudy(analysis);
+    Agros2D::preprocessor()->studies()->addStudy(analysis);
 
     // only one parameter
     analysis->setParameter(Parameter("R3", 0.05, 0.07));
@@ -191,8 +189,6 @@ void OptiLabWidget::testOptimization()
 
     // solve
     analysis->solve();
-
-    Agros2D::studies()->saveStudies();
 }
 
 void OptiLabWidget::computationSelect(const QString &key)

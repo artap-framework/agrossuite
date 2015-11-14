@@ -29,8 +29,10 @@
 
 #include "scene.h"
 
+#include <typeinfo>
+
 // consts
-const QString NAME = "name";
+const QString TYPE = "type";
 const QString COMPUTATIONS = "computations";
 const QString PARAMETERS = "parameters";
 const QString FUNCTIONAL = "functionals";
@@ -43,12 +45,21 @@ Studies::Studies(QObject *parent) : QObject(parent)
 
 Studies::~Studies()
 {
-
+    QString fn = QString("%1/studies.json").arg(cacheProblemDir());
+    if (QFile::exists(fn))
+        QFile::remove(fn);
 }
 
 void Studies::addStudy(Study *study)
 {
     m_studies.append(study);
+
+    emit invalidated();
+}
+
+void Studies::removeStudy(Study *study)
+{
+    m_studies.removeOne(study);
 
     emit invalidated();
 }
@@ -65,6 +76,42 @@ void Studies::clear()
 
 void Studies::loadStudies()
 {
+    clear();
+
+    QString fn = QString("%1/studies.json").arg(cacheProblemDir());
+    QFile file(fn);
+    if (!file.exists())
+        return;
+
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qWarning("Couldn't open study file.");
+        return;
+    }
+
+    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+
+    QJsonObject rootJson = doc.object();
+
+    QJsonArray studiesJson = rootJson[STUDIES].toArray();
+    for (int i = 0; i < studiesJson.size(); i++)
+    {
+        QJsonObject studyJson = studiesJson[i].toObject();
+
+        // type
+        StudyType type = studyTypeFromStringKey(studyJson[TYPE].toString());
+
+        Study *study = nullptr;
+        if (type == StudyType_SweepAnalysis)
+            study = new StudySweepAnalysis();
+        else if (type == StudyType_GoldenSectionSearch)
+            study = new StudyGoldenSectionSearch();
+        else
+            assert(0);
+
+        study->load(studyJson);
+        m_studies.append(study);
+    }
 
     emit invalidated();
 }
@@ -84,11 +131,12 @@ void Studies::saveStudies()
     // root object
     QJsonObject rootJson;
 
-    // results
+    // studies
     QJsonArray studiesJson;
     foreach (Study *study, m_studies)
     {
         QJsonObject studyJson;
+        studyJson[TYPE] = studyTypeToStringKey(study->type());
         study->save(studyJson);
 
         studiesJson.append(studyJson);
@@ -126,12 +174,39 @@ void Study::clear()
 
 void Study::load(QJsonObject &object)
 {
+    // computations
+    QJsonArray computationsJson = object[COMPUTATIONS].toArray();
+    for (int i = 0; i < computationsJson.size(); i++)
+    {
+        QMap<QString, QSharedPointer<ProblemComputation> > computations = Agros2D::computations();
+        m_computations.append(computations[computationsJson[i].toString()]);
+    }
+
+    // parameters
+    QJsonArray parametersJson = object[PARAMETERS].toArray();
+    for (int i = 0; i < parametersJson.size(); i++)
+    {
+        QJsonObject parameterJson = parametersJson[i].toObject();
+        Parameter parameter;
+        parameter.load(parameterJson);
+
+        m_parameters.append(parameter);
+    }
+
+    // functionals
+    QJsonArray functionalsJson = object[FUNCTIONAL].toArray();
+    for (int i = 0; i < functionalsJson.size(); i++)
+    {
+        QJsonObject parameterJson = functionalsJson[i].toObject();
+        Functional functional;
+        functional.load(parameterJson);
+
+        m_functionals.append(functional);
+    }
 }
 
 void Study::save(QJsonObject &object)
-{
-    object[NAME] = name();
-
+{    
     // computations
     QJsonArray computationsJson;
     foreach (QSharedPointer<ProblemComputation> computation, m_computations)
@@ -152,15 +227,15 @@ void Study::save(QJsonObject &object)
     object[PARAMETERS] = parametersJson;
 
     // functionals
-    QJsonArray functinalsJson;
+    QJsonArray functionalsJson;
     foreach (Functional functional, m_functionals)
     {
         QJsonObject functionalJson;
         functional.save(functionalJson);
 
-        functinalsJson.append(functionalJson);
+        functionalsJson.append(functionalJson);
     }
-    object[FUNCTIONAL] = functinalsJson;
+    object[FUNCTIONAL] = functionalsJson;
 }
 
 // ********************************************************************************

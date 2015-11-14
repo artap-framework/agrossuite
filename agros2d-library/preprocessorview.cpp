@@ -61,7 +61,7 @@ PreprocessorWidget::PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget
     connect(Agros2D::preprocessor()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
     connect(currentPythonEngineAgros(), SIGNAL(executedScript()), this, SLOT(refresh()));
 
-    connect(Agros2D::studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
+    connect(Agros2D::preprocessor()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
 
     connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
     connect(trvWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
@@ -399,10 +399,10 @@ void PreprocessorWidget::refresh()
     studiesNode->setExpanded(true);
 
     QList<QTreeWidgetItem *> listStudies;
-    foreach (Study *study, Agros2D::studies()->studies())
+    foreach (Study *study, Agros2D::preprocessor()->studies()->items())
     {
         QTreeWidgetItem *item = new QTreeWidgetItem();
-        item->setText(0, study->name());
+        item->setText(0, studyTypeString(study->type()));
         item->setData(0, Qt::UserRole, study->variant());
         item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
 

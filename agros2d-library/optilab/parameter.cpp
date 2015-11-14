@@ -31,11 +31,6 @@ const QString VALUES = "values";
 const QString LOWER_BOUND = "lower_bound";
 const QString UPPER_BOUND = "upper_bound";
 
-Parameter::Parameter(const QString &name) :
-    m_name(name), m_values(QList<double>()), m_lowerBound(0.0), m_upperBound(1.0)
-{
-}
-
 Parameter::Parameter(const QString &name, double lowerBound, double upperBound) :
     m_name(name), m_values(QList<double>()), m_lowerBound(lowerBound), m_upperBound(upperBound)
 {
@@ -55,7 +50,15 @@ void Parameter::clear()
 
 void Parameter::load(QJsonObject &object)
 {
+    m_name = object[NAME].toString();
+    m_lowerBound = object[LOWER_BOUND].toDouble();
+    m_upperBound = object[UPPER_BOUND].toDouble();
 
+    QJsonArray valuesJson = object[VALUES].toArray();
+    for (int i = 0; i < valuesJson.size(); i++)
+    {
+        m_values.append(valuesJson[i].toDouble());
+    }
 }
 
 void Parameter::save(QJsonObject &object)

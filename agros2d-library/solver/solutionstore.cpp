@@ -372,11 +372,11 @@ void SolutionStore::loadRunTimeDetails()
 
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
 
-    QJsonObject storeJson = doc.object();
+    QJsonObject rootJson = doc.object();
 
     // solutions
     int time_step = 0;
-    QJsonArray solutionsJson = storeJson[SOLUTIONS].toArray();
+    QJsonArray solutionsJson = rootJson[SOLUTIONS].toArray();
     for (int i = 0; i < solutionsJson.size(); i++)
     {
         QJsonObject solutionJson = solutionsJson[i].toObject();
@@ -415,7 +415,7 @@ void SolutionStore::saveRunTimeDetails()
     }
 
     // root object
-    QJsonObject storeJson;
+    QJsonObject rootJson;
 
     // solution
     QJsonArray solutionsJson;
@@ -433,9 +433,9 @@ void SolutionStore::saveRunTimeDetails()
 
         solutionsJson.append(solutionJson);
     }
-    storeJson[SOLUTIONS] = solutionsJson;
+    rootJson[SOLUTIONS] = solutionsJson;
 
     // save to file
-    QJsonDocument doc(storeJson);
+    QJsonDocument doc(rootJson);
     file.write(doc.toJson());
 }

@@ -52,6 +52,7 @@ static QMap<DataTableType, QString> dataTableTypeList;
 static QMap<ButcherTableType, QString> butcherTableTypeList;
 static QMap<IterSolverDealII, QString> iterLinearSolverDealIIMethodList;
 static QMap<PreconditionerDealII, QString> iterLinearSolverDealIIPreconditionerList;
+static QMap<StudyType, QString> studyTypeList;
 
 QStringList coordinateTypeStringKeys() { return coordinateTypeList.values(); }
 QString coordinateTypeToStringKey(CoordinateType coordinateType) { return coordinateTypeList[coordinateType]; }
@@ -156,6 +157,10 @@ IterSolverDealII iterLinearSolverDealIIMethodFromStringKey(const QString &type) 
 QStringList iterLinearSolverDealIIPreconditionerStringKeys() { return iterLinearSolverDealIIPreconditionerList.values(); }
 QString iterLinearSolverDealIIPreconditionerToStringKey(PreconditionerDealII type) { return iterLinearSolverDealIIPreconditionerList[type]; }
 PreconditionerDealII iterLinearSolverDealIIPreconditionerFromStringKey(const QString &type) { return iterLinearSolverDealIIPreconditionerList.key(type); }
+
+QStringList studyTypeStringKeys() { return studyTypeList.values(); }
+QString studyTypeToStringKey(StudyType type) { return studyTypeList[type]; }
+StudyType studyTypeFromStringKey(const QString &type) { return studyTypeList.key(type); }
 
 void initLists()
 {
@@ -333,6 +338,10 @@ void initLists()
     // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_PSOR, "psor");
     // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_LACSolver, "lacsolver");
     // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_Chebyshev, "chebyshev");
+
+    // study type
+    studyTypeList.insert(StudyType_SweepAnalysis, "sweepanalysis");
+    studyTypeList.insert(StudyType_GoldenSectionSearch, "goldensectionsearch");
 }
 
 QString errorNormString(NormType projNormType)
@@ -823,6 +832,20 @@ QString iterLinearSolverDealIIPreconditionerString(PreconditionerDealII type)
         return QObject::tr("Chebyshev");
     default:
         std::cerr << "Iterative solver Deal.II preconditioner '" + QString::number(type).toStdString() + "' is not implemented. iterLinearSolverPreconditionerTypeString(PreconditionerType type)" << endl;
+        throw;
+    }
+}
+
+QString studyTypeString(StudyType type)
+{
+    switch (type)
+    {
+    case StudyType_SweepAnalysis:
+        return QObject::tr("Sweep analysis");
+    case StudyType_GoldenSectionSearch:
+        return QObject::tr("Golden section search");
+    default:
+        std::cerr << "Study type '" + QString::number(type).toStdString() + "' is not implemented. studyTypeString(StudyType type)" << endl;
         throw;
     }
 }

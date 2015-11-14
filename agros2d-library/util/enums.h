@@ -330,6 +330,12 @@ enum SymFlag
     SymFlag_SYM = 1
 };
 
+enum StudyType
+{
+    StudyType_SweepAnalysis,
+    StudyType_GoldenSectionSearch
+};
+
 // keys
 AGROS_LIBRARY_API void initLists();
 
@@ -487,5 +493,11 @@ AGROS_LIBRARY_API QString iterLinearSolverDealIIPreconditionerString(Preconditio
 AGROS_LIBRARY_API QStringList iterLinearSolverDealIIPreconditionerStringKeys();
 AGROS_LIBRARY_API QString iterLinearSolverDealIIPreconditionerToStringKey(PreconditionerDealII type);
 AGROS_LIBRARY_API PreconditionerDealII iterLinearSolverDealIIPreconditionerFromStringKey(const QString &type);
+
+// study type
+AGROS_LIBRARY_API QString studyTypeString(StudyType type);
+AGROS_LIBRARY_API QStringList studyTypeStringKeys();
+AGROS_LIBRARY_API QString studyTypeToStringKey(StudyType type);
+AGROS_LIBRARY_API StudyType studyTypeFromStringKey(const QString &type);
 
 #endif // UTIL_ENUMS_H

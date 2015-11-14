@@ -29,10 +29,6 @@
 const QString NAME = "name";
 const QString EXPRESSION = "expression";
 
-Functional::Functional(const QString &name) :
-    m_name(name), m_expression("")
-{
-}
 
 Functional::Functional(const QString &name, const QString &expression) :
     m_name(name), m_expression(expression)

@@ -43,6 +43,7 @@ class ProblemComputation;
 class PostDeal;
 class SolutionStore;
 class ProblemResult;
+class Studies;
 
 class CalculationThread : public QThread
 {
@@ -161,6 +162,7 @@ class AGROS_LIBRARY_API ProblemPreprocessor : public Problem
 
 public:
     ProblemPreprocessor();
+    ~ProblemPreprocessor();
 
     QSharedPointer<ProblemComputation> createComputation(bool newComputation = false, bool setCurrentComputation = true);
 
@@ -168,12 +170,17 @@ public:
     void writeProblemToArchive(const QString &fileName, bool saveWithSolution = false);
     void readProblemFromFile(const QString &fileName);
 
+    inline Studies *studies() { return m_studies; }
+
 signals:
     void fileNameChanged(const QString &fileName);
 
 public slots:
     virtual void clearFieldsAndConfig();
     inline void doFileNameChanged(const QString &name) { m_config->setFileName(name); }
+
+private:
+    Studies *m_studies;
 };
 
 class AGROS_LIBRARY_API ProblemComputation : public Problem

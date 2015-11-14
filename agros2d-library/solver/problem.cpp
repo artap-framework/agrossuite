@@ -47,6 +47,8 @@
 #include "pythonlab/pythonengine.h"
 #include "pythonlab/pythonengine_agros.h"
 
+#include "optilab/study.h"
+
 #include "mesh/meshgenerator_triangle.h"
 #include "mesh/meshgenerator_cubit.h"
 #include "mesh/meshgenerator_gmsh.h"
@@ -331,6 +333,9 @@ void Problem::clearFieldsAndConfig()
 
     // clear scene
     m_scene->clear();
+
+    // clear studies
+
 }
 
 void Problem::addField(FieldInfo *field)
@@ -1534,7 +1539,14 @@ bool ProblemComputation::saveResults()
 
 ProblemPreprocessor::ProblemPreprocessor() : Problem()
 {
+    m_studies = new Studies();
+
     connect(this, SIGNAL(fileNameChanged(QString)), this, SLOT(doFileNameChanged(QString)));
+}
+
+ProblemPreprocessor::~ProblemPreprocessor()
+{
+    delete m_studies;
 }
 
 QSharedPointer<ProblemComputation> ProblemPreprocessor::createComputation(bool newComputation, bool setCurrentComputation)
@@ -1567,6 +1579,8 @@ QSharedPointer<ProblemComputation> ProblemPreprocessor::createComputation(bool n
 void ProblemPreprocessor::clearFieldsAndConfig()
 {
     Problem::clearFieldsAndConfig();
+    m_studies->clear();
+
     QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
 
     emit fileNameChanged(tr("unnamed"));
@@ -1646,6 +1660,9 @@ void ProblemPreprocessor::readProblemFromArchive(const QString &fileName)
         Agros2D::setCurrentComputation(post->problemDir());
         emit post->solved();
     }
+
+    // read studies
+    m_studies->loadStudies();
 }
 
 void ProblemPreprocessor::writeProblemToArchive(const QString &fileName, bool saveWithSolution)
@@ -1663,6 +1680,9 @@ void ProblemPreprocessor::writeProblemToArchive(const QString &fileName, bool sa
 
     if (saveWithSolution)
     {
+        // write studies
+        m_studies->saveStudies();
+
         // whole directory
         JlCompress::compressDir(fileName, cacheProblemDir());
     }
@@ -1673,7 +1693,7 @@ void ProblemPreprocessor::writeProblemToArchive(const QString &fileName, bool sa
         lst << fileInfoProblem.absoluteFilePath();
         if (JlCompress::compressFiles(fileName, lst))
             emit fileNameChanged(QFileInfo(fileName).absoluteFilePath());
-    }
+    }    
 }
 
 void ProblemPreprocessor::readProblemFromFile(const QString &fileName)

@@ -27,8 +27,7 @@
 class Parameter
 {
 public:
-    Parameter(const QString &name);
-    Parameter(const QString &name, double lowerBound, double upperBound);
+    Parameter(const QString &name = "", double lowerBound = 0.0, double upperBound = 1.0);
     virtual ~Parameter();
 
     void clear();

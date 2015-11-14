@@ -27,8 +27,7 @@
 class Functional
 {
 public:
-    Functional(const QString &name);
-    Functional(const QString &name, const QString &expression);
+    Functional(const QString &name = "", const QString &expression = "");
     virtual ~Functional();
 
     void load(QJsonObject &object);

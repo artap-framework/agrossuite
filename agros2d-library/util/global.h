@@ -28,11 +28,9 @@ class ProblemComputation;
 class Config;
 class SolutionStore;
 class Log;
-class Scene;
 class PluginInterface;
 class ScriptEngineRemote;
 class MemoryMonitor;
-class Studies;
 
 class AGROS_LIBRARY_API AgrosApplication : public QApplication
 {
@@ -76,8 +74,6 @@ public:
     static void removeComputation(const QString &problemDir);
     static void clearComputations();
 
-    static Studies *studies() { return Agros2D::singleton()->m_studies; }
-
     static inline Log *log() { return Agros2D::singleton()->m_log; }
     static inline MemoryMonitor *memoryMonitor() { return Agros2D::singleton()->m_memoryMonitor; }
 
@@ -96,8 +92,6 @@ private:
     // postprocessor
     QSharedPointer<ProblemComputation> m_computation;
     QMap<QString, QSharedPointer<ProblemComputation> > m_computations;
-    // studies
-    Studies *m_studies;
     // log and memory monitor
     Log *m_log;
     MemoryMonitor *m_memoryMonitor;
