@@ -68,22 +68,12 @@ public:
     QAction *actSceneModeOptiLab;
     inline OptiLabWidget *optiLabWidget() { return m_optiLabWidget; }
 
-    void addStudy(Study *study);
-    inline QList<Study *> studies() { return m_studies; }
-
-    void loadStudies();
-    void saveStudies();
-
 signals:
 
 public slots:
     void computationSelected(const QString &key);
-    void clear();
 
 private:
-    // studies
-    QList<Study *> m_studies;
-
     OptiLabWidget *m_optiLabWidget;
     InfoWidgetGeneral *m_infoWidget;
 

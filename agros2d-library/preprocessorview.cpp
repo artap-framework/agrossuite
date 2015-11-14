@@ -23,6 +23,7 @@
 #include "util/global.h"
 #include "gui/parameterdialog.h"
 #include "solver/problem_config.h"
+#include "optilab/study.h"
 
 #include "scene.h"
 #include "logview.h"
@@ -39,19 +40,6 @@
 
 #include "solver/problem.h"
 #include "ctemplate/template.h"
-
-enum PreprocessorType
-{
-    Undefined = 0,
-    GeometryNode,
-    GeometryEdge,
-    GeometryLabel,
-    Material,
-    Boundary,
-    Study,
-    Parameter,
-    Functional
-};
 
 PreprocessorWidget::PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget *parent): QWidget(parent)
 {
@@ -72,6 +60,8 @@ PreprocessorWidget::PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget
 
     connect(Agros2D::preprocessor()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
     connect(currentPythonEngineAgros(), SIGNAL(executedScript()), this, SLOT(refresh()));
+
+    connect(Agros2D::studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
 
     connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
     connect(trvWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
@@ -270,7 +260,7 @@ void PreprocessorWidget::refresh()
             if (Agros2D::preprocessor()->scene()->labels->haveMarker(material).isEmpty())
                 item->setForeground(0, QBrush(Qt::gray));
             item->setData(0, Qt::UserRole, material->variant());
-            item->setData(1, Qt::UserRole, Material);
+            item->setData(1, Qt::UserRole, PreprocessorWidget::Material);
 
             listMaterials.append(item);
         }
@@ -297,7 +287,7 @@ void PreprocessorWidget::refresh()
             if (Agros2D::preprocessor()->scene()->edges->haveMarker(boundary).isEmpty())
                 item->setForeground(0, QBrush(Qt::gray));
             item->setData(0, Qt::UserRole, boundary->variant());
-            item->setData(1, Qt::UserRole, Boundary);
+            item->setData(1, Qt::UserRole, PreprocessorWidget::Boundary);
 
             listMarkes.append(item);
         }
@@ -331,7 +321,7 @@ void PreprocessorWidget::refresh()
                       arg(node->point().y, 0, 'e', 2));
         item->setIcon(0, icon("scene-node"));
         item->setData(0, Qt::UserRole, node->variant());
-        item->setData(1, Qt::UserRole, GeometryNode);
+        item->setData(1, Qt::UserRole, PreprocessorWidget::GeometryNode);
 
         listNodes.append(item);
 
@@ -360,7 +350,7 @@ void PreprocessorWidget::refresh()
                               edge->radius() * edge->angle() / 180.0 * M_PI, 0, 'e', 2));
         item->setIcon(0, icon("scene-edge"));
         item->setData(0, Qt::UserRole, edge->variant());
-        item->setData(1, Qt::UserRole, GeometryEdge);
+        item->setData(1, Qt::UserRole, PreprocessorWidget::GeometryEdge);
 
         listEdges.append(item);
 
@@ -408,6 +398,18 @@ void PreprocessorWidget::refresh()
     studiesNode->setFont(0, fnt);
     studiesNode->setExpanded(true);
 
+    QList<QTreeWidgetItem *> listStudies;
+    foreach (Study *study, Agros2D::studies()->studies())
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem();
+        item->setText(0, study->name());
+        item->setData(0, Qt::UserRole, study->variant());
+        item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
+
+        listStudies.append(item);
+    }
+    studiesNode->addChildren(listStudies);
+
     QTreeWidgetItem *parametersNode = new QTreeWidgetItem(optilabNode);
     parametersNode->setText(0, tr("Parameters"));
     // labelsNode->setIcon(0, icon("scenelabel"));
@@ -422,7 +424,7 @@ void PreprocessorWidget::refresh()
         item->setText(0, key);
         item->setText(1, QString::number(parameters[key]));
         item->setData(0, Qt::UserRole, key);
-        item->setData(1, Qt::UserRole, Parameter);
+        item->setData(1, Qt::UserRole, PreprocessorWidget::Parameter);
 
         listParameters.append(item);
     }
@@ -468,9 +470,9 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
 
     if (current)
     {
-        PreprocessorType type = (PreprocessorType) trvWidget->currentItem()->data(1, Qt::UserRole).toInt();
+        PreprocessorWidget::Type type = (PreprocessorWidget::Type) trvWidget->currentItem()->data(1, Qt::UserRole).toInt();
 
-        if (type == GeometryNode || type == GeometryEdge || type == GeometryLabel)
+        if (type == PreprocessorWidget::GeometryNode || type == PreprocessorWidget::GeometryEdge || type == PreprocessorWidget::GeometryLabel)
         {
             // geometry
             SceneBasic *objectBasic = current->data(0, Qt::UserRole).value<SceneBasic *>();
@@ -488,7 +490,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
-        else if (type == Boundary)
+        else if (type == PreprocessorWidget::Boundary)
         {
             // edge marker
             // select all edges
@@ -500,7 +502,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
-        else if (type == Material)
+        else if (type == PreprocessorWidget::Material)
         {
             // label marker
             // select all labels
@@ -512,7 +514,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
-        else if (type == Parameter)
+        else if (type == PreprocessorWidget::Parameter)
         {
             // parameter
             actProperties->setEnabled(true);
@@ -532,9 +534,9 @@ void PreprocessorWidget::doProperties()
 {
     if (trvWidget->currentItem())
     {
-        PreprocessorType type = (PreprocessorType) trvWidget->currentItem()->data(1, Qt::UserRole).toInt();
+        PreprocessorWidget::Type type = (PreprocessorWidget::Type) trvWidget->currentItem()->data(1, Qt::UserRole).toInt();
 
-        if (type == GeometryNode || type == GeometryEdge || type == GeometryLabel)
+        if (type == PreprocessorWidget::GeometryNode || type == PreprocessorWidget::GeometryEdge || type == PreprocessorWidget::GeometryLabel)
         {
             // geometry
             SceneBasic *objectBasic = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBasic *>();
@@ -544,7 +546,7 @@ void PreprocessorWidget::doProperties()
                 refresh();
             }
         }
-        else if (type == Boundary)
+        else if (type == PreprocessorWidget::Boundary)
         {
             // edge marker
             SceneBoundary *objectBoundary = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBoundary *>();
@@ -555,7 +557,7 @@ void PreprocessorWidget::doProperties()
                 refresh();
             }
         }
-        else if (type == Material)
+        else if (type == PreprocessorWidget::Material)
         {
             // label marker
             SceneMaterial *objectMaterial = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneMaterial *>();
@@ -565,7 +567,7 @@ void PreprocessorWidget::doProperties()
                 refresh();
             }
         }
-        else if (type == Parameter)
+        else if (type == PreprocessorWidget::Parameter)
         {
             // parameter
             QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
@@ -584,9 +586,9 @@ void PreprocessorWidget::doDelete()
 {
     if (trvWidget->currentItem())
     {
-        PreprocessorType type = (PreprocessorType) trvWidget->currentItem()->data(1, Qt::UserRole).toInt();
+        PreprocessorWidget::Type type = (PreprocessorWidget::Type) trvWidget->currentItem()->data(1, Qt::UserRole).toInt();
 
-        if (type == GeometryNode || type == GeometryEdge || type == GeometryLabel)
+        if (type == PreprocessorWidget::GeometryNode || type == PreprocessorWidget::GeometryEdge || type == PreprocessorWidget::GeometryLabel)
         {
             // scene objects
             SceneBasic *objectBasic = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBasic*>();
@@ -606,19 +608,19 @@ void PreprocessorWidget::doDelete()
                 Agros2D::preprocessor()->scene()->labels->remove(label);
             }
         }
-        else if (type == Material)
+        else if (type == PreprocessorWidget::Material)
         {
             // label marker
             SceneMaterial *objectMaterial = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneMaterial *>();
             Agros2D::preprocessor()->scene()->removeMaterial(objectMaterial);
         }
-        else if (type == Boundary)
+        else if (type == PreprocessorWidget::Boundary)
         {
             // edge marker
             SceneBoundary *objectBoundary = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBoundary *>();
             Agros2D::preprocessor()->scene()->removeBoundary(objectBoundary);
         }
-        else if (type == Parameter)
+        else if (type == PreprocessorWidget::Parameter)
         {
             // parameter
             QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();

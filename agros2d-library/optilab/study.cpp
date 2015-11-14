@@ -29,13 +29,81 @@
 
 #include "scene.h"
 
+// consts
 const QString NAME = "name";
 const QString COMPUTATIONS = "computations";
 const QString PARAMETERS = "parameters";
+const QString FUNCTIONAL = "functionals";
+const QString STUDIES = "studies";
+
+Studies::Studies(QObject *parent) : QObject(parent)
+{
+
+}
+
+Studies::~Studies()
+{
+
+}
+
+void Studies::addStudy(Study *study)
+{
+    m_studies.append(study);
+
+    emit invalidated();
+}
+
+void Studies::clear()
+{
+    for (int i = 0; i < m_studies.size(); i++)
+        delete m_studies[i];
+
+    m_studies.clear();
+
+    emit invalidated();
+}
+
+void Studies::loadStudies()
+{
+
+    emit invalidated();
+}
+
+void Studies::saveStudies()
+{
+    QString fn = QString("%1/studies.json").arg(cacheProblemDir());
+
+    QFile file(fn);
+
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        qWarning("Couldn't open studies file.");
+        return;
+    }
+
+    // root object
+    QJsonObject rootJson;
+
+    // results
+    QJsonArray studiesJson;
+    foreach (Study *study, m_studies)
+    {
+        QJsonObject studyJson;
+        study->save(studyJson);
+
+        studiesJson.append(studyJson);
+    }
+    rootJson[STUDIES] = studiesJson;
+
+    // save to file
+    QJsonDocument doc(rootJson);
+    file.write(doc.toJson());
+}
+
+// *****************************************************************************************************************
 
 Study::Study()
 {
-
 }
 
 Study::~Study()
@@ -43,14 +111,21 @@ Study::~Study()
     clear();
 }
 
+QVariant Study::variant()
+{
+    QVariant v;
+    v.setValue(this);
+    return v;
+}
+
 void Study::clear()
 {
-    m_resultExpressions.clear();
+    m_parameters.clear();
+    m_functionals.clear();
 }
 
 void Study::load(QJsonObject &object)
 {
-
 }
 
 void Study::save(QJsonObject &object)
@@ -75,6 +150,17 @@ void Study::save(QJsonObject &object)
         parametersJson.append(parameterJson);
     }
     object[PARAMETERS] = parametersJson;
+
+    // functionals
+    QJsonArray functinalsJson;
+    foreach (Functional functional, m_functionals)
+    {
+        QJsonObject functionalJson;
+        functional.save(functionalJson);
+
+        functinalsJson.append(functionalJson);
+    }
+    object[FUNCTIONAL] = functinalsJson;
 }
 
 // ********************************************************************************

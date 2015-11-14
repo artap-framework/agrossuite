@@ -31,12 +31,11 @@
 
 #include "gui/infowidget.h"
 
-// consts
-const QString STUDIES = "studies";
-
 OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(parent)
 {
     createControls();
+
+    connect(Agros2D::studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
 }
 
 OptiLabWidget::~OptiLabWidget()
@@ -69,17 +68,12 @@ void OptiLabWidget::createControls()
 
     connect(trvComputations, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(computationChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
-    QPushButton *btnComputationsRefresh = new QPushButton(tr("Refresh"));
-    connect(btnComputationsRefresh, SIGNAL(clicked()), this, SLOT(refresh()));
-
     QPushButton *btnTESTSWEEP = new QPushButton(tr("TEST SWEEP"));
     connect(btnTESTSWEEP, SIGNAL(clicked()), this, SLOT(testSweep()));
     QPushButton *btnTESTOPT = new QPushButton(tr("TEST OPT."));
     connect(btnTESTOPT, SIGNAL(clicked()), this, SLOT(testOptimization()));
 
     QHBoxLayout *layoutParametersButton = new QHBoxLayout();
-    layoutParametersButton->addWidget(btnComputationsRefresh);
-    layoutParametersButton->addStretch(1);
     layoutParametersButton->addWidget(btnTESTSWEEP);
     layoutParametersButton->addWidget(btnTESTOPT);
 
@@ -102,7 +96,7 @@ void OptiLabWidget::refresh()
         selectedItem = cmbStudies->currentText();
 
     cmbStudies->clear();
-    foreach (Study *study, m_optilab->studies())
+    foreach (Study *study, Agros2D::studies()->studies())
     {
         cmbStudies->addItem(study->name());
     }
@@ -123,7 +117,7 @@ void OptiLabWidget::refresh()
 void OptiLabWidget::studyChanged(int index)
 {
     // study
-    Study *study = m_optilab->studies().at(cmbStudies->currentIndex());
+    Study *study = Agros2D::studies()->studies().at(cmbStudies->currentIndex());
 
     QList<QSharedPointer<ProblemComputation> > computations = study->computations();
 
@@ -161,7 +155,7 @@ void OptiLabWidget::testSweep()
     StudySweepAnalysis *analysis = new StudySweepAnalysis();
 
     // add to list
-    m_optilab->addStudy(analysis);
+    Agros2D::studies()->addStudy(analysis);
 
     // only one parameter
     // QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
@@ -170,16 +164,14 @@ void OptiLabWidget::testSweep()
     analysis->setParameter(Parameter::fromRandom("R3", 0.05, 0.07, 4));
     // analysis->setParameter(Parameter::fromLinspace("R3", 0.05, 0.07, 3));
 
-    // add expressions
-    analysis->addExpression("We", "TODO");
-    analysis->addExpression("V", "TODO");
+    // add functionals
+    analysis->addFunctional(Functional("We", "TODO"));
+    analysis->addFunctional(Functional("V", "TODO"));
 
     // solve
     analysis->solve();
 
-    m_optilab->saveStudies();
-
-    refresh();
+    Agros2D::studies()->saveStudies();
 }
 
 void OptiLabWidget::testOptimization()
@@ -188,22 +180,19 @@ void OptiLabWidget::testOptimization()
     StudyGoldenSectionSearch *analysis = new StudyGoldenSectionSearch(1e-4);
 
     // add to list
-    m_optilab->addStudy(analysis);
+    Agros2D::studies()->addStudy(analysis);
 
     // only one parameter
     analysis->setParameter(Parameter("R3", 0.05, 0.07));
-    analysis->setFunctional(); // TODO
 
-    // add expressions
-    analysis->addExpression("We", "TODO");
-    analysis->addExpression("V", "TODO");
+    // add functionals
+    analysis->addFunctional(Functional("We", "TODO"));
+    analysis->addFunctional(Functional("V", "TODO"));
 
     // solve
     analysis->solve();
 
-    m_optilab->saveStudies();
-
-    refresh();
+    Agros2D::studies()->saveStudies();
 }
 
 void OptiLabWidget::computationSelect(const QString &key)
@@ -234,8 +223,7 @@ OptiLab::OptiLab(QWidget *parent) : QWidget(parent)
 }
 
 OptiLab::~OptiLab()
-{
-    clear();
+{    
 }
 
 void OptiLab::createControls()
@@ -246,55 +234,6 @@ void OptiLab::createControls()
     layoutLab->addWidget(m_infoWidget);
 
     setLayout(layoutLab);
-}
-
-void OptiLab::addStudy(Study *study)
-{
-    m_studies.append(study);    
-}
-
-void OptiLab::clear()
-{
-    for (int i = 0; i < m_studies.size(); i++)
-        delete m_studies[i];
-
-    m_studies.clear();
-}
-
-void OptiLab::loadStudies()
-{
-
-}
-
-void OptiLab::saveStudies()
-{
-    QString fn = QString("%1/studies.json").arg(cacheProblemDir());
-
-    QFile file(fn);
-
-    if (!file.open(QIODevice::WriteOnly))
-    {
-        qWarning("Couldn't open studies file.");
-        return;
-    }
-
-    // root object
-    QJsonObject rootJson;
-
-    // results
-    QJsonArray studiesJson;
-    foreach (Study *study, m_studies)
-    {
-        QJsonObject studyJson;
-        study->save(studyJson);
-
-        studiesJson.append(studyJson);
-    }
-    rootJson[STUDIES] = studiesJson;
-
-    // save to file
-    QJsonDocument doc(rootJson);
-    file.write(doc.toJson());
 }
 
 void OptiLab::computationSelected(const QString &key)

@@ -119,6 +119,7 @@ SET(SOURCES
     optilab/optilab.cpp
     optilab/study.cpp
     optilab/parameter.cpp
+    optilab/functional.cpp
     pythonlab/pythonconsole.cpp
     pythonlab/pythoncompleter.cpp
     pythonlab/pythonhighlighter.cpp
@@ -341,6 +342,7 @@ SET(HEADERS
   optilab/optilab.h
   optilab/study.h
   optilab/parameter.h
+  optilab/functional.h
   pythonlab/pythonconsole.h
   pythonlab/pythoncompleter.h
   pythonlab/pythonhighlighter.h

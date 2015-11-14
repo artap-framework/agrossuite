@@ -24,11 +24,42 @@
 
 #include "util.h"
 #include "parameter.h"
+#include "functional.h"
 
 class ProblemComputation;
+class Study;
 
-class Study
+class Studies : public QObject
 {
+    Q_OBJECT
+
+public:
+    Studies(QObject *parent = 0);
+    ~Studies();
+
+    void addStudy(Study *study);
+    inline QList<Study *> studies() { return m_studies; }
+
+    void loadStudies();
+    void saveStudies();
+
+signals:
+    void invalidated();
+
+public slots:
+    void clear();
+
+private:
+    // studies
+    QList<Study *> m_studies;
+};
+
+Q_DECLARE_METATYPE(Study *)
+
+class Study : public QObject
+{
+    Q_OBJECT
+
 public:
     Study();
     virtual ~Study();
@@ -40,14 +71,17 @@ public:
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
-    inline QMap<QString, QString> resultExpressions() { return m_resultExpressions; }
     QList<QSharedPointer<ProblemComputation> > computations() { return m_computations; }
 
     void addParameter(Parameter parameter) { m_parameters.append(parameter); }
-    void addExpression(const QString &name, const QString &expression) { m_resultExpressions[name] = expression; }
+    QList<Parameter> &parameters() { return m_parameters; }
+    void addFunctional(Functional functional) { m_functionals.append(functional); }
+    QList<Functional> &functionals() { return m_functionals; }
+
+    QVariant variant();
 
 protected:
-    QMap<QString, QString> m_resultExpressions;
+    QList<Functional> m_functionals;
     QList<Parameter> m_parameters;
     QList<QSharedPointer<ProblemComputation> > m_computations;
 
@@ -78,8 +112,6 @@ public:
     virtual QString name() { return "Golden section search"; } // TODO: user defined
 
     void setParameter(Parameter parameter) { m_parameters.append(parameter); assert(m_parameters.size() == 1); }
-    // void setFunctional(const QString &functional); // TODO
-    void setFunctional() { qDebug() << "not implemented"; }
 
     void solve();
 

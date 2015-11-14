@@ -43,6 +43,8 @@ ParameterDialog::ParameterDialog(const QString &key, QWidget *parent)
 
 void ParameterDialog::createControls()
 {
+    setWindowTitle(tr("Parameter: %1").arg(m_key));
+
     lblParametersError = new QLabel();
 
     txtParameterName = new QLineEdit(m_key);

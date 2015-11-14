@@ -52,7 +52,20 @@ public:
 protected:
     void keyPressEvent(QKeyEvent *event);
 
-private:
+private:    
+    enum Type
+    {
+        Undefined = 0,
+        GeometryNode,
+        GeometryEdge,
+        GeometryLabel,
+        Material,
+        Boundary,
+        OptilabStudy,
+        Parameter,
+        Functional
+    };
+
     SceneViewPreprocessor *m_sceneViewPreprocessor;
 
     QTextEdit *txtViewNodes;
