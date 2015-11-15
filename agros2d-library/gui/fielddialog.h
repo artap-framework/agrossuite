@@ -17,23 +17,15 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#ifndef PROBLEMDIALOG_H
-#define PROBLEMDIALOG_H
+#ifndef FIELDDIALOG_H
+#define FIELDDIALOG_H
 
 #include "util.h"
 
-class ProblemConfig;
 class FieldInfo;
-class CouplingInfo;
 
 class LineEditDouble;
 class ValueLineEdit;
-class CollapsableGroupBoxButton;
-class ScriptEditor;
-
-class FieldInfo;
-
-class ProblemWidget;
 
 class FieldSelectDialog : public QDialog
 {
@@ -56,29 +48,6 @@ private:
     QString m_selectedFieldId;
 
     QDialogButtonBox *buttonBox;
-};
-
-class CouplingsWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    CouplingsWidget(QWidget *parent);
-
-    void createContent();
-
-signals:
-    void changed();
-
-public slots:
-    void save();
-    void refresh();
-    void itemChanged(int index);
-
-private:
-    void createComboBoxes();
-
-    QList<QComboBox *> m_comboBoxes;
-    QList<QLabel *> m_labels;
 };
 
 class FieldWidget : public QWidget
@@ -199,7 +168,6 @@ private:
 private slots:
     void doAccept();
     void deleteField();
-    void moduleEditor();
 };
 
 class FieldsToobar: public QWidget
@@ -226,58 +194,4 @@ private slots:
     void addField();
 };
 
-class ProblemWidget: public QWidget
-{
-    Q_OBJECT
-public:
-    ProblemWidget(QWidget *parent = 0);
-
-    QAction *actProperties;
-    QToolBar *toolBar;
-
-signals:
-    void changed();
-
-public slots:
-    void updateControls();
-
-private:
-    QDialogButtonBox *buttonBox;
-
-    FieldsToobar *fieldsToolbar;
-    CouplingsWidget *couplingsWidget;
-
-    QComboBox *cmbCoordinateType;
-    QComboBox *cmbMeshType;
-
-    // harmonic
-    QGroupBox *grpHarmonicAnalysis;
-    ValueLineEdit *txtFrequency;
-
-    // transient
-    QGroupBox *grpTransientAnalysis;
-    LineEditDouble *txtTransientTimeTotal;
-    QLabel* lblTransientSteps;
-    QSpinBox *txtTransientSteps;
-    LineEditDouble *txtTransientTolerance;
-    QCheckBox *chkTransientInitialStepSize;
-    LineEditDouble *txtTransientInitialStepSize;
-    QLabel *lblTransientTimeTotal;
-    QSpinBox *txtTransientOrder;
-    QComboBox *cmbTransientMethod;
-    QLabel *lblTransientTimeStep;
-
-    // couplings
-    QGroupBox *grpCouplings;
-
-    void createActions();
-    void createControls();
-
-    void fillComboBox();
-
-private slots:
-    void transientChanged();
-    void saveConfig();
-};
-
-#endif // PROBLEMDIALOG_H
+#endif // FIELDDIALOG_H

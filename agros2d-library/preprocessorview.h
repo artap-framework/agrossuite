@@ -26,7 +26,6 @@
 #include <QWebView>
 
 class SceneViewPreprocessor;
-class FieldsToobar;
 
 class PreprocessorWidget : public QWidget
 {
@@ -39,6 +38,7 @@ public slots:
     void doProperties();
     void doDelete();
     void doNewParameter();
+    void doAddField();
 
 public:
     PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget *parent = 0);
@@ -64,7 +64,9 @@ private:
         Boundary,
         OptilabStudy,
         OptilabParameter,
-        OptilabFunctional
+        OptilabFunctional,
+        ProblemProperties,
+        FieldProperties
     };
 
     SceneViewPreprocessor *m_sceneViewPreprocessor;
@@ -78,6 +80,7 @@ private:
     QAction *actProperties;
     QAction *actDelete;
     QAction *actNewParameter;
+    QAction *actAddField;
     
     QMenu *mnuPreprocessor;
 

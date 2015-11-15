@@ -21,7 +21,8 @@
 
 #include "gui/about.h"
 #include "gui/imageloader.h"
-
+#include "gui/problemdialog.h"
+#include "gui/fielddialog.h"
 #include "util/global.h"
 #include "util/checkversion.h"
 #include "util/form_interface.h"
@@ -45,7 +46,6 @@
 #include "pythonlab/python_unittests.h"
 #include "optilab/optilab.h"
 #include "videodialog.h"
-#include "problemdialog.h"
 #include "resultsview.h"
 #include "materialbrowserdialog.h"
 #include "solver/module.h"

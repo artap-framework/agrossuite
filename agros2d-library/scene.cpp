@@ -36,7 +36,6 @@
 #include "solver/problem.h"
 #include "solver/plugin_interface.h"
 
-#include "problemdialog.h"
 #include "scenetransformdialog.h"
 #include "scenemarker.h"
 #include "scenemarkerselectdialog.h"

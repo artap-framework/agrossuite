@@ -97,6 +97,8 @@ SET(SOURCES
     gui/valuetimedialog.cpp
     gui/parameterdialog.cpp
     gui/infowidget.cpp
+    gui/problemdialog.cpp
+    gui/fielddialog.cpp
     logview.cpp
     mainwindow.cpp
     materialbrowserdialog.cpp
@@ -115,7 +117,6 @@ SET(SOURCES
     postprocessorview_chart.cpp
     postprocessorview_particletracing.cpp
     preprocessorview.cpp
-    problemdialog.cpp
     optilab/optilab.cpp
     optilab/study.cpp
     optilab/parameter.cpp
@@ -321,6 +322,8 @@ SET(HEADERS
   gui/valuetimedialog.h
   gui/parameterdialog.h
   gui/infowidget.h
+  gui/problemdialog.h
+  gui/fielddialog.h
   logview.h
   mainwindow.h
   materialbrowserdialog.h
@@ -338,7 +341,6 @@ SET(HEADERS
   postprocessorview_chart.h
   postprocessorview_particletracing.h
   preprocessorview.h
-  problemdialog.h
   optilab/optilab.h
   optilab/study.h
   optilab/parameter.h

@@ -1659,7 +1659,10 @@ void Problem::readProblemFromArchive(const QString &fileName)
     {
         QSharedPointer<Computation> post = m_currentComputation;
         if (post.isNull())
+        {
             post = Agros2D::computations().last();
+            m_currentComputation = post;
+        }
 
         Agros2D::setCurrentComputation(post->problemDir());
         emit post->solved();

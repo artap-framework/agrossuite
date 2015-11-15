@@ -21,7 +21,11 @@
 
 #include "util/constants.h"
 #include "util/global.h"
+
 #include "gui/parameterdialog.h"
+#include "gui/problemdialog.h"
+#include "gui/fielddialog.h"
+
 #include "solver/problem_config.h"
 #include "optilab/study.h"
 
@@ -34,7 +38,6 @@
 #include "sceneview_geometry.h"
 #include "scenemarker.h"
 #include "scenemarkerdialog.h"
-#include "problemdialog.h"
 #include "pythonlab/pythonengine_agros.h"
 #include "solver/module.h"
 
@@ -88,6 +91,9 @@ void PreprocessorWidget::createActions()
 
     actNewParameter = new QAction(icon(""), tr("New parameter"), this);
     connect(actNewParameter, SIGNAL(triggered()), this, SLOT(doNewParameter()));
+
+    actAddField = new QAction(icon(""), tr("Add field"), this);
+    connect(actAddField, SIGNAL(triggered()), this, SLOT(doAddField()));
 }
 
 void PreprocessorWidget::createMenu()
@@ -101,6 +107,8 @@ void PreprocessorWidget::createMenu()
     Agros2D::problem()->scene()->addBoundaryAndMaterialMenuItems(mnuPreprocessor, this);
     mnuPreprocessor->addSeparator();
     mnuPreprocessor->addAction(actNewParameter);
+    mnuPreprocessor->addSeparator();
+    mnuPreprocessor->addAction(actAddField);
     mnuPreprocessor->addSeparator();
     mnuPreprocessor->addAction(actDelete);
     mnuPreprocessor->addSeparator();
@@ -154,6 +162,7 @@ void PreprocessorWidget::createControls()
     loadTooltip(SceneGeometryMode_OperateOnNodes);
 
     trvWidget = new QTreeWidget(this);
+    trvWidget->setExpandsOnDoubleClick(false);
     trvWidget->setHeaderHidden(false);
     trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     trvWidget->setMouseTracking(true);
@@ -239,28 +248,38 @@ void PreprocessorWidget::refresh()
     parametersNode->setFont(0, fnt);
     parametersNode->setExpanded(true);
 
-    QList<QTreeWidgetItem *> listParameters;
     ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
     foreach (QString key, parameters.keys())
     {
-        QTreeWidgetItem *item = new QTreeWidgetItem();
+        QTreeWidgetItem *item = new QTreeWidgetItem(parametersNode);
         item->setText(0, key);
         item->setText(1, QString::number(parameters[key]));
         item->setData(0, Qt::UserRole, key);
         item->setData(1, Qt::UserRole, PreprocessorWidget::GeometryParameter);
-
-        listParameters.append(item);
     }
-    parametersNode->addChildren(listParameters);
 
-    // markers
+    // field and markers
     foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
     {
         // field
         QTreeWidgetItem *fieldNode = new QTreeWidgetItem(trvWidget);
         fieldNode->setText(0, fieldInfo->name());
+        fieldNode->setIcon(1, icon("fields/" + fieldInfo->fieldId()));
         fieldNode->setFont(0, fnt);
+        fieldNode->setData(0, Qt::UserRole, fieldInfo->fieldId());
+        fieldNode->setData(1, Qt::UserRole, PreprocessorWidget::FieldProperties);
         fieldNode->setExpanded(true);
+
+        // field dialog
+        /*
+        QTreeWidgetItem *fieldPropertiesNode = new QTreeWidgetItem(fieldNode);
+        fieldPropertiesNode->setText(0, analysisTypeString(fieldInfo->analysisType()));
+        fieldPropertiesNode->setText(1, QString("ref. / order: %1/%2")
+                                     .arg(fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt())
+                                     .arg(fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()));
+        fieldPropertiesNode->setData(0, Qt::UserRole, fieldInfo->fieldId());
+        fieldPropertiesNode->setData(1, Qt::UserRole, PreprocessorWidget::FieldProperties);
+        */
 
         // materials
         QTreeWidgetItem *materialsNode = new QTreeWidgetItem(fieldNode);
@@ -517,6 +536,12 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
+        else if (type == PreprocessorWidget::FieldProperties)
+        {
+            // field properties
+            actProperties->setEnabled(true);
+            actDelete->setEnabled(true);
+        }
 
         m_sceneViewPreprocessor->refresh();
     }
@@ -576,6 +601,18 @@ void PreprocessorWidget::doProperties()
                 refresh();
             }
         }
+        else if (type == PreprocessorWidget::FieldProperties)
+        {
+            // parameter
+            FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
+
+            FieldDialog fieldDialog(fieldInfo, this);
+            if (fieldDialog.exec() == QDialog::Accepted)
+            {
+                refresh();
+                // emit changed();
+            }
+        }
     }
 }
 
@@ -626,6 +663,17 @@ void PreprocessorWidget::doDelete()
 
             Agros2D::problem()->checkAndApplyParameters(parameters);
         }
+        else if (type == PreprocessorWidget::FieldProperties)
+        {
+            // parameter
+            FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
+
+            if (QMessageBox::question(this, tr("Delete"), tr("Physical field '%1' will be pernamently deleted. Are you sure?").
+                                      arg(fieldInfo->name()), tr("&Yes"), tr("&No")) == 0)
+            {
+                Agros2D::problem()->removeField(fieldInfo);
+            }
+        }
 
         refresh();
         m_sceneViewPreprocessor->refresh();
@@ -639,6 +687,30 @@ void PreprocessorWidget::doNewParameter()
     {
         m_sceneViewPreprocessor->refresh();
         refresh();
+    }
+}
+
+void PreprocessorWidget::doAddField()
+{
+    // select field dialog
+    FieldSelectDialog dialog(Agros2D::problem()->fieldInfos().keys(), this);
+    if (dialog.showDialog() == QDialog::Accepted)
+    {
+        // add field
+        FieldInfo *fieldInfo = new FieldInfo(dialog.selectedFieldId());
+
+        FieldDialog fieldDialog(fieldInfo, this);
+        if (fieldDialog.exec() == QDialog::Accepted)
+        {
+            Agros2D::problem()->addField(fieldInfo);
+
+            refresh();
+            // emit changed();
+        }
+        else
+        {
+            delete fieldInfo;
+        }
     }
 }
 
