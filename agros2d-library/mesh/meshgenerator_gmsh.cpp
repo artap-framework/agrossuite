@@ -53,7 +53,7 @@
 #include "MElement.h"
 #endif
 
-MeshGeneratorGMSH::MeshGeneratorGMSH(ProblemComputation *computation)
+MeshGeneratorGMSH::MeshGeneratorGMSH(Computation *computation)
     : MeshGenerator(computation)
 {
 }

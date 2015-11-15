@@ -64,7 +64,7 @@ public:
     DoubleCellIterator(const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_first,
                        const dealii::hp::DoFHandler<2>::active_cell_iterator &cell_second,
                        const dealii::hp::DoFHandler<2> &doFHandler,
-                       ProblemComputation *computation,
+                       Computation *computation,
                        const FieldInfo *fieldInfo) :
         cell_first(cell_first), cell_second(cell_second), m_doFHandler(&doFHandler), m_computation(computation), m_fieldInfo(fieldInfo)
     {
@@ -112,7 +112,7 @@ public:
         return tmp;   // return old value
     }
     const FieldInfo *m_fieldInfo;
-    ProblemComputation *m_computation;
+    Computation *m_computation;
     const dealii::hp::DoFHandler<2> *m_doFHandler;
 };
 
@@ -180,7 +180,7 @@ protected:
 class AGROS_LIBRARY_API ProblemSolver
 {
 public:
-    ProblemSolver(ProblemComputation *parentProblem);
+    ProblemSolver(Computation *parentProblem);
 
     void init();
     void clear();
@@ -192,7 +192,7 @@ public:
     dealii::hp::MappingCollection<2> *mappingCollection(const FieldInfo *fieldInfo);
 
 private:
-    ProblemComputation *m_computation;
+    Computation *m_computation;
 
     QMap<QString, SolverDeal *> m_solverDeal;
 

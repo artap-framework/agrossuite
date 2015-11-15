@@ -52,7 +52,7 @@ Value::Value(const QString &value)
     evaluateAndSave();
 }
 
-Value::Value(const QString &value, Problem *problem)
+Value::Value(const QString &value, ProblemBase *problem)
     : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(problem)
 {
     parseFromString(value.isEmpty() ? "0" : value);
@@ -72,7 +72,7 @@ Value::Value(const QString &value, std::vector<double> x, std::vector<double> y,
     evaluateAndSave();
 }
 
-Value::Value(const QString &value, const DataTable &table, Problem *problem)
+Value::Value(const QString &value, const DataTable &table, ProblemBase *problem)
     : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(table), m_problem(problem)
 {
     parseFromString(value.isEmpty() ? "0" : value);

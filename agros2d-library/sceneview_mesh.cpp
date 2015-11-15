@@ -47,19 +47,19 @@ SceneViewMesh::SceneViewMesh(QWidget *parent)
     createActionsMesh();
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 SceneViewMesh::~SceneViewMesh()
 {
 }
 
-Problem *SceneViewMesh::problem()
+ProblemBase *SceneViewMesh::problem()
 {
-    return static_cast<Problem *>(m_computation.data());
+    return static_cast<ProblemBase *>(m_computation.data());
 }
 
-void SceneViewMesh::connectComputation(QSharedPointer<ProblemComputation> computation)
+void SceneViewMesh::connectComputation(QSharedPointer<Computation> computation)
 {
     if (!m_computation.isNull())
     {

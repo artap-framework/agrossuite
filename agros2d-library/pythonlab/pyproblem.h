@@ -48,7 +48,7 @@ public:
 
 protected:
     void checkExistingFields(const QString &sourceField, const QString &targetField) const;
-    QSharedPointer<Problem> m_problem;
+    QSharedPointer<ProblemBase> m_problem;
 };
 
 class PyProblem : public PyProblemBase
@@ -77,11 +77,11 @@ class PyComputation : public QObject, public PyProblemBase
     Q_OBJECT
 
 public:
-    PyComputation(bool newComputation);
+    PyComputation(bool newComputation, std::string name = "");
     ~PyComputation() {}
 
     void setComputation(const std::string &computation);
-    QSharedPointer<ProblemComputation> getComputation();
+    QSharedPointer<Computation> getComputation();
 
     void clear();
 
@@ -93,7 +93,7 @@ public:
     void timeStepsTimes(vector<double> &times) const;
 
 protected:
-    QSharedPointer<ProblemComputation> m_computation;
+    QSharedPointer<Computation> m_computation;
 };
 
 class PySolution : public QObject
@@ -133,7 +133,7 @@ public:
     std::string filenameSLN(int timeStep, int adaptivityStep) const;
 
 private:
-    QSharedPointer<ProblemComputation> m_computation;
+    QSharedPointer<Computation> m_computation;
     FieldInfo *m_fieldInfo;
 
     int getTimeStep(int timeStep) const;

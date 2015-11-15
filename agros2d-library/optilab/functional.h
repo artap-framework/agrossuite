@@ -24,10 +24,19 @@
 
 #include "util.h"
 
+class Computation;
+
 class Functional
 {
 public:
-    Functional(const QString &name = "", const QString &expression = "");
+    enum Operation
+    {
+        Minimize,
+        Maximize,
+        Result
+    };
+
+    Functional(const QString &name = "", Operation operation = Minimize, const QString &expression = "");
     virtual ~Functional();
 
     void load(QJsonObject &object);
@@ -38,9 +47,12 @@ public:
     inline QString expression() { return m_expression; }
     inline void setExpression(const QString &expression) { m_expression = expression; }
 
+    bool evaluateExpression(QSharedPointer<Computation> computation);
+
 protected:
     QString m_name;
     QString m_expression;
+    Operation m_operation;
 };
 
 #endif // FUNCTIONAL_H

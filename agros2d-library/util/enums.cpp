@@ -407,9 +407,9 @@ QString physicFieldVariableCompString(PhysicFieldVariableComp physicFieldVariabl
     case PhysicFieldVariableComp_Magnitude:
         return QObject::tr("Magnitude");
     case PhysicFieldVariableComp_X:
-        return Agros2D::preprocessor()->config()->labelX();
+        return Agros2D::problem()->config()->labelX();
     case PhysicFieldVariableComp_Y:
-        return Agros2D::preprocessor()->config()->labelY();
+        return Agros2D::problem()->config()->labelY();
     default:
         return QObject::tr("Undefined");
     }

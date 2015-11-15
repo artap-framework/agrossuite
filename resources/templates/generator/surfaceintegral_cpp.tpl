@@ -46,7 +46,7 @@
 
 #include <deal.II/numerics/vector_tools.h>
 
-{{CLASS}}SurfaceIntegral::{{CLASS}}SurfaceIntegral(ProblemComputation *computation,
+{{CLASS}}SurfaceIntegral::{{CLASS}}SurfaceIntegral(Computation *computation,
                                                    const FieldInfo *fieldInfo,
                                                    int timeStep,
                                                    int adaptivityStep)

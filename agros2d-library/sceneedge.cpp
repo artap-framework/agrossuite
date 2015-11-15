@@ -800,7 +800,7 @@ SceneEdgeSelectDialog::SceneEdgeSelectDialog(MarkedSceneBasicContainer<SceneBoun
     QGroupBox *grpBoundaries = new QGroupBox(tr("Boundary conditions"));
     grpBoundaries->setLayout(layoutBoundaries);
 
-    foreach (FieldInfo *fieldInfo, Agros2D::preprocessor()->fieldInfos())
+    foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
     {
         QComboBox *cmbBoundary = new QComboBox();
         cmbBoundaries[fieldInfo] = cmbBoundary;
@@ -833,16 +833,16 @@ void SceneEdgeSelectDialog::load()
         cmbBoundaries[fieldInfo]->clear();
 
         // none marker
-        cmbBoundaries[fieldInfo]->addItem(Agros2D::preprocessor()->scene()->boundaries->getNone(fieldInfo)->name(),
-                                          Agros2D::preprocessor()->scene()->boundaries->getNone(fieldInfo)->variant());
+        cmbBoundaries[fieldInfo]->addItem(Agros2D::problem()->scene()->boundaries->getNone(fieldInfo)->name(),
+                                          Agros2D::problem()->scene()->boundaries->getNone(fieldInfo)->variant());
 
         // real markers
-        foreach (SceneBoundary *boundary, Agros2D::preprocessor()->scene()->boundaries->filter(fieldInfo).items())
+        foreach (SceneBoundary *boundary, Agros2D::problem()->scene()->boundaries->filter(fieldInfo).items())
             cmbBoundaries[fieldInfo]->addItem(boundary->name(),
                                               boundary->variant());
     }
 
-    foreach (FieldInfo *fieldInfo, Agros2D::preprocessor()->fieldInfos())
+    foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
     {
         SceneBoundary* boundary = NULL;
         bool match = true;
@@ -864,7 +864,7 @@ bool SceneEdgeSelectDialog::save()
 {
     foreach (SceneEdge* edge, m_edges.items())
     {
-        foreach (FieldInfo *fieldInfo, Agros2D::preprocessor()->fieldInfos())
+        foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
         {
             if (cmbBoundaries[fieldInfo]->currentIndex() != -1)
                 edge->addMarker(cmbBoundaries[fieldInfo]->itemData(cmbBoundaries[fieldInfo]->currentIndex()).value<SceneBoundary *>());
@@ -872,7 +872,7 @@ bool SceneEdgeSelectDialog::save()
         }
     }
 
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->invalidate();
     return true;
 }
 
@@ -902,24 +902,24 @@ SceneEdgeCommandAdd::SceneEdgeCommandAdd(const Point &pointStart, const Point &p
 
 void SceneEdgeCommandAdd::undo()
 {
-    Agros2D::preprocessor()->scene()->edges->remove(Agros2D::preprocessor()->scene()->getEdge(m_pointStart, m_pointEnd, m_angle.number(), m_segments, m_isCurvilinear));
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->edges->remove(Agros2D::problem()->scene()->getEdge(m_pointStart, m_pointEnd, m_angle.number(), m_segments, m_isCurvilinear));
+    Agros2D::problem()->scene()->invalidate();
 }
 
 void SceneEdgeCommandAdd::redo()
 {
     // new edge
-    SceneNode *nodeStart = new SceneNode(Agros2D::preprocessor()->scene(), m_pointStart);
-    nodeStart = Agros2D::preprocessor()->scene()->addNode(nodeStart);
-    SceneNode *nodeEnd = new SceneNode(Agros2D::preprocessor()->scene(), m_pointEnd);
-    nodeEnd = Agros2D::preprocessor()->scene()->addNode(nodeEnd);
-    SceneEdge *edge = new SceneEdge(Agros2D::preprocessor()->scene(), nodeStart, nodeEnd, m_angle, m_segments, m_isCurvilinear);
+    SceneNode *nodeStart = new SceneNode(Agros2D::problem()->scene(), m_pointStart);
+    nodeStart = Agros2D::problem()->scene()->addNode(nodeStart);
+    SceneNode *nodeEnd = new SceneNode(Agros2D::problem()->scene(), m_pointEnd);
+    nodeEnd = Agros2D::problem()->scene()->addNode(nodeEnd);
+    SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, m_angle, m_segments, m_isCurvilinear);
 
     edge->addMarkersFromStrings(m_markers);
 
     // add edge to the list
-    Agros2D::preprocessor()->scene()->addEdge(edge);
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->addEdge(edge);
+    Agros2D::problem()->scene()->invalidate();
 }
 
 SceneEdgeCommandAddOrRemoveMulti::SceneEdgeCommandAddOrRemoveMulti(QList<Point> pointStarts, QList<Point> pointEnds,
@@ -937,28 +937,28 @@ SceneEdgeCommandAddOrRemoveMulti::SceneEdgeCommandAddOrRemoveMulti(QList<Point> 
 
 void SceneEdgeCommandAddOrRemoveMulti::remove()
 {
-    Agros2D::preprocessor()->scene()->stopInvalidating(true);
+    Agros2D::problem()->scene()->stopInvalidating(true);
 
     for(int i = 0; i < m_pointStarts.size(); i++)
     {
-        Agros2D::preprocessor()->scene()->edges->remove(Agros2D::preprocessor()->scene()->getEdge(m_pointStarts[i], m_pointEnds[i], m_angles[i].number(), m_segments[i], m_isCurvilinear[i]));
+        Agros2D::problem()->scene()->edges->remove(Agros2D::problem()->scene()->getEdge(m_pointStarts[i], m_pointEnds[i], m_angles[i].number(), m_segments[i], m_isCurvilinear[i]));
     }
 
-    Agros2D::preprocessor()->scene()->stopInvalidating(false);
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->stopInvalidating(false);
+    Agros2D::problem()->scene()->invalidate();
 }
 
 void SceneEdgeCommandAddOrRemoveMulti::add()
 {
-    Agros2D::preprocessor()->scene()->stopInvalidating(true);
+    Agros2D::problem()->scene()->stopInvalidating(true);
     for(int i = 0; i < m_pointStarts.size(); i++)
     {
-        SceneNode *nodeStart = Agros2D::preprocessor()->scene()->getNode(m_pointStarts[i]);
-        SceneNode *nodeEnd = Agros2D::preprocessor()->scene()->getNode(m_pointEnds[i]);
+        SceneNode *nodeStart = Agros2D::problem()->scene()->getNode(m_pointStarts[i]);
+        SceneNode *nodeEnd = Agros2D::problem()->scene()->getNode(m_pointEnds[i]);
         assert(nodeStart && nodeEnd);
         if(nodeStart && nodeEnd)
         {
-            SceneEdge *edge = new SceneEdge(Agros2D::preprocessor()->scene(), nodeStart, nodeEnd, m_angles[i], m_segments[i], m_isCurvilinear[i]);
+            SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, m_angles[i], m_segments[i], m_isCurvilinear[i]);
 
             // if markers are not empty, we were deleting or copying "withMarkers = True"
             if(!m_markers.empty())
@@ -966,11 +966,11 @@ void SceneEdgeCommandAddOrRemoveMulti::add()
                 edge->addMarkersFromStrings(m_markers[i]);
             }
             // add edge to the list
-            Agros2D::preprocessor()->scene()->addEdge(edge);
+            Agros2D::problem()->scene()->addEdge(edge);
         }
     }
-    Agros2D::preprocessor()->scene()->stopInvalidating(false);
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->stopInvalidating(false);
+    Agros2D::problem()->scene()->invalidate();
 }
 
 SceneEdgeCommandRemove::SceneEdgeCommandRemove(const Point &pointStart, const Point &pointEnd, const QMap<QString, QString> &markers,
@@ -987,23 +987,23 @@ SceneEdgeCommandRemove::SceneEdgeCommandRemove(const Point &pointStart, const Po
 void SceneEdgeCommandRemove::undo()
 {
     // new edge
-    SceneNode *nodeStart = new SceneNode(Agros2D::preprocessor()->scene(), m_pointStart);
-    nodeStart = Agros2D::preprocessor()->scene()->addNode(nodeStart);
-    SceneNode *nodeEnd = new SceneNode(Agros2D::preprocessor()->scene(), m_pointEnd);
-    nodeEnd = Agros2D::preprocessor()->scene()->addNode(nodeEnd);
-    SceneEdge *edge = new SceneEdge(Agros2D::preprocessor()->scene(), nodeStart, nodeEnd, m_angle, m_segments, m_isCurvilinear);
+    SceneNode *nodeStart = new SceneNode(Agros2D::problem()->scene(), m_pointStart);
+    nodeStart = Agros2D::problem()->scene()->addNode(nodeStart);
+    SceneNode *nodeEnd = new SceneNode(Agros2D::problem()->scene(), m_pointEnd);
+    nodeEnd = Agros2D::problem()->scene()->addNode(nodeEnd);
+    SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, m_angle, m_segments, m_isCurvilinear);
 
     edge->addMarkersFromStrings(m_markers);
 
     // add edge to the list
-    Agros2D::preprocessor()->scene()->addEdge(edge);
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->addEdge(edge);
+    Agros2D::problem()->scene()->invalidate();
 }
 
 void SceneEdgeCommandRemove::redo()
 {
-    Agros2D::preprocessor()->scene()->edges->remove(Agros2D::preprocessor()->scene()->getEdge(m_pointStart, m_pointEnd, m_angle.number(), m_segments, m_isCurvilinear));
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->edges->remove(Agros2D::problem()->scene()->getEdge(m_pointStart, m_pointEnd, m_angle.number(), m_segments, m_isCurvilinear));
+    Agros2D::problem()->scene()->invalidate();
 }
 
 SceneEdgeCommandEdit::SceneEdgeCommandEdit(const Point &pointStart, const Point &pointEnd, const Point &pointStartNew, const Point &pointEndNew,
@@ -1023,27 +1023,27 @@ SceneEdgeCommandEdit::SceneEdgeCommandEdit(const Point &pointStart, const Point 
 
 void SceneEdgeCommandEdit::undo()
 {
-    SceneEdge *edge = Agros2D::preprocessor()->scene()->getEdge(m_pointStartNew, m_pointEndNew, m_angleNew.number(), m_segmentsNew, m_isCurvilinearNew);
+    SceneEdge *edge = Agros2D::problem()->scene()->getEdge(m_pointStartNew, m_pointEndNew, m_angleNew.number(), m_segmentsNew, m_isCurvilinearNew);
     if (edge)
     {
-        edge->setNodeStart(Agros2D::preprocessor()->scene()->getNode(m_pointStart));
-        edge->setNodeEnd(Agros2D::preprocessor()->scene()->getNode(m_pointEnd));
+        edge->setNodeStart(Agros2D::problem()->scene()->getNode(m_pointStart));
+        edge->setNodeEnd(Agros2D::problem()->scene()->getNode(m_pointEnd));
         edge->setAngleValue(m_angle);
         edge->setSegments(m_segments);
-        Agros2D::preprocessor()->scene()->invalidate();
+        Agros2D::problem()->scene()->invalidate();
     }
 }
 
 void SceneEdgeCommandEdit::redo()
 {
-    SceneEdge *edge = Agros2D::preprocessor()->scene()->getEdge(m_pointStart, m_pointEnd, m_angle.number(), m_segments, m_isCurvilinear);
+    SceneEdge *edge = Agros2D::problem()->scene()->getEdge(m_pointStart, m_pointEnd, m_angle.number(), m_segments, m_isCurvilinear);
     if (edge)
     {
-        edge->setNodeStart(Agros2D::preprocessor()->scene()->getNode(m_pointStartNew));
-        edge->setNodeEnd(Agros2D::preprocessor()->scene()->getNode(m_pointEndNew));
+        edge->setNodeStart(Agros2D::problem()->scene()->getNode(m_pointStartNew));
+        edge->setNodeEnd(Agros2D::problem()->scene()->getNode(m_pointEndNew));
         edge->setAngleValue(m_angleNew);
         edge->setSegments(m_segmentsNew);
-        Agros2D::preprocessor()->scene()->invalidate();
+        Agros2D::problem()->scene()->invalidate();
     }
 }
 

@@ -37,7 +37,7 @@ class FieldInfo;
 class {{CLASS}}ForceValue : public ForceValue
 {
 public:
-    {{CLASS}}ForceValue(ProblemComputation *computation,
+    {{CLASS}}ForceValue(Computation *computation,
                         const FieldInfo *fieldInfo,
                         int timeStep,
                         int adaptivityStep);

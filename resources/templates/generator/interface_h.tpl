@@ -42,11 +42,11 @@ virtual ~{{CLASS}}Interface();
 inline virtual QString fieldId() { return "{{ID}}"; }
 
 // solver deal
-virtual SolverDeal *solverDeal(ProblemComputation *computation, const FieldInfo *fieldInfo);
+virtual SolverDeal *solverDeal(Computation *computation, const FieldInfo *fieldInfo);
 
 // postprocessor
 // filter
-virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(ProblemComputation *computation,
+virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(Computation *computation,
                                                                     const FieldInfo *fieldInfo,
                                                                     int timeStep,
                                                                     int adaptivityStep,
@@ -58,24 +58,24 @@ virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(ProblemCompu
 //                                                                   const QString &calculator, CalculatedErrorType errorType);
 
 // local values
-virtual std::shared_ptr<LocalValue> localValue(ProblemComputation *computation,
+virtual std::shared_ptr<LocalValue> localValue(Computation *computation,
                                                const FieldInfo *fieldInfo,
                                                int timeStep,
                                                int adaptivityStep,
                                                const Point &point);
 // surface integrals
-virtual std::shared_ptr<IntegralValue> surfaceIntegral(ProblemComputation *computation,
+virtual std::shared_ptr<IntegralValue> surfaceIntegral(Computation *computation,
                                                        const FieldInfo *fieldInfo,
                                                        int timeStep,
                                                        int adaptivityStep);
 // volume integrals
-virtual std::shared_ptr<IntegralValue> volumeIntegral(ProblemComputation *computation,
+virtual std::shared_ptr<IntegralValue> volumeIntegral(Computation *computation,
                                                       const FieldInfo *fieldInfo,
                                                       int timeStep,
                                                       int adaptivityStep);
 
 // force calculation
-virtual std::shared_ptr<ForceValue> force(ProblemComputation *computation,
+virtual std::shared_ptr<ForceValue> force(Computation *computation,
                                           const FieldInfo *fieldInfo,
                                           int timeStep,
                                           int adaptivityStep);

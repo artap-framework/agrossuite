@@ -67,7 +67,7 @@ protected:
     virtual void paintGL();
     virtual void resizeGL(int w, int h);
 
-    virtual Problem *problem();
+    virtual ProblemBase *problem();
 
     void paintGeometry(); // paint edges
 
@@ -103,7 +103,7 @@ private slots:
 
     void setControls();
 
-    void connectComputation(QSharedPointer<ProblemComputation> computation);
+    void connectComputation(QSharedPointer<Computation> computation);
 };
 
 #endif // SCENEVIEWPOST2D_H

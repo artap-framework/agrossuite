@@ -80,7 +80,7 @@ void InfoWidgetGeneral::clear()
     webView->setHtml("");
 }
 
-void InfoWidgetGeneral::showProblemInfo(Problem *problem)
+void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
 {
     if (currentPythonEngine()->isScriptRunning())
         return;
@@ -160,7 +160,7 @@ void InfoWidgetGeneral::showProblemInfo(Problem *problem)
     }
 
     // results (only for computation)
-    if (ProblemComputation *computation = dynamic_cast<ProblemComputation *>(problem))
+    if (Computation *computation = dynamic_cast<Computation *>(problem))
     {
         QMap<QString, double> results = computation->result()->results();
         problemInfo.SetValue("RESULTS_MAIN_LABEL", tr("Results").toStdString());
@@ -281,11 +281,11 @@ InfoWidget::InfoWidget(QWidget *parent)
 {
     connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
 
-    connect(Agros2D::preprocessor()->scene(), SIGNAL(cleared()), this, SLOT(refresh()));
-    connect(Agros2D::preprocessor()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
+    connect(Agros2D::problem()->scene(), SIGNAL(cleared()), this, SLOT(refresh()));
+    connect(Agros2D::problem()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
 
-    connect(Agros2D::preprocessor(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
-    connect(Agros2D::preprocessor(), SIGNAL(couplingsChanged()), this, SLOT(refresh()));
+    connect(Agros2D::problem(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
+    connect(Agros2D::problem(), SIGNAL(couplingsChanged()), this, SLOT(refresh()));
 
     connect(currentPythonEngineAgros(), SIGNAL(executedScript()), this, SLOT(refresh()));
 
@@ -299,10 +299,10 @@ InfoWidget::~InfoWidget()
 
 void InfoWidget::refresh()
 {
-    if (Agros2D::preprocessor()->fieldInfos().isEmpty())
+    if (Agros2D::problem()->fieldInfos().isEmpty())
         showWelcome();
     else
-        showProblemInfo(Agros2D::preprocessor());
+        showProblemInfo(Agros2D::problem());
 }
 
 

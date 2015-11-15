@@ -56,14 +56,15 @@ private:
     enum Type
     {
         Undefined = 0,
+        GeometryParameter,
         GeometryNode,
         GeometryEdge,
         GeometryLabel,
         Material,
         Boundary,
         OptilabStudy,
-        Parameter,
-        Functional
+        OptilabParameter,
+        OptilabFunctional
     };
 
     SceneViewPreprocessor *m_sceneViewPreprocessor;

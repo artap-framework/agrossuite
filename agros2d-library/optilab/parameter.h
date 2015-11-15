@@ -61,4 +61,20 @@ protected:
     double m_upperBound;
 };
 
+// Q_DECLARE_METATYPE(Parameters)
+
+class Parameters
+{
+public:
+    // void checkName(const QString &key);
+
+    inline QMap<QString, Parameter> &items() { return m_parameters; }
+
+    Parameter &operator[] (const QString &key) { return m_parameters[key]; }
+    const Parameter operator[] (const QString &key) const { return m_parameters[key]; }
+
+private:
+    QMap<QString, Parameter> m_parameters;
+};
+
 #endif // PARAMETER_H

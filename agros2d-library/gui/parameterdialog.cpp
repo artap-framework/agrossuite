@@ -35,7 +35,7 @@ ParameterDialog::ParameterDialog(QWidget *parent)
 ParameterDialog::ParameterDialog(const QString &key, QWidget *parent)
     : QDialog(parent), m_key(key)
 {
-    ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
     m_value = parameters[key];
 
     createControls();
@@ -94,7 +94,7 @@ bool ParameterDialog::save()
     // check parameter name
     try
     {
-        Agros2D::preprocessor()->config()->checkParameterName(txtParameterName->text());
+        Agros2D::problem()->config()->checkParameterName(txtParameterName->text());
     }
     catch (AgrosException &e)
     {
@@ -105,28 +105,28 @@ bool ParameterDialog::save()
         return false;
     }
 
-    ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
     parameters[txtParameterName->text()] = txtParameterValue->value();
 
     // remove old parameter
     if (!m_key.isEmpty() && txtParameterName->text() != m_key)
         parameters.remove(m_key);
 
-    if (Agros2D::preprocessor()->checkAndApplyParameters(parameters))
+    if (Agros2D::problem()->checkAndApplyParameters(parameters))
     {
-        Agros2D::preprocessor()->scene()->invalidate();
+        Agros2D::problem()->scene()->invalidate();
         return true;
     }
 }
 
 bool ParameterDialog::remove()
 {
-    ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
     parameters.remove(m_key);
 
-    if (Agros2D::preprocessor()->checkAndApplyParameters(parameters))
+    if (Agros2D::problem()->checkAndApplyParameters(parameters))
     {
-        Agros2D::preprocessor()->scene()->invalidate();
+        Agros2D::problem()->scene()->invalidate();
         return true;
     }
 
@@ -138,7 +138,7 @@ void ParameterDialog::parameterNameTextChanged(const QString &str)
     lblParametersError->setVisible(false);
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
 
-    ParametersType parameters = Agros2D::preprocessor()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
 
     if (str.isEmpty())
     {
@@ -157,7 +157,7 @@ void ParameterDialog::parameterNameTextChanged(const QString &str)
 
     try
     {
-        Agros2D::preprocessor()->config()->checkParameterName(str);
+        Agros2D::problem()->config()->checkParameterName(str);
     }
     catch (AgrosException &e)
     {

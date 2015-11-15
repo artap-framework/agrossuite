@@ -46,7 +46,7 @@ protected:
     virtual void paintGL();
     virtual void resizeGL(int w, int h);
 
-    virtual Problem *problem();
+    virtual ProblemBase *problem();
 
     void paintGeometryOutline();
     void paintGeometrySurface(bool blend = false);
@@ -77,7 +77,7 @@ private slots:
 
     void setControls();
 
-    void connectComputation(QSharedPointer<ProblemComputation> computation);
+    void connectComputation(QSharedPointer<Computation> computation);
 };
 
 #endif // SCENEVIEWPARTICLETRACING_H

@@ -57,7 +57,7 @@
 #include "../3rdparty/quazip/JlCompress.h"
 #include "../resources_source/classes/problem_a2d_31_xml.h"
 
-CalculationThread::CalculationThread(ProblemComputation *parentProblem) : QThread(), m_computation(parentProblem)
+CalculationThread::CalculationThread(Computation *parentProblem) : QThread(), m_computation(parentProblem)
 {
 }
 
@@ -89,7 +89,7 @@ void CalculationThread::run()
     }
 }
 
-Problem::Problem()
+ProblemBase::ProblemBase()
 {
     m_config = new ProblemConfig();
     m_setting = new ProblemSetting();
@@ -101,7 +101,7 @@ Problem::Problem()
     m_timeStepLengths.append(0.0);
 }
 
-Problem::~Problem()
+ProblemBase::~ProblemBase()
 {
     clearFieldsAndConfig();
 
@@ -111,7 +111,7 @@ Problem::~Problem()
     delete m_scene;
 }
 
-int Problem::numAdaptiveFields() const
+int ProblemBase::numAdaptiveFields() const
 {
     int num = 0;
     foreach (FieldInfo* fieldInfo, m_fieldInfos)
@@ -120,7 +120,7 @@ int Problem::numAdaptiveFields() const
     return num;
 }
 
-int Problem::numTransientFields() const
+int ProblemBase::numTransientFields() const
 {
     int num = 0;
     foreach (FieldInfo* fieldInfo, m_fieldInfos)
@@ -129,12 +129,12 @@ int Problem::numTransientFields() const
     return num;
 }
 
-bool Problem::isTransient() const
+bool ProblemBase::isTransient() const
 {
     return numTransientFields() > 0;
 }
 
-bool Problem::isHarmonic() const
+bool ProblemBase::isHarmonic() const
 {
     foreach (FieldInfo* fieldInfo, m_fieldInfos)
         if (fieldInfo->analysisType() == AnalysisType_Harmonic)
@@ -143,7 +143,7 @@ bool Problem::isHarmonic() const
     return false;
 }
 
-bool Problem::determineIsNonlinear() const
+bool ProblemBase::determineIsNonlinear() const
 {
     foreach (FieldInfo* fieldInfo, m_fieldInfos)
         if (fieldInfo->linearityType() != LinearityType_Linear)
@@ -152,7 +152,7 @@ bool Problem::determineIsNonlinear() const
     return false;
 }
 
-bool Problem::checkAndApplyParameters(ParametersType parameters, bool apply)
+bool ProblemBase::checkAndApplyParameters(ParametersType parameters, bool apply)
 {
     // store original parameters
     ParametersType parametersOriginal = m_config->value(ProblemConfig::Parameters).value<ParametersType>();
@@ -176,7 +176,7 @@ bool Problem::checkAndApplyParameters(ParametersType parameters, bool apply)
 }
 
 // apply parameters from m_config
-bool Problem::applyParametersInternal()
+bool ProblemBase::applyParametersInternal()
 {
     bool successfulRun = true;
 
@@ -311,7 +311,7 @@ bool Problem::applyParametersInternal()
     return successfulRun;
 }
 
-void Problem::clearFieldsAndConfig()
+void ProblemBase::clearFieldsAndConfig()
 {
     // clear couplings
     foreach (CouplingInfo* couplingInfo, m_couplingInfos)
@@ -338,7 +338,7 @@ void Problem::clearFieldsAndConfig()
 
 }
 
-void Problem::addField(FieldInfo *field)
+void ProblemBase::addField(FieldInfo *field)
 {
     // remove field
     if (hasField(field->fieldId()))
@@ -356,7 +356,7 @@ void Problem::addField(FieldInfo *field)
     emit fieldsChanged();
 }
 
-void Problem::removeField(FieldInfo *field)
+void ProblemBase::removeField(FieldInfo *field)
 {
     // first remove references to markers of this field from all edges and labels
     m_scene->edges->removeFieldMarkers(field);
@@ -376,7 +376,7 @@ void Problem::removeField(FieldInfo *field)
     emit fieldsChanged();
 }
 
-void Problem::synchronizeCouplings()
+void ProblemBase::synchronizeCouplings()
 {
     bool changed = false;
 
@@ -419,7 +419,7 @@ void Problem::synchronizeCouplings()
         emit couplingsChanged();
 }
 
-void Problem::readProblemFromA2D(const QString &fileName)
+void ProblemBase::readProblemFromA2D(const QString &fileName)
 {
     Agros2D::log()->printMessage(tr("Problem"), tr("Loading problem from disk: %1").arg(QFileInfo(fileName).baseName()));
 
@@ -456,7 +456,7 @@ void Problem::readProblemFromA2D(const QString &fileName)
     }
 }
 
-void Problem::readProblemFromA2D31(const QString &fileName)
+void ProblemBase::readProblemFromA2D31(const QString &fileName)
 {
     try
     {
@@ -761,7 +761,7 @@ void Problem::readProblemFromA2D31(const QString &fileName)
     }
 }
 
-void Problem::transformProblem(const QString &fileName, const QString &tempFileName, double version)
+void ProblemBase::transformProblem(const QString &fileName, const QString &tempFileName, double version)
 {
     QString out;
 
@@ -800,7 +800,7 @@ void Problem::transformProblem(const QString &fileName, const QString &tempFileN
     transformProblem(tempFileName, tempFileName, version);
 }
 
-void Problem::writeProblemToA2D(const QString &fileName)
+void ProblemBase::writeProblemToA2D(const QString &fileName)
 {
     double version = 3.1;
 
@@ -1004,7 +1004,7 @@ void Problem::writeProblemToA2D(const QString &fileName)
 
 // computation
 
-ProblemComputation::ProblemComputation(const QString &problemDir) : Problem()
+Computation::Computation(const QString &problemDir) : ProblemBase()
 {
     // m_timeStep = 0;
     m_lastTimeElapsed = QTime();
@@ -1038,7 +1038,7 @@ ProblemComputation::ProblemComputation(const QString &problemDir) : Problem()
     QDir(cacheProblemDir()).mkdir(m_problemDir);
 }
 
-ProblemComputation::~ProblemComputation()
+Computation::~Computation()
 {
     clearSolution();
 
@@ -1049,7 +1049,7 @@ ProblemComputation::~ProblemComputation()
     delete m_result;
 }
 
-QList<double> ProblemComputation::timeStepTimes() const
+QList<double> Computation::timeStepTimes() const
 {
     QList<double> times;
 
@@ -1063,7 +1063,7 @@ QList<double> ProblemComputation::timeStepTimes() const
     return times;
 }
 
-double ProblemComputation::timeStepToTotalTime(int timeStepIndex) const
+double Computation::timeStepToTotalTime(int timeStepIndex) const
 {
     double time = 0.0;
     for (int ts = 0; ts <= timeStepIndex; ts++)
@@ -1072,17 +1072,17 @@ double ProblemComputation::timeStepToTotalTime(int timeStepIndex) const
     return time;
 }
 
-void ProblemComputation::setActualTimeStepLength(double timeStep)
+void Computation::setActualTimeStepLength(double timeStep)
 {
     m_timeStepLengths.append(timeStep);
 }
 
-void ProblemComputation::removeLastTimeStepLength()
+void Computation::removeLastTimeStepLength()
 {
     m_timeStepLengths.removeLast();
 }
 
-void ProblemComputation::solveInit()
+void Computation::solveInit()
 {
     if (fieldInfos().isEmpty())
     {
@@ -1120,13 +1120,13 @@ void ProblemComputation::solveInit()
     m_problemSolver->init();
 }
 
-void ProblemComputation::doAbortSolve()
+void Computation::doAbortSolve()
 {
     m_abort = true;
     Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Aborting calculation..."));
 }
 
-void ProblemComputation::meshWithGUI()
+void Computation::meshWithGUI()
 {
     if (!isPreparedForAction())
         return;
@@ -1138,7 +1138,7 @@ void ProblemComputation::meshWithGUI()
     meshThread();
 }
 
-void ProblemComputation::solveWithGUI()
+void Computation::solveWithGUI()
 {
     if (!isPreparedForAction())
         return;
@@ -1150,7 +1150,7 @@ void ProblemComputation::solveWithGUI()
     solveThread();
 }
 
-void ProblemComputation::meshThread()
+void Computation::meshThread()
 {
     if (!isPreparedForAction())
         return;
@@ -1158,7 +1158,7 @@ void ProblemComputation::meshThread()
     m_calculationThread->startCalculation(CalculationThread::CalculationType_Mesh);
 }
 
-void ProblemComputation::solveThread()
+void Computation::solveThread()
 {
     if (!isPreparedForAction())
         return;
@@ -1166,7 +1166,7 @@ void ProblemComputation::solveThread()
     m_calculationThread->startCalculation(CalculationThread::CalculationType_Solve);
 }
 
-void ProblemComputation::solve()
+void Computation::solve()
 {
     if (!isPreparedForAction())
         return;
@@ -1288,7 +1288,7 @@ void ProblemComputation::solve()
     }
 }
 
-void ProblemComputation::solveAction()
+void Computation::solveAction()
 {
     // clear solution
     clearSolution();
@@ -1299,7 +1299,7 @@ void ProblemComputation::solveAction()
     m_problemSolver->solveProblem();
 }
 
-bool ProblemComputation::mesh(bool emitMeshed)
+bool Computation::mesh(bool emitMeshed)
 {
     bool result = false;
 
@@ -1364,7 +1364,7 @@ bool ProblemComputation::mesh(bool emitMeshed)
     return result;
 }
 
-bool ProblemComputation::meshAction(bool emitMeshed)
+bool Computation::meshAction(bool emitMeshed)
 {
     clearSolution();
 
@@ -1421,7 +1421,7 @@ bool ProblemComputation::meshAction(bool emitMeshed)
     return false;
 }
 
-void ProblemComputation::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator)
+void Computation::readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator)
 {
     if (!meshGenerator)
     {
@@ -1461,7 +1461,7 @@ void ProblemComputation::readInitialMeshFromFile(bool emitMeshed, QSharedPointer
         emit meshed();
 }
 
-void ProblemComputation::propagateBoundaryMarkers()
+void Computation::propagateBoundaryMarkers()
 {
     dealii::Triangulation<2>::cell_iterator cell_unrefined = m_initialUnrefinedMesh.begin();
     dealii::Triangulation<2>::cell_iterator end_cell_unrefined = m_initialUnrefinedMesh.end();
@@ -1481,7 +1481,7 @@ void ProblemComputation::propagateBoundaryMarkers()
     }
 }
 
-bool ProblemComputation::isMeshed() const
+bool Computation::isMeshed() const
 {
     if (m_initialMesh.n_active_cells() == 0)
         return false;
@@ -1489,13 +1489,13 @@ bool ProblemComputation::isMeshed() const
     return (m_fieldInfos.size() > 0);
 }
 
-bool ProblemComputation::isSolved() const
+bool Computation::isSolved() const
 {
     // return (!Agros2D::solutionStore()->isEmpty() && !m_isSolving && !m_isMeshing);
     return (!m_solutionStore->isEmpty());
 }
 
-void ProblemComputation::clearSolution()
+void Computation::clearSolution()
 {
     m_abort = false;
 
@@ -1510,26 +1510,26 @@ void ProblemComputation::clearSolution()
     m_solutionStore->clear();
 }
 
-void ProblemComputation::clearResults()
+void Computation::clearResults()
 {
     m_result->clear();
 }
 
-void ProblemComputation::clearFieldsAndConfig()
+void Computation::clearFieldsAndConfig()
 {
     m_solutionStore->clear();
     m_postDeal->clear();
 
-    Problem::clearFieldsAndConfig();
+    ProblemBase::clearFieldsAndConfig();
 }
 
-bool ProblemComputation::loadResults()
+bool Computation::loadResults()
 {
     QString fnResults = QString("%1/%2/results.json").arg(cacheProblemDir()).arg(m_problemDir);
     return m_result->load(fnResults);
 }
 
-bool ProblemComputation::saveResults()
+bool Computation::saveResults()
 {
     QString fnResults = QString("%1/%2/results.json").arg(cacheProblemDir()).arg(m_problemDir);
     return m_result->save(fnResults);
@@ -1537,24 +1537,25 @@ bool ProblemComputation::saveResults()
 
 // preprocessor
 
-ProblemPreprocessor::ProblemPreprocessor() : Problem()
+Problem::Problem() : ProblemBase()
 {
     m_studies = new Studies();
 
     connect(this, SIGNAL(fileNameChanged(QString)), this, SLOT(doFileNameChanged(QString)));
 }
 
-ProblemPreprocessor::~ProblemPreprocessor()
+Problem::~Problem()
 {
     delete m_studies;
 }
 
-QSharedPointer<ProblemComputation> ProblemPreprocessor::createComputation(bool newComputation, bool setCurrentComputation)
+QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool setCurrentComputation)
 {
-    QSharedPointer<ProblemComputation> computation;
-    if (newComputation || Agros2D::computations().isEmpty())
+    QSharedPointer<Computation> computation;
+    if (newComputation || m_currentComputation || Agros2D::computations().isEmpty())
     {
-        computation = QSharedPointer<ProblemComputation>(new ProblemComputation());
+        computation = QSharedPointer<Computation>(new Computation());
+        m_currentComputation = computation;
         Agros2D::addComputation(computation->problemDir(), computation);
 
         if (setCurrentComputation)
@@ -1562,7 +1563,7 @@ QSharedPointer<ProblemComputation> ProblemPreprocessor::createComputation(bool n
     }
     else
     {
-        computation = Agros2D::computation();
+        computation = m_currentComputation;
         computation->clearFieldsAndConfig();
     }
 
@@ -1576,17 +1577,20 @@ QSharedPointer<ProblemComputation> ProblemPreprocessor::createComputation(bool n
     return computation;
 }
 
-void ProblemPreprocessor::clearFieldsAndConfig()
+void Problem::clearFieldsAndConfig()
 {
-    Problem::clearFieldsAndConfig();
+    ProblemBase::clearFieldsAndConfig();
     m_studies->clear();
 
     QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
+    QFile::remove(QString("%1/studies.json").arg(cacheProblemDir()));
+
+    m_currentComputation.clear();
 
     emit fileNameChanged(tr("unnamed"));
 }
 
-void ProblemPreprocessor::readProblemFromArchive(const QString &fileName)
+void Problem::readProblemFromArchive(const QString &fileName)
 {
     QSettings settings;
     QFileInfo fileInfo(fileName);
@@ -1624,7 +1628,7 @@ void ProblemPreprocessor::readProblemFromArchive(const QString &fileName)
 
         if (QFile::exists(fnProblem))
         {
-            QSharedPointer<ProblemComputation> computation = QSharedPointer<ProblemComputation>(new ProblemComputation(problemDir));
+            QSharedPointer<Computation> computation = QSharedPointer<Computation>(new Computation(problemDir));
             Agros2D::addComputation(computation->problemDir(), computation);
 
             Agros2D::log()->printMessage(tr("Problem"), tr("Loading solution from disk: %1").arg(problemDir));
@@ -1653,7 +1657,7 @@ void ProblemPreprocessor::readProblemFromArchive(const QString &fileName)
     // set last computation
     if (Agros2D::computations().count() > 0)
     {
-        QSharedPointer<ProblemComputation> post = Agros2D::computation();
+        QSharedPointer<Computation> post = m_currentComputation;
         if (post.isNull())
             post = Agros2D::computations().last();
 
@@ -1665,7 +1669,7 @@ void ProblemPreprocessor::readProblemFromArchive(const QString &fileName)
     m_studies->loadStudies();
 }
 
-void ProblemPreprocessor::writeProblemToArchive(const QString &fileName, bool saveWithSolution)
+void Problem::writeProblemToArchive(const QString &fileName, bool saveWithSolution)
 {
     QSettings settings;
     QFileInfo fileInfo(fileName);
@@ -1696,7 +1700,7 @@ void ProblemPreprocessor::writeProblemToArchive(const QString &fileName, bool sa
     }    
 }
 
-void ProblemPreprocessor::readProblemFromFile(const QString &fileName)
+void Problem::readProblemFromFile(const QString &fileName)
 {
     QFileInfo fileInfo(fileName);
 

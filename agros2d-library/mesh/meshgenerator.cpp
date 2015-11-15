@@ -80,7 +80,7 @@
 #include "solver/problem_config.h"
 #include "mesh/agros_manifold.h"
 
-MeshGenerator::MeshGenerator(ProblemComputation *computation)
+MeshGenerator::MeshGenerator(Computation *computation)
     : QObject(),
     m_triangulation(dealii::Triangulation<2>(dealii::Triangulation<2>::maximum_smoothing, false)),
     m_computation(computation)

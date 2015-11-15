@@ -35,7 +35,7 @@ OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(paren
 {
     createControls();
 
-    connect(Agros2D::preprocessor()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
+    connect(Agros2D::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
 }
 
 OptiLabWidget::~OptiLabWidget()
@@ -96,7 +96,7 @@ void OptiLabWidget::refresh()
         selectedItem = cmbStudies->currentText();
 
     cmbStudies->clear();
-    foreach (Study *study, Agros2D::preprocessor()->studies()->items())
+    foreach (Study *study, Agros2D::problem()->studies()->items())
     {
         cmbStudies->addItem(studyTypeString(study->type()));
     }
@@ -117,9 +117,9 @@ void OptiLabWidget::refresh()
 void OptiLabWidget::studyChanged(int index)
 {
     // study
-    Study *study = Agros2D::preprocessor()->studies()->items().at(cmbStudies->currentIndex());
+    Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
 
-    QList<QSharedPointer<ProblemComputation> > computations = study->computations();
+    QList<QSharedPointer<Computation> > computations = study->computations();
 
     trvComputations->blockSignals(true);
 
@@ -129,7 +129,7 @@ void OptiLabWidget::studyChanged(int index)
         selectedItem = trvComputations->currentItem()->data(0, Qt::UserRole).toString();
 
     trvComputations->clear();
-    foreach (QSharedPointer<ProblemComputation> computation, computations)
+    foreach (QSharedPointer<Computation> computation, computations)
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(trvComputations);
         item->setText(0, computation->problemDir());
@@ -155,7 +155,7 @@ void OptiLabWidget::testSweep()
     StudySweepAnalysis *analysis = new StudySweepAnalysis();
 
     // add to list
-    Agros2D::preprocessor()->studies()->addStudy(analysis);
+    Agros2D::problem()->studies()->addStudy(analysis);
 
     // only one parameter
     // QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
@@ -165,11 +165,12 @@ void OptiLabWidget::testSweep()
     // analysis->setParameter(Parameter::fromLinspace("R3", 0.05, 0.07, 3));
 
     // add functionals
-    analysis->addFunctional(Functional("We", "TODO"));
-    analysis->addFunctional(Functional("V", "TODO"));
+    analysis->addFunctional(Functional("We", Functional::Minimize, "computation.solution(\"electrostatic\").volume_integrals([0,1])[\"We\"]"));
 
     // solve
     analysis->solve();
+
+    refresh();
 }
 
 void OptiLabWidget::testOptimization()
@@ -178,17 +179,18 @@ void OptiLabWidget::testOptimization()
     StudyGoldenSectionSearch *analysis = new StudyGoldenSectionSearch(1e-4);
 
     // add to list
-    Agros2D::preprocessor()->studies()->addStudy(analysis);
+    Agros2D::problem()->studies()->addStudy(analysis);
 
     // only one parameter
     analysis->setParameter(Parameter("R3", 0.05, 0.07));
 
     // add functionals
-    analysis->addFunctional(Functional("We", "TODO"));
-    analysis->addFunctional(Functional("V", "TODO"));
+    analysis->addFunctional(Functional("We", Functional::Minimize, "computation.solution(\"electrostatic\").volume_integrals([0,1])[\"We\"]"));
 
     // solve
     analysis->solve();
+
+    refresh();
 }
 
 void OptiLabWidget::computationSelect(const QString &key)
@@ -234,8 +236,8 @@ void OptiLab::createControls()
 
 void OptiLab::computationSelected(const QString &key)
 {
-    QMap<QString, QSharedPointer<ProblemComputation> > computations = Agros2D::computations();
-    QSharedPointer<ProblemComputation> computation = computations[key];
+    QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
+    QSharedPointer<Computation> computation = computations[key];
 
     m_infoWidget->showProblemInfo(computation.data());
 }

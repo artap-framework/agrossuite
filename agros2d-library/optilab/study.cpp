@@ -20,6 +20,8 @@
 #include "study.h"
 #include "parameter.h"
 
+#include "pythonlab/pythonengine.h"
+
 #include "optilab.h"
 #include "util/global.h"
 #include "solver/problem.h"
@@ -60,7 +62,6 @@ void Studies::addStudy(Study *study)
 void Studies::removeStudy(Study *study)
 {
     m_studies.removeOne(study);
-
     emit invalidated();
 }
 
@@ -68,7 +69,6 @@ void Studies::clear()
 {
     for (int i = 0; i < m_studies.size(); i++)
         delete m_studies[i];
-
     m_studies.clear();
 
     emit invalidated();
@@ -76,6 +76,8 @@ void Studies::clear()
 
 void Studies::loadStudies()
 {
+    blockSignals(true);
+
     clear();
 
     QString fn = QString("%1/studies.json").arg(cacheProblemDir());
@@ -112,6 +114,8 @@ void Studies::loadStudies()
         study->load(studyJson);
         m_studies.append(study);
     }
+
+    blockSignals(false);
 
     emit invalidated();
 }
@@ -178,7 +182,7 @@ void Study::load(QJsonObject &object)
     QJsonArray computationsJson = object[COMPUTATIONS].toArray();
     for (int i = 0; i < computationsJson.size(); i++)
     {
-        QMap<QString, QSharedPointer<ProblemComputation> > computations = Agros2D::computations();
+        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
         m_computations.append(computations[computationsJson[i].toString()]);
     }
 
@@ -209,7 +213,7 @@ void Study::save(QJsonObject &object)
 {    
     // computations
     QJsonArray computationsJson;
-    foreach (QSharedPointer<ProblemComputation> computation, m_computations)
+    foreach (QSharedPointer<Computation> computation, m_computations)
     {
         computationsJson.append(computation->problemDir());
     }
@@ -254,29 +258,25 @@ void StudySweepAnalysis::solve()
     foreach (double value, parameter.values())
     {
         // set parameter
-        Agros2D::preprocessor()->config()->setParameter(parameter.name(), value);
+        Agros2D::problem()->config()->setParameter(parameter.name(), value);
 
         // create computation
-        QSharedPointer<ProblemComputation> computation = Agros2D::preprocessor()->createComputation(true, false);
+        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true, false);
         // store computation
         m_computations.append(computation);
 
         // solve
         computation->solve();
 
-        // postprocessor
-        // TODO: script !!!
-        FieldInfo *fieldInfo = computation->fieldInfo("electrostatic");
-        computation->scene()->labels->setSelected(true);
-        std::shared_ptr<IntegralValue> values = fieldInfo->plugin()->volumeIntegral(computation.data(),
-                                                                                    fieldInfo,
-                                                                                    0,
-                                                                                    0);
+        // evaluate expressions
+        foreach (Functional functional, m_functionals)
+        {
+            bool successfulRun = functional.evaluateExpression(computation);
+            // qDebug() << successfulRun;
+        }
 
-        QMap<QString, double> integrals = values->values();
-        computation->result()->setResult("We", integrals["electrostatic_energy"]);
-        computation->result()->setResult("V", integrals["electrostatic_volume"]);
-        // TODO: script !!!
+        // global dict
+        currentPythonEngine()->useGlobalDict();
 
         computation->saveResults();
     }
@@ -302,35 +302,22 @@ StudyGoldenSectionSearch::StudyGoldenSectionSearch(double tolerance) : Study(),
 double StudyGoldenSectionSearch::valueForParameter(const QString &name, double value)
 {
     // set parameter
-    Agros2D::preprocessor()->config()->setParameter(name, value);
+    Agros2D::problem()->config()->setParameter(name, value);
     // create computation
-    QSharedPointer<ProblemComputation> computation = Agros2D::preprocessor()->createComputation(true, false);
+    QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true, false);
     // store computation
     m_computations.append(computation);
 
     // solve
     computation->solve();
 
-    // postprocessor
-    // TODO: script !!!
-    FieldInfo *fieldInfo = computation->fieldInfo("electrostatic");
-    computation->scene()->labels->setSelected(true);
-    std::shared_ptr<IntegralValue> values = fieldInfo->plugin()->volumeIntegral(computation.data(),
-                                                                                fieldInfo,
-                                                                                0,
-                                                                                0);
-
-    QMap<QString, double> integrals = values->values();
-    computation->result()->setResult("We", integrals["electrostatic_energy"]);
-
-    // "functional"
-    double functional = integrals["electrostatic_energy"] / integrals["electrostatic_volume"];
-    computation->result()->setResult("fct", functional);
+    // evaluate expression - only one functional
+    Functional functional = m_functionals[0];
+    bool successfulRun = functional.evaluateExpression(computation);
 
     computation->saveResults();
 
-    return functional;
-    // TODO: script !!!
+    return computation->result()->results()[functional.name()];
 }
 
 void StudyGoldenSectionSearch::solve()

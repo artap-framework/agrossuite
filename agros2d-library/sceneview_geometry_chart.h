@@ -43,17 +43,17 @@ protected:
     void paintGL();
     virtual void doZoomRegion(const Point &start, const Point &end);
 
-    virtual Problem *problem();
+    virtual ProblemBase *problem();
 
     void paintChartLine();
     void paintGeometry(); // paint nodes, edges and labels
 
 private:
     ChartLine m_chartLine;
-    QSharedPointer<ProblemComputation> m_computation;
+    QSharedPointer<Computation> m_computation;
 
 private slots:
-    void connectComputation(QSharedPointer<ProblemComputation> computation);
+    void connectComputation(QSharedPointer<Computation> computation);
 };
 
 #endif // SCENEVIEWGEOMETRYCHART_H

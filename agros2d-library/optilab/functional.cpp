@@ -30,8 +30,8 @@ const QString NAME = "name";
 const QString EXPRESSION = "expression";
 
 
-Functional::Functional(const QString &name, const QString &expression) :
-    m_name(name), m_expression(expression)
+Functional::Functional(const QString &name, Operation operation, const QString &expression) :
+    m_name(name), m_operation(operation), m_expression(expression)
 {
 }
 
@@ -51,3 +51,25 @@ void Functional::save(QJsonObject &object)
     object[EXPRESSION] = m_expression;
 }
 
+bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
+{
+    // temporary dict
+    currentPythonEngine()->useTemporaryDict();
+
+    // eval expression
+    QString command = QString("import agros2d; computation = agros2d.computation('%1')").arg(computation->problemDir());
+    currentPythonEngine()->runExpression(command);
+
+    // qDebug() << m_expression;
+    double result = 0.0;
+    bool successfulRun = currentPythonEngine()->runExpression(m_expression, &result);
+    if (successfulRun)
+    {
+        computation->result()->setResult(m_name, result);
+    }
+
+    // global dict
+    currentPythonEngine()->useGlobalDict();
+
+    return successfulRun;
+}

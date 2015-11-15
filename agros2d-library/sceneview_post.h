@@ -35,7 +35,7 @@ class MultiArray;
 
 class ParticleTracing;
 class FieldInfo;
-class ProblemComputation;
+class Computation;
 
 struct PostTriangle
 {
@@ -58,7 +58,7 @@ struct PostTriangle
 class PostDataOut : public dealii::DataOut<2, dealii::hp::DoFHandler<2> >
 {
 public:
-    PostDataOut(FieldInfo *fieldInfo, ProblemComputation *parentProblem);
+    PostDataOut(FieldInfo *fieldInfo, Computation *parentProblem);
 
     void compute_nodes(QList<PostTriangle> &values, bool deform = false);
 
@@ -77,7 +77,7 @@ private:
     double m_min;
     double m_max;
 
-    ProblemComputation *m_problem;
+    Computation *m_problem;
     const FieldInfo *m_fieldInfo;
 
     void compute_node(dealii::Point<2> &node, const dealii::DataOutBase::Patch<2> *patch,
@@ -90,7 +90,7 @@ class PostDeal : public QObject
     Q_OBJECT
 
 public:
-    PostDeal(ProblemComputation *parentProblem);
+    PostDeal(Computation *parentProblem);
     ~PostDeal();
 
     // contour
@@ -132,7 +132,7 @@ public slots:
     void clearView();
 
 private:
-    ProblemComputation *m_computation;
+    Computation *m_computation;
 
     bool m_isProcessed;
 
@@ -170,7 +170,7 @@ public:
     SceneViewPostInterface(QWidget *parent = 0);
 
 protected:
-    QSharedPointer<ProblemComputation> m_computation;
+    QSharedPointer<Computation> m_computation;
 
     double m_texScale;
     double m_texShift;

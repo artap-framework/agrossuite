@@ -78,7 +78,7 @@ void AgrosSolver::solveProblem()
 
     try
     {
-        Agros2D::preprocessor()->readProblemFromA2D(m_fileName);
+        Agros2D::problem()->readProblemFromA2D(m_fileName);
 
         Agros2D::log()->printMessage(tr("Problem"), tr("Problem '%1' successfuly loaded").arg(m_fileName));
 
@@ -91,7 +91,7 @@ void AgrosSolver::solveProblem()
         Agros2D::log()->printMessage(tr("Solver"), tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
 
         // clear all
-        Agros2D::preprocessor()->clearFieldsAndConfig();
+        Agros2D::problem()->clearFieldsAndConfig();
 
         QApplication::exit(0);
     }
@@ -136,7 +136,7 @@ void AgrosSolver::runCommand()
     {
         Agros2D::log()->printMessage(tr("Solver"), tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
 
-        Agros2D::preprocessor()->scene()->clear();
+        Agros2D::problem()->scene()->clear();
         Agros2D::clear();
         QApplication::exit(0);
     }
@@ -169,7 +169,7 @@ void AgrosSolver::runSuite()
 
     if (successfulRun)
     {
-        Agros2D::preprocessor()->scene()->clear();
+        Agros2D::problem()->scene()->clear();
         Agros2D::clear();
         QApplication::exit(0);
     }
@@ -202,7 +202,7 @@ void AgrosSolver::runTest()
 
     if (successfulRun)
     {
-        Agros2D::preprocessor()->scene()->clear();
+        Agros2D::problem()->scene()->clear();
         Agros2D::clear();
         QApplication::exit(0);
     }

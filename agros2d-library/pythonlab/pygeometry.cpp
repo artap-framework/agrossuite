@@ -31,17 +31,17 @@ void PyGeometry::activate()
 
 int PyGeometry::nodesCount() const
 {
-    return Agros2D::preprocessor()->scene()->nodes->count();
+    return Agros2D::problem()->scene()->nodes->count();
 }
 
 int PyGeometry::edgesCount() const
 {
-    return Agros2D::preprocessor()->scene()->edges->count();
+    return Agros2D::problem()->scene()->edges->count();
 }
 
 int PyGeometry::labelsCount() const
 {
-    return Agros2D::preprocessor()->scene()->labels->count();
+    return Agros2D::problem()->scene()->labels->count();
 }
 
 int PyGeometry::addNode(double x, double y)
@@ -49,17 +49,17 @@ int PyGeometry::addNode(double x, double y)
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnNodes->trigger();
 
-    if (Agros2D::preprocessor()->config()->coordinateType() == CoordinateType_Axisymmetric && x < 0.0)
+    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && x < 0.0)
         throw out_of_range(QObject::tr("Radial component must be greater then or equal to zero.").toStdString());
 
-    foreach (SceneNode *node, Agros2D::preprocessor()->scene()->nodes->items())
+    foreach (SceneNode *node, Agros2D::problem()->scene()->nodes->items())
     {
         if (node->point() == Point(x, y))
             throw logic_error(QObject::tr("Node already exist.").toStdString());
     }
 
-    SceneNode *node = Agros2D::preprocessor()->scene()->addNode(new SceneNode(Agros2D::preprocessor()->scene(), Point(x, y)));
-    return Agros2D::preprocessor()->scene()->nodes->items().indexOf(node);
+    SceneNode *node = Agros2D::problem()->scene()->addNode(new SceneNode(Agros2D::problem()->scene(), Point(x, y)));
+    return Agros2D::problem()->scene()->nodes->items().indexOf(node);
 }
 
 int PyGeometry::addEdge(double x1, double y1, double x2, double y2, double angle, int segments, int curvilinear,
@@ -68,13 +68,13 @@ int PyGeometry::addEdge(double x1, double y1, double x2, double y2, double angle
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnEdges->trigger();
 
-    if (Agros2D::preprocessor()->config()->coordinateType() == CoordinateType_Axisymmetric && (x1 < 0.0 || x2 < 0.0))
+    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && (x1 < 0.0 || x2 < 0.0))
         throw out_of_range(QObject::tr("Radial component must be greater then or equal to zero.").toStdString());
 
     testAngle(angle);
     testSegments(segments);
 
-    foreach (SceneEdge *edge, Agros2D::preprocessor()->scene()->edges->items())
+    foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
     {
         if (almostEqualRelAndAbs(edge->nodeStart()->point().x, x1, POINT_ABS_ZERO, POINT_REL_ZERO) &&
                 almostEqualRelAndAbs(edge->nodeEnd()->point().x, x2, POINT_ABS_ZERO, POINT_REL_ZERO) &&
@@ -83,11 +83,11 @@ int PyGeometry::addEdge(double x1, double y1, double x2, double y2, double angle
             throw logic_error(QObject::tr("Edge already exist.").toStdString());
     }
 
-    SceneNode *nodeStart = new SceneNode(Agros2D::preprocessor()->scene(), Point(x1, y1));
-    nodeStart = Agros2D::preprocessor()->scene()->addNode(nodeStart);
-    SceneNode *nodeEnd = new SceneNode(Agros2D::preprocessor()->scene(), Point(x2, y2));
-    nodeEnd = Agros2D::preprocessor()->scene()->addNode(nodeEnd);
-    SceneEdge *edge = new SceneEdge(Agros2D::preprocessor()->scene(), nodeStart, nodeEnd, angle, segments, curvilinear);
+    SceneNode *nodeStart = new SceneNode(Agros2D::problem()->scene(), Point(x1, y1));
+    nodeStart = Agros2D::problem()->scene()->addNode(nodeStart);
+    SceneNode *nodeEnd = new SceneNode(Agros2D::problem()->scene(), Point(x2, y2));
+    nodeEnd = Agros2D::problem()->scene()->addNode(nodeEnd);
+    SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, angle, segments, curvilinear);
 
     try
     {
@@ -100,9 +100,9 @@ int PyGeometry::addEdge(double x1, double y1, double x2, double y2, double angle
         throw;
     }
 
-    Agros2D::preprocessor()->scene()->addEdge(edge);
+    Agros2D::problem()->scene()->addEdge(edge);
 
-    return Agros2D::preprocessor()->scene()->edges->items().indexOf(edge);
+    return Agros2D::problem()->scene()->edges->items().indexOf(edge);
 }
 
 int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, double angle, int segments, int curvilinear,
@@ -111,30 +111,30 @@ int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, double angl
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnEdges->trigger();
 
-    if (Agros2D::preprocessor()->scene()->nodes->isEmpty())
+    if (Agros2D::problem()->scene()->nodes->isEmpty())
         throw out_of_range(QObject::tr("Geometry does not contain nodes.").toStdString());
 
     if (nodeStartIndex == nodeEndIndex)
         throw logic_error(QObject::tr("Start node index is the same as index of end node.").toStdString());
 
-    if (nodeStartIndex > (Agros2D::preprocessor()->scene()->nodes->length() - 1) || nodeStartIndex < 0)
+    if (nodeStartIndex > (Agros2D::problem()->scene()->nodes->length() - 1) || nodeStartIndex < 0)
         throw out_of_range(QObject::tr("Node with index '%1' does not exist.").arg(nodeStartIndex).toStdString());
-    if (nodeEndIndex > (Agros2D::preprocessor()->scene()->nodes->length() - 1) || nodeEndIndex < 0)
+    if (nodeEndIndex > (Agros2D::problem()->scene()->nodes->length() - 1) || nodeEndIndex < 0)
         throw out_of_range(QObject::tr("Node with index '%1' does not exist.").arg(nodeEndIndex).toStdString());
 
     testAngle(angle);
     testSegments(segments);
 
-    foreach (SceneEdge *edge, Agros2D::preprocessor()->scene()->edges->items())
+    foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
     {
-        if (Agros2D::preprocessor()->scene()->nodes->items().indexOf(edge->nodeStart()) == nodeStartIndex &&
-                Agros2D::preprocessor()->scene()->nodes->items().indexOf(edge->nodeEnd()) == nodeEndIndex)
+        if (Agros2D::problem()->scene()->nodes->items().indexOf(edge->nodeStart()) == nodeStartIndex &&
+                Agros2D::problem()->scene()->nodes->items().indexOf(edge->nodeEnd()) == nodeEndIndex)
             throw logic_error(QObject::tr("Edge already exist.").toStdString());
     }
 
-    SceneEdge *edge = new SceneEdge(Agros2D::preprocessor()->scene(),
-                                    Agros2D::preprocessor()->scene()->nodes->at(nodeStartIndex),
-                                    Agros2D::preprocessor()->scene()->nodes->at(nodeEndIndex),
+    SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(),
+                                    Agros2D::problem()->scene()->nodes->at(nodeStartIndex),
+                                    Agros2D::problem()->scene()->nodes->at(nodeEndIndex),
                                     angle, segments, curvilinear);
 
     try
@@ -148,9 +148,9 @@ int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, double angl
         throw;
     }
 
-    Agros2D::preprocessor()->scene()->addEdge(edge);
+    Agros2D::problem()->scene()->addEdge(edge);
 
-    return Agros2D::preprocessor()->scene()->edges->items().indexOf(edge);
+    return Agros2D::problem()->scene()->edges->items().indexOf(edge);
 }
 
 void PyGeometry::modifyEdge(int index, double angle, int segments, int isCurvilinear, const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
@@ -158,16 +158,16 @@ void PyGeometry::modifyEdge(int index, double angle, int segments, int isCurvili
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnEdges->trigger();
 
-    if (Agros2D::preprocessor()->scene()->edges->isEmpty())
+    if (Agros2D::problem()->scene()->edges->isEmpty())
         throw out_of_range(QObject::tr("No edges are defined.").toStdString());
 
-    if (index < 0 || index >= Agros2D::preprocessor()->scene()->edges->length())
-        throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::preprocessor()->scene()->edges->length()-1).toStdString());
+    if (index < 0 || index >= Agros2D::problem()->scene()->edges->length())
+        throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->edges->length()-1).toStdString());
 
     testAngle(angle);
     testSegments(segments);
 
-    SceneEdge *edge = Agros2D::preprocessor()->scene()->edges->items().at(index);
+    SceneEdge *edge = Agros2D::problem()->scene()->edges->items().at(index);
 
     edge->setAngleValue(Value(angle));
     edge->setSegments(segments);
@@ -176,7 +176,7 @@ void PyGeometry::modifyEdge(int index, double angle, int segments, int isCurvili
     setRefinementsOnEdge(edge, refinements);
     setBoundaries(edge, boundaries);
 
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->invalidate();
 }
 
 void PyGeometry::testAngle(double angle) const
@@ -198,11 +198,11 @@ void PyGeometry::setBoundaries(SceneEdge *edge, const map<std::string, std::stri
         QString field = QString::fromStdString((*i).first);
         QString marker = QString::fromStdString((*i).second);
 
-        if (!Agros2D::preprocessor()->hasField(field))
+        if (!Agros2D::problem()->hasField(field))
             throw invalid_argument(QObject::tr("Invalid field id '%1'.").arg(field).toStdString());
 
         bool assigned = false;
-        foreach (SceneBoundary *boundary, Agros2D::preprocessor()->scene()->boundaries->filter(Agros2D::preprocessor()->fieldInfo(field)).items())
+        foreach (SceneBoundary *boundary, Agros2D::problem()->scene()->boundaries->filter(Agros2D::problem()->fieldInfo(field)).items())
         {
             if (boundary->name() == marker)
             {
@@ -224,13 +224,13 @@ void PyGeometry::setRefinementsOnEdge(SceneEdge *edge, const map<std::string, in
         QString field = QString::fromStdString((*i).first);
         int refinement = (*i).second;
 
-        if (!Agros2D::preprocessor()->hasField(field))
+        if (!Agros2D::problem()->hasField(field))
             throw invalid_argument(QObject::tr("Invalid field id '%1'.").arg(field).toStdString());
 
         if ((refinement < 0) || (refinement > 10))
             throw out_of_range(QObject::tr("Number of refinements '%1' is out of range (0 - 10).").arg(refinement).toStdString());
 
-        Agros2D::preprocessor()->fieldInfo(field)->setEdgeRefinement(edge, refinement);
+        Agros2D::problem()->fieldInfo(field)->setEdgeRefinement(edge, refinement);
     }
 }
 
@@ -240,19 +240,19 @@ int PyGeometry::addLabel(double x, double y, double area, const map<std::string,
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnLabels->trigger();
 
-    if (Agros2D::preprocessor()->config()->coordinateType() == CoordinateType_Axisymmetric && x < 0.0)
+    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && x < 0.0)
         throw out_of_range(QObject::tr("Radial component must be greater then or equal to zero.").toStdString());
 
     if (area < 0.0)
         throw out_of_range(QObject::tr("Area must be positive.").toStdString());
 
-    foreach (SceneLabel *label, Agros2D::preprocessor()->scene()->labels->items())
+    foreach (SceneLabel *label, Agros2D::problem()->scene()->labels->items())
     {
         if (label->point() == Point(x, y))
             throw logic_error(QObject::tr("Label already exist.").toStdString());
     }
 
-    SceneLabel *label = new SceneLabel(Agros2D::preprocessor()->scene(), Point(x, y), area);
+    SceneLabel *label = new SceneLabel(Agros2D::problem()->scene(), Point(x, y), area);
 
     try
     {
@@ -266,9 +266,9 @@ int PyGeometry::addLabel(double x, double y, double area, const map<std::string,
         throw;
     }
 
-    Agros2D::preprocessor()->scene()->addLabel(label);
+    Agros2D::problem()->scene()->addLabel(label);
 
-    return Agros2D::preprocessor()->scene()->labels->items().indexOf(label);
+    return Agros2D::problem()->scene()->labels->items().indexOf(label);
 }
 
 void PyGeometry::modifyLabel(int index, double area, const map<std::string, int> &refinements,
@@ -277,23 +277,23 @@ void PyGeometry::modifyLabel(int index, double area, const map<std::string, int>
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnLabels->trigger();
 
-    if (Agros2D::preprocessor()->scene()->labels->isEmpty())
+    if (Agros2D::problem()->scene()->labels->isEmpty())
         throw out_of_range(QObject::tr("No labels are defined.").toStdString());
 
-    if (index < 0 || index >= Agros2D::preprocessor()->scene()->labels->length())
-        throw out_of_range(QObject::tr("Label index must be between 0 and '%1'.").arg(Agros2D::preprocessor()->scene()->labels->length()-1).toStdString());
+    if (index < 0 || index >= Agros2D::problem()->scene()->labels->length())
+        throw out_of_range(QObject::tr("Label index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->labels->length()-1).toStdString());
 
     if (area < 0.0)
         throw out_of_range(QObject::tr("Area must be positive.").toStdString());
 
-    SceneLabel *label = Agros2D::preprocessor()->scene()->labels->at(index);
+    SceneLabel *label = Agros2D::problem()->scene()->labels->at(index);
 
     label->setArea(area);
     setMaterials(label, materials);
     setRefinements(label, refinements);
     setPolynomialOrders(label, orders);
 
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->invalidate();
 }
 
 void PyGeometry::setMaterials(SceneLabel *label, const map<std::string, std::string> &materials)
@@ -303,14 +303,14 @@ void PyGeometry::setMaterials(SceneLabel *label, const map<std::string, std::str
         QString field = QString::fromStdString((*i).first);
         QString marker = QString::fromStdString((*i).second);
 
-        if (!Agros2D::preprocessor()->hasField(field))
+        if (!Agros2D::problem()->hasField(field))
             throw invalid_argument(QObject::tr("Invalid field id '%1'.").arg(field).toStdString());
 
         if (marker != "none")
         {
 
             bool assigned = false;
-            foreach (SceneMaterial *material, Agros2D::preprocessor()->scene()->materials->filter(Agros2D::preprocessor()->fieldInfo(field)).items())
+            foreach (SceneMaterial *material, Agros2D::problem()->scene()->materials->filter(Agros2D::problem()->fieldInfo(field)).items())
             {
                 if ((material->fieldId() == field) && (material->name() == marker))
                 {
@@ -333,13 +333,13 @@ void PyGeometry::setRefinements(SceneLabel *label, const map<std::string, int> &
         QString field = QString::fromStdString((*i).first);
         int refinement = (*i).second;
 
-        if (!Agros2D::preprocessor()->hasField(field))
+        if (!Agros2D::problem()->hasField(field))
             throw invalid_argument(QObject::tr("Invalid field id '%1'.").arg(field).toStdString());
 
         if ((refinement < 0) || (refinement > 10))
             throw out_of_range(QObject::tr("Number of refinements '%1' is out of range (0 - 10).").arg(refinement).toStdString());
 
-        Agros2D::preprocessor()->fieldInfo(field)->setLabelRefinement(label, refinement);
+        Agros2D::problem()->fieldInfo(field)->setLabelRefinement(label, refinement);
     }
 }
 
@@ -350,13 +350,13 @@ void PyGeometry::setPolynomialOrders(SceneLabel *label, const map<std::string, i
         QString field = QString::fromStdString((*i).first);
         int order = (*i).second;
 
-        if (!Agros2D::preprocessor()->hasField(field))
+        if (!Agros2D::problem()->hasField(field))
             throw invalid_argument(QObject::tr("Invalid field id '%1'.").arg(field).toStdString());
 
         if ((order < 1) || (order > 10))
             throw out_of_range(QObject::tr("Polynomial order '%1' is out of range (1 - 10).").arg(order).toStdString());
 
-        Agros2D::preprocessor()->fieldInfo(field)->setLabelPolynomialOrder(label, order);
+        Agros2D::problem()->fieldInfo(field)->setLabelPolynomialOrder(label, order);
     }
 }
 
@@ -364,22 +364,22 @@ void PyGeometry::removeNodes(const vector<int> &nodes)
 {
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnNodes->trigger();
-    Agros2D::preprocessor()->scene()->selectNone();
+    Agros2D::problem()->scene()->selectNone();
 
     if (!nodes.empty())
     {
         for (vector<int>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
         {
-            if ((*it >= 0) && (*it < Agros2D::preprocessor()->scene()->nodes->length()))
-                Agros2D::preprocessor()->scene()->nodes->at(*it)->setSelected(true);
+            if ((*it >= 0) && (*it < Agros2D::problem()->scene()->nodes->length()))
+                Agros2D::problem()->scene()->nodes->at(*it)->setSelected(true);
             else
-                throw out_of_range(QObject::tr("Node index must be between 0 and '%1'.").arg(Agros2D::preprocessor()->scene()->nodes->length()-1).toStdString());
+                throw out_of_range(QObject::tr("Node index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->nodes->length()-1).toStdString());
         }
     }
     else
-        Agros2D::preprocessor()->scene()->selectAll(SceneGeometryMode_OperateOnNodes);
+        Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnNodes);
 
-    Agros2D::preprocessor()->scene()->deleteSelected();
+    Agros2D::problem()->scene()->deleteSelected();
 
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
@@ -389,22 +389,22 @@ void PyGeometry::removeEdges(const vector<int> &edges)
 {
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnEdges->trigger();
-    Agros2D::preprocessor()->scene()->selectNone();
+    Agros2D::problem()->scene()->selectNone();
 
     if (!edges.empty())
     {
         for (vector<int>::const_iterator it = edges.begin(); it != edges.end(); ++it)
         {
-            if ((*it >= 0) && (*it < Agros2D::preprocessor()->scene()->edges->length()))
-                Agros2D::preprocessor()->scene()->edges->at(*it)->setSelected(true);
+            if ((*it >= 0) && (*it < Agros2D::problem()->scene()->edges->length()))
+                Agros2D::problem()->scene()->edges->at(*it)->setSelected(true);
             else
-                throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::preprocessor()->scene()->edges->length()-1).toStdString());
+                throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->edges->length()-1).toStdString());
         }
     }
     else
-        Agros2D::preprocessor()->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
+        Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
 
-    Agros2D::preprocessor()->scene()->deleteSelected();
+    Agros2D::problem()->scene()->deleteSelected();
 
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
@@ -414,22 +414,22 @@ void PyGeometry::removeLabels(const vector<int> &labels)
 {
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnLabels->trigger();
-    Agros2D::preprocessor()->scene()->selectNone();
+    Agros2D::problem()->scene()->selectNone();
 
     if (!labels.empty())
     {
         for (vector<int>::const_iterator it = labels.begin(); it != labels.end(); ++it)
         {
-            if ((*it >= 0) && (*it < Agros2D::preprocessor()->scene()->labels->length()))
-                Agros2D::preprocessor()->scene()->labels->at(*it)->setSelected(true);
+            if ((*it >= 0) && (*it < Agros2D::problem()->scene()->labels->length()))
+                Agros2D::problem()->scene()->labels->at(*it)->setSelected(true);
             else
-                throw out_of_range(QObject::tr("Label index must be between 0 and '%1'.").arg(Agros2D::preprocessor()->scene()->labels->length()-1).toStdString());
+                throw out_of_range(QObject::tr("Label index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->labels->length()-1).toStdString());
         }
     }
     else
-        Agros2D::preprocessor()->scene()->selectAll(SceneGeometryMode_OperateOnLabels);
+        Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnLabels);
 
-    Agros2D::preprocessor()->scene()->deleteSelected();
+    Agros2D::problem()->scene()->deleteSelected();
 
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
@@ -439,21 +439,21 @@ void PyGeometry::selectNodes(const vector<int> &nodes)
 {
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnNodes->trigger();
-    Agros2D::preprocessor()->scene()->selectNone();
+    Agros2D::problem()->scene()->selectNone();
 
     if (!nodes.empty())
     {
         for (vector<int>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
         {
-            if ((*it >= 0) && (*it < Agros2D::preprocessor()->scene()->nodes->length()))
-                Agros2D::preprocessor()->scene()->nodes->at(*it)->setSelected(true);
+            if ((*it >= 0) && (*it < Agros2D::problem()->scene()->nodes->length()))
+                Agros2D::problem()->scene()->nodes->at(*it)->setSelected(true);
             else
-                throw out_of_range(QObject::tr("Node index must be between 0 and '%1'.").arg(Agros2D::preprocessor()->scene()->nodes->length()-1).toStdString());
+                throw out_of_range(QObject::tr("Node index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->nodes->length()-1).toStdString());
         }
     }
     else
     {
-        Agros2D::preprocessor()->scene()->selectAll(SceneGeometryMode_OperateOnNodes);
+        Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnNodes);
     }
 
     if (!silentMode())
@@ -465,21 +465,21 @@ void PyGeometry::selectEdges(const vector<int> &edges)
 {
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnEdges->trigger();
-    Agros2D::preprocessor()->scene()->selectNone();
+    Agros2D::problem()->scene()->selectNone();
 
     if (!edges.empty())
     {
         for (vector<int>::const_iterator it = edges.begin(); it != edges.end(); ++it)
         {
-            if ((*it >= 0) && (*it < Agros2D::preprocessor()->scene()->edges->length()))
-                Agros2D::preprocessor()->scene()->edges->at(*it)->setSelected(true);
+            if ((*it >= 0) && (*it < Agros2D::problem()->scene()->edges->length()))
+                Agros2D::problem()->scene()->edges->at(*it)->setSelected(true);
             else
-                throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::preprocessor()->scene()->edges->length()-1).toStdString());
+                throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->edges->length()-1).toStdString());
         }
     }
     else
     {
-        Agros2D::preprocessor()->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
+        Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
     }
 
     if (!silentMode())
@@ -490,21 +490,21 @@ void PyGeometry::selectLabels(const vector<int> &labels)
 {
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnLabels->trigger();
-    Agros2D::preprocessor()->scene()->selectNone();
+    Agros2D::problem()->scene()->selectNone();
 
     if (!labels.empty())
     {
         for (vector<int>::const_iterator it = labels.begin(); it != labels.end(); ++it)
         {
-            if ((*it >= 0) && (*it < Agros2D::preprocessor()->scene()->labels->length()))
-                Agros2D::preprocessor()->scene()->labels->at(*it)->setSelected(true);
+            if ((*it >= 0) && (*it < Agros2D::problem()->scene()->labels->length()))
+                Agros2D::problem()->scene()->labels->at(*it)->setSelected(true);
             else
-                throw out_of_range(QObject::tr("Label index must be between 0 and '%1'.").arg(Agros2D::preprocessor()->scene()->labels->length()-1).toStdString());
+                throw out_of_range(QObject::tr("Label index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->labels->length()-1).toStdString());
         }
     }
     else
     {
-        Agros2D::preprocessor()->scene()->selectAll(SceneGeometryMode_OperateOnLabels);
+        Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnLabels);
     }
 
     if (!silentMode())
@@ -515,9 +515,9 @@ void PyGeometry::selectNodeByPoint(double x, double y)
 {
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnNodes->trigger();
-    Agros2D::preprocessor()->scene()->selectNone();
+    Agros2D::problem()->scene()->selectNone();
 
-    SceneNode *node = SceneNode::findClosestNode(Agros2D::preprocessor()->scene(), Point(x, y));
+    SceneNode *node = SceneNode::findClosestNode(Agros2D::problem()->scene(), Point(x, y));
     if (node)
     {
         node->setSelected(true);
@@ -532,9 +532,9 @@ void PyGeometry::selectEdgeByPoint(double x, double y)
 {
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnEdges->trigger();
-    Agros2D::preprocessor()->scene()->selectNone();
+    Agros2D::problem()->scene()->selectNone();
 
-    SceneEdge *edge = SceneEdge::findClosestEdge(Agros2D::preprocessor()->scene(), Point(x, y));
+    SceneEdge *edge = SceneEdge::findClosestEdge(Agros2D::problem()->scene(), Point(x, y));
     if (edge)
     {
         edge->setSelected(true);
@@ -549,9 +549,9 @@ void PyGeometry::selectLabelByPoint(double x, double y)
 {
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnLabels->trigger();
-    Agros2D::preprocessor()->scene()->selectNone();
+    Agros2D::problem()->scene()->selectNone();
 
-    SceneLabel *label = SceneLabel::findClosestLabel(Agros2D::preprocessor()->scene(), Point(x, y));
+    SceneLabel *label = SceneLabel::findClosestLabel(Agros2D::problem()->scene(), Point(x, y));
     if (label)
     {
         label->setSelected(true);
@@ -564,7 +564,7 @@ void PyGeometry::selectLabelByPoint(double x, double y)
 
 void PyGeometry::selectNone()
 {
-    Agros2D::preprocessor()->scene()->selectNone();
+    Agros2D::problem()->scene()->selectNone();
 
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
@@ -572,7 +572,7 @@ void PyGeometry::selectNone()
 
 void PyGeometry::moveSelection(double dx, double dy, bool copy, bool withMarkers)
 {
-    Agros2D::preprocessor()->scene()->transformTranslate(Point(dx, dy), copy, withMarkers);
+    Agros2D::problem()->scene()->transformTranslate(Point(dx, dy), copy, withMarkers);
 
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
@@ -580,7 +580,7 @@ void PyGeometry::moveSelection(double dx, double dy, bool copy, bool withMarkers
 
 void PyGeometry::rotateSelection(double x, double y, double angle, bool copy, bool withMarkers)
 {
-    Agros2D::preprocessor()->scene()->transformRotate(Point(x, y), angle, copy, withMarkers);
+    Agros2D::problem()->scene()->transformRotate(Point(x, y), angle, copy, withMarkers);
 
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
@@ -588,7 +588,7 @@ void PyGeometry::rotateSelection(double x, double y, double angle, bool copy, bo
 
 void PyGeometry::scaleSelection(double x, double y, double scale, bool copy, bool withMarkers)
 {
-    Agros2D::preprocessor()->scene()->transformScale(Point(x, y), scale, copy, withMarkers);
+    Agros2D::problem()->scene()->transformScale(Point(x, y), scale, copy, withMarkers);
 
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
@@ -596,7 +596,7 @@ void PyGeometry::scaleSelection(double x, double y, double scale, bool copy, boo
 
 void PyGeometry::removeSelection()
 {
-    Agros2D::preprocessor()->scene()->deleteSelected();
+    Agros2D::problem()->scene()->deleteSelected();
 
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
@@ -604,16 +604,16 @@ void PyGeometry::removeSelection()
 
 void PyGeometry::exportVTK(const std::string &fileName) const
 {
-    Agros2D::preprocessor()->scene()->exportVTKGeometry(QString::fromStdString(fileName));
+    Agros2D::problem()->scene()->exportVTKGeometry(QString::fromStdString(fileName));
 }
 
 void PyGeometry::exportSVG(const std::string &fileName) const
 {
-    QString geometry = generateSvgGeometry(Agros2D::preprocessor()->scene()->edges->items());
+    QString geometry = generateSvgGeometry(Agros2D::problem()->scene()->edges->items());
     writeStringContent(QString::fromStdString(fileName), geometry);
 }
 
 std::string PyGeometry::exportSVG() const
 {
-    return generateSvgGeometry(Agros2D::preprocessor()->scene()->edges->items()).toStdString();
+    return generateSvgGeometry(Agros2D::problem()->scene()->edges->items()).toStdString();
 }

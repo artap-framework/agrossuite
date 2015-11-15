@@ -64,19 +64,19 @@ SceneViewPost2D::SceneViewPost2D(QWidget *parent)
     connect(this, SIGNAL(mousePressed(Point)), this, SLOT(selectedPoint(Point)));
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 SceneViewPost2D::~SceneViewPost2D()
 {
 }
 
-Problem *SceneViewPost2D::problem()
+ProblemBase *SceneViewPost2D::problem()
 {
-    return static_cast<Problem *>(m_computation.data());
+    return static_cast<ProblemBase *>(m_computation.data());
 }
 
-void SceneViewPost2D::connectComputation(QSharedPointer<ProblemComputation> computation)
+void SceneViewPost2D::connectComputation(QSharedPointer<Computation> computation)
 {
     if (!m_computation.isNull())
     {

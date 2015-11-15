@@ -32,7 +32,7 @@ signals:
 
 public slots:
     void updateControls();
-    void connectComputation(QSharedPointer<ProblemComputation> computation);
+    void connectComputation(QSharedPointer<Computation> computation);
 
 public:
     PhysicalFieldWidget(QWidget *parent = 0);
@@ -66,7 +66,7 @@ private:
     QString m_currentFieldName;
     AnalysisType m_currentAnalysisType;
 
-    QSharedPointer<ProblemComputation> m_computation;
+    QSharedPointer<Computation> m_computation;
 
 public slots:
     void doComputation(int index = -1);

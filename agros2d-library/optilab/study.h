@@ -27,7 +27,7 @@
 #include "parameter.h"
 #include "functional.h"
 
-class ProblemComputation;
+class Computation;
 class Study;
 
 class Studies : public QObject
@@ -40,10 +40,13 @@ public:
 
     void addStudy(Study *study);
     void removeStudy(Study *study);
-    inline QList<Study *> items() { return m_studies; }
+    inline QList<Study *> &items() { return m_studies; }
 
     void loadStudies();
     void saveStudies();
+
+    Study * operator[] (int idx) { return m_studies[idx]; }
+    const Study * operator[] (int idx) const { return m_studies[idx]; }
 
 signals:
     void invalidated();
@@ -74,7 +77,7 @@ public:
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
-    QList<QSharedPointer<ProblemComputation> > computations() { return m_computations; }
+    QList<QSharedPointer<Computation> > computations() { return m_computations; }
 
     void addParameter(Parameter parameter) { m_parameters.append(parameter); }
     QList<Parameter> &parameters() { return m_parameters; }
@@ -86,7 +89,7 @@ public:
 protected:
     QList<Functional> m_functionals;
     QList<Parameter> m_parameters;
-    QList<QSharedPointer<ProblemComputation> > m_computations;
+    QList<QSharedPointer<Computation> > m_computations;
 
     void evaluateExpressions();
 };

@@ -36,7 +36,7 @@ class SceneEdge;
 class SceneLabel;
 class Marker;
 class FieldInfo;
-class Problem;
+class ProblemBase;
 
 const int MARKER_IDX_NOT_EXISTING = -1;
 

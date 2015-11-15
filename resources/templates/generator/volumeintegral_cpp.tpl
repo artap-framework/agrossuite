@@ -47,7 +47,7 @@
 
 #include <deal.II/numerics/vector_tools.h>
 
-{{CLASS}}VolumeIntegral::{{CLASS}}VolumeIntegral(ProblemComputation *computation,
+{{CLASS}}VolumeIntegral::{{CLASS}}VolumeIntegral(Computation *computation,
                                                  const FieldInfo *fieldInfo,
                                                  int timeStep,
                                                  int adaptivityStep)

@@ -124,7 +124,7 @@ class AGROS_LIBRARY_API LogDialog : public QDialog
 {
     Q_OBJECT
 public:
-    LogDialog(ProblemComputation *computation, const QString &title = tr("Progress..."));
+    LogDialog(Computation *computation, const QString &title = tr("Progress..."));
     ~LogDialog();
 
 protected:
@@ -154,7 +154,7 @@ private:
 
     QListWidget *m_progress;
 
-    ProblemComputation *m_computation;
+    Computation *m_computation;
 
     void createControls();
 

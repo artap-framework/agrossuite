@@ -112,7 +112,7 @@ MarkerType* MarkerContainer<MarkerType>::getSingleOrNull()
 }
 
 template <typename MarkerType>
-void MarkerContainer<MarkerType>::doFieldsChanged(Problem *problem)
+void MarkerContainer<MarkerType>::doFieldsChanged(ProblemBase *problem)
 {
     foreach (const FieldInfo* fieldInfo, noneMarkers.keys())
     {

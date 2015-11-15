@@ -381,7 +381,7 @@ QList<Module::MaterialTypeVariable> FieldInfo::materialTypeVariables() const
                     if (variable.id().toStdString() == qty.id())
                     {
                         QString nonlinearExpression;
-                        if (Agros2D::preprocessor()->config()->coordinateType() == CoordinateType_Planar && qty.nonlinearity_planar().present())
+                        if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Planar && qty.nonlinearity_planar().present())
                             nonlinearExpression = QString::fromStdString(qty.nonlinearity_planar().get());
                         else
                             if (qty.nonlinearity_axi().present())

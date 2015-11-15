@@ -282,7 +282,7 @@ void ExamplesDialog::problemInfo(const QString &fileName)
         }
         else if (fileInfo.suffix() == "a2d")
         {
-            QSharedPointer<ProblemComputation> computation = QSharedPointer<ProblemComputation>(new ProblemComputation(""));
+            QSharedPointer<Computation> computation = QSharedPointer<Computation>(new Computation(""));
             computation->readProblemFromA2D31(fileName);
             m_infoWidget->showProblemInfo(computation.data());
 

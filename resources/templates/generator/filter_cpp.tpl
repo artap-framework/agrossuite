@@ -34,7 +34,7 @@
 #include <deal.II/fe/mapping_q1.h>
 #include <deal.II/numerics/fe_field_function.h>
 
-{{CLASS}}ViewScalarFilter::{{CLASS}}ViewScalarFilter(ProblemComputation *computation,
+{{CLASS}}ViewScalarFilter::{{CLASS}}ViewScalarFilter(Computation *computation,
                                                      const FieldInfo *fieldInfo,
                                                      int timeStep,
                                                      int adaptivityStep,

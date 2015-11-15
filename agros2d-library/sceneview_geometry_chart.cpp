@@ -47,19 +47,19 @@ SceneViewPreprocessorChart::SceneViewPreprocessorChart(QWidget *parent)
     setMinimumSize(100, 50);
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 SceneViewPreprocessorChart::~SceneViewPreprocessorChart()
 {
 }
 
-Problem *SceneViewPreprocessorChart::problem()
+ProblemBase *SceneViewPreprocessorChart::problem()
 {
-    return static_cast<Problem *>(m_computation.data());
+    return static_cast<ProblemBase *>(m_computation.data());
 }
 
-void SceneViewPreprocessorChart::connectComputation(QSharedPointer<ProblemComputation> computation)
+void SceneViewPreprocessorChart::connectComputation(QSharedPointer<Computation> computation)
 {
     m_computation = computation;
 }

@@ -45,7 +45,7 @@ class PythonEditorDialog;
 class SceneTransformDialog;
 class SceneViewWidget;
 class LogStdOut;
-class ProblemComputation;
+class Computation;
 
 class AGROS_LIBRARY_API MainWindow : public QMainWindow
 {
@@ -111,7 +111,7 @@ private slots:
     /// fields added or removed, menus need to be modified
     void doFieldsChanged();
 
-    void connectComputation(QSharedPointer<ProblemComputation> computation);
+    void connectComputation(QSharedPointer<Computation> computation);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -225,7 +225,7 @@ private:
     bool m_startupExecute;
 
     // TODO: remove
-    QSharedPointer<ProblemComputation> m_computation;
+    QSharedPointer<Computation> m_computation;
 
     void setRecentFiles();
 

@@ -32,7 +32,7 @@ class MeshGeneratorTriangleExternal : public MeshGenerator
 {
     Q_OBJECT
 public:
-    MeshGeneratorTriangleExternal(ProblemComputation *computation);
+    MeshGeneratorTriangleExternal(Computation *computation);
 
     virtual bool mesh();
 
@@ -48,7 +48,7 @@ class MeshGeneratorTriangle : public MeshGenerator
     Q_OBJECT
 
 public:
-    MeshGeneratorTriangle(ProblemComputation *computation);
+    MeshGeneratorTriangle(Computation *computation);
 
     virtual bool mesh();
 

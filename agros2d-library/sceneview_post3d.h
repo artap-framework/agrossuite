@@ -48,7 +48,7 @@ protected:
     virtual void paintGL();
     virtual void resizeGL(int w, int h);
 
-    virtual Problem *problem();
+    virtual ProblemBase *problem();
 
     void paintScalarField3D(); // paint scalar field 3d surface
     void paintScalarField3DSolid(); // paint scalar field 3d solid
@@ -67,7 +67,7 @@ private slots:
 
     void setControls();
 
-    void connectComputation(QSharedPointer<ProblemComputation> computation);
+    void connectComputation(QSharedPointer<Computation> computation);
 };
 
 #endif // SCENEVIEWPOST3D_H

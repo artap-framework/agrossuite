@@ -128,7 +128,7 @@ void SolutionStore::SolutionRunTimeDetails::setDefaultValues()
 
 // *******************************************************************************************************************************
 
-SolutionStore::SolutionStore(ProblemComputation *parentProblem) : m_computation(parentProblem)
+SolutionStore::SolutionStore(Computation *parentProblem) : m_computation(parentProblem)
 {
 }
 

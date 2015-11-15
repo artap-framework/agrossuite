@@ -31,9 +31,9 @@ PyField::PyField(std::string fieldId)
 
     if (modules.keys().contains(id))
     {
-        if (Agros2D::preprocessor()->hasField(id))
+        if (Agros2D::problem()->hasField(id))
         {
-            m_fieldInfo = Agros2D::preprocessor()->fieldInfo(id);
+            m_fieldInfo = Agros2D::problem()->fieldInfo(id);
         }
         else
         {
@@ -46,7 +46,7 @@ PyField::PyField(std::string fieldId)
                 throw invalid_argument(QObject::tr("Invalid field id. Plugin %1 cannot be loaded").arg(id).toStdString());
             }
 
-            Agros2D::preprocessor()->addField(m_fieldInfo);
+            Agros2D::problem()->addField(m_fieldInfo);
         }
     }
     else
@@ -205,7 +205,7 @@ void PyField::addBoundary(const std::string &name, const std::string &type,
                           const map<std::string, std::string> &expressions)
 {
     // check boundaries with same name
-    foreach (SceneBoundary *boundary, Agros2D::preprocessor()->scene()->boundaries->filter(m_fieldInfo->fieldId()).items())
+    foreach (SceneBoundary *boundary, Agros2D::problem()->scene()->boundaries->filter(m_fieldInfo->fieldId()).items())
     {
         if (boundary->name() == QString::fromStdString(name))
             throw invalid_argument(QObject::tr("Boundary condition '%1' already exists.").arg(QString::fromStdString(name)).toStdString());
@@ -238,14 +238,14 @@ void PyField::addBoundary(const std::string &name, const std::string &type,
             throw invalid_argument(QObject::tr("Wrong parameter '%1'.").arg(QString::fromStdString((*i).first)).toStdString());
     }
 
-    Agros2D::preprocessor()->scene()->addBoundary(new SceneBoundary(Agros2D::preprocessor()->scene(), m_fieldInfo, QString::fromStdString(name), QString::fromStdString(type), values));
+    Agros2D::problem()->scene()->addBoundary(new SceneBoundary(Agros2D::problem()->scene(), m_fieldInfo, QString::fromStdString(name), QString::fromStdString(type), values));
 }
 
 void PyField::modifyBoundary(const std::string &name, const std::string &type,
                              const map<std::string, double> &parameters,
                              const map<std::string, std::string> &expressions)
 {
-    SceneBoundary *sceneBoundary = Agros2D::preprocessor()->scene()->getBoundary(m_fieldInfo, QString::fromStdString(name));
+    SceneBoundary *sceneBoundary = Agros2D::problem()->scene()->getBoundary(m_fieldInfo, QString::fromStdString(name));
     if (sceneBoundary == NULL)
         throw invalid_argument(QObject::tr("Boundary condition '%1' doesn't exists.").arg(QString::fromStdString(name)).toStdString());
 
@@ -286,11 +286,11 @@ void PyField::modifyBoundary(const std::string &name, const std::string &type,
 
 void PyField::removeBoundary(const std::string &name)
 {
-    SceneBoundary *sceneBoundary = Agros2D::preprocessor()->scene()->getBoundary(m_fieldInfo, QString::fromStdString(name));
+    SceneBoundary *sceneBoundary = Agros2D::problem()->scene()->getBoundary(m_fieldInfo, QString::fromStdString(name));
     if (sceneBoundary == NULL)
         throw invalid_argument(QObject::tr("Boundary condition '%1' doesn't exists.").arg(QString::fromStdString(name)).toStdString());
 
-    Agros2D::preprocessor()->scene()->removeBoundary(sceneBoundary);
+    Agros2D::problem()->scene()->removeBoundary(sceneBoundary);
 }
 
 void PyField::addMaterial(const std::string &name, const map<std::string, double> &parameters,
@@ -300,7 +300,7 @@ void PyField::addMaterial(const std::string &name, const map<std::string, double
                           const map<string, map<string, string> > &settings_map)
 {
     // check materials with same name
-    foreach (SceneMaterial *material, Agros2D::preprocessor()->scene()->materials->filter(m_fieldInfo->fieldId()).items())
+    foreach (SceneMaterial *material, Agros2D::problem()->scene()->materials->filter(m_fieldInfo->fieldId()).items())
     {
         if (material->name() == QString::fromStdString(name))
             throw invalid_argument(QObject::tr("Material '%1' already exists.").arg(QString::fromStdString(name)).toStdString());
@@ -398,7 +398,7 @@ void PyField::addMaterial(const std::string &name, const map<std::string, double
             throw invalid_argument(QObject::tr("Wrong parameter '%1'.").arg(QString::fromStdString((*i).first)).toStdString());
     }
 
-    Agros2D::preprocessor()->scene()->addMaterial(new SceneMaterial(Agros2D::preprocessor()->scene(), m_fieldInfo, QString::fromStdString(name), values));
+    Agros2D::problem()->scene()->addMaterial(new SceneMaterial(Agros2D::problem()->scene(), m_fieldInfo, QString::fromStdString(name), values));
 }
 
 void PyField::modifyMaterial(const std::string &name, const map<std::string, double> &parameters,
@@ -407,7 +407,7 @@ void PyField::modifyMaterial(const std::string &name, const map<std::string, dou
                              const map<std::string, vector<double> > &nonlin_y,
                              const map<string, map<string, string> > &settings_map)
 {
-    SceneMaterial *sceneMaterial = Agros2D::preprocessor()->scene()->getMaterial(m_fieldInfo, QString::fromStdString(name));
+    SceneMaterial *sceneMaterial = Agros2D::problem()->scene()->getMaterial(m_fieldInfo, QString::fromStdString(name));
 
     if (sceneMaterial == NULL)
         throw invalid_argument(QObject::tr("Material '%1' doesn't exists.").arg(QString::fromStdString(name)).toStdString());
@@ -498,9 +498,9 @@ void PyField::modifyMaterial(const std::string &name, const map<std::string, dou
 
 void PyField::removeMaterial(const std::string &name)
 {
-    SceneMaterial *sceneMaterial = Agros2D::preprocessor()->scene()->getMaterial(m_fieldInfo, QString::fromStdString(name));
+    SceneMaterial *sceneMaterial = Agros2D::problem()->scene()->getMaterial(m_fieldInfo, QString::fromStdString(name));
     if (sceneMaterial == NULL)
         throw invalid_argument(QObject::tr("Material '%1' doesn't exists.").arg(QString::fromStdString(name)).toStdString());
 
-    Agros2D::preprocessor()->scene()->removeMaterial(sceneMaterial);
+    Agros2D::problem()->scene()->removeMaterial(sceneMaterial);
 }

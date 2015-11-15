@@ -36,7 +36,7 @@ void fillComboBoxComputation(QComboBox *cmbComputation)
     // clear combo
     cmbComputation->blockSignals(true);
     cmbComputation->clear();
-    foreach (QSharedPointer<ProblemComputation> problem, Agros2D::computations())
+    foreach (QSharedPointer<Computation> problem, Agros2D::computations())
     {
         QDateTime time = QDateTime::fromString(problem->problemDir(), "yyyy-MM-dd-hh-mm-ss-zzz");
         cmbComputation->addItem(time.toString("dd.MM.yyyy hh:mm:ss.zzz"), problem->problemDir());
@@ -53,7 +53,7 @@ void fillComboBoxComputation(QComboBox *cmbComputation)
     cmbComputation->blockSignals(false);
 }
 
-void fillComboBoxFieldInfo(QComboBox *cmbFieldInfo, QSharedPointer<ProblemComputation> problem)
+void fillComboBoxFieldInfo(QComboBox *cmbFieldInfo, QSharedPointer<Computation> problem)
 {
     // store variable
     QString fieldId = cmbFieldInfo->itemData(cmbFieldInfo->currentIndex()).toString();
@@ -70,7 +70,7 @@ void fillComboBoxFieldInfo(QComboBox *cmbFieldInfo, QSharedPointer<ProblemComput
     cmbFieldInfo->blockSignals(false);
 }
 
-void fillComboBoxTimeStep(const FieldInfo* fieldInfo, QComboBox *cmbTimeStep, QSharedPointer<ProblemComputation> computation)
+void fillComboBoxTimeStep(const FieldInfo* fieldInfo, QComboBox *cmbTimeStep, QSharedPointer<Computation> computation)
 {
     if (!computation->isSolved())
         return;
@@ -114,7 +114,7 @@ void fillComboBoxTimeStep(const FieldInfo* fieldInfo, QComboBox *cmbTimeStep, QS
     cmbTimeStep->blockSignals(false);
 }
 
-void fillComboBoxAdaptivityStep(FieldInfo* fieldInfo, int timeStep, QComboBox *cmbAdaptivityStep, QSharedPointer<ProblemComputation> computation)
+void fillComboBoxAdaptivityStep(FieldInfo* fieldInfo, int timeStep, QComboBox *cmbAdaptivityStep, QSharedPointer<Computation> computation)
 {
     if (!computation->isSolved())
         return;
@@ -197,14 +197,14 @@ PhysicalFieldWidget::PhysicalFieldWidget(QWidget *parent) : QWidget(parent)
     setLayout(layoutMain);
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 PhysicalFieldWidget::~PhysicalFieldWidget()
 {
 }
 
-void PhysicalFieldWidget::connectComputation(QSharedPointer<ProblemComputation> computation)
+void PhysicalFieldWidget::connectComputation(QSharedPointer<Computation> computation)
 {
     if (!m_computation.isNull())
     {

@@ -42,7 +42,7 @@
 
 #include <QThread>
 
-MeshGeneratorTriangleExternal::MeshGeneratorTriangleExternal(ProblemComputation *computation)
+MeshGeneratorTriangleExternal::MeshGeneratorTriangleExternal(Computation *computation)
     : MeshGenerator(computation)
 {
 }
@@ -510,7 +510,7 @@ bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
 
 // ****************************************************************************
 
-MeshGeneratorTriangle::MeshGeneratorTriangle(ProblemComputation *computation)
+MeshGeneratorTriangle::MeshGeneratorTriangle(Computation *computation)
     : MeshGenerator(computation)
 {
 }

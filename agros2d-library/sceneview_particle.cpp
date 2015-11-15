@@ -88,19 +88,19 @@ SceneViewParticleTracing::SceneViewParticleTracing(QWidget *parent)
     createActionsParticleTracing();
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 SceneViewParticleTracing::~SceneViewParticleTracing()
 {
 }
 
-Problem *SceneViewParticleTracing::problem()
+ProblemBase *SceneViewParticleTracing::problem()
 {
-    return static_cast<Problem *>(m_computation.data());
+    return static_cast<ProblemBase *>(m_computation.data());
 }
 
-void SceneViewParticleTracing::connectComputation(QSharedPointer<ProblemComputation> computation)
+void SceneViewParticleTracing::connectComputation(QSharedPointer<Computation> computation)
 {
     if (!m_computation.isNull())
     {

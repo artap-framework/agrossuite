@@ -36,7 +36,7 @@
 #include <deal.II/fe/mapping_q1.h>
 #include <deal.II/numerics/fe_field_function.h>
 
-{{CLASS}}ForceValue::{{CLASS}}ForceValue(ProblemComputation *computation,
+{{CLASS}}ForceValue::{{CLASS}}ForceValue(Computation *computation,
                                          const FieldInfo *fieldInfo,
                                          int timeStep,
                                          int adaptivityStep)

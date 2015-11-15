@@ -39,7 +39,7 @@ class ParticleTracing : public QObject
     Q_OBJECT
 
 public:
-    ParticleTracing(ProblemComputation *computation, QList<double> particleMassesList, QObject *parent = 0);
+    ParticleTracing(Computation *computation, QList<double> particleMassesList, QObject *parent = 0);
     ~ParticleTracing();
 
     void inline addExternalForce(ParticleTracingForce *force) { m_forces.append(force); }
@@ -57,11 +57,11 @@ public:
     inline double velocityModuleMin() const { return m_velocityModuleMin; }
     inline double velocityModuleMax() const { return m_velocityModuleMax; }
 
-    inline ProblemComputation *computation() { return m_computation; }
+    inline Computation *computation() { return m_computation; }
 
 private:
     // computation
-    ProblemComputation *m_computation;
+    Computation *m_computation;
 
     QList<ParticleTracingForce *> m_forces;
     // masses

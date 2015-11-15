@@ -57,13 +57,13 @@ public slots:
     void doExportData();
 
 private slots:
-    void connectComputation(QSharedPointer<ProblemComputation> computation);
+    void connectComputation(QSharedPointer<Computation> computation);
     void chartMouseMoved(QMouseEvent *event);
 
 private:
     QCustomPlot *m_chart;
 
-    QSharedPointer<ProblemComputation> m_computation;
+    QSharedPointer<Computation> m_computation;
 
     QVector<double> horizontalAxisValues(ChartLine *chartLine);
     void plotGeometry();

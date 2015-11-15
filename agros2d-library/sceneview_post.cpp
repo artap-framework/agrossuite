@@ -51,7 +51,7 @@
 
 #include "pythonlab/pythonengine.h"
 
-PostDataOut::PostDataOut(FieldInfo *fieldInfo, ProblemComputation *parentProblem) : dealii::DataOut<2, dealii::hp::DoFHandler<2> >(),
+PostDataOut::PostDataOut(FieldInfo *fieldInfo, Computation *parentProblem) : dealii::DataOut<2, dealii::hp::DoFHandler<2> >(),
     m_problem(parentProblem), m_fieldInfo(fieldInfo)
 {
 }
@@ -195,7 +195,7 @@ dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_
 
 // ************************************************************************************************************************
 
-PostDeal::PostDeal(ProblemComputation *parentProblem) :
+PostDeal::PostDeal(Computation *parentProblem) :
     m_computation(parentProblem),
     m_activeViewField(nullptr),
     m_activeTimeStep(NOT_FOUND_SO_FAR),

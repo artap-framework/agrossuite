@@ -88,7 +88,7 @@ PyProblem::PyProblem(bool clearProblem) : PyProblemBase()
     if (clearProblem)
         clear();
 
-    m_problem = QSharedPointer<Problem>(Agros2D::preprocessor());
+    m_problem = QSharedPointer<ProblemBase>(Agros2D::problem());
 }
 
 void PyProblem::clear()
@@ -157,7 +157,7 @@ void PyProblem::setParameter(std::string key, double value)
     ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
     parameters[QString::fromStdString(key)] = value;
 
-    Agros2D::preprocessor()->config()->setValue(ProblemConfig::Parameters, parameters);
+    Agros2D::problem()->config()->setValue(ProblemConfig::Parameters, parameters);
 }
 
 void PyProblem::setNumConstantTimeSteps(int timeSteps)
@@ -195,15 +195,27 @@ void PyProblem::setCouplingType(const std::string &sourceField, const std::strin
         throw logic_error(QObject::tr("Coupling '%1' + '%2' doesn't exists.").arg(source).arg(target).toStdString());
 }
 
-PyComputation::PyComputation(bool newComputation) : PyProblemBase()
+PyComputation::PyComputation(bool newComputation, std::string name) : PyProblemBase()
 {
-    Agros2D::preprocessor()->createComputation(newComputation);
-    m_computation = Agros2D::computation();
+    if (name != "")
+    {
+        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
+        QString key = QString::fromStdString(name);
+        if (computations.contains(key))
+            m_computation = computations[key];
+        else
+            throw logic_error(QObject::tr("Computation '%1' does not exists.").arg(key).toStdString());
+    }
+    else
+    {
+        Agros2D::problem()->createComputation(newComputation);
+        m_computation = Agros2D::problem()->m_currentComputation;
+    }
 }
 
 void PyComputation::setComputation(const string &computation)
 {
-    QMap<QString, QSharedPointer<ProblemComputation> > computations = Agros2D::computations();
+    QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
     QString key = QString::fromStdString(computation);
     if (computations.contains(key))
         m_computation = computations[key];
@@ -211,7 +223,7 @@ void PyComputation::setComputation(const string &computation)
         throw logic_error(QObject::tr("Computation '%1' does not exists.").arg(key).toStdString());
 }
 
-QSharedPointer<ProblemComputation> PyComputation::getComputation()
+QSharedPointer<Computation> PyComputation::getComputation()
 {
     return m_computation;
 }
@@ -255,7 +267,7 @@ double PyComputation::timeElapsed() const
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     double time = m_computation->timeElapsed().hour()*3600 + m_computation->timeElapsed().minute()*60 +
-                  m_computation->timeElapsed().second() + m_computation->timeElapsed().msec() * 1e-3;
+            m_computation->timeElapsed().second() + m_computation->timeElapsed().msec() * 1e-3;
     return time;
 }
 
@@ -360,7 +372,7 @@ void PySolution::localValues(double x, double y, int timeStep, int adaptivitySte
 }
 
 void PySolution::surfaceIntegrals(const vector<int> &edges, int timeStep, int adaptivityStep,
-                               map<std::string, double> &results) const
+                                  map<std::string, double> &results) const
 {
     map<std::string, double> values;
 
@@ -384,8 +396,8 @@ void PySolution::surfaceIntegrals(const vector<int> &edges, int timeStep, int ad
                 }
             }
 
-            if (!silentMode() && !m_computation->isSolving())
-                currentPythonEngineAgros()->sceneViewPost2D()->updateGL();
+            // if (!silentMode() && !m_computation->isSolving())
+            //     currentPythonEngineAgros()->sceneViewPost2D()->updateGL();
         }
         else
         {
@@ -414,7 +426,7 @@ void PySolution::surfaceIntegrals(const vector<int> &edges, int timeStep, int ad
 }
 
 void PySolution::volumeIntegrals(const vector<int> &labels, int timeStep, int adaptivityStep,
-                              map<std::string, double> &results) const
+                                 map<std::string, double> &results) const
 {
     map<std::string, double> values;
 
@@ -441,8 +453,8 @@ void PySolution::volumeIntegrals(const vector<int> &labels, int timeStep, int ad
                 }
             }
 
-            if (!silentMode() && !m_computation->isSolving())
-                currentPythonEngineAgros()->sceneViewPost2D()->updateGL();
+            // if (!silentMode() && !m_computation->isSolving())
+            //     currentPythonEngineAgros()->sceneViewPost2D()->updateGL();
         }
         else
         {
@@ -498,8 +510,8 @@ void PySolution::solutionMeshInfo(int timeStep, int adaptivityStep, map<std::str
 }
 
 void PySolution::solverInfo(int timeStep, int adaptivityStep,
-                         vector<double> &solutionsChange, vector<double> &residual,
-                         vector<double> &dampingCoeff, int &jacobianCalculations) const
+                            vector<double> &solutionsChange, vector<double> &residual,
+                            vector<double> &dampingCoeff, int &jacobianCalculations) const
 {
     if (!m_computation->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());

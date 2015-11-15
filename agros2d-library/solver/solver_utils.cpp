@@ -131,7 +131,7 @@ void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, co
     delete [] ir;
 }
 
-ProblemSolver::ProblemSolver(ProblemComputation *parentProblem) : m_computation(parentProblem)
+ProblemSolver::ProblemSolver(Computation *parentProblem) : m_computation(parentProblem)
 {
 }
 

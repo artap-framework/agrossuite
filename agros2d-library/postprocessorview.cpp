@@ -83,7 +83,7 @@ PostprocessorWidget::PostprocessorWidget()
     // connect(currentPythonEngine(), SIGNAL(executedScript()), this, SLOT(doCalculationFinished()));
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 void PostprocessorWidget::createControls()
@@ -209,7 +209,7 @@ void PostprocessorWidget::refresh()
     m_particleTracingWidget->load();
 }
 
-void PostprocessorWidget::connectComputation(QSharedPointer<ProblemComputation> computation)
+void PostprocessorWidget::connectComputation(QSharedPointer<Computation> computation)
 {
     if (!m_computation.isNull())
     {

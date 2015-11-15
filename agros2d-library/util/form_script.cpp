@@ -189,7 +189,7 @@ void FormScript::showWidget()
                 widget->clear();
 
                 int i = 0;
-                foreach (SceneNode *node, Agros2D::preprocessor()->scene()->nodes->items())
+                foreach (SceneNode *node, Agros2D::problem()->scene()->nodes->items())
                 {
                     QListWidgetItem *item = new QListWidgetItem(widget);
 
@@ -219,7 +219,7 @@ void FormScript::showWidget()
                 widget->clear();
 
                 int i = 0;
-                foreach (SceneEdge *edge, Agros2D::preprocessor()->scene()->edges->items())
+                foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
                 {
                     QListWidgetItem *item = new QListWidgetItem(widget);
 
@@ -250,7 +250,7 @@ void FormScript::showWidget()
                 widget->clear();
 
                 int i = 0;
-                foreach (SceneLabel *label, Agros2D::preprocessor()->scene()->labels->items())
+                foreach (SceneLabel *label, Agros2D::problem()->scene()->labels->items())
                 {
                     QListWidgetItem *item = new QListWidgetItem(widget);
 
@@ -291,7 +291,7 @@ void FormScript::showWidget()
 
                 widget->clear();
 
-                foreach (FieldInfo *fieldInfo, Agros2D::preprocessor()->fieldInfos())
+                foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
                 {
                     QTreeWidgetItem *itemField = new QTreeWidgetItem(widget);
 
@@ -303,7 +303,7 @@ void FormScript::showWidget()
 
                     widget->addTopLevelItem(itemField);
 
-                    foreach (Module::LocalVariable variable, fieldInfo->localPointVariables(Agros2D::preprocessor()->config()->coordinateType()))
+                    foreach (Module::LocalVariable variable, fieldInfo->localPointVariables(Agros2D::problem()->config()->coordinateType()))
                     {
                         QTreeWidgetItem *item = new QTreeWidgetItem(itemField);
 
@@ -334,7 +334,7 @@ void FormScript::showWidget()
 
                 widget->clear();
 
-                foreach (FieldInfo *fieldInfo, Agros2D::preprocessor()->fieldInfos())
+                foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
                 {
                     QTreeWidgetItem *itemField = new QTreeWidgetItem(widget);
 
@@ -346,7 +346,7 @@ void FormScript::showWidget()
 
                     widget->addTopLevelItem(itemField);
 
-                    foreach (Module::Integral variable, fieldInfo->surfaceIntegrals(Agros2D::preprocessor()->config()->coordinateType()))
+                    foreach (Module::Integral variable, fieldInfo->surfaceIntegrals(Agros2D::problem()->config()->coordinateType()))
                     {
                         QTreeWidgetItem *item = new QTreeWidgetItem(itemField);
 
@@ -378,7 +378,7 @@ void FormScript::showWidget()
 
                 widget->clear();
 
-                foreach (FieldInfo *fieldInfo, Agros2D::preprocessor()->fieldInfos())
+                foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
                 {
                     QTreeWidgetItem *itemField = new QTreeWidgetItem(widget);
 
@@ -390,7 +390,7 @@ void FormScript::showWidget()
 
                     widget->addTopLevelItem(itemField);
 
-                    foreach (Module::Integral variable, fieldInfo->volumeIntegrals(Agros2D::preprocessor()->config()->coordinateType()))
+                    foreach (Module::Integral variable, fieldInfo->volumeIntegrals(Agros2D::problem()->config()->coordinateType()))
                     {
                         QTreeWidgetItem *item = new QTreeWidgetItem(itemField);
 

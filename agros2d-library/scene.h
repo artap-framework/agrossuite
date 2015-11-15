@@ -47,7 +47,7 @@ class SceneTransformDialog;
 class ProgressItemSolve;
 class CouplingInfo;
 
-class Problem;
+class ProblemBase;
 class SolutionStore;
 class Log;
 
@@ -97,11 +97,11 @@ signals:
     void defaultValues();
 
 public:
-    Scene(Problem *parentProblem);
+    Scene(ProblemBase *parentProblem);
     ~Scene();
 
     // parent problem
-    Problem *parentProblem() { return m_problem; }
+    ProblemBase *parentProblem() { return m_problem; }
 
     // geometry
     SceneNodeContainer* nodes;
@@ -183,7 +183,7 @@ public:
     inline void invalidate() { emit invalidated(); }
 
 private:
-    Problem *m_problem;
+    ProblemBase *m_problem;
 
     QUndoStack *m_undoStack;
 

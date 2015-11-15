@@ -319,18 +319,18 @@ SceneNodeCommandAdd::SceneNodeCommandAdd(const PointValue &point, QUndoCommand *
 
 void SceneNodeCommandAdd::undo()
 {
-    SceneNode *node = Agros2D::preprocessor()->scene()->getNode(m_point.point());
+    SceneNode *node = Agros2D::problem()->scene()->getNode(m_point.point());
     if (node)
     {
-        Agros2D::preprocessor()->scene()->nodes->remove(node);
-        Agros2D::preprocessor()->scene()->invalidate();
+        Agros2D::problem()->scene()->nodes->remove(node);
+        Agros2D::problem()->scene()->invalidate();
     }
 }
 
 void SceneNodeCommandAdd::redo()
 {
-    Agros2D::preprocessor()->scene()->addNode(new SceneNode(Agros2D::preprocessor()->scene(), m_point));
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->addNode(new SceneNode(Agros2D::problem()->scene(), m_point));
+    Agros2D::problem()->scene()->invalidate();
 }
 
 SceneNodeCommandRemove::SceneNodeCommandRemove(const PointValue &point, QUndoCommand *parent) : QUndoCommand(parent)
@@ -340,17 +340,17 @@ SceneNodeCommandRemove::SceneNodeCommandRemove(const PointValue &point, QUndoCom
 
 void SceneNodeCommandRemove::undo()
 {
-    Agros2D::preprocessor()->scene()->addNode(new SceneNode(Agros2D::preprocessor()->scene(), m_point));
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->addNode(new SceneNode(Agros2D::problem()->scene(), m_point));
+    Agros2D::problem()->scene()->invalidate();
 }
 
 void SceneNodeCommandRemove::redo()
 {
-    SceneNode *node = Agros2D::preprocessor()->scene()->getNode(m_point.point());
+    SceneNode *node = Agros2D::problem()->scene()->getNode(m_point.point());
     if (node)
     {
-        Agros2D::preprocessor()->scene()->nodes->remove(node);
-        Agros2D::preprocessor()->scene()->invalidate();
+        Agros2D::problem()->scene()->nodes->remove(node);
+        Agros2D::problem()->scene()->invalidate();
     }
 }
 
@@ -362,21 +362,21 @@ SceneNodeCommandEdit::SceneNodeCommandEdit(const PointValue &point, const PointV
 
 void SceneNodeCommandEdit::undo()
 {
-    SceneNode *node = Agros2D::preprocessor()->scene()->getNode(m_pointNew.point());
+    SceneNode *node = Agros2D::problem()->scene()->getNode(m_pointNew.point());
     if (node)
     {
         node->setPointValue(m_point);
-        Agros2D::preprocessor()->scene()->invalidate();
+        Agros2D::problem()->scene()->invalidate();
     }
 }
 
 void SceneNodeCommandEdit::redo()
 {
-    SceneNode *node = Agros2D::preprocessor()->scene()->getNode(m_point.point());
+    SceneNode *node = Agros2D::problem()->scene()->getNode(m_point.point());
     if (node)
     {
         node->setPointValue(m_pointNew);
-        Agros2D::preprocessor()->scene()->invalidate();
+        Agros2D::problem()->scene()->invalidate();
     }
 }
 
@@ -393,7 +393,7 @@ void SceneNodeCommandMoveMulti::moveAll(QList<PointValue> moveFrom, QList<PointV
     for(int i = 0; i < moveFrom.size(); i++)
     {
         Point point = moveFrom[i].point();
-        SceneNode *node = Agros2D::preprocessor()->scene()->getNode(point);
+        SceneNode *node = Agros2D::problem()->scene()->getNode(point);
         nodes.push_back(node);
     }
 
@@ -410,22 +410,22 @@ void SceneNodeCommandMoveMulti::moveAll(QList<PointValue> moveFrom, QList<PointV
 
 void SceneNodeCommandMoveMulti::undo()
 {
-    Agros2D::preprocessor()->scene()->stopInvalidating(true);
+    Agros2D::problem()->scene()->stopInvalidating(true);
 
     moveAll(m_pointsNew, m_points);
 
-    Agros2D::preprocessor()->scene()->stopInvalidating(false);
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->stopInvalidating(false);
+    Agros2D::problem()->scene()->invalidate();
 }
 
 void SceneNodeCommandMoveMulti::redo()
 {
-    Agros2D::preprocessor()->scene()->stopInvalidating(true);
+    Agros2D::problem()->scene()->stopInvalidating(true);
 
     moveAll(m_points, m_pointsNew);
 
-    Agros2D::preprocessor()->scene()->stopInvalidating(false);
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->stopInvalidating(false);
+    Agros2D::problem()->scene()->invalidate();
 }
 
 SceneNodeCommandAddMulti::SceneNodeCommandAddMulti(QList<PointValue> points, QUndoCommand *parent) : QUndoCommand(parent)
@@ -435,31 +435,31 @@ SceneNodeCommandAddMulti::SceneNodeCommandAddMulti(QList<PointValue> points, QUn
 
 void SceneNodeCommandAddMulti::undo()
 {
-    Agros2D::preprocessor()->scene()->stopInvalidating(true);
+    Agros2D::problem()->scene()->stopInvalidating(true);
     foreach(PointValue point, m_points)
     {
-        SceneNode *node = Agros2D::preprocessor()->scene()->getNode(point.point());
+        SceneNode *node = Agros2D::problem()->scene()->getNode(point.point());
         if (node)
         {
-            Agros2D::preprocessor()->scene()->nodes->remove(node);
+            Agros2D::problem()->scene()->nodes->remove(node);
         }
     }
 
-    Agros2D::preprocessor()->scene()->stopInvalidating(false);
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->stopInvalidating(false);
+    Agros2D::problem()->scene()->invalidate();
 }
 
 void SceneNodeCommandAddMulti::redo()
 {
-    Agros2D::preprocessor()->scene()->stopInvalidating(true);
+    Agros2D::problem()->scene()->stopInvalidating(true);
 
     foreach(PointValue point, m_points)
     {
-        Agros2D::preprocessor()->scene()->addNode(new SceneNode(Agros2D::preprocessor()->scene(), point));
+        Agros2D::problem()->scene()->addNode(new SceneNode(Agros2D::problem()->scene(), point));
     }
 
-    Agros2D::preprocessor()->scene()->stopInvalidating(false);
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->stopInvalidating(false);
+    Agros2D::problem()->scene()->invalidate();
 }
 
 SceneNodeCommandRemoveMulti::SceneNodeCommandRemoveMulti(QList<PointValue> points, QUndoCommand *parent) : QUndoCommand(parent)
@@ -469,30 +469,30 @@ SceneNodeCommandRemoveMulti::SceneNodeCommandRemoveMulti(QList<PointValue> point
 
 void SceneNodeCommandRemoveMulti::undo()
 {
-    Agros2D::preprocessor()->scene()->stopInvalidating(true);
+    Agros2D::problem()->scene()->stopInvalidating(true);
 
     // new nodes
     foreach(PointValue point, m_nodePoints)
     {
-        Agros2D::preprocessor()->scene()->addNode(new SceneNode(Agros2D::preprocessor()->scene(), point));
+        Agros2D::problem()->scene()->addNode(new SceneNode(Agros2D::problem()->scene(), point));
     }
 
     // new edges
     for (int i = 0; i < m_edgePointStart.count(); i++)
     {
-        SceneNode *nodeStart = Agros2D::preprocessor()->scene()->getNode(m_edgePointStart[i]);
-        SceneNode *nodeEnd = Agros2D::preprocessor()->scene()->getNode(m_edgePointEnd[i]);
+        SceneNode *nodeStart = Agros2D::problem()->scene()->getNode(m_edgePointStart[i]);
+        SceneNode *nodeEnd = Agros2D::problem()->scene()->getNode(m_edgePointEnd[i]);
         assert(nodeStart && nodeEnd);
-        SceneEdge *edge = new SceneEdge(Agros2D::preprocessor()->scene(), nodeStart, nodeEnd, m_edgeAngle[i]);
+        SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, m_edgeAngle[i]);
 
         edge->addMarkersFromStrings(m_edgeMarkers[i]);
 
         // add edge to the list
-        Agros2D::preprocessor()->scene()->addEdge(edge);
+        Agros2D::problem()->scene()->addEdge(edge);
     }
 
-    Agros2D::preprocessor()->scene()->stopInvalidating(false);
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->stopInvalidating(false);
+    Agros2D::problem()->scene()->invalidate();
 }
 
 void SceneNodeCommandRemoveMulti::redo()
@@ -502,11 +502,11 @@ void SceneNodeCommandRemoveMulti::redo()
     m_edgeAngle.clear();
     m_edgeMarkers.clear();
 
-    Agros2D::preprocessor()->scene()->stopInvalidating(true);
+    Agros2D::problem()->scene()->stopInvalidating(true);
 
     foreach (PointValue point, m_nodePoints)
     {
-        SceneNode *node = Agros2D::preprocessor()->scene()->getNode(point.point());
+        SceneNode *node = Agros2D::problem()->scene()->getNode(point.point());
         if (node)
         {
             QList<SceneEdge *> connectedEdges = node->connectedEdges();
@@ -517,13 +517,13 @@ void SceneNodeCommandRemoveMulti::redo()
                 m_edgeMarkers.append(edge->markersKeys());
                 m_edgeAngle.append(edge->angleValue());
 
-                Agros2D::preprocessor()->scene()->edges->remove(edge);
+                Agros2D::problem()->scene()->edges->remove(edge);
             }
 
-            Agros2D::preprocessor()->scene()->nodes->remove(node);
+            Agros2D::problem()->scene()->nodes->remove(node);
         }
     }
 
-    Agros2D::preprocessor()->scene()->stopInvalidating(false);
-    Agros2D::preprocessor()->scene()->invalidate();
+    Agros2D::problem()->scene()->stopInvalidating(false);
+    Agros2D::problem()->scene()->invalidate();
 }

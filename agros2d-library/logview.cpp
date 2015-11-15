@@ -236,7 +236,7 @@ LogView::LogView(QWidget *parent) : QDockWidget(tr("Application log"), parent)
 
 // *******************************************************************************************************
 
-LogDialog::LogDialog(ProblemComputation *computation, const QString &title) : QDialog(QApplication::activeWindow()),
+LogDialog::LogDialog(Computation *computation, const QString &title) : QDialog(QApplication::activeWindow()),
     m_computation(computation),
     m_nonlinearChart(NULL), m_nonlinearErrorGraph(NULL), m_nonlinearProgress(NULL),
     m_adaptivityChart(NULL), m_adaptivityErrorGraph(NULL), m_adaptivityDOFsGraph(NULL), m_adaptivityProgress(NULL),

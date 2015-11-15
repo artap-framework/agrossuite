@@ -69,19 +69,19 @@ SceneViewPost3D::SceneViewPost3D(QWidget *parent)
     createActionsPost3D();
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 SceneViewPost3D::~SceneViewPost3D()
 {
 }
 
-Problem *SceneViewPost3D::problem()
+ProblemBase *SceneViewPost3D::problem()
 {
-    return static_cast<Problem *>(m_computation.data());
+    return static_cast<ProblemBase *>(m_computation.data());
 }
 
-void SceneViewPost3D::connectComputation(QSharedPointer<ProblemComputation> computation)
+void SceneViewPost3D::connectComputation(QSharedPointer<Computation> computation)
 {
     if (!m_computation.isNull())
     {

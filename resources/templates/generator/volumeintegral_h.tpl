@@ -31,7 +31,7 @@ class FieldInfo;
 class {{CLASS}}VolumeIntegral : public IntegralValue
 {
 public:
-    {{CLASS}}VolumeIntegral(ProblemComputation *computation,
+    {{CLASS}}VolumeIntegral(Computation *computation,
                             const FieldInfo *fieldInfo,
                             int timeStep,
                             int adaptivityStep);

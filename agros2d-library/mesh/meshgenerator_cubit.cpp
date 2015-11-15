@@ -42,7 +42,7 @@
 
 #include <QThread>
 
-MeshGeneratorCubitExternal::MeshGeneratorCubitExternal(ProblemComputation *computation)
+MeshGeneratorCubitExternal::MeshGeneratorCubitExternal(Computation *computation)
     : MeshGenerator(computation)
 {
 }

@@ -66,7 +66,7 @@ ResultsView::ResultsView(QWidget *parent)
     setWidget(widget);
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 void ResultsView::createActions()
@@ -76,7 +76,7 @@ void ResultsView::createActions()
     webView->addAction(copyAction);
 }
 
-void ResultsView::connectComputation(QSharedPointer<ProblemComputation> computation)
+void ResultsView::connectComputation(QSharedPointer<Computation> computation)
 {
     if (!m_computation.isNull())
     {
@@ -303,7 +303,7 @@ void ResultsView::showNotSolved()
     webView->setHtml(QString::fromStdString(results));
 }
 
-LocalPointValueDialog::LocalPointValueDialog(Point point, ProblemComputation *computation, QWidget *parent) : QDialog(parent)
+LocalPointValueDialog::LocalPointValueDialog(Point point, Computation *computation, QWidget *parent) : QDialog(parent)
 {
     setWindowIcon(icon("scene-node"));
     setWindowTitle(tr("Local point value"));

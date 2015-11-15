@@ -33,7 +33,7 @@ class SceneLabelContainer;
 class {{CLASS}}ViewScalarFilter : public dealii::DataPostprocessorScalar<2>
 {
 public:
-    {{CLASS}}ViewScalarFilter(ProblemComputation *computation,
+    {{CLASS}}ViewScalarFilter(Computation *computation,
                               const FieldInfo *fieldInfo,
                               int timeStep,
                               int adaptivityStep,
@@ -60,7 +60,7 @@ public:
 protected:
 
 private:
-    ProblemComputation *m_computation;
+    Computation *m_computation;
     const FieldInfo *m_fieldInfo;
     int m_timeStep;
     int m_adaptivityStep;

@@ -69,7 +69,7 @@ struct LocalPointValue
 class LocalValue
 {
 public:
-    LocalValue(ProblemComputation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, const Point &point)
+    LocalValue(Computation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep, const Point &point)
         : m_computation(computation), m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep), m_point(point) {}
     virtual ~LocalValue()
     {
@@ -88,7 +88,7 @@ protected:
     // point
     Point m_point;
     // computation
-    ProblemComputation *m_computation;
+    Computation *m_computation;
     // field info
     const FieldInfo *m_fieldInfo;
     int m_timeStep;
@@ -101,7 +101,7 @@ protected:
 class IntegralValue
 {
 public:
-    IntegralValue(ProblemComputation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
+    IntegralValue(Computation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
         : m_computation(computation), m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep) {}
 
     // variables
@@ -109,7 +109,7 @@ public:
 
 protected:
     // computation
-    ProblemComputation *m_computation;
+    Computation *m_computation;
     // field info
     const FieldInfo *m_fieldInfo;
     int m_timeStep;
@@ -122,7 +122,7 @@ protected:
 class ForceValue
 {
 public:
-    ForceValue(ProblemComputation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
+    ForceValue(Computation *computation, const FieldInfo *fieldInfo, int timeStep, int adaptivityStep)
         : m_computation(computation), m_fieldInfo(fieldInfo), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep) {}
 
     virtual Point3 force(const Point3 &point, const Point3 &velocity) { return Point3(); }
@@ -130,7 +130,7 @@ public:
 
 protected:
     // computation
-    ProblemComputation *m_computation;
+    Computation *m_computation;
     // field info
     const FieldInfo *m_fieldInfo;
     int m_timeStep;
@@ -150,11 +150,11 @@ public:
     inline XMLModule::coupling *coupling() const { assert(m_coupling); return m_coupling; }
 
     // weak forms
-    virtual SolverDeal *solverDeal(ProblemComputation *computation, const FieldInfo *fieldInfo) = 0;
+    virtual SolverDeal *solverDeal(Computation *computation, const FieldInfo *fieldInfo) = 0;
 
     // postprocessor
     // filter
-    virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(ProblemComputation *computation,
+    virtual std::shared_ptr<dealii::DataPostprocessorScalar<2> > filter(Computation *computation,
                                                                         const FieldInfo *fieldInfo,
                                                                         int timeStep,
                                                                         int adaptivityStep,
@@ -163,23 +163,23 @@ public:
                                                                         PhysicFieldVariableComp physicFieldVariableComp) = 0;
 
     // local values
-    virtual std::shared_ptr<LocalValue> localValue(ProblemComputation *computation,
+    virtual std::shared_ptr<LocalValue> localValue(Computation *computation,
                                                    const FieldInfo *fieldInfo,
                                                    int timeStep,
                                                    int adaptivityStep,
                                                    const Point &point) = 0;
     // surface integrals
-    virtual std::shared_ptr<IntegralValue> surfaceIntegral(ProblemComputation *computation,
+    virtual std::shared_ptr<IntegralValue> surfaceIntegral(Computation *computation,
                                                            const FieldInfo *fieldInfo,
                                                            int timeStep,
                                                            int adaptivityStep) = 0;
     // volume integrals
-    virtual std::shared_ptr<IntegralValue> volumeIntegral(ProblemComputation *computation,
+    virtual std::shared_ptr<IntegralValue> volumeIntegral(Computation *computation,
                                                           const FieldInfo *fieldInfo,
                                                           int timeStep,
                                                           int adaptivityStep) = 0;
     // force calculation
-    virtual std::shared_ptr<ForceValue> force(ProblemComputation *computation,
+    virtual std::shared_ptr<ForceValue> force(Computation *computation,
                                               const FieldInfo *fieldInfo,
                                               int timeStep,
                                               int adaptivityStep) = 0;

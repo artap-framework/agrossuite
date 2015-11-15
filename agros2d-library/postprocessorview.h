@@ -34,7 +34,7 @@ class CollapsableGroupBoxButton;
 class FieldInfo;
 class ValueLineEdit;
 class PhysicalFieldWidget;
-class ProblemComputation;
+class Computation;
 
 class PostprocessorSceneMeshWidget;
 class PostprocessorScenePost2DWidget;
@@ -70,7 +70,7 @@ public:
     inline SceneViewParticleTracing *sceneViewParticleTracing() { return m_sceneViewParticleTracing; }
     inline SceneViewChart *sceneViewChart() { return m_sceneViewChart; }
 
-    inline QSharedPointer<ProblemComputation> computation() { return m_computation; }
+    inline QSharedPointer<Computation> computation() { return m_computation; }
 
     QAction *actSceneModePost;
 
@@ -84,7 +84,7 @@ public slots:
 
 private:
     PhysicalFieldWidget *m_fieldWidget;
-    QSharedPointer<ProblemComputation> m_computation;
+    QSharedPointer<Computation> m_computation;
 
     QTabWidget *tabWidget;
     QPushButton *btnApply;
@@ -111,7 +111,7 @@ private:
     friend class PostprocessorSceneWidget;
 
 private slots:
-    void connectComputation(QSharedPointer<ProblemComputation> computation);
+    void connectComputation(QSharedPointer<Computation> computation);
 
     void doCalculationFinished();
 };

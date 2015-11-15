@@ -38,7 +38,7 @@ class SceneLabel;
 
 class SceneViewInterface;
 
-class Problem;
+class ProblemBase;
 
 namespace Module
 {
@@ -91,7 +91,7 @@ protected:
     QPointF m_zoomRegionPos;
 
     // problem (preprocessor vs. computation)
-    virtual Problem *problem() = 0;
+    virtual ProblemBase *problem() = 0;
 
     void createActions();
 

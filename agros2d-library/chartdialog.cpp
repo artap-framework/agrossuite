@@ -71,7 +71,7 @@ SceneViewChart::SceneViewChart(QWidget *parent) : QWidget(parent)
     refresh();
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<ProblemComputation>)), this, SLOT(connectComputation(QSharedPointer<ProblemComputation>)));
+    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 void SceneViewChart::chartMouseMoved(QMouseEvent *event)
@@ -125,7 +125,7 @@ void SceneViewChart::refresh()
     }
 }
 
-void SceneViewChart::connectComputation(QSharedPointer<ProblemComputation> computation)
+void SceneViewChart::connectComputation(QSharedPointer<Computation> computation)
 {
     if (!m_computation.isNull())
     {

@@ -27,7 +27,7 @@
 class FieldInfo;
 class CouplingInfo;
 
-class Problem;
+class ProblemBase;
 
 namespace XMLProblem
 {

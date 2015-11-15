@@ -59,7 +59,7 @@ public:
     class AGROS_LIBRARY_API AssembleBase
     {
     public:
-        AssembleBase(ProblemComputation *computation, SolverDeal *solverDeal, dealii::Triangulation<2> &triangulation);
+        AssembleBase(Computation *computation, SolverDeal *solverDeal, dealii::Triangulation<2> &triangulation);
 
         // current solution
         dealii::hp::DoFHandler<2> doFHandler;
@@ -111,7 +111,7 @@ public:
 
     protected:
         // local references
-        ProblemComputation *m_computation;
+        Computation *m_computation;
         const FieldInfo *m_fieldInfo;
         SolverDeal *m_solverDeal;
 
@@ -147,7 +147,7 @@ public:
         int n_q_points;
     };
 
-    SolverDeal(ProblemComputation *computation, const FieldInfo *fieldInfo);
+    SolverDeal(Computation *computation, const FieldInfo *fieldInfo);
     virtual ~SolverDeal();
 
     // solve problem
@@ -218,7 +218,7 @@ protected:
     };
 
     // local reference
-    ProblemComputation *m_computation;
+    Computation *m_computation;
     const FieldInfo *m_fieldInfo;
 
     // assembling

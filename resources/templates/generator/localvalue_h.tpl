@@ -31,7 +31,7 @@ class FieldInfo;
 class {{CLASS}}LocalValue : public LocalValue
 {
 public:
-    {{CLASS}}LocalValue(ProblemComputation *computation,
+    {{CLASS}}LocalValue(Computation *computation,
                         const FieldInfo *fieldInfo,
                         int timeStep,
                         int adaptivityStep,

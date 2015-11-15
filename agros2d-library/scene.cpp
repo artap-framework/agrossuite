@@ -136,7 +136,7 @@ void NewMarkerAction::doTriggered()
 
 // ************************************************************************************************************************
 
-Scene::Scene(Problem *problem) : m_problem(problem), m_loopsInfo(NULL)
+Scene::Scene(ProblemBase *problem) : m_problem(problem), m_loopsInfo(NULL)
 {
     createActions();
 

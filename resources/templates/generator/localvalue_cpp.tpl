@@ -37,7 +37,7 @@
 #include <deal.II/numerics/fe_field_function.h>
 
 
-{{CLASS}}LocalValue::{{CLASS}}LocalValue(ProblemComputation *computation,
+{{CLASS}}LocalValue::{{CLASS}}LocalValue(Computation *computation,
                                          const FieldInfo *fieldInfo,
                                          int timeStep,
                                          int adaptivityStep,

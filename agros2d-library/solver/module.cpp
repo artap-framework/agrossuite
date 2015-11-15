@@ -552,7 +552,7 @@ void Module::DialogUI::clear()
 
 // ***********************************************************************************************
 
-AGROS_LIBRARY_API void Module::updateTimeFunctions(ProblemComputation *computation, double time)
+AGROS_LIBRARY_API void Module::updateTimeFunctions(Computation *computation, double time)
 {
     // update materials
     foreach (SceneMaterial *material, computation->scene()->materials->items())

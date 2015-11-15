@@ -31,7 +31,7 @@ class FieldInfo;
 class {{CLASS}}SurfaceIntegral : public IntegralValue
 {
 public:
-    {{CLASS}}SurfaceIntegral(ProblemComputation *computation,
+    {{CLASS}}SurfaceIntegral(Computation *computation,
                              const FieldInfo *fieldInfo,
                              int timeStep,
                              int adaptivityStep);

@@ -47,7 +47,7 @@ public slots:
 protected:
     virtual void paintGL();
 
-    virtual Problem *problem();
+    virtual ProblemBase *problem();
 
     void paintGeometry();
 
@@ -68,7 +68,7 @@ private slots:
     virtual void refresh();   
     virtual void clearGLLists();
 
-    void connectComputation(QSharedPointer<ProblemComputation> computation);
+    void connectComputation(QSharedPointer<Computation> computation);
 };
 
 #endif // SCENEVIEWMESH_H

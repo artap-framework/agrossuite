@@ -202,7 +202,7 @@ SolverDeal::AssemblyCopyData::AssemblyCopyData()
 
 // *****************************************************************************************************************
 
-SolverDeal::AssembleBase::AssembleBase(ProblemComputation *computation, SolverDeal *solverDeal, dealii::Triangulation<2> &triangulation) :
+SolverDeal::AssembleBase::AssembleBase(Computation *computation, SolverDeal *solverDeal, dealii::Triangulation<2> &triangulation) :
     m_computation(computation),
     m_solverDeal(solverDeal),
     // dof handler
@@ -380,7 +380,7 @@ void SolverDeal::AssembleBase::solveProblemLinear()
 
 // ***************************************************************************************************************************
 
-SolverDeal::SolverDeal(ProblemComputation *computation, const FieldInfo *fieldInfo)
+SolverDeal::SolverDeal(Computation *computation, const FieldInfo *fieldInfo)
     : m_computation(computation),
       m_fieldInfo(fieldInfo),
       // fe collection

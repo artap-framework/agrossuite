@@ -34,12 +34,12 @@ class ProblemSolver;
 class FieldInfo;
 class CouplingInfo;
 
-class Problem;
+class ProblemBase;
 class ProblemConfig;
 class ProblemSetting;
 class PyProblem;
 
-class ProblemComputation;
+class Computation;
 class PostDeal;
 class SolutionStore;
 class ProblemResult;
@@ -57,7 +57,7 @@ public:
         CalculationType_SolveTimeStep
     };
 
-    CalculationThread(ProblemComputation *parentProblem);
+    CalculationThread(Computation *parentProblem);
 
     void startCalculation(CalculationType type);
 
@@ -69,10 +69,10 @@ signals:
 
 private:
     CalculationType m_calculationType;
-    ProblemComputation *m_computation;
+    Computation *m_computation;
 };
 
-class AGROS_LIBRARY_API Problem : public QObject
+class AGROS_LIBRARY_API ProblemBase : public QObject
 {
     Q_OBJECT
 signals:
@@ -87,8 +87,8 @@ public slots:
     virtual void clearFieldsAndConfig();
 
 public:
-    Problem();
-    virtual ~Problem();
+    ProblemBase();
+    virtual ~ProblemBase();
 
     inline ProblemConfig *config() const { return m_config; }
     inline ProblemSetting *setting() const { return m_setting; }
@@ -148,23 +148,23 @@ protected:
     friend class CalculationThread;
     friend class PyProblem;
     friend class AgrosSolver;
-    friend class ProblemPreprocessor;
-    friend class ProblemComputation;
+    friend class Problem;
+    friend class Computation;
     friend class Scene;
 
 private:
     bool applyParametersInternal();
 };
 
-class AGROS_LIBRARY_API ProblemPreprocessor : public Problem
+class AGROS_LIBRARY_API Problem : public ProblemBase
 {
     Q_OBJECT
 
 public:
-    ProblemPreprocessor();
-    ~ProblemPreprocessor();
+    Problem();
+    ~Problem();
 
-    QSharedPointer<ProblemComputation> createComputation(bool newComputation = false, bool setCurrentComputation = true);
+    QSharedPointer<Computation> createComputation(bool newComputation = false, bool setCurrentComputation = true);
 
     void readProblemFromArchive(const QString &fileName);
     void writeProblemToArchive(const QString &fileName, bool saveWithSolution = false);
@@ -180,16 +180,20 @@ public slots:
     inline void doFileNameChanged(const QString &name) { m_config->setFileName(name); }
 
 private:
+    QSharedPointer<Computation> m_currentComputation;
     Studies *m_studies;
+
+    friend class PyComputation;
+    friend class PyProblem;
 };
 
-class AGROS_LIBRARY_API ProblemComputation : public Problem
+class AGROS_LIBRARY_API Computation : public ProblemBase
 {
     Q_OBJECT
 
 public:
-    ProblemComputation(const QString &problemDir = "");
-    virtual ~ProblemComputation();
+    Computation(const QString &problemDir = "");
+    virtual ~Computation();
 
     // mesh
     void meshThread();

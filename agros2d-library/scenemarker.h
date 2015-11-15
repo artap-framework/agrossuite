@@ -26,7 +26,7 @@ class SceneBoundary;
 class SceneMaterial;
 class Marker;
 class FieldInfo;
-class Problem;
+class ProblemBase;
 class Scene;
 
 template <typename MarkerType>
@@ -78,7 +78,7 @@ public:
     void clear();
 
     /// create or delete markers for new or removed field
-    void doFieldsChanged(Problem *problem);
+    void doFieldsChanged(ProblemBase *problem);
 
     bool evaluateAllVariables();
 

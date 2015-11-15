@@ -28,7 +28,7 @@
 
 class DataTable;
 class FieldInfo;
-class Problem;
+class ProblemBase;
 
 class AGROS_LIBRARY_API Value
 {
@@ -43,7 +43,7 @@ public:
 
     Value(const QString &value);
     Value(const QString &value,
-          Problem *problem);
+          ProblemBase *problem);
     Value(const QString &value,
           std::vector<double> x,
           std::vector<double> y,
@@ -52,7 +52,7 @@ public:
           bool extrapolateConstant = true);
     Value(const QString &value,
           const DataTable &table,
-          Problem *problem);
+          ProblemBase *problem);
 
     Value(const Value& origin);
     Value& operator=(const Value& origin);
@@ -94,7 +94,7 @@ private:
     bool m_isEvaluated;   
 
     // problem
-    Problem *m_problem;
+    ProblemBase *m_problem;
 
     // expression
     double m_number;

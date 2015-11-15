@@ -23,8 +23,8 @@
 #include "util.h"
 #include "util/enums.h"
 
-class ProblemPreprocessor;
-class ProblemComputation;
+class Problem;
+class Computation;
 class Config;
 class SolutionStore;
 class Log;
@@ -60,17 +60,16 @@ public:
 
     static inline Config *configComputer() { return Agros2D::singleton()->m_configComputer; }
 
-    static inline ProblemPreprocessor *preprocessor() { return Agros2D::singleton()->m_preprocessor; }
+    static inline Problem *problem() { return Agros2D::singleton()->m_problem; }
 
-    static QString currentComputationDir();
     static void setCurrentComputation(const QString &problemDir);
-    static inline QSharedPointer<ProblemComputation> computation()
+    static inline QSharedPointer<Computation> computation()
     {
         qWarning() << "Agros2D::computation() deprecated - method will be removed!";
         return Agros2D::singleton()->m_computation;
     }
-    static inline QMap<QString, QSharedPointer<ProblemComputation> > computations() { return Agros2D::singleton()->m_computations; }
-    static void addComputation(const QString &problemDir, QSharedPointer<ProblemComputation> comp);
+    static inline QMap<QString, QSharedPointer<Computation> > computations() { return Agros2D::singleton()->m_computations; }
+    static void addComputation(const QString &problemDir, QSharedPointer<Computation> comp);
     static void removeComputation(const QString &problemDir);
     static void clearComputations();
 
@@ -82,16 +81,16 @@ public:
     static void clear();
 
 signals:
-    void connectComputation(QSharedPointer<ProblemComputation>);
+    void connectComputation(QSharedPointer<Computation>);
 
 private:    
     // computer config
     Config *m_configComputer;
-    // preprocessor
-    ProblemPreprocessor *m_preprocessor;
-    // postprocessor
-    QSharedPointer<ProblemComputation> m_computation;
-    QMap<QString, QSharedPointer<ProblemComputation> > m_computations;
+    // problem
+    Problem *m_problem;
+    // computation
+    QSharedPointer<Computation> m_computation;
+    QMap<QString, QSharedPointer<Computation> > m_computations;
     // log and memory monitor
     Log *m_log;
     MemoryMonitor *m_memoryMonitor;

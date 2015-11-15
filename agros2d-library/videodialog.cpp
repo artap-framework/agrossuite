@@ -31,7 +31,7 @@
 
 #include "gui/lineeditdouble.h"
 
-VideoDialog::VideoDialog(SceneViewPostInterface *sceneViewInterface, ProblemComputation *computation, QWidget *parent)
+VideoDialog::VideoDialog(SceneViewPostInterface *sceneViewInterface, Computation *computation, QWidget *parent)
     : QDialog(parent), m_sceneViewInterface(sceneViewInterface), m_computation(computation)
 {
     setModal(true);
