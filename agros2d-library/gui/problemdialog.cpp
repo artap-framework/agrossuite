@@ -40,6 +40,23 @@
 
 #include "pythonlab/pythoneditor.h"
 
+
+MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
+{
+    createActions();
+
+    toolBar = new QToolBar(this);
+}
+
+void MainWidget::createActions()
+{
+    actProperties = new QAction(icon("agros2d"), tr("Welcome"), this);
+    actProperties->setShortcut(tr("Ctrl+1"));
+    actProperties->setCheckable(true);
+}
+
+// ******************************************************************************************************************************
+
 CouplingsWidget::CouplingsWidget(QWidget *parent) : QWidget(parent)
 {
     Agros2D::problem()->synchronizeCouplings();
@@ -130,35 +147,15 @@ void CouplingsWidget::itemChanged(int index)
 
 ProblemWidget::ProblemWidget(QWidget *parent) : QWidget(parent)
 {
-    createActions();
     createControls();
 
-    updateControls();
-
-    // global signals
-    connect(Agros2D::problem()->scene(), SIGNAL(invalidated()), this, SLOT(updateControls()));
-    connect(Agros2D::problem(), SIGNAL(fieldsChanged()), this, SLOT(updateControls()));
-    // connect(fieldsToolbar, SIGNAL(changed()), this, SLOT(updateControls()));
-
-    // resend signal
-    // connect(fieldsToolbar, SIGNAL(changed()), this, SIGNAL(changed()));
-    connect(couplingsWidget, SIGNAL(changed()), this, SIGNAL(changed()));
+    load();
 
     setMinimumSize(sizeHint());
 }
 
-void ProblemWidget::createActions()
-{
-    actProperties = new QAction(icon("document-properties"), tr("Properties"), this);
-    actProperties->setShortcut(tr("Ctrl+1"));
-    actProperties->setCheckable(true);
-}
-
 void ProblemWidget::createControls()
 {
-    // main toolbar
-    toolBar = new QToolBar();
-
     // fields toolbar
     /*
     fieldsToolbar = new FieldsToobar();
@@ -218,6 +215,10 @@ void ProblemWidget::createControls()
     txtTransientSteps->setMaximum(10000);
     lblTransientTimeStep = new QLabel("0.0");
     lblTransientSteps = new QLabel(tr("Number of constant steps:"));
+    connect(cmbTransientMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(transientChanged()));
+    connect(txtTransientSteps, SIGNAL(valueChanged(int)), this, SLOT(transientChanged()));
+    connect(txtTransientTimeTotal, SIGNAL(textChanged(QString)), this, SLOT(transientChanged()));
+    connect(txtTransientOrder, SIGNAL(valueChanged(int)), this, SLOT(transientChanged()));
 
     // transient analysis
     QGridLayout *layoutTransientAnalysis = new QGridLayout();
@@ -257,27 +258,14 @@ void ProblemWidget::createControls()
     grpCouplings->setLayout(layoutCouplings);
 
     // problem widget
-    QVBoxLayout *layoutArea = new QVBoxLayout();
-    layoutArea->setContentsMargins(0, 0, 0, 0);
-    layoutArea->addWidget(grpGeneral);
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(grpGeneral);
     // layoutArea->addWidget(grpFieldsToolbar);
-    layoutArea->addWidget(grpCouplings);
-    layoutArea->addWidget(grpHarmonicAnalysis);
-    layoutArea->addWidget(grpTransientAnalysis);
-    layoutArea->addStretch(1);
-
-    QWidget *widget = new QWidget(this);
-    widget->setLayout(layoutArea);
-
-    QScrollArea *widgetArea = new QScrollArea();
-    widgetArea->setFrameShape(QFrame::NoFrame);
-    widgetArea->setWidgetResizable(true);
-    widgetArea->setWidget(widget);
-
-    QVBoxLayout *layout= new QVBoxLayout();
-    layout->setContentsMargins(2, 2, 2, 3);
-    layout->addWidget(toolBar);
-    layout->addWidget(widgetArea);
+    layout->addWidget(grpCouplings);
+    layout->addWidget(grpHarmonicAnalysis);
+    layout->addWidget(grpTransientAnalysis);
+    layout->addStretch(1);
 
     setLayout(layout);
 }
@@ -297,22 +285,8 @@ void ProblemWidget::fillComboBox()
         cmbTransientMethod->addItem(timeStepMethodString(timeStepMethodFromStringKey(timeStepType)), timeStepMethodFromStringKey(timeStepType));
 }
 
-void ProblemWidget::updateControls()
+void ProblemWidget::load()
 {
-    // disconnect signals
-    cmbCoordinateType->disconnect();
-    cmbMeshType->disconnect();
-
-    txtFrequency->disconnect();
-
-    cmbTransientMethod->disconnect();
-    txtTransientOrder->disconnect();
-    txtTransientTimeTotal->disconnect();
-    txtTransientTolerance->disconnect();
-    chkTransientInitialStepSize->disconnect();
-    txtTransientInitialStepSize->disconnect();
-    txtTransientSteps->disconnect();
-
     // main
     cmbCoordinateType->setCurrentIndex(cmbCoordinateType->findData(Agros2D::problem()->config()->coordinateType()));
     if (cmbCoordinateType->currentIndex() == -1)
@@ -347,29 +321,9 @@ void ProblemWidget::updateControls()
     grpCouplings->setVisible(Agros2D::problem()->couplingInfos().count() > 0);
 
     transientChanged();
-
-    // connect signals
-    connect(cmbCoordinateType, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-    connect(cmbMeshType, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-
-    connect(txtFrequency, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-
-    // transient
-    connect(cmbTransientMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(saveConfig()));
-    connect(txtTransientSteps, SIGNAL(valueChanged(int)), this, SLOT(saveConfig()));
-    connect(txtTransientTimeTotal, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-    connect(txtTransientOrder, SIGNAL(valueChanged(int)), this, SLOT(saveConfig()));
-    connect(txtTransientTolerance, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-    connect(chkTransientInitialStepSize, SIGNAL(stateChanged(int)), this, SLOT(saveConfig()));
-    connect(txtTransientInitialStepSize, SIGNAL(textChanged(QString)), this, SLOT(saveConfig()));
-
-    connect(cmbTransientMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(transientChanged()));
-    connect(txtTransientSteps, SIGNAL(valueChanged(int)), this, SLOT(transientChanged()));
-    connect(txtTransientTimeTotal, SIGNAL(textChanged(QString)), this, SLOT(transientChanged()));
-    connect(txtTransientOrder, SIGNAL(valueChanged(int)), this, SLOT(transientChanged()));
 }
 
-void ProblemWidget::saveConfig()
+void ProblemWidget::save()
 {
     // save properties
     Agros2D::problem()->config()->blockSignals(true);
@@ -439,3 +393,41 @@ void ProblemWidget::transientChanged()
     }
 }
 
+
+// **************************************************************************************************************************
+
+ProblemDialog::ProblemDialog(QWidget *parent)  : QDialog(parent)
+{
+    setWindowTitle(tr("Problem properties"));
+
+    problemWidget = new ProblemWidget(this);
+
+    // dialog buttons
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(doAccept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(close()));
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(problemWidget);
+    layout->addStretch();
+    layout->addWidget(buttonBox);
+
+    setLayout(layout);
+
+    setMinimumSize(sizeHint());
+    setMaximumSize(sizeHint());
+
+    move(QApplication::activeWindow()->pos().x() + (QApplication::activeWindow()->width() - width()) / 2.0,
+         QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
+}
+
+
+ProblemDialog::~ProblemDialog()
+{
+}
+
+void ProblemDialog::doAccept()
+{
+    problemWidget->save();
+    accept();
+}

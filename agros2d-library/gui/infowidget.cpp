@@ -299,12 +299,14 @@ InfoWidget::~InfoWidget()
 
 void InfoWidget::refresh()
 {
+    /*
     if (Agros2D::problem()->fieldInfos().isEmpty())
         showWelcome();
     else
         showProblemInfo(Agros2D::problem());
+    */
+    showWelcome();
 }
-
 
 void InfoWidget::showWelcome()
 {
@@ -386,8 +388,8 @@ void InfoWidget::showWelcome()
     // webView->setHtml(QString::fromStdString(info));
 
     // load(...) works
-    writeStringContent(tempProblemDir() + "/info.html", QString::fromStdString(info));
-    webView->load(QUrl::fromLocalFile(tempProblemDir() + "/info.html"));
+    writeStringContent(tempProblemDir() + "/welcome.html", QString::fromStdString(info));
+    webView->load(QUrl::fromLocalFile(tempProblemDir() + "/welcome.html"));
 }
 
 void InfoWidget::linkClicked(const QUrl &url)

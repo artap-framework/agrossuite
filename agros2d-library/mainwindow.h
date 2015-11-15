@@ -31,7 +31,7 @@ class SceneViewMesh;
 class OptiLab;
 class InfoWidget;
 class SettingsWidget;
-class ProblemWidget;
+class MainWidget;
 class ResultsView;
 class VolumeIntegralValueView;
 class SurfaceIntegralValueView;
@@ -206,7 +206,7 @@ private:
 
     QWidget *viewControls;
     QStackedLayout *tabControlsLayout;
-    ProblemWidget *problemWidget;
+    MainWidget *mainWidget;
     PreprocessorWidget *preprocessorWidget;
     PostprocessorWidget *postprocessorWidget;
 

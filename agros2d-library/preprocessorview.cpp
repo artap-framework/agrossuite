@@ -76,8 +76,6 @@ PreprocessorWidget::PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget
 PreprocessorWidget::~PreprocessorWidget()
 {
     QSettings settings;
-    settings.setValue("PreprocessorWidget/SplitterState", splitter->saveState());
-    settings.setValue("PreprocessorWidget/SplitterGeometry", splitter->saveGeometry());
     settings.setValue("PreprocessorWidget/TreeColumnWidth", trvWidget->columnWidth(0));
 }
 
@@ -144,6 +142,18 @@ void PreprocessorWidget::createControls()
     toolBar->addSeparator();
     toolBar->addAction(Agros2D::problem()->scene()->actDeleteSelected);
 
+    trvWidget = new QTreeWidget(this);
+    trvWidget->setExpandsOnDoubleClick(false);
+    trvWidget->setHeaderHidden(false);
+    trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    trvWidget->setMouseTracking(true);
+    trvWidget->setColumnCount(2);
+    trvWidget->setColumnWidth(0, settings.value("PreprocessorWidget/TreeColumnWidth", 200).toInt());
+
+    txtViewInfo = new QTextEdit(this);
+    txtViewInfo->setReadOnly(true);
+    txtViewInfo->setVisible(false);
+
     txtViewNodes = new QTextEdit(this);
     txtViewNodes->setReadOnly(true);
     txtViewNodes->setVisible(false);
@@ -161,14 +171,18 @@ void PreprocessorWidget::createControls()
 
     loadTooltip(SceneGeometryMode_OperateOnNodes);
 
-    trvWidget = new QTreeWidget(this);
-    trvWidget->setExpandsOnDoubleClick(false);
-    trvWidget->setHeaderHidden(false);
-    trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    trvWidget->setMouseTracking(true);
-    trvWidget->setColumnCount(2);
-    trvWidget->setColumnWidth(0, settings.value("PreprocessorWidget/TreeColumnWidth", 200).toInt());
-    // trvWidget->setIndentation(15);
+    QHBoxLayout *layoutView = new QHBoxLayout();
+    layoutView->addWidget(txtViewNodes);
+    layoutView->addWidget(txtViewEdges);
+    layoutView->addWidget(txtViewLabels);
+
+    QWidget *widgetView = new QWidget();
+    widgetView->setLayout(layoutView);
+
+    QTabWidget *tabInfo = new QTabWidget();
+    tabInfo->setTabPosition(QTabWidget::West);
+    tabInfo->addTab(txtViewInfo, tr("Info"));
+    tabInfo->addTab(widgetView, tr("Hints"));
 
     QStringList headers;
     headers << tr("Name") << tr("Value");
@@ -182,37 +196,18 @@ void PreprocessorWidget::createControls()
     connect(btnOK, SIGNAL(clicked()), SLOT(doApply()));
 
     QGridLayout *layoutTreeView = new QGridLayout();
+    layoutTreeView->setContentsMargins(2, 2, 2, 3);
+    layoutTreeView->addWidget(toolBar, 0, 0, 1, 4);
     layoutTreeView->addWidget(trvWidget, 1, 0, 1, 4);
-    layoutTreeView->addWidget(new QLabel(tr("Grid step:")), 2, 0);
-    layoutTreeView->addWidget(txtGridStep, 2, 1);
-    layoutTreeView->addWidget(chkSnapToGrid, 2, 2);
-    layoutTreeView->addWidget(btnOK, 2, 3);
+    layoutTreeView->addWidget(tabInfo, 2, 0, 1, 4);
+    layoutTreeView->addWidget(new QLabel(tr("Grid step:")), 3, 0);
+    layoutTreeView->addWidget(txtGridStep, 3, 1);
+    layoutTreeView->addWidget(chkSnapToGrid, 3, 2);
+    layoutTreeView->addWidget(btnOK, 3, 3);
+    layoutTreeView->setRowStretch(1, 4);
+    layoutTreeView->setRowStretch(2, 1);
 
-    QWidget *widgetTreeView = new QWidget();
-    widgetTreeView->setLayout(layoutTreeView);
-
-    QHBoxLayout *layoutView = new QHBoxLayout();
-    layoutView->addWidget(txtViewNodes);
-    layoutView->addWidget(txtViewEdges);
-    layoutView->addWidget(txtViewLabels);
-
-    QWidget *view = new QWidget();
-    view->setLayout(layoutView);
-
-    splitter = new QSplitter(this);
-    splitter->setOrientation(Qt::Vertical);
-    splitter->addWidget(widgetTreeView);
-    splitter->addWidget(view);
-
-    QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->setContentsMargins(2, 2, 2, 3);
-    layoutMain->addWidget(toolBar);
-    layoutMain->addWidget(splitter);
-
-    setLayout(layoutMain);
-
-    splitter->restoreState(settings.value("PreprocessorWidget/SplitterState").toByteArray());
-    splitter->restoreGeometry(settings.value("PreprocessorWidget/SplitterGeometry").toByteArray());
+    setLayout(layoutTreeView);
 }
 
 void PreprocessorWidget::keyPressEvent(QKeyEvent *event)
@@ -234,6 +229,8 @@ void PreprocessorWidget::refresh()
     // script speed improvement
     if (currentPythonEngine()->isScriptRunning()) return;
 
+    txtViewInfo->clear();
+
     blockSignals(true);
     setUpdatesEnabled(false);
 
@@ -242,20 +239,31 @@ void PreprocessorWidget::refresh()
     QFont fnt = trvWidget->font();
     fnt.setBold(true);
 
-    QTreeWidgetItem *parametersNode = new QTreeWidgetItem(trvWidget);
-    parametersNode->setText(0, tr("Parameters"));
-    // labelsNode->setIcon(0, icon("scenelabel"));
-    parametersNode->setFont(0, fnt);
-    parametersNode->setExpanded(true);
+    // problem
+    QTreeWidgetItem *problemNode = new QTreeWidgetItem(trvWidget);
+    problemNode->setText(0, tr("Problem"));
+    problemNode->setText(1, QFileInfo(Agros2D::problem()->config()->fileName()).baseName());
+    problemNode->setFont(0, fnt);
+    problemNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
+    problemNode->setExpanded(true);
+    problemNode->setToolTip(0, loadProblemInfo());
 
     ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
-    foreach (QString key, parameters.keys())
+    if (parameters.count() > 0)
     {
-        QTreeWidgetItem *item = new QTreeWidgetItem(parametersNode);
-        item->setText(0, key);
-        item->setText(1, QString::number(parameters[key]));
-        item->setData(0, Qt::UserRole, key);
-        item->setData(1, Qt::UserRole, PreprocessorWidget::GeometryParameter);
+        QTreeWidgetItem *parametersNode = new QTreeWidgetItem(trvWidget);
+        parametersNode->setText(0, tr("Parameters"));
+        parametersNode->setFont(0, fnt);
+        parametersNode->setExpanded(true);
+
+        foreach (QString key, parameters.keys())
+        {
+            QTreeWidgetItem *item = new QTreeWidgetItem(parametersNode);
+            item->setText(0, key);
+            item->setText(1, QString::number(parameters[key]));
+            item->setData(0, Qt::UserRole, key);
+            item->setData(1, Qt::UserRole, PreprocessorWidget::GeometryParameter);
+        }
     }
 
     // field and markers
@@ -269,17 +277,7 @@ void PreprocessorWidget::refresh()
         fieldNode->setData(0, Qt::UserRole, fieldInfo->fieldId());
         fieldNode->setData(1, Qt::UserRole, PreprocessorWidget::FieldProperties);
         fieldNode->setExpanded(true);
-
-        // field dialog
-        /*
-        QTreeWidgetItem *fieldPropertiesNode = new QTreeWidgetItem(fieldNode);
-        fieldPropertiesNode->setText(0, analysisTypeString(fieldInfo->analysisType()));
-        fieldPropertiesNode->setText(1, QString("ref. / order: %1/%2")
-                                     .arg(fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt())
-                                     .arg(fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()));
-        fieldPropertiesNode->setData(0, Qt::UserRole, fieldInfo->fieldId());
-        fieldPropertiesNode->setData(1, Qt::UserRole, PreprocessorWidget::FieldProperties);
-        */
+        fieldNode->setToolTip(0, loadFieldInfo(fieldInfo));
 
         // materials
         QTreeWidgetItem *materialsNode = new QTreeWidgetItem(fieldNode);
@@ -405,50 +403,53 @@ void PreprocessorWidget::refresh()
         ilabel++;
     }
 
-    // parameters
-    QTreeWidgetItem *optilabNode = new QTreeWidgetItem(trvWidget);
-    optilabNode->setText(0, tr("OptiLab"));
-    optilabNode->setFont(0, fnt);
-    optilabNode->setExpanded(true);
-
-    foreach (Study *study, Agros2D::problem()->studies()->items())
+    // optilab
+    if (Agros2D::problem()->studies()->items().count() > 0)
     {
-        // study
-        QTreeWidgetItem *studyNode = new QTreeWidgetItem(optilabNode);
-        studyNode->setText(0, studyTypeString(study->type()));
-        studyNode->setFont(0, fnt);
-        studyNode->setData(0, Qt::UserRole, study->variant());
-        studyNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
-        studyNode->setExpanded(true);
+        QTreeWidgetItem *optilabNode = new QTreeWidgetItem(trvWidget);
+        optilabNode->setText(0, tr("OptiLab"));
+        optilabNode->setFont(0, fnt);
+        optilabNode->setExpanded(true);
 
-        // parameters
-        QTreeWidgetItem *parametersNode = new QTreeWidgetItem(studyNode);
-        parametersNode->setText(0, tr("Parameters"));
-        parametersNode->setFont(0, fnt);
-        parametersNode->setExpanded(true);
-
-        foreach (Parameter parameter, study->parameters())
+        foreach (Study *study, Agros2D::problem()->studies()->items())
         {
-            QTreeWidgetItem *item = new QTreeWidgetItem(parametersNode);
+            // study
+            QTreeWidgetItem *studyNode = new QTreeWidgetItem(optilabNode);
+            studyNode->setText(0, studyTypeString(study->type()));
+            studyNode->setFont(0, fnt);
+            studyNode->setData(0, Qt::UserRole, study->variant());
+            studyNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
+            studyNode->setExpanded(true);
 
-            item->setText(0, QString("%1").arg(parameter.name()));
-            item->setData(0, Qt::UserRole, parameter.name());
-            item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabParameter);
-        }
+            // parameters
+            QTreeWidgetItem *parametersNode = new QTreeWidgetItem(studyNode);
+            parametersNode->setText(0, tr("Parameters"));
+            parametersNode->setFont(0, fnt);
+            parametersNode->setExpanded(true);
 
-        // functionals
-        QTreeWidgetItem *functionalsNode = new QTreeWidgetItem(studyNode);
-        functionalsNode->setText(0, tr("Functionals"));
-        functionalsNode->setFont(0, fnt);
-        functionalsNode->setExpanded(true);
+            foreach (Parameter parameter, study->parameters())
+            {
+                QTreeWidgetItem *item = new QTreeWidgetItem(parametersNode);
 
-        foreach (Functional functional, study->functionals())
-        {
-            QTreeWidgetItem *item = new QTreeWidgetItem(functionalsNode);
+                item->setText(0, QString("%1").arg(parameter.name()));
+                item->setData(0, Qt::UserRole, parameter.name());
+                item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabParameter);
+            }
 
-            item->setText(0, QString("%1").arg(functional.name()));
-            item->setData(0, Qt::UserRole, functional.name());
-            item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);
+            // functionals
+            QTreeWidgetItem *functionalsNode = new QTreeWidgetItem(studyNode);
+            functionalsNode->setText(0, tr("Functionals"));
+            functionalsNode->setFont(0, fnt);
+            functionalsNode->setExpanded(true);
+
+            foreach (Functional functional, study->functionals())
+            {
+                QTreeWidgetItem *item = new QTreeWidgetItem(functionalsNode);
+
+                item->setText(0, QString("%1").arg(functional.name()));
+                item->setData(0, Qt::UserRole, functional.name());
+                item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);
+            }
         }
     }
 
@@ -461,6 +462,53 @@ void PreprocessorWidget::loadTooltip(SceneGeometryMode sceneMode)
     txtViewNodes->setVisible(sceneMode == SceneGeometryMode_OperateOnNodes);
     txtViewEdges->setVisible(sceneMode == SceneGeometryMode_OperateOnEdges);
     txtViewLabels->setVisible(sceneMode == SceneGeometryMode_OperateOnLabels);
+}
+
+QString PreprocessorWidget::loadProblemInfo()
+{
+    // TODO: rework
+    QString html = "<body style=\"font-size: 11px;\">";
+    html += QString("<h4>%1</h4>").arg(tr("Problem properties"));
+    html += "<table width=\"100%\">";
+    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Coordinate type:")).arg(coordinateTypeString(Agros2D::problem()->config()->coordinateType()));
+    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Mesh type:")).arg(meshTypeString(Agros2D::problem()->config()->meshType()));
+    if (Agros2D::problem()->isHarmonic())
+    {
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Frequency:")).arg(Agros2D::problem()->config()->value(ProblemConfig::Frequency).value<Value>().toString() + " Hz");
+    }
+    if (Agros2D::problem()->isTransient())
+    {
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Method:")).arg(timeStepMethodString((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()));
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Order:")).arg(QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt()));
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Tolerance (%):")).arg(Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble());
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Initial step size:")).arg(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Constant time step:")).arg(QString::number(Agros2D::problem()->config()->constantTimeStepLength()) + " s");
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Number of const. time steps:")).arg(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt());
+        html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Total time:")).arg(QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()) + " s");
+    }
+
+    html += "</table>";
+    html += "</body>";
+
+    return html;
+}
+
+QString PreprocessorWidget::loadFieldInfo(FieldInfo *fieldInfo)
+{
+    // TODO: rework
+    QString html = "<body style=\"font-size: 11px;\">";
+    html += QString("<h4>%1</h4>").arg(fieldInfo->name());
+    html += "<table width=\"100%\">";
+    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Analysis:")).arg(analysisTypeString(fieldInfo->analysisType()));
+    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Solver:")).arg(linearityTypeString(fieldInfo->linearityType()));
+    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Number of refinements:")).arg(fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt());
+    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Polynomial order:")).arg(fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt());
+    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Adaptivity:")).arg(adaptivityTypeString(fieldInfo->adaptivityType()));
+    html += QString("<tr><td><b>%1</b></td><td>%2</td></tr>").arg(tr("Matrix solver:")).arg(matrixSolverTypeString(fieldInfo->matrixSolver()));
+    html += "</table>";
+    html += "</body>";
+
+    return html;
 }
 
 void PreprocessorWidget::doContextMenu(const QPoint &pos)
@@ -541,6 +589,15 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             // field properties
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
+
+            FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
+            txtViewInfo->setText(loadFieldInfo(fieldInfo));
+        }
+        else if (type == PreprocessorWidget::ProblemProperties)
+        {
+            // problem properties
+            actProperties->setEnabled(true);
+            txtViewInfo->setText(loadProblemInfo());
         }
 
         m_sceneViewPreprocessor->refresh();
@@ -603,11 +660,21 @@ void PreprocessorWidget::doProperties()
         }
         else if (type == PreprocessorWidget::FieldProperties)
         {
-            // parameter
+            // field properties
             FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
 
             FieldDialog fieldDialog(fieldInfo, this);
             if (fieldDialog.exec() == QDialog::Accepted)
+            {
+                refresh();
+                // emit changed();
+            }
+        }
+        else if (type == PreprocessorWidget::ProblemProperties)
+        {
+            // problem properties
+            ProblemDialog problemDialog(this);
+            if (problemDialog.exec() == QDialog::Accepted)
             {
                 refresh();
                 // emit changed();

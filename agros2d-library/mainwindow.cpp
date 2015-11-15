@@ -94,7 +94,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     connect(postprocessorWidget, SIGNAL(modeChanged()), this, SLOT(setControls()));
 
     // problem
-    problemWidget = new ProblemWidget(this);
+    mainWidget = new MainWidget(this);
 
     createViews();
 
@@ -127,7 +127,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     connect(actSceneModeGroup, SIGNAL(triggered(QAction *)), sceneViewPreprocessor, SLOT(refresh()));
 
     // preprocessor
-    connect(problemWidget, SIGNAL(changed()), sceneViewPreprocessor, SLOT(refresh()));
     connect(sceneViewPreprocessor, SIGNAL(sceneGeometryModeChanged(SceneGeometryMode)), preprocessorWidget, SLOT(loadTooltip(SceneGeometryMode)));
     connect(currentPythonEngine(), SIGNAL(executedScript()), Agros2D::problem()->scene(), SLOT(doInvalidated()));
     connect(currentPythonEngine(), SIGNAL(executedScript()), Agros2D::problem()->scene()->loopsInfo(), SLOT(processPolygonTriangles()));
@@ -139,9 +138,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     connect(postprocessorWidget->sceneViewPost2D(), SIGNAL(postprocessorModeGroupChanged(SceneModePostprocessor)), resultsView, SLOT(doPostprocessorModeGroupChanged(SceneModePostprocessor)));
 
     // info
-    connect(problemWidget, SIGNAL(changed()), sceneInfoWidget, SLOT(refresh()));
-    connect(postprocessorWidget, SIGNAL(apply()), sceneInfoWidget, SLOT(refresh()));
-
     connect(Agros2D::problem(), SIGNAL(fieldsChanged()), this, SLOT(doFieldsChanged()));
 
     // reconnect computation slots
@@ -154,7 +150,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     Agros2D::problem()->scene()->clear();
 
-    problemWidget->actProperties->trigger();
+    mainWidget->actProperties->trigger();
     sceneViewPreprocessor->doZoomBestFit();
 
     // set recent files
@@ -324,7 +320,7 @@ void MainWindow::createActions()
     actSceneZoomRegion->setCheckable(true);
 
     actSceneModeGroup = new QActionGroup(this);
-    actSceneModeGroup->addAction(problemWidget->actProperties);
+    actSceneModeGroup->addAction(mainWidget->actProperties);
     actSceneModeGroup->addAction(sceneViewPreprocessor->actSceneModePreprocessor);
     actSceneModeGroup->addAction(postprocessorWidget->actSceneModePost);
     actSceneModeGroup->addAction(scriptEditor->actSceneModePythonEditor);
@@ -470,9 +466,9 @@ void MainWindow::createMenus()
 void MainWindow::createToolBars()
 {
     // main toolbar
-    problemWidget->toolBar->addAction(actDocumentNew);
-    problemWidget->toolBar->addAction(actDocumentOpen);
-    problemWidget->toolBar->addAction(actDocumentSave);
+    mainWidget->toolBar->addAction(actDocumentNew);
+    mainWidget->toolBar->addAction(actDocumentOpen);
+    mainWidget->toolBar->addAction(actDocumentSave);
 
     // zoom toolbar
     QMenu *menu = new QMenu();
@@ -519,7 +515,7 @@ void MainWindow::createMain()
 
     tabControlsLayout = new QStackedLayout();
     tabControlsLayout->setContentsMargins(0, 0, 0, 0);
-    tabControlsLayout->addWidget(problemWidget);
+    tabControlsLayout->addWidget(mainWidget);
     tabControlsLayout->addWidget(preprocessorWidget);
     tabControlsLayout->addWidget(postprocessorWidget);
     tabControlsLayout->addWidget(optiLab->optiLabWidget());
@@ -553,7 +549,7 @@ void MainWindow::createMain()
     tlbLeftBar->setIconSize(QSize(32, 32));
     tlbLeftBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-    tlbLeftBar->addAction(problemWidget->actProperties);
+    tlbLeftBar->addAction(mainWidget->actProperties);
     tlbLeftBar->addSeparator();
     tlbLeftBar->addAction(sceneViewPreprocessor->actSceneModePreprocessor);
     tlbLeftBar->addAction(postprocessorWidget->actSceneModePost);
@@ -726,7 +722,7 @@ void MainWindow::doDocumentNew()
 
             Agros2D::problem()->addField(fieldInfo);
 
-            problemWidget->actProperties->trigger();
+            sceneViewPreprocessor->actSceneModePreprocessor->trigger();
             sceneViewPreprocessor->doZoomBestFit();
         }
         catch (AgrosPluginException& e)
@@ -767,7 +763,7 @@ void MainWindow::doDocumentOpen(const QString &fileName)
             // load solution
             // m_computation->readSolutionFromFile(fileNameDocument);
 
-            problemWidget->actProperties->trigger();
+            sceneViewPreprocessor->actSceneModePreprocessor->trigger();
             sceneViewPreprocessor->doZoomBestFit();
 
             return;
@@ -843,7 +839,7 @@ void MainWindow::doDeleteSolution()
     // clear all computations
     Agros2D::clearComputations();
 
-    problemWidget->actProperties->trigger();
+    mainWidget->actProperties->trigger();
     sceneViewPreprocessor->doZoomBestFit();
 }
 
@@ -879,7 +875,7 @@ void MainWindow::doDocumentClose()
     // clear preprocessor
     Agros2D::problem()->clearFieldsAndConfig();
 
-    problemWidget->actProperties->trigger();
+    mainWidget->actProperties->trigger();
 }
 
 void MainWindow::doDocumentImportDXF()
@@ -1124,7 +1120,7 @@ void MainWindow::doPaste()
 
 void MainWindow::clear()
 {
-    problemWidget->actProperties->trigger();
+    mainWidget->actProperties->trigger();
 
     setControls();
 }
@@ -1186,10 +1182,10 @@ void MainWindow::setControls()
     actSceneZoomOut->disconnect();
     actSceneZoomBestFit->disconnect();
 
-    if (problemWidget->actProperties->isChecked())
+    if (mainWidget->actProperties->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewInfoWidget);
-        tabControlsLayout->setCurrentWidget(problemWidget);
+        tabControlsLayout->setCurrentWidget(mainWidget);
     }
     else if (sceneViewPreprocessor->actSceneModePreprocessor->isChecked())
     {

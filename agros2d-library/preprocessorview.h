@@ -26,6 +26,7 @@
 #include <QWebView>
 
 class SceneViewPreprocessor;
+class FieldInfo;
 
 class PreprocessorWidget : public QWidget
 {
@@ -74,8 +75,8 @@ private:
     QTextEdit *txtViewNodes;
     QTextEdit *txtViewEdges;
     QTextEdit *txtViewLabels;
+    QTextEdit *txtViewInfo;
     QTreeWidget *trvWidget;
-    QSplitter *splitter;
 
     QAction *actProperties;
     QAction *actDelete;
@@ -90,6 +91,9 @@ private:
     void createActions();
     void createControls();
     void createMenu();
+
+    QString loadProblemInfo();
+    QString loadFieldInfo(FieldInfo *fieldInfo);
 
 private slots:
     void doContextMenu(const QPoint &pos);

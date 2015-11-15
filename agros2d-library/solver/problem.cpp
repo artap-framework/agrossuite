@@ -1592,6 +1592,8 @@ void Problem::clearFieldsAndConfig()
 
 void Problem::readProblemFromArchive(const QString &fileName)
 {
+    clearFieldsAndConfig();
+
     QSettings settings;
     QFileInfo fileInfo(fileName);
     if (fileInfo.absoluteDir() != tempProblemDir() && !fileName.contains("resources/examples"))

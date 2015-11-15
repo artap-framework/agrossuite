@@ -64,7 +64,7 @@ ProblemBase *SceneViewPreprocessor::problem()
 
 void SceneViewPreprocessor::createActionsGeometry()
 {
-    actSceneModePreprocessor = new QAction(iconView(), tr("Preprocessor"), this);
+    actSceneModePreprocessor = new QAction(iconView(), tr("Problem"), this);
     actSceneModePreprocessor->setShortcut(tr("Ctrl+2"));
     actSceneModePreprocessor->setCheckable(true);
 

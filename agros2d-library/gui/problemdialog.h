@@ -32,6 +32,19 @@ class ValueLineEdit;
 class ProblemWidget;
 class FieldsToobar;
 
+class MainWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    MainWidget(QWidget *parent = 0);
+
+    QAction *actProperties;
+    QToolBar *toolBar;
+
+private:
+    void createActions();
+};
+
 class CouplingsWidget : public QWidget
 {
     Q_OBJECT
@@ -55,20 +68,18 @@ private:
     QList<QLabel *> m_labels;
 };
 
-class ProblemWidget: public QWidget
+class ProblemWidget : public QWidget
 {
     Q_OBJECT
 public:
     ProblemWidget(QWidget *parent = 0);
 
-    QAction *actProperties;
-    QToolBar *toolBar;
-
 signals:
     void changed();
 
 public slots:
-    void updateControls();
+    void load();
+    void save();
 
 private:
     QDialogButtonBox *buttonBox;
@@ -99,14 +110,27 @@ private:
     // couplings
     QGroupBox *grpCouplings;
 
-    void createActions();
     void createControls();
 
     void fillComboBox();
 
 private slots:
     void transientChanged();
-    void saveConfig();
 };
+
+class ProblemDialog : public QDialog
+{
+    Q_OBJECT
+public:
+    ProblemDialog(QWidget *parent = 0);
+    ~ProblemDialog();
+
+private:
+    ProblemWidget *problemWidget;
+
+private slots:
+    void doAccept();
+};
+
 
 #endif // PROBLEMDIALOG_H
