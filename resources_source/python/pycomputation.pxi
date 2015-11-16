@@ -3,6 +3,7 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         PyComputation(bool newComputation, string name)
 
         void clear() except +
+        void refresh()
 
         void mesh() except +
         void solve() except +
@@ -10,6 +11,19 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         double timeElapsed() except +
         void timeStepsLength(vector[double] &steps) except +
         void timeStepsTimes(vector[double] &times) except +
+
+        void getParameters(vector[string] &keys)
+        double getParameter(string &key) except +
+        string getCoordinateType()
+        string getMeshType()
+        double getFrequency()
+        string getTimeStepMethod()
+        int getTimeMethodOrder()
+        double getTimeMethodTolerance()
+        double getTimeTotal()
+        int getNumConstantTimeSteps()
+        double getTimeInitialTimeStep()
+        string getCouplingType(string &sourceField, string &targetField) except +
 
     cdef cppclass PySolution:
         PySolution()
@@ -37,15 +51,14 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         string filenameRHS(int timeStep, int adaptivityStep) except +
         string filenameSLN(int timeStep, int adaptivityStep) except +
 
-cdef class __Computation__(__ProblemBase__):
+cdef class __Computation__:
     cdef PyComputation *_computation
     cdef object _solutions
 
     def __cinit__(self, new_computation = True, name = ""):
-        __ProblemBase__.__init__(self)
         self._computation = new PyComputation(new_computation, name.encode())
         self._solutions = dict()
-        
+
     def __dealloc__(self):
         del self._computation
 
@@ -102,6 +115,65 @@ cdef class __Computation__(__ProblemBase__):
         for i in range(times_vector.size()):
             times.append(times_vector[i])
         return times
+
+    def _unauthorized(self):
+        raise Exception("Value can not be changed.")
+
+    # coordinate type
+    coordinate_type = property(_get_coordinate_type, _unauthorized)
+    def _get_coordinate_type(self):
+        return self._computation.getCoordinateType().decode()
+
+    # mesh type
+    mesh_type = property(_get_mesh_type, _unauthorized)
+    def _get_mesh_type(self):
+            return self._computation.getMeshType().decode()
+
+    # frequency
+    frequency = property(_get_frequency, _unauthorized)
+    def _get_frequency(self):
+            return self._computation.getFrequency()
+
+    # time step method
+    time_step_method = property(_get_time_step_method, _unauthorized)
+    def _get_time_step_method(self):
+            return self._computation.getTimeStepMethod().decode()
+
+    # time method order
+    time_method_order = property(_get_time_method_order, _unauthorized)
+    def _get_time_method_order(self):
+            return self._computation.getTimeMethodOrder()
+
+    # time method tolerance
+    time_method_tolerance = property(_get_time_method_tolerance, _unauthorized)            
+    def _get_time_method_tolerance(self):
+            return self._computation.getTimeMethodTolerance()
+
+    # time total
+    time_total = property(_get_time_total, _unauthorized)
+    def _get_time_total(self):
+            return self._computation.getTimeTotal()
+
+    # time steps
+    time_steps = property(_get_time_steps, _unauthorized)
+    def _get_time_steps(self):
+            return self._computation.getNumConstantTimeSteps()
+
+    # initial time step
+    initial_time_step = property(_get_initial_time_step, _unauthorized)
+    def _get_initial_time_step(self):
+            return self._computation.getTimeInitialTimeStep()
+
+    def get_coupling_type(self, source_field, target_field):
+        """Return type of coupling.
+
+        get_coupling_type(source_field, target_field)
+
+        Keyword arguments:
+        source_field -- source field id
+        target_field -- target field id
+        """
+        return self._computation.getCouplingType(source_field.encode(), target_field.encode()).decode()
 
 cdef class __Solution__:
     cdef PySolution *_solution

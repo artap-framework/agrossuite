@@ -26,12 +26,12 @@
 
 void PyProblemBase::refresh()
 {
-    m_problem->scene()->invalidate();
+    m_problemBase->scene()->invalidate();
 }
 
 void PyProblemBase::getParameters(std::vector<std::string> &keys) const
 {
-    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    ParametersType parameters = m_problemBase->config()->value(ProblemConfig::Parameters).value<ParametersType>();
 
     foreach (QString key, parameters.keys())
         keys.push_back(key.toStdString());
@@ -39,7 +39,7 @@ void PyProblemBase::getParameters(std::vector<std::string> &keys) const
 
 double PyProblemBase::getParameter(std::string key) const
 {
-    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    ParametersType parameters = m_problemBase->config()->value(ProblemConfig::Parameters).value<ParametersType>();
 
     if (parameters.contains(QString::fromStdString(key)))
         return parameters[QString::fromStdString(key)];
@@ -62,9 +62,9 @@ std::string PyProblemBase::getCouplingType(const std::string &sourceField, const
 
     checkExistingFields(source, target);
 
-    if (m_problem->hasCoupling(source, target))
+    if (m_problemBase->hasCoupling(source, target))
     {
-        CouplingInfo *couplingInfo = m_problem->couplingInfo(source, target);
+        CouplingInfo *couplingInfo = m_problemBase->couplingInfo(source, target);
         return couplingTypeToStringKey(couplingInfo->couplingType()).toStdString();
     }
     else
@@ -73,19 +73,20 @@ std::string PyProblemBase::getCouplingType(const std::string &sourceField, const
 
 void PyProblemBase::checkExistingFields(const QString &sourceField, const QString &targetField) const
 {
-    if (m_problem->fieldInfos().isEmpty())
+    if (m_problemBase->fieldInfos().isEmpty())
         throw logic_error(QObject::tr("No fields are defined.").toStdString());
 
-    if (!m_problem->fieldInfos().contains(sourceField))
+    if (!m_problemBase->fieldInfos().contains(sourceField))
         throw logic_error(QObject::tr("Source field '%1' is not defined.").arg(sourceField).toStdString());
 
-    if (!m_problem->fieldInfos().contains(targetField))
+    if (!m_problemBase->fieldInfos().contains(targetField))
         throw logic_error(QObject::tr("Target field '%1' is not defined.").arg(targetField).toStdString());
 }
 
 PyProblem::PyProblem(bool clearProblem) : PyProblemBase()
 {
-    m_problem = QSharedPointer<ProblemBase>(Agros2D::problem());
+    m_problem = QSharedPointer<Problem>(Agros2D::problem());
+    m_problemBase = m_problem;
 
     if (clearProblem)
         clear();
@@ -202,29 +203,33 @@ PyComputation::PyComputation(bool newComputation, std::string name) : PyProblemB
         QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
         QString key = QString::fromStdString(name);
         if (computations.contains(key))
-            m_problem = computations[key];
+        {
+            m_computation = computations[key];
+            m_problemBase = m_computation;
+        }
         else
             throw logic_error(QObject::tr("Computation '%1' does not exists.").arg(key).toStdString());
     }
     else
     {
-        Agros2D::problem()->createComputation(newComputation);
-        m_problem = Agros2D::problem()->m_currentComputation;
+        Agros2D::problem()->createComputation(true);
+        m_computation = Agros2D::problem()->m_currentComputation;
+        m_problemBase = m_computation;
     }
 }
 
 QSharedPointer<Computation> PyComputation::getComputation()
 {
-    return m_problem;
+    return m_computation;
 }
 
 void PyComputation::clear()
 {
-    if (!m_problem->isSolved())
+    if (!m_computation->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    m_problem->clearSolution();
-    m_problem->scene()->invalidate();
+    m_computation->clearSolution();
+    m_computation->scene()->invalidate();
 
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actSceneModePreprocessor->trigger();
@@ -233,56 +238,56 @@ void PyComputation::clear()
 
 void PyComputation::mesh()
 {
-    m_problem->scene()->invalidate();
-    m_problem->scene()->loopsInfo()->processPolygonTriangles(true);
-    m_problem->mesh(true);
+    m_computation->scene()->invalidate();
+    m_computation->scene()->loopsInfo()->processPolygonTriangles(true);
+    m_computation->mesh(true);
 
-    if (!m_problem->isMeshed())
+    if (!m_computation->isMeshed())
         throw logic_error(QObject::tr("Problem is not meshed.").toStdString());
 }
 
 void PyComputation::solve()
 {
-    m_problem->scene()->invalidate();
-    m_problem->scene()->loopsInfo()->processPolygonTriangles(true);
-    m_problem->solve();
+    m_computation->scene()->invalidate();
+    m_computation->scene()->loopsInfo()->processPolygonTriangles(true);
+    m_computation->solve();
 
-    if (!m_problem->isSolved())
+    if (!m_computation->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 }
 
 double PyComputation::timeElapsed() const
 {
-    if (!m_problem->isSolved())
+    if (!m_computation->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    double time = m_problem->timeElapsed().hour()*3600 + m_problem->timeElapsed().minute()*60 +
-            m_problem->timeElapsed().second() + m_problem->timeElapsed().msec() * 1e-3;
+    double time = m_computation->timeElapsed().hour()*3600 + m_computation->timeElapsed().minute()*60 +
+            m_computation->timeElapsed().second() + m_computation->timeElapsed().msec() * 1e-3;
     return time;
 }
 
 void PyComputation::timeStepsLength(vector<double> &steps) const
 {
-    if (!m_problem->isTransient())
+    if (!m_computation->isTransient())
         throw logic_error(QObject::tr("Problem is not transient.").toStdString());
 
-    if (!m_problem->isSolved())
+    if (!m_computation->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    QList<double> timeStepLengths = m_problem->timeStepLengths();
+    QList<double> timeStepLengths = m_computation->timeStepLengths();
     for (int i = 0; i < timeStepLengths.size(); i++)
         steps.push_back(timeStepLengths.at(i));
 }
 
 void PyComputation::timeStepsTimes(vector<double> &times) const
 {
-    if (!m_problem->isTransient())
+    if (!m_computation->isTransient())
         throw logic_error(QObject::tr("Problem is not transient.").toStdString());
 
-    if (!m_problem->isSolved())
+    if (!m_computation->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    QList<double> timeStepTimes = m_problem->timeStepTimes();
+    QList<double> timeStepTimes = m_computation->timeStepTimes();
     for (int i = 0; i < timeStepTimes.size(); i++)
         times.push_back(timeStepTimes.at(i));
 }
