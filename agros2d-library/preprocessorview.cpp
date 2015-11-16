@@ -77,6 +77,8 @@ PreprocessorWidget::~PreprocessorWidget()
 {
     QSettings settings;
     settings.setValue("PreprocessorWidget/TreeColumnWidth", trvWidget->columnWidth(0));
+    settings.setValue("PreprocessorWidget/SplitterState", splitter->saveState());
+    settings.setValue("PreprocessorWidget/SplitterGeometry", splitter->saveGeometry());
 }
 
 void PreprocessorWidget::createActions()
@@ -147,12 +149,16 @@ void PreprocessorWidget::createControls()
     trvWidget->setHeaderHidden(false);
     trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     trvWidget->setMouseTracking(true);
-    trvWidget->setColumnCount(2);
+    trvWidget->setUniformRowHeights(true);
+    // trvWidget->setColumnCount(3);
     trvWidget->setColumnWidth(0, settings.value("PreprocessorWidget/TreeColumnWidth", 200).toInt());
+    // trvWidget->setColumnWidth(1, 150);
+    // trvWidget->setColumnWidth(2, 20);
+    trvWidget->setIndentation(trvWidget->indentation() - 2);
 
-    txtViewInfo = new QTextEdit(this);
-    txtViewInfo->setReadOnly(true);
-    txtViewInfo->setVisible(false);
+    QStringList headers;
+    headers << tr("Name") << tr("Value");
+    trvWidget->setHeaderLabels(headers);
 
     txtViewNodes = new QTextEdit(this);
     txtViewNodes->setReadOnly(true);
@@ -176,17 +182,8 @@ void PreprocessorWidget::createControls()
     layoutView->addWidget(txtViewEdges);
     layoutView->addWidget(txtViewLabels);
 
-    QWidget *widgetView = new QWidget();
-    widgetView->setLayout(layoutView);
-
-    QTabWidget *tabInfo = new QTabWidget();
-    tabInfo->setTabPosition(QTabWidget::West);
-    tabInfo->addTab(txtViewInfo, tr("Info"));
-    tabInfo->addTab(widgetView, tr("Hints"));
-
-    QStringList headers;
-    headers << tr("Name") << tr("Value");
-    trvWidget->setHeaderLabels(headers);
+    QWidget *view = new QWidget();
+    view->setLayout(layoutView);
 
     txtGridStep = new QLineEdit("0.1");
     txtGridStep->setValidator(new QDoubleValidator(txtGridStep));
@@ -199,15 +196,27 @@ void PreprocessorWidget::createControls()
     layoutTreeView->setContentsMargins(2, 2, 2, 3);
     layoutTreeView->addWidget(toolBar, 0, 0, 1, 4);
     layoutTreeView->addWidget(trvWidget, 1, 0, 1, 4);
-    layoutTreeView->addWidget(tabInfo, 2, 0, 1, 4);
     layoutTreeView->addWidget(new QLabel(tr("Grid step:")), 3, 0);
     layoutTreeView->addWidget(txtGridStep, 3, 1);
     layoutTreeView->addWidget(chkSnapToGrid, 3, 2);
     layoutTreeView->addWidget(btnOK, 3, 3);
-    layoutTreeView->setRowStretch(1, 4);
-    layoutTreeView->setRowStretch(2, 1);
 
-    setLayout(layoutTreeView);
+    QWidget *widgetTreeView = new QWidget();
+    widgetTreeView->setLayout(layoutTreeView);
+
+    splitter = new QSplitter(this);
+    splitter->setOrientation(Qt::Vertical);
+    splitter->addWidget(widgetTreeView);
+    splitter->addWidget(view);
+    splitter->restoreState(settings.value("PreprocessorWidget/SplitterState").toByteArray());
+    splitter->restoreGeometry(settings.value("PreprocessorWidget/SplitterGeometry").toByteArray());
+
+    QVBoxLayout *layoutMain = new QVBoxLayout();
+    layoutMain->setContentsMargins(2, 2, 2, 3);
+    layoutMain->addWidget(toolBar);
+    layoutMain->addWidget(splitter);
+
+    setLayout(layoutMain);
 }
 
 void PreprocessorWidget::keyPressEvent(QKeyEvent *event)
@@ -229,8 +238,6 @@ void PreprocessorWidget::refresh()
     // script speed improvement
     if (currentPythonEngine()->isScriptRunning()) return;
 
-    txtViewInfo->clear();
-
     blockSignals(true);
     setUpdatesEnabled(false);
 
@@ -241,17 +248,25 @@ void PreprocessorWidget::refresh()
 
     // problem
     QTreeWidgetItem *problemNode = new QTreeWidgetItem(trvWidget);
-    problemNode->setText(0, tr("Problem"));
-    problemNode->setText(1, QFileInfo(Agros2D::problem()->config()->fileName()).baseName());
+    problemNode->setText(0, tr("Problem"));    
     problemNode->setFont(0, fnt);
+    problemNode->setToolTip(0, problemPropertiesToString());
     problemNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
+    problemNode->setIcon(1, icon("document-properties"));
     problemNode->setExpanded(true);
-    problemNode->setToolTip(0, loadProblemInfo());
+    problemNode->setTextAlignment(1, Qt::AlignRight);
+
+    // problem properties
+    QTreeWidgetItem *problemPropertiesNode = new QTreeWidgetItem(problemNode);
+    problemPropertiesNode->setText(0, tr("Properties"));
+    problemPropertiesNode->setForeground(0, QBrush(Qt::darkGray));
+    problemPropertiesNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
+    problemProperties(problemPropertiesNode);
 
     ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
     if (parameters.count() > 0)
     {
-        QTreeWidgetItem *parametersNode = new QTreeWidgetItem(trvWidget);
+        QTreeWidgetItem *parametersNode = new QTreeWidgetItem(problemNode);
         parametersNode->setText(0, tr("Parameters"));
         parametersNode->setFont(0, fnt);
         parametersNode->setExpanded(true);
@@ -266,24 +281,33 @@ void PreprocessorWidget::refresh()
         }
     }
 
+    // fields
+    QTreeWidgetItem *fieldsNode = new QTreeWidgetItem(trvWidget);
+    fieldsNode->setText(0, tr("Fields"));
+    fieldsNode->setFont(0, fnt);
+    fieldsNode->setExpanded(true);
+
     // field and markers
     foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
     {
         // field
-        QTreeWidgetItem *fieldNode = new QTreeWidgetItem(trvWidget);
+        QTreeWidgetItem *fieldNode = new QTreeWidgetItem(fieldsNode);
         fieldNode->setText(0, fieldInfo->name());
-        fieldNode->setIcon(1, icon("fields/" + fieldInfo->fieldId()));
         fieldNode->setFont(0, fnt);
         fieldNode->setData(0, Qt::UserRole, fieldInfo->fieldId());
+        fieldNode->setToolTip(0, fieldPropertiesToString(fieldInfo));
+        fieldNode->setIcon(1, icon("fields/" + fieldInfo->fieldId()));
         fieldNode->setData(1, Qt::UserRole, PreprocessorWidget::FieldProperties);
         fieldNode->setExpanded(true);
-        fieldNode->setToolTip(0, loadFieldInfo(fieldInfo));
+
+        // field properties
+        QTreeWidgetItem *fieldPropertiesNode = propertiesItem(fieldNode, tr("Properties"), "", PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+        fieldProperties(fieldInfo, fieldPropertiesNode);
 
         // materials
         QTreeWidgetItem *materialsNode = new QTreeWidgetItem(fieldNode);
         materialsNode->setIcon(0, icon("scenelabelmarker"));
         materialsNode->setText(0, tr("Materials"));
-        // materialsNode->setForeground(0, QBrush(Qt::darkBlue));
         materialsNode->setFont(0, fnt);
         materialsNode->setExpanded(true);
 
@@ -303,7 +327,6 @@ void PreprocessorWidget::refresh()
         QTreeWidgetItem *boundaryConditionsNode = new QTreeWidgetItem(fieldNode);
         boundaryConditionsNode->setIcon(0, icon("sceneedgemarker"));
         boundaryConditionsNode->setText(0, tr("Boundary conditions"));
-        // boundaryConditionsNode->setForeground(0, QBrush(Qt::darkBlue));
         boundaryConditionsNode->setFont(0, fnt);
         boundaryConditionsNode->setExpanded(true);
 
@@ -325,7 +348,6 @@ void PreprocessorWidget::refresh()
 
     // geometry
     QTreeWidgetItem *geometryNode = new QTreeWidgetItem(trvWidget);
-    // geometryNode->setIcon(0, icon("geometry"));
     geometryNode->setText(0, tr("Geometry"));
     geometryNode->setFont(0, fnt);
     geometryNode->setExpanded(false);
@@ -333,8 +355,7 @@ void PreprocessorWidget::refresh()
     // nodes
     QTreeWidgetItem *nodesNode = new QTreeWidgetItem(geometryNode);
     nodesNode->setText(0, tr("Nodes"));
-    nodesNode->setIcon(0, icon("scenenode"));
-    // nodesNode->setForeground(0, QBrush(Qt::darkBlue));
+    nodesNode->setIcon(1, icon("scenenode"));
     nodesNode->setFont(0, fnt);
 
     int inode = 0;
@@ -342,13 +363,12 @@ void PreprocessorWidget::refresh()
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(nodesNode);
 
-        item->setText(0, QString("%1").
-                      arg(inode));
-        item->setText(1, QString("[%1; %2]").
+        item->setText(0, QString("[%1; %2]").
                       arg(node->point().x, 0, 'e', 2).
                       arg(node->point().y, 0, 'e', 2));
         item->setIcon(0, icon("scene-node"));
         item->setData(0, Qt::UserRole, node->variant());
+        item->setText(1, QString("%1").arg(inode));
         item->setData(1, Qt::UserRole, PreprocessorWidget::GeometryNode);
 
         inode++;
@@ -358,7 +378,6 @@ void PreprocessorWidget::refresh()
     QTreeWidgetItem *edgesNode = new QTreeWidgetItem(geometryNode);
     edgesNode->setText(0, tr("Edges"));
     edgesNode->setIcon(0, icon("sceneedge"));
-    // edgesNode->setForeground(0, QBrush(Qt::darkBlue));
     edgesNode->setFont(0, fnt);
 
     int iedge = 0;
@@ -366,14 +385,13 @@ void PreprocessorWidget::refresh()
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(edgesNode);
 
-        item->setText(0, QString("%1").
-                      arg(iedge));
-        item->setText(1, QString("%1 m").
+        item->setText(0, QString("%1 m").
                       arg((edge->angle() < EPS_ZERO) ?
                               (edge->nodeEnd()->point() - edge->nodeStart()->point()).magnitude() :
                               edge->radius() * edge->angle() / 180.0 * M_PI, 0, 'e', 2));
         item->setIcon(0, icon("scene-edge"));
         item->setData(0, Qt::UserRole, edge->variant());
+        item->setText(1, QString("%1").arg(iedge));
         item->setData(1, Qt::UserRole, PreprocessorWidget::GeometryEdge);
 
         iedge++;
@@ -391,13 +409,12 @@ void PreprocessorWidget::refresh()
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(labelsNode);
 
-        item->setText(0, QString("%1").
-                      arg(ilabel));
-        item->setText(1, QString("[%1; %2]").
+        item->setText(0, QString("[%1; %2]").
                       arg(label->point().x, 0, 'e', 2).
                       arg(label->point().y, 0, 'e', 2));
         item->setIcon(0, icon("scene-label"));
         item->setData(0, Qt::UserRole, label->variant());
+        item->setText(1, QString("%1").arg(ilabel));
         item->setData(1, Qt::UserRole, GeometryLabel);
 
         ilabel++;
@@ -464,7 +481,7 @@ void PreprocessorWidget::loadTooltip(SceneGeometryMode sceneMode)
     txtViewLabels->setVisible(sceneMode == SceneGeometryMode_OperateOnLabels);
 }
 
-QString PreprocessorWidget::loadProblemInfo()
+QString PreprocessorWidget::problemPropertiesToString()
 {
     // TODO: rework
     QString html = "<body style=\"font-size: 11px;\">";
@@ -493,7 +510,7 @@ QString PreprocessorWidget::loadProblemInfo()
     return html;
 }
 
-QString PreprocessorWidget::loadFieldInfo(FieldInfo *fieldInfo)
+QString PreprocessorWidget::fieldPropertiesToString(FieldInfo *fieldInfo)
 {
     // TODO: rework
     QString html = "<body style=\"font-size: 11px;\">";
@@ -509,6 +526,49 @@ QString PreprocessorWidget::loadFieldInfo(FieldInfo *fieldInfo)
     html += "</body>";
 
     return html;
+}
+
+void PreprocessorWidget::problemProperties(QTreeWidgetItem *item)
+{
+    propertiesItem(item, tr("Coordinate type"), coordinateTypeString(Agros2D::problem()->config()->coordinateType()), PreprocessorWidget::ProblemProperties);
+    propertiesItem(item, tr("Mesh type"), meshTypeString(Agros2D::problem()->config()->meshType()), PreprocessorWidget::ProblemProperties);
+    if (Agros2D::problem()->isHarmonic())
+    {
+        propertiesItem(item, tr("Frequency"), Agros2D::problem()->config()->value(ProblemConfig::Frequency).value<Value>().toString() + " Hz", PreprocessorWidget::ProblemProperties);
+    }
+    if (Agros2D::problem()->isTransient())
+    {
+        propertiesItem(item, tr("Method"), timeStepMethodString((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()), PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Order"), QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt()), PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Tolerance"), QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble()), PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Initial step size"), QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeMethodTolerance).toDouble()) + " %", PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Constant time step"), QString::number(Agros2D::problem()->config()->constantTimeStepLength()) + " s", PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Number of const. time steps"), QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt()), PreprocessorWidget::ProblemProperties);
+        propertiesItem(item, tr("Total time"), QString::number(Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()) + " s", PreprocessorWidget::ProblemProperties);
+    }
+}
+
+void PreprocessorWidget::fieldProperties(FieldInfo *fieldInfo, QTreeWidgetItem *item)
+{
+    propertiesItem(item, tr("Analysis"), analysisTypeString(fieldInfo->analysisType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+    propertiesItem(item, tr("Solver"), linearityTypeString(fieldInfo->linearityType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+    propertiesItem(item, tr("Number of refinements"), QString::number(fieldInfo->value(FieldInfo::SpaceNumberOfRefinements).toInt()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+    propertiesItem(item, tr("Polynomial order"), QString::number(fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+    propertiesItem(item, tr("Adaptivity"), adaptivityTypeString(fieldInfo->adaptivityType()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+    propertiesItem(item, tr("Matrix solver"), matrixSolverTypeString(fieldInfo->matrixSolver()), PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+}
+
+QTreeWidgetItem *PreprocessorWidget::propertiesItem(QTreeWidgetItem *item, const QString &key, const QString &value, PreprocessorWidget::Type type, const QString &data)
+{
+    QTreeWidgetItem *result = new QTreeWidgetItem(item);
+    result->setText(0, key);
+    result->setText(1, value);
+    result->setForeground(0, QBrush(Qt::darkGray));
+    result->setForeground(1, QBrush(Qt::darkGray));
+    result->setData(0, Qt::UserRole, data);
+    result->setData(1, Qt::UserRole, type);
+
+    return result;
 }
 
 void PreprocessorWidget::doContextMenu(const QPoint &pos)
@@ -591,13 +651,11 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             actDelete->setEnabled(true);
 
             FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
-            txtViewInfo->setText(loadFieldInfo(fieldInfo));
         }
         else if (type == PreprocessorWidget::ProblemProperties)
         {
             // problem properties
             actProperties->setEnabled(true);
-            txtViewInfo->setText(loadProblemInfo());
         }
 
         m_sceneViewPreprocessor->refresh();
