@@ -55,4 +55,5 @@ protected:
     Operation m_operation;
 };
 
+
 #endif // FUNCTIONAL_H

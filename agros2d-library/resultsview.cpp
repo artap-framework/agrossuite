@@ -36,8 +36,7 @@
 
 #include <ctemplate/template.h>
 
-ResultsView::ResultsView(QWidget *parent)
-    : QDockWidget(tr("Results view"), parent)
+ResultsView::ResultsView(QWidget *parent) : QWidget(parent)
 {
     setObjectName("ResultsView");
 
@@ -60,10 +59,7 @@ ResultsView::ResultsView(QWidget *parent)
     layout->addWidget(webView);
     layout->setContentsMargins(0, 0, 0, 7);
 
-    QWidget *widget = new QWidget(this);
-    widget->setLayout(layout);
-
-    setWidget(widget);
+    setLayout(layout);
 
     // reconnect computation slots
     connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));

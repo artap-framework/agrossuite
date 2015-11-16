@@ -30,6 +30,7 @@
 #include "solver/solutionstore.h"
 
 #include "gui/infowidget.h"
+#include "qcustomplot.h"
 
 OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(parent)
 {
@@ -68,6 +69,16 @@ void OptiLabWidget::createControls()
 
     connect(trvComputations, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(computationChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
+    cmbChartX = new QComboBox(this);
+    cmbChartY = new QComboBox(this);
+
+    QGridLayout *layoutChartXYControls = new QGridLayout();
+    layoutChartXYControls->addWidget(new QLabel(tr("Variable X:")), 0, 0);
+    layoutChartXYControls->addWidget(cmbChartX, 0, 1);
+    layoutChartXYControls->addWidget(new QLabel(tr("Variable Y:")), 1, 0);
+    layoutChartXYControls->addWidget(cmbChartY, 1, 1);
+    layoutChartXYControls->addWidget(new QLabel(""), 19, 0);
+
     QPushButton *btnTESTSWEEP = new QPushButton(tr("TEST SWEEP"));
     connect(btnTESTSWEEP, SIGNAL(clicked()), this, SLOT(testSweep()));
     QPushButton *btnTESTOPT = new QPushButton(tr("TEST OPT."));
@@ -81,6 +92,7 @@ void OptiLabWidget::createControls()
     layout->setContentsMargins(2, 2, 2, 3);
     layout->addWidget(grpStudies);
     layout->addWidget(trvComputations);
+    layout->addLayout(layoutChartXYControls);
     layout->addLayout(layoutParametersButton);
 
     setLayout(layout);
@@ -111,6 +123,26 @@ void OptiLabWidget::refresh()
             cmbStudies->setCurrentIndex(0);
 
         studyChanged(cmbStudies->currentIndex());
+    }
+
+    // fill combo boxes
+    cmbChartX->clear();
+    cmbChartY->clear();
+
+    // parameters
+    if (cmbStudies->currentIndex() != -1)
+    {
+        Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
+        foreach (Parameter parameter, study->parameters())
+        {
+            cmbChartX->addItem(QString("%1 (par.)").arg(parameter.name()), QString("parameter:%1").arg(parameter.name()));
+            cmbChartY->addItem(QString("%1 (par.)").arg(parameter.name()), QString("parameter:%1").arg(parameter.name()));
+        }
+        foreach (Functional functional, study->functionals())
+        {
+            cmbChartX->addItem(QString("%1 (fun.)").arg(functional.name()), QString("functional:%1").arg(functional.name()));
+            cmbChartY->addItem(QString("%1 (fun.)").arg(functional.name()), QString("functional:%1").arg(functional.name()));
+        }
     }
 }
 
@@ -228,8 +260,18 @@ void OptiLab::createControls()
 {
     m_infoWidget = new InfoWidgetGeneral(this);
 
-    QHBoxLayout *layoutLab = new QHBoxLayout();
-    layoutLab->addWidget(m_infoWidget);
+    m_chart = new QCustomPlot(this);
+    m_chart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    // m_chart->xAxis->setLabel("");
+    // m_chart->yAxis->setLabel("");
+    m_chart->addGraph();
+
+    m_chart->graph(0)->setLineStyle(QCPGraph::lsLine);
+    m_chart->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 4));
+
+    QVBoxLayout *layoutLab = new QVBoxLayout();
+    layoutLab->addWidget(m_infoWidget, 1);
+    layoutLab->addWidget(m_chart, 1);
 
     setLayout(layoutLab);
 }

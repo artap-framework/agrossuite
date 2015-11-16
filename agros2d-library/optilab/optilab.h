@@ -28,6 +28,7 @@
 class OptiLab;
 class Study;
 class InfoWidgetGeneral;
+class QCustomPlot;
 
 class AGROS_LIBRARY_API OptiLabWidget : public QWidget
 {
@@ -41,6 +42,9 @@ private:
 
     QTreeWidget *trvComputations;
     QComboBox *cmbStudies;
+
+    QComboBox *cmbChartX;
+    QComboBox *cmbChartY;
 
     void createControls();
 
@@ -76,6 +80,8 @@ public slots:
 private:
     OptiLabWidget *m_optiLabWidget;
     InfoWidgetGeneral *m_infoWidget;
+
+    QCustomPlot *m_chart;
 
     void createControls();
 };

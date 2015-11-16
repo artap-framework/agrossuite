@@ -223,7 +223,7 @@ void LogWidget::refreshMemory(int usage)
 
 // *******************************************************************************************************
 
-LogView::LogView(QWidget *parent) : QDockWidget(tr("Application log"), parent)
+LogView::LogView(QWidget *parent) : QWidget(parent)
 {
     setObjectName("LogView");
     
@@ -231,7 +231,10 @@ LogView::LogView(QWidget *parent) : QDockWidget(tr("Application log"), parent)
     logWidget->setMemoryLabelVisible(true);
     logWidget->welcomeMessage();
     
-    setWidget(logWidget);
+    QHBoxLayout *layout = new QHBoxLayout();
+    layout->addWidget(logWidget);
+
+    setLayout(layout);
 }
 
 // *******************************************************************************************************

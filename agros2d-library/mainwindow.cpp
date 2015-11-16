@@ -96,7 +96,10 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // problem
     mainWidget = new MainWidget(this);
 
-    createViews();
+    // view info
+    consoleView = new PythonScriptingConsoleView(currentPythonEngine(), this);
+    logView = new LogView(this);
+    resultsView = new ResultsView(this);
 
     // PythonLab
     scriptEditor = new PythonEditorDialog(consoleView->console(), this);
@@ -166,10 +169,13 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     restoreGeometry(settings.value("MainWindow/Geometry", saveGeometry()).toByteArray());
     restoreState(settings.value("MainWindow/State", saveState()).toByteArray());
-    splitter->restoreState(settings.value("MainWindow/SplitterState").toByteArray());
-    // show/hide control panel
+    splitterMain->restoreState(settings.value("MainWindow/SplitterMainState").toByteArray());
+    splitterView->restoreState(settings.value("MainWindow/SplitterViewState").toByteArray());
+    // show/hide control and view panel
     actHideControlPanel->setChecked(settings.value("MainWindow/ControlPanel", true).toBool());
+    actHideViewPanel->setChecked(settings.value("MainWindow/ViewPanel", true).toBool());
     doHideControlPanel();
+    doHideViewPanel();
 
     setControls();
 }
@@ -180,8 +186,10 @@ MainWindow::~MainWindow()
     settings.setValue("MainWindow/Geometry", saveGeometry());
     settings.setValue("MainWindow/State", saveState());
     settings.setValue("MainWindow/RecentFiles", recentFiles);
-    settings.setValue("MainWindow/SplitterState", splitter->saveState());
+    settings.setValue("MainWindow/SplitterMainState", splitterMain->saveState());
+    settings.setValue("MainWindow/SplitterViewState", splitterView->saveState());
     settings.setValue("MainWindow/ControlPanel", actHideControlPanel->isChecked());
+    settings.setValue("MainWindow/ViewPanel", actHideViewPanel->isChecked());
 
     // remove temp and cache plugins
     removeDirectory(cacheProblemDir());
@@ -330,6 +338,11 @@ void MainWindow::createActions()
     actHideControlPanel->setShortcut(tr("Alt+0"));
     actHideControlPanel->setCheckable(true);
     connect(actHideControlPanel, SIGNAL(triggered()), this, SLOT(doHideControlPanel()));
+
+    actHideViewPanel = new QAction(icon("showhide"), tr("Show/hide view panel"), this);
+    actHideViewPanel->setShortcut(tr("Alt+."));
+    actHideViewPanel->setCheckable(true);
+    connect(actHideViewPanel, SIGNAL(triggered()), this, SLOT(doHideViewPanel()));
 }
 
 
@@ -440,16 +453,11 @@ void MainWindow::createMenus()
     mnuTools->addMenu(mnuCustomForms);
     readCustomScripts(mnuCustomForms, consoleView->console(), this);
 
-    QMenu *mnuShowPanels = new QMenu(tr("Panels"), this);
-    mnuShowPanels->addAction(resultsView->toggleViewAction());
-    mnuShowPanels->addAction(consoleView->toggleViewAction());
-    mnuShowPanels->addAction(logView->toggleViewAction());
-
     mnuSettings = menuBar()->addMenu(tr("S&ettings"));
     mnuSettings->addAction(actUnitTests);
     mnuSettings->addSeparator();
-    mnuSettings->addMenu(mnuShowPanels);
     mnuSettings->addAction(actHideControlPanel);
+    mnuSettings->addAction(actHideViewPanel);
     mnuSettings->addAction(actFullScreen);
     mnuSettings->addSeparator();
     mnuSettings->addAction(actOptions);
@@ -524,6 +532,18 @@ void MainWindow::createMain()
     viewControls = new QWidget();
     viewControls->setLayout(tabControlsLayout);
 
+    QTabWidget *tabInfo = new QTabWidget(this);
+    tabInfo->addTab(consoleView, tr("Python console"));
+    tabInfo->addTab(resultsView, tr("Results"));
+
+    splitterView = new QSplitter(Qt::Vertical, this);
+    splitterView->addWidget(tabInfo);
+    splitterView->addWidget(logView);
+    splitterView->setCollapsible(0, false);
+    splitterView->setCollapsible(1, false);
+    splitterView->setStretchFactor(0, 1);
+    splitterView->setStretchFactor(1, 3);
+
     // spacing
     QLabel *spacing = new QLabel;
     spacing->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -561,45 +581,26 @@ void MainWindow::createMain()
     tlbLeftBar->addAction(actSolve);
     tlbLeftBar->addAction(actSolveNewComputation);
 
-    splitter = new QSplitter(Qt::Horizontal, this);
-    splitter->addWidget(viewControls);
-    splitter->addWidget(viewWidget);
-    splitter->setCollapsible(0, false);
-    splitter->setCollapsible(1, false);
-    splitter->setStretchFactor(0, 0);
-    splitter->setStretchFactor(1, 1);
-    QList<int> sizes;
-    sizes << 240 << 0;
-    splitter->setSizes(sizes);
+    splitterMain = new QSplitter(Qt::Horizontal, this);
+    splitterMain->addWidget(viewControls);
+    splitterMain->addWidget(viewWidget);
+    splitterMain->addWidget(splitterView);
+    splitterMain->setCollapsible(0, false);
+    splitterMain->setCollapsible(1, false);
+    splitterMain->setCollapsible(2, false);
+    splitterMain->setStretchFactor(0, 1);
+    splitterMain->setStretchFactor(1, 4);
+    splitterMain->setStretchFactor(2, 1);
 
     QHBoxLayout *layoutMain = new QHBoxLayout();
     layoutMain->setContentsMargins(0, 0, 0, 0);
     layoutMain->addWidget(tlbLeftBar);
-    layoutMain->addWidget(splitter);
+    layoutMain->addWidget(splitterMain);
 
     QWidget *main = new QWidget();
     main->setLayout(layoutMain);
 
     setCentralWidget(main);
-}
-
-void MainWindow::createViews()
-{
-    consoleView = new PythonScriptingConsoleView(currentPythonEngine(), this);
-    consoleView->setAllowedAreas(Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-    consoleView->setVisible(false);
-    addDockWidget(Qt::RightDockWidgetArea, consoleView);
-
-    logView = new LogView(this);
-    logView->setAllowedAreas(Qt::RightDockWidgetArea);
-    addDockWidget(Qt::RightDockWidgetArea, logView);
-
-    resultsView = new ResultsView(this);
-    resultsView->setAllowedAreas(Qt::RightDockWidgetArea);
-    addDockWidget(Qt::RightDockWidgetArea, resultsView);
-
-    // tabify dock together
-    tabifyDockWidget(resultsView, consoleView);
 }
 
 void MainWindow::doMouseSceneModeChanged(MouseSceneMode mouseSceneMode)
@@ -1314,6 +1315,11 @@ void MainWindow::doAbout()
 void MainWindow::doHideControlPanel()
 {
     viewControls->setVisible(actHideControlPanel->isChecked());
+}
+
+void MainWindow::doHideViewPanel()
+{
+    splitterView->setVisible(actHideViewPanel->isChecked());
 }
 
 void MainWindow::doDocumentExportMeshFile()

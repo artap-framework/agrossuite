@@ -33,7 +33,7 @@ class Solution;
 class PostDeal;
 class Computation;
 
-class ResultsView : public QDockWidget
+class ResultsView : public QWidget
 {
     Q_OBJECT
 

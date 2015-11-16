@@ -701,14 +701,17 @@ void PythonScriptingConsole::consoleMessage(const QString &message, const QColor
 // ***********************************************************************************************
 
 PythonScriptingConsoleView::PythonScriptingConsoleView(PythonEngine *pythonEngine, QWidget *parent)
-    : QDockWidget(tr("Console"), parent)
+    : QWidget(parent)
 {
     setObjectName("ConsoleView");
 
     m_console = new PythonScriptingConsole(pythonEngine, this);
     setFocusProxy(m_console);
 
-    setWidget(m_console);
+    QHBoxLayout *layout = new QHBoxLayout();
+    layout->addWidget(m_console);
+
+    setLayout(layout);
 }
 
 PythonScriptingConsoleView::~PythonScriptingConsoleView()

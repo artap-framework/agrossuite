@@ -92,6 +92,7 @@ private slots:
     void doUnitTests();
 
     void doHideControlPanel();
+    void doHideViewPanel();
     void doFullScreen();
 
     void doCut();
@@ -151,6 +152,7 @@ private:
     QActionGroup *actDocumentOpenRecentGroup;
 
     QAction *actHideControlPanel;
+    QAction *actHideViewPanel;
 
     QAction *actCopy;
 
@@ -216,7 +218,8 @@ private:
 
     SceneTransformDialog *sceneTransformDialog;
 
-    QSplitter *splitter;
+    QSplitter *splitterMain;
+    QSplitter *splitterView;
 
     LogStdOut *logStdOut;
 
@@ -234,7 +237,6 @@ private:
     void createMenus();
     void createToolBars();
     void createMain();
-    void createViews();   
 };
 
 #endif // MAINWINDOW_H
