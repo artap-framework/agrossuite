@@ -35,6 +35,7 @@ public:
 
     void getParameters(std::vector<std::string> &keys) const;
     double getParameter(std::string key) const;
+
     inline std::string getCoordinateType() const { return coordinateTypeToStringKey(m_problem->config()->coordinateType()).toStdString(); }
     inline std::string getMeshType() const { return meshTypeToStringKey(m_problem->config()->meshType()).toStdString(); }
     inline double getFrequency() const { return m_problem->config()->value(ProblemConfig::Frequency).value<Value>().number(); }
@@ -79,8 +80,6 @@ class PyComputation : public QObject, public PyProblemBase
 public:
     PyComputation(bool newComputation, std::string name = "");
     ~PyComputation() {}
-
-    void setComputation(const std::string &computation);
     QSharedPointer<Computation> getComputation();
 
     void clear();
@@ -93,7 +92,7 @@ public:
     void timeStepsTimes(vector<double> &times) const;
 
 protected:
-    QSharedPointer<Computation> m_computation;
+    QSharedPointer<Computation> m_problem;
 };
 
 class PySolution : public QObject

@@ -85,10 +85,10 @@ void PyProblemBase::checkExistingFields(const QString &sourceField, const QStrin
 
 PyProblem::PyProblem(bool clearProblem) : PyProblemBase()
 {
+    m_problem = QSharedPointer<ProblemBase>(Agros2D::problem());
+
     if (clearProblem)
         clear();
-
-    m_problem = QSharedPointer<ProblemBase>(Agros2D::problem());
 }
 
 void PyProblem::clear()
@@ -202,39 +202,29 @@ PyComputation::PyComputation(bool newComputation, std::string name) : PyProblemB
         QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
         QString key = QString::fromStdString(name);
         if (computations.contains(key))
-            m_computation = computations[key];
+            m_problem = computations[key];
         else
             throw logic_error(QObject::tr("Computation '%1' does not exists.").arg(key).toStdString());
     }
     else
     {
         Agros2D::problem()->createComputation(newComputation);
-        m_computation = Agros2D::problem()->m_currentComputation;
+        m_problem = Agros2D::problem()->m_currentComputation;
     }
-}
-
-void PyComputation::setComputation(const string &computation)
-{
-    QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
-    QString key = QString::fromStdString(computation);
-    if (computations.contains(key))
-        m_computation = computations[key];
-    else
-        throw logic_error(QObject::tr("Computation '%1' does not exists.").arg(key).toStdString());
 }
 
 QSharedPointer<Computation> PyComputation::getComputation()
 {
-    return m_computation;
+    return m_problem;
 }
 
 void PyComputation::clear()
 {
-    if (!m_computation->isSolved())
+    if (!m_problem->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    m_computation->clearSolution();
-    m_computation->scene()->invalidate();
+    m_problem->clearSolution();
+    m_problem->scene()->invalidate();
 
     if (!silentMode())
         currentPythonEngineAgros()->sceneViewPreprocessor()->actSceneModePreprocessor->trigger();
@@ -243,56 +233,56 @@ void PyComputation::clear()
 
 void PyComputation::mesh()
 {
-    m_computation->scene()->invalidate();
-    m_computation->scene()->loopsInfo()->processPolygonTriangles(true);
-    m_computation->mesh(true);
+    m_problem->scene()->invalidate();
+    m_problem->scene()->loopsInfo()->processPolygonTriangles(true);
+    m_problem->mesh(true);
 
-    if (!m_computation->isMeshed())
+    if (!m_problem->isMeshed())
         throw logic_error(QObject::tr("Problem is not meshed.").toStdString());
 }
 
 void PyComputation::solve()
 {
-    m_computation->scene()->invalidate();
-    m_computation->scene()->loopsInfo()->processPolygonTriangles(true);
-    m_computation->solve();
+    m_problem->scene()->invalidate();
+    m_problem->scene()->loopsInfo()->processPolygonTriangles(true);
+    m_problem->solve();
 
-    if (!m_computation->isSolved())
+    if (!m_problem->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 }
 
 double PyComputation::timeElapsed() const
 {
-    if (!m_computation->isSolved())
+    if (!m_problem->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    double time = m_computation->timeElapsed().hour()*3600 + m_computation->timeElapsed().minute()*60 +
-            m_computation->timeElapsed().second() + m_computation->timeElapsed().msec() * 1e-3;
+    double time = m_problem->timeElapsed().hour()*3600 + m_problem->timeElapsed().minute()*60 +
+            m_problem->timeElapsed().second() + m_problem->timeElapsed().msec() * 1e-3;
     return time;
 }
 
 void PyComputation::timeStepsLength(vector<double> &steps) const
 {
-    if (!m_computation->isTransient())
+    if (!m_problem->isTransient())
         throw logic_error(QObject::tr("Problem is not transient.").toStdString());
 
-    if (!m_computation->isSolved())
+    if (!m_problem->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    QList<double> timeStepLengths = m_computation->timeStepLengths();
+    QList<double> timeStepLengths = m_problem->timeStepLengths();
     for (int i = 0; i < timeStepLengths.size(); i++)
         steps.push_back(timeStepLengths.at(i));
 }
 
 void PyComputation::timeStepsTimes(vector<double> &times) const
 {
-    if (!m_computation->isTransient())
+    if (!m_problem->isTransient())
         throw logic_error(QObject::tr("Problem is not transient.").toStdString());
 
-    if (!m_computation->isSolved())
+    if (!m_problem->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
-    QList<double> timeStepTimes = m_computation->timeStepTimes();
+    QList<double> timeStepTimes = m_problem->timeStepTimes();
     for (int i = 0; i < timeStepTimes.size(); i++)
         times.push_back(timeStepTimes.at(i));
 }

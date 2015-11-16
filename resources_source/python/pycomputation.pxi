@@ -1,7 +1,6 @@
 cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
     cdef cppclass PyComputation:
         PyComputation(bool newComputation, string name)
-        void setComputation(string &computation) except +
 
         void clear() except +
 
@@ -44,8 +43,8 @@ cdef class __Computation__(__ProblemBase__):
 
     def __cinit__(self, new_computation = True, name = ""):
         __ProblemBase__.__init__(self)
-        self._computation = new PyComputation(new_computation, name)
-        self._solutions = dict()           
+        self._computation = new PyComputation(new_computation, name.encode())
+        self._solutions = dict()
         
     def __dealloc__(self):
         del self._computation
@@ -314,6 +313,5 @@ cdef class __Solution__:
                                           int(-1 if adaptivity_step is None else adaptivity_step)).decode()
 
 def computation(computation):
-    existing_computation = __Computation__(False, computation.encode())
-    # existing_computation._computation.setComputation(computation.encode())
+    existing_computation = __Computation__(False, computation)
     return existing_computation
