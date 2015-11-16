@@ -1,7 +1,7 @@
 cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
     cdef cppclass PyComputation:
         PyComputation()
-        PyComputation(string computation)
+        PyComputation(string computation) except +
 
         void clear() except +
         void refresh()
@@ -390,5 +390,4 @@ cdef class __Solution__:
                                           int(-1 if adaptivity_step is None else adaptivity_step)).decode()
 
 def computation(computation):
-    existing_computation = __Computation__(computation)
-    return existing_computation
+    return __Computation__(computation)
