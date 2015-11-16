@@ -4,6 +4,8 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
 
         void refresh()
 
+        void getParameters(vector[string] &keys)
+        double getParameter(string &key) except +
         string getCoordinateType()
         string getMeshType()
         double getFrequency()
@@ -13,8 +15,6 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         double getTimeTotal()
         int getNumConstantTimeSteps()
         double getTimeInitialTimeStep()
-        void getParameters(vector[string] &keys)
-        double getParameter(string &key) except +
         string getCouplingType(string &sourceField, string &targetField) except +
 
     cdef cppclass PyProblem:
@@ -22,6 +22,7 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
 
         void clear()
 
+        void setParameter(string &key, double value)
         void setCoordinateType(string &coordinateType) except +
         void setMeshType(string &meshType) except +
         void setFrequency(double frequency) except +
@@ -31,7 +32,6 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         void setTimeTotal(double timeTotal) except +
         void setNumConstantTimeSteps(int timeSteps) except +
         void setTimeInitialTimeStep(double timeInitialTimeStep) except +
-        void setParameter(string &key, double value)
         void setCouplingType(string &sourceField, string &targetField, string &type) except +
 
 cdef class __ProblemBase__:
@@ -57,6 +57,17 @@ cdef class __ProblemBase__:
 
     def _unauthorized(self):
         raise Exception("Value can not be changed.")
+
+    def _get_parameters(self):
+        cdef vector[string] params_vector
+        self._base.getParameters(params_vector)
+
+        params = dict()
+        for i in range(params_vector.size()):
+            params[(<string>params_vector[i]).decode()] = self._base.getParameter(params_vector[i])
+
+        return params
+    parameters = property(_get_parameters, _unauthorized)
 
     def _get_coordinate_type(self):
         return self._base.getCoordinateType().decode()
@@ -146,6 +157,11 @@ cdef class __Problem__(__ProblemBase__):
     def computation(self):
         """Create and return new Computation() object."""
         return __Computation__()
+
+    def _set_parameters(self, params):
+        for key in params:
+            self._problem.setParameter(key.encode(), <double>params[key])
+    parameters = property(__ProblemBase__._get_parameters, _set_parameters)
 
     def _set_coordinate_type(self, coordinate_type):
         self._problem.setCoordinateType(coordinate_type.encode())

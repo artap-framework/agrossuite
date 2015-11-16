@@ -29,6 +29,14 @@ void PyProblemBase::refresh()
     m_problem->scene()->invalidate();
 }
 
+void PyProblemBase::getParameters(std::vector<std::string> &keys) const
+{
+    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+
+    foreach (QString key, parameters.keys())
+        keys.push_back(key.toStdString());
+}
+
 double PyProblemBase::getParameter(std::string key) const
 {
     ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
@@ -45,14 +53,6 @@ double PyProblemBase::getParameter(std::string key) const
 
         throw logic_error(QObject::tr("Invalid argument. Valid keys: %1").arg(str).toStdString());
     }
-}
-
-void PyProblemBase::getParameters(std::vector<std::string> &keys) const
-{
-    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
-
-    foreach (QString key, parameters.keys())
-        keys.push_back(key.toStdString());
 }
 
 std::string PyProblemBase::getCouplingType(const std::string &sourceField, const std::string &targetField) const
@@ -94,6 +94,14 @@ PyProblem::PyProblem(bool clearProblem) : PyProblemBase()
 void PyProblem::clear()
 {
     m_problem->clearFieldsAndConfig();
+}
+
+void PyProblem::setParameter(std::string key, double value)
+{
+    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    parameters[QString::fromStdString(key)] = value;
+
+    Agros2D::problem()->config()->setValue(ProblemConfig::Parameters, parameters);
 }
 
 void PyProblem::setCoordinateType(const std::string &coordinateType)
@@ -150,14 +158,6 @@ void PyProblem::setTimeInitialTimeStep(double timeInitialTimeStep)
         m_problem->config()->setValue(ProblemConfig::TimeInitialStepSize, timeInitialTimeStep);
     else
         throw out_of_range(QObject::tr("Initial time step must be positive.").toStdString());
-}
-
-void PyProblem::setParameter(std::string key, double value)
-{
-    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
-    parameters[QString::fromStdString(key)] = value;
-
-    Agros2D::problem()->config()->setValue(ProblemConfig::Parameters, parameters);
 }
 
 void PyProblem::setNumConstantTimeSteps(int timeSteps)

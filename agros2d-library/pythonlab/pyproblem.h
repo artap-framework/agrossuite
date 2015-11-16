@@ -33,6 +33,8 @@ public:
 
     void refresh();
 
+    void getParameters(std::vector<std::string> &keys) const;
+    double getParameter(std::string key) const;
     inline std::string getCoordinateType() const { return coordinateTypeToStringKey(m_problem->config()->coordinateType()).toStdString(); }
     inline std::string getMeshType() const { return meshTypeToStringKey(m_problem->config()->meshType()).toStdString(); }
     inline double getFrequency() const { return m_problem->config()->value(ProblemConfig::Frequency).value<Value>().number(); }
@@ -42,8 +44,6 @@ public:
     inline double getTimeInitialTimeStep() const { return m_problem->config()->value(ProblemConfig::TimeInitialStepSize).toDouble(); }
     inline double getTimeTotal() const { return m_problem->config()->value(ProblemConfig::TimeTotal).toDouble(); }
     inline int getNumConstantTimeSteps() const { return m_problem->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); }
-    double getParameter(std::string key) const;
-    void getParameters(std::vector<std::string> &keys) const;
     std::string getCouplingType(const std::string &sourceField, const std::string &targetField) const;
 
 protected:
@@ -59,6 +59,7 @@ public:
 
     void clear();
 
+    void setParameter(std::string key, double value);
     void setCoordinateType(const std::string &coordinateType);
     void setMeshType(const std::string &meshType);
     void setFrequency(double frequency);
@@ -68,7 +69,6 @@ public:
     void setTimeInitialTimeStep(double timeInitialTimeStep);
     void setTimeTotal(double timeTotal);
     void setNumConstantTimeSteps(int timeSteps);
-    void setParameter(std::string key, double value);
     void setCouplingType(const std::string &sourceField, const std::string &targetField, const std::string &type);
 };
 
