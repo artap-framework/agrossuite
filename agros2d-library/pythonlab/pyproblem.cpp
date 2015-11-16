@@ -26,12 +26,20 @@
 
 void PyProblemBase::refresh()
 {
-    m_problem->scene()->invalidate();
+    m_problemBase->scene()->invalidate();
+}
+
+void PyProblemBase::getParameters(std::vector<std::string> &keys) const
+{
+    ParametersType parameters = m_problemBase->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+
+    foreach (QString key, parameters.keys())
+        keys.push_back(key.toStdString());
 }
 
 double PyProblemBase::getParameter(std::string key) const
 {
-    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    ParametersType parameters = m_problemBase->config()->value(ProblemConfig::Parameters).value<ParametersType>();
 
     if (parameters.contains(QString::fromStdString(key)))
         return parameters[QString::fromStdString(key)];
@@ -47,14 +55,6 @@ double PyProblemBase::getParameter(std::string key) const
     }
 }
 
-void PyProblemBase::getParameters(std::vector<std::string> &keys) const
-{
-    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
-
-    foreach (QString key, parameters.keys())
-        keys.push_back(key.toStdString());
-}
-
 std::string PyProblemBase::getCouplingType(const std::string &sourceField, const std::string &targetField) const
 {
     QString source = QString::fromStdString(sourceField);
@@ -62,9 +62,9 @@ std::string PyProblemBase::getCouplingType(const std::string &sourceField, const
 
     checkExistingFields(source, target);
 
-    if (m_problem->hasCoupling(source, target))
+    if (m_problemBase->hasCoupling(source, target))
     {
-        CouplingInfo *couplingInfo = m_problem->couplingInfo(source, target);
+        CouplingInfo *couplingInfo = m_problemBase->couplingInfo(source, target);
         return couplingTypeToStringKey(couplingInfo->couplingType()).toStdString();
     }
     else
@@ -73,27 +73,36 @@ std::string PyProblemBase::getCouplingType(const std::string &sourceField, const
 
 void PyProblemBase::checkExistingFields(const QString &sourceField, const QString &targetField) const
 {
-    if (m_problem->fieldInfos().isEmpty())
+    if (m_problemBase->fieldInfos().isEmpty())
         throw logic_error(QObject::tr("No fields are defined.").toStdString());
 
-    if (!m_problem->fieldInfos().contains(sourceField))
+    if (!m_problemBase->fieldInfos().contains(sourceField))
         throw logic_error(QObject::tr("Source field '%1' is not defined.").arg(sourceField).toStdString());
 
-    if (!m_problem->fieldInfos().contains(targetField))
+    if (!m_problemBase->fieldInfos().contains(targetField))
         throw logic_error(QObject::tr("Target field '%1' is not defined.").arg(targetField).toStdString());
 }
 
 PyProblem::PyProblem(bool clearProblem) : PyProblemBase()
 {
+    m_problem = QSharedPointer<Problem>(Agros2D::problem());
+    m_problemBase = m_problem;
+
     if (clearProblem)
         clear();
-
-    m_problem = QSharedPointer<ProblemBase>(Agros2D::problem());
 }
 
 void PyProblem::clear()
 {
     m_problem->clearFieldsAndConfig();
+}
+
+void PyProblem::setParameter(std::string key, double value)
+{
+    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    parameters[QString::fromStdString(key)] = value;
+
+    Agros2D::problem()->config()->setValue(ProblemConfig::Parameters, parameters);
 }
 
 void PyProblem::setCoordinateType(const std::string &coordinateType)
@@ -152,14 +161,6 @@ void PyProblem::setTimeInitialTimeStep(double timeInitialTimeStep)
         throw out_of_range(QObject::tr("Initial time step must be positive.").toStdString());
 }
 
-void PyProblem::setParameter(std::string key, double value)
-{
-    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
-    parameters[QString::fromStdString(key)] = value;
-
-    Agros2D::problem()->config()->setValue(ProblemConfig::Parameters, parameters);
-}
-
 void PyProblem::setNumConstantTimeSteps(int timeSteps)
 {
     if (timeSteps >= 1)
@@ -195,32 +196,26 @@ void PyProblem::setCouplingType(const std::string &sourceField, const std::strin
         throw logic_error(QObject::tr("Coupling '%1' + '%2' doesn't exists.").arg(source).arg(target).toStdString());
 }
 
-PyComputation::PyComputation(bool newComputation, std::string name) : PyProblemBase()
+PyComputation::PyComputation() : PyProblemBase()
 {
-    if (name != "")
-    {
-        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
-        QString key = QString::fromStdString(name);
-        if (computations.contains(key))
-            m_computation = computations[key];
-        else
-            throw logic_error(QObject::tr("Computation '%1' does not exists.").arg(key).toStdString());
-    }
-    else
-    {
-        Agros2D::problem()->createComputation(newComputation);
-        m_computation = Agros2D::problem()->m_currentComputation;
-    }
+    Agros2D::problem()->createComputation(true);
+    m_computation = Agros2D::problem()->m_currentComputation;
+    m_problemBase = m_computation;
 }
 
-void PyComputation::setComputation(const string &computation)
+PyComputation::PyComputation(std::string computation) : PyProblemBase()
 {
     QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
     QString key = QString::fromStdString(computation);
     if (computations.contains(key))
+    {
         m_computation = computations[key];
+        m_problemBase = m_computation;
+    }
     else
+    {
         throw logic_error(QObject::tr("Computation '%1' does not exists.").arg(key).toStdString());
+    }
 }
 
 QSharedPointer<Computation> PyComputation::getComputation()

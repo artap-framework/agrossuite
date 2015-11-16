@@ -33,22 +33,25 @@ public:
 
     void refresh();
 
-    inline std::string getCoordinateType() const { return coordinateTypeToStringKey(m_problem->config()->coordinateType()).toStdString(); }
-    inline std::string getMeshType() const { return meshTypeToStringKey(m_problem->config()->meshType()).toStdString(); }
-    inline double getFrequency() const { return m_problem->config()->value(ProblemConfig::Frequency).value<Value>().number(); }
-    inline std::string getTimeStepMethod() const { return timeStepMethodToStringKey((TimeStepMethod) m_problem->config()->value(ProblemConfig::TimeMethod).toInt()).toStdString(); }
-    inline double getTimeMethodTolerance() const { return m_problem->config()->value(ProblemConfig::TimeMethodTolerance).toDouble(); }
-    inline int getTimeMethodOrder() const { return m_problem->config()->value(ProblemConfig::TimeOrder).toInt(); }
-    inline double getTimeInitialTimeStep() const { return m_problem->config()->value(ProblemConfig::TimeInitialStepSize).toDouble(); }
-    inline double getTimeTotal() const { return m_problem->config()->value(ProblemConfig::TimeTotal).toDouble(); }
-    inline int getNumConstantTimeSteps() const { return m_problem->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); }
-    double getParameter(std::string key) const;
+    // parameters
     void getParameters(std::vector<std::string> &keys) const;
+    double getParameter(std::string key) const;
+
+    // properties
+    inline std::string getCoordinateType() const { return coordinateTypeToStringKey(m_problemBase->config()->coordinateType()).toStdString(); }
+    inline std::string getMeshType() const { return meshTypeToStringKey(m_problemBase->config()->meshType()).toStdString(); }
+    inline double getFrequency() const { return m_problemBase->config()->value(ProblemConfig::Frequency).value<Value>().number(); }
+    inline std::string getTimeStepMethod() const { return timeStepMethodToStringKey((TimeStepMethod) m_problemBase->config()->value(ProblemConfig::TimeMethod).toInt()).toStdString(); }
+    inline double getTimeMethodTolerance() const { return m_problemBase->config()->value(ProblemConfig::TimeMethodTolerance).toDouble(); }
+    inline int getTimeMethodOrder() const { return m_problemBase->config()->value(ProblemConfig::TimeOrder).toInt(); }
+    inline double getTimeInitialTimeStep() const { return m_problemBase->config()->value(ProblemConfig::TimeInitialStepSize).toDouble(); }
+    inline double getTimeTotal() const { return m_problemBase->config()->value(ProblemConfig::TimeTotal).toDouble(); }
+    inline int getNumConstantTimeSteps() const { return m_problemBase->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt(); }
     std::string getCouplingType(const std::string &sourceField, const std::string &targetField) const;
 
 protected:
     void checkExistingFields(const QString &sourceField, const QString &targetField) const;
-    QSharedPointer<ProblemBase> m_problem;
+    QSharedPointer<ProblemBase> m_problemBase;
 };
 
 class PyProblem : public PyProblemBase
@@ -59,6 +62,10 @@ public:
 
     void clear();
 
+    // parameters
+    void setParameter(std::string key, double value);
+
+    // properties
     void setCoordinateType(const std::string &coordinateType);
     void setMeshType(const std::string &meshType);
     void setFrequency(double frequency);
@@ -68,19 +75,18 @@ public:
     void setTimeInitialTimeStep(double timeInitialTimeStep);
     void setTimeTotal(double timeTotal);
     void setNumConstantTimeSteps(int timeSteps);
-    void setParameter(std::string key, double value);
     void setCouplingType(const std::string &sourceField, const std::string &targetField, const std::string &type);
+
+private:
+    QSharedPointer<Problem> m_problem;
 };
 
-class PyComputation : public QObject, public PyProblemBase
+class PyComputation : public PyProblemBase
 {
-    Q_OBJECT
-
 public:
-    PyComputation(bool newComputation, std::string name = "");
+    PyComputation();
+    PyComputation(std::string computation);
     ~PyComputation() {}
-
-    void setComputation(const std::string &computation);
     QSharedPointer<Computation> getComputation();
 
     void clear();
@@ -92,14 +98,12 @@ public:
     void timeStepsLength(vector<double> &steps) const;
     void timeStepsTimes(vector<double> &times) const;
 
-protected:
+private:
     QSharedPointer<Computation> m_computation;
 };
 
-class PySolution : public QObject
+class PySolution
 {
-    Q_OBJECT
-
 public:
     PySolution() {}
     ~PySolution() {}
