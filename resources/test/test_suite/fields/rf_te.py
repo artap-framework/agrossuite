@@ -11,12 +11,8 @@ class TestRFTEHarmonicPlanar(Agros2DTestCase):
         
         problem.frequency = 1.6e10
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
-        self.rf = agros2d.field("rf_te")
+        self.rf = problem.field("rf_te")
         self.rf.analysis_type = "harmonic"
         self.rf.number_of_refinements = 2	
         self.rf.polynomial_order = 3
@@ -30,7 +26,7 @@ class TestRFTEHarmonicPlanar(Agros2DTestCase):
         self.rf.add_material("Air", {"rf_te_permittivity" : 1, "rf_te_permeability" : 1, "rf_te_conductivity" : 3e-2})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         
         # edges
         geometry.add_edge(-0.01, 0.02286, -0.01, 0, 0, boundaries = {"rf_te" : "Surface current"})
@@ -53,14 +49,17 @@ class TestRFTEHarmonicPlanar(Agros2DTestCase):
         # labels
         geometry.add_label(0.0359418, 0.0109393, materials = {"rf_te" : "Air"})
         
-        agros2d.view.zoom_best_fit()
         
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
-    def test_values(self):         
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("rf_te")
+                 
         # point value
-        point = self.rf.local_values(0.019107, 0.016725)
+        point = solution.local_values(0.019107, 0.016725)
         self.value_test("Electric field", point["E"], 456.810483)
         self.value_test("Electric field - real", point["Er"], 141.973049)
         self.value_test("Electric field - imag", point["Ei"], 434.18829)
@@ -78,11 +77,11 @@ class TestRFTEHarmonicPlanar(Agros2DTestCase):
         self.value_test("Poynting vector - y", point["Ny"], -3.138616, 1)
         
         # volume integral
-        # volume_integrals = rf.volume_integrals([0, 1, 2])
+        # volume_integrals = solution.volume_integrals([0, 1, 2])
         # testEnergy = agros2d.test("Energy", volume["We"], 1.799349e-8)
         
         # surface integral
-        # surface_integrals = rf.surface_integrals([1, 12])
+        # surface_integrals = solution.surface_integrals([1, 12])
         # testQ = agros2d.test("Electric charge", surface["Q"], -1.291778e-9)
         
 class TestRFTEHarmonicAxisymmetric(Agros2DTestCase):
@@ -93,14 +92,10 @@ class TestRFTEHarmonicAxisymmetric(Agros2DTestCase):
         problem.mesh_type = "triangle"
         
         problem.frequency = 1e+09
-        
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
+
         # fields
         # rf
-        self.rf = agros2d.field("rf_te")
+        self.rf = problem.field("rf_te")
         self.rf.analysis_type = "harmonic"
         self.rf.number_of_refinements = 2
         self.rf.polynomial_order = 3
@@ -116,7 +111,7 @@ class TestRFTEHarmonicAxisymmetric(Agros2DTestCase):
         self.rf.add_material("Air", {"rf_te_permittivity" : 1, "rf_te_permeability" : 1, "rf_te_conductivity" : 0, "rf_te_current_density_external_real" : 0, "rf_te_current_density_external_imag" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0, 1, 0, -1, boundaries = {"rf_te" : "PEC"})
         geometry.add_edge(0, -1, 1, -1, boundaries = {"rf_te" : "Impedance"})
         geometry.add_edge(1, -1, 1, -0.75, boundaries = {"rf_te" : "Impedance"})
@@ -135,13 +130,17 @@ class TestRFTEHarmonicAxisymmetric(Agros2DTestCase):
         geometry.add_label(0.399371, 0.440347, materials = {"rf_te" : "Air"})
         geometry.add_label(0.484795, -0.434246, materials = {"rf_te" : "none"})
         geometry.add_label(0.57193, 0.0710058, materials = {"rf_te" : "none"})
-        agros2d.view.zoom_best_fit()
         
-        problem.solve()
+        # solve problem
+        self.computation = problem.computation()
+        self.computation.solve()
         
     def test_values(self): 
+        # solution
+        solution = self.computation.solution("rf_te")
+        
         # point value        
-        point1 = self.rf.local_values(1.729e-01, -1.289e-01)
+        point1 = solution.local_values(1.729e-01, -1.289e-01)
         
         self.value_test("Electric field", point1["E"], 1.6461)
         self.value_test("Electric field - real", point1["Er"], 0.49426)
@@ -151,7 +150,7 @@ class TestRFTEHarmonicAxisymmetric(Agros2DTestCase):
         self.value_test("Displacement - real", point1["Dr"], 4.3762E-12)
         self.value_test("Displacement - imag", point1["Di"], 1.3902E-11)
 
-        point2 = self.rf.local_values(0.05574473738670349, -0.17109256982803345)
+        point2 = solution.local_values(0.05574473738670349, -0.17109256982803345)
         
         self.value_test("Magnetic field", point2["H"], 0.010094494526820486)
         self.value_test("Magnetic field r component - real", point2["Hrr"], -6.373444608076603E-4)

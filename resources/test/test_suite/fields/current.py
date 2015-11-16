@@ -8,13 +8,9 @@ class TestCurrentPlanar(Agros2DTestCase):
         problem = agros2d.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
-        
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
+               
         # fields
-        self.current = agros2d.field("current")
+        self.current = problem.field("current")
         self.current.analysis_type = "steadystate"
         self.current.number_of_refinements = 3
         self.current.polynomial_order = 3
@@ -29,7 +25,7 @@ class TestCurrentPlanar(Agros2DTestCase):
         self.current.add_material("mat 3", {"current_conductivity" : 1e3})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         
         # edges
         geometry.add_edge(0, 0, 0.6, 0, boundaries = {"current" : "Zero"})
@@ -45,16 +41,18 @@ class TestCurrentPlanar(Agros2DTestCase):
         # labels
         geometry.add_label(0.3, 0.670924, materials = {"current" : "mat 1"})
         geometry.add_label(0.105779, 0.364111, materials = {"current" : "mat 2"})
-        geometry.add_label(0.394296, 0.203668, materials = {"current" : "mat 3"})
-        
-        agros2d.view.zoom_best_fit()
-        
+        geometry.add_label(0.394296, 0.203668, materials = {"current" : "mat 3"})        
+       
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
     def test_values(self):
+        # solution
+        solution = self.computation.solution("current")
+        
         # point value
-        point = self.current.local_values(3.154e-01, 3.523e-01)
+        point = solution.local_values(3.154e-01, 3.523e-01)
         self.value_test("Scalar potential", point["V"], 0.87224)
         self.value_test("Electric field", point["Er"], 1.831040)
         self.value_test("Electric field - x", point["Erx"], 1.0138)
@@ -65,11 +63,11 @@ class TestCurrentPlanar(Agros2DTestCase):
         self.value_test("Losses", point["pj"], 3354.2)
         
         # volume integral
-        volume = self.current.volume_integrals([0, 1, 2])
+        volume = solution.volume_integrals([0, 1, 2])
         self.value_test("Losses", volume["Pj"], 11792)
         
         # surface integral
-        surface = self.current.surface_integrals([0])
+        surface = solution.surface_integrals([0])
         self.value_test("Current", surface["Ir"], 3629.425713)
         
 class TestCurrentAxisymmetric(Agros2DTestCase):
@@ -79,12 +77,8 @@ class TestCurrentAxisymmetric(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
-        self.current = agros2d.field("current")
+        self.current = problem.field("current")
         self.current.analysis_type = "steadystate"
         self.current.number_of_refinements = 1
         self.current.polynomial_order = 4
@@ -98,7 +92,7 @@ class TestCurrentAxisymmetric(Agros2DTestCase):
         self.current.add_material("Copper", {"current_conductivity" : 5.7e7})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         
         # edges
         geometry.add_edge(0, 0.45, 0, 0, boundaries = {"current" : "Neumann"})
@@ -109,15 +103,17 @@ class TestCurrentAxisymmetric(Agros2DTestCase):
         
         # labels
         geometry.add_label(0.0933957, 0.350253, materials = {"current" : "Copper"})
-        
-        agros2d.view.zoom_best_fit()
-        
+                
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
     def test_values(self):
+        # solution
+        solution = self.computation.solution("current")
+        
         # point value
-        point = self.current.local_values(0.213175, 0.25045)
+        point = solution.local_values(0.213175, 0.25045)
         self.value_test("Scalar potential", point["V"], 5.566438)
         self.value_test("Electric field", point["Er"], 32.059116)
         self.value_test("Electric field - r", point["Err"], -11.088553)
@@ -128,11 +124,11 @@ class TestCurrentAxisymmetric(Agros2DTestCase):
         self.value_test("Losses", point["pj"], 5.858385e10)	
         
         # volume integral
-        volume = self.current.volume_integrals([0])
+        volume = solution.volume_integrals([0])
         self.value_test("Losses", volume["Pj"], 4.542019e9)
         
         # surface integral
-        surface = self.current.surface_integrals([1])
+        surface = solution.surface_integrals([1])
         self.value_test("Current", surface["Ir"], -2.166256e8)        
         
 if __name__ == '__main__':        

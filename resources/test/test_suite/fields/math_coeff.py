@@ -10,12 +10,8 @@ class TestMathCoeffPlanar(Agros2DTestCase):
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
-        self.math_coeff = agros2d.field("math_coeff")
+        self.math_coeff = problem.field("math_coeff")
         self.math_coeff.analysis_type = "steadystate"
         self.math_coeff.number_of_refinements = 2
         self.math_coeff.polynomial_order = 3
@@ -30,7 +26,7 @@ class TestMathCoeffPlanar(Agros2DTestCase):
         self.math_coeff.add_material("Material", {"math_coeff_c" : 2, "math_coeff_a" : 3, "math_coeff_beta_x" : 1, "math_coeff_beta_y" : 2, "math_coeff_f" : 5})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         
         # edges
         geometry.add_edge(-0.95, 0.6, 0.45, 0.8, boundaries = {"math_coeff" : "Neumann"})
@@ -50,15 +46,17 @@ class TestMathCoeffPlanar(Agros2DTestCase):
         geometry.add_label(0.350372, -0.0349351, materials = {"math_coeff" : "none"})
         geometry.add_label(0.270465, 0.500445, materials = {"math_coeff" : "Material"})
         geometry.add_label(-0.540581, 0.239645, materials = {"math_coeff" : "none"})
-        
-        agros2d.view.zoom_best_fit()
-        
+                    
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
     def test_values(self):
+        # solution
+        solution = self.computation.solution("math_coeff")
+        
         # point value
-        point = self.math_coeff.local_values(-6.800e-01, -2.526e-02)
+        point = solution.local_values(-6.800e-01, -2.526e-02)
         self.value_test("Solution", point["u"], 3.1225)
         self.value_test("Gradient", point["g"], 10.695858)
         self.value_test("Gradient - x", point["gx"], -4.84176)
@@ -68,11 +66,11 @@ class TestMathCoeffPlanar(Agros2DTestCase):
         self.value_test("Flux - y", point["fy"], -9.53723 * 2)
         
         # volume integral
-        volume = self.math_coeff.volume_integrals([1])
+        volume = solution.volume_integrals([1])
         self.value_test("Solution", volume["u"], 7.07878)
         
         # surface integral
-        surface = self.math_coeff.surface_integrals([0, 1, 2, 3, 4])
+        surface = solution.surface_integrals([0, 1, 2, 3, 4])
         self.value_test("Gradient", surface["g"], 59.98499 / 2)
         self.value_test("Flux", surface["f"], 59.98499)
    
@@ -83,12 +81,8 @@ class TestMathCoeffAxisymmetric(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
-        self.math_coeff = agros2d.field("math_coeff")
+        self.math_coeff = problem.field("math_coeff")
         self.math_coeff.analysis_type = "steadystate"
         self.math_coeff.number_of_refinements = 3
         self.math_coeff.polynomial_order = 3
@@ -103,7 +97,7 @@ class TestMathCoeffAxisymmetric(Agros2DTestCase):
         self.math_coeff.add_material("Material 2", {"math_coeff_c" : 3, "math_coeff_a" : 0, "math_coeff_beta_x" : -3, "math_coeff_beta_y" : 4, "math_coeff_f" : 0})
 
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         
         # edges
         geometry.add_edge(0, 1.6, 0, 0.95, boundaries = {"math_coeff" : "Zero flux"})
@@ -124,14 +118,16 @@ class TestMathCoeffAxisymmetric(Agros2DTestCase):
         geometry.add_label(0.301166, 0.88379, materials = {"math_coeff" : "Material 1"})
         geometry.add_label(0.755711, -0.216858, materials = {"math_coeff" : "Material 2"})
         
-        agros2d.view.zoom_best_fit()
-        
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
     def test_values(self):
+        # solution
+        solution = self.computation.solution("math_coeff")
+        
         # point value
-        point = self.math_coeff.local_values(1.220, 8.820e-02)
+        point = solution.local_values(1.220, 8.820e-02)
         self.value_test("Solution", point["u"], -16.28353)
         self.value_test("Gradient", point["g"], 15.85405	)
         self.value_test("Gradient - r", point["gr"], -14.25501)
@@ -141,11 +137,11 @@ class TestMathCoeffAxisymmetric(Agros2DTestCase):
         self.value_test("Flux - z", point["fz"], -6.93706 * 3)
         
         # volume integral
-        volume = self.math_coeff.volume_integrals([2])
+        volume = solution.volume_integrals([2])
         self.value_test("Solution", volume["u"], -45.8945)
         
         # surface integral
-        surface = self.math_coeff.surface_integrals([5, 6])
+        surface = solution.surface_integrals([5, 6])
         self.value_test("Gradient", surface["g"], -281.55775	 / 3 - 437.52318 / 5)
         self.value_test("Flux", surface["f"], -719.08092)
 
@@ -161,7 +157,7 @@ class TestMathCoeffTransientPlanar(Agros2DTestCase):
         problem.time_steps = 20
         
         # math_coeff
-        self.math_coeff = agros2d.field("math_coeff")
+        self.math_coeff = problem.field("math_coeff")
         self.math_coeff.analysis_type = "transient"
         self.math_coeff.transient_initial_condition = 0
         self.math_coeff.number_of_refinements = 2
@@ -178,7 +174,7 @@ class TestMathCoeffTransientPlanar(Agros2DTestCase):
         self.math_coeff.add_material("Material", {"math_coeff_ea" : 300, "math_coeff_da" : 280, "math_coeff_c" : 3, "math_coeff_a" : 4, "math_coeff_beta_x" : 2, "math_coeff_beta_y" : -2, "math_coeff_f" : 5})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(-0.22, 0.055, 0.045, 0.08, boundaries = {"math_coeff" : "Neumann"})
         geometry.add_edge(0.045, 0.08, 0.095, 0.005, boundaries = {"math_coeff" : "Neumann"})
         geometry.add_edge(0.095, 0.005, 0.05, -0.095, boundaries = {"math_coeff" : "Neumann"})
@@ -198,14 +194,16 @@ class TestMathCoeffTransientPlanar(Agros2DTestCase):
         geometry.add_label(0.0270465, 0.0500445, materials = {"math_coeff" : "Material"})
         geometry.add_label(-0.150064, 0.00228808, materials = {"math_coeff" : "none"})
         
-        agros2d.view.zoom_best_fit()
-        
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
     def test_values(self):
+        # solution
+        solution = self.computation.solution("math_coeff")
+        
         # point value
-        point = self.math_coeff.local_values(9.386e-01, 1.147e-01)
+        point = solution.local_values(9.386e-01, 1.147e-01)
         self.value_test("Solution", point["u"], -0.91572, 5)
         self.value_test("Gradient", point["g"], 0.176053, 10)
         self.value_test("Gradient - r", point["gr"], 0.04536, 10)
@@ -215,11 +213,11 @@ class TestMathCoeffTransientPlanar(Agros2DTestCase):
         self.value_test("Flux - z", point["fz"], 0.17011 * 3, 10)
         
         # volume integral
-        volume = self.math_coeff.volume_integrals([1])
+        volume = solution.volume_integrals([1])
         self.value_test("Solution", volume["u"], -4.29455, 10)
         
         # surface integral
-        surface = self.math_coeff.surface_integrals([4])
+        surface = solution.surface_integrals([4])
         self.value_test("Gradient", surface["g"], 1.33109 / 3, 10)
         self.value_test("Flux", surface["f"], 1.33109, 10)
         
@@ -233,13 +231,9 @@ class TestMathCoeffTransientAxisymmetric(Agros2DTestCase):
         problem.time_method_order = 2
         problem.time_total = 4
         problem.time_method_tolerance = 0.05
-        
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
+
         # fields
-        self.math_coeff = agros2d.field("math_coeff")
+        self.math_coeff = problem.field("math_coeff")
         self.math_coeff.analysis_type = "transient"
         self.math_coeff.number_of_refinements = 3
         self.math_coeff.polynomial_order = 3
@@ -254,7 +248,7 @@ class TestMathCoeffTransientAxisymmetric(Agros2DTestCase):
         self.math_coeff.add_material("Material 2", {"math_coeff_ea" : 1, "math_coeff_da" : 4, "math_coeff_c" : 3, "math_coeff_a" : 0, "math_coeff_beta_x" : -3, "math_coeff_beta_y" : 4, "math_coeff_f" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0, 1.6, 0, 0.95, boundaries = {"math_coeff" : "Zero flux"})
         geometry.add_edge(0, 0.95, 0.35, 0.45, boundaries = {"math_coeff" : "Zero flux"})
         geometry.add_edge(0.35, 0.45, 0.25, 0, boundaries = {"math_coeff" : "Zero flux"})
@@ -266,16 +260,18 @@ class TestMathCoeffTransientAxisymmetric(Agros2DTestCase):
         geometry.add_edge(0.35, 0.45, 1.4, 0.8)
         
         geometry.add_label(0.301166, 0.88379, materials = {"math_coeff" : "Material 1"})
-        geometry.add_label(0.755711, -0.216858, materials = {"math_coeff" : "Material 2"})
-        
-        agros2d.view.zoom_best_fit()
+        geometry.add_label(0.755711, -0.216858, materials = {"math_coeff" : "Material 2"})        
         
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
     def test_values(self):
+        # solution
+        solution = self.computation.solution("math_coeff")
+        
         # point value
-        point = self.math_coeff.local_values(9.386e-01, 1.147e-01)
+        point = solution.local_values(9.386e-01, 1.147e-01)
         self.value_test("Solution", point["u"], -0.91572, 5)
         self.value_test("Gradient", point["g"], 0.176053, 10)
         self.value_test("Gradient - r", point["gr"], 0.04536, 10)
@@ -285,11 +281,11 @@ class TestMathCoeffTransientAxisymmetric(Agros2DTestCase):
         self.value_test("Flux - z", point["fz"], 0.17011 * 3, 10)
         
         # volume integral
-        volume = self.math_coeff.volume_integrals([1])
+        volume = solution.volume_integrals([1])
         self.value_test("Solution", volume["u"], -4.29455, 10)
         
         # surface integral
-        surface = self.math_coeff.surface_integrals([4])
+        surface = solution.surface_integrals([4])
         self.value_test("Gradient", surface["g"], 1.33109 / 3, 10)
         self.value_test("Flux", surface["f"], 1.33109, 10)
         
@@ -298,7 +294,8 @@ if __name__ == '__main__':
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffPlanar))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffAxisymmetric))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffPlanar))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffAxisymmetric))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffTransientPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffTransientAxisymmetric))    
     suite.run(result)

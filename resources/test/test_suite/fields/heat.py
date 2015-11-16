@@ -9,12 +9,8 @@ class TestHeatPlanar(Agros2DTestCase):
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
 
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-
         # fields
-        self.heat = agros2d.field("heat")
+        self.heat = problem.field("heat")
         self.heat.analysis_type = "steadystate"
         self.heat.number_of_refinements = 2
         self.heat.polynomial_order = 3
@@ -28,7 +24,7 @@ class TestHeatPlanar(Agros2DTestCase):
         self.heat.add_material("Material 2", {"heat_volume_heat" : 70000, "heat_conductivity" : 10, "heat_density" : 0, "heat_velocity_x" : 0, "heat_velocity_y" : 0, "heat_specific_heat" : 0, "heat_velocity_angular" : 0})
 
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
 
         # edges
         geometry.add_edge(0.1, 0.15, 0, 0.15, boundaries = {"heat" : "T outer"})
@@ -44,14 +40,16 @@ class TestHeatPlanar(Agros2DTestCase):
         geometry.add_label(0.0553981, 0.124595, materials = {"heat" : "Material 1"}, area=0.0003)
         geometry.add_label(0.070091, 0.068229, materials = {"heat" : "Material 2"}, area=0.0003)
 
-        agros2d.view.zoom_best_fit()
-
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
 
-    def test_values(self):        
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("heat")
+                
         # point value
-        point = self.heat.local_values(0.079734, 0.120078)
+        point = solution.local_values(0.079734, 0.120078)
         self.value_test("Temperature", point["T"], 2.76619)
         self.value_test("Gradient", point["G"], 299.50258)
         self.value_test("Gradient - x", point["Gx"], -132.7564285)
@@ -61,11 +59,11 @@ class TestHeatPlanar(Agros2DTestCase):
         self.value_test("Heat flux - y", point["Fy"], -536.94516)
 
         # volume integral
-        volume = self.heat.volume_integrals([0])
+        volume = solution.volume_integrals([0])
         self.value_test("Temperature", volume["T"], 0.00335)
 
         # surface integral
-        surface = self.heat.surface_integrals([0, 6, 7])
+        surface = solution.surface_integrals([0, 6, 7])
         self.value_test("Heat flux", surface["f"], -85.821798)
 
 class TestHeatAxisymmetric(Agros2DTestCase):
@@ -75,12 +73,8 @@ class TestHeatAxisymmetric(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
 
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-
         # fields
-        self.heat = agros2d.field("heat")
+        self.heat = problem.field("heat")
         self.heat.analysis_type = "steadystate"
         self.heat.number_of_refinements = 2
         self.heat.polynomial_order = 3
@@ -94,7 +88,7 @@ class TestHeatAxisymmetric(Agros2DTestCase):
         self.heat.add_material("Material", {"heat_volume_heat" : 6e+06, "heat_conductivity" : 52, "heat_density" : 7800, "heat_velocity_x" : 0, "heat_velocity_y" : 0.001, "heat_specific_heat" : 300, "heat_velocity_angular" : 0})
                     
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
 
         # edges
         geometry.add_edge(0.02, 0, 0.1, 0, boundaries = {"heat" : "Temperature"})
@@ -107,14 +101,16 @@ class TestHeatAxisymmetric(Agros2DTestCase):
         # labels
         geometry.add_label(0.0460134, 0.0867717, materials = {"heat" : "Material"}, area=0.0003)
 
-        agros2d.view.zoom_best_fit()
-
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
 
-    def test_values(self):   
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("heat")
+           
         # point value
-        point = self.heat.local_values(0.062926, 0.038129)
+        point = solution.local_values(0.062926, 0.038129)
         self.value_test("Temperature", point["T"], 105.414118)
         self.value_test("Gradient", point["G"], 2890.873908)
         self.value_test("Gradient - r", point["Gr"], 370.891549)
@@ -124,11 +120,11 @@ class TestHeatAxisymmetric(Agros2DTestCase):
         self.value_test("Heat flux - z", point["Fz"], -1.490831e5)
 
         # volume integral
-        volume = self.heat.volume_integrals([0])
+        volume = solution.volume_integrals([0])
         self.value_test("Temperature", volume["T"], 0.616202)
 
         # surface integral
-        surface = self.heat.surface_integrals([1])
+        surface = solution.surface_integrals([1])
         self.value_test("Heat flux", surface["f"], 199.0004)
         
 class TestHeatNonlinPlanarNewton(Agros2DTestCase):
@@ -138,12 +134,8 @@ class TestHeatNonlinPlanarNewton(Agros2DTestCase):
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
 
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-
         # fields
-        self.heat = agros2d.field("heat")
+        self.heat = problem.field("heat")
         self.heat.analysis_type = "steadystate"
         self.heat.number_of_refinements = 2
         self.heat.polynomial_order = 2
@@ -165,7 +157,7 @@ class TestHeatNonlinPlanarNewton(Agros2DTestCase):
         self.heat.add_material("Material", {"heat_conductivity" : 230, "heat_volume_heat" : 0})
 
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
 
         # edges
         geometry.add_edge(-0.25, 0.25, -0.1, 0.1, boundaries = {"heat" : "Convection"})
@@ -183,24 +175,26 @@ class TestHeatNonlinPlanarNewton(Agros2DTestCase):
         geometry.add_label(-0.0150215, 0.018161, materials = {"heat" : "Material"})
         geometry.add_label(-0.183934, 0.0732177, materials = {"heat" : "Material - nonlin"})
 
-        agros2d.view.zoom_best_fit()
-
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
 
-    def test_values(self):   
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("heat")
+           
         # point value
-        point = self.heat.local_values(8.620e-02, 1.620e-01)
+        point = solution.local_values(8.620e-02, 1.620e-01)
         self.value_test("Temperature", point["T"], 357.17654)
         self.value_test("Gradient", point["G"], 444.435957)
         self.value_test("Heat flux", point["F"], 1.805517e5)
 
         # volume integral
-        volume = self.heat.volume_integrals([1])
+        volume = solution.volume_integrals([1])
         self.value_test("Temperature", volume["T"], 12.221687)
 
         # surface integral
-        surface = self.heat.surface_integrals([8])
+        surface = solution.surface_integrals([8])
         self.value_test("Heat flux", surface["f"], 96464.56418)
         
 class TestHeatNonlinPlanarPicard(Agros2DTestCase):
@@ -210,12 +204,8 @@ class TestHeatNonlinPlanarPicard(Agros2DTestCase):
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
 
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-
         # fields
-        self.heat = agros2d.field("heat")
+        self.heat = problem.field("heat")
         self.heat.analysis_type = "steadystate"
         self.heat.number_of_refinements = 2
         self.heat.polynomial_order = 2
@@ -234,7 +224,7 @@ class TestHeatNonlinPlanarPicard(Agros2DTestCase):
         self.heat.add_material("Material", {"heat_conductivity" : 230, "heat_volume_heat" : 0})
 
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
 
         # edges
         geometry.add_edge(-0.25, 0.25, -0.1, 0.1, boundaries = {"heat" : "Convection"})
@@ -252,24 +242,26 @@ class TestHeatNonlinPlanarPicard(Agros2DTestCase):
         geometry.add_label(-0.0150215, 0.018161, materials = {"heat" : "Material"})
         geometry.add_label(-0.183934, 0.0732177, materials = {"heat" : "Material - nonlin"})
 
-        agros2d.view.zoom_best_fit()
-
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
 
-    def test_values(self):   
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("heat")
+           
         # point value
-        point = self.heat.local_values(8.620e-02, 1.620e-01)
+        point = solution.local_values(8.620e-02, 1.620e-01)
         self.value_test("Temperature", point["T"], 357.17654)
         self.value_test("Gradient", point["G"], 444.435957)
         self.value_test("Heat flux", point["F"], 1.805517e5)
 
         # volume integral
-        volume = self.heat.volume_integrals([1])
+        volume = solution.volume_integrals([1])
         self.value_test("Temperature", volume["T"], 12.221687)
 
         # surface integral
-        surface = self.heat.surface_integrals([8])
+        surface = solution.surface_integrals([8])
         self.value_test("Heat flux", surface["f"], 96464.56418)
         
 class BenchmarkHeatTransientAxisymmetric(Agros2DTestCase):
@@ -289,13 +281,9 @@ class BenchmarkHeatTransientAxisymmetric(Agros2DTestCase):
         problem.time_steps = 30
         problem.time_total = 190
 
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-
         # fields
         # heat
-        self.heat = agros2d.field("heat")
+        self.heat = problem.field("heat")
         self.heat.analysis_type = "transient"
         self.heat.transient_initial_condition = 0
         self.heat.number_of_refinements = 1
@@ -308,7 +296,7 @@ class BenchmarkHeatTransientAxisymmetric(Agros2DTestCase):
         self.heat.add_material("Material", {"heat_volume_heat" : 0, "heat_conductivity" : 52, "heat_velocity_x" : 0, "heat_density" : 7850, "heat_velocity_y" : 0, "heat_specific_heat" : 460, "heat_velocity_angular" : 0})
 
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0, 0.4, 0, 0, boundaries = {"heat" : "Symmetry"})
         geometry.add_edge(0.3, 0.4, 0.3, 0, boundaries = {"heat" : "Temperature"})
         geometry.add_edge(0.3, 0, 0, 0, boundaries = {"heat" : "Temperature"})
@@ -316,14 +304,16 @@ class BenchmarkHeatTransientAxisymmetric(Agros2DTestCase):
 
         geometry.add_label(0.151637, 0.112281, materials = {"heat" : "Material"}, area = 0.01)
 
-        agros2d.view.zoom_best_fit()
-
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
 
     def test_values(self):
+        # solution
+        solution = self.computation.solution("heat")
+        
         # point value
-        point = self.heat.local_values(0.1, 0.3)
+        point = solution.local_values(0.1, 0.3)
         self.value_test("Temperature", point["T"], 186.5, 0.0004) # permissible error 0.02 %
         
 class TestHeatTransientAxisymmetric(Agros2DTestCase):
@@ -338,12 +328,8 @@ class TestHeatTransientAxisymmetric(Agros2DTestCase):
         problem.time_total = 10000
         problem.time_steps = 40
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
-        self.heat = agros2d.field("heat")
+        self.heat = problem.field("heat")
         self.heat.analysis_type = "transient"
         self.heat.number_of_refinements = 0
         self.heat.polynomial_order = 2
@@ -360,7 +346,7 @@ class TestHeatTransientAxisymmetric(Agros2DTestCase):
         self.heat.add_material("Brass", {"heat_conductivity" : 100, "heat_volume_heat" : 0, "heat_density" : 8400, "heat_specific_heat" : 378}) 
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         
         # edges
         geometry.add_edge(0, 0.18, 0.035, 0.18, 0, boundaries = {"heat" : "Convection"})
@@ -398,25 +384,27 @@ class TestHeatTransientAxisymmetric(Agros2DTestCase):
         geometry.add_label(0.00380689, 0.151055, materials = {"heat" : "Air"})
         geometry.add_label(0.0112064, 0.0336487, materials = {"heat" : "Brass"})
         
-        agros2d.view.zoom_best_fit()
-        
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
 
     def test_values(self):
+        # solution
+        solution = self.computation.solution("heat")
+        
         # point value
-        point = self.heat.local_values(0.00503, 0.134283)
+        point = solution.local_values(0.00503, 0.134283)
         self.value_test("Temperature", point["T"], 73.115)
         self.value_test("Heat flux", point["F"], 6.9739, 0.09)   #todo: large error
         self.value_test("Heat flux - r", point["Fr"], -3.39076, 0.09) #todo: large error
         self.value_test("Heat flux - z", point["Fz"], -6.09395, 0.09) #todo: large error
         
         # volume integral
-        volume = self.heat.volume_integrals([3])
+        volume = solution.volume_integrals([3])
         self.value_test("Temperature", volume["T"], 0.00458)
         
         # surface integral
-        surface = self.heat.surface_integrals([26])
+        surface = solution.surface_integrals([26])
         #self.value_test("Heat flux", surface["f"], 0.032866, error = 0.05)  #todo: jaky heat flux v comsolu pouzit?
         
 if __name__ == '__main__':        
@@ -424,10 +412,10 @@ if __name__ == '__main__':
 
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatPlanar))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatAxisymmetric))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatPlanar))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatAxisymmetric))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarNewton))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarPicard))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatTransientAxisymmetric))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(BenchmarkHeatTransientAxisymmetric))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarPicard))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatTransientAxisymmetric))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(BenchmarkHeatTransientAxisymmetric))
     suite.run(result)

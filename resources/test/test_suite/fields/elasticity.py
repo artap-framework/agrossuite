@@ -9,12 +9,8 @@ class TestElasticityPlanar(Agros2DTestCase):
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
-        self.elasticity = agros2d.field("elasticity")
+        self.elasticity = problem.field("elasticity")
         self.elasticity.analysis_type = "steadystate"
         self.elasticity.number_of_refinements = 3
         self.elasticity.polynomial_order = 3
@@ -29,7 +25,7 @@ class TestElasticityPlanar(Agros2DTestCase):
         self.elasticity.add_material("Material 3", {"elasticity_young_modulus" : 1e11, "elasticity_poisson_ratio" : 0.33, "elasticity_volume_force_x" : 0, "elasticity_volume_force_y" : 0, "elasticity_alpha" : 1e-6, "elasticity_temperature_difference" : 10})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         
         # edges
         geometry.add_edge(1.4, 0.2, 1.6, 0.2, boundaries = {"elasticity" : "Load"})
@@ -48,14 +44,16 @@ class TestElasticityPlanar(Agros2DTestCase):
         geometry.add_label(1.48989, 0.108829, materials = {"elasticity" : "Material 3"})
         geometry.add_label(1.20588, 0.108829, materials = {"elasticity" : "Material 2"})
         
-        agros2d.view.zoom_best_fit()
-        
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
-    def test_values(self):        
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("elasticity")
+              
         # point value
-        point = self.elasticity.local_values(1.327264, 0.041087)
+        point = solution.local_values(1.327264, 0.041087)
         # testVonMises = agros2d.test("Von Mises stress", point["mises"], 1.175226e5)
         # testTresca = agros2d.test("Tresca stress", point["tresca"], 1.344939e5)
         self.value_test("Displacement", point["d"], 1.682194e-5)
@@ -70,7 +68,7 @@ class TestElasticityPlanar(Agros2DTestCase):
         # testexy = agros2d.test("Strain XY", point["exy"], -8.616553e-8)
         
         # surface integral
-        # surface = elasticity.surface_integrals([0])
+        # surface = solution.surface_integrals([0])
         # testI = agros2d.test("Current", surface["I"], 3629.425713)
         
 
@@ -81,12 +79,8 @@ class TestElasticityAxisymmetric(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
-        self.elasticity = agros2d.field("elasticity")
+        self.elasticity = problem.field("elasticity")
         self.elasticity.analysis_type = "steadystate"
         self.elasticity.number_of_refinements = 2
         self.elasticity.polynomial_order = 3
@@ -101,7 +95,7 @@ class TestElasticityAxisymmetric(Agros2DTestCase):
         self.elasticity.add_material("Material 3", {"elasticity_young_modulus" : 1e+11, "elasticity_poisson_ratio" : 0.33, "elasticity_volume_force_x" : 0, "elasticity_volume_force_y" : 0, "elasticity_alpha" : 2e-7, "elasticity_temperature_difference" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         
         # edges
         geometry.add_edge(1.4, 0.2, 1.6, 0.2, boundaries = {"elasticity" : "Load"})
@@ -120,14 +114,16 @@ class TestElasticityAxisymmetric(Agros2DTestCase):
         geometry.add_label(1.48989, 0.108829, materials = {"elasticity" : "Material 3"})
         geometry.add_label(1.20588, 0.108829, materials = {"elasticity" : "Material 2"})
         
-        agros2d.view.zoom_best_fit()
-        
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
-    def test_values(self):                    
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("elasticity")
+                            
         # point value
-        point = self.elasticity.local_values(1.369034, 0.04259)
+        point = solution.local_values(1.369034, 0.04259)
         #testVonMises = agros2d.test("Von Mises stress", point["mises"], 1.69779e5)
         # testTresca = agros2d.test("Tresca stress", point["tresca"], 1.235475e5)
         self.value_test("Displacement", point["d"], 6.154748e-6)
@@ -143,7 +139,7 @@ class TestElasticityAxisymmetric(Agros2DTestCase):
         #testerz = agros2d.test("Strain RZ", point["exy"], 5.236592e-7)
         
         # surface integral
-        # surface = elasticity.surface_integrals([0])
+        # surface = solution.surface_integrals([0])
         # testI = agros2d.test("Current", surface["I"], 3629.425713)        
         
 if __name__ == '__main__':        

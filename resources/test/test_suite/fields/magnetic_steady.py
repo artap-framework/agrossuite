@@ -10,12 +10,8 @@ class TestMagneticPlanar(Agros2DTestCase):
         self.problem.mesh_type = "triangle"
         self.problem.frequency = 100
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
-        self.magnetic = agros2d.field("magnetic")
+        self.magnetic = self.problem.field("magnetic")
         self.magnetic.analysis_type = "steadystate"
         self.magnetic.number_of_refinements = 0
         self.magnetic.polynomial_order = 2
@@ -29,7 +25,7 @@ class TestMagneticPlanar(Agros2DTestCase):
         self.magnetic.add_material("Velocity", {"magnetic_permeability" : 1, "magnetic_conductivity" : 1e7, "magnetic_velocity_x" : 2})
         
         # geometry
-        self.geometry = agros2d.geometry
+        self.geometry = self.problem.geometry()
         
         # edges
         self.geometry.add_edge(-0.5, 1, 0.5, 1, boundaries = {"magnetic" : "A = 0"})
@@ -62,11 +58,12 @@ class TestMagneticPlanar(Agros2DTestCase):
         self.geometry.add_label(0.310203, 0.631164, materials = {"magnetic" : "Air"})
         self.geometry.add_label(-0.295858, -0.182894, materials = {"magnetic" : "Velocity"})
         
-        agros2d.view.zoom_best_fit()
-        
-    def general_test_values(self):                  
+    def general_test_values(self):
+        # solution
+        solution = self.computation.solution("magnetic")
+                          
         # point value
-        point = self.magnetic.local_values(0.018895, -0.173495)
+        point = solution.local_values(0.018895, -0.173495)
         self.value_test("Magnetic potential", point["Ar"], 0.002978)
         self.value_test("Flux density", point["Br"], 0.013047)
         self.value_test("Flux density - x", point["Brx"], 0.008413)
@@ -82,18 +79,18 @@ class TestMagneticPlanar(Agros2DTestCase):
         self.value_test("Lorentz force - y", point["Fly"], -1671.99571)
         
         # volume integral
-        volume = self.magnetic.volume_integrals([4])
+        volume = solution.volume_integrals([4])
         self.value_test("Energy", volume["Wm"], 3.088946)
         self.value_test("Losses", volume["Pj"], 220.022114)
         self.value_test("Lorentz force - x", volume["Flx"], -110.011057)
         self.value_test("Lorentz force - y", volume["Fly"], -36.62167)        
-        volume = self.magnetic.volume_integrals([0])
+        volume = solution.volume_integrals([0])
         self.value_test("Volume Maxwell force - x", volume["Ftx"], 2.531945167373358)
         self.value_test("Volume Maxwell force - y", volume["Fty"], -10.176192051889345, 0.05)            
         self.value_test("Volume Maxwell torque", volume["Tt"], 0.09914308361389448)
         
         # surface integral
-        surface = self.magnetic.surface_integrals([2, 3, 4, 5])
+        surface = solution.surface_integrals([2, 3, 4, 5])
         self.value_test("Surface Maxwell force - x", surface["Ftx"], 2.531945167373358)
         self.value_test("Surface Maxwell force - y", surface["Fty"], -10.176192051889345, 0.05)
         self.value_test("Surface Maxwell torque", surface["Tt"], 0.09914308361389448)          
@@ -101,13 +98,15 @@ class TestMagneticPlanar(Agros2DTestCase):
 #    def test_values_total_current(self):
 #        self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_total_current_prescribed" : 1, "magnetic_total_current_real" : 1e6*1.225e-2})
 #        self.geometry.add_label(0.00301448, 0.0404858, area = 0.005, materials = {"magnetic" : "Cu"})
-#        self.problem.solve()
+#        self.computation = self.problem.computation()
+#        self.computation.solve()
 #        self.general_test_values()
 
     def test_values_current_density(self):
         self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_current_density_external_real" : 1e6})
         self.geometry.add_label(0.00301448, 0.0404858, area = 0.005, materials = {"magnetic" : "Cu"})
-        self.problem.solve()
+        self.computation = self.problem.computation()
+        self.computation.solve()
         self.general_test_values()
             
 class TestMagneticAxisymmetric(Agros2DTestCase):
@@ -116,13 +115,9 @@ class TestMagneticAxisymmetric(Agros2DTestCase):
         self.problem = agros2d.problem(clear = True)
         self.problem.coordinate_type = "axisymmetric"
         self.problem.mesh_type = "triangle"
-        
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
+
         # fields
-        self.magnetic = agros2d.field("magnetic")
+        self.magnetic = self.problem.field("magnetic")
         self.magnetic.analysis_type = "steadystate"
         self.magnetic.number_of_refinements = 0
         self.magnetic.polynomial_order = 2
@@ -135,7 +130,7 @@ class TestMagneticAxisymmetric(Agros2DTestCase):
         self.magnetic.add_material("Magnet", {"magnetic_permeability" : 1.1, "magnetic_remanence" : 0.6, "magnetic_remanence_angle" : 90}) 
         
         # geometry
-        self.geometry = agros2d.geometry
+        self.geometry = self.problem.geometry()
         
         # edges
         self.geometry.add_edge(0.01, 0.01, 0.01, 0)
@@ -175,11 +170,12 @@ class TestMagneticAxisymmetric(Agros2DTestCase):
         self.geometry.add_label(0.0346923, 0.0892198, materials = {"magnetic" : "Fe"})
         self.geometry.add_label(0.036093, 0.0654078, materials = {"magnetic" : "Magnet"})
         
-        agros2d.view.zoom_best_fit()
-        
-    def general_test_values(self):                  
+    def general_test_values(self):
+        # solution
+        solution = self.computation.solution("magnetic")
+                          
         # point value
-        point = self.magnetic.local_values(0.005985, 0.043924)
+        point = solution.local_values(0.005985, 0.043924)
         self.value_test("Scalar potential", point["Ar"], 5.438198e-4)
         self.value_test("Flux density", point["Br"], 0.195525)
         self.value_test("Flux density - r", point["Brr"], 0.059085)
@@ -189,34 +185,36 @@ class TestMagneticAxisymmetric(Agros2DTestCase):
         self.value_test("Magnetic intensity - z", point["Hrz"], 494.39852)
         self.value_test("Energy density", point["wm"], 50.704118)
         
-        point = self.magnetic.local_values(0.0199415, 0.0609942)
+        point = solution.local_values(0.0199415, 0.0609942)
         self.value_test("Lorentz force - r - real", point["Flr"], -1.237274e5)
         self.value_test("Lorentz force - z - real", point["Flz"], -41951.726164)
         
         # volume integral
-        volume = self.magnetic.volume_integrals([1])
+        volume = solution.volume_integrals([1])
         self.value_test("Energy", volume["Wm"], 0.002273)
         
-        volume = self.magnetic.volume_integrals([5])
+        volume = solution.volume_integrals([5])
         self.value_test("Integral Lorentz force - r", volume["Flx"], -8.069509) 
         self.value_test("Integral Lorentz force - z", volume["Fly"], -5.288991) 
-        volume = self.magnetic.volume_integrals([1])        
+        volume = solution.volume_integrals([1])        
         self.value_test("Volume Maxwell force - z", volume["Fty"], 0.429770, 0.05)
         
         # surface integral
-        surface = self.magnetic.surface_integrals([12, 13, 14, 15])
+        surface = solution.surface_integrals([12, 13, 14, 15])
         self.value_test("Surface Maxwell force - z", surface["Fty"], 0.429770, 0.05)
 #        
 #    def test_values_total_current(self):
 #        self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_total_current_prescribed" : 1, "magnetic_total_current_real" : 2e6*1.216e-3 }) 
-#        self.geometry.add_label(0.021206, 0.0692964, materials = {"magnetic" : "Cu"})        
-#        self.problem.solve()
+#        self.geometry.add_label(0.021206, 0.0692964, materials = {"magnetic" : "Cu"})
+#        self.computation = self.problem.computation()
+#        self.computation.solve()        
 #        self.general_test_values()
 
     def test_values_current_density(self):
         self.magnetic.add_material("Cu", {"magnetic_permeability" : 1, "magnetic_current_density_external_real" : 2e6}) 
-        self.geometry.add_label(0.021206, 0.0692964, materials = {"magnetic" : "Cu"})        
-        self.problem.solve()
+        self.geometry.add_label(0.021206, 0.0692964, materials = {"magnetic" : "Cu"})
+        self.computation = self.problem.computation()
+        self.computation.solve()        
         self.general_test_values()
     
 class TestMagneticNonlinPlanar(Agros2DTestCase):
@@ -226,12 +224,8 @@ class TestMagneticNonlinPlanar(Agros2DTestCase):
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
-        self.magnetic = agros2d.field("magnetic")
+        self.magnetic = problem.field("magnetic")
         self.magnetic.analysis_type = "steadystate"
         self.magnetic.number_of_refinements = 0
         self.magnetic.polynomial_order = 3
@@ -252,7 +246,7 @@ class TestMagneticNonlinPlanar(Agros2DTestCase):
         self.magnetic.add_material("Air", {"magnetic_conductivity" : 0, "magnetic_current_density_external_real" : 0, "magnetic_permeability" : 1, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_angular" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         
         # edges
         geometry.add_edge(-0.05, -0.01, 0.05, -0.01, boundaries = {})
@@ -290,20 +284,22 @@ class TestMagneticNonlinPlanar(Agros2DTestCase):
         geometry.add_label(0.0173943, -0.00630466, materials = {"magnetic" : "Iron"})
         geometry.add_label(0.00305095, 0.0688963, materials = {"magnetic" : "Civka 2"})
         geometry.add_label(-0.00501291, 0.0328188, materials = {"magnetic" : "Civka 1"})
-        
-        agros2d.view.zoom_best_fit()
-        
+                
         # solve problem
-        problem.solve()        
+        self.computation = problem.computation()
+        self.computation.solve()
         
-    def test_values(self):            
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("magnetic")
+                    
         # point value
-        point = self.magnetic.local_values(1.814e-02, -7.690e-03)
+        point = solution.local_values(1.814e-02, -7.690e-03)
         self.value_test("Flux density", point["Br"], 1.819661)
         self.value_test("Permeability", point["mur"], 139.364773, 0.04)
         
         # volume integral
-        volume = self.magnetic.volume_integrals([2])
+        volume = solution.volume_integrals([2])
         self.value_test("Energy", volume["Wm"], 3.264012)
 
 class TestMagneticNonlinAxisymmetric(Agros2DTestCase):
@@ -314,7 +310,7 @@ class TestMagneticNonlinAxisymmetric(Agros2DTestCase):
         problem.mesh_type = "triangle"
         
         # magnetic
-        self.magnetic = agros2d.field("magnetic")
+        self.magnetic = problem.field("magnetic")
         self.magnetic.analysis_type = "steadystate"
         self.magnetic.matrix_solver = "umfpack"
         self.magnetic.number_of_refinements = 0
@@ -341,7 +337,7 @@ class TestMagneticNonlinAxisymmetric(Agros2DTestCase):
         self.magnetic.add_material("Magnet", {"magnetic_permeability" : 1.1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0.6, "magnetic_remanence_angle" : 90, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0.01, 0.01, 0.01, 0)
         geometry.add_edge(0.01, 0, 0.04, 0)
         geometry.add_edge(0.04, 0.1, 0, 0.1)
@@ -378,15 +374,17 @@ class TestMagneticNonlinAxisymmetric(Agros2DTestCase):
         geometry.add_label(0.0141705, 0.12445, materials = {"magnetic" : "Air"})
         geometry.add_label(0.0346923, 0.0892198, materials = {"magnetic" : "Fe"})
         geometry.add_label(0.036093, 0.0654078, materials = {"magnetic" : "Magnet"})
-        
-        agros2d.view.zoom_best_fit()
-        
+                
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
 
-    def test_values(self):                  
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("magnetic")    
+                      
         # point value
-        point = self.magnetic.local_values(0.0043, 0.032)
+        point = solution.local_values(0.0043, 0.032)
         self.value_test("Scalar potential", point["Ar"], 8.060968068023004E-4)
         self.value_test("Flux density", point["Br"], 0.3823335718298335)
         self.value_test("Flux density - r", point["Brr"], 0.029885255691612152)
@@ -396,23 +394,23 @@ class TestMagneticNonlinAxisymmetric(Agros2DTestCase):
         self.value_test("Magnetic intensity - z", point["Hrz"], 185.1042985102139)
         self.value_test("Energy density", point["wm"], 35.4943923762853)
         
-        point = self.magnetic.local_values(0.0199415, 0.0609942)
+        point = solution.local_values(0.0199415, 0.0609942)
         self.value_test("Lorentz force - r - real", point["Flr"], -123060.01919)
         self.value_test("Lorentz force - z - real", point["Flz"], -42838.956)
         
         # volume integral
-        volume = self.magnetic.volume_integrals([1])
+        volume = solution.volume_integrals([1])
         self.value_test("Energy", volume["Wm"], 4.625935002717195E-4)
         
-        volume = self.magnetic.volume_integrals([2])
+        volume = solution.volume_integrals([2])
         self.value_test("Integral Lorentz force - r", volume["Flx"], -8.101651950576503) 
         self.value_test("Integral Lorentz force - z", volume["Fly"], -5.501189057498289) 
 
-        volume = self.magnetic.volume_integrals([1])        
+        volume = solution.volume_integrals([1])        
         self.value_test("Volume Maxwell force - z", volume["Fty"], 0.4922392956664127, 0.1)
         
         # surface integral
-        surface = self.magnetic.surface_integrals([12, 13, 14, 15])
+        surface = solution.surface_integrals([12, 13, 14, 15])
         self.value_test("Surface Maxwell force - z", surface["Fty"], 0.4922392956664127, 0.1)
                                                                                                                                                                                                                                            
 if __name__ == '__main__':        
@@ -421,7 +419,7 @@ if __name__ == '__main__':
     suite = ut.TestSuite()
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticPlanar))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticAxisymmetric))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticNonlinPlanar))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticNonlinAxisymmetric)) 
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticAxisymmetric))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticNonlinPlanar))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticNonlinAxisymmetric)) 
     suite.run(result)

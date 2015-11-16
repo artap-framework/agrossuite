@@ -8,12 +8,8 @@ class TestFlowPlanar(Agros2DTestCase):
         problem = agros2d.problem(clear = True)
         problem.coordinate_type = "planar"
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-
         # flow
-        self.flow = agros2d.field("flow")
+        self.flow = problem.field("flow")
         self.flow.analysis_type = "steadystate"
         self.flow.number_of_refinements = 1
         self.flow.polynomial_order = 2
@@ -34,7 +30,7 @@ class TestFlowPlanar(Agros2DTestCase):
         self.flow.add_material("Water", {"flow_density" : 1, "flow_force_x" : 0, "flow_force_y" : 0, "flow_viscosity" : 0.001})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(-0.35, 0.05, 0.4, 0.05, boundaries = {"flow" : "Wall"})
         geometry.add_edge(0.4, 0.05, 0.4, 0.25, boundaries = {"flow" : "Wall"})
         geometry.add_edge(-0.25, 0.1, -0.2, 0.1, boundaries = {"flow" : "Wall"}, angle = 90, segments = 6)
@@ -57,26 +53,28 @@ class TestFlowPlanar(Agros2DTestCase):
         
         geometry.add_label(-0.086153, 0.205999, materials = {"flow" : "Water"})
         geometry.add_label(-0.224921, 0.126655, materials = {"flow" : "none"})
-        
-        agros2d.view.zoom_best_fit()
-        
+
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
-    def test_values(self):        
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("flow")
+                
         # point value
-        point = self.flow.local_values(-0.023486, 0.117842)
+        point = solution.local_values(-0.023486, 0.117842)
         self.value_test("Pressure", point["p"], 0.65205)
         self.value_test("Velocity", point["v"], 0.406233)
         self.value_test("Velocity - x", point["vx"], 0.337962)
         self.value_test("Velocity - y", point["vy"], -0.225404)
         
         # volume integral
-        # volume = flow.volume_integrals([0])
+        # volume = solution.volume_integrals([0])
         # testPj = agros2d.test("Losses", volume["Pj"], 10070.23937)
         
         # surface integral
-        surface = self.flow.surface_integrals([5])
+        surface = solution.surface_integrals([5])
         self.value_test("Pressure force x", surface["Fpx"], -0.13155320861904402 + 0.004544859567663737)
         self.value_test("Pressure force y", surface["Fpy"], -0.002419169736737781 + 5.14286345695936E-4)
         self.value_test("Viscous force x", surface["Fvx"], -0.004544859567663737)
@@ -90,12 +88,8 @@ class TestFlowAxisymmetric(Agros2DTestCase):
         problem = agros2d.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # flow
-        self.flow = agros2d.field("flow")
+        self.flow = problem.field("flow")
         self.flow.analysis_type = "steadystate"
         self.flow.number_of_refinements = 1
         self.flow.polynomial_order = 3
@@ -117,7 +111,7 @@ class TestFlowAxisymmetric(Agros2DTestCase):
         self.flow.add_material("fluid", {"flow_viscosity" : 0.001, "flow_density" : 1, "flow_force_x" : 0, "flow_force_y" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0, 0.5, 0.25, 0.5, boundaries = {"flow" : "inlet"})
         geometry.add_edge(0.25, 0.5, 0.25, -0.05, boundaries = {"flow" : "wall"})
         geometry.add_edge(0.25, -0.05, 0.15, -0.15, boundaries = {"flow" : "wall"})
@@ -133,26 +127,28 @@ class TestFlowAxisymmetric(Agros2DTestCase):
         geometry.add_edge(0.15, -0.55, 0.15, -0.5, boundaries = {"flow" : "wall"})
         
         geometry.add_label(0.127882, 0.157169, materials = {"flow" : "fluid"})
-        
-        agros2d.view.zoom_best_fit()
-        
+                
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
-    def test_values(self):        
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("flow")
+                
         # point value
-        point = self.flow.local_values(2.137e-01, 8.173e-03)
+        point = solution.local_values(2.137e-01, 8.173e-03)
         self.value_test("Pressure", point["p"], 2.880471)
         self.value_test("Velocity", point["v"], 0.652625)
         self.value_test("Velocity - r", point["vr"], 0.02563, 4)
         self.value_test("Velocity - z", point["vz"], -0.652122)
         
         # volume integral
-        # volume = self.flow.volume_integrals([0])
+        # volume = solution.volume_integrals([0])
         # testPj = agros2d.test("Losses", volume["Pj"], 10070.23937)
         
         # surface integral
-        surface = self.flow.surface_integrals([6])
+        surface = solution.surface_integrals([6])
         self.value_test("Pressure force r", surface["Fpx"], 0.282427 + 0.006718)
         self.value_test("Pressure force z", surface["Fpy"], 0.224571 - 0.016407)
         self.value_test("Viscous force r", surface["Fvx"], -0.00737211877987858)
@@ -165,7 +161,7 @@ if __name__ == '__main__':
 
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowPlanar))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFlowAxisymmetric))
     suite.run(result)
     

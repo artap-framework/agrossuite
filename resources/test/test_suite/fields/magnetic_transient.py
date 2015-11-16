@@ -13,12 +13,8 @@ class TestMagneticTransientPlanar(Agros2DTestCase):
         problem.time_total = 0.4
         problem.time_steps = 100
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # magnetic
-        self.magnetic = agros2d.field("magnetic")
+        self.magnetic = problem.field("magnetic")
         self.magnetic.analysis_type = "transient"
         self.magnetic.transient_initial_condition = 0
         self.magnetic.number_of_refinements = 1
@@ -35,7 +31,7 @@ class TestMagneticTransientPlanar(Agros2DTestCase):
         self.magnetic.add_material("Air", {"magnetic_permeability" : 1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(-0.75, 0.75, -0.75, -0.25, boundaries = {"magnetic" : "A = 0"})
         geometry.add_edge(-0.75, 0.75, 0.75, 0.75, boundaries = {"magnetic" : "A = 0"})
         geometry.add_edge(0.75, 0.75, 0.75, -0.25, boundaries = {"magnetic" : "A = 0"})
@@ -53,14 +49,16 @@ class TestMagneticTransientPlanar(Agros2DTestCase):
         geometry.add_label(-0.15588, 0.306142, materials = {"magnetic" : "Coil"})
         geometry.add_label(-0.00331733, 0.106999, materials = {"magnetic" : "Copper"})
         
-        agros2d.view.zoom_best_fit()
-        
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
     def test_values(self):
+        # solution
+        solution = self.computation.solution("magnetic")
+        
         # point value
-        point = self.magnetic.local_values(2.809e-02, 1.508e-01)
+        point = solution.local_values(2.809e-02, 1.508e-01)
         self.value_test("Magnetic potential", point["Ar"], 3.856287421197996E-4)
         self.value_test("Flux density", point["Br"], 0.001116683242432341)
         self.value_test("Flux density - x", point["Brx"], 4.0104560252330734E-4)
@@ -76,7 +74,7 @@ class TestMagneticTransientPlanar(Agros2DTestCase):
         self.value_test("Lorenz force - y", point["Fly"], 16.226339194728205)
         
         # volume integral
-#        volume = self.magnetic.volume_integrals([2])
+#        volume = solution.volume_integrals([2])
 #        self.value_test("Energy", volume["Wm"], 0.04391581801480497)
 #        self.value_test("Losses", volume["Pj"], 0.7546173357026923)
 #        self.value_test("Lorentz force integral - x", volume["Flx"], -0.06460752047773814)
@@ -84,7 +82,7 @@ class TestMagneticTransientPlanar(Agros2DTestCase):
 #        self.value_test("Current - induced transform", volume["Iitr"], 812.2394578364593)
 #        self.value_test("Current - total1", volume["Ir"], 812.2394578364593)
         
-#        volumeSource = self.magnetic.volume_integrals([1])
+#        volumeSource = solution.volume_integrals([1])
 #        self.value_test("Current - total2", volumeSource["Ir"], 421.23575)
 #        self.value_test("Current - external", volumeSource["Ier"], 421.23575)
                 
@@ -99,12 +97,8 @@ class TestMagneticTransientAxisymmetric(Agros2DTestCase):
         problem.time_total = 0.3
         problem.time_steps = 20
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
-        self.magnetic = agros2d.field("magnetic")
+        self.magnetic = problem.field("magnetic")
         self.magnetic.analysis_type = "transient"
         self.magnetic.transient_initial_condition = 0
         self.magnetic.number_of_refinements = 1
@@ -121,7 +115,7 @@ class TestMagneticTransientAxisymmetric(Agros2DTestCase):
         self.magnetic.add_material("Copper", {"magnetic_permeability" : 1, "magnetic_conductivity" : 5.7e+07, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0, -0.5, 0.5, 0, angle = 90, boundaries = {"magnetic" : "A = 0"})
         geometry.add_edge(0.5, 0, 0, 0.5, angle = 90, boundaries = {"magnetic" : "A = 0"})
         geometry.add_edge(0, 0.5, 0, 0.15, boundaries = {"magnetic" : "A = 0"})
@@ -139,14 +133,17 @@ class TestMagneticTransientAxisymmetric(Agros2DTestCase):
         geometry.add_label(0.051315, -0.0143629, materials = {"magnetic" : "Copper"})
         geometry.add_label(0.165856, 0.213151, materials = {"magnetic" : "Air"})
         
-        agros2d.view.zoom_best_fit()
         
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
                         
     def test_values(self):
+        # solution
+        solution = self.computation.solution("magnetic")
+        
         # point value
-        point = self.magnetic.local_values(5.340e-02, -2.316e-02)
+        point = solution.local_values(5.340e-02, -2.316e-02)
         self.value_test("Magnetic potential", point["Ar"], 1.5449179762269398E-4)
         self.value_test("Flux density", point["Br"], 0.004639593632573921)
         self.value_test("Flux density - x", point["Brr"], 1.0775445209791154E-4)
@@ -161,7 +158,7 @@ class TestMagneticTransientAxisymmetric(Agros2DTestCase):
         self.value_test("Current density - total", point["Jr"], 76547.05797412641)
         
         # volume integral
-        volume = self.magnetic.volume_integrals([1])
+        volume = solution.volume_integrals([1])
         self.value_test("Energy", volume["Wm"], 0.03185301819233872)
         self.value_test("Losses", volume["Pj"], 0.36062893759748205)
         self.value_test("Current - external", volume["Ier"], 0.0)
@@ -174,6 +171,6 @@ if __name__ == '__main__':
 
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticTransientPlanar))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticTransientAxisymmetric))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticTransientPlanar))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMagneticTransientAxisymmetric))
     suite.run(result)

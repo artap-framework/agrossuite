@@ -11,12 +11,8 @@ class TestRFTMHarmonicPlanar(Agros2DTestCase):
         
         problem.frequency = 1e10
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # rf_tm
-        self.rf_tm = agros2d.field("rf_tm")
+        self.rf_tm = problem.field("rf_tm")
         self.rf_tm.analysis_type = "harmonic"
         self.rf_tm.number_of_refinements = 2
         self.rf_tm.polynomial_order = 2
@@ -31,7 +27,7 @@ class TestRFTMHarmonicPlanar(Agros2DTestCase):
         self.rf_tm.add_material("Air", {"rf_tm_permittivity" : 1, "rf_tm_permeability" : 1, "rf_tm_conductivity" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(-0.01, 0.02286, -0.01, 0, boundaries = {"rf_tm" : "Surface current"})
         geometry.add_edge(0.06907, 0.02286, 0.076, 0.01593, angle = 90, boundaries = {"rf_tm" : "Perfect electric conductor"})
         geometry.add_edge(0.076, 0.01593, 0.081, 0.01593, boundaries = {"rf_tm" : "Perfect electric conductor"})
@@ -50,14 +46,17 @@ class TestRFTMHarmonicPlanar(Agros2DTestCase):
         geometry.add_edge(0.086, 0, 0.16, 0, boundaries = {"rf_tm" : "Perfect electric conductor"})
         
         geometry.add_label(0.0359418, 0.0109393, materials = {"rf_tm" : "Air"})
-        agros2d.view.zoom_best_fit()
         
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
 
-    def test_values(self): 
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("rf_tm")
+         
         # point value
-        point = self.rf_tm.local_values(0.019107, 0.016725)
+        point = solution.local_values(0.019107, 0.016725)
 
         self.value_test("Magnetic field", point["H"], 3.23)
         self.value_test("Magnetic field - real", point["Hr"], 2.28)
@@ -80,7 +79,7 @@ class TestRFTMHarmonicPlanar(Agros2DTestCase):
         self.value_test("Electric displacement - y - imag", point["Diy"], -3.027227e-9)
 
         self.value_test("Poynting vector - x", point["Nx"], 0.820297)
-        point = self.rf_tm.local_values(1.841e-01, -3.055e-02)
+        point = solution.local_values(1.841e-01, -3.055e-02)
         self.value_test("Poynting vector - y", point["Ny"], -1.880639)
 
 class TestRFTMHarmonicAxisymmetric(Agros2DTestCase):
@@ -92,12 +91,8 @@ class TestRFTMHarmonicAxisymmetric(Agros2DTestCase):
         
         problem.frequency = 1e+09
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # rf_tm
-        self.rf_tm = agros2d.field("rf_tm")
+        self.rf_tm = problem.field("rf_tm")
         self.rf_tm.analysis_type = "harmonic"
         self.rf_tm.number_of_refinements = 3
         self.rf_tm.polynomial_order = 2
@@ -113,7 +108,7 @@ class TestRFTMHarmonicAxisymmetric(Agros2DTestCase):
         self.rf_tm.add_material("Air", {"rf_tm_permittivity" : 1, "rf_tm_permeability" : 1, "rf_tm_conductivity" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0, 1, 0, -1, boundaries = {"rf_tm" : "PMC"})
         geometry.add_edge(0, -1, 1, -1, boundaries = {"rf_tm" : "Impedance"})
         geometry.add_edge(1, -1, 1, -0.75, boundaries = {"rf_tm" : "Impedance"})
@@ -132,13 +127,17 @@ class TestRFTMHarmonicAxisymmetric(Agros2DTestCase):
         geometry.add_label(0.399371, 0.440347, materials = {"rf_tm" : "Air"})
         geometry.add_label(0.484795, -0.434246, materials = {"rf_tm" : "none"})
         geometry.add_label(0.57193, 0.0710058, materials = {"rf_tm" : "none"})
-        agros2d.view.zoom_best_fit()
         
-        problem.solve()
+        # solve problem
+        self.computation = problem.computation()
+        self.computation.solve()
         
-    def test_values(self): 
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("rf_tm")
+         
         # point value        
-        point = self.rf_tm.local_values(0.92463, -0.20118)
+        point = solution.local_values(0.92463, -0.20118)
         
         self.value_test("Magnetic field", point["H"], 0.53836)
         self.value_test("Magnetic field - real", point["Hr"], 0.538097)
