@@ -75,7 +75,8 @@ private:
     QTextEdit *txtViewNodes;
     QTextEdit *txtViewEdges;
     QTextEdit *txtViewLabels;
-    QTextEdit *txtViewInfo;
+    QSplitter *splitter;
+
     QTreeWidget *trvWidget;
 
     QAction *actProperties;
@@ -92,8 +93,13 @@ private:
     void createControls();
     void createMenu();
 
-    QString loadProblemInfo();
-    QString loadFieldInfo(FieldInfo *fieldInfo);
+    QString problemPropertiesToString();
+    QString fieldPropertiesToString(FieldInfo *fieldInfo);
+    void problemProperties(QTreeWidgetItem *item);
+    void fieldProperties(FieldInfo *fieldInfo, QTreeWidgetItem *item);
+    QTreeWidgetItem *propertiesItem(QTreeWidgetItem *item, const QString &key, const QString &value,
+                                    PreprocessorWidget::Type type = PreprocessorWidget::Undefined,
+                                    const QString &data = "");
 
 private slots:
     void doContextMenu(const QPoint &pos);
