@@ -196,25 +196,25 @@ void PyProblem::setCouplingType(const std::string &sourceField, const std::strin
         throw logic_error(QObject::tr("Coupling '%1' + '%2' doesn't exists.").arg(source).arg(target).toStdString());
 }
 
-PyComputation::PyComputation(bool newComputation, std::string name) : PyProblemBase()
+PyComputation::PyComputation() : PyProblemBase()
 {
-    if (name != "")
+    Agros2D::problem()->createComputation(true);
+    m_computation = Agros2D::problem()->m_currentComputation;
+    m_problemBase = m_computation;
+}
+
+PyComputation::PyComputation(std::string computation) : PyProblemBase()
+{
+    QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
+    QString key = QString::fromStdString(computation);
+    if (computations.contains(key))
     {
-        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
-        QString key = QString::fromStdString(name);
-        if (computations.contains(key))
-        {
-            m_computation = computations[key];
-            m_problemBase = m_computation;
-        }
-        else
-            throw logic_error(QObject::tr("Computation '%1' does not exists.").arg(key).toStdString());
+        m_computation = computations[key];
+        m_problemBase = m_computation;
     }
     else
     {
-        Agros2D::problem()->createComputation(true);
-        m_computation = Agros2D::problem()->m_currentComputation;
-        m_problemBase = m_computation;
+        throw logic_error(QObject::tr("Computation '%1' does not exists.").arg(key).toStdString());
     }
 }
 

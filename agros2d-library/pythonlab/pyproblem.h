@@ -84,7 +84,8 @@ private:
 class PyComputation : public PyProblemBase
 {
 public:
-    PyComputation(bool newComputation, std::string name = "");
+    PyComputation();
+    PyComputation(std::string computation);
     ~PyComputation() {}
     QSharedPointer<Computation> getComputation();
 
