@@ -82,7 +82,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     sceneInfoWidget->setRecentProblemFiles(&recentFiles);
     connect(sceneInfoWidget, SIGNAL(open(QString)), this, SLOT(doDocumentOpen(QString)));
     connect(sceneInfoWidget, SIGNAL(openForm(QString, QString)), this, SLOT(doDocumentOpenForm(QString, QString)));
-    connect(sceneInfoWidget, SIGNAL(examples(QString)), this, SLOT(doExamples(QString)));
+    // connect(sceneInfoWidget, SIGNAL(examples(QString)), this, SLOT(doExamples(QString)));
 
     // preprocessor
     preprocessorWidget = new PreprocessorWidget(sceneViewPreprocessor, this);
@@ -94,7 +94,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     connect(postprocessorWidget, SIGNAL(modeChanged()), this, SLOT(setControls()));
 
     // problem
-    mainWidget = new MainWidget(this);
+    exampleWidget = new ExamplesWidget(this, sceneInfoWidget);
+    connect(exampleWidget, SIGNAL(problemOpen(QString)), this, SLOT(doDocumentOpen(QString)));
 
     // view info
     consoleView = new PythonScriptingConsoleView(currentPythonEngine(), this);
@@ -153,7 +154,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     Agros2D::problem()->scene()->clear();
 
-    mainWidget->actProperties->trigger();
+    exampleWidget->actExamples->trigger();
     sceneViewPreprocessor->doZoomBestFit();
 
     // set recent files
@@ -248,10 +249,6 @@ void MainWindow::createActions()
     actDocumentSaveGeometry = new QAction(tr("Export geometry..."), this);
     connect(actDocumentSaveGeometry, SIGNAL(triggered()), this, SLOT(doDocumentSaveGeometry()));
 
-    actExamples = new QAction(tr("Open example..."), this);
-    actExamples->setShortcut(tr("Ctrl+Shift+O"));
-    connect(actExamples, SIGNAL(triggered()), this, SLOT(doExamples()));
-
     actCreateVideo = new QAction(icon("video"), tr("Create &video..."), this);
     connect(actCreateVideo, SIGNAL(triggered()), this, SLOT(doCreateVideo()));
 
@@ -328,7 +325,7 @@ void MainWindow::createActions()
     actSceneZoomRegion->setCheckable(true);
 
     actSceneModeGroup = new QActionGroup(this);
-    actSceneModeGroup->addAction(mainWidget->actProperties);
+    actSceneModeGroup->addAction(exampleWidget->actExamples);
     actSceneModeGroup->addAction(sceneViewPreprocessor->actSceneModePreprocessor);
     actSceneModeGroup->addAction(postprocessorWidget->actSceneModePost);
     actSceneModeGroup->addAction(scriptEditor->actSceneModePythonEditor);
@@ -393,14 +390,8 @@ void MainWindow::createMenus()
     // mnuFileImportExport->addAction(sceneViewPost2D->actExportVTKScalar);
     // mnuFileImportExport->addAction(sceneViewPost2D->actExportVTKContours);
 
-    // QMenu *mnuServer = new QMenu(tr("Colaboration"), this);
-    // mnuServer->addAction(actDocumentDownloadFromServer);
-    // mnuServer->addAction(actDocumentUploadToServer);
-    // mnuServer->addAction(actCollaborationServer);
-
     mnuFile = menuBar()->addMenu(tr("&File"));
     mnuFile->addAction(actDocumentNew);
-    mnuFile->addAction(actExamples);
     mnuFile->addAction(actDocumentOpen);
     mnuFile->addMenu(mnuRecentFiles);
     mnuFile->addSeparator();
@@ -474,9 +465,9 @@ void MainWindow::createMenus()
 void MainWindow::createToolBars()
 {
     // main toolbar
-    mainWidget->toolBar->addAction(actDocumentNew);
-    mainWidget->toolBar->addAction(actDocumentOpen);
-    mainWidget->toolBar->addAction(actDocumentSave);
+    exampleWidget->toolBar->insertAction(exampleWidget->toolBar->actions().last(), actDocumentNew);
+    exampleWidget->toolBar->insertAction(exampleWidget->toolBar->actions().last(), actDocumentOpen);
+    exampleWidget->toolBar->insertAction(exampleWidget->toolBar->actions().last(), actDocumentSave);
 
     // zoom toolbar
     QMenu *menu = new QMenu();
@@ -523,7 +514,7 @@ void MainWindow::createMain()
 
     tabControlsLayout = new QStackedLayout();
     tabControlsLayout->setContentsMargins(0, 0, 0, 0);
-    tabControlsLayout->addWidget(mainWidget);
+    tabControlsLayout->addWidget(exampleWidget);
     tabControlsLayout->addWidget(preprocessorWidget);
     tabControlsLayout->addWidget(postprocessorWidget);
     tabControlsLayout->addWidget(optiLab->optiLabWidget());
@@ -569,7 +560,7 @@ void MainWindow::createMain()
     tlbLeftBar->setIconSize(QSize(32, 32));
     tlbLeftBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
-    tlbLeftBar->addAction(mainWidget->actProperties);
+    tlbLeftBar->addAction(exampleWidget->actExamples);
     tlbLeftBar->addSeparator();
     tlbLeftBar->addAction(sceneViewPreprocessor->actSceneModePreprocessor);
     tlbLeftBar->addAction(postprocessorWidget->actSceneModePost);
@@ -840,7 +831,7 @@ void MainWindow::doDeleteSolution()
     // clear all computations
     Agros2D::clearComputations();
 
-    mainWidget->actProperties->trigger();
+    exampleWidget->actExamples->trigger();
     sceneViewPreprocessor->doZoomBestFit();
 }
 
@@ -876,7 +867,7 @@ void MainWindow::doDocumentClose()
     // clear preprocessor
     Agros2D::problem()->clearFieldsAndConfig();
 
-    mainWidget->actProperties->trigger();
+    exampleWidget->actExamples->trigger();
 }
 
 void MainWindow::doDocumentImportDXF()
@@ -963,10 +954,11 @@ void MainWindow::doDocumentSaveGeometry()
     }
 }
 
+/*
 void MainWindow::doExamples(const QString &groupName)
 {
-    ExamplesDialog examples(this);
-    if (examples.showDialog(groupName) == QDialog::Accepted)
+    ExamplesWidget examples(this);
+    if (examples.showWidget(groupName) == QDialog::Accepted)
     {
         if (QFile::exists(examples.selectedFilename()))
         {
@@ -983,6 +975,7 @@ void MainWindow::doExamples(const QString &groupName)
         }
     }
 }
+    */
 
 void MainWindow::doCreateVideo()
 {
@@ -1121,7 +1114,7 @@ void MainWindow::doPaste()
 
 void MainWindow::clear()
 {
-    mainWidget->actProperties->trigger();
+    exampleWidget->actExamples->trigger();
 
     setControls();
 }
@@ -1183,10 +1176,10 @@ void MainWindow::setControls()
     actSceneZoomOut->disconnect();
     actSceneZoomBestFit->disconnect();
 
-    if (mainWidget->actProperties->isChecked())
+    if (exampleWidget->actExamples->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewInfoWidget);
-        tabControlsLayout->setCurrentWidget(mainWidget);
+        tabControlsLayout->setCurrentWidget(exampleWidget);
     }
     else if (sceneViewPreprocessor->actSceneModePreprocessor->isChecked())
     {

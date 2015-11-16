@@ -32,19 +32,6 @@ class ValueLineEdit;
 class ProblemWidget;
 class FieldsToobar;
 
-class MainWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    MainWidget(QWidget *parent = 0);
-
-    QAction *actProperties;
-    QToolBar *toolBar;
-
-private:
-    void createActions();
-};
-
 class CouplingsWidget : public QWidget
 {
     Q_OBJECT

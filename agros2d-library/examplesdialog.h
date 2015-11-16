@@ -22,47 +22,42 @@
 
 #include "util.h"
 
-class InfoWidgetGeneral;
+class InfoWidget;
 
-namespace XMLProblem {
-    class geometry;
-}
-
-class ExamplesDialog : public QDialog
+class ExamplesWidget : public QWidget
 {
     Q_OBJECT
-public:
-    ExamplesDialog(QWidget *parent);
-    ~ExamplesDialog();
 
-    int showDialog(const QString &expandedGroup = "");
-    inline QString selectedFilename() { return m_selectedFilename; }
-    inline QString selectedFormFilename() { return m_selectedFormFilename; }
+public:
+    ExamplesWidget(QWidget *parent, InfoWidget *infoWidget);
+
+    QAction *actExamples;
+    QToolBar *toolBar;
+
+    void showWidget(const QString &expandedGroup = "");
+
+signals:
+    void problemOpen(const QString &fileName);
+    void formOpen(const QString &fileName);
 
 private slots:
-    void doAccept();
-    void doReject();
-
     void doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void doItemDoubleClicked(QTreeWidgetItem *item, int column);
 
-    // void linkClicked(const QUrl &url);
-
 private:
-    InfoWidgetGeneral *m_infoWidget;
+    InfoWidget *m_infoWidget;
 
-    QTreeWidget *lstProblems;
+    QTreeWidget *trvProblems;
     QString m_selectedFilename;
     QString m_selectedFormFilename;
 
     QString m_expandedGroup;
 
-    QDialogButtonBox *buttonBox;
+    void createActions();
 
     void readProblems();
     int readProblems(QDir dir, QTreeWidgetItem *parentItem);
     void problemInfo(const QString &fileName);
-    QString problemSvgGeometry(XMLProblem::geometry *geometry);
     QList<QIcon> problemIcons(const QString &fileName);
 };
 

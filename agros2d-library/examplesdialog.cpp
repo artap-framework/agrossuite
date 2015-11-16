@@ -38,107 +38,89 @@
 #include "../3rdparty/quazip/JlCompress.h"
 #include "../resources_source/classes/problem_a2d_31_xml.h"
 
-ExamplesDialog::ExamplesDialog(QWidget *parent) : QDialog(parent)
+ExamplesWidget::ExamplesWidget(QWidget *parent, InfoWidget *infoWidget)
+    : QWidget(parent), m_infoWidget(infoWidget)
 {
-    setWindowTitle(tr("Examples"));
-    setModal(true);
-
     m_selectedFilename = "";
     m_selectedFormFilename = "";
     m_expandedGroup = "";
 
-    lstProblems = new QTreeWidget(this);
-    lstProblems->setMouseTracking(true);
-    lstProblems->setColumnCount(1);
-    lstProblems->setIndentation(15);
-    lstProblems->setIconSize(QSize(24, 24));
-    lstProblems->setHeaderHidden(true);
-    lstProblems->setMinimumWidth(320);
+    createActions();
 
-    connect(lstProblems, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
-    connect(lstProblems, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+    trvProblems = new QTreeWidget(this);
+    trvProblems->setMouseTracking(true);
+    trvProblems->setColumnCount(1);
+    trvProblems->setIconSize(QSize(24, 24));
+    trvProblems->setHeaderHidden(true);
 
-    m_infoWidget = new InfoWidgetGeneral(this);
+    connect(trvProblems, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
+    connect(trvProblems, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+
     // connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
 
     QHBoxLayout *layoutSurface = new QHBoxLayout();
-    layoutSurface->addWidget(lstProblems);
-    layoutSurface->addWidget(m_infoWidget, 1);
+    layoutSurface->addWidget(trvProblems);
 
-    QWidget *widget = new QWidget();
+    QGroupBox *widget = new QGroupBox(tr("Examples"));
     widget->setLayout(layoutSurface);
 
-    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(doAccept()));
-    connect(buttonBox, SIGNAL(rejected()), this, SLOT(doReject()));
-
     QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(toolBar);
     layout->addWidget(widget, 1);
-    layout->addStretch();
-    layout->addWidget(buttonBox);
 
     setLayout(layout);
 
-    buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
-
-    int w = 3.0/4.0 * QApplication::desktop()->screenGeometry().width();
-    int h = 3.0/4.0 * QApplication::desktop()->screenGeometry().height();
-
-    setMinimumSize(w, h);
-    setMaximumSize(w, h);
-
-    move(QApplication::activeWindow()->pos().x() + (QApplication::activeWindow()->width() - width()) / 2.0,
-         QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
+    showWidget("Examples");
 }
 
-ExamplesDialog::~ExamplesDialog()
+void ExamplesWidget::createActions()
 {
+    actExamples = new QAction(icon("agros2d"), tr("Welcome"), this);
+    actExamples->setShortcut(tr("Ctrl+1"));
+    actExamples->setCheckable(true);
+
+    toolBar = new QToolBar(this);
+    // toolBar->addSeparator();
+
+    QAction *actWelcome = new QAction(icon("agros2d"), tr("Welcome screen"), this);
+    connect(actWelcome, SIGNAL(triggered(bool)), m_infoWidget, SLOT(showWelcome()));
+    toolBar->addAction(actWelcome);
 }
 
-void ExamplesDialog::doAccept()
-{
-    accept();
-}
-
-void ExamplesDialog::doReject()
-{
-    reject();
-}
-
-int ExamplesDialog::showDialog(const QString &expandedGroup)
+void ExamplesWidget::showWidget(const QString &expandedGroup)
 {
     m_expandedGroup = expandedGroup;
 
     readProblems();
 
-    QList<QTreeWidgetItem *> items = lstProblems->findItems(m_expandedGroup, Qt::MatchExactly);
+    QList<QTreeWidgetItem *> items = trvProblems->findItems(m_expandedGroup, Qt::MatchExactly);
     if (items.count() == 1)
-        lstProblems->setCurrentItem(items.at(0));
-
-    return exec();
+        trvProblems->setCurrentItem(items.at(0));
 }
 
-void ExamplesDialog::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+void ExamplesWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
     m_infoWidget->clear();
 
+    m_selectedFilename.clear();
     if (current)
     {
         m_selectedFilename = current->data(0, Qt::UserRole).toString();
         if (!m_selectedFilename.isEmpty())
         {
             problemInfo(m_selectedFilename);
-            buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
         }
     }
 }
 
-void ExamplesDialog::doItemDoubleClicked(QTreeWidgetItem *item, int column)
+void ExamplesWidget::doItemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    if (lstProblems->currentItem())
-    {
-        if (!lstProblems->currentItem()->data(0, Qt::UserRole).toString().isEmpty())
-            accept();
+    if (trvProblems->currentItem())
+    {        
+        if (!m_selectedFilename.isEmpty())
+        {
+            emit problemOpen(m_selectedFilename);
+        }
     }
 }
 
@@ -164,18 +146,18 @@ void ExamplesDialog::linkClicked(const QUrl &url)
 }
 */
 
-void ExamplesDialog::readProblems()
+void ExamplesWidget::readProblems()
 {
     // clear listview
-    lstProblems->clear();
+    trvProblems->clear();
 
     QDir dir(QString("%1/resources/examples").arg(datadir()));
     dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoSymLinks);
 
-    readProblems(dir, lstProblems->invisibleRootItem());
+    readProblems(dir, trvProblems->invisibleRootItem());
 }
 
-int ExamplesDialog::readProblems(QDir dir, QTreeWidgetItem *parentItem)
+int ExamplesWidget::readProblems(QDir dir, QTreeWidgetItem *parentItem)
 {
     int count = 0;
 
@@ -188,16 +170,19 @@ int ExamplesDialog::readProblems(QDir dir, QTreeWidgetItem *parentItem)
 
         if (fileInfo.isDir())
         {
-            QFont fnt = lstProblems->font();
+            QFont fnt = trvProblems->font();
             fnt.setBold(true);
 
             QTreeWidgetItem *dirItem = new QTreeWidgetItem(parentItem);
             dirItem->setText(0, fileInfo.fileName());
             dirItem->setFont(0, fnt);
+            QString fn = QString("%1.png").arg(fileInfo.absoluteFilePath());
+            if (QFile::exists(fn))
+                dirItem->setIcon(0, QIcon(fn));
             // expand group
             if (m_expandedGroup.isEmpty()
-                    || (parentItem != lstProblems->invisibleRootItem())
-                    || ((m_expandedGroup == fileInfo.fileName()) && parentItem == lstProblems->invisibleRootItem()))
+                    || (parentItem != trvProblems->invisibleRootItem())
+                    || ((m_expandedGroup == fileInfo.fileName()) && parentItem == trvProblems->invisibleRootItem()))
                 dirItem->setExpanded(true);
 
             // recursive read
@@ -262,7 +247,7 @@ int ExamplesDialog::readProblems(QDir dir, QTreeWidgetItem *parentItem)
     return count;
 }
 
-void ExamplesDialog::problemInfo(const QString &fileName)
+void ExamplesWidget::problemInfo(const QString &fileName)
 {
     if (QFile::exists(fileName))
     {
@@ -311,7 +296,7 @@ void ExamplesDialog::problemInfo(const QString &fileName)
     }
 }
 
-QList<QIcon> ExamplesDialog::problemIcons(const QString &fileName)
+QList<QIcon> ExamplesWidget::problemIcons(const QString &fileName)
 {
     QList<QIcon> icons;
 

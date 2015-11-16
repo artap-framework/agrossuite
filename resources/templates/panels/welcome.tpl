@@ -56,6 +56,7 @@
 <img style="float: right; margin-right: 10px; margin-top: 12px;" src="{{AGROS2D}}" /> 
 <h1>{{GETTING_STARTED_LABEL}}</h1>
 
+<!--
 <table>
 <tr>
 <td>
@@ -74,6 +75,7 @@
 </td>
 </tr>
 </table>
+-->
 
 <table>
 <tr>
