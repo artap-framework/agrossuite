@@ -7,7 +7,7 @@ import numpy as np
 from test_suite.scenario import Agros2DTestCase
 from test_suite.scenario import Agros2DTestResult
 
-# TODO: add more iter methods (PARALUTION and deal.II)
+# TODO: add more iter methods (deal.II)
 # TODO: add MUMPS
 
 class TestInternalMatrixSolvers(Agros2DTestCase):
@@ -134,20 +134,6 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
         self.assertTrue(np.allclose(self.reference_sln, umfpack_sln, rtol=1e-15, atol=1e-6), 
                         "UMFPACK sln failed.")       
 
-    def test_paralution_iter(self):
-        # PARALUTION - iterative
-        filename_paralution_iterative_matrix, filename_paralution_iterative_rhs, filename_paralution_iterative_sln = self.model("paralution")
-        paralution_iterative_mat, paralution_iterative_rhs, paralution_iterative_sln = self.read_system(filename_paralution_iterative_matrix, 
-                                                                                                        filename_paralution_iterative_rhs,
-                                                                                                        filename_paralution_iterative_sln)
-                
-        self.assertTrue(np.allclose(self.reference_mat.todense(), paralution_iterative_mat.todense(), rtol=1e-15, atol=1e-15), 
-                        "PARALUTION iterative matrix failed.")
-        self.assertTrue(np.allclose(self.reference_rhs, paralution_iterative_rhs, rtol=1e-15, atol=1e-10), 
-                        "PARALUTION iterative rhs failed.")
-        self.assertTrue(np.allclose(self.reference_sln, paralution_iterative_sln, rtol=1e-6), 
-                        "PARALUTION iterative sln failed.")                        
-                        
     def test_dealii_iter(self):
         # deal.II - iterative
         filename_dealii_iterative_matrix, filename_dealii_iterative_rhs, filename_dealii_iterative_sln = self.model("dealii")
@@ -160,17 +146,7 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
         self.assertTrue(np.allclose(self.reference_rhs, dealii_iterative_rhs, rtol=1e-15, atol=1e-10), 
                         "dealii iterative rhs failed.")
         self.assertTrue(np.allclose(self.reference_sln, dealii_iterative_sln, rtol=1e-6), 
-                        "dealii iterative sln failed.")                           
-                        
-    #def test_paralution_amg(self):
-        # PARALUTION - amg
-        #filename_paralution_amg_matrix, filename_paralution_amg_rhs = self.model("paralution_amg")
-        #paralution_amg_mat, paralution_amg_rhs = self.read_system(filename_paralution_amg_matrix, filename_paralution_amg_rhs)
-        #
-        #self.assertTrue(np.allclose(self.reference_mat.todense(), paralution_amg_mat.todense(), rtol=1e-15, atol=1e-15), 
-        #                "PARALUTION AMG matrix failed.")
-        #self.assertTrue(np.allclose(self.reference_rhs, paralution_amg_rhs, rtol=1e-15, atol=1e-10), 
-        #                "PARALUTION AMG rhs failed.")
+                        "dealii iterative sln failed.")                                                   
 
     def test_external(self):
         # external
