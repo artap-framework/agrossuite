@@ -40,23 +40,6 @@
 
 #include "pythonlab/pythoneditor.h"
 
-
-MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
-{
-    createActions();
-
-    toolBar = new QToolBar(this);
-}
-
-void MainWidget::createActions()
-{
-    actProperties = new QAction(icon("agros2d"), tr("Welcome"), this);
-    actProperties->setShortcut(tr("Ctrl+1"));
-    actProperties->setCheckable(true);
-}
-
-// ******************************************************************************************************************************
-
 CouplingsWidget::CouplingsWidget(QWidget *parent) : QWidget(parent)
 {
     Agros2D::problem()->synchronizeCouplings();

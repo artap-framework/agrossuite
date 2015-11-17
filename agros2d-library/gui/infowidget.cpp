@@ -349,7 +349,7 @@ void InfoWidget::showWelcome()
     problemInfo.SetValue("RECENT_PROBLEMS_LABEL", tr("Recent problems").toStdString());
     if (m_recentProblemFiles)
     {
-        for (int i = 0; i < qMin(10, m_recentProblemFiles->count()); i++)
+        for (int i = 0; i < qMin(15, m_recentProblemFiles->count()); i++)
         {
             QFileInfo fileInfo(m_recentProblemFiles->at(i));
             if (!QFile::exists(fileInfo.absoluteFilePath()))
@@ -366,7 +366,7 @@ void InfoWidget::showWelcome()
     problemInfo.SetValue("RECENT_SCRIPTS_LABEL", tr("Recent Python scripts").toStdString());
     if (m_recentScriptFiles)
     {
-        for (int i = 0; i < qMin(7, m_recentScriptFiles->count()); i++)
+        for (int i = 0; i < qMin(15, m_recentScriptFiles->count()); i++)
         {
             QFileInfo fileInfo(m_recentScriptFiles->at(i));
             if (!QFile::exists(fileInfo.absoluteFilePath()))

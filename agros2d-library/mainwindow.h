@@ -31,7 +31,7 @@ class SceneViewMesh;
 class OptiLab;
 class InfoWidget;
 class SettingsWidget;
-class MainWidget;
+class ExamplesWidget;
 class ResultsView;
 class VolumeIntegralValueView;
 class SurfaceIntegralValueView;
@@ -76,7 +76,7 @@ private slots:
     void doExportVTKGeometry();
     void doDocumentSaveImage();
     void doDocumentSaveGeometry();    
-    void doExamples(const QString &groupName = "");
+    // void doExamples(const QString &groupName = "");
 
     void doMouseSceneModeChanged(MouseSceneMode mouseSceneMode);
 
@@ -147,7 +147,6 @@ private:
     QAction *actDocumentSaveGeometry;
     QAction *actExportVTKGeometry;
 
-    QAction *actExamples;
     QAction *actExit;
     QActionGroup *actDocumentOpenRecentGroup;
 
@@ -208,7 +207,7 @@ private:
 
     QWidget *viewControls;
     QStackedLayout *tabControlsLayout;
-    MainWidget *mainWidget;
+    ExamplesWidget *exampleWidget;
     PreprocessorWidget *preprocessorWidget;
     PostprocessorWidget *postprocessorWidget;
 

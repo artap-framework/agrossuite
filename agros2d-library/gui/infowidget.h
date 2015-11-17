@@ -63,6 +63,7 @@ signals:
     void examples(const QString &groupName);
 
 public slots:
+    void showWelcome();
     virtual void refresh();
 
 private:
@@ -70,7 +71,6 @@ private:
     QStringList *m_recentScriptFiles;
 
 private slots:
-    void showWelcome();
     void linkClicked(const QUrl &url);
 };
 

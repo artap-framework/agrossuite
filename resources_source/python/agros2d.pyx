@@ -111,6 +111,7 @@ include "pygeometry.pxi"
 include "pyfield.pxi"
 include "pyproblem.pxi"
 include "pycomputation.pxi"
+include "pysolution.pxi"
 include "pyparticletracing.pxi"
 #include "pyview.pxi"
 
