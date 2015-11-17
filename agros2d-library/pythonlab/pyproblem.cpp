@@ -18,6 +18,7 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "pyproblem.h"
+#include "solver/problem_result.h"
 #include "pythonengine_agros.h"
 #include "sceneview_geometry.h"
 #include "sceneview_post2d.h"
@@ -37,7 +38,7 @@ void PyProblemBase::getParameters(std::vector<std::string> &keys) const
         keys.push_back(key.toStdString());
 }
 
-double PyProblemBase::getParameter(std::string key) const
+double PyProblemBase::getParameter(const string &key) const
 {
     ParametersType parameters = m_problemBase->config()->value(ProblemConfig::Parameters).value<ParametersType>();
 
@@ -99,12 +100,12 @@ void PyProblem::clear()
     m_problem->clearFieldsAndConfig();
 }
 
-void PyProblem::setParameter(std::string key, double value)
+void PyProblem::setParameter(const string &key, double value)
 {
     ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
     parameters[QString::fromStdString(key)] = value;
 
-    Agros2D::problem()->config()->setValue(ProblemConfig::Parameters, parameters);
+    m_problem->config()->setValue(ProblemConfig::Parameters, parameters);
 }
 
 void PyProblem::setCoordinateType(const std::string &coordinateType)
@@ -155,10 +156,10 @@ void PyProblem::setTimeMethodOrder(int timeMethodOrder)
         throw out_of_range(QObject::tr("Number of time method order must be greater than 1.").toStdString());
 }
 
-void PyProblem::setTimeInitialTimeStep(double timeInitialTimeStep)
+void PyProblem::setInitialTimeStep(double initialTimeStep)
 {
-    if (timeInitialTimeStep > 0.0)
-        m_problem->config()->setValue(ProblemConfig::TimeInitialStepSize, timeInitialTimeStep);
+    if (initialTimeStep > 0.0)
+        m_problem->config()->setValue(ProblemConfig::TimeInitialStepSize, initialTimeStep);
     else
         throw out_of_range(QObject::tr("Initial time step must be positive.").toStdString());
 }
@@ -205,7 +206,7 @@ PyComputation::PyComputation() : PyProblemBase()
     m_problemBase = m_computation;
 }
 
-PyComputation::PyComputation(std::string computation) : PyProblemBase()
+PyComputation::PyComputation(const string &computation) : PyProblemBase()
 {
     QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
     QString key = QString::fromStdString(computation);
@@ -220,7 +221,7 @@ PyComputation::PyComputation(std::string computation) : PyProblemBase()
     }
 }
 
-QSharedPointer<Computation> PyComputation::getComputation()
+QSharedPointer<Computation> PyComputation::computation()
 {
     return m_computation;
 }
@@ -294,13 +295,10 @@ void PyComputation::timeStepsTimes(vector<double> &times) const
         times.push_back(timeStepTimes.at(i));
 }
 
-void PySolution::setComputation(PyComputation *computation)
+void PySolution::setSolution(PyComputation *computation, const std::string &fieldId)
 {
-    m_computation = computation->getComputation();
-}
+    m_computation = computation->computation();
 
-void PySolution::setField(const std::string &fieldId)
-{
     QString id = QString::fromStdString(fieldId);
     if (m_computation->hasField(id))
         m_fieldInfo = m_computation->fieldInfo(id);
@@ -337,7 +335,7 @@ void PyComputation::getResults(std::vector<std::string> &keys) const
         keys.push_back(key.toStdString());
 }
 
-double PyComputation::getResult(std::string key) const
+double PyComputation::getResult(const std::string &key) const
 {
     QMap<QString, double> results = m_computation->result()->results();
 
@@ -357,7 +355,7 @@ double PyComputation::getResult(std::string key) const
     }
 }
 
-void PyComputation::setResult(std::string key, double value)
+void PyComputation::setResult(const string &key, double value)
 {
     QMap<QString, double> results = m_computation->result()->results();
     results[QString::fromStdString(key)] = value;
