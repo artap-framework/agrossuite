@@ -371,7 +371,7 @@ PythonEditorDialog::PythonEditorDialog(PythonScriptingConsole *console, QWidget 
     setAcceptDrops(true);
 
     restoreGeometry(settings.value("PythonEditorDialog/Geometry", saveGeometry()).toByteArray());
-    m_recentFiles = settings.value("PythonEditorDialog/RecentFiles").value<QStringList>();
+    m_recentFiles = settings.value("RecentScripts").value<QStringList>();
 
     // set recent files
     setRecentFiles();
@@ -381,7 +381,6 @@ PythonEditorDialog::~PythonEditorDialog()
 {
     QSettings settings;
     settings.setValue("PythonEditorDialog/Geometry", saveGeometry());
-    settings.setValue("PythonEditorDialog/RecentFiles", m_recentFiles);
 }
 
 void PythonEditorDialog::closeEvent(QCloseEvent *event)
@@ -1282,6 +1281,9 @@ void PythonEditorDialog::setRecentFiles()
             m_recentFiles.move(m_recentFiles.indexOf(fileInfo.absoluteFilePath()), 0);
 
         while (m_recentFiles.count() > 15) m_recentFiles.removeLast();
+
+        QSettings settings;
+        settings.setValue("RecentScripts", m_recentFiles);
     }
 
     mnuRecentFiles->clear();

@@ -54,21 +54,15 @@ public:
     InfoWidget(QWidget *parent = 0);
     ~InfoWidget();
 
-    inline void setRecentProblemFiles(QStringList *recentProblemFiles) { m_recentProblemFiles = recentProblemFiles; }
-    inline void setRecentScriptFiles(QStringList *recentScriptFiles) { m_recentScriptFiles = recentScriptFiles; }
-
 signals:
     void open(const QString &fileName);
     void openForm(const QString &fileName, const QString &formName);
     void examples(const QString &groupName);
 
 public slots:
-    void showWelcome();
     virtual void refresh();
 
 private:
-    QStringList *m_recentProblemFiles;
-    QStringList *m_recentScriptFiles;
 
 private slots:
     void linkClicked(const QUrl &url);

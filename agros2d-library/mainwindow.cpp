@@ -79,10 +79,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     // scene - info widget
     sceneInfoWidget = new InfoWidget(this);
-    sceneInfoWidget->setRecentProblemFiles(&recentFiles);
-    connect(sceneInfoWidget, SIGNAL(open(QString)), this, SLOT(doDocumentOpen(QString)));
-    connect(sceneInfoWidget, SIGNAL(openForm(QString, QString)), this, SLOT(doDocumentOpenForm(QString, QString)));
-    // connect(sceneInfoWidget, SIGNAL(examples(QString)), this, SLOT(doExamples(QString)));
 
     // preprocessor
     preprocessorWidget = new PreprocessorWidget(sceneViewPreprocessor, this);
@@ -96,6 +92,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // problem
     exampleWidget = new ExamplesWidget(this, sceneInfoWidget);
     connect(exampleWidget, SIGNAL(problemOpen(QString)), this, SLOT(doDocumentOpen(QString)));
+    connect(exampleWidget, SIGNAL(formOpen(QString,QString)), this, SLOT(doDocumentOpenForm(QString, QString)));
 
     // view info
     consoleView = new PythonScriptingConsoleView(currentPythonEngine(), this);
@@ -114,7 +111,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     createMain();
 
     // info
-    sceneInfoWidget->setRecentScriptFiles(scriptEditor->recentFiles());
     sceneTransformDialog = new SceneTransformDialog(sceneViewPreprocessor, this);
 
     // python engine
@@ -150,7 +146,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     sceneViewPreprocessor->clear();
 
     QSettings settings;
-    recentFiles = settings.value("MainWindow/RecentFiles").value<QStringList>();
+    recentFiles = settings.value("RecentProblems").value<QStringList>();
 
     Agros2D::problem()->scene()->clear();
 
@@ -186,7 +182,6 @@ MainWindow::~MainWindow()
     QSettings settings;
     settings.setValue("MainWindow/Geometry", saveGeometry());
     settings.setValue("MainWindow/State", saveState());
-    settings.setValue("MainWindow/RecentFiles", recentFiles);
     settings.setValue("MainWindow/SplitterMainState", splitterMain->saveState());
     settings.setValue("MainWindow/SplitterViewState", splitterView->saveState());
     settings.setValue("MainWindow/ControlPanel", actHideControlPanel->isChecked());
@@ -465,9 +460,9 @@ void MainWindow::createMenus()
 void MainWindow::createToolBars()
 {
     // main toolbar
-    exampleWidget->toolBar->insertAction(exampleWidget->toolBar->actions().last(), actDocumentNew);
-    exampleWidget->toolBar->insertAction(exampleWidget->toolBar->actions().last(), actDocumentOpen);
-    exampleWidget->toolBar->insertAction(exampleWidget->toolBar->actions().last(), actDocumentSave);
+    exampleWidget->toolBar->addAction(actDocumentNew);
+    exampleWidget->toolBar->addAction(actDocumentOpen);
+    exampleWidget->toolBar->addAction(actDocumentSave);
 
     // zoom toolbar
     QMenu *menu = new QMenu();
@@ -661,6 +656,9 @@ void MainWindow::setRecentFiles()
             recentFiles.move(recentFiles.indexOf(fileInfo.absoluteFilePath()), 0);
 
         while (recentFiles.count() > 15) recentFiles.removeLast();
+
+        QSettings settings;
+        settings.setValue("RecentProblems", recentFiles);
     }
 
     mnuRecentFiles->clear();
