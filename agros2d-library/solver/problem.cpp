@@ -333,9 +333,6 @@ void ProblemBase::clearFieldsAndConfig()
 
     // clear scene
     m_scene->clear();
-
-    // clear studies
-
 }
 
 void ProblemBase::addField(FieldInfo *field)
@@ -1016,7 +1013,6 @@ Computation::Computation(const QString &problemDir) : ProblemBase()
     connect(this, SIGNAL(fieldsChanged()), m_scene, SLOT(doFieldsChanged()));
 
     m_calculationThread = new CalculationThread(this);
-
     m_problemSolver = new ProblemSolver(this);
     m_postDeal = new PostDeal(this);
     m_solutionStore = new SolutionStore(this);
@@ -1039,14 +1035,16 @@ Computation::Computation(const QString &problemDir) : ProblemBase()
 }
 
 Computation::~Computation()
-{
+{   
     clearSolution();
 
     delete m_calculationThread;
     delete m_problemSolver;
     delete m_postDeal;
     delete m_solutionStore;
-    delete m_result;
+    delete m_result;    
+
+    removeDirectory(QString("%1/%2").arg(cacheProblemDir(), m_problemDir));
 }
 
 QList<double> Computation::timeStepTimes() const
@@ -1506,6 +1504,11 @@ void Computation::clearSolution()
 
     m_initialMesh.clear();
     m_initialUnrefinedMesh.clear();
+
+    QString fnMesh = QString("%1/%2/mesh_initial.msh").arg(cacheProblemDir()).arg(problemDir());
+    if (QFile::exists(fnMesh))
+        QFile::remove(fnMesh);
+
     m_calculationMesh.clear();
     m_solutionStore->clear();
 }
@@ -1552,7 +1555,7 @@ Problem::~Problem()
 QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool setCurrentComputation)
 {
     QSharedPointer<Computation> computation;
-    if (newComputation || m_currentComputation || Agros2D::computations().isEmpty())
+    if (newComputation || m_currentComputation.isNull() || Agros2D::computations().isEmpty())
     {
         computation = QSharedPointer<Computation>(new Computation());
         m_currentComputation = computation;
@@ -1585,7 +1588,9 @@ void Problem::clearFieldsAndConfig()
     QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
     QFile::remove(QString("%1/studies.json").arg(cacheProblemDir()));
 
+    // clear all computations
     m_currentComputation.clear();
+    Agros2D::clearComputations();
 
     emit fileNameChanged(tr("unnamed"));
 }
@@ -1714,9 +1719,6 @@ void Problem::readProblemFromFile(const QString &fileName)
 
     try
     {
-        // clear all computations
-        Agros2D::clearComputations();
-
         // load problem
         if (fileInfo.suffix() == "ags")
         {

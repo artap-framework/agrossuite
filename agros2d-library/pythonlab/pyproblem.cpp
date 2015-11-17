@@ -95,6 +95,12 @@ PyProblem::PyProblem(bool clearProblem) : PyProblemBase()
         clear();
 }
 
+PyProblem::~PyProblem()
+{
+    // qDebug() << "PyProblem::~PyProblem() - m_problem " << m_problem.isNull();
+    // qDebug() << "PyProblem::~PyProblem() - m_problemBase " << m_problemBase.isNull();
+}
+
 void PyProblem::clear()
 {
     m_problem->clearFieldsAndConfig();
@@ -221,6 +227,12 @@ PyComputation::PyComputation(const string &computation) : PyProblemBase()
     }
 }
 
+PyComputation::~PyComputation()
+{
+    // qDebug() << "PyComputation::~PyComputation() - m_problemBase " << m_problemBase.isNull();
+    // qDebug() << "PyComputation::~PyComputation() - m_computation " << m_computation.isNull();
+}
+
 QSharedPointer<Computation> PyComputation::computation()
 {
     return m_computation;
@@ -293,6 +305,11 @@ void PyComputation::timeStepsTimes(vector<double> &times) const
     QList<double> timeStepTimes = m_computation->timeStepTimes();
     for (int i = 0; i < timeStepTimes.size(); i++)
         times.push_back(timeStepTimes.at(i));
+}
+
+PySolution::~PySolution()
+{
+    // qDebug() << "PySolution::~PySolution() - m_computation " << m_computation.isNull();
 }
 
 void PySolution::setSolution(PyComputation *computation, const std::string &fieldId)

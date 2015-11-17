@@ -439,7 +439,7 @@ QTime milisecondsToTime(int ms)
 
 bool removeDirectory(const QString &str)
 {
-    bool error = false;
+    bool ok = true;
 
     if (QDir(str).exists())
     {
@@ -451,23 +451,23 @@ bool removeDirectory(const QString &str)
             QString path = entryInfo.absoluteFilePath();
             if (entryInfo.isDir())
             {
-                error = removeDirectory(path);
+                ok = removeDirectory(path);
             }
             else
             {
                 QFile file(path);
                 if (!file.remove())
                 {
-                    error = true;
+                    ok = false;
                     break;
                 }
             }
         }
         if (!QDir().rmdir(str))
-            error = true;
+            ok = false;
     }
 
-    return error;
+    return ok;
 }
 
 void msleep(unsigned long msecs)

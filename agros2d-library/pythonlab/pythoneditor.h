@@ -164,8 +164,6 @@ protected:
 
     PythonEngine *pythonEngine;
 
-    QStringList m_recentFiles;
-
     // gui    
     PythonEditorWidget *m_pythonEditorWidget;
     ScriptEditor *txtEditor;

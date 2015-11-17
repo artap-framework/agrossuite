@@ -371,7 +371,6 @@ PythonEditorDialog::PythonEditorDialog(PythonScriptingConsole *console, QWidget 
     setAcceptDrops(true);
 
     restoreGeometry(settings.value("PythonEditorDialog/Geometry", saveGeometry()).toByteArray());
-    m_recentFiles = settings.value("RecentScripts").value<QStringList>();
 
     // set recent files
     setRecentFiles();
@@ -1271,28 +1270,31 @@ void PythonEditorDialog::setRecentFiles()
 {
     if (!tabWidget) return;
 
+    mnuRecentFiles->clear();
+
     // recent files
     if (!scriptEditorWidget()->fileName().isEmpty())
     {
-        QFileInfo fileInfo(scriptEditorWidget()->fileName());
-        if (m_recentFiles.indexOf(fileInfo.absoluteFilePath()) == -1)
-            m_recentFiles.insert(0, fileInfo.absoluteFilePath());
-        else
-            m_recentFiles.move(m_recentFiles.indexOf(fileInfo.absoluteFilePath()), 0);
-
-        while (m_recentFiles.count() > 15) m_recentFiles.removeLast();
-
         QSettings settings;
-        settings.setValue("RecentScripts", m_recentFiles);
-    }
+        QStringList recentFiles = settings.value("RecentScripts").value<QStringList>();
 
-    mnuRecentFiles->clear();
-    for (int i = 0; i<m_recentFiles.count(); i++)
-    {
-        QAction *actMenuRecentItem = new QAction(m_recentFiles[i], this);
-        actFileOpenRecentGroup->addAction(actMenuRecentItem);
-        mnuRecentFiles->addAction(actMenuRecentItem);
-    }
+        QFileInfo fileInfo(scriptEditorWidget()->fileName());
+        if (recentFiles.indexOf(fileInfo.absoluteFilePath()) == -1)
+            recentFiles.insert(0, fileInfo.absoluteFilePath());
+        else
+            recentFiles.move(recentFiles.indexOf(fileInfo.absoluteFilePath()), 0);
+
+        while (recentFiles.count() > 15) recentFiles.removeLast();
+
+        settings.setValue("RecentScripts", recentFiles);
+
+        for (int i = 0; i<recentFiles.count(); i++)
+        {
+            QAction *actMenuRecentItem = new QAction(recentFiles[i], this);
+            actFileOpenRecentGroup->addAction(actMenuRecentItem);
+            mnuRecentFiles->addAction(actMenuRecentItem);
+        }
+    }    
 }
 
 void PythonEditorDialog::closeTabs()

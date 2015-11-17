@@ -84,7 +84,7 @@ class PyProblem : public PyProblemBase
 {
 public:
     PyProblem(bool clearProblem);
-    ~PyProblem() {}
+    ~PyProblem();
 
     void clear();
 
@@ -111,7 +111,7 @@ class PyComputation : public PyProblemBase
 public:
     PyComputation();
     PyComputation(const std::string &computation);
-    ~PyComputation() {}
+    ~PyComputation();
 
     void clear();
     void mesh();
@@ -135,7 +135,7 @@ class PySolution
 {
 public:
     PySolution() {}
-    ~PySolution() {}
+    ~PySolution();
     void setSolution(PyComputation *computation, const std::string &fieldId);
 
     // local values, integrals

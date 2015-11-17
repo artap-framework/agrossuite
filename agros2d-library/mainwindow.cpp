@@ -138,10 +138,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     sceneViewProblem->clear();
 
-    QSettings settings;
-    recentFiles = settings.value("RecentProblems").value<QStringList>();
-
-    Agros2D::problem()->scene()->clear();
+    Agros2D::problem()->clearFieldsAndConfig();
 
     exampleWidget->actExamples->trigger();
     sceneViewProblem->doZoomBestFit();
@@ -157,6 +154,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     checkForNewVersion(true);
 
+    QSettings settings;
     restoreGeometry(settings.value("MainWindow/Geometry", saveGeometry()).toByteArray());
     restoreState(settings.value("MainWindow/State", saveState()).toByteArray());
     splitterMain->restoreState(settings.value("MainWindow/SplitterMainState").toByteArray());
@@ -631,10 +629,15 @@ void MainWindow::doMouseSceneModeChanged(MouseSceneMode mouseSceneMode)
 }
 
 void MainWindow::setRecentFiles()
-{
+{    
+    mnuRecentFiles->clear();
+
     // recent files
     if (!Agros2D::problem()->config()->fileName().isEmpty())
     {
+        QSettings settings;
+        QStringList recentFiles = settings.value("RecentProblems").value<QStringList>();
+
         QFileInfo fileInfo(Agros2D::problem()->config()->fileName());
         if (recentFiles.indexOf(fileInfo.absoluteFilePath()) == -1)
             recentFiles.insert(0, fileInfo.absoluteFilePath());
@@ -643,16 +646,14 @@ void MainWindow::setRecentFiles()
 
         while (recentFiles.count() > 15) recentFiles.removeLast();
 
-        QSettings settings;
         settings.setValue("RecentProblems", recentFiles);
-    }
 
-    mnuRecentFiles->clear();
-    for (int i = 0; i<recentFiles.count(); i++)
-    {
-        QAction *actMenuRecentItem = new QAction(recentFiles[i], this);
-        actDocumentOpenRecentGroup->addAction(actMenuRecentItem);
-        mnuRecentFiles->addAction(actMenuRecentItem);
+        for (int i = 0; i<recentFiles.count(); i++)
+        {
+            QAction *actMenuRecentItem = new QAction(recentFiles[i], this);
+            actDocumentOpenRecentGroup->addAction(actMenuRecentItem);
+            mnuRecentFiles->addAction(actMenuRecentItem);
+        }
     }
 }
 
@@ -685,9 +686,6 @@ void MainWindow::doDocumentNew()
     FieldSelectDialog dialog(QList<QString>(), this);
     if (dialog.showDialog() == QDialog::Accepted)
     {
-        // clear all computations
-        Agros2D::clearComputations();
-
         // clear preprocessor
         Agros2D::problem()->clearFieldsAndConfig();
 
@@ -812,11 +810,11 @@ void MainWindow::doDocumentSave()
 
 void MainWindow::doDeleteSolution()
 {
-    // clear all computations
-    Agros2D::clearComputations();
-
     exampleWidget->actExamples->trigger();
     sceneViewProblem->doZoomBestFit();
+
+    // clear all computations
+    Agros2D::clearComputations();    
 }
 
 void MainWindow::doDocumentSaveAs()
@@ -844,13 +842,10 @@ void MainWindow::doDocumentSaveAs()
 
 void MainWindow::doDocumentClose()
 {
-    // clear all computations
-    Agros2D::clearComputations();
-
-    // clear preprocessor
-    Agros2D::problem()->clearFieldsAndConfig();
-
     exampleWidget->actExamples->trigger();
+
+    // clear problem
+    Agros2D::problem()->clearFieldsAndConfig();    
 }
 
 void MainWindow::doDocumentImportDXF()
@@ -1093,8 +1088,6 @@ void MainWindow::doPaste()
 
 void MainWindow::clear()
 {
-    exampleWidget->actExamples->trigger();
-
     setControls();
 }
 

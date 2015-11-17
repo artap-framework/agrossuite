@@ -108,6 +108,7 @@ void OptiLabWidget::refresh()
         selectedItem = cmbStudies->currentText();
 
     cmbStudies->clear();
+    trvComputations->clear();
     foreach (Study *study, Agros2D::problem()->studies()->items())
     {
         cmbStudies->addItem(studyTypeString(study->type()));

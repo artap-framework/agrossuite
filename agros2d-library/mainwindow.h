@@ -121,8 +121,6 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private:
-    QStringList recentFiles;
-
     QMenu *mnuRecentFiles;
     QMenu *mnuProblemAddBoundaryAndMaterial;
     QMenu *mnuCustomForms;
