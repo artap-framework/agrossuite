@@ -322,6 +322,9 @@ void PythonEngine::useTemporaryDict()
     m_dictTemporary = PyDict_New();
     PyDict_SetItemString(m_dictTemporary, "__builtins__", PyEval_GetBuiltins());
     Py_INCREF(m_dictTemporary);
+
+    PyObject *importMath = PyRun_String("import math", Py_file_input, m_dictTemporary, m_dictTemporary);
+    Py_XDECREF(importMath);
 }
 
 void PythonEngine::useGlobalDict()
