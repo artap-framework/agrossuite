@@ -7,38 +7,51 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
 
         void getParameters(vector[string] &keys)
         double getParameter(string &key) except +
-        string getCoordinateType()
-        string getMeshType()
-        double getFrequency()
-        string getTimeStepMethod()
-        int getTimeMethodOrder()
-        double getTimeMethodTolerance()
-        double getTimeTotal()
-        int getNumConstantTimeSteps()
-        double getTimeInitialTimeStep()
-        string getCouplingType(string &sourceField, string &targetField) except +
-
         void setParameter(string &key, double value)
+
+        string getCoordinateType()
         void setCoordinateType(string &coordinateType) except +
+
+        string getMeshType()
         void setMeshType(string &meshType) except +
+
+        double getFrequency()
         void setFrequency(double frequency) except +
+
+        string getTimeStepMethod()
         void setTimeStepMethod(string &timeStepMethod) except +
+
+        int getTimeMethodOrder()
         void setTimeMethodOrder(int timeMethodOrder) except +
+
+        double getTimeMethodTolerance()
         void setTimeMethodTolerance(double timeMethodTolerance) except +
+
+        double getTimeTotal()
         void setTimeTotal(double timeTotal) except +
+
+        int getNumConstantTimeSteps()
         void setNumConstantTimeSteps(int timeSteps) except +
-        void setTimeInitialTimeStep(double timeInitialTimeStep) except +
+
+        double getInitialTimeStep()
+        void setInitialTimeStep(double initialTimeStep) except +
+
+        string getCouplingType(string &sourceField, string &targetField) except +
         void setCouplingType(string &sourceField, string &targetField, string &type) except +
 
 cdef class __Problem__:
     cdef PyProblem *_problem
     cdef object _time_callback
+    cdef object _parameters
     cdef object _fields
     cdef object _geometry
 
     def __cinit__(self, clear = False):
         self._problem = new PyProblem(clear)
         self._time_callback = None
+        self._parameters = __Parameters__(self.__get_parameters__,
+                                          self.__set_parameters__,
+                                          False)
         self._fields = dict()
         self._geometry = __Geometry__()
 
@@ -47,8 +60,10 @@ cdef class __Problem__:
 
     def clear(self):
         """Clear problem."""
-        self._time_callback = None
         self._problem.clear()
+        self._time_callback = None
+        self._parameters.clear()
+        self._fields.clear()
 
     def refresh(self):
         """Refresh preprocessor and postprocessor."""
@@ -62,7 +77,6 @@ cdef class __Problem__:
         Keyword arguments:
         field_id -- field keyword 
         """
-
         if (not field_id in self._fields):
             self._fields[field_id] = __Field__(field_id)
         return self._fields[field_id]
@@ -80,19 +94,23 @@ cdef class __Problem__:
         return __Computation__()
 
     # parameters
-    parameters = property(_get_parameters, _set_parameters)
-    def _get_parameters(self):
-        cdef vector[string] params_vector
-        self._problem.getParameters(params_vector)
+    property parameters:
+        def __get__(self):
+            return self._parameters.get_parameters()
 
-        params = dict()
-        for i in range(params_vector.size()):
-            params[(<string>params_vector[i]).decode()] = self._problem.getParameter(params_vector[i])
+    def __get_parameters__(self):
+        cdef vector[string] parameters_vector
+        self._problem.getParameters(parameters_vector)
 
-        return params
-    def _set_parameters(self, params):
-        for key in params:
-            self._problem.setParameter(key.encode(), <double>params[key])
+        parameters = dict()
+        for i in range(parameters_vector.size()):
+            parameters[(<string>parameters_vector[i]).decode()] = self._problem.getParameter(parameters_vector[i])
+
+        return parameters
+
+    def __set_parameters__(self, parameters):
+        for key in parameters:
+            self._problem.setParameter(key.encode(), <double>parameters[key])
 
     # coordinate type
     coordinate_type = property(_get_coordinate_type, _set_coordinate_type)
@@ -153,9 +171,9 @@ cdef class __Problem__:
     # initial time step
     initial_time_step = property(_get_initial_time_step, _set_initial_time_step)
     def _get_initial_time_step(self):
-        return self._problem.getTimeInitialTimeStep()
+        return self._problem.getInitialTimeStep()
     def _set_initial_time_step(self, initial_time_step):
-            self._problem.setTimeInitialTimeStep(initial_time_step)
+            self._problem.setInitialTimeStep(initial_time_step)
 
     # time callback
     time_callback = property(_get_time_callback, _set_time_callback)
