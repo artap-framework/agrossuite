@@ -13,7 +13,7 @@ def model(omega):
     
     # fields
     # magnetic
-    magnetic = a2d.field("magnetic")
+    magnetic = problem.field("magnetic")
     magnetic.analysis_type = "harmonic"
     magnetic.number_of_refinements = 0
     magnetic.polynomial_order = 2
@@ -32,7 +32,7 @@ def model(omega):
     magnetic.add_material("J-", {"magnetic_permeability" : 1, "magnetic_current_density_external_real" : -math.sqrt(2)*3.1e6})
     
     # geometry
-    geometry = a2d.geometry
+    geometry = problem.geometry()
     geometry.add_edge(0, -0.02, 0.02, 0, angle = 90)
     geometry.add_edge(0.02, 0, 0, 0.02, angle = 90)
     geometry.add_edge(0, 0.02, -0.02, 0, angle = 90)
@@ -70,10 +70,12 @@ def model(omega):
     geometry.add_label(0.0415852, -0.00289976, area = 5e-06, materials = {"magnetic" : "J+"})
     geometry.add_label(-0.28823, 0.248321, materials = {"magnetic" : "Air"})
 
-    a2d.view.zoom_best_fit()
-    problem.solve()
+    computation = problem.computation()
+    computation.solve()
     
-    volume = magnetic.volume_integrals([1, 2])
+    solution = computation.solution("magnetic")
+    volume = solution.volume_integrals([1, 2])
+
     return volume["Tl"], volume["Pj"]
 
 # analytical solution
