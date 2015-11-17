@@ -8,13 +8,9 @@ class TestCoupledProblemsBasic1General(Agros2DTestCase):
         problem = agros2d.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
-        
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
+ 
         # fields
-        self.current = agros2d.field("current")
+        self.current = problem.field("current")
         self.current.analysis_type = "steadystate"
         self.current.number_of_refinements = 0
         self.current.polynomial_order = 3
@@ -31,7 +27,7 @@ class TestCoupledProblemsBasic1General(Agros2DTestCase):
         else:
             self.current.solver = "linear"
         
-        self.heat = agros2d.field("heat")
+        self.heat = problem.field("heat")
         self.heat.analysis_type = "steadystate"
         self.heat.number_of_refinements = 1
         self.heat.polynomial_order = 3
@@ -46,7 +42,7 @@ class TestCoupledProblemsBasic1General(Agros2DTestCase):
         self.heat.add_material("Mild steel", {"heat_conductivity" : 400, "heat_volume_heat" : 0})
         self.heat.add_material("Aluminium", {"heat_conductivity" : 250, "heat_volume_heat" : 0})
         
-        self.elasticity = agros2d.field("elasticity")
+        self.elasticity = problem.field("elasticity")
         self.elasticity.analysis_type = "steadystate"
         self.elasticity.number_of_refinements = 1
         self.elasticity.polynomial_order = 3
@@ -68,7 +64,7 @@ class TestCoupledProblemsBasic1General(Agros2DTestCase):
         problem.set_coupling_type("heat", "elasticity", heat_elast)
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         
         # edges
         geometry.add_edge(0, 0.01, 0.191, 0.02, boundaries = {"current" : "Neumann", "elasticity" : "Free", "heat" : "Convection"})
@@ -92,19 +88,23 @@ class TestCoupledProblemsBasic1General(Agros2DTestCase):
         geometry.add_label(0.173639, 0.0106815, materials = {"current" : "Mild steel", "elasticity" : "Mild steel", "heat" : "Mild steel"})
         geometry.add_label(0.160202, -0.00535067, materials = {"current" : "Aluminium", "elasticity" : "Aluminium", "heat" : "Aluminium"})
         geometry.add_label(0.116793, 0.00774503, materials = {"current" : "none", "elasticity" : "none", "heat" : "none"})
-        
-        agros2d.view.zoom_best_fit()
-        
+                
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
 
-    def test_values(self):         
+    def test_values(self): 
+        # solution
+        solution_current = self.computation.solution("current")
+        solution_heat = self.computation.solution("heat")
+        solution_elasticity = self.computation.solution("elasticity")
+                        
         # point value
-        local_values_current = self.current.local_values(0.155787, 0.00713725)
+        local_values_current = solution_current.local_values(0.155787, 0.00713725)
         self.value_test("Current - Scalar potential", local_values_current["V"], 0.001555)
-        local_values_heat = self.heat.local_values(0.155787, 0.00713725)
+        local_values_heat = solution_heat.local_values(0.155787, 0.00713725)
         self.value_test("Heat transfer - Temperature", local_values_heat["T"], 40.649361)
-        local_values_elasticity = self.elasticity.local_values(0.155787, 0.00713725)
+        local_values_elasticity = solution_elasticity.local_values(0.155787, 0.00713725)
         self.value_test("Thermoelasticity - Displacement", local_values_elasticity["d"], 1.592721e-4)
 
 class TestCoupledProblemsBasic1WeakWeak(TestCoupledProblemsBasic1General):
@@ -130,14 +130,10 @@ class TestCoupledProblemsBasic2General(Agros2DTestCase):
         problem = agros2d.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
-        problem.frequency = 50
-        
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
+        problem.frequency = 50      
+       
         # fields
-        self.heat = agros2d.field("heat")
+        self.heat = problem.field("heat")
         self.heat.analysis_type = "steadystate"
         self.heat.number_of_refinements = 1
         self.heat.polynomial_order = 2
@@ -154,7 +150,7 @@ class TestCoupledProblemsBasic2General(Agros2DTestCase):
         else:
             self.heat.solver = "linear"
         
-        self.magnetic = agros2d.field("magnetic")
+        self.magnetic = problem.field("magnetic")
         self.magnetic.analysis_type = "harmonic"
         self.magnetic.number_of_refinements = 1
         self.magnetic.polynomial_order = 2
@@ -174,7 +170,7 @@ class TestCoupledProblemsBasic2General(Agros2DTestCase):
         problem.set_coupling_type("magnetic", "heat", mag_heat)
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         
         # edges
         geometry.add_edge(0.3, 0.6, 0, 0.6, boundaries = {"heat" : "Radiation"})
@@ -200,17 +196,20 @@ class TestCoupledProblemsBasic2General(Agros2DTestCase):
         geometry.add_label(0.087409, 0.293345, materials = {"heat" : "Steel", "magnetic" : "Steel"}, area = 0.0005)
         geometry.add_label(0.132733, 0.0478408, materials = {"heat" : "Insulation", "magnetic" : "Insulation"})
         geometry.add_label(0.378237, 0.221582, materials = {"heat" : "none", "magnetic" : "Copper"})
-        
-        agros2d.view.zoom_best_fit()
-        
+                
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
 
-    def test_values(self):           
+    def test_values(self):
+        # solution
+        solution_magnetic = self.computation.solution("magnetic")
+        solution_heat = self.computation.solution("heat")
+                   
         # point value
-        local_values_magnetic = self.magnetic.local_values(0.2956, 0.2190)
+        local_values_magnetic = solution_magnetic.local_values(0.2956, 0.2190)
         self.value_test("Magnetic - Vector potential", local_values_magnetic["A"], 0.009137)
-        local_values_heat = self.heat.local_values(0.2956, 0.2190)
+        local_values_heat = solution_heat.local_values(0.2956, 0.2190)
         self.value_test("Heat transfer - Temperature", local_values_heat["T"], 975.749917)
 
 class TestCoupledProblemsBasic2Weak(TestCoupledProblemsBasic2General):
@@ -229,12 +228,8 @@ class TestCoupledProblemsBasic3General(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
-        self.current = agros2d.field("current")
+        self.current = problem.field("current")
         self.current.analysis_type = "steadystate"
         self.current.number_of_refinements = 1
         self.current.polynomial_order = 3
@@ -251,7 +246,7 @@ class TestCoupledProblemsBasic3General(Agros2DTestCase):
         else:
             self.current.solver = "linear"
 
-        self.heat = agros2d.field("heat")
+        self.heat = problem.field("heat")
         self.heat.analysis_type = "steadystate"
         self.heat.number_of_refinements = 1
         self.heat.polynomial_order = 3
@@ -269,7 +264,7 @@ class TestCoupledProblemsBasic3General(Agros2DTestCase):
         self.heat.add_material("Material", {"heat_conductivity" : { "value" : 385, "x" : [0,100,400,900,1200,1800], "y" : [300,350,480,300,280,320] }, "heat_volume_heat" : 0})
         self.heat.solver = "newton"
 
-        self.elasticity = agros2d.field("elasticity")
+        self.elasticity = problem.field("elasticity")
         self.elasticity.analysis_type = "steadystate"
         self.elasticity.number_of_refinements = 1
         self.elasticity.polynomial_order = 3
@@ -291,7 +286,7 @@ class TestCoupledProblemsBasic3General(Agros2DTestCase):
         problem.set_coupling_type("heat", "elasticity", heat_elast)        
 
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         
         # edges
         geometry.add_edge(0.25, 0.2, 0.25, -0.25, boundaries = {"elasticity" : "Fixed free"})
@@ -313,22 +308,26 @@ class TestCoupledProblemsBasic3General(Agros2DTestCase):
         geometry.add_label(0.0497159, 0.00460215, materials = {"current" : "none", "elasticity" : "none", "heat" : "Material"})
         geometry.add_label(0.204343, 0.00622128, materials = {"current" : "none", "elasticity" : "none", "heat" : "Material"})
         geometry.add_label(0.276729, -0.0804181, materials = {"current" : "none", "elasticity" : "Material", "heat" : "Material"})
-        
-        agros2d.view.zoom_best_fit()
-        
+                
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
-    def test_values(self):    
+    def test_values(self):
+        # solution
+        solution_current = self.computation.solution("current")
+        solution_heat = self.computation.solution("heat")
+        solution_elasticity = self.computation.solution("elasticity")
+            
         # point value
-        local_values_current = self.current.local_values(0.140872, -0.015538)
+        local_values_current = solution_current.local_values(0.140872, -0.015538)
         self.value_test("Current - Scalar potential", local_values_current["V"], 5.712807)
-        local_values_heat = self.heat.local_values(0.277308, -0.216051)
+        local_values_heat = solution_heat.local_values(0.277308, -0.216051)
         self.value_test("Heat transfer - Temperature", local_values_heat["T"], 395.728987)
         self.value_test("Heat transfer - Heat conductivity", local_values_heat["lambda"], 479.949868)
-        local_values_heat = self.heat.local_values(0.063718, -0.022513)
+        local_values_heat = solution_heat.local_values(0.063718, -0.022513)
         self.value_test("Heat transfer - Heat conductivity", local_values_heat["lambda"], 299.195502)
-        local_values_elasticity = self.elasticity.local_values(0.277308,-0.216051)
+        local_values_elasticity = solution_elasticity.local_values(0.277308,-0.216051)
         self.value_test("Thermoelasticity - Displacement", local_values_elasticity["d"], 0.001958)        
    
 
@@ -360,13 +359,9 @@ class TestCoupledProblemsBasic4General(Agros2DTestCase):
         problem.time_method_order = 2
         problem.time_steps = 6
         problem.time_total = 60
-        
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
+
         # fields
-        self.current = agros2d.field("current")
+        self.current = problem.field("current")
         self.current.analysis_type = "steadystate"
         self.current.polynomial_order = 2
         
@@ -381,7 +376,7 @@ class TestCoupledProblemsBasic4General(Agros2DTestCase):
         else:
             self.current.solver = "linear"
 
-        self.heat = agros2d.field("heat")
+        self.heat = problem.field("heat")
         self.heat.analysis_type = "transient"
         self.heat.polynomial_order = 2
         self.heat.transient_initial_condition = 20
@@ -403,7 +398,7 @@ class TestCoupledProblemsBasic4General(Agros2DTestCase):
         problem.set_coupling_type("current", "heat", curr_heat)
 
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         
         # edges
         geometry.add_edge(0.25, 0.25, 0, 0, boundaries = {"current" : "neumann"}, angle = 90)
@@ -431,20 +426,24 @@ class TestCoupledProblemsBasic4General(Agros2DTestCase):
         geometry.add_label(-0.123246, 0.198947, materials = {"current" : "none", "heat" : "Fe (source)"})
         geometry.add_label(0.05, 0.378655, materials = {"current" : "none", "heat" : "Fe (source)"})
         
-        agros2d.view.zoom_best_fit()
+        # solve problem
+        self.computation = problem.computation()
+        self.computation.solve()        
         
-        problem.solve()
-        
-    def test_values(self):        
+    def test_values(self):
+        # solution
+        solution_current = self.computation.solution("current")
+        solution_heat = self.computation.solution("heat")
+                
         # point value
-        local_values_current = self.current.local_values(0.1, 0.15)
+        local_values_current = solution_current.local_values(0.1, 0.15)
         self.value_test("Current - Scalar potential", local_values_current["V"], 0.049999)
         self.value_test("Current - Current density", local_values_current["Jrc"], 9.901206e6)
-        local_values_heat = self.heat.local_values(0.05, 0.05)
+        local_values_heat = solution_heat.local_values(0.05, 0.05)
         self.value_test("Heat - Temperature 1", local_values_heat["T"], 71.88167)
-        local_values_heat = self.heat.local_values(-0.05, 0.15)
+        local_values_heat = solution_heat.local_values(-0.05, 0.15)
         self.value_test("Heat - Temperature 2", local_values_heat["T"], 25.002605)
-        volume_integral_heat = self.heat.volume_integrals([0, 1, 2, 3, 4])
+        volume_integral_heat = solution_heat.volume_integrals([0, 1, 2, 3, 4])
         self.value_test("Heat - Temperature volume", volume_integral_heat["T"], 8.498177)
 
 
@@ -463,16 +462,16 @@ if __name__ == '__main__':
     suite = ut.TestSuite()
     result = Agros2DTestResult()
 
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic1WeakWeak))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic1WeakHard))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic1HardWeak))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic1HardHard))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic2Weak))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic2Hard))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic3WeakWeak))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic3WeakHard))   
-    ##suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic3HardWeak))
-    ##suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic3HardHard))    
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic1WeakWeak))
+#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic1WeakHard))
+#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic1HardWeak))
+#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic1HardHard))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic2Weak))
+#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic2Hard))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic3WeakWeak))
+#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic3WeakHard))   
+#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic3HardWeak))
+#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic3HardHard))    
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic4Weak))
-    ##suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic4Hard))
+#    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCoupledProblemsBasic4Hard))
     suite.run(result)

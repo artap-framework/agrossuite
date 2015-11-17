@@ -10,13 +10,9 @@ class TestAdaptivityElectrostatic(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
         # electrostatic
-        self.electrostatic = agros2d.field("electrostatic")
+        self.electrostatic = problem.field("electrostatic")
         self.electrostatic.analysis_type = "steadystate"
         self.electrostatic.number_of_refinements = 0
         self.electrostatic.polynomial_order = 1
@@ -35,7 +31,7 @@ class TestAdaptivityElectrostatic(Agros2DTestCase):
         self.electrostatic.add_material("Air", {"electrostatic_permittivity" : 1, "electrostatic_charge_density" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0.2, 1, 0, 0.5, boundaries = {"electrostatic" : "Source"})
         geometry.add_edge(0, 0.5, 0, 0.25, boundaries = {"electrostatic" : "Border"})
         geometry.add_edge(0, -0.25, 0, -1, boundaries = {"electrostatic" : "Border"})
@@ -47,13 +43,17 @@ class TestAdaptivityElectrostatic(Agros2DTestCase):
         geometry.add_edge(0.25, 0, 0, 0.25, angle = 90, boundaries = {"electrostatic" : "Ground"})
         
         geometry.add_label(0.879551, 0.764057, area = 0.06, materials = {"electrostatic" : "Air"})
-        agros2d.view.zoom_best_fit()
         
-        problem.solve()
+        # solve problem
+        self.computation = problem.computation()
+        self.computation.solve()
 
-    def test_values(self):                
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("electrostatic")
+                        
         # values from Comsol
-        local_values = self.electrostatic.local_values(5e-2, 5e-1)
+        local_values = solution.local_values(5e-2, 5e-1)
         self.value_test("Electrostatic potential", local_values["V"], 648.638)
         self.value_test("Electric field - r", local_values["Er"], 1913.123)
         self.value_test("Electric field - z", local_values["Ez"], -3244.191)
@@ -67,13 +67,9 @@ class TestAdaptivityAcoustic(Agros2DTestCase):
         problem.mesh_type = "triangle"
         problem.frequency = 5000
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
         # acoustic
-        self.acoustic = agros2d.field("acoustic")
+        self.acoustic = problem.field("acoustic")
         self.acoustic.analysis_type = "harmonic"
         self.acoustic.number_of_refinements = 0
         self.acoustic.polynomial_order = 1
@@ -94,7 +90,7 @@ class TestAdaptivityAcoustic(Agros2DTestCase):
         self.acoustic.add_material("Air", {"acoustic_density" : 1.25, "acoustic_speed" : 343})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0.3, 0, 0, 0.3, angle = 90, boundaries = {"acoustic" : "Matched boundary"})
         geometry.add_edge(0.1, 0, 0.3, 0, boundaries = {"acoustic" : "Wall"})
         geometry.add_edge(0.1, 0, 0.025, -0.175, boundaries = {"acoustic" : "Wall"})
@@ -103,15 +99,19 @@ class TestAdaptivityAcoustic(Agros2DTestCase):
         geometry.add_edge(0, 0.3, 0, -0.2, boundaries = {"acoustic" : "Wall"})
         
         geometry.add_label(0.109723, 0.176647, materials = {"acoustic" : "Air"})
-        agros2d.view.zoom_best_fit()
         
-        problem.solve()
+        # solve problem
+        self.computation = problem.computation()
+        self.computation.solve()
         
-    def test_values(self):        
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("acoustic")
+                        
         # values from Comsol
-        point1 = self.acoustic.local_values(7.544e-3, -0.145)
+        point1 = solution.local_values(7.544e-3, -0.145)
         self.value_test("Acoustic pressure 1", point1["p"], 0.74307)
-        point2 = self.acoustic.local_values(6.994e-2, 1.894e-2)
+        point2 = solution.local_values(6.994e-2, 1.894e-2)
         self.value_test("Acoustic pressure 2", point2["p"], 0.28242)
          	
 class TestAdaptivityElasticityBracket(Agros2DTestCase):
@@ -121,13 +121,9 @@ class TestAdaptivityElasticityBracket(Agros2DTestCase):
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
         # elasticity
-        self.elasticity = agros2d.field("elasticity")
+        self.elasticity = problem.field("elasticity")
         self.elasticity.analysis_type = "steadystate"
         self.elasticity.number_of_refinements = 0
         self.elasticity.polynomial_order = 1
@@ -145,7 +141,7 @@ class TestAdaptivityElasticityBracket(Agros2DTestCase):
         self.elasticity.add_material("Steel", {"elasticity_young_modulus" : 2e11, "elasticity_poisson_ratio" : 0.33, "elasticity_volume_force_x" : 0, "elasticity_volume_force_y" : { "expression" : "-9.81*7800" }, "elasticity_alpha" : 0, "elasticity_temperature_difference" : 0, "elasticity_temperature_reference" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0.3, 0, 0, 0, boundaries = {"elasticity" : "Load"})
         geometry.add_edge(0, 0, 0, -0.3, boundaries = {"elasticity" : "Wall"})
         geometry.add_edge(0, -0.3, 0.03, -0.27, angle = 90, boundaries = {"elasticity" : "Free"})
@@ -160,16 +156,19 @@ class TestAdaptivityElasticityBracket(Agros2DTestCase):
         geometry.add_edge(0.15, -0.031, 0.031, -0.15, angle = 45, boundaries = {"elasticity" : "Free"})
         
         geometry.add_label(0.19805, -0.0157016, materials = {"elasticity" : "Steel"})
-        geometry.add_label(0.0484721, -0.0490752, materials = {"elasticity" : "none"})
-
-        agros2d.view.zoom_best_fit()       
-                                                                                                                
-        problem.solve()
+        geometry.add_label(0.0484721, -0.0490752, materials = {"elasticity" : "none"})      
         
-    def test_values(self):        
+        # solve problem
+        self.computation = problem.computation()
+        self.computation.solve()
+        
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("elasticity")
+                
         # exact values in this test are taken from Agros -> not a proper test
         # only to see if adaptivity works, should be replaced with comsol values
-        point1 = self.elasticity.local_values(2.042e-1, -3e-2)
+        point1 = solution.local_values(2.042e-1, -3e-2)
         self.value_test("Displacement", point1["d"], 1.161e-7)
         
 class TestAdaptivityMagneticProfileConductor(Agros2DTestCase):
@@ -180,13 +179,9 @@ class TestAdaptivityMagneticProfileConductor(Agros2DTestCase):
         problem.mesh_type = "triangle"
         problem.frequency = 50000
 
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
         # magnetic
-        self.magnetic = agros2d.field("magnetic")
+        self.magnetic = problem.field("magnetic")
         self.magnetic.analysis_type = "harmonic"
         self.magnetic.matrix_solver = "umfpack"
         self.magnetic.number_of_refinements = 0
@@ -205,7 +200,7 @@ class TestAdaptivityMagneticProfileConductor(Agros2DTestCase):
         self.magnetic.add_material("Copper", {"magnetic_permeability" : 1, "magnetic_conductivity" : 57e6, "magnetic_current_density_external_real" : 1e6/4})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0, 0.002, 0, 0.000768, boundaries = {"magnetic" : "Neumann"})
         geometry.add_edge(0, 0.000768, 0, 0, boundaries = {"magnetic" : "Neumann"})
         geometry.add_edge(0, 0, 0.000768, 0, boundaries = {"magnetic" : "Neumann"})
@@ -219,13 +214,16 @@ class TestAdaptivityMagneticProfileConductor(Agros2DTestCase):
         
         geometry.add_label(0.000585418, 0.00126858, materials = {"magnetic" : "Air"})
         geometry.add_label(0.000109549, 8.6116e-05, materials = {"magnetic" : "Copper"})
-
-        agros2d.view.zoom_best_fit()                                                                                                                
         
-        problem.solve()
+        # solve problem
+        self.computation = problem.computation()
+        self.computation.solve()        
         
-    def test_values(self):        
-        point = self.magnetic.local_values(6.106e-04, 2.378e-04)
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("magnetic")
+                        
+        point = solution.local_values(6.106e-04, 2.378e-04)
         self.value_test("Magnetic potential - real", point["Ar"], 2.7584856899647945E-9)
         self.value_test("Magnetic potential - imag", point["Ai"], -1.0598108775564893E-8)        
         self.value_test("Flux density", point["B"], 1.3839318132148589E-5)
@@ -238,14 +236,10 @@ class TestAdaptivityRF_TE(Agros2DTestCase):
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
         problem.frequency = 1.6e+10
-        
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
 
         # fields
         # rf_te
-        self.rf_te = agros2d.field("rf_te")
+        self.rf_te = problem.field("rf_te")
         self.rf_te.analysis_type = "harmonic"
         self.rf_te.number_of_refinements = 1
         self.rf_te.polynomial_order = 1
@@ -266,7 +260,7 @@ class TestAdaptivityRF_TE(Agros2DTestCase):
         self.rf_te.add_material("Air", {"rf_te_permittivity" : 1, "rf_te_permeability" : 1, "rf_te_conductivity" : 0, "rf_te_current_density_external_real" : 0, "rf_te_current_density_external_imag" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0.17, -0.01143, 0.17, 0.01143, boundaries = {"rf_te" : "Matched boundary"})
         geometry.add_edge(0, 0.01143, 0, -0.01143, boundaries = {"rf_te" : "Source"})
         geometry.add_edge(0.076, 0.01143, 0.076, 0.0045, boundaries = {"rf_te" : "Perfect electric conductor"})
@@ -281,11 +275,16 @@ class TestAdaptivityRF_TE(Agros2DTestCase):
         geometry.add_edge(0.076, 0.01143, 0, 0.01143, boundaries = {"rf_te" : "Perfect electric conductor"})
         
         geometry.add_label(0.0367388, 0.0025708, materials = {"rf_te" : "Air"})
-        agros2d.view.zoom_best_fit()
-        problem.solve()
+
+        # solve problem
+        self.computation = problem.computation()
+        self.computation.solve()
         
-    def test_values(self):        
-        point1 = self.rf_te.local_values(5.801e-02, 4.192e-03)
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("rf_te")
+                
+        point1 = solution.local_values(5.801e-02, 4.192e-03)
         self.value_test("Electric field", point1["E"], 0.1769)
         self.value_test("Flux density", point1["B"], 2.604E-9)
            
@@ -297,13 +296,9 @@ class TestAdaptivityHLenses(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
 
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
         # fields
         # magnetic
-        self.magnetic = agros2d.field("magnetic")
+        self.magnetic = problem.field("magnetic")
         self.magnetic.analysis_type = "steadystate"
         self.magnetic.number_of_refinements = 0
         self.magnetic.polynomial_order = 1
@@ -321,7 +316,7 @@ class TestAdaptivityHLenses(Agros2DTestCase):
         self.magnetic.add_material("Coil 2", {"magnetic_permeability" : 1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 1e7, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0, 0.04, 0.05, 0.04, boundaries = {"magnetic" : "A = 0"})
         geometry.add_edge(0.05, 0.04, 0.05, -0.08, boundaries = {"magnetic" : "A = 0"})
         geometry.add_edge(0.05, -0.08, 0, -0.08, boundaries = {"magnetic" : "A = 0"})
@@ -343,13 +338,17 @@ class TestAdaptivityHLenses(Agros2DTestCase):
         geometry.add_label(0.027331, 0.0261643, materials = {"magnetic" : "Air"})
         geometry.add_label(0.00883434, 0.00543334, materials = {"magnetic" : "Coil 1"})
         geometry.add_label(0.00902444, -0.0168831, materials = {"magnetic" : "Coil 2"})
-        agros2d.view.zoom_best_fit()
         
-        problem.solve()
+        # solve problem
+        self.computation = problem.computation()
+        self.computation.solve()
         
-    def test_values(self):        
+    def test_values(self):
+        # solution
+        solution = self.computation.solution("magnetic")
+                
         # values from Comsol        
-        point1 = self.magnetic.local_values(5.902e-03, -1.241e-02)
+        point1 = solution.local_values(5.902e-03, -1.241e-02)
         self.value_test("Magnetic potential", point1["Ar"], 2.2250E-5)
         self.value_test("Flux density - r", point1["Brr"], 0.0032758)
         self.value_test("Flux density - z", point1["Brz"], 0.0068235)
@@ -363,14 +362,10 @@ class TestAdaptivityPAndHCoupled(Agros2DTestCase):
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
         problem.frequency = 50
-        
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-  
+
         # fields
         # magnetic
-        self.magnetic = agros2d.field("magnetic")
+        self.magnetic = problem.field("magnetic")
         self.magnetic.analysis_type = "harmonic"
         self.magnetic.number_of_refinements = 0
         self.magnetic.polynomial_order = 1
@@ -390,7 +385,7 @@ class TestAdaptivityPAndHCoupled(Agros2DTestCase):
         self.magnetic.add_material("Steel", {"magnetic_permeability" : 100, "magnetic_conductivity" : 3e5, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 0, "magnetic_current_density_external_imag" : 0, "magnetic_total_current_prescribed" : 0, "magnetic_total_current_real" : 0, "magnetic_total_current_imag" : 0})
                                 
         # heat
-        self.heat = agros2d.field("heat")
+        self.heat = problem.field("heat")
         self.heat.analysis_type = "steadystate"
         self.heat.number_of_refinements = 0
         self.heat.polynomial_order = 1
@@ -410,7 +405,7 @@ class TestAdaptivityPAndHCoupled(Agros2DTestCase):
         self.heat.add_material("Insulation", {"heat_conductivity" : 6, "heat_volume_heat" : 0, "heat_velocity_x" : 0, "heat_velocity_y" : 0, "heat_velocity_angular" : 0, "heat_density" : 0, "heat_specific_heat" : 0})
                 
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0.3, 0.6, 0, 0.6, boundaries = {"heat" : "Radiation"})
         geometry.add_edge(0, 1.2, 0.9, 1.2, boundaries = {"magnetic" : "A = 0"})
         geometry.add_edge(0.9, 1.2, 0.9, -0.5, boundaries = {"magnetic" : "A = 0"})
@@ -433,15 +428,21 @@ class TestAdaptivityPAndHCoupled(Agros2DTestCase):
         geometry.add_label(0.087409, 0.293345, materials = {"heat" : "Steel", "magnetic" : "Steel"})
         geometry.add_label(0.132733, 0.0478408, materials = {"heat" : "Insulation", "magnetic" : "Insulation"})
         geometry.add_label(0.378237, 0.221582, materials = {"heat" : "none", "magnetic" : "Copper"})
-        agros2d.view.zoom_best_fit()        
-        problem.solve()
+
+        # solve problem
+        self.computation = problem.computation()
+        self.computation.solve()
         
-    def test_values(self):        
+    def test_values(self):
+        # solution
+        solution_heat = self.computation.solution("heat")
+        solution_magnetic = self.computation.solution("magnetic")
+                
         # exact values in this test are taken from Agros -> not a proper test
         # only to see if adaptivity works, should be replaced with comsol values
-        point_heat = self.heat.local_values(3.048e-01, 8.919e-02)
+        point_heat = solution_heat.local_values(3.048e-01, 8.919e-02)
         self.value_test("Temperature", point_heat["T"], 1.277e+03, 0.006)
-        point_mag = self.magnetic.local_values(2.920e-01, 1.333e-01)
+        point_mag = solution_magnetic.local_values(2.920e-01, 1.333e-01)
         self.value_test("Flux density", point_mag["Br"], 5.893e-01, 0.025)
         
 if __name__ == '__main__':        
