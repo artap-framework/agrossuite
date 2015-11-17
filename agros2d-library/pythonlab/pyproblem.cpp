@@ -133,7 +133,7 @@ void PyProblem::setMeshType(const std::string &meshType)
 void PyProblem::setFrequency(double frequency)
 {
     if (frequency > 0.0)
-        m_problem->config()->setValue(ProblemConfig::Frequency, QString::number(frequency));
+        m_problem->config()->setValue(ProblemConfig::Frequency, Value(frequency));
     else
         throw out_of_range(QObject::tr("The frequency must be positive.").toStdString());
 }
