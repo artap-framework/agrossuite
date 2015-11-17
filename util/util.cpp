@@ -252,6 +252,48 @@ QIcon icon(const QString &name)
     return iconCache->value(name);
 }
 
+QIcon iconAlphabet(const QChar &letter, AlphabetColor color)
+{
+    QString directory = "";
+
+    switch (color)
+    {
+    case AlphabetColor_Blue:
+        directory = "blue";
+        break;
+    case AlphabetColor_Bluegray:
+        directory = "bluegray";
+        break;
+    case AlphabetColor_Brown:
+        directory = "brown";
+        break;
+    case AlphabetColor_Green:
+        directory = "green";
+        break;
+    case AlphabetColor_Lightgray:
+        directory = "lightgray";
+        break;
+    case AlphabetColor_Purple:
+        directory = "purple";
+        break;
+    case AlphabetColor_Red:
+        directory = "red";
+        break;
+    case AlphabetColor_Yellow:
+        directory = "yellow";
+        break;
+    default:
+        assert(0);
+    }
+
+    static QString alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+    if (alphabet.contains(letter.toLower()))
+        return icon(QString("alphabet/%1/%2").arg(directory).arg(letter.toLower()));
+    else
+        return icon(QString("alphabet/%1/imageback").arg(directory));
+}
+
 QString compatibleFilename(const QString &fileName)
 {
     QString out = QFileInfo(fileName).absoluteFilePath();

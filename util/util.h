@@ -134,6 +134,19 @@ AGROS_UTIL_API QString defaultLocale();
 
 // get icon with respect to actual theme
 AGROS_UTIL_API QIcon icon(const QString &name);
+enum AlphabetColor
+{
+    AlphabetColor_Blue,
+    AlphabetColor_Bluegray,
+    AlphabetColor_Brown,
+    AlphabetColor_Green,
+    AlphabetColor_Lightgray,
+    AlphabetColor_Purple,
+    AlphabetColor_Red,
+    AlphabetColor_Yellow
+};
+// get color icon with letter
+AGROS_UTIL_API QIcon iconAlphabet(const QChar &letter, AlphabetColor color);
 
 // windows short name
 AGROS_UTIL_API QString compatibleFilename(const QString &fileName);
