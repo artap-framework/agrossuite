@@ -232,7 +232,7 @@ void PyComputation::clear()
     m_computation->scene()->invalidate();
 
     if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actSceneModePreprocessor->trigger();
+        currentPythonEngineAgros()->sceneViewPreprocessor()->actSceneModeProblem->trigger();
 }
 
 

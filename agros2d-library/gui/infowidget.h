@@ -60,7 +60,7 @@ signals:
     void examples(const QString &groupName);
 
 public slots:
-    virtual void refresh();
+    void welcome();
 
 private:
 

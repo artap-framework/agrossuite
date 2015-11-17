@@ -110,6 +110,11 @@ void Config::setStringKeys()
     m_settingKey[Python_UseProfiler] = "Python_UseProfiler";
     m_settingKey[Python_PrintStacktrace] = "Python_PrintStacktrace";
     m_settingKey[Python_ConsoleOutput] = "Python_ConsoleOutput";
+    m_settingKey[ShowConsoleAndLog_Welcome] = "ShowConsoleAndLog_Welcome";
+    m_settingKey[ShowConsoleAndLog_Problem] = "ShowConsoleAndLog_Problem";
+    m_settingKey[ShowConsoleAndLog_Results] = "ShowConsoleAndLog_Results";
+    m_settingKey[ShowConsoleAndLog_OptiLab] = "ShowConsoleAndLog_OptiLab";
+    m_settingKey[ShowConsoleAndLog_PythonLab] = "ShowConsoleAndLog_PythonLab";
 }
 
 void Config::setDefaultValues()
@@ -135,4 +140,9 @@ void Config::setDefaultValues()
     m_settingDefault[Python_UseProfiler] = false;
     m_settingDefault[Python_PrintStacktrace] = true;
     m_settingDefault[Python_ConsoleOutput] = false;
+    m_settingDefault[ShowConsoleAndLog_Welcome] = false;
+    m_settingDefault[ShowConsoleAndLog_Problem] = false;
+    m_settingDefault[ShowConsoleAndLog_Results] = false;
+    m_settingDefault[ShowConsoleAndLog_OptiLab] = true;
+    m_settingDefault[ShowConsoleAndLog_PythonLab] = true;
 }

@@ -77,46 +77,6 @@
 </table>
 -->
 
-<table>
-<tr>
-<td>
-<div class="section">
-<h2>{{RECENT_PROBLEMS_LABEL}}</h2>
-<hr/>
-<ul class="recent">
-{{#RECENT_PROBLEM_SECTION}}
-<li><a href="open?filename={{PROBLEM_FILENAME}}" class="recent_name">{{PROBLEM_BASE}}</a><br />
-	<span class="recent_filename">{{PROBLEM_FILENAME_LABEL}}</span></li>
-{{/RECENT_PROBLEM_SECTION}}
-</ul>
-</div>
-</td>
-<td>
-<div class="section">
-<h2>{{RECENT_SCRIPTS_LABEL}}</h2>
-<hr/>
-<ul class="recent">
-{{#RECENT_SCRIPT_SECTION}}
-<li><a href="open?filename={{SCRIPT_FILENAME}}" class="recent_name">{{SCRIPT_BASE}}</a><br />
-	<span class="recent_filename">{{SCRIPT_FILENAME_LABEL}}</span></li>
-{{/RECENT_SCRIPT_SECTION}}
-</ul>
-</div>
-
-<div class="section">
-<h2>{{RECENT_OPTILAB_LABEL}}</h2>
-<hr/>
-<ul class="recent">
-{{#RECENT_OPTILAB_SECTION}}
-<li><a href="open?filename={{OPTILAB_FILENAME}}" class="recent_name">{{OPTILAB_BASE}}</a><br />
-	<span class="recent_filename">{{OPTILAB_FILENAME_LABEL}}</span></li>
-{{/RECENT_OPTILAB_SECTION}}
-</ul>
-</div>
-</td>
-</tr>
-</table>
-
 <div class="cleaner"></div>
 <br />
 

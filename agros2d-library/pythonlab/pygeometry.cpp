@@ -26,7 +26,7 @@
 void PyGeometry::activate()
 {
     if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actSceneModePreprocessor->trigger();
+        currentPythonEngineAgros()->sceneViewPreprocessor()->actSceneModeProblem->trigger();
 }
 
 int PyGeometry::nodesCount() const

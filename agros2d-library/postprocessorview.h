@@ -72,7 +72,7 @@ public:
 
     inline QSharedPointer<Computation> computation() { return m_computation; }
 
-    QAction *actSceneModePost;
+    QAction *actSceneModeResults;
 
 signals:
     void apply();

@@ -110,15 +110,16 @@ void ExamplesWidget::init(const QString &expandedGroup)
     readRecentFiles();
     readExamples();
 
-    QList<QTreeWidgetItem *> items = trvExamples->findItems(m_expandedGroup, Qt::MatchExactly);
-    if (items.count() == 1)
-        trvExamples->setCurrentItem(items.at(0));
+    if (!trvExamples->currentItem())
+    {
+        QList<QTreeWidgetItem *> items = trvExamples->findItems(m_expandedGroup, Qt::MatchExactly);
+        if (items.count() == 1)
+            trvExamples->setCurrentItem(items.at(0));
+    }
 }
 
 void ExamplesWidget::doRecentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
-    m_infoWidget->clear();
-
     m_selectedRecentFilename.clear();
     if (current)
     {
@@ -126,8 +127,11 @@ void ExamplesWidget::doRecentItemChanged(QTreeWidgetItem *current, QTreeWidgetIt
         if (!m_selectedRecentFilename.isEmpty())
         {
             problemInfo(m_selectedRecentFilename);
+            return;
         }
     }
+
+    m_infoWidget->welcome();
 }
 
 void ExamplesWidget::doRecentItemDoubleClicked(QTreeWidgetItem *item, int column)
@@ -143,8 +147,6 @@ void ExamplesWidget::doRecentItemDoubleClicked(QTreeWidgetItem *item, int column
 
 void ExamplesWidget::doExampleItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
-    m_infoWidget->clear();
-
     m_selectedExampleFilename.clear();
     if (current)
     {
@@ -152,8 +154,11 @@ void ExamplesWidget::doExampleItemChanged(QTreeWidgetItem *current, QTreeWidgetI
         if (!m_selectedExampleFilename.isEmpty())
         {
             problemInfo(m_selectedExampleFilename);
+            return;
         }
     }
+
+    m_infoWidget->welcome();
 }
 
 void ExamplesWidget::doExampleItemDoubleClicked(QTreeWidgetItem *item, int column)
@@ -216,6 +221,8 @@ void ExamplesWidget::readRecentFiles()
         item->setData(0, Qt::UserRole, fileInfo.absoluteFilePath());
         item->setIcon(0, icon("pythonlab"));
     }
+
+    m_infoWidget->welcome();
 }
 
 void ExamplesWidget::readExamples()
@@ -335,6 +342,7 @@ void ExamplesWidget::problemInfo(const QString &fileName)
             QString fn = QString("%1/%2").arg(tempProblemDir()).arg("problem.a2d");
             this->problemInfo(fn);
             QFile::remove(fn);
+
             return;
         }
         else if (fileInfo.suffix() == "a2d")
@@ -356,15 +364,23 @@ void ExamplesWidget::problemInfo(const QString &fileName)
                 problemInfo.SetValue("PROBLEM_DETAILS", detail.toStdString());
             }
             */
+
+            return;
         }
         else if (fileInfo.suffix() == "py")
         {
             m_infoWidget->showPythonInfo(fileName);
+
+            return;
         }
         else if (fileInfo.suffix() == "ui")
         {
             // templateName = "example_form.tpl";
         }
+    }
+    else
+    {
+        m_infoWidget->welcome();
     }
 }
 

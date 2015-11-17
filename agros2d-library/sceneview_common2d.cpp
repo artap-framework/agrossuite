@@ -44,6 +44,8 @@ SceneViewCommon2D::SceneViewCommon2D(QWidget *parent)
     : SceneViewPostInterface(parent)
 {
     connect(this, SIGNAL(mouseMoved(Point)), this, SLOT(updatePosition(Point)));
+
+    clear();
 }
 
 SceneViewCommon2D::~SceneViewCommon2D()

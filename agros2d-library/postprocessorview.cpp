@@ -53,10 +53,10 @@
 PostprocessorWidget::PostprocessorWidget()
 {
     // scene mode
-    actSceneModePost = new QAction(icon("scene-post2d"), tr("Postprocessor"), this);
-    actSceneModePost->setShortcut(tr("Ctrl+3"));
-    actSceneModePost->setCheckable(true);
-    actSceneModePost->setEnabled(false);
+    actSceneModeResults = new QAction(icon("scene-post2d"), tr("Results"), this);
+    actSceneModeResults->setShortcut(tr("Ctrl+3"));
+    actSceneModeResults->setCheckable(true);
+    actSceneModeResults->setEnabled(false);
 
     m_fieldWidget = new PhysicalFieldWidget(this);
     connect(m_fieldWidget, SIGNAL(fieldChanged()), this, SLOT(refresh()));
@@ -169,7 +169,7 @@ void PostprocessorWidget::doApply()
 
 void PostprocessorWidget::refresh()
 {
-    actSceneModePost->setEnabled(m_computation && m_computation->isMeshed());
+    actSceneModeResults->setEnabled(m_computation && m_computation->isMeshed());
 
     if (m_computation.isNull())
         return;
@@ -238,7 +238,7 @@ void PostprocessorWidget::doCalculationFinished()
     if (currentPythonEngine()->isScriptRunning())
         return;
 
-    actSceneModePost->setEnabled(m_computation->isMeshed());
+    actSceneModeResults->setEnabled(m_computation->isMeshed());
 
     if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
     {

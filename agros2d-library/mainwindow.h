@@ -92,7 +92,6 @@ private slots:
     void doUnitTests();
 
     void doHideControlPanel();
-    void doHideViewPanel();
     void doFullScreen();
 
     void doCut();
@@ -151,7 +150,6 @@ private:
     QActionGroup *actDocumentOpenRecentGroup;
 
     QAction *actHideControlPanel;
-    QAction *actHideViewPanel;
 
     QAction *actCopy;
 
@@ -190,7 +188,7 @@ private:
     QActionGroup *actSceneModeGroup;
 
     SceneViewWidget *sceneViewInfoWidget;
-    SceneViewWidget *sceneViewPreprocessorWidget;
+    SceneViewWidget *sceneViewProblemWidget;
     SceneViewWidget *sceneViewMeshWidget;
     SceneViewWidget *sceneViewPost2DWidget;
     SceneViewWidget *sceneViewPost3DWidget;
@@ -201,15 +199,15 @@ private:
 
     QStackedLayout *tabViewLayout;
     InfoWidget *sceneInfoWidget;
-    SceneViewPreprocessor *sceneViewPreprocessor;
+    SceneViewPreprocessor *sceneViewProblem;
     PythonEditorDialog *scriptEditor;
     OptiLab *optiLab;
 
     QWidget *viewControls;
     QStackedLayout *tabControlsLayout;
     ExamplesWidget *exampleWidget;
-    PreprocessorWidget *preprocessorWidget;
-    PostprocessorWidget *postprocessorWidget;
+    PreprocessorWidget *problemWidget;
+    PostprocessorWidget *resultsWidget;
 
     PythonScriptingConsoleView *consoleView;
     LogView *logView;
@@ -218,6 +216,7 @@ private:
 
     QSplitter *splitterMain;
     QSplitter *splitterView;
+    QSplitter *splitterConsoleAndLog;
 
     LogStdOut *logStdOut;
 

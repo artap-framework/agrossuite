@@ -208,6 +208,8 @@ void PreprocessorWidget::createControls()
     splitter->setOrientation(Qt::Vertical);
     splitter->addWidget(widgetTreeView);
     splitter->addWidget(view);
+    splitter->setStretchFactor(0, 2);
+    splitter->setStretchFactor(1, 1);
     splitter->restoreState(settings.value("PreprocessorWidget/SplitterState").toByteArray());
     splitter->restoreGeometry(settings.value("PreprocessorWidget/SplitterGeometry").toByteArray());
 
@@ -473,6 +475,8 @@ void PreprocessorWidget::refresh()
         }
     }
 
+    trvWidget->resizeColumnToContents(1);
+
     setUpdatesEnabled(true);
     blockSignals(false);
 }
@@ -603,7 +607,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
         {
             // geometry
             SceneBasic *objectBasic = current->data(0, Qt::UserRole).value<SceneBasic *>();
-            m_sceneViewPreprocessor->actSceneModePreprocessor->trigger();
+            m_sceneViewPreprocessor->actSceneModeProblem->trigger();
 
             if (dynamic_cast<SceneNode *>(objectBasic))
                 m_sceneViewPreprocessor->actOperateOnNodes->trigger();

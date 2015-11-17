@@ -45,7 +45,7 @@ public:
 
     QAction *actSceneViewSelectRegion;
 
-    QAction *actSceneModePreprocessor;
+    QAction *actSceneModeProblem;
 
     QActionGroup *actOperateGroup;
     QAction *actOperateOnNodes;

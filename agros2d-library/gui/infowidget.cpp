@@ -279,7 +279,7 @@ void InfoWidgetGeneral::showPythonInfo(const QString &fileName)
 InfoWidget::InfoWidget(QWidget *parent)
     : InfoWidgetGeneral(parent)
 {
-    refresh();
+    welcome();
 }
 
 InfoWidget::~InfoWidget()
@@ -287,8 +287,22 @@ InfoWidget::~InfoWidget()
     QFile::remove(tempProblemDir() + "/info.html");
 }
 
-void InfoWidget::refresh()
+void InfoWidget::welcome()
 {
+    if (currentPythonEngine()->isScriptRunning())
+        return;
+
+    // template
+    std::string info;
+    ctemplate::TemplateDictionary problemInfo("welcome");
+
+    problemInfo.SetValue("AGROS2D", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/panels/agros2d_logo.png").absolutePath()).toStdString());
+    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT + "/panels")).toString().toStdString());
+
+    ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/panels/welcome.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
+
+    writeStringContent(tempProblemDir() + "/welcome.html", QString::fromStdString(info));
+    webView->load(QUrl::fromLocalFile(tempProblemDir() + "/welcome.html"));
 }
 
 void InfoWidget::linkClicked(const QUrl &url)
