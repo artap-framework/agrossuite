@@ -44,7 +44,6 @@ PythonBrowser::PythonBrowser(PythonScriptingConsole *console, QWidget *parent)
     trvBrowser = new QTreeWidget(this);
     trvBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
     trvBrowser->setColumnCount(3);
-    trvBrowser->setIndentation(18);
     trvBrowser->setColumnWidth(0, 200);
     trvBrowser->setColumnWidth(0, 200);
 

@@ -1037,12 +1037,13 @@ Computation::Computation(const QString &problemDir) : ProblemBase()
 Computation::~Computation()
 {   
     clearSolution();
+    clearResults();
 
     delete m_calculationThread;
     delete m_problemSolver;
     delete m_postDeal;
     delete m_solutionStore;
-    delete m_result;    
+    delete m_result;
 
     removeDirectory(QString("%1/%2").arg(cacheProblemDir(), m_problemDir));
 }
@@ -1516,12 +1517,18 @@ void Computation::clearSolution()
 void Computation::clearResults()
 {
     m_result->clear();
+    saveResults();
 }
 
 void Computation::clearFieldsAndConfig()
 {
     m_solutionStore->clear();
     m_postDeal->clear();
+    clearSolution();
+
+    QString fn = QString("%1/%2/problem.a2d").arg(cacheProblemDir()).arg(m_problemDir);
+    if (QFile::exists(fn))
+        QFile::remove(fn);
 
     ProblemBase::clearFieldsAndConfig();
 }
@@ -1574,7 +1581,7 @@ QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool
             arg(cacheProblemDir()).
             arg(computation->problemDir());
 
-    writeProblemToA2D(fn);    
+    writeProblemToA2D(fn);
     computation->readProblemFromA2D31(fn);
 
     return computation;
@@ -1643,17 +1650,18 @@ void Problem::readProblemFromArchive(const QString &fileName)
             computation->readProblemFromA2D31(fnProblem);
 
             // read results
-            computation->solutionStore()->loadRunTimeDetails();
-
-            // read mesh file
-            try
+            if (computation->solutionStore()->loadRunTimeDetails())
             {
-                computation->readInitialMeshFromFile(true);
-            }
-            catch (AgrosException& e)
-            {
-                computation->clearSolution();
-                Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
+                // read mesh file
+                try
+                {
+                    computation->readInitialMeshFromFile(true);
+                }
+                catch (AgrosException& e)
+                {
+                    computation->clearSolution();
+                    Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
+                }
             }
 
             // results
@@ -1673,13 +1681,13 @@ void Problem::readProblemFromArchive(const QString &fileName)
 
         Agros2D::setCurrentComputation(post->problemDir());
         emit post->solved();
-    }
 
-    // read studies
-    m_studies->loadStudies();
+        // read studies
+        m_studies->loadStudies();
+    }
 }
 
-void Problem::writeProblemToArchive(const QString &fileName, bool saveWithSolution)
+void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFile)
 {
     QSettings settings;
     QFileInfo fileInfo(fileName);
@@ -1692,22 +1700,22 @@ void Problem::writeProblemToArchive(const QString &fileName, bool saveWithSoluti
     QFileInfo fileInfoProblem(QString("%1/problem.a2d").arg(cacheProblemDir()));
     writeProblemToA2D(fileInfoProblem.absoluteFilePath());
 
-    if (saveWithSolution)
-    {
-        // write studies
-        m_studies->saveStudies();
-
-        // whole directory
-        JlCompress::compressDir(fileName, cacheProblemDir());
-    }
-    else
+    if (onlyProblemFile)
     {
         // only problem file
         QStringList lst;
         lst << fileInfoProblem.absoluteFilePath();
         if (JlCompress::compressFiles(fileName, lst))
             emit fileNameChanged(QFileInfo(fileName).absoluteFilePath());
-    }    
+    }
+    else
+    {
+        // save studies
+        m_studies->saveStudies();
+
+        // whole directory
+        JlCompress::compressDir(fileName, cacheProblemDir());
+    }
 }
 
 void Problem::readProblemFromFile(const QString &fileName)

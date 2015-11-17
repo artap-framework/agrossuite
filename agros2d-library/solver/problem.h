@@ -167,7 +167,7 @@ public:
     QSharedPointer<Computation> createComputation(bool newComputation = false, bool setCurrentComputation = true);
 
     void readProblemFromArchive(const QString &fileName);
-    void writeProblemToArchive(const QString &fileName, bool saveWithSolution = false);
+    void writeProblemToArchive(const QString &fileName, bool onlyProblemFile = true);
     void readProblemFromFile(const QString &fileName);
 
     inline Studies *studies() { return m_studies; }

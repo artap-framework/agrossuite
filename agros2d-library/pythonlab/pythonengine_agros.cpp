@@ -663,7 +663,7 @@ void saveFile(const std::string &file, bool saveWithSolution)
 {
     try
     {
-        Agros2D::problem()->writeProblemToArchive(QString::fromStdString(file));
+        Agros2D::problem()->writeProblemToArchive(QString::fromStdString(file), !saveWithSolution);
 
         // if (saveWithSolution || silentMode())
         //    Agros2D::computation()->writeSolutionToFile(QString::fromStdString(file));

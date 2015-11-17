@@ -42,7 +42,7 @@ const QString STUDIES = "studies";
 
 Studies::Studies(QObject *parent) : QObject(parent)
 {
-
+    connect(this, SIGNAL(invalidated()), this, SLOT(saveStudies()));
 }
 
 Studies::~Studies()
@@ -62,6 +62,7 @@ void Studies::addStudy(Study *study)
 void Studies::removeStudy(Study *study)
 {
     m_studies.removeOne(study);
+
     emit invalidated();
 }
 
@@ -74,21 +75,22 @@ void Studies::clear()
     emit invalidated();
 }
 
-void Studies::loadStudies()
+bool Studies::loadStudies()
 {
     blockSignals(true);
 
     clear();
 
     QString fn = QString("%1/studies.json").arg(cacheProblemDir());
+
     QFile file(fn);
     if (!file.exists())
-        return;
+        return true; // OK - no study
 
     if (!file.open(QIODevice::ReadOnly))
     {
         qWarning("Couldn't open study file.");
-        return;
+        return false;
     }
 
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
@@ -118,18 +120,28 @@ void Studies::loadStudies()
     blockSignals(false);
 
     emit invalidated();
+
+    return true;
 }
 
-void Studies::saveStudies()
+bool Studies::saveStudies()
 {
     QString fn = QString("%1/studies.json").arg(cacheProblemDir());
+
+    if (m_studies.isEmpty())
+    {
+        if (QFile::exists(fn))
+            QFile::remove(fn);
+
+        return true;
+    }
 
     QFile file(fn);
 
     if (!file.open(QIODevice::WriteOnly))
     {
         qWarning("Couldn't open studies file.");
-        return;
+        return false;
     }
 
     // root object
@@ -150,6 +162,8 @@ void Studies::saveStudies()
     // save to file
     QJsonDocument doc(rootJson);
     file.write(doc.toJson());
+
+    return true;
 }
 
 // *****************************************************************************************************************
@@ -279,7 +293,7 @@ void StudySweepAnalysis::solve()
         currentPythonEngine()->useGlobalDict();
 
         computation->saveResults();
-    }
+    }       
 }
 
 void StudySweepAnalysis::load(QJsonObject &object)

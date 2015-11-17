@@ -91,7 +91,6 @@ PythonEditorTextEdit::PythonEditorTextEdit(PythonEngine *pythonEngine, QWidget *
     trvPyLint->setHeaderHidden(true);
     trvPyLint->setMouseTracking(true);
     trvPyLint->setColumnCount(1);
-    trvPyLint->setIndentation(12);
     trvPyLint->setMaximumHeight(150);
     trvPyLint->setVisible(false);
     connect(trvPyLint, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doHighlightLine(QTreeWidgetItem *, int)));
@@ -1979,7 +1978,6 @@ ErrorWidget::ErrorWidget(QTabWidget *tabWidget, QWidget *parent)
     trvErrors->setMouseTracking(true);
     trvErrors->setColumnCount(3);
     trvErrors->setColumnWidth(1, 200);
-    trvErrors->setIndentation(12);
     connect(trvErrors, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doHighlightLineError(QTreeWidgetItem *, int)));
 
     QStringList headers;

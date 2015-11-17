@@ -59,7 +59,6 @@ void OptiLabWidget::createControls()
     trvComputations = new QTreeWidget(this);
     trvComputations->setMouseTracking(true);
     trvComputations->setColumnCount(2);
-    trvComputations->setIndentation(15);
     trvComputations->setMinimumWidth(220);
     trvComputations->setColumnWidth(0, 220);
 

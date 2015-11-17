@@ -359,15 +359,15 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, Multi
     m_multiSolutionCacheIDOrder.append(solutionID);
 }
 
-void SolutionStore::loadRunTimeDetails()
+bool SolutionStore::loadRunTimeDetails()
 {
     QString fnJSON = QString("%1/%2/runtime.json").arg(cacheProblemDir()).arg(m_computation->problemDir());
     QFile file(fnJSON);
 
     if (!file.open(QIODevice::ReadOnly))
     {
-        qWarning("Couldn't open result file.");
-        return;
+        qWarning("Couldn't open runtime file.");
+        return false;
     }
 
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
@@ -401,9 +401,11 @@ void SolutionStore::loadRunTimeDetails()
         // append run time details
         m_multiSolutionRunTimeDetails.insert(solutionID, runTime);
     }
+
+    return true;
 }
 
-void SolutionStore::saveRunTimeDetails()
+bool SolutionStore::saveRunTimeDetails()
 {
     QString fnJSON = QString("%1/%2/runtime.json").arg(cacheProblemDir()).arg(m_computation->problemDir());
     QFile file(fnJSON);
@@ -411,7 +413,7 @@ void SolutionStore::saveRunTimeDetails()
     if (!file.open(QIODevice::WriteOnly))
     {
         qWarning("Couldn't open result file.");
-        return;
+        return false;
     }
 
     // root object
@@ -438,4 +440,6 @@ void SolutionStore::saveRunTimeDetails()
     // save to file
     QJsonDocument doc(rootJson);
     file.write(doc.toJson());
+
+    return true;
 }

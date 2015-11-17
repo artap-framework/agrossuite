@@ -203,8 +203,8 @@ void MainWindow::createActions()
     actDocumentSave->setShortcuts(QKeySequence::Save);
     connect(actDocumentSave, SIGNAL(triggered()), this, SLOT(doDocumentSave()));
 
-    actDeleteSolution = new QAction(icon(""), tr("Delete solution"), this);
-    connect(actDeleteSolution, SIGNAL(triggered()), this, SLOT(doDeleteSolution()));
+    actDeleteSolution = new QAction(icon(""), tr("Delete solutions"), this);
+    connect(actDeleteSolution, SIGNAL(triggered()), this, SLOT(doDeleteSolutions()));
 
     actDocumentSaveAs = new QAction(icon("document-save-as"), tr("Save &As..."), this);
     actDocumentSaveAs->setShortcuts(QKeySequence::SaveAs);
@@ -795,7 +795,7 @@ void MainWindow::doDocumentSave()
         try
         {
             // write to archive
-            Agros2D::problem()->writeProblemToArchive(Agros2D::problem()->config()->fileName(), true);
+            Agros2D::problem()->writeProblemToArchive(Agros2D::problem()->config()->fileName(), false);
         }
         catch (AgrosException &e)
         {
@@ -808,13 +808,13 @@ void MainWindow::doDocumentSave()
     }
 }
 
-void MainWindow::doDeleteSolution()
+void MainWindow::doDeleteSolutions()
 {
     exampleWidget->actExamples->trigger();
     sceneViewProblem->doZoomBestFit();
 
     // clear all computations
-    Agros2D::clearComputations();    
+    Agros2D::clearComputations();
 }
 
 void MainWindow::doDocumentSaveAs()
@@ -830,7 +830,7 @@ void MainWindow::doDocumentSaveAs()
 
         try
         {
-            Agros2D::problem()->writeProblemToArchive(fileName, true);
+            Agros2D::problem()->writeProblemToArchive(fileName, false);
             setRecentFiles();
         }
         catch (AgrosException &e)

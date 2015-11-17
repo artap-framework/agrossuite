@@ -68,7 +68,7 @@ private slots:
     void doDocumentOpenRecent(QAction *action);
     void doDocumentSave();
     void doDocumentSaveAs();    
-    void doDeleteSolution();
+    void doDeleteSolutions();
     void doDocumentClose();
     void doDocumentImportDXF();
     void doDocumentExportDXF();

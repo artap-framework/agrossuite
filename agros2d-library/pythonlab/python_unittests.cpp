@@ -48,7 +48,6 @@ UnitTestsWidget::UnitTestsWidget(QWidget *parent)
     trvTests = new QTreeWidget(this);
     trvTests->setMouseTracking(true);
     trvTests->setColumnCount(1);
-    trvTests->setIndentation(15);
     trvTests->setIconSize(QSize(24, 24));
     trvTests->setHeaderHidden(true);
     trvTests->setMinimumWidth(360);
