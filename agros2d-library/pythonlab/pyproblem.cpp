@@ -42,12 +42,14 @@ double PyProblemBase::getParameter(std::string key) const
     ParametersType parameters = m_problemBase->config()->value(ProblemConfig::Parameters).value<ParametersType>();
 
     if (parameters.contains(QString::fromStdString(key)))
+    {
         return parameters[QString::fromStdString(key)];
+    }
     else
     {
         QString str;
-        foreach (QString k, parameters.keys())
-            str += k + ", ";
+        foreach (QString key, parameters.keys())
+            str += key + ", ";
         if (str.length() > 0)
             str = str.left(str.length() - 2);
 
@@ -325,6 +327,40 @@ int PySolution::getAdaptivityStep(int adaptivityStep, int timeStep) const
         throw out_of_range(QObject::tr("Adaptivity step is out of range. (0 to %1).").arg(m_fieldInfo->value(FieldInfo::AdaptivitySteps).toInt() - 1).toStdString());
 
     return adaptivityStep;
+}
+
+void PyComputation::getResults(std::vector<std::string> &keys) const
+{
+    QMap<QString, double> results = m_computation->result()->results();
+
+    foreach (QString key, results.keys())
+        keys.push_back(key.toStdString());
+}
+
+double PyComputation::getResult(std::string key) const
+{
+    QMap<QString, double> results = m_computation->result()->results();
+
+    if (results.contains(QString::fromStdString(key)))
+    {
+        return results[QString::fromStdString(key)];
+    }
+    else
+    {
+        QString str;
+        foreach (QString key, results.keys())
+            str += key + ", ";
+        if (str.length() > 0)
+            str = str.left(str.length() - 2);
+
+        throw logic_error(QObject::tr("Invalid argument. Valid keys: %1").arg(str).toStdString());
+    }
+}
+
+void PyComputation::setResult(std::string key, double value)
+{
+    QMap<QString, double> results = m_computation->result()->results();
+    results[QString::fromStdString(key)] = value;
 }
 
 void PySolution::localValues(double x, double y, int timeStep, int adaptivityStep, map<std::string, double> &results) const

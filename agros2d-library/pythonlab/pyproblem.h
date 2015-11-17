@@ -22,6 +22,7 @@
 
 #include "util/global.h"
 #include "solver/problem.h"
+#include "solver/problem_result.h"
 #include "solver/problem_config.h"
 #include "solver/plugin_interface.h"
 
@@ -97,6 +98,11 @@ public:
     double timeElapsed() const;
     void timeStepsLength(vector<double> &steps) const;
     void timeStepsTimes(vector<double> &times) const;
+
+    // results
+    void getResults(std::vector<std::string> &keys) const;
+    double getResult(std::string key) const;
+    void setResult(std::string key, double value);
 
 private:
     QSharedPointer<Computation> m_computation;

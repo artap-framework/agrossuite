@@ -7,6 +7,8 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
 
         void getParameters(vector[string] &keys)
         double getParameter(string &key) except +
+        void setParameter(string &key, double value)
+
         string getCoordinateType()
         string getMeshType()
         double getFrequency()
@@ -18,7 +20,6 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         double getTimeInitialTimeStep()
         string getCouplingType(string &sourceField, string &targetField) except +
 
-        void setParameter(string &key, double value)
         void setCoordinateType(string &coordinateType) except +
         void setMeshType(string &meshType) except +
         void setFrequency(double frequency) except +
@@ -35,12 +36,17 @@ cdef class __Problem__:
     cdef object _time_callback
     cdef object _fields
     cdef object _geometry
+    cdef object parameters
 
     def __cinit__(self, clear = False):
         self._problem = new PyProblem(clear)
         self._time_callback = None
         self._fields = dict()
         self._geometry = __Geometry__()
+
+        self.parameters = __Parameters__(self.__get_parameters__,
+                                         self.__set_parameters__,
+                                         False)
 
     def __dealloc__(self):
         del self._problem
@@ -80,19 +86,21 @@ cdef class __Problem__:
         return __Computation__()
 
     # parameters
-    parameters = property(_get_parameters, _set_parameters)
-    def _get_parameters(self):
-        cdef vector[string] params_vector
-        self._problem.getParameters(params_vector)
+    property parameters:
+        def __get__(self):
+            return self.parameters.get_parameters()
 
-        params = dict()
-        for i in range(params_vector.size()):
-            params[(<string>params_vector[i]).decode()] = self._problem.getParameter(params_vector[i])
+    def __get_parameters__(self):
+        cdef vector[string] parameters_vector
+        self._problem.getParameters(parameters_vector)
 
-        return params
-    def _set_parameters(self, params):
-        for key in params:
-            self._problem.setParameter(key.encode(), <double>params[key])
+        parameters = dict()
+        for i in range(parameters_vector.size()):
+            parameters[(<string>parameters_vector[i]).decode()] = self._problem.getParameter(parameters_vector[i])
+        return parameters
+    def __set_parameters__(self, parameters):
+        for key in parameters:
+            self._problem.setParameter(key.encode(), <double>parameters[key])
 
     # coordinate type
     coordinate_type = property(_get_coordinate_type, _set_coordinate_type)

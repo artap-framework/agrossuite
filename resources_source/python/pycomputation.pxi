@@ -13,8 +13,13 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         void timeStepsLength(vector[double] &steps) except +
         void timeStepsTimes(vector[double] &times) except +
 
+        void getResults(vector[string] &keys)
+        double getResult(string &key) except +
+        void setResult(string &key, double value)
+
         void getParameters(vector[string] &keys)
         double getParameter(string &key) except +
+
         string getCoordinateType()
         string getMeshType()
         double getFrequency()
@@ -55,6 +60,8 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
 cdef class __Computation__:
     cdef PyComputation *_computation
     cdef object _solutions
+    cdef object parameters
+    cdef object results
 
     def __cinit__(self, computation = None):
         if isinstance(computation, str):
@@ -63,6 +70,12 @@ cdef class __Computation__:
             self._computation = new PyComputation()
 
         self._solutions = dict()
+        self.parameters = __Parameters__(self.__get_parameters__,
+                                         self._unauthorized,
+                                         False)
+        self.results = __Parameters__(self.__get_results__,
+                                      self.__set_results__,
+                                      False)
 
     def __dealloc__(self):
         del self._computation
@@ -121,8 +134,39 @@ cdef class __Computation__:
             times.append(times_vector[i])
         return times
 
-    def _unauthorized(self):
+    def _unauthorized(self, value=None):
         raise Exception("Value can not be changed.")
+
+    # results
+    property results:
+        def __get__(self):
+            return self.results.get_parameters()
+
+    def __get_results__(self):
+        cdef vector[string] results_vector
+        self._computation.getResults(results_vector)
+
+        results = dict()
+        for i in range(results_vector.size()):
+            results[(<string>results_vector[i]).decode()] = self._problem.getResult(results_vector[i])
+        return results
+    def __set_results__(self, results):
+        for key in results:
+            self._computation.setResult(key.encode(), <double>results[key])
+
+    # parameters
+    property parameters:
+        def __get__(self):
+            return self.parameters.get_parameters()
+
+    def __get_parameters__(self):
+        cdef vector[string] parameters_vector
+        self._computation.getParameters(parameters_vector)
+
+        parameters = dict()
+        for i in range(parameters_vector.size()):
+            parameters[(<string>parameters_vector[i]).decode()] = self._computation.getParameter(parameters_vector[i])
+        return parameters
 
     # coordinate type
     coordinate_type = property(_get_coordinate_type, _unauthorized)
