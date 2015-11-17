@@ -46,7 +46,6 @@
 #include "pythonlab/python_unittests.h"
 #include "optilab/optilab.h"
 #include "videodialog.h"
-#include "resultsview.h"
 #include "materialbrowserdialog.h"
 #include "solver/module.h"
 #include "solver/problem.h"
@@ -97,7 +96,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // view info
     consoleView = new PythonScriptingConsoleView(currentPythonEngine(), this);
     logView = new LogView(this);
-    resultsView = new ResultsView(this);
 
     // PythonLab
     scriptEditor = new PythonEditorDialog(consoleView->console(), this);
@@ -131,11 +129,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     connect(currentPythonEngine(), SIGNAL(executedScript()), Agros2D::problem()->scene(), SLOT(doInvalidated()));
     connect(currentPythonEngine(), SIGNAL(executedScript()), Agros2D::problem()->scene()->loopsInfo(), SLOT(processPolygonTriangles()));
     currentPythonEngineAgros()->setSceneViewPreprocessor(sceneViewPreprocessor);
-
-    // postprocessor 2d
-    connect(postprocessorWidget->sceneViewPost2D(), SIGNAL(mousePressed()), resultsView, SLOT(doShowResults()));
-    connect(postprocessorWidget->sceneViewPost2D(), SIGNAL(mousePressed(const Point &)), resultsView, SLOT(showPoint(const Point &)));
-    connect(postprocessorWidget->sceneViewPost2D(), SIGNAL(postprocessorModeGroupChanged(SceneModePostprocessor)), resultsView, SLOT(doPostprocessorModeGroupChanged(SceneModePostprocessor)));
 
     // info
     connect(Agros2D::problem(), SIGNAL(fieldsChanged()), this, SLOT(doFieldsChanged()));
@@ -520,7 +513,7 @@ void MainWindow::createMain()
 
     QTabWidget *tabInfo = new QTabWidget(this);
     tabInfo->addTab(consoleView, tr("Python console"));
-    tabInfo->addTab(resultsView, tr("Results"));
+    // tabInfo->addTab(resultsView, tr("Results"));
 
     splitterView = new QSplitter(Qt::Vertical, this);
     splitterView->addWidget(tabInfo);
@@ -1039,9 +1032,6 @@ void MainWindow::doSolveFinished()
         postprocessorWidget->sceneViewPost3D()->doZoomBestFit();
         postprocessorWidget->sceneViewParticleTracing()->doZoomBestFit();
     }
-
-    // show empty results
-    resultsView->showEmpty();
 }
 
 void MainWindow::doFullScreen()
@@ -1135,7 +1125,6 @@ void MainWindow::setEnabledControls(bool state)
     tabViewLayout->setEnabled(state);
     tabControlsLayout->setEnabled(state);
 
-    resultsView->setEnabled(state);
     consoleView->setEnabled(state);
     logView->setEnabled(state);
 

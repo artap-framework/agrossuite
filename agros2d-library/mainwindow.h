@@ -211,7 +211,6 @@ private:
     PreprocessorWidget *preprocessorWidget;
     PostprocessorWidget *postprocessorWidget;
 
-    ResultsView *resultsView;
     PythonScriptingConsoleView *consoleView;
     LogView *logView;
 
