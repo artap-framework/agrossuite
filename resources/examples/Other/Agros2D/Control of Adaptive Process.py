@@ -5,8 +5,8 @@ ENERGY_TOLERANCE = 1e-9
 
 def adaptivity_callback(adaptivity_step):    
     if (adaptivity_step > 0):
-        electrostatic = a2d.field("electrostatic")    
-        energy_difference = math.fabs(electrostatic.volume_integrals([0], None, adaptivity_step)["We"] - electrostatic.volume_integrals([0], None, adaptivity_step - 1)["We"])
+        solution = computation.solution("electrostatic") # TODO: global!!! move 'computation' to parameter
+        energy_difference = math.fabs(solution.volume_integrals([0], None, adaptivity_step)["We"] - solution.volume_integrals([0], None, adaptivity_step - 1)["We"])
 
         print("step = " + str(adaptivity_step) + ", energy difference = " + str(energy_difference) + " J")
 
