@@ -7,15 +7,11 @@ class TestCoupledProblemsManyDomainsGeneral(Agros2DTestCase):
         # problem
         problem = agros2d.problem(clear = True)
         problem.coordinate_type = "planar"
-        problem.mesh_type = "triangle"
-        
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
+        problem.mesh_type = "triangle"       
 
         # fields
         # current
-        self.current = agros2d.field("current")
+        self.current = problem.field("current")
         self.current.analysis_type = "steadystate"
         self.current.number_of_refinements = 1
         self.current.polynomial_order = 2
@@ -36,7 +32,7 @@ class TestCoupledProblemsManyDomainsGeneral(Agros2DTestCase):
             self.current.solver = "linear"
                 
         # heat
-        self.heat = agros2d.field("heat")
+        self.heat = problem.field("heat")
         self.heat.analysis_type = "steadystate"
         self.heat.number_of_refinements = 1
         self.heat.polynomial_order = 2
@@ -56,7 +52,7 @@ class TestCoupledProblemsManyDomainsGeneral(Agros2DTestCase):
             self.heat.solver = "linear"
             
         # elasticity
-        self.elasticity = agros2d.field("elasticity")
+        self.elasticity = problem.field("elasticity")
         self.elasticity.analysis_type = "steadystate"
         self.elasticity.number_of_refinements = 1
         self.elasticity.polynomial_order = 2
@@ -75,7 +71,7 @@ class TestCoupledProblemsManyDomainsGeneral(Agros2DTestCase):
             self.elasticity.solver = "linear"
 
         # electrostatic
-        self.electrostatic = agros2d.field("electrostatic")
+        self.electrostatic = problem.field("electrostatic")
         self.electrostatic.analysis_type = "steadystate"
         self.electrostatic.number_of_refinements = 1
         self.electrostatic.polynomial_order = 2
@@ -95,7 +91,7 @@ class TestCoupledProblemsManyDomainsGeneral(Agros2DTestCase):
         problem.set_coupling_type("heat", "elasticity", heat_elast)        
 
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0, 0.1, 0, 0, boundaries = {"current" : "Source"})
         geometry.add_edge(0.15, 0, 0.15, 0.1, boundaries = {"current" : "Ground"})
         geometry.add_edge(0, 0, 0.05, 0, boundaries = {"current" : "Neumann"})
@@ -224,28 +220,33 @@ class TestCoupledProblemsManyDomainsGeneral(Agros2DTestCase):
         geometry.add_label(0.122094, 0.0238927, materials = {"current" : "Cond 2", "elasticity" : "none", "electrostatic" : "electrostatic", "heat" : "heat"})
         geometry.add_label(0.128557, 0.0273469, materials = {"current" : "Cond 2", "elasticity" : "structural", "electrostatic" : "none", "heat" : "heat"})
         
-        agros2d.view.zoom_best_fit()
-
         # solve problem
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
 
-    def test_values(self):         
+    def test_values(self):
+        # solution
+        solution_current = self.computation.solution("current")
+        solution_heat = self.computation.solution("heat")
+        solution_elasticity = self.computation.solution("elasticity")
+        solution_electrostatic = self.computation.solution("electrostatic")
+                 
         # point value
-        point1_elast = self.elasticity.local_values(7.161e-02, 1.999e-02)
+        point1_elast = solution_elasticity.local_values(7.161e-02, 1.999e-02)
         self.value_test("Elasticity displ", point1_elast["d"], 4.629e-3)
-        point2_elast = self.elasticity.local_values(6.181e-02, 6.472e-02)
+        point2_elast = solution_elasticity.local_values(6.181e-02, 6.472e-02)
         self.value_test("Elasticity displ", point2_elast["d"], 0)
-        point3_elast = self.elasticity.local_values(1.173e-01, 6.803e-02)
+        point3_elast = solution_elasticity.local_values(1.173e-01, 6.803e-02)
         self.value_test("Elasticity displ", point3_elast["d"], 0)
-        point4_elast = self.elasticity.local_values(1.374e-01, 3.193e-02)
+        point4_elast = solution_elasticity.local_values(1.374e-01, 3.193e-02)
         self.value_test("Elasticity displ", point4_elast["d"], 6.584e-03)
         
-        point1_heat = self.heat.local_values(1.329e-01, 3.714e-02)
+        point1_heat = solution_heat.local_values(1.329e-01, 3.714e-02)
         self.value_test("Temperature", point1_heat["T"], 7.624e+04)
-        point2_heat = self.heat.local_values(3.142e-02, 7.729e-02)
+        point2_heat = solution_heat.local_values(3.142e-02, 7.729e-02)
         self.value_test("Temperature", point2_heat["T"], 3.025e+04)
         
-        point1_electrostatic = self.electrostatic.local_values(1.169e-01, 2.757e-02)
+        point1_electrostatic = solution_electrostatic.local_values(1.169e-01, 2.757e-02)
         self.value_test("Electric field", point1_electrostatic["E"], 1.785e+04)        
 
 
