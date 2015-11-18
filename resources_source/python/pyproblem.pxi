@@ -84,9 +84,15 @@ cdef class __Problem__:
         """Get geometry object."""
         return self._geometry
 
-    def computation(self):
-        """Create and return new Computation() object."""
-        return __Computation__()
+    def computation(self, new_computation = True):
+        """Create and return new Computation() object.
+
+        computation(new_computation)
+
+        Keyword arguments:
+        new_computation -- create new computation (True or False)
+        """
+        return __Computation__(new_computation)
 
     # parameters
     property parameters:

@@ -196,10 +196,10 @@ void PyProblem::setCouplingType(const std::string &sourceField, const std::strin
         throw logic_error(QObject::tr("Coupling '%1' + '%2' doesn't exists.").arg(source).arg(target).toStdString());
 }
 
-PyComputation::PyComputation() : PyProblemBase()
+PyComputation::PyComputation(bool newComputation) : PyProblemBase()
 {
-    Agros2D::problem()->createComputation(true);
-    m_problem = Agros2D::problem()->m_currentComputation;
+    Agros2D::problem()->createComputation(newComputation);
+    m_problem = Agros2D::problem()->currentComputation();
 }
 
 PyComputation::PyComputation(const string &computation) : PyProblemBase()
@@ -320,7 +320,7 @@ PySolution::~PySolution()
     // qDebug() << "PySolution::~PySolution() - m_computation " << m_computation.isNull();
 }
 
-void PySolution::setSolution(PyComputation *computation, const std::string &fieldId)
+void PySolution::setComputation(PyComputation *computation, const std::string &fieldId)
 {
     m_computation = computation->computation();
 

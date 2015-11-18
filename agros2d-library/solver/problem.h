@@ -165,6 +165,7 @@ public:
     ~Problem();
 
     QSharedPointer<Computation> createComputation(bool newComputation = false, bool setCurrentComputation = true);
+    inline QSharedPointer<Computation> currentComputation() { return m_currentComputation; }
 
     void readProblemFromArchive(const QString &fileName);
     void writeProblemToArchive(const QString &fileName, bool onlyProblemFile = true);

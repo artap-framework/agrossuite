@@ -1,7 +1,7 @@
 cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
     cdef cppclass PySolution:
         PySolution()
-        void setSolution(PyComputation *computation, string &fieldId) except +
+        void setComputation(PyComputation *computation, string &fieldId) except +
 
         void localValues(double x, double y, int timeStep, int adaptivityStep,
                          map[string, double] &results) except +

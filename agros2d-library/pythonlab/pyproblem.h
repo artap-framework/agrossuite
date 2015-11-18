@@ -104,7 +104,7 @@ public:
 class PyComputation : public PyProblemBase
 {
 public:
-    PyComputation();
+    PyComputation(bool newComputation);
     PyComputation(const std::string &computation);
     ~PyComputation();
 
@@ -133,7 +133,7 @@ class PySolution
 public:
     PySolution() {}
     ~PySolution();
-    void setSolution(PyComputation *computation, const std::string &fieldId);
+    void setComputation(PyComputation *computation, const std::string &fieldId);
 
     // local values, integrals
     void localValues(double x, double y, int timeStep, int adaptivityStep,
