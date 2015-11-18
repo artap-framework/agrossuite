@@ -807,7 +807,9 @@ void SolverDeal::solveSteadyState()
 
             // Python callback
             double cont = 1.0;
-            QString command = QString("(agros2d.problem().field(\"%1\").adaptivity_callback(%2) if (agros2d.problem().field(\"%1\").adaptivity_callback is not None and hasattr(agros2d.problem().field(\"%1\").adaptivity_callback, '__call__')) else True)").
+            QString command = QString("(agros2d.problem().field(\"%1\").adaptivity_callback(agros2d.problem().computation(new_computation=False), %2)"
+                                      "if (agros2d.problem().field(\"%1\").adaptivity_callback is not None and"
+                                      "hasattr(agros2d.problem().field(\"%1\").adaptivity_callback, '__call__')) else True)").
                     arg(m_fieldInfo->fieldId()).
                     arg(adaptiveStep);
             bool successfulRun = currentPythonEngine()->runExpression(command, &cont);

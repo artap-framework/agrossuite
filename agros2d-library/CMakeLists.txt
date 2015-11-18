@@ -135,7 +135,6 @@ SET(SOURCES
     pythonlab/python_unittests.cpp
     pythonlab/pythonengine_agros.cpp
     pythonlab/remotecontrol.cpp    
-    resultsview.cpp
     scene.cpp
     scenebasic.cpp
     scenebasicselectdialog.cpp
@@ -358,7 +357,6 @@ SET(HEADERS
   pythonlab/python_unittests.h
   pythonlab/pythonengine_agros.h
   pythonlab/remotecontrol.h
-  resultsview.h
   scene.h
   scenebasic.h
   scenebasicselectdialog.h

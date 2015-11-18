@@ -337,13 +337,10 @@ set(info #resources/modules/acoustic.xml
          resources/templates/generator/equations.tpl
          resources/templates/generator/equations.tex
          resources/templates/panels/empty.tpl
-         resources/templates/panels/integrals.tpl
-         resources/templates/panels/local_point_values.tpl
          resources/templates/panels/material.tpl
          resources/templates/panels/problem.tpl
          resources/templates/panels/welcome.tpl
          resources/templates/panels/style_common.css
-         resources/templates/panels/style_results.css
          resources_source/python/agros2d.pyx
          resources_source/python/pygeometry.pxi
          resources_source/python/pyfield.pxi
