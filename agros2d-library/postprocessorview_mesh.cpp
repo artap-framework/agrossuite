@@ -50,7 +50,7 @@ PostprocessorSceneMeshWidget::PostprocessorSceneMeshWidget(PostprocessorWidget *
     setWindowIcon(icon("scene-properties"));
     setObjectName("PostprocessorMeshWidget");
 
-    createControls();    
+    createControls();
 }
 
 void PostprocessorSceneMeshWidget::createControls()
@@ -104,10 +104,27 @@ void PostprocessorSceneMeshWidget::createControls()
     QGroupBox *grpShowOrder = new QGroupBox(tr("Polynomial order"));
     grpShowOrder->setLayout(gridLayoutOrder);
 
+    // mesh and polynomial info
+    lblMeshInitial = new QLabel();
+    lblMeshSolution = new QLabel();
+    lblDOFs = new QLabel();
+
+    QGridLayout *layoutInfo = new QGridLayout();
+    layoutInfo->addWidget(new QLabel(tr("Initial mesh:")), 0, 0);
+    layoutInfo->addWidget(lblMeshInitial, 0, 1);
+    layoutInfo->addWidget(new QLabel(tr("Solution mesh:")), 1, 0);
+    layoutInfo->addWidget(lblMeshSolution, 1, 1);
+    layoutInfo->addWidget(new QLabel(tr("Number of DOFs:")), 2, 0);
+    layoutInfo->addWidget(lblDOFs, 2, 1);
+
+    QGroupBox *grpInfo = new QGroupBox(tr("Mesh and polynomial order"));
+    grpInfo->setLayout(layoutInfo);
+
     QVBoxLayout *widgetsLayout = new QVBoxLayout();
     widgetsLayout->addWidget(grpShowMesh);
     widgetsLayout->addWidget(grpShowOrder);
     widgetsLayout->addStretch(1);
+    widgetsLayout->addWidget(grpInfo);
 
     QWidget *widget = new QWidget(this);
     widget->setLayout(widgetsLayout);
@@ -152,6 +169,28 @@ void PostprocessorSceneMeshWidget::load()
     chkShowOrderColorbar->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool());
     cmbOrderPaletteOrder->setCurrentIndex(cmbOrderPaletteOrder->findData((PaletteOrderType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt()));
     chkOrderLabel->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderLabel).toBool());
+
+    // mesh and polynomial info
+    int dofs = 0;
+    if (m_postprocessorWidget->computation()->isMeshed())
+    {
+        lblMeshInitial->setText(QString(tr("%1 nodes, %2 elements").
+                                        arg(m_postprocessorWidget->computation()->initialMesh().n_used_vertices()).
+                                        arg(m_postprocessorWidget->computation()->initialMesh().n_active_cells())));
+        lblMeshSolution->setText(QString(tr("%1 nodes, %2 elements").
+                                         arg(m_postprocessorWidget->computation()->calculationMesh().n_used_vertices()).
+                                         arg(m_postprocessorWidget->computation()->calculationMesh().n_active_cells())));
+    }
+
+    if (m_postprocessorWidget->computation()->isSolved() && m_postprocessorWidget->fieldWidget()->selectedField())
+    {
+        MultiArray ma = m_postprocessorWidget->computation()->solutionStore()->multiArray(FieldSolutionID(m_postprocessorWidget->fieldWidget()->selectedField()->fieldId(),
+                                                                                                          m_postprocessorWidget->fieldWidget()->selectedTimeStep(),
+                                                                                                          m_postprocessorWidget->fieldWidget()->selectedAdaptivityStep()));
+
+        dofs = ma.doFHandler()->n_dofs();
+    }
+    lblDOFs->setText(tr("%1 DOFs").arg(dofs));
 }
 
 void PostprocessorSceneMeshWidget::save()
