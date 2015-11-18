@@ -88,8 +88,9 @@ void PyProblemBase::checkExistingFields(const QString &sourceField, const QStrin
 
 PyProblem::PyProblem(bool clearProblem) : PyProblemBase()
 {
-    m_problem = QSharedPointer<Problem>(Agros2D::problem());
-    m_problemBase = m_problem;
+    // m_problem = QSharedPointer<Problem>(Agros2D::problem());
+    // m_problemBase = m_problem;
+    m_problemBase = QSharedPointer<Problem>(Agros2D::problem());
 
     if (clearProblem)
         clear();
@@ -208,8 +209,9 @@ void PyProblem::setCouplingType(const std::string &sourceField, const std::strin
 PyComputation::PyComputation() : PyProblemBase()
 {
     Agros2D::problem()->createComputation(true);
-    m_computation = Agros2D::problem()->m_currentComputation;
-    m_problemBase = m_computation;
+    // m_computation = Agros2D::problem()->m_currentComputation;
+    // m_problemBase = m_computation;
+    m_problemBase = Agros2D::problem()->m_currentComputation;
 }
 
 PyComputation::PyComputation(const string &computation) : PyProblemBase()
@@ -235,12 +237,13 @@ PyComputation::~PyComputation()
 
 QSharedPointer<Computation> PyComputation::computation()
 {
-    return m_computation;
+    // return m_computation;
+    return qSharedPointerDynamicCast<Computation>(m_problemBase);
 }
 
 void PyComputation::clear()
 {
-    if (!m_computation->isSolved())
+    if (!computation()->isSolved())
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     m_computation->clearSolution();
