@@ -43,7 +43,6 @@ UnitTestsWidget::UnitTestsWidget(QWidget *parent)
     connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
 
     logWidget = new LogWidget(this);
-    logWidget->setMemoryLabelVisible(false);
 
     trvTests = new QTreeWidget(this);
     trvTests->setMouseTracking(true);

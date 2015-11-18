@@ -30,6 +30,7 @@ class SceneViewInterface;
 class InfoWidget;
 class PythonEditorDialog;
 class OptiLab;
+class LogView;
 class SceneViewChart;
 class SceneViewCommon;
 
@@ -43,6 +44,7 @@ public:
    SceneViewWidget(InfoWidget *widget, QWidget *parent = 0);
    SceneViewWidget(PythonEditorDialog *widget, QWidget *parent = 0);
    SceneViewWidget(OptiLab *widget, QWidget *parent = 0);
+   SceneViewWidget(LogView *widget, QWidget *parent = 0);
    ~SceneViewWidget();
 
 public slots:

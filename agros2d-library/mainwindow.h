@@ -194,6 +194,7 @@ private:
     SceneViewWidget *sceneViewChartWidget;
     SceneViewWidget *sceneViewPythonEditorWidget;
     SceneViewWidget *sceneViewOptilabWidget;
+    SceneViewWidget *sceneViewLogWidget;
 
     QStackedLayout *tabViewLayout;
     InfoWidget *sceneInfoWidget;
@@ -214,7 +215,6 @@ private:
 
     QSplitter *splitterMain;
     QSplitter *splitterView;
-    QSplitter *splitterConsoleAndLog;
 
     LogStdOut *logStdOut;
 

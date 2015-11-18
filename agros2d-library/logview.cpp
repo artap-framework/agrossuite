@@ -33,6 +33,27 @@
 
 #include "qcustomplot/qcustomplot.h"
 
+LogConfigWidget::LogConfigWidget(LogWidget *logWidget)
+    : QWidget(logWidget), m_logWidget(logWidget)
+{
+    m_memoryLabel = new QLabel("                                                         ");
+
+    connect(Agros2D::memoryMonitor(), SIGNAL(refreshMemory(int)), this, SLOT(refreshMemory(int)));
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->addStretch(1);
+    layout->addWidget(m_memoryLabel);
+}
+
+void LogConfigWidget::refreshMemory(int usage)
+{
+    // show memory usage
+    m_memoryLabel->setText(tr("Physical memory: %1 MB").arg(usage));
+    m_memoryLabel->repaint();
+}
+
+// *******************************************************************************************************
+
 Log::Log()
 {
     qRegisterMetaType<QVector<double> >("QVector<double>");
@@ -44,18 +65,14 @@ Log::Log()
 LogWidget::LogWidget(QWidget *parent) : QWidget(parent),
     m_printCounter(0)
 {
-    plainLog = new QPlainTextEdit(this);
+    plainLog = new QTextEdit(this);
     plainLog->setReadOnly(true);
-    plainLog->setMaximumBlockCount(500);
+    // plainLog->setMaximumBlockCount(500);
     plainLog->setMinimumSize(160, 80);
-    
-    memoryLabel = new QLabel("                                                         ");
-    memoryLabel->setVisible(false);
-    
+
     QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->setContentsMargins(0, 0, 0, 0);
     layoutMain->addWidget(plainLog, 1);
-    layoutMain->addWidget(memoryLabel, 0, Qt::AlignLeft);
     
     setLayout(layoutMain);
     
@@ -75,9 +92,14 @@ LogWidget::LogWidget(QWidget *parent) : QWidget(parent),
     connect(Agros2D::log(), SIGNAL(errorMsg(QString, QString)), this, SLOT(printError(QString, QString)));
     connect(Agros2D::log(), SIGNAL(warningMsg(QString, QString)), this, SLOT(printWarning(QString, QString)));
     connect(Agros2D::log(), SIGNAL(debugMsg(QString, QString)), this, SLOT(printDebug(QString, QString)));
+
+    connect(Agros2D::log(), SIGNAL(appendImg(QString)), this, SLOT(appendImage(QString)));
     
     plainLog->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(plainLog, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu(const QPoint &)));
+
+    // create log directory
+    QDir().mkdir(QString("%1/log").arg(tempProblemDir()));
 }
 
 LogWidget::~LogWidget()
@@ -176,7 +198,7 @@ void LogWidget::print(const QString &module, const QString &message, const QStri
             arg(module).
             arg(strMessage);
     
-    plainLog->appendHtml(html);
+    plainLog->append(html);
     
     // force run process events
     m_printCounter++;
@@ -186,6 +208,11 @@ void LogWidget::print(const QString &module, const QString &message, const QStri
         m_printCounter = 0;
     }
     
+    ensureCursorVisible();
+}
+
+void LogWidget::ensureCursorVisible()
+{
     // ensure cursor visible
     QTextCursor cursor = plainLog->textCursor();
     cursor.movePosition(QTextCursor::End);
@@ -199,26 +226,16 @@ void LogWidget::welcomeMessage()
     print("Agros2D", tr("version: %1").arg(QApplication::applicationVersion()), "green");
 }
 
-bool LogWidget::isMemoryLabelVisible() const
+void LogWidget::appendImage(const QString &fileName)
 {
-    return memoryLabel->isVisible();
-}
+    plainLog->append(QString());
 
-void LogWidget::setMemoryLabelVisible(bool visible)
-{
-    memoryLabel->setVisible(visible);
-    
-    if (visible)
-        connect(Agros2D::memoryMonitor(), SIGNAL(refreshMemory(int)), this, SLOT(refreshMemory(int)));
-    else
-        disconnect(Agros2D::memoryMonitor(), SIGNAL(refreshMemory(int)), this, SLOT(refreshMemory(int)));
-}
+    QTextCursor cursor = plainLog->textCursor();
+    cursor.insertImage(fileName);
 
-void LogWidget::refreshMemory(int usage)
-{
-    // show memory usage
-    memoryLabel->setText(tr("Physical memory: %1 MB").arg(usage));
-    memoryLabel->repaint();
+    plainLog->append(QString());
+
+    ensureCursorVisible();
 }
 
 // *******************************************************************************************************
@@ -226,15 +243,21 @@ void LogWidget::refreshMemory(int usage)
 LogView::LogView(QWidget *parent) : QWidget(parent)
 {
     setObjectName("LogView");
-    
-    logWidget = new LogWidget(this);
-    logWidget->setMemoryLabelVisible(true);
-    logWidget->welcomeMessage();
-    
-    QHBoxLayout *layout = new QHBoxLayout();
-    layout->addWidget(logWidget);
 
-    setLayout(layout);
+    actLog = new QAction(icon("log"), tr("Log"), this);
+    actLog->setShortcut(Qt::Key_F10);
+    actLog->setCheckable(true);
+    
+    m_logWidget = new LogWidget(this);
+    m_logWidget->welcomeMessage();
+    
+    QHBoxLayout *layoutMain = new QHBoxLayout();
+    layoutMain->setContentsMargins(2, 2, 2, 2);
+    layoutMain->addWidget(m_logWidget);
+
+    setLayout(layoutMain);
+
+    m_logConfigWidget = new LogConfigWidget(m_logWidget);
 }
 
 // *******************************************************************************************************
@@ -255,8 +278,8 @@ LogDialog::LogDialog(Computation *computation, const QString &title) : QDialog(Q
     createControls();
 
     connect(btnAbort, SIGNAL(clicked()), m_computation, SLOT(doAbortSolve()));
-    connect(m_computation, SIGNAL(meshed()), this, SLOT(close()));
-    connect(m_computation, SIGNAL(solved()), this, SLOT(close()));
+    connect(m_computation, SIGNAL(meshed()), this, SLOT(tryClose()));
+    connect(m_computation, SIGNAL(solved()), this, SLOT(tryClose()));
     
     int w = 2.0/3.0 * QApplication::desktop()->screenGeometry().width();
     int h = 2.0/3.0 * QApplication::desktop()->screenGeometry().height();
@@ -296,8 +319,7 @@ void LogDialog::createControls()
     connect(Agros2D::log(), SIGNAL(addIconImg(QIcon, QString)), this, SLOT(addIcon(QIcon, QString)));
     
     m_logWidget = new LogWidget(this);
-    m_logWidget->setMemoryLabelVisible(false);
-        
+
 #ifdef Q_WS_WIN
     int fontSize = 7;
 #endif
@@ -600,9 +622,44 @@ void LogDialog::addIcon(const QIcon &icn, const QString &label)
 void LogDialog::tryClose()
 {
     if (m_computation->isSolving())
+    {
         Agros2D::log()->printError(tr("Solver"), tr("Solution is being aborted."));
+    }
     else
+    {
         close();
+
+        // save charts
+        int w = 650;
+        int h = 280;
+
+        if (m_computation->isTransient())
+        {
+            QDateTime time(QDateTime::currentDateTime());
+            QString fn = QString("%1/log/%2_adaptivity.png").arg(tempProblemDir()).arg(time.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
+            m_timeChart->savePng(fn, w, h);
+
+            Agros2D::log()->appendImage(fn);
+        }
+
+        if (m_computation->isNonlinear())
+        {
+            QDateTime time(QDateTime::currentDateTime());
+            QString fn = QString("%1/log/%2_adaptivity.png").arg(tempProblemDir()).arg(time.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
+            m_nonlinearChart->savePng(fn, w, h);
+
+            Agros2D::log()->appendImage(fn);
+        }
+
+        if (m_computation->numAdaptiveFields() > 0)
+        {
+            QDateTime time(QDateTime::currentDateTime());
+            QString fn = QString("%1/log/%2_adaptivity.png").arg(tempProblemDir()).arg(time.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
+            m_adaptivityChart->savePng(fn, w, h);
+
+            Agros2D::log()->appendImage(fn);
+        }
+    }
 }
 
 

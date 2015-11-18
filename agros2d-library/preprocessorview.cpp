@@ -148,6 +148,8 @@ void PreprocessorWidget::createControls()
     trvWidget = new QTreeWidget(this);
     trvWidget->setExpandsOnDoubleClick(false);
     trvWidget->setHeaderHidden(false);
+    trvWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Value"));
+    // trvWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     trvWidget->setMouseTracking(true);
     trvWidget->setUniformRowHeights(true);
@@ -155,10 +157,6 @@ void PreprocessorWidget::createControls()
     trvWidget->setColumnWidth(0, settings.value("PreprocessorWidget/TreeColumnWidth0", 200).toInt());
     trvWidget->setColumnWidth(1, settings.value("PreprocessorWidget/TreeColumnWidth1", 200).toInt());
     trvWidget->setIndentation(trvWidget->indentation() - 2);
-
-    QStringList headers;
-    headers << tr("Name") << tr("Value");
-    trvWidget->setHeaderLabels(headers);
 
     txtViewNodes = new QTextEdit(this);
     txtViewNodes->setReadOnly(true);

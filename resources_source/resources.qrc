@@ -44,16 +44,11 @@
         <file alias="options-colors.png">images/options-colors.png</file>
         <file alias="options-advanced.png">images/options-advanced.png</file>
         <file alias="options-python.png">images/options-python.png</file>
-        <file alias="options-weakform.png">images/options-weakform.png</file>
         <file alias="options-plugin.png">images/options-plugin.png</file>
         <file alias="scene-node.png">images/scene-node.png</file>
         <file alias="scene-edge.png">images/scene-edge.png</file>
         <file alias="scene-label.png">images/scene-label.png</file>
         <file alias="scene-model.png">images/scene-model.png</file>
-        <file alias="scene-edgemarker.png">images/scene-edgemarker.png</file>
-        <file alias="scene-edgemarker-notused.png">images/scene-edgemarker-notused.png</file>
-        <file alias="scene-labelmarker.png">images/scene-labelmarker.png</file>
-        <file alias="scene-labelmarker-notused.png">images/scene-labelmarker-notused.png</file>
         <file alias="scene-info.png">images/scene-info.png</file>
         <file alias="scene-geometry.png">images/scene-geometry.png</file>
         <file alias="scene-mesh.png">images/scene-mesh.png</file>

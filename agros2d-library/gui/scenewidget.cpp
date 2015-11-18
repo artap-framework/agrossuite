@@ -30,6 +30,7 @@
 #include "infowidget.h"
 #include "pythonlab/pythonengine_agros.h"
 #include "optilab/optilab.h"
+#include "logview.h"
 
 #include "scenebasic.h"
 #include "scenenode.h"
@@ -92,6 +93,14 @@ SceneViewWidget::SceneViewWidget(OptiLab *widget, QWidget *parent) : QWidget(par
 
     iconLeft(icon("optilab"));
     labelLeft(tr("OptiLab"));
+}
+
+SceneViewWidget::SceneViewWidget(LogView *widget, QWidget *parent) : QWidget(parent)
+{
+    createControls(widget);
+
+    iconLeft(icon("log"));
+    labelLeft(tr("Application log"));
 }
 
 SceneViewWidget::~SceneViewWidget()

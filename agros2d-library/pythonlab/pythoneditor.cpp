@@ -317,6 +317,7 @@ void PythonEditorWidget::createControls()
     tab->addTab(variableBrowser, tr("Variables"));
 
     splitter = new QSplitter();
+    splitter->setContentsMargins(2, 2, 2, 2);
     splitter->setOrientation(Qt::Vertical);
     splitter->setStretchFactor(1, 3);
     splitter->setStretchFactor(2, 6);
@@ -332,7 +333,7 @@ void PythonEditorWidget::createControls()
     toolBar->addAction(pythonEditor->actCreateFromModel);
 
     QVBoxLayout *layout = new QVBoxLayout();
-    layout->setContentsMargins(2, 2, 2, 3);
+    layout->setContentsMargins(1, 1, 1, 1);
     layout->addWidget(toolBar);
     layout->addWidget(splitter);
 
@@ -654,6 +655,7 @@ void PythonEditorDialog::createControls()
     m_pythonEditorWidget = new PythonEditorWidget(this);
 
     QHBoxLayout *layoutLab = new QHBoxLayout();
+    layoutLab->setContentsMargins(2, 2, 2, 2);
     layoutLab->addWidget(m_pythonEditorWidget);
     layoutLab->addLayout(layout);
 
