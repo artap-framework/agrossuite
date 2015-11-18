@@ -601,7 +601,6 @@ MaterialBrowserDialog::MaterialBrowserDialog(QWidget *parent) : QDialog(parent),
     trvMaterial = new QTreeWidget(this);
     trvMaterial->setMouseTracking(true);
     trvMaterial->setColumnCount(1);
-    trvMaterial->setIndentation(15);
     trvMaterial->setIconSize(QSize(24, 24));
     trvMaterial->setHeaderHidden(true);
     trvMaterial->setMinimumWidth(230);

@@ -191,36 +191,24 @@ void Agros2D::addComputation(const QString &problemDir, QSharedPointer<Computati
     Agros2D::singleton()->m_computations[problemDir] = comp;
 }
 
-void Agros2D::removeComputation(const QString &problemDir)
+void Agros2D::clearComputations()
 {
-    assert(Agros2D::singleton()->m_computations.contains(problemDir));
+    // clear studies
+    Agros2D::singleton()->m_problem->studies()->clear();
 
-    Agros2D::singleton()->m_computations.remove(problemDir);
-    removeDirectory(QString("%1/%2").arg(cacheProblemDir(), problemDir));
-
-    if (Agros2D::singleton()->m_computations.count() > 0)
+    foreach (QSharedPointer<Computation> computation, Agros2D::singleton()->m_computations)
     {
-        Agros2D::singleton()->m_computation = Agros2D::singleton()->m_computations.last();
+        // clear solutions
+        computation->clearFieldsAndConfig();
+        // clear results
+        computation->clearResults();
+        // remove from list
+        Agros2D::singleton()->m_computations.remove(computation->problemDir());
     }
-    else
-    {
-        Agros2D::singleton()->m_computation = QSharedPointer<Computation>(nullptr);
-    }
+    Agros2D::singleton()->m_computation.clear();
 
     // connect computation
     emit Agros2D::singleton()->connectComputation(Agros2D::singleton()->m_computation);
-}
-
-void Agros2D::clearComputations()
-{
-    foreach (QSharedPointer<Computation> computation, Agros2D::singleton()->m_computations)
-    {
-        Agros2D::singleton()->m_computations.remove(computation->problemDir());
-        removeDirectory(QString("%1/%2").arg(cacheProblemDir(), computation->problemDir()));
-    }
-
-    // connect computation
-    emit Agros2D::singleton()->connectComputation(QSharedPointer<Computation>(nullptr));
 }
 
 void Agros2D::createSingleton()

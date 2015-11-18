@@ -136,7 +136,6 @@ private:
 
     QPushButton *btnClose;
     QPushButton *btnAbort;
-    QPushButton *btnShowHide;
 
     QCustomPlot *m_nonlinearChart;
     QProgressBar *m_nonlinearProgress;
@@ -168,7 +167,6 @@ private slots:
     void addIcon(const QIcon &icn, const QString &label);
 
     void tryClose();
-    void showHide();
 };
 
 class AGROS_LIBRARY_API LogStdOut : public QObject

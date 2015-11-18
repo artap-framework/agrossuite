@@ -70,7 +70,6 @@ public:
     }
     static inline QMap<QString, QSharedPointer<Computation> > computations() { return Agros2D::singleton()->m_computations; }
     static void addComputation(const QString &problemDir, QSharedPointer<Computation> comp);
-    static void removeComputation(const QString &problemDir);
     static void clearComputations();
 
     static inline Log *log() { return Agros2D::singleton()->m_log; }

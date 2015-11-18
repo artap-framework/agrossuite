@@ -68,7 +68,7 @@ private slots:
     void doDocumentOpenRecent(QAction *action);
     void doDocumentSave();
     void doDocumentSaveAs();    
-    void doDeleteSolution();
+    void doDeleteSolutions();
     void doDocumentClose();
     void doDocumentImportDXF();
     void doDocumentExportDXF();
@@ -92,7 +92,6 @@ private slots:
     void doUnitTests();
 
     void doHideControlPanel();
-    void doHideViewPanel();
     void doFullScreen();
 
     void doCut();
@@ -122,8 +121,6 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private:
-    QStringList recentFiles;
-
     QMenu *mnuRecentFiles;
     QMenu *mnuProblemAddBoundaryAndMaterial;
     QMenu *mnuCustomForms;
@@ -151,7 +148,6 @@ private:
     QActionGroup *actDocumentOpenRecentGroup;
 
     QAction *actHideControlPanel;
-    QAction *actHideViewPanel;
 
     QAction *actCopy;
 
@@ -190,7 +186,7 @@ private:
     QActionGroup *actSceneModeGroup;
 
     SceneViewWidget *sceneViewInfoWidget;
-    SceneViewWidget *sceneViewPreprocessorWidget;
+    SceneViewWidget *sceneViewProblemWidget;
     SceneViewWidget *sceneViewMeshWidget;
     SceneViewWidget *sceneViewPost2DWidget;
     SceneViewWidget *sceneViewPost3DWidget;
@@ -201,17 +197,16 @@ private:
 
     QStackedLayout *tabViewLayout;
     InfoWidget *sceneInfoWidget;
-    SceneViewPreprocessor *sceneViewPreprocessor;
+    SceneViewPreprocessor *sceneViewProblem;
     PythonEditorDialog *scriptEditor;
     OptiLab *optiLab;
 
     QWidget *viewControls;
     QStackedLayout *tabControlsLayout;
     ExamplesWidget *exampleWidget;
-    PreprocessorWidget *preprocessorWidget;
-    PostprocessorWidget *postprocessorWidget;
+    PreprocessorWidget *problemWidget;
+    PostprocessorWidget *resultsWidget;
 
-    ResultsView *resultsView;
     PythonScriptingConsoleView *consoleView;
     LogView *logView;
 
@@ -219,6 +214,7 @@ private:
 
     QSplitter *splitterMain;
     QSplitter *splitterView;
+    QSplitter *splitterConsoleAndLog;
 
     LogStdOut *logStdOut;
 

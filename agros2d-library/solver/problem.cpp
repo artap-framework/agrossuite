@@ -333,9 +333,6 @@ void ProblemBase::clearFieldsAndConfig()
 
     // clear scene
     m_scene->clear();
-
-    // clear studies
-
 }
 
 void ProblemBase::addField(FieldInfo *field)
@@ -1016,7 +1013,6 @@ Computation::Computation(const QString &problemDir) : ProblemBase()
     connect(this, SIGNAL(fieldsChanged()), m_scene, SLOT(doFieldsChanged()));
 
     m_calculationThread = new CalculationThread(this);
-
     m_problemSolver = new ProblemSolver(this);
     m_postDeal = new PostDeal(this);
     m_solutionStore = new SolutionStore(this);
@@ -1039,14 +1035,17 @@ Computation::Computation(const QString &problemDir) : ProblemBase()
 }
 
 Computation::~Computation()
-{
+{   
     clearSolution();
+    clearResults();
 
     delete m_calculationThread;
     delete m_problemSolver;
     delete m_postDeal;
     delete m_solutionStore;
     delete m_result;
+
+    removeDirectory(QString("%1/%2").arg(cacheProblemDir(), m_problemDir));
 }
 
 QList<double> Computation::timeStepTimes() const
@@ -1506,6 +1505,11 @@ void Computation::clearSolution()
 
     m_initialMesh.clear();
     m_initialUnrefinedMesh.clear();
+
+    QString fnMesh = QString("%1/%2/mesh_initial.msh").arg(cacheProblemDir()).arg(problemDir());
+    if (QFile::exists(fnMesh))
+        QFile::remove(fnMesh);
+
     m_calculationMesh.clear();
     m_solutionStore->clear();
 }
@@ -1513,12 +1517,18 @@ void Computation::clearSolution()
 void Computation::clearResults()
 {
     m_result->clear();
+    saveResults();
 }
 
 void Computation::clearFieldsAndConfig()
 {
     m_solutionStore->clear();
     m_postDeal->clear();
+    clearSolution();
+
+    QString fn = QString("%1/%2/problem.a2d").arg(cacheProblemDir()).arg(m_problemDir);
+    if (QFile::exists(fn))
+        QFile::remove(fn);
 
     ProblemBase::clearFieldsAndConfig();
 }
@@ -1552,7 +1562,7 @@ Problem::~Problem()
 QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool setCurrentComputation)
 {
     QSharedPointer<Computation> computation;
-    if (newComputation || m_currentComputation || Agros2D::computations().isEmpty())
+    if (newComputation || m_currentComputation.isNull() || Agros2D::computations().isEmpty())
     {
         computation = QSharedPointer<Computation>(new Computation());
         m_currentComputation = computation;
@@ -1571,7 +1581,7 @@ QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool
             arg(cacheProblemDir()).
             arg(computation->problemDir());
 
-    writeProblemToA2D(fn);    
+    writeProblemToA2D(fn);
     computation->readProblemFromA2D31(fn);
 
     return computation;
@@ -1585,7 +1595,9 @@ void Problem::clearFieldsAndConfig()
     QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
     QFile::remove(QString("%1/studies.json").arg(cacheProblemDir()));
 
+    // clear all computations
     m_currentComputation.clear();
+    Agros2D::clearComputations();
 
     emit fileNameChanged(tr("unnamed"));
 }
@@ -1638,17 +1650,18 @@ void Problem::readProblemFromArchive(const QString &fileName)
             computation->readProblemFromA2D31(fnProblem);
 
             // read results
-            computation->solutionStore()->loadRunTimeDetails();
-
-            // read mesh file
-            try
+            if (computation->solutionStore()->loadRunTimeDetails())
             {
-                computation->readInitialMeshFromFile(true);
-            }
-            catch (AgrosException& e)
-            {
-                computation->clearSolution();
-                Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
+                // read mesh file
+                try
+                {
+                    computation->readInitialMeshFromFile(true);
+                }
+                catch (AgrosException& e)
+                {
+                    computation->clearSolution();
+                    Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
+                }
             }
 
             // results
@@ -1668,13 +1681,13 @@ void Problem::readProblemFromArchive(const QString &fileName)
 
         Agros2D::setCurrentComputation(post->problemDir());
         emit post->solved();
-    }
 
-    // read studies
-    m_studies->loadStudies();
+        // read studies
+        m_studies->loadStudies();
+    }
 }
 
-void Problem::writeProblemToArchive(const QString &fileName, bool saveWithSolution)
+void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFile)
 {
     QSettings settings;
     QFileInfo fileInfo(fileName);
@@ -1687,22 +1700,22 @@ void Problem::writeProblemToArchive(const QString &fileName, bool saveWithSoluti
     QFileInfo fileInfoProblem(QString("%1/problem.a2d").arg(cacheProblemDir()));
     writeProblemToA2D(fileInfoProblem.absoluteFilePath());
 
-    if (saveWithSolution)
-    {
-        // write studies
-        m_studies->saveStudies();
-
-        // whole directory
-        JlCompress::compressDir(fileName, cacheProblemDir());
-    }
-    else
+    if (onlyProblemFile)
     {
         // only problem file
         QStringList lst;
         lst << fileInfoProblem.absoluteFilePath();
         if (JlCompress::compressFiles(fileName, lst))
             emit fileNameChanged(QFileInfo(fileName).absoluteFilePath());
-    }    
+    }
+    else
+    {
+        // save studies
+        m_studies->saveStudies();
+
+        // whole directory
+        JlCompress::compressDir(fileName, cacheProblemDir());
+    }
 }
 
 void Problem::readProblemFromFile(const QString &fileName)
@@ -1714,9 +1727,6 @@ void Problem::readProblemFromFile(const QString &fileName)
 
     try
     {
-        // clear all computations
-        Agros2D::clearComputations();
-
         // load problem
         if (fileInfo.suffix() == "ags")
         {

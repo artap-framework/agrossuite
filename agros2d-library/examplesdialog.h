@@ -34,29 +34,38 @@ public:
     QAction *actExamples;
     QToolBar *toolBar;
 
-    void showWidget(const QString &expandedGroup = "");
+    void init(const QString &expandedGroup = "");
 
 signals:
     void problemOpen(const QString &fileName);
-    void formOpen(const QString &fileName);
+    void formOpen(const QString &fileName, const QString &formName);
+
+public slots:
+    void readRecentFiles();
 
 private slots:
-    void doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void doItemDoubleClicked(QTreeWidgetItem *item, int column);
+    void doRecentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void doRecentItemDoubleClicked(QTreeWidgetItem *item, int column);
+    void doExampleItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void doExampleItemDoubleClicked(QTreeWidgetItem *item, int column);
 
 private:
     InfoWidget *m_infoWidget;
 
-    QTreeWidget *trvProblems;
-    QString m_selectedFilename;
-    QString m_selectedFormFilename;
+    QTreeWidget *trvRecentFiles;
+    QTreeWidget *trvExamples;
+    QString m_selectedRecentFilename;
+    QString m_selectedRecentFormFilename;
+    QString m_selectedExampleFilename;
+    QString m_selectedExampleFormFilename;
 
     QString m_expandedGroup;
 
     void createActions();
 
-    void readProblems();
-    int readProblems(QDir dir, QTreeWidgetItem *parentItem);
+    void readExamples();
+    int readExamples(QDir dir, QTreeWidgetItem *parentItem);
+
     void problemInfo(const QString &fileName);
     QList<QIcon> problemIcons(const QString &fileName);
 };

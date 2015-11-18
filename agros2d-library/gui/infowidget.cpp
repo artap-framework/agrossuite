@@ -277,19 +277,9 @@ void InfoWidgetGeneral::showPythonInfo(const QString &fileName)
 // info
 
 InfoWidget::InfoWidget(QWidget *parent)
-    : InfoWidgetGeneral(parent), m_recentProblemFiles(nullptr), m_recentScriptFiles(nullptr)
+    : InfoWidgetGeneral(parent)
 {
-    connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
-
-    connect(Agros2D::problem()->scene(), SIGNAL(cleared()), this, SLOT(refresh()));
-    connect(Agros2D::problem()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
-
-    connect(Agros2D::problem(), SIGNAL(fieldsChanged()), this, SLOT(refresh()));
-    connect(Agros2D::problem(), SIGNAL(couplingsChanged()), this, SLOT(refresh()));
-
-    connect(currentPythonEngineAgros(), SIGNAL(executedScript()), this, SLOT(refresh()));
-
-    refresh();
+    welcome();
 }
 
 InfoWidget::~InfoWidget()
@@ -297,97 +287,20 @@ InfoWidget::~InfoWidget()
     QFile::remove(tempProblemDir() + "/info.html");
 }
 
-void InfoWidget::refresh()
-{
-    /*
-    if (Agros2D::problem()->fieldInfos().isEmpty())
-        showWelcome();
-    else
-        showProblemInfo(Agros2D::problem());
-    */
-    showWelcome();
-}
-
-void InfoWidget::showWelcome()
+void InfoWidget::welcome()
 {
     if (currentPythonEngine()->isScriptRunning())
         return;
 
     // template
     std::string info;
-    ctemplate::TemplateDictionary problemInfo("info");
+    ctemplate::TemplateDictionary problemInfo("welcome");
 
     problemInfo.SetValue("AGROS2D", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/panels/agros2d_logo.png").absolutePath()).toStdString());
-
-    problemInfo.SetValue("STYLESHEET", m_cascadeStyleSheet.toStdString());
     problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT + "/panels")).toString().toStdString());
-    problemInfo.SetValue("EXAMPLES_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg("/resources/examples")).toString().toStdString());
-
-    problemInfo.SetValue("GETTING_STARTED_LABEL", tr("Getting Started").toStdString());
-
-    // read root examples
-    problemInfo.SetValue("EXAMPLES_LABEL", tr("Examples and Tutorials").toStdString());
-    QDir dir(QString("%1/resources/examples").arg(datadir()));
-    dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoSymLinks);
-
-    QFileInfoList listExamples = dir.entryInfoList();
-    for (int i = 0; i < listExamples.size(); ++i)
-    {
-        QFileInfo fileInfo = listExamples.at(i);
-        if (fileInfo.fileName() == "." || fileInfo.fileName() == "..")
-            continue;
-
-        if (fileInfo.isDir())
-        {
-            ctemplate::TemplateDictionary *example = problemInfo.AddSectionDictionary("EXAMPLE_SECTION");
-
-            example->SetValue("EXAMPLE_GROUP", fileInfo.fileName().toStdString());
-        }
-    }
-
-    // recent problem files
-    problemInfo.SetValue("RECENT_PROBLEMS_LABEL", tr("Recent problems").toStdString());
-    if (m_recentProblemFiles)
-    {
-        for (int i = 0; i < qMin(15, m_recentProblemFiles->count()); i++)
-        {
-            QFileInfo fileInfo(m_recentProblemFiles->at(i));
-            if (!QFile::exists(fileInfo.absoluteFilePath()))
-                continue;
-
-            ctemplate::TemplateDictionary *recent = problemInfo.AddSectionDictionary("RECENT_PROBLEM_SECTION");
-            recent->SetValue("PROBLEM_FILENAME", QUrl::fromUserInput(m_recentProblemFiles->at(i)).toString().toStdString());
-            recent->SetValue("PROBLEM_FILENAME_LABEL", fileInfo.absolutePath().replace("/", "/&thinsp;").toStdString());
-            recent->SetValue("PROBLEM_BASE", fileInfo.baseName().toStdString());
-        }
-    }
-
-    // recent script files
-    problemInfo.SetValue("RECENT_SCRIPTS_LABEL", tr("Recent Python scripts").toStdString());
-    if (m_recentScriptFiles)
-    {
-        for (int i = 0; i < qMin(15, m_recentScriptFiles->count()); i++)
-        {
-            QFileInfo fileInfo(m_recentScriptFiles->at(i));
-            if (!QFile::exists(fileInfo.absoluteFilePath()))
-                continue;
-
-            ctemplate::TemplateDictionary *recent = problemInfo.AddSectionDictionary("RECENT_SCRIPT_SECTION");
-            recent->SetValue("SCRIPT_FILENAME", QUrl::fromUserInput(m_recentScriptFiles->at(i)).toString().toStdString());
-            recent->SetValue("SCRIPT_FILENAME_LABEL", fileInfo.absolutePath().replace("/", "/&thinsp;").toStdString());
-            recent->SetValue("SCRIPT_BASE", fileInfo.baseName().toStdString());
-        }
-    }
-
-    // links
-    problemInfo.SetValue("LINKS_LABEL", tr("Links").toStdString());
 
     ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/panels/welcome.tpl").toStdString(), ctemplate::DO_NOT_STRIP, &problemInfo, &info);
 
-    // setHtml(...) doesn't work
-    // webView->setHtml(QString::fromStdString(info));
-
-    // load(...) works
     writeStringContent(tempProblemDir() + "/welcome.html", QString::fromStdString(info));
     webView->load(QUrl::fromLocalFile(tempProblemDir() + "/welcome.html"));
 }

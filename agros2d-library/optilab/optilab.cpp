@@ -59,7 +59,6 @@ void OptiLabWidget::createControls()
     trvComputations = new QTreeWidget(this);
     trvComputations->setMouseTracking(true);
     trvComputations->setColumnCount(2);
-    trvComputations->setIndentation(15);
     trvComputations->setMinimumWidth(220);
     trvComputations->setColumnWidth(0, 220);
 
@@ -108,6 +107,7 @@ void OptiLabWidget::refresh()
         selectedItem = cmbStudies->currentText();
 
     cmbStudies->clear();
+    trvComputations->clear();
     foreach (Study *study, Agros2D::problem()->studies()->items())
     {
         cmbStudies->addItem(studyTypeString(study->type()));

@@ -42,9 +42,6 @@ public:
     void removeStudy(Study *study);
     inline QList<Study *> &items() { return m_studies; }
 
-    void loadStudies();
-    void saveStudies();
-
     Study * operator[] (int idx) { return m_studies[idx]; }
     const Study * operator[] (int idx) const { return m_studies[idx]; }
 
@@ -53,6 +50,9 @@ signals:
 
 public slots:
     void clear();
+
+    bool loadStudies();
+    bool saveStudies();
 
 private:
     // studies

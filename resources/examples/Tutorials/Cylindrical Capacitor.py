@@ -60,9 +60,10 @@ geometry.add_edge(r1, l/2, 0, l/2, boundaries = {"electrostatic" : "Source"})
 geometry.add_label(0.019, 0.021, materials = {"electrostatic" : "Dielectric n.1"})
 geometry.add_label(0.0379, 0.051, materials = {"electrostatic" : "Dielectric n.2"})
 geometry.add_label(0.0284191, 0.123601, materials = {"electrostatic" : "Air"})
-#a2d.view.zoom_best_fit()
 
 # calculation of capacity
+computation = problem.computation()
+
 r = []
 C = []
 print("C = f(r) (F):")
@@ -71,13 +72,12 @@ for i in range(15):
         geometry.select_edges([6, 7, 8])
         geometry.move_selection(dr, 0, False)
 
-    computation = problem.computation()
     computation.solve()
     solution = computation.solution("electrostatic")
     result = solution.volume_integrals([0, 1, 2])
     r.append(r1 + (i*dr))
     C.append(2*2*result["We"]/(U^2))
-    print(r[-1], C[-1])
+    print(r[-1], " = ", C[-1])
 
 # chart
 pl.close()

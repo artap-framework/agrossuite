@@ -91,7 +91,6 @@ PythonEditorTextEdit::PythonEditorTextEdit(PythonEngine *pythonEngine, QWidget *
     trvPyLint->setHeaderHidden(true);
     trvPyLint->setMouseTracking(true);
     trvPyLint->setColumnCount(1);
-    trvPyLint->setIndentation(12);
     trvPyLint->setMaximumHeight(150);
     trvPyLint->setVisible(false);
     connect(trvPyLint, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doHighlightLine(QTreeWidgetItem *, int)));
@@ -371,7 +370,6 @@ PythonEditorDialog::PythonEditorDialog(PythonScriptingConsole *console, QWidget 
     setAcceptDrops(true);
 
     restoreGeometry(settings.value("PythonEditorDialog/Geometry", saveGeometry()).toByteArray());
-    m_recentFiles = settings.value("PythonEditorDialog/RecentFiles").value<QStringList>();
 
     // set recent files
     setRecentFiles();
@@ -381,7 +379,6 @@ PythonEditorDialog::~PythonEditorDialog()
 {
     QSettings settings;
     settings.setValue("PythonEditorDialog/Geometry", saveGeometry());
-    settings.setValue("PythonEditorDialog/RecentFiles", m_recentFiles);
 }
 
 void PythonEditorDialog::closeEvent(QCloseEvent *event)
@@ -1272,25 +1269,31 @@ void PythonEditorDialog::setRecentFiles()
 {
     if (!tabWidget) return;
 
+    mnuRecentFiles->clear();
+
     // recent files
     if (!scriptEditorWidget()->fileName().isEmpty())
     {
+        QSettings settings;
+        QStringList recentFiles = settings.value("RecentScripts").value<QStringList>();
+
         QFileInfo fileInfo(scriptEditorWidget()->fileName());
-        if (m_recentFiles.indexOf(fileInfo.absoluteFilePath()) == -1)
-            m_recentFiles.insert(0, fileInfo.absoluteFilePath());
+        if (recentFiles.indexOf(fileInfo.absoluteFilePath()) == -1)
+            recentFiles.insert(0, fileInfo.absoluteFilePath());
         else
-            m_recentFiles.move(m_recentFiles.indexOf(fileInfo.absoluteFilePath()), 0);
+            recentFiles.move(recentFiles.indexOf(fileInfo.absoluteFilePath()), 0);
 
-        while (m_recentFiles.count() > 15) m_recentFiles.removeLast();
-    }
+        while (recentFiles.count() > 15) recentFiles.removeLast();
 
-    mnuRecentFiles->clear();
-    for (int i = 0; i<m_recentFiles.count(); i++)
-    {
-        QAction *actMenuRecentItem = new QAction(m_recentFiles[i], this);
-        actFileOpenRecentGroup->addAction(actMenuRecentItem);
-        mnuRecentFiles->addAction(actMenuRecentItem);
-    }
+        settings.setValue("RecentScripts", recentFiles);
+
+        for (int i = 0; i<recentFiles.count(); i++)
+        {
+            QAction *actMenuRecentItem = new QAction(recentFiles[i], this);
+            actFileOpenRecentGroup->addAction(actMenuRecentItem);
+            mnuRecentFiles->addAction(actMenuRecentItem);
+        }
+    }    
 }
 
 void PythonEditorDialog::closeTabs()
@@ -1975,7 +1978,6 @@ ErrorWidget::ErrorWidget(QTabWidget *tabWidget, QWidget *parent)
     trvErrors->setMouseTracking(true);
     trvErrors->setColumnCount(3);
     trvErrors->setColumnWidth(1, 200);
-    trvErrors->setIndentation(12);
     connect(trvErrors, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doHighlightLineError(QTreeWidgetItem *, int)));
 
     QStringList headers;

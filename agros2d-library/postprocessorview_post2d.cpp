@@ -27,6 +27,8 @@
 #include "gui/common.h"
 #include "gui/physicalfield.h"
 
+#include "resultsview.h"
+
 #include "scene.h"
 #include "scenemarker.h"
 #include "sceneview_geometry.h"
@@ -70,12 +72,24 @@ void PostprocessorScenePost2DWidget::createControls()
     groupPostContour = postContourWidget();
     groupPostVector = postVectorWidget();
 
+    resultsView = new ResultsView(this);
+    connect(m_scenePost2D, SIGNAL(mousePressed()), resultsView, SLOT(doShowResults()));
+    connect(m_scenePost2D, SIGNAL(mousePressed(const Point &)), resultsView, SLOT(showPoint(const Point &)));
+    connect(m_scenePost2D, SIGNAL(postprocessorModeGroupChanged(SceneModePostprocessor)), resultsView, SLOT(doPostprocessorModeGroupChanged(SceneModePostprocessor)));
+
+    QVBoxLayout *layoutResults = new QVBoxLayout();
+    layoutResults->addWidget(resultsView);
+
+    QGroupBox *grpResults = new QGroupBox(tr("Local values and integrals"));
+    grpResults->setLayout(layoutResults);
+
     QVBoxLayout *layoutArea = new QVBoxLayout();
     layoutArea->addWidget(groupPost2d);
     layoutArea->addWidget(groupPostScalar);
     layoutArea->addWidget(groupPostContour);
     layoutArea->addWidget(groupPostVector);
-    layoutArea->addStretch(1);
+    layoutArea->addWidget(grpResults, 1);
+    // layoutArea->addStretch(1);
 
     QWidget *widget = new QWidget(this);
     widget->setLayout(layoutArea);
@@ -513,6 +527,9 @@ void PostprocessorScenePost2DWidget::doPaletteFilter(int state)
 
 void PostprocessorScenePost2DWidget::refresh()
 {
+    // show empty results
+    resultsView->showEmpty();
+
     if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
         return;
 

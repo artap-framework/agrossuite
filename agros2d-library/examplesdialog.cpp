@@ -35,42 +35,63 @@
 
 #include "solver/module.h"
 
+#include "pythonlab/pythonengine_agros.h"
+
 #include "../3rdparty/quazip/JlCompress.h"
 #include "../resources_source/classes/problem_a2d_31_xml.h"
 
 ExamplesWidget::ExamplesWidget(QWidget *parent, InfoWidget *infoWidget)
     : QWidget(parent), m_infoWidget(infoWidget)
 {
-    m_selectedFilename = "";
-    m_selectedFormFilename = "";
+    m_selectedRecentFilename = "";
+    m_selectedRecentFormFilename = "";
+    m_selectedExampleFilename = "";
+    m_selectedExampleFormFilename = "";
     m_expandedGroup = "";
 
     createActions();
 
-    trvProblems = new QTreeWidget(this);
-    trvProblems->setMouseTracking(true);
-    trvProblems->setColumnCount(1);
-    trvProblems->setIconSize(QSize(24, 24));
-    trvProblems->setHeaderHidden(true);
+    trvRecentFiles = new QTreeWidget(this);
+    trvRecentFiles->setMouseTracking(true);
+    trvRecentFiles->setColumnCount(1);
+    trvRecentFiles->setIconSize(QSize(24, 24));
+    trvRecentFiles->setHeaderHidden(true);
 
-    connect(trvProblems, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doItemDoubleClicked(QTreeWidgetItem *, int)));
-    connect(trvProblems, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+    connect(trvRecentFiles, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doRecentItemDoubleClicked(QTreeWidgetItem *, int)));
+    connect(trvRecentFiles, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doRecentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
-    // connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
+    QHBoxLayout *layoutRecentFiles = new QHBoxLayout();
+    layoutRecentFiles->addWidget(trvRecentFiles);
 
-    QHBoxLayout *layoutSurface = new QHBoxLayout();
-    layoutSurface->addWidget(trvProblems);
+    QGroupBox *widgetRecentFiles = new QGroupBox(tr("Recent files"));
+    widgetRecentFiles->setLayout(layoutRecentFiles);
 
-    QGroupBox *widget = new QGroupBox(tr("Examples"));
-    widget->setLayout(layoutSurface);
+    trvExamples = new QTreeWidget(this);
+    trvExamples->setMouseTracking(true);
+    trvExamples->setColumnCount(1);
+    trvExamples->setIconSize(QSize(24, 24));
+    trvExamples->setHeaderHidden(true);
+
+    connect(trvExamples, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doExampleItemDoubleClicked(QTreeWidgetItem *, int)));
+    connect(trvExamples, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doExampleItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+
+    QHBoxLayout *layoutExamples = new QHBoxLayout();
+    layoutExamples->addWidget(trvExamples);
+
+    QGroupBox *widgetExamples = new QGroupBox(tr("Examples"));
+    widgetExamples->setLayout(layoutExamples);
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(toolBar);
-    layout->addWidget(widget, 1);
+    layout->addWidget(widgetRecentFiles, 1);
+    layout->addWidget(widgetExamples, 2);
 
     setLayout(layout);
 
-    showWidget("Examples");
+    connect(Agros2D::problem()->scene(), SIGNAL(cleared()), this, SLOT(readRecentFiles()));
+    connect(currentPythonEngineAgros(), SIGNAL(executedScript()), this, SLOT(readRecentFiles()));
+
+    init("Examples");
 }
 
 void ExamplesWidget::createActions()
@@ -80,84 +101,142 @@ void ExamplesWidget::createActions()
     actExamples->setCheckable(true);
 
     toolBar = new QToolBar(this);
-    // toolBar->addSeparator();
-
-    QAction *actWelcome = new QAction(icon("agros2d"), tr("Welcome screen"), this);
-    connect(actWelcome, SIGNAL(triggered(bool)), m_infoWidget, SLOT(showWelcome()));
-    toolBar->addAction(actWelcome);
 }
 
-void ExamplesWidget::showWidget(const QString &expandedGroup)
+void ExamplesWidget::init(const QString &expandedGroup)
 {
     m_expandedGroup = expandedGroup;
 
-    readProblems();
+    readRecentFiles();
+    readExamples();
 
-    QList<QTreeWidgetItem *> items = trvProblems->findItems(m_expandedGroup, Qt::MatchExactly);
-    if (items.count() == 1)
-        trvProblems->setCurrentItem(items.at(0));
+    if (!trvExamples->currentItem())
+    {
+        QList<QTreeWidgetItem *> items = trvExamples->findItems(m_expandedGroup, Qt::MatchExactly);
+        if (items.count() == 1)
+            trvExamples->setCurrentItem(items.at(0));
+    }
 }
 
-void ExamplesWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+void ExamplesWidget::doRecentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
-    m_infoWidget->clear();
-
-    m_selectedFilename.clear();
+    m_selectedRecentFilename.clear();
     if (current)
     {
-        m_selectedFilename = current->data(0, Qt::UserRole).toString();
-        if (!m_selectedFilename.isEmpty())
+        m_selectedRecentFilename = current->data(0, Qt::UserRole).toString();
+        if (!m_selectedRecentFilename.isEmpty())
         {
-            problemInfo(m_selectedFilename);
+            problemInfo(m_selectedRecentFilename);
+            return;
         }
     }
+
+    m_infoWidget->welcome();
 }
 
-void ExamplesWidget::doItemDoubleClicked(QTreeWidgetItem *item, int column)
+void ExamplesWidget::doRecentItemDoubleClicked(QTreeWidgetItem *item, int column)
 {
-    if (trvProblems->currentItem())
-    {        
-        if (!m_selectedFilename.isEmpty())
-        {
-            emit problemOpen(m_selectedFilename);
-        }
-    }
-}
-
-/*
-void ExamplesDialog::linkClicked(const QUrl &url)
-{
-    QString search = "/open?";
-    if (url.toString().contains(search))
+    if (trvRecentFiles->currentItem())
     {
-#if QT_VERSION < 0x050000
-        QString fileName = url.queryItemValue("filename");
-        QString form = url.queryItemValue("form");
-#else
-        QString fileName = QUrlQuery(url).queryItemValue("filename");
-        QString form = QUrlQuery(url).queryItemValue("form");
-#endif
-
-        m_selectedFilename = QUrl(fileName).toLocalFile();
-        m_selectedFormFilename = QUrl(form).toLocalFile();
-
-        accept();
+        if (!m_selectedRecentFilename.isEmpty())
+        {
+            emit problemOpen(m_selectedRecentFilename);
+        }
     }
 }
-*/
 
-void ExamplesWidget::readProblems()
+void ExamplesWidget::doExampleItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+    m_selectedExampleFilename.clear();
+    if (current)
+    {
+        m_selectedExampleFilename = current->data(0, Qt::UserRole).toString();
+        if (!m_selectedExampleFilename.isEmpty())
+        {
+            problemInfo(m_selectedExampleFilename);
+            return;
+        }
+    }
+
+    m_infoWidget->welcome();
+}
+
+void ExamplesWidget::doExampleItemDoubleClicked(QTreeWidgetItem *item, int column)
+{
+    if (trvExamples->currentItem())
+    {
+        if (!m_selectedExampleFilename.isEmpty())
+        {
+            emit problemOpen(m_selectedExampleFilename);
+        }
+    }
+}
+
+void ExamplesWidget::readRecentFiles()
+{
+    QSettings settings;
+
+    trvRecentFiles->clear();
+
+    QFont fnt = trvRecentFiles->font();
+    fnt.setBold(true);
+
+    QTreeWidgetItem *trvRecentProblems = new QTreeWidgetItem(trvRecentFiles);
+    trvRecentProblems->setText(0, tr("Recent problems"));
+    trvRecentProblems->setFont(0, fnt);
+    trvRecentProblems->setExpanded(true);
+
+    QStringList recentProblems = settings.value("RecentProblems").value<QStringList>();
+    for (int i = 0; i < qMin(5, recentProblems.count()); i++)
+    {
+        QFileInfo fileInfo(recentProblems[i]);
+        if (!QFile::exists(fileInfo.absoluteFilePath()))
+            continue;
+
+        QList<QIcon> icons = problemIcons(fileInfo.absoluteFilePath());
+
+        QTreeWidgetItem *item = new QTreeWidgetItem(trvRecentProblems);
+        item->setText(0, fileInfo.baseName());
+        item->setData(0, Qt::UserRole, fileInfo.absoluteFilePath());
+        if (icons.count() == 1)
+            item->setIcon(0, icons.at(0));
+        else
+            item->setIcon(0, icon("fields/empty"));
+    }
+
+    QTreeWidgetItem *trvRecentScripts = new QTreeWidgetItem(trvRecentFiles);
+    trvRecentScripts->setText(0, tr("Recent scripts"));
+    trvRecentScripts->setFont(0, fnt);
+    trvRecentScripts->setExpanded(true);
+
+    QStringList recentScripts = settings.value("RecentScripts").value<QStringList>();
+    for (int i = 0; i < qMin(5, recentScripts.count()); i++)
+    {
+        QFileInfo fileInfo(recentScripts[i]);
+        if (!QFile::exists(fileInfo.absoluteFilePath()))
+            continue;
+
+        QTreeWidgetItem *item = new QTreeWidgetItem(trvRecentScripts);
+        item->setText(0, fileInfo.baseName());
+        item->setData(0, Qt::UserRole, fileInfo.absoluteFilePath());
+        item->setIcon(0, icon("pythonlab"));
+    }
+
+    m_infoWidget->welcome();
+}
+
+void ExamplesWidget::readExamples()
 {
     // clear listview
-    trvProblems->clear();
+    trvExamples->clear();
 
     QDir dir(QString("%1/resources/examples").arg(datadir()));
     dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoSymLinks);
 
-    readProblems(dir, trvProblems->invisibleRootItem());
+    readExamples(dir, trvExamples->invisibleRootItem());
 }
 
-int ExamplesWidget::readProblems(QDir dir, QTreeWidgetItem *parentItem)
+int ExamplesWidget::readExamples(QDir dir, QTreeWidgetItem *parentItem)
 {
     int count = 0;
 
@@ -170,7 +249,7 @@ int ExamplesWidget::readProblems(QDir dir, QTreeWidgetItem *parentItem)
 
         if (fileInfo.isDir())
         {
-            QFont fnt = trvProblems->font();
+            QFont fnt = trvExamples->font();
             fnt.setBold(true);
 
             QTreeWidgetItem *dirItem = new QTreeWidgetItem(parentItem);
@@ -181,12 +260,12 @@ int ExamplesWidget::readProblems(QDir dir, QTreeWidgetItem *parentItem)
                 dirItem->setIcon(0, QIcon(fn));
             // expand group
             if (m_expandedGroup.isEmpty()
-                    || (parentItem != trvProblems->invisibleRootItem())
-                    || ((m_expandedGroup == fileInfo.fileName()) && parentItem == trvProblems->invisibleRootItem()))
+                    || (parentItem != trvExamples->invisibleRootItem())
+                    || ((m_expandedGroup == fileInfo.fileName()) && parentItem == trvExamples->invisibleRootItem()))
                 dirItem->setExpanded(true);
 
             // recursive read
-            int numberOfProblems = readProblems(fileInfo.absoluteFilePath(), dirItem);
+            int numberOfProblems = readExamples(fileInfo.absoluteFilePath(), dirItem);
 
             if (numberOfProblems == 0)
             {
@@ -263,6 +342,7 @@ void ExamplesWidget::problemInfo(const QString &fileName)
             QString fn = QString("%1/%2").arg(tempProblemDir()).arg("problem.a2d");
             this->problemInfo(fn);
             QFile::remove(fn);
+
             return;
         }
         else if (fileInfo.suffix() == "a2d")
@@ -284,15 +364,23 @@ void ExamplesWidget::problemInfo(const QString &fileName)
                 problemInfo.SetValue("PROBLEM_DETAILS", detail.toStdString());
             }
             */
+
+            return;
         }
         else if (fileInfo.suffix() == "py")
         {
             m_infoWidget->showPythonInfo(fileName);
+
+            return;
         }
         else if (fileInfo.suffix() == "ui")
         {
             // templateName = "example_form.tpl";
         }
+    }
+    else
+    {
+        m_infoWidget->welcome();
     }
 }
 

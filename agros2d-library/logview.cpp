@@ -297,11 +297,7 @@ void LogDialog::createControls()
     
     m_logWidget = new LogWidget(this);
     m_logWidget->setMemoryLabelVisible(false);
-    
-    // set log visibility
-    QSettings settings;
-    m_logWidget->setVisible(settings.value("LogDialog/ShowLog", false).toBool());
-    
+        
 #ifdef Q_WS_WIN
     int fontSize = 7;
 #endif
@@ -330,14 +326,10 @@ void LogDialog::createControls()
     connect(btnClose, SIGNAL(clicked()), this, SLOT(tryClose()));
     btnClose->setEnabled(false);
     
-    btnShowHide = new QPushButton(tr("Show/hide log"));
-    connect(btnShowHide, SIGNAL(clicked()), this, SLOT(showHide()));
-    
     btnAbort = new QPushButton(tr("Abort"));
     
     QHBoxLayout *layoutStatus = new QHBoxLayout();
     layoutStatus->addStretch();
-    layoutStatus->addWidget(btnShowHide, 0, Qt::AlignRight);
     layoutStatus->addWidget(btnAbort, 0, Qt::AlignRight);
     layoutStatus->addWidget(btnClose, 0, Qt::AlignRight);
     
@@ -613,14 +605,6 @@ void LogDialog::tryClose()
         close();
 }
 
-void LogDialog::showHide()
-{
-    m_logWidget->setVisible(!m_logWidget->isVisible());
-    repaint();
-    
-    QSettings settings;
-    settings.setValue("LogDialog/ShowLog", m_logWidget->isVisible());
-}
 
 // *******************************************************************************************
 

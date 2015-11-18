@@ -83,8 +83,8 @@ public:
     int lastAdaptiveStep(const FieldInfo *fieldInfo, int timeStep = -1) const;
     int lastTimeStep(const FieldInfo *fieldInfo) const;
 
-    void loadRunTimeDetails();
-    void saveRunTimeDetails();
+    bool loadRunTimeDetails();
+    bool saveRunTimeDetails();
     SolutionRunTimeDetails multiSolutionRunTimeDetail(FieldSolutionID solutionID) const { assert(m_multiSolutionRunTimeDetails.contains(solutionID)); return m_multiSolutionRunTimeDetails[solutionID]; }
 
     inline bool isEmpty() const { return m_multiSolutions.isEmpty(); }

@@ -52,7 +52,7 @@ problem.time_steps = 40
 problem.time_callback = time_callback
 
 # heat
-heat = a2d.field("heat")
+heat = problem.field("heat")
 heat.analysis_type = "transient"
 heat.matrix_solver = "umfpack"
 heat.transient_initial_condition = 293.15
@@ -72,7 +72,7 @@ heat.add_material("Iron", {"heat_velocity_x" : 0, "heat_velocity_y" : 0, "heat_v
 heat.add_material("Brass", {"heat_velocity_x" : 0, "heat_velocity_y" : 0, "heat_velocity_angular" : 0, "heat_conductivity" : 100, "heat_volume_heat" : 0, "heat_density" : 8400, "heat_specific_heat" : 378})
 
 # geometry
-geometry = a2d.geometry
+geometry = problem.geometry()
 geometry.add_edge(0, 0.18, 0.035, 0.18, boundaries = {"heat" : "Convection"})
 geometry.add_edge(0.035, 0.18, 0.035, 0.03, boundaries = {"heat" : "Convection"})
 geometry.add_edge(0.035, 0.03, 0.0135, 0.03, boundaries = {"heat" : "Convection"})
@@ -107,8 +107,8 @@ geometry.add_label(0.0163723, 0.144289, materials = {"heat" : "Copper"})
 geometry.add_label(0.00380689, 0.151055, materials = {"heat" : "Air"})
 geometry.add_label(0.0112064, 0.0336487, materials = {"heat" : "Brass"})
 
-a2d.view.zoom_best_fit()
-problem.solve()
+computation = problem.computation()
+computation.solve()    
 
 # current
 pl.figure(figsize=[8,3])

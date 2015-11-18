@@ -61,6 +61,14 @@ bool ProblemResult::load(const QString &fileName)
 
 bool ProblemResult::save(const QString &fileName)
 {
+    if (m_results.isEmpty() && m_info.isEmpty())
+    {
+        if (QFile::exists(fileName))
+            QFile::remove(fileName);
+
+        return true;
+    }
+
     QFile file(fileName);
 
     if (!file.open(QIODevice::WriteOnly))

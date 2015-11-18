@@ -117,8 +117,6 @@ public:
     void closeTabs();
     bool isScriptModified();
 
-    QStringList *recentFiles() { return &m_recentFiles; }
-
     QAction *actSceneModePythonEditor;
     inline PythonEditorWidget *pythonEditorWidget() { return m_pythonEditorWidget; }
 
@@ -165,8 +163,6 @@ protected:
     virtual void scriptFinish();
 
     PythonEngine *pythonEngine;
-
-    QStringList m_recentFiles;
 
     // gui    
     PythonEditorWidget *m_pythonEditorWidget;

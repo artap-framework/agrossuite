@@ -64,9 +64,9 @@ ProblemBase *SceneViewPreprocessor::problem()
 
 void SceneViewPreprocessor::createActionsGeometry()
 {
-    actSceneModePreprocessor = new QAction(iconView(), tr("Problem"), this);
-    actSceneModePreprocessor->setShortcut(tr("Ctrl+2"));
-    actSceneModePreprocessor->setCheckable(true);
+    actSceneModeProblem = new QAction(iconView(), tr("Problem"), this);
+    actSceneModeProblem->setShortcut(tr("Ctrl+2"));
+    actSceneModeProblem->setCheckable(true);
 
     // scene - operate on items
     actOperateOnNodes = new QAction(icon("scene-node"), tr("Operate on &nodes"), this);
@@ -192,10 +192,10 @@ void SceneViewPreprocessor::doSelectBasic()
 void SceneViewPreprocessor::refresh()
 {
     // actions
-    actSceneViewSelectRegion->setEnabled(actSceneModePreprocessor->isChecked());
-    actOperateOnNodes->setEnabled(actSceneModePreprocessor->isChecked());
-    actOperateOnEdges->setEnabled(actSceneModePreprocessor->isChecked());
-    actOperateOnLabels->setEnabled(actSceneModePreprocessor->isChecked());
+    actSceneViewSelectRegion->setEnabled(actSceneModeProblem->isChecked());
+    actOperateOnNodes->setEnabled(actSceneModeProblem->isChecked());
+    actOperateOnEdges->setEnabled(actSceneModeProblem->isChecked());
+    actOperateOnLabels->setEnabled(actSceneModeProblem->isChecked());
 
     SceneViewCommon::refresh();
 }

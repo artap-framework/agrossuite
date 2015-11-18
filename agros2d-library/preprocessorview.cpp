@@ -76,7 +76,8 @@ PreprocessorWidget::PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget
 PreprocessorWidget::~PreprocessorWidget()
 {
     QSettings settings;
-    settings.setValue("PreprocessorWidget/TreeColumnWidth", trvWidget->columnWidth(0));
+    settings.setValue("PreprocessorWidget/TreeColumnWidth0", trvWidget->columnWidth(0));
+    settings.setValue("PreprocessorWidget/TreeColumnWidth1", trvWidget->columnWidth(1));
     settings.setValue("PreprocessorWidget/SplitterState", splitter->saveState());
     settings.setValue("PreprocessorWidget/SplitterGeometry", splitter->saveGeometry());
 }
@@ -150,10 +151,9 @@ void PreprocessorWidget::createControls()
     trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     trvWidget->setMouseTracking(true);
     trvWidget->setUniformRowHeights(true);
-    // trvWidget->setColumnCount(3);
-    trvWidget->setColumnWidth(0, settings.value("PreprocessorWidget/TreeColumnWidth", 200).toInt());
-    // trvWidget->setColumnWidth(1, 150);
-    // trvWidget->setColumnWidth(2, 20);
+    trvWidget->setColumnCount(2);
+    trvWidget->setColumnWidth(0, settings.value("PreprocessorWidget/TreeColumnWidth0", 200).toInt());
+    trvWidget->setColumnWidth(1, settings.value("PreprocessorWidget/TreeColumnWidth1", 200).toInt());
     trvWidget->setIndentation(trvWidget->indentation() - 2);
 
     QStringList headers;
@@ -208,6 +208,8 @@ void PreprocessorWidget::createControls()
     splitter->setOrientation(Qt::Vertical);
     splitter->addWidget(widgetTreeView);
     splitter->addWidget(view);
+    splitter->setStretchFactor(0, 2);
+    splitter->setStretchFactor(1, 1);
     splitter->restoreState(settings.value("PreprocessorWidget/SplitterState").toByteArray());
     splitter->restoreGeometry(settings.value("PreprocessorWidget/SplitterGeometry").toByteArray());
 
@@ -248,17 +250,18 @@ void PreprocessorWidget::refresh()
 
     // problem
     QTreeWidgetItem *problemNode = new QTreeWidgetItem(trvWidget);
-    problemNode->setText(0, tr("Problem"));    
+    problemNode->setText(0, tr("Problem"));
     problemNode->setFont(0, fnt);
+    problemNode->setIcon(0, iconAlphabet('P', AlphabetColor_Brown));
     problemNode->setToolTip(0, problemPropertiesToString());
     problemNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
-    problemNode->setIcon(1, icon("document-properties"));
     problemNode->setExpanded(true);
     problemNode->setTextAlignment(1, Qt::AlignRight);
 
     // problem properties
     QTreeWidgetItem *problemPropertiesNode = new QTreeWidgetItem(problemNode);
     problemPropertiesNode->setText(0, tr("Properties"));
+    problemPropertiesNode->setIcon(0, iconAlphabet('P', AlphabetColor_Green));
     problemPropertiesNode->setForeground(0, QBrush(Qt::darkGray));
     problemPropertiesNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
     problemProperties(problemPropertiesNode);
@@ -268,6 +271,7 @@ void PreprocessorWidget::refresh()
     {
         QTreeWidgetItem *parametersNode = new QTreeWidgetItem(problemNode);
         parametersNode->setText(0, tr("Parameters"));
+        parametersNode->setIcon(0, iconAlphabet('P', AlphabetColor_Green));
         parametersNode->setFont(0, fnt);
         parametersNode->setExpanded(true);
 
@@ -284,6 +288,7 @@ void PreprocessorWidget::refresh()
     // fields
     QTreeWidgetItem *fieldsNode = new QTreeWidgetItem(trvWidget);
     fieldsNode->setText(0, tr("Fields"));
+    fieldsNode->setIcon(0, iconAlphabet('F', AlphabetColor_Brown));
     fieldsNode->setFont(0, fnt);
     fieldsNode->setExpanded(true);
 
@@ -294,6 +299,7 @@ void PreprocessorWidget::refresh()
         QTreeWidgetItem *fieldNode = new QTreeWidgetItem(fieldsNode);
         fieldNode->setText(0, fieldInfo->name());
         fieldNode->setFont(0, fnt);
+        fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
         fieldNode->setData(0, Qt::UserRole, fieldInfo->fieldId());
         fieldNode->setToolTip(0, fieldPropertiesToString(fieldInfo));
         fieldNode->setIcon(1, icon("fields/" + fieldInfo->fieldId()));
@@ -302,11 +308,12 @@ void PreprocessorWidget::refresh()
 
         // field properties
         QTreeWidgetItem *fieldPropertiesNode = propertiesItem(fieldNode, tr("Properties"), "", PreprocessorWidget::FieldProperties, fieldInfo->fieldId());
+        fieldPropertiesNode->setIcon(0, iconAlphabet('P', AlphabetColor_Green));
         fieldProperties(fieldInfo, fieldPropertiesNode);
 
         // materials
         QTreeWidgetItem *materialsNode = new QTreeWidgetItem(fieldNode);
-        materialsNode->setIcon(0, icon("scenelabelmarker"));
+        materialsNode->setIcon(0, iconAlphabet('M', AlphabetColor_Red));
         materialsNode->setText(0, tr("Materials"));
         materialsNode->setFont(0, fnt);
         materialsNode->setExpanded(true);
@@ -316,7 +323,6 @@ void PreprocessorWidget::refresh()
             QTreeWidgetItem *item = new QTreeWidgetItem(materialsNode);
 
             item->setText(0, material->name());
-            item->setIcon(0, (Agros2D::problem()->scene()->labels->haveMarker(material).count() > 0) ? icon("scene-labelmarker") : icon("scene-labelmarker-notused"));
             if (Agros2D::problem()->scene()->labels->haveMarker(material).isEmpty())
                 item->setForeground(0, QBrush(Qt::gray));
             item->setData(0, Qt::UserRole, material->variant());
@@ -325,7 +331,7 @@ void PreprocessorWidget::refresh()
 
         // boundary conditions
         QTreeWidgetItem *boundaryConditionsNode = new QTreeWidgetItem(fieldNode);
-        boundaryConditionsNode->setIcon(0, icon("sceneedgemarker"));
+        boundaryConditionsNode->setIcon(0, iconAlphabet('B', AlphabetColor_Purple));
         boundaryConditionsNode->setText(0, tr("Boundary conditions"));
         boundaryConditionsNode->setFont(0, fnt);
         boundaryConditionsNode->setExpanded(true);
@@ -338,7 +344,6 @@ void PreprocessorWidget::refresh()
 
             item->setText(0, boundary->name());
             item->setText(1, boundaryType.name());
-            item->setIcon(0, (Agros2D::problem()->scene()->edges->haveMarker(boundary).count() > 0) ? icon("scene-edgemarker") : icon("scene-edgemarker-notused"));
             if (Agros2D::problem()->scene()->edges->haveMarker(boundary).isEmpty())
                 item->setForeground(0, QBrush(Qt::gray));
             item->setData(0, Qt::UserRole, boundary->variant());
@@ -349,13 +354,14 @@ void PreprocessorWidget::refresh()
     // geometry
     QTreeWidgetItem *geometryNode = new QTreeWidgetItem(trvWidget);
     geometryNode->setText(0, tr("Geometry"));
+    geometryNode->setIcon(0, iconAlphabet('G', AlphabetColor_Brown));
     geometryNode->setFont(0, fnt);
     geometryNode->setExpanded(false);
 
     // nodes
     QTreeWidgetItem *nodesNode = new QTreeWidgetItem(geometryNode);
     nodesNode->setText(0, tr("Nodes"));
-    nodesNode->setIcon(1, icon("scenenode"));
+    nodesNode->setIcon(0, iconAlphabet('N', AlphabetColor_Green));
     nodesNode->setFont(0, fnt);
 
     int inode = 0;
@@ -377,7 +383,7 @@ void PreprocessorWidget::refresh()
     // edges
     QTreeWidgetItem *edgesNode = new QTreeWidgetItem(geometryNode);
     edgesNode->setText(0, tr("Edges"));
-    edgesNode->setIcon(0, icon("sceneedge"));
+    edgesNode->setIcon(0, iconAlphabet('E', AlphabetColor_Green));
     edgesNode->setFont(0, fnt);
 
     int iedge = 0;
@@ -389,7 +395,6 @@ void PreprocessorWidget::refresh()
                       arg((edge->angle() < EPS_ZERO) ?
                               (edge->nodeEnd()->point() - edge->nodeStart()->point()).magnitude() :
                               edge->radius() * edge->angle() / 180.0 * M_PI, 0, 'e', 2));
-        item->setIcon(0, icon("scene-edge"));
         item->setData(0, Qt::UserRole, edge->variant());
         item->setText(1, QString("%1").arg(iedge));
         item->setData(1, Qt::UserRole, PreprocessorWidget::GeometryEdge);
@@ -400,8 +405,7 @@ void PreprocessorWidget::refresh()
     // labels
     QTreeWidgetItem *labelsNode = new QTreeWidgetItem(geometryNode);
     labelsNode->setText(0, tr("Labels"));
-    labelsNode->setIcon(0, icon("scenelabel"));
-    // labelsNode->setForeground(0, QBrush(Qt::darkBlue));
+    labelsNode->setIcon(0, iconAlphabet('L', AlphabetColor_Green));
     labelsNode->setFont(0, fnt);
 
     int ilabel = 0;
@@ -412,7 +416,6 @@ void PreprocessorWidget::refresh()
         item->setText(0, QString("[%1; %2]").
                       arg(label->point().x, 0, 'e', 2).
                       arg(label->point().y, 0, 'e', 2));
-        item->setIcon(0, icon("scene-label"));
         item->setData(0, Qt::UserRole, label->variant());
         item->setText(1, QString("%1").arg(ilabel));
         item->setData(1, Qt::UserRole, GeometryLabel);
@@ -425,6 +428,7 @@ void PreprocessorWidget::refresh()
     {
         QTreeWidgetItem *optilabNode = new QTreeWidgetItem(trvWidget);
         optilabNode->setText(0, tr("OptiLab"));
+        optilabNode->setIcon(0, iconAlphabet('O', AlphabetColor_Brown));
         optilabNode->setFont(0, fnt);
         optilabNode->setExpanded(true);
 
@@ -433,6 +437,7 @@ void PreprocessorWidget::refresh()
             // study
             QTreeWidgetItem *studyNode = new QTreeWidgetItem(optilabNode);
             studyNode->setText(0, studyTypeString(study->type()));
+            studyNode->setIcon(0, iconAlphabet(studyTypeString(study->type()).at(0), AlphabetColor_Green));
             studyNode->setFont(0, fnt);
             studyNode->setData(0, Qt::UserRole, study->variant());
             studyNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
@@ -469,6 +474,8 @@ void PreprocessorWidget::refresh()
             }
         }
     }
+
+    trvWidget->resizeColumnToContents(1);
 
     setUpdatesEnabled(true);
     blockSignals(false);
@@ -600,7 +607,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
         {
             // geometry
             SceneBasic *objectBasic = current->data(0, Qt::UserRole).value<SceneBasic *>();
-            m_sceneViewPreprocessor->actSceneModePreprocessor->trigger();
+            m_sceneViewPreprocessor->actSceneModeProblem->trigger();
 
             if (dynamic_cast<SceneNode *>(objectBasic))
                 m_sceneViewPreprocessor->actOperateOnNodes->trigger();

@@ -27,6 +27,7 @@ class PostDeal;
 class SceneViewPost2D;
 class LineEditDouble;
 class CollapsableGroupBoxButton;
+class ResultsView;
 
 class PostprocessorScenePost2DWidget : public PostprocessorSceneWidget
 {
@@ -103,6 +104,8 @@ private:
     QWidget *postContourAdvancedWidget();
     CollapsableGroupBoxButton *postVectorWidget();
     QWidget *postVectorAdvancedWidget();
+
+    ResultsView *resultsView;
 
 public slots:
     virtual void refresh();

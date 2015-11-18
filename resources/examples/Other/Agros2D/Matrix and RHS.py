@@ -13,20 +13,20 @@ def model_electrostatic():
     
     # fields
     # electrostatic
-    electrostatic = a2d.field("electrostatic")
+    electrostatic = problem.field("electrostatic")
     electrostatic.analysis_type = "steadystate"
-    electrostatic.matrix_solver = "mumps"
+    electrostatic.matrix_solver = "umfpack"
     electrostatic.number_of_refinements = 0
     electrostatic.polynomial_order = 2
-    electrostatic.adaptivity_type = "hp-adaptivity"
-    
+
+    electrostatic.adaptivity_type = "hp-adaptivity"    
     electrostatic.adaptivity_parameters['steps'] = 10
     electrostatic.adaptivity_parameters['tolerance'] = 0.5
-    electrostatic.adaptivity_parameters['threshold'] = 0.7
-    electrostatic.adaptivity_parameters['stopping_criterion'] = "singleelement"
-    electrostatic.adaptivity_parameters['error_calculator'] = "h1"
-    electrostatic.adaptivity_parameters['anisotropic_refinement'] = True
-    electrostatic.adaptivity_parameters['finer_reference_solution'] = False
+    electrostatic.adaptivity_parameters['estimator'] = "kelly"
+    electrostatic.adaptivity_parameters['strategy'] = "fixed_fraction_of_total_error"
+    electrostatic.adaptivity_parameters['strategy_hp'] = "fourier_series"
+    electrostatic.adaptivity_parameters['fine_percentage'] = 30
+    electrostatic.adaptivity_parameters['coarse_percentage'] = 3
     electrostatic.solver = "linear"
     
     # boundaries
@@ -38,7 +38,7 @@ def model_electrostatic():
     electrostatic.add_material("Air", {"electrostatic_permittivity" : 1, "electrostatic_charge_density" : 0})
     
     # geometry
-    geometry = a2d.geometry
+    geometry = problem.geometry()
     geometry.add_edge(0.2, 1, 0, 0.5, boundaries = {"electrostatic" : "Source"})
     geometry.add_edge(0, 0.5, 0, 0.25, boundaries = {"electrostatic" : "Border"})
     geometry.add_edge(0, -0.25, 0, -1, boundaries = {"electrostatic" : "Border"})
@@ -50,11 +50,13 @@ def model_electrostatic():
     geometry.add_edge(0.25, 0, 0, 0.25, angle = 90, boundaries = {"electrostatic" : "Ground"})
     
     geometry.add_label(0.879551, 0.764057, area = 0.06, materials = {"electrostatic" : "Air"})
+
+    computation = problem.computation()
+    computation.solve()    
     
-    a2d.view.zoom_best_fit()
-    problem.solve()
+    solution = computation.solution("electrostatic")
     
-    return electrostatic.filename_matrix(), electrostatic.filename_rhs()
+    return solution.filename_matrix(), solution.filename_rhs()
     
 def model_harmonic_magnetic():
     print("Harmonic magnetic field (two components)")
@@ -66,9 +68,9 @@ def model_harmonic_magnetic():
     
     # fields
     # magnetic
-    magnetic = a2d.field("magnetic")
+    magnetic = problem.field("magnetic")
     magnetic.analysis_type = "harmonic"
-    magnetic.matrix_solver = "mumps"
+    magnetic.matrix_solver = "umfpack"
     magnetic.number_of_refinements = 2
     magnetic.polynomial_order = 3
     magnetic.adaptivity_type = "disabled"
@@ -83,7 +85,7 @@ def model_harmonic_magnetic():
     magnetic.add_material("Copper", {"magnetic_permeability" : 1, "magnetic_conductivity" : 57e6, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : 1e6, "magnetic_current_density_external_imag" : 0})
     
     # geometry
-    geometry = a2d.geometry
+    geometry = problem.geometry()
     geometry.add_edge(0, 0.002, 0, 0.000768, boundaries = {"magnetic" : "Neumann"})
     geometry.add_edge(0, 0.000768, 0, 0, boundaries = {"magnetic" : "Neumann"})
     geometry.add_edge(0, 0, 0.000768, 0, boundaries = {"magnetic" : "Neumann"})
@@ -97,11 +99,13 @@ def model_harmonic_magnetic():
     
     geometry.add_label(0.000585418, 0.00126858, materials = {"magnetic" : "Air"})
     geometry.add_label(0.000109549, 8.6116e-05, materials = {"magnetic" : "Copper"})
+       
+    computation = problem.computation()
+    computation.solve()    
     
-    a2d.view.zoom_best_fit()
-    problem.solve()
+    solution = computation.solution("magnetic")
     
-    return magnetic.filename_matrix(), magnetic.filename_rhs()
+    return solution.filename_matrix(), solution.filename_rhs()
 
 
 def analyse_matrix_and_rhs(filename_matrix, filename_rhs):  

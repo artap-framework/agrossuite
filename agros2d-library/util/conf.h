@@ -52,7 +52,12 @@ public:
         Config_ShowAxes,
         Python_UseProfiler,
         Python_PrintStacktrace,
-        Python_ConsoleOutput
+        Python_ConsoleOutput,
+        ShowConsoleAndLog_Welcome,
+        ShowConsoleAndLog_Problem,
+        ShowConsoleAndLog_Results,
+        ShowConsoleAndLog_OptiLab,
+        ShowConsoleAndLog_PythonLab
     };
 
     inline QVariant value(Type type) {  return m_setting[type]; }
