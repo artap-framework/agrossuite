@@ -78,6 +78,7 @@ void PostprocessorScenePost2DWidget::createControls()
     connect(m_scenePost2D, SIGNAL(postprocessorModeGroupChanged(SceneModePostprocessor)), resultsView, SLOT(doPostprocessorModeGroupChanged(SceneModePostprocessor)));
 
     QVBoxLayout *layoutResults = new QVBoxLayout();
+    layoutResults->addWidget(toolBar);
     layoutResults->addWidget(resultsView);
 
     QGroupBox *grpResults = new QGroupBox(tr("Local values and integrals"));
@@ -101,7 +102,6 @@ void PostprocessorScenePost2DWidget::createControls()
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->setContentsMargins(0, 0, 0, 0);
-    layoutMain->addWidget(toolBar);
     layoutMain->addWidget(widgetArea, 1);
 
     refresh();
