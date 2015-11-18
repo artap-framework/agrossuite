@@ -42,7 +42,6 @@ public slots:
     void doShowResults();
 
     void showEmpty();
-    void showNotSolved();
     void showPoint(const Point &point);
     void showPoint();
     void showVolumeIntegral();
@@ -50,6 +49,7 @@ public slots:
 
 public:
     ResultsView(QWidget *parent = 0);
+    ~ResultsView();
 
     QPushButton *btnSelectMarker;
 
@@ -57,10 +57,9 @@ private:
     Point m_point;
 
     SceneModePostprocessor m_sceneModePostprocessor;
-    QString m_cascadeStyleSheet;
 
     QAction *actPoint;
-    QWebView *webView;
+    QTreeWidget *trvWidget;
 
     QSharedPointer<Computation> m_computation;
 

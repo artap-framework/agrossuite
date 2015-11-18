@@ -27,7 +27,7 @@
 #include "gui/common.h"
 #include "gui/physicalfield.h"
 
-#include "resultsview.h"
+#include "gui/resultsview.h"
 
 #include "scene.h"
 #include "scenemarker.h"

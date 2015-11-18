@@ -99,6 +99,7 @@ SET(SOURCES
     gui/infowidget.cpp
     gui/problemdialog.cpp
     gui/fielddialog.cpp
+    gui/resultsview.cpp
     logview.cpp
     mainwindow.cpp
     materialbrowserdialog.cpp
@@ -134,8 +135,7 @@ SET(SOURCES
     pythonlab/python_unittests.cpp
     pythonlab/pythonengine_agros.cpp
     pythonlab/pyview.cpp
-    pythonlab/remotecontrol.cpp
-    resultsview.cpp
+    pythonlab/remotecontrol.cpp    
     scene.cpp
     scenebasic.cpp
     scenebasicselectdialog.cpp
@@ -324,6 +324,7 @@ SET(HEADERS
   gui/infowidget.h
   gui/problemdialog.h
   gui/fielddialog.h
+  gui/resultsview.h
   logview.h
   mainwindow.h
   materialbrowserdialog.h
@@ -358,8 +359,7 @@ SET(HEADERS
   pythonlab/python_unittests.h
   pythonlab/pythonengine_agros.h
   pythonlab/pyview.h
-  pythonlab/remotecontrol.h
-  resultsview.h
+  pythonlab/remotecontrol.h  
   scene.h
   scenebasic.h
   scenebasicselectdialog.h

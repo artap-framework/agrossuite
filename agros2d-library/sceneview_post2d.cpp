@@ -35,7 +35,7 @@
 #include "scenelabel.h"
 #include "scenemarker.h"
 #include "scenemarkerselectdialog.h"
-#include "resultsview.h"
+#include "gui/resultsview.h"
 
 #include "solver/module.h"
 
