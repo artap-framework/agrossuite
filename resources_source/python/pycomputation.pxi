@@ -201,4 +201,4 @@ cdef class __Computation__:
         return self._computation.getCouplingType(source_field.encode(), target_field.encode()).decode()
 
 def computation(computation):
-    return __Computation__(computation)
+    return __Computation__(computation=computation)

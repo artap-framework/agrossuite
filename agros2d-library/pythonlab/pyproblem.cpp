@@ -251,7 +251,7 @@ double PyComputation::timeElapsed() const
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     double time = computation()->timeElapsed().hour()*3600 + computation()->timeElapsed().minute()*60 +
-                  computation()->timeElapsed().second() + computation()->timeElapsed().msec() * 1e-3;
+            computation()->timeElapsed().second() + computation()->timeElapsed().msec() * 1e-3;
     return time;
 }
 
@@ -356,7 +356,7 @@ void PySolution::localValues(double x, double y, int timeStep, int adaptivitySte
 {
     map<std::string, double> values;
 
-    if (m_computation->isSolved())
+    if (m_computation->isSolved() or m_computation->isSolving())
     {
         Point point(x, y);
 
@@ -396,7 +396,7 @@ void PySolution::surfaceIntegrals(const vector<int> &edges, int timeStep, int ad
 {
     map<std::string, double> values;
 
-    if (m_computation->isSolved())
+    if (m_computation->isSolved() or m_computation->isSolving())
     {
         m_computation->scene()->selectNone();
 
@@ -446,8 +446,7 @@ void PySolution::volumeIntegrals(const vector<int> &labels, int timeStep, int ad
                                  map<std::string, double> &results) const
 {
     map<std::string, double> values;
-
-    if (m_computation->isSolved())
+    if (m_computation->isSolved() or m_computation->isSolving())
     {
         m_computation->scene()->selectNone();
 
