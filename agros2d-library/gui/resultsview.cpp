@@ -42,7 +42,10 @@ ResultsView::ResultsView(QWidget *parent) : QWidget(parent)
 
     QSettings settings;
     trvWidget = new QTreeWidget(this);
-    trvWidget->setHeaderHidden(false);
+    trvWidget->setHeaderHidden(true);
+    // trvWidget->setHeaderHidden(false);
+    // trvWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Var.") << tr("Value"));
+    trvWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     trvWidget->setMouseTracking(true);
     trvWidget->setUniformRowHeights(true);
@@ -51,10 +54,6 @@ ResultsView::ResultsView(QWidget *parent) : QWidget(parent)
     trvWidget->setColumnWidth(1, settings.value("ResultsView/TreeColumnWidth1", 150).toInt());
     trvWidget->setColumnWidth(2, settings.value("ResultsView/TreeColumnWidth2", 70).toInt());
     trvWidget->setIndentation(trvWidget->indentation() - 2);
-
-    QStringList headers;
-    headers << tr("Name") << tr("Var.") << tr("Value");
-    trvWidget->setHeaderLabels(headers);
 
     connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
 
