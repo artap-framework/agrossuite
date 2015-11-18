@@ -4,7 +4,6 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         PyComputation(string computation) except +
 
         void clear() except +
-        void refresh()
         void mesh() except +
         void solve() except +
 
@@ -59,10 +58,6 @@ cdef class __Computation__:
     def clear(self):
         """Clear solution."""
         self._computation.clear()
-
-    def refresh(self):
-        """Refresh preprocessor and postprocessor."""
-        self._computation.refresh()
 
     def mesh(self):
         """Area discretization."""

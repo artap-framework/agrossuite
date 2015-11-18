@@ -134,8 +134,8 @@ SET(SOURCES
     pythonlab/pyproblem.cpp
     pythonlab/python_unittests.cpp
     pythonlab/pythonengine_agros.cpp
-    pythonlab/pyview.cpp
     pythonlab/remotecontrol.cpp    
+    resultsview.cpp
     scene.cpp
     scenebasic.cpp
     scenebasicselectdialog.cpp
@@ -238,7 +238,6 @@ SOURCE_GROUP(
   pythonlab/pyproblem.cpp
   pythonlab/python_unittests.cpp
   pythonlab/pythonengine_agros.cpp
-  pythonlab/pyview.cpp
   pythonlab/remotecontrol.cpp
 )
 
@@ -358,8 +357,8 @@ SET(HEADERS
   pythonlab/pyproblem.h
   pythonlab/python_unittests.h
   pythonlab/pythonengine_agros.h
-  pythonlab/pyview.h
-  pythonlab/remotecontrol.h  
+  pythonlab/remotecontrol.h
+  resultsview.h
   scene.h
   scenebasic.h
   scenebasicselectdialog.h
@@ -457,7 +456,6 @@ SOURCE_GROUP(
   pythonlab/pyproblem.h
   pythonlab/python_unittests.h
   pythonlab/pythonengine_agros.h
-  pythonlab/pyview.h
   pythonlab/remotecontrol.h
 )
 

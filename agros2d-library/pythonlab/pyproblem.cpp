@@ -19,16 +19,8 @@
 
 #include "pyproblem.h"
 #include "solver/problem_result.h"
-#include "pythonengine_agros.h"
-#include "sceneview_geometry.h"
-#include "sceneview_post2d.h"
 #include "solver/coupling.h"
 #include "solver/solutionstore.h"
-
-void PyProblemBase::refresh()
-{
-    m_problem->scene()->invalidate();
-}
 
 void PyProblemBase::getParameters(std::vector<std::string> &keys) const
 {
@@ -232,16 +224,11 @@ void PyComputation::clear()
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     computation()->clearSolution();
-    computation()->scene()->invalidate();
-
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actSceneModeProblem->trigger();
 }
 
 
 void PyComputation::mesh()
 {
-    computation()->scene()->invalidate();
     computation()->scene()->loopsInfo()->processPolygonTriangles(true);
     computation()->mesh(true);
 
@@ -251,7 +238,6 @@ void PyComputation::mesh()
 
 void PyComputation::solve()
 {
-    computation()->scene()->invalidate();
     computation()->scene()->loopsInfo()->processPolygonTriangles(true);
     computation()->solve();
 
@@ -429,9 +415,6 @@ void PySolution::surfaceIntegrals(const vector<int> &edges, int timeStep, int ad
                     return;
                 }
             }
-
-            // if (!silentMode() && !m_computation->isSolving())
-            //     currentPythonEngineAgros()->sceneViewPost2D()->updateGL();
         }
         else
         {
@@ -486,9 +469,6 @@ void PySolution::volumeIntegrals(const vector<int> &labels, int timeStep, int ad
                     return;
                 }
             }
-
-            // if (!silentMode() && !m_computation->isSolving())
-            //     currentPythonEngineAgros()->sceneViewPost2D()->updateGL();
         }
         else
         {

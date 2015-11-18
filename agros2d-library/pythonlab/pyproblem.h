@@ -31,8 +31,6 @@ public:
     PyProblemBase() {}
     ~PyProblemBase() {}
 
-    void refresh();
-
     // properties
     inline std::string getCoordinateType() const
     {

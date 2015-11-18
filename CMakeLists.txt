@@ -345,12 +345,13 @@ set(info #resources/modules/acoustic.xml
          resources/templates/panels/style_common.css
          resources/templates/panels/style_results.css
          resources_source/python/agros2d.pyx
-         resources_source/python/pyfield.pxi
          resources_source/python/pygeometry.pxi
-         resources_source/python/pyparticletracing.pxi
+         resources_source/python/pyfield.pxi
          resources_source/python/pyproblem.pxi
+         resources_source/python/pycomputation.pxi
+         resources_source/python/pysolution.pxi
+         resources_source/python/pyparticletracing.pxi
          resources_source/python/pythonlab.pyx
-         resources_source/python/pyview.pxi
 )
 add_info_files(${info})
 add_custom_target(other SOURCES ${info})

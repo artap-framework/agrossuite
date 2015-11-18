@@ -3,7 +3,6 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         PyProblem(bool clear)
 
         void clear()
-        void refresh()
 
         void getParameters(vector[string] &keys)
         double getParameter(string &key) except +
@@ -64,10 +63,6 @@ cdef class __Problem__:
         self._time_callback = None
         self._parameters.clear()
         self._fields.clear()
-
-    def refresh(self):
-        """Refresh preprocessor and postprocessor."""
-        self._problem.refresh()
 
     def field(self, field_id):
         """Add new field to problem and return Field() object.
