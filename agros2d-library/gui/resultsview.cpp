@@ -40,8 +40,6 @@ ResultsView::ResultsView(QWidget *parent) : QWidget(parent)
 {
     setObjectName("ResultsView");
 
-    createActions();
-
     QSettings settings;
     trvWidget = new QTreeWidget(this);
     trvWidget->setHeaderHidden(false);
@@ -51,12 +49,14 @@ ResultsView::ResultsView(QWidget *parent) : QWidget(parent)
     trvWidget->setColumnCount(3);
     trvWidget->setColumnWidth(0, settings.value("ResultsView/TreeColumnWidth0", 200).toInt());
     trvWidget->setColumnWidth(1, settings.value("ResultsView/TreeColumnWidth1", 150).toInt());
-    trvWidget->setColumnWidth(2, settings.value("ResultsView/TreeColumnWidth2", 200).toInt());
+    trvWidget->setColumnWidth(2, settings.value("ResultsView/TreeColumnWidth2", 70).toInt());
     trvWidget->setIndentation(trvWidget->indentation() - 2);
 
     QStringList headers;
     headers << tr("Name") << tr("Var.") << tr("Value");
     trvWidget->setHeaderLabels(headers);
+
+    connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
 
     // main widget
     QVBoxLayout *layout = new QVBoxLayout();
@@ -77,11 +77,28 @@ ResultsView::~ResultsView()
     settings.setValue("ResultsView/TreeColumnWidth2", trvWidget->columnWidth(2));
 }
 
-void ResultsView::createActions()
+void ResultsView::doContextMenu(const QPoint &pos)
 {
-    // QAction *copyAction = webView->pageAction(QWebPage::Copy);
-    // copyAction->setShortcut(QKeySequence::Copy);
-    // webView->addAction(copyAction);
+    QTreeWidgetItem *current = trvWidget->itemAt(pos);
+    if (current && !current->data(0, Qt::UserRole).isNull())
+    {
+
+        QAction *actCopy = new QAction(tr("Copy value"), this);
+        connect(actCopy, SIGNAL(triggered(bool)), this, SLOT(doCopy(bool)));
+
+        QMenu *mnuView = new QMenu(this);
+        mnuView->addAction(actCopy);
+
+        mnuView->exec(QCursor::pos());
+    }
+}
+
+void ResultsView::doCopy(bool state)
+{
+    if (trvWidget->currentItem() && !trvWidget->currentItem()->data(0, Qt::UserRole).isNull())
+    {
+        QApplication::clipboard()->setText(QString::number(trvWidget->currentItem()->data(0, Qt::UserRole).toDouble()));
+    }
 }
 
 void ResultsView::connectComputation(QSharedPointer<Computation> computation)
@@ -129,7 +146,6 @@ void ResultsView::showPoint()
 {
     if (!(m_computation->isSolved() && m_computation->postDeal()->isProcessed()))
         return;
-
 
     trvWidget->setUpdatesEnabled(false);
     trvWidget->clear();
@@ -180,6 +196,7 @@ void ResultsView::showPoint()
                     // scalar variable
                     QTreeWidgetItem *itemNode = new QTreeWidgetItem(fieldNode);
                     itemNode->setText(0, variable.name());
+                    itemNode->setData(0, Qt::UserRole, values[variable.id()].scalar);
                     trvWidget->setItemWidget(itemNode, 1, new QLabel(QString("%1 (%2)").arg(variable.shortnameHtml()).arg(variable.unitHtml())));
                     itemNode->setText(2, QString("%1").arg(values[variable.id()].scalar, 0, 'e', 3));
                 }
@@ -188,12 +205,14 @@ void ResultsView::showPoint()
                     // vector variable
                     QTreeWidgetItem *itemNode = new QTreeWidgetItem(fieldNode);
                     itemNode->setText(0, variable.name());
+                    itemNode->setData(0, Qt::UserRole, values[variable.id()].vector.magnitude());
                     trvWidget->setItemWidget(itemNode, 1, new QLabel(QString("%1 (%2)").arg(variable.shortnameHtml()).arg(variable.unitHtml())));
-                    itemNode->setText(2, QString("%1").arg(values[variable.id()].scalar, 0, 'e', 3));
+                    itemNode->setText(2, QString("%1").arg(values[variable.id()].vector.magnitude(), 0, 'e', 3));
                     itemNode->setExpanded(true);
 
                     QTreeWidgetItem *itemNodeX = new QTreeWidgetItem(itemNode);
                     itemNodeX->setText(0, "");
+                    itemNodeX->setData(0, Qt::UserRole, values[variable.id()].vector.x);
                     trvWidget->setItemWidget(itemNodeX, 1, new QLabel(QString("%1<sub><i>%2</i></sub> (%3)").
                                                                       arg(variable.shortnameHtml()).
                                                                       arg(m_computation->config()->labelX().toLower()).
@@ -202,6 +221,7 @@ void ResultsView::showPoint()
 
                     QTreeWidgetItem *itemNodeY = new QTreeWidgetItem(fieldNode);
                     itemNodeY->setText(0, "");
+                    itemNodeY->setData(0, Qt::UserRole, values[variable.id()].vector.y);
                     trvWidget->setItemWidget(itemNodeY, 1, new QLabel(QString("%1<sub><i>%2</i></sub> (%3)").
                                                                       arg(variable.shortnameHtml()).
                                                                       arg(m_computation->config()->labelY().toLower()).
@@ -247,6 +267,7 @@ void ResultsView::showVolumeIntegral()
                 // integral
                 QTreeWidgetItem *itemNode = new QTreeWidgetItem(fieldNode);
                 itemNode->setText(0, integral.name());
+                itemNode->setData(0, Qt::UserRole, values[integral.id()]);
                 trvWidget->setItemWidget(itemNode, 1, new QLabel(QString("%1 (%2)").arg(integral.shortnameHtml()).arg(integral.unitHtml())));
                 itemNode->setText(2, QString("%1").arg(values[integral.id()], 0, 'e', 3));
             }
@@ -289,6 +310,7 @@ void ResultsView::showSurfaceIntegral()
                 // integral
                 QTreeWidgetItem *itemNode = new QTreeWidgetItem(fieldNode);
                 itemNode->setText(0, integral.name());
+                itemNode->setData(0, Qt::UserRole, values[integral.id()]);
                 trvWidget->setItemWidget(itemNode, 1, new QLabel(QString("%1 (%2)").arg(integral.shortnameHtml()).arg(integral.unitHtml())));
                 itemNode->setText(2, QString("%1").arg(values[integral.id()], 0, 'e', 3));
             }

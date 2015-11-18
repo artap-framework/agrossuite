@@ -63,10 +63,10 @@ private:
 
     QSharedPointer<Computation> m_computation;
 
-    void createActions();
-
 private slots:
     void connectComputation(QSharedPointer<Computation> computation);
+    void doContextMenu(const QPoint &pos);
+    void doCopy(bool state);
 };
 
 class LocalPointValueDialog : public QDialog
