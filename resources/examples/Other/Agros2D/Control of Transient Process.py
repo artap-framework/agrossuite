@@ -9,11 +9,11 @@ k = 0.65
 S = 1.943e-03
 IMAX = 3.0
 
-def time_callback(time_step):
-    heat = a2d.field("heat")    
-    volume = heat.volume_integrals([2])
-    
-    time = problem.time_steps_total()[time_step]
+def time_callback(computation, time_step):
+    solution = computation.solution("heat")
+    volume = solution.volume_integrals([2])
+
+    time = computation.time_steps_total()[time_step]
     avg = volume["Td"] / volume["V"]
     print('timestep = {0}, time = {1} s, average coil temperature = {2} deg.'.format(time_step, time, avg))
 
@@ -22,12 +22,12 @@ def time_callback(time_step):
         I = 0.0
     else:
         I = IMAX
-    
+
     # current density
     J = N*I/(S*k)
     # Joule losses
     pj = (J**2)/SIGMA
-            
+
     # set source
     heat.modify_material("Copper", { "heat_volume_heat" : pj })
 
@@ -107,8 +107,7 @@ geometry.add_label(0.0163723, 0.144289, materials = {"heat" : "Copper"})
 geometry.add_label(0.00380689, 0.151055, materials = {"heat" : "Air"})
 geometry.add_label(0.0112064, 0.0336487, materials = {"heat" : "Brass"})
 
-computation = problem.computation()
-computation.solve()    
+problem.computation().solve()
 
 # current
 pl.figure(figsize=[8,3])
