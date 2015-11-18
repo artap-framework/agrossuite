@@ -71,8 +71,8 @@ def model_harmonic_magnetic():
     magnetic = problem.field("magnetic")
     magnetic.analysis_type = "harmonic"
     magnetic.matrix_solver = "umfpack"
-    magnetic.number_of_refinements = 2
-    magnetic.polynomial_order = 3
+    magnetic.number_of_refinements = 1
+    magnetic.polynomial_order = 2
     magnetic.adaptivity_type = "disabled"
     magnetic.solver = "linear"
     
@@ -107,7 +107,6 @@ def model_harmonic_magnetic():
     
     return solution.filename_matrix(), solution.filename_rhs()
 
-
 def analyse_matrix_and_rhs(filename_matrix, filename_rhs):  
     # read matrix and rhs from file
     mat_object = sio.loadmat(filename_matrix)
@@ -139,7 +138,7 @@ a2d.options.dump_format = "matlab_mat"
 # solve model
 filename_matrix, filename_rhs = model_electrostatic()
 analyse_matrix_and_rhs(filename_matrix, filename_rhs)
-filename_matrix, filename_rhs = model_harmonic_magnetic()
+filename_matrix, filename_rhs =  model_harmonic_magnetic()
 analyse_matrix_and_rhs(filename_matrix, filename_rhs)
 
 # restore state

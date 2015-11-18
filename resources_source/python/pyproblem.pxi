@@ -162,7 +162,7 @@ cdef class __Problem__:
             self._problem.setTimeTotal(time_total)
 
     # time steps
-    time_steps = property(_get_time_steps, _get_time_steps)
+    time_steps = property(_get_time_steps, _set_time_steps)
     def _get_time_steps(self):
         return self._problem.getNumConstantTimeSteps()
     def _set_time_steps(self, time_steps):
