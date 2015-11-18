@@ -2,22 +2,25 @@ import agros2d
 import pythonlab
 from math import pi
 
-agros2d.open_file(pythonlab.datadir('resources/examples/Examples/Magnetic Field/Magnetostatics/Switched Reluctance Machine.a2d'))
+agros2d.open_file(pythonlab.datadir('resources/examples/Examples/Magnetic Field/Magnetostatics/Switched Reluctance Machine.ags'))
 
 def get_energy(dphi, Jext):
     problem = agros2d.problem()
-    magnetic = agros2d.field("magnetic")
+    magnetic = problem.field("magnetic")
 
     for coil in Jext:
         magnetic.modify_material("Copper {0}+".format(coil), {"magnetic_current_density_external_real" : +Jext[coil]})
         magnetic.modify_material("Copper {0}-".format(coil), {"magnetic_current_density_external_real" : -Jext[coil]})
 
-    geometry = agros2d.geometry
+    geometry = problem.geometry()
     geometry.select_edges(range(64, 80))
     geometry.rotate_selection(0, 0, dphi)
 
-    problem.solve()
-    return magnetic.volume_integrals()['Wm']
+    computation = problem.computation()
+    computation.solve()
+    solution = computation.solution("magnetic")
+
+    return solution.volume_integrals()['Wm']
 
 def get_density(phi):
     Jext = {'A' : 0.0, 'B' : 0.0, 'C' : 0.0}

@@ -29,15 +29,15 @@ U = 10
 dr = 0.003
 
 # boundaries
-electrostatic.add_boundary("Source", "electrostatic_potential", {"electrostatic_potential" : 10})
+electrostatic.add_boundary("Source", "electrostatic_potential", {"electrostatic_potential" : U})
 electrostatic.add_boundary("Ground", "electrostatic_potential", {"electrostatic_potential" : 0})
 electrostatic.add_boundary("Neumann BC", "electrostatic_surface_charge_density", {"electrostatic_surface_charge_density" : 0})
 
 
 # materials
 electrostatic.add_material("Air", {"electrostatic_permittivity" : 1, "electrostatic_charge_density" : 0})
-electrostatic.add_material("Dielectric n.1", {"electrostatic_permittivity" : 10, "electrostatic_charge_density" : 0})
-electrostatic.add_material("Dielectric n.2", {"electrostatic_permittivity" : 3, "electrostatic_charge_density" : 0})
+electrostatic.add_material("Dielectric n.1", {"electrostatic_permittivity" : eps1, "electrostatic_charge_density" : 0})
+electrostatic.add_material("Dielectric n.2", {"electrostatic_permittivity" : eps2, "electrostatic_charge_density" : 0})
 
 # geometry
 geometry = problem.geometry()
