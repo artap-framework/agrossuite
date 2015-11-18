@@ -28,6 +28,25 @@ class QCustomPlot;
 class QCPGraph;
 class FieldInfo;
 class SolverAgros;
+class LogWidget;
+
+class LogConfigWidget : public QWidget
+{
+    Q_OBJECT
+
+public:
+    LogConfigWidget(LogWidget *logWidget);
+
+public slots:
+
+private slots:
+    void refreshMemory(int usage);
+
+private:
+    LogWidget *m_logWidget;
+
+    QLabel *m_memoryLabel;
+};
 
 class AGROS_LIBRARY_API Log: public QObject
 {
@@ -45,6 +64,8 @@ public:
     inline void updateAdaptivityChartInfo(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep) { emit updateAdaptivityChart(fieldInfo, timeStep, adaptivityStep); }
     inline void updateTransientChartInfo(double actualTime) { emit updateTransientChart(actualTime); }
 
+    inline void appendImage(const QString &fileName) { emit appendImg(fileName); }
+
     inline void addIcon(const QIcon &icn, const QString &label) { emit addIconImg(icn, label); }
 
 signals:
@@ -58,6 +79,8 @@ signals:
     void updateAdaptivityChart(const FieldInfo *fieldInfo, int timeStep, int adaptivityStep);
     void updateTransientChart(double actualTime);
 
+    void appendImg(const QString &fileName);
+
     void addIconImg(const QIcon &icn, const QString &label);
 };
 
@@ -70,9 +93,6 @@ public:
 
     void welcomeMessage();
 
-    bool isMemoryLabelVisible() const;
-    void setMemoryLabelVisible(bool visible = true);
-
 public slots:
     void clear();
 
@@ -80,17 +100,17 @@ protected:
     void print(const QString &module, const QString &message,
                const QString &color = "");
 
+    void ensureCursorVisible();
+
 private:
     QMenu *mnuInfo;
 
-    QPlainTextEdit *plainLog;
-    QString m_cascadeStyleSheet;
+    QTextEdit *plainLog;
 
     QAction *actShowTimestamp;
     QAction *actShowDebug;
     QAction *actClear;
 
-    QLabel *memoryLabel;
     int m_printCounter;
 
     void createActions();
@@ -104,10 +124,10 @@ private slots:
     void printDebug(const QString &module, const QString &message);
     void printHeading(const QString &message);
 
-    void showTimestamp();
-    void showDebug();
+    void appendImage(const QString &fileName);
 
-    void refreshMemory(int usage);
+    void showTimestamp();
+    void showDebug();   
 };
 
 class AGROS_LIBRARY_API LogView : public QWidget
@@ -116,8 +136,13 @@ class AGROS_LIBRARY_API LogView : public QWidget
 public:
     LogView(QWidget *parent = 0);
 
+    QAction *actLog;
+
+    inline LogConfigWidget *logConfigWidget() { return m_logConfigWidget; }
+
 private:
-    LogWidget *logWidget;
+    LogWidget *m_logWidget;
+    LogConfigWidget *m_logConfigWidget;
 };
 
 class AGROS_LIBRARY_API LogDialog : public QDialog

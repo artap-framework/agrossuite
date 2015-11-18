@@ -35,7 +35,6 @@
 #include "sceneview_post2d.h"
 #include "sceneview_post3d.h"
 #include "sceneview_particle.h"
-// #include "sceneview_vtk2d.h"
 #include "logview.h"
 #include "gui/infowidget.h"
 #include "preprocessorview.h"
@@ -159,7 +158,6 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     restoreState(settings.value("MainWindow/State", saveState()).toByteArray());
     splitterMain->restoreState(settings.value("MainWindow/SplitterMainState").toByteArray());
     splitterView->restoreState(settings.value("MainWindow/SplitterViewState").toByteArray());
-    splitterConsoleAndLog->restoreState(settings.value("MainWindow/SplitterConsoleAndLog").toByteArray());
 
     // show/hide control and view panel
     actHideControlPanel->setChecked(settings.value("MainWindow/ControlPanel", true).toBool());
@@ -175,7 +173,6 @@ MainWindow::~MainWindow()
     settings.setValue("MainWindow/State", saveState());
     settings.setValue("MainWindow/SplitterMainState", splitterMain->saveState());
     settings.setValue("MainWindow/SplitterViewState", splitterView->saveState());
-    settings.setValue("MainWindow/splitterConsoleAndLog", splitterConsoleAndLog->saveState());
     settings.setValue("MainWindow/ControlPanel", actHideControlPanel->isChecked());
 
     // remove temp and cache plugins
@@ -316,6 +313,7 @@ void MainWindow::createActions()
     actSceneModeGroup->addAction(resultsWidget->actSceneModeResults);
     actSceneModeGroup->addAction(scriptEditor->actSceneModePythonEditor);
     actSceneModeGroup->addAction(optiLab->actSceneModeOptiLab);
+    actSceneModeGroup->addAction(logView->actLog);
 
     actHideControlPanel = new QAction(icon("showhide"), tr("Show/hide control panel"), this);
     actHideControlPanel->setShortcut(tr("Alt+0"));
@@ -476,6 +474,7 @@ void MainWindow::createMain()
     sceneViewChartWidget = new SceneViewWidget(resultsWidget->sceneViewChart(), this);
     sceneViewPythonEditorWidget = new SceneViewWidget(scriptEditor, this);
     sceneViewOptilabWidget = new SceneViewWidget(optiLab, this);
+    sceneViewLogWidget = new SceneViewWidget(logView, this);
 
     tabViewLayout = new QStackedLayout();
     tabViewLayout->setContentsMargins(0, 0, 0, 0);
@@ -488,6 +487,7 @@ void MainWindow::createMain()
     tabViewLayout->addWidget(sceneViewChartWidget);
     tabViewLayout->addWidget(sceneViewPythonEditorWidget);
     tabViewLayout->addWidget(sceneViewOptilabWidget);
+    tabViewLayout->addWidget(sceneViewLogWidget);
 
     QWidget *viewWidget = new QWidget();
     viewWidget->setLayout(tabViewLayout);
@@ -499,17 +499,10 @@ void MainWindow::createMain()
     tabControlsLayout->addWidget(resultsWidget);
     tabControlsLayout->addWidget(optiLab->optiLabWidget());
     tabControlsLayout->addWidget(scriptEditor->pythonEditorWidget());
+    tabControlsLayout->addWidget(logView->logConfigWidget());
 
     viewControls = new QWidget();
     viewControls->setLayout(tabControlsLayout);
-
-    splitterConsoleAndLog = new QSplitter(Qt::Horizontal, this);
-    splitterConsoleAndLog->addWidget(consoleView);
-    splitterConsoleAndLog->addWidget(logView);
-    splitterConsoleAndLog->setCollapsible(0, true);
-    splitterConsoleAndLog->setCollapsible(1, true);
-    splitterConsoleAndLog->setStretchFactor(0, 2);
-    splitterConsoleAndLog->setStretchFactor(1, 1);
 
     // spacing
     QLabel *spacing = new QLabel;
@@ -543,6 +536,8 @@ void MainWindow::createMain()
     tlbLeftBar->addSeparator();
     tlbLeftBar->addAction(optiLab->actSceneModeOptiLab);
     tlbLeftBar->addAction(scriptEditor->actSceneModePythonEditor);
+    tlbLeftBar->addSeparator();
+    tlbLeftBar->addAction(logView->actLog);
     tlbLeftBar->addWidget(spacing);
     tlbLeftBar->addAction(actMesh);
     tlbLeftBar->addAction(actSolve);
@@ -550,7 +545,7 @@ void MainWindow::createMain()
 
     splitterView = new QSplitter(Qt::Vertical, this);
     splitterView->addWidget(viewWidget);
-    splitterView->addWidget(splitterConsoleAndLog);
+    splitterView->addWidget(consoleView);
     splitterView->setCollapsible(0, false);
     splitterView->setCollapsible(1, false);
 
@@ -1152,7 +1147,7 @@ void MainWindow::setControls()
         tabViewLayout->setCurrentWidget(sceneViewInfoWidget);
         tabControlsLayout->setCurrentWidget(exampleWidget);
 
-        splitterConsoleAndLog->setVisible(Agros2D::configComputer()->value(Config::ShowConsoleAndLog_Welcome).toBool());
+        consoleView->setVisible(false);
     }
     else if (sceneViewProblem->actSceneModeProblem->isChecked())
     {
@@ -1166,7 +1161,7 @@ void MainWindow::setControls()
         connect(actSceneZoomBestFit, SIGNAL(triggered()), sceneViewProblem, SLOT(doZoomBestFit()));
         sceneViewProblem->actSceneZoomRegion = actSceneZoomRegion;
 
-        splitterConsoleAndLog->setVisible(Agros2D::configComputer()->value(Config::ShowConsoleAndLog_Problem).toBool());
+        consoleView->setVisible(false);
     }
     else if (resultsWidget->actSceneModeResults->isChecked())
     {
@@ -1220,21 +1215,28 @@ void MainWindow::setControls()
         }
         tabControlsLayout->setCurrentWidget(resultsWidget);
 
-        splitterConsoleAndLog->setVisible(Agros2D::configComputer()->value(Config::ShowConsoleAndLog_Results).toBool());
+        consoleView->setVisible(false);
     }
     else if (optiLab->actSceneModeOptiLab->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewOptilabWidget);
         tabControlsLayout->setCurrentWidget(optiLab->optiLabWidget());
 
-        splitterConsoleAndLog->setVisible(Agros2D::configComputer()->value(Config::ShowConsoleAndLog_OptiLab).toBool());
+        consoleView->setVisible(true);
     }
     else if (scriptEditor->actSceneModePythonEditor->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewPythonEditorWidget);
         tabControlsLayout->setCurrentWidget(scriptEditor->pythonEditorWidget());
 
-        splitterConsoleAndLog->setVisible(Agros2D::configComputer()->value(Config::ShowConsoleAndLog_PythonLab).toBool());
+        consoleView->setVisible(true);
+    }
+    else if (logView->actLog->isChecked())
+    {
+        tabViewLayout->setCurrentWidget(sceneViewLogWidget);
+        tabControlsLayout->setCurrentWidget(logView->logConfigWidget());
+
+        consoleView->setVisible(false);
     }
 
     // menu bar

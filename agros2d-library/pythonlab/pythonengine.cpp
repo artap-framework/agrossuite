@@ -35,6 +35,7 @@ tbb::mutex codeHelpMutex;
 tbb::mutex runDeleteUserModulesMutex;
 tbb::mutex runExpressionMutex;
 tbb::mutex runScriptMutex;
+tbb::mutex temporaryDictMutex;
 
 #ifdef Q_WS_X11
 #include <csignal>
@@ -313,18 +314,22 @@ void PythonEngine::init(int argc, char *argv[])
 }
 
 void PythonEngine::useTemporaryDict()
-{
+{       
+    {
+        tbb::mutex::scoped_lock lock(temporaryDictMutex);
+
+        if (m_dictTemporary)
+            Py_XDECREF(m_dictTemporary);
+
+        m_dictTemporary = PyDict_New();
+        PyDict_SetItemString(m_dictTemporary, "__builtins__", PyEval_GetBuiltins());
+        Py_INCREF(m_dictTemporary);
+
+        PyObject *importMath = PyRun_String("from math import *", Py_file_input, m_dictTemporary, m_dictTemporary);
+        Py_XDECREF(importMath);
+    }
+
     m_useGlobalDict = false;
-
-    if (m_dictTemporary)
-        Py_XDECREF(m_dictTemporary);
-
-    m_dictTemporary = PyDict_New();
-    PyDict_SetItemString(m_dictTemporary, "__builtins__", PyEval_GetBuiltins());
-    Py_INCREF(m_dictTemporary);
-
-    PyObject *importMath = PyRun_String("from math import *", Py_file_input, m_dictTemporary, m_dictTemporary);
-    Py_XDECREF(importMath);
 }
 
 void PythonEngine::useGlobalDict()
