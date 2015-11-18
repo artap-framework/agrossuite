@@ -62,7 +62,7 @@ geometry.add_label(0.0379, 0.051, materials = {"electrostatic" : "Dielectric n.2
 geometry.add_label(0.0284191, 0.123601, materials = {"electrostatic" : "Air"})
 
 # calculation of capacity
-computation = problem.computation()
+#computation = problem.computation()
 
 r = []
 C = []
@@ -71,7 +71,8 @@ for i in range(15):
     if i > 0:
         geometry.select_edges([6, 7, 8])
         geometry.move_selection(dr, 0, False)
-
+        
+    computation = problem.computation()
     computation.solve()
     solution = computation.solution("electrostatic")
     result = solution.volume_integrals([0, 1, 2])
