@@ -8,14 +8,10 @@ class TestParticleTracingPlanar(Agros2DTestCase):
         problem = agros2d.problem(clear = True)
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
-                
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
         
         # fields
         # electrostatic
-        electrostatic = agros2d.field("electrostatic")
+        electrostatic = problem.field("electrostatic")
         electrostatic.analysis_type = "steadystate"
         electrostatic.number_of_refinements = 1
         electrostatic.polynomial_order = 2
@@ -32,7 +28,7 @@ class TestParticleTracingPlanar(Agros2DTestCase):
         electrostatic.add_material("Screen", {"electrostatic_permittivity" : 2, "electrostatic_charge_density" : 0})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0.075, -0.022, 0.075, 0.022, angle = 90)
         geometry.add_edge(0.075, -0.022, 0.079, -0.026)
         geometry.add_edge(0.079, -0.026, 0.079, 0.026, angle = 90)
@@ -54,12 +50,12 @@ class TestParticleTracingPlanar(Agros2DTestCase):
         geometry.add_label(0.0504445, 0.0129438, materials = {"electrostatic" : "none"})
         geometry.add_label(0.0452163, -0.0148758, materials = {"electrostatic" : "none"})
         geometry.add_label(0.109507, 0.050865, materials = {"electrostatic" : "Air"})
-        agros2d.view.zoom_best_fit()
         
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
-    def test_values(self):        
-        tracing = agros2d.particle_tracing
+    def test_values(self):
+        tracing = self.computation.particle_tracing()
         tracing.drag_force_density = 1.2041
         tracing.drag_force_coefficient = 0
         tracing.drag_force_reference_area = 1e-06
@@ -88,14 +84,10 @@ class TestParticleTracingAxisymmetric(Agros2DTestCase):
         problem = agros2d.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
-        
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-        
+
         # fields
         # electrostatic
-        electrostatic = agros2d.field("electrostatic")
+        electrostatic = problem.field("electrostatic")
         electrostatic.analysis_type = "steadystate"
         electrostatic.number_of_refinements = 1
         electrostatic.polynomial_order = 2
@@ -111,7 +103,7 @@ class TestParticleTracingAxisymmetric(Agros2DTestCase):
         electrostatic.add_material("air", {"electrostatic_permittivity" : 1, "electrostatic_charge_density" : 0})
         
         # magnetic
-        magnetic = agros2d.field("magnetic")
+        magnetic = problem.field("magnetic")
         magnetic.analysis_type = "steadystate"
         magnetic.number_of_refinements = 2
         magnetic.polynomial_order = 2
@@ -127,7 +119,7 @@ class TestParticleTracingAxisymmetric(Agros2DTestCase):
         magnetic.add_material("Coil 2", {"magnetic_permeability" : 1, "magnetic_conductivity" : 0, "magnetic_remanence" : 0, "magnetic_remanence_angle" : 0, "magnetic_velocity_x" : 0, "magnetic_velocity_y" : 0, "magnetic_velocity_angular" : 0, "magnetic_current_density_external_real" : { "expression" : "1e7" }})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0, 0.04, 0.05, 0.04, boundaries = {"electrostatic" : "0 V", "magnetic" : "A = 0"})
         geometry.add_edge(0.05, 0.04, 0.05, -0.08, boundaries = {"electrostatic" : "neumann", "magnetic" : "A = 0"})
         geometry.add_edge(0.05, -0.08, 0, -0.08, boundaries = {"electrostatic" : "potential", "magnetic" : "A = 0"})
@@ -149,12 +141,12 @@ class TestParticleTracingAxisymmetric(Agros2DTestCase):
         geometry.add_label(0.027331, 0.0261643, materials = {"electrostatic" : "air", "magnetic" : "Air"})
         geometry.add_label(0.00883433, 0.00543334, materials = {"electrostatic" : "air", "magnetic" : "Coil 1"})
         geometry.add_label(0.00902444, -0.0168831, materials = {"electrostatic" : "air", "magnetic" : "Coil 2"})
-        agros2d.view.zoom_best_fit()
         
-        problem.solve()
+        self.computation = problem.computation()
+        self.computation.solve()
         
     def test_values(self):               
-        tracing = agros2d.particle_tracing
+        tracing = self.computation.particle_tracing()
         tracing.drag_force_density = 1.2041
         tracing.drag_force_coefficient = 0
         tracing.drag_force_reference_area = 1e-06
@@ -182,5 +174,5 @@ if __name__ == '__main__':
     suite = ut.TestSuite()
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestParticleTracingPlanar))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestParticleTracingAxisymmetric))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestParticleTracingAxisymmetric))
     suite.run(result)            

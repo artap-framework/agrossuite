@@ -21,20 +21,25 @@
 #include "pythonengine_agros.h"
 #include "particle/particle_tracing.h"
 
+void PyParticleTracing::setComputation(PyComputation *computation)
+{
+    m_computation = computation->computation();
+}
+
 void PyParticleTracing::solve(const vector<vector<double> > &initialPositionsVector, const vector<vector<double> > &initialVelocitiesVector,
                               const vector<double> &particleChargesVector, const vector<double> &particleMassesVector)
 {
-    if (!Agros2D::computation()->isSolved())
+    if (!m_computation->isSolved())
         throw invalid_argument(QObject::tr("Problem is not solved.").toStdString());
 
-    int numberOfParticles = Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt();
+    int numberOfParticles = m_computation->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt();
 
     // initial position
     QList<Point3> initialPositions;
     if (initialPositions.empty())
     {
-        Point3 initialPosition(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartX).toDouble(),
-                               Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartY).toDouble(), 0.0);
+        Point3 initialPosition(m_computation->setting()->value(ProblemSetting::View_ParticleStartX).toDouble(),
+                               m_computation->setting()->value(ProblemSetting::View_ParticleStartY).toDouble(), 0.0);
 
         for (int i = 0; i < numberOfParticles; i++)
             initialPositions.append(initialPosition);
@@ -52,8 +57,8 @@ void PyParticleTracing::solve(const vector<vector<double> > &initialPositionsVec
     QList<Point3> initialVelocities;
     if (initialVelocities.empty())
     {
-        Point3 initialVelocity(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartVelocityX).toDouble(),
-                               Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartVelocityY).toDouble(), 0.0);
+        Point3 initialVelocity(m_computation->setting()->value(ProblemSetting::View_ParticleStartVelocityX).toDouble(),
+                               m_computation->setting()->value(ProblemSetting::View_ParticleStartVelocityY).toDouble(), 0.0);
 
         for (int i = 0; i < numberOfParticles; i++)
             initialVelocities.append(initialVelocity);
@@ -72,7 +77,7 @@ void PyParticleTracing::solve(const vector<vector<double> > &initialPositionsVec
     if (particleCharges.empty())
     {
         for (int i = 0; i < numberOfParticles; i++)
-            particleCharges.append(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleConstant).toDouble());
+            particleCharges.append(m_computation->setting()->value(ProblemSetting::View_ParticleConstant).toDouble());
     }
     else
     {
@@ -87,7 +92,7 @@ void PyParticleTracing::solve(const vector<vector<double> > &initialPositionsVec
     if (particleMasses.empty())
     {
         for (int i = 0; i < numberOfParticles; i++)
-            particleMasses.append(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleMass).toDouble());
+            particleMasses.append(m_computation->setting()->value(ProblemSetting::View_ParticleMass).toDouble());
     }
     else
     {
@@ -97,7 +102,7 @@ void PyParticleTracing::solve(const vector<vector<double> > &initialPositionsVec
         particleMasses = QList<double>::fromVector(QVector<double>::fromStdVector(particleMassesVector));
     }
 
-    ParticleTracing particleTracing(Agros2D::computation().data(), particleMasses);
+    ParticleTracing particleTracing(m_computation.data(), particleMasses);
     ParticleTracingForceCustom forceCustom(&particleTracing);
     ParticleTracingForceDrag forceDrag(&particleTracing);
     ParticleTracingForceField forceField(&particleTracing, particleCharges);
@@ -161,13 +166,13 @@ void PyParticleTracing::times(vector<vector<double> > &t) const
 
 void PyParticleTracing::getInitialPosition(vector<double> &position) const
 {
-    position.push_back(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartX).toDouble());
-    position.push_back(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartY).toDouble());
+    position.push_back(m_computation->setting()->value(ProblemSetting::View_ParticleStartX).toDouble());
+    position.push_back(m_computation->setting()->value(ProblemSetting::View_ParticleStartY).toDouble());
 }
 
 void PyParticleTracing::setInitialPosition(const vector<double> &position)
 {
-    RectPoint rect = Agros2D::computation()->scene()->boundingBox();
+    RectPoint rect = m_computation->scene()->boundingBox();
 
     double x = position[0];
     double y = position[1];
@@ -177,20 +182,20 @@ void PyParticleTracing::setInitialPosition(const vector<double> &position)
     if (y < rect.start.y || y > rect.end.y)
         throw out_of_range(QObject::tr("The y coordinate is out of range.").toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleStartX, x);
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleStartY, y);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleStartX, x);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleStartY, y);
 }
 
 void PyParticleTracing::getInitialVelocity(vector<double> &velocity) const
 {
-    velocity.push_back(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartVelocityX).toDouble());
-    velocity.push_back(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleStartVelocityY).toDouble());
+    velocity.push_back(m_computation->setting()->value(ProblemSetting::View_ParticleStartVelocityX).toDouble());
+    velocity.push_back(m_computation->setting()->value(ProblemSetting::View_ParticleStartVelocityY).toDouble());
 }
 
 void PyParticleTracing::setInitialVelocity(const vector<double> &velocity)
 {
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleStartVelocityX, velocity[0]);
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleStartVelocityY, velocity[1]);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleStartVelocityX, velocity[0]);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleStartVelocityY, velocity[1]);
 }
 
 void PyParticleTracing::setNumberOfParticles(int particles)
@@ -198,7 +203,7 @@ void PyParticleTracing::setNumberOfParticles(int particles)
     if (particles < 1 || particles > 200)
         throw out_of_range(QObject::tr("Number of particles is out of range (1 - 200).").toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleNumberOfParticles, particles);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleNumberOfParticles, particles);
 }
 
 void PyParticleTracing::setStartingRadius(double radius)
@@ -206,7 +211,7 @@ void PyParticleTracing::setStartingRadius(double radius)
     if (radius < 0.0)
         throw out_of_range(QObject::tr("Particles dispersion cannot be negative.").toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleStartingRadius, radius);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleStartingRadius, radius);
 }
 
 void PyParticleTracing::setParticleMass(double mass)
@@ -214,12 +219,12 @@ void PyParticleTracing::setParticleMass(double mass)
     if (mass < 0.0)
         throw out_of_range(QObject::tr("Particle mass cannot be negative.").toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleMass, mass);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleMass, mass);
 }
 
 void PyParticleTracing::setParticleCharge(double charge)
 {
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleConstant, charge);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleConstant, charge);
 }
 
 void PyParticleTracing::setDragForceDensity(double density)
@@ -227,7 +232,7 @@ void PyParticleTracing::setDragForceDensity(double density)
     if (density < 0.0)
         throw out_of_range(QObject::tr("Drag force density cannot be negative.").toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleDragDensity, density);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleDragDensity, density);
 }
 
 void PyParticleTracing::setDragForceReferenceArea(double area)
@@ -235,7 +240,7 @@ void PyParticleTracing::setDragForceReferenceArea(double area)
     if (area < 0.0)
         throw out_of_range(QObject::tr("Drag force area cannot be negative.").toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleDragReferenceArea, area);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleDragReferenceArea, area);
 }
 
 void PyParticleTracing::setDragForceCoefficient(double coeff)
@@ -243,7 +248,7 @@ void PyParticleTracing::setDragForceCoefficient(double coeff)
     if (coeff < 0.0)
         throw out_of_range(QObject::tr("Drag force coefficient cannot be negative.").toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleDragCoefficient, coeff);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleDragCoefficient, coeff);
 }
 
 void PyParticleTracing::setCustomForce(const vector<double> &force)
@@ -251,16 +256,16 @@ void PyParticleTracing::setCustomForce(const vector<double> &force)
     if (force.empty())
         throw invalid_argument(QObject::tr("Value of force is not defined.").toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleCustomForceX, force[0]);
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleCustomForceY, force[1]);
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleCustomForceZ, force[2]);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleCustomForceX, force[0]);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleCustomForceY, force[1]);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleCustomForceZ, force[2]);
 }
 
 void PyParticleTracing::getCustomForce(vector<double> &force) const
 {
-    force.push_back(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCustomForceX).toDouble());
-    force.push_back(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCustomForceY).toDouble());
-    force.push_back(Agros2D::computation()->setting()->value(ProblemSetting::View_ParticleCustomForceZ).toDouble());
+    force.push_back(m_computation->setting()->value(ProblemSetting::View_ParticleCustomForceX).toDouble());
+    force.push_back(m_computation->setting()->value(ProblemSetting::View_ParticleCustomForceY).toDouble());
+    force.push_back(m_computation->setting()->value(ProblemSetting::View_ParticleCustomForceZ).toDouble());
 }
 
 void PyParticleTracing::setButcherTableType(const std::string &tableType)
@@ -268,7 +273,7 @@ void PyParticleTracing::setButcherTableType(const std::string &tableType)
     if (!butcherTableTypeStringKeys().contains(QString::fromStdString(tableType)))
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(butcherTableTypeStringKeys())).toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleButcherTableType, butcherTableTypeFromStringKey(QString::fromStdString(tableType)));
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleButcherTableType, butcherTableTypeFromStringKey(QString::fromStdString(tableType)));
 }
 
 void PyParticleTracing::setMaximumRelativeError(double error)
@@ -276,7 +281,7 @@ void PyParticleTracing::setMaximumRelativeError(double error)
     if (error < 0.0)
         throw out_of_range(QObject::tr("Maximum relative error cannot be negative.").toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleMaximumRelativeError, error);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleMaximumRelativeError, error);
 }
 
 void PyParticleTracing::setMaximumNumberOfSteps(int steps)
@@ -284,7 +289,7 @@ void PyParticleTracing::setMaximumNumberOfSteps(int steps)
     if (steps < 10 || steps > 1e5)
         throw out_of_range(QObject::tr("Maximum number of steps is out of range (10 - 1e5).").toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleMaximumNumberOfSteps, steps);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleMaximumNumberOfSteps, steps);
 }
 
 void PyParticleTracing::setMaximumStep(int step)
@@ -292,7 +297,7 @@ void PyParticleTracing::setMaximumStep(int step)
     if (step < 0.0)
         throw out_of_range(QObject::tr("Maximum step cannot be negative.").toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleMaximumStep, step);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleMaximumStep, step);
 }
 
 void PyParticleTracing::setCoefficientOfRestitution(double coeff)
@@ -300,7 +305,7 @@ void PyParticleTracing::setCoefficientOfRestitution(double coeff)
     if (coeff < 0.0 || coeff > 1.0)
         throw out_of_range(QObject::tr("Coefficient of restitution must be between 0 (collide inelastically) and 1 (collide elastically).").toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleCoefficientOfRestitution, coeff);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleCoefficientOfRestitution, coeff);
 }
 
 void PyParticleTracing::setNumShowParticlesAxi(int particles)
@@ -308,5 +313,5 @@ void PyParticleTracing::setNumShowParticlesAxi(int particles)
     if (particles < 1 || particles > 500)
         throw out_of_range(QObject::tr("Number of multiple show particles is out of range (1 - 500).").toStdString());
 
-    Agros2D::computation()->setting()->setValue(ProblemSetting::View_ParticleNumShowParticlesAxi, particles);
+    m_computation->setting()->setValue(ProblemSetting::View_ParticleNumShowParticlesAxi, particles);
 }

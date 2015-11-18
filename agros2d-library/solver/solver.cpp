@@ -807,8 +807,9 @@ void SolverDeal::solveSteadyState()
 
             // Python callback
             double cont = 1.0;
-            QString command = QString("(agros2d.field(\"%1\").adaptivity_callback(%2) if (agros2d.field(\"%1\").adaptivity_callback is not None and hasattr(agros2d.field(\"%1\").adaptivity_callback, '__call__')) else True)").
+            QString command = QString("(agros2d.problem().field(\"%1\").adaptivity_callback(agros2d.computation('%2'), %3) if (agros2d.problem().field(\"%1\").adaptivity_callback is not None and hasattr(agros2d.problem().field(\"%1\").adaptivity_callback, '__call__')) else True)").
                     arg(m_fieldInfo->fieldId()).
+                    arg(m_computation->problemDir()).
                     arg(adaptiveStep);
             bool successfulRun = currentPythonEngine()->runExpression(command, &cont);
             if (!successfulRun)
@@ -855,7 +856,8 @@ void SolverDeal::solveTransient()
 
     // Python callback
     double cont = 1.0;
-    QString command = QString("(agros2d.problem().time_callback(%1) if (agros2d.problem().time_callback is not None and hasattr(agros2d.problem().time_callback, '__call__')) else True)").
+    QString command = QString("(agros2d.problem().time_callback(agros2d.computation('%1'), %2) if (agros2d.problem().time_callback is not None and hasattr(agros2d.problem().time_callback, '__call__')) else True)").
+            arg(m_computation->problemDir()).
             arg(0);
     bool successfulRun = currentPythonEngine()->runExpression(command, &cont);
 
@@ -1063,7 +1065,8 @@ void SolverDeal::solveTransient()
                 m_computation->solutionStore()->addSolution(solutionID, MultiArray(&primal->doFHandler, primal->solution), runTime);
 
                 // Python callback
-                QString command = QString("(agros2d.problem().time_callback(%1) if (agros2d.problem().time_callback is not None and hasattr(agros2d.problem().time_callback, '__call__')) else True)").
+                QString command = QString("(agros2d.problem().time_callback(agros2d.computation('%1'), %2) if (agros2d.problem().time_callback is not None and hasattr(agros2d.problem().time_callback, '__call__')) else True)").
+                        arg(m_computation->problemDir()).
                         arg(timeStep);
 
                 double cont = 1.0;

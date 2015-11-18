@@ -49,6 +49,11 @@ private:
     QCheckBox *chkOrderLabel;
     QSpinBox *txtOrderComponent;
 
+    // mesh and polynomial info
+    QLabel *lblMeshInitial;
+    QLabel *lblMeshSolution;
+    QLabel *lblDOFs;
+
     void createControls();
 
 public slots:

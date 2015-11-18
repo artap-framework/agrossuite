@@ -256,7 +256,6 @@ void PreprocessorWidget::refresh()
     problemNode->setToolTip(0, problemPropertiesToString());
     problemNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
     problemNode->setExpanded(true);
-    problemNode->setTextAlignment(1, Qt::AlignRight);
 
     // problem properties
     QTreeWidgetItem *problemPropertiesNode = new QTreeWidgetItem(problemNode);

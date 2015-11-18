@@ -1,10 +1,9 @@
 cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
     cdef cppclass PyComputation:
-        PyComputation()
+        PyComputation(bool newComputation)
         PyComputation(string computation) except +
 
         void clear() except +
-        void refresh()
         void mesh() except +
         void solve() except +
 
@@ -36,11 +35,11 @@ cdef class __Computation__:
     cdef object parameters
     cdef object results
 
-    def __cinit__(self, computation = None):
+    def __cinit__(self, new_computation=True, computation = None):
         if not computation:
-            self._computation = new PyComputation()
+            self._computation = new PyComputation(<bool> new_computation)
         elif isinstance(computation, str):
-            self._computation = new PyComputation(computation.encode())
+            self._computation = new PyComputation(<string> computation.encode())
         else:
             raise TypeError("Parameter type is not supported.")
 
@@ -60,10 +59,6 @@ cdef class __Computation__:
         """Clear solution."""
         self._computation.clear()
 
-    def refresh(self):
-        """Refresh preprocessor and postprocessor."""
-        self._computation.refresh()
-
     def mesh(self):
         """Area discretization."""
         self._computation.mesh()
@@ -82,10 +77,17 @@ cdef class __Computation__:
         """
         if (not field_id in self._solutions):
             solution = __Solution__()
-            solution._solution.setSolution(self._computation, field_id.encode())
+            solution._solution.setComputation(self._computation, field_id.encode())
             self._solutions[field_id] = solution
 
         return self._solutions[field_id]
+
+    def particle_tracing(self):
+        """Create and return new object of ParticleTracing class."""
+        tracing = __ParticleTracing__()
+        tracing._tracing.setComputation(self._computation)
+
+        return tracing
 
     def elapsed_time(self):
         """Return elapsed time in seconds."""
@@ -199,4 +201,4 @@ cdef class __Computation__:
         return self._computation.getCouplingType(source_field.encode(), target_field.encode()).decode()
 
 def computation(computation):
-    return __Computation__(computation)
+    return __Computation__(computation=computation)

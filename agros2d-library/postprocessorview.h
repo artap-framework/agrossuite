@@ -89,11 +89,6 @@ private:
     QTabWidget *tabWidget;
     QPushButton *btnApply;
 
-    // mesh and polynomial info
-    QLabel *lblMeshInitial;
-    QLabel *lblMeshSolution;
-    QLabel *lblDOFs;
-
     PostprocessorSceneMeshWidget *m_meshWidget;
     PostprocessorScenePost2DWidget *m_post2DWidget;
     PostprocessorScenePost3DWidget *m_post3DWidget;

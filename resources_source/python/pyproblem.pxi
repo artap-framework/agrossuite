@@ -3,7 +3,6 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         PyProblem(bool clear)
 
         void clear()
-        void refresh()
 
         void getParameters(vector[string] &keys)
         double getParameter(string &key) except +
@@ -65,10 +64,6 @@ cdef class __Problem__:
         self._parameters.clear()
         self._fields.clear()
 
-    def refresh(self):
-        """Refresh preprocessor and postprocessor."""
-        self._problem.refresh()
-
     def field(self, field_id):
         """Add new field to problem and return Field() object.
 
@@ -89,9 +84,15 @@ cdef class __Problem__:
         """Get geometry object."""
         return self._geometry
 
-    def computation(self):
-        """Create and return new Computation() object."""
-        return __Computation__()
+    def computation(self, new_computation = True):
+        """Create and return new Computation() object.
+
+        computation(new_computation)
+
+        Keyword arguments:
+        new_computation -- create new computation (True or False)
+        """
+        return __Computation__(new_computation)
 
     # parameters
     property parameters:
@@ -162,7 +163,7 @@ cdef class __Problem__:
             self._problem.setTimeTotal(time_total)
 
     # time steps
-    time_steps = property(_get_time_steps, _get_time_steps)
+    time_steps = property(_get_time_steps, _set_time_steps)
     def _get_time_steps(self):
         return self._problem.getNumConstantTimeSteps()
     def _set_time_steps(self, time_steps):

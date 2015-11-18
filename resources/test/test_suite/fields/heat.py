@@ -404,7 +404,7 @@ class TestHeatTransientAxisymmetric(Agros2DTestCase):
         self.value_test("Temperature", volume["T"], 0.00458)
         
         # surface integral
-        surface = solution.surface_integrals([26])
+        #surface = solution.surface_integrals([26])
         #self.value_test("Heat flux", surface["f"], 0.032866, error = 0.05)  #todo: jaky heat flux v comsolu pouzit?
         
 if __name__ == '__main__':        

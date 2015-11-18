@@ -1,6 +1,7 @@
 cdef extern from "../../agros2d-library/pythonlab/pyparticletracing.h":
     cdef cppclass PyParticleTracing:
         PyParticleTracing()
+        void setComputation(PyComputation *computation)
 
         void getInitialPosition(vector[double] &position)
         void setInitialPosition(vector[double] &position) except +
@@ -72,12 +73,12 @@ cdef extern from "../../agros2d-library/pythonlab/pyparticletracing.h":
         void times(vector[vector[double]] &t)
 
 cdef class __ParticleTracing__:
-    cdef PyParticleTracing *thisptr
+    cdef PyParticleTracing *_tracing
 
     def __cinit__(self):
-        self.thisptr = new PyParticleTracing()
+        self._tracing = new PyParticleTracing()
     def __dealloc__(self):
-        del self.thisptr
+        del self._tracing
 
     def solve(self, initial_positions = [], initial_velocities = [],
                     particle_charges = [], particle_masses = []):
@@ -90,19 +91,19 @@ cdef class __ParticleTracing__:
         for velocity in initial_velocities:
             initial_velocities_vector.push_back(list_to_double_vector(velocity))
 
-        self.thisptr.solve(initial_positions_vector,
+        self._tracing.solve(initial_positions_vector,
                            initial_velocities_vector,
                            list_to_double_vector(particle_charges),
                            list_to_double_vector(particle_masses))
 
     """
     def length(self):
-        return self.thisptr.length()
+        return self._tracing.length()
     """
 
     def positions(self):
         cdef vector[vector[double]] x, y, z
-        self.thisptr.positions(x, y, z)
+        self._tracing.positions(x, y, z)
 
         assert x.size() == y.size() == z.size()
 
@@ -116,7 +117,7 @@ cdef class __ParticleTracing__:
 
     def velocities(self):
         cdef vector[vector[double]] vx, vy, vz
-        self.thisptr.velocities(vx, vy, vz)
+        self._tracing.velocities(vx, vy, vz)
 
         assert vx.size() == vy.size() == vz.size()
 
@@ -130,7 +131,7 @@ cdef class __ParticleTracing__:
 
     def times(self):
         cdef vector[vector[double]] t
-        self.thisptr.times(t)
+        self._tracing.times(t)
 
         out = []
         for i in range(t.size()):
@@ -140,152 +141,150 @@ cdef class __ParticleTracing__:
 
     property number_of_particles:
         def __get__(self):
-            return self.thisptr.getNumberOfParticles()
+            return self._tracing.getNumberOfParticles()
         def __set__(self, particles):
-            self.thisptr.setNumberOfParticles(particles)
+            self._tracing.setNumberOfParticles(particles)
 
     property particles_dispersion:
         def __get__(self):
-            return self.thisptr.getStartingRadius()
+            return self._tracing.getStartingRadius()
         def __set__(self, dispersion):
-            self.thisptr.setStartingRadius(dispersion)
+            self._tracing.setStartingRadius(dispersion)
 
     property initial_position:
         def __get__(self):
             cdef vector[double] position
-            self.thisptr.getInitialPosition(position)
+            self._tracing.getInitialPosition(position)
             return double_vector_to_list(position)
         def __set__(self, position):
-            self.thisptr.setInitialPosition(list_to_double_vector(position))
+            self._tracing.setInitialPosition(list_to_double_vector(position))
 
     property initial_velocity:
         def __get__(self):
             cdef vector[double] velocity
-            self.thisptr.getInitialVelocity(velocity)
+            self._tracing.getInitialVelocity(velocity)
             return double_vector_to_list(velocity)
         def __set__(self, velocity):
-            self.thisptr.setInitialVelocity(list_to_double_vector(velocity))
+            self._tracing.setInitialVelocity(list_to_double_vector(velocity))
 
     property mass:
         def __get__(self):
-            return self.thisptr.getParticleMass()
+            return self._tracing.getParticleMass()
         def __set__(self, mass):
-            self.thisptr.setParticleMass(mass)
+            self._tracing.setParticleMass(mass)
 
     property charge:
         def __get__(self):
-            return self.thisptr.getParticleCharge()
+            return self._tracing.getParticleCharge()
         def __set__(self, charge):
-            self.thisptr.setParticleCharge(charge)
+            self._tracing.setParticleCharge(charge)
 
     property include_relativistic_correction:
         def __get__(self):
-            return self.thisptr.getIncludeRelativisticCorrection()
+            return self._tracing.getIncludeRelativisticCorrection()
         def __set__(self, correction):
-            self.thisptr.setIncludeRelativisticCorrection(correction)
+            self._tracing.setIncludeRelativisticCorrection(correction)
 
     property reflect_on_different_material:
         def __get__(self):
-            return self.thisptr.getReflectOnDifferentMaterial()
+            return self._tracing.getReflectOnDifferentMaterial()
         def __set__(self, reflect):
-            self.thisptr.setReflectOnDifferentMaterial(reflect)
+            self._tracing.setReflectOnDifferentMaterial(reflect)
 
     property reflect_on_boundary:
         def __get__(self):
-            return self.thisptr.getReflectOnBoundary()
+            return self._tracing.getReflectOnBoundary()
         def __set__(self, reflect):
-            self.thisptr.setReflectOnBoundary(reflect)
+            self._tracing.setReflectOnBoundary(reflect)
 
     property coefficient_of_restitution:
         def __get__(self):
-            return self.thisptr.getCoefficientOfRestitution()
+            return self._tracing.getCoefficientOfRestitution()
         def __set__(self, coeff):
-            self.thisptr.setCoefficientOfRestitution(coeff)
+            self._tracing.setCoefficientOfRestitution(coeff)
 
     property drag_force_density:
         def __get__(self):
-            return self.thisptr.getDragForceDensity()
+            return self._tracing.getDragForceDensity()
         def __set__(self, density):
-            self.thisptr.setDragForceDensity(density)
+            self._tracing.setDragForceDensity(density)
 
     property drag_force_reference_area:
         def __get__(self):
-            return self.thisptr.getDragForceReferenceArea()
+            return self._tracing.getDragForceReferenceArea()
         def __set__(self, area):
-            self.thisptr.setDragForceReferenceArea(area)
+            self._tracing.setDragForceReferenceArea(area)
 
     property drag_force_coefficient:
         def __get__(self):
-            return self.thisptr.getDragForceCoefficient()
+            return self._tracing.getDragForceCoefficient()
         def __set__(self, coeff):
-            self.thisptr.setDragForceCoefficient(coeff)
+            self._tracing.setDragForceCoefficient(coeff)
 
     property custom_force:
         def __get__(self):
             cdef vector[double] force
-            self.thisptr.getCustomForce(force)
+            self._tracing.getCustomForce(force)
             return double_vector_to_list(force)
         def __set__(self, force):
-            self.thisptr.setCustomForce(list_to_double_vector(force))
+            self._tracing.setCustomForce(list_to_double_vector(force))
 
     property electrostatic_interaction:
         def __get__(self):
-            return self.thisptr.getElectrostaticInteraction()
+            return self._tracing.getElectrostaticInteraction()
         def __set__(self, interaction):
-            self.thisptr.setElectrostaticInteraction(interaction)
+            self._tracing.setElectrostaticInteraction(interaction)
 
     property magnetic_interaction:
         def __get__(self):
-            return self.thisptr.getMagneticInteraction()
+            return self._tracing.getMagneticInteraction()
         def __set__(self, interaction):
-            self.thisptr.setMagneticInteraction(interaction)
+            self._tracing.setMagneticInteraction(interaction)
 
     property butcher_table_type:
         def __get__(self):
-            return self.thisptr.getButcherTableType().c_str()
+            return self._tracing.getButcherTableType().c_str()
         def __set__(self, table_type):
-            self.thisptr.setButcherTableType(table_type.encode())
+            self._tracing.setButcherTableType(table_type.encode())
 
     property maximum_number_of_steps:
         def __get__(self):
-            return self.thisptr.getMaximumNumberOfSteps()
+            return self._tracing.getMaximumNumberOfSteps()
         def __set__(self, steps):
-            self.thisptr.setMaximumNumberOfSteps(steps)
+            self._tracing.setMaximumNumberOfSteps(steps)
 
     property maximum_relative_error:
         def __get__(self):
-            return self.thisptr.getMaximumRelativeError()
+            return self._tracing.getMaximumRelativeError()
         def __set__(self, tolerance):
-            self.thisptr.setMaximumRelativeError(tolerance)
+            self._tracing.setMaximumRelativeError(tolerance)
 
     property maximum_step:
         def __get__(self):
-            return self.thisptr.getMaximumStep()
+            return self._tracing.getMaximumStep()
         def __set__(self, step):
-            self.thisptr.setMaximumStep(step)
+            self._tracing.setMaximumStep(step)
 
     property collor_by_velocity:
         def __get__(self):
-            return self.thisptr.getColorByVelocity()
+            return self._tracing.getColorByVelocity()
         def __set__(self, show):
-            self.thisptr.setColorByVelocity(show)
+            self._tracing.setColorByVelocity(show)
 
     property show_points:
         def __get__(self):
-            return self.thisptr.getShowPoints()
+            return self._tracing.getShowPoints()
         def __set__(self, show):
-            self.thisptr.setShowPoints(show)
+            self._tracing.setShowPoints(show)
 
     property blended_faces:
         def __get__(self):
-            return self.thisptr.getShowBlendedFaces()
+            return self._tracing.getShowBlendedFaces()
         def __set__(self, show):
-            self.thisptr.setShowBlendedFaces(show)
+            self._tracing.setShowBlendedFaces(show)
 
     property multiple_show_particles:
         def __get__(self):
-            return self.thisptr.getNumShowParticlesAxi()
+            return self._tracing.getNumShowParticlesAxi()
         def __set__(self, particles):
-            self.thisptr.setNumShowParticlesAxi(particles)
-
-particle_tracing = __ParticleTracing__()
+            self._tracing.setNumShowParticlesAxi(particles)

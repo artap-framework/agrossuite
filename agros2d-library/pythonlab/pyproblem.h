@@ -31,44 +31,42 @@ public:
     PyProblemBase() {}
     ~PyProblemBase() {}
 
-    void refresh();
-
     // properties
     inline std::string getCoordinateType() const
     {
-        return coordinateTypeToStringKey(m_problemBase->config()->coordinateType()).toStdString();
+        return coordinateTypeToStringKey(m_problem->config()->coordinateType()).toStdString();
     }
     inline std::string getMeshType() const
     {
-        return meshTypeToStringKey(m_problemBase->config()->meshType()).toStdString();
+        return meshTypeToStringKey(m_problem->config()->meshType()).toStdString();
     }
     inline double getFrequency() const
     {
-        return m_problemBase->config()->value(ProblemConfig::Frequency).value<Value>().number();
+        return m_problem->config()->value(ProblemConfig::Frequency).value<Value>().number();
     }
     inline std::string getTimeStepMethod() const
     {
-        return timeStepMethodToStringKey((TimeStepMethod) m_problemBase->config()->value(ProblemConfig::TimeMethod).toInt()).toStdString();
+        return timeStepMethodToStringKey((TimeStepMethod) m_problem->config()->value(ProblemConfig::TimeMethod).toInt()).toStdString();
     }
     inline double getTimeMethodTolerance() const
     {
-        return m_problemBase->config()->value(ProblemConfig::TimeMethodTolerance).toDouble();
+        return m_problem->config()->value(ProblemConfig::TimeMethodTolerance).toDouble();
     }
     inline int getTimeMethodOrder() const
     {
-        return m_problemBase->config()->value(ProblemConfig::TimeOrder).toInt();
+        return m_problem->config()->value(ProblemConfig::TimeOrder).toInt();
     }
     inline double getInitialTimeStep() const
     {
-        return m_problemBase->config()->value(ProblemConfig::TimeInitialStepSize).toDouble();
+        return m_problem->config()->value(ProblemConfig::TimeInitialStepSize).toDouble();
     }
     inline double getTimeTotal() const
     {
-        return m_problemBase->config()->value(ProblemConfig::TimeTotal).toDouble();
+        return m_problem->config()->value(ProblemConfig::TimeTotal).toDouble();
     }
     inline int getNumConstantTimeSteps() const
     {
-        return m_problemBase->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
+        return m_problem->config()->value(ProblemConfig::TimeConstantTimeSteps).toInt();
     }
 
     void getParameters(std::vector<std::string> &keys) const;
@@ -76,7 +74,7 @@ public:
     std::string getCouplingType(const std::string &sourceField, const std::string &targetField) const;
 
 protected:
-    QSharedPointer<ProblemBase> m_problemBase;
+    QSharedPointer<ProblemBase> m_problem;
     void checkExistingFields(const QString &sourceField, const QString &targetField) const;
 };
 
@@ -101,22 +99,24 @@ public:
 
     void setParameter(const std::string &key, double value);
     void setCouplingType(const std::string &sourceField, const std::string &targetField, const std::string &type);
-
-private:
-    QSharedPointer<Problem> m_problem;
 };
 
 class PyComputation : public PyProblemBase
 {
 public:
-    PyComputation();
+    PyComputation(bool newComputation);
     PyComputation(const std::string &computation);
     ~PyComputation();
 
     void clear();
     void mesh();
     void solve();
-    QSharedPointer<Computation> computation();
+
+    inline QSharedPointer<Computation> computation() const
+    {
+        return qSharedPointerDynamicCast<Computation>(m_problem);
+    }
+
 
     double timeElapsed() const;
     void timeStepsLength(vector<double> &steps) const;
@@ -126,9 +126,6 @@ public:
     void getResults(std::vector<std::string> &keys) const;
     double getResult(const std::string &key) const;
     void setResult(const std::string &key, double value);
-
-private:
-    QSharedPointer<Computation> m_computation;
 };
 
 class PySolution
@@ -136,7 +133,7 @@ class PySolution
 public:
     PySolution() {}
     ~PySolution();
-    void setSolution(PyComputation *computation, const std::string &fieldId);
+    void setComputation(PyComputation *computation, const std::string &fieldId);
 
     // local values, integrals
     void localValues(double x, double y, int timeStep, int adaptivityStep,

@@ -3,10 +3,10 @@ import agros2d as a2d
 
 ENERGY_TOLERANCE = 1e-9
 
-def adaptivity_callback(adaptivity_step):    
+def adaptivity_callback(computation, adaptivity_step):    
     if (adaptivity_step > 0):
-        electrostatic = a2d.field("electrostatic")    
-        energy_difference = math.fabs(electrostatic.volume_integrals([0], None, adaptivity_step)["We"] - electrostatic.volume_integrals([0], None, adaptivity_step - 1)["We"])
+        solution = computation.solution("electrostatic")
+        energy_difference = math.fabs(solution.volume_integrals([0], None, adaptivity_step)["We"] - solution.volume_integrals([0], None, adaptivity_step - 1)["We"])
 
         print("step = " + str(adaptivity_step) + ", energy difference = " + str(energy_difference) + " J")
 
@@ -57,8 +57,6 @@ geometry.add_edge(0, 1, 0.2, 1, boundaries = {"electrostatic" : "Source"})
 geometry.add_edge(0, 2, 0, 1, boundaries = {"electrostatic" : "Border"})
 geometry.add_edge(0, -0.25, 0.25, 0, angle = 90, boundaries = {"electrostatic" : "Ground"})
 geometry.add_edge(0.25, 0, 0, 0.25, angle = 90, boundaries = {"electrostatic" : "Ground"})
-
 geometry.add_label(0.879551, 0.764057, area = 0.06, materials = {"electrostatic" : "Air"})
 
-computation = problem.computation()
-computation.solve()    
+problem.computation().solve()

@@ -92,19 +92,6 @@ void PostprocessorWidget::createControls()
     btnApply = new QPushButton(tr("Apply"));
     connect(btnApply, SIGNAL(clicked()), SLOT(doApply()));
 
-    // mesh and polynomial info
-    lblMeshInitial = new QLabel();
-    lblMeshSolution = new QLabel();
-    lblDOFs = new QLabel();
-
-    QGridLayout *layoutInfo = new QGridLayout();
-    layoutInfo->addWidget(new QLabel(tr("Initial mesh:")), 0, 0);
-    layoutInfo->addWidget(lblMeshInitial, 0, 1);
-    layoutInfo->addWidget(new QLabel(tr("Solution mesh:")), 1, 0);
-    layoutInfo->addWidget(lblMeshSolution, 1, 1);
-    layoutInfo->addWidget(new QLabel(tr("Number of DOFs:")), 2, 0);
-    layoutInfo->addWidget(lblDOFs, 2, 1);
-
     tabWidget = new QTabWidget();
     tabWidget->addTab(m_meshWidget, icon("scene-mesh"), tr("Mesh"));
     tabWidget->addTab(m_post2DWidget, icon("scene-post2d"), tr("2D"));
@@ -117,8 +104,6 @@ void PostprocessorWidget::createControls()
     layoutMain->setContentsMargins(2, 2, 2, 3);
     layoutMain->addWidget(m_fieldWidget);
     layoutMain->addWidget(tabWidget);
-    // layoutMain->addStretch(1);
-    layoutMain->addLayout(layoutInfo);
     layoutMain->addWidget(btnApply, 0, Qt::AlignRight);
 
     setLayout(layoutMain);
@@ -179,28 +164,6 @@ void PostprocessorWidget::refresh()
     tabWidget->setTabEnabled(2, m_computation->isSolved());
     tabWidget->setTabEnabled(3, m_computation->isSolved());
     tabWidget->setTabEnabled(4, m_computation->isSolved());
-
-    // mesh and polynomial info
-    int dofs = 0;
-    if (m_computation->isMeshed())
-    {
-        lblMeshInitial->setText(QString(tr("%1 nodes, %2 elements").
-                                        arg(m_computation->initialMesh().n_used_vertices()).
-                                        arg(m_computation->initialMesh().n_active_cells())));
-        lblMeshSolution->setText(QString(tr("%1 nodes, %2 elements").
-                                         arg(m_computation->calculationMesh().n_used_vertices()).
-                                         arg(m_computation->calculationMesh().n_active_cells())));
-    }
-
-    if (m_computation->isSolved() && m_fieldWidget->selectedField())
-    {
-        MultiArray ma = m_computation->solutionStore()->multiArray(FieldSolutionID(m_fieldWidget->selectedField()->fieldId(),
-                                                                                   m_fieldWidget->selectedTimeStep(),
-                                                                                   m_fieldWidget->selectedAdaptivityStep()));
-
-        dofs = ma.doFHandler()->n_dofs();
-    }
-    lblDOFs->setText(tr("%1 DOFs").arg(dofs));
 
     m_meshWidget->load();
     m_post2DWidget->load();
