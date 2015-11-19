@@ -33,15 +33,15 @@ In the first step of compilation, you have to generate makefiles and compile the
 
 Linux:
 
-cmake .
-make 
-
 cd dealii
 mkdir build
 cd build
 cmake ..
 make
 cd ../../
+
+cmake .
+make 
 
 cd solver-external-paralution
 mkdir build
