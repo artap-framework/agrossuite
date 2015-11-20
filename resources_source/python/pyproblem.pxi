@@ -40,14 +40,14 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
 
 cdef class __Problem__:
     cdef PyProblem *_problem
-    cdef object _time_callback
+    #cdef object _time_callback
     cdef object _parameters
     cdef object _fields
     cdef object _geometry
 
     def __cinit__(self, clear = False):
         self._problem = new PyProblem(clear)
-        self._time_callback = None
+        #self._time_callback = None
         self._parameters = __Parameters__(self.__get_parameters__,
                                           self.__set_parameters__,
                                           False)
@@ -60,7 +60,7 @@ cdef class __Problem__:
     def clear(self):
         """Clear problem."""
         self._problem.clear()
-        self._time_callback = None
+        #self._time_callback = None
         self._parameters.clear()
         self._fields.clear()
 
@@ -177,11 +177,13 @@ cdef class __Problem__:
             self._problem.setInitialTimeStep(initial_time_step)
 
     # time callback
+    """
     time_callback = property(_get_time_callback, _set_time_callback)
     def _get_time_callback(self):
             return self._time_callback
     def _set_time_callback(self, callback):
             self._time_callback = callback
+    """
 
     def get_coupling_type(self, source_field, target_field):
         """Return type of coupling.
