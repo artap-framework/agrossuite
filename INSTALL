@@ -22,9 +22,12 @@ You can use defines WITH_UNITY (support for Unity application launcher) for Ubun
 This defines needs package libunity-dev.
 
 To initialise dealii submodule of the Agros2D repository, go to the main agros2d folder and issue following commands:
-
 git submodule init
 git submodule update
+
+Then go to the dealii subdirectory and select branch dealii
+cd dealii
+git checkout dealii
 
 Compilation
 ===========
@@ -38,16 +41,27 @@ mkdir build
 cd build
 cmake ..
 make
+
+or to run compilation on N cores:
+make -jN
+
+Return back to the Agros2D directory
 cd ../../
 
 cmake .
 make 
+or to run compilation on N cores:
+make -jN
 
 cd solver-external-paralution
 mkdir build
 cd build
 cmake ..
+
 make
+or to run compilation on N cores:
+make -jN
+
 cd ../..
 
 Windows:
