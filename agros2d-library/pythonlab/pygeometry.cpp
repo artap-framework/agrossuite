@@ -23,12 +23,6 @@
 #include "sceneview_geometry.h"
 #include "scenemarker.h"
 
-void PyGeometry::activate()
-{
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actSceneModeProblem->trigger();
-}
-
 int PyGeometry::nodesCount() const
 {
     return Agros2D::problem()->scene()->nodes->count();
@@ -44,50 +38,54 @@ int PyGeometry::labelsCount() const
     return Agros2D::problem()->scene()->labels->count();
 }
 
-int PyGeometry::addNode(double x, double y)
+int PyGeometry::addNode(std::string x, std::string y)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnNodes->trigger();
+    PointValue point = PointValue(Value(QString::fromStdString(x)),
+                                  Value(QString::fromStdString(y)));
 
-    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && x < 0.0)
+    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && point.numberX() < 0.0)
         throw out_of_range(QObject::tr("Radial component must be greater then or equal to zero.").toStdString());
 
     foreach (SceneNode *node, Agros2D::problem()->scene()->nodes->items())
     {
-        if (node->point() == Point(x, y))
+        if (node->point() == point.point())
             throw logic_error(QObject::tr("Node already exist.").toStdString());
     }
 
-    SceneNode *node = Agros2D::problem()->scene()->addNode(new SceneNode(Agros2D::problem()->scene(), Point(x, y)));
+    SceneNode *node = Agros2D::problem()->scene()->addNode(new SceneNode(Agros2D::problem()->scene(), point));
     return Agros2D::problem()->scene()->nodes->items().indexOf(node);
 }
 
-int PyGeometry::addEdge(double x1, double y1, double x2, double y2, double angle, int segments, int curvilinear,
+int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::string y2, std::string angle, int segments, int curvilinear,
                         const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnEdges->trigger();
+    PointValue pointStart = PointValue(Value(QString::fromStdString(x1)),
+                                       Value(QString::fromStdString(y1)));
+    PointValue pointEnd = PointValue(Value(QString::fromStdString(x2)),
+                                     Value(QString::fromStdString(y2)));
+    Value valueAngle = Value(QString::fromStdString(angle));
 
-    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && (x1 < 0.0 || x2 < 0.0))
+    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric &&
+            (pointStart.numberX() < 0.0 || pointEnd.numberX() < 0.0))
         throw out_of_range(QObject::tr("Radial component must be greater then or equal to zero.").toStdString());
 
-    testAngle(angle);
+    testAngle(valueAngle.number());
     testSegments(segments);
 
     foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
     {
-        if (almostEqualRelAndAbs(edge->nodeStart()->point().x, x1, POINT_ABS_ZERO, POINT_REL_ZERO) &&
-                almostEqualRelAndAbs(edge->nodeEnd()->point().x, x2, POINT_ABS_ZERO, POINT_REL_ZERO) &&
-                almostEqualRelAndAbs(edge->nodeStart()->point().y, y1, POINT_ABS_ZERO, POINT_REL_ZERO) &&
-                almostEqualRelAndAbs(edge->nodeEnd()->point().y, y2, POINT_ABS_ZERO, POINT_REL_ZERO))
+        if (almostEqualRelAndAbs(edge->nodeStart()->point().x, pointStart.numberX(), POINT_ABS_ZERO, POINT_REL_ZERO) &&
+                almostEqualRelAndAbs(edge->nodeEnd()->point().x, pointEnd.numberX(), POINT_ABS_ZERO, POINT_REL_ZERO) &&
+                almostEqualRelAndAbs(edge->nodeStart()->point().y, pointStart.numberY(), POINT_ABS_ZERO, POINT_REL_ZERO) &&
+                almostEqualRelAndAbs(edge->nodeEnd()->point().y, pointEnd.numberY(), POINT_ABS_ZERO, POINT_REL_ZERO))
             throw logic_error(QObject::tr("Edge already exist.").toStdString());
     }
 
-    SceneNode *nodeStart = new SceneNode(Agros2D::problem()->scene(), Point(x1, y1));
+    SceneNode *nodeStart = new SceneNode(Agros2D::problem()->scene(), pointStart);
     nodeStart = Agros2D::problem()->scene()->addNode(nodeStart);
-    SceneNode *nodeEnd = new SceneNode(Agros2D::problem()->scene(), Point(x2, y2));
+    SceneNode *nodeEnd = new SceneNode(Agros2D::problem()->scene(), pointEnd);
     nodeEnd = Agros2D::problem()->scene()->addNode(nodeEnd);
-    SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, angle, segments, curvilinear);
+    SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, valueAngle, segments, curvilinear);
 
     try
     {
@@ -105,11 +103,10 @@ int PyGeometry::addEdge(double x1, double y1, double x2, double y2, double angle
     return Agros2D::problem()->scene()->edges->items().indexOf(edge);
 }
 
-int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, double angle, int segments, int curvilinear,
+int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string angle, int segments, int curvilinear,
                                const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnEdges->trigger();
+    Value valueAngle = Value(QString::fromStdString(angle));
 
     if (Agros2D::problem()->scene()->nodes->isEmpty())
         throw out_of_range(QObject::tr("Geometry does not contain nodes.").toStdString());
@@ -122,7 +119,7 @@ int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, double angl
     if (nodeEndIndex > (Agros2D::problem()->scene()->nodes->length() - 1) || nodeEndIndex < 0)
         throw out_of_range(QObject::tr("Node with index '%1' does not exist.").arg(nodeEndIndex).toStdString());
 
-    testAngle(angle);
+    testAngle(valueAngle.number());
     testSegments(segments);
 
     foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
@@ -135,7 +132,7 @@ int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, double angl
     SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(),
                                     Agros2D::problem()->scene()->nodes->at(nodeStartIndex),
                                     Agros2D::problem()->scene()->nodes->at(nodeEndIndex),
-                                    angle, segments, curvilinear);
+                                    valueAngle, segments, curvilinear);
 
     try
     {
@@ -153,10 +150,9 @@ int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, double angl
     return Agros2D::problem()->scene()->edges->items().indexOf(edge);
 }
 
-void PyGeometry::modifyEdge(int index, double angle, int segments, int isCurvilinear, const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
+void PyGeometry::modifyEdge(int index, std::string angle, int segments, int isCurvilinear, const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnEdges->trigger();
+    Value valueAngle = Value(QString::fromStdString(angle));
 
     if (Agros2D::problem()->scene()->edges->isEmpty())
         throw out_of_range(QObject::tr("No edges are defined.").toStdString());
@@ -164,12 +160,12 @@ void PyGeometry::modifyEdge(int index, double angle, int segments, int isCurvili
     if (index < 0 || index >= Agros2D::problem()->scene()->edges->length())
         throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->edges->length()-1).toStdString());
 
-    testAngle(angle);
+    testAngle(valueAngle.number());
     testSegments(segments);
 
     SceneEdge *edge = Agros2D::problem()->scene()->edges->items().at(index);
 
-    edge->setAngleValue(Value(angle));
+    edge->setAngleValue(valueAngle);
     edge->setSegments(segments);
     edge->setCurvilinear(isCurvilinear);
 
@@ -234,13 +230,13 @@ void PyGeometry::setRefinementsOnEdge(SceneEdge *edge, const map<std::string, in
     }
 }
 
-int PyGeometry::addLabel(double x, double y, double area, const map<std::string, int> &refinements,
+int PyGeometry::addLabel(std::string x, std::string y, double area, const map<std::string, int> &refinements,
                          const map<std::string, int> &orders, const map<std::string, std::string> &materials)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnLabels->trigger();
+    PointValue point = PointValue(Value(QString::fromStdString(x)),
+                                  Value(QString::fromStdString(y)));
 
-    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && x < 0.0)
+    if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && point.numberX() < 0.0)
         throw out_of_range(QObject::tr("Radial component must be greater then or equal to zero.").toStdString());
 
     if (area < 0.0)
@@ -248,11 +244,11 @@ int PyGeometry::addLabel(double x, double y, double area, const map<std::string,
 
     foreach (SceneLabel *label, Agros2D::problem()->scene()->labels->items())
     {
-        if (label->point() == Point(x, y))
+        if (label->point() == point.point())
             throw logic_error(QObject::tr("Label already exist.").toStdString());
     }
 
-    SceneLabel *label = new SceneLabel(Agros2D::problem()->scene(), Point(x, y), area);
+    SceneLabel *label = new SceneLabel(Agros2D::problem()->scene(), point, area);
 
     try
     {

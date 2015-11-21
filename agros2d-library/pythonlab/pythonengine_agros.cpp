@@ -162,16 +162,6 @@ QString createPythonFromModel()
     // import modules
     str += "import agros2d as a2d\n\n";
 
-    // startup script
-    /*
-    if (!Agros2D::preprocessor()->setting()->value(ProblemSetting::Problem_StartupScript).toString().trimmed().isEmpty())
-    {
-        str += "# startup script\n";
-        str += Agros2D::preprocessor()->setting()->value(ProblemSetting::Problem_StartupScript).toString();
-        str += "\n\n";
-    }
-    */
-
     // model
     str += "# problem\n";
     str += QString("problem = a2d.problem(clear = True)\n");
@@ -215,13 +205,11 @@ QString createPythonFromModel()
     }
 
     // fields
-    str += "\n# fields\n";
+    str += "# fields\n";
     foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
     {
         str += QString("# %1\n").arg(fieldInfo->fieldId());
-
-        // str += QString("%1 = a2d.field(field_id = \"%2\")\n").
-        str += QString("%1 = a2d.field(\"%2\")\n").
+        str += QString("%1 = problem.field(\"%2\")\n").
                 arg(fieldInfo->fieldId()).
                 arg(fieldInfo->fieldId());
         str += QString("%1.analysis_type = \"%2\"\n").
@@ -394,10 +382,9 @@ QString createPythonFromModel()
                         arg(fieldInfo->value(FieldInfo::PicardAndersonNumberOfLastVectors).toInt());
             }
         }
-
         str += "\n";
 
-        str += "\n# boundaries\n";
+        str += "# boundaries\n";
         foreach (SceneBoundary *boundary, Agros2D::problem()->scene()->boundaries->filter(fieldInfo).items())
         {
             const QMap<uint, QSharedPointer<Value> > values = boundary->values();
@@ -417,9 +404,18 @@ QString createPythonFromModel()
                 }
                 else
                 {
-                    variables += QString("\"%1\" : %2, ").
-                            arg(variable.id()).
-                            arg(value->toString());
+                    if (value->isNumber())
+                    {
+                        variables += QString("\"%1\" : %2, ").
+                                arg(variable.id()).
+                                arg(value->toString());
+                    }
+                    else
+                    {
+                        variables += QString("\"%1\" : \"%2\", ").
+                                arg(variable.id()).
+                                arg(value->toString());
+                    }
                 }
             }
             variables = (variables.endsWith(", ") ? variables.left(variables.length() - 2) : variables) + "}";
@@ -430,10 +426,9 @@ QString createPythonFromModel()
                     arg(boundary->type()).
                     arg(variables);
         }
-
         str += "\n";
 
-        str += "\n# materials\n";
+        str += "# materials\n";
         foreach (SceneMaterial *material, Agros2D::problem()->scene()->materials->filter(fieldInfo).items())
         {
             const QMap<uint, QSharedPointer<Value> > values = material->values();
@@ -471,9 +466,18 @@ QString createPythonFromModel()
                 }
                 else
                 {
-                    variables += QString("\"%1\" : %2, ").
-                            arg(variable.id()).
-                            arg(value->toString());
+                    if (value->isNumber())
+                    {
+                        variables += QString("\"%1\" : %2, ").
+                                arg(variable.id()).
+                                arg(value->toString());
+                    }
+                    else
+                    {
+                        variables += QString("\"%1\" : \"%2\", ").
+                                arg(variable.id()).
+                                arg(value->toString());
+                    }
                 }
             }
 
@@ -484,29 +488,36 @@ QString createPythonFromModel()
                     arg(material->name()).
                     arg(variables);
         }
-
         str += "\n";
     }
 
     // geometry
     str += "# geometry\n";
-    str += "geometry = a2d.geometry\n";
+    str += "geometry = problem.geometry()\n";
 
     // edges
     if (Agros2D::problem()->scene()->edges->count() > 0)
     {
-        //str += "\n# edges\n";
         foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
         {
+            Value startPointX = edge->nodeStart()->pointValue().x();
+            Value startPointY = edge->nodeStart()->pointValue().y();
+            Value endPointX = edge->nodeEnd()->pointValue().x();
+            Value endPointY = edge->nodeEnd()->pointValue().y();
+
             str += QString("geometry.add_edge(%1, %2, %3, %4").
-                    arg(edge->nodeStart()->pointValue().x().isNumber() ? QString::number(edge->nodeStart()->point().x) : edge->nodeStart()->pointValue().x().toString()).
-                    arg(edge->nodeStart()->pointValue().y().isNumber() ? QString::number(edge->nodeStart()->point().y) : edge->nodeStart()->pointValue().y().toString()).
-                    arg(edge->nodeEnd()->pointValue().x().isNumber() ? QString::number(edge->nodeEnd()->point().x) : edge->nodeEnd()->pointValue().x().toString()).
-                    arg(edge->nodeEnd()->pointValue().y().isNumber() ? QString::number(edge->nodeEnd()->point().y) : edge->nodeEnd()->pointValue().y().toString());
+                    arg(startPointX.isNumber() ? QString::number(startPointX.number()) : QString("\"%1\"").arg(startPointX.toString())).
+                    arg(startPointY.isNumber() ? QString::number(startPointY.number()) : QString("\"%1\"").arg(startPointY.toString())).
+                    arg(endPointX.isNumber() ? QString::number(endPointX.number()) : QString("\"%1\"").arg(endPointX.toString())).
+                    arg(endPointY.isNumber() ? QString::number(endPointY.number()) : QString("\"%1\"").arg(endPointY.toString()));
 
             if (edge->angle() > 0.0)
             {
-                str += ", angle = " + QString::number(edge->angle());
+                if (edge->angleValue().isNumber())
+                    str += ", angle = " + QString::number(edge->angle());
+                else
+                    str += QString('"%1"').arg(edge->angleValue().toString());
+
                 if (edge->segments() > 4)
                     str += ", segments = " + QString::number(edge->segments());
                 if (!edge->isCurvilinear())
@@ -566,12 +577,13 @@ QString createPythonFromModel()
     // labels
     if (Agros2D::problem()->scene()->labels->count() > 0)
     {
-        //str += "# labels\n";
         foreach (SceneLabel *label, Agros2D::problem()->scene()->labels->items())
         {
+            Value pointX = label->pointValue().x();
+            Value pointY = label->pointValue().y();
             str += QString("geometry.add_label(%1, %2").
-                    arg(label->pointValue().x().isNumber() ? QString::number(label->point().x) : label->pointValue().x().toString()).
-                    arg(label->pointValue().y().isNumber() ? QString::number(label->point().y) : label->pointValue().y().toString());
+                    arg(pointX.isNumber() ? QString::number(pointX.number()) : QString("\"%1\"").arg(pointX.toString())).
+                    arg(pointY.isNumber() ? QString::number(pointY.number()) : QString("\"%1\"").arg(pointY.toString()));
 
             if (label->area() > 0.0)
                 str += ", area = " + QString::number(label->area());
@@ -637,7 +649,6 @@ QString createPythonFromModel()
             str += ")\n";
         }
     }
-    str += "a2d.view.zoom_best_fit()";
 
     return str;
 }
