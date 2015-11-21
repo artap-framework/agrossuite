@@ -106,29 +106,6 @@ void PyField::setNonlinearDampingType(std::string dampingType)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(dampingTypeStringKeys())).toStdString());
 }
 
-/*
-void PyField::setPicardAndersonAcceleration(bool acceleration)
-{
-    m_fieldInfo->setValue(FieldInfo::PicardAndersonAcceleration, acceleration);
-}
-
-void PyField::setPicardAndersonBeta(double beta)
-{
-    if (beta > 0 && beta <= 1)
-        m_fieldInfo->setValue(FieldInfo::PicardAndersonBeta, beta);
-    else
-        throw out_of_range(QObject::tr("Anderson coefficient is out of range (0 - 1).").toStdString());
-}
-
-void PyField::setPicardAndersonNumberOfLastVectors(int number)
-{
-    if (number >= 1 && number <= 5)
-        m_fieldInfo->setValue(FieldInfo::PicardAndersonNumberOfLastVectors, number);
-    else
-        throw out_of_range(QObject::tr("Number of last vector is out of range (1 - 5).").toStdString());
-}
-*/
-
 void PyField::setAdaptivityType(const std::string &adaptivityType)
 {
     if (adaptivityTypeStringKeys().contains(QString::fromStdString(adaptivityType)))
@@ -201,7 +178,7 @@ void PyField::setTimeSkip(double timeSkip)
 }
 
 void PyField::addBoundary(const std::string &name, const std::string &type,
-                          const map<std::string, double> &parameters,
+                          const map<std::string, std::string> &parameters,
                           const map<std::string, std::string> &expressions)
 {
     // check boundaries with same name
@@ -218,7 +195,7 @@ void PyField::addBoundary(const std::string &name, const std::string &type,
 
     // browse boundary parameters
     QMap<QString, Value> values;
-    for (map<std::string, double>::const_iterator i = parameters.begin(); i != parameters.end(); ++i)
+    for (map<std::string, std::string>::const_iterator i = parameters.begin(); i != parameters.end(); ++i)
     {
         bool assigned = false;
         foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
@@ -227,7 +204,7 @@ void PyField::addBoundary(const std::string &name, const std::string &type,
             {
                 assigned = true;
                 if (expressions.count((*i).first) == 0)
-                    values[variable.id()] = Value((*i).second);
+                    values[variable.id()] = Value(QString::fromStdString((*i).second));
                 else
                     values[variable.id()] = Value(QString::fromStdString(expressions.at((*i).first)));
                 break;
@@ -242,7 +219,7 @@ void PyField::addBoundary(const std::string &name, const std::string &type,
 }
 
 void PyField::modifyBoundary(const std::string &name, const std::string &type,
-                             const map<std::string, double> &parameters,
+                             const map<std::string, std::string> &parameters,
                              const map<std::string, std::string> &expressions)
 {
     SceneBoundary *sceneBoundary = Agros2D::problem()->scene()->getBoundary(m_fieldInfo, QString::fromStdString(name));
@@ -263,7 +240,7 @@ void PyField::modifyBoundary(const std::string &name, const std::string &type,
 
     // browse boundary parameters
     Module::BoundaryType boundaryType = m_fieldInfo->boundaryType(sceneBoundary->type());
-    for (map<std::string, double>::const_iterator i = parameters.begin(); i != parameters.end(); ++i)
+    for (map<std::string, std::string>::const_iterator i = parameters.begin(); i != parameters.end(); ++i)
     {
         bool assigned = false;
         foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
@@ -272,7 +249,7 @@ void PyField::modifyBoundary(const std::string &name, const std::string &type,
             {
                 assigned = true;
                 if (expressions.count((*i).first) == 0)
-                    sceneBoundary->modifyValue(QString::fromStdString((*i).first), Value((*i).second));
+                    sceneBoundary->modifyValue(QString::fromStdString((*i).first), Value(QString::fromStdString((*i).second)));
                 else
                     sceneBoundary->modifyValue(QString::fromStdString((*i).first), Value(QString::fromStdString(expressions.at((*i).first))));
                 break;
@@ -293,7 +270,7 @@ void PyField::removeBoundary(const std::string &name)
     Agros2D::problem()->scene()->removeBoundary(sceneBoundary);
 }
 
-void PyField::addMaterial(const std::string &name, const map<std::string, double> &parameters,
+void PyField::addMaterial(const std::string &name, const map<std::string, std::string> &parameters,
                           const map<std::string, std::string> &expressions,
                           const map<std::string, vector<double> > &nonlin_x,
                           const map<std::string, vector<double> > &nonlin_y,
@@ -309,7 +286,7 @@ void PyField::addMaterial(const std::string &name, const map<std::string, double
     // browse material parameters
     QList<Module::MaterialTypeVariable> variables = m_fieldInfo->materialTypeVariables();
     QMap<QString, Value> values;
-    for (map<std::string, double>::const_iterator i = parameters.begin(); i != parameters.end(); ++i)
+    for (map<std::string, std::string>::const_iterator i = parameters.begin(); i != parameters.end(); ++i)
     {
         bool assigned = false;
         foreach (Module::MaterialTypeVariable variable, variables)
@@ -372,7 +349,7 @@ void PyField::addMaterial(const std::string &name, const map<std::string, double
                 {
                     if (expressions.count((*i).first) == 0)
                     {
-                        values[variable.id()] = Value((*i).second,
+                        values[variable.id()] = Value(QString::fromStdString((*i).second),
                                                       (lenx > 0) ? nonlin_x.at((*i).first) : vector<double>(),
                                                       (leny > 0) ? nonlin_y.at((*i).first) : vector<double>(),
                                                       dataTableType, splineFirstDerivatives, extrapolateConstant);
@@ -401,7 +378,7 @@ void PyField::addMaterial(const std::string &name, const map<std::string, double
     Agros2D::problem()->scene()->addMaterial(new SceneMaterial(Agros2D::problem()->scene(), m_fieldInfo, QString::fromStdString(name), values));
 }
 
-void PyField::modifyMaterial(const std::string &name, const map<std::string, double> &parameters,
+void PyField::modifyMaterial(const std::string &name, const map<string, std::string> &parameters,
                              const map<std::string, std::string> &expressions,
                              const map<std::string, vector<double> > &nonlin_x,
                              const map<std::string, vector<double> > &nonlin_y,
@@ -412,7 +389,7 @@ void PyField::modifyMaterial(const std::string &name, const map<std::string, dou
     if (sceneMaterial == NULL)
         throw invalid_argument(QObject::tr("Material '%1' doesn't exists.").arg(QString::fromStdString(name)).toStdString());
 
-    for (map<std::string, double>::const_iterator i = parameters.begin(); i != parameters.end(); ++i)
+    for (map<std::string, std::string>::const_iterator i = parameters.begin(); i != parameters.end(); ++i)
     {
         QList<Module::MaterialTypeVariable> materialVariables = m_fieldInfo->materialTypeVariables();
 
@@ -471,7 +448,7 @@ void PyField::modifyMaterial(const std::string &name, const map<std::string, dou
                 {
                     if (expressions.count((*i).first) == 0)
                     {
-                        sceneMaterial->modifyValue(QString::fromStdString((*i).first), Value((*i).second,
+                        sceneMaterial->modifyValue(QString::fromStdString((*i).first), Value(QString::fromStdString((*i).second),
                                                                                              (lenx > 0) ? nonlin_x.at((*i).first) : vector<double>(),
                                                                                              (leny > 0) ? nonlin_y.at((*i).first) : vector<double>()));
                     }

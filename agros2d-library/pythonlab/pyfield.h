@@ -94,7 +94,6 @@ class PyField
              return iterLinearSolverDealIIMethodToStringKey((IterSolverDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()).toStdString();
         }
         void setLinearSolverDealIIMethod(const std::string &linearSolverMethod);
-
         inline std::string getLinearSolverDealIIPreconditioner() const {
             return iterLinearSolverDealIIPreconditionerToStringKey((PreconditionerDealII) m_fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()).toStdString();
         }
@@ -118,20 +117,20 @@ class PyField
 
         // boundaries
         void addBoundary(const std::string &name, const std::string &type,
-                         const map<std::string, double> &parameters,
+                         const map<std::string, std::string> &parameters,
                          const map<std::string, std::string > &expressions);
         void modifyBoundary(const std::string &name, const std::string &type,
-                            const map<std::string, double> &parameters,
+                            const map<std::string, std::string> &parameters,
                             const map<std::string, std::string> &expressions);
         void removeBoundary(const std::string &name);
 
         // materials
-        void addMaterial(const std::string &name, const map<std::string, double> &parameters,
+        void addMaterial(const std::string &name, const map<std::string, std::string> &parameters,
                          const map<std::string, std::string> &expressions,
                          const map<std::string, vector<double> > &nonlin_x,
                          const map<std::string, vector<double> > &nonlin_y,
                          const map<std::string, map<std::string, std::string> > &settings_map);
-        void modifyMaterial(const std::string &name, const map<std::string, double> &parameters,
+        void modifyMaterial(const std::string &name, const map<std::string, std::string> &parameters,
                             const map<std::string, std::string> &expressions,
                             const map<std::string, vector<double> > &nonlin_x,
                             const map<std::string, vector<double> > &nonlin_y,

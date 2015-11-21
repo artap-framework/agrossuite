@@ -54,19 +54,19 @@ cdef extern from "../../agros2d-library/pythonlab/pyfield.h":
         void setTimeSkip(double timeSkip) except +
 
         void addBoundary(string &name, string &type,
-                         map[string, double] &parameters,
+                         map[string, string] &parameters,
                          map[string, string] &expressions) except +
         void modifyBoundary(string &name, string &type,
-                            map[string, double] &parameters,
+                            map[string, string] &parameters,
                             map[string, string] &expressions) except +
         void removeBoundary(string &name) except +
 
-        void addMaterial(string &name, map[string, double] &parameters,
+        void addMaterial(string &name, map[string, string] &parameters,
                          map[string, string] &expressions,
                          map[string, vector[double]] &nonlin_x,
                          map[string, vector[double]] &nonlin_y,
                          map[string, map[string, string]] &settings) except +
-        void modifyMaterial(string &name, map[string, double] &parameters,
+        void modifyMaterial(string &name, map[string, string] &parameters,
                             map[string, string] &expressions,
                             map[string, vector[double]] &nonlin_x,
                             map[string, vector[double]] &nonlin_y,
@@ -74,21 +74,20 @@ cdef extern from "../../agros2d-library/pythonlab/pyfield.h":
         void removeMaterial(string &name) except +
     
 
-cdef map[string, double] get_parameters_map(parameters):
-    cdef map[string, double] parameters_map
-    cdef pair[string, double] parameter
+cdef map[string, string] get_parameters_map(parameters):
+    cdef map[string, string] parameters_map
+    cdef pair[string, string] parameter
 
     for key in parameters:
-        if isinstance(parameters[key], dict):
-            if ("value" in parameters[key]):
-                val = parameters[key]["value"]
-            else:
-                val = 0.0
+        val = None
+        if (isinstance(parameters[key], dict) and
+            "value" in parameters[key]):
+            val = str(parameters[key]["value"])
         else:
-            val = parameters[key]
+            val = str(parameters[key])
 
         parameter.first = key.encode()
-        parameter.second = val
+        parameter.second = val.encode()
         parameters_map.insert(parameter)
 
     return parameters_map
@@ -98,11 +97,11 @@ cdef map[string, string] get_expression_map(parameters):
     cdef pair[string, string] expression
 
     for key in parameters:
-        if isinstance(parameters[key], dict):
-            if ("expression" in parameters[key]):
-                expression.first = key.encode()
-                expression.second = parameters[key]["expression"].encode()
-                expression_map.insert(expression)
+        if (isinstance(parameters[key], dict) and
+            "expression" in parameters[key]):
+            expression.first = key.encode()
+            expression.second = parameters[key]["expression"].encode()
+            expression_map.insert(expression)
 
     return expression_map
 
@@ -112,15 +111,15 @@ cdef map[string, vector[double]] get_nonlin_x_map(parameters):
     cdef vector[double] x
 
     for key in parameters:
-        if isinstance(parameters[key], dict):
-            if ("x" in parameters[key]):
-                for value in parameters[key]["x"]:
-                    x.push_back(value)
+        if (isinstance(parameters[key], dict) and
+            "x" in parameters[key]):
+            for value in parameters[key]["x"]:
+                x.push_back(value)
 
-                nonlin_x.first = key.encode()
-                nonlin_x.second = x
-                nonlin_x_map.insert(nonlin_x)
-                x.clear()
+            nonlin_x.first = key.encode()
+            nonlin_x.second = x
+            nonlin_x_map.insert(nonlin_x)
+            x.clear()
 
     return nonlin_x_map
 
@@ -130,15 +129,15 @@ cdef map[string, vector[double]] get_nonlin_y_map(parameters):
     cdef vector[double] y
 
     for key in parameters:
-        if isinstance(parameters[key], dict):
-          if ("y" in parameters[key]):
-              for value in parameters[key]["y"]:
-                  y.push_back(value)
+        if (isinstance(parameters[key], dict) and
+            "y" in parameters[key]):
+            for value in parameters[key]["y"]:
+                y.push_back(value)
 
-              nonlin_y.first = key.encode()
-              nonlin_y.second = y
-              nonlin_y_map.insert(nonlin_y)
-              y.clear()
+            nonlin_y.first = key.encode()
+            nonlin_y.second = y
+            nonlin_y_map.insert(nonlin_y)
+            y.clear()
 
     return nonlin_y_map
 
@@ -402,7 +401,7 @@ cdef class __Field__:
         type -- boundary contition type
         parameters -- dict of boundary condition parameters (default is {})
         """
-        cdef map[string, double] parameters_map = get_parameters_map(parameters)
+        cdef map[string, string] parameters_map = get_parameters_map(parameters)
         cdef map[string, string] expression_map = get_expression_map(parameters)
 
         self.thisptr.addBoundary(name.encode(), type.encode(), parameters_map, expression_map)
@@ -417,7 +416,7 @@ cdef class __Field__:
         type -- boundary contition type (default is "")
         parameters -- dict of boundary condition parameters (default is {})
         """
-        cdef map[string, double] parameters_map = get_parameters_map(parameters)
+        cdef map[string, string] parameters_map = get_parameters_map(parameters)
         cdef map[string, string] expression_map = get_expression_map(parameters)
 
         self.thisptr.modifyBoundary(name.encode(), type.encode(), parameters_map, expression_map)
@@ -443,7 +442,7 @@ cdef class __Field__:
         type -- material type
         parameters -- dict of material parameters (default is {})
         """
-        cdef map[string, double] parameters_map = get_parameters_map(parameters)
+        cdef map[string, string] parameters_map = get_parameters_map(parameters)
         cdef map[string, string] expression_map = get_expression_map(parameters)
         cdef map[string, vector[double]] nonlin_x_map = get_nonlin_x_map(parameters)
         cdef map[string, vector[double]] nonlin_y_map = get_nonlin_y_map(parameters)
@@ -461,7 +460,7 @@ cdef class __Field__:
         type -- material type (default is {})
         parameters -- dict of material parameters (default is {})
         """
-        cdef map[string, double] parameters_map = get_parameters_map(parameters)
+        cdef map[string, string] parameters_map = get_parameters_map(parameters)
         cdef map[string, string] expression_map = get_expression_map(parameters)
         cdef map[string, vector[double]] nonlin_x_map = get_nonlin_x_map(parameters)
         cdef map[string, vector[double]] nonlin_y_map = get_nonlin_y_map(parameters)
