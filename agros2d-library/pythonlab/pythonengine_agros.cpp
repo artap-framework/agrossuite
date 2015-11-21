@@ -221,21 +221,30 @@ QString createPythonFromModel()
 
         if (fieldInfo->matrixSolver() == SOLVER_DEALII)
         {
-                str += QString("%1.matrix_solver_parameters[\"method_dealii\"] = \"%2\"\n").
+                str += QString("%1.matrix_solver_parameters[\"dealii_method\"] = \"%2\"\n").
                         arg(fieldInfo->fieldId()).
                         arg(iterLinearSolverDealIIMethodToStringKey((IterSolverDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()));
-                str += QString("%1.matrix_solver_parameters[\"preconditioner_dealii\"] = \"%2\"\n").
+                str += QString("%1.matrix_solver_parameters[\"dealii_preconditioner\"] = \"%2\"\n").
                         arg(fieldInfo->fieldId()).
                         arg(iterLinearSolverDealIIPreconditionerToStringKey((PreconditionerDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
+                str += QString("%1.matrix_solver_parameters[\"dealii_tolerance\"] = %2\n").
+                        arg(fieldInfo->fieldId()).
+                        arg(fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble());
+                str += QString("%1.matrix_solver_parameters[\"dealii_iterations\"] = %2\n").
+                        arg(fieldInfo->fieldId()).
+                        arg(fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt());
         }
-        if (isMatrixSolverIterative(fieldInfo->matrixSolver()))
+        if (fieldInfo->matrixSolver() == SOLVER_EXTERNAL)
         {           
-            str += QString("%1.matrix_solver_parameters[\"tolerance\"] = %2\n").
+            str += QString("%1.matrix_solver_parameters[\"external_solver\"] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
-                    arg(fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble());
-            str += QString("%1.matrix_solver_parameters[\"iterations\"] = %2\n").
+                    arg(fieldInfo->value(FieldInfo::LinearSolverExternalName).toString());
+            str += QString("%1.matrix_solver_parameters[\"external_enviroment\"] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
-                    arg(fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt());
+                    arg(fieldInfo->value(FieldInfo::LinearSolverExternalCommandEnvironment).toString());
+            str += QString("%1.matrix_solver_parameters[\"external_parameters\"] = \"%2\"\n").
+                    arg(fieldInfo->fieldId()).
+                    arg(fieldInfo->value(FieldInfo::LinearSolverExternalCommandParameters).toString());
         }
 
         if (Agros2D::problem()->isTransient())

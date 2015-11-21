@@ -140,6 +140,19 @@ void PyField::setLinearSolverDealIIPreconditioner(const std::string &linearSolve
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(iterLinearSolverDealIIPreconditionerStringKeys())).toStdString());
 }
 
+void PyField::setExternalMatrixSolver(const std::string &solver)
+{
+    QStringList solvers;
+    QDirIterator itDir(QString("%1/libs/").arg(datadir()), QStringList() << "*.ext", QDir::Files);
+    while (itDir.hasNext())
+        solvers << QFileInfo(itDir.next()).fileName();
+
+    if (solvers.contains(QString::fromStdString(solver)))
+        m_fieldInfo->setValue(FieldInfo::LinearSolverExternalName, QString::fromStdString(solver));
+    else
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(solvers)).toStdString());
+}
+
 void PyField::setAdaptivityEstimator(const std::string &adaptivityEstimator)
 {
     if (adaptivityEstimatorStringKeys().contains(QString::fromStdString(adaptivityEstimator)))

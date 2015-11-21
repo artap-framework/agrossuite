@@ -5,6 +5,7 @@ cdef extern from "../../agros2d-library/pythonlab/pyfield.h":
         void setParameter(string &parameter, bool value) except +
         void setParameter(string &parameter, int value) except +
         void setParameter(string &parameter, double value) except +
+        void setParameter(string &parameter, string value) except +
 
         bool getBoolParameter(string &parameter) except +
         int getIntParameter(string &parameter) except +
@@ -31,6 +32,13 @@ cdef extern from "../../agros2d-library/pythonlab/pyfield.h":
         void setLinearSolverDealIIMethod(string &linearSolverMethod) except +
         string getLinearSolverDealIIPreconditioner()
         void setLinearSolverDealIIPreconditioner(string &linearSolverPreconditioner) except +
+
+        string getExternalMatrixSolver()
+        void setExternalMatrixSolver(string &solver) except +
+        string getExternalMatrixSolverEnviroment()
+        void setExternalMatrixSolverEnviroment(string &enviroment)
+        string getExternalMatrixSolverParameters()
+        void setExternalMatrixSolverParameters(string &parameters)
 
         string getNonlinearDampingType()
         void setNonlinearDampingType(string &dampingType) except +
@@ -288,23 +296,31 @@ cdef class __Field__:
             return self.matrix_solver_parameters.get_parameters()
 
     def __get_matrix_solver_parameters__(self):
-        return {'tolerance' : self.thisptr.getDoubleParameter(b'LinearSolverIterToleranceAbsolute'),
-                'iterations' : self.thisptr.getIntParameter(b'LinearSolverIterIters'),
-                'method_dealii' : self.thisptr.getLinearSolverDealIIMethod().decode(),
-                'preconditioner_dealii' : self.thisptr.getLinearSolverDealIIPreconditioner().decode()}
+        return {'dealii_tolerance' : self.thisptr.getDoubleParameter(b'LinearSolverIterToleranceAbsolute'),
+                'dealii_iterations' : self.thisptr.getIntParameter(b'LinearSolverIterIters'),
+                'dealii_method' : self.thisptr.getLinearSolverDealIIMethod().decode(),
+                'dealii_preconditioner' : self.thisptr.getLinearSolverDealIIPreconditioner().decode(),
+                'external_solver' : self.thisptr.getExternalMatrixSolver().decode(),
+                'external_enviroment' : self.thisptr.getExternalMatrixSolverEnviroment().decode(),
+                'external_parameters' : self.thisptr.getExternalMatrixSolverParameters().decode()}
 
     def __set_matrix_solver_parameters__(self, parameters):
         # tolerance
-        positive_value(parameters['tolerance'], 'tolerance')
-        self.thisptr.setParameter(string(b'LinearSolverIterToleranceAbsolute'), <double>parameters['tolerance'])
+        positive_value(parameters['dealii_tolerance'], 'dealii_tolerance')
+        self.thisptr.setParameter(string(b'LinearSolverIterToleranceAbsolute'), <double>parameters['dealii_tolerance'])
 
         # max iterations
-        value_in_range(parameters['iterations'], 1, 1e4, 'iterations')
-        self.thisptr.setParameter(string(b'LinearSolverIterIters'), <int>parameters['iterations'])
+        value_in_range(parameters['dealii_iterations'], 1, 1e4, 'dealii_iterations')
+        self.thisptr.setParameter(string(b'LinearSolverIterIters'), <int>parameters['dealii_iterations'])
 
         # method, preconditioner
-        self.thisptr.setLinearSolverDealIIMethod(parameters['method_dealii'].encode())
-        self.thisptr.setLinearSolverDealIIPreconditioner(parameters['preconditioner_dealii'].encode())        
+        self.thisptr.setLinearSolverDealIIMethod(parameters['dealii_method'].encode())
+        self.thisptr.setLinearSolverDealIIPreconditioner(parameters['dealii_preconditioner'].encode())
+
+        # external solver
+        self.thisptr.setExternalMatrixSolver(parameters['external_solver'].encode())
+        self.thisptr.setParameter(string(b'LinearSolverExternalCommandEnvironment'), <string>parameters['external_enviroment'].encode())
+        self.thisptr.setParameter(string(b'LinearSolverExternalCommandParameters'), <string>parameters['external_parameters'].encode())
 
     # refinements
     property number_of_refinements:
