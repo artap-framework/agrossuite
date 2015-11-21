@@ -270,9 +270,6 @@ int PyGeometry::addLabel(std::string x, std::string y, double area, const map<st
 void PyGeometry::modifyLabel(int index, double area, const map<std::string, int> &refinements,
                              const map<std::string, int> &orders, const map<std::string, std::string> &materials)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnLabels->trigger();
-
     if (Agros2D::problem()->scene()->labels->isEmpty())
         throw out_of_range(QObject::tr("No labels are defined.").toStdString());
 
@@ -358,8 +355,6 @@ void PyGeometry::setPolynomialOrders(SceneLabel *label, const map<std::string, i
 
 void PyGeometry::removeNodes(const vector<int> &nodes)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnNodes->trigger();
     Agros2D::problem()->scene()->selectNone();
 
     if (!nodes.empty())
@@ -376,15 +371,10 @@ void PyGeometry::removeNodes(const vector<int> &nodes)
         Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnNodes);
 
     Agros2D::problem()->scene()->deleteSelected();
-
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
 }
 
 void PyGeometry::removeEdges(const vector<int> &edges)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnEdges->trigger();
     Agros2D::problem()->scene()->selectNone();
 
     if (!edges.empty())
@@ -401,15 +391,10 @@ void PyGeometry::removeEdges(const vector<int> &edges)
         Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
 
     Agros2D::problem()->scene()->deleteSelected();
-
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
 }
 
 void PyGeometry::removeLabels(const vector<int> &labels)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnLabels->trigger();
     Agros2D::problem()->scene()->selectNone();
 
     if (!labels.empty())
@@ -426,15 +411,10 @@ void PyGeometry::removeLabels(const vector<int> &labels)
         Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnLabels);
 
     Agros2D::problem()->scene()->deleteSelected();
-
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
 }
 
 void PyGeometry::selectNodes(const vector<int> &nodes)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnNodes->trigger();
     Agros2D::problem()->scene()->selectNone();
 
     if (!nodes.empty())
@@ -451,16 +431,10 @@ void PyGeometry::selectNodes(const vector<int> &nodes)
     {
         Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnNodes);
     }
-
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
-
 }
 
 void PyGeometry::selectEdges(const vector<int> &edges)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnEdges->trigger();
     Agros2D::problem()->scene()->selectNone();
 
     if (!edges.empty())
@@ -477,15 +451,10 @@ void PyGeometry::selectEdges(const vector<int> &edges)
     {
         Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
     }
-
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
 }
 
 void PyGeometry::selectLabels(const vector<int> &labels)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnLabels->trigger();
     Agros2D::problem()->scene()->selectNone();
 
     if (!labels.empty())
@@ -502,58 +471,37 @@ void PyGeometry::selectLabels(const vector<int> &labels)
     {
         Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnLabels);
     }
-
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
 }
 
 void PyGeometry::selectNodeByPoint(double x, double y)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnNodes->trigger();
     Agros2D::problem()->scene()->selectNone();
 
     SceneNode *node = SceneNode::findClosestNode(Agros2D::problem()->scene(), Point(x, y));
     if (node)
-    {
         node->setSelected(true);
-        if (!silentMode())
-            currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
-    }
     else
         throw logic_error(QObject::tr("There are no nodes around the point [%1, %2].").arg(x).arg(y).toStdString());
 }
 
 void PyGeometry::selectEdgeByPoint(double x, double y)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnEdges->trigger();
     Agros2D::problem()->scene()->selectNone();
 
     SceneEdge *edge = SceneEdge::findClosestEdge(Agros2D::problem()->scene(), Point(x, y));
     if (edge)
-    {
         edge->setSelected(true);
-        if (!silentMode())
-            currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
-    }
     else
         throw logic_error(QObject::tr("There are no edges around the point [%1, %2].").arg(x).arg(y).toStdString());
 }
 
 void PyGeometry::selectLabelByPoint(double x, double y)
 {
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->actOperateOnLabels->trigger();
     Agros2D::problem()->scene()->selectNone();
 
     SceneLabel *label = SceneLabel::findClosestLabel(Agros2D::problem()->scene(), Point(x, y));
     if (label)
-    {
         label->setSelected(true);
-        if (!silentMode())
-            currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
-    }
     else
         throw logic_error(QObject::tr("There are no labels around the point [%1, %2].").arg(x).arg(y).toStdString());
 }
@@ -561,41 +509,26 @@ void PyGeometry::selectLabelByPoint(double x, double y)
 void PyGeometry::selectNone()
 {
     Agros2D::problem()->scene()->selectNone();
-
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
 }
 
 void PyGeometry::moveSelection(double dx, double dy, bool copy, bool withMarkers)
 {
     Agros2D::problem()->scene()->transformTranslate(Point(dx, dy), copy, withMarkers);
-
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
 }
 
 void PyGeometry::rotateSelection(double x, double y, double angle, bool copy, bool withMarkers)
 {
     Agros2D::problem()->scene()->transformRotate(Point(x, y), angle, copy, withMarkers);
-
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
 }
 
 void PyGeometry::scaleSelection(double x, double y, double scale, bool copy, bool withMarkers)
 {
     Agros2D::problem()->scene()->transformScale(Point(x, y), scale, copy, withMarkers);
-
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
 }
 
 void PyGeometry::removeSelection()
 {
     Agros2D::problem()->scene()->deleteSelected();
-
-    if (!silentMode())
-        currentPythonEngineAgros()->sceneViewPreprocessor()->refresh();
 }
 
 void PyGeometry::exportVTK(const std::string &fileName) const
