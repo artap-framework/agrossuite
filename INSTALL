@@ -35,6 +35,7 @@ Compilation
 In the first step of compilation, you have to generate makefiles and compile the code by issuing the following commands:
 
 Linux:
+~~~~~~
 
 cd dealii
 mkdir build
@@ -64,16 +65,25 @@ make -jN
 
 cd ../..
 
-Windows:
-
-cmake -G "Visual Studio 10"
-open agros2d.sln with Visual Studio 10 (2010) and build.
-
-If you have more than one CPU, you can use “make -jN” where N is the number of CPUs of your computer.
 Next step is generating of plugins source code and their compilation:
 
 ./agros2d_generator
 cd plugins
 cmake .
-# replace the previous line with ## $ cmake -G "Visual Studio 10" . ## if you are using Windows.
-$ make # Or open plugins.sln with Visual Studio 10 (2010) and build.
+
+Notice:
+If you have more than one CPU, you can use “make -jN” where N is the number of CPUs of your computer.
+
+Windows:
+~~~~~~~~
+cmake -G "Visual Studio 10"
+open agros2d.sln with Visual Studio 10 (2010) and build.
+
+Next step is generating of plugins source code and their compilation:
+
+./agros2d_generator
+cd plugins
+cmake -G "Visual Studio 10" .
+make
+
+Or open plugins.sln with Visual Studio 10 (2010) and build.
