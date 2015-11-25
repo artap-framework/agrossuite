@@ -120,6 +120,8 @@ SET(SOURCES
     preprocessorview.cpp
     optilab/optilab.cpp
     optilab/study.cpp
+    optilab/study_sweep.cpp
+    optilab/study_genetic.cpp
     optilab/parameter.cpp
     optilab/functional.cpp
     pythonlab/pythonconsole.cpp
@@ -342,6 +344,8 @@ SET(HEADERS
   preprocessorview.h
   optilab/optilab.h
   optilab/study.h
+  optilab/study_sweep.h
+  optilab/study_genetic.h
   optilab/parameter.h
   optilab/functional.h
   pythonlab/pythonconsole.h

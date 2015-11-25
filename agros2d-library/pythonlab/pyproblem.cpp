@@ -197,9 +197,8 @@ void PyProblem::setCouplingType(const std::string &sourceField, const std::strin
 }
 
 PyComputation::PyComputation(bool newComputation) : PyProblemBase()
-{
-    Agros2D::problem()->createComputation(newComputation);
-    m_problem = Agros2D::problem()->currentComputation();
+{    
+    m_problem = Agros2D::problem()->createComputation(newComputation);
 }
 
 PyComputation::PyComputation(const string &computation) : PyProblemBase()

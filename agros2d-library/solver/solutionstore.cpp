@@ -366,7 +366,7 @@ bool SolutionStore::loadRunTimeDetails()
 
     if (!file.open(QIODevice::ReadOnly))
     {
-        qWarning("Couldn't open runtime file.");
+        // qWarning("Couldn't open runtime file.");
         return false;
     }
 
@@ -412,7 +412,7 @@ bool SolutionStore::saveRunTimeDetails()
 
     if (!file.open(QIODevice::WriteOnly))
     {
-        qWarning("Couldn't open result file.");
+        // qWarning("Couldn't open result file.");
         return false;
     }
 

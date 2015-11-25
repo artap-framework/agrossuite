@@ -333,7 +333,7 @@ enum SymFlag
 enum StudyType
 {
     StudyType_SweepAnalysis,
-    StudyType_GoldenSectionSearch
+    StudyType_Genetic
 };
 
 // keys

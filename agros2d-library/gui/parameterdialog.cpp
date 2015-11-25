@@ -73,6 +73,8 @@ void ParameterDialog::createControls()
     layoutParametersWidget->addWidget(buttonBox);
 
     setLayout(layoutParametersWidget);
+
+    txtParameterValue->setFocus();
 }
 
 void ParameterDialog::doAccept()

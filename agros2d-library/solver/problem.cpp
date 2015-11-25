@@ -1592,8 +1592,8 @@ void Problem::clearFieldsAndConfig()
     ProblemBase::clearFieldsAndConfig();
     m_studies->clear();
 
-    QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
-    QFile::remove(QString("%1/studies.json").arg(cacheProblemDir()));
+    // QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
+    // QFile::remove(QString("%1/studies.json").arg(cacheProblemDir()));
 
     // clear all computations
     m_currentComputation.clear();

@@ -46,6 +46,8 @@ public:
     inline void setName(const QString &name) { m_name = name; }
     inline QString expression() { return m_expression; }
     inline void setExpression(const QString &expression) { m_expression = expression; }
+    inline Operation operation() { return m_operation; }
+    inline void setOperation(const Operation &operation) { m_operation = operation; }
 
     bool evaluateExpression(QSharedPointer<Computation> computation);
 

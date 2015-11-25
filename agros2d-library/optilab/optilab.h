@@ -59,7 +59,7 @@ private slots:
     void refresh();
 
     void testSweep();
-    void testOptimization();
+    void testGenetic();
 };
 
 class OptiLab : public QWidget

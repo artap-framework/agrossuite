@@ -327,9 +327,9 @@ void PythonEngine::useTemporaryDict()
 
         PyObject *importMath = PyRun_String("from math import *", Py_file_input, m_dictTemporary, m_dictTemporary);
         Py_XDECREF(importMath);
-    }
 
-    m_useGlobalDict = false;
+        m_useGlobalDict = false;
+    }
 }
 
 void PythonEngine::useGlobalDict()

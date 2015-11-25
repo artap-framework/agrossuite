@@ -17,33 +17,34 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#ifndef PROBLEM_RESULT_H
-#define PROBLEM_RESULT_H
+#ifndef STUDY_SWEEP_H
+#define STUDY_SWEEP_H
+
+#include <QWidget>
 
 #include "util.h"
+#include "util/enums.h"
+#include "study.h"
 
-class ProblemResult
+
+// only one parameter sweep
+class StudySweepAnalysis : public Study
 {
 public:
-    ProblemResult();
-    ~ProblemResult() {}
+    StudySweepAnalysis();
 
-    void clear();
+    virtual inline StudyType type() { return StudyType_SweepAnalysis; }
 
-    bool load(const QString &fileName);
-    bool save(const QString &fileName);
+    void setParameter(Parameter parameter) { m_parameters.append(parameter); assert(m_parameters.size() == 1); }
+    virtual void solve();
 
-    inline double resultValue(const QString &key) const { return m_results[key]; }
-    inline QMap<QString, double> &results() { return m_results; }
-    inline bool hasResults() const { return !m_results.isEmpty(); }
-    inline void setResult(const QString &key, double value) { m_results[key] = value; }
-    inline void removeResult(const QString &key) { m_results.remove(key); }
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
 
-    inline QMap<QString, QVariant> &info() { return m_info; }
+    virtual void fillTreeView(QTreeWidget *trvComputations);
 
-private:
-    QMap<QString, double> m_results;
-    QMap<QString, QVariant> m_info;
+protected:
+    QList<QSharedPointer<Computation> > m_computations;
 };
 
-#endif // PROBLEM_CONFIG_H
+#endif // STUDY_SWEEP_H

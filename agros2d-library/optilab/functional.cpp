@@ -53,6 +53,18 @@ void Functional::save(QJsonObject &object)
 
 bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
 {
+    // parameters
+    QString commandPre = "";
+
+    ParametersType parameters = computation->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    foreach (QString key, parameters.keys())
+    {
+        if (commandPre.isEmpty())
+            commandPre += QString("%1 = %2").arg(key).arg(parameters[key]);
+        else
+            commandPre += QString("; %1 = %2").arg(key).arg(parameters[key]);
+    }
+
     // temporary dict
     currentPythonEngine()->useTemporaryDict();
 
@@ -62,7 +74,7 @@ bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
 
     // qDebug() << m_expression;
     double result = 0.0;
-    bool successfulRun = currentPythonEngine()->runExpression(m_expression, &result);
+    bool successfulRun = currentPythonEngine()->runExpression(m_expression, &result, commandPre);
     if (successfulRun)
     {
         computation->result()->setResult(m_name, result);

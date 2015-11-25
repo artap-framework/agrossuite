@@ -77,8 +77,6 @@ public:
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
-    QList<QSharedPointer<Computation> > computations() { return m_computations; }
-
     void addParameter(Parameter parameter) { m_parameters.append(parameter); }
     QList<Parameter> &parameters() { return m_parameters; }
     void addFunctional(Functional functional) { m_functionals.append(functional); }
@@ -86,48 +84,13 @@ public:
 
     QVariant variant();
 
+    virtual void fillTreeView(QTreeWidget *trvComputations) = 0;
+
 protected:
     QList<Functional> m_functionals;
     QList<Parameter> m_parameters;
-    QList<QSharedPointer<Computation> > m_computations;
 
     void evaluateExpressions();
-};
-
-// only one parameter sweep
-class StudySweepAnalysis : public Study
-{
-public:
-    StudySweepAnalysis();
-
-    virtual inline StudyType type() { return StudyType_SweepAnalysis; }
-
-    void setParameter(Parameter parameter) { m_parameters.append(parameter); assert(m_parameters.size() == 1); }
-    virtual void solve();
-
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
-};
-
-// a strictly unimodal function
-class StudyGoldenSectionSearch : public Study
-{
-public:
-    StudyGoldenSectionSearch(double tolerance = 1e-4);
-
-    virtual inline StudyType type() { return StudyType_GoldenSectionSearch; }
-
-    void setParameter(Parameter parameter) { m_parameters.append(parameter); assert(m_parameters.size() == 1); }
-
-    void solve();
-
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
-
-protected:
-    double m_tolerance;
-
-    double valueForParameter(const QString &name, double value);
 };
 
 #endif // STUDY_H

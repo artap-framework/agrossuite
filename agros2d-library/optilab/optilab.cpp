@@ -20,6 +20,8 @@
 #include "optilab.h"
 #include "parameter.h"
 #include "study.h"
+#include "study_sweep.h"
+#include "study_genetic.h"
 #include "util/global.h"
 
 #include "study.h"
@@ -80,12 +82,12 @@ void OptiLabWidget::createControls()
 
     QPushButton *btnTESTSWEEP = new QPushButton(tr("TEST SWEEP"));
     connect(btnTESTSWEEP, SIGNAL(clicked()), this, SLOT(testSweep()));
-    QPushButton *btnTESTOPT = new QPushButton(tr("TEST OPT."));
-    connect(btnTESTOPT, SIGNAL(clicked()), this, SLOT(testOptimization()));
+    QPushButton *btnTESTGENETIC = new QPushButton(tr("TEST GEN."));
+    connect(btnTESTGENETIC, SIGNAL(clicked()), this, SLOT(testGenetic()));
 
     QHBoxLayout *layoutParametersButton = new QHBoxLayout();
     layoutParametersButton->addWidget(btnTESTSWEEP);
-    layoutParametersButton->addWidget(btnTESTOPT);
+    layoutParametersButton->addWidget(btnTESTGENETIC);
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(2, 2, 2, 3);
@@ -151,8 +153,6 @@ void OptiLabWidget::studyChanged(int index)
     // study
     Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
 
-    QList<QSharedPointer<Computation> > computations = study->computations();
-
     trvComputations->blockSignals(true);
 
     // computations
@@ -161,20 +161,15 @@ void OptiLabWidget::studyChanged(int index)
         selectedItem = trvComputations->currentItem()->data(0, Qt::UserRole).toString();
 
     trvComputations->clear();
-    foreach (QSharedPointer<Computation> computation, computations)
-    {
-        QTreeWidgetItem *item = new QTreeWidgetItem(trvComputations);
-        item->setText(0, computation->problemDir());
-        item->setText(1, (computation->isSolved() ? tr("solved") : "-"));
-        item->setData(0, Qt::UserRole, computation->problemDir());
 
-        trvComputations->addTopLevelItem(item);
-    }
+    // fill tree view
+    study->fillTreeView(trvComputations);
 
     trvComputations->blockSignals(false);
 
     // select current computation
-    computationSelect(selectedItem);
+    if (!selectedItem.isEmpty())
+        computationSelect(selectedItem);
 
     // if not selected -> select first
     if (trvComputations->topLevelItemCount() > 0 && !trvComputations->currentItem())
@@ -205,19 +200,22 @@ void OptiLabWidget::testSweep()
     refresh();
 }
 
-void OptiLabWidget::testOptimization()
+void OptiLabWidget::testGenetic()
 {
     // sweep analysis
-    StudyGoldenSectionSearch *analysis = new StudyGoldenSectionSearch(1e-4);
+    StudyGenetic *analysis = new StudyGenetic();
 
     // add to list
     Agros2D::problem()->studies()->addStudy(analysis);
 
     // only one parameter
-    analysis->setParameter(Parameter("R3", 0.05, 0.07));
+    analysis->addParameter(Parameter("px", -10.0, 10.0));
+    analysis->addParameter(Parameter("py", -10.0, 10.0));
 
     // add functionals
-    analysis->addFunctional(Functional("We", Functional::Minimize, "computation.solution(\"electrostatic\").volume_integrals([0,1])[\"We\"]"));
+    // analysis->addFunctional(Functional("f", Functional::Minimize, "-(sin(px) * cos(py) * exp((1 - (sqrt(px**2 + py**2)/pi))))"));
+    // analysis->addFunctional(Functional("f", Functional::Minimize, "px**2 + py**2"));
+    analysis->addFunctional(Functional("f", Functional::Minimize, "(px+2*py-7)**2 + (2*px+py-5)**2"));
 
     // solve
     analysis->solve();
@@ -269,7 +267,7 @@ void OptiLab::createControls()
     m_chart->graph(0)->setLineStyle(QCPGraph::lsLine);
     m_chart->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 4));
 
-    QVBoxLayout *layoutLab = new QVBoxLayout();
+    QHBoxLayout *layoutLab = new QHBoxLayout();
     layoutLab->addWidget(m_infoWidget, 1);
     layoutLab->addWidget(m_chart, 1);
 
@@ -278,8 +276,15 @@ void OptiLab::createControls()
 
 void OptiLab::computationSelected(const QString &key)
 {
-    QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
-    QSharedPointer<Computation> computation = computations[key];
+    if (key.isEmpty())
+    {
+        m_infoWidget->clear();
+    }
+    else
+    {
+        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
+        QSharedPointer<Computation> computation = computations[key];
 
-    m_infoWidget->showProblemInfo(computation.data());
+        m_infoWidget->showProblemInfo(computation.data());
+    }
 }
