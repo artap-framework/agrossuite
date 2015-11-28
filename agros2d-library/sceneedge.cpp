@@ -33,7 +33,7 @@
 #include "solver/problem_config.h"
 #include "solver/field.h"
 
-SceneEdge::SceneEdge(Scene *scene, SceneNode *nodeStart, SceneNode *nodeEnd, const Value &angle, int segments, bool isCurvilinear)
+SceneFace::SceneFace(Scene *scene, SceneNode *nodeStart, SceneNode *nodeEnd, const Value &angle, int segments, bool isCurvilinear)
     : MarkedSceneBasic<SceneBoundary>(scene),
       m_nodeStart(nodeStart), m_nodeEnd(nodeEnd), m_angle(angle), m_segments(segments), m_isCurvilinear(isCurvilinear)
 {
@@ -49,7 +49,7 @@ SceneEdge::SceneEdge(Scene *scene, SceneNode *nodeStart, SceneNode *nodeEnd, con
     computeCenterAndRadius();
 }
 
-void SceneEdge::swapDirection()
+void SceneFace::swapDirection()
 {
     SceneNode *tmp = m_nodeStart;
 
@@ -60,7 +60,7 @@ void SceneEdge::swapDirection()
     computeCenterAndRadius();
 }
 
-bool SceneEdge::isLyingOnNode(const SceneNode *node) const
+bool SceneFace::isLyingOnNode(const SceneNode *node) const
 {
     // start or end node
     if ((m_nodeStart == node) || (m_nodeEnd == node))
@@ -70,7 +70,7 @@ bool SceneEdge::isLyingOnNode(const SceneNode *node) const
     return isLyingOnPoint(node->point());
 }
 
-bool SceneEdge::isLyingOnPoint(const Point &point) const
+bool SceneFace::isLyingOnPoint(const Point &point) const
 {
     if (isStraight())
     {
@@ -104,7 +104,7 @@ bool SceneEdge::isLyingOnPoint(const Point &point) const
     }
 }
 
-double SceneEdge::distance(const Point &point) const
+double SceneFace::distance(const Point &point) const
 {
     if (isStraight())
     {
@@ -146,10 +146,10 @@ double SceneEdge::distance(const Point &point) const
     }
 }
 
-bool SceneEdge::isCrossed() const
+bool SceneFace::isCrossed() const
 {
     // TODO: copy of crossedEdges() !!!!
-    foreach (SceneEdge *edgeCheck, m_scene->edges->items())
+    foreach (SceneFace *edgeCheck, m_scene->faces->items())
     {
         if (edgeCheck != this)
         {
@@ -176,17 +176,17 @@ bool SceneEdge::isCrossed() const
     return false;
 }
 
-bool SceneEdge::hasLyingNode() const
+bool SceneFace::hasLyingNode() const
 {
     return (lyingNodes().length() > 0);
 }
 
-QList<SceneNode *> SceneEdge::lyingNodes() const
+QList<SceneNode *> SceneFace::lyingNodes() const
 {
-    return m_scene->lyingEdgeNodes().values(const_cast<SceneEdge *>(this));
+    return m_scene->lyingEdgeNodes().values(const_cast<SceneFace *>(this));
 }
 
-void SceneEdge::setSegments(int segments)
+void SceneFace::setSegments(int segments)
 {
     m_segments = segments;
 
@@ -197,12 +197,12 @@ void SceneEdge::setSegments(int segments)
         m_segments = 20;
 }
 
-void SceneEdge::setCurvilinear(bool isCurvilinear)
+void SceneFace::setCurvilinear(bool isCurvilinear)
 {
     m_isCurvilinear = isCurvilinear;
 }
 
-double SceneEdge::length() const
+double SceneFace::length() const
 {
     if (isStraight())
         return (m_nodeEnd->point() - m_nodeStart->point()).magnitude();
@@ -210,33 +210,33 @@ double SceneEdge::length() const
         return radius() * m_angle.number() / 180.0 * M_PI;
 }
 
-bool SceneEdge::isOutsideArea() const
+bool SceneFace::isOutsideArea() const
 {
     return (m_nodeStart->isOutsideArea() || m_nodeEnd->isOutsideArea());
 }
 
-bool SceneEdge::isError() const
+bool SceneFace::isError() const
 {
     return (hasLyingNode() || isOutsideArea() || isCrossed());
 }
 
-int SceneEdge::showDialog(QWidget *parent, bool isNew)
+int SceneFace::showDialog(QWidget *parent, bool isNew)
 {
-    SceneEdgeDialog *dialog = new SceneEdgeDialog(this, parent, isNew);
+    SceneFaceDialog *dialog = new SceneFaceDialog(this, parent, isNew);
     return dialog->exec();
 }
 
-SceneEdgeCommandAdd* SceneEdge::getAddCommand()
+SceneFaceCommandAdd* SceneFace::getAddCommand()
 {
-    return new SceneEdgeCommandAdd(m_nodeStart->point(), m_nodeEnd->point(), markersKeys(), m_angle, m_segments, m_isCurvilinear);
+    return new SceneFaceCommandAdd(m_nodeStart->point(), m_nodeEnd->point(), markersKeys(), m_angle, m_segments, m_isCurvilinear);
 }
 
-SceneEdgeCommandRemove* SceneEdge::getRemoveCommand()
+SceneFaceCommandRemove* SceneFace::getRemoveCommand()
 {
-    return new SceneEdgeCommandRemove(m_nodeStart->point(), m_nodeEnd->point(), markersKeys(), m_angle, m_segments, m_isCurvilinear);
+    return new SceneFaceCommandRemove(m_nodeStart->point(), m_nodeEnd->point(), markersKeys(), m_angle, m_segments, m_isCurvilinear);
 }
 
-void SceneEdge::computeCenterAndRadius()
+void SceneFace::computeCenterAndRadius()
 {
     if (!isStraight())
         m_centerCache = centerPoint(m_nodeStart->point(), m_nodeEnd->point(), m_angle.number());
@@ -248,12 +248,12 @@ void SceneEdge::computeCenterAndRadius()
     m_vectorCache = m_nodeEnd->point() - m_nodeStart->point();
 }
 
-SceneEdge *SceneEdge::findClosestEdge(Scene *scene, const Point &point)
+SceneFace *SceneFace::findClosestFace(Scene *scene, const Point &point)
 {
-    SceneEdge *edgeClosest = NULL;
+    SceneFace *edgeClosest = NULL;
 
     double distance = numeric_limits<double>::max();
-    foreach (SceneEdge *edge, scene->edges->items())
+    foreach (SceneFace *edge, scene->faces->items())
     {
         double edgeDistance = edge->distance(point);
         if (edge->distance(point) < distance)
@@ -266,7 +266,7 @@ SceneEdge *SceneEdge::findClosestEdge(Scene *scene, const Point &point)
     return edgeClosest;
 }
 
-void SceneEdge::addMarkersFromStrings(QMap<QString, QString> markers)
+void SceneFace::addMarkersFromStrings(QMap<QString, QString> markers)
 {
     foreach (QString fieldId, markers.keys())
     {
@@ -283,7 +283,7 @@ void SceneEdge::addMarkersFromStrings(QMap<QString, QString> markers)
     }
 }
 
-int SceneEdge::innerLabelIdx(const FieldInfo *fieldInfo) const
+int SceneFace::innerLabelIdx(const FieldInfo *fieldInfo) const
 {
     if ((m_leftLabelIdx == MARKER_IDX_NOT_EXISTING) && (m_rightLabelIdx == MARKER_IDX_NOT_EXISTING))
         throw AgrosGeometryException(QObject::tr("right/left label idx not initialized"));
@@ -307,7 +307,7 @@ int SceneEdge::innerLabelIdx(const FieldInfo *fieldInfo) const
     }
 }
 
-int SceneEdge::innerLabelIdx() const
+int SceneFace::innerLabelIdx() const
 {
     int returnIdx = MARKER_IDX_NOT_EXISTING;
     foreach(FieldInfo* fieldInfo, m_scene->parentProblem()->fieldInfos())
@@ -330,7 +330,7 @@ int SceneEdge::innerLabelIdx() const
     return returnIdx;
 }
 
-void SceneEdge::addNeighbouringLabel(int idx)
+void SceneFace::addNeighbouringLabel(int idx)
 {
     int *first, *second;
     bool turn = false;
@@ -367,31 +367,31 @@ void SceneEdge::addNeighbouringLabel(int idx)
     }
 }
 
-void SceneEdge::unsetRightLeftLabelIdx()
+void SceneFace::unsetRightLeftLabelIdx()
 {
     m_rightLabelIdx = MARKER_IDX_NOT_EXISTING;
     m_leftLabelIdx = MARKER_IDX_NOT_EXISTING;
 }
 
-SceneLabel *SceneEdge::leftLabel() const
+SceneLabel *SceneFace::leftLabel() const
 {
     return (m_leftLabelIdx == MARKER_IDX_NOT_EXISTING) ? NULL : m_scene->labels->at(m_leftLabelIdx);
 }
 
-SceneLabel *SceneEdge::rightLabel() const
+SceneLabel *SceneFace::rightLabel() const
 {
     return (m_rightLabelIdx == MARKER_IDX_NOT_EXISTING) ? NULL : m_scene->labels->at(m_rightLabelIdx);
 }
 
 //************************************************************************************************
 
-void SceneEdgeContainer::removeConnectedToNode(SceneNode *node)
+void SceneFaceContainer::removeConnectedToNode(SceneNode *node)
 {
-    foreach (SceneEdge *edge, m_data)
+    foreach (SceneFace *edge, m_data)
     {
         if ((edge->nodeStart() == node) || (edge->nodeEnd() == node))
         {
-            edge->scene()->undoStack()->push(new SceneEdgeCommandRemove(edge->nodeStart()->point(),
+            edge->scene()->undoStack()->push(new SceneFaceCommandRemove(edge->nodeStart()->point(),
                                                                            edge->nodeEnd()->point(),
                                                                            edge->markersKeys(),
                                                                            edge->angle(),
@@ -402,9 +402,9 @@ void SceneEdgeContainer::removeConnectedToNode(SceneNode *node)
 
 }
 
-SceneEdge* SceneEdgeContainer::get(SceneEdge* edge) const
+SceneFace* SceneFaceContainer::get(SceneFace* edge) const
 {
-    foreach (SceneEdge *edgeCheck, m_data)
+    foreach (SceneFace *edgeCheck, m_data)
     {
         if ((((edgeCheck->nodeStart() == edge->nodeStart()) && (edgeCheck->nodeEnd() == edge->nodeEnd())) &&
              (fabs(edgeCheck->angle() - edge->angle()) < EPS_ZERO)) ||
@@ -418,9 +418,9 @@ SceneEdge* SceneEdgeContainer::get(SceneEdge* edge) const
     return NULL;
 }
 
-SceneEdge* SceneEdgeContainer::get(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear) const
+SceneFace* SceneFaceContainer::get(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear) const
 {
-    foreach (SceneEdge *edgeCheck, m_data)
+    foreach (SceneFace *edgeCheck, m_data)
     {
         if (((edgeCheck->nodeStart()->point() == pointStart) && (edgeCheck->nodeEnd()->point() == pointEnd))
                 && ((edgeCheck->angle() - angle) < EPS_ZERO) && (edgeCheck->segments() == segments) && (edgeCheck->isCurvilinear() == isCurvilinear))
@@ -430,9 +430,9 @@ SceneEdge* SceneEdgeContainer::get(const Point &pointStart, const Point &pointEn
     return NULL;
 }
 
-SceneEdge* SceneEdgeContainer::get(const Point &pointStart, const Point &pointEnd) const
+SceneFace* SceneFaceContainer::get(const Point &pointStart, const Point &pointEnd) const
 {
-    foreach (SceneEdge *edgeCheck, m_data)
+    foreach (SceneFace *edgeCheck, m_data)
     {
         if (((edgeCheck->nodeStart()->point() == pointStart) && (edgeCheck->nodeEnd()->point() == pointEnd)))
             return edgeCheck;
@@ -441,17 +441,17 @@ SceneEdge* SceneEdgeContainer::get(const Point &pointStart, const Point &pointEn
     return NULL;
 }
 
-RectPoint SceneEdgeContainer::boundingBox() const
+RectPoint SceneFaceContainer::boundingBox() const
 {
-    return SceneEdgeContainer::boundingBox(m_data);
+    return SceneFaceContainer::boundingBox(m_data);
 }
 
-RectPoint SceneEdgeContainer::boundingBox(QList<SceneEdge *> edges)
+RectPoint SceneFaceContainer::boundingBox(QList<SceneFace *> edges)
 {
     Point min( numeric_limits<double>::max(),  numeric_limits<double>::max());
     Point max(-numeric_limits<double>::max(), -numeric_limits<double>::max());
 
-    foreach (SceneEdge *edge, edges)
+    foreach (SceneFace *edge, edges)
     {
         // start and end node
         min.x = qMin(min.x, qMin(edge->nodeStart()->point().x, edge->nodeEnd()->point().x));
@@ -489,8 +489,8 @@ RectPoint SceneEdgeContainer::boundingBox(QList<SceneEdge *> edges)
 
 // *************************************************************************************************************************************
 
-SceneEdgeMarker::SceneEdgeMarker(SceneEdge *edge, FieldInfo *fieldInfo, QWidget *parent)
-    : QGroupBox(parent), m_fieldInfo(fieldInfo), m_edge(edge)
+SceneFaceMarker::SceneFaceMarker(SceneFace *edge, FieldInfo *fieldInfo, QWidget *parent)
+    : QGroupBox(parent), m_fieldInfo(fieldInfo), m_face(edge)
 
 {
     setTitle(fieldInfo->name());
@@ -506,88 +506,57 @@ SceneEdgeMarker::SceneEdgeMarker(SceneEdge *edge, FieldInfo *fieldInfo, QWidget 
     layoutBoundary->addWidget(cmbBoundary, 1);
     layoutBoundary->addWidget(btnBoundary);
 
-    // refine towards edge
-    chkRefineTowardsEdge = new QCheckBox();
-    connect(chkRefineTowardsEdge, SIGNAL(stateChanged(int)), this, SLOT(doRefineTowardsEdge(int)));
-
-    txtRefineTowardsEdge = new QSpinBox(this);
-    txtRefineTowardsEdge->setMinimum(0);
-    txtRefineTowardsEdge->setMaximum(10);
-
-    QHBoxLayout *layoutRefineTowardsEdge = new QHBoxLayout();
-    layoutRefineTowardsEdge->addWidget(chkRefineTowardsEdge);
-    layoutRefineTowardsEdge->addWidget(txtRefineTowardsEdge);
-    layoutRefineTowardsEdge->addStretch();
-
     QFormLayout *layoutBoundaries = new QFormLayout();
     layoutBoundaries->addRow(tr("Boundary condition:"), layoutBoundary);
-    layoutBoundaries->addRow(tr("Refine towards edge:"), layoutRefineTowardsEdge);
 
     setLayout(layoutBoundaries);
 }
 
-void SceneEdgeMarker::load()
+void SceneFaceMarker::load()
 {
-    if (m_edge->hasMarker(m_fieldInfo))
-        cmbBoundary->setCurrentIndex(cmbBoundary->findData(m_edge->marker(m_fieldInfo)->variant()));
-
-    // edge refinement
-    int refinement = m_fieldInfo->edgeRefinement(m_edge);
-    chkRefineTowardsEdge->setChecked(refinement > 0);
-    txtRefineTowardsEdge->setEnabled(chkRefineTowardsEdge->isChecked());
-    txtRefineTowardsEdge->setValue(refinement);
+    if (m_face->hasMarker(m_fieldInfo))
+        cmbBoundary->setCurrentIndex(cmbBoundary->findData(m_face->marker(m_fieldInfo)->variant()));
 }
 
-bool SceneEdgeMarker::save()
+bool SceneFaceMarker::save()
 {
-    m_edge->addMarker(cmbBoundary->itemData(cmbBoundary->currentIndex()).value<SceneBoundary *>());
-
-    // edge refinement
-    if (chkRefineTowardsEdge->isChecked())
-        m_fieldInfo->setEdgeRefinement(m_edge, txtRefineTowardsEdge->text().toInt());
-    else
-        m_fieldInfo->removeEdgeRefinement(m_edge);
+    m_face->addMarker(cmbBoundary->itemData(cmbBoundary->currentIndex()).value<SceneBoundary *>());
 
     return true;
 }
 
-void SceneEdgeMarker::fillComboBox()
+void SceneFaceMarker::fillComboBox()
 {
     cmbBoundary->clear();
 
     // none marker
-    cmbBoundary->addItem(m_edge->scene()->boundaries->getNone(m_fieldInfo)->name(),
-                         m_edge->scene()->boundaries->getNone(m_fieldInfo)->variant());
+    cmbBoundary->addItem(m_face->scene()->boundaries->getNone(m_fieldInfo)->name(),
+                         m_face->scene()->boundaries->getNone(m_fieldInfo)->variant());
 
     // real markers
-    foreach (SceneBoundary *boundary, m_edge->scene()->boundaries->filter(m_fieldInfo).items())
+    foreach (SceneBoundary *boundary, m_face->scene()->boundaries->filter(m_fieldInfo).items())
     {
         cmbBoundary->addItem(boundary->name(),
                              boundary->variant());
     }
 }
 
-void SceneEdgeMarker::doBoundaryChanged(int index)
+void SceneFaceMarker::doBoundaryChanged(int index)
 {
     btnBoundary->setEnabled(cmbBoundary->currentIndex() > 0);
 }
 
-void SceneEdgeMarker::doBoundaryClicked()
+void SceneFaceMarker::doBoundaryClicked()
 {
     SceneBoundary *marker = cmbBoundary->itemData(cmbBoundary->currentIndex()).value<SceneBoundary *>();
     if (marker->showDialog(this) == QDialog::Accepted)
     {
         cmbBoundary->setItemText(cmbBoundary->currentIndex(), marker->name());
-        m_edge->scene()->invalidate();
+        m_face->scene()->invalidate();
     }
 }
 
-void SceneEdgeMarker::doRefineTowardsEdge(int state)
-{
-    txtRefineTowardsEdge->setEnabled(chkRefineTowardsEdge->isChecked());
-}
-
-SceneEdgeDialog::SceneEdgeDialog(SceneEdge *edge, QWidget *parent, bool isNew) : SceneBasicDialog(parent, isNew)
+SceneFaceDialog::SceneFaceDialog(SceneFace *edge, QWidget *parent, bool isNew) : SceneBasicDialog(parent, isNew)
 {
     m_object = edge;
 
@@ -602,17 +571,17 @@ SceneEdgeDialog::SceneEdgeDialog(SceneEdge *edge, QWidget *parent, bool isNew) :
     // setMaximumSize(sizeHint());
 }
 
-QLayout* SceneEdgeDialog::createContent()
+QLayout* SceneFaceDialog::createContent()
 {
     // layout
     QFormLayout *layout = new QFormLayout();
 
     foreach (FieldInfo *fieldInfo, m_object->scene()->parentProblem()->fieldInfos())
     {
-        SceneEdgeMarker *sceneEdge = new SceneEdgeMarker(dynamic_cast<SceneEdge *>(m_object), fieldInfo, this);
+        SceneFaceMarker *sceneEdge = new SceneFaceMarker(dynamic_cast<SceneFace *>(m_object), fieldInfo, this);
         layout->addRow(sceneEdge);
 
-        m_edgeMarkers.append(sceneEdge);
+        m_faceMarkers.append(sceneEdge);
     }
 
     txtAngle = new ValueLineEdit();
@@ -656,10 +625,10 @@ QLayout* SceneEdgeDialog::createContent()
     return layout;
 }
 
-void SceneEdgeDialog::fillComboBox()
+void SceneFaceDialog::fillComboBox()
 {
     // markers
-    foreach (SceneEdgeMarker *edgeMarker, m_edgeMarkers)
+    foreach (SceneFaceMarker *edgeMarker, m_faceMarkers)
         edgeMarker->fillComboBox();
 
     // start and end nodes
@@ -684,9 +653,9 @@ void SceneEdgeDialog::fillComboBox()
     cmbNodeEnd->blockSignals(false);
 }
 
-bool SceneEdgeDialog::load()
+bool SceneFaceDialog::load()
 {
-    SceneEdge *sceneEdge = dynamic_cast<SceneEdge *>(m_object);
+    SceneFace *sceneEdge = dynamic_cast<SceneFace *>(m_object);
 
     cmbNodeStart->blockSignals(true);
     cmbNodeEnd->blockSignals(true);
@@ -698,7 +667,7 @@ bool SceneEdgeDialog::load()
     txtSegments->setValue(sceneEdge->segments());
     chkIsCurvilinear->setChecked(sceneEdge->isCurvilinear());
 
-    foreach (SceneEdgeMarker *edgeMarker, m_edgeMarkers)
+    foreach (SceneFaceMarker *edgeMarker, m_faceMarkers)
         edgeMarker->load();
 
     nodeChanged();
@@ -709,11 +678,11 @@ bool SceneEdgeDialog::load()
     return true;
 }
 
-bool SceneEdgeDialog::save()
+bool SceneFaceDialog::save()
 {
     if (!txtAngle->evaluate(false)) return false;
 
-    SceneEdge *sceneEdge = dynamic_cast<SceneEdge *>(m_object);
+    SceneFace *sceneEdge = dynamic_cast<SceneFace *>(m_object);
 
     if (cmbNodeStart->currentIndex() == cmbNodeEnd->currentIndex())
     {
@@ -725,7 +694,7 @@ bool SceneEdgeDialog::save()
     SceneNode *nodeStart = dynamic_cast<SceneNode *>(cmbNodeStart->itemData(cmbNodeStart->currentIndex()).value<SceneBasic *>());
     SceneNode *nodeEnd = dynamic_cast<SceneNode *>(cmbNodeEnd->itemData(cmbNodeEnd->currentIndex()).value<SceneBasic *>());
 
-    SceneEdge *edgeCheck = m_object->scene()->getEdge(nodeStart->point(), nodeEnd->point());
+    SceneFace *edgeCheck = m_object->scene()->getFace(nodeStart->point(), nodeEnd->point());
     if ((edgeCheck) && ((sceneEdge != edgeCheck) || m_isNew))
     {
         QMessageBox::warning(this, tr("Edge"), tr("Edge already exists."));
@@ -750,31 +719,31 @@ bool SceneEdgeDialog::save()
     sceneEdge->setSegments(txtSegments->value());
     sceneEdge->setCurvilinear(chkIsCurvilinear->checkState() == Qt::Checked);
 
-    foreach (SceneEdgeMarker *edgeMarker, m_edgeMarkers)
+    foreach (SceneFaceMarker *edgeMarker, m_faceMarkers)
         edgeMarker->save();
 
     m_object->scene()->invalidate();
     return true;
 }
 
-void SceneEdgeDialog::nodeChanged()
+void SceneFaceDialog::nodeChanged()
 {
     SceneNode *nodeStart = dynamic_cast<SceneNode *>(cmbNodeStart->itemData(cmbNodeStart->currentIndex()).value<SceneBasic *>());
     SceneNode *nodeEnd = dynamic_cast<SceneNode *>(cmbNodeEnd->itemData(cmbNodeEnd->currentIndex()).value<SceneBasic *>());
 
     if (nodeStart && nodeEnd)
     {
-        SceneEdge *sceneEdge = dynamic_cast<SceneEdge *>(m_object);
+        SceneFace *sceneEdge = dynamic_cast<SceneFace *>(m_object);
 
-        SceneEdge *edgeCheck = m_object->scene()->getEdge(nodeStart->point(), nodeEnd->point());
+        SceneFace *edgeCheck = m_object->scene()->getFace(nodeStart->point(), nodeEnd->point());
         buttonBox->button(QDialogButtonBox::Ok)->setEnabled(!((nodeStart == nodeEnd) || ((edgeCheck) && ((sceneEdge != edgeCheck) || m_isNew))));
 
-        SceneEdge edge(m_object->scene(), nodeStart, nodeEnd, txtAngle->number(), txtSegments->value(), chkIsCurvilinear->checkState() == Qt::Checked);
+        SceneFace edge(m_object->scene(), nodeStart, nodeEnd, txtAngle->number(), txtSegments->value(), chkIsCurvilinear->checkState() == Qt::Checked);
         lblLength->setText(QString("%1 m").arg(edge.length()));
     }
 }
 
-void SceneEdgeDialog::swap()
+void SceneFaceDialog::swap()
 {
     // swap nodes
     int startIndex = cmbNodeStart->currentIndex();
@@ -782,13 +751,13 @@ void SceneEdgeDialog::swap()
     cmbNodeEnd->setCurrentIndex(startIndex);
 }
 
-void SceneEdgeDialog::angleChanged()
+void SceneFaceDialog::angleChanged()
 {
     txtSegments->setEnabled(txtAngle->value().isEvaluated() && txtAngle->value().number() > 0.0);
     chkIsCurvilinear->setEnabled(txtAngle->value().isEvaluated() && txtAngle->value().number() > 0.0);
 }
 
-SceneEdgeSelectDialog::SceneEdgeSelectDialog(MarkedSceneBasicContainer<SceneBoundary, SceneEdge> edges, QWidget *parent)
+SceneEdgeSelectDialog::SceneEdgeSelectDialog(MarkedSceneBasicContainer<SceneBoundary, SceneFace> edges, QWidget *parent)
     : QDialog(parent), m_edges(edges)
 {
     setWindowIcon(icon("scene-edge"));
@@ -846,7 +815,7 @@ void SceneEdgeSelectDialog::load()
     {
         SceneBoundary* boundary = NULL;
         bool match = true;
-        foreach (SceneEdge *edge, m_edges.items())
+        foreach (SceneFace *edge, m_edges.items())
         {
             if (boundary)
                 match = match && (boundary == edge->marker(fieldInfo));
@@ -862,7 +831,7 @@ void SceneEdgeSelectDialog::load()
 
 bool SceneEdgeSelectDialog::save()
 {
-    foreach (SceneEdge* edge, m_edges.items())
+    foreach (SceneFace* edge, m_edges.items())
     {
         foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
         {
@@ -889,7 +858,7 @@ void SceneEdgeSelectDialog::doReject()
 
 // **********************************************************************************************************************************
 
-SceneEdgeCommandAdd::SceneEdgeCommandAdd(const Point &pointStart, const Point &pointEnd, const QMap<QString, QString> &markers,
+SceneFaceCommandAdd::SceneFaceCommandAdd(const Point &pointStart, const Point &pointEnd, const QMap<QString, QString> &markers,
                                          const Value &angle, int segments, bool isCurvilinear, QUndoCommand *parent) : QUndoCommand(parent)
 {
     m_pointStart = pointStart;
@@ -900,25 +869,25 @@ SceneEdgeCommandAdd::SceneEdgeCommandAdd(const Point &pointStart, const Point &p
     m_isCurvilinear = isCurvilinear;
 }
 
-void SceneEdgeCommandAdd::undo()
+void SceneFaceCommandAdd::undo()
 {
-    Agros2D::problem()->scene()->edges->remove(Agros2D::problem()->scene()->getEdge(m_pointStart, m_pointEnd, m_angle.number(), m_segments, m_isCurvilinear));
+    Agros2D::problem()->scene()->faces->remove(Agros2D::problem()->scene()->getFace(m_pointStart, m_pointEnd, m_angle.number(), m_segments, m_isCurvilinear));
     Agros2D::problem()->scene()->invalidate();
 }
 
-void SceneEdgeCommandAdd::redo()
+void SceneFaceCommandAdd::redo()
 {
     // new edge
     SceneNode *nodeStart = new SceneNode(Agros2D::problem()->scene(), m_pointStart);
     nodeStart = Agros2D::problem()->scene()->addNode(nodeStart);
     SceneNode *nodeEnd = new SceneNode(Agros2D::problem()->scene(), m_pointEnd);
     nodeEnd = Agros2D::problem()->scene()->addNode(nodeEnd);
-    SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, m_angle, m_segments, m_isCurvilinear);
+    SceneFace *edge = new SceneFace(Agros2D::problem()->scene(), nodeStart, nodeEnd, m_angle, m_segments, m_isCurvilinear);
 
     edge->addMarkersFromStrings(m_markers);
 
     // add edge to the list
-    Agros2D::problem()->scene()->addEdge(edge);
+    Agros2D::problem()->scene()->addFace(edge);
     Agros2D::problem()->scene()->invalidate();
 }
 
@@ -941,7 +910,7 @@ void SceneEdgeCommandAddOrRemoveMulti::remove()
 
     for(int i = 0; i < m_pointStarts.size(); i++)
     {
-        Agros2D::problem()->scene()->edges->remove(Agros2D::problem()->scene()->getEdge(m_pointStarts[i], m_pointEnds[i], m_angles[i].number(), m_segments[i], m_isCurvilinear[i]));
+        Agros2D::problem()->scene()->faces->remove(Agros2D::problem()->scene()->getFace(m_pointStarts[i], m_pointEnds[i], m_angles[i].number(), m_segments[i], m_isCurvilinear[i]));
     }
 
     Agros2D::problem()->scene()->stopInvalidating(false);
@@ -958,7 +927,7 @@ void SceneEdgeCommandAddOrRemoveMulti::add()
         assert(nodeStart && nodeEnd);
         if(nodeStart && nodeEnd)
         {
-            SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, m_angles[i], m_segments[i], m_isCurvilinear[i]);
+            SceneFace *edge = new SceneFace(Agros2D::problem()->scene(), nodeStart, nodeEnd, m_angles[i], m_segments[i], m_isCurvilinear[i]);
 
             // if markers are not empty, we were deleting or copying "withMarkers = True"
             if(!m_markers.empty())
@@ -966,14 +935,14 @@ void SceneEdgeCommandAddOrRemoveMulti::add()
                 edge->addMarkersFromStrings(m_markers[i]);
             }
             // add edge to the list
-            Agros2D::problem()->scene()->addEdge(edge);
+            Agros2D::problem()->scene()->addFace(edge);
         }
     }
     Agros2D::problem()->scene()->stopInvalidating(false);
     Agros2D::problem()->scene()->invalidate();
 }
 
-SceneEdgeCommandRemove::SceneEdgeCommandRemove(const Point &pointStart, const Point &pointEnd, const QMap<QString, QString> &markers,
+SceneFaceCommandRemove::SceneFaceCommandRemove(const Point &pointStart, const Point &pointEnd, const QMap<QString, QString> &markers,
                                                const Value &angle, int segments, bool isCurvilinear, QUndoCommand *parent) : QUndoCommand(parent)
 {
     m_pointStart = pointStart;
@@ -984,25 +953,25 @@ SceneEdgeCommandRemove::SceneEdgeCommandRemove(const Point &pointStart, const Po
     m_isCurvilinear = isCurvilinear;
 }
 
-void SceneEdgeCommandRemove::undo()
+void SceneFaceCommandRemove::undo()
 {
     // new edge
     SceneNode *nodeStart = new SceneNode(Agros2D::problem()->scene(), m_pointStart);
     nodeStart = Agros2D::problem()->scene()->addNode(nodeStart);
     SceneNode *nodeEnd = new SceneNode(Agros2D::problem()->scene(), m_pointEnd);
     nodeEnd = Agros2D::problem()->scene()->addNode(nodeEnd);
-    SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, m_angle, m_segments, m_isCurvilinear);
+    SceneFace *edge = new SceneFace(Agros2D::problem()->scene(), nodeStart, nodeEnd, m_angle, m_segments, m_isCurvilinear);
 
     edge->addMarkersFromStrings(m_markers);
 
     // add edge to the list
-    Agros2D::problem()->scene()->addEdge(edge);
+    Agros2D::problem()->scene()->addFace(edge);
     Agros2D::problem()->scene()->invalidate();
 }
 
-void SceneEdgeCommandRemove::redo()
+void SceneFaceCommandRemove::redo()
 {
-    Agros2D::problem()->scene()->edges->remove(Agros2D::problem()->scene()->getEdge(m_pointStart, m_pointEnd, m_angle.number(), m_segments, m_isCurvilinear));
+    Agros2D::problem()->scene()->faces->remove(Agros2D::problem()->scene()->getFace(m_pointStart, m_pointEnd, m_angle.number(), m_segments, m_isCurvilinear));
     Agros2D::problem()->scene()->invalidate();
 }
 
@@ -1023,7 +992,7 @@ SceneEdgeCommandEdit::SceneEdgeCommandEdit(const Point &pointStart, const Point 
 
 void SceneEdgeCommandEdit::undo()
 {
-    SceneEdge *edge = Agros2D::problem()->scene()->getEdge(m_pointStartNew, m_pointEndNew, m_angleNew.number(), m_segmentsNew, m_isCurvilinearNew);
+    SceneFace *edge = Agros2D::problem()->scene()->getFace(m_pointStartNew, m_pointEndNew, m_angleNew.number(), m_segmentsNew, m_isCurvilinearNew);
     if (edge)
     {
         edge->setNodeStart(Agros2D::problem()->scene()->getNode(m_pointStart));
@@ -1036,7 +1005,7 @@ void SceneEdgeCommandEdit::undo()
 
 void SceneEdgeCommandEdit::redo()
 {
-    SceneEdge *edge = Agros2D::problem()->scene()->getEdge(m_pointStart, m_pointEnd, m_angle.number(), m_segments, m_isCurvilinear);
+    SceneFace *edge = Agros2D::problem()->scene()->getFace(m_pointStart, m_pointEnd, m_angle.number(), m_segments, m_isCurvilinear);
     if (edge)
     {
         edge->setNodeStart(Agros2D::problem()->scene()->getNode(m_pointStartNew));

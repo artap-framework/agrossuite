@@ -78,7 +78,7 @@ void AgrosSolver::solveProblem()
 
     try
     {
-        Agros2D::problem()->readProblemFromA2D(m_fileName);
+        Agros2D::problem()->importProblemFromA2D(m_fileName);
 
         Agros2D::log()->printMessage(tr("Problem"), tr("Problem '%1' successfuly loaded").arg(m_fileName));
 

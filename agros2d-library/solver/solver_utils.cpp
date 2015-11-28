@@ -197,9 +197,6 @@ void ProblemSolver::solveProblem()
     foreach (FieldInfo* targetfieldInfo, fieldInfosSorted)
     {
         // frequency
-        // TODO: find some better place, where some values are initialized
-        targetfieldInfo->setFrequency(m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number());
-
         SolverDeal *solverDeal = m_solverDeal[targetfieldInfo->fieldId()];
 
         // look for coupling sources

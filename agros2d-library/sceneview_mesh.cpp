@@ -238,7 +238,7 @@ void SceneViewMesh::paintGeometry()
     loadProjection2d(true);
 
     // edges
-    foreach (SceneEdge *edge, m_computation->scene()->edges->items())
+    foreach (SceneFace *edge, m_computation->scene()->faces->items())
     {
         glColor3d(COLOREDGE[0], COLOREDGE[1], COLOREDGE[2]);
         glLineWidth(EDGEWIDTH);

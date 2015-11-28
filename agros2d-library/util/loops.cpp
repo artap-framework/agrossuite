@@ -150,7 +150,7 @@ bool LoopsInfo::isInsideSeg(double angleSegStart, double angleSegEnd, double ang
     }
 }
 
-LoopsInfo::Intersection LoopsInfo::intersects(Point point, double tangent, SceneEdge* edge, Point& intersection)
+LoopsInfo::Intersection LoopsInfo::intersects(Point point, double tangent, SceneFace* edge, Point& intersection)
 {
     double x1 = edge->nodeStart()->point().x;
     double y1 = edge->nodeStart()->point().y;
@@ -272,7 +272,7 @@ LoopsInfo::Intersection LoopsInfo::intersects(Point point, double tangent, Scene
     }
 }
 
-LoopsInfo::Intersection LoopsInfo::intersects(Point point, double tangent, SceneEdge* edge)
+LoopsInfo::Intersection LoopsInfo::intersects(Point point, double tangent, SceneFace* edge)
 {
     Point intersection;
     return intersects(point, tangent, edge, intersection);
@@ -301,7 +301,7 @@ int LoopsInfo::intersectionsParity(Point point, QList<LoopsNodeEdgeData> loop)
 
         foreach (LoopsNodeEdgeData ned, loop)
         {
-            Intersection result = intersects(point, tangent, m_scene->edges->at(ned.edge));
+            Intersection result = intersects(point, tangent, m_scene->faces->at(ned.edge));
             if(result == Intersection_Uncertain)
             {
                 rejectTangent = true;
@@ -336,7 +336,7 @@ int LoopsInfo::windingNumber(Point point, QList<LoopsNodeEdgeData> loop)
     {
         // use two segments instead of arc. Point on arc to be found as intersection of arc with line going through
         // edge center and point
-        SceneEdge* edge = m_scene->edges->at(ned.edge);
+        SceneFace* edge = m_scene->faces->at(ned.edge);
         if (!edge->isStraight())
         {
             Point intersection;
@@ -460,7 +460,7 @@ void LoopsInfo::switchOrientation(int idx)
         m_loops[idx][i].reverse = !m_loops[idx][i].reverse;
 }
 
-void LoopsInfo::addEdgePoints(QList<Point> *polyline, const SceneEdge &edge, bool reverse)
+void LoopsInfo::addEdgePoints(QList<Point> *polyline, const SceneFace &edge, bool reverse)
 {
     QList<Point> localPolyline;
 
@@ -510,10 +510,10 @@ void LoopsInfo::processLoops()
 
     // find loops
     LoopsGraph graph(m_scene->nodes->length());
-    for (int edgeIdx = 0; edgeIdx < m_scene->edges->length(); edgeIdx++)
+    for (int edgeIdx = 0; edgeIdx < m_scene->faces->length(); edgeIdx++)
     {
-        SceneNode* startNode = m_scene->edges->at(edgeIdx)->nodeStart();
-        SceneNode* endNode = m_scene->edges->at(edgeIdx)->nodeEnd();
+        SceneNode* startNode = m_scene->faces->at(edgeIdx)->nodeStart();
+        SceneNode* endNode = m_scene->faces->at(edgeIdx)->nodeEnd();
         int startNodeIdx = m_scene->nodes->items().indexOf(startNode);
         int endNodeIdx = m_scene->nodes->items().indexOf(endNode);
 
@@ -703,7 +703,7 @@ void LoopsInfo::processLoops()
 
     // use the loops to determine what is the right and left label for each edge
 
-    foreach(SceneEdge* edge, m_scene->edges->items())
+    foreach(SceneFace* edge, m_scene->faces->items())
     {
         edge->unsetRightLeftLabelIdx();
     }
@@ -749,7 +749,7 @@ void LoopsInfo::processLoops()
                     {
                         // qDebug() <<  edgesLoop[loopIdx][k];
 
-                        SceneEdge *edge = m_scene->edges->at(edgesLoop[loopIdx][k]);
+                        SceneFace *edge = m_scene->faces->at(edgesLoop[loopIdx][k]);
 
                         int index = label->isHole() ? MARKER_IDX_NOT_EXISTING : labelIdx;
                         bool reverse = edgesReverse[loopIdx][k];
@@ -856,13 +856,13 @@ void LoopsInfo::processPolygonTriangles(bool force)
             // QList<Point> contour;
             for (int j = 0; j < m_loops[i].size(); j++)
             {
-                SceneEdge *edge = m_scene->edges->items().at(m_loops[i][j].edge);
+                SceneFace *edge = m_scene->faces->items().at(m_loops[i][j].edge);
                 if ((edge->nodeStart()->numberOfConnectedEdges() > 0) && (edge->nodeEnd()->numberOfConnectedEdges() > 0))
                 {
                     if (m_loops[i][j].reverse)
-                        addEdgePoints(&polyline, SceneEdge(edge->scene(), edge->nodeStart(), edge->nodeEnd(), edge->angle()), true);
+                        addEdgePoints(&polyline, SceneFace(edge->scene(), edge->nodeStart(), edge->nodeEnd(), edge->angle()), true);
                     else
-                        addEdgePoints(&polyline, SceneEdge(edge->scene(), edge->nodeStart(), edge->nodeEnd(), edge->angle()));
+                        addEdgePoints(&polyline, SceneFace(edge->scene(), edge->nodeStart(), edge->nodeEnd(), edge->angle()));
                 }
             }
 

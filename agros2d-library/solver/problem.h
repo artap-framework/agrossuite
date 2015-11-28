@@ -121,11 +121,13 @@ public:
     inline bool hasCoupling(FieldInfo *sourceField, FieldInfo *targetField) { return (m_couplingInfos.contains(QPair<FieldInfo*, FieldInfo* >(sourceField, targetField))); }
     inline bool hasCoupling(const QString &sourceFieldId, const QString &targetFieldId) { return hasCoupling(fieldInfo(sourceFieldId), fieldInfo(targetFieldId)); }
 
-    void readProblemFromA2D(const QString &fileName);
-    void readProblemFromA2D31(const QString &fileName);
-    void transformProblem(const QString &fileName, const QString &tempFileName, double version);
+    virtual QString problemFileName() const = 0;
 
-    void writeProblemToA2D(const QString &fileName);
+    void importProblemFromA2D(const QString &fileName);
+    void exportProblemToA2D(const QString &fileName);
+
+    void readProblemFromJson(const QString &fileName = "");
+    void writeProblemToJson(const QString &fileName = "");
 
 protected:
     Scene *m_scene;
@@ -167,20 +169,24 @@ public:
     QSharedPointer<Computation> createComputation(bool newComputation = false, bool setCurrentComputation = true);
     inline QSharedPointer<Computation> currentComputation() { return m_currentComputation; }
 
-    void readProblemFromArchive(const QString &fileName);
-    void writeProblemToArchive(const QString &fileName, bool onlyProblemFile = true);
-    void readProblemFromFile(const QString &fileName);
+    void readProblemFromArchive(const QString &archiveFileName);
+    void writeProblemToArchive(const QString &archiveFileName, bool onlyProblemFile = true);
+    void readProblemFromFile(const QString &archiveFileName);
 
     inline Studies *studies() { return m_studies; }
 
+    // filenames
+    virtual QString problemFileName() const;
+    inline QString archiveFileName() const { return m_fileName; }
+
 signals:
-    void fileNameChanged(const QString &fileName);
+    void fileNameChanged(const QString &archiveFileName);
 
 public slots:
     virtual void clearFieldsAndConfig();
-    inline void doFileNameChanged(const QString &name) { m_config->setFileName(name); }
 
 private:
+    QString m_fileName;
     QSharedPointer<Computation> m_currentComputation;
     Studies *m_studies;
 
@@ -246,6 +252,7 @@ public:
     void meshWithGUI();
     void solveWithGUI();
 
+    virtual QString problemFileName() const;
     inline QString problemDir() { return m_problemDir; }
 
 signals:

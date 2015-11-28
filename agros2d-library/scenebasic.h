@@ -32,7 +32,7 @@ class SceneBasic;
 template <typename MarkerType> class MarkedSceneBasic;
 template <typename MarkerType> class MarkerContainer;
 class SceneNode;
-class SceneEdge;
+class SceneFace;
 class SceneLabel;
 class Marker;
 class FieldInfo;

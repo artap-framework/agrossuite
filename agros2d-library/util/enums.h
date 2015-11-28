@@ -35,6 +35,7 @@ enum CoordinateType
     CoordinateType_Planar = 0,
     CoordinateType_Axisymmetric = 1
 };
+Q_DECLARE_METATYPE(CoordinateType)
 
 enum AnalysisType
 {
@@ -43,6 +44,7 @@ enum AnalysisType
     AnalysisType_Transient = 2,
     AnalysisType_Harmonic = 3
 };
+Q_DECLARE_METATYPE(AnalysisType)
 
 enum AdaptivityMethod
 {
@@ -52,6 +54,7 @@ enum AdaptivityMethod
     AdaptivityMethod_P = 2,
     AdaptivityMethod_HP = 0
 };
+Q_DECLARE_METATYPE(AdaptivityMethod)
 
 enum AdaptivityEstimator
 {
@@ -86,6 +89,7 @@ enum LinearityType
     LinearityType_Picard = 1,
     LinearityType_Newton = 2
 };
+Q_DECLARE_METATYPE(LinearityType)
 
 enum DampingType
 {
@@ -117,6 +121,7 @@ enum MeshType
     // MeshType_NETGEN_QuadDominated = 11
     MeshType_CUBIT = 12
 };
+Q_DECLARE_METATYPE(MeshType)
 
 enum PhysicFieldVariableComp
 {
@@ -267,6 +272,7 @@ enum MatrixSolverType
     SOLVER_DEALII,
     SOLVER_EMPTY = 100
 };
+Q_DECLARE_METATYPE(MatrixSolverType)
 
 enum DirectMatrixSolverType
 {

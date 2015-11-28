@@ -403,13 +403,13 @@ void PySolution::surfaceIntegrals(const vector<int> &edges, int timeStep, int ad
         {
             for (vector<int>::const_iterator it = edges.begin(); it != edges.end(); ++it)
             {
-                if ((*it >= 0) && (*it < m_computation->scene()->edges->length()))
+                if ((*it >= 0) && (*it < m_computation->scene()->faces->length()))
                 {
-                    m_computation->scene()->edges->at(*it)->setSelected(true);
+                    m_computation->scene()->faces->at(*it)->setSelected(true);
                 }
                 else
                 {
-                    throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(m_computation->scene()->edges->length()-1).toStdString());
+                    throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(m_computation->scene()->faces->length()-1).toStdString());
                     results = values;
                     return;
                 }

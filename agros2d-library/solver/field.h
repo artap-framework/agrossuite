@@ -64,6 +64,8 @@ public:
     enum Type
     {
         Unknown,
+        Analysis,
+        Linearity,
         NonlinearResidualNorm,
         NonlinearRelativeChangeOfSolutions,
         NonlinearDampingType,
@@ -78,6 +80,7 @@ public:
         PicardAndersonNumberOfLastVectors,
         SpaceNumberOfRefinements,
         SpacePolynomialOrder,
+        Adaptivity,
         AdaptivitySteps,
         AdaptivityTolerance,
         AdaptivityEstimator,
@@ -89,6 +92,7 @@ public:
         AdaptivityTransientRedoneEach,
         TransientTimeSkip,
         TransientInitialCondition,
+        LinearSolver,
         LinearSolverIterDealIIMethod,
         LinearSolverIterDealIIPreconditioner,
         LinearSolverIterToleranceAbsolute,
@@ -100,30 +104,25 @@ public:
     };
 
     // analysis type
-    AnalysisType analysisType() const { return m_analysisType; }
+    inline AnalysisType analysisType() const { return m_setting[Analysis].value<AnalysisType>(); }
     void setAnalysisType(const AnalysisType analysisType);
 
     // linearity
-    inline LinearityType linearityType() const {return m_linearityType; }
-    void setLinearityType(const LinearityType lt) { m_linearityType = lt; emit changed(); }
+    inline LinearityType linearityType() const {return m_setting[Linearity].value<LinearityType>(); }
+    void setLinearityType(const LinearityType linearityType) { m_setting[Linearity] = QVariant::fromValue(linearityType); emit changed(); }
 
     QList<LinearityType> availableLinearityTypes(AnalysisType at) const;
 
     // adaptivity
-    inline AdaptivityMethod adaptivityType() const { return m_adaptivityType; }
-    void setAdaptivityType(const AdaptivityMethod at) { m_adaptivityType = at; emit changed(); }
+    inline AdaptivityMethod adaptivityType() const { return m_setting[Adaptivity].value<AdaptivityMethod>(); }
+    void setAdaptivityType(const AdaptivityMethod adaptivityType) { m_setting[Adaptivity] = QVariant::fromValue(adaptivityType); emit changed(); }
 
     // matrix
-    inline MatrixSolverType matrixSolver() const { return m_matrixSolver; }
-    void setMatrixSolver(const MatrixSolverType matrixSolver) { m_matrixSolver = matrixSolver; emit changed(); }
+    inline MatrixSolverType matrixSolver() const { return m_setting[LinearSolver].value<MatrixSolverType>(); }
+    void setMatrixSolver(const MatrixSolverType matrixSolver) { m_setting[LinearSolver] = QVariant::fromValue(matrixSolver); emit changed(); }
 
     // number of solutions
     inline int numberOfSolutions() const { return m_numberOfSolutions; }
-
-    const QMap<SceneEdge *, int> edgesRefinement() { return m_edgesRefinement; }
-    int edgeRefinement(SceneEdge *edge);
-    void setEdgeRefinement(SceneEdge *edge, int refinement) { m_edgesRefinement[edge] = refinement; }
-    void removeEdgeRefinement(SceneEdge *edge) { m_edgesRefinement.remove(edge); }
 
     const QMap<SceneLabel *, int> labelsRefinement() const { return m_labelsRefinement; }
     int labelRefinement(SceneLabel *label) const;
@@ -135,8 +134,11 @@ public:
     void setLabelPolynomialOrder(SceneLabel *label, int order) { m_labelsPolynomialOrder[label] = order; }
     void removeLabelPolynomialOrder(SceneLabel *label) { m_labelsPolynomialOrder.remove(label); }
 
+    // load and save
     void load(XMLProblem::field_config *configxsd);
     void save(XMLProblem::field_config *configxsd);
+    void load(QJsonObject &object);
+    void save(QJsonObject &object);
 
     inline QString typeToStringKey(Type type) { return m_settingKey[type]; }
     inline Type stringKeyToType(const QString &key) { return m_settingKey.key(key); }
@@ -230,9 +232,6 @@ public:
     QList<LinearityType> availableLinearityTypes() const {return m_availableLinearityTypes;}
 
     double labelArea(int agrosLabel) const;
-    void setFrequency(double f) {m_frequency = f; }
-    inline double frequency() const { return m_frequency; }
-
 
 signals:
     void changed();
@@ -247,22 +246,12 @@ private:
     /// unique field info
     QString m_fieldId;
 
-    // analysis type
-    AnalysisType m_analysisType;
     // number of solutions cache
     int m_numberOfSolutions;
 
     // linearity
-    LinearityType m_linearityType;
     QList<LinearityType> m_availableLinearityTypes;
 
-    // adaptivity
-    AdaptivityMethod m_adaptivityType;
-
-    // matrix solver
-    MatrixSolverType m_matrixSolver;
-
-    QMap<SceneEdge *, int> m_edgesRefinement;
     QMap<SceneLabel *, int> m_labelsRefinement;
     QMap<SceneLabel *, int> m_labelsPolynomialOrder;
 
@@ -277,7 +266,6 @@ private:
     QMap<QString, QList<QWeakPointer<Value> > > m_valuePointersTable;
     int* m_hermesMarkerToAgrosLabelConversion;
     double* m_labelAreas;
-    double m_frequency;
 };
 
 XMLModule::linearity_option findLinearityOption(XMLModule::field* module, AnalysisType analysisType, LinearityType linearityType);

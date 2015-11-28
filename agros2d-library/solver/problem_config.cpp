@@ -45,23 +45,13 @@ ProblemConfig::ProblemConfig(QWidget *parent) : QObject(parent)
     qRegisterMetaType<Value>("Value");
 
     setStringKeys();
-    setDefaultValues();
-
     clear();
 }
 
 void ProblemConfig::clear()
 {
-    m_fileName = "";
-
-    // coordinate type
-    m_coordinateType = CoordinateType_Planar;
-
-    // mesh type
-    m_meshType = MeshType_Triangle;
-
+    // set default values and types
     setDefaultValues();
-
     m_setting = m_settingDefault;
 }
 
@@ -93,9 +83,13 @@ void ProblemConfig::load(XMLProblem::problem_config *configxsd)
                 m_setting[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value()).split("|");
             else
             {
-                if (m_setting[key].canConvert<Value>())
+                if (m_settingDefault[key].userType() == qMetaTypeId<CoordinateType>())
+                    m_setting[key] = QVariant::fromValue(coordinateTypeFromStringKey(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
+                else if (m_settingDefault[key].userType() == qMetaTypeId<MeshType>())
+                    m_setting[key] = QVariant::fromValue(meshTypeFromStringKey(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
+                else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
                     m_setting[key] = QVariant::fromValue(Value(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
-                else if (m_setting[key].canConvert<ParametersType>())
+                else if (m_settingDefault[key].userType() == qMetaTypeId<ParametersType>())
                 {
                     QString str = QString::fromStdString(configxsd->problem_item().at(i).problem_value());
                     QStringList strKeysAndValues = str.split(":");
@@ -106,21 +100,11 @@ void ProblemConfig::load(XMLProblem::problem_config *configxsd)
                     ParametersType parameters;
                     for (int i = 0; i < strKeys.count(); i++)
                         parameters[strKeys[i]] = strValues[i].toDouble();
-                    /*
-                    parameters["R1"] = 0.01;
-                    parameters["R2"] = 0.03;
-                    parameters["R3"] = 0.05;
-                    parameters["R4"] = 0.06;
-                    parameters["L"] = 0.08;
-                    parameters["RB"] = 0.2;
-                    parameters["U"] = 10;
-                    parameters["eps1"] = 3;
-                    parameters["eps2"] = 4;
-                    */
+
                     m_setting[key] = QVariant::fromValue(parameters);
                 }
                 else
-                    qDebug() << "Key not found" << QString::fromStdString(configxsd->problem_item().at(i).problem_key()) << QString::fromStdString(configxsd->problem_item().at(i).problem_value());
+                    qDebug() << "Key not found (XML)" << QString::fromStdString(configxsd->problem_item().at(i).problem_key()) << QString::fromStdString(configxsd->problem_item().at(i).problem_value());
             }
         }
     }
@@ -142,9 +126,13 @@ void ProblemConfig::save(XMLProblem::problem_config *configxsd)
             configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toDouble()).toStdString()));
         else
         {
-            if (m_setting[key].canConvert<Value>())
+            if (m_settingDefault[key].userType() == qMetaTypeId<CoordinateType>())
+                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), coordinateTypeToStringKey(m_setting[key].value<CoordinateType>()).toStdString()));
+            else if (m_settingDefault[key].userType() == qMetaTypeId<MeshType>())
+                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), meshTypeToStringKey(m_setting[key].value<MeshType>()).toStdString()));
+            else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
                 configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_setting[key].value<Value>().toString().toStdString()));
-            else if (m_setting[key].canConvert<ParametersType>())
+            else if (m_settingDefault[key].userType() == qMetaTypeId<ParametersType>())
             {
                 assert(m_setting[key].value<ParametersType>().keys().count() == m_setting[key].value<ParametersType>().values().count());
 
@@ -167,6 +155,96 @@ void ProblemConfig::save(XMLProblem::problem_config *configxsd)
     }
 }
 
+void ProblemConfig::load(QJsonObject &object)
+{
+    // default
+    m_setting = m_settingDefault;
+
+    foreach (Type key, m_settingDefault.keys())
+    {
+        if (m_settingDefault[key].type() == QVariant::StringList)
+            m_setting[key] = object[typeToStringKey(key)].toString().split("|");
+        else if (m_settingDefault[key].type() == QVariant::Bool)
+            m_setting[key] = object[typeToStringKey(key)].toBool();
+        else if (m_settingDefault[key].type() == QVariant::String)
+            m_setting[key] = object[typeToStringKey(key)].toString();
+        else if (m_settingDefault[key].type() == QVariant::Double)
+            m_setting[key] = object[typeToStringKey(key)].toDouble();
+        else if (m_settingDefault[key].type() == QVariant::Int)
+            m_setting[key] = object[typeToStringKey(key)].toInt();
+        else
+        {
+            if (m_settingDefault[key].userType() == qMetaTypeId<CoordinateType>())
+                m_setting[key] = QVariant::fromValue(coordinateTypeFromStringKey(object[typeToStringKey(key)].toString()));
+            else if (m_settingDefault[key].userType() == qMetaTypeId<MeshType>())
+                m_setting[key] = QVariant::fromValue(meshTypeFromStringKey(object[typeToStringKey(key)].toString()));
+            else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
+                m_setting[key] = QVariant::fromValue(Value(object[typeToStringKey(key)].toString()));
+            else if (m_settingDefault[key].userType() == qMetaTypeId<ParametersType>())
+            {
+                QString str = object[typeToStringKey(key)].toString();
+                QStringList strKeysAndValues = str.split(":");
+                QStringList strKeys = (strKeysAndValues[0].size() > 0) ? strKeysAndValues[0].split("|") : QStringList();
+                QStringList strValues = (strKeysAndValues[1].size() > 0) ? strKeysAndValues[1].split("|") : QStringList();
+                assert(strKeys.count() == strValues.count());
+
+                ParametersType parameters;
+                for (int i = 0; i < strKeys.count(); i++)
+                    parameters[strKeys[i]] = strValues[i].toDouble();
+
+                m_setting[key] = QVariant::fromValue(parameters);
+            }
+            else
+                assert(0);
+        }
+    }
+}
+
+void ProblemConfig::save(QJsonObject &object)
+{
+    foreach (Type key, m_setting.keys())
+    {
+        if (m_settingDefault[key].type() == QVariant::StringList)
+            object[typeToStringKey(key)] = m_setting[key].toStringList().join("|");
+        else if (m_settingDefault[key].type() == QVariant::Bool)
+            object[typeToStringKey(key)] = m_setting[key].toBool();
+        else if (m_settingDefault[key].type() == QVariant::String)
+            object[typeToStringKey(key)] = m_setting[key].toString();
+        else if (m_settingDefault[key].type() == QVariant::Double)
+            object[typeToStringKey(key)] = m_setting[key].toDouble();
+        else if (m_settingDefault[key].type() == QVariant::Int)
+            object[typeToStringKey(key)] = m_setting[key].toInt();
+        else
+        {
+            if (m_settingDefault[key].userType() == qMetaTypeId<CoordinateType>())
+                object[typeToStringKey(key)] = coordinateTypeToStringKey(m_setting[key].value<CoordinateType>());
+            else if (m_settingDefault[key].userType() == qMetaTypeId<MeshType>())
+                object[typeToStringKey(key)] = meshTypeToStringKey(m_setting[key].value<MeshType>());
+            else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
+                object[typeToStringKey(key)] = m_setting[key].value<Value>().toString();
+            else if (m_settingDefault[key].userType() == qMetaTypeId<ParametersType>())
+            {
+                assert(m_setting[key].value<ParametersType>().keys().count() == m_setting[key].value<ParametersType>().values().count());
+
+                QString outKeys;
+                QString outValues;
+                int cnt = m_setting[key].value<ParametersType>().keys().count();
+                QList<QString> keys = m_setting[key].value<ParametersType>().keys();
+                QList<double> values = m_setting[key].value<ParametersType>().values();
+                for (int i = 0; i < cnt; i++)
+                {
+                    outKeys += keys[i] + ((i < cnt - 1) ? "|" : "");
+                    outValues += QString::number(values[i]) + ((i < cnt - 1) ? "|" : "");
+                }
+
+                object[typeToStringKey(key)] = QString("%1:%2").arg(outKeys).arg(outValues);
+            }
+            else
+                assert(0);
+        }
+    }
+}
+
 void ProblemConfig::setStringKeys()
 {
     m_settingKey[Frequency] = "Frequency";
@@ -177,6 +255,8 @@ void ProblemConfig::setStringKeys()
     m_settingKey[TimeConstantTimeSteps] = "TimeSteps";
     m_settingKey[TimeTotal] = "TimeTotal";
     m_settingKey[Parameters] = "Parameters";
+    m_settingKey[Coordinate] = "Coordinate";
+    m_settingKey[Mesh] = "Mesh";
 }
 
 void ProblemConfig::setDefaultValues()
@@ -191,6 +271,8 @@ void ProblemConfig::setDefaultValues()
     m_settingDefault[TimeConstantTimeSteps] = 10;
     m_settingDefault[TimeTotal] = 10.0;
     m_settingDefault[Parameters] = QVariant::fromValue(ParametersType());
+    m_settingDefault[Coordinate] = QVariant::fromValue(CoordinateType_Planar);
+    m_settingDefault[Mesh] = QVariant::fromValue(MeshType_Triangle);
 }
 
 // parameters
@@ -230,8 +312,6 @@ void ProblemConfig::checkParameterName(const QString &key)
 ProblemSetting::ProblemSetting()
 {
     setStringKeys();
-    setDefaultValues();
-
     clear();
 }
 
@@ -242,9 +322,7 @@ ProblemSetting::~ProblemSetting()
 void ProblemSetting::clear()
 {
     // set default values and types
-    m_setting.clear();
     setDefaultValues();
-
     m_setting = m_settingDefault;
 }
 
@@ -465,5 +543,42 @@ void ProblemSetting::save(XMLProblem::config *configxsd)
             configxsd->item().push_back(XMLProblem::item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toInt()).toStdString()));
         else
             configxsd->item().push_back(XMLProblem::item(typeToStringKey(key).toStdString(), m_setting[key].toString().toStdString()));
+    }
+}
+
+void ProblemSetting::load(QJsonObject &object)
+{
+    // default
+    m_setting = m_settingDefault;
+
+    foreach (Type key, m_settingDefault.keys())
+    {
+        if (m_settingDefault[key].type() == QVariant::StringList)
+            m_setting[key] = object[typeToStringKey(key)].toString().split("|");
+        else if (m_settingDefault[key].type() == QVariant::Bool)
+            m_setting[key] = object[typeToStringKey(key)].toBool();
+        else if (m_settingDefault[key].type() == QVariant::String)
+            m_setting[key] = object[typeToStringKey(key)].toString();
+        else if (m_settingDefault[key].type() == QVariant::Double)
+            m_setting[key] = object[typeToStringKey(key)].toDouble();
+        else if (m_settingDefault[key].type() == QVariant::Int)
+            m_setting[key] = object[typeToStringKey(key)].toInt();
+    }
+}
+
+void ProblemSetting::save(QJsonObject &object)
+{
+    foreach (Type key, m_settingDefault.keys())
+    {
+        if (m_settingDefault[key].type() == QVariant::StringList)
+            object[typeToStringKey(key)] = m_setting[key].toStringList().join("|");
+        else if (m_settingDefault[key].type() == QVariant::Bool)
+            object[typeToStringKey(key)] = m_setting[key].toBool();
+        else if (m_settingDefault[key].type() == QVariant::String)
+            object[typeToStringKey(key)] = m_setting[key].toString();
+        else if (m_settingDefault[key].type() == QVariant::Double)
+            object[typeToStringKey(key)] = m_setting[key].toDouble();
+        else if (m_settingDefault[key].type() == QVariant::Int)
+            object[typeToStringKey(key)] = m_setting[key].toInt();
     }
 }

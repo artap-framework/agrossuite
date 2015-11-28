@@ -30,7 +30,7 @@ int PyGeometry::nodesCount() const
 
 int PyGeometry::edgesCount() const
 {
-    return Agros2D::problem()->scene()->edges->count();
+    return Agros2D::problem()->scene()->faces->count();
 }
 
 int PyGeometry::labelsCount() const
@@ -72,7 +72,7 @@ int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::str
     testAngle(valueAngle.number());
     testSegments(segments);
 
-    foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
+    foreach (SceneFace *edge, Agros2D::problem()->scene()->faces->items())
     {
         if (almostEqualRelAndAbs(edge->nodeStart()->point().x, pointStart.numberX(), POINT_ABS_ZERO, POINT_REL_ZERO) &&
                 almostEqualRelAndAbs(edge->nodeEnd()->point().x, pointEnd.numberX(), POINT_ABS_ZERO, POINT_REL_ZERO) &&
@@ -85,12 +85,11 @@ int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::str
     nodeStart = Agros2D::problem()->scene()->addNode(nodeStart);
     SceneNode *nodeEnd = new SceneNode(Agros2D::problem()->scene(), pointEnd);
     nodeEnd = Agros2D::problem()->scene()->addNode(nodeEnd);
-    SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, valueAngle, segments, curvilinear);
+    SceneFace *edge = new SceneFace(Agros2D::problem()->scene(), nodeStart, nodeEnd, valueAngle, segments, curvilinear);
 
     try
     {
-        setBoundaries(edge, boundaries);
-        setRefinementsOnEdge(edge, refinements);
+        setBoundaries(edge, boundaries);       
     }
     catch (std::exception& e)
     {
@@ -98,9 +97,9 @@ int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::str
         throw;
     }
 
-    Agros2D::problem()->scene()->addEdge(edge);
+    Agros2D::problem()->scene()->addFace(edge);
 
-    return Agros2D::problem()->scene()->edges->items().indexOf(edge);
+    return Agros2D::problem()->scene()->faces->items().indexOf(edge);
 }
 
 int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string angle, int segments, int curvilinear,
@@ -122,22 +121,21 @@ int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string
     testAngle(valueAngle.number());
     testSegments(segments);
 
-    foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
+    foreach (SceneFace *edge, Agros2D::problem()->scene()->faces->items())
     {
         if (Agros2D::problem()->scene()->nodes->items().indexOf(edge->nodeStart()) == nodeStartIndex &&
                 Agros2D::problem()->scene()->nodes->items().indexOf(edge->nodeEnd()) == nodeEndIndex)
             throw logic_error(QObject::tr("Edge already exist.").toStdString());
     }
 
-    SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(),
+    SceneFace *edge = new SceneFace(Agros2D::problem()->scene(),
                                     Agros2D::problem()->scene()->nodes->at(nodeStartIndex),
                                     Agros2D::problem()->scene()->nodes->at(nodeEndIndex),
                                     valueAngle, segments, curvilinear);
 
     try
     {
-        setBoundaries(edge, boundaries);
-        setRefinementsOnEdge(edge, refinements);
+        setBoundaries(edge, boundaries);        
     }
     catch (std::exception& e)
     {
@@ -145,31 +143,30 @@ int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string
         throw;
     }
 
-    Agros2D::problem()->scene()->addEdge(edge);
+    Agros2D::problem()->scene()->addFace(edge);
 
-    return Agros2D::problem()->scene()->edges->items().indexOf(edge);
+    return Agros2D::problem()->scene()->faces->items().indexOf(edge);
 }
 
 void PyGeometry::modifyEdge(int index, std::string angle, int segments, int isCurvilinear, const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
 {
     Value valueAngle = Value(QString::fromStdString(angle));
 
-    if (Agros2D::problem()->scene()->edges->isEmpty())
+    if (Agros2D::problem()->scene()->faces->isEmpty())
         throw out_of_range(QObject::tr("No edges are defined.").toStdString());
 
-    if (index < 0 || index >= Agros2D::problem()->scene()->edges->length())
-        throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->edges->length()-1).toStdString());
+    if (index < 0 || index >= Agros2D::problem()->scene()->faces->length())
+        throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->faces->length()-1).toStdString());
 
     testAngle(valueAngle.number());
     testSegments(segments);
 
-    SceneEdge *edge = Agros2D::problem()->scene()->edges->items().at(index);
+    SceneFace *edge = Agros2D::problem()->scene()->faces->items().at(index);
 
     edge->setAngleValue(valueAngle);
     edge->setSegments(segments);
     edge->setCurvilinear(isCurvilinear);
 
-    setRefinementsOnEdge(edge, refinements);
     setBoundaries(edge, boundaries);
 
     Agros2D::problem()->scene()->invalidate();
@@ -187,7 +184,7 @@ void PyGeometry::testSegments(int segments) const
         throw out_of_range(QObject::tr("Segments '%1' is out of range.").arg(segments).toStdString());
 }
 
-void PyGeometry::setBoundaries(SceneEdge *edge, const map<std::string, std::string> &boundaries)
+void PyGeometry::setBoundaries(SceneFace *edge, const map<std::string, std::string> &boundaries)
 {
     for (map<std::string, std::string>::const_iterator i = boundaries.begin(); i != boundaries.end(); ++i)
     {
@@ -210,23 +207,6 @@ void PyGeometry::setBoundaries(SceneEdge *edge, const map<std::string, std::stri
 
         if (!assigned)
             throw invalid_argument(QObject::tr("Boundary condition '%1' doesn't exists.").arg(marker).toStdString());
-    }
-}
-
-void PyGeometry::setRefinementsOnEdge(SceneEdge *edge, const map<std::string, int> &refinements)
-{
-    for (map<std::string, int>::const_iterator i = refinements.begin(); i != refinements.end(); ++i)
-    {
-        QString field = QString::fromStdString((*i).first);
-        int refinement = (*i).second;
-
-        if (!Agros2D::problem()->hasField(field))
-            throw invalid_argument(QObject::tr("Invalid field id '%1'.").arg(field).toStdString());
-
-        if ((refinement < 0) || (refinement > 10))
-            throw out_of_range(QObject::tr("Number of refinements '%1' is out of range (0 - 10).").arg(refinement).toStdString());
-
-        Agros2D::problem()->fieldInfo(field)->setEdgeRefinement(edge, refinement);
     }
 }
 
@@ -381,10 +361,10 @@ void PyGeometry::removeEdges(const vector<int> &edges)
     {
         for (vector<int>::const_iterator it = edges.begin(); it != edges.end(); ++it)
         {
-            if ((*it >= 0) && (*it < Agros2D::problem()->scene()->edges->length()))
-                Agros2D::problem()->scene()->edges->at(*it)->setSelected(true);
+            if ((*it >= 0) && (*it < Agros2D::problem()->scene()->faces->length()))
+                Agros2D::problem()->scene()->faces->at(*it)->setSelected(true);
             else
-                throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->edges->length()-1).toStdString());
+                throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->faces->length()-1).toStdString());
         }
     }
     else
@@ -441,10 +421,10 @@ void PyGeometry::selectEdges(const vector<int> &edges)
     {
         for (vector<int>::const_iterator it = edges.begin(); it != edges.end(); ++it)
         {
-            if ((*it >= 0) && (*it < Agros2D::problem()->scene()->edges->length()))
-                Agros2D::problem()->scene()->edges->at(*it)->setSelected(true);
+            if ((*it >= 0) && (*it < Agros2D::problem()->scene()->faces->length()))
+                Agros2D::problem()->scene()->faces->at(*it)->setSelected(true);
             else
-                throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->edges->length()-1).toStdString());
+                throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->faces->length()-1).toStdString());
         }
     }
     else
@@ -488,7 +468,7 @@ void PyGeometry::selectEdgeByPoint(double x, double y)
 {
     Agros2D::problem()->scene()->selectNone();
 
-    SceneEdge *edge = SceneEdge::findClosestEdge(Agros2D::problem()->scene(), Point(x, y));
+    SceneFace *edge = SceneFace::findClosestFace(Agros2D::problem()->scene(), Point(x, y));
     if (edge)
         edge->setSelected(true);
     else
@@ -538,11 +518,11 @@ void PyGeometry::exportVTK(const std::string &fileName) const
 
 void PyGeometry::exportSVG(const std::string &fileName) const
 {
-    QString geometry = generateSvgGeometry(Agros2D::problem()->scene()->edges->items());
+    QString geometry = generateSvgGeometry(Agros2D::problem()->scene()->faces->items());
     writeStringContent(QString::fromStdString(fileName), geometry);
 }
 
 std::string PyGeometry::exportSVG() const
 {
-    return generateSvgGeometry(Agros2D::problem()->scene()->edges->items()).toStdString();
+    return generateSvgGeometry(Agros2D::problem()->scene()->faces->items()).toStdString();
 }

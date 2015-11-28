@@ -334,36 +334,35 @@ void ExamplesWidget::problemInfo(const QString &fileName)
 
         if (fileInfo.suffix() == "ags")
         {
-            // extract problem.a2d file to temp
-            QStringList lst;
-            lst << "problem.a2d";
-            JlCompress::extractFiles(fileInfo.absoluteFilePath(), lst, tempProblemDir());
+            QStringList files = JlCompress::getFileList(fileInfo.absoluteFilePath());
+            // extract problem file to temp
+            QString problemName = "";
+            if (files.contains("problem.json"))
+                problemName = "problem.json";
+            else
+                problemName = "problem.a2d";
 
-            QString fn = QString("%1/%2").arg(tempProblemDir()).arg("problem.a2d");
+            JlCompress::extractFiles(fileInfo.absoluteFilePath(), QStringList() << problemName, tempProblemDir());
+
+            QString fn = QString("%1/%2").arg(tempProblemDir()).arg(problemName);
             this->problemInfo(fn);
             QFile::remove(fn);
 
             return;
         }
-        else if (fileInfo.suffix() == "a2d")
+        else if (fileInfo.suffix() == "json")
         {
-            QSharedPointer<Computation> computation = QSharedPointer<Computation>(new Computation(""));
-            computation->readProblemFromA2D31(fileName);
+            QSharedPointer<Computation> computation = QSharedPointer<Computation>(new Computation());
+            computation->readProblemFromJson(fileName);
             m_infoWidget->showProblemInfo(computation.data());
 
-            // details
-            /*
-            QString detailsFilename(QString("%1/%2/index.html").arg(fileInfo.absolutePath()).arg(fileInfo.baseName()));
-            if (QFile::exists(detailsFilename))
-            {
-                // replace current path in index.html
-                QString detail = readFileContent(detailsFilename);
-                detail = detail.replace("{{DIR}}", QString("%1/%2").arg(QUrl::fromLocalFile(fileInfo.absolutePath()).toString()).arg(fileInfo.baseName()));
-                detail = detail.replace("{{RESOURCES}}", QUrl::fromLocalFile(QString("%1/resources/").arg(QDir(datadir()).absolutePath())).toString());
-
-                problemInfo.SetValue("PROBLEM_DETAILS", detail.toStdString());
-            }
-            */
+            return;
+        }
+        else if (fileInfo.suffix() == "a2d")
+        {
+            QSharedPointer<Computation> computation = QSharedPointer<Computation>(new Computation());
+            computation->importProblemFromA2D(fileName);
+            m_infoWidget->showProblemInfo(computation.data());
 
             return;
         }
@@ -377,6 +376,20 @@ void ExamplesWidget::problemInfo(const QString &fileName)
         {
             // templateName = "example_form.tpl";
         }
+
+        // details
+        /*
+        QString detailsFilename(QString("%1/%2/index.html").arg(fileInfo.absolutePath()).arg(fileInfo.baseName()));
+        if (QFile::exists(detailsFilename))
+        {
+            // replace current path in index.html
+            QString detail = readFileContent(detailsFilename);
+            detail = detail.replace("{{DIR}}", QString("%1/%2").arg(QUrl::fromLocalFile(fileInfo.absolutePath()).toString()).arg(fileInfo.baseName()));
+            detail = detail.replace("{{RESOURCES}}", QUrl::fromLocalFile(QString("%1/resources/").arg(QDir(datadir()).absolutePath())).toString());
+
+            problemInfo.SetValue("PROBLEM_DETAILS", detail.toStdString());
+        }
+        */
     }
     else
     {
@@ -390,45 +403,61 @@ QList<QIcon> ExamplesWidget::problemIcons(const QString &fileName)
 
     if (QFile::exists(fileName))
     {
+        QStringList lst;
+
         QString tmpFile = fileName;
 
         if (QFileInfo(fileName).suffix() == "ags")
         {
-            // extract problem.a2d file to temp
-            QStringList lst;
-            lst << "problem.a2d";
-            JlCompress::extractFiles(QFileInfo(fileName).absoluteFilePath(), lst, tempProblemDir());
+            // extract problem file to temp
+            QStringList files = JlCompress::getFileList(fileName);
+            // extract problem file to temp
+            QString problemName = "";
+            if (files.contains("problem.json"))
+                problemName = "problem.json";
+            else
+                problemName = "problem.a2d";
 
-            tmpFile = QString("%1/%2").arg(tempProblemDir()).arg("problem.a2d");
+            JlCompress::extractFiles(QFileInfo(fileName).absoluteFilePath(), QStringList() << problemName, tempProblemDir());
+
+            tmpFile = QString("%1/%2").arg(tempProblemDir()).arg(problemName);
         }
 
         // open file
         QFile file(tmpFile);
 
-        QDomDocument doc;
-        if (!doc.setContent(&file))
+        if (QFileInfo(fileName).suffix() == "a2d")
         {
+            // xml
+            QDomDocument doc;
+            if (!doc.setContent(&file))
+            {
+                file.close();
+                throw AgrosException(tr("File '%1' is not valid Agros2D file.").arg(fileName));
+                return icons;
+            }
             file.close();
-            throw AgrosException(tr("File '%1' is not valid Agros2D file.").arg(fileName));
-            return icons;
+
+            // main document
+            QDomElement eleDoc = doc.documentElement();
+
+            // problem info
+            QDomNode eleProblemInfo = eleDoc.elementsByTagName("problem").at(0);
+
+            QDomNode eleFields = eleProblemInfo.toElement().elementsByTagName("fields").at(0);
+            QDomNode nodeField = eleFields.firstChild();
+            while (!nodeField.isNull())
+            {
+                QDomNode eleField = nodeField.toElement();
+                icons.append(icon("fields/" + eleField.toElement().attribute("field_id")));
+
+                // next field
+                nodeField = nodeField.nextSibling();
+            }
         }
-        file.close();
-
-        // main document
-        QDomElement eleDoc = doc.documentElement();
-
-        // problem info
-        QDomNode eleProblemInfo = eleDoc.elementsByTagName("problem").at(0);
-
-        QDomNode eleFields = eleProblemInfo.toElement().elementsByTagName("fields").at(0);
-        QDomNode nodeField = eleFields.firstChild();
-        while (!nodeField.isNull())
+        else
         {
-            QDomNode eleField = nodeField.toElement();
-            icons.append(icon("fields/" + eleField.toElement().attribute("field_id")));
-
-            // next field
-            nodeField = nodeField.nextSibling();
+            // json
         }
     }
 

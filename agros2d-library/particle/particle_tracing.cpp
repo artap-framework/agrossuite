@@ -380,8 +380,8 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
             }
 
             // check crossing
-            QMap<SceneEdge *, Point> intersections;
-            foreach (SceneEdge *edge, m_computation->scene()->edges->items())
+            QMap<SceneFace *, Point> intersections;
+            foreach (SceneFace *edge, m_computation->scene()->faces->items())
             {
                 QList<Point> incts = intersection(Point(position.x, position.y), Point(newPositionH.x, newPositionH.y),
                                                   Point(), 0.0, 0.0,
@@ -395,9 +395,9 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
 
             // find the closest intersection
             Point intersect;
-            SceneEdge *crossingEdge = NULL;
+            SceneFace *crossingEdge = NULL;
             double distance = numeric_limits<double>::max();
-            for (QMap<SceneEdge *, Point>::const_iterator it = intersections.begin(); it != intersections.end(); ++it)
+            for (QMap<SceneFace *, Point>::const_iterator it = intersections.begin(); it != intersections.end(); ++it)
                 if ((it.value() - Point(position.x, position.y)).magnitude() < distance)
                 {
                     distance = (it.value() - Point(position.x, position.y)).magnitude();

@@ -53,8 +53,6 @@ FieldInfo::FieldInfo(QString fieldId)
     assert(m_plugin);
 
     setStringKeys();
-    setDefaultValues();
-
     clear();
 
     // default analysis
@@ -72,13 +70,13 @@ double FieldInfo::labelArea(int agrosLabel) const
     return m_labelAreas[agrosLabel];
 }
 
-void FieldInfo::setAnalysisType(AnalysisType at)
+void FieldInfo::setAnalysisType(AnalysisType analysisType)
 {
-    m_analysisType = at;
+    m_setting[Analysis] = QVariant::fromValue(analysisType);
 
     foreach (XMLModule::analysis an, m_plugin->module()->general_field().analyses().analysis())
     {
-        if (an.type() == analysisTypeToStringKey(at).toStdString())
+        if (an.type() == analysisTypeToStringKey(analysisType).toStdString())
         {
             m_numberOfSolutions = an.solutions();
 
@@ -106,7 +104,7 @@ void FieldInfo::setAnalysisType(AnalysisType at)
                 }
             }
 
-            m_availableLinearityTypes = availableLinearityTypes(at);
+            m_availableLinearityTypes = availableLinearityTypes(analysisType);
         }
     }
 }
@@ -127,19 +125,6 @@ QList<LinearityType> FieldInfo::availableLinearityTypes(AnalysisType at) const
     }
 
     return availableLinearityTypes;
-}
-
-
-int FieldInfo::edgeRefinement(SceneEdge *edge)
-{
-    QMapIterator<SceneEdge *, int> i(m_edgesRefinement);
-    while (i.hasNext()) {
-        i.next();
-        if (i.key() == edge)
-            return i.value();
-    }
-
-    return 0;
 }
 
 int FieldInfo::labelRefinement(SceneLabel *label) const
@@ -170,20 +155,11 @@ int FieldInfo::labelPolynomialOrder(SceneLabel *label)
 void FieldInfo::clear()
 {
     // set default values and types
-    m_setting.clear();
     setDefaultValues();
-
     m_setting = m_settingDefault;
 
-    m_edgesRefinement.clear();
     m_labelsRefinement.clear();
     m_labelsPolynomialOrder.clear();
-
-    m_analysisType = AnalysisType_Undefined;
-    m_linearityType = LinearityType_Linear;
-    m_adaptivityType = AdaptivityMethod_None;
-    // m_matrixSolver = SOLVER_MUMPS;
-    m_matrixSolver = SOLVER_UMFPACK;
 }
 
 void FieldInfo::refineMesh(dealii::Triangulation<2> *mesh)
@@ -191,32 +167,6 @@ void FieldInfo::refineMesh(dealii::Triangulation<2> *mesh)
     // distort random
     // dealii::GridTools::distort_random<2>(0.2, *mesh);
     mesh->refine_global(value(FieldInfo::SpaceNumberOfRefinements).toInt());
-
-    /*
-    // refine mesh - boundary
-    foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
-    {
-        if (edgeRefinement(edge) > 0)
-        {
-            mesh->refine_towards_boundary(QString::number(Agros2D::problem()->scene()->edges->items().indexOf(edge)).toStdString(),
-                                          edgeRefinement(edge));
-        }
-    }
-
-    // refine mesh - elements
-    foreach (SceneLabel *label, Agros2D::problem()->scene()->labels->items())
-    {
-        if (!label->marker(this)->isNone())
-        {
-            if (labelRefinement(label) > 0)
-                mesh->refine_in_area(QString::number(Agros2D::problem()->scene()->labels->items().indexOf(label)).toStdString(),
-                                     labelRefinement(label));
-            else if (value(FieldInfo::SpaceNumberOfRefinements).toInt() > 0)
-                mesh->refine_in_area(QString::number(Agros2D::problem()->scene()->labels->items().indexOf(label)).toStdString(),
-                                     value(FieldInfo::SpaceNumberOfRefinements).toInt());
-        }
-    }
-    */
 }
 
 // xml module
@@ -749,8 +699,8 @@ void FieldInfo::load(XMLProblem::field_config *configxsd)
                 m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value());
             else if (m_settingDefault[key].type() == QVariant::StringList)
                 m_setting[key] = QString::fromStdString(configxsd->field_item().at(i).field_value()).split("|");
-            else
-                qDebug() << "Key not found" << QString::fromStdString(configxsd->field_item().at(i).field_key()) << QString::fromStdString(configxsd->field_item().at(i).field_value());
+            // else
+            //    qDebug() << "Key not found" << QString::fromStdString(configxsd->field_item().at(i).field_key()) << QString::fromStdString(configxsd->field_item().at(i).field_value());
         }
     }
 }
@@ -765,11 +715,77 @@ void FieldInfo::save(XMLProblem::field_config *configxsd)
             configxsd->field_item().push_back(XMLProblem::field_item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toInt()).toStdString()));
         else
             configxsd->field_item().push_back(XMLProblem::field_item(typeToStringKey(key).toStdString(), m_setting[key].toString().toStdString()));
+
+    }
+}
+
+void FieldInfo::load(QJsonObject &object)
+{
+    // default
+    m_setting = m_settingDefault;
+
+    foreach (Type key, m_settingDefault.keys())
+    {
+        if (m_settingDefault[key].type() == QVariant::StringList)
+            m_setting[key] = object[typeToStringKey(key)].toString().split("|");
+        else if (m_settingDefault[key].type() == QVariant::Bool)
+            m_setting[key] = object[typeToStringKey(key)].toBool();
+        else if (m_settingDefault[key].type() == QVariant::String)
+            m_setting[key] = object[typeToStringKey(key)].toString();
+        else if (m_settingDefault[key].type() == QVariant::Double)
+            m_setting[key] = object[typeToStringKey(key)].toDouble();
+        else if (m_settingDefault[key].type() == QVariant::Int)
+            m_setting[key] = object[typeToStringKey(key)].toInt();
+        else
+        {
+            if (m_settingDefault[key].userType() == qMetaTypeId<AnalysisType>())
+                m_setting[key] = QVariant::fromValue(analysisTypeFromStringKey(object[typeToStringKey(key)].toString()));
+            else if (m_settingDefault[key].userType() == qMetaTypeId<LinearityType>())
+                m_setting[key] = QVariant::fromValue(linearityTypeFromStringKey(object[typeToStringKey(key)].toString()));
+            else if (m_settingDefault[key].userType() == qMetaTypeId<AdaptivityMethod>())
+                m_setting[key] = QVariant::fromValue(adaptivityTypeFromStringKey(object[typeToStringKey(key)].toString()));
+            else if (m_settingDefault[key].userType() == qMetaTypeId<MatrixSolverType>())
+                m_setting[key] = QVariant::fromValue(matrixSolverTypeFromStringKey( object[typeToStringKey(key)].toString()));
+            else
+                assert(0);
+        }
+    }
+}
+
+void FieldInfo::save(QJsonObject &object)
+{
+    foreach (Type key, m_settingDefault.keys())
+    {
+        if (m_settingDefault[key].type() == QVariant::StringList)
+            object[typeToStringKey(key)] = m_setting[key].toStringList().join("|");
+        else if (m_settingDefault[key].type() == QVariant::Bool)
+            object[typeToStringKey(key)] = m_setting[key].toBool();
+        else if (m_settingDefault[key].type() == QVariant::String)
+            object[typeToStringKey(key)] = m_setting[key].toString();
+        else if (m_settingDefault[key].type() == QVariant::Double)
+            object[typeToStringKey(key)] = m_setting[key].toDouble();
+        else if (m_settingDefault[key].type() == QVariant::Int)
+            object[typeToStringKey(key)] = m_setting[key].toInt();
+        else
+        {
+            if (m_settingDefault[key].userType() == qMetaTypeId<AnalysisType>())
+                object[typeToStringKey(key)] = analysisTypeToStringKey(m_setting[key].value<AnalysisType>());
+            else if (m_settingDefault[key].userType() == qMetaTypeId<LinearityType>())
+                object[typeToStringKey(key)] = linearityTypeToStringKey(m_setting[key].value<LinearityType>());
+            else if (m_settingDefault[key].userType() == qMetaTypeId<AdaptivityMethod>())
+                object[typeToStringKey(key)] = adaptivityTypeToStringKey(m_setting[key].value<AdaptivityMethod>());
+            else if (m_settingDefault[key].userType() == qMetaTypeId<MatrixSolverType>())
+                object[typeToStringKey(key)] = matrixSolverTypeToStringKey(m_setting[key].value<MatrixSolverType>());
+            else
+                assert(0);
+        }
     }
 }
 
 void FieldInfo::setStringKeys()
 {
+    m_settingKey[Analysis] = "Analysis";
+    m_settingKey[Linearity] = "Linearity";
     m_settingKey[NonlinearResidualNorm] = "NonlinearResidualNorm";
     m_settingKey[NonlinearRelativeChangeOfSolutions] = "NonlinearRelativeChangeOfSolutions";
     m_settingKey[NonlinearDampingType] = "NonlinearDampingType";
@@ -784,6 +800,7 @@ void FieldInfo::setStringKeys()
     m_settingKey[PicardAndersonNumberOfLastVectors] = "PicardAndersonNumberOfLastVectors";
     m_settingKey[SpaceNumberOfRefinements] = "SpaceNumberOfRefinements";
     m_settingKey[SpacePolynomialOrder] = "SpacePolynomialOrder";
+    m_settingKey[Adaptivity] = "Adaptivity";
     m_settingKey[AdaptivitySteps] = "AdaptivitySteps";
     m_settingKey[AdaptivityTolerance] = "AdaptivityTolerance";
     m_settingKey[AdaptivityTransientBackSteps] = "AdaptivityTransientBackSteps";
@@ -795,6 +812,7 @@ void FieldInfo::setStringKeys()
     m_settingKey[AdaptivityStrategyHP] = "AdaptivityStrategyHP";
     m_settingKey[TransientTimeSkip] = "TransientTimeSkip";
     m_settingKey[TransientInitialCondition] = "TransientInitialCondition";
+    m_settingKey[LinearSolver] = "LinearSolver";
     m_settingKey[LinearSolverIterDealIIMethod] = "LinearSolverIterDealIIMethod";
     m_settingKey[LinearSolverIterDealIIPreconditioner] = "LinearSolverIterDealIIPreconditioner";
     m_settingKey[LinearSolverIterToleranceAbsolute] = "LinearSolverIterToleranceAbsolute";
@@ -809,6 +827,8 @@ void FieldInfo::setDefaultValues()
 {
     m_settingDefault.clear();
 
+    m_settingDefault[Analysis] = QVariant::fromValue(AnalysisType_Undefined);
+    m_settingDefault[Linearity] = QVariant::fromValue(LinearityType_Linear);
     m_settingDefault[NonlinearResidualNorm] = 0.0;
     m_settingDefault[NonlinearRelativeChangeOfSolutions] = 0.1;
     m_settingDefault[NonlinearDampingType] = DampingType_Automatic;
@@ -823,6 +843,7 @@ void FieldInfo::setDefaultValues()
     m_settingDefault[PicardAndersonNumberOfLastVectors] = 3;
     m_settingDefault[SpaceNumberOfRefinements] = 1;
     m_settingDefault[SpacePolynomialOrder] = 2;
+    m_settingDefault[Adaptivity] = QVariant::fromValue(AdaptivityMethod_None);
     m_settingDefault[AdaptivitySteps] = 10;
     m_settingDefault[AdaptivityTolerance] = 1.0;
     m_settingDefault[AdaptivityEstimator] = AdaptivityEstimator_Kelly;
@@ -834,6 +855,7 @@ void FieldInfo::setDefaultValues()
     m_settingDefault[AdaptivityTransientRedoneEach] = 5;
     m_settingDefault[TransientTimeSkip] = 0.0;
     m_settingDefault[TransientInitialCondition] = 0.0;
+    m_settingDefault[LinearSolver] = QVariant::fromValue(SOLVER_UMFPACK);
     m_settingDefault[LinearSolverIterDealIIMethod] = IterSolverDealII_BiCGStab;
     m_settingDefault[LinearSolverIterDealIIPreconditioner] = PreconditionerDealII_SSOR;
     m_settingDefault[LinearSolverIterToleranceAbsolute] = 1e-16;

@@ -52,35 +52,35 @@ public:
         TimeOrder,
         TimeConstantTimeSteps,
         TimeTotal,
-        Parameters
+        Parameters,
+        Coordinate,
+        Mesh
     };
 
     ProblemConfig(QWidget *parent = 0);
 
-    inline QString labelX() { return ((m_coordinateType == CoordinateType_Planar) ? "X" : "R");  }
-    inline QString labelY() { return ((m_coordinateType == CoordinateType_Planar) ? "Y" : "Z");  }
-    inline QString labelZ() { return ((m_coordinateType == CoordinateType_Planar) ? "Z" : "a");  }
+    inline QString labelX() { return ((coordinateType() == CoordinateType_Planar) ? "X" : "R");  }
+    inline QString labelY() { return ((coordinateType() == CoordinateType_Planar) ? "Y" : "Z");  }
+    inline QString labelZ() { return ((coordinateType() == CoordinateType_Planar) ? "Z" : "a");  }
 
     void clear();
 
-    // filename
-    inline QString fileName() const { return m_fileName; }
-    void setFileName(const QString &fileName) { m_fileName = fileName; }
-
     // coordinates
-    inline CoordinateType coordinateType() const { return m_coordinateType; }
-    void setCoordinateType(const CoordinateType coordinateType) { m_coordinateType = coordinateType; emit changed(); }
+    inline CoordinateType coordinateType() const { return m_setting[ProblemConfig::Coordinate].value<CoordinateType>(); }
+    void setCoordinateType(const CoordinateType coordinateType) { m_setting[ProblemConfig::Coordinate] = QVariant::fromValue(coordinateType); emit changed(); }
 
     // mesh
-    inline MeshType meshType() const { return m_meshType; }
-    void setMeshType(const MeshType meshType) { m_meshType = meshType; emit changed(); }
+    inline MeshType meshType() const { return m_setting[ProblemConfig::Mesh].value<MeshType>(); }
+    void setMeshType(const MeshType meshType) { m_setting[ProblemConfig::Mesh] = QVariant::fromValue(meshType); emit changed(); }
 
     // load and save
     void load(XMLProblem::problem_config *configxsd);
     void save(XMLProblem::problem_config *configxsd);
+    void load(QJsonObject &object);
+    void save(QJsonObject &object);
 
-    inline QString typeToStringKey(Type type) { return m_settingKey[type]; }
-    inline Type stringKeyToType(const QString &key) { return m_settingKey.key(key); }
+    inline QString typeToStringKey(Type type) const { return m_settingKey[type]; }
+    inline Type stringKeyToType(const QString &key) const { return m_settingKey.key(key); }
 
     inline QVariant value(Type type) const { return m_setting[type]; }
     inline void setValue(Type type, int value, bool emitChanged = true) {  m_setting[type] = value; if (emitChanged) emit changed(); }
@@ -106,12 +106,6 @@ signals:
     void changed();
 
 private:
-    QString m_fileName;
-    CoordinateType m_coordinateType;
-
-    // mesh type
-    MeshType m_meshType;
-
     QMap<Type, QVariant> m_setting;
     QMap<Type, QVariant> m_settingDefault;
     QMap<Type, QString> m_settingKey;
@@ -218,8 +212,11 @@ public:
     ProblemSetting();
     ~ProblemSetting();
 
+    // load and save
     void load(XMLProblem::config *configxsd);
     void save(XMLProblem::config *configxsd);
+    void load(QJsonObject &object);
+    void save(QJsonObject &object);
 
     void clear();
 

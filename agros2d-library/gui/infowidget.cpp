@@ -97,7 +97,8 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
     problemInfo.SetValue("BASIC_INFORMATION_LABEL", tr("Basic informations").toStdString());
 
     problemInfo.SetValue("NAME_LABEL", tr("Name:").toStdString());
-    problemInfo.SetValue("NAME", QFileInfo(problem->config()->fileName()).baseName().toStdString());
+    if (Problem *preprocessor = dynamic_cast<Problem *>(problem))
+        problemInfo.SetValue("NAME", QFileInfo(preprocessor->archiveFileName()).baseName().toStdString());
 
     // general
     problemInfo.SetValue("GENERAL_LABEL", tr("General:").toStdString());
@@ -139,14 +140,14 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
     problemInfo.SetValue("GEOMETRY_NODES_LABEL", tr("Nodes:").toStdString());
     problemInfo.SetValue("GEOMETRY_NODES", QString::number(problem->scene()->nodes->count()).toStdString());
     problemInfo.SetValue("GEOMETRY_EDGES_LABEL", tr("Edges:").toStdString());
-    problemInfo.SetValue("GEOMETRY_EDGES", QString::number(problem->scene()->edges->count()).toStdString());
+    problemInfo.SetValue("GEOMETRY_EDGES", QString::number(problem->scene()->faces->count()).toStdString());
     problemInfo.SetValue("GEOMETRY_LABELS_LABEL", tr("Labels:").toStdString());
     problemInfo.SetValue("GEOMETRY_LABELS", QString::number(problem->scene()->labels->count()).toStdString());
     problemInfo.SetValue("GEOMETRY_MATERIALS_LABEL", tr("Materials:").toStdString());
     problemInfo.SetValue("GEOMETRY_MATERIALS", QString::number(problem->scene()->materials->items().count() - 1).toStdString());
     problemInfo.SetValue("GEOMETRY_BOUNDARIES_LABEL", tr("Boundaries:").toStdString());
     problemInfo.SetValue("GEOMETRY_BOUNDARIES", QString::number(problem->scene()->boundaries->items().count() - 1).toStdString());
-    problemInfo.SetValue("GEOMETRY_SVG", generateSvgGeometry(problem->scene()->edges->items()).toStdString());
+    problemInfo.SetValue("GEOMETRY_SVG", generateSvgGeometry(problem->scene()->faces->items()).toStdString());
 
     // parameters
     ParametersType parameters = problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
@@ -224,18 +225,21 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
     }
 
     // details
-    if (!problem->config()->fileName().isEmpty())
+    if (Problem *preprocessor = dynamic_cast<Problem *>(problem))
     {
-        QFileInfo fileInfo(problem->config()->fileName());
-        QString detailsFilename(QString("%1/%2/index.html").arg(fileInfo.absolutePath()).arg(fileInfo.baseName()));
-        if (QFile::exists(detailsFilename))
+        if (!preprocessor->archiveFileName().isEmpty())
         {
-            // replace current path in index.html
-            QString detail = readFileContent(detailsFilename);
-            detail = detail.replace("{{DIR}}", QString("%1/%2").arg(QUrl::fromLocalFile(fileInfo.absolutePath()).toString()).arg(fileInfo.baseName()));
-            detail = detail.replace("{{RESOURCES}}", QUrl::fromLocalFile(QString("%1/resources/").arg(QDir(datadir()).absolutePath())).toString());
+            QFileInfo fileInfo(preprocessor->archiveFileName());
+            QString detailsFilename(QString("%1/%2/index.html").arg(fileInfo.absolutePath()).arg(fileInfo.baseName()));
+            if (QFile::exists(detailsFilename))
+            {
+                // replace current path in index.html
+                QString detail = readFileContent(detailsFilename);
+                detail = detail.replace("{{DIR}}", QString("%1/%2").arg(QUrl::fromLocalFile(fileInfo.absolutePath()).toString()).arg(fileInfo.baseName()));
+                detail = detail.replace("{{RESOURCES}}", QUrl::fromLocalFile(QString("%1/resources/").arg(QDir(datadir()).absolutePath())).toString());
 
-            problemInfo.SetValue("PROBLEM_DETAILS", detail.toStdString());
+                problemInfo.SetValue("PROBLEM_DETAILS", detail.toStdString());
+            }
         }
     }
 

@@ -25,13 +25,13 @@
 #include "scenemarkerdialog.h"
 
 class Scene;
-class SceneEdgeCommandAdd;
-class SceneEdgeCommandRemove;
+class SceneFaceCommandAdd;
+class SceneFaceCommandRemove;
 
-class AGROS_LIBRARY_API SceneEdge : public MarkedSceneBasic<SceneBoundary>
+class AGROS_LIBRARY_API SceneFace : public MarkedSceneBasic<SceneBoundary>
 {
 public:
-    SceneEdge(Scene *scene, SceneNode *nodeStart, SceneNode *nodeEnd, const Value &angle, int segments = 3, bool isCurvilinear = true);
+    SceneFace(Scene *scene, SceneNode *nodeStart, SceneNode *nodeEnd, const Value &angle, int segments = 3, bool isCurvilinear = true);
 
     inline SceneNode *nodeStart() const { return m_nodeStart; }
     inline void setNodeStart(SceneNode *nodeStart) { m_nodeStart = nodeStart; computeCenterAndRadius(); }
@@ -64,12 +64,12 @@ public:
     inline bool isCurvilinear() const { return m_isCurvilinear; }
     void setCurvilinear(bool isCurvilinear);
 
-    SceneEdgeCommandAdd* getAddCommand();
-    SceneEdgeCommandRemove* getRemoveCommand();
+    SceneFaceCommandAdd* getAddCommand();
+    SceneFaceCommandRemove* getRemoveCommand();
 
     int showDialog(QWidget *parent, bool isNew = false);
 
-    static SceneEdge *findClosestEdge(Scene *scene, const Point &point);
+    static SceneFace *findClosestFace(Scene *scene, const Point &point);
 
     void addMarkersFromStrings(QMap<QString, QString> markers);
 
@@ -121,37 +121,37 @@ private:
     int m_rightLabelIdx;
 };
 
-Q_DECLARE_METATYPE(SceneEdge *)
+Q_DECLARE_METATYPE(SceneFace *)
 
 // *************************************************************************************************************************************
 
-class SceneEdgeContainer : public MarkedSceneBasicContainer<SceneBoundary, SceneEdge>
+class SceneFaceContainer : public MarkedSceneBasicContainer<SceneBoundary, SceneFace>
 {
 public:
     void removeConnectedToNode(SceneNode* node);
 
     /// if container contains the same edge, returns it. Otherwise returns NULL
-    SceneEdge* get(SceneEdge* edge) const;
+    SceneFace* get(SceneFace* edge) const;
 
     /// returns corresponding edge or NULL
-    SceneEdge* get(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear) const;
+    SceneFace* get(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear) const;
 
     /// returns corresponding edge or NULL
-    SceneEdge* get(const Point &pointStart, const Point &pointEnd) const;
+    SceneFace* get(const Point &pointStart, const Point &pointEnd) const;
 
     /// returns bounding box, assumes container not empty
     RectPoint boundingBox() const;
-    static RectPoint boundingBox(QList<SceneEdge *> edges);
+    static RectPoint boundingBox(QList<SceneFace *> edges);
 };
 
 // *************************************************************************************************************************************
 
-class SceneEdgeMarker : public QGroupBox
+class SceneFaceMarker : public QGroupBox
 {
     Q_OBJECT
 
 public:
-    SceneEdgeMarker(SceneEdge *edge, FieldInfo *fieldInfo, QWidget *parent);
+    SceneFaceMarker(SceneFace *edge, FieldInfo *fieldInfo, QWidget *parent);
 
     void load();
     bool save();
@@ -159,26 +159,22 @@ public:
 
 private:
     FieldInfo *m_fieldInfo;
-    SceneEdge *m_edge;
+    SceneFace *m_face;
 
     QComboBox *cmbBoundary;
     QPushButton *btnBoundary;
 
-    QCheckBox *chkRefineTowardsEdge;
-    QSpinBox *txtRefineTowardsEdge;
-
 private slots:
     void doBoundaryChanged(int index);
     void doBoundaryClicked();
-    void doRefineTowardsEdge(int state);    
 };
 
-class SceneEdgeDialog : public SceneBasicDialog
+class SceneFaceDialog : public SceneBasicDialog
 {
     Q_OBJECT
 
 public:
-    SceneEdgeDialog(SceneEdge *edge, QWidget *parent, bool m_isNew);
+    SceneFaceDialog(SceneFace *edge, QWidget *parent, bool m_isNew);
 
 protected:
     QLayout *createContent();
@@ -196,7 +192,7 @@ private:
     QComboBox *cmbNodeStart;
     QComboBox *cmbNodeEnd;
 
-    QList<SceneEdgeMarker *> m_edgeMarkers;
+    QList<SceneFaceMarker *> m_faceMarkers;
 
     void fillComboBox();
 
@@ -211,14 +207,14 @@ class SceneEdgeSelectDialog : public QDialog
     Q_OBJECT
 
 public:
-    SceneEdgeSelectDialog(MarkedSceneBasicContainer<SceneBoundary, SceneEdge> edges, QWidget *parent);
+    SceneEdgeSelectDialog(MarkedSceneBasicContainer<SceneBoundary, SceneFace> edges, QWidget *parent);
 
 protected:
     void load();
     bool save();
 
 private:
-    MarkedSceneBasicContainer<SceneBoundary, SceneEdge> m_edges;
+    MarkedSceneBasicContainer<SceneBoundary, SceneFace> m_edges;
     QMap<FieldInfo*, QComboBox *> cmbBoundaries;
 
     void fillComboBox();
@@ -230,10 +226,10 @@ private slots:
 
 // undo framework *******************************************************************************************************************
 
-class SceneEdgeCommandAdd : public QUndoCommand
+class SceneFaceCommandAdd : public QUndoCommand
 {
 public:
-    SceneEdgeCommandAdd(const Point &pointStart, const Point &pointEnd, const QMap<QString, QString> &markers,
+    SceneFaceCommandAdd(const Point &pointStart, const Point &pointEnd, const QMap<QString, QString> &markers,
                         const Value &angle, int segments, bool isCurvilinear, QUndoCommand *parent = 0);
     void undo();
     void redo();
@@ -286,10 +282,10 @@ public:
     void redo() { add(); }
 };
 
-class SceneEdgeCommandRemove : public QUndoCommand
+class SceneFaceCommandRemove : public QUndoCommand
 {
 public:
-    SceneEdgeCommandRemove(const Point &pointStart, const Point &pointEnd, const QMap<QString, QString> &markers,
+    SceneFaceCommandRemove(const Point &pointStart, const Point &pointEnd, const QMap<QString, QString> &markers,
                            const Value &angle, int segments, bool isCurvilinear, QUndoCommand *parent = 0);
     void undo();
     void redo();

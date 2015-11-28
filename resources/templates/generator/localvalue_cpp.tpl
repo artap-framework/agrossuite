@@ -55,6 +55,8 @@ void {{CLASS}}LocalValue::calculate()
 
     if (m_computation->isSolved())
     {
+        double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
+
         FieldSolutionID fsid(m_fieldInfo->fieldId(), m_timeStep, m_adaptivityStep);
         // check existence
         if (!m_computation->solutionStore()->contains(fsid))

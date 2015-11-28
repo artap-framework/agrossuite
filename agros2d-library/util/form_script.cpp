@@ -219,7 +219,7 @@ void FormScript::showWidget()
                 widget->clear();
 
                 int i = 0;
-                foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
+                foreach (SceneFace *edge, Agros2D::problem()->scene()->faces->items())
                 {
                     QListWidgetItem *item = new QListWidgetItem(widget);
 

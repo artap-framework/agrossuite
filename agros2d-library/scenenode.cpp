@@ -43,7 +43,7 @@ void SceneNode::setPointValue(const PointValue &point)
     m_point = point;
 
     // refresh cache
-    foreach (SceneEdge *edge, connectedEdges())
+    foreach (SceneFace *edge, connectedEdges())
         edge->computeCenterAndRadius();
 }
 
@@ -84,7 +84,7 @@ SceneNode *SceneNode::findClosestNode(Scene *scene, const Point &point)
 
 bool SceneNode::isConnected() const
 {
-    foreach (SceneEdge *edge, m_scene->edges->items())
+    foreach (SceneFace *edge, m_scene->faces->items())
         if (edge->nodeStart() == this || edge->nodeEnd() == this)
             return true;
 
@@ -94,19 +94,19 @@ bool SceneNode::isConnected() const
 bool SceneNode::isEndNode() const
 {
     int connections = 0;
-    foreach (SceneEdge *edge, m_scene->edges->items())
+    foreach (SceneFace *edge, m_scene->faces->items())
         if (edge->nodeStart() == this || edge->nodeEnd() == this)
             connections++;
 
     return (connections == 1);
 }
 
-QList<SceneEdge *> SceneNode::connectedEdges() const
+QList<SceneFace *> SceneNode::connectedEdges() const
 {
-    QList<SceneEdge *> edges;
-    edges.reserve(m_scene->edges->count());
+    QList<SceneFace *> edges;
+    edges.reserve(m_scene->faces->count());
 
-    foreach (SceneEdge *edge, m_scene->edges->items())
+    foreach (SceneFace *edge, m_scene->faces->items())
         if (edge->nodeStart() == this || edge->nodeEnd() == this)
             edges.append(edge);
 
@@ -123,7 +123,7 @@ bool SceneNode::hasLyingEdges() const
     return (lyingEdges().length() > 0);
 }
 
-QList<SceneEdge *> SceneNode::lyingEdges() const
+QList<SceneFace *> SceneNode::lyingEdges() const
 {
     return m_scene->lyingEdgeNodes().keys(const_cast<SceneNode *>(this));
 }
@@ -168,7 +168,7 @@ SceneNode* SceneNodeContainer::get(const Point &point) const
 bool SceneNodeContainer::remove(SceneNode *item)
 {
     // remove all edges connected to this node
-    item->scene()->edges->removeConnectedToNode(item);
+    item->scene()->faces->removeConnectedToNode(item);
 
     return SceneBasicContainer<SceneNode>::remove(item);
 }
@@ -483,12 +483,12 @@ void SceneNodeCommandRemoveMulti::undo()
         SceneNode *nodeStart = Agros2D::problem()->scene()->getNode(m_edgePointStart[i]);
         SceneNode *nodeEnd = Agros2D::problem()->scene()->getNode(m_edgePointEnd[i]);
         assert(nodeStart && nodeEnd);
-        SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, m_edgeAngle[i]);
+        SceneFace *edge = new SceneFace(Agros2D::problem()->scene(), nodeStart, nodeEnd, m_edgeAngle[i]);
 
         edge->addMarkersFromStrings(m_edgeMarkers[i]);
 
         // add edge to the list
-        Agros2D::problem()->scene()->addEdge(edge);
+        Agros2D::problem()->scene()->addFace(edge);
     }
 
     Agros2D::problem()->scene()->stopInvalidating(false);
@@ -509,15 +509,15 @@ void SceneNodeCommandRemoveMulti::redo()
         SceneNode *node = Agros2D::problem()->scene()->getNode(point.point());
         if (node)
         {
-            QList<SceneEdge *> connectedEdges = node->connectedEdges();
-            foreach (SceneEdge *edge, connectedEdges)
+            QList<SceneFace *> connectedEdges = node->connectedEdges();
+            foreach (SceneFace *edge, connectedEdges)
             {
                 m_edgePointStart.append(edge->nodeStart()->point());
                 m_edgePointEnd.append(edge->nodeEnd()->point());
                 m_edgeMarkers.append(edge->markersKeys());
                 m_edgeAngle.append(edge->angleValue());
 
-                Agros2D::problem()->scene()->edges->remove(edge);
+                Agros2D::problem()->scene()->faces->remove(edge);
             }
 
             Agros2D::problem()->scene()->nodes->remove(node);

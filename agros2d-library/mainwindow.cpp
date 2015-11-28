@@ -628,12 +628,12 @@ void MainWindow::setRecentFiles()
     mnuRecentFiles->clear();
 
     // recent files
-    if (!Agros2D::problem()->config()->fileName().isEmpty())
+    if (!Agros2D::problem()->archiveFileName().isEmpty())
     {
         QSettings settings;
         QStringList recentFiles = settings.value("RecentProblems").value<QStringList>();
 
-        QFileInfo fileInfo(Agros2D::problem()->config()->fileName());
+        QFileInfo fileInfo(Agros2D::problem()->archiveFileName());
         if (recentFiles.indexOf(fileInfo.absoluteFilePath()) == -1)
             recentFiles.insert(0, fileInfo.absoluteFilePath());
         else
@@ -729,9 +729,6 @@ void MainWindow::doDocumentOpen(const QString &fileName)
             Agros2D::problem()->readProblemFromFile(fileNameDocument);
             setRecentFiles();
 
-            // load solution
-            // m_computation->readSolutionFromFile(fileNameDocument);
-
             sceneViewProblem->actSceneModeProblem->trigger();
             sceneViewProblem->doZoomBestFit();
 
@@ -785,12 +782,12 @@ void MainWindow::doDocumentOpenRecent(QAction *action)
 
 void MainWindow::doDocumentSave()
 {
-    if (QFile::exists(Agros2D::problem()->config()->fileName()))
+    if (QFile::exists(Agros2D::problem()->archiveFileName()))
     {
         try
         {
             // write to archive
-            Agros2D::problem()->writeProblemToArchive(Agros2D::problem()->config()->fileName(), false);
+            Agros2D::problem()->writeProblemToArchive(Agros2D::problem()->archiveFileName(), false);
         }
         catch (AgrosException &e)
         {
@@ -926,29 +923,6 @@ void MainWindow::doDocumentSaveGeometry()
             settings.setValue("General/LastImageDir", fileInfo.absolutePath());
     }
 }
-
-/*
-void MainWindow::doExamples(const QString &groupName)
-{
-    ExamplesWidget examples(this);
-    if (examples.showWidget(groupName) == QDialog::Accepted)
-    {
-        if (QFile::exists(examples.selectedFilename()))
-        {
-            QFileInfo fileInfo(examples.selectedFilename());
-
-            if (fileInfo.suffix() == "ags" || fileInfo.suffix() == "a2d" || fileInfo.suffix() == "py")
-            {
-                doDocumentOpen(examples.selectedFilename());
-            }
-            else if (fileInfo.suffix() == "ui")
-            {
-                doDocumentOpenForm(examples.selectedFilename(), examples.selectedFormFilename());
-            }
-        }
-    }
-}
-    */
 
 void MainWindow::doCreateVideo()
 {

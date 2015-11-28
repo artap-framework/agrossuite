@@ -50,9 +50,9 @@
 #include "solver/solutionstore.h"
 #include "solver/plugin_interface.h"
 
-QString generateSvgGeometry(QList<SceneEdge*> edges)
+QString generateSvgGeometry(QList<SceneFace*> edges)
 {
-    RectPoint boundingBox = SceneEdgeContainer::boundingBox(edges);
+    RectPoint boundingBox = SceneFaceContainer::boundingBox(edges);
 
     double size = 180;
     double stroke_width = max(boundingBox.width(), boundingBox.height()) / size / 2.0;
@@ -69,7 +69,7 @@ QString generateSvgGeometry(QList<SceneEdge*> edges)
 
     str += QString("<g stroke=\"black\" stroke-width=\"%1\" fill=\"none\">\n").arg(stroke_width);
 
-    foreach (SceneEdge *edge, edges)
+    foreach (SceneFace *edge, edges)
     {
         if (edge->angle() > 0.0)
         {
@@ -147,7 +147,7 @@ Scene::Scene(ProblemBase *problem) : m_problem(problem), m_loopsInfo(NULL)
     materials = new SceneMaterialContainer();
 
     nodes = new SceneNodeContainer();
-    edges = new SceneEdgeContainer();
+    faces = new SceneFaceContainer();
     labels = new SceneLabelContainer();
 
     m_loopsInfo = new LoopsInfo(this);
@@ -169,7 +169,7 @@ Scene::~Scene()
     delete boundaries;
     delete materials;
     delete nodes;
-    delete edges;
+    delete faces;
     delete labels;
 
     delete m_loopsInfo;
@@ -266,32 +266,32 @@ SceneNode *Scene::getNode(const Point &point)
     return nodes->get(point);
 }
 
-SceneEdge *Scene::addEdge(SceneEdge *edge)
+SceneFace *Scene::addFace(SceneFace *edge)
 {
     // check if edge doesn't exists
-    if (SceneEdge* existing = edges->get(edge)){
+    if (SceneFace* existing = faces->get(edge)){
         delete edge;
         return existing;
     }
 
-    edges->add(edge);
+    faces->add(edge);
     if (!currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
         emit invalidated();
 
     return edge;
 }
 
-SceneEdge *Scene::getEdge(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear)
+SceneFace *Scene::getFace(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear)
 {
-    return edges->get(pointStart, pointEnd, angle, segments, isCurvilinear);
+    return faces->get(pointStart, pointEnd, angle, segments, isCurvilinear);
 }
 
-SceneEdge *Scene::getEdge(const Point &pointStart, const Point &pointEnd)
+SceneFace *Scene::getFace(const Point &pointStart, const Point &pointEnd)
 {
-    SceneEdge *edge = edges->get(pointStart, pointEnd);
+    SceneFace *edge = faces->get(pointStart, pointEnd);
     if(edge)
         return edge;
-    return edges->get(pointEnd, pointStart);
+    return faces->get(pointEnd, pointStart);
 }
 
 SceneLabel *Scene::addLabel(SceneLabel *label)
@@ -324,7 +324,7 @@ void Scene::addBoundary(SceneBoundary *boundary)
 void Scene::removeBoundary(SceneBoundary *boundary)
 {
     //TODO instead of setting NoneBoundary we now remove... rething
-    edges->removeMarkerFromAll(boundary);
+    faces->removeMarkerFromAll(boundary);
     boundaries->remove(boundary);
     // delete boundary;
 
@@ -334,7 +334,7 @@ void Scene::removeBoundary(SceneBoundary *boundary)
 
 void Scene::setBoundary(SceneBoundary *boundary)
 {
-    edges->selected().addMarkerToAll(boundary);
+    faces->selected().addMarkerToAll(boundary);
     selectNone();
 }
 
@@ -375,11 +375,11 @@ void Scene::setMaterial(SceneMaterial *material)
 
 void Scene::checkGeometryAssignement()
 {
-    if (edges->length() > 2)
+    if (faces->length() > 2)
     {
         // at least one boundary condition has to be assigned
         int count = 0;
-        foreach (SceneEdge *edge, edges->items())
+        foreach (SceneFace *edge, faces->items())
             if (edge->markersCount() > 0)
                 count++;
 
@@ -417,7 +417,7 @@ void Scene::clear()
 
     // geometry
     nodes->clear();
-    edges->clear();
+    faces->clear();
     labels->clear();
 
     // markers
@@ -447,7 +447,7 @@ void Scene::clear()
 
 RectPoint Scene::boundingBox() const
 {
-    if (nodes->isEmpty() && edges->isEmpty() && labels->isEmpty())
+    if (nodes->isEmpty() && faces->isEmpty() && labels->isEmpty())
     {
         return RectPoint(Point(-0.5, -0.5), Point(0.5, 0.5));
     }
@@ -456,7 +456,7 @@ RectPoint Scene::boundingBox() const
         // nodes bounding box
         RectPoint nodesBoundingBox = nodes->boundingBox();
         // edges bounding box
-        RectPoint edgesBoundingBox = edges->boundingBox();
+        RectPoint edgesBoundingBox = faces->boundingBox();
         // labels bounding box
         RectPoint labelsBoundingBox = labels->boundingBox();
 
@@ -470,7 +470,7 @@ RectPoint Scene::boundingBox() const
 void Scene::selectNone()
 {
     nodes->setSelected(false);
-    edges->setSelected(false);
+    faces->setSelected(false);
     labels->setSelected(false);
 }
 
@@ -484,7 +484,7 @@ void Scene::selectAll(SceneGeometryMode sceneMode)
         nodes->setSelected();
         break;
     case SceneGeometryMode_OperateOnEdges:
-        edges->setSelected();
+        faces->setSelected();
         break;
     case SceneGeometryMode_OperateOnLabels:
         labels->setSelected();
@@ -510,7 +510,7 @@ void Scene::deleteSelected()
     QList<int> selectedEdgeSegments;
     QList<bool> selectedEdgeIsCurvilinear;
     QList<QMap<QString, QString> > selectedEdgeMarkers;
-    foreach (SceneEdge *edge, edges->selected().items())
+    foreach (SceneFace *edge, faces->selected().items())
     {
         selectedEdgePointsStart.append(edge->nodeStart()->point());
         selectedEdgePointsEnd.append(edge->nodeEnd()->point());
@@ -546,21 +546,21 @@ void Scene::deleteSelected()
 int Scene::selectedCount()
 {
     return nodes->selected().length() +
-            edges->selected().length() +
+            faces->selected().length() +
             labels->selected().length();
 }
 
 void Scene::highlightNone()
 {
     nodes->setHighlighted(false);
-    edges->setHighlighted(false);
+    faces->setHighlighted(false);
     labels->setHighlighted(false);
 }
 
 int Scene::highlightedCount()
 {
     return nodes->highlighted().length() +
-            edges->highlighted().length() +
+            faces->highlighted().length() +
             labels->highlighted().length();
 }
 
@@ -590,7 +590,7 @@ Point Scene::calculateNewPoint(SceneTransformMode mode, Point originalPoint, Poi
 bool Scene::moveSelectedNodes(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy)
 {
     // select endpoints
-    foreach (SceneEdge *edge, edges->items())
+    foreach (SceneFace *edge, faces->items())
     {
         if (edge->isSelected())
         {
@@ -652,9 +652,9 @@ bool Scene::moveSelectedNodes(SceneTransformMode mode, Point point, double angle
 
 bool Scene::moveSelectedEdges(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy, bool withMarkers)
 {
-    QList<SceneEdge *> selectedEdges;
+    QList<SceneFace *> selectedEdges;
 
-    foreach (SceneEdge *edge, edges->selected().items())
+    foreach (SceneFace *edge, faces->selected().items())
     {
         selectedEdges.append(edge);
     }
@@ -674,7 +674,7 @@ bool Scene::moveSelectedEdges(SceneTransformMode mode, Point point, double angle
     QList<bool> edgeIsCurvilinearToAdd;
     QList<QMap<QString, QString> > edgeMarkersToAdd;
 
-    foreach (SceneEdge *edge, selectedEdges)
+    foreach (SceneFace *edge, selectedEdges)
     {
         Point newPointStart = calculateNewPoint(mode, edge->nodeStart()->point(), point, angle, scaleFactor);
         Point newPointEnd = calculateNewPoint(mode, edge->nodeEnd()->point(), point, angle, scaleFactor);
@@ -685,7 +685,7 @@ bool Scene::moveSelectedEdges(SceneTransformMode mode, Point point, double angle
 
         assert(newNodeStart && newNodeEnd);
 
-        SceneEdge *obstructEdge = getEdge(newPointStart, newPointEnd);
+        SceneFace *obstructEdge = getFace(newPointStart, newPointEnd);
         if (obstructEdge && !obstructEdge->isSelected())
         {
             Agros2D::log()->printWarning(tr("Geometry"), tr("Cannot perform transformation, existing edge would be overwritten"));
@@ -707,14 +707,14 @@ bool Scene::moveSelectedEdges(SceneTransformMode mode, Point point, double angle
         newEdgeEndPoints.push_back(QPair<Point, Point>(newPointStart, newPointEnd));
     }
 
-    edges->setSelected(false);
+    faces->setSelected(false);
 
     m_undoStack->push(new SceneEdgeCommandAddMulti(edgeStartPointsToAdd, edgeEndPointsToAdd,
                                                    edgeAnglesToAdd, edgeSegmentsToAdd, edgeIsCurvilinearToAdd, edgeMarkersToAdd));
 
     for(int i = 0; i < newEdgeEndPoints.size(); i++)
     {
-        SceneEdge* sceneEdge = getEdge(newEdgeEndPoints[i].first, newEdgeEndPoints[i].second);
+        SceneFace* sceneEdge = getFace(newEdgeEndPoints[i].first, newEdgeEndPoints[i].second);
         if(sceneEdge)
             sceneEdge->setSelected(true);
     }
@@ -828,7 +828,7 @@ void Scene::doInvalidated()
     // evaluate point values
     foreach (SceneNode *node, nodes->items())
         node->setPointValue(node->pointValue());
-    foreach (SceneEdge *edge, edges->items())
+    foreach (SceneFace *edge, faces->items())
         edge->setAngleValue(edge->angleValue());
     foreach (SceneLabel *label, labels->items())
         label->setPointValue(label->pointValue());
@@ -852,10 +852,10 @@ void Scene::doNewNode(const Point &point)
 
 void Scene::doNewEdge()
 {
-    SceneEdge *edge = new SceneEdge(this, nodes->at(0), nodes->at(1), 0);
+    SceneFace *edge = new SceneFace(this, nodes->at(0), nodes->at(1), 0);
     if (edge->showDialog(QApplication::activeWindow(), true) == QDialog::Accepted)
     {
-        SceneEdge *edgeAdded = addEdge(edge);
+        SceneFace *edgeAdded = addFace(edge);
         if (edgeAdded == edge)
             m_undoStack->push(edge->getAddCommand());
     }
@@ -942,7 +942,7 @@ void Scene::addBoundaryAndMaterialMenuItems(QMenu* menu, QWidget* parent)
 
 void Scene::doFieldsChanged()
 {
-    edges->doFieldsChanged();
+    faces->doFieldsChanged();
     labels->doFieldsChanged();
     boundaries->doFieldsChanged(parentProblem());
     materials->doFieldsChanged(parentProblem());
@@ -955,7 +955,7 @@ void Scene::exportVTKGeometry(const QString &fileName)
         vtkNodes.append(Point(node->point().x, node->point().y));
 
     QMap<int, int> vtkEdges;
-    foreach (SceneEdge *edge, edges->items())
+    foreach (SceneFace *edge, faces->items())
     {
         if (edge->isStraight())
         {
@@ -1056,7 +1056,7 @@ void Scene::checkNodeConnect(SceneNode *node)
         if ((nodeCheck->distance(node->point()) < EPS_ZERO) && (nodeCheck != node))
         {
             isConnected = true;
-            foreach (SceneEdge *edgeCheck, node->connectedEdges())
+            foreach (SceneFace *edgeCheck, node->connectedEdges())
             {
                 SceneNode *nodeStart = NULL;
                 SceneNode *nodeEnd = NULL;
@@ -1075,9 +1075,9 @@ void Scene::checkNodeConnect(SceneNode *node)
                 assert(nodeEnd);
 
                 Value edgeAngle = edgeCheck->angleValue();
-                edges->remove(edgeCheck);
+                faces->remove(edgeCheck);
 
-                SceneEdge *edge = new SceneEdge(this, nodeStart, nodeEnd, 0.0);
+                SceneFace *edge = new SceneFace(this, nodeStart, nodeEnd, 0.0);
                 edge->setAngleValue(edgeAngle);
             }
         }
@@ -1158,7 +1158,7 @@ void Scene::findLyingEdgeNodes()
 {
     m_lyingEdgeNodes.clear();
 
-    foreach (SceneEdge *edge, edges->items())
+    foreach (SceneFace *edge, faces->items())
     {
         foreach (SceneNode *node, nodes->items())
         {
@@ -1177,7 +1177,7 @@ void Scene::findNumberOfConnectedNodeEdges()
     foreach (SceneNode *node, nodes->items())
     {
         int connections = 0;
-        foreach (SceneEdge *edge, edges->items())
+        foreach (SceneFace *edge, faces->items())
         {
             if (edge->nodeStart() == node || edge->nodeEnd() == node)
                 connections++;
@@ -1190,13 +1190,13 @@ void Scene::findCrossings()
 {
     m_crossings.clear();
 
-    for (int i = 0; i < edges->count(); i++)
+    for (int i = 0; i < faces->count(); i++)
     {
-        SceneEdge *edge = edges->at(i);
+        SceneFace *edge = faces->at(i);
 
-        for (int j = i + 1; j < edges->count(); j++)
+        for (int j = i + 1; j < faces->count(); j++)
         {
-            SceneEdge *edgeCheck = edges->at(j);
+            SceneFace *edgeCheck = faces->at(j);
 
             QList<Point> intersects;
 

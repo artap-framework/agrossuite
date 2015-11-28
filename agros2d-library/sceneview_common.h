@@ -33,7 +33,7 @@ class Scene;
 class SceneViewCommon;
 
 class SceneNode;
-class SceneEdge;
+class SceneFace;
 class SceneLabel;
 
 class SceneViewInterface;

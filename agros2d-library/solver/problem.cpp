@@ -52,10 +52,45 @@
 #include "mesh/meshgenerator_triangle.h"
 #include "mesh/meshgenerator_cubit.h"
 #include "mesh/meshgenerator_gmsh.h"
-// #include "mesh/meshgenerator_netgen.h"
 
 #include "../3rdparty/quazip/JlCompress.h"
 #include "../resources_source/classes/problem_a2d_31_xml.h"
+
+const QString VERSION = "version";
+
+const QString LIST = "list";
+const QString ANGLE = "angle";
+const QString SEGMENTS = "segments";
+const QString ISCURVILINEAR = "iscurvilinear";
+const QString X = "x";
+const QString Y = "y";
+const QString Z = "Z";
+const QString AREA = "area";
+const QString VALUE = "value";
+
+const QString ID = "id";
+const QString NAME = "name";
+const QString TYPE = "type";
+const QString GEOMETRY = "geometry";
+const QString NODES = "nodes";
+const QString FACES = "faces";
+const QString LABELS = "labels";
+const QString SETTINGS = "settings";
+const QString CONFIG = "config";
+const QString FIELDS = "fields";
+const QString FIELDID = "fieldid";
+const QString BOUNDARIES = "boundaries";
+const QString BOUNDARY_FACES = "boundary_faces";
+const QString BOUNDARY_TYPES = "boundary_types";
+const QString MATERIALS = "materials";
+const QString MATERIAL_LABELS = "material_labels";
+const QString MATERIAL_TYPES = "material_types";
+const QString REFINEMENT_NUMBER = "refinement_number";
+const QString REFINEMENT_ORDER = "refinement_order";
+
+const QString COUPLINGS = "couplings";
+const QString SOURCE_FIELDID = "source_field";
+const QString TARGET_FIELDID = "target_field";
 
 CalculationThread::CalculationThread(Computation *parentProblem) : QThread(), m_computation(parentProblem)
 {
@@ -217,7 +252,7 @@ bool ProblemBase::applyParametersInternal()
     }
 
     // edges
-    foreach (SceneEdge *edge, m_scene->edges->items())
+    foreach (SceneFace *edge, m_scene->faces->items())
     {
         if (edge->angleValue().isNumber())
         {
@@ -229,7 +264,7 @@ bool ProblemBase::applyParametersInternal()
             {
                 ErrorResult result = currentPythonEngineAgros()->parseError();
                 Agros2D::log()->printError(QObject::tr("Parameters"), QObject::tr("Edge %1: %2").
-                                           arg(m_scene->edges->items().indexOf(edge)).
+                                           arg(m_scene->faces->items().indexOf(edge)).
                                            arg(result.error()));
 
                 successfulRun = false;
@@ -356,7 +391,7 @@ void ProblemBase::addField(FieldInfo *field)
 void ProblemBase::removeField(FieldInfo *field)
 {
     // first remove references to markers of this field from all edges and labels
-    m_scene->edges->removeFieldMarkers(field);
+    m_scene->faces->removeFieldMarkers(field);
     m_scene->labels->removeFieldMarkers(field);
 
     // then remove them from lists of markers - here they are really deleted
@@ -416,45 +451,274 @@ void ProblemBase::synchronizeCouplings()
         emit couplingsChanged();
 }
 
-void ProblemBase::readProblemFromA2D(const QString &fileName)
+void ProblemBase::readProblemFromJson(const QString &fileName)
 {
-    Agros2D::log()->printMessage(tr("Problem"), tr("Loading problem from disk: %1").arg(QFileInfo(fileName).baseName()));
+    // QTime time;
+    // time.start();
 
-    QFile file(fileName);
+    // clear scene
+    m_scene->clear();
+
+    m_scene->blockSignals(true);
+    m_scene->stopInvalidating(true);
+
+    QFile file(fileName.isEmpty() ? problemFileName() : fileName);
+
+    if (!file.exists())
+        return;
+
     if (!file.open(QIODevice::ReadOnly))
-        throw AgrosException(tr("File '%1' cannot be opened (%2).").arg(fileName).arg(file.errorString()));
-
-    QDomDocument doc;
-    if (!doc.setContent(&file))
     {
-        file.close();
-        throw AgrosException(tr("File '%1' is not valid Agros2D data file.").arg(fileName));
+        qWarning("Couldn't open problem file.");
+        return;
     }
-    file.close();
 
-    double version = doc.documentElement().attribute("version").toDouble();
+    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
 
-    try
+    QJsonObject rootJson = doc.object();
+
+    // settings
+    QJsonObject settingsJson = rootJson[SETTINGS].toObject();
+    m_setting->load(settingsJson);
+
+    // config
+    QJsonObject configJson = rootJson[CONFIG].toObject();
+    m_config->load(configJson);
+
+    // geometry
+    QJsonObject geometryJson = rootJson[GEOMETRY].toObject();
+
+    // nodes
+    QJsonArray nodesJson = geometryJson[NODES].toArray();
+    for (int i = 0; i < nodesJson.size(); i++)
     {
-        if (version == 3.1)
+        QJsonObject nodeJson = nodesJson[i].toObject();
+
+        Value x = Value(nodeJson[X].toString(), this);
+        if (!x.isEvaluated())
         {
-            readProblemFromA2D31(fileName);
+            ErrorResult result = currentPythonEngineAgros()->parseError();
+            throw AgrosException(result.error());
         }
-        else
+
+        Value y = Value(nodeJson[Y].toString(), this);
+        if (!y.isEvaluated())
         {
-            QString tempFileName = tempProblemDir() + QString("/%1.a2d").arg(QFileInfo(fileName).baseName());
-            transformProblem(fileName, tempFileName, version);
-            readProblemFromA2D31(tempFileName);
+            ErrorResult result = currentPythonEngineAgros()->parseError();
+            throw AgrosException(result.error());
+        }
+
+        m_scene->addNode(new SceneNode(m_scene, PointValue(x, y)));
+    }
+
+    // edges
+    QJsonArray facesJson = geometryJson[FACES].toArray();
+    for (int i = 0; i < facesJson.size(); i++)
+    {
+        QJsonObject faceJson = facesJson[i].toObject();
+
+        QJsonArray listJson = faceJson[LIST].toArray();
+        SceneNode *nodeFrom = m_scene->nodes->at(listJson[0].toInt());
+        SceneNode *nodeTo = m_scene->nodes->at(listJson[1].toInt());
+
+        int segments = faceJson[SEGMENTS].toInt();
+
+        Value angle = Value(faceJson[ANGLE].toString(), this);
+        if (!angle.isEvaluated())
+        {
+            ErrorResult result = currentPythonEngineAgros()->parseError();
+            throw AgrosException(result.error());
+        }
+        if (angle.number() < 0.0) angle.setNumber(0.0);
+        if (angle.number() > 90.0) angle.setNumber(90.0);
+
+        bool isCurvilinear = (angle.number() > 0);
+
+        m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, angle, segments, isCurvilinear));
+    }
+
+    // labels
+    QJsonArray labelsJson = geometryJson[LABELS].toArray();
+    for (int i = 0; i < labelsJson.size(); i++)
+    {
+        QJsonObject labelJson = labelsJson[i].toObject();
+
+        Value x = Value(labelJson[X].toString(), this);
+        if (!x.isEvaluated())
+        {
+            ErrorResult result = currentPythonEngineAgros()->parseError();
+            throw AgrosException(result.error());
+        }
+
+        Value y = Value(labelJson[Y].toString(), this);
+        if (!y.isEvaluated())
+        {
+            ErrorResult result = currentPythonEngineAgros()->parseError();
+            throw AgrosException(result.error());
+        }
+
+        double area = labelJson[AREA].toDouble();
+
+        m_scene->addLabel(new SceneLabel(m_scene, PointValue(x, y), area));
+    }
+
+    // fields
+    QJsonArray fieldsJson = rootJson[FIELDS].toArray();
+    for (int i = 0; i < fieldsJson.size(); i++)
+    {
+        QJsonObject fieldJson = fieldsJson[i].toObject();
+
+        FieldInfo *fieldInfo = new FieldInfo(fieldJson[FIELDID].toString());
+
+        // settings
+        QJsonObject settingsJson = fieldJson[SETTINGS].toObject();
+        fieldInfo->load(settingsJson);
+
+        // label refinement
+        QJsonArray labelRefinementJson = fieldJson[REFINEMENT_NUMBER].toArray();
+        for (int i = 0; i < labelRefinementJson.size(); i++)
+        {
+            QJsonObject refinement = labelRefinementJson[i].toObject();
+
+            // if (label.refinement_label_id() != -1)
+            fieldInfo->setLabelRefinement(m_scene->labels->items().at(refinement[ID].toInt()), refinement[VALUE].toInt());
+        }
+
+        // polynomial order
+        QJsonArray labelOrderJson = fieldJson[REFINEMENT_ORDER].toArray();
+        for (int i = 0; i < labelOrderJson.size(); i++)
+        {
+            QJsonObject order = labelOrderJson[i].toObject();
+
+            fieldInfo->setLabelPolynomialOrder(m_scene->labels->items().at(order[ID].toInt()), order[VALUE].toInt());
+        }
+
+        // boundary conditions
+        QJsonArray boundariesJson = fieldJson[BOUNDARIES].toArray();
+        for (int j = 0; j < boundariesJson.size(); j++)
+        {
+            QJsonObject boundaryJson = boundariesJson[j].toObject();
+
+            // read marker
+            SceneBoundary *bound = new SceneBoundary(m_scene,
+                                                     fieldInfo,
+                                                     boundaryJson[NAME].toString(),
+                                                     boundaryJson[TYPE].toString());
+
+            // default values
+            Module::BoundaryType boundaryType = fieldInfo->boundaryType(boundaryJson[TYPE].toString());
+            foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
+                bound->setValue(variable.id(), Value());
+
+            QJsonArray boundaryTypesJson = boundaryJson[BOUNDARY_TYPES].toArray();
+            for (int k = 0; k < boundaryTypesJson.size(); k++)
+            {
+                QJsonObject type = boundaryTypesJson[k].toObject();
+
+                Value m = Value(type[VALUE].toString(), this);
+                if (!m.isEvaluated())
+                {
+                    ErrorResult result = currentPythonEngineAgros()->parseError();
+                    throw AgrosException(result.error());
+                }
+
+                bound->setValue(type[ID].toString(), m);
+            }
+
+            m_scene->addBoundary(bound);
+
+            // add boundary to the edge marker
+            QJsonArray boundaryFacesJson = boundaryJson[BOUNDARY_FACES].toArray();
+            for (unsigned int k = 0; k < boundaryFacesJson.size(); k++)
+            {
+                int face = boundaryFacesJson[k].toInt();
+
+                m_scene->faces->at(face)->addMarker(bound);
+            }
+        }
+
+        // materials
+        QJsonArray materialsJson = fieldJson[MATERIALS].toArray();
+        for (int j = 0; j < materialsJson.size(); j++)
+        {
+            QJsonObject materialJson = materialsJson[j].toObject();
+
+            // read marker
+            SceneMaterial *mat = new SceneMaterial(m_scene,
+                                                   fieldInfo,
+                                                   materialJson[NAME].toString());
+
+            // default values
+            foreach (Module::MaterialTypeVariable variable, fieldInfo->materialTypeVariables())
+                mat->setValue(variable.id(), Value());
+
+            QJsonArray materialTypesJson = materialJson[MATERIAL_TYPES].toArray();
+            for (int k = 0; k < materialTypesJson.size(); k++)
+            {
+                QJsonObject type = materialTypesJson[k].toObject();
+
+                Value m = Value(type[VALUE].toString(), this);
+                if (!m.isEvaluated())
+                {
+                    ErrorResult result = currentPythonEngineAgros()->parseError();
+                    throw AgrosException(result.error());
+                }
+
+                mat->setValue(type[ID].toString(), m);
+            }
+
+            m_scene->addMaterial(mat);
+
+            // add label to the label marker
+            QJsonArray materialLabelsJson = materialJson[MATERIAL_LABELS].toArray();
+            for (unsigned int k = 0; k < materialLabelsJson.size(); k++)
+            {
+                int label = materialLabelsJson[k].toInt();
+
+                m_scene->labels->at(label)->addMarker(mat);
+            }
+        }
+
+        // add missing none markers
+        m_scene->faces->addMissingFieldMarkers(fieldInfo);
+        m_scene->labels->addMissingFieldMarkers(fieldInfo);
+
+        // add field
+        addField(fieldInfo);
+    }
+
+    // couplings
+    synchronizeCouplings();
+
+    QJsonArray couplingsJson = rootJson[COUPLINGS].toArray();
+    for (int i = 0; i < couplingsJson.size(); i++)
+    {
+        QJsonObject couplingJson = couplingsJson[i].toObject();
+
+        if (hasCoupling(couplingJson[SOURCE_FIELDID].toString(),
+                        couplingJson[TARGET_FIELDID].toString()))
+        {
+            CouplingInfo *cpl = couplingInfo(couplingJson[SOURCE_FIELDID].toString(),
+                                             couplingJson[TARGET_FIELDID].toString());
+            cpl->setCouplingType(couplingTypeFromStringKey(couplingJson[TYPE].toString()));
         }
     }
-    catch (AgrosException &e)
-    {
-        Agros2D::log()->printError(tr("Problem"), e.toString());
-    }
+
+    m_scene->stopInvalidating(false);
+    m_scene->blockSignals(false);
+
+    // qDebug() << "readProblemFromJson" << time.elapsed();
+
+    // default values
+    emit m_scene->invalidated();
+    emit m_scene->defaultValues();
 }
 
-void ProblemBase::readProblemFromA2D31(const QString &fileName)
+void ProblemBase::importProblemFromA2D(const QString &fileName)
 {
+    // QTime time;
+    // time.start();
+
     try
     {
         std::unique_ptr<XMLProblem::document> document_xsd = XMLProblem::document_(compatibleFilename(fileName).toStdString(), xml_schema::flags::dont_validate);
@@ -466,15 +730,15 @@ void ProblemBase::readProblemFromA2D31(const QString &fileName)
         m_scene->blockSignals(true);
         m_scene->stopInvalidating(true);
 
-        // coordinate type
-        m_config->setCoordinateType(coordinateTypeFromStringKey(QString::fromStdString(doc->problem().coordinate_type())));
-        // mesh type
-        m_config->setMeshType(meshTypeFromStringKey(QString::fromStdString(doc->problem().mesh_type())));
-
         // problem config
         m_config->load(&doc->problem().problem_config());
         // general config
         m_setting->load(&doc->config());
+
+        // coordinate type
+        m_config->setCoordinateType(coordinateTypeFromStringKey(QString::fromStdString(doc->problem().coordinate_type())));
+        // mesh type
+        m_config->setMeshType(meshTypeFromStringKey(QString::fromStdString(doc->problem().mesh_type())));
 
         // nodes
         for (unsigned int i = 0; i < doc->geometry().nodes().node().size(); i++)
@@ -534,11 +798,11 @@ void ProblemBase::readProblemFromA2D31(const QString &fileName)
                 if (angle.number() < 0.0) angle.setNumber(0.0);
                 if (angle.number() > 90.0) angle.setNumber(90.0);
 
-                m_scene->addEdge(new SceneEdge(m_scene, nodeFrom, nodeTo, angle, segments, isCurvilinear));
+                m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, angle, segments, isCurvilinear));
             }
             else
             {
-                m_scene->addEdge(new SceneEdge(m_scene, nodeFrom, nodeTo, edge.angle(), segments, isCurvilinear));
+                m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, edge.angle(), segments, isCurvilinear));
             }
         }
 
@@ -584,6 +848,9 @@ void ProblemBase::readProblemFromA2D31(const QString &fileName)
 
             FieldInfo *fieldInfo = new FieldInfo(QString::fromStdString(field.field_id()));
 
+            // field config
+            fieldInfo->load(&field.field_config());
+
             // analysis type
             fieldInfo->setAnalysisType(analysisTypeFromStringKey(QString::fromStdString(field.analysis_type())));
             // adaptivity
@@ -593,18 +860,6 @@ void ProblemBase::readProblemFromA2D31(const QString &fileName)
             // matrix solver
             if (field.matrix_solver().present())
                 fieldInfo->setMatrixSolver(matrixSolverTypeFromStringKey(QString::fromStdString(field.matrix_solver().get())));
-
-            // field config
-            fieldInfo->load(&field.field_config());
-
-            // edge refinement
-            for (unsigned int j = 0; j < field.refinement_edges().refinement_edge().size(); j++)
-            {
-                XMLProblem::refinement_edge edge = field.refinement_edges().refinement_edge().at(j);
-
-                if (edge.refinement_edge_id() != -1)
-                    fieldInfo->setEdgeRefinement(m_scene->edges->items().at(edge.refinement_edge_id()), edge.refinement_edge_number());
-            }
 
             // label refinement
             for (unsigned int j = 0; j < field.refinement_labels().refinement_label().size(); j++)
@@ -660,7 +915,7 @@ void ProblemBase::readProblemFromA2D31(const QString &fileName)
                 {
                     XMLProblem::boundary_edge edge = boundary.boundary_edges().boundary_edge().at(k);
 
-                    m_scene->edges->at(edge.id())->addMarker(bound);
+                    m_scene->faces->at(edge.id())->addMarker(bound);
                 }
             }
 
@@ -706,7 +961,7 @@ void ProblemBase::readProblemFromA2D31(const QString &fileName)
             }
 
             // add missing none markers
-            m_scene->edges->addMissingFieldMarkers(fieldInfo);
+            m_scene->faces->addMissingFieldMarkers(fieldInfo);
             m_scene->labels->addMissingFieldMarkers(fieldInfo);
 
             // add field
@@ -732,9 +987,11 @@ void ProblemBase::readProblemFromA2D31(const QString &fileName)
         m_scene->stopInvalidating(false);
         m_scene->blockSignals(false);
 
+        // qDebug() << "readProblemFromA2D" << time.elapsed();
+
         // default values
-        emit m_scene->invalidated();
-        emit m_scene->defaultValues();
+        // emit m_scene->invalidated();
+        // emit m_scene->defaultValues();
     }
     catch (const xml_schema::expected_element& e)
     {
@@ -758,48 +1015,12 @@ void ProblemBase::readProblemFromA2D31(const QString &fileName)
     }
 }
 
-void ProblemBase::transformProblem(const QString &fileName, const QString &tempFileName, double version)
-{
-    QString out;
-
-    if (version == 3.1)
-    {
-        Agros2D::log()->printMessage(tr("Problem"), tr("Data file was transformed to new version and saved to temp dictionary."));
-        return;
-    }
-    else if (version == 3.0)
-    {
-        out = transformXML(fileName, datadir() + "/resources/xslt/problem_a2d_31_xml.xsl");
-        version = 3.1;
-    }
-    else if (version == 2.1)
-    {
-        out = transformXML(fileName, datadir() + "/resources/xslt/problem_a2d_30_xml.xsl");
-        version = 3.0;
-    }
-    else if (version == 2.0 || version == 0.0)
-    {
-        out = transformXML(fileName, datadir() + "/resources/xslt/problem_a2d_21_xml.xsl");
-        version = 2.1;
-    }
-    else
-        throw AgrosException(tr("It is impossible to transform data file."));
-
-    //qDebug() << out;
-
-    QFile tempFile(tempFileName);
-    if (!tempFile.open(QIODevice::WriteOnly))
-        throw AgrosException(tr("File cannot be saved (%2).").arg(tempFile.errorString()));
-
-    QTextStream(&tempFile) << out;
-    tempFile.close();
-
-    transformProblem(tempFileName, tempFileName, version);
-}
-
-void ProblemBase::writeProblemToA2D(const QString &fileName)
+void ProblemBase::exportProblemToA2D(const QString &fileName)
 {
     double version = 3.1;
+
+    // QTime time;
+    // time.start();
 
     try
     {
@@ -807,14 +1028,8 @@ void ProblemBase::writeProblemToA2D(const QString &fileName)
         // fields
         foreach (FieldInfo *fieldInfo, fieldInfos())
         {
+            // deprecated
             XMLProblem::refinement_edges refinement_edges;
-            QMapIterator<SceneEdge *, int> edgeIterator(fieldInfo->edgesRefinement());
-            while (edgeIterator.hasNext()) {
-                edgeIterator.next();
-
-                refinement_edges.refinement_edge().push_back(XMLProblem::refinement_edge(m_scene->edges->items().indexOf(edgeIterator.key()),
-                                                                                         edgeIterator.value()));
-            }
 
             XMLProblem::refinement_labels refinement_labels;
             QMapIterator<SceneLabel *, int> labelIterator(fieldInfo->labelsRefinement());
@@ -840,9 +1055,9 @@ void ProblemBase::writeProblemToA2D(const QString &fileName)
             {
                 // add edges
                 XMLProblem::boundary_edges boundary_edges;
-                foreach (SceneEdge *edge, m_scene->edges->items())
+                foreach (SceneFace *edge, m_scene->faces->items())
                     if (edge->hasMarker(bound))
-                        boundary_edges.boundary_edge().push_back(XMLProblem::boundary_edge(m_scene->edges->items().indexOf(edge)));
+                        boundary_edges.boundary_edge().push_back(XMLProblem::boundary_edge(m_scene->faces->items().indexOf(edge)));
 
                 XMLProblem::boundary_types boundary_types;
                 const QMap<uint, QSharedPointer<Value> > values = bound->values();
@@ -945,7 +1160,7 @@ void ProblemBase::writeProblemToA2D(const QString &fileName)
         // edges
         XMLProblem::edges edges;
         int iedge = 0;
-        foreach (SceneEdge *edge, m_scene->edges->items())
+        foreach (SceneFace *edge, m_scene->faces->items())
         {
             XMLProblem::edge edgexml = XMLProblem::edge(iedge,
                                                         m_scene->nodes->items().indexOf(edge->nodeStart()),
@@ -992,11 +1207,247 @@ void ProblemBase::writeProblemToA2D(const QString &fileName)
 
         std::ofstream out(compatibleFilename(fileName).toStdString().c_str());
         XMLProblem::document_(out, doc, namespace_info_map);
+
+        // qDebug() << "writeProblemToA2D" << time.elapsed();
     }
     catch (const xml_schema::exception& e)
     {
         throw AgrosException(QString::fromStdString(e.what()));
     }
+}
+
+void ProblemBase::writeProblemToJson(const QString &fileName)
+{
+    // QTime time;
+    // time.start();
+
+    QFile file(fileName.isEmpty() ? problemFileName() : fileName);
+
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        qWarning("Couldn't open problem file.");
+        return;
+    }
+
+    // root object
+    QJsonObject rootJson;
+    rootJson[VERSION] = 1;
+
+    // settings
+    QJsonObject settingsJson;
+    m_setting->save(settingsJson);
+    rootJson[SETTINGS] = settingsJson;
+
+    // config
+    QJsonObject configJson;
+    m_config->save(configJson);
+    rootJson[CONFIG] = configJson;
+
+    // geometry
+    QJsonObject geometryJson;
+
+    // nodes
+    QJsonArray nodesJson;
+    int inode = 0;
+    foreach (SceneNode *node, m_scene->nodes->items())
+    {
+        QJsonObject nodeJson;
+
+        nodeJson[ID] = inode;
+        nodeJson[X] = node->pointValue().x().toString();
+        nodeJson[Y] = node->pointValue().y().toString();
+
+        nodesJson.append(nodeJson);
+
+        inode++;
+    }
+    geometryJson[NODES] = nodesJson;
+
+    // edges
+    QJsonArray edgesJson;
+    int iedge = 0;
+    foreach (SceneFace *edge, m_scene->faces->items())
+    {
+        QJsonObject edgeJson;
+
+        edgeJson[ID] = iedge;
+        edgeJson[ANGLE] = edge->angleValue().toString();
+        edgeJson[SEGMENTS] = edge->segments();
+        // edgeJson[ISCURVILINEAR] = edge->isCurvilinear();
+
+        QJsonArray listJson;
+        listJson.append(m_scene->nodes->items().indexOf(edge->nodeStart()));
+        listJson.append(m_scene->nodes->items().indexOf(edge->nodeEnd()));
+        edgeJson[LIST] = listJson;
+
+        edgesJson.append(edgeJson);
+
+        iedge++;
+    }
+    geometryJson[FACES] = edgesJson;
+
+    // labels
+    QJsonArray labelsJson;
+    int ilabel = 0;
+    foreach (SceneLabel *label, m_scene->labels->items())
+    {
+        QJsonObject labelJson;
+
+        labelJson[ID] = inode;
+        labelJson[X] = label->pointValue().x().toString();
+        labelJson[Y] = label->pointValue().y().toString();
+        labelJson[AREA] = label->area();
+
+        labelsJson.append(labelJson);
+
+        ilabel++;
+    }
+    geometryJson[LABELS] = labelsJson;
+
+    // geometry
+    rootJson[GEOMETRY] = geometryJson;
+
+    // fields
+    QJsonArray fieldsJson;
+    foreach (FieldInfo *fieldInfo, fieldInfos())
+    {
+        QJsonObject fieldJson;
+        fieldJson[FIELDID] = fieldInfo->fieldId();
+
+        // settings
+        QJsonObject settingsJson;
+        fieldInfo->save(settingsJson);
+        fieldJson[SETTINGS] = settingsJson;
+
+        // label refinement
+        QJsonArray labelRefinementJson;
+        QMapIterator<SceneLabel *, int> labelIterator(fieldInfo->labelsRefinement());
+        while (labelIterator.hasNext())
+        {
+            labelIterator.next();
+
+            QJsonObject refinement;
+            refinement[ID] = QString::number(m_scene->labels->items().indexOf(labelIterator.key()));
+            refinement[VALUE] = labelIterator.value();
+
+            labelRefinementJson.append(refinement);
+        }
+        fieldJson[REFINEMENT_NUMBER] = labelRefinementJson;
+
+        // polynomial order
+        QJsonArray labelOrderJson;
+        QMapIterator<SceneLabel *, int> labelOrderIterator(fieldInfo->labelsPolynomialOrder());
+        while (labelOrderIterator.hasNext())
+        {
+            labelOrderIterator.next();
+
+            QJsonObject order;
+            order[ID] = QString::number(m_scene->labels->items().indexOf(labelOrderIterator.key()));
+            order[VALUE] = labelOrderIterator.value();
+
+            labelOrderJson.append(order);
+        }
+        fieldJson[REFINEMENT_ORDER] = labelOrderJson;
+
+        // boundaries
+        QJsonArray boundariesJson;
+        int iboundary = 1;
+        foreach (SceneBoundary *bound, m_scene->boundaries->filter(fieldInfo).items())
+        {
+            QJsonObject boundaryJson;
+
+            QJsonArray boundaryFacesJson;
+            XMLProblem::boundary_edges boundary_edges;
+            foreach (SceneFace *edge, m_scene->faces->items())
+            {
+                if (edge->hasMarker(bound))
+                    boundaryFacesJson.append(m_scene->faces->items().indexOf(edge));
+            }
+            boundaryJson[BOUNDARY_FACES] = boundaryFacesJson;
+
+            QJsonArray boundaryTypesJson;
+            const QMap<uint, QSharedPointer<Value> > values = bound->values();
+            for (QMap<uint, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
+            {
+                QJsonObject type;
+                type[ID] = bound->valueName(it.key());
+                type[VALUE] = it.value()->toString();
+
+                boundaryTypesJson.append(type);
+            }
+            boundaryJson[BOUNDARY_TYPES] = boundaryTypesJson;
+
+            boundaryJson[ID] = iboundary;
+            boundaryJson[NAME] = bound->name();
+            boundaryJson[TYPE] = (bound->type() == "") ? "none" : bound->type();
+
+            boundariesJson.append(boundaryJson);
+
+            iboundary++;
+        }
+        fieldJson[BOUNDARIES] = boundariesJson;
+
+        // materials
+        QJsonArray  materialsJson;
+        int imaterial = 1;
+        foreach (SceneMaterial *mat, m_scene->materials->filter(fieldInfo).items())
+        {
+            QJsonObject materialJson;
+
+            QJsonArray materialLabelsJson;
+            foreach (SceneLabel *label, m_scene->labels->items())
+            {
+                if (label->hasMarker(mat))
+                    materialLabelsJson.append(m_scene->labels->items().indexOf(label));
+            }
+            materialJson[MATERIAL_LABELS] = materialLabelsJson;
+
+            QJsonArray materialTypesJson;
+            const QMap<uint, QSharedPointer<Value> > values = mat->values();
+            for (QMap<uint, QSharedPointer<Value> >::const_iterator it = values.begin(); it != values.end(); ++it)
+            {
+                QJsonObject type;
+                type[ID] = mat->valueName(it.key());
+                type[VALUE] = it.value()->toString();
+
+                materialTypesJson.append(type);
+            }
+            materialJson[MATERIAL_TYPES] = materialTypesJson;
+
+            materialJson[ID] = imaterial;
+            materialJson[NAME] = mat->name();
+
+            materialsJson.append(materialJson);
+
+            imaterial++;
+        }
+        fieldJson[MATERIALS] = materialsJson;
+
+        fieldsJson.append(fieldJson);
+    }
+    rootJson[FIELDS] = fieldsJson;
+
+    // couplings
+    QJsonArray couplingsJson;
+    foreach (CouplingInfo *couplingInfo, couplingInfos())
+    {
+        QJsonObject couplingJson;
+
+        couplingJson[ID] = couplingInfo->couplingId();
+        couplingJson[TYPE] = couplingTypeToStringKey(couplingInfo->couplingType());
+        couplingJson[SOURCE_FIELDID] = couplingInfo->sourceField()->fieldId();
+        couplingJson[TARGET_FIELDID] = couplingInfo->targetField()->fieldId();
+
+        couplingsJson.append(couplingJson);
+    }
+    rootJson[COUPLINGS] = couplingsJson;
+
+    // save to file
+    QJsonDocument doc(rootJson);
+    // file.write(doc.toJson(QJsonDocument::Indented));
+    file.write(doc.toJson(QJsonDocument::Compact));
+
+    // qDebug() << "writeProblemToJson" << time.elapsed();
 }
 
 // computation
@@ -1046,6 +1497,11 @@ Computation::~Computation()
     delete m_result;
 
     removeDirectory(QString("%1/%2").arg(cacheProblemDir(), m_problemDir));
+}
+
+QString Computation::problemFileName() const
+{
+    return QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(m_problemDir);
 }
 
 QList<double> Computation::timeStepTimes() const
@@ -1550,13 +2006,16 @@ bool Computation::saveResults()
 Problem::Problem() : ProblemBase()
 {
     m_studies = new Studies();
-
-    connect(this, SIGNAL(fileNameChanged(QString)), this, SLOT(doFileNameChanged(QString)));
 }
 
 Problem::~Problem()
 {
     delete m_studies;
+}
+
+QString Problem::problemFileName() const
+{
+    return QString("%1/problem.json").arg(cacheProblemDir());
 }
 
 QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool setCurrentComputation)
@@ -1577,12 +2036,25 @@ QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool
         computation->clearFieldsAndConfig();
     }
 
+    QTime time;
+    time.start();
     QString fn = QString("%1/%2/problem.a2d").
             arg(cacheProblemDir()).
             arg(computation->problemDir());
 
-    writeProblemToA2D(fn);
-    computation->readProblemFromA2D31(fn);
+    exportProblemToA2D(fn);
+    computation->importProblemFromA2D(fn);
+    computation->clearFieldsAndConfig();
+    qDebug() << "A2D" << time.elapsed();
+
+    time.start();
+    // write problem
+    writeProblemToJson();
+    // copy file
+    QFile::copy(problemFileName(), QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(computation->problemDir()));
+    // read problem
+    computation->readProblemFromJson();
+    qDebug() << "JSON" << time.elapsed();
 
     return computation;
 }
@@ -1592,8 +2064,9 @@ void Problem::clearFieldsAndConfig()
     ProblemBase::clearFieldsAndConfig();
     m_studies->clear();
 
-    // QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
-    // QFile::remove(QString("%1/studies.json").arg(cacheProblemDir()));
+    QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
+    QFile::remove(QString("%1/problem.json").arg(cacheProblemDir()));
+    QFile::remove(QString("%1/studies.json").arg(cacheProblemDir()));
 
     // clear all computations
     m_currentComputation.clear();
@@ -1613,15 +2086,23 @@ void Problem::readProblemFromArchive(const QString &fileName)
 
     JlCompress::extractDir(fileName, cacheProblemDir());
 
-    QString problem = QString("%1/problem.a2d").arg(cacheProblemDir());
-    if (QFile::exists(problem))
+    // convert a2d
+    QString problemA2D = QString("%1/problem.a2d").arg(cacheProblemDir());
+    if (QFile::exists(problemA2D))
     {
-        readProblemFromA2D(problem);
-
-        QString fn = QFileInfo(fileName).absoluteFilePath();
-        m_config->setFileName(fn);
-        emit fileNameChanged(fn);
+        importProblemFromA2D(problemA2D);
+        writeProblemToJson();
     }
+
+    // read problem
+    readProblemFromJson();
+
+    // remove a2d
+    if (QFile::exists(problemA2D))
+        QFile::remove(problemA2D);
+
+    m_fileName = QFileInfo(fileName).absoluteFilePath();
+    emit fileNameChanged(m_fileName);
 
     // read solutions
     QDirIterator it(cacheProblemDir(), QDir::Dirs, QDirIterator::NoIteratorFlags);
@@ -1636,18 +2117,14 @@ void Problem::readProblemFromArchive(const QString &fileName)
 
         QString problemDir = fileInfo.fileName();
 
-        QString fnProblem = QString("%1/%2/problem.a2d").
-                arg(cacheProblemDir()).
-                arg(problemDir);
-
-        if (QFile::exists(fnProblem))
+        if (QFile::exists(problemFileName()))
         {
             QSharedPointer<Computation> computation = QSharedPointer<Computation>(new Computation(problemDir));
             Agros2D::addComputation(computation->problemDir(), computation);
 
             Agros2D::log()->printMessage(tr("Problem"), tr("Loading solution from disk: %1").arg(problemDir));
 
-            computation->readProblemFromA2D31(fnProblem);
+            computation->readProblemFromJson();
 
             // read results
             if (computation->solutionStore()->loadRunTimeDetails())
@@ -1694,18 +2171,20 @@ void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFil
     if (fileInfo.absoluteDir() != tempProblemDir())
     {
         settings.setValue("General/LastProblemDir", fileInfo.absoluteFilePath());
-        m_config->setFileName(fileName);
+        m_fileName = fileName;
     }
 
-    QFileInfo fileInfoProblem(QString("%1/problem.a2d").arg(cacheProblemDir()));
-    writeProblemToA2D(fileInfoProblem.absoluteFilePath());
+    // temporary - speed check
+    // QFileInfo fileInfoProblem(QString("%1/problem").arg(cacheProblemDir()));
+    // exportProblemToA2D(fileInfoProblem.absoluteFilePath());
+    // QFile::remove(fileInfoProblem.absoluteFilePath() + ".a2d");
+
+    writeProblemToJson();
 
     if (onlyProblemFile)
     {
         // only problem file
-        QStringList lst;
-        lst << fileInfoProblem.absoluteFilePath();
-        if (JlCompress::compressFiles(fileName, lst))
+        if (JlCompress::compressFiles(fileName, QStringList() << problemFileName()))
             emit fileNameChanged(QFileInfo(fileName).absoluteFilePath());
     }
     else
@@ -1742,13 +2221,11 @@ void Problem::readProblemFromFile(const QString &fileName)
             QFile::copy(fileName, QString("%1/problem.a2d").arg(cacheProblemDir()));
 
             // open file
-            readProblemFromA2D(QString("%1/problem.a2d").arg(cacheProblemDir()));
+            importProblemFromA2D(QString("%1/problem.a2d").arg(cacheProblemDir()));
 
             // set filename
-            fn = QString("%1/%2.ags").arg(fileInfo.absolutePath()).arg(fileInfo.baseName());
-
-            m_config->setFileName(fn);
-            emit fileNameChanged(fn);
+            m_fileName = QString("%1/%2.ags").arg(fileInfo.absolutePath()).arg(fileInfo.baseName());
+            emit fileNameChanged(m_fileName);
             // writeProblemToArchive(fn); // only for automatic convert
         }
     }

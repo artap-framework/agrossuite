@@ -139,9 +139,9 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
         Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_computation->scene()->nodes->length()));
         return false;
     }
-    if (m_computation->scene()->edges->length() < 3)
+    if (m_computation->scene()->faces->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_computation->scene()->edges->length()));
+        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_computation->scene()->faces->length()));
         return false;
     }
 
@@ -175,15 +175,15 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
     // edges
     QString outEdges;
     int edgesCount = 0;
-    for (int i = 0; i < m_computation->scene()->edges->length(); i++)
+    for (int i = 0; i < m_computation->scene()->faces->length(); i++)
     {
-        if (m_computation->scene()->edges->at(i)->angle() == 0)
+        if (m_computation->scene()->faces->at(i)->angle() == 0)
         {
             // line
             outEdges += QString("%1  %2  %3  %4\n").
                     arg(edgesCount).
-                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeStart())).
-                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeEnd())).
+                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeStart())).
+                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeEnd())).
                     arg(i+1);
             edgesCount++;
         }
@@ -191,13 +191,13 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
         {
             // arc
             // add pseudo nodes
-            Point center = m_computation->scene()->edges->at(i)->center();
-            double radius = m_computation->scene()->edges->at(i)->radius();
-            double startAngle = atan2(center.y - m_computation->scene()->edges->at(i)->nodeStart()->point().y,
-                                      center.x - m_computation->scene()->edges->at(i)->nodeStart()->point().x) - M_PI;
+            Point center = m_computation->scene()->faces->at(i)->center();
+            double radius = m_computation->scene()->faces->at(i)->radius();
+            double startAngle = atan2(center.y - m_computation->scene()->faces->at(i)->nodeStart()->point().y,
+                                      center.x - m_computation->scene()->faces->at(i)->nodeStart()->point().x) - M_PI;
 
-            int segments = m_computation->scene()->edges->at(i)->segments();
-            double theta = deg2rad(m_computation->scene()->edges->at(i)->angle()) / double(segments);
+            int segments = m_computation->scene()->faces->at(i)->segments();
+            double theta = deg2rad(m_computation->scene()->faces->at(i)->angle()) / double(segments);
 
             int nodeStartIndex = 0;
             int nodeEndIndex = 0;
@@ -211,12 +211,12 @@ bool MeshGeneratorTriangleExternal::writeToTriangle()
                 nodeEndIndex = nodesCount+1;
                 if (j == 0)
                 {
-                    nodeStartIndex = m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeStart());
+                    nodeStartIndex = m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeStart());
                     nodeEndIndex = nodesCount;
                 }
                 if (j == segments - 1)
                 {
-                    nodeEndIndex = m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeEnd());
+                    nodeEndIndex = m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeEnd());
                 }
                 if ((j > 0) && (j < segments))
                 {
@@ -362,7 +362,7 @@ bool MeshGeneratorTriangleExternal::readTriangleMeshFormat()
 
         if (parsedLine.at(3).toInt() > 0)
         {
-            SceneEdge* sceneEdge = m_computation->scene()->edges->at(parsedLine.at(3).toInt() - 1);
+            SceneFace* sceneEdge = m_computation->scene()->faces->at(parsedLine.at(3).toInt() - 1);
 
             if (sceneEdge->angle() > 0.0 && sceneEdge->isCurvilinear())
             {
@@ -547,9 +547,9 @@ bool MeshGeneratorTriangle::writeToTriangle()
         Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_computation->scene()->nodes->length()));
         return false;
     }
-    if (m_computation->scene()->edges->length() < 3)
+    if (m_computation->scene()->faces->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_computation->scene()->edges->length()));
+        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_computation->scene()->faces->length()));
         return false;
     }
 
@@ -570,12 +570,12 @@ bool MeshGeneratorTriangle::writeToTriangle()
     // edges
     QList<MeshEdge> inEdges;
     int edgesCount = 0;
-    for (int i = 0; i<m_computation->scene()->edges->length(); i++)
+    for (int i = 0; i<m_computation->scene()->faces->length(); i++)
     {
-        if (m_computation->scene()->edges->at(i)->angle() == 0)
+        if (m_computation->scene()->faces->at(i)->angle() == 0)
         {
-            inEdges.append(MeshEdge(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeStart()),
-                                    m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeEnd()),
+            inEdges.append(MeshEdge(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeStart()),
+                                    m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeEnd()),
                                     i+1));
 
             edgesCount++;
@@ -584,14 +584,14 @@ bool MeshGeneratorTriangle::writeToTriangle()
         {
             // arc
             // add pseudo nodes
-            Point center = m_computation->scene()->edges->at(i)->center();
-            double radius = m_computation->scene()->edges->at(i)->radius();
-            double startAngle = atan2(center.y - m_computation->scene()->edges->at(i)->nodeStart()->point().y,
-                                      center.x - m_computation->scene()->edges->at(i)->nodeStart()->point().x) - M_PI;
+            Point center = m_computation->scene()->faces->at(i)->center();
+            double radius = m_computation->scene()->faces->at(i)->radius();
+            double startAngle = atan2(center.y - m_computation->scene()->faces->at(i)->nodeStart()->point().y,
+                                      center.x - m_computation->scene()->faces->at(i)->nodeStart()->point().x) - M_PI;
 
             // TODO: REMOVE MULTIPLICATION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            int segments = m_computation->scene()->edges->at(i)->segments() * 1; // TODO: REMOVE MULTIPLICATION
-            double theta = deg2rad(m_computation->scene()->edges->at(i)->angle()) / double(segments);
+            int segments = m_computation->scene()->faces->at(i)->segments() * 1; // TODO: REMOVE MULTIPLICATION
+            double theta = deg2rad(m_computation->scene()->faces->at(i)->angle()) / double(segments);
 
             int nodeStartIndex = 0;
             int nodeEndIndex = 0;
@@ -605,12 +605,12 @@ bool MeshGeneratorTriangle::writeToTriangle()
                 nodeEndIndex = nodesCount + 1;
                 if (j == 0)
                 {
-                    nodeStartIndex = m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeStart());
+                    nodeStartIndex = m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeStart());
                     nodeEndIndex = nodesCount;
                 }
                 if (j == segments - 1)
                 {
-                    nodeEndIndex = m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeEnd());
+                    nodeEndIndex = m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeEnd());
                 }
                 if ((j > 0) && (j < segments))
                 {
@@ -788,7 +788,7 @@ bool MeshGeneratorTriangle::readTriangleMeshFormat()
 
         if (triOut.edgemarkerlist[i] > 0)
         {
-            SceneEdge* sceneEdge = m_computation->scene()->edges->at(triOut.edgemarkerlist[i] - 1);
+            SceneFace* sceneEdge = m_computation->scene()->faces->at(triOut.edgemarkerlist[i] - 1);
 
             if (sceneEdge->angle() > 0.0 && sceneEdge->isCurvilinear())
             {

@@ -83,9 +83,8 @@ class PyGeometry
 private:
         void testAngle(double angle) const;
         void testSegments(int segments) const;
-        void setBoundaries(SceneEdge *edge, const map<std::string, std::string> &boundaries);
+        void setBoundaries(SceneFace *edge, const map<std::string, std::string> &boundaries);
         void setMaterials(SceneLabel *label, const map<std::string, std::string> &materials);
-        void setRefinementsOnEdge(SceneEdge *edge, const map<std::string, int> &refinements);
         void setRefinements(SceneLabel *label, const map<std::string, int> &refinements);
         void setPolynomialOrders(SceneLabel *label, const map<std::string, int> &orders);
 };

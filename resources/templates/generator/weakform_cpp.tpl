@@ -131,6 +131,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
                                               AssemblyCopyData &copy_data)
 {
     double actualTime = m_solverDeal->get_time();
+    double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
 
     const TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = iter.cell_second;
     // const TYPENAME dealii::hp::DoFHandler<2>::active_cell_iterator cell = std::get<0>(iter.iterators);
@@ -243,7 +244,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
         {
             if(cell->face(face)->user_index() > 0 )
             {
-                SceneBoundary *boundary = m_computation->scene()->edges->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
+                SceneBoundary *boundary = m_computation->scene()->faces->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
                 if (boundary != m_computation->scene()->boundaries->getNone(m_fieldInfo))
                 {
                     scratch_data.hp_fe_face_values.reinit(cell, face);
@@ -409,7 +410,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
         {
             if(cell->face(face)->user_index() > 0 )
             {
-                SceneBoundary *boundary = m_computation->scene()->edges->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
+                SceneBoundary *boundary = m_computation->scene()->faces->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
                 const QMap<uint, QSharedPointer<Value> > boundaryValues = boundary->values();
 
                 if (boundary != m_computation->scene()->boundaries->getNone(m_fieldInfo))
@@ -514,7 +515,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleDirichlet(bool calculateDir
         {
             if (cell->face(face)->user_index() > 0)
             {
-                SceneBoundary *boundary = m_computation->scene()->edges->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
+                SceneBoundary *boundary = m_computation->scene()->faces->at(cell->face(face)->user_index() - 1)->marker(m_fieldInfo);
                 if (boundary != m_computation->scene()->boundaries->getNone(m_fieldInfo))
                 {
                     const dealii::FiniteElement<2> &fe = cell->get_fe();

@@ -61,6 +61,8 @@ void {{CLASS}}SurfaceIntegral::calculate()
 
     if (m_computation->isSolved())
     {
+        double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
+
         FieldSolutionID fsid(m_fieldInfo->fieldId(), m_timeStep, m_adaptivityStep);
         // check existence
         if (!m_computation->solutionStore()->contains(fsid))
@@ -81,9 +83,9 @@ void {{CLASS}}SurfaceIntegral::calculate()
 
         dealii::hp::FEFaceValues<2> hp_fe_face_values(ma.doFHandler()->get_fe(), face_quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values);
 
-        for (int iFace = 0; iFace < m_computation->scene()->edges->count(); iFace++)
+        for (int iFace = 0; iFace < m_computation->scene()->faces->count(); iFace++)
         {
-            SceneEdge *edge = m_computation->scene()->edges->at(iFace);
+            SceneFace *edge = m_computation->scene()->faces->at(iFace);
             if (!edge->isSelected())
                 continue;
 

@@ -46,11 +46,11 @@ void SceneBasicSelectDialog::createControls()
 {
     // edge
     lstEdges = new QListWidget(this);
-    for (int i = 1; i < Agros2D::problem()->scene()->edges->length(); i++)
+    for (int i = 1; i < Agros2D::problem()->scene()->faces->length(); i++)
     {
         QListWidgetItem *item = new QListWidgetItem(lstEdges);
         item->setText(QString::number(i));
-        if (Agros2D::problem()->scene()->edges->at(i)->isSelected())
+        if (Agros2D::problem()->scene()->faces->at(i)->isSelected())
             item->setCheckState(Qt::Checked);
         else
             item->setCheckState(Qt::Unchecked);
@@ -84,7 +84,7 @@ void SceneBasicSelectDialog::doAccept()
     Agros2D::problem()->scene()->selectNone();
     for (int i = 0; i < lstEdges->count(); i++)
     {
-        Agros2D::problem()->scene()->edges->at(i)->setSelected(lstEdges->item(i)->checkState() == Qt::Checked);
+        Agros2D::problem()->scene()->faces->at(i)->setSelected(lstEdges->item(i)->checkState() == Qt::Checked);
     }
     m_sceneView->refresh();
     accept();

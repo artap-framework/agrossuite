@@ -137,9 +137,9 @@ bool MeshGeneratorCubitExternal::writeToCubit()
         Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_computation->scene()->nodes->length()));
         return false;
     }
-    if (m_computation->scene()->edges->length() < 3)
+    if (m_computation->scene()->faces->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_computation->scene()->edges->length()));
+        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_computation->scene()->faces->length()));
         return false;
     }
 
@@ -157,7 +157,7 @@ bool MeshGeneratorCubitExternal::writeToCubit()
     RectPoint rect = m_computation->scene()->boundingBox();
     double charEdge = 0; // qMax(rect.width(), rect.height()) / 2.0;
 
-    foreach (SceneEdge *edge, m_computation->scene()->edges->items())
+    foreach (SceneFace *edge, m_computation->scene()->faces->items())
         if (edge->length() > charEdge)
             charEdge = edge->length();
 
@@ -176,20 +176,20 @@ bool MeshGeneratorCubitExternal::writeToCubit()
     QString outEdges;
     int edgesCount = 0;
     double minEdge = numeric_limits<double>::max();
-    for (int i = 0; i<m_computation->scene()->edges->length(); i++)
+    for (int i = 0; i<m_computation->scene()->faces->length(); i++)
     {
-        if (m_computation->scene()->edges->at(i)->isStraight())
+        if (m_computation->scene()->faces->at(i)->isStraight())
         {
             // line .. increase edge index to count from 1
             outEdges += QString("Create Curve %1 %2 # straight\n").
-                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeStart()) + 1).
-                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeEnd()) + 1);
+                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeStart()) + 1).
+                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeEnd()) + 1);
         }
         else
         {
             // arc
             // add pseudo nodes
-            Point center = m_computation->scene()->edges->at(i)->center();
+            Point center = m_computation->scene()->faces->at(i)->center();
             outNodes += QString("Create Vertex %1\t%2\t0.0\n").
                     arg(center.x, 0, 'f', 10).
                     arg(center.y, 0, 'f', 10);
@@ -197,14 +197,14 @@ bool MeshGeneratorCubitExternal::writeToCubit()
 
             outEdges += QString("Create Curve Arc Center Vertex %1 %2 %3 # curved\n").
                     arg(nodesCount).
-                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeStart()) + 1).
-                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->edges->at(i)->nodeEnd()) + 1);
+                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeStart()) + 1).
+                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeEnd()) + 1);
 
             // arg(nodesCount - 1).
         }
 
-        if (m_computation->scene()->edges->at(i)->length() < minEdge)
-            minEdge = m_computation->scene()->edges->at(i)->length();
+        if (m_computation->scene()->faces->at(i)->length() < minEdge)
+            minEdge = m_computation->scene()->faces->at(i)->length();
 
         outEdges += QString("Nodeset %1 Curve %1\n").arg(edgesCount + 1);
 

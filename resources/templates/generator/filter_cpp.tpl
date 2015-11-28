@@ -72,21 +72,10 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_scalar (const std::ve
                                                                    const dealii::types::material_id mat_id,
                                                                    std::vector<dealii::Vector<double> > &computed_quantities) const
 {
-    // qDebug() << "compute_derived_quantities_scalar " << computed_quantities.size();
-    // qDebug() << "uh.size() " << uh.size();
-    // qDebug() << "duh.size() " << duh.size();
-
     int numberOfSolutions = m_fieldInfo->numberOfSolutions();
-
-    // dealii::Point<2> center((evaluation_points.front()[0] + evaluation_points.back()[0]) / 2.0,
-    //        (evaluation_points.front()[1] + evaluation_points.back()[1]) / 2.0);
-
-    // terrible slow -> improve!!!!
-    // std::pair<typename dealii::Triangulation<2>::active_cell_iterator, dealii::Point<2> > current_cell =
-    //         dealii::GridTools::find_active_cell_around_point(dealii::MappingQ1<2>(), *m_fieldInfo->initialMesh(), center);
+    double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
 
     // find marker
-    // SceneLabel *label = m_labels->at(current_cell.first->material_id() - 1);
     SceneLabel *label = m_labels->at(mat_id - 1);
     SceneMaterial *material = label->marker(m_fieldInfo);
     if(material == m_noneMarker)
@@ -126,17 +115,8 @@ void {{CLASS}}ViewScalarFilter::compute_derived_quantities_vector (const std::ve
                                                                    const dealii::types::material_id mat_id,
                                                                    std::vector<dealii::Vector<double> > &computed_quantities) const
 {
-    // qDebug() << "compute_derived_quantities_vector " << computed_quantities.size();
-    // qDebug() << "uh.size() " << uh.size();
-    // qDebug() << "duh.size() " << duh.size();
-
     int numberOfSolutions = m_fieldInfo->numberOfSolutions();
-
-    // dealii::Point<2> center((evaluation_points.front()[0] + evaluation_points.back()[0]) / 2.0,
-    //         (evaluation_points.front()[1] + evaluation_points.back()[1]) / 2.0);
-
-    // std::pair<typename dealii::Triangulation<2>::active_cell_iterator, dealii::Point<2> > current_cell =
-    //        dealii::GridTools::find_active_cell_around_point(dealii::MappingQ1<2>(), *m_fieldInfo->initialMesh(), center);
+    double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
 
     // find marker
     // SceneLabel *label = m_labels->at(current_cell.first->material_id() - 1);

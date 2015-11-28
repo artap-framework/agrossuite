@@ -344,7 +344,7 @@ void SceneViewPost3D::paintScalarField3D()
         }
 
         // geometry - edges
-        foreach (SceneEdge *edge, m_computation->scene()->edges->items())
+        foreach (SceneFace *edge, m_computation->scene()->faces->items())
         {
 
             glColor3d(COLOREDGE[0], COLOREDGE[1], COLOREDGE[2]);
@@ -683,7 +683,7 @@ void SceneViewPost3D::paintScalarField3DSolid()
             if (m_computation->config()->coordinateType() == CoordinateType_Planar)
             {
                 // top and bottom
-                foreach (SceneEdge *edge, m_computation->scene()->edges->items())
+                foreach (SceneFace *edge, m_computation->scene()->faces->items())
                 {
                     glBegin(GL_LINES);
                     if (edge->isStraight())
@@ -740,7 +740,7 @@ void SceneViewPost3D::paintScalarField3DSolid()
             else
             {
                 // top
-                foreach (SceneEdge *edge, m_computation->scene()->edges->items())
+                foreach (SceneFace *edge, m_computation->scene()->faces->items())
                 {
                     for (int j = 0; j < 2; j++)
                     {

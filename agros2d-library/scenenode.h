@@ -40,10 +40,10 @@ public:
     // geometry editor
     bool isConnected() const;
     bool isEndNode() const;
-    QList<SceneEdge *> connectedEdges() const;
+    QList<SceneFace *> connectedEdges() const;
     int numberOfConnectedEdges() const;
     bool hasLyingEdges() const;
-    QList<SceneEdge *> lyingEdges() const;
+    QList<SceneFace *> lyingEdges() const;
     bool isOutsideArea() const;
     bool isError();
     double distance(const Point &point) const;

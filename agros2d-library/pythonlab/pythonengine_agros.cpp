@@ -505,9 +505,9 @@ QString createPythonFromModel()
     str += "geometry = problem.geometry()\n";
 
     // edges
-    if (Agros2D::problem()->scene()->edges->count() > 0)
+    if (Agros2D::problem()->scene()->faces->count() > 0)
     {
-        foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
+        foreach (SceneFace *edge, Agros2D::problem()->scene()->faces->items())
         {
             Value startPointX = edge->nodeStart()->pointValue().x();
             Value startPointY = edge->nodeStart()->pointValue().y();
@@ -531,28 +531,6 @@ QString createPythonFromModel()
                     str += ", segments = " + QString::number(edge->segments());
                 if (!edge->isCurvilinear())
                     str += ", curvilinear = False";
-            }
-
-            // refinement
-            if (Agros2D::problem()->fieldInfos().count() > 0)
-            {
-                int refinementCount = 0;
-                QString refinements = ", refinements = {";
-                foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
-                {
-                    if (fieldInfo->edgeRefinement(edge) > 0)
-                    {
-                        refinements += QString("\"%1\" : %2, ").
-                                arg(fieldInfo->fieldId()).
-                                arg(fieldInfo->edgeRefinement(edge));
-
-                        refinementCount++;
-                    }
-                }
-                refinements = (refinements.endsWith(", ") ? refinements.left(refinements.length() - 2) : refinements) + "}";
-
-                if (refinementCount > 0)
-                    str += refinements;
             }
 
             // boundaries

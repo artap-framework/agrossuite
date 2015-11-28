@@ -213,7 +213,7 @@ void MeshGenerator::moveNodesOnCurvedEdges()
         if (edge.marker == -1)
             continue;
 
-        if (!(m_computation->scene()->edges->at(edge.marker)->angle() > 0.0 && m_computation->scene()->edges->at(edge.marker)->isCurvilinear()))
+        if (!(m_computation->scene()->faces->at(edge.marker)->angle() > 0.0 && m_computation->scene()->faces->at(edge.marker)->isCurvilinear()))
             continue;
 
         // Only boundary now.
@@ -223,15 +223,15 @@ void MeshGenerator::moveNodesOnCurvedEdges()
             if (edge.marker != -1)
             {
                 // curve
-                if (m_computation->scene()->edges->at(edge.marker)->angle() > 0.0 &&
-                    m_computation->scene()->edges->at(edge.marker)->isCurvilinear())
+                if (m_computation->scene()->faces->at(edge.marker)->angle() > 0.0 &&
+                    m_computation->scene()->faces->at(edge.marker)->isCurvilinear())
                 {
                     // Nodes.
                     Point* node[2] = { &nodeList[edge.node[0]], &nodeList[edge.node[1]] };
                     // Center
-                    Point center = m_computation->scene()->edges->at(edge.marker)->center();
+                    Point center = m_computation->scene()->faces->at(edge.marker)->center();
                     // Radius
-                    double radius = m_computation->scene()->edges->at(edge.marker)->radius();
+                    double radius = m_computation->scene()->faces->at(edge.marker)->radius();
 
                     // First node handling
                     double pointAngle1 = atan2(center.y - node[0]->y, center.x - node[0]->x) - M_PI;
@@ -255,7 +255,7 @@ void MeshGenerator::moveNodesOnCurvedEdges()
         if (edge.marker == -1)
             continue;
 
-        if (!(m_computation->scene()->edges->at(edge.marker)->angle() > 0.0 && m_computation->scene()->edges->at(edge.marker)->isCurvilinear()))
+        if (!(m_computation->scene()->faces->at(edge.marker)->angle() > 0.0 && m_computation->scene()->faces->at(edge.marker)->isCurvilinear()))
             continue;
 
         // Boundary has been taken care of.
@@ -266,15 +266,15 @@ void MeshGenerator::moveNodesOnCurvedEdges()
         if (edge.marker != -1)
         {
             // curve
-            if (m_computation->scene()->edges->at(edge.marker)->angle() > 0.0 &&
-                m_computation->scene()->edges->at(edge.marker)->isCurvilinear())
+            if (m_computation->scene()->faces->at(edge.marker)->angle() > 0.0 &&
+                m_computation->scene()->faces->at(edge.marker)->isCurvilinear())
             {
                 // Nodes.
                 Point* node[2] = { &nodeList[edge.node[0]], &nodeList[edge.node[1]] };
                 // Center
-                Point center = m_computation->scene()->edges->at(edge.marker)->center();
+                Point center = m_computation->scene()->faces->at(edge.marker)->center();
                 // Radius
-                double radius = m_computation->scene()->edges->at(edge.marker)->radius();
+                double radius = m_computation->scene()->faces->at(edge.marker)->radius();
 
                 // Handle the nodes recursively using moveNode()
                 for (int inode = 0; inode < 2; inode++)
@@ -357,7 +357,7 @@ void MeshGenerator::writeTodealii()
             MeshEdge edge = edgeList[edge_i];
             if (edge.marker != -1)
             {
-                SceneEdge* sceneEdge = m_computation->scene()->edges->at(edge.marker);
+                SceneFace* sceneEdge = m_computation->scene()->faces->at(edge.marker);
                 if (sceneEdge->angle() > 0.0 && sceneEdge->isCurvilinear())
                 {
                     dealii::types::manifold_id edgeManifoldId = edge_i + 1;

@@ -222,7 +222,7 @@ void SceneBasicContainer<BasicType>::setHighlighted(bool value)
 }
 
 template class SceneBasicContainer<SceneNode>;
-template class SceneBasicContainer<SceneEdge>;
+template class SceneBasicContainer<SceneFace>;
 template class SceneBasicContainer<SceneLabel>;
 
 template <typename MarkerType, typename MarkedSceneBasicType>
@@ -326,7 +326,7 @@ void MarkedSceneBasicContainer<MarkerType, MarkedSceneBasicType>::addMarkerToAll
     }
 }
 
-template class MarkedSceneBasicContainer<SceneBoundary, SceneEdge>;
+template class MarkedSceneBasicContainer<SceneBoundary, SceneFace>;
 template class MarkedSceneBasicContainer<SceneMaterial, SceneLabel>;
 
 // *************************************************************************************************************************************

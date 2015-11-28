@@ -28,7 +28,7 @@
 
 class Scene;
 class SceneNode;
-class SceneEdge;
+class SceneFace;
 class SceneLabel;
 class SceneBoundary;
 class SceneMaterial;
@@ -36,7 +36,7 @@ struct SceneViewSettings;
 class LoopsInfo;
 
 class SceneNodeContainer;
-class SceneEdgeContainer;
+class SceneFaceContainer;
 class SceneLabelContainer;
 
 class SceneBoundaryContainer;
@@ -53,7 +53,7 @@ class Log;
 
 class PluginInterface;
 
-QString generateSvgGeometry(QList<SceneEdge *> edges);
+QString generateSvgGeometry(QList<SceneFace *> edges);
 
 class AGROS_LIBRARY_API NewMarkerAction : public QAction
 {
@@ -105,7 +105,7 @@ public:
 
     // geometry
     SceneNodeContainer* nodes;
-    SceneEdgeContainer* edges;
+    SceneFaceContainer* faces;
     SceneLabelContainer* labels;
 
     // boundaries and materials
@@ -128,9 +128,9 @@ public:
     SceneNode *addNode(SceneNode *node);
     SceneNode *getNode(const Point &point);
 
-    SceneEdge *addEdge(SceneEdge *edge);
-    SceneEdge *getEdge(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear);
-    SceneEdge *getEdge(const Point &pointStart, const Point &pointEnd);
+    SceneFace *addFace(SceneFace *edge);
+    SceneFace *getFace(const Point &pointStart, const Point &pointEnd, double angle, int segments, bool isCurvilinear);
+    SceneFace *getFace(const Point &pointStart, const Point &pointEnd);
 
     SceneLabel *addLabel(SceneLabel *label);
     SceneLabel *getLabel(const Point &point);
@@ -162,9 +162,9 @@ public:
     void transformScale(const Point &point, double scaleFactor, bool copy, bool withMarkers);
 
     LoopsInfo *loopsInfo() const { return m_loopsInfo; }
-    QMultiMap<SceneEdge *, SceneNode *> lyingEdgeNodes() const { return m_lyingEdgeNodes; }
+    QMultiMap<SceneFace *, SceneNode *> lyingEdgeNodes() const { return m_lyingEdgeNodes; }
     QMap<SceneNode *, int> numberOfConnectedNodeEdges() const { return m_numberOfConnectedNodeEdges; }
-    QList<SceneEdge *> crossings() const { return m_crossings; }
+    QList<SceneFace *> crossings() const { return m_crossings; }
 
     void importFromDxf(const QString &fileName);
     void exportToDxf(const QString &fileName);
@@ -188,9 +188,9 @@ private:
     QUndoStack *m_undoStack;
 
     LoopsInfo *m_loopsInfo;
-    QMultiMap<SceneEdge *, SceneNode *> m_lyingEdgeNodes;
+    QMultiMap<SceneFace *, SceneNode *> m_lyingEdgeNodes;
     QMap<SceneNode *, int> m_numberOfConnectedNodeEdges;
-    QList<SceneEdge *> m_crossings;
+    QList<SceneFace *> m_crossings;
 
     void createActions();
 

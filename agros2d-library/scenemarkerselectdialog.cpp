@@ -112,7 +112,7 @@ void SceneMarkerSelectDialog::doAccept()
         {
             if (lstSurface->item(i)->checkState() == Qt::Checked)
             {
-                foreach (SceneEdge *edge, m_sceneViewPost2D->m_computation->scene()->edges->items())
+                foreach (SceneFace *edge, m_sceneViewPost2D->m_computation->scene()->faces->items())
                 {
                     if (edge->marker(m_sceneViewPost2D->m_computation->postDeal()->activeViewField()) ==
                             lstSurface->item(i)->data(Qt::UserRole).value<SceneBoundary *>())

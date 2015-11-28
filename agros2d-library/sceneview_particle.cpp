@@ -204,7 +204,7 @@ void SceneViewParticleTracing::paintGeometryOutline()
     if (m_computation->config()->coordinateType() == CoordinateType_Planar)
     {
         // depth
-        foreach (SceneEdge *edge, m_computation->scene()->edges->items())
+        foreach (SceneFace *edge, m_computation->scene()->faces->items())
         {
             glBegin(GL_LINES);
             if (edge->isStraight())
@@ -219,7 +219,7 @@ void SceneViewParticleTracing::paintGeometryOutline()
         }
 
         // length
-        foreach (SceneEdge *edge, m_computation->scene()->edges->items())
+        foreach (SceneFace *edge, m_computation->scene()->faces->items())
         {
             glBegin(GL_LINES);
             if (edge->isStraight())
@@ -265,7 +265,7 @@ void SceneViewParticleTracing::paintGeometryOutline()
     else
     {
         // top
-        foreach (SceneEdge *edge, m_computation->scene()->edges->items())
+        foreach (SceneFace *edge, m_computation->scene()->faces->items())
         {
             for (int j = 0; j <= 360; j = j + 90)
             {
@@ -393,7 +393,7 @@ void SceneViewParticleTracing::paintGeometrySurface(bool blend)
         glEnd();
 
         // length
-        foreach (SceneEdge *edge, m_computation->scene()->edges->items())
+        foreach (SceneFace *edge, m_computation->scene()->faces->items())
         {
             glBegin(GL_TRIANGLE_STRIP);
             if (edge->isStraight())
@@ -453,7 +453,7 @@ void SceneViewParticleTracing::paintGeometrySurface(bool blend)
         glEnd();
 
         // length
-        foreach (SceneEdge *edge, m_computation->scene()->edges->items())
+        foreach (SceneFace *edge, m_computation->scene()->faces->items())
         {
             int count = 29.0;
             double step = 360.0/count;

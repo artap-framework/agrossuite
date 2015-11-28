@@ -69,7 +69,7 @@ void DxfInterfaceDXFRW::addLine(const DRW_Line &l)
                                                             Point(l.secPoint.x, l.secPoint.y)));
 
         // edge
-        m_scene->addEdge(new SceneEdge(Agros2D::problem()->scene(),
+        m_scene->addFace(new SceneFace(Agros2D::problem()->scene(),
                                        nodeStart, nodeEnd, 0));
     }
     else
@@ -99,7 +99,7 @@ void DxfInterfaceDXFRW::addArc(const DRW_Arc& a)
                                                             Point(a.basePoint.x + a.radious*cos(angle2/180.0*M_PI),
                                                                   a.basePoint.y + a.radious*sin(angle2/180.0*M_PI))));
         // edge
-        m_scene->addEdge(new SceneEdge(Agros2D::problem()->scene(),
+        m_scene->addFace(new SceneFace(Agros2D::problem()->scene(),
                                        nodeStart, nodeEnd, (angle1 < angle2) ? angle2-angle1 : angle2+360.0-angle1));
     }
     else
@@ -119,10 +119,10 @@ void DxfInterfaceDXFRW::addCircle(const DRW_Circle &c)
         SceneNode *node4 = m_scene->addNode(new SceneNode(Agros2D::problem()->scene(), Point(c.basePoint.x, c.basePoint.y - c.radious)));
 
         // edges
-        m_scene->addEdge(new SceneEdge(Agros2D::problem()->scene(), node1, node2, 90));
-        m_scene->addEdge(new SceneEdge(Agros2D::problem()->scene(), node2, node3, 90));
-        m_scene->addEdge(new SceneEdge(Agros2D::problem()->scene(), node3, node4, 90));
-        m_scene->addEdge(new SceneEdge(Agros2D::problem()->scene(), node4, node1, 90));
+        m_scene->addFace(new SceneFace(Agros2D::problem()->scene(), node1, node2, 90));
+        m_scene->addFace(new SceneFace(Agros2D::problem()->scene(), node2, node3, 90));
+        m_scene->addFace(new SceneFace(Agros2D::problem()->scene(), node3, node4, 90));
+        m_scene->addFace(new SceneFace(Agros2D::problem()->scene(), node4, node1, 90));
     }
 }
 
@@ -136,7 +136,7 @@ void DxfInterfaceDXFRW::addPolyline(const DRW_Polyline& data)
         SceneNode *nodeStart = m_scene->addNode(new SceneNode(Agros2D::problem()->scene(), Point(vertStart->basePoint.x, vertStart->basePoint.y)));
         SceneNode *nodeEnd = m_scene->addNode(new SceneNode(Agros2D::problem()->scene(), Point(vertEnd->basePoint.x, vertEnd->basePoint.y)));
 
-        m_scene->addEdge(new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, 0.0));
+        m_scene->addFace(new SceneFace(Agros2D::problem()->scene(), nodeStart, nodeEnd, 0.0));
     }
 }
 
@@ -150,7 +150,7 @@ void DxfInterfaceDXFRW::addLWPolyline(const DRW_LWPolyline& data)
         SceneNode *nodeStart = m_scene->addNode(new SceneNode(Agros2D::problem()->scene(), Point(vertStart->x, vertStart->y)));
         SceneNode *nodeEnd = m_scene->addNode(new SceneNode(Agros2D::problem()->scene(), Point(vertEnd->x, vertEnd->y)));
 
-        m_scene->addEdge(new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, 0.0));
+        m_scene->addFace(new SceneFace(Agros2D::problem()->scene(), nodeStart, nodeEnd, 0.0));
     }
 }
 
@@ -166,7 +166,7 @@ void DxfInterfaceDXFRW::addSpline(const DRW_Spline *data)
         SceneNode *nodeStart = m_scene->addNode(new SceneNode(Agros2D::problem()->scene(), Point(vertStart->x, vertStart->y)));
         SceneNode *nodeEnd = m_scene->addNode(new SceneNode(Agros2D::problem()->scene(), Point(vertEnd->x, vertEnd->y)));
 
-        m_scene->addEdge(new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, 0.0));
+        m_scene->addFace(new SceneFace(Agros2D::problem()->scene(), nodeStart, nodeEnd, 0.0));
     }
     else if (data->degree > 1)
     {
@@ -179,7 +179,7 @@ void DxfInterfaceDXFRW::addSpline(const DRW_Spline *data)
         SceneNode *nodeStart = m_scene->addNode(new SceneNode(Agros2D::problem()->scene(), Point(vertStart->x, vertStart->y)));
         SceneNode *nodeEnd = m_scene->addNode(new SceneNode(Agros2D::problem()->scene(), Point(vertEnd->x, vertEnd->y)));
 
-        m_scene->addEdge(new SceneEdge(Agros2D::problem()->scene(), nodeStart, nodeEnd, 0.0));
+        m_scene->addFace(new SceneFace(Agros2D::problem()->scene(), nodeStart, nodeEnd, 0.0));
     }
 }
 
@@ -257,7 +257,7 @@ void DxfInterfaceDXFRW::writeHeader(DRW_Header& data)
 void DxfInterfaceDXFRW::writeEntities()
 {
     // edges
-    foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
+    foreach (SceneFace *edge, Agros2D::problem()->scene()->faces->items())
     {
         if (fabs(edge->angle()) < EPS_ZERO)
         {

@@ -341,7 +341,7 @@ void PreprocessorWidget::refresh()
 
             item->setText(0, boundary->name());
             item->setText(1, boundaryType.name());
-            if (Agros2D::problem()->scene()->edges->haveMarker(boundary).isEmpty())
+            if (Agros2D::problem()->scene()->faces->haveMarker(boundary).isEmpty())
                 item->setForeground(0, QBrush(Qt::gray));
             item->setData(0, Qt::UserRole, boundary->variant());
             item->setData(1, Qt::UserRole, PreprocessorWidget::Boundary);
@@ -384,7 +384,7 @@ void PreprocessorWidget::refresh()
     edgesNode->setFont(0, fnt);
 
     int iedge = 0;
-    foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
+    foreach (SceneFace *edge, Agros2D::problem()->scene()->faces->items())
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(edgesNode);
 
@@ -608,7 +608,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
 
             if (dynamic_cast<SceneNode *>(objectBasic))
                 m_sceneViewPreprocessor->actOperateOnNodes->trigger();
-            if (dynamic_cast<SceneEdge *>(objectBasic))
+            if (dynamic_cast<SceneFace *>(objectBasic))
                 m_sceneViewPreprocessor->actOperateOnEdges->trigger();
             if (dynamic_cast<SceneLabel *>(objectBasic))
                 m_sceneViewPreprocessor->actOperateOnLabels->trigger();
@@ -625,7 +625,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             SceneBoundary *objectBoundary = current->data(0, Qt::UserRole).value<SceneBoundary *>();
             m_sceneViewPreprocessor->actOperateOnEdges->trigger();
 
-            Agros2D::problem()->scene()->edges->haveMarker(objectBoundary).setSelected();
+            Agros2D::problem()->scene()->faces->haveMarker(objectBoundary).setSelected();
 
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
@@ -761,9 +761,9 @@ void PreprocessorWidget::doDelete()
                 Agros2D::problem()->scene()->nodes->remove(node);
             }
 
-            else if (SceneEdge *edge = dynamic_cast<SceneEdge *>(objectBasic))
+            else if (SceneFace *edge = dynamic_cast<SceneFace *>(objectBasic))
             {
-                Agros2D::problem()->scene()->edges->remove(edge);
+                Agros2D::problem()->scene()->faces->remove(edge);
             }
 
             else if (SceneLabel *label = dynamic_cast<SceneLabel *>(objectBasic))

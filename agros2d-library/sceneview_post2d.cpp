@@ -206,7 +206,7 @@ void SceneViewPost2D::mousePressEvent(QMouseEvent *event)
         if (actPostprocessorModeSurfaceIntegral->isChecked())
         {
             //  find edge marker
-            SceneEdge *edge = SceneEdge::findClosestEdge(m_computation->scene(), p);
+            SceneFace *edge = SceneFace::findClosestFace(m_computation->scene(), p);
 
             edge->setSelected(!edge->isSelected());
             updateGL();
@@ -299,7 +299,7 @@ void SceneViewPost2D::paintGeometry()
     loadProjection2d(true);
 
     // edges
-    foreach (SceneEdge *edge, m_computation->scene()->edges->items())
+    foreach (SceneFace *edge, m_computation->scene()->faces->items())
     {
         glColor3d(COLOREDGE[0], COLOREDGE[1], COLOREDGE[2]);
         glLineWidth(EDGEWIDTH);
@@ -758,7 +758,7 @@ void SceneViewPost2D::paintPostprocessorSelectedSurface()
     if (!m_computation->isSolved()) return;
 
     // edges
-    foreach (SceneEdge *edge, m_computation->scene()->edges->items()) {
+    foreach (SceneFace *edge, m_computation->scene()->faces->items()) {
         glColor3d(COLORSELECTED[0], COLORSELECTED[1], COLORSELECTED[2]);
         glLineWidth(3.0);
 

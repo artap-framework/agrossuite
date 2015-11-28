@@ -22,7 +22,7 @@
 
 class Scene;
 class SceneLabel;
-class SceneEdge;
+class SceneFace;
 
 #include "util.h"
 
@@ -122,8 +122,8 @@ private:
 
     QMap<SceneLabel*, QList<Triangle> > m_polygonTriangles;
 
-    Intersection intersects(Point point, double tangent, SceneEdge* edge);
-    Intersection intersects(Point point, double tangent, SceneEdge* edge, Point& intersection);
+    Intersection intersects(Point point, double tangent, SceneFace* edge);
+    Intersection intersects(Point point, double tangent, SceneFace* edge, Point& intersection);
     int intersectionsParity(Point point, QList<LoopsNodeEdgeData> loop);
     bool isInsideSeg(double angleSegStart, double angleSegEnd, double angle);
 
@@ -134,7 +134,7 @@ private:
     int longerLoop(int idx1, int idx2);
     bool shareEdge(int idx1, int idx2);
     void switchOrientation(int idx);
-    void addEdgePoints(QList<Point> *polyline, const SceneEdge &edge, bool reverse = false);
+    void addEdgePoints(QList<Point> *polyline, const SceneFace &edge, bool reverse = false);
 };
 
 

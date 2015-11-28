@@ -138,15 +138,15 @@ void SceneViewPreprocessor::doSceneObjectProperties()
     {
         if (Agros2D::problem()->scene()->selectedCount() > 1)
         {
-            SceneEdgeSelectDialog *dialog = new SceneEdgeSelectDialog(Agros2D::problem()->scene()->edges->selected(), this);
+            SceneEdgeSelectDialog *dialog = new SceneEdgeSelectDialog(Agros2D::problem()->scene()->faces->selected(), this);
             dialog->exec();
         }
         if (Agros2D::problem()->scene()->selectedCount() == 1)
         {
-            for (int i = 0; i < Agros2D::problem()->scene()->edges->length(); i++)
+            for (int i = 0; i < Agros2D::problem()->scene()->faces->length(); i++)
             {
-                if (Agros2D::problem()->scene()->edges->at(i)->isSelected())
-                    Agros2D::problem()->scene()->edges->at(i)->showDialog(this);
+                if (Agros2D::problem()->scene()->faces->at(i)->isSelected())
+                    Agros2D::problem()->scene()->faces->at(i)->showDialog(this);
             }
         }
     }
@@ -175,10 +175,10 @@ void SceneViewPreprocessor::doSceneEdgeSwapDirection()
     // swap
     if (m_sceneMode == SceneGeometryMode_OperateOnEdges)
         if (Agros2D::problem()->scene()->selectedCount() == 1)
-            for (int i = 0; i < Agros2D::problem()->scene()->edges->length(); i++)
-                if (Agros2D::problem()->scene()->edges->at(i)->isSelected())
+            for (int i = 0; i < Agros2D::problem()->scene()->faces->length(); i++)
+                if (Agros2D::problem()->scene()->faces->at(i)->isSelected())
                 {
-                    Agros2D::problem()->scene()->edges->at(i)->swapDirection();
+                    Agros2D::problem()->scene()->faces->at(i)->swapDirection();
                     updateGL();
                 }
 }
@@ -266,7 +266,7 @@ void SceneViewPreprocessor::selectRegion(const Point &start, const Point &end)
                 node->setSelected(true);
         break;
     case SceneGeometryMode_OperateOnEdges:
-        foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
+        foreach (SceneFace *edge, Agros2D::problem()->scene()->faces->items())
             if (edge->nodeStart()->point().x >= start.x && edge->nodeStart()->point().x <= end.x && edge->nodeStart()->point().y >= start.y && edge->nodeStart()->point().y <= end.y &&
                     edge->nodeEnd()->point().x >= start.x && edge->nodeEnd()->point().x <= end.x && edge->nodeEnd()->point().y >= start.y && edge->nodeEnd()->point().y <= end.y)
                 edge->setSelected(true);
@@ -317,18 +317,15 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
         if (m_sceneMode == SceneGeometryMode_OperateOnEdges)
         {
             // highlight the closest edge
-            SceneEdge *edge = SceneEdge::findClosestEdge(Agros2D::problem()->scene(), p);
+            SceneFace *edge = SceneFace::findClosestFace(Agros2D::problem()->scene(), p);
             if (edge)
             {
                 // assigned boundary conditions
-                QString str, refinement;
+                QString str;
                 foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
                 {
                     str = str + QString("%1 (%2), ").
                             arg(edge->hasMarker(fieldInfo) ? edge->marker(fieldInfo)->name() : "-").
-                            arg(fieldInfo->name());
-                    refinement = refinement + QString("%1 (%2), ").
-                            arg(fieldInfo->edgeRefinement(edge)).
                             arg(fieldInfo->name());
                 }
                 if (str.length() > 0)
@@ -336,15 +333,14 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
 
                 Agros2D::problem()->scene()->highlightNone();
                 edge->setHighlighted(true);
-                setToolTip(tr("<h3>Edge</h3><b>Point:</b> [%1; %2] - [%3; %4]<br/><b>Boundary conditions:</b> %5<br/><b>Refinement:</b> %6<br/><b>Angle:</b> %7 deg.<br/><b>Index:</b> %8").
+                setToolTip(tr("<h3>Edge</h3><b>Point:</b> [%1; %2] - [%3; %4]<br/><b>Boundary conditions:</b> %5<br/><b>Angle:</b> %7 deg.<br/><b>Index:</b> %8").
                            arg(edge->nodeStart()->point().x, 0, 'g', 3).
                            arg(edge->nodeStart()->point().y, 0, 'g', 3).
                            arg(edge->nodeEnd()->point().x, 0, 'g', 3).
                            arg(edge->nodeEnd()->point().y, 0, 'g', 3).
                            arg(str).
-                           arg(refinement).
                            arg(edge->angle(), 0, 'f', 0).
-                           arg(Agros2D::problem()->scene()->edges->items().indexOf(edge)));
+                           arg(Agros2D::problem()->scene()->faces->items().indexOf(edge)));
                 updateGL();
             }
         }
@@ -578,8 +574,8 @@ void SceneViewPreprocessor::mousePressEvent(QMouseEvent *event)
                 {
                     if (node != m_nodeLast)
                     {
-                        SceneEdge *edge = new SceneEdge(Agros2D::problem()->scene(), m_nodeLast, node, 0);
-                        SceneEdge *edgeAdded = Agros2D::problem()->scene()->addEdge(edge);
+                        SceneFace *edge = new SceneFace(Agros2D::problem()->scene(), m_nodeLast, node, 0);
+                        SceneFace *edgeAdded = Agros2D::problem()->scene()->addFace(edge);
 
                         if (edgeAdded == edge) Agros2D::problem()->scene()->undoStack()->push(edge->getAddCommand());
                     }
@@ -635,7 +631,7 @@ void SceneViewPreprocessor::mousePressEvent(QMouseEvent *event)
         if (m_sceneMode == SceneGeometryMode_OperateOnEdges)
         {
             // select the closest edge
-            SceneEdge *edge = SceneEdge::findClosestEdge(Agros2D::problem()->scene(), p);
+            SceneFace *edge = SceneFace::findClosestFace(Agros2D::problem()->scene(), p);
             if (edge)
             {
                 edge->setSelected(!edge->isSelected());
@@ -712,7 +708,7 @@ void SceneViewPreprocessor::mouseDoubleClickEvent(QMouseEvent *event)
             if (m_sceneMode == SceneGeometryMode_OperateOnEdges)
             {
                 // select the closest label
-                SceneEdge *edge = SceneEdge::findClosestEdge(Agros2D::problem()->scene(), p);
+                SceneFace *edge = SceneFace::findClosestFace(Agros2D::problem()->scene(), p);
                 if (edge)
                 {
                     edge->setSelected(true);
@@ -948,7 +944,7 @@ void SceneViewPreprocessor::paintGeometry()
     loadProjection2d(true);
 
     // edges
-    foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
+    foreach (SceneFace *edge, Agros2D::problem()->scene()->faces->items())
     {
         if (m_sceneMode == SceneGeometryMode_OperateOnEdges)
         {
@@ -1230,7 +1226,7 @@ void SceneViewPreprocessor::paintEdgeLine()
             glColor3d(COLOREDGE[0], COLOREDGE[1], COLOREDGE[2]);
 
             // check for crossing
-            foreach (SceneEdge *edge, Agros2D::problem()->scene()->edges->items())
+            foreach (SceneFace *edge, Agros2D::problem()->scene()->faces->items())
             {
                 QList<Point> intersects = intersection(p, m_nodeLast->point(),
                                                        m_nodeLast->point(), 0, 0,
@@ -1283,6 +1279,6 @@ void SceneViewPreprocessor::paintSelectRegion()
 
 void SceneViewPreprocessor::saveGeometryToSvg(const QString &fileName)
 {
-    QString geometry = generateSvgGeometry(Agros2D::problem()->scene()->edges->items());
+    QString geometry = generateSvgGeometry(Agros2D::problem()->scene()->faces->items());
     writeStringContent(fileName, geometry);
 }

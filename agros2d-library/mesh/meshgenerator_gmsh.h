@@ -43,7 +43,7 @@ private:
     // model
     GModel *m;
     // edges
-    QMap<SceneEdge *, GEdge *> edgesMap;
+    QMap<SceneFace *, GEdge *> edgesMap;
     // faces
     QMap<SceneLabel *, GFace *> facesMap;
 
