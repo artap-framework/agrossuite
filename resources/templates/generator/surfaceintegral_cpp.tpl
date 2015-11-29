@@ -120,13 +120,15 @@ void {{CLASS}}SurfaceIntegral::calculate()
                         {{#VARIABLE_SOURCE}}
                         if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
                         {
+                            double res = 0.0;
                             for (unsigned int k = 0; k < n_face_q_points; ++k)
                             {
                                 const dealii::Point<2> p = fe_values.quadrature_point(k);
                                 const dealii::Tensor<1,2> normal = fe_values.normal_vector(k);
 
-                                m_values[QLatin1String("{{VARIABLE}}")] += (atBoundary ? 1.0 : 0.5) * fe_values.JxW(k) * ({{EXPRESSION}});
+                                res += (atBoundary ? 1.0 : 0.5) * fe_values.JxW(k) * ({{EXPRESSION}});
                             }
+                            m_values[QLatin1String("{{VARIABLE}}")] += res;
                         }
                         {{/VARIABLE_SOURCE}}
                     }

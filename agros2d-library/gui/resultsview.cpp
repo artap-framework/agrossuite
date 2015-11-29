@@ -42,10 +42,9 @@ ResultsView::ResultsView(QWidget *parent) : QWidget(parent)
 
     QSettings settings;
     trvWidget = new QTreeWidget(this);
-    trvWidget->setHeaderHidden(true);
-    // trvWidget->setHeaderHidden(false);
-    // trvWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Var.") << tr("Value"));
-    trvWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    trvWidget->setHeaderHidden(false);
+    trvWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Var.") << tr("Value"));
+    // trvWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     trvWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     trvWidget->setMouseTracking(true);
     trvWidget->setUniformRowHeights(true);
@@ -258,6 +257,7 @@ void ResultsView::showVolumeIntegral()
                                                                                       fieldInfo,
                                                                                       m_computation->postDeal()->activeTimeStep(),
                                                                                       m_computation->postDeal()->activeAdaptivityStep());
+
         QMap<QString, double> values = integral->values();
         if (values.size() > 0)
         {

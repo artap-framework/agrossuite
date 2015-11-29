@@ -2036,25 +2036,20 @@ QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool
         computation->clearFieldsAndConfig();
     }
 
-    QTime time;
-    time.start();
-    QString fn = QString("%1/%2/problem.a2d").
-            arg(cacheProblemDir()).
-            arg(computation->problemDir());
+    // QString fn = QString("%1/%2/problem.a2d").
+    //         arg(cacheProblemDir()).
+    //         arg(computation->problemDir());
 
-    exportProblemToA2D(fn);
-    computation->importProblemFromA2D(fn);
-    computation->clearFieldsAndConfig();
-    qDebug() << "A2D" << time.elapsed();
+    // exportProblemToA2D(fn);
+    // computation->importProblemFromA2D(fn);
+    // computation->clearFieldsAndConfig();
 
-    time.start();
     // write problem
     writeProblemToJson();
     // copy file
     QFile::copy(problemFileName(), QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(computation->problemDir()));
     // read problem
     computation->readProblemFromJson();
-    qDebug() << "JSON" << time.elapsed();
 
     return computation;
 }
