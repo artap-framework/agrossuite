@@ -855,11 +855,13 @@ void SolverDeal::solveTransient()
     m_computation->solutionStore()->addSolution(solutionID, MultiArray(&primal->doFHandler, initialSolution), runTime);
 
     // Python callback
+    /*
     double cont = 1.0;
     QString command = QString("(agros2d.problem().time_callback(agros2d.computation('%1'), %2) if (agros2d.problem().time_callback is not None and hasattr(agros2d.problem().time_callback, '__call__')) else True)").
             arg(m_computation->problemDir()).
             arg(0);
     bool successfulRun = currentPythonEngine()->runExpression(command, &cont);
+    */
 
     primal->solution = initialSolution;
 
@@ -1065,6 +1067,7 @@ void SolverDeal::solveTransient()
                 m_computation->solutionStore()->addSolution(solutionID, MultiArray(&primal->doFHandler, primal->solution), runTime);
 
                 // Python callback
+                /*
                 QString command = QString("(agros2d.problem().time_callback(agros2d.computation('%1'), %2) if (agros2d.problem().time_callback is not None and hasattr(agros2d.problem().time_callback, '__call__')) else True)").
                         arg(m_computation->problemDir()).
                         arg(timeStep);
@@ -1079,6 +1082,7 @@ void SolverDeal::solveTransient()
 
                 if (!cont)
                     break;
+                */
 
                 // adapt mesh
                 if (m_fieldInfo->adaptivityType() != AdaptivityMethod_None)
