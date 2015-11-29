@@ -325,6 +325,9 @@ void PythonEditorWidget::createControls()
     splitter->addWidget(tab);
 
     toolBar = new QToolBar(this);
+    toolBar->addAction(pythonEditor->actFileOpen);
+    toolBar->addAction(pythonEditor->actFileSave);
+    toolBar->addSeparator();
     toolBar->addAction(pythonEditor->actRunPython);
     toolBar->addAction(pythonEditor->actStopPython);
     toolBar->addSeparator();
