@@ -32,7 +32,6 @@ public:
     ExamplesWidget(QWidget *parent, InfoWidget *infoWidget);
 
     QAction *actExamples;
-    QToolBar *toolBar;
 
     void init(const QString &expandedGroup = "");
 

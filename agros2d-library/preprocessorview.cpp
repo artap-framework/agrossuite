@@ -133,8 +133,6 @@ void PreprocessorWidget::createControls()
 
     // main toolbar
     toolBar = new QToolBar();
-    toolBar->addAction(actUndo);
-    toolBar->addAction(actRedo);
     toolBar->addSeparator();
     toolBar->addAction(m_sceneViewPreprocessor->actOperateOnNodes);
     toolBar->addAction(m_sceneViewPreprocessor->actOperateOnEdges);

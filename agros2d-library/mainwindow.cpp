@@ -443,9 +443,9 @@ void MainWindow::createMenus()
 void MainWindow::createToolBars()
 {
     // main toolbar
-    exampleWidget->toolBar->addAction(actDocumentNew);
-    exampleWidget->toolBar->addAction(actDocumentOpen);
-    exampleWidget->toolBar->addAction(actDocumentSave);
+    problemWidget->toolBar->insertAction(problemWidget->toolBar->actions().first(), actDocumentSave);
+    problemWidget->toolBar->insertAction(problemWidget->toolBar->actions().first(), actDocumentOpen);
+    problemWidget->toolBar->insertAction(problemWidget->toolBar->actions().first(), actDocumentNew);
 
     // zoom toolbar
     QMenu *menu = new QMenu();

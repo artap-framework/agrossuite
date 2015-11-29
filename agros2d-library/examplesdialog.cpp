@@ -82,7 +82,6 @@ ExamplesWidget::ExamplesWidget(QWidget *parent, InfoWidget *infoWidget)
     widgetExamples->setLayout(layoutExamples);
 
     QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(toolBar);
     layout->addWidget(widgetRecentFiles, 1);
     layout->addWidget(widgetExamples, 2);
 
@@ -98,9 +97,7 @@ void ExamplesWidget::createActions()
 {
     actExamples = new QAction(icon("agros2d"), tr("Welcome"), this);
     actExamples->setShortcut(tr("Ctrl+1"));
-    actExamples->setCheckable(true);
-
-    toolBar = new QToolBar(this);
+    actExamples->setCheckable(true);    
 }
 
 void ExamplesWidget::init(const QString &expandedGroup)
