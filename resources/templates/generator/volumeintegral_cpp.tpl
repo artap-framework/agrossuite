@@ -47,29 +47,30 @@
 
 #include <deal.II/numerics/vector_tools.h>
 
+#include <deal.II/base/work_stream.h>
+
 {{CLASS}}VolumeIntegral::{{CLASS}}VolumeIntegral(Computation *computation,
                                                  const FieldInfo *fieldInfo,
                                                  int timeStep,
                                                  int adaptivityStep)
     : IntegralValue(computation, fieldInfo, timeStep, adaptivityStep)
 {
-    calculate();
-}
-
-void {{CLASS}}VolumeIntegral::calculate()
-{
     m_values.clear();
 
     if (m_computation->isSolved())
     {
-        double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
-
         FieldSolutionID fsid(m_fieldInfo->fieldId(), m_timeStep, m_adaptivityStep);
-        // check existence
-        if (!m_computation->solutionStore()->contains(fsid))
-            return;
+        ma = m_computation->solutionStore()->multiArray(fsid);
 
-        MultiArray ma = m_computation->solutionStore()->multiArray(fsid);
+        // Gauss quadrature - volume
+        dealii::hp::QCollection<2> quadratureFormulas;
+        for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+            quadratureFormulas.push_back(dealii::QGauss<2>(degree + 1));
+
+        // Gauss quadrature - surface
+        dealii::hp::QCollection<2-1> faceQuadratureFormulas;
+        for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
+            faceQuadratureFormulas.push_back(dealii::QGauss<2-1>(degree + 1));
 
         // update time functions
         if (!m_computation->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
@@ -77,22 +78,7 @@ void {{CLASS}}VolumeIntegral::calculate()
             Module::updateTimeFunctions(m_computation, m_computation->timeStepToTotalTime(m_timeStep));
         }
 
-        // Gauss quadrature - volume
-        dealii::hp::QCollection<2> quadrature_formulas;
-        for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
-            quadrature_formulas.push_back(dealii::QGauss<2>(degree + 1));
-
-        dealii::hp::FEValues<2> hp_fe_values(ma.doFHandler()->get_fe(), quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
-
-        // Gauss quadrature - surface
-        dealii::hp::QCollection<2-1> face_quadrature_formulas;
-        for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
-            face_quadrature_formulas.push_back(dealii::QGauss<2-1>(degree + 1));
-
-        dealii::hp::FEFaceValues<2> hp_fe_face_values(ma.doFHandler()->get_fe(), face_quadrature_formulas, dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values);
-
         // find faces around the selected labels
-        QList<int> surroundings;
         if ({{INTEGRAL_COUNT_EGGSHELL}} > 0)
         {
             for (int iFace = 0; iFace < m_computation->scene()->faces->count(); iFace++)
@@ -118,94 +104,128 @@ void {{CLASS}}VolumeIntegral::calculate()
             }
         }
 
-        for (int iLabel = 0; iLabel < m_computation->scene()->labels->count(); iLabel++)
+        dealii::WorkStream::run(ma.doFHandler()->begin_active(),
+                                ma.doFHandler()->end(),
+                                *this,
+                                &{{CLASS}}VolumeIntegral::localAssembleSystem,
+                                &{{CLASS}}VolumeIntegral::copyLocalToGlobal,
+                                IntegralScratchData(ma.doFHandler()->get_fe(),
+                                                    quadratureFormulas,
+                                                    faceQuadratureFormulas),
+                                IntegralCopyData());
+    }
+}
+
+void {{CLASS}}VolumeIntegral::localAssembleSystem(const typename dealii::hp::DoFHandler<2>::active_cell_iterator &cell_int,
+                                 IntegralScratchData &scratch_data,
+                                 IntegralCopyData &copy_data)
+{
+    double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
+
+    for (int iLabel = 0; iLabel < m_computation->scene()->labels->count(); iLabel++)
+    {
+        SceneLabel *label = m_computation->scene()->labels->at(iLabel);
+        if (!label->isSelected())
+            continue;
+
+        SceneMaterial *material = label->marker(m_fieldInfo);
+        if (material->isNone())
+            continue;
+
+        {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
+        {{/VARIABLE_MATERIAL}}
+
+        // volume integration
+        if (cell_int->material_id() - 1 == iLabel)
         {
-            SceneLabel *label = m_computation->scene()->labels->at(iLabel);
-            SceneMaterial *material = label->marker(m_fieldInfo);
-            if (material->isNone())
-                continue;
-
-            {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
-            {{/VARIABLE_MATERIAL}}
-
-            // Then start the loop over all cells, and select those cells which are close enough to the evaluation point:
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(), endc_int = ma.doFHandler()->end();
-            for (; cell_int != endc_int; ++cell_int)
+            if (label->isSelected())
             {
-                // volume integration
-                if (cell_int->material_id() - 1 == iLabel)
+                scratch_data.hp_fe_values.reinit(cell_int);
+
+                const dealii::FEValues<2> &fe_values = scratch_data.hp_fe_values.get_present_fe_values();
+                const unsigned int n_q_points = fe_values.n_quadrature_points;
+
+                std::vector<dealii::Vector<double> > solution_values(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+                std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
+                fe_values.get_function_values(ma.solution(), solution_values);
+                fe_values.get_function_gradients(ma.solution(), solution_grads);
+
+                // expressions
+                {{#VARIABLE_SOURCE}}
+                if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
                 {
-                    if (label->isSelected())
+                    double res = 0.0;
+                    for (unsigned int k = 0; k < n_q_points; ++k)
                     {
-                        hp_fe_values.reinit(cell_int);
+                        const dealii::Point<2> p = fe_values.quadrature_point(k);
 
-                        const dealii::FEValues<2> &fe_values = hp_fe_values.get_present_fe_values();
-                        const unsigned int n_q_points = fe_values.n_quadrature_points;
-
-                        std::vector<dealii::Vector<double> > solution_values(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-                        std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
-
-                        fe_values.get_function_values(ma.solution(), solution_values);
-                        fe_values.get_function_gradients(ma.solution(), solution_grads);
-
-                        // expressions
-                        {{#VARIABLE_SOURCE}}
-                        if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
-                        {
-                            double res = 0.0;
-                            for (unsigned int k = 0; k < n_q_points; ++k)
-                            {
-                                const dealii::Point<2> p = fe_values.quadrature_point(k);
-
-                                res += fe_values.JxW(k) * ({{EXPRESSION}});
-                            }
-                            m_values[QLatin1String("{{VARIABLE}}")] += res;
-                        }
-                        {{/VARIABLE_SOURCE}}
+                        res += fe_values.JxW(k) * ({{EXPRESSION}});
                     }
+                    copy_data.results[QLatin1String("{{VARIABLE}}")] += res;
+                }
+                {{/VARIABLE_SOURCE}}
+            }
 
-                    // volume to surface (temporary eggshell replacement)
-                    if ({{INTEGRAL_COUNT_EGGSHELL}} > 0)
+            // volume to surface (temporary eggshell replacement)
+            if ({{INTEGRAL_COUNT_EGGSHELL}} > 0)
+            {
+                for (int j = 0; j < surroundings.count(); j++)
+                {
+                    // surface integration
+                    for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
                     {
-                        for (int j = 0; j < surroundings.count(); j++)
+                        if (cell_int->face(face)->user_index() - 1 == surroundings[j])
                         {
-                            // surface integration
-                            for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
+                            scratch_data.hp_fe_face_values.reinit(cell_int, face);
+
+                            const dealii::FEFaceValues<2> &fe_values = scratch_data.hp_fe_face_values.get_present_fe_values();
+                            const unsigned int n_face_q_points = fe_values.n_quadrature_points;
+
+                            std::vector<dealii::Vector<double> > solution_values(n_face_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+                            std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_face_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
+                            fe_values.get_function_values(ma.solution(), solution_values);
+                            fe_values.get_function_gradients(ma.solution(), solution_grads);
+
+                            // expressions
+                            {{#VARIABLE_SOURCE_EGGSHELL}}
+                            if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
                             {
-                                if (cell_int->face(face)->user_index() - 1 == surroundings[j])
+                                double res = 0.0;
+                                for (unsigned int k = 0; k < n_face_q_points; ++k)
                                 {
-                                    hp_fe_face_values.reinit(cell_int, face);
+                                    const dealii::Point<2> p = fe_values.quadrature_point(k);
+                                    const dealii::Tensor<1,2> normal = fe_values.normal_vector(k);
 
-                                    const dealii::FEFaceValues<2> &fe_values = hp_fe_face_values.get_present_fe_values();
-                                    const unsigned int n_face_q_points = fe_values.n_quadrature_points;
-
-                                    std::vector<dealii::Vector<double> > solution_values(n_face_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-                                    std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_face_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
-
-                                    fe_values.get_function_values(ma.solution(), solution_values);
-                                    fe_values.get_function_gradients(ma.solution(), solution_grads);
-
-                                    // expressions
-                                    {{#VARIABLE_SOURCE_EGGSHELL}}
-                                    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
-                                    {
-                                        double res = 0.0;
-                                        for (unsigned int k = 0; k < n_face_q_points; ++k)
-                                        {
-                                            const dealii::Point<2> p = fe_values.quadrature_point(k);
-                                            const dealii::Tensor<1,2> normal = fe_values.normal_vector(k);
-
-                                            res += fe_values.JxW(k) * ({{EXPRESSION}});
-                                        }
-                                        m_values[QLatin1String("{{VARIABLE}}")] += res;
-                                    }
-                                    {{/VARIABLE_SOURCE_EGGSHELL}}
+                                    res += fe_values.JxW(k) * ({{EXPRESSION}});
                                 }
+                                copy_data.results[QLatin1String("{{VARIABLE}}")] += res;
                             }
+                            {{/VARIABLE_SOURCE_EGGSHELL}}
                         }
                     }
                 }
             }
         }
     }
+}
+
+void {{CLASS}}VolumeIntegral::copyLocalToGlobal(const IntegralCopyData &copy_data)
+{
+    // expressions
+    {{#VARIABLE_SOURCE}}
+    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
+    {
+        m_values[QLatin1String("{{VARIABLE}}")] += copy_data.results[QLatin1String("{{VARIABLE}}")];
+    }
+    {{/VARIABLE_SOURCE}}
+
+    // eggshell expressions
+    {{#VARIABLE_SOURCE_EGGSHELL}}
+    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
+    {
+        m_values[QLatin1String("{{VARIABLE}}")] += copy_data.results[QLatin1String("{{VARIABLE}}")];
+    }
+    {{/VARIABLE_SOURCE_EGGSHELL}}
 }

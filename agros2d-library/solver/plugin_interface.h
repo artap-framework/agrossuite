@@ -107,13 +107,42 @@ public:
     // variables
     inline QMap<QString, double> values() const { return m_values; }
 
+    class AGROS_LIBRARY_API IntegralScratchData
+    {
+    public:
+        IntegralScratchData(const dealii::hp::FECollection<2> &feCollection,
+                            const dealii::hp::QCollection<2> &quadratureFormulas,
+                            const dealii::hp::QCollection<2-1> &faceQuadratureFormulas);
+        IntegralScratchData(const IntegralScratchData &scratch_data);
+
+        dealii::hp::FEValues<2> hp_fe_values;
+        dealii::hp::FEFaceValues<2> hp_fe_face_values;
+    };
+
+    class AGROS_LIBRARY_API IntegralCopyData
+    {
+    public:
+        IntegralCopyData() : results(QMap<QString, double>()) {}
+
+        QMap<QString, double> results;
+    };
+
+    virtual void localAssembleSystem(const typename dealii::hp::DoFHandler<2>::active_cell_iterator &cell_int,
+                                     IntegralScratchData &scratch_data,
+                                     IntegralCopyData &copy_data) = 0;
+    virtual void copyLocalToGlobal(const IntegralCopyData &copy_data) = 0;
+
 protected:
     // computation
     Computation *m_computation;
+
     // field info
     const FieldInfo *m_fieldInfo;
     int m_timeStep;
-    int m_adaptivityStep;    
+    int m_adaptivityStep;
+
+    QList<int> surroundings;
+    MultiArray ma;
 
     // variables
     QMap<QString, double> m_values;
