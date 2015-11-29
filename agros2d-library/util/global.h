@@ -63,11 +63,6 @@ public:
     static inline Problem *problem() { return Agros2D::singleton()->m_problem; }
 
     static void setCurrentComputation(const QString &problemDir);
-    static inline QSharedPointer<Computation> computation()
-    {
-        qWarning() << "Agros2D::computation() deprecated - method will be removed!";
-        return Agros2D::singleton()->m_computation;
-    }
     static inline QMap<QString, QSharedPointer<Computation> > computations() { return Agros2D::singleton()->m_computations; }
     static void addComputation(const QString &problemDir, QSharedPointer<Computation> comp);
     static void clearComputations();
@@ -87,8 +82,7 @@ private:
     Config *m_configComputer;
     // problem
     Problem *m_problem;
-    // computation
-    QSharedPointer<Computation> m_computation;
+    // computations
     QMap<QString, QSharedPointer<Computation> > m_computations;
     // log and memory monitor
     Log *m_log;

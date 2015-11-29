@@ -187,7 +187,7 @@ void PostprocessorWidget::connectComputation(QSharedPointer<Computation> computa
     {
         connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doCalculationFinished()));
         connect(m_computation.data(), SIGNAL(solved()), this, SLOT(doCalculationFinished()));
-        connect(this, SIGNAL(apply()), m_computation.data()->postDeal(), SLOT(refresh()));        
+        connect(this, SIGNAL(apply()), m_computation.data()->postDeal(), SLOT(refresh()));
     }    
 
     refresh();

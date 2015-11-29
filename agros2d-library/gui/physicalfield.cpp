@@ -290,9 +290,11 @@ void PhysicalFieldWidget::doComputation(int index)
     if (Agros2D::computations().count() > 0)
     {
         // set current computation
-        Agros2D::setCurrentComputation(cmbComputation->itemData(cmbComputation->currentIndex()).toString());
         if (m_computation && m_computation->isMeshed())
         {
+            if (cmbComputation->itemData(cmbComputation->currentIndex()).toString() != m_computation->problemDir())
+                Agros2D::setCurrentComputation(cmbComputation->itemData(cmbComputation->currentIndex()).toString());
+
             fillComboBoxFieldInfo(cmbFieldInfo, m_computation);
         }
         else

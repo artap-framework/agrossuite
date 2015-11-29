@@ -85,7 +85,10 @@ void SceneViewChart::chartMouseMoved(QMouseEvent *event)
 
 void SceneViewChart::refresh()
 {
-    if (m_computation.isNull())
+    if (!(m_computation && m_computation->postDeal()->activeViewField()))
+        return;
+
+    if (m_computation->setting()->value(ProblemSetting::View_ChartVariable).toString().isEmpty())
         return;
 
     Module::LocalVariable physicFieldVariable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),

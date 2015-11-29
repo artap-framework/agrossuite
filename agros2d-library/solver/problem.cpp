@@ -1444,8 +1444,8 @@ void ProblemBase::writeProblemToJson(const QString &fileName)
 
     // save to file
     QJsonDocument doc(rootJson);
-    // file.write(doc.toJson(QJsonDocument::Indented));
-    file.write(doc.toJson(QJsonDocument::Compact));
+    file.write(doc.toJson(QJsonDocument::Indented));
+    // file.write(doc.toJson(QJsonDocument::Compact));
 
     // qDebug() << "writeProblemToJson" << time.elapsed();
 }
@@ -2047,6 +2047,7 @@ QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool
     // write problem
     writeProblemToJson();
     // copy file
+    QFile::remove(QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(computation->problemDir()));
     QFile::copy(problemFileName(), QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(computation->problemDir()));
     // read problem
     computation->readProblemFromJson();

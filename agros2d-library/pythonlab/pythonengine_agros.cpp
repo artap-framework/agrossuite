@@ -55,8 +55,8 @@ void PythonEngineAgros::addCustomFunctions()
 
 void PythonEngineAgros::abortScript()
 {
-    if (Agros2D::computation()->isMeshing() || Agros2D::computation()->isSolving())
-        Agros2D::computation()->doAbortSolve();
+    // if (Agros2D::computation()->isMeshing() || Agros2D::computation()->isSolving())
+    //     Agros2D::computation()->doAbortSolve();
 
     PythonEngine::abortScript();
 }
