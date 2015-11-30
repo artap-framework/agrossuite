@@ -71,6 +71,44 @@ Next step is generating of plugins source code and their compilation:
 cd plugins
 cmake .
 
+Building of the external solvers:
+--------------------------------
+
+- PARALUTION
+cd solver-external-paralution
+cd paralution
+mkdir build
+cd build
+cmake ..
+make
+cd ../..
+cmake .
+make
+
+- ViennaCL
+sudo apt-get install libboost-math-dev
+cd solver-external-viennacl
+cmake .
+make
+
+- MUMPS
+sudo apt-get install libmumps-dev
+sudo apt-get install mpi-default-dev
+cmake .
+make
+
+- UMFPACK
+cd solver-external-umfpack
+cmake .
+make
+
+- Trilinos (!in development!)
+sudo add-apt-repository ppa:nschloe/trilinos-nightly
+sudo apt-get install trilinos-all-dev trilinos-dev trilinos-doc
+sudo apt-get install libtrilinos-*
+
+After the solvers compilation, You can control if the solvers binaries has been ganarated in /agros2d/libs.
+
 Notice:
 If you have more than one CPU, you can use “make -jN” where N is the number of CPUs of your computer.
 
