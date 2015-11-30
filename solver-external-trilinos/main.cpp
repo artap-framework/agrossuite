@@ -81,6 +81,9 @@ int main(int argc, char *argv[])
         system_rhs.block_read(readRHS);
         readRHS.close();
 
+        // test of rhs values ---
+        system_rhs.block_write(std::cout);
+
         VectorRW solution(system_rhs.max_len);
 
         // number of unknowns
@@ -89,16 +92,16 @@ int main(int argc, char *argv[])
         // number of nonzero elements in matrix
         int nz = system_matrix.max_len;
 
-        Epetra_CrsMatrix A;
-        Epetra_Vector X;
-        Epetra_Vector B;
+//        Epetra_CrsMatrix A;
+//        Epetra_Vector X;
+//        Epetra_Vector B;
 
-        Epetra_LinearProblem Problem(&A, &X, &B);
+//        Epetra_LinearProblem Problem(&A, &X, &B);
 
         Amesos_BaseSolver* Solver;
         Amesos Factory;
         char* SolverType = "Amesos_Klu"; // uses the KLU direct solver
-        Solver = Factory.Create(SolverType, Problem);
+//       Solver = Factory.Create(SolverType, Problem);
 
         AMESOS_CHK_ERR(Solver->SymbolicFactorization());
 
