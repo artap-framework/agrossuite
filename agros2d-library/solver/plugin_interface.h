@@ -141,6 +141,9 @@ protected:
     int m_timeStep;
     int m_adaptivityStep;
 
+    AnalysisType m_analysisType;
+    CoordinateType m_coordinateType;
+
     QList<int> surroundings;
     MultiArray ma;
 

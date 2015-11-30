@@ -54,6 +54,9 @@
                                                    int adaptivityStep)
     : IntegralValue(computation, fieldInfo, timeStep, adaptivityStep)
 {
+    m_analysisType = m_fieldInfo->analysisType();
+    m_coordinateType = m_computation->config()->coordinateType();
+
     m_values.clear();
 
     if (m_computation->isSolved())
@@ -72,7 +75,7 @@
             faceQuadratureFormulas.push_back(dealii::QGauss<2-1>(degree + 1));
 
         // update time functions
-        if (!m_computation->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
+        if (!m_computation->isSolving() && m_analysisType == AnalysisType_Transient)
         {
             Module::updateTimeFunctions(m_computation, m_computation->timeStepToTotalTime(m_timeStep));
         }
@@ -126,7 +129,7 @@ void {{CLASS}}SurfaceIntegral::localAssembleSystem(const typename dealii::hp::Do
                 fe_values.get_function_gradients(ma.solution(), solution_grads);
 
                 {{#VARIABLE_SOURCE}}
-                if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
+                if ((m_analysisType == {{ANALYSIS_TYPE}}) && (m_coordinateType == {{COORDINATE_TYPE}}))
                 {
                     double res = 0.0;
                     for (unsigned int k = 0; k < n_face_q_points; ++k)
@@ -151,7 +154,7 @@ void {{CLASS}}SurfaceIntegral::copyLocalToGlobal(const IntegralCopyData &copy_da
 
     // expressions
     {{#VARIABLE_SOURCE}}
-    if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
+    if ((m_analysisType == {{ANALYSIS_TYPE}}) && (m_coordinateType == {{COORDINATE_TYPE}}))
     {
         m_values[QLatin1String("{{VARIABLE}}")] += copy_data.results[{{VARIABLE_HASH}}];
     }
