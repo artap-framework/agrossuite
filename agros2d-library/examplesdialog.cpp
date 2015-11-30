@@ -97,7 +97,7 @@ void ExamplesWidget::createActions()
 {
     actExamples = new QAction(icon("agros2d"), tr("Welcome"), this);
     actExamples->setShortcut(tr("Ctrl+1"));
-    actExamples->setCheckable(true);    
+    actExamples->setCheckable(true);
 }
 
 void ExamplesWidget::init(const QString &expandedGroup)
@@ -400,10 +400,6 @@ QList<QIcon> ExamplesWidget::problemIcons(const QString &fileName)
 
     if (QFile::exists(fileName))
     {
-        QStringList lst;
-
-        QString tmpFile = fileName;
-
         if (QFileInfo(fileName).suffix() == "ags")
         {
             // extract problem file to temp
@@ -411,50 +407,33 @@ QList<QIcon> ExamplesWidget::problemIcons(const QString &fileName)
             // extract problem file to temp
             QString problemName = "";
             if (files.contains("problem.json"))
+            {
                 problemName = "problem.json";
-            else
-                problemName = "problem.a2d";
 
-            JlCompress::extractFiles(QFileInfo(fileName).absoluteFilePath(), QStringList() << problemName, tempProblemDir());
+                JlCompress::extractFiles(QFileInfo(fileName).absoluteFilePath(), QStringList() << problemName, tempProblemDir());
+                QString tmpFile = QString("%1/%2").arg(tempProblemDir()).arg(problemName);
 
-            tmpFile = QString("%1/%2").arg(tempProblemDir()).arg(problemName);
-        }
+                // open file
+                QFile file(tmpFile);
 
-        // open file
-        QFile file(tmpFile);
+                // json
+                if (!file.exists())
+                    return icons;
 
-        if (QFileInfo(fileName).suffix() == "a2d")
-        {
-            // xml
-            QDomDocument doc;
-            if (!doc.setContent(&file))
-            {
-                file.close();
-                throw AgrosException(tr("File '%1' is not valid Agros2D file.").arg(fileName));
-                return icons;
+                if (!file.open(QIODevice::ReadOnly))
+                    return icons;
+
+                QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+                QJsonObject rootJson = doc.object();
+
+                // fields
+                QJsonArray fieldsJson = rootJson["fields"].toArray();
+                for (int i = 0; i < fieldsJson.size(); i++)
+                {
+                    QJsonObject fieldJson = fieldsJson[i].toObject();
+                    icons.append(icon("fields/" + fieldJson["fieldid"].toString()));
+                }
             }
-            file.close();
-
-            // main document
-            QDomElement eleDoc = doc.documentElement();
-
-            // problem info
-            QDomNode eleProblemInfo = eleDoc.elementsByTagName("problem").at(0);
-
-            QDomNode eleFields = eleProblemInfo.toElement().elementsByTagName("fields").at(0);
-            QDomNode nodeField = eleFields.firstChild();
-            while (!nodeField.isNull())
-            {
-                QDomNode eleField = nodeField.toElement();
-                icons.append(icon("fields/" + eleField.toElement().attribute("field_id")));
-
-                // next field
-                nodeField = nodeField.nextSibling();
-            }
-        }
-        else
-        {
-            // json
         }
     }
 
