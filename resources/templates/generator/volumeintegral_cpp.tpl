@@ -162,7 +162,7 @@ void {{CLASS}}VolumeIntegral::localAssembleSystem(const typename dealii::hp::DoF
 
                         res += fe_values.JxW(k) * ({{EXPRESSION}});
                     }
-                    copy_data.results[QLatin1String("{{VARIABLE}}")] += res;
+                    copy_data.results[{{VARIABLE_HASH}}] += res;
                 }
                 {{/VARIABLE_SOURCE}}
             }
@@ -200,7 +200,7 @@ void {{CLASS}}VolumeIntegral::localAssembleSystem(const typename dealii::hp::DoF
 
                                     res += fe_values.JxW(k) * ({{EXPRESSION}});
                                 }
-                                copy_data.results[QLatin1String("{{VARIABLE}}")] += res;
+                                copy_data.results[{{VARIABLE_HASH}}] += res;
                             }
                             {{/VARIABLE_SOURCE_EGGSHELL}}
                         }
@@ -213,11 +213,14 @@ void {{CLASS}}VolumeIntegral::localAssembleSystem(const typename dealii::hp::DoF
 
 void {{CLASS}}VolumeIntegral::copyLocalToGlobal(const IntegralCopyData &copy_data)
 {
+    if (copy_data.results.isEmpty())
+        return;
+
     // expressions
     {{#VARIABLE_SOURCE}}
     if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
     {
-        m_values[QLatin1String("{{VARIABLE}}")] += copy_data.results[QLatin1String("{{VARIABLE}}")];
+        m_values[QLatin1String("{{VARIABLE}}")] += copy_data.results[{{VARIABLE_HASH}}];
     }
     {{/VARIABLE_SOURCE}}
 
@@ -225,7 +228,7 @@ void {{CLASS}}VolumeIntegral::copyLocalToGlobal(const IntegralCopyData &copy_dat
     {{#VARIABLE_SOURCE_EGGSHELL}}
     if ((m_fieldInfo->analysisType() == {{ANALYSIS_TYPE}}) && (m_computation->config()->coordinateType() == {{COORDINATE_TYPE}}))
     {
-        m_values[QLatin1String("{{VARIABLE}}")] += copy_data.results[QLatin1String("{{VARIABLE}}")];
+        m_values[QLatin1String("{{VARIABLE}}")] += copy_data.results[{{VARIABLE_HASH}}];
     }
     {{/VARIABLE_SOURCE_EGGSHELL}}
 }

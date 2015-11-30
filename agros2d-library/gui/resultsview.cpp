@@ -244,6 +244,9 @@ void ResultsView::showVolumeIntegral()
     QFont fnt = trvWidget->font();
     fnt.setBold(true);
 
+    QTime time;
+    time.start();
+
     foreach (FieldInfo *fieldInfo, m_computation->fieldInfos())
     {
         // field
@@ -272,6 +275,8 @@ void ResultsView::showVolumeIntegral()
             }
         }
     }
+
+    qDebug() << "volume" << time.elapsed();
 
     trvWidget->setUpdatesEnabled(true);
 }

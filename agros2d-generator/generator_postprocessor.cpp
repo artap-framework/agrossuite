@@ -523,6 +523,7 @@ void Agros2DGeneratorModule::createFilterExpression(ctemplate::TemplateDictionar
     {
         ctemplate::TemplateDictionary *expression = output.AddSectionDictionary("VARIABLE_SOURCE");
 
+        expression->SetValue("VARIABLE", variable.toStdString());
         expression->SetValue("VARIABLE_HASH", QString::number(qHash(variable)).toStdString());
         expression->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisType).toStdString());
         expression->SetValue("COORDINATE_TYPE", Agros2DGenerator::coordinateTypeStringEnum(coordinateType).toStdString());
@@ -544,6 +545,7 @@ void Agros2DGeneratorModule::createLocalValueExpression(ctemplate::TemplateDicti
 
     ParserModuleInfo pmi(*m_module, analysisType, coordinateType, LinearityType_Linear, false);
     expression->SetValue("VARIABLE", variable.toStdString());
+    expression->SetValue("VARIABLE_HASH", QString::number(qHash(variable)).toStdString());
     expression->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisType).toStdString());
     expression->SetValue("COORDINATE_TYPE", Agros2DGenerator::coordinateTypeStringEnum(coordinateType).toStdString());
     expression->SetValue("EXPRESSION_SCALAR", exprScalar.isEmpty() ? "0" : Parser::parsePostprocessorExpression(pmi, exprScalar).replace("[i]", "").toStdString());
@@ -565,6 +567,7 @@ void Agros2DGeneratorModule::createIntegralExpression(ctemplate::TemplateDiction
 
         ParserModuleInfo pmi(*m_module, analysisType, coordinateType, LinearityType_Linear, false);
         expression->SetValue("VARIABLE", variable.toStdString());
+        expression->SetValue("VARIABLE_HASH", QString::number(qHash(variable)).toStdString());
         expression->SetValue("ANALYSIS_TYPE", Agros2DGenerator::analysisTypeStringEnum(analysisType).toStdString());
         expression->SetValue("COORDINATE_TYPE", Agros2DGenerator::coordinateTypeStringEnum(coordinateType).toStdString());
         expression->SetValue("EXPRESSION", Parser::parsePostprocessorExpression(pmi, expr).toStdString());
