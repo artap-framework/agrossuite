@@ -122,9 +122,9 @@ public:
     class AGROS_LIBRARY_API IntegralCopyData
     {
     public:
-        IntegralCopyData() : results(QMap<int, double>()) {}
+        IntegralCopyData() : results(QMap<uint, double>()) {}
 
-        QMap<int, double> results;
+        QMap<uint, double> results;
     };
 
     virtual void localAssembleSystem(const typename dealii::hp::DoFHandler<2>::active_cell_iterator &cell_int,

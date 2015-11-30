@@ -96,6 +96,9 @@ void {{CLASS}}SurfaceIntegral::localAssembleSystem(const typename dealii::hp::Do
                                  IntegralScratchData &scratch_data,
                                  IntegralCopyData &copy_data)
 {
+    // clear copy data
+    copy_data.results.clear();
+
     double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
 
     for (int iFace = 0; iFace < m_computation->scene()->faces->count(); iFace++)

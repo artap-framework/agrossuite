@@ -123,6 +123,9 @@ void {{CLASS}}VolumeIntegral::localAssembleSystem(const typename dealii::hp::DoF
                                  IntegralScratchData &scratch_data,
                                  IntegralCopyData &copy_data)
 {
+    // clear copy data
+    copy_data.results.clear();
+
     double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
 
     for (int iLabel = 0; iLabel < m_computation->scene()->labels->count(); iLabel++)
@@ -141,34 +144,31 @@ void {{CLASS}}VolumeIntegral::localAssembleSystem(const typename dealii::hp::DoF
         // volume integration
         if (cell_int->material_id() - 1 == iLabel)
         {
-            if (label->isSelected())
+            scratch_data.hp_fe_values.reinit(cell_int);
+
+            const dealii::FEValues<2> &fe_values = scratch_data.hp_fe_values.get_present_fe_values();
+            const unsigned int n_q_points = fe_values.n_quadrature_points;
+
+            std::vector<dealii::Vector<double> > solution_values(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+            std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
+            fe_values.get_function_values(ma.solution(), solution_values);
+            fe_values.get_function_gradients(ma.solution(), solution_grads);
+
+            // expressions
+            {{#VARIABLE_SOURCE}}
+            if ((m_analysisType == {{ANALYSIS_TYPE}}) && (m_coordinateType == {{COORDINATE_TYPE}}))
             {
-                scratch_data.hp_fe_values.reinit(cell_int);
-
-                const dealii::FEValues<2> &fe_values = scratch_data.hp_fe_values.get_present_fe_values();
-                const unsigned int n_q_points = fe_values.n_quadrature_points;
-
-                std::vector<dealii::Vector<double> > solution_values(n_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-                std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
-
-                fe_values.get_function_values(ma.solution(), solution_values);
-                fe_values.get_function_gradients(ma.solution(), solution_grads);
-
-                // expressions
-                {{#VARIABLE_SOURCE}}
-                if ((m_analysisType == {{ANALYSIS_TYPE}}) && (m_coordinateType == {{COORDINATE_TYPE}}))
+                double res = 0.0;
+                for (unsigned int k = 0; k < n_q_points; ++k)
                 {
-                    double res = 0.0;
-                    for (unsigned int k = 0; k < n_q_points; ++k)
-                    {
-                        const dealii::Point<2> p = fe_values.quadrature_point(k);
+                    const dealii::Point<2> p = fe_values.quadrature_point(k);
 
-                        res += fe_values.JxW(k) * ({{EXPRESSION}});
-                    }
-                    copy_data.results[{{VARIABLE_HASH}}] += res;
+                    res += fe_values.JxW(k) * ({{EXPRESSION}});
                 }
-                {{/VARIABLE_SOURCE}}
+                copy_data.results[{{VARIABLE_HASH}}] += res;
             }
+            {{/VARIABLE_SOURCE}}
 
             // volume to surface (temporary eggshell replacement)
             if ({{INTEGRAL_COUNT_EGGSHELL}} > 0)
