@@ -260,6 +260,11 @@ LogView::LogView(QWidget *parent) : QWidget(parent)
     m_logConfigWidget = new LogConfigWidget(m_logWidget);
 }
 
+LogView::~LogView()
+{
+    delete m_logConfigWidget;
+}
+
 // *******************************************************************************************************
 
 LogDialog::LogDialog(Computation *computation, const QString &title) : QDialog(QApplication::activeWindow()),
@@ -370,7 +375,7 @@ void LogDialog::createControls()
     QFont fontChart(font());
     fontChart.setPointSize(fontSize);
 
-    layoutHorizontal = new QHBoxLayout();
+    layoutHorizontal = new QHBoxLayout(this);
 
     // transient
     if (m_computation->isTransient())
@@ -504,8 +509,10 @@ void LogDialog::createControls()
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(m_progress, 0);
-    if (layoutHorizontal->count() > 0)
+    if (!layoutHorizontal->isEmpty())
         layout->addLayout(layoutHorizontal, 4);
+    else
+        delete layoutHorizontal;
     layout->addWidget(m_logWidget, 1);
     layout->addStretch();
     layout->addLayout(layoutStatus);

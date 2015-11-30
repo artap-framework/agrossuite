@@ -135,6 +135,11 @@ ProblemSolver::ProblemSolver(Computation *parentProblem) : m_computation(parentP
 {
 }
 
+ProblemSolver::~ProblemSolver()
+{
+    clear();
+}
+
 void ProblemSolver::clear()
 {
     foreach (QString fieldId, m_solverDeal.keys())

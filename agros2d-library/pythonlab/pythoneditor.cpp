@@ -592,7 +592,7 @@ void PythonEditorDialog::createControls()
 {
     mnuRecentFiles = new QMenu(tr("&Recent files"), this);
 
-    mnuFile = new QMenu(tr("&File"));
+    mnuFile = new QMenu(tr("&File"), this);
     mnuFile->addAction(actFileNew);
     mnuFile->addAction(actFileOpen);
     mnuFile->addAction(actFileSave);
@@ -605,7 +605,7 @@ void PythonEditorDialog::createControls()
     mnuFile->addAction(actFileClose);
     mnuFile->addAction(actExit);
 
-    mnuEdit = new QMenu(tr("&Edit"));
+    mnuEdit = new QMenu(tr("&Edit"), this);
     mnuEdit->addAction(actFind);
     mnuEdit->addAction(actFindNext);
     mnuEdit->addAction(actReplace);
@@ -622,7 +622,7 @@ void PythonEditorDialog::createControls()
     mnuSettings->addAction(actPrintStacktrace);
     mnuSettings->addAction(actConsoleOutput);
 
-    mnuTools = new QMenu(tr("&Tools"));
+    mnuTools = new QMenu(tr("&Tools"), this);
     mnuTools->addAction(actReplaceTabsWithSpaces);
     mnuTools->addSeparator();
     mnuTools->addAction(actHelpOnWord);
@@ -674,7 +674,7 @@ void PythonEditorDialog::createControls()
 
 void PythonEditorDialog::createStatusBar()
 {
-    lblCurrentPosition = new QLabel("Status");
+    // lblCurrentPosition = new QLabel("Status");
 
     // statusBar()->showMessage(tr("Ready"));
     // statusBar()->addPermanentWidget(lblCurrentPosition);
@@ -1234,9 +1234,9 @@ void PythonEditorDialog::doCurrentPageChanged(int index)
 
 void PythonEditorDialog::doCursorPositionChanged()
 {
-    QTextCursor cur(txtEditor->textCursor());
-    lblCurrentPosition->setText(tr("Line: %1, Col: %2").arg(cur.blockNumber()+1)
-                                .arg(cur.columnNumber()+1));
+    // QTextCursor cur(txtEditor->textCursor());
+    // lblCurrentPosition->setText(tr("Line: %1, Col: %2").arg(cur.blockNumber()+1)
+    //                            .arg(cur.columnNumber()+1));
 }
 
 void PythonEditorDialog::doCurrentDocumentChanged(bool changed)

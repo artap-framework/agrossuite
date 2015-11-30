@@ -36,7 +36,8 @@
 
 #include <ctemplate/template.h>
 
-ResultsView::ResultsView(QWidget *parent) : QWidget(parent)
+ResultsView::ResultsView(QWidget *parent) : QWidget(parent),
+    m_sceneModePostprocessor(SceneModePostprocessor_Empty)
 {
     setObjectName("ResultsView");
 

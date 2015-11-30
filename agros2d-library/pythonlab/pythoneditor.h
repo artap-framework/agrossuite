@@ -169,7 +169,7 @@ protected:
     ScriptEditor *txtEditor;
     ErrorWidget *errorWidget;
 
-    QLabel *lblCurrentPosition;
+    // QLabel *lblCurrentPosition;
     PythonScriptingConsole *m_console;
 
     QAction *actFileNew;

@@ -448,7 +448,7 @@ void MainWindow::createToolBars()
     problemWidget->toolBar->insertAction(problemWidget->toolBar->actions().first(), actDocumentNew);
 
     // zoom toolbar
-    QMenu *menu = new QMenu();
+    QMenu *menu = new QMenu(this);
     menu->addAction(actSceneZoomBestFit);
     menu->addAction(actSceneZoomRegion);
     menu->addAction(actSceneZoomIn);

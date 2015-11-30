@@ -135,6 +135,7 @@ class AGROS_LIBRARY_API LogView : public QWidget
     Q_OBJECT
 public:
     LogView(QWidget *parent = 0);
+    ~LogView();
 
     QAction *actLog;
 

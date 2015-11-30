@@ -584,7 +584,7 @@ MaterialBrowserDialog::MaterialBrowserDialog(QWidget *parent) : QDialog(parent),
 
     // problem information
     webView = new QWebView(this);
-    webView->page()->setNetworkAccessManager(new QNetworkAccessManager());
+    webView->page()->setNetworkAccessManager(new QNetworkAccessManager(this));
     webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 
     connect(webView->page(), SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));

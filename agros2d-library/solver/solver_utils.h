@@ -181,6 +181,7 @@ class AGROS_LIBRARY_API ProblemSolver
 {
 public:
     ProblemSolver(Computation *parentProblem);
+    ~ProblemSolver();
 
     void init();
     void clear();

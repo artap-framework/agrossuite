@@ -264,7 +264,7 @@ bool ValueLineEdit::evaluate(bool quiet)
         if (isOk)
         {
             emit evaluated(false);
-            if(valueChanged)
+            if (valueChanged)
             {
                 QString textValue = QString("%1").arg(m_number);
                 emit textChanged(textValue);

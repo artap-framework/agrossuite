@@ -189,9 +189,9 @@ void setLocale(const QString &locale)
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("utf8"));
 #endif
 
-    QTranslator *qtTranslator = new QTranslator();
-    QTranslator *appTranslator = new QTranslator();
-    QTranslator *pluginTranslator = new QTranslator();
+    QTranslator *qtTranslator = new QTranslator(QApplication::instance());
+    QTranslator *appTranslator = new QTranslator(QApplication::instance());
+    QTranslator *pluginTranslator = new QTranslator(QApplication::instance());
 
     QString country = locale.section('_',0,0);
     if (QFile::exists(QLibraryInfo::location(QLibraryInfo::TranslationsPath) + "/qt_" + country + ".qm"))

@@ -50,7 +50,7 @@ InfoWidgetGeneral::InfoWidgetGeneral(QWidget *parent)
 {
     // problem information
     webView = new QWebView();
-    webView->page()->setNetworkAccessManager(new QNetworkAccessManager());
+    webView->page()->setNetworkAccessManager(new QNetworkAccessManager(this));
     webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     webView->setMinimumSize(200, 200);
 
@@ -82,6 +82,8 @@ void InfoWidgetGeneral::clear()
 
 void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
 {
+    return;
+
     if (currentPythonEngine()->isScriptRunning())
         return;
 
@@ -293,6 +295,8 @@ InfoWidget::~InfoWidget()
 
 void InfoWidget::welcome()
 {
+    return;
+
     if (currentPythonEngine()->isScriptRunning())
         return;
 

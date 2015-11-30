@@ -154,13 +154,13 @@ void PostprocessorSceneChartWidget::createControls()
     radHorizontalAxisX = new QRadioButton("X");
     radHorizontalAxisY = new QRadioButton("Y");
 
-    QButtonGroup *axisGroup = new QButtonGroup();
+    QButtonGroup *axisGroup = new QButtonGroup(this);
     axisGroup->addButton(radHorizontalAxisLength);
     axisGroup->addButton(radHorizontalAxisX);
     axisGroup->addButton(radHorizontalAxisY);
 
     // axis
-    QHBoxLayout *layoutAxis = new QHBoxLayout();
+    QHBoxLayout *layoutAxis = new QHBoxLayout(this);
     layoutAxis->addWidget(radHorizontalAxisLength);
     layoutAxis->addWidget(radHorizontalAxisX);
     layoutAxis->addWidget(radHorizontalAxisY);
