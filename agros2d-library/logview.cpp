@@ -360,7 +360,6 @@ void LogDialog::createControls()
     layoutStatus->addWidget(btnAbort, 0, Qt::AlignRight);
     layoutStatus->addWidget(btnClose, 0, Qt::AlignRight);
     
-    QHBoxLayout *layoutHorizontal = NULL;
     QPen pen;
     pen.setColor(Qt::darkGray);
     pen.setWidth(2);
@@ -375,7 +374,7 @@ void LogDialog::createControls()
     QFont fontChart(font());
     fontChart.setPointSize(fontSize);
 
-    layoutHorizontal = new QHBoxLayout(this);
+    QHBoxLayout *layoutHorizontal = new QHBoxLayout();
 
     // transient
     if (m_computation->isTransient())
