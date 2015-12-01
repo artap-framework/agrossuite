@@ -32,66 +32,20 @@ class ProblemResult;
 class GeneticIndividual
 {
 public:
-    GeneticIndividual()
-    {
-    }
-    ~GeneticIndividual()
-    {
-        m_values.clear();
-
-        m_computation.clear();
-    }
+    GeneticIndividual(bool createComputation = false);
+    ~GeneticIndividual();
 
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
-    QMap<QString, double> &values() { return m_values; }
-
     // computation
-    inline void setComputation(QSharedPointer<Computation> &computation) { m_computation = computation; }
-    inline QSharedPointer<Computation> computation() const { return m_computation; }
+    inline QSharedPointer<Computation> computation() { return m_computation; }
 
-    void generateRandomly(QList<Parameter> parameters)
-    {
-        // random parameters
-        foreach (Parameter parameter, parameters)
-            m_values[parameter.name()] = parameter.randomNumber();
-    }
-
-    void mutate(QList<Parameter> parameters, double propability, double ratio)
-    {
-        foreach (Parameter parameter, parameters)
-        {
-            if ((double) qrand() / RAND_MAX * 100 < propability)
-            {
-                // mutate
-                double value = m_values[parameter.name()];
-
-                double pert = (double) qrand() / RAND_MAX * (parameter.upperBound() - parameter.lowerBound()) * ratio;
-
-                // 50 %
-                if (qrand() > RAND_MAX / 2)
-                    value += pert;
-                else
-                    value -= pert;
-
-                // check bounds
-                if (value < parameter.lowerBound())
-                    value = parameter.lowerBound();
-                if (value > parameter.upperBound())
-                    value = parameter.upperBound();
-
-                // set new value
-                m_values[parameter.name()] = value;
-            }
-        }
-    }
+    void generateRandomly(QList<Parameter> parameters);
+    void mutate(QList<Parameter> parameters, double propability, double ratio);
 
 protected:
-    // specific values
-    QMap<QString, double> m_values;
-
-    // problem dir
+    // computation
     QSharedPointer<Computation> m_computation;
 };
 
@@ -120,18 +74,7 @@ protected:
 class GeneticPopulationRandom : public GeneticPopulation
 {
 public:
-    GeneticPopulationRandom(QList<Parameter> parameters, int count)
-    {
-        for (int i = 0; i < count; i++)
-        {
-             GeneticIndividual individual;
-             individual.generateRandomly(parameters);
-
-             m_individuals.append(individual);
-        }
-    }
-
-protected:
+    GeneticPopulationRandom(QList<Parameter> parameters, int count);
 };
 
 class StudyGenetic : public Study
