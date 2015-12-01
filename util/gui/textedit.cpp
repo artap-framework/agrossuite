@@ -26,15 +26,15 @@ TextBlockData::TextBlockData()
 
 }
 
-QVector<ParenthesisInfo *> TextBlockData::parentheses(const char &bracket)
+QVector<ParenthesisInfo> TextBlockData::parentheses(const char &bracket)
 {
     return m_parentheses[bracket];
 }
 
-void TextBlockData::insert(const char &bracket, ParenthesisInfo *info)
+void TextBlockData::insert(const char &bracket, ParenthesisInfo info)
 {
     int i = 0;
-    while (i < m_parentheses[bracket].size() && info->position > m_parentheses[bracket].at(i)->position)
+    while (i < m_parentheses[bracket].size() && info.position > m_parentheses[bracket].at(i).position)
         ++i;
 
     m_parentheses[bracket].insert(i, info);
@@ -53,23 +53,23 @@ void PlainTextEditParenthesis::matchParentheses(char left, char right)
 
     if (data)
     {
-        QVector<ParenthesisInfo *> infos = data->parentheses(left);
+        QVector<ParenthesisInfo> infos = data->parentheses(left);
 
         int pos = textCursor().block().position();
         for (int i = 0; i < infos.size(); ++i)
         {
-            ParenthesisInfo *info = infos.at(i);
+            ParenthesisInfo info = infos.at(i);
 
             int curPos = textCursor().position() - textCursor().block().position();
-            if (info->position == curPos - 1 && info->character == left)
+            if (info.position == curPos - 1 && info.character == left)
             {
                 if (matchLeftParenthesis(left, right, textCursor().block(), i + 1, 0))
-                    createParenthesisSelection(pos + info->position);
+                    createParenthesisSelection(pos + info.position);
             }
-            else if (info->position == curPos - 1 && info->character == right)
+            else if (info.position == curPos - 1 && info.character == right)
             {
                 if (matchRightParenthesis(left, right, textCursor().block(), i - 1, 0))
-                    createParenthesisSelection(pos + info->position);
+                    createParenthesisSelection(pos + info.position);
             }
         }
     }
@@ -78,22 +78,22 @@ void PlainTextEditParenthesis::matchParentheses(char left, char right)
 bool PlainTextEditParenthesis::matchLeftParenthesis(char left, char right, QTextBlock currentBlock, int i, int numLeftParentheses)
 {
     TextBlockData *data = static_cast<TextBlockData *>(currentBlock.userData());
-    QVector<ParenthesisInfo *> infos = data->parentheses(left);
+    QVector<ParenthesisInfo> infos = data->parentheses(left);
 
     int docPos = currentBlock.position();
     for (; i < infos.size(); ++i)
     {
-        ParenthesisInfo *info = infos.at(i);
+        ParenthesisInfo info = infos.at(i);
 
-        if (info->character == left)
+        if (info.character == left)
         {
             ++numLeftParentheses;
             continue;
         }
 
-        if (info->character == right && numLeftParentheses == 0)
+        if (info.character == right && numLeftParentheses == 0)
         {
-            createParenthesisSelection(docPos + info->position);
+            createParenthesisSelection(docPos + info.position);
             return true;
         }
         else
@@ -112,20 +112,20 @@ bool PlainTextEditParenthesis::matchLeftParenthesis(char left, char right, QText
 bool PlainTextEditParenthesis::matchRightParenthesis(char left, char right, QTextBlock currentBlock, int i, int numRightParentheses)
 {
     TextBlockData *data = static_cast<TextBlockData *>(currentBlock.userData());
-    QVector<ParenthesisInfo *> parentheses = data->parentheses(left);
+    QVector<ParenthesisInfo> parentheses = data->parentheses(left);
 
     int docPos = currentBlock.position();
     for (; i > -1 && parentheses.size() > 0; --i)
     {
-        ParenthesisInfo *info = parentheses.at(i);
-        if (info->character == right)
+        ParenthesisInfo info = parentheses.at(i);
+        if (info.character == right)
         {
             ++numRightParentheses;
             continue;
         }
-        if (info->character == left && numRightParentheses == 0)
+        if (info.character == left && numRightParentheses == 0)
         {
-            createParenthesisSelection(docPos + info->position);
+            createParenthesisSelection(docPos + info.position);
             return true;
         }
         else
