@@ -16,16 +16,16 @@ ENDIF()
 
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../3rdparty/")
 
-#SET(PARALUTION_ROOT ${CMAKE_SOURCE_DIR}/paralution/build)
+#SET(TRILINOS_ROOT ${CMAKE_SOURCE_DIR}/trilinos/build)
 find_package(TRILINOS REQUIRED)
 INCLUDE_DIRECTORIES(${AMESOS_INCLUDE_PATH} ${EPETRA_INCLUDE_PATH})
-#message(${PARALUTION_INCLUDE_DIR})
+#message(${TRILINOS_INCLUDE_DIR})
 
 SET(SOURCES main.cpp)
 
 file(WRITE "${CMAKE_HOME_DIRECTORY}/../libs/${PROJECT_NAME}.ext"
-"PARALUTION\n\
-solver_PARALUTION\n\
+"Trilinos\n\
+solver_TRILINOS\n\
 <b>-c</b> or <b>--preconditioner</b> (<i>string</i>) : Jacobi, MultiColoredGS, MultiColoredSGS, ILU, MultiColoredILU, MultiElimination, FSAI<br/>\
 <b>-l</b> or <b>--solver</b> (<i>string</i>) : BiCGStab, CG, GMRES, FGMRES, CR, IDR<br/>\
 <b>-x</b> or <b>--max_iter</b> (<i>int</i>)<br/>\
