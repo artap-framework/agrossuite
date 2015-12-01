@@ -7,7 +7,7 @@ from math import sin, cos
 class BenchmarkGeometryTransformation(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
-        self.geometry = a2d.geometry
+        self.geometry = self.problem.geometry()
 
         for i in range(100):
             self.geometry.add_node(i*sin(i), i*cos(i))

@@ -42,14 +42,14 @@ class TestProblemTime(Agros2DTestCase):
         self.problem.time_total = 1e2
         self.problem.time_steps = 10
 
-        heat = a2d.field('heat')
+        heat = self.problem.field('heat')
         heat.analysis_type = 'transient'
         heat.add_boundary("Convection", "heat_heat_flux", {"heat_convection_heat_transfer_coefficient" : 10,
                                                            "heat_convection_external_temperature" : 293})
         heat.add_material("Copper", {"heat_conductivity" : 200, "heat_volume_heat" : 1e3,
                                      "heat_density" : 8700, "heat_specific_heat" : 385})
 
-        a2d.geometry.add_rect(0, 0, 1, 1, boundaries = {'heat' : 'Convection'}, materials = {'heat' : 'Copper'})
+        self.problem.geometry().add_rect(0, 0, 1, 1, boundaries = {'heat' : 'Convection'}, materials = {'heat' : 'Copper'})
 
     """ time_step_method """
     def test_time_step_method(self):
@@ -102,55 +102,50 @@ class TestProblemTime(Agros2DTestCase):
 
     """ time_steps_length """
     def test_time_steps_length(self):
-        self.problem.solve()
-        self.assertEqual(self.problem.time_steps_length(), [0] + [10]*10)
+        computation = self.problem.computation()
+        computation.solve()
+        self.assertEqual(computation.time_steps_length(), [0] + [10]*10)
 
     """ time_steps_total """
+    """
     def test_time_steps_total(self):
-        self.problem.solve()
+        computation = self.problem.computation()
+        computation.solve()
         self.assertEqual(self.problem.time_steps_total(), list(range(0, 101, 10)))
+    """
 
     """ elapsed_time """
+    """
     def test_elapsed_time(self):
-        self.problem.solve()
+        computation = self.problem.computation()
+        computation.solve()
         self.assertNotEqual(self.problem.elapsed_time(), 0.0)
 
     def test_elapsed_time_without_solution(self):
         with self.assertRaises(RuntimeError):
             self.problem.elapsed_time()
-
-    """ time_callback """
-    def time_callback(self, time_step):
-        if (time_step > 0):
-            self.steps += 1
-        return True
-
-    def test_time_callback(self):
-        self.steps = 0
-        self.problem.time_callback = self.time_callback
-        self.problem.solve()
-        self.assertEqual(self.problem.time_steps, self.steps)
+    """
 
 class TestProblemSolution(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
-        current = a2d.field('current')
+        current = self.problem.field('current')
         current.add_boundary("Source", "current_potential", {"current_potential" : 10})
         current.add_boundary("Ground", "current_potential", {"current_potential" : 0})
         current.add_boundary("Neumann", "current_inward_current_flow", {"current_inward_current_flow" : 0})
         current.add_material("Copper", {"current_conductivity" : 33e6})
 
-        self.heat = a2d.field('heat')
+        self.heat = self.problem.field('heat')
         self.heat.analysis_type = 'transient'
         self.heat.add_boundary("Convection", "heat_heat_flux", {"heat_convection_heat_transfer_coefficient" : 10,
                                                                 "heat_convection_external_temperature" : 293})
         self.heat.add_material("Copper", {"heat_conductivity" : 200, "heat_density" : 8700, "heat_specific_heat" : 385})
 
-        a2d.geometry.add_edge(0, 0, 1, 0, boundaries = {'current' : 'Neumann', 'heat' : 'Convection'})
-        a2d.geometry.add_edge(1, 0, 1, 1, boundaries = {'current' : 'Ground', 'heat' : 'Convection'})
-        a2d.geometry.add_edge(1, 1, 0, 1, boundaries = {'current' : 'Neumann', 'heat' : 'Convection'})
-        a2d.geometry.add_edge(0, 1, 0, 0, boundaries = {'current' : 'Source', 'heat' : 'Convection'})
-        a2d.geometry.add_label(0.5, 0.5, materials = {'current' : 'Copper', 'heat' : 'Copper'})
+        self.problem.geometry().add_edge(0, 0, 1, 0, boundaries = {'current' : 'Neumann', 'heat' : 'Convection'})
+        self.problem.geometry().add_edge(1, 0, 1, 1, boundaries = {'current' : 'Ground', 'heat' : 'Convection'})
+        self.problem.geometry().add_edge(1, 1, 0, 1, boundaries = {'current' : 'Neumann', 'heat' : 'Convection'})
+        self.problem.geometry().add_edge(0, 1, 0, 0, boundaries = {'current' : 'Source', 'heat' : 'Convection'})
+        self.problem.geometry().add_label(0.5, 0.5, materials = {'current' : 'Copper', 'heat' : 'Copper'})
 
     """ coupling_type """
     def test_coupling_type(self):
@@ -159,16 +154,18 @@ class TestProblemSolution(Agros2DTestCase):
             self.assertEqual(self.problem.get_coupling_type('current', 'heat'), type)
 
     """ clear_solution """
+    """
     def test_clear_solution(self):
-        self.problem.solve()
-        self.problem.clear_solution()
+        computation = self.problem.computation()
+        computation.solve()
+        computation.clear()
         with self.assertRaises(RuntimeError):
-            self.problem.elapsed_time()
-
+            computation.elapsed_time()
+    """
     """ clear """
     def test_clear(self):
         self.problem.clear()
-        self.assertEqual(a2d.geometry.nodes_count(), 0)
+        self.assertEqual(self.problem.geometry().nodes_count(), 0)
 
 if __name__ == '__main__':        
     import unittest as ut
