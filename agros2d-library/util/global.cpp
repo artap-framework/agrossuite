@@ -23,7 +23,6 @@
 
 #include "util.h"
 #include "logview.h"
-#include "memory_monitor.h"
 #include "scene.h"
 
 #include "pythonlab/pythonengine_agros.h"
@@ -157,9 +156,6 @@ Agros2D::Agros2D()
 
     // log
     m_log = new Log();
-
-    // memory monitor
-    m_memoryMonitor = new MemoryMonitor();
 }
 
 void Agros2D::clear()
@@ -169,7 +165,6 @@ void Agros2D::clear()
 
     delete m_singleton.data()->m_configComputer;   
     delete m_singleton.data()->m_log;
-    delete m_singleton.data()->m_memoryMonitor;
 
     // remove temp and cache plugins
     removeDirectory(cacheProblemDir());

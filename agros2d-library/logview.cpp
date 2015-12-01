@@ -21,7 +21,6 @@
 
 #include "util/global.h"
 #include "util/constants.h"
-#include "util/memory_monitor.h"
 #include "gui/common.h"
 
 #include "scene.h"
@@ -36,20 +35,6 @@
 LogConfigWidget::LogConfigWidget(LogWidget *logWidget)
     : QWidget(logWidget), m_logWidget(logWidget)
 {
-    m_memoryLabel = new QLabel("                                                         ");
-
-    connect(Agros2D::memoryMonitor(), SIGNAL(refreshMemory(int)), this, SLOT(refreshMemory(int)));
-
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->addStretch(1);
-    layout->addWidget(m_memoryLabel);
-}
-
-void LogConfigWidget::refreshMemory(int usage)
-{
-    // show memory usage
-    m_memoryLabel->setText(tr("Physical memory: %1 MB").arg(usage));
-    m_memoryLabel->repaint();
 }
 
 // *******************************************************************************************************

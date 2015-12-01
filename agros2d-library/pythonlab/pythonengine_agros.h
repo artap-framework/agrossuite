@@ -99,9 +99,6 @@ inline std::string getScriptFromModel() { return createPythonFromModel().toStdSt
 inline std::string tempDir() { return tempProblemDir().toStdString(); }
 inline std::string cacheDir() { return cacheProblemDir().toStdString(); }
 
-int appTime();
-void memoryUsage(std::vector<int> &time, std::vector<int> &usage);
-
 // functions
 char *pyVersion();
 void pyQuit();

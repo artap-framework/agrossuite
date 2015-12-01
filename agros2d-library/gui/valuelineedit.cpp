@@ -34,7 +34,11 @@
 
 
 ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, bool isBool, QString id, QString onlyIf, QString onlyIfNot, bool isSource)
-    : QWidget(parent), m_hasTimeDep(hasTimeDep), m_hasNonlin(hasNonlin), m_problem(nullptr),
+    : QWidget(parent),
+      m_number(0.0),
+      m_hasTimeDep(hasTimeDep),
+      m_hasNonlin(hasNonlin),
+      m_problem(nullptr),
       m_minimum(-numeric_limits<double>::max()),
       m_minimumSharp(-numeric_limits<double>::max()),
       m_maximum(numeric_limits<double>::max()),

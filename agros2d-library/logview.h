@@ -37,15 +37,8 @@ class LogConfigWidget : public QWidget
 public:
     LogConfigWidget(LogWidget *logWidget);
 
-public slots:
-
-private slots:
-    void refreshMemory(int usage);
-
 private:
     LogWidget *m_logWidget;
-
-    QLabel *m_memoryLabel;
 };
 
 class AGROS_LIBRARY_API Log: public QObject

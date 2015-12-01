@@ -30,7 +30,6 @@ class SolutionStore;
 class Log;
 class PluginInterface;
 class ScriptEngineRemote;
-class MemoryMonitor;
 
 class AGROS_LIBRARY_API AgrosApplication : public QApplication
 {
@@ -68,7 +67,6 @@ public:
     static void clearComputations();
 
     static inline Log *log() { return Agros2D::singleton()->m_log; }
-    static inline MemoryMonitor *memoryMonitor() { return Agros2D::singleton()->m_memoryMonitor; }
 
     static PluginInterface *loadPlugin(const QString &pluginName);
 
@@ -86,7 +84,6 @@ private:
     QMap<QString, QSharedPointer<Computation> > m_computations;
     // log and memory monitor
     Log *m_log;
-    MemoryMonitor *m_memoryMonitor;
 };
 
 #endif /* GLOBAL_H */
