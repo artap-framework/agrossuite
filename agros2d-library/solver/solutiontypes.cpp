@@ -38,36 +38,28 @@ QString FieldSolutionID::toString()
 
 // *********************************************************************************************
 
-MultiArray::MultiArray() : m_triangulation(nullptr), m_doFHandler(nullptr)
+MultiArray::MultiArray()
 {
 }
 
-MultiArray::MultiArray(dealii::hp::DoFHandler<2> *doFHandler,
+MultiArray::MultiArray(std::shared_ptr<dealii::hp::DoFHandler<2> > doFHandler,
                        dealii::Vector<double> &solution)
-    : m_triangulation(nullptr), // &Agros2D::problem()->calculationMesh()
+    : m_doFHandler(doFHandler),
+      m_solution(solution)
+{
+}
+
+MultiArray::MultiArray(std::shared_ptr<dealii::Triangulation<2> > triangulation,
+                       std::shared_ptr<dealii::hp::DoFHandler<2> > doFHandler,
+                       dealii::Vector<double> &solution)
+    : m_triangulation(triangulation),
       m_doFHandler(doFHandler),
       m_solution(solution)
 {
 }
 
 MultiArray::~MultiArray()
-{
-    // clear must be called explicitely
-}
-
-void MultiArray::clear()
-{        
-    // if (&Agros2D::problem()->calculationMesh() != m_triangulation)
-    if (m_triangulation)
-        delete m_triangulation;
-    delete m_doFHandler;
-}
-
-void MultiArray::append(dealii::Triangulation<2> *triangulation, dealii::hp::DoFHandler<2> *doFHandler, dealii::Vector<double> &solution)
 {    
-    m_triangulation = triangulation;
-    m_doFHandler = doFHandler;
-    m_solution = solution;
 }
 
 bool MultiArray::isNull()

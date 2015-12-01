@@ -76,7 +76,7 @@ public:
     bool contains(FieldSolutionID solutionID) const;
     MultiArray multiArray(FieldSolutionID solutionID);
 
-    void addSolution(FieldSolutionID solutionID, MultiArray multiArray, SolutionRunTimeDetails runTime);
+    void addSolution(FieldSolutionID solutionID, dealii::hp::DoFHandler<2> &doFHandler, dealii::Vector<double> &solution, SolutionRunTimeDetails runTime);
     void removeSolution(FieldSolutionID solutionID, bool saveRunTime = true);
 
     // last adaptive step for given time step. If time step not given, last time step used implicitly
@@ -100,7 +100,7 @@ private:
     QMap<FieldSolutionID, MultiArray> m_multiSolutionDealCache;
     QList<FieldSolutionID> m_multiSolutionCacheIDOrder;
 
-    void insertMultiSolutionToCache(FieldSolutionID solutionID, MultiArray multiArray);
+    void insertMultiSolutionToCache(FieldSolutionID solutionID, dealii::hp::DoFHandler<2> &doFHandler, dealii::Vector<double> &solution);
 
     QString baseStoreFileName(FieldSolutionID solutionID) const;
 };

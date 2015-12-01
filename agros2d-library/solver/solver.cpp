@@ -723,7 +723,7 @@ void SolverDeal::solveSteadyState()
         runTime.setValue(SolutionStore::SolutionRunTimeDetails::TimeStepLength, 0.0);
         runTime.setValue(SolutionStore::SolutionRunTimeDetails::AdaptivityError, 0.0);
         runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
-        m_computation->solutionStore()->addSolution(solutionID, MultiArray(&primal->doFHandler, primal->solution), runTime);
+        m_computation->solutionStore()->addSolution(solutionID, primal->doFHandler, primal->solution, runTime);
     }
     else
     {
@@ -795,7 +795,7 @@ void SolverDeal::solveSteadyState()
             runTime.setValue(SolutionStore::SolutionRunTimeDetails::TimeStepLength, 0.0);
             runTime.setValue(SolutionStore::SolutionRunTimeDetails::AdaptivityError, relChangeSol);
             runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
-            m_computation->solutionStore()->addSolution(solutionID, MultiArray(&primal->doFHandler, primal->solution), runTime);
+            m_computation->solutionStore()->addSolution(solutionID, primal->doFHandler, primal->solution, runTime);
 
             if (adaptiveStep > 0)
                 Agros2D::log()->updateAdaptivityChartInfo(m_fieldInfo, 0, adaptiveStep);
@@ -852,7 +852,7 @@ void SolverDeal::solveTransient()
     runTime.setValue(SolutionStore::SolutionRunTimeDetails::TimeStepLength, 0.0);
     runTime.setValue(SolutionStore::SolutionRunTimeDetails::AdaptivityError, 0.0);
     runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
-    m_computation->solutionStore()->addSolution(solutionID, MultiArray(&primal->doFHandler, initialSolution), runTime);
+    m_computation->solutionStore()->addSolution(solutionID, primal->doFHandler, initialSolution, runTime);
 
     // Python callback
     /*
@@ -1064,7 +1064,7 @@ void SolverDeal::solveTransient()
                 runTime.setValue(SolutionStore::SolutionRunTimeDetails::TimeStepLength, actualTimeStep);
                 runTime.setValue(SolutionStore::SolutionRunTimeDetails::AdaptivityError, relChangeSol);
                 runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
-                m_computation->solutionStore()->addSolution(solutionID, MultiArray(&primal->doFHandler, primal->solution), runTime);
+                m_computation->solutionStore()->addSolution(solutionID, primal->doFHandler, primal->solution, runTime);
 
                 // Python callback
                 /*

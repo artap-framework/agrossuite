@@ -175,23 +175,23 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
         QString baseFN = baseStoreFileName(solutionID);
 
         // triangulation
-        dealii::Triangulation<2> triangulation;
+        std::shared_ptr<dealii::Triangulation<2> > triangulation = std::shared_ptr<dealii::Triangulation<2> >(new dealii::Triangulation<2>());
         QString fnMesh = QString("%1.msh").arg(baseFN);
         if (!QFile::exists(fnMesh))
             assert(0); // return MultiArray();
         std::ifstream ifsMesh(fnMesh.toStdString());
         boost::archive::binary_iarchive sbiMesh(ifsMesh);
-        triangulation.load(sbiMesh, 0);
+        triangulation->load(sbiMesh, 0);
 
         // dof handler
-        dealii::hp::DoFHandler<2> doFHandler(triangulation);
-        doFHandler.distribute_dofs(*m_computation->problemSolver()->feCollection(m_computation->fieldInfo(solutionID.fieldId)));
+        std::shared_ptr<dealii::hp::DoFHandler<2> > doFHandler = std::shared_ptr<dealii::hp::DoFHandler<2> >(new dealii::hp::DoFHandler<2>(*triangulation));
+        doFHandler->distribute_dofs(*m_computation->problemSolver()->feCollection(m_computation->fieldInfo(solutionID.fieldId)));
         QString fnDoF = QString("%1.dof").arg(baseFN);
         if (!QFile::exists(fnDoF))
             assert(0); // return MultiArray();
         std::ifstream ifsDoF(fnDoF.toStdString());
         boost::archive::binary_iarchive sbiDoF(ifsDoF);
-        doFHandler.load(sbiDoF, 0);
+        doFHandler->load(sbiDoF, 0);
 
         // solution vector
         dealii::Vector<double> solution;
@@ -202,10 +202,8 @@ MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
         boost::archive::binary_iarchive sbiSol(ifsSol);
         solution.load(sbiSol, 0);
 
-        // new multisolution
-        MultiArray msa(&triangulation, &doFHandler, solution);
-
-        insertMultiSolutionToCache(solutionID, msa);
+        // insert to the cache
+        insertMultiSolutionToCache(solutionID, *doFHandler, solution);
     }
 
     return m_multiSolutionDealCache[solutionID];
@@ -216,10 +214,11 @@ bool SolutionStore::contains(FieldSolutionID solutionID) const
     return m_multiSolutions.contains(solutionID);
 }
 
-void SolutionStore::addSolution(FieldSolutionID solutionID, MultiArray multiSolution, SolutionRunTimeDetails runTime)
+void SolutionStore::addSolution(FieldSolutionID solutionID,
+                                dealii::hp::DoFHandler<2> &doFHandler,
+                                dealii::Vector<double> &solution,
+                                SolutionRunTimeDetails runTime)
 {
-    // qDebug() << "saving solution " << solutionID;
-    // assert(!m_multiSolutions.contains(solutionID));
     assert(solutionID.timeStep >= 0);
     assert(solutionID.adaptivityStep >= 0);
 
@@ -229,17 +228,17 @@ void SolutionStore::addSolution(FieldSolutionID solutionID, MultiArray multiSolu
     QString fnMesh = QString("%1.msh").arg(baseFN);
     std::ofstream ofsMesh(fnMesh.toStdString());
     boost::archive::binary_oarchive sbMesh(ofsMesh);
-    multiSolution.doFHandler()->get_tria().save(sbMesh, 0);
+    doFHandler.get_tria().save(sbMesh, 0);
 
     QString fnDoF = QString("%1.dof").arg(baseFN);
     std::ofstream ofsDoF(fnDoF.toStdString());
     boost::archive::binary_oarchive sbDoF(ofsDoF);
-    multiSolution.doFHandler()->save(sbDoF, 0);
+    doFHandler.save(sbDoF, 0);
 
     QString fnSol = QString("%1.sol").arg(baseFN);
     std::ofstream ofsSol(fnSol.toStdString());
     boost::archive::binary_oarchive sbSol(ofsSol);
-    multiSolution.solution().save(sbSol, 0);
+    solution.save(sbSol, 0);
 
     // append multisolution
     m_multiSolutions.append(solutionID);
@@ -248,7 +247,7 @@ void SolutionStore::addSolution(FieldSolutionID solutionID, MultiArray multiSolu
     m_multiSolutionRunTimeDetails.insert(solutionID, runTime);
 
     // insert to the cache
-    insertMultiSolutionToCache(solutionID, multiSolution);
+    insertMultiSolutionToCache(solutionID, doFHandler, solution);
 
     // save run time details to the file
     saveRunTimeDetails();
@@ -266,7 +265,6 @@ void SolutionStore::removeSolution(FieldSolutionID solutionID, bool saveRunTime)
     if (m_multiSolutionDealCache.contains(solutionID))
     {
         // free ma
-        m_multiSolutionDealCache[solutionID].clear();
         m_multiSolutionDealCache.remove(solutionID);
         m_multiSolutionCacheIDOrder.removeOne(solutionID);
     }
@@ -318,26 +316,25 @@ int SolutionStore::lastAdaptiveStep(const FieldInfo *fieldInfo, int timeStep) co
     return adaptiveStep;
 }
 
-void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, MultiArray multiSolution)
+void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, dealii::hp::DoFHandler<2> &doFHandler, dealii::Vector<double> &solution)
 {
     // triangulation
-    dealii::Triangulation<2> *triangulation = new dealii::Triangulation<2>();
-    triangulation->copy_triangulation(multiSolution.doFHandler()->get_tria());
+    std::shared_ptr<dealii::Triangulation<2> > newTriangulation = std::shared_ptr<dealii::Triangulation<2> >(new dealii::Triangulation<2>());
+    newTriangulation->copy_triangulation(doFHandler.get_tria());
 
     // dof handler
     std::stringstream fsDoF(std::ios::out | std::ios::in | std::ios::binary);
     boost::archive::binary_oarchive sboDoF(fsDoF);
-    multiSolution.doFHandler()->save(sboDoF, 0);
+    doFHandler.save(sboDoF, 0);
     // new handler
-    dealii::hp::DoFHandler<2> *doFHandler = new dealii::hp::DoFHandler<2>(*triangulation);
-    doFHandler->distribute_dofs(*m_computation->problemSolver()->feCollection(m_computation->fieldInfo(solutionID.fieldId)));
+    std::shared_ptr<dealii::hp::DoFHandler<2> > newDoFHandler = std::shared_ptr<dealii::hp::DoFHandler<2> >(new dealii::hp::DoFHandler<2>(*newTriangulation));
+    newDoFHandler->distribute_dofs(*m_computation->problemSolver()->feCollection(m_computation->fieldInfo(solutionID.fieldId)));
     // load
     boost::archive::binary_iarchive sbiDoF(fsDoF);
-    doFHandler->load(sbiDoF, 0);
-    // cout << doFHandler->memory_consumption() << endl;
+    newDoFHandler->load(sbiDoF, 0);
 
     // new multisolution
-    MultiArray multiSolutionCopy(triangulation, doFHandler, multiSolution.solution());
+    MultiArray multiSolutionCopy(newTriangulation, newDoFHandler, solution);
 
     assert(!m_multiSolutionDealCache.contains(solutionID));
 
@@ -349,7 +346,6 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, Multi
         m_multiSolutionCacheIDOrder.removeFirst();
 
         // free ma
-        m_multiSolutionDealCache[idRemove].clear();
         m_multiSolutionDealCache.remove(idRemove);
         m_multiSolutionCacheIDOrder.removeOne(idRemove);
     }
