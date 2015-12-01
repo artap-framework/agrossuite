@@ -82,8 +82,6 @@ void InfoWidgetGeneral::clear()
 
 void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
 {
-    return;
-
     if (currentPythonEngine()->isScriptRunning())
         return;
 
@@ -295,8 +293,6 @@ InfoWidget::~InfoWidget()
 
 void InfoWidget::welcome()
 {
-    return;
-
     if (currentPythonEngine()->isScriptRunning())
         return;
 
