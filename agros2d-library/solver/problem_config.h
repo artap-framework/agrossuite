@@ -95,6 +95,8 @@ public:
 
     // parameters
     void setParameter(const QString &key, double val);
+    inline double parameter(const QString &key) const { assert(m_setting[ProblemConfig::Parameters].value<ParametersType>().contains(key)); return m_setting[ProblemConfig::Parameters].value<ParametersType>()[key]; }
+    inline ParametersType parameters() const { return m_setting[ProblemConfig::Parameters].value<ParametersType>(); }
     void checkParameterName(const QString &key);
 
     inline double constantTimeStepLength() { return value(ProblemConfig::TimeTotal).toDouble() / value(ProblemConfig::TimeConstantTimeSteps).toInt(); }

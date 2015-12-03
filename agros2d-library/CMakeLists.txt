@@ -182,7 +182,6 @@ SET(SOURCES
     util/form_script.cpp
     util/global.cpp
     util/loops.cpp
-    util/memory_monitor.cpp
     util/xml.cpp
     value.cpp
     videodialog.cpp
@@ -298,7 +297,6 @@ SOURCE_GROUP(
   util/form_script.cpp
   util/global.cpp
   util/loops.cpp
-  util/memory_monitor.cpp
   util/xml.cpp
 )
 
@@ -408,7 +406,6 @@ SET(HEADERS
   util/form_script.h
   util/global.h
   util/loops.h
-  util/memory_monitor.h
   util/xml.h
   value.h
   videodialog.h
@@ -517,7 +514,6 @@ SOURCE_GROUP(
   util/form_script.h
   util/global.h
   util/loops.h
-  util/memory_monitor.h
   util/xml.h
 )
 

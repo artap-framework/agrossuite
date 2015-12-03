@@ -146,8 +146,7 @@ signals:
     void startedScript();
 
 public:
-    PythonEngine() : errorType(NULL), errorValue(NULL), errorTraceback(NULL), m_useProfiler(false),
-        m_useGlobalDict(true), m_dictTemporary(NULL), m_dictGlobal(NULL) {}
+    PythonEngine();
     ~PythonEngine();
 
     void init(int argc, char *argv[]);

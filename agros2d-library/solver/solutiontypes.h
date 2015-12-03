@@ -40,29 +40,22 @@ class AGROS_LIBRARY_API MultiArray
 {
 public:
     MultiArray();
-    MultiArray(dealii::hp::DoFHandler<2> *doFHandler,
+    MultiArray(std::shared_ptr<dealii::hp::DoFHandler<2> > doFHandler,
                dealii::Vector<double> &solution);
-    MultiArray(dealii::Triangulation<2> *triangulation,
-               dealii::hp::DoFHandler<2> *doFHandler,
-               dealii::Vector<double> &solution)
-        : m_triangulation(triangulation),
-          m_doFHandler(doFHandler),
-          m_solution(solution) {}
+    MultiArray(std::shared_ptr<dealii::Triangulation<2> > triangulation,
+               std::shared_ptr<dealii::hp::DoFHandler<2> > doFHandler,
+               dealii::Vector<double> &solution);
+
     ~MultiArray();
 
-    void clear();
-
-    // add next component
-    void append(dealii::Triangulation<2> *triangulation, dealii::hp::DoFHandler<2> *doFHandler, dealii::Vector<double> &solution);
-
-    dealii::hp::DoFHandler<2> *doFHandler() { return m_doFHandler; }
-    dealii::Vector<double> &solution() { return m_solution; }
+    inline dealii::hp::DoFHandler<2> *doFHandler() const { return m_doFHandler.get(); }
+    inline dealii::Vector<double> &solution() { return m_solution; }
 
     bool isNull();
 
 private:
-    dealii::Triangulation<2> *m_triangulation; // must be deleted
-    dealii::hp::DoFHandler<2> *m_doFHandler;
+    std::shared_ptr<dealii::Triangulation<2> > m_triangulation;
+    std::shared_ptr<dealii::hp::DoFHandler<2> > m_doFHandler;
     dealii::Vector<double> m_solution;
 };
 

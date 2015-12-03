@@ -26,7 +26,6 @@
 #include "logview.h"
 #include "solver/plugin_interface.h"
 #include "solver/module.h"
-#include "util/memory_monitor.h"
 
 #ifdef TBB_FOUND
 #include <tbb/tbb.h>
@@ -670,17 +669,6 @@ void saveFile(const std::string &file, bool saveWithSolution)
     {
         throw logic_error(e.toString().toStdString());
     }
-}
-
-int appTime()
-{
-    return Agros2D::memoryMonitor()->appTime();
-}
-
-void memoryUsage(std::vector<int> &time, std::vector<int> &usage)
-{
-    time = Agros2D::memoryMonitor()->memoryTime().toVector().toStdVector();
-    usage = Agros2D::memoryMonitor()->memoryUsage().toVector().toStdVector();
 }
 
 char *pyVersion()

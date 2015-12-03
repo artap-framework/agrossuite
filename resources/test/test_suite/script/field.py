@@ -7,7 +7,7 @@ from math import pi, sqrt
 class TestField(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
-        self.field = a2d.field('magnetic')
+        self.field = self.problem.field('magnetic')
 
     """ field_id """
     def test_field_id(self):
@@ -35,7 +35,7 @@ class TestField(Agros2DTestCase):
 
     """ matrix_solver """
     def test_matrix_solver(self):
-        for solver in ['umfpack', 'external', 'dealii', 'paralution']:
+        for solver in ['umfpack', 'external', 'dealii']:
             self.field.matrix_solver = solver
             self.assertEqual(self.field.matrix_solver, solver)
 
@@ -90,13 +90,13 @@ class TestField(Agros2DTestCase):
 class TestFieldBoundaries(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
-        self.field = a2d.field('magnetic')
+        self.field = self.problem.field('magnetic')
         self.field.analysis_type = 'harmonic'
 
     """ add_boundary """
     def test_add_boundary(self):
         self.field.add_boundary("A = 0", "magnetic_potential", {"magnetic_potential_real" : 0})
-        a2d.geometry.add_edge(0, 0, 1, 1, boundaries = {'magnetic' : 'A = 0'})
+        self.problem.geometry().add_edge(0, 0, 1, 1, boundaries = {'magnetic' : 'A = 0'})
 
     def test_add_existing_boundary(self):
         self.field.add_boundary("A = 0", "magnetic_potential", {"magnetic_potential_real" : 0})
@@ -128,7 +128,7 @@ class TestFieldBoundaries(Agros2DTestCase):
         self.field.remove_boundary("A = 0")
 
         with self.assertRaises(ValueError):
-            a2d.geometry.add_edge(0, 0, 1, 1, boundaries = {'magnetic' : 'A = 0'})
+            self.problem.geometry().add_edge(0, 0, 1, 1, boundaries = {'magnetic' : 'A = 0'})
 
     def test_remove_nonexistent_boundary(self):
         self.field.add_boundary("A = 0", "magnetic_potential", {"magnetic_potential_real" : 0})
@@ -138,13 +138,13 @@ class TestFieldBoundaries(Agros2DTestCase):
 class TestFieldMaterials(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
-        self.field = a2d.field('magnetic')
+        self.field = self.problem.field('magnetic')
         self.field.analysis_type = 'harmonic'
 
     """ add_material """
     def test_add_material(self):
         self.field.add_material("Iron", {"magnetic_permeability" : 1e3})
-        a2d.geometry.add_label(0, 0, materials = {'magnetic' : 'Iron'})
+        self.problem.geometry().add_label(0, 0, materials = {'magnetic' : 'Iron'})
 
     def test_add_existing_material(self):
         self.field.add_material("Iron", {"magnetic_permeability" : 1e3})
@@ -156,7 +156,6 @@ class TestFieldMaterials(Agros2DTestCase):
             self.field.add_material("Iron", {"wrong_parameter" : 1e3})
 
     """
-    TODO (Franta)
     def test_add_material_with_wrong_parameter(self):
         with self.assertRaises(ValueError):
             self.field.add_material("Iron", {"magnetic_permeability" : -1e3})
@@ -174,7 +173,7 @@ class TestFieldMaterials(Agros2DTestCase):
 
     def test_add_nonlinear_material(self):
         self.add_material()
-        a2d.geometry.add_label(0, 0, materials = {'magnetic' : 'Iron'})
+        self.problem.geometry().add_label(0, 0, materials = {'magnetic' : 'Iron'})
 
     def test_add_nonlinear_material_with_wrong_x_length(self):
         with self.assertRaises(ValueError):
@@ -224,7 +223,7 @@ class TestFieldMaterials(Agros2DTestCase):
         self.field.remove_material("Iron")
 
         with self.assertRaises(ValueError):
-            a2d.geometry.add_label(0, 0, materials = {'magnetic' : 'Iron'})
+            self.problem.geometry().add_label(0, 0, materials = {'magnetic' : 'Iron'})
 
     def test_remove_nonexistent_material(self):
         self.add_material()
@@ -234,7 +233,7 @@ class TestFieldMaterials(Agros2DTestCase):
 class TestFieldNewtonSolver(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
-        self.field = a2d.field('magnetic')
+        self.field = self.problem.field('magnetic')
         self.field.solver = 'newton'
 
     """ relative_change_of_solutions """
@@ -319,77 +318,55 @@ class TestFieldNewtonSolver(Agros2DTestCase):
 class TestFieldMatrixSolver(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
-        self.field = a2d.field('magnetic')
-        self.field.matrix_solver = 'paralution'
+        self.field = self.problem.field('magnetic')
+        self.field.matrix_solver = 'dealii'
 
     """ preconditioner - dealii """
     def test_preconditioner_dealii(self):
         # ['jacobi', 'multicoloredsgs', 'ilu', 'multicoloredilu']:
         for preconditioner in ['ssor']: 
-            self.field.matrix_solver_parameters['preconditioner_dealii'] = preconditioner
-            self.assertEqual(self.field.matrix_solver_parameters['preconditioner_dealii'], preconditioner)
+            self.field.matrix_solver_parameters['dealii_preconditioner'] = preconditioner
+            self.assertEqual(self.field.matrix_solver_parameters['dealii_preconditioner'], preconditioner)
 
     def test_set_wrong_preconditioner_dealii(self):
         with self.assertRaises(ValueError):
-            self.field.matrix_solver_parameters['preconditioner_dealii'] = 'wrong_preconditioner'
+            self.field.matrix_solver_parameters['dealii_preconditioner'] = 'wrong_preconditioner'
 
     """ method - dealii """
     def test_method_dealii(self):
         for method in ['cg', 'gmres', 'bicgstab']:
-            self.field.matrix_solver_parameters['method_dealii'] = method
-            self.assertEqual(self.field.matrix_solver_parameters['method_dealii'], method)
+            self.field.matrix_solver_parameters['dealii_method'] = method
+            self.assertEqual(self.field.matrix_solver_parameters['dealii_method'], method)
 
     def test_set_wrong_method_dealii(self):
         with self.assertRaises(ValueError):
-            self.field.matrix_solver_parameters['method_dealii'] = 'wrong_method'
-
-    """ preconditioner - paralution """
-    def test_preconditioner_paralution(self):
-        # ['jacobi', 'multicoloredsgs', 'ilu', 'multicoloredilu']:
-        for preconditioner in ['jacobi', 'multicoloredgs', 'multicoloredsgs', 'ilu', 'multicoloredilu', 'multielimination', 'fsai']: 
-            self.field.matrix_solver_parameters['preconditioner_paralution'] = preconditioner
-            self.assertEqual(self.field.matrix_solver_parameters['preconditioner_paralution'], preconditioner)
-
-    def test_set_wrong_preconditioner_paralution(self):
-        with self.assertRaises(ValueError):
-            self.field.matrix_solver_parameters['preconditioner_paralution'] = 'wrong_preconditioner'
-
-    """ method - paralution """
-    def test_method_paralution(self):
-        for method in ['cg', 'gmres', 'bicgstab', 'fgmres', 'cr', 'idr']:
-            self.field.matrix_solver_parameters['method_paralution'] = method
-            self.assertEqual(self.field.matrix_solver_parameters['method_paralution'], method)
-
-    def test_set_wrong_method_paralution(self):
-        self.field.matrix_solver = 'paralution'
-        with self.assertRaises(ValueError):
-            self.field.matrix_solver_parameters['method_paralution'] = 'wrong_method'
+            self.field.matrix_solver_parameters['dealii_method'] = 'wrong_method'
 
     """ tolerance """
     def test_tolerance(self):
-        self.field.matrix_solver_parameters['tolerance'] = 1e-5
-        self.assertEqual(self.field.matrix_solver_parameters['tolerance'], 1e-5)
+        self.field.matrix_solver_parameters['dealii_tolerance'] = 1e-5
+        self.assertEqual(self.field.matrix_solver_parameters['dealii_tolerance'], 1e-5)
 
     def test_set_wrong_tolerance(self):
         with self.assertRaises(IndexError):
-            self.field.matrix_solver_parameters['tolerance'] = -1
+            self.field.matrix_solver_parameters['dealii_tolerance'] = -1
 
     """ iterations """
     def test_iterations(self):
-        self.field.matrix_solver_parameters['iterations'] = 1e2
-        self.assertEqual(self.field.matrix_solver_parameters['iterations'], 1e2)
+        self.field.matrix_solver_parameters['dealii_iterations'] = 1e2
+        self.assertEqual(self.field.matrix_solver_parameters['dealii_iterations'], 1e2)
 
     def test_set_wrong_jacobian_reuse_steps(self):
         with self.assertRaises(IndexError):
-            self.field.matrix_solver_parameters['iterations'] = 0
+            self.field.matrix_solver_parameters['dealii_iterations'] = 0
 
         with self.assertRaises(IndexError):
-            self.field.matrix_solver_parameters['iterations'] = 1.1e4
+            self.field.matrix_solver_parameters['dealii_iterations'] = 1.1e4
 
 class TestFieldAdaptivity(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
-        self.field = a2d.field('magnetic')
+        self.field = self.problem.field('magnetic')
         self.field.adaptivity_type = 'hp-adaptivity'
 
     """ steps """
@@ -463,7 +440,7 @@ class TestFieldAdaptivity(Agros2DTestCase):
 class TestFieldLocalValues(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
-        self.field = a2d.field("magnetic")
+        self.field = self.problem.field("magnetic")
         self.field.number_of_refinements = 0
         self.field.polynomial_order = 1
 
@@ -473,7 +450,7 @@ class TestFieldLocalValues(Agros2DTestCase):
         self.field.add_material("Air", {"magnetic_permeability" : 1})
 
         self.size = 3.141592653589793
-        geometry = a2d.geometry
+        geometry = self.problem.geometry()
         geometry.add_edge(self.size, self.size, 0, self.size, boundaries = {"magnetic" : "A=0.75*x"})
         geometry.add_edge(0, self.size, 0, 0, boundaries = {"magnetic" : "A=0.75*x"})
         geometry.add_edge(0, 0, self.size, 0, boundaries = {"magnetic" : "A=0.75*x"})
@@ -489,8 +466,10 @@ class TestFieldLocalValues(Agros2DTestCase):
             self.assertAlmostEqual(self.field.local_values(x, y)['Bry'], -self.B, 3)
 
     def test_local_values_outside_area(self):
-        self.problem.solve()
-        self.assertEqual(len(self.field.local_values(-1, -1)), 0)
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('magnetic')
+        self.assertEqual(len(solution.local_values(-1, -1)), 0)
 
     def test_local_values_without_solution(self):
         with self.assertRaises(RuntimeError):
@@ -499,7 +478,7 @@ class TestFieldLocalValues(Agros2DTestCase):
 class TestFieldIntegrals(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
-        self.field = a2d.field("electrostatic")
+        self.field = self.problem.field("electrostatic")
         self.field.number_of_refinements = 1
         self.field.polynomial_order = 1
         
@@ -508,7 +487,7 @@ class TestFieldIntegrals(Agros2DTestCase):
         self.field.add_material("Source", {"electrostatic_permittivity" : 1, "electrostatic_charge_density" : 10})
         self.field.add_material("Material", {"electrostatic_permittivity" : 1, "electrostatic_charge_density" : 0})
 
-        geometry = a2d.geometry
+        geometry = self.problem.geometry()
         geometry.add_edge(0.25, 0, 0.75, 0, boundaries = {"electrostatic" : "Dirichlet"})
         geometry.add_edge(0.75, 0, 0.75, 0.25, boundaries = {"electrostatic" : "Dirichlet"})
         geometry.add_edge(0.75, 0.25, 1.25, 0.75, angle = 90, segments = 5, boundaries = {"electrostatic" : "Neumann"})
@@ -533,38 +512,30 @@ class TestFieldIntegrals(Agros2DTestCase):
         geometry.add_label(0.25, 0.25, materials = {"electrostatic" : "Material"})
         geometry.add_label(0.2, 0.5, materials = {"electrostatic" : "none"})
         geometry.add_label(0.5, 0.2, materials = {"electrostatic" : "none"})
-        a2d.view.zoom_best_fit()
         
         self.volume = 0.75**2 + 3*(pi*0.5**2)/4.0 - (pi*0.25**2)/4.0 - 0.2**2 - (0.1*0.25)/2.0 - (pi*0.25**2)
         self.surface = (0.25+0.1+sqrt(0.25**2+0.1**2))
 
     """ surface_integrals """
     def test_surface_integrals(self):
-        self.problem.solve()
-        self.assertAlmostEqual(self.field.surface_integrals([16,17,18])['l'], self.surface, 5)
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('magnetic')
+        self.assertAlmostEqual(solution.surface_integrals([16,17,18])['l'], self.surface, 5)
 
     def test_surface_integrals_on_nonexistent_edge(self):
-        self.problem.solve()
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('magnetic')
         with self.assertRaises(IndexError):
-            self.field.surface_integrals([99])['l']
-
-    def test_surface_itegrals_without_solution(self):
-        with self.assertRaises(RuntimeError):
-            self.field.surface_integrals()
+            solution.surface_integrals([99])['l']
 
     """ volume_integrals """
     def test_volume_integrals(self):
-        self.problem.solve()
-        self.assertAlmostEqual(self.field.volume_integrals([1])['V'], self.volume, 3)
-
-    def test_volume_integrals_on_nonexistent_edge(self):
-        self.problem.solve()
-        with self.assertRaises(IndexError):
-            self.field.volume_integrals([5])['V']
-
-    def test_volume_integrals_without_solution(self):
-        with self.assertRaises(RuntimeError):
-            self.field.volume_integrals()
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('magnetic')
+        self.assertAlmostEqual(solution.volume_integrals([1])['V'], self.volume, 3)
 
 class TestFieldAdaptivityInfo(Agros2DTestCase):
     def setUp(self):
@@ -572,7 +543,7 @@ class TestFieldAdaptivityInfo(Agros2DTestCase):
         self.problem.coordinate_type = "axisymmetric"
         self.problem.mesh_type = "triangle"
         
-        self.field = a2d.field("electrostatic")
+        self.field = self.problem.field("electrostatic")
         self.field.adaptivity_type = "hp-adaptivity"
         self.field.number_of_refinements = 0
         self.field.polynomial_order = 1
@@ -585,7 +556,7 @@ class TestFieldAdaptivityInfo(Agros2DTestCase):
         self.field.add_boundary("Border", "electrostatic_surface_charge_density", {"electrostatic_surface_charge_density" : 0})
         self.field.add_material("Air", {"electrostatic_permittivity" : 1, "electrostatic_charge_density" : 0})
         
-        geometry = a2d.geometry
+        geometry = self.problem.geometry()
         geometry.add_edge(0.2, 0.6, 0, 0.1, boundaries = {"electrostatic" : "Source"})
         geometry.add_edge(0, 0.1, 0, -0.1, boundaries = {"electrostatic" : "Border"})
         geometry.add_edge(0, -0.6, 0, -1.6, boundaries = {"electrostatic" : "Border"})
@@ -600,58 +571,58 @@ class TestFieldAdaptivityInfo(Agros2DTestCase):
         geometry.add_label(0.8, 0.8, materials = {"electrostatic" : "Air"})
 
     def test_adaptivity_info(self):
-        self.problem.solve()
-        info = self.field.adaptivity_info()
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('electrostatic')
+        info = solution.adaptivity_info()
 
         self.assertTrue('dofs' in info)
         self.assertTrue('error' in info)
         self.assertTrue(type(info['dofs']) is list)
         self.assertTrue(type(info['error']) is list)
 
-    def test_adaptivity_info_without_solution(self):
-        with self.assertRaises(RuntimeError):
-            self.field.adaptivity_info()
-
     def test_adaptivity_info_without_adaptive_solution(self):
         self.field.adaptivity_type = "disabled"
-        self.problem.solve()
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('electrostatic')
         with self.assertRaises(RuntimeError):
-            self.field.adaptivity_info()
+            solution.adaptivity_info()
 
     def test_adaptivity_info_with_nonexisted_time_step(self):
-        self.problem.solve()
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('electrostatic')
         with self.assertRaises(IndexError):
-            self.field.adaptivity_info(time_step=1)
+            solution.adaptivity_info(time_step=1)
 
     def test_initial_and_solution_mesh_info(self):
-        self.problem.solve()
-        init = self.field.initial_mesh_info()
-        sol = self.field.solution_mesh_info()
-        info = self.field.adaptivity_info()
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('electrostatic')
+
+        init = solution.initial_mesh_info()
+        sol = solution.solution_mesh_info()
+        info = solution.adaptivity_info()
         
         self.assertEqual(sol['dofs'], info['dofs'][-1])
-        
         self.assertGreater(sol['elements'], init['elements'])
         self.assertGreater(sol['nodes'], init['nodes'])
 
     def test_initial_mesh_info(self):
-        self.problem.mesh()
-        self.assertTrue(self.field.initial_mesh_info()['elements'])
-        self.assertTrue(self.field.initial_mesh_info()['nodes'])
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('electrostatic')
+        self.assertTrue(solution.initial_mesh_info()['elements'])
+        self.assertTrue(solution.initial_mesh_info()['nodes'])
 
     def test_solution_mesh_info(self):
-        self.problem.solve()
-        self.assertTrue(self.field.solution_mesh_info()['dofs'])
-        self.assertTrue(self.field.solution_mesh_info()['elements'])
-        self.assertTrue(self.field.solution_mesh_info()['nodes'])
-
-    def test_initial_mesh_info_without_mesh(self):
-        with self.assertRaises(RuntimeError):
-            self.field.initial_mesh_info()
-
-    def test_solution_mesh_info_without_solution(self):
-        with self.assertRaises(RuntimeError):
-            self.field.solution_mesh_info()
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('electrostatic')
+        self.assertTrue(solution.solution_mesh_info()['dofs'])
+        self.assertTrue(solution.solution_mesh_info()['elements'])
+        self.assertTrue(solution.solution_mesh_info()['nodes'])
 
 class TestFieldSolverInfo(Agros2DTestCase):
     def setUp(self):
@@ -663,7 +634,7 @@ class TestFieldSolverInfo(Agros2DTestCase):
         self.problem.time_total = 5
         self.problem.time_steps = 5
 
-        self.field = a2d.field("heat")
+        self.field = self.problem.field("heat")
         self.field.analysis_type = "transient"
         self.field.matrix_solver = "umfpack"
         self.field.transient_initial_condition = 293.15
@@ -709,7 +680,7 @@ class TestFieldSolverInfo(Agros2DTestCase):
                                                                   "extrapolation" : "constant",
                                                                   "derivative_at_endpoints" : "first" }})
         
-        geometry = a2d.geometry
+        geometry = self.problem.geometry()
         geometry.add_edge(0, -0.15, 0.15, 0, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
         geometry.add_edge(0.15, 0, 0, 0.15, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
         geometry.add_edge(0, 0.15, -0.15, 0, angle = 90, segments = 5, boundaries = {"heat" : "Neumann"})
@@ -732,8 +703,6 @@ class TestFieldSolverInfo(Agros2DTestCase):
         geometry.add_edge(0.023097, -0.00956709, 0.01, 0, boundaries = {"heat" : "Dirichlet"})
         geometry.add_label(0, 0, materials = {"heat" : "none"})
         geometry.add_label(0.075, 0, materials = {"heat" : "Material"})
-            
-        # self.problem.solve()
 
     def test_solver_info_with_wrong_parameters(self):
         pass
@@ -768,22 +737,15 @@ if __name__ == '__main__':
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestField))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldBoundaries))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldMaterials))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldNewtonSolver))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldMatrixSolver))
-    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivity))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestField))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldBoundaries))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldMaterials))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldNewtonSolver))
+    ##suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldMatrixSolver))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivity))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldLocalValues))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldIntegrals))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivityInfo))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivityInfoTransient))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldAdaptivityInfoTransient))
     #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestFieldSolverInfo))
     suite.run(result)
-
-# TODO (Franta) :
-"""
-modify_material
-filename_matrix
-filename_rhs
-"""

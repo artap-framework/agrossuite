@@ -6,12 +6,12 @@ from test_suite.scenario import Agros2DTestResult
 class TestGeometry(Agros2DTestCase):
     def setUp(self):
         self.problem = a2d.problem(clear = True)
-        self.geometry = a2d.geometry
+        self.geometry = self.problem.geometry()
 
     def model(self):
         self.problem = a2d.problem(clear = True)
 
-        self.electrostatic = a2d.field("electrostatic")
+        self.electrostatic = self.problem.field("electrostatic")
         self.electrostatic.add_boundary("Source", "electrostatic_potential", {"electrostatic_potential" : 10})
         self.electrostatic.add_boundary("Ground", "electrostatic_potential", {"electrostatic_potential" : 0})
         self.electrostatic.add_boundary("Neumann", "electrostatic_surface_charge_density", {"electrostatic_surface_charge_density" : 0})
@@ -20,7 +20,7 @@ class TestGeometry(Agros2DTestCase):
         self.a = 1.0
         self.b = 1.0
 
-        self.geometry = a2d.geometry
+        self.geometry = self.problem.geometry()
         self.geometry.add_edge(0, 0, self.a, 0, boundaries = {"electrostatic" : "Neumann"})
         self.geometry.add_edge(self.a, 0, self.a, self.b, boundaries = {"electrostatic" : "Ground"})
         self.geometry.add_edge(self.a, self.b, 0, self.b, boundaries = {"electrostatic" : "Neumann"})
@@ -73,7 +73,7 @@ class TestGeometry(Agros2DTestCase):
         with self.assertRaises(ValueError):
             self.geometry.add_edge(0, 0, 1, 1, boundaries = {'wrong_field' : 'wrong_boundary_condition'})
 
-        a2d.field('electrostatic').add_boundary("Potential", "electrostatic_potential", {"electrostatic_potential" : 1000})
+        self.problem.field('electrostatic').add_boundary("Potential", "electrostatic_potential", {"electrostatic_potential" : 1000})
         with self.assertRaises(ValueError):
             self.geometry.add_edge(0, 0, 1, 1, boundaries = {'electrostatic' : 'wrong_boundary_condition'})
 
@@ -83,7 +83,7 @@ class TestGeometry(Agros2DTestCase):
         with self.assertRaises(ValueError):
             self.geometry.add_edge(0, 0, 1, 1, refinements = {'field' : 1})
 
-        a2d.field('electrostatic')
+        self.problem.field('electrostatic')
         with self.assertRaises(IndexError):
             self.geometry.add_edge(0, 0, 1, 1, refinements = {'electrostatic' : -1})
 
@@ -111,20 +111,23 @@ class TestGeometry(Agros2DTestCase):
             self.geometry.add_edge_by_nodes(0, 1)
 
     """ modify_edge() """
+    """
     def test_modify_edge_angle(self):
         self.model()
         self.geometry.modify_edge(1, angle = 90)
-        self.problem.solve()
-        self.assertAlmostEqual(self.electrostatic.surface_integrals([1])['l'], pi/2.0 * sqrt((self.a/2.0)**2 + (self.b/2.0)**2), 1)
-
-    def test_modify_edge_refinements(self):
-        pass
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('electrostatic')
+        self.assertAlmostEqual(solution.surface_integrals([1])['l'], pi/2.0 * sqrt((self.a/2.0)**2 + (self.b/2.0)**2), 1)
 
     def test_modify_edge_boundaries(self):
         self.model()
         self.geometry.modify_edge(1, boundaries = {'electrostatic' : 'Ground'})
-        self.problem.solve()
-        self.assertAlmostEqual(self.electrostatic.volume_integrals([0])['We'], 0)
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('electrostatic')
+        self.assertAlmostEqual(solution.volume_integrals([0])['We'], 0)
+    """
 
     def test_modify_nonexisting_edge(self):
         self.geometry.add_edge(0, 0, 1, 1)
@@ -146,7 +149,7 @@ class TestGeometryTransformations(Agros2DTestCase):
     def model(self):
         self.problem = a2d.problem(clear = True)
 
-        self.electrostatic = a2d.field("electrostatic")
+        self.electrostatic = self.problem.field("electrostatic")
         self.electrostatic.add_boundary("Source", "electrostatic_potential", {"electrostatic_potential" : 10})
         self.electrostatic.add_boundary("Ground", "electrostatic_potential", {"electrostatic_potential" : 0})
         self.electrostatic.add_boundary("Neumann", "electrostatic_surface_charge_density", {"electrostatic_surface_charge_density" : 0})
@@ -155,7 +158,7 @@ class TestGeometryTransformations(Agros2DTestCase):
         self.a = 1
         self.b = 1
 
-        self.geometry = a2d.geometry
+        self.geometry = self.problem.geometry()
         self.geometry.add_edge(0, 0, self.a, 0, boundaries = {"electrostatic" : "Neumann"})
         self.geometry.add_edge(self.a, 0, self.a, self.b, boundaries = {"electrostatic" : "Ground"})
         self.geometry.add_edge(self.a, self.b, 0, self.b, boundaries = {"electrostatic" : "Neumann"})
@@ -172,9 +175,12 @@ class TestGeometryTransformations(Agros2DTestCase):
         self.geometry.select_edges([2])
         self.geometry.move_selection(0, dy, False)
 
-        self.problem.solve()
-        self.assertAlmostEqual(self.electrostatic.volume_integrals([0])['V'], (self.a + dx) * (self.b + dy))
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('electrostatic')
+        self.assertAlmostEqual(solution.volume_integrals([0])['V'], (self.a + dx) * (self.b + dy))
 
+    """
     def test_rotate_selection(self):
         pass
 
@@ -185,9 +191,12 @@ class TestGeometryTransformations(Agros2DTestCase):
         self.geometry.select_edges(list(range(0, 4)))
         self.geometry.scale_selection(self.a/2.0, self.b/2.0, scale, False)
 
-        self.problem.solve()
-        self.assertAlmostEqual(self.electrostatic.volume_integrals([0])['S'], (self.a * scale) * (self.b * scale))
-        
+        computation = self.problem.computation()
+        computation.solve()
+        solution = computation.solution('electrostatic')
+        self.assertAlmostEqual(solution.volume_integrals([0])['S'], (self.a * scale) * (self.b * scale))
+   """
+
 if __name__ == '__main__':        
     import unittest as ut
     

@@ -47,7 +47,8 @@ SceneViewPreprocessor::SceneViewPreprocessor(QWidget *parent)
       m_sceneMode(SceneGeometryMode_OperateOnNodes),
       m_snapToGrid(true),
       m_selectRegion(false),
-      m_selectRegionPos(QPointF())
+      m_selectRegionPos(QPointF()),
+      m_backgroundTexture(-1)
 {
     createActionsGeometry();
     createMenuGeometry();

@@ -45,22 +45,24 @@ void StudySweepAnalysis::solve()
 
     foreach (double value, parameter.values())
     {
-        // set parameter
-        Agros2D::problem()->config()->setParameter(parameter.name(), value);
-
         // create computation
         QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true, false);
         // store computation
         m_computations.append(computation);
 
+        // set parameter
+        computation->config()->setParameter(parameter.name(), value);
+
         // solve
         computation->solve();
+
+        // temporary dict
+        currentPythonEngine()->useTemporaryDict();
 
         // evaluate expressions
         foreach (Functional functional, m_functionals)
         {
             bool successfulRun = functional.evaluateExpression(computation);
-            // qDebug() << successfulRun;
         }
 
         // global dict

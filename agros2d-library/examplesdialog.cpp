@@ -268,6 +268,7 @@ int ExamplesWidget::readExamples(QDir dir, QTreeWidgetItem *parentItem)
             {
                 // remove dir from tree
                 parentItem->removeChild(dirItem);
+                delete dirItem;
             }
 
             // increase counter

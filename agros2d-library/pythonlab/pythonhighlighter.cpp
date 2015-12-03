@@ -175,9 +175,9 @@ void PythonHighlighter::highlightBlockParenthesis(const QString &text, char left
     int leftPos = text.indexOf(left);
     while (leftPos != -1)
     {
-        ParenthesisInfo *info = new ParenthesisInfo();
-        info->character = left;
-        info->position = leftPos;
+        ParenthesisInfo info;
+        info.character = left;
+        info.position = leftPos;
 
         data->insert(left, info);
         leftPos = text.indexOf(left, leftPos + 1);
@@ -186,9 +186,9 @@ void PythonHighlighter::highlightBlockParenthesis(const QString &text, char left
     int rightPos = text.indexOf(right);
     while (rightPos != -1)
     {
-        ParenthesisInfo *info = new ParenthesisInfo();
-        info->character = right;
-        info->position = rightPos;
+        ParenthesisInfo info;
+        info.character = right;
+        info.position = rightPos;
 
         data->insert(left, info);
         rightPos = text.indexOf(right, rightPos + 1);

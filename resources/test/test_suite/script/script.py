@@ -30,23 +30,18 @@ def save_solution_test(problem, field):
                         field.surface_integrals([0, 1, 2]),
                         field.volume_integrals()]
                         
-    #print(values_from_solution)                    
-    #print(values_from_file)    
+    #print(values_from_solution)
+    #print(values_from_file)
 
     return compare(values_from_solution, values_from_file)
 
 class TestSaveAdaptiveSolutionSteady(Agros2DTestCase):
     def setUp(self):
-        # model
         self.problem = agros2d.problem(clear = True)
         self.problem.coordinate_type = "axisymmetric"
         self.problem.mesh_type = "triangle"
-        
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-               
-        self.magnetic = agros2d.field("magnetic")
+
+        self.magnetic = self.problem.field("magnetic")
         self.magnetic.analysis_type = "steadystate"
         self.magnetic.matrix_solver = "umfpack"
         self.magnetic.number_of_refinements = 0
@@ -61,7 +56,7 @@ class TestSaveAdaptiveSolutionSteady(Agros2DTestCase):
         self.magnetic.add_material("Iron", {"magnetic_permeability" : 100, "magnetic_conductivity" : 10e6})
         self.magnetic.add_material("Air", {"magnetic_permeability" : 1})
 
-        geometry = agros2d.geometry
+        geometry = self.problem.geometry()
         geometry.add_edge(0, -0.25, 0.1, -0.25)
         geometry.add_edge(0.1, -0.25, 0.1, 0.25)
         geometry.add_edge(0.1, 0.25, 0, 0.25)
@@ -74,31 +69,27 @@ class TestSaveAdaptiveSolutionSteady(Agros2DTestCase):
         geometry.add_edge(0.75, 0, 4.59243e-17, 0.75, angle = 90, boundaries = {"magnetic" : "A = 0"})
         geometry.add_edge(4.59243e-17, 0.75, 0, 0.25, boundaries = {"magnetic" : "A = 0"})
         geometry.add_edge(0, -0.25, 4.59243e-17, -0.75, boundaries = {"magnetic" : "A = 0"})
-        
+
         geometry.add_label(0.5, 0, materials = {"magnetic" : "Air"})
         geometry.add_label(0.2, 0, materials = {"magnetic" : "Copper"})
         geometry.add_label(0.05, 0, materials = {"magnetic" : "Iron"})
 
-        self.problem.solve()
-                   
+        computation = self.problem.computation()
+        computation.solve()
+
     def test_steady_state(self):        
         self.assertTrue(save_solution_test(self.problem, self.magnetic))
     
 class TestSaveAdaptiveSolutionTransient(Agros2DTestCase):
     def setUp(self):
-        # model
         self.problem = agros2d.problem(clear = True)
         self.problem.coordinate_type = "axisymmetric"
         self.problem.mesh_type = "triangle"
         self.problem.time_step_method = "fixed"
         self.problem.time_total = 3
         self.problem.time_steps = 1
-               
-        # disable view
-        #agros2d.view.mesh.disable()
-        #agros2d.view.post2d.disable()
-               
-        self.magnetic = agros2d.field("magnetic")
+
+        self.magnetic = self.problem.field("magnetic")
         self.magnetic.analysis_type = "transient"
         self.magnetic.matrix_solver = "umfpack"
         self.magnetic.number_of_refinements = 0
@@ -112,7 +103,7 @@ class TestSaveAdaptiveSolutionTransient(Agros2DTestCase):
         self.magnetic.add_material("Iron", {"magnetic_permeability" : 100, "magnetic_conductivity" : 10e6})
         self.magnetic.add_material("Air", {"magnetic_permeability" : 1})
 
-        geometry = agros2d.geometry
+        geometry = self.problem.geometry()
         geometry.add_edge(0, -0.25, 0.1, -0.25)
         geometry.add_edge(0.1, -0.25, 0.1, 0.25)
         geometry.add_edge(0.1, 0.25, 0, 0.25)
@@ -125,12 +116,13 @@ class TestSaveAdaptiveSolutionTransient(Agros2DTestCase):
         geometry.add_edge(0.75, 0, 4.59243e-17, 0.75, angle = 90, boundaries = {"magnetic" : "A = 0"})
         geometry.add_edge(4.59243e-17, 0.75, 0, 0.25, boundaries = {"magnetic" : "A = 0"})
         geometry.add_edge(0, -0.25, 4.59243e-17, -0.75, boundaries = {"magnetic" : "A = 0"})
-        
+
         geometry.add_label(0.5, 0, materials = {"magnetic" : "Air"})
         geometry.add_label(0.2, 0, materials = {"magnetic" : "Copper"})
         geometry.add_label(0.05, 0, materials = {"magnetic" : "Iron"})    
 
-        self.problem.solve()                        
+        computation = self.problem.computation()
+        computation.solve()                   
 
     def test_transient(self):
         self.assertTrue(save_solution_test(self.problem, self.magnetic))
@@ -141,5 +133,5 @@ if __name__ == '__main__':
     suite = ut.TestSuite()
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestSaveAdaptiveSolutionSteady))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestSaveAdaptiveSolutionTransient))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestSaveAdaptiveSolutionTransient))
     suite.run(result)
