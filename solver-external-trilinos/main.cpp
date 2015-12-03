@@ -17,6 +17,9 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
+// DEVELOPMENT TEMPORARY INFO - command line call:
+// ./solver_TRILINOS -s test.sol -r testmatice.rhs -p testmatice.matrix_pattern -m testmatice.matrix
+
 #include <streambuf>
 #include <iostream>
 #include <sstream>
@@ -30,6 +33,11 @@
 #include <Epetra_Vector.h>
 #include <Epetra_CrsMatrix.h>
 #include <EpetraExt_MatrixMatrix.h>
+#include <Epetra_SerialComm.h>
+#include <Epetra_Map.h>
+#include <Epetra_CrsGraph.h>
+#include <EpetraExt_RowMatrixOut.h>
+#include <EpetraExt_VectorOut.h>
 
 #include "../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
@@ -45,7 +53,7 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
         TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
         TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", true, "", "string");
-        TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
+//        TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
 //        TCLAP::ValueArg<std::string> preconditionerArg("c", "preconditioner", "Preconditioner", false, "", "string");
 //        TCLAP::ValueArg<std::string> solverArg("l", "solver", "Solver", false, "", "string");
 //        TCLAP::ValueArg<double> absTolArg("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double");
@@ -56,7 +64,7 @@ int main(int argc, char *argv[])
         cmd.add(matrixPatternArg);
         cmd.add(rhsArg);
         cmd.add(solutionArg);
-        cmd.add(initialArg);
+//        cmd.add(initialArg);
 //        cmd.add(preconditionerArg);
 //        cmd.add(solverArg);
 //        cmd.add(absTolArg);
@@ -65,6 +73,15 @@ int main(int argc, char *argv[])
 
         // parse the argv array.
         cmd.parse(argc, argv);
+
+//      only for development -------------------------
+//        char *pom[4];
+//        // pom[0] = (char *) "Testing";
+//        pom[0] = (char *) "testmatice.matrix";
+//        pom[1] = (char *) "testmatice.matrix_pattern";
+//        pom[2] = (char *) "testmatice.rhs";
+//        cmd.parse(3, pom);
+// ---------------------------------------------------
 
         SparsityPatternRW system_matrix_pattern;
         std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
@@ -82,7 +99,8 @@ int main(int argc, char *argv[])
         readRHS.close();
 
         // test of rhs values ---
-        system_rhs.block_write(std::cout);
+        std::cout << "TEST Trilinos matrixes -----" << std::endl;
+        // system_rhs.block_write(std::cout);
 
         VectorRW solution(system_rhs.max_len);
 
@@ -92,25 +110,64 @@ int main(int argc, char *argv[])
         // number of nonzero elements in matrix
         int nz = system_matrix.max_len;
 
+        // representation of the matrix and rhs
+        double *a = new double[nz];
+
+        // matrix indices pointing to the row and column dimensions
+        int *irn = new int[nz];
+        int *jcn = new int[nz];
+
+        int index = 0;
+
+        // loop over the elements of the matrix row by row
+        for (int row = 0; row < system_matrix_pattern.rows; ++row)
+        {
+            std::size_t col_start = system_matrix_pattern.rowstart[row];
+            std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
+
+            for (int i = col_start; i < col_end; i++)
+            {
+                irn[index] = row + 0;
+                jcn[index] = system_matrix_pattern.colnums[i] + 0;
+                a[index] = system_matrix.val[i];
+                ++index;
+            }
+        }
+
+// --- develop ---
+        // print elements in (of the matrix row by row)
+        std::cout << "Matrixes -----" << std::endl;
+        for (int row = 0; row < system_matrix_pattern.rows; ++row)
+        {
+            std::size_t col_start = system_matrix_pattern.rowstart[row];
+            std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
+
+            for (int i = col_start; i < col_end; i++)
+            {
+                std::cout << row + 0 << " " << system_matrix_pattern.colnums[i] + 0 << " " <<  system_matrix.val[i] << std::endl;
+            }
+        }
+// ---------------
+
 //        Epetra_CrsMatrix A;
 //        Epetra_Vector X;
-//        Epetra_Vector B;
+//        Epetra_Vector rhs(Copy, Map, LocalValues);
 
-//        Epetra_LinearProblem Problem(&A, &X, &B);
+//        Epetra_LinearProblem Problem(&A, &X, &rhs);
 
         Amesos_BaseSolver* Solver;
         Amesos Factory;
         char* SolverType = "Amesos_Klu"; // uses the KLU direct solver
-//       Solver = Factory.Create(SolverType, Problem);
+        // Solver = Factory.Create(SolverType, Problem);
 
         AMESOS_CHK_ERR(Solver->SymbolicFactorization());
 
         AMESOS_CHK_ERR(Solver->NumericFactorization());
         AMESOS_CHK_ERR(Solver->Solve());
 
-        std::ofstream writeSln(solutionArg.getValue());
-        solution.block_write(writeSln);
-        writeSln.close();
+//        std::ofstream writeSln(solutionArg.getValue());
+//        solution.block_write(writeSln);
+//        writeSln.close();
 
         exit(0);
     }
