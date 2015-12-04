@@ -38,7 +38,7 @@ public:
     ValueTimeDialog(QWidget *parent = 0);
     ~ValueTimeDialog();
 
-    Value value() const { return Value(txtLineEdit->text()); }
+    Value value() const { return Value(m_problem, txtLineEdit->text()); }
     void setValue(Value value);
 
 private:
@@ -52,6 +52,8 @@ private:
     QLineEdit *txtLineEdit;
     ValueLineEdit *txtTimeTotal;
     QComboBox *cmbPresets;
+
+    ProblemBase *m_problem;
 
     void createControls();
 

@@ -30,11 +30,13 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-SceneNode::SceneNode(Scene *scene, const Point &point) : SceneBasic(scene), m_point(point.x, point.y)
+SceneNode::SceneNode(Scene *scene, const Point &point) : SceneBasic(scene),
+    m_point(scene->parentProblem(), point)
 {
 }
 
-SceneNode::SceneNode(Scene *scene, const PointValue &pointValue) : SceneBasic(scene), m_point(pointValue)
+SceneNode::SceneNode(Scene *scene, const PointValue &pointValue) : SceneBasic(scene),
+    m_point(pointValue)
 {
 }
 
@@ -60,7 +62,7 @@ int SceneNode::showDialog(QWidget *parent, bool isNew)
 
 SceneNodeCommandRemove* SceneNode::getRemoveCommand()
 {
-    return new SceneNodeCommandRemove(this->point());
+    return new SceneNodeCommandRemove(this->pointValue());
 }
 
 
@@ -292,7 +294,7 @@ bool SceneNodeDialog::save()
     {
         if (sceneNode->point() != point.point())
         {
-            m_object->scene()->undoStack()->push(new SceneNodeCommandEdit(sceneNode->point(), point.point()));
+            m_object->scene()->undoStack()->push(new SceneNodeCommandEdit(sceneNode->pointValue(), point));
         }
     }
 
@@ -312,9 +314,9 @@ void SceneNodeDialog::doEditingFinished()
 
 // undo framework *******************************************************************************************************************
 
-SceneNodeCommandAdd::SceneNodeCommandAdd(const PointValue &point, QUndoCommand *parent) : QUndoCommand(parent)
+SceneNodeCommandAdd::SceneNodeCommandAdd(const PointValue &point, QUndoCommand *parent)
+    : QUndoCommand(parent), m_point(point)
 {
-    m_point = point;
 }
 
 void SceneNodeCommandAdd::undo()
@@ -333,9 +335,9 @@ void SceneNodeCommandAdd::redo()
     Agros2D::problem()->scene()->invalidate();
 }
 
-SceneNodeCommandRemove::SceneNodeCommandRemove(const PointValue &point, QUndoCommand *parent) : QUndoCommand(parent)
-{
-    m_point = point;
+SceneNodeCommandRemove::SceneNodeCommandRemove(const PointValue &point, QUndoCommand *parent)
+    : QUndoCommand(parent), m_point(point)
+{    
 }
 
 void SceneNodeCommandRemove::undo()
@@ -354,10 +356,9 @@ void SceneNodeCommandRemove::redo()
     }
 }
 
-SceneNodeCommandEdit::SceneNodeCommandEdit(const PointValue &point, const PointValue &pointNew, QUndoCommand *parent) : QUndoCommand(parent)
-{
-    m_point = point;
-    m_pointNew = pointNew;
+SceneNodeCommandEdit::SceneNodeCommandEdit(const PointValue &point, const PointValue &pointNew, QUndoCommand *parent)
+    : QUndoCommand(parent), m_point(point), m_pointNew(pointNew)
+{    
 }
 
 void SceneNodeCommandEdit::undo()
@@ -380,30 +381,30 @@ void SceneNodeCommandEdit::redo()
     }
 }
 
-SceneNodeCommandMoveMulti::SceneNodeCommandMoveMulti(QList<PointValue> points, QList<PointValue> pointsNew, QUndoCommand *parent) : QUndoCommand(parent)
-{
-    m_points = points;
-    m_pointsNew = pointsNew;
+SceneNodeCommandMoveMulti::SceneNodeCommandMoveMulti(QList<PointValue> points, QList<PointValue> pointsNew, QUndoCommand *parent)
+    : QUndoCommand(parent), m_points(points), m_pointsNew(pointsNew)
+{   
 }
 
 void SceneNodeCommandMoveMulti::moveAll(QList<PointValue> moveFrom, QList<PointValue> moveTo)
 {
     assert(moveFrom.size() == moveTo.size());
     QList<SceneNode*> nodes;
-    for(int i = 0; i < moveFrom.size(); i++)
+    for (int i = 0; i < moveFrom.size(); i++)
     {
         Point point = moveFrom[i].point();
         SceneNode *node = Agros2D::problem()->scene()->getNode(point);
         nodes.push_back(node);
     }
 
-    for(int i = 0; i < moveFrom.size(); i++)
+    for (int i = 0; i < moveFrom.size(); i++)
     {
-        Point pointNew = moveTo[i].point();
+        ProblemBase *problem = moveTo[i].x().problem();
+        Point point = moveTo[i].point();
         SceneNode *node = nodes[i];
         if (node)
         {
-            node->setPointValue(pointNew);
+            node->setPointValue(PointValue(problem, point));
         }
     }
 }
@@ -428,9 +429,9 @@ void SceneNodeCommandMoveMulti::redo()
     Agros2D::problem()->scene()->invalidate();
 }
 
-SceneNodeCommandAddMulti::SceneNodeCommandAddMulti(QList<PointValue> points, QUndoCommand *parent) : QUndoCommand(parent)
+SceneNodeCommandAddMulti::SceneNodeCommandAddMulti(QList<PointValue> points, QUndoCommand *parent)
+    : QUndoCommand(parent), m_points(points)
 {
-    m_points = points;
 }
 
 void SceneNodeCommandAddMulti::undo()
@@ -462,9 +463,9 @@ void SceneNodeCommandAddMulti::redo()
     Agros2D::problem()->scene()->invalidate();
 }
 
-SceneNodeCommandRemoveMulti::SceneNodeCommandRemoveMulti(QList<PointValue> points, QUndoCommand *parent) : QUndoCommand(parent)
-{
-    m_nodePoints = points;
+SceneNodeCommandRemoveMulti::SceneNodeCommandRemoveMulti(QList<PointValue> points, QUndoCommand *parent)
+    : QUndoCommand(parent), m_nodePoints(points)
+{    
 }
 
 void SceneNodeCommandRemoveMulti::undo()

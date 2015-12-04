@@ -40,8 +40,8 @@ int PyGeometry::labelsCount() const
 
 int PyGeometry::addNode(std::string x, std::string y)
 {
-    PointValue point = PointValue(Value(QString::fromStdString(x)),
-                                  Value(QString::fromStdString(y)));
+    PointValue point = PointValue(Value(Agros2D::problem(), QString::fromStdString(x)),
+                                  Value(Agros2D::problem(), QString::fromStdString(y)));
 
     if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && point.numberX() < 0.0)
         throw out_of_range(QObject::tr("Radial component must be greater then or equal to zero.").toStdString());
@@ -59,11 +59,11 @@ int PyGeometry::addNode(std::string x, std::string y)
 int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::string y2, std::string angle, int segments, int curvilinear,
                         const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
 {
-    PointValue pointStart = PointValue(Value(QString::fromStdString(x1)),
-                                       Value(QString::fromStdString(y1)));
-    PointValue pointEnd = PointValue(Value(QString::fromStdString(x2)),
-                                     Value(QString::fromStdString(y2)));
-    Value valueAngle = Value(QString::fromStdString(angle));
+    PointValue pointStart = PointValue(Value(Agros2D::problem(), QString::fromStdString(x1)),
+                                       Value(Agros2D::problem(), QString::fromStdString(y1)));
+    PointValue pointEnd = PointValue(Value(Agros2D::problem(), QString::fromStdString(x2)),
+                                     Value(Agros2D::problem(), QString::fromStdString(y2)));
+    Value valueAngle = Value(Agros2D::problem(), QString::fromStdString(angle));
 
     if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric &&
             (pointStart.numberX() < 0.0 || pointEnd.numberX() < 0.0))
@@ -105,7 +105,7 @@ int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::str
 int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string angle, int segments, int curvilinear,
                                const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
 {
-    Value valueAngle = Value(QString::fromStdString(angle));
+    Value valueAngle = Value(Agros2D::problem(), QString::fromStdString(angle));
 
     if (Agros2D::problem()->scene()->nodes->isEmpty())
         throw out_of_range(QObject::tr("Geometry does not contain nodes.").toStdString());
@@ -150,7 +150,7 @@ int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string
 
 void PyGeometry::modifyEdge(int index, std::string angle, int segments, int isCurvilinear, const map<std::string, int> &refinements, const map<std::string, std::string> &boundaries)
 {
-    Value valueAngle = Value(QString::fromStdString(angle));
+    Value valueAngle = Value(Agros2D::problem(), QString::fromStdString(angle));
 
     if (Agros2D::problem()->scene()->faces->isEmpty())
         throw out_of_range(QObject::tr("No edges are defined.").toStdString());
@@ -213,8 +213,8 @@ void PyGeometry::setBoundaries(SceneFace *edge, const map<std::string, std::stri
 int PyGeometry::addLabel(std::string x, std::string y, double area, const map<std::string, int> &refinements,
                          const map<std::string, int> &orders, const map<std::string, std::string> &materials)
 {
-    PointValue point = PointValue(Value(QString::fromStdString(x)),
-                                  Value(QString::fromStdString(y)));
+    PointValue point = PointValue(Value(Agros2D::problem(), QString::fromStdString(x)),
+                                  Value(Agros2D::problem(), QString::fromStdString(y)));
 
     if (Agros2D::problem()->config()->coordinateType() == CoordinateType_Axisymmetric && point.numberX() < 0.0)
         throw out_of_range(QObject::tr("Radial component must be greater then or equal to zero.").toStdString());

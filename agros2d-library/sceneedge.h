@@ -229,14 +229,14 @@ private slots:
 class SceneFaceCommandAdd : public QUndoCommand
 {
 public:
-    SceneFaceCommandAdd(const Point &pointStart, const Point &pointEnd, const QMap<QString, QString> &markers,
+    SceneFaceCommandAdd(const PointValue &pointStart, const PointValue &pointEnd, const QMap<QString, QString> &markers,
                         const Value &angle, int segments, bool isCurvilinear, QUndoCommand *parent = 0);
     void undo();
     void redo();
 
 private:
-    Point m_pointStart;
-    Point m_pointEnd;
+    PointValue m_pointStart;
+    PointValue m_pointEnd;
     QMap<QString, QString> m_markers;
     Value m_angle;
     int m_segments;
@@ -246,14 +246,14 @@ private:
 class SceneEdgeCommandAddOrRemoveMulti : public QUndoCommand
 {
 public:
-    SceneEdgeCommandAddOrRemoveMulti(QList<Point> pointStarts, QList<Point> pointEnds,
-                        QList<Value> angles, QList<int> segments, QList<bool> isCurvilinear, QList<QMap<QString, QString> > markers, QUndoCommand *parent = 0);
+    SceneEdgeCommandAddOrRemoveMulti(QList<PointValue> pointStarts, QList<PointValue> pointEnds,
+                        QList<QMap<QString, QString> > markers, QList<Value> angles, QList<int> segments, QList<bool> isCurvilinear, QUndoCommand *parent = 0);
     void add();
     void remove();
 
 private:
-    QList<Point> m_pointStarts;
-    QList<Point> m_pointEnds;
+    QList<PointValue> m_pointStarts;
+    QList<PointValue> m_pointEnds;
     QList<Value> m_angles;
     QList<int> m_segments;
     QList<bool> m_isCurvilinear;
@@ -263,9 +263,9 @@ private:
 class SceneEdgeCommandRemoveMulti : public SceneEdgeCommandAddOrRemoveMulti
 {
 public:
-    SceneEdgeCommandRemoveMulti(QList<Point> pointStarts, QList<Point> pointEnds,
-                                QList<Value> angles, QList<int> segments, QList<bool> isCurvilinear, QList<QMap<QString, QString> > markers, QUndoCommand *parent = 0)
-        : SceneEdgeCommandAddOrRemoveMulti(pointStarts, pointEnds, angles, segments, isCurvilinear, markers, parent) {}
+    SceneEdgeCommandRemoveMulti(QList<PointValue> pointStarts, QList<PointValue> pointEnds,
+                                QList<QMap<QString, QString> > markers, QList<Value> angles, QList<int> segments, QList<bool> isCurvilinear, QUndoCommand *parent = 0)
+        : SceneEdgeCommandAddOrRemoveMulti(pointStarts, pointEnds, markers, angles, segments, isCurvilinear, parent) {}
 
     void undo() { add(); }
     void redo() { remove(); }
@@ -274,9 +274,9 @@ public:
 class SceneEdgeCommandAddMulti : public SceneEdgeCommandAddOrRemoveMulti
 {
 public:
-    SceneEdgeCommandAddMulti(QList<Point> pointStarts, QList<Point> pointEnds,
-                                QList<Value> angles, QList<int> segments, QList<bool> isCurvilinear, QList<QMap<QString, QString> > markers, QUndoCommand *parent = 0)
-        : SceneEdgeCommandAddOrRemoveMulti(pointStarts, pointEnds, angles, segments, isCurvilinear, markers, parent) {}
+    SceneEdgeCommandAddMulti(QList<PointValue> pointStarts, QList<PointValue> pointEnds,
+                                QList<QMap<QString, QString> > markers, QList<Value> angles, QList<int> segments, QList<bool> isCurvilinear, QUndoCommand *parent = 0)
+        : SceneEdgeCommandAddOrRemoveMulti(pointStarts, pointEnds, markers, angles, segments, isCurvilinear, parent) {}
 
     void undo() { remove(); }
     void redo() { add(); }
@@ -285,14 +285,14 @@ public:
 class SceneFaceCommandRemove : public QUndoCommand
 {
 public:
-    SceneFaceCommandRemove(const Point &pointStart, const Point &pointEnd, const QMap<QString, QString> &markers,
+    SceneFaceCommandRemove(const PointValue &pointStart, const PointValue &pointEnd, const QMap<QString, QString> &markers,
                            const Value &angle, int segments, bool isCurvilinear, QUndoCommand *parent = 0);
     void undo();
     void redo();
 
 private:
-    Point m_pointStart;
-    Point m_pointEnd;
+    PointValue m_pointStart;
+    PointValue m_pointEnd;
     QMap<QString, QString> m_markers;
     Value m_angle;
     int m_segments;
@@ -302,16 +302,16 @@ private:
 class SceneEdgeCommandEdit : public QUndoCommand
 {
 public:
-    SceneEdgeCommandEdit(const Point &pointStart, const Point &pointEnd, const Point &pointStartNew, const Point &pointEndNew,
+    SceneEdgeCommandEdit(const PointValue &pointStart, const PointValue &pointEnd, const PointValue &pointStartNew, const PointValue &pointEndNew,
                          const Value &angle, const Value &angleNew, int segments, int segmentsNew, bool isCurvilinear, bool isCurvilinearNew, QUndoCommand *parent = 0);
     void undo();
     void redo();
 
 private:
-    Point m_pointStart;
-    Point m_pointEnd;
-    Point m_pointStartNew;
-    Point m_pointEndNew;
+    PointValue m_pointStart;
+    PointValue m_pointEnd;
+    PointValue m_pointStartNew;
+    PointValue m_pointEndNew;
     Value m_angle;
     Value m_angleNew;
     int m_segments;

@@ -25,64 +25,78 @@
 #include "solver/problem_config.h"
 #include "parser/lex.h"
 
-Value::Value(double value)
-    : m_isEvaluated(true), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(nullptr)
+Value::Value(ProblemBase *problem,
+             double value)
+    : m_problem(problem),
+      m_isEvaluated(true),
+      m_isTimeDependent(false),
+      m_isCoordinateDependent(false),
+      m_time(0.0),
+      m_point(Point()),
+      m_table(DataTable())
 {
+    if (!problem)
+        qDebug() << "Value problem == null";
+
     m_text = QString::number(value);
     m_number = value;
 }
 
-Value::Value(double value, std::vector<double> x, std::vector<double> y, DataTableType type, bool splineFirstDerivatives, bool extrapolateConstant)
-    : m_isEvaluated(true), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(nullptr)
+Value::Value(ProblemBase *problem,
+             const QString &value,
+             const DataTable &table)
+    : m_problem(problem),
+      m_isEvaluated(false),
+      m_isTimeDependent(false),
+      m_isCoordinateDependent(false),
+      m_time(0.0),
+      m_point(Point()),
+      m_table(table)
+{
+    if (value.isEmpty())
+    {
+        m_text = "0";
+        m_number = 0;
+        m_isEvaluated = true;
+    }
+    else
+    {
+        parseFromString(value);
+        evaluateAndSave();
+    }
+}
+
+Value::Value(ProblemBase *problem,
+             const QString &value,
+             std::vector<double> x,
+             std::vector<double> y,
+             DataTableType type,
+             bool splineFirstDerivatives,
+             bool extrapolateConstant)
+    : m_problem(problem),
+      m_isEvaluated(false),
+      m_isTimeDependent(false),
+      m_isCoordinateDependent(false),
+      m_time(0.0),
+      m_point(Point()),
+      m_table(DataTable())
 {
     assert(x.size() == y.size());
 
-    m_text = QString::number(value);
-    m_number = value;
+    parseFromString(value.isEmpty() ? "0" : value);
     m_table.setValues(x, y);
     m_table.setType(type);
     m_table.setSplineFirstDerivatives(splineFirstDerivatives);
     m_table.setExtrapolateConstant(extrapolateConstant);
-}
 
-Value::Value(const QString &value)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(nullptr)
-{
-    parseFromString(value.isEmpty() ? "0" : value);
     evaluateAndSave();
-}
-
-Value::Value(const QString &value, ProblemBase *problem)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(problem)
-{
-    parseFromString(value.isEmpty() ? "0" : value);
-    evaluateAndSave();
-}
-
-Value::Value(const QString &value, std::vector<double> x, std::vector<double> y, DataTableType type, bool splineFirstDerivatives, bool extrapolateConstant)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(nullptr)
-{
-    assert(x.size() == y.size());
-
-    parseFromString(value.isEmpty() ? "0" : value);
-    m_table.setValues(x, y);
-    m_table.setType(type);
-    m_table.setSplineFirstDerivatives(splineFirstDerivatives);
-    m_table.setExtrapolateConstant(extrapolateConstant);
-    evaluateAndSave();
-}
-
-Value::Value(const QString &value, const DataTable &table, ProblemBase *problem)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(table), m_problem(problem)
-{
-    parseFromString(value.isEmpty() ? "0" : value);
 }
 
 Value::Value(const Value &origin)
 {
     *this = origin;
+
     evaluateAndSave();
-    //    qDebug() << "Copy Value" << this->m_text << ", " << this->m_number;
 }
 
 Value& Value::operator =(const Value &origin)
@@ -384,15 +398,10 @@ bool Value::evaluateExpression(const QString &expression, double time, const Poi
 
 // ************************************************************************************************
 
-PointValue::PointValue(double x, double y)
-    : m_x(Value(x)), m_y(Value(y))
+PointValue::PointValue(ProblemBase *problem, const Point &point)
+    : m_x(Value(problem, point.x)),
+      m_y(Value(problem, point.y))
 {
-}
-
-PointValue::PointValue(const Point &point)
-{
-    m_x.setNumber(point.x);
-    m_y.setNumber(point.y);
 }
 
 PointValue::PointValue(const Value &x, const Value &y)

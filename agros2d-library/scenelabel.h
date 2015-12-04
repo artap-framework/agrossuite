@@ -181,7 +181,7 @@ private:
 class SceneLabelCommandRemove : public QUndoCommand
 {
 public:
-    SceneLabelCommandRemove(const PointValue &pointValue, const QMap<QString, QString> &markers, double area, QUndoCommand *parent = 0);
+    SceneLabelCommandRemove(const PointValue &point, const QMap<QString, QString> &markers, double area, QUndoCommand *parent = 0);
     void undo();
     void redo();
 

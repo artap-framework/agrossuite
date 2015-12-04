@@ -217,9 +217,9 @@ void PyField::addBoundary(const std::string &name, const std::string &type,
             {
                 assigned = true;
                 if (expressions.count((*i).first) == 0)
-                    values[variable.id()] = Value(QString::fromStdString((*i).second));
+                    values[variable.id()] = Value(Agros2D::problem(), QString::fromStdString((*i).second));
                 else
-                    values[variable.id()] = Value(QString::fromStdString(expressions.at((*i).first)));
+                    values[variable.id()] = Value(Agros2D::problem(), QString::fromStdString(expressions.at((*i).first)));
                 break;
             }
         }
@@ -262,9 +262,9 @@ void PyField::modifyBoundary(const std::string &name, const std::string &type,
             {
                 assigned = true;
                 if (expressions.count((*i).first) == 0)
-                    sceneBoundary->modifyValue(QString::fromStdString((*i).first), Value(QString::fromStdString((*i).second)));
+                    sceneBoundary->modifyValue(QString::fromStdString((*i).first), Value(Agros2D::problem(), QString::fromStdString((*i).second)));
                 else
-                    sceneBoundary->modifyValue(QString::fromStdString((*i).first), Value(QString::fromStdString(expressions.at((*i).first))));
+                    sceneBoundary->modifyValue(QString::fromStdString((*i).first), Value(Agros2D::problem(), QString::fromStdString(expressions.at((*i).first))));
                 break;
             }
         }
@@ -362,14 +362,16 @@ void PyField::addMaterial(const std::string &name, const map<std::string, std::s
                 {
                     if (expressions.count((*i).first) == 0)
                     {
-                        values[variable.id()] = Value(QString::fromStdString((*i).second),
+                        values[variable.id()] = Value(Agros2D::problem(),
+                                                      QString::fromStdString((*i).second),
                                                       (lenx > 0) ? nonlin_x.at((*i).first) : vector<double>(),
                                                       (leny > 0) ? nonlin_y.at((*i).first) : vector<double>(),
                                                       dataTableType, splineFirstDerivatives, extrapolateConstant);
                     }
                     else
                     {
-                        values[variable.id()] = Value(QString::fromStdString(expressions.at((*i).first)),
+                        values[variable.id()] = Value(Agros2D::problem(),
+                                                      QString::fromStdString(expressions.at((*i).first)),
                                                       (lenx > 0) ? nonlin_x.at((*i).first) : vector<double>(),
                                                       (leny > 0) ? nonlin_y.at((*i).first) : vector<double>(),
                                                       dataTableType, splineFirstDerivatives, extrapolateConstant);
@@ -461,13 +463,15 @@ void PyField::modifyMaterial(const std::string &name, const map<string, std::str
                 {
                     if (expressions.count((*i).first) == 0)
                     {
-                        sceneMaterial->modifyValue(QString::fromStdString((*i).first), Value(QString::fromStdString((*i).second),
+                        sceneMaterial->modifyValue(QString::fromStdString((*i).first), Value(sceneMaterial->valueNakedPtr(QString::fromStdString((*i).second))->problem(),
+                                                                                             QString::fromStdString((*i).second),
                                                                                              (lenx > 0) ? nonlin_x.at((*i).first) : vector<double>(),
                                                                                              (leny > 0) ? nonlin_y.at((*i).first) : vector<double>()));
                     }
                     else
                     {
-                        sceneMaterial->modifyValue(QString::fromStdString((*i).first), Value(QString::fromStdString(expressions.at((*i).first)),
+                        sceneMaterial->modifyValue(QString::fromStdString((*i).first), Value(sceneMaterial->valueNakedPtr(QString::fromStdString((*i).second))->problem(),
+                                                                                             QString::fromStdString(expressions.at((*i).first)),
                                                                                              (lenx > 0) ? nonlin_x.at((*i).first) : vector<double>(),
                                                                                              (leny > 0) ? nonlin_y.at((*i).first) : vector<double>()));
                     }

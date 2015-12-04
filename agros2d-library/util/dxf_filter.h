@@ -118,8 +118,8 @@ private:
     DXFInsert m_activeInsert;
 };
 
-void readFromDXF(const QString &fileName);
-void writeToDXF(const QString &fileName);
+void readFromDXF(Scene *scene, const QString &fileName);
+void writeToDXF(Scene *scene, const QString &fileName);
 
 #endif // UTIL_DXF_FILTER_H
 

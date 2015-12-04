@@ -57,7 +57,7 @@ public:
         Mesh
     };
 
-    ProblemConfig(QWidget *parent = 0);
+    ProblemConfig(ProblemBase *parentProblem);
 
     inline QString labelX() { return ((coordinateType() == CoordinateType_Planar) ? "X" : "R");  }
     inline QString labelY() { return ((coordinateType() == CoordinateType_Planar) ? "Y" : "Z");  }
@@ -114,6 +114,8 @@ private:
 
     void setDefaultValues();
     void setStringKeys();
+
+    ProblemBase *m_problem;
 };
 
 class ProblemSetting : public QObject
@@ -211,7 +213,7 @@ public:
         View_SolidViewHide
     };
 
-    ProblemSetting();
+    ProblemSetting(ProblemBase *parentProblem);
     ~ProblemSetting();
 
     // load and save
@@ -241,6 +243,8 @@ private:
 
     void setDefaultValues();
     void setStringKeys();
+
+    ProblemBase *m_problem;
 };
 
 #endif // PROBLEM_CONFIG_H

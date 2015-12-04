@@ -163,7 +163,7 @@ void SceneFieldWidget::createContent()
 
                 // text edit
                 values.append(textEdit);
-                textEdit->setValue(Value(QString::number(row.defaultValue())));
+                textEdit->setValue(Value(nullptr, QString::number(row.defaultValue())));
 
                 conditions.append(row.condition());
 

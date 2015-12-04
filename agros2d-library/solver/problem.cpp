@@ -126,8 +126,8 @@ void CalculationThread::run()
 
 ProblemBase::ProblemBase()
 {
-    m_config = new ProblemConfig();
-    m_setting = new ProblemSetting();
+    m_config = new ProblemConfig(this);
+    m_setting = new ProblemSetting(this);
 
     m_scene = new Scene(this);
 
@@ -494,14 +494,14 @@ void ProblemBase::readProblemFromJson(const QString &fileName)
     {
         QJsonObject nodeJson = nodesJson[i].toObject();
 
-        Value x = Value(nodeJson[X].toString(), this);
+        Value x = Value(this, nodeJson[X].toString());
         if (!x.isEvaluated())
         {
             ErrorResult result = currentPythonEngineAgros()->parseError();
             throw AgrosException(result.error());
         }
 
-        Value y = Value(nodeJson[Y].toString(), this);
+        Value y = Value(this, nodeJson[Y].toString());
         if (!y.isEvaluated())
         {
             ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -523,7 +523,7 @@ void ProblemBase::readProblemFromJson(const QString &fileName)
 
         int segments = faceJson[SEGMENTS].toInt();
 
-        Value angle = Value(faceJson[ANGLE].toString(), this);
+        Value angle = Value(this, faceJson[ANGLE].toString());
         if (!angle.isEvaluated())
         {
             ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -543,14 +543,14 @@ void ProblemBase::readProblemFromJson(const QString &fileName)
     {
         QJsonObject labelJson = labelsJson[i].toObject();
 
-        Value x = Value(labelJson[X].toString(), this);
+        Value x = Value(this, labelJson[X].toString());
         if (!x.isEvaluated())
         {
             ErrorResult result = currentPythonEngineAgros()->parseError();
             throw AgrosException(result.error());
         }
 
-        Value y = Value(labelJson[Y].toString(), this);
+        Value y = Value(this, labelJson[Y].toString());
         if (!y.isEvaluated())
         {
             ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -608,14 +608,14 @@ void ProblemBase::readProblemFromJson(const QString &fileName)
             // default values
             Module::BoundaryType boundaryType = fieldInfo->boundaryType(boundaryJson[TYPE].toString());
             foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
-                bound->setValue(variable.id(), Value());
+                bound->setValue(variable.id(), Value(this));
 
             QJsonArray boundaryTypesJson = boundaryJson[BOUNDARY_TYPES].toArray();
             for (int k = 0; k < boundaryTypesJson.size(); k++)
             {
                 QJsonObject type = boundaryTypesJson[k].toObject();
 
-                Value m = Value(type[VALUE].toString(), this);
+                Value m = Value(this, type[VALUE].toString());
                 if (!m.isEvaluated())
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -650,14 +650,14 @@ void ProblemBase::readProblemFromJson(const QString &fileName)
 
             // default values
             foreach (Module::MaterialTypeVariable variable, fieldInfo->materialTypeVariables())
-                mat->setValue(variable.id(), Value());
+                mat->setValue(variable.id(), Value(this));
 
             QJsonArray materialTypesJson = materialJson[MATERIAL_TYPES].toArray();
             for (int k = 0; k < materialTypesJson.size(); k++)
             {
                 QJsonObject type = materialTypesJson[k].toObject();
 
-                Value m = Value(type[VALUE].toString(), this);
+                Value m = Value(this, type[VALUE].toString());
                 if (!m.isEvaluated())
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -747,14 +747,14 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
 
             if (node.valuex().present() && node.valuey().present())
             {
-                Value x = Value(QString::fromStdString(node.valuex().get()), this);
+                Value x = Value(this, QString::fromStdString(node.valuex().get()));
                 if (!x.isEvaluated())
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
                     throw AgrosException(result.error());
                 }
 
-                Value y = Value(QString::fromStdString(node.valuey().get()), this);
+                Value y = Value(this, QString::fromStdString(node.valuey().get()));
                 if (!y.isEvaluated())
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -789,7 +789,7 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
 
             if (edge.valueangle().present())
             {
-                Value angle = Value(QString::fromStdString(edge.valueangle().get()), this);
+                Value angle = Value(this, QString::fromStdString(edge.valueangle().get()));
                 if (!angle.isEvaluated())
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -802,7 +802,7 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
             }
             else
             {
-                m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, edge.angle(), segments, isCurvilinear));
+                m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, Value(this, edge.angle()), segments, isCurvilinear));
             }
         }
 
@@ -813,14 +813,14 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
 
             if (label.valuex().present() && label.valuey().present())
             {
-                Value x = Value(QString::fromStdString(label.valuex().get()), this);
+                Value x = Value(this, QString::fromStdString(label.valuex().get()));
                 if (!x.isEvaluated())
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
                     throw AgrosException(result.error());
                 }
 
-                Value y = Value(QString::fromStdString(label.valuey().get()), this);
+                Value y = Value(this, QString::fromStdString(label.valuey().get()));
                 if (!y.isEvaluated())
                 {
                     ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -892,13 +892,13 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
                 // default values
                 Module::BoundaryType boundaryType = fieldInfo->boundaryType(QString::fromStdString(boundary.type()));
                 foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
-                    bound->setValue(variable.id(), Value());
+                    bound->setValue(variable.id(), Value(this));
 
                 for (unsigned int k = 0; k < boundary.boundary_types().boundary_type().size(); k++)
                 {
                     XMLProblem::boundary_type type = boundary.boundary_types().boundary_type().at(k);
 
-                    Value b = Value(QString::fromStdString(type.value()), this);
+                    Value b = Value(this, QString::fromStdString(type.value()));
                     if (!b.isEvaluated())
                     {
                         ErrorResult result = currentPythonEngineAgros()->parseError();
@@ -931,15 +931,13 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
 
                 // default values
                 foreach (Module::MaterialTypeVariable variable, fieldInfo->materialTypeVariables())
-                {
-                    mat->setValue(variable.id(), Value());
-                }
+                    mat->setValue(variable.id(), Value(this));
 
                 for (unsigned int k = 0; k < material.material_types().material_type().size(); k++)
                 {
                     XMLProblem::material_type type = material.material_types().material_type().at(k);
 
-                    Value m = Value(QString::fromStdString(type.value()), this);
+                    Value m = Value(this, QString::fromStdString(type.value()));
                     if (!m.isEvaluated())
                     {
                         ErrorResult result = currentPythonEngineAgros()->parseError();
