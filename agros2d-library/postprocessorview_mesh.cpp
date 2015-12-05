@@ -188,7 +188,7 @@ void PostprocessorSceneMeshWidget::load()
                                                                                                           m_postprocessorWidget->fieldWidget()->selectedTimeStep(),
                                                                                                           m_postprocessorWidget->fieldWidget()->selectedAdaptivityStep()));
 
-        dofs = ma.doFHandler()->n_dofs();
+        dofs = ma.doFHandler().n_dofs();
     }
     lblDOFs->setText(tr("%1 DOFs").arg(dofs));
 }

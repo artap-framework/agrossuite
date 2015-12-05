@@ -516,9 +516,9 @@ void PySolution::solutionMeshInfo(int timeStep, int adaptivityStep, map<std::str
     // TODO: (Franta) time and adaptivity step in gui vs. implementation
     MultiArray ma = m_computation->solutionStore()->multiArray(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptivityStep));
 
-    info["nodes"] = ma.doFHandler()->get_tria().n_used_vertices();
-    info["elements"] = ma.doFHandler()->get_tria().n_active_cells();
-    info["dofs"] = ma.doFHandler()->n_dofs();
+    info["nodes"] = ma.doFHandler().get_tria().n_used_vertices();
+    info["elements"] = ma.doFHandler().get_tria().n_active_cells();
+    info["dofs"] = ma.doFHandler().n_dofs();
 }
 
 void PySolution::solverInfo(int timeStep, int adaptivityStep,

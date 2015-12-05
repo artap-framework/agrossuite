@@ -555,7 +555,7 @@ void SceneViewPost2D::paintVectors()
         double gs = (rect.width() + rect.height()) / m_computation->setting()->value(ProblemSetting::View_VectorCount).toInt();
 
         MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
-        dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > localvalues(*ma.doFHandler(), ma.solution());
+        dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > localvalues(ma.doFHandler(), ma.solution());
 
         // min max
         double rangeMin =  numeric_limits<double>::max();

@@ -80,12 +80,12 @@
             Module::updateTimeFunctions(m_computation, m_computation->timeStepToTotalTime(m_timeStep));
         }
 
-        dealii::WorkStream::run(ma.doFHandler()->begin_active(),
-                                ma.doFHandler()->end(),
+        dealii::WorkStream::run(ma.doFHandler().begin_active(),
+                                ma.doFHandler().end(),
                                 *this,
                                 &{{CLASS}}SurfaceIntegral::localAssembleSystem,
                                 &{{CLASS}}SurfaceIntegral::copyLocalToGlobal,
-                                IntegralScratchData(ma.doFHandler()->get_fe(),
+                                IntegralScratchData(ma.doFHandler().get_fe(),
                                                     quadratureFormulas,
                                                     faceQuadratureFormulas),
                                 IntegralCopyData());

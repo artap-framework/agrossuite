@@ -265,6 +265,7 @@ void SolutionStore::removeSolution(FieldSolutionID solutionID, bool saveRunTime)
     if (m_multiSolutionDealCache.contains(solutionID))
     {
         // free ma
+        m_multiSolutionDealCache[solutionID].clear();
         m_multiSolutionDealCache.remove(solutionID);
         m_multiSolutionCacheIDOrder.removeOne(solutionID);
     }
@@ -319,7 +320,7 @@ int SolutionStore::lastAdaptiveStep(const FieldInfo *fieldInfo, int timeStep) co
 void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, dealii::hp::DoFHandler<2> &doFHandler, dealii::Vector<double> &solution)
 {
     // triangulation
-    std::shared_ptr<dealii::Triangulation<2> > newTriangulation = std::shared_ptr<dealii::Triangulation<2> >(new dealii::Triangulation<2>());
+    dealii::Triangulation<2> *newTriangulation = new dealii::Triangulation<2>();
     newTriangulation->copy_triangulation(doFHandler.get_tria());
 
     // dof handler
@@ -327,14 +328,13 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, deali
     boost::archive::binary_oarchive sboDoF(fsDoF);
     doFHandler.save(sboDoF, 0);
     // new handler
-    std::shared_ptr<dealii::hp::DoFHandler<2> > newDoFHandler = std::shared_ptr<dealii::hp::DoFHandler<2> >(new dealii::hp::DoFHandler<2>(*newTriangulation));
+    dealii::hp::DoFHandler<2> *newDoFHandler = new dealii::hp::DoFHandler<2>(*newTriangulation);
     newDoFHandler->distribute_dofs(*m_computation->problemSolver()->feCollection(m_computation->fieldInfo(solutionID.fieldId)));
     // load
     boost::archive::binary_iarchive sbiDoF(fsDoF);
     newDoFHandler->load(sbiDoF, 0);
 
-    // new multisolution
-    MultiArray multiSolutionCopy(newTriangulation, newDoFHandler, solution);
+    dealii::Vector<double> *newSolution = new dealii::Vector<double>(solution);
 
     assert(!m_multiSolutionDealCache.contains(solutionID));
 
@@ -346,12 +346,13 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, deali
         m_multiSolutionCacheIDOrder.removeFirst();
 
         // free ma
+        m_multiSolutionDealCache[solutionID].clear();
         m_multiSolutionDealCache.remove(idRemove);
         m_multiSolutionCacheIDOrder.removeOne(idRemove);
     }
 
     // add solution
-    m_multiSolutionDealCache.insert(solutionID, multiSolutionCopy);
+    m_multiSolutionDealCache.insert(solutionID, MultiArray(newTriangulation, newDoFHandler, newSolution));
     m_multiSolutionCacheIDOrder.append(solutionID);
 }
 

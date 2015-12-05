@@ -49,8 +49,8 @@
 #include <deal.II/base/multithread_info.h>
 
 void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleSystem(const dealii::Vector<double> &solutionNonlinearPrevious,
-                                         bool assembleMatrix,
-                                         bool assembleRHS)
+                                                            bool assembleMatrix,
+                                                            bool assembleRHS)
 {
     bool isTransient = (m_fieldInfo->analysisType() == AnalysisType_Transient);
 
@@ -74,11 +74,12 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleSystem(const dealii::Vector
     // if there is no source, we use the same as dummy
     source_begin = doFHandler.begin_active();
     source_end = doFHandler.end();
+
     // coupling sources{{#COUPLING_SOURCE}}
     if (m_computation->hasField("{{COUPLING_SOURCE_ID}}"))
     {
-        source_begin = m_solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").doFHandler()->begin_active();
-        source_end = m_solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").doFHandler()->end();
+        source_begin = m_solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").doFHandler().begin_active();
+        source_end = m_solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").doFHandler().end();
 
         // cell_and_source_begin = dealii::SynchronousIterators<IteratorTuple>(IteratorTuple(doFHandler.begin_active(),
         //                                                                                   m_solverDeal->couplingSource("{{COUPLING_SOURCE_ID}}").doFHandler()->begin_active()));
@@ -115,20 +116,21 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleSystem(const dealii::Vector
                             *this,
                             &SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem,
                             &SolverDeal{{CLASS}}::Assemble{{CLASS}}::copyLocalToGlobal,
-                            AssemblyScratchData(m_solverDeal->feCollection(),
-                                                m_solverDeal->mappingCollection(),
-                                                m_solverDeal->quadratureFormulas(),
-                                                m_solverDeal->quadratureFormulasFace(),
-                                                solutionNonlinearPrevious,
-                                                assembleMatrix,
-                                                assembleRHS),
+                            AssemblyScratchData{{CLASS}}(m_computation,
+                                                        m_solverDeal->feCollection(),
+                                                        m_solverDeal->mappingCollection(),
+                                                        m_solverDeal->quadratureFormulas(),
+                                                        m_solverDeal->quadratureFormulasFace(),
+                                                        solutionNonlinearPrevious,
+                                                        assembleMatrix,
+                                                        assembleRHS),
                             AssemblyCopyData());
 }
 
 // void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const dealii::SynchronousIterators<IteratorTuple> &iter,
 void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCellIterator &iter,
-                                              AssemblyScratchData &scratch_data,
-                                              AssemblyCopyData &copy_data)
+                                                                 AssemblyScratchData{{CLASS}} &scratch_data,
+                                                                 AssemblyCopyData &copy_data)
 {
     double actualTime = m_solverDeal->get_time();
     double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
@@ -138,10 +140,8 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
 
     // coupling sources{{#COUPLING_SOURCE}}
     dealii::hp::DoFHandler<2>::active_cell_iterator cell_{{COUPLING_SOURCE_ID}};
-    const SolverDeal *{{COUPLING_SOURCE_ID}}_solver = nullptr;
     if (m_computation->hasField("{{COUPLING_SOURCE_ID}}"))
     {
-        {{COUPLING_SOURCE_ID}}_solver = m_computation->problemSolver()->solver("{{COUPLING_SOURCE_ID}}");
         cell_{{COUPLING_SOURCE_ID}} = iter.cell_first;
         // cell_{{COUPLING_SOURCE_ID}} = std::get<1>(iter.iterators);
     }
@@ -196,14 +196,12 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
 
         SceneMaterial *{{COUPLING_SOURCE_ID}}_material = nullptr;
         if (m_computation->hasField("{{COUPLING_SOURCE_ID}}"))
-        {            
+        {
             {{COUPLING_SOURCE_ID}}_fieldInfo = m_computation->fieldInfo("{{COUPLING_SOURCE_ID}}");
             {{COUPLING_SOURCE_ID}}_material = m_computation->scene()->labels->at(cell->material_id() - 1)->marker({{COUPLING_SOURCE_ID}}_fieldInfo);
 
-            // todo: we probably do not need to initialize everything
-            dealii::hp::FEValues<2> {{COUPLING_SOURCE_ID}}_hp_fe_values({{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadratureFormulas(), dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values);
-            {{COUPLING_SOURCE_ID}}_hp_fe_values.reinit(cell_{{COUPLING_SOURCE_ID}});
-            const dealii::FEValues<2> &{{COUPLING_SOURCE_ID}}_fe_values = {{COUPLING_SOURCE_ID}}_hp_fe_values.get_present_fe_values();
+            scratch_data.{{COUPLING_SOURCE_ID}}_hp_fe_values->reinit(cell_{{COUPLING_SOURCE_ID}});
+            const dealii::FEValues<2> &{{COUPLING_SOURCE_ID}}_fe_values = scratch_data.{{COUPLING_SOURCE_ID}}_hp_fe_values->get_present_fe_values();
 
             {{COUPLING_SOURCE_ID}}_value = std::vector<dealii::Vector<double> >({{COUPLING_SOURCE_ID}}_fe_values.n_quadrature_points, dealii::Vector<double>({{COUPLING_SOURCE_ID}}_fieldInfo->numberOfSolutions()));
             {{COUPLING_SOURCE_ID}}_grad = std::vector<std::vector<dealii::Tensor<1,2> > >({{COUPLING_SOURCE_ID}}_fe_values.n_quadrature_points, std::vector<dealii::Tensor<1,2> >({{COUPLING_SOURCE_ID}}_fieldInfo->numberOfSolutions()));
@@ -319,7 +317,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
                             if (components[i] == {{ROW_INDEX}} && components[j] == {{COLUMN_INDEX}} && ({{EXPRESSION_CHECK}}))
                             {
                                 copy_data.cell_matrix(i,j) += fe_values.JxW(q_point) *({{EXPRESSION}});
-                            }{{/FORM_EXPRESSION_MATRIX}}                                                
+                            }{{/FORM_EXPRESSION_MATRIX}}
 
                             if (isTransient)
                             {
@@ -370,11 +368,11 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
                     {{{#COUPLING_FORMS_ANALYSIS_TYPE}}
                         if({{COUPLING_SOURCE_ID}}_fieldInfo->analysisType() == {{ANALYSIS_TYPE}})
                         {{{#FORM_EXPRESSION_COUPLING_VECTOR}}
-                               // {{EXPRESSION_ID}}
-                               if (components[i] == {{ROW_INDEX}})
-                               {
-                                   copy_data.cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
-                               }{{/FORM_EXPRESSION_COUPLING_VECTOR}}
+                            // {{EXPRESSION_ID}}
+                            if (components[i] == {{ROW_INDEX}})
+                            {
+                                copy_data.cell_rhs(i) += fe_values.JxW(q_point) *({{EXPRESSION}});
+                            }{{/FORM_EXPRESSION_COUPLING_VECTOR}}
                         }{{/COUPLING_FORMS_ANALYSIS_TYPE}}
                     }{{/COUPLING_SOURCE}}
                 }

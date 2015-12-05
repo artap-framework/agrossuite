@@ -31,6 +31,58 @@
 class SolverDeal{{CLASS}} : public SolverDeal
 {
 public:
+    class AssemblyScratchData{{CLASS}} : public SolverDeal::AssemblyScratchData
+    {
+    public:
+        AssemblyScratchData{{CLASS}}(Computation *computation,
+                                        const dealii::hp::FECollection<2> &feCollection,
+                                        const dealii::hp::MappingCollection<2> &mappingCollection,
+                                        const dealii::hp::QCollection<2> &quadratureFormulas,
+                                        const dealii::hp::QCollection<2-1> &faceQuadratureFormulas,
+                                        const dealii::Vector<double> &solutionNonlinearPrevious = dealii::Vector<double>(),
+                                        bool assembleMatrix = true,
+                                        bool assembleRHS = true) :
+            SolverDeal::AssemblyScratchData::AssemblyScratchData(feCollection, mappingCollection, quadratureFormulas, faceQuadratureFormulas,
+                                                                 solutionNonlinearPrevious, assembleMatrix, assembleRHS)
+            {{#COUPLING_SOURCE}}, {{COUPLING_SOURCE_ID}}_hp_fe_values(nullptr)
+            {{/COUPLING_SOURCE}}
+        {
+            // coupling sources
+            {{#COUPLING_SOURCE}}if (computation->hasField("{{COUPLING_SOURCE_ID}}"))
+            {
+                const SolverDeal *{{COUPLING_SOURCE_ID}}_solver = computation->problemSolver()->solver("{{COUPLING_SOURCE_ID}}");
+                {{COUPLING_SOURCE_ID}}_hp_fe_values = new dealii::hp::FEValues<2>({{COUPLING_SOURCE_ID}}_solver->mappingCollection(), {{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadratureFormulas(), dealii::update_values | dealii::update_gradients);
+            }
+            {{/COUPLING_SOURCE}}
+        }
+
+        AssemblyScratchData{{CLASS}}(const AssemblyScratchData{{CLASS}} &scratch_data) :
+            SolverDeal::AssemblyScratchData::AssemblyScratchData(scratch_data)
+            {{#COUPLING_SOURCE}}, {{COUPLING_SOURCE_ID}}_hp_fe_values(nullptr)
+            {{/COUPLING_SOURCE}}
+        {
+            {{#COUPLING_SOURCE}}if (scratch_data.{{COUPLING_SOURCE_ID}}_hp_fe_values)
+            {
+                {{COUPLING_SOURCE_ID}}_hp_fe_values = new dealii::hp::FEValues<2>(scratch_data.{{COUPLING_SOURCE_ID}}_hp_fe_values->get_mapping_collection(),
+                                                                                  scratch_data.{{COUPLING_SOURCE_ID}}_hp_fe_values->get_fe_collection(),
+                                                                                  scratch_data.{{COUPLING_SOURCE_ID}}_hp_fe_values->get_quadrature_collection(),
+                                                                                  dealii::update_values | dealii::update_gradients);
+            }
+            {{/COUPLING_SOURCE}}
+        }
+
+        ~AssemblyScratchData{{CLASS}}()
+        {
+            {{#COUPLING_SOURCE}}if ({{COUPLING_SOURCE_ID}}_hp_fe_values)
+                delete {{COUPLING_SOURCE_ID}}_hp_fe_values;
+            {{/COUPLING_SOURCE}}
+        }
+
+        // coupling sources
+        {{#COUPLING_SOURCE}}dealii::hp::FEValues<2> *{{COUPLING_SOURCE_ID}}_hp_fe_values;
+        {{/COUPLING_SOURCE}}
+    };
+
     class Assemble{{CLASS}} : public AssembleNonlinear
     {
     public:
@@ -44,7 +96,7 @@ public:
     protected:
         // virtual void localAssembleSystem(const dealii::SynchronousIterators<IteratorTuple> &iter,
         virtual void localAssembleSystem(const DoubleCellIterator &iter,
-                                        AssemblyScratchData &scratch,
+                                        AssemblyScratchData{{CLASS}} &scratch,
                                         AssemblyCopyData &copy_data);
         virtual void copyLocalToGlobal(const AssemblyCopyData &copy_data);
     };

@@ -395,7 +395,7 @@ std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable ph
     MultiArray ma = activeMultiSolutionArray();
 
     std::shared_ptr<PostDataOut> data_out = std::shared_ptr<PostDataOut>(new PostDataOut(activeViewField(), m_computation));
-    data_out->attach_dof_handler(*ma.doFHandler());
+    data_out->attach_dof_handler(ma.doFHandler());
     data_out->add_data_vector(ma.solution(), *post);
     // deform shape
     if (m_activeViewField->hasDeformableShape())

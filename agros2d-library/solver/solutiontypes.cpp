@@ -38,20 +38,21 @@ QString FieldSolutionID::toString()
 
 // *********************************************************************************************
 
-MultiArray::MultiArray()
+MultiArray::MultiArray() :
+    m_triangulation(nullptr), m_doFHandler(nullptr), m_solution(nullptr)
 {
 }
 
-MultiArray::MultiArray(std::shared_ptr<dealii::hp::DoFHandler<2> > doFHandler,
-                       dealii::Vector<double> &solution)
+MultiArray::MultiArray(dealii::hp::DoFHandler<2> *doFHandler,
+                       dealii::Vector<double> *solution)
     : m_doFHandler(doFHandler),
       m_solution(solution)
 {
 }
 
-MultiArray::MultiArray(std::shared_ptr<dealii::Triangulation<2> > triangulation,
-                       std::shared_ptr<dealii::hp::DoFHandler<2> > doFHandler,
-                       dealii::Vector<double> &solution)
+MultiArray::MultiArray(dealii::Triangulation<2> *triangulation,
+                       dealii::hp::DoFHandler<2> *doFHandler,
+                       dealii::Vector<double> *solution)
     : m_triangulation(triangulation),
       m_doFHandler(doFHandler),
       m_solution(solution)
@@ -62,7 +63,43 @@ MultiArray::~MultiArray()
 {    
 }
 
+MultiArray::MultiArray(const MultiArray &origin)
+{
+    *this = origin;
+}
+
+MultiArray& MultiArray::operator =(const MultiArray &origin)
+{
+    m_doFHandler = origin.m_doFHandler;
+    m_triangulation = origin.m_triangulation;
+    m_solution = origin.m_solution;
+
+    return *this;
+}
+
+void MultiArray::clear()
+{
+    // explicit clear
+    if (m_doFHandler)
+    {
+        delete m_doFHandler;
+        m_doFHandler = nullptr;
+    }
+
+    if (m_triangulation)
+    {
+        delete m_triangulation;
+        m_triangulation = nullptr;
+    }
+
+    if (m_solution)
+    {
+        delete m_solution;
+        m_solution = nullptr;
+    }
+}
+
 bool MultiArray::isNull()
 {
-    return ((m_triangulation == nullptr) && (m_doFHandler == nullptr) && (m_solution.size() == 0));
+    return ((m_triangulation == nullptr) && (m_doFHandler == nullptr) && (m_solution == nullptr));
 }

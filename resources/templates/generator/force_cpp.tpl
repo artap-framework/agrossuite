@@ -47,7 +47,7 @@
 
     // point values
     localvalues = std::shared_ptr<dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > >
-            (new dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> >(*ma.doFHandler(), ma.solution()));
+            (new dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> >(ma.doFHandler(), ma.solution()));
 }
 
 bool {{CLASS}}ForceValue::hasForce()
