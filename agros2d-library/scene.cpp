@@ -845,7 +845,7 @@ void Scene::doInvalidated()
 
 void Scene::doNewNode(const Point &point)
 {
-    SceneNode *node = new SceneNode(this, point);
+    SceneNode *node = new SceneNode(this, PointValue(m_problem, point));
     if (node->showDialog(QApplication::activeWindow(), true) == QDialog::Accepted)
     {
         SceneNode *nodeAdded = addNode(node);
@@ -857,7 +857,7 @@ void Scene::doNewNode(const Point &point)
 
 void Scene::doNewEdge()
 {
-    SceneFace *edge = new SceneFace(this, nodes->at(0), nodes->at(1), 0);
+    SceneFace *edge = new SceneFace(this, nodes->at(0), nodes->at(1), Value(m_problem, 0.0));
     if (edge->showDialog(QApplication::activeWindow(), true) == QDialog::Accepted)
     {
         SceneFace *edgeAdded = addFace(edge);
@@ -870,7 +870,7 @@ void Scene::doNewEdge()
 
 void Scene::doNewLabel(const Point &point)
 {
-    SceneLabel *label = new SceneLabel(this, point, 0.0);
+    SceneLabel *label = new SceneLabel(this, PointValue(m_problem, point), 0.0);
     if (label->showDialog(QApplication::activeWindow(), true) == QDialog::Accepted)
     {
         SceneLabel *labelAdded = addLabel(label);

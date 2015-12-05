@@ -165,7 +165,7 @@ void SolutionStore::clear()
     assert(m_multiSolutionDealCache.isEmpty());
 }
 
-MultiArray SolutionStore::multiArray(FieldSolutionID solutionID)
+MultiArray &SolutionStore::multiArray(FieldSolutionID solutionID)
 {
     assert(m_multiSolutions.contains(solutionID));
 
@@ -334,8 +334,6 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, deali
     boost::archive::binary_iarchive sbiDoF(fsDoF);
     newDoFHandler->load(sbiDoF, 0);
 
-    dealii::Vector<double> *newSolution = new dealii::Vector<double>(solution);
-
     assert(!m_multiSolutionDealCache.contains(solutionID));
 
     // flush cache
@@ -346,13 +344,13 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, deali
         m_multiSolutionCacheIDOrder.removeFirst();
 
         // free ma
-        m_multiSolutionDealCache[solutionID].clear();
+        m_multiSolutionDealCache[idRemove].clear();
         m_multiSolutionDealCache.remove(idRemove);
         m_multiSolutionCacheIDOrder.removeOne(idRemove);
     }
 
     // add solution
-    m_multiSolutionDealCache.insert(solutionID, MultiArray(newTriangulation, newDoFHandler, newSolution));
+    m_multiSolutionDealCache.insert(solutionID, MultiArray(newTriangulation, newDoFHandler, solution));
     m_multiSolutionCacheIDOrder.append(solutionID);
 }
 

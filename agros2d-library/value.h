@@ -33,8 +33,11 @@ class ProblemBase;
 class AGROS_LIBRARY_API Value
 {
 public:
-    Value(ProblemBase *problem = nullptr,
+    Value();
+
+    Value(ProblemBase *problem,
           const double value = 0.0);
+
     Value(ProblemBase *problem,
           const QString &value,
           const DataTable &table = DataTable());

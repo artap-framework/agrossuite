@@ -139,7 +139,7 @@ SolverDeal::AssemblyScratchData::AssemblyScratchData(const AssemblyScratchData &
                    scratch_data.hp_fe_values.get_fe_collection(),
                    scratch_data.hp_fe_values.get_quadrature_collection(),
                    dealii::update_values | dealii::update_gradients | dealii::update_quadrature_points | dealii::update_JxW_values),
-      hp_fe_face_values(scratch_data.hp_fe_values.get_mapping_collection(),
+      hp_fe_face_values(scratch_data.hp_fe_face_values.get_mapping_collection(),
                         scratch_data.hp_fe_face_values.get_fe_collection(),
                         scratch_data.hp_fe_face_values.get_quadrature_collection(),
                         dealii::update_values | dealii::update_quadrature_points | dealii::update_normal_vectors | dealii::update_JxW_values),

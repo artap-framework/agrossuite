@@ -213,8 +213,8 @@ void ProblemSolver::solveProblem()
                                            m_computation->solutionStore()->lastTimeStep(sourceFieldInfo),
                                            m_computation->solutionStore()->lastAdaptiveStep(sourceFieldInfo));
 
-                MultiArray sourceSolution = m_computation->solutionStore()->multiArray(solutionID);
-                solverDeal->setCouplingSource(sourceFieldInfo->fieldId(), sourceSolution);
+                solverDeal->setCouplingSource(sourceFieldInfo->fieldId(),
+                                              m_computation->solutionStore()->multiArray(solutionID));
             }
         }
 

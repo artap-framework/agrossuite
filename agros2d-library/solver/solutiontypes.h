@@ -41,27 +41,25 @@ class AGROS_LIBRARY_API MultiArray
 public:
     MultiArray();
     MultiArray(dealii::hp::DoFHandler<2> *doFHandler,
-               dealii::Vector<double> *solution);
+               dealii::Vector<double> &solution);
     MultiArray(dealii::Triangulation<2> *triangulation,
                dealii::hp::DoFHandler<2> *doFHandler,
-               dealii::Vector<double> *solution);
+               dealii::Vector<double> &solution);
 
     ~MultiArray();
-
-    MultiArray(const MultiArray& origin);
-    MultiArray& operator=(const MultiArray& origin);
 
     void clear();
 
     inline dealii::hp::DoFHandler<2> &doFHandler() const { return *m_doFHandler; }
-    inline dealii::Vector<double> &solution() { return *m_solution; }
+    inline dealii::Vector<double> &solution() { return m_solution; }
+    inline dealii::Vector<double> solution() const { return m_solution; }
 
     bool isNull();
 
 private:
     dealii::Triangulation<2> *m_triangulation;
     dealii::hp::DoFHandler<2> *m_doFHandler;
-    dealii::Vector<double> *m_solution;
+    dealii::Vector<double> m_solution;
 };
 
 class FieldSolutionID

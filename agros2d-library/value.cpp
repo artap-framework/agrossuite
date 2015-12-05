@@ -25,9 +25,10 @@
 #include "solver/problem_config.h"
 #include "parser/lex.h"
 
-Value::Value(ProblemBase *problem,
-             double value)
-    : m_problem(problem),
+Value::Value()
+    : m_problem(nullptr),
+      m_number(0),
+      m_text("0"),
       m_isEvaluated(true),
       m_isTimeDependent(false),
       m_isCoordinateDependent(false),
@@ -35,17 +36,30 @@ Value::Value(ProblemBase *problem,
       m_point(Point()),
       m_table(DataTable())
 {
-    if (!problem)
-        qDebug() << "Value problem == null";
+}
 
-    m_text = QString::number(value);
-    m_number = value;
+Value::Value(ProblemBase *problem,
+             double value)
+    : m_problem(problem),
+      m_number(value),
+      m_text(QString::number(value)),
+      m_isEvaluated(true),
+      m_isTimeDependent(false),
+      m_isCoordinateDependent(false),
+      m_time(0.0),
+      m_point(Point()),
+      m_table(DataTable())
+{
+    // if (!problem)
+    //     qDebug() << "Value 1 problem == null";
 }
 
 Value::Value(ProblemBase *problem,
              const QString &value,
              const DataTable &table)
     : m_problem(problem),
+      m_number(0),
+      m_text("0"),
       m_isEvaluated(false),
       m_isTimeDependent(false),
       m_isCoordinateDependent(false),
@@ -53,13 +67,10 @@ Value::Value(ProblemBase *problem,
       m_point(Point()),
       m_table(table)
 {
-    if (value.isEmpty())
-    {
-        m_text = "0";
-        m_number = 0;
-        m_isEvaluated = true;
-    }
-    else
+    // if (!problem)
+    //     qDebug() << "Value 2 problem == null";
+
+    if (!value.isEmpty())
     {
         parseFromString(value);
         evaluateAndSave();
@@ -74,6 +85,8 @@ Value::Value(ProblemBase *problem,
              bool splineFirstDerivatives,
              bool extrapolateConstant)
     : m_problem(problem),
+      m_number(0),
+      m_text("0"),
       m_isEvaluated(false),
       m_isTimeDependent(false),
       m_isCoordinateDependent(false),
@@ -81,6 +94,9 @@ Value::Value(ProblemBase *problem,
       m_point(Point()),
       m_table(DataTable())
 {
+    // if (!problem)
+    //     qDebug() << "Value 3 problem == null";
+
     assert(x.size() == y.size());
 
     parseFromString(value.isEmpty() ? "0" : value);
@@ -101,18 +117,19 @@ Value::Value(const Value &origin)
 
 Value& Value::operator =(const Value &origin)
 {
+    m_number = origin.m_number;
     m_text = origin.m_text;
     m_time = origin.m_time;
     m_point = origin.m_point;
     m_isTimeDependent = origin.m_isTimeDependent;
     m_isCoordinateDependent = origin.m_isCoordinateDependent;
+    m_isEvaluated = origin.m_isEvaluated;
     m_table = origin.m_table;
     m_problem = origin.m_problem;
 
     evaluateAndSave();
 
     return *this;
-    //    qDebug() << "operator= Value" << this->m_text << ", " << this->m_number;
 }
 
 Value::~Value()

@@ -74,7 +74,7 @@ public:
     };
 
     bool contains(FieldSolutionID solutionID) const;
-    MultiArray multiArray(FieldSolutionID solutionID);
+    MultiArray &multiArray(FieldSolutionID solutionID);
 
     void addSolution(FieldSolutionID solutionID, dealii::hp::DoFHandler<2> &doFHandler, dealii::Vector<double> &solution, SolutionRunTimeDetails runTime);
     void removeSolution(FieldSolutionID solutionID, bool saveRunTime = true);

@@ -152,7 +152,6 @@ Agros2D::Agros2D()
     initLists();
 
     m_configComputer = new Config();
-    m_configComputer->load();
 
     // log
     m_log = new Log();

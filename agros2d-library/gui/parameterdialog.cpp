@@ -74,7 +74,8 @@ void ParameterDialog::createControls()
 
     setLayout(layoutParametersWidget);
 
-    txtParameterValue->setFocus();
+    if (!m_key.isEmpty())
+        txtParameterValue->setFocus();
 }
 
 void ParameterDialog::doAccept()
@@ -119,6 +120,8 @@ bool ParameterDialog::save()
         Agros2D::problem()->scene()->invalidate();
         return true;
     }
+
+    return false;
 }
 
 bool ParameterDialog::remove()
