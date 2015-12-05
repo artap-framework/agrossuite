@@ -79,19 +79,6 @@ class TestGeometry(Agros2DTestCase):
 
         self.assertEqual(self.geometry.add_edge(0, 0, 1, 1, boundaries = {'electrostatic' : 'Potential'}), 0)
 
-    def test_add_edge_with_efinements(self):
-        with self.assertRaises(ValueError):
-            self.geometry.add_edge(0, 0, 1, 1, refinements = {'field' : 1})
-
-        self.problem.field('electrostatic')
-        with self.assertRaises(IndexError):
-            self.geometry.add_edge(0, 0, 1, 1, refinements = {'electrostatic' : -1})
-
-        with self.assertRaises(IndexError):
-            self.geometry.add_edge(0, 0, 1, 1, refinements = {'electrostatic' : 11})
-
-        self.assertEqual(self.geometry.add_edge(0, 0, 1, 1, refinements = {'electrostatic' : 1}), 0)
-
     """ add_edge_by_nodes() """
     def test_add_edge_by_nodes(self):
         self.geometry.add_node(0, 0)
@@ -111,7 +98,6 @@ class TestGeometry(Agros2DTestCase):
             self.geometry.add_edge_by_nodes(0, 1)
 
     """ modify_edge() """
-    """
     def test_modify_edge_angle(self):
         self.model()
         self.geometry.modify_edge(1, angle = 90)
@@ -127,7 +113,6 @@ class TestGeometry(Agros2DTestCase):
         computation.solve()
         solution = computation.solution('electrostatic')
         self.assertAlmostEqual(solution.volume_integrals([0])['We'], 0)
-    """
 
     def test_modify_nonexisting_edge(self):
         self.geometry.add_edge(0, 0, 1, 1)
@@ -180,7 +165,6 @@ class TestGeometryTransformations(Agros2DTestCase):
         solution = computation.solution('electrostatic')
         self.assertAlmostEqual(solution.volume_integrals([0])['V'], (self.a + dx) * (self.b + dy))
 
-    """
     def test_rotate_selection(self):
         pass
 
@@ -195,7 +179,6 @@ class TestGeometryTransformations(Agros2DTestCase):
         computation.solve()
         solution = computation.solution('electrostatic')
         self.assertAlmostEqual(solution.volume_integrals([0])['S'], (self.a * scale) * (self.b * scale))
-   """
 
 if __name__ == '__main__':        
     import unittest as ut
