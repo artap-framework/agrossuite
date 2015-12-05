@@ -2,7 +2,6 @@ import pythonlab
 import agros2d
 import os
 
-from test_suite.scenario import Agros2DTestCase
 from test_suite.scenario import Agros2DTestResult
 
 def create_tests(case, dir):
@@ -19,7 +18,10 @@ def create_tests(case, dir):
 def get_test(file):
     def test(self):
         agros2d.open_file(file)
-        agros2d.problem().solve()
+        problem = agros2d.problem(clear=False)
+        computation = problem.computation()
+        computation.solve()
+
     return test
 
 tests = list()
