@@ -149,7 +149,7 @@ void PyField::setExternalMatrixSolver(const std::string &solver)
 
     if (solvers.contains(QString::fromStdString(solver)))
         m_fieldInfo->setValue(FieldInfo::LinearSolverExternalName, QString::fromStdString(solver));
-    else
+    else if (m_fieldInfo->matrixSolver() == SOLVER_EXTERNAL)
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(solvers)).toStdString());
 }
 
