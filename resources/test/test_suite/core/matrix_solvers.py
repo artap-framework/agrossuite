@@ -7,9 +7,6 @@ import numpy as np
 from test_suite.scenario import Agros2DTestCase
 from test_suite.scenario import Agros2DTestResult
 
-# TODO: add more iter methods (deal.II)
-# TODO: add MUMPS
-
 class TestMatrixSolvers(Agros2DTestCase):
     @classmethod
     def setUpClass(self):
@@ -22,9 +19,9 @@ class TestMatrixSolvers(Agros2DTestCase):
         agros2d.options.dump_format = "matlab_mat"
         
         # read reference matrix and rhs from file
-        self.reference_mat, self.reference_rhs, self.reference_sln = self.read_system(pythonlab.datadir("/resources/test/test_suite/core/matrix_solvers_matrix.mat"), 
-                                                                                      pythonlab.datadir("/resources/test/test_suite/core/matrix_solvers_rhs.mat"), 
-                                                                                      pythonlab.datadir("/resources/test/test_suite/core/matrix_solvers_sln.mat"))
+        self.reference_mat, self.reference_rhs, self.reference_sln = self.read_system(pythonlab.datadir("/resources/test/test_suite/core/matrix_solvers/matrix.mat"), 
+                                                                                      pythonlab.datadir("/resources/test/test_suite/core/matrix_solvers/rhs.mat"), 
+                                                                                      pythonlab.datadir("/resources/test/test_suite/core/matrix_solvers/sln.mat"))
 
     @classmethod
     def tearDownClass(self):
@@ -34,13 +31,10 @@ class TestMatrixSolvers(Agros2DTestCase):
 
     @classmethod
     def model(self, solver, matrix_solver=""):
-        # problem
         problem = agros2d.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
         problem.mesh_type = "triangle"
-        
-        # fields
-        # electrostatic
+
         electrostatic = problem.field("electrostatic")
         electrostatic.analysis_type = "steadystate"
         electrostatic.matrix_solver = solver
@@ -51,17 +45,13 @@ class TestMatrixSolvers(Agros2DTestCase):
 
         electrostatic.matrix_solver_parameters['external_solver'] = matrix_solver
                 
-        # boundaries
         electrostatic.add_boundary("Source", "electrostatic_potential", {"electrostatic_potential" : 1e9})
         electrostatic.add_boundary("Ground", "electrostatic_potential", {"electrostatic_potential" : 0})
         electrostatic.add_boundary("Neumann", "electrostatic_surface_charge_density", {"electrostatic_surface_charge_density" : 0})
-        
-        # materials
         electrostatic.add_material("Air", {"electrostatic_permittivity" : 1, "electrostatic_charge_density" : 1})
         electrostatic.add_material("Dielectric 1", {"electrostatic_permittivity" : 3, "electrostatic_charge_density" : 20})
         electrostatic.add_material("Dielectric 2", {"electrostatic_permittivity" : 4, "electrostatic_charge_density" : 30})
         
-        # geometry
         geometry = problem.geometry()
         geometry.add_edge(0, 0.2, 0, 0.08, boundaries = {"electrostatic" : "Neumann"})
         geometry.add_edge(0.01, 0.08, 0.01, 0, refinements = {"electrostatic" : 1}, boundaries = {"electrostatic" : "Source"})
@@ -76,7 +66,7 @@ class TestMatrixSolvers(Agros2DTestCase):
         geometry.add_edge(0.2, 0, 0, 0.2, angle = 90, boundaries = {"electrostatic" : "Neumann"})
         geometry.add_edge(0.01, 0.08, 0.03, 0.08)
         geometry.add_edge(0.01, 0.08, 0, 0.08, refinements = {"electrostatic" : 1}, boundaries = {"electrostatic" : "Source"})
-        
+
         geometry.add_label(0.019, 0.021, materials = {"electrostatic" : "Dielectric 1"})
         geometry.add_label(0.0379, 0.051, materials = {"electrostatic" : "Dielectric 2"})
         geometry.add_label(0.0284191, 0.123601, materials = {"electrostatic" : "Air"})
@@ -90,14 +80,9 @@ class TestMatrixSolvers(Agros2DTestCase):
     @classmethod    
     def analyse_system(self, filename_matrix, filename_rhs, filename_sln):
         import pylab as pl
-   
+
         # read matrix and rhs from file
-        mat_object = sio.loadmat(filename_matrix)
-        matrix = mat_object["matrix"]
-        rhs_object = sio.loadmat(filename_rhs)
-        rhs = rhs_object["rhs"]
-        sln_object = sio.loadmat(filename_sln)
-        sln = sln_object["sln"]
+        matrix, rhs, sln = self.read_system(filename_matrix, filename_rhs, filename_sln)
               
         # size of the matrix
         print(("Matrix size: " + str(len(rhs))))
@@ -109,7 +94,6 @@ class TestMatrixSolvers(Agros2DTestCase):
         fn_pattern = pythonlab.tempname("png")
         pl.savefig(fn_pattern, dpi=60)
         pl.close(fig)   
-        # show in console
         pythonlab.image(fn_pattern)
 
     @classmethod        
@@ -125,49 +109,79 @@ class TestMatrixSolvers(Agros2DTestCase):
 
     def test_umfpack(self):
         # UMFPACK
-        filename_umfpack_matrix, filename_umfpack_rhs, filename_umfpack_sln = self.model("umfpack")
-        umfpack_mat, umfpack_rhs, umfpack_sln = self.read_system(filename_umfpack_matrix, 
-                                                                 filename_umfpack_rhs, 
-                                                                 filename_umfpack_sln)
+        filename_matrix, filename_rhs, filename_sln = self.model("umfpack")
+        mat, rhs, sln = self.read_system(filename_matrix, filename_rhs, filename_sln)
         
-        self.assertTrue(np.allclose(self.reference_mat.todense(), umfpack_mat.todense(), rtol=1e-15, atol=1e-15), 
+        self.assertTrue(np.allclose(self.reference_mat.todense(), mat.todense(), rtol=1e-15, atol=1e-15), 
                         "UMFPACK matrix failed.")
-        self.assertTrue(np.allclose(self.reference_rhs, umfpack_rhs, rtol=1e-15, atol=1e-10), 
+        self.assertTrue(np.allclose(self.reference_rhs, rhs, rtol=1e-15, atol=1e-10), 
                         "UMFPACK rhs failed.")
-        self.assertTrue(np.allclose(self.reference_sln, umfpack_sln, rtol=1e-15, atol=1e-6), 
+        self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-15, atol=1e-6), 
                         "UMFPACK sln failed.")
 
-    def test_dealii_iter(self):
-        # deal.II - iterative
-        filename_dealii_iterative_matrix, filename_dealii_iterative_rhs, filename_dealii_iterative_sln = self.model("dealii")
-        dealii_iterative_mat, dealii_iterative_rhs, dealii_iterative_sln = self.read_system(filename_dealii_iterative_matrix, 
-                                                                                            filename_dealii_iterative_rhs,
-                                                                                            filename_dealii_iterative_sln)
+    def test_dealii(self):
+        # deal.II
+        filename_matrix, filename_rhs, filename_sln = self.model("dealii")
+        mat, rhs, sln = self.read_system(filename_matrix, filename_rhs, filename_sln)
                                 
-        self.assertTrue(np.allclose(self.reference_mat.todense(), dealii_iterative_mat.todense(), rtol=1e-15, atol=1e-15), 
-                        "dealii iterative matrix failed.")
-        self.assertTrue(np.allclose(self.reference_rhs, dealii_iterative_rhs, rtol=1e-15, atol=1e-10), 
-                        "dealii iterative rhs failed.")
-        self.assertTrue(np.allclose(self.reference_sln, dealii_iterative_sln, rtol=1e-6), 
-                        "dealii iterative sln failed.")                                                   
+        self.assertTrue(np.allclose(self.reference_mat.todense(), mat.todense(), rtol=1e-15, atol=1e-15), 
+                        "dealii matrix failed.")
+        self.assertTrue(np.allclose(self.reference_rhs, rhs, rtol=1e-15, atol=1e-10), 
+                        "dealii rhs failed.")
+        self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), 
+                        "dealii sln failed.")                                                   
 
-    def test_external(self):
-        # external
-        filename_external_matrix, filename_external_rhs, filename_external_sln = self.model("external", "solver_MUMPS.ext")
-        external_mat, external_rhs, external_sln = self.read_system(filename_external_matrix, 
-                                                                    filename_external_rhs, 
-                                                                    filename_external_sln)
+    def test_external_umfpack(self):
+        # UMFPACK
+        filename_matrix, filename_rhs, filename_sln = self.model("external", "solver_UMFPACK.ext")
+        mat, rhs, sln = self.read_system(filename_matrix, filename_rhs, filename_sln)
         
-        self.assertTrue(np.allclose(self.reference_mat.todense(), external_mat.todense(), rtol=1e-15, atol=1e-15), 
-                        "MUMPS matrix failed.")
-        self.assertTrue(np.allclose(self.reference_rhs, external_rhs, rtol=1e-15, atol=1e-10), 
-                        "MUMPS rhs failed.")
-        self.assertTrue(np.allclose(self.reference_sln, external_sln, rtol=1e-6), 
-                        "MUMPS rhs failed.")
+        self.assertTrue(np.allclose(self.reference_mat.todense(), mat.todense(), rtol=1e-15, atol=1e-15), 
+                        "UMFPACK (external) matrix failed.")
+        self.assertTrue(np.allclose(self.reference_rhs, rhs, rtol=1e-15, atol=1e-10), 
+                        "UMFPACK (external) rhs failed.")
+        self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), 
+                        "UMFPACK (external) sln failed.")
 
-if __name__ == '__main__':        
+    def test_external_mumps(self):
+        # MUMPS
+        filename_matrix, filename_rhs, filename_sln = self.model("external", "solver_MUMPS.ext")
+        mat, rhs, sln = self.read_system(filename_matrix, filename_rhs, filename_sln)
+        
+        self.assertTrue(np.allclose(self.reference_mat.todense(), mat.todense(), rtol=1e-15, atol=1e-15), 
+                        "MUMPS matrix failed.")
+        self.assertTrue(np.allclose(self.reference_rhs, rhs, rtol=1e-15, atol=1e-10), 
+                        "MUMPS rhs failed.")
+        self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), 
+                        "MUMPS sln failed.")
+
+    def test_external_paralution(self):
+        # PARALUTION
+        filename_matrix, filename_rhs, filename_sln = self.model("external", "solver_PARALUTION.ext")
+        mat, rhs, sln = self.read_system(filename_matrix, filename_rhs, filename_sln)
+        
+        self.assertTrue(np.allclose(self.reference_mat.todense(), mat.todense(), rtol=1e-15, atol=1e-15), 
+                        "PARALUTION matrix failed.")
+        self.assertTrue(np.allclose(self.reference_rhs, rhs, rtol=1e-15, atol=1e-10), 
+                        "PARALUTION rhs failed.")
+        self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), 
+                        "PARALUTION sln failed.")
+
+    def test_external_viennacl(self):
+        # ViennaCL
+        filename_matrix, filename_rhs, filename_sln = self.model("external", "solver_ViennaCL.ext")
+        mat, rhs, sln = self.read_system(filename_matrix, filename_rhs, filename_sln)
+        
+        self.assertTrue(np.allclose(self.reference_mat.todense(), mat.todense(), rtol=1e-15, atol=1e-15), 
+                        "ViennaCL matrix failed.")
+        self.assertTrue(np.allclose(self.reference_rhs, rhs, rtol=1e-15, atol=1e-10), 
+                        "ViennaCL rhs failed.")
+        self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-5), 
+                        "ViennaCL sln failed.")
+
+if __name__ == '__main__':
     import unittest as ut
-    
+
     suite = ut.TestSuite()
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMatrixSolvers))
