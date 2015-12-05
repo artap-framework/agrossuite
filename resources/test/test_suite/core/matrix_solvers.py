@@ -10,9 +10,9 @@ from test_suite.scenario import Agros2DTestResult
 # TODO: add more iter methods (deal.II)
 # TODO: add MUMPS
 
-class TestInternalMatrixSolvers(Agros2DTestCase):
+class TestMatrixSolvers(Agros2DTestCase):
     @classmethod
-    def setUpClass(self): 
+    def setUpClass(self):
         # store state
         self.save_matrix_and_rhs = agros2d.options.save_matrix_and_rhs
         self.dump_format = agros2d.options.dump_format
@@ -33,7 +33,7 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
         agros2d.options.dump_format = self.dump_format
 
     @classmethod
-    def model(self, solver):
+    def model(self, solver, matrix_solver=""):
         # problem
         problem = agros2d.problem(clear = True)
         problem.coordinate_type = "axisymmetric"
@@ -41,14 +41,16 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
         
         # fields
         # electrostatic
-        electrostatic = agros2d.field("electrostatic")
+        electrostatic = problem.field("electrostatic")
         electrostatic.analysis_type = "steadystate"
         electrostatic.matrix_solver = solver
         electrostatic.number_of_refinements = 1
         electrostatic.polynomial_order = 2
         electrostatic.adaptivity_type = "disabled"
         electrostatic.solver = "linear"
-        
+
+        electrostatic.matrix_solver_parameters['external_solver'] = matrix_solver
+                
         # boundaries
         electrostatic.add_boundary("Source", "electrostatic_potential", {"electrostatic_potential" : 1e9})
         electrostatic.add_boundary("Ground", "electrostatic_potential", {"electrostatic_potential" : 0})
@@ -60,7 +62,7 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
         electrostatic.add_material("Dielectric 2", {"electrostatic_permittivity" : 4, "electrostatic_charge_density" : 30})
         
         # geometry
-        geometry = agros2d.geometry
+        geometry = problem.geometry()
         geometry.add_edge(0, 0.2, 0, 0.08, boundaries = {"electrostatic" : "Neumann"})
         geometry.add_edge(0.01, 0.08, 0.01, 0, refinements = {"electrostatic" : 1}, boundaries = {"electrostatic" : "Source"})
         geometry.add_edge(0.01, 0, 0.03, 0, boundaries = {"electrostatic" : "Neumann"})
@@ -79,10 +81,11 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
         geometry.add_label(0.0379, 0.051, materials = {"electrostatic" : "Dielectric 2"})
         geometry.add_label(0.0284191, 0.123601, materials = {"electrostatic" : "Air"})
         
-        agros2d.view.zoom_best_fit()
-        problem.solve()
-        
-        return electrostatic.filename_matrix(), electrostatic.filename_rhs(), electrostatic.filename_sln()
+        computation = problem.computation()
+        computation.solve()
+        solution = computation.solution("electrostatic")
+
+        return solution.filename_matrix(), solution.filename_rhs(), solution.filename_sln()
     
     @classmethod    
     def analyse_system(self, filename_matrix, filename_rhs, filename_sln):
@@ -132,7 +135,7 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
         self.assertTrue(np.allclose(self.reference_rhs, umfpack_rhs, rtol=1e-15, atol=1e-10), 
                         "UMFPACK rhs failed.")
         self.assertTrue(np.allclose(self.reference_sln, umfpack_sln, rtol=1e-15, atol=1e-6), 
-                        "UMFPACK sln failed.")       
+                        "UMFPACK sln failed.")
 
     def test_dealii_iter(self):
         # deal.II - iterative
@@ -150,22 +153,22 @@ class TestInternalMatrixSolvers(Agros2DTestCase):
 
     def test_external(self):
         # external
-        filename_external_matrix, filename_external_rhs, filename_external_sln = self.model("external")
+        filename_external_matrix, filename_external_rhs, filename_external_sln = self.model("external", "solver_MUMPS.ext")
         external_mat, external_rhs, external_sln = self.read_system(filename_external_matrix, 
                                                                     filename_external_rhs, 
                                                                     filename_external_sln)
         
         self.assertTrue(np.allclose(self.reference_mat.todense(), external_mat.todense(), rtol=1e-15, atol=1e-15), 
-                        "EXTERNAL matrix failed.")
+                        "MUMPS matrix failed.")
         self.assertTrue(np.allclose(self.reference_rhs, external_rhs, rtol=1e-15, atol=1e-10), 
-                        "EXTERNAL rhs failed.")        
+                        "MUMPS rhs failed.")
         self.assertTrue(np.allclose(self.reference_sln, external_sln, rtol=1e-6), 
-                        "EXTERNAL rhs failed.")        
+                        "MUMPS rhs failed.")
 
 if __name__ == '__main__':        
     import unittest as ut
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestInternalMatrixSolvers))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMatrixSolvers))
     suite.run(result)
