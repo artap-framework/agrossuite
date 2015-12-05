@@ -21,7 +21,7 @@ def get_test(example):
         agros2d.open_file(example)
         script = agros2d.get_script_from_model()
         exec(script in globals(), locals())
-        agros2d.problem().solve()
+        agros2d.problem(clear=False).computation().solve()
 
     return test
 

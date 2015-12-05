@@ -2,6 +2,7 @@ import pythonlab
 import agros2d
 import os
 
+from test_suite.scenario import Agros2DTestCase
 from test_suite.scenario import Agros2DTestResult
 
 def create_tests(case, dir):
