@@ -380,29 +380,6 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem(const DoubleCel
         }
         {{/VOLUME_SOURCE}}
 
-        // prepare QCollection
-        dealii::hp::FECollection<2> feCollection(doFHandler.get_fe());
-        dealii::hp::QCollection<2 - 1> qCollection;
-        for (unsigned int f = 0; f<feCollection.size(); ++f)
-        {
-            const dealii::FiniteElement<2> &fe = feCollection[f];
-
-            if (fe.has_face_support_points())
-                qCollection.push_back(dealii::Quadrature<2 - 1>(fe.get_unit_face_support_points()));
-            else
-            {
-                std::vector<dealii::Point<2 - 1> > unit_support_points(fe.dofs_per_face);
-
-                for (unsigned int i = 0; i<fe.dofs_per_face; ++i)
-                    if (fe.is_primitive(fe.face_to_cell_index(i, 0)))
-                        // if (mask[fe.face_system_to_component_index(i).first] == true)
-                        unit_support_points[i] = fe.unit_face_support_point(i);
-
-                qCollection.push_back(dealii::Quadrature<2 - 1>(unit_support_points));
-            }
-        }
-        dealii::hp::FEFaceValues<2> hp_fe_face_values(m_solverDeal->mappingCollection(), m_solverDeal->feCollection(), qCollection, dealii::update_quadrature_points);
-        
         // boundaries
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
         {
