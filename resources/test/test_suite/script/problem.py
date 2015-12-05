@@ -107,24 +107,21 @@ class TestProblemTime(Agros2DTestCase):
         self.assertEqual(computation.time_steps_length(), [0] + [10]*10)
 
     """ time_steps_total """
-    """
     def test_time_steps_total(self):
         computation = self.problem.computation()
         computation.solve()
-        self.assertEqual(self.problem.time_steps_total(), list(range(0, 101, 10)))
-    """
+        self.assertEqual(computation.time_steps_total(), list(range(0, 101, 10)))
 
     """ elapsed_time """
-    """
     def test_elapsed_time(self):
         computation = self.problem.computation()
         computation.solve()
-        self.assertNotEqual(self.problem.elapsed_time(), 0.0)
+        self.assertNotEqual(computation.elapsed_time(), 0.0)
 
     def test_elapsed_time_without_solution(self):
+        computation = self.problem.computation()
         with self.assertRaises(RuntimeError):
-            self.problem.elapsed_time()
-    """
+            computation.elapsed_time()
 
 class TestProblemSolution(Agros2DTestCase):
     def setUp(self):
@@ -154,14 +151,13 @@ class TestProblemSolution(Agros2DTestCase):
             self.assertEqual(self.problem.get_coupling_type('current', 'heat'), type)
 
     """ clear_solution """
-    """
     def test_clear_solution(self):
         computation = self.problem.computation()
         computation.solve()
         computation.clear()
         with self.assertRaises(RuntimeError):
             computation.elapsed_time()
-    """
+
     """ clear """
     def test_clear(self):
         self.problem.clear()
