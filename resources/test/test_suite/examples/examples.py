@@ -14,21 +14,21 @@ def create_tests(case, dir):
                                            name.replace(" ", "_")).lower().replace("~1", "")
             example = '{0}/{1}'.format(path, file)
 
-            if (extension == '.a2d'):
-                setattr(case, method, get_a2d_test(example))
+            if (extension == '.ags'):
+                setattr(case, method, get_ags_test(example))
             elif (extension == '.py'):
                 setattr(case, method, get_py_test(example))
 
-def get_a2d_test(example):
+def get_ags_test(example):
     def test(self):
         agros2d.open_file(example)
-        agros2d.problem().solve()
+        agros2d.problem(clear=False).computation().solve()
     return test
         
 def get_py_test(example):
     def test(self):        
         with open(example) as f:
-            exec(f.read() in globals())
+            exec(str(f.read() in globals()))
     return test
 
 tests = list()
@@ -39,7 +39,7 @@ data_dirs = [pythonlab.datadir('/resources/examples/Examples'),
 
 for dir in data_dirs:
     for (path, dirs, files) in os.walk(dir):
-        if not (any("a2d" in file for file in files) or
+        if not (any("ags" in file for file in files) or
                 any("py" in file for file in files)):
             continue
 

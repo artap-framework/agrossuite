@@ -2,7 +2,7 @@ import agros2d as a2d
 from test_suite.scenario import Agros2DTestCase
 from test_suite.scenario import Agros2DTestResult
 
-from .pairparticle_tracing import save_data
+from pairparticle_tracing import save_data
 import time
 
 class TestMultiParticleTracingPlanar(Agros2DTestCase):
@@ -12,9 +12,9 @@ class TestMultiParticleTracingPlanar(Agros2DTestCase):
         problem.coordinate_type = "planar"
         problem.mesh_type = "triangle"
 
-        electrostatic = a2d.field("electrostatic")
+        electrostatic = problem.field("electrostatic")
         electrostatic.analysis_type = "steadystate"
-        electrostatic.matrix_solver = "mumps"
+        electrostatic.matrix_solver = "umfpack"
         electrostatic.number_of_refinements = 1
         electrostatic.polynomial_order = 2
         electrostatic.adaptivity_type = "disabled"
@@ -25,7 +25,7 @@ class TestMultiParticleTracingPlanar(Agros2DTestCase):
         electrostatic.add_boundary("Neumann", "electrostatic_surface_charge_density", {"electrostatic_surface_charge_density" : 0})
         electrostatic.add_material("Air", {"electrostatic_permittivity" : 1, "electrostatic_charge_density" : 0})
 
-        geometry = a2d.geometry
+        geometry = problem.geometry()
 
         d = 1
         h = 1
@@ -34,14 +34,13 @@ class TestMultiParticleTracingPlanar(Agros2DTestCase):
         geometry.add_edge(d/2.0, 0, d/2.0, h, boundaries = {"electrostatic" : "Ground"})
         geometry.add_edge(d/2.0, h, -d/2.0, h, boundaries = {"electrostatic" : "Neumann"})
         geometry.add_edge(-d/2.0, h, -d/2.0, 0, boundaries = {"electrostatic" : "Source"})
-
         geometry.add_label(0, h/2.0, materials = {"electrostatic" : "Air"})
-        a2d.view.zoom_best_fit()
 
-        problem.solve()
+        cls.computation = problem.computation()
+        cls.computation.solve()
 
     def setUp(self):
-        self.tracing = a2d.particle_tracing
+        self.tracing = self.computation.particle_tracing()
         self.tracing.number_of_particles = 2
 
         x0 = 0.001

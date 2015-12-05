@@ -3,18 +3,14 @@ from test_suite.scenario import Agros2DTestCase
 from test_suite.scenario import Agros2DTestResult
 
 class TestMeshGenerator(Agros2DTestCase):
-    def setUp(self):       
+    def setUp(self):
         # model
         self.problem = agros2d.problem(clear = True)
         self.problem.coordinate_type = "planar"
         self.problem.mesh_type = "triangle"
 
-        # disable view
-        agros2d.view.mesh.disable()
-        agros2d.view.post2d.disable()
-
         # fields
-        self.heat = agros2d.field("heat")
+        self.heat = self.problem.field("heat")
         self.heat.analysis_type = "steadystate"
         self.heat.number_of_refinements = 2
         self.heat.polynomial_order = 2
@@ -28,7 +24,7 @@ class TestMeshGenerator(Agros2DTestCase):
         self.heat.add_material("Material 2", {"heat_volume_heat" : 70000, "heat_conductivity" : 10, "heat_density" : 0, "heat_velocity_x" : 0, "heat_velocity_y" : 0, "heat_specific_heat" : 0, "heat_velocity_angular" : 0})
 
         # geometry
-        geometry = agros2d.geometry
+        geometry = self.problem.geometry()
 
         # edges
         geometry.add_edge(0.1, 0.15, 0, 0.15, boundaries = {"heat" : "T outer"})
@@ -44,41 +40,25 @@ class TestMeshGenerator(Agros2DTestCase):
         geometry.add_label(0.0553981, 0.124595, materials = {"heat" : "Material 1"}, area=0.0003)
         geometry.add_label(0.070091, 0.068229, materials = {"heat" : "Material 2"}, area=0.0003)
 
-        agros2d.view.zoom_best_fit()
-
     def test_triangle(self):
         self.problem.mesh_type = "triangle"
-        self.solution_test_values()
-
-    def test_triangle_quad_rough_division(self):
-        self.problem.mesh_type = "triangle_quad_rough_division"
-        self.solution_test_values()
-
-    def test_triangle_quad_fine_division(self):
-        self.problem.mesh_type = "triangle_quad_fine_division"
-        self.solution_test_values()
-
-    def test_triangle_quad_join(self):
-        self.problem.mesh_type = "triangle_quad_join"
-        self.solution_test_values()
-
-    def test_gmsh_triangle(self):
-        self.problem.mesh_type = "gmsh_triangle"
         self.solution_test_values()
 
     def test_gmsh_quad(self):
         self.problem.mesh_type = "gmsh_quad"
         self.solution_test_values()
 
-    #def test_gmsh_quad_delaunay(self):
-    #    self.problem.mesh_type = "gmsh_quad_delaunay"
-    #    self.solution_test_values()
+    def test_gmsh_quad_delaunay(self):
+        self.problem.mesh_type = "gmsh_quad_delaunay"
+        self.solution_test_values()
         
     def solution_test_values(self):
-       self.problem.solve()
+       computation = self.problem.computation()
+       computation.solve()
+       solution = computation.solution("heat")
         
        # point value
-       point = self.heat.local_values(0.079734, 0.120078)
+       point = solution.local_values(0.079734, 0.120078)
        self.value_test("Temperature", point["T"], 2.76619)
        self.value_test("Gradient", point["G"], 299.50258)
        self.value_test("Gradient - x", point["Gx"], -132.7564285)
@@ -88,11 +68,11 @@ class TestMeshGenerator(Agros2DTestCase):
        self.value_test("Heat flux - y", point["Fy"], -536.94516)
 
        # volume integral
-       volume = self.heat.volume_integrals([0])
+       volume = solution.volume_integrals([0])
        self.value_test("Temperature", volume["T"], 0.00335)
 
        # surface integral
-       surface = self.heat.surface_integrals([0, 6, 7])
+       surface = solution.surface_integrals([0, 6, 7])
        self.value_test("Heat flux", surface["f"], -85.821798)
     
 if __name__ == '__main__':        
@@ -102,4 +82,3 @@ if __name__ == '__main__':
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMeshGenerator))
     suite.run(result)
-    

@@ -1,19 +1,16 @@
-#!/usr/bin/python
-
 import pylab as pl
 import matplotlib.cm as cm
 
 import json
 import time
 
-from visual import *
+#from visual import *
 from math import pi, sqrt
 
 pl.rcParams['figure.figsize'] = 10, 10
 pl.rcParams['font.size'] = 11
 pl.rcParams['legend.fontsize'] = 9
 pl.rcParams['text.usetex'] = True
-pl.rcParams['text.latex.preamble'] = "\usepackage{mathptmx}"
 pl.rcParams['axes.grid'] = False
 
 def save_data(data, variant):

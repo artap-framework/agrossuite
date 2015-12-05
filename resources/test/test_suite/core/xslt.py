@@ -19,7 +19,10 @@ def create_tests(case, dir):
 def get_test(file):
     def test(self):
         agros2d.open_file(file)
-        agros2d.problem().solve()
+        problem = agros2d.problem(clear=False)
+        computation = problem.computation()
+        computation.solve()
+
     return test
 
 tests = list()

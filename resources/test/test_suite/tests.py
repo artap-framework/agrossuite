@@ -55,8 +55,8 @@ __tests__["examples"] = test_suite.examples.examples.tests
 
 # core
 __tests__["core"] = __get_tests__(test_suite.core.matrix_solvers) + \
-                    __get_tests__(test_suite.core.generator) + \
-                    test_suite.core.xslt.tests
+                    __get_tests__(test_suite.core.mesh_generator)
+# __get_tests__(test_suite.core.generator) + test_suite.core.xslt.tests
 
 # complete 
 __tests__["complete"] = __tests__["fields"] + __tests__["coupled"] + __tests__["nonlin"] + \
@@ -132,7 +132,7 @@ test_suite.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsMany
 test_suite.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsManyDomainsHardWeak,
 test_suite.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsManyDomainsHardHard,
 # core
-test_suite.core.matrix_solvers.TestInternalMatrixSolvers
+test_suite.core.matrix_solvers.TestMatrixSolvers
 ] + __tests__["script"]
 
 # deal.II 
@@ -204,7 +204,7 @@ test_suite.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsMany
 #test_suite.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsManyDomainsHardWeak,
 #test_suite.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsManyDomainsHardHard,
 # core
-test_suite.core.matrix_solvers.TestInternalMatrixSolvers
+test_suite.core.matrix_solvers.TestMatrixSolvers
 ] + __tests__["script"]
 
 def all_tests():
