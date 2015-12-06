@@ -349,7 +349,7 @@ void PhysicalFieldWidget::doFieldInfo(int index)
 
 void PhysicalFieldWidget::doTimeStep(int index)
 {
-    if (m_computation && m_computation->isSolved())
+    if (m_computation && m_computation->isSolved() && selectedField())
     {
         fillComboBoxAdaptivityStep(selectedField(), selectedTimeStep(), cmbAdaptivityStep, m_computation);
         if ((cmbAdaptivityStep->currentIndex() >= cmbAdaptivityStep->count()) || (cmbAdaptivityStep->currentIndex() < 0))

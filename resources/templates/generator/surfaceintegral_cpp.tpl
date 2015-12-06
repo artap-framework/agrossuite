@@ -101,17 +101,20 @@ void {{CLASS}}SurfaceIntegral::localAssembleSystem(const typename dealii::hp::Do
 
     double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
 
+    SceneLabel *label = m_computation->scene()->labels->at(cell_int->material_id() - 1);
+    SceneMaterial *material = label->marker(m_fieldInfo);
+
+    if (material->isNone())
+        return;
+
+    {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
+    {{/VARIABLE_MATERIAL}}
+
     for (int iFace = 0; iFace < m_computation->scene()->faces->count(); iFace++)
     {
         SceneFace *edge = m_computation->scene()->faces->at(iFace);
         if (!edge->isSelected())
             continue;
-
-        SceneLabel *label = m_computation->scene()->labels->at(cell_int->material_id() - 1);
-        SceneMaterial *material = label->marker(m_fieldInfo);
-
-        {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
-        {{/VARIABLE_MATERIAL}}
 
         // surface integration
         for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)

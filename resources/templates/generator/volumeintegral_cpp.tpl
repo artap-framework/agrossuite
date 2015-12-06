@@ -128,18 +128,19 @@ void {{CLASS}}VolumeIntegral::localAssembleSystem(const typename dealii::hp::DoF
 
     double frequency = m_computation->config()->value(ProblemConfig::Frequency).value<Value>().number();
 
+    SceneLabel *label = m_computation->scene()->labels->at(cell_int->material_id() - 1);
+    SceneMaterial *material = label->marker(m_fieldInfo);
+
+    if (material->isNone())
+        return;
+
+    {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
+    {{/VARIABLE_MATERIAL}}
+
     for (int iLabel = 0; iLabel < m_computation->scene()->labels->count(); iLabel++)
     {
-        SceneLabel *label = m_computation->scene()->labels->at(iLabel);
         if (!label->isSelected())
             continue;
-
-        SceneMaterial *material = label->marker(m_fieldInfo);
-        if (material->isNone())
-            continue;
-
-        {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
-        {{/VARIABLE_MATERIAL}}
 
         // volume integration
         if (cell_int->material_id() - 1 == iLabel)
@@ -168,46 +169,48 @@ void {{CLASS}}VolumeIntegral::localAssembleSystem(const typename dealii::hp::DoF
                 }
                 copy_data.results[{{VARIABLE_HASH}}] += res;
             }
-            {{/VARIABLE_SOURCE}}
+            {{/VARIABLE_SOURCE}}            
+        }
+    }
 
-            // volume to surface (temporary eggshell replacement)
-            if ({{INTEGRAL_COUNT_EGGSHELL}} > 0)
+    // volume to surface (temporary eggshell replacement)
+    if ({{INTEGRAL_COUNT_EGGSHELL}} > 0)
+    {
+        // surface integration
+        for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
+        {
+            int faceIndex = cell_int->face(face)->user_index() - 1;
+
+            for (int j = 0; j < surroundings.count(); j++)
             {
-                for (int j = 0; j < surroundings.count(); j++)
+                if (faceIndex == surroundings[j])
                 {
-                    // surface integration
-                    for (unsigned int face = 0; face < dealii::GeometryInfo<2>::faces_per_cell; ++face)
+                    scratch_data.hp_fe_face_values.reinit(cell_int, face);
+
+                    const dealii::FEFaceValues<2> &fe_values = scratch_data.hp_fe_face_values.get_present_fe_values();
+                    const unsigned int n_face_q_points = fe_values.n_quadrature_points;
+
+                    std::vector<dealii::Vector<double> > solution_values(n_face_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
+                    std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_face_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
+
+                    fe_values.get_function_values(ma.solution(), solution_values);
+                    fe_values.get_function_gradients(ma.solution(), solution_grads);
+
+                    // expressions
+                    {{#VARIABLE_SOURCE_EGGSHELL}}
+                    if ((m_analysisType == {{ANALYSIS_TYPE}}) && (m_coordinateType == {{COORDINATE_TYPE}}))
                     {
-                        if (cell_int->face(face)->user_index() - 1 == surroundings[j])
+                        double res = 0.0;
+                        for (unsigned int k = 0; k < n_face_q_points; ++k)
                         {
-                            scratch_data.hp_fe_face_values.reinit(cell_int, face);
+                            const dealii::Point<2> p = fe_values.quadrature_point(k);
+                            const dealii::Tensor<1,2> normal = fe_values.normal_vector(k);
 
-                            const dealii::FEFaceValues<2> &fe_values = scratch_data.hp_fe_face_values.get_present_fe_values();
-                            const unsigned int n_face_q_points = fe_values.n_quadrature_points;
-
-                            std::vector<dealii::Vector<double> > solution_values(n_face_q_points, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
-                            std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(n_face_q_points, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));
-
-                            fe_values.get_function_values(ma.solution(), solution_values);
-                            fe_values.get_function_gradients(ma.solution(), solution_grads);
-
-                            // expressions
-                            {{#VARIABLE_SOURCE_EGGSHELL}}
-                            if ((m_analysisType == {{ANALYSIS_TYPE}}) && (m_coordinateType == {{COORDINATE_TYPE}}))
-                            {
-                                double res = 0.0;
-                                for (unsigned int k = 0; k < n_face_q_points; ++k)
-                                {
-                                    const dealii::Point<2> p = fe_values.quadrature_point(k);
-                                    const dealii::Tensor<1,2> normal = fe_values.normal_vector(k);
-
-                                    res += fe_values.JxW(k) * ({{EXPRESSION}});
-                                }
-                                copy_data.results[{{VARIABLE_HASH}}] += res;
-                            }
-                            {{/VARIABLE_SOURCE_EGGSHELL}}
+                            res += fe_values.JxW(k) * ({{EXPRESSION}});
                         }
+                        copy_data.results[{{VARIABLE_HASH}}] += res;
                     }
+                    {{/VARIABLE_SOURCE_EGGSHELL}}
                 }
             }
         }
