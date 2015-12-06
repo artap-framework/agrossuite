@@ -237,7 +237,6 @@ private slots:
     void doStartedScript();
     void doExecutedScript();
 
-    void doPrintStacktrace();
     void doUseProfiler();
     void doConsoleOutput();
 

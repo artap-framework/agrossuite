@@ -577,11 +577,6 @@ void PythonEditorDialog::createActions()
     actUseProfiler->setChecked(Agros2D::configComputer()->value(Config::Python_UseProfiler).toBool());
     connect(actUseProfiler, SIGNAL(triggered()), this, SLOT(doUseProfiler()));
 
-    actPrintStacktrace = new QAction(icon(""), tr("Print stacktrace"), this);
-    actPrintStacktrace->setCheckable(true);
-    actPrintStacktrace->setChecked(Agros2D::configComputer()->value(Config::Python_PrintStacktrace).toBool());
-    connect(actPrintStacktrace, SIGNAL(triggered()), this, SLOT(doPrintStacktrace()));
-
     actConsoleOutput = new QAction(icon(""), tr("Console output"), this);
     actConsoleOutput->setCheckable(true);
     actConsoleOutput->setChecked(Agros2D::configComputer()->value(Config::Python_UseProfiler).toBool());
@@ -619,7 +614,6 @@ void PythonEditorDialog::createControls()
 
     QMenu *mnuSettings = new QMenu(tr("Config"), this);
     mnuSettings->addAction(actUseProfiler);
-    mnuSettings->addAction(actPrintStacktrace);
     mnuSettings->addAction(actConsoleOutput);
 
     mnuTools = new QMenu(tr("&Tools"), this);
@@ -759,12 +753,8 @@ void PythonEditorDialog::doRunPython()
         ErrorResult result = pythonEngine->parseError();
 
         m_console->stdErr(result.error());
-
-        if (Agros2D::configComputer()->value(Config::Python_PrintStacktrace).toBool())
-        {
-            m_console->stdErr("\nStacktrace:\n");
-            m_console->stdErr(result.tracebackToString());
-        }
+        m_console->stdErr("\nStacktrace:\n");
+        m_console->stdErr(result.tracebackToString());
 
         if (!txtEditor->textCursor().hasSelection() && result.line() >= 0)
             txtEditor->gotoLine(result.line(), true);
@@ -1253,11 +1243,6 @@ void PythonEditorDialog::doCurrentDocumentChanged(bool changed)
         tabWidget->setTabText(tabWidget->currentIndex(), QString("* %1").arg(fileName));
     else
         tabWidget->setTabText(tabWidget->currentIndex(), fileName);
-}
-
-void PythonEditorDialog::doPrintStacktrace()
-{
-    Agros2D::configComputer()->setValue(Config::Python_PrintStacktrace, !Agros2D::configComputer()->value(Config::Python_PrintStacktrace).toBool());
 }
 
 void PythonEditorDialog::doUseProfiler()

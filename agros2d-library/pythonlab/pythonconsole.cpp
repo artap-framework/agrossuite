@@ -204,12 +204,8 @@ void PythonScriptingConsole::executeCode(const QString& code)
     {
         ErrorResult result = pythonEngine->parseError();
         stdErr(result.error());
-
-        if (Agros2D::configComputer()->value(Config::Python_PrintStacktrace).toBool())
-        {
-            stdErr("\nStacktrace:\n");
-            stdErr(result.tracebackToString());
-        }
+        stdErr("\nStacktrace:\n");
+        stdErr(result.tracebackToString());
     }
 
     setFocus();

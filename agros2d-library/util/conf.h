@@ -51,7 +51,6 @@ public:
         Config_ShowRulers,
         Config_ShowAxes,
         Python_UseProfiler,
-        Python_PrintStacktrace,
         Python_ConsoleOutput,
         ShowConsoleAndLog_Welcome,
         ShowConsoleAndLog_Problem,
