@@ -25,6 +25,10 @@
 #include "solver/problem_config.h"
 #include "parser/lex.h"
 
+#include <tbb/tbb.h>
+tbb::mutex runValueExpressionMutex;
+
+
 Value::Value()
     : m_problem(nullptr),
       m_number(0),
@@ -392,23 +396,33 @@ bool Value::evaluateExpression(const QString &expression, double time, const Poi
         }
     }
 
-    // temporary dict
-    currentPythonEngineAgros()->useTemporaryDict();
+    bool successfulRun = false;
 
-    // eval expression
-    bool successfulRun = currentPythonEngineAgros()->runExpression(expression,
-                                                                   &evaluationResult,
-                                                                   commandPre,
-                                                                   commandPost);
+    {
+        tbb::mutex::scoped_lock lock(runValueExpressionMutex);
 
-    // global dict
-    currentPythonEngineAgros()->useGlobalDict();
+        // temporary dict
+        currentPythonEngineAgros()->useTemporaryDict();
+
+        // eval expression
+        successfulRun = currentPythonEngineAgros()->runExpression(expression,
+                                                                  &evaluationResult,
+                                                                  commandPre,
+                                                                  commandPost);
+
+        if (!successfulRun)
+        {
+            qDebug() << successfulRun;
+            ErrorResult result = currentPythonEngine()->parseError();
+            Agros2D::log()->printError(QObject::tr("Value expression"), result.error());
+        }
+
+        // global dict
+        currentPythonEngineAgros()->useGlobalDict();
+    }
 
     if (!signalBlocked)
         currentPythonEngineAgros()->blockSignals(false);
-
-    if (!successfulRun)
-        qDebug() << successfulRun;
 
     return successfulRun;
 }

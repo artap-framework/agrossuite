@@ -308,13 +308,13 @@ void PythonEngine::init(int argc, char *argv[])
     addCustomExtensions();
 
     // custom modules
-    PyObject *importPython = PyRun_String(QString("import sys; sys.path.insert(0, \"%1/resources/python\")").arg(datadir()).toLatin1().data(), Py_file_input, globalDict(), globalDict());
+    PyObject *importPython = PyRun_String(QString("import sys; sys.path.insert(0, \"%1/resources/python\")").arg(datadir()).toLatin1().data(), Py_file_input, globalDict(), localDict());
     Py_XDECREF(importPython);
-    PyObject *importTest = PyRun_String(QString("import sys; sys.path.insert(0,\"%1/resources/test\")").arg(datadir()).toLatin1().data(), Py_file_input, globalDict(), globalDict());
+    PyObject *importTest = PyRun_String(QString("import sys; sys.path.insert(0,\"%1/resources/test\")").arg(datadir()).toLatin1().data(), Py_file_input, globalDict(), localDict());
     Py_XDECREF(importTest);
 
     // functions.py
-    PyObject *func = PyRun_String(m_functions.toLatin1().data(), Py_file_input, globalDict(), globalDict());
+    PyObject *func = PyRun_String(m_functions.toLatin1().data(), Py_file_input, globalDict(), localDict());
     Py_XDECREF(func);
 }
 
@@ -330,10 +330,10 @@ void PythonEngine::useTemporaryDict()
         PyDict_SetItemString(m_dictTemporary, "__builtins__", PyEval_GetBuiltins());
         Py_INCREF(m_dictTemporary);
 
-        PyObject *importMath = PyRun_String(QString("from math import *").toLatin1().data(), Py_file_input, m_dictTemporary, m_dictTemporary);
-        Py_XDECREF(importMath);
-
         m_useGlobalDict = false;
+
+        PyObject *importMath = PyRun_String(QString("from math import *").toLatin1().data(), Py_file_input, globalDict(), localDict());
+        Py_XDECREF(importMath);        
     }
 }
 
@@ -532,9 +532,6 @@ bool PythonEngine::runExpression(const QString &expression, double *value, const
                         successfulRun = false;
                     }
                 }
-
-                // speed up?
-                // PyRun_String(QString("del python_engine_result").toLatin1().data(), Py_single_input, globalDict(), localDict());
             }
         }
         else
@@ -606,7 +603,7 @@ QStringList PythonEngine::codeCompletion(const QString& command)
     {
         tbb::mutex::scoped_lock lock(codeCompletionMutex);
 
-        PyObject *output = PyRun_String(command.toLatin1().data(), Py_single_input, globalDict(), globalDict());
+        PyObject *output = PyRun_String(command.toLatin1().data(), Py_single_input, globalDict(), localDict());
 
         // parse result
         if (output)
@@ -636,7 +633,7 @@ QStringList PythonEngine::codeCompletion(const QString& command)
                 Py_DECREF(result);
             }
 
-            PyObject *del = PyRun_String(QString("del result_jedi_pythonlab").toLatin1().data(), Py_single_input, globalDict(), globalDict());
+            PyObject *del = PyRun_String(QString("del result_jedi_pythonlab").toLatin1().data(), Py_single_input, globalDict(), localDict());
             Py_XDECREF(del);
         }
         else
@@ -661,7 +658,7 @@ QStringList PythonEngine::codePyFlakes(const QString& fileName)
         {
             tbb::mutex::scoped_lock lock(codePyFlakesMutex);
 
-            PyObject *run = PyRun_String(exp.toLatin1().data(), Py_single_input, globalDict(), globalDict());
+            PyObject *run = PyRun_String(exp.toLatin1().data(), Py_single_input, globalDict(), localDict());
             // parse result
             PyObject *result = PyDict_GetItemString(globalDict(), "result_pyflakes_pythonlab");
             if (result)
@@ -683,7 +680,7 @@ QStringList PythonEngine::codePyFlakes(const QString& fileName)
             }
             Py_XDECREF(run);
 
-            PyObject *del = PyRun_String(QString("del result_pyflakes_pythonlab").toLatin1().data(), Py_single_input, globalDict(), globalDict());
+            PyObject *del = PyRun_String(QString("del result_pyflakes_pythonlab").toLatin1().data(), Py_single_input, globalDict(), localDict());
             Py_XDECREF(del);
         }
     }
@@ -730,7 +727,7 @@ PythonGotoDefinition PythonEngine::codeGotoDefinition(const QString& filename, i
             Py_XDECREF(result);
         }
 
-        PyObject *del = PyRun_String(QString("del agros2d_goto_definition").toLatin1().data(), Py_single_input, globalDict(), globalDict());
+        PyObject *del = PyRun_String(QString("del agros2d_goto_definition").toLatin1().data(), Py_single_input, globalDict(), localDict());
         Py_XDECREF(del);
     }
 
@@ -756,7 +753,7 @@ QString PythonEngine::codeHelp(const QString& filename, int row, int column)
             Py_XDECREF(result);
         }
 
-        PyObject *del = PyRun_String(QString("del agros2d_code_help").toLatin1().data(), Py_single_input, globalDict(), globalDict());
+        PyObject *del = PyRun_String(QString("del agros2d_code_help").toLatin1().data(), Py_single_input, globalDict(), localDict());
         Py_XDECREF(del);
     }
 
@@ -849,7 +846,7 @@ void PythonEngine::addCustomExtensions()
     PyDict_SetItemString(PyImport_GetModuleDict(), "pythonlab_cython", m);
 
     // merge modules
-    PyObject *del = PyRun_String(QString("import pythonlab_cython; import pythonlab; pythonlab.__dict__.update(pythonlab_cython.__dict__); del pythonlab_cython;").toLatin1().data(), Py_single_input, globalDict(), globalDict());
+    PyObject *del = PyRun_String(QString("import pythonlab_cython; import pythonlab; pythonlab.__dict__.update(pythonlab_cython.__dict__); del pythonlab_cython;").toLatin1().data(), Py_single_input, globalDict(), localDict());
     Py_XDECREF(del);
 }
 
