@@ -207,7 +207,6 @@ protected:
     QAction *actPrintSelection;
 
     QAction *actUseProfiler;
-    QAction *actPrintStacktrace;
     QAction *actConsoleOutput;
 
     QAction *actCreateFromModel;

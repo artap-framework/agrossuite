@@ -334,6 +334,9 @@ void PythonEditorWidget::createControls()
     toolBar->addAction(pythonEditor->actCheckPyLint);
     toolBar->addSeparator();
     toolBar->addAction(pythonEditor->actCreateFromModel);
+    toolBar->addSeparator();
+    toolBar->addAction(pythonEditor->actUseProfiler);
+    toolBar->addAction(pythonEditor->actConsoleOutput);
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(1, 1, 1, 1);
@@ -572,12 +575,12 @@ void PythonEditorDialog::createActions()
     actPrintSelection->setShortcut(tr("F5"));
     connect(actPrintSelection, SIGNAL(triggered()), this, SLOT(doPrintSelection()));
 
-    actUseProfiler = new QAction(icon(""), tr("Profiler"), this);
+    actUseProfiler = new QAction(icon("profiler"), tr("Profiler"), this);
     actUseProfiler->setCheckable(true);
     actUseProfiler->setChecked(Agros2D::configComputer()->value(Config::Python_UseProfiler).toBool());
     connect(actUseProfiler, SIGNAL(triggered()), this, SLOT(doUseProfiler()));
 
-    actConsoleOutput = new QAction(icon(""), tr("Console output"), this);
+    actConsoleOutput = new QAction(icon("log"), tr("Console output"), this);
     actConsoleOutput->setCheckable(true);
     actConsoleOutput->setChecked(Agros2D::configComputer()->value(Config::Python_UseProfiler).toBool());
     connect(actConsoleOutput, SIGNAL(triggered()), this, SLOT(doConsoleOutput()));
@@ -612,18 +615,12 @@ void PythonEditorDialog::createControls()
     mnuEdit->addSeparator();
     mnuEdit->addAction(actGotoLine);
 
-    QMenu *mnuSettings = new QMenu(tr("Config"), this);
-    mnuSettings->addAction(actUseProfiler);
-    mnuSettings->addAction(actConsoleOutput);
-
     mnuTools = new QMenu(tr("&Tools"), this);
     mnuTools->addAction(actReplaceTabsWithSpaces);
     mnuTools->addSeparator();
     mnuTools->addAction(actHelpOnWord);
     mnuTools->addAction(actGotoDefinition);
     mnuTools->addAction(actPrintSelection);
-    mnuTools->addSeparator();
-    mnuTools->addMenu(mnuSettings);
 
     // contents
     tabWidget = new QTabWidget(this);
