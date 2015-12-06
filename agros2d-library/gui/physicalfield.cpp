@@ -210,6 +210,10 @@ void PhysicalFieldWidget::connectComputation(QSharedPointer<Computation> computa
     {
         disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(updateControls()));
         disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(updateControls()));
+
+        cmbFieldInfo->clear();
+        cmbTimeStep->clear();
+        cmbAdaptivityStep->clear();
     }
 
     m_computation = computation;

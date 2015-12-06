@@ -31,7 +31,6 @@ class LineEditDouble;
 class LocalValue;
 class FieldInfo;
 class SceneViewPost2D;
-class PhysicalFieldWidget;
 class QCustomPlot;
 class QCPBars;
 class QCPItemTracer;
