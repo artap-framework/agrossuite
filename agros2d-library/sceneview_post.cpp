@@ -522,87 +522,33 @@ const double* SceneViewPostInterface::paletteColor(double x) const
         return paletteDataJet[n];
     }
         break;
-    case Palette_Copper:
+    case Palette_Parula:
     {
         if (x < 0.0) x = 0.0;
         else if (x > 1.0) x = 1.0;
         x *= PALETTEENTRIES;
         int n = (int) x;
-        return paletteDataCopper[n];
+        return paletteDataParula[n];
     }
         break;
-    case Palette_Hot:
+    case Palette_Inferno:
     {
         if (x < 0.0) x = 0.0;
         else if (x > 1.0) x = 1.0;
         x *= PALETTEENTRIES;
         int n = (int) x;
-        return paletteDataHot[n];
+        return paletteDataInferno[n];
     }
         break;
-    case Palette_Cool:
+    case Palette_Viridis:
     {
         if (x < 0.0) x = 0.0;
         else if (x > 1.0) x = 1.0;
         x *= PALETTEENTRIES;
         int n = (int) x;
-        return paletteDataCool[n];
+        return paletteDataViridis[n];
     }
-        break;
-    case Palette_Bone:
-    {
-        if (x < 0.0) x = 0.0;
-        else if (x > 1.0) x = 1.0;
-        x *= PALETTEENTRIES;
-        int n = (int) x;
-        return paletteDataBone[n];
-    }
-        break;
-    case Palette_Pink:
-    {
-        if (x < 0.0) x = 0.0;
-        else if (x > 1.0) x = 1.0;
-        x *= PALETTEENTRIES;
-        int n = (int) x;
-        return paletteDataPink[n];
-    }
-        break;
-    case Palette_Spring:
-    {
-        if (x < 0.0) x = 0.0;
-        else if (x > 1.0) x = 1.0;
-        x *= PALETTEENTRIES;
-        int n = (int) x;
-        return paletteDataSpring[n];
-    }
-        break;
-    case Palette_Summer:
-    {
-        if (x < 0.0) x = 0.0;
-        else if (x > 1.0) x = 1.0;
-        x *= PALETTEENTRIES;
-        int n = (int) x;
-        return paletteDataSummer[n];
-    }
-        break;
-    case Palette_Autumn:
-    {
-        if (x < 0.0) x = 0.0;
-        else if (x > 1.0) x = 1.0;
-        x *= PALETTEENTRIES;
-        int n = (int) x;
-        return paletteDataAutumn[n];
-    }
-        break;
-    case Palette_Winter:
-    {
-        if (x < 0.0) x = 0.0;
-        else if (x > 1.0) x = 1.0;
-        x *= PALETTEENTRIES;
-        int n = (int) x;
-        return paletteDataWinter[n];
-    }
-        break;
+        break;    
     case Palette_HSV:
     {
         if (x < 0.0) x = 0.0;
@@ -640,24 +586,12 @@ const double* SceneViewPostInterface::paletteColorOrder(int n) const
         return paletteOrderAgros[n];
     case PaletteOrder_Jet:
         return paletteOrderJet[n];
-    case PaletteOrder_Copper:
-        return paletteOrderCopper[n];
-    case PaletteOrder_Hot:
-        return paletteOrderHot[n];
-    case PaletteOrder_Cool:
-        return paletteOrderCool[n];
-    case PaletteOrder_Bone:
-        return paletteOrderBone[n];
-    case PaletteOrder_Pink:
-        return paletteOrderPink[n];
-    case PaletteOrder_Spring:
-        return paletteOrderSpring[n];
-    case PaletteOrder_Summer:
-        return paletteOrderSummer[n];
-    case PaletteOrder_Autumn:
-        return paletteOrderAutumn[n];
-    case PaletteOrder_Winter:
-        return paletteOrderWinter[n];
+    case PaletteOrder_Parula:
+        return paletteOrderParula[n];
+    case PaletteOrder_Inferno:
+        return paletteOrderInferno[n];
+    case PaletteOrder_Viridis:
+        return paletteOrderViridis[n];
     case PaletteOrder_HSV:
         return paletteOrderHSV[n];
     case PaletteOrder_BWAsc:

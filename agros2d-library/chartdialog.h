@@ -27,7 +27,6 @@
 #include <QSvgRenderer>
 
 class LineEditDouble;
-class LineEditDouble;
 class LocalValue;
 class FieldInfo;
 class SceneViewPost2D;
