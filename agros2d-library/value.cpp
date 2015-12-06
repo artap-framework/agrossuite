@@ -364,22 +364,17 @@ bool Value::evaluateExpression(const QString &expression, double time, const Poi
     currentPythonEngineAgros()->blockSignals(true);
 
     QString commandPre;
-    QString commandPost;
-
     if (m_isCoordinateDependent && !m_isTimeDependent)
     {
         commandPre = QString("x = %1; y = %2; r = %1; z = %2").arg(point.x).arg(point.y);
-        // commandPost = QString("del x; del y; del r; del z");
     }
     else if (m_isTimeDependent && !m_isCoordinateDependent)
     {
         commandPre = QString("time = %1").arg(time);
-        // commandPost = QString("del time");
     }
     else if (m_isCoordinateDependent && m_isTimeDependent)
     {
         commandPre = QString("time = %1; x = %2; y = %3; r = %2; z = %3").arg(time).arg(point.x).arg(point.y);
-        // commandPost = QString("del time; del x; del y; del r; del z");
     }
 
     // problem
@@ -407,8 +402,7 @@ bool Value::evaluateExpression(const QString &expression, double time, const Poi
         // eval expression
         successfulRun = currentPythonEngineAgros()->runExpression(expression,
                                                                   &evaluationResult,
-                                                                  commandPre,
-                                                                  commandPost);
+                                                                  commandPre);
 
         if (!successfulRun)
         {
