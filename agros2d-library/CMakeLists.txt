@@ -87,6 +87,7 @@ SET(SOURCES
     datatable.cpp
     examplesdialog.cpp
     gui/common.cpp
+    gui/chart.cpp
     gui/groupbox.cpp
     gui/htmledit.cpp
     gui/imageloader.cpp
@@ -206,6 +207,7 @@ SOURCE_GROUP(
 SOURCE_GROUP(
   "Source Files\\GUI" FILES 
   gui/common.cpp
+  gui/chart.cpp
   gui/groupbox.cpp
   gui/htmledit.cpp
   gui/imageloader.cpp
@@ -310,6 +312,7 @@ SET(HEADERS
   datatable.h
   examplesdialog.h
   gui/common.h
+  gui/chart.h
   gui/groupbox.h
   gui/htmledit.h
   gui/imageloader.h
@@ -423,6 +426,7 @@ SOURCE_GROUP(
 SOURCE_GROUP(
   "Header Files\\GUI" FILES 
   gui/common.h
+  gui/chart.h
   gui/groupbox.h
   gui/htmledit.h
   gui/imageloader.h

@@ -79,6 +79,7 @@ LogWidget::LogWidget(QWidget *parent) : QWidget(parent),
     connect(Agros2D::log(), SIGNAL(debugMsg(QString, QString)), this, SLOT(printDebug(QString, QString)));
 
     connect(Agros2D::log(), SIGNAL(appendImg(QString)), this, SLOT(appendImage(QString)));
+    connect(Agros2D::log(), SIGNAL(appendHtm(QString)), this, SLOT(appendHtml(QString)));
     
     plainLog->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(plainLog, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu(const QPoint &)));
@@ -218,6 +219,15 @@ void LogWidget::appendImage(const QString &fileName)
     QTextCursor cursor = plainLog->textCursor();
     cursor.insertImage(fileName);
 
+    plainLog->append(QString());
+
+    ensureCursorVisible();
+}
+
+void LogWidget::appendHtml(const QString &html)
+{
+    plainLog->append(QString());
+    plainLog->append(html);
     plainLog->append(QString());
 
     ensureCursorVisible();
@@ -619,37 +629,6 @@ void LogDialog::tryClose()
     else
     {
         close();
-
-        // save charts
-        int w = 650;
-        int h = 280;
-
-        if (m_computation->isTransient())
-        {
-            QDateTime time(QDateTime::currentDateTime());
-            QString fn = QString("%1/log/%2_adaptivity.png").arg(tempProblemDir()).arg(time.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
-            m_timeChart->savePng(fn, w, h);
-
-            Agros2D::log()->appendImage(fn);
-        }
-
-        if (m_computation->isNonlinear())
-        {
-            QDateTime time(QDateTime::currentDateTime());
-            QString fn = QString("%1/log/%2_adaptivity.png").arg(tempProblemDir()).arg(time.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
-            m_nonlinearChart->savePng(fn, w, h);
-
-            Agros2D::log()->appendImage(fn);
-        }
-
-        if (m_computation->numAdaptiveFields() > 0)
-        {
-            QDateTime time(QDateTime::currentDateTime());
-            QString fn = QString("%1/log/%2_adaptivity.png").arg(tempProblemDir()).arg(time.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
-            m_adaptivityChart->savePng(fn, w, h);
-
-            Agros2D::log()->appendImage(fn);
-        }
     }
 }
 
@@ -689,4 +668,5 @@ void LogStdOut::printDebug(const QString &module, const QString &message)
 {
     qDebug() << (QString("%1: %2").arg(module).arg(message).toLatin1());
 }
+
 

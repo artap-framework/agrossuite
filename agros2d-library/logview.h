@@ -58,6 +58,7 @@ public:
     inline void updateTransientChartInfo(double actualTime) { emit updateTransientChart(actualTime); }
 
     inline void appendImage(const QString &fileName) { emit appendImg(fileName); }
+    inline void appendHtml(const QString &html) { emit appendHtm(html); }
 
     inline void addIcon(const QIcon &icn, const QString &label) { emit addIconImg(icn, label); }
 
@@ -73,6 +74,7 @@ signals:
     void updateTransientChart(double actualTime);
 
     void appendImg(const QString &fileName);
+    void appendHtm(const QString &html);
 
     void addIconImg(const QIcon &icn, const QString &label);
 };
@@ -118,6 +120,7 @@ private slots:
     void printHeading(const QString &message);
 
     void appendImage(const QString &fileName);
+    void appendHtml(const QString &html);
 
     void showTimestamp();
     void showDebug();   

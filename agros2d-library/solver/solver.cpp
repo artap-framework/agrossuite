@@ -73,6 +73,7 @@
 #include "util.h"
 #include "util/global.h"
 #include "util/constants.h"
+#include "gui/chart.h"
 
 #include "field.h"
 #include "problem.h"
@@ -480,12 +481,12 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                 if (cellHandler->active_fe_index() < DEALII_MAX_ORDER - 1)
                     cellHandler->set_active_fe_index(cellHandler->active_fe_index() + orderIncrease);
             if ((estimator == AdaptivityEstimator_ReferenceSpatial) || (estimator == AdaptivityEstimator_ReferenceSpatialAndOrder))
-                  cellHandler->set_refine_flag();
+                cellHandler->set_refine_flag();
         }
 
         // execute refinement
         if ((estimator == AdaptivityEstimator_ReferenceSpatial) || (estimator == AdaptivityEstimator_ReferenceSpatialAndOrder))
-             tria.execute_coarsening_and_refinement();
+            tria.execute_coarsening_and_refinement();
 
         // std::cout << "Number of degrees of freedom (before solve): " << dual->doFHandler.n_dofs() << std::endl;
         dual->solve();
@@ -750,6 +751,10 @@ void SolverDeal::solveSteadyState()
             assert(0);
         }
 
+        QVector<double> adaptiveSteps;
+        QVector<double> adaptiveDOFs;
+        QVector<double> adaptiveError;
+
         // solution transfer
         dealii::SolutionTransfer<2, dealii::Vector<double>, dealii::hp::DoFHandler<2> > solutionTrans(primal->doFHandler);
         dealii::Vector<double> previousSolution;
@@ -805,6 +810,11 @@ void SolverDeal::solveSteadyState()
                                          arg(relChangeSol).
                                          arg(primal->doFHandler.n_dofs()));
 
+            // add info
+            adaptiveSteps.append(adaptiveStep + 1);
+            adaptiveDOFs.append(primal->doFHandler.n_dofs());
+            adaptiveError.append(relChangeSol);
+
             // Python callback
             double cont = 1.0;
             QString command = QString("(agros2d.problem().field(\"%1\").adaptivity_callback(agros2d.computation('%2'), %3) if (agros2d.problem().field(\"%1\").adaptivity_callback is not None and hasattr(agros2d.problem().field(\"%1\").adaptivity_callback, '__call__')) else True)").
@@ -825,6 +835,14 @@ void SolverDeal::solveSteadyState()
                     || (relChangeSol < EPS_ZERO))
                 break;
         }
+
+        // save chart
+        ChartAdaptivityImage chart;
+        chart.setError(adaptiveSteps, adaptiveError);
+        chart.setDOFs(adaptiveSteps, adaptiveDOFs);
+        QString fn = chart.save();
+
+        Agros2D::log()->appendImage(fn);
     }
 }
 
@@ -1153,4 +1171,22 @@ void SolverDeal::solveTransient()
         if (!refused)
             timeStep++;
     }
+
+    /*
+    // time step lengths
+    QList<double> timeStepLengths() const { return m_timeStepLengths; }
+    // cumulative times
+    QList<double> timeStepTimes() const;
+      */
+    // save chart
+    QVector<double> transientSteps;
+    for (int i = 1; i < m_computation->timeStepLengths().size() + 1; i++)
+        transientSteps.append(i);
+
+    ChartTransientImage chart;
+    chart.setStepLength(transientSteps, m_computation->timeStepLengths().toVector());
+    chart.setTotalTime(transientSteps, m_computation->timeStepTimes().toVector());
+    QString fn = chart.save();
+
+    Agros2D::log()->appendImage(fn);
 }

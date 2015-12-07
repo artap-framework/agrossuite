@@ -73,6 +73,8 @@
 #include "util/global.h"
 #include "util/constants.h"
 
+#include "gui/chart.h"
+
 #include "field.h"
 #include "problem.h"
 #include "solver/problem_config.h"
@@ -133,8 +135,8 @@ void AssembleNonlinear::solveProblemNonLinearPicard()
     QTime time;
     time.start();
 
-    QVector<double> steps;
-    QVector<double> relativeChangeOfSolutions;
+    QVector<double> nonlinearSteps;
+    QVector<double> nonlinearRelativeChangeOfSolutions;
 
     setup(true);
 
@@ -208,8 +210,8 @@ void AssembleNonlinear::solveProblemNonLinearPicard()
         solutionNonlinearPrevious.add(-dampingFactor, vec);
 
         // update
-        steps.append(iteration);
-        relativeChangeOfSolutions.append(relChangeSol);
+        nonlinearSteps.append(iteration);
+        nonlinearRelativeChangeOfSolutions.append(relChangeSol);
         lastRelChangeSol = relChangeSol;
 
         criteriaReached = true;
@@ -223,13 +225,20 @@ void AssembleNonlinear::solveProblemNonLinearPicard()
 
         Agros2D::log()->printMessage(QObject::tr("Solver (Picard)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, damping: %3)")
                                      .arg(iteration)
-                                     .arg(QString::number(relativeChangeOfSolutions.last(), 'e', 3))
+                                     .arg(QString::number(nonlinearRelativeChangeOfSolutions.last(), 'e', 3))
                                      .arg(dampingFactor));
 
-        Agros2D::log()->updateNonlinearChartInfo(phase, steps, relativeChangeOfSolutions);
+        Agros2D::log()->updateNonlinearChartInfo(phase, nonlinearSteps, nonlinearRelativeChangeOfSolutions);
     }
 
     constraintsAll.distribute(solution);
+
+    // save chart
+    ChartNonlinearImage chart;
+    chart.setError(nonlinearSteps, nonlinearRelativeChangeOfSolutions);
+    QString fn = chart.save();
+
+    Agros2D::log()->appendImage(fn);
 
     // qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
@@ -242,8 +251,8 @@ void AssembleNonlinear::solveProblemNonLinearNewton()
     QTime time;
     time.start();
 
-    QVector<double> steps;
-    QVector<double> relativeChangeOfSolutions;
+    QVector<double> nonlinearSteps;
+    QVector<double> nonlinearRelativeChangeOfSolutions;
 
     setup(false);
 
@@ -413,9 +422,9 @@ void AssembleNonlinear::solveProblemNonLinearNewton()
             }
         }
         // update
-        steps.append(iteration);
+        nonlinearSteps.append(iteration);
         double relChangeSol = dampingFactor * solution.l2_norm() / solutionNonlinearPrevious.l2_norm() * 100;
-        relativeChangeOfSolutions.append(relChangeSol);
+        nonlinearRelativeChangeOfSolutions.append(relChangeSol);
 
         // stop criteria
         criteriaReached = true;
@@ -433,17 +442,24 @@ void AssembleNonlinear::solveProblemNonLinearNewton()
 
         Agros2D::log()->printMessage(QObject::tr("Solver (Newton)"), QObject::tr("Iteration: %1 (rel. change of sol.: %2 %, residual: %3, damping: %4)")
                                      .arg(iteration)
-                                     .arg(QString::number(relativeChangeOfSolutions.last(), 'e', 3))
+                                     .arg(QString::number(nonlinearRelativeChangeOfSolutions.last(), 'e', 3))
                                      .arg(QString::number(residualNorm, 'e', 3))
                                      .arg(dampingFactor));
 
-        Agros2D::log()->updateNonlinearChartInfo(phase, steps, relativeChangeOfSolutions);
+        Agros2D::log()->updateNonlinearChartInfo(phase, nonlinearSteps, nonlinearRelativeChangeOfSolutions);
     }
 
     // put the final solution into the solution
     solution = solutionNonlinearPrevious;
 
     constraintsDirichlet.distribute(solution);
+
+    // save chart
+    ChartNonlinearImage chart;
+    chart.setError(nonlinearSteps, nonlinearRelativeChangeOfSolutions);
+    QString fn = chart.save();
+
+    Agros2D::log()->appendImage(fn);
 
     // qDebug() << "solve nonlinear total (" << time.elapsed() << "ms )";
 }
