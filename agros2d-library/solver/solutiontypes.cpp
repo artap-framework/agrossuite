@@ -38,19 +38,20 @@ QString FieldSolutionID::toString()
 
 // *********************************************************************************************
 
-MultiArray::MultiArray()
+MultiArray::MultiArray() :
+    m_triangulation(nullptr), m_doFHandler(nullptr), m_solution(dealii::Vector<double>())
 {
 }
 
-MultiArray::MultiArray(std::shared_ptr<dealii::hp::DoFHandler<2> > doFHandler,
+MultiArray::MultiArray(dealii::hp::DoFHandler<2> *doFHandler,
                        dealii::Vector<double> &solution)
     : m_doFHandler(doFHandler),
       m_solution(solution)
 {
 }
 
-MultiArray::MultiArray(std::shared_ptr<dealii::Triangulation<2> > triangulation,
-                       std::shared_ptr<dealii::hp::DoFHandler<2> > doFHandler,
+MultiArray::MultiArray(dealii::Triangulation<2> *triangulation,
+                       dealii::hp::DoFHandler<2> *doFHandler,
                        dealii::Vector<double> &solution)
     : m_triangulation(triangulation),
       m_doFHandler(doFHandler),
@@ -60,6 +61,25 @@ MultiArray::MultiArray(std::shared_ptr<dealii::Triangulation<2> > triangulation,
 
 MultiArray::~MultiArray()
 {    
+    // qDebug() << "MultiArray::~MultiArray()" << m_doFHandler << m_triangulation << m_solution.size();
+}
+
+void MultiArray::clear()
+{
+    // qDebug() << "MultiArray::clear()" << m_doFHandler << m_triangulation << m_solution.size();
+
+    // explicit clear
+    if (m_triangulation)
+    {
+        delete m_triangulation;
+        m_triangulation = nullptr;
+    }
+
+    if (m_doFHandler)
+    {
+        delete m_doFHandler;
+        m_doFHandler = nullptr;
+    }    
 }
 
 bool MultiArray::isNull()

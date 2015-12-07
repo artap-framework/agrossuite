@@ -124,7 +124,7 @@ void PyProblem::setMeshType(const std::string &meshType)
 void PyProblem::setFrequency(double frequency)
 {
     if (frequency > 0.0)
-        m_problem->config()->setValue(ProblemConfig::Frequency, Value(frequency));
+        m_problem->config()->setValue(ProblemConfig::Frequency, Value(m_problem.data(), frequency));
     else
         throw out_of_range(QObject::tr("The frequency must be positive.").toStdString());
 }
@@ -516,9 +516,9 @@ void PySolution::solutionMeshInfo(int timeStep, int adaptivityStep, map<std::str
     // TODO: (Franta) time and adaptivity step in gui vs. implementation
     MultiArray ma = m_computation->solutionStore()->multiArray(FieldSolutionID(m_fieldInfo->fieldId(), timeStep, adaptivityStep));
 
-    info["nodes"] = ma.doFHandler()->get_tria().n_used_vertices();
-    info["elements"] = ma.doFHandler()->get_tria().n_active_cells();
-    info["dofs"] = ma.doFHandler()->n_dofs();
+    info["nodes"] = ma.doFHandler().get_tria().n_used_vertices();
+    info["elements"] = ma.doFHandler().get_tria().n_active_cells();
+    info["dofs"] = ma.doFHandler().n_dofs();
 }
 
 void PySolution::solverInfo(int timeStep, int adaptivityStep,

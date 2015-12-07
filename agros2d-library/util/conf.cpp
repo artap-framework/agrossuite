@@ -108,7 +108,6 @@ void Config::setStringKeys()
     m_settingKey[Config_PostFontFamily] = "Config_PostFontFamily";
     m_settingKey[Config_PostFontPointSize] = "Config_PostFontPointSize";
     m_settingKey[Python_UseProfiler] = "Python_UseProfiler";
-    m_settingKey[Python_PrintStacktrace] = "Python_PrintStacktrace";
     m_settingKey[Python_ConsoleOutput] = "Python_ConsoleOutput";
     m_settingKey[ShowConsoleAndLog_Welcome] = "ShowConsoleAndLog_Welcome";
     m_settingKey[ShowConsoleAndLog_Problem] = "ShowConsoleAndLog_Problem";
@@ -138,7 +137,6 @@ void Config::setDefaultValues()
     m_settingDefault[Config_PostFontFamily] = QString("Droid");
     m_settingDefault[Config_PostFontPointSize] = 16;
     m_settingDefault[Python_UseProfiler] = false;
-    m_settingDefault[Python_PrintStacktrace] = true;
     m_settingDefault[Python_ConsoleOutput] = false;
     m_settingDefault[ShowConsoleAndLog_Welcome] = false;
     m_settingDefault[ShowConsoleAndLog_Problem] = false;

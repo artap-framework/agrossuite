@@ -39,7 +39,7 @@
 
 #include "../resources_source/classes/problem_a2d_31_xml.h"
 
-ProblemConfig::ProblemConfig(QWidget *parent) : QObject(parent)
+ProblemConfig::ProblemConfig(ProblemBase *parentProblem) : QObject(), m_problem(parentProblem)
 {
     qRegisterMetaType<ParametersType>("ParametersType");
     qRegisterMetaType<Value>("Value");
@@ -88,7 +88,7 @@ void ProblemConfig::load(XMLProblem::problem_config *configxsd)
                 else if (m_settingDefault[key].userType() == qMetaTypeId<MeshType>())
                     m_setting[key] = QVariant::fromValue(meshTypeFromStringKey(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
                 else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
-                    m_setting[key] = QVariant::fromValue(Value(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
+                    m_setting[key] = QVariant::fromValue(Value(m_problem, QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
                 else if (m_settingDefault[key].userType() == qMetaTypeId<ParametersType>())
                 {
                     QString str = QString::fromStdString(configxsd->problem_item().at(i).problem_value());
@@ -179,7 +179,7 @@ void ProblemConfig::load(QJsonObject &object)
             else if (m_settingDefault[key].userType() == qMetaTypeId<MeshType>())
                 m_setting[key] = QVariant::fromValue(meshTypeFromStringKey(object[typeToStringKey(key)].toString()));
             else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
-                m_setting[key] = QVariant::fromValue(Value(object[typeToStringKey(key)].toString()));
+                m_setting[key] = QVariant::fromValue(Value(m_problem, object[typeToStringKey(key)].toString()));
             else if (m_settingDefault[key].userType() == qMetaTypeId<ParametersType>())
             {
                 QString str = object[typeToStringKey(key)].toString();
@@ -263,7 +263,7 @@ void ProblemConfig::setDefaultValues()
 {
     m_settingDefault.clear();
 
-    m_settingDefault[Frequency] = QVariant::fromValue(Value(50));
+    m_settingDefault[Frequency] = QVariant::fromValue(Value(m_problem, 50));
     m_settingDefault[TimeMethod] = TimeStepMethod_Fixed;
     m_settingDefault[TimeMethodTolerance] = 0.05;
     m_settingDefault[TimeInitialStepSize] = 0.0;
@@ -309,7 +309,7 @@ void ProblemConfig::checkParameterName(const QString &key)
 
 // ********************************************************************************************
 
-ProblemSetting::ProblemSetting()
+ProblemSetting::ProblemSetting(ProblemBase *parentProblem) : QObject(), m_problem(parentProblem)
 {
     setStringKeys();
     clear();

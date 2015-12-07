@@ -53,7 +53,7 @@ ValueTimeDialog::~ValueTimeDialog()
 void ValueTimeDialog::setValue(Value value)
 {
     txtLineEdit->setText(value.text());
-
+    m_problem = value.m_problem;
     // plot
     plotFunction();
 }
@@ -70,7 +70,7 @@ void ValueTimeDialog::createControls()
     connect(txtLineEdit, SIGNAL(textChanged(QString)), this, SLOT(checkExpression()));
 
     txtTimeTotal = new ValueLineEdit();
-    txtTimeTotal->setValue(Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble());
+    txtTimeTotal->setValue(Value(m_problem, Agros2D::problem()->config()->value(ProblemConfig::TimeTotal).toDouble()));
 
     cmbPresets = new QComboBox();
     cmbPresets->addItem(tr("select a preset..."));
@@ -173,7 +173,7 @@ void ValueTimeDialog::plotFunction()
     QVector<double> pointsVector;
     QVector<double> valuesVector;
 
-    Value val(txtLineEdit->text());
+    Value val(m_problem, txtLineEdit->text());
     for (int i = 0; i < count; i++)
     {
         if (!val.evaluateAtTime(i*dt))

@@ -504,16 +504,16 @@ void Scene::deleteSelected()
         undoStack()->push(new SceneNodeCommandRemoveMulti(selectedNodePoints));
 
     // edges
-    QList<Point> selectedEdgePointsStart;
-    QList<Point> selectedEdgePointsEnd;
+    QList<PointValue> selectedEdgePointsStart;
+    QList<PointValue> selectedEdgePointsEnd;
     QList<Value> selectedEdgeAngles;
     QList<int> selectedEdgeSegments;
     QList<bool> selectedEdgeIsCurvilinear;
     QList<QMap<QString, QString> > selectedEdgeMarkers;
     foreach (SceneFace *edge, faces->selected().items())
     {
-        selectedEdgePointsStart.append(edge->nodeStart()->point());
-        selectedEdgePointsEnd.append(edge->nodeEnd()->point());
+        selectedEdgePointsStart.append(edge->nodeStart()->pointValue());
+        selectedEdgePointsEnd.append(edge->nodeEnd()->pointValue());
         selectedEdgeAngles.append(edge->angleValue());
         selectedEdgeSegments.append(edge->segments());
         selectedEdgeIsCurvilinear.append(edge->isCurvilinear());
@@ -521,8 +521,7 @@ void Scene::deleteSelected()
     }
     if (!selectedEdgePointsStart.isEmpty())
         undoStack()->push(new SceneEdgeCommandRemoveMulti(selectedEdgePointsStart, selectedEdgePointsEnd,
-                                                          selectedEdgeAngles, selectedEdgeSegments, selectedEdgeIsCurvilinear,
-                                                          selectedEdgeMarkers));
+                                                          selectedEdgeMarkers, selectedEdgeAngles, selectedEdgeSegments, selectedEdgeIsCurvilinear));
 
     // labels
     QList<PointValue> selectedLabelPointsStart;
@@ -599,13 +598,15 @@ bool Scene::moveSelectedNodes(SceneTransformMode mode, Point point, double angle
         }
     }
 
-    QList<PointValue> points, newPoints, pointsToSelect;
+    QList<PointValue> points;
+    QList<PointValue> newPoints;
+    QList<PointValue> pointsToSelect;
 
     foreach (SceneNode *node, nodes->selected().items())
     {
-        Point newPoint = calculateNewPoint(mode, node->point(), point, angle, scaleFactor);
+        PointValue newPoint = PointValue(m_problem, calculateNewPoint(mode, node->point(), point, angle, scaleFactor));
 
-        SceneNode *obstructNode = getNode(newPoint);
+        SceneNode *obstructNode = getNode(newPoint.point());
         if (obstructNode && !obstructNode->isSelected())
         {
             Agros2D::log()->printWarning(tr("Geometry"), tr("Cannot perform transformation, existing point would be overwritten"));
@@ -618,7 +619,7 @@ bool Scene::moveSelectedNodes(SceneTransformMode mode, Point point, double angle
         // when moving, add all, because if poit on place where adding exist, it will be moved away (otherwise it would be obstruct node and function would not reach this point)
         if(copy)
         {
-            if(obstructNode)
+            if (obstructNode)
                 pointsToSelect.push_back(newPoint);
             else
                 newPoints.push_back(newPoint);
@@ -629,7 +630,7 @@ bool Scene::moveSelectedNodes(SceneTransformMode mode, Point point, double angle
         }
     }
 
-    if(copy)
+    if (copy)
     {
         m_undoStack->push(new SceneNodeCommandAddMulti(newPoints));
 
@@ -668,7 +669,8 @@ bool Scene::moveSelectedEdges(SceneTransformMode mode, Point point, double angle
         return true;
 
     QList<QPair<Point, Point> > newEdgeEndPoints;
-    QList<Point> edgeStartPointsToAdd, edgeEndPointsToAdd;
+    QList<PointValue> edgeStartPointsToAdd;
+    QList<PointValue> edgeEndPointsToAdd;
     QList<Value> edgeAnglesToAdd;
     QList<int> edgeSegmentsToAdd;
     QList<bool> edgeIsCurvilinearToAdd;
@@ -676,16 +678,16 @@ bool Scene::moveSelectedEdges(SceneTransformMode mode, Point point, double angle
 
     foreach (SceneFace *edge, selectedEdges)
     {
-        Point newPointStart = calculateNewPoint(mode, edge->nodeStart()->point(), point, angle, scaleFactor);
-        Point newPointEnd = calculateNewPoint(mode, edge->nodeEnd()->point(), point, angle, scaleFactor);
+        PointValue newPointStart = PointValue(m_problem, calculateNewPoint(mode, edge->nodeStart()->point(), point, angle, scaleFactor));
+        PointValue newPointEnd = PointValue(m_problem, calculateNewPoint(mode, edge->nodeEnd()->point(), point, angle, scaleFactor));
 
         // add new edge
-        SceneNode *newNodeStart = getNode(newPointStart);
-        SceneNode *newNodeEnd = getNode(newPointEnd);
+        SceneNode *newNodeStart = getNode(newPointStart.point());
+        SceneNode *newNodeEnd = getNode(newPointEnd.point());
 
         assert(newNodeStart && newNodeEnd);
 
-        SceneFace *obstructEdge = getFace(newPointStart, newPointEnd);
+        SceneFace *obstructEdge = getFace(newPointStart.point(), newPointEnd.point());
         if (obstructEdge && !obstructEdge->isSelected())
         {
             Agros2D::log()->printWarning(tr("Geometry"), tr("Cannot perform transformation, existing edge would be overwritten"));
@@ -704,18 +706,18 @@ bool Scene::moveSelectedEdges(SceneTransformMode mode, Point point, double angle
                 edgeMarkersToAdd.append(edge->markersKeys());
         }
 
-        newEdgeEndPoints.push_back(QPair<Point, Point>(newPointStart, newPointEnd));
+        newEdgeEndPoints.push_back(QPair<Point, Point>(newPointStart.point(), newPointEnd.point()));
     }
 
     faces->setSelected(false);
 
     m_undoStack->push(new SceneEdgeCommandAddMulti(edgeStartPointsToAdd, edgeEndPointsToAdd,
-                                                   edgeAnglesToAdd, edgeSegmentsToAdd, edgeIsCurvilinearToAdd, edgeMarkersToAdd));
+                                                   edgeMarkersToAdd, edgeAnglesToAdd, edgeSegmentsToAdd, edgeIsCurvilinearToAdd));
 
     for(int i = 0; i < newEdgeEndPoints.size(); i++)
     {
         SceneFace* sceneEdge = getFace(newEdgeEndPoints[i].first, newEdgeEndPoints[i].second);
-        if(sceneEdge)
+        if (sceneEdge)
             sceneEdge->setSelected(true);
     }
 
@@ -724,13 +726,16 @@ bool Scene::moveSelectedEdges(SceneTransformMode mode, Point point, double angle
 
 bool Scene::moveSelectedLabels(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy, bool withMarkers)
 {
-    QList<PointValue> points, newPoints, pointsToSelect;
+    QList<PointValue> points;
+    QList<PointValue> newPoints;
+    QList<PointValue> pointsToSelect;
+
     QList<double> newAreas;
     QList<QMap<QString, QString> > newMarkers;
 
     foreach (SceneLabel *label, labels->selected().items())
     {
-        PointValue newPoint = calculateNewPoint(mode, label->point(), point, angle, scaleFactor);
+        PointValue newPoint = PointValue(m_problem, calculateNewPoint(mode, label->point(), point, angle, scaleFactor));
 
         SceneLabel *obstructLabel = getLabel(newPoint.point());
         if (obstructLabel && !obstructLabel->isSelected())
@@ -739,11 +744,11 @@ bool Scene::moveSelectedLabels(SceneTransformMode mode, Point point, double angl
             return false;
         }
 
-        points.push_back(label->point());
+        points.push_back(label->pointValue());
 
         // when copying, add only those points, that did not exist
         // when moving, add all, because if poit on place where adding exist, it will be moved away (otherwise it would be obstruct node and function would not reach this point)
-        if(copy)
+        if (copy)
         {
             if(obstructLabel)
             {
@@ -840,11 +845,11 @@ void Scene::doInvalidated()
 
 void Scene::doNewNode(const Point &point)
 {
-    SceneNode *node = new SceneNode(this, point);
+    SceneNode *node = new SceneNode(this, PointValue(m_problem, point));
     if (node->showDialog(QApplication::activeWindow(), true) == QDialog::Accepted)
     {
         SceneNode *nodeAdded = addNode(node);
-        if (nodeAdded == node) m_undoStack->push(new SceneNodeCommandAdd(node->point()));
+        if (nodeAdded == node) m_undoStack->push(new SceneNodeCommandAdd(node->pointValue()));
     }
     else
         delete node;
@@ -852,7 +857,7 @@ void Scene::doNewNode(const Point &point)
 
 void Scene::doNewEdge()
 {
-    SceneFace *edge = new SceneFace(this, nodes->at(0), nodes->at(1), 0);
+    SceneFace *edge = new SceneFace(this, nodes->at(0), nodes->at(1), Value(m_problem, 0.0));
     if (edge->showDialog(QApplication::activeWindow(), true) == QDialog::Accepted)
     {
         SceneFace *edgeAdded = addFace(edge);
@@ -865,7 +870,7 @@ void Scene::doNewEdge()
 
 void Scene::doNewLabel(const Point &point)
 {
-    SceneLabel *label = new SceneLabel(this, point, 0.0);
+    SceneLabel *label = new SceneLabel(this, PointValue(m_problem, point), 0.0);
     if (label->showDialog(QApplication::activeWindow(), true) == QDialog::Accepted)
     {
         SceneLabel *labelAdded = addLabel(label);
@@ -1040,12 +1045,12 @@ void Scene::exportVTKGeometry(const QString &fileName)
 
 void Scene::exportToDxf(const QString &fileName)
 {
-    writeToDXF(fileName);
+    writeToDXF(this, fileName);
 }
 
 void Scene::importFromDxf(const QString &fileName)
 {
-    readFromDXF(fileName);
+    readFromDXF(this, fileName);
 }
 
 void Scene::checkNodeConnect(SceneNode *node)
@@ -1077,7 +1082,7 @@ void Scene::checkNodeConnect(SceneNode *node)
                 Value edgeAngle = edgeCheck->angleValue();
                 faces->remove(edgeCheck);
 
-                SceneFace *edge = new SceneFace(this, nodeStart, nodeEnd, 0.0);
+                SceneFace *edge = new SceneFace(this, nodeStart, nodeEnd, Value(Agros2D::problem(), 0.0));
                 edge->setAngleValue(edgeAngle);
             }
         }

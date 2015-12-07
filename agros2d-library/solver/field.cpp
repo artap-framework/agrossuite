@@ -738,14 +738,14 @@ void FieldInfo::load(QJsonObject &object)
             m_setting[key] = object[typeToStringKey(key)].toInt();
         else
         {
-            if (m_settingDefault[key].userType() == qMetaTypeId<AnalysisType>())
-                m_setting[key] = QVariant::fromValue(analysisTypeFromStringKey(object[typeToStringKey(key)].toString()));
+            if (m_settingDefault[key].userType() == qMetaTypeId<AnalysisType>())                
+                setAnalysisType(analysisTypeFromStringKey(object[typeToStringKey(key)].toString()));
             else if (m_settingDefault[key].userType() == qMetaTypeId<LinearityType>())
-                m_setting[key] = QVariant::fromValue(linearityTypeFromStringKey(object[typeToStringKey(key)].toString()));
+                setLinearityType(linearityTypeFromStringKey(object[typeToStringKey(key)].toString()));
             else if (m_settingDefault[key].userType() == qMetaTypeId<AdaptivityMethod>())
-                m_setting[key] = QVariant::fromValue(adaptivityTypeFromStringKey(object[typeToStringKey(key)].toString()));
+                setAdaptivityType(adaptivityTypeFromStringKey(object[typeToStringKey(key)].toString()));
             else if (m_settingDefault[key].userType() == qMetaTypeId<MatrixSolverType>())
-                m_setting[key] = QVariant::fromValue(matrixSolverTypeFromStringKey( object[typeToStringKey(key)].toString()));
+                setMatrixSolver(matrixSolverTypeFromStringKey( object[typeToStringKey(key)].toString()));
             else
                 assert(0);
         }

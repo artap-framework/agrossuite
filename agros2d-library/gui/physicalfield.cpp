@@ -210,6 +210,10 @@ void PhysicalFieldWidget::connectComputation(QSharedPointer<Computation> computa
     {
         disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(updateControls()));
         disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(updateControls()));
+
+        cmbFieldInfo->clear();
+        cmbTimeStep->clear();
+        cmbAdaptivityStep->clear();
     }
 
     m_computation = computation;
@@ -345,7 +349,7 @@ void PhysicalFieldWidget::doFieldInfo(int index)
 
 void PhysicalFieldWidget::doTimeStep(int index)
 {
-    if (m_computation && m_computation->isSolved())
+    if (m_computation && m_computation->isSolved() && selectedField())
     {
         fillComboBoxAdaptivityStep(selectedField(), selectedTimeStep(), cmbAdaptivityStep, m_computation);
         if ((cmbAdaptivityStep->currentIndex() >= cmbAdaptivityStep->count()) || (cmbAdaptivityStep->currentIndex() < 0))

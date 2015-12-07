@@ -315,9 +315,9 @@ void SceneViewMesh::paintSolutionMesh()
         // int comp = Agros2D::problem()->setting()->value(ProblemSetting::View_OrderComponent).toInt() - 1;
 
         // for (int level = 0; level <= m_computation->postDeal()->activeAdaptivityStep(); level++)
-        for (int level = 0; level <= ma.doFHandler()->get_tria().n_levels() - 1; level++)
+        for (int level = 0; level <= ma.doFHandler().get_tria().n_levels() - 1; level++)
         {
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
+            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
                 if (cell_int->active_fe_index() == 0)
@@ -361,9 +361,9 @@ void SceneViewMesh::paintOrder()
     {
         MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
 
-        for (int level = 0; level <= ma.doFHandler()->get_tria().n_levels() - 1; level++)
+        for (int level = 0; level <= ma.doFHandler().get_tria().n_levels() - 1; level++)
         {
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
+            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
                 if (cell_int->active_fe_index() == 0)
@@ -426,9 +426,9 @@ void SceneViewMesh::paintOrder()
 
         MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
 
-        for (int level = 0; level <= ma.doFHandler()->get_tria().n_levels() - 1; level++)
+        for (int level = 0; level <= ma.doFHandler().get_tria().n_levels() - 1; level++)
         {
-            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end_active(level);
+            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
             for (; cell_int != endc_int; ++cell_int)
             {
                 if (cell_int->active_fe_index() == 0)
@@ -468,7 +468,7 @@ void SceneViewMesh::paintOrderColorBar()
     MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
 
     int level = 0;
-    dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler()->begin_active(level), endc_int = ma.doFHandler()->end();
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end();
     for (; cell_int != endc_int; ++cell_int)
     {
         // polynomial degree

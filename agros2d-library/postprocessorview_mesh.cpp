@@ -78,15 +78,9 @@ void PostprocessorSceneMeshWidget::createControls()
     cmbOrderPaletteOrder = new QComboBox();
     cmbOrderPaletteOrder->addItem(tr("Agros"), PaletteOrder_Agros);
     cmbOrderPaletteOrder->addItem(tr("Jet"), PaletteOrder_Jet);
-    cmbOrderPaletteOrder->addItem(tr("Copper"), PaletteOrder_Copper);
-    cmbOrderPaletteOrder->addItem(tr("Hot"), PaletteOrder_Hot);
-    cmbOrderPaletteOrder->addItem(tr("Cool"), PaletteOrder_Cool);
-    cmbOrderPaletteOrder->addItem(tr("Bone"), PaletteOrder_Bone);
-    cmbOrderPaletteOrder->addItem(tr("Pink"), PaletteOrder_Pink);
-    cmbOrderPaletteOrder->addItem(tr("Spring"), PaletteOrder_Spring);
-    cmbOrderPaletteOrder->addItem(tr("Summer"), PaletteOrder_Summer);
-    cmbOrderPaletteOrder->addItem(tr("Autumn"), PaletteOrder_Autumn);
-    cmbOrderPaletteOrder->addItem(tr("Winter"), PaletteOrder_Winter);
+    cmbOrderPaletteOrder->addItem(tr("Parula"), PaletteOrder_Parula);
+    cmbOrderPaletteOrder->addItem(tr("Inferno"), PaletteOrder_Inferno);
+    cmbOrderPaletteOrder->addItem(tr("Viridis"), PaletteOrder_Viridis);
     cmbOrderPaletteOrder->addItem(tr("HSV"), PaletteOrder_HSV);
     cmbOrderPaletteOrder->addItem(tr("B/W ascending"), PaletteOrder_BWAsc);
     cmbOrderPaletteOrder->addItem(tr("B/W descending"), PaletteOrder_BWDesc);
@@ -188,7 +182,7 @@ void PostprocessorSceneMeshWidget::load()
                                                                                                           m_postprocessorWidget->fieldWidget()->selectedTimeStep(),
                                                                                                           m_postprocessorWidget->fieldWidget()->selectedAdaptivityStep()));
 
-        dofs = ma.doFHandler()->n_dofs();
+        dofs = ma.doFHandler().n_dofs();
     }
     lblDOFs->setText(tr("%1 DOFs").arg(dofs));
 }

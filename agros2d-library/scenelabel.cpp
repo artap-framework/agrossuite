@@ -36,7 +36,9 @@
 #include "solver/problem_config.h"
 
 SceneLabel::SceneLabel(Scene *scene, const Point &point, double area)
-    : MarkedSceneBasic<SceneMaterial>(scene), m_point(point.x, point.y), m_area(area)
+    : MarkedSceneBasic<SceneMaterial>(scene),
+      m_point(scene->parentProblem(), point),
+      m_area(area)
 {
     foreach (FieldInfo* field, m_scene->parentProblem()->fieldInfos())
     {
@@ -461,7 +463,7 @@ bool SceneLabelDialog::save()
     {
         if (sceneLabel->point() != point.point())
         {
-            m_object->scene()->undoStack()->push(new SceneLabelCommandEdit(sceneLabel->point(), point.point()));
+            m_object->scene()->undoStack()->push(new SceneLabelCommandEdit(sceneLabel->pointValue(), point));
         }
     }
 
@@ -581,11 +583,9 @@ void SceneLabelSelectDialog::doReject()
 
 // undo framework *******************************************************************************************************************
 
-SceneLabelCommandAdd::SceneLabelCommandAdd(const PointValue &pointValue, const QMap<QString, QString> &markers, double area, QUndoCommand *parent) : QUndoCommand(parent)
-{
-    m_point = pointValue;
-    m_markers = markers;
-    m_area = area;
+SceneLabelCommandAdd::SceneLabelCommandAdd(const PointValue &pointValue, const QMap<QString, QString> &markers, double area, QUndoCommand *parent)
+    : QUndoCommand(parent), m_point(pointValue), m_markers(markers), m_area(area)
+{    
 }
 
 void SceneLabelCommandAdd::undo()
@@ -606,11 +606,9 @@ void SceneLabelCommandAdd::redo()
     Agros2D::problem()->scene()->invalidate();
 }
 
-SceneLabelCommandRemove::SceneLabelCommandRemove(const PointValue &pointValue, const QMap<QString, QString> &markers, double area, QUndoCommand *parent) : QUndoCommand(parent)
-{
-    m_point = pointValue;
-    m_markers = markers;
-    m_area = area;
+SceneLabelCommandRemove::SceneLabelCommandRemove(const PointValue &point, const QMap<QString, QString> &markers, double area, QUndoCommand *parent)
+    : QUndoCommand(parent), m_point(point), m_markers(markers), m_area(area)
+{    
 }
 
 void SceneLabelCommandRemove::undo()
@@ -631,10 +629,9 @@ void SceneLabelCommandRemove::redo()
     Agros2D::problem()->scene()->invalidate();
 }
 
-SceneLabelCommandEdit::SceneLabelCommandEdit(const PointValue &point, const PointValue &pointNew, QUndoCommand *parent) : QUndoCommand(parent)
+SceneLabelCommandEdit::SceneLabelCommandEdit(const PointValue &point, const PointValue &pointNew, QUndoCommand *parent)
+    : QUndoCommand(parent), m_point(point), m_pointNew(pointNew)
 {
-    m_point = point;
-    m_pointNew = pointNew;
 }
 
 void SceneLabelCommandEdit::undo()
@@ -657,10 +654,9 @@ void SceneLabelCommandEdit::redo()
     }
 }
 
-SceneLabelCommandMoveMulti::SceneLabelCommandMoveMulti(QList<PointValue> points, QList<PointValue> pointsNew, QUndoCommand *parent) : QUndoCommand(parent)
+SceneLabelCommandMoveMulti::SceneLabelCommandMoveMulti(QList<PointValue> points, QList<PointValue> pointsNew, QUndoCommand *parent)
+    : QUndoCommand(parent), m_points(points), m_pointsNew(pointsNew)
 {
-    m_points = points;
-    m_pointsNew = pointsNew;
 }
 
 void SceneLabelCommandMoveMulti::moveAll(QList<PointValue> moveFrom, QList<PointValue> moveTo)
@@ -695,11 +691,9 @@ void SceneLabelCommandMoveMulti::redo()
     Agros2D::problem()->scene()->invalidate();
 }
 
-SceneLabelCommandAddOrRemoveMulti::SceneLabelCommandAddOrRemoveMulti(QList<PointValue> points, QList<QMap<QString, QString> > markers, QList<double> areas, QUndoCommand *parent) : QUndoCommand(parent)
-{
-    m_points = points;
-    m_areas = areas;
-    m_markers = markers;
+SceneLabelCommandAddOrRemoveMulti::SceneLabelCommandAddOrRemoveMulti(QList<PointValue> points, QList<QMap<QString, QString> > markers, QList<double> areas, QUndoCommand *parent)
+    : QUndoCommand(parent), m_points(points), m_areas(areas), m_markers(markers)
+{    
 }
 
 void SceneLabelCommandAddOrRemoveMulti::remove()

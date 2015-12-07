@@ -860,9 +860,9 @@ void LoopsInfo::processPolygonTriangles(bool force)
                 if ((edge->nodeStart()->numberOfConnectedEdges() > 0) && (edge->nodeEnd()->numberOfConnectedEdges() > 0))
                 {
                     if (m_loops[i][j].reverse)
-                        addEdgePoints(&polyline, SceneFace(edge->scene(), edge->nodeStart(), edge->nodeEnd(), edge->angle()), true);
+                        addEdgePoints(&polyline, SceneFace(edge->scene(), edge->nodeStart(), edge->nodeEnd(), Value(m_scene->parentProblem(), edge->angle())), true);
                     else
-                        addEdgePoints(&polyline, SceneFace(edge->scene(), edge->nodeStart(), edge->nodeEnd(), edge->angle()));
+                        addEdgePoints(&polyline, SceneFace(edge->scene(), edge->nodeStart(), edge->nodeEnd(), Value(m_scene->parentProblem(), edge->angle())));
                 }
             }
 

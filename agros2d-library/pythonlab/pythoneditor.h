@@ -207,7 +207,6 @@ protected:
     QAction *actPrintSelection;
 
     QAction *actUseProfiler;
-    QAction *actPrintStacktrace;
     QAction *actConsoleOutput;
 
     QAction *actCreateFromModel;
@@ -237,7 +236,6 @@ private slots:
     void doStartedScript();
     void doExecutedScript();
 
-    void doPrintStacktrace();
     void doUseProfiler();
     void doConsoleOutput();
 

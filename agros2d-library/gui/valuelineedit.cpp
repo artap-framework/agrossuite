@@ -175,9 +175,9 @@ void ValueLineEdit::setValue(const Value &value)
 Value ValueLineEdit::value()
 {
     if (m_isBool)
-        return Value(int(chkCheckBox->isChecked()));
+        return Value(m_problem, int(chkCheckBox->isChecked()));
     else
-        return Value(txtLineEdit->text(), m_table, m_problem);
+        return Value(m_problem, txtLineEdit->text(), m_table);
 }
 
 void ValueLineEdit::doCheckBoxStateChanged()
@@ -368,7 +368,7 @@ void ValueLineEdit::focusInEvent(QFocusEvent *event)
 void ValueLineEdit::doOpenValueTimeDialog()
 {
     ValueTimeDialog dialog;
-    dialog.setValue(Value(txtLineEdit->text()));
+    dialog.setValue(Value(m_problem, txtLineEdit->text()));
 
     if (dialog.exec() == QDialog::Accepted)
     {

@@ -80,30 +80,24 @@ const QString Marker::valueName(const uint id) const
 
 void Marker::setValue(const QString& name, Value value)
 {
-#pragma omp critical
-    {
-        uint hsh = qHash(name);
-        m_valuesHash[name] = hsh;
-        m_values[hsh] = QSharedPointer<Value>(new Value(value));
-    }
+    uint hsh = qHash(name);
+    m_valuesHash[name] = hsh;
+    m_values[hsh] = QSharedPointer<Value>(new Value(value));
 }
 
 void Marker::modifyValue(const QString& name, Value value)
 {
-#pragma omp critical
+    if ((m_valuesHash.contains(name) && m_values.contains(m_valuesHash[name])))
     {
-        if ((m_valuesHash.contains(name) && m_values.contains(m_valuesHash[name])))
-        {
-            // existing value
-            *m_values[m_valuesHash[name]].data() = value;
-        }
-        else
-        {
-            // new value
-            uint hsh = qHash(name);
-            m_valuesHash[name] = hsh;
-            m_values[hsh] = QSharedPointer<Value>(new Value(value));
-        }
+        // existing value
+        *m_values[m_valuesHash[name]].data() = value;
+    }
+    else
+    {
+        // new value
+        uint hsh = qHash(name);
+        m_valuesHash[name] = hsh;
+        m_values[hsh] = QSharedPointer<Value>(new Value(value));
     }
 }
 
@@ -151,7 +145,7 @@ Boundary::Boundary(Scene *scene, const FieldInfo *fieldInfo, QString name, QStri
                 {
                     // default for GUI
                     Module::DialogRow row = fieldInfo->boundaryUI().dialogRow(variable.id());
-                    setValue(variable.id(), Value(QString::number(row.defaultValue())));
+                    setValue(variable.id(), Value(m_scene->parentProblem(), QString::number(row.defaultValue())));
                 }
             }
         }
@@ -175,7 +169,7 @@ Material::Material(Scene *scene, const FieldInfo *fieldInfo, QString name,
             {
                 // default for GUI
                 Module::DialogRow row = fieldInfo->materialUI().dialogRow(variable.id());
-                setValue(variable.id(), Value(QString::number(row.defaultValue())));
+                setValue(variable.id(), Value(m_scene->parentProblem(), QString::number(row.defaultValue())));
             }
         }
 
@@ -183,7 +177,7 @@ Material::Material(Scene *scene, const FieldInfo *fieldInfo, QString name,
         {
             if (!this->contains(id))
             {
-                setValue(id, Value(QString::number(0)));
+                setValue(id, Value(m_scene->parentProblem()));
             }
         }
     }

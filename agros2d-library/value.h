@@ -33,26 +33,22 @@ class ProblemBase;
 class AGROS_LIBRARY_API Value
 {
 public:
-    Value(double value = 0.0);
-    Value(double value,
-          std::vector<double> x,
-          std::vector<double> y,
-          DataTableType type = DataTableType_PiecewiseLinear,
-          bool splineFirstDerivatives = true,
-          bool extrapolateConstant = true);
+    Value();
 
-    Value(const QString &value);
-    Value(const QString &value,
-          ProblemBase *problem);
-    Value(const QString &value,
+    Value(ProblemBase *problem,
+          const double value = 0.0);
+
+    Value(ProblemBase *problem,
+          const QString &value,
+          const DataTable &table = DataTable());
+
+    Value(ProblemBase *problem,
+          const QString &value,
           std::vector<double> x,
           std::vector<double> y,
           DataTableType type = DataTableType_PiecewiseLinear,
           bool splineFirstDerivatives = true,
-          bool extrapolateConstant = true);
-    Value(const QString &value,
-          const DataTable &table,
-          ProblemBase *problem);
+          bool extrapolateConstant = true);   
 
     Value(const Value& origin);
     Value& operator=(const Value& origin);
@@ -90,6 +86,8 @@ public:
 
     inline DataTable table() const { return m_table; }
 
+    inline ProblemBase *problem() const { return m_problem; }
+
 private:
     bool m_isEvaluated;   
 
@@ -113,15 +111,17 @@ private:
     bool evaluateExpression(const QString &expression, double time, const Point &point, double& evaluationResult) const ;
 
     friend class ValueLineEdit;
+    friend class ValueTimeDialog;
     friend class PointValue;
 };
 
 class AGROS_LIBRARY_API PointValue
 {
 public:
-    PointValue(double x = 0.0, double y = 0.0);
-    PointValue(const Point &point);
+    PointValue(ProblemBase *problem = nullptr, const Point &point = Point());
     PointValue(const Value &x, const Value &y);
+
+    // PointValue(const PointValue& origin);
     PointValue& operator=(const PointValue &origin);
 
     void setPoint(double x, double y);

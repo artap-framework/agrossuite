@@ -25,80 +25,115 @@
 #include "solver/problem_config.h"
 #include "parser/lex.h"
 
-Value::Value(double value)
-    : m_isEvaluated(true), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(nullptr)
+#include <tbb/tbb.h>
+tbb::mutex runValueExpressionMutex;
+
+
+Value::Value()
+    : m_problem(nullptr),
+      m_number(0),
+      m_text("0"),
+      m_isEvaluated(true),
+      m_isTimeDependent(false),
+      m_isCoordinateDependent(false),
+      m_time(0.0),
+      m_point(Point()),
+      m_table(DataTable())
 {
-    m_text = QString::number(value);
-    m_number = value;
 }
 
-Value::Value(double value, std::vector<double> x, std::vector<double> y, DataTableType type, bool splineFirstDerivatives, bool extrapolateConstant)
-    : m_isEvaluated(true), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(nullptr)
+Value::Value(ProblemBase *problem,
+             double value)
+    : m_problem(problem),
+      m_number(value),
+      m_text(QString::number(value)),
+      m_isEvaluated(true),
+      m_isTimeDependent(false),
+      m_isCoordinateDependent(false),
+      m_time(0.0),
+      m_point(Point()),
+      m_table(DataTable())
 {
+    // if (!problem)
+    //     qDebug() << "Value 1 problem == null";
+}
+
+Value::Value(ProblemBase *problem,
+             const QString &value,
+             const DataTable &table)
+    : m_problem(problem),
+      m_number(0),
+      m_text("0"),
+      m_isEvaluated(false),
+      m_isTimeDependent(false),
+      m_isCoordinateDependent(false),
+      m_time(0.0),
+      m_point(Point()),
+      m_table(table)
+{
+    // if (!problem)
+    //     qDebug() << "Value 2 problem == null";
+
+    if (!value.isEmpty())
+    {
+        parseFromString(value);
+        evaluateAndSave();
+    }
+}
+
+Value::Value(ProblemBase *problem,
+             const QString &value,
+             std::vector<double> x,
+             std::vector<double> y,
+             DataTableType type,
+             bool splineFirstDerivatives,
+             bool extrapolateConstant)
+    : m_problem(problem),
+      m_number(0),
+      m_text("0"),
+      m_isEvaluated(false),
+      m_isTimeDependent(false),
+      m_isCoordinateDependent(false),
+      m_time(0.0),
+      m_point(Point()),
+      m_table(DataTable())
+{
+    // if (!problem)
+    //     qDebug() << "Value 3 problem == null";
+
     assert(x.size() == y.size());
 
-    m_text = QString::number(value);
-    m_number = value;
+    parseFromString(value.isEmpty() ? "0" : value);
     m_table.setValues(x, y);
     m_table.setType(type);
     m_table.setSplineFirstDerivatives(splineFirstDerivatives);
     m_table.setExtrapolateConstant(extrapolateConstant);
-}
 
-Value::Value(const QString &value)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(nullptr)
-{
-    parseFromString(value.isEmpty() ? "0" : value);
     evaluateAndSave();
-}
-
-Value::Value(const QString &value, ProblemBase *problem)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(problem)
-{
-    parseFromString(value.isEmpty() ? "0" : value);
-    evaluateAndSave();
-}
-
-Value::Value(const QString &value, std::vector<double> x, std::vector<double> y, DataTableType type, bool splineFirstDerivatives, bool extrapolateConstant)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(DataTable()), m_problem(nullptr)
-{
-    assert(x.size() == y.size());
-
-    parseFromString(value.isEmpty() ? "0" : value);
-    m_table.setValues(x, y);
-    m_table.setType(type);
-    m_table.setSplineFirstDerivatives(splineFirstDerivatives);
-    m_table.setExtrapolateConstant(extrapolateConstant);
-    evaluateAndSave();
-}
-
-Value::Value(const QString &value, const DataTable &table, ProblemBase *problem)
-    : m_isEvaluated(false), m_isTimeDependent(false), m_isCoordinateDependent(false), m_time(0.0), m_point(Point()), m_table(table), m_problem(problem)
-{
-    parseFromString(value.isEmpty() ? "0" : value);
 }
 
 Value::Value(const Value &origin)
 {
     *this = origin;
+
     evaluateAndSave();
-    //    qDebug() << "Copy Value" << this->m_text << ", " << this->m_number;
 }
 
 Value& Value::operator =(const Value &origin)
 {
+    m_number = origin.m_number;
     m_text = origin.m_text;
     m_time = origin.m_time;
     m_point = origin.m_point;
     m_isTimeDependent = origin.m_isTimeDependent;
     m_isCoordinateDependent = origin.m_isCoordinateDependent;
+    m_isEvaluated = origin.m_isEvaluated;
     m_table = origin.m_table;
     m_problem = origin.m_problem;
 
     evaluateAndSave();
 
     return *this;
-    //    qDebug() << "operator= Value" << this->m_text << ", " << this->m_number;
 }
 
 Value::~Value()
@@ -329,22 +364,17 @@ bool Value::evaluateExpression(const QString &expression, double time, const Poi
     currentPythonEngineAgros()->blockSignals(true);
 
     QString commandPre;
-    QString commandPost;
-
     if (m_isCoordinateDependent && !m_isTimeDependent)
     {
         commandPre = QString("x = %1; y = %2; r = %1; z = %2").arg(point.x).arg(point.y);
-        // commandPost = QString("del x; del y; del r; del z");
     }
     else if (m_isTimeDependent && !m_isCoordinateDependent)
     {
         commandPre = QString("time = %1").arg(time);
-        // commandPost = QString("del time");
     }
     else if (m_isCoordinateDependent && m_isTimeDependent)
     {
         commandPre = QString("time = %1; x = %2; y = %3; r = %2; z = %3").arg(time).arg(point.x).arg(point.y);
-        // commandPost = QString("del time; del x; del y; del r; del z");
     }
 
     // problem
@@ -361,38 +391,42 @@ bool Value::evaluateExpression(const QString &expression, double time, const Poi
         }
     }
 
-    // temporary dict
-    currentPythonEngineAgros()->useTemporaryDict();
+    bool successfulRun = false;
 
-    // eval expression
-    bool successfulRun = currentPythonEngineAgros()->runExpression(expression,
-                                                                   &evaluationResult,
-                                                                   commandPre,
-                                                                   commandPost);
+    {
+        tbb::mutex::scoped_lock lock(runValueExpressionMutex);
 
-    // global dict
-    currentPythonEngineAgros()->useGlobalDict();
+        // temporary dict
+        currentPythonEngineAgros()->useTemporaryDict();
+
+        // eval expression
+        successfulRun = currentPythonEngineAgros()->runExpression(expression,
+                                                                  &evaluationResult,
+                                                                  commandPre);
+
+        if (!successfulRun)
+        {
+            qDebug() << successfulRun;
+            ErrorResult result = currentPythonEngine()->parseError();
+            Agros2D::log()->printError(QObject::tr("Value expression"), result.error());
+        }
+
+        // global dict
+        currentPythonEngineAgros()->useGlobalDict();
+    }
 
     if (!signalBlocked)
         currentPythonEngineAgros()->blockSignals(false);
-
-    if (!successfulRun)
-        qDebug() << successfulRun;
 
     return successfulRun;
 }
 
 // ************************************************************************************************
 
-PointValue::PointValue(double x, double y)
-    : m_x(Value(x)), m_y(Value(y))
+PointValue::PointValue(ProblemBase *problem, const Point &point)
+    : m_x(Value(problem, point.x)),
+      m_y(Value(problem, point.y))
 {
-}
-
-PointValue::PointValue(const Point &point)
-{
-    m_x.setNumber(point.x);
-    m_y.setNumber(point.y);
 }
 
 PointValue::PointValue(const Value &x, const Value &y)

@@ -171,7 +171,7 @@ public:
     inline const dealii::hp::QCollection<2-1> &quadratureFormulasFace() const { return m_quadratureFormulasFace; }
 
     inline MultiArray &couplingSource(const QString &fieldID) { return m_couplingSources[fieldID]; }
-    inline void setCouplingSource(const QString &fieldID, MultiArray sourceSolution) { m_couplingSources[fieldID] = sourceSolution; }
+    inline void setCouplingSource(const QString &fieldID, const MultiArray &sourceSolution) { m_couplingSources[fieldID] = sourceSolution; }
 
     // assemble base class
     virtual shared_ptr<SolverDeal::AssembleBase> createAssembleBase(dealii::Triangulation<2> &triangulation) = 0;

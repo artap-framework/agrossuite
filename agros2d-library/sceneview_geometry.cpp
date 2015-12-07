@@ -556,14 +556,15 @@ void SceneViewPreprocessor::mousePressEvent(QMouseEvent *event)
             {
                 SceneNode *node = new SceneNode(Agros2D::problem()->scene(), pointNode);
                 SceneNode *nodeAdded = Agros2D::problem()->scene()->addNode(node);
-                if (nodeAdded == node) Agros2D::problem()->scene()->undoStack()->push(new SceneNodeCommandAdd(node->point()));
+                if (nodeAdded == node)
+                    Agros2D::problem()->scene()->undoStack()->push(new SceneNodeCommandAdd(node->pointValue()));
                 updateGL();
             }
         }
         if (m_sceneMode == SceneGeometryMode_OperateOnEdges)
         {
             // add edge directly by mouse click
-            SceneNode *node =SceneNode::findClosestNode(Agros2D::problem()->scene(), p);
+            SceneNode *node = SceneNode::findClosestNode(Agros2D::problem()->scene(), p);
             if (node)
             {
                 if (m_nodeLast == NULL)

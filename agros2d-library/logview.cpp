@@ -254,10 +254,10 @@ LogView::~LogView()
 
 LogDialog::LogDialog(Computation *computation, const QString &title) : QDialog(QApplication::activeWindow()),
     m_computation(computation),
-    m_nonlinearChart(NULL), m_nonlinearErrorGraph(NULL), m_nonlinearProgress(NULL),
-    m_adaptivityChart(NULL), m_adaptivityErrorGraph(NULL), m_adaptivityDOFsGraph(NULL), m_adaptivityProgress(NULL),
-    m_timeChart(NULL), m_timeTimeStepGraph(NULL), m_timeProgress(NULL),
-    m_progress(NULL)
+    m_nonlinearChart(nullptr), m_nonlinearErrorGraph(nullptr), m_nonlinearProgress(nullptr),
+    m_adaptivityChart(nullptr), m_adaptivityErrorGraph(nullptr), m_adaptivityDOFsGraph(nullptr), m_adaptivityProgress(nullptr),
+    m_timeChart(nullptr), m_timeTimeStepGraph(nullptr), m_timeProgress(nullptr),
+    m_progress(nullptr)
 {
     setModal(true);
     
@@ -409,7 +409,7 @@ void LogDialog::createControls()
     }
 
     // nonlinear
-    if (m_computation->isNonlinear())
+    if (m_computation->determineIsNonlinear())
     {
         m_nonlinearChart = new QCustomPlot(this);
         QCPPlotTitle *nonlinearTitle = new QCPPlotTitle(m_nonlinearChart, tr("Nonlinear solver"));

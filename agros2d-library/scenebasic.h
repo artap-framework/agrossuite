@@ -110,15 +110,15 @@ public:
     ~MarkedSceneBasic() {}
 
     /// gets marker that corresponds to the given field
-    MarkerType* marker(QString field);
-    MarkerType* marker(const FieldInfo *fieldInfo);
+    MarkerType* marker(QString field) const;
+    MarkerType* marker(const FieldInfo *fieldInfo) const;
 
     /// adds marker. If there exists marker with the same field, is overwritten
     void addMarker(MarkerType* marker);
 
     /// true if has given marker
-    bool hasMarker(const MarkerType* marker) { return m_markers[marker->fieldInfo()] == marker; }
-    bool hasMarker(const FieldInfo* fieldInfo) { return m_markers.contains(fieldInfo); }
+    bool hasMarker(const MarkerType* marker) const { return m_markers[marker->fieldInfo()] == marker; }
+    bool hasMarker(const FieldInfo* fieldInfo) const { return m_markers.contains(fieldInfo); }
 
     /// returns markers length
     int markersCount();

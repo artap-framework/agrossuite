@@ -323,7 +323,7 @@ class TestMagneticHarmonicNonlinAxisymmetric(Agros2DTestCase):
         self.magnetic.polynomial_order = 3
         self.magnetic.adaptivity_type = "disabled"
         self.magnetic.solver = "newton"
-        self.magnetic.solver_parameters['residual'] = 0.01
+        self.magnetic.solver_parameters['residual'] = 0.002
         self.magnetic.solver_parameters['damping'] = "automatic"
         self.magnetic.solver_parameters['damping_factor'] = 0.8
         self.magnetic.solver_parameters['jacobian_reuse'] = True
@@ -558,7 +558,7 @@ class TestMagneticHarmonicAxisymmetricTotalCurrent(Agros2DTestCase):
         # fields
         self.magnetic = problem.field("magnetic")
         self.magnetic.analysis_type = "harmonic"
-        self.magnetic.matrix_solver = "mumps"
+        self.magnetic.matrix_solver = "umfpack"
         self.magnetic.number_of_refinements = 2
         self.magnetic.polynomial_order = 3
         self.magnetic.adaptivity_type = "disabled"

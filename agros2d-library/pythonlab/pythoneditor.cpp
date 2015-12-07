@@ -334,6 +334,9 @@ void PythonEditorWidget::createControls()
     toolBar->addAction(pythonEditor->actCheckPyLint);
     toolBar->addSeparator();
     toolBar->addAction(pythonEditor->actCreateFromModel);
+    toolBar->addSeparator();
+    toolBar->addAction(pythonEditor->actUseProfiler);
+    toolBar->addAction(pythonEditor->actConsoleOutput);
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(1, 1, 1, 1);
@@ -572,17 +575,12 @@ void PythonEditorDialog::createActions()
     actPrintSelection->setShortcut(tr("F5"));
     connect(actPrintSelection, SIGNAL(triggered()), this, SLOT(doPrintSelection()));
 
-    actUseProfiler = new QAction(icon(""), tr("Profiler"), this);
+    actUseProfiler = new QAction(icon("profiler"), tr("Profiler"), this);
     actUseProfiler->setCheckable(true);
     actUseProfiler->setChecked(Agros2D::configComputer()->value(Config::Python_UseProfiler).toBool());
     connect(actUseProfiler, SIGNAL(triggered()), this, SLOT(doUseProfiler()));
 
-    actPrintStacktrace = new QAction(icon(""), tr("Print stacktrace"), this);
-    actPrintStacktrace->setCheckable(true);
-    actPrintStacktrace->setChecked(Agros2D::configComputer()->value(Config::Python_PrintStacktrace).toBool());
-    connect(actPrintStacktrace, SIGNAL(triggered()), this, SLOT(doPrintStacktrace()));
-
-    actConsoleOutput = new QAction(icon(""), tr("Console output"), this);
+    actConsoleOutput = new QAction(icon("log"), tr("Console output"), this);
     actConsoleOutput->setCheckable(true);
     actConsoleOutput->setChecked(Agros2D::configComputer()->value(Config::Python_UseProfiler).toBool());
     connect(actConsoleOutput, SIGNAL(triggered()), this, SLOT(doConsoleOutput()));
@@ -617,19 +615,12 @@ void PythonEditorDialog::createControls()
     mnuEdit->addSeparator();
     mnuEdit->addAction(actGotoLine);
 
-    QMenu *mnuSettings = new QMenu(tr("Config"), this);
-    mnuSettings->addAction(actUseProfiler);
-    mnuSettings->addAction(actPrintStacktrace);
-    mnuSettings->addAction(actConsoleOutput);
-
     mnuTools = new QMenu(tr("&Tools"), this);
     mnuTools->addAction(actReplaceTabsWithSpaces);
     mnuTools->addSeparator();
     mnuTools->addAction(actHelpOnWord);
     mnuTools->addAction(actGotoDefinition);
     mnuTools->addAction(actPrintSelection);
-    mnuTools->addSeparator();
-    mnuTools->addMenu(mnuSettings);
 
     // contents
     tabWidget = new QTabWidget(this);
@@ -759,12 +750,8 @@ void PythonEditorDialog::doRunPython()
         ErrorResult result = pythonEngine->parseError();
 
         m_console->stdErr(result.error());
-
-        if (Agros2D::configComputer()->value(Config::Python_PrintStacktrace).toBool())
-        {
-            m_console->stdErr("\nStacktrace:\n");
-            m_console->stdErr(result.tracebackToString());
-        }
+        m_console->stdErr("\nStacktrace:\n");
+        m_console->stdErr(result.tracebackToString());
 
         if (!txtEditor->textCursor().hasSelection() && result.line() >= 0)
             txtEditor->gotoLine(result.line(), true);
@@ -1253,11 +1240,6 @@ void PythonEditorDialog::doCurrentDocumentChanged(bool changed)
         tabWidget->setTabText(tabWidget->currentIndex(), QString("* %1").arg(fileName));
     else
         tabWidget->setTabText(tabWidget->currentIndex(), fileName);
-}
-
-void PythonEditorDialog::doPrintStacktrace()
-{
-    Agros2D::configComputer()->setValue(Config::Python_PrintStacktrace, !Agros2D::configComputer()->value(Config::Python_PrintStacktrace).toBool());
 }
 
 void PythonEditorDialog::doUseProfiler()

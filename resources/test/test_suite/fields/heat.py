@@ -414,7 +414,7 @@ if __name__ == '__main__':
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatAxisymmetric))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarNewton))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarNewton))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatNonlinPlanarPicard))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestHeatTransientAxisymmetric))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(BenchmarkHeatTransientAxisymmetric))

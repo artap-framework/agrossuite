@@ -47,7 +47,7 @@ QVariant SceneBasic::variant()
 // *************************************************************************************************************************************
 
 template <typename MarkerType>
-MarkerType* MarkedSceneBasic<MarkerType>::marker(const FieldInfo* field)
+MarkerType* MarkedSceneBasic<MarkerType>::marker(const FieldInfo* field) const
 {
     assert(m_markers.contains(field));
     MarkerType* marker = m_markers[field];
@@ -57,7 +57,7 @@ MarkerType* MarkedSceneBasic<MarkerType>::marker(const FieldInfo* field)
 }
 
 template <typename MarkerType>
-MarkerType* MarkedSceneBasic<MarkerType>::marker(QString fieldId)
+MarkerType* MarkedSceneBasic<MarkerType>::marker(QString fieldId) const
 {
     return marker(m_scene->parentProblem()->fieldInfo(fieldId));
 }
