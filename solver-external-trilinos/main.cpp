@@ -33,7 +33,18 @@
 #include <Epetra_Vector.h>
 #include <Epetra_CrsMatrix.h>
 #include <EpetraExt_MatrixMatrix.h>
+// develop. - just for serial version, not yet prepared for MPI (page 14 of Trilinos pdf manual)
 #include <Epetra_SerialComm.h>
+#include <Epetra_SerialDenseMatrix.h>
+#include <Epetra_SerialCommData.h>
+#include <Epetra_SerialDenseOperator.h>
+#include <Epetra_SerialDenseSolver.h>
+#include <Epetra_SerialDenseVector.h>
+#include <Epetra_SerialDenseSVD.h>
+#include <Epetra_SerialDistributor.h>
+#include <Epetra_SerialSpdDenseSolver.h>
+#include <Epetra_SerialSymDenseMatrix.h>
+//----
 #include <Epetra_Map.h>
 #include <Epetra_CrsGraph.h>
 #include <EpetraExt_RowMatrixOut.h>
@@ -105,17 +116,17 @@ int main(int argc, char *argv[])
         VectorRW solution(system_rhs.max_len);
 
         // number of unknowns
-        int n = system_matrix_pattern.rows;
+        int numOfRows = system_matrix_pattern.rows;
 
         // number of nonzero elements in matrix
         int nz = system_matrix.max_len;
 
-        // representation of the matrix and rhs
-        double *a = new double[nz];
+        // representation of the matrix
+        double *matrixA = new double[nz];
 
         // matrix indices pointing to the row and column dimensions
-        int *irn = new int[nz];
-        int *jcn = new int[nz];
+        int *iRn = new int[nz];
+        int *jCn = new int[nz];
 
         int index = 0;
 
@@ -127,43 +138,74 @@ int main(int argc, char *argv[])
 
             for (int i = col_start; i < col_end; i++)
             {
-                irn[index] = row + 0;
-                jcn[index] = system_matrix_pattern.colnums[i] + 0;
-                a[index] = system_matrix.val[i];
+                iRn[index] = row;
+                jCn[index] = system_matrix_pattern.colnums[i];
+                matrixA[index] = system_matrix.val[i];
                 ++index;
             }
         }
 
 // --- develop ---
         // print elements in (of the matrix row by row)
-        std::cout << "Matrixes -----" << std::endl;
-        for (int row = 0; row < system_matrix_pattern.rows; ++row)
-        {
-            std::size_t col_start = system_matrix_pattern.rowstart[row];
-            std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
+//        std::cout << "Matrixes -----" << std::endl;
+//        for (int row = 0; row < system_matrix_pattern.rows; ++row)
+//        {
+//            std::size_t col_start = system_matrix_pattern.rowstart[row];
+//            std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
 
-            for (int i = col_start; i < col_end; i++)
-            {
-                std::cout << row + 0 << " " << system_matrix_pattern.colnums[i] + 0 << " " <<  system_matrix.val[i] << std::endl;
-            }
+//            for (int i = col_start; i < col_end; i++)
+//            {
+//                std::cout << row << " " << system_matrix_pattern.colnums[i] << " " <<  system_matrix.val[i] << std::endl;
+//            }
+//        }
+// ---------------
+        Epetra_SerialDenseVector epeRhs(numOfRows);     // it have automatic deletion of memory allocation when destructed
+        epeRhs.SetLabel("RHS - com Epetra");
+
+        // fill Epetra vector by rhs values
+        for (int i = 0; i < numOfRows; i++) {
+//            std::cout << system_rhs[i] << " ";    // show original rhs values - develop
+            epeRhs(i)= system_rhs[i];             // (i) enforce bounds checking
         }
+//        std::cout << std::endl << "Filled RHS check" << std::endl << epeRhs << std::endl;  // develop
+
+
+        Epetra_SerialDenseMatrix epeA(numOfRows, numOfRows);
+        // fill the Epetra matrix A by solved system A matrix values
+        for (int index = 0; index < nz; index++) {
+            epeA(iRn[index], jCn[index]) = matrixA[index];
+        }
+//        std::cout << std::endl << "Filled A matrix check" << std::endl << epeA << std::endl;  // develop
+
+//        develop - simple test of matrix multiplication
+//        Epetra_SerialDenseMatrix epeMultiplication(numOfRows, numOfRows);
+//        epeMultiplication.Multiply('Y', 'N', 1.0, epeA, epeA, 1.0);
+//        std::cout << "Multiplication" << std::endl << epeMultiplication << std::endl;
+
+
+        Epetra_SerialDenseVector epeSolution(numOfRows);     // Epetra solution vector
 // ---------------
 
-//        Epetra_CrsMatrix A;
-//        Epetra_Vector X;
-//        Epetra_Vector rhs(Copy, Map, LocalValues);
-
 //        Epetra_LinearProblem Problem(&A, &X, &rhs);
+        Epetra_SerialDenseSolver solver;
+        solver.SetMatrix(epeA);
+        solver.SetVectors(epeSolution, epeRhs);
 
-        Amesos_BaseSolver* Solver;
-        Amesos Factory;
-        char* SolverType = "Amesos_Klu"; // uses the KLU direct solver
+//        solver.ApplyRefinement();
+        int solvStatus = solver.Solve();
+        std::cout << "Solver status: " << solvStatus << std::endl;
+        std::cout << "Solved ?: " << solver.Solved() << std::endl;
+        std::cout << "rcond = " << solver.RCOND() << std::endl;
+
+//        Amesos_BaseSolver* Solver;
+//        Amesos Factory;
+//        char* SolverType = "Amesos_Klu"; // uses the KLU direct solver
         // Solver = Factory.Create(SolverType, Problem);
 
-        AMESOS_CHK_ERR(Solver->SymbolicFactorization());
+//        AMESOS_CHK_ERR(Solver->SymbolicFactorization());
 
-        AMESOS_CHK_ERR(Solver->NumericFactorization());
-        AMESOS_CHK_ERR(Solver->Solve());
+//        AMESOS_CHK_ERR(Solver->NumericFactorization());
+//        AMESOS_CHK_ERR(Solver->Solve());
 
 //        std::ofstream writeSln(solutionArg.getValue());
 //        solution.block_write(writeSln);
