@@ -33,7 +33,7 @@
 #include <Epetra_Vector.h>
 #include <Epetra_CrsMatrix.h>
 #include <EpetraExt_MatrixMatrix.h>
-// develop. - just for serial version, not yet prepared for MPI (page 14 of Trilinos pdf manual)
+// develop. - Serial version, not yet prepared for MPI (page 14 of Trilinos pdf manual)
 #include <Epetra_SerialComm.h>
 #include <Epetra_SerialDenseMatrix.h>
 #include <Epetra_SerialCommData.h>
@@ -45,11 +45,14 @@
 #include <Epetra_SerialSpdDenseSolver.h>
 #include <Epetra_SerialSymDenseMatrix.h>
 //----
+// develop. - Serial version, not yet prepared for MPI (page 14 of Trilinos pdf manual)
+//#include <mpi/mpi.h> // ??
 #include <Epetra_Map.h>
 #include <Epetra_CrsGraph.h>
 #include <EpetraExt_RowMatrixOut.h>
 #include <EpetraExt_VectorOut.h>
 
+//----
 #include "../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
 
@@ -85,15 +88,6 @@ int main(int argc, char *argv[])
         // parse the argv array.
         cmd.parse(argc, argv);
 
-//      only for development -------------------------
-//        char *pom[4];
-//        // pom[0] = (char *) "Testing";
-//        pom[0] = (char *) "testmatice.matrix";
-//        pom[1] = (char *) "testmatice.matrix_pattern";
-//        pom[2] = (char *) "testmatice.rhs";
-//        cmd.parse(3, pom);
-// ---------------------------------------------------
-
         SparsityPatternRW system_matrix_pattern;
         std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
         system_matrix_pattern.block_read(readMatrixSparsityPattern);
@@ -119,14 +113,14 @@ int main(int argc, char *argv[])
         int numOfRows = system_matrix_pattern.rows;
 
         // number of nonzero elements in matrix
-        int nz = system_matrix.max_len;
+        int numOfNonZero = system_matrix.max_len;
 
         // representation of the matrix
-        double *matrixA = new double[nz];
+        double *matrixA = new double[numOfNonZero];
 
         // matrix indices pointing to the row and column dimensions
-        int *iRn = new int[nz];
-        int *jCn = new int[nz];
+        int *iRn = new int[numOfNonZero];
+        int *jCn = new int[numOfNonZero];
 
         int index = 0;
 
@@ -145,8 +139,9 @@ int main(int argc, char *argv[])
             }
         }
 
+// -------------------------- Dense version - TODO: separate to class -----------
 // --- develop ---
-        // print elements in (of the matrix row by row)
+// print elements in (of the matrix row by row)
 //        std::cout << "Matrixes -----" << std::endl;
 //        for (int row = 0; row < system_matrix_pattern.rows; ++row)
 //        {
@@ -172,7 +167,7 @@ int main(int argc, char *argv[])
 
         Epetra_SerialDenseMatrix epeA(numOfRows, numOfRows);
         // fill the Epetra matrix A by solved system A matrix values
-        for (int index = 0; index < nz; index++) {
+        for (int index = 0; index < numOfNonZero; index++) {
             epeA(iRn[index], jCn[index]) = matrixA[index];
         }
 //        std::cout << std::endl << "Filled A matrix check" << std::endl << epeA << std::endl;  // develop
@@ -196,6 +191,11 @@ int main(int argc, char *argv[])
         std::cout << "Solver status: " << solvStatus << std::endl;
         std::cout << "Solved ?: " << solver.Solved() << std::endl;
         std::cout << "rcond = " << solver.RCOND() << std::endl;
+// -------------------------- END of Dense version ------------------------------
+
+// -------------------------- Distributed version - TODO: separate to class -----
+//        Epetra_Map mapOnProcess()
+
 
 //        Amesos_BaseSolver* Solver;
 //        Amesos Factory;
@@ -211,6 +211,7 @@ int main(int argc, char *argv[])
 //        solution.block_write(writeSln);
 //        writeSln.close();
 
+// -------------------------- END of Distributed version ------------------------------
         exit(0);
     }
     catch (TCLAP::ArgException &e)
