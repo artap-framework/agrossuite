@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
             }
         }
 
-// -------------------------- Dense version - TODO: separate to class -----------
+// -------------------------- Dense serial version - TODO: separate to class -----------
 // --- develop ---
 // print elements in (of the matrix row by row)
 //        std::cout << "Matrixes -----" << std::endl;
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 //                std::cout << row << " " << system_matrix_pattern.colnums[i] << " " <<  system_matrix.val[i] << std::endl;
 //            }
 //        }
-// ---------------
+
         Epetra_SerialDenseVector epeRhs(numOfRows);     // it have automatic deletion of memory allocation when destructed
         epeRhs.SetLabel("RHS - com Epetra");
 
@@ -193,7 +193,49 @@ int main(int argc, char *argv[])
         std::cout << "rcond = " << solver.RCOND() << std::endl;
 // -------------------------- END of Dense version ------------------------------
 
+// -------------------------- Sparse serial version - TODO: separate to class ---
+//        Epetra_SerialComm Comm();
+//        // ***** Map puts same number of equations on each pe *****
+//        int NumMyElements = 1000 ;
+//        Epetra_Map Map(-1, NumMyElements, 0, Comm);
+//        int NumGlobalElements = Map.NumGlobalElements();
+
+//        // ***** Create an Epetra_Matrix  tridiag(-1,2,-1) *****
+
+//        Epetra_CrsMatrix A(Copy, Map, 3);
+//        double negOne = -1.0; double posTwo = 2.0;
+
+//          for (int i=0; i<NumMyElements; i++) {
+//            int GlobalRow = A.GRID(i);
+//            int RowLess1 = GlobalRow - 1;
+//            int RowPlus1 = GlobalRow + 1;
+//            if (RowLess1!=-1)
+//               A.InsertGlobalValues(GlobalRow, 1, &negOne, &RowLess1);
+//            if (RowPlus1!=NumGlobalElements)
+//               A.InsertGlobalValues(GlobalRow, 1, &negOne, &RowPlus1);
+//            A.InsertGlobalValues(GlobalRow, 1, &posTwo, &GlobalRow);
+//          }
+//        A.FillComplete(); // Transform from GIDs to LIDs
+//        // ***** Create x and b vectors *****
+//          Epetra_Vector x(Map);
+//          Epetra_Vector b(Map);
+//          b.Random(); // Fill RHS with random #s
+//          // ***** Create Linear Problem *****
+//            Epetra_LinearProblem problem(&A, &x, &b);
+//            // ***** Create/define AztecOO instance, solve *****
+//            AztecOO solver(problem);
+//            solver.SetAztecOption(AZ_precond, AZ_Jacobi);
+//            solver.Iterate(1000, 1.0E-8);
+//            // ***** Report results, finish ***********************
+//              cout << "Solver performed " << solver.NumIters()
+//                      << " iterations." << endl
+//                      << "Norm of true residual = "
+//                      << solver.TrueResidual()
+//                      << endl;
+// -------------------------- END of Sparse Serial version ------------------------------
+
 // -------------------------- Distributed version - TODO: separate to class -----
+
 //        Epetra_Map mapOnProcess()
 
 
@@ -211,7 +253,7 @@ int main(int argc, char *argv[])
 //        solution.block_write(writeSln);
 //        writeSln.close();
 
-// -------------------------- END of Distributed version ------------------------------
+// -------------------------- END of Sparse Distributed version ------------------------------
         exit(0);
     }
     catch (TCLAP::ArgException &e)
