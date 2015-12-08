@@ -30,6 +30,7 @@ class ExamplesWidget : public QWidget
 
 public:
     ExamplesWidget(QWidget *parent, InfoWidget *infoWidget);
+    ~ExamplesWidget();
 
     QAction *actExamples;
 
@@ -59,6 +60,8 @@ private:
     QString m_selectedExampleFormFilename;
 
     QString m_expandedGroup;
+
+    QSplitter *splitter;
 
     void createActions();
 

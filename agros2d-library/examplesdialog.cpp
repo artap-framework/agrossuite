@@ -81,9 +81,18 @@ ExamplesWidget::ExamplesWidget(QWidget *parent, InfoWidget *infoWidget)
     QGroupBox *widgetExamples = new QGroupBox(tr("Examples"));
     widgetExamples->setLayout(layoutExamples);
 
+    QSettings settings;
+    splitter = new QSplitter(this);
+    splitter->setOrientation(Qt::Vertical);
+    splitter->addWidget(widgetRecentFiles);
+    splitter->addWidget(widgetExamples);
+    splitter->setStretchFactor(0, 1);
+    splitter->setStretchFactor(1, 2);
+    splitter->restoreState(settings.value("ExamplesWidget/SplitterState").toByteArray());
+    splitter->restoreGeometry(settings.value("ExamplesWidget/SplitterGeometry").toByteArray());
+
     QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(widgetRecentFiles, 1);
-    layout->addWidget(widgetExamples, 2);
+    layout->addWidget(splitter);
 
     setLayout(layout);
 
@@ -91,6 +100,13 @@ ExamplesWidget::ExamplesWidget(QWidget *parent, InfoWidget *infoWidget)
     connect(currentPythonEngineAgros(), SIGNAL(executedScript()), this, SLOT(readRecentFiles()));
 
     init("Examples");
+}
+
+ExamplesWidget::~ExamplesWidget()
+{
+    QSettings settings;
+    settings.setValue("ExamplesWidget/SplitterState", splitter->saveState());
+    settings.setValue("ExamplesWidget/SplitterGeometry", splitter->saveGeometry());
 }
 
 void ExamplesWidget::createActions()
