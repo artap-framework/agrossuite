@@ -45,7 +45,6 @@ static QMap<MeshType, QString> meshTypeList;
 static QMap<MatrixSolverType, QString> matrixSolverTypeList;
 static QMap<MatrixExportFormat, QString> dumpFormatList;
 static QMap<PaletteType, QString> paletteTypeList;
-static QMap<PaletteOrderType, QString> paletteOrderTypeList;
 static QMap<VectorType, QString> vectorTypeList;
 static QMap<VectorCenter, QString> vectorCenterList;
 static QMap<DataTableType, QString> dataTableTypeList;
@@ -129,10 +128,6 @@ SceneViewPost3DMode sceneViewPost3DModeFromStringKey(const QString &sceneViewPos
 QStringList paletteTypeStringKeys() { return paletteTypeList.values(); }
 QString paletteTypeToStringKey(PaletteType paletteType) { return paletteTypeList[paletteType]; }
 PaletteType paletteTypeFromStringKey(const QString &paletteType) { return paletteTypeList.key(paletteType); }
-
-QStringList paletteOrderTypeStringKeys() { return paletteOrderTypeList.values(); }
-QString paletteOrderTypeToStringKey(PaletteOrderType paletteType) { return paletteOrderTypeList[paletteType]; }
-PaletteOrderType paletteOrderTypeFromStringKey(const QString &paletteType) { return paletteOrderTypeList.key(paletteType); }
 
 QStringList vectorTypeStringKeys() { return vectorTypeList.values(); }
 QString vectorTypeToStringKey(VectorType vectorType) { return vectorTypeList[vectorType]; }
@@ -269,24 +264,13 @@ void initLists()
     dampingTypeList.insert(DampingType_Fixed, "fixed");
 
     // PaletteType
-    paletteTypeList.insert(Palette_Agros2D, "agros2d");
-    paletteTypeList.insert(Palette_Jet, "jet");
-    paletteTypeList.insert(Palette_Parula, "parula");
-    paletteTypeList.insert(Palette_Inferno, "inferno");
     paletteTypeList.insert(Palette_Viridis, "viridis");
+    paletteTypeList.insert(Palette_Inferno, "inferno");
+    paletteTypeList.insert(Palette_Parula, "parula");
+    paletteTypeList.insert(Palette_Jet, "jet");
     paletteTypeList.insert(Palette_HSV, "hsv");
     paletteTypeList.insert(Palette_BWAsc, "bw_ascending");
     paletteTypeList.insert(Palette_BWDesc, "bw_descending");
-
-    // PaletteOrderType
-    paletteOrderTypeList.insert(PaletteOrder_Agros, "agros");
-    paletteOrderTypeList.insert(PaletteOrder_Jet, "jet");
-    paletteOrderTypeList.insert(PaletteOrder_Parula, "parula");
-    paletteOrderTypeList.insert(PaletteOrder_Inferno, "inferno");
-    paletteOrderTypeList.insert(PaletteOrder_Viridis, "viridis");
-    paletteOrderTypeList.insert(PaletteOrder_HSV, "hsv");
-    paletteOrderTypeList.insert(PaletteOrder_BWAsc, "bw_ascending");
-    paletteOrderTypeList.insert(PaletteOrder_BWDesc, "bw_descending");
 
     // VectorType
     vectorTypeList.insert(VectorType_Arrow, "arrow");
@@ -601,16 +585,14 @@ QString paletteTypeString(PaletteType paletteType)
 {
     switch (paletteType)
     {
-    case Palette_Agros2D:
-        return QObject::tr("Agros2D");
-    case Palette_Jet:
-        return QObject::tr("Jet");
-    case Palette_Parula:
-        return QObject::tr("Parula");
-    case Palette_Inferno:
-        return QObject::tr("Inferno");
     case Palette_Viridis:
         return QObject::tr("Viridis");
+    case Palette_Inferno:
+        return QObject::tr("Inferno");
+    case Palette_Parula:
+        return QObject::tr("Parula");
+    case Palette_Jet:
+        return QObject::tr("Jet");
     case Palette_HSV:
         return QObject::tr("HSV");
     case Palette_BWAsc:

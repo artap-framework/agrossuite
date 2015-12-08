@@ -441,7 +441,7 @@ void ProblemSetting::setDefaultValues()
     m_settingDefault[View_ShowScalarColorBar] = true;
     m_settingDefault[View_ScalarVariable] = QString();
     m_settingDefault[View_ScalarVariableComp] = PhysicFieldVariableComp_Undefined;
-    m_settingDefault[View_PaletteType] = Palette_Agros2D;
+    m_settingDefault[View_PaletteType] = Palette_Viridis;
     m_settingDefault[View_PaletteFilter] = false;
     m_settingDefault[View_PaletteSteps] = 30;
     m_settingDefault[View_ScalarRangeLog] = false;
@@ -462,7 +462,7 @@ void ProblemSetting::setDefaultValues()
     m_settingDefault[View_ShowOrderView] = true;
     m_settingDefault[View_ShowOrderLabel] = false;
     m_settingDefault[View_ShowOrderColorBar] = true;
-    m_settingDefault[View_OrderPaletteOrderType] = PaletteOrder_Agros;
+    m_settingDefault[View_OrderPaletteOrderType] = Palette_Viridis;
     m_settingDefault[View_ParticleButcherTableType] = Explicit_FEHLBERG_6_45_embedded;
     m_settingDefault[View_ParticleIncludeRelativisticCorrection] = true;
     m_settingDefault[View_ParticleMass] = 9.109e-31;

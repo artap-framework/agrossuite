@@ -173,11 +173,10 @@ enum SceneModePostprocessor
 
 enum PaletteType
 {
-    Palette_Agros2D = 0,
+    Palette_Viridis = 0,
     Palette_Jet = 1,
     Palette_Parula = 2,
     Palette_Inferno = 3,
-    Palette_Viridis = 4,
     Palette_HSV = 11,
     Palette_BWAsc = 12,
     Palette_BWDesc = 13
@@ -446,11 +445,6 @@ AGROS_LIBRARY_API QStringList paletteTypeStringKeys();
 AGROS_LIBRARY_API QString paletteTypeToStringKey(PaletteType paletteType);
 AGROS_LIBRARY_API PaletteType paletteTypeFromStringKey(const QString &paletteType);
 AGROS_LIBRARY_API QString paletteTypeString(PaletteType paletteType);
-
-// palette order
-AGROS_LIBRARY_API QStringList paletteOrderTypeStringKeys();
-AGROS_LIBRARY_API QString paletteOrderTypeToStringKey(PaletteOrderType paletteType);
-AGROS_LIBRARY_API PaletteOrderType paletteOrderTypeFromStringKey(const QString &paletteType);
 
 // vector type
 AGROS_LIBRARY_API QString vectorTypeString(VectorType vectorType);

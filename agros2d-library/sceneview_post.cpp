@@ -347,7 +347,7 @@ void PostDeal::problemSolved()
     if (m_activeTimeStep == NOT_FOUND_SO_FAR || activeTimeStep() > lastTimeStep)
         setActiveTimeStep(lastTimeStep);
 
-    // adaptive step    
+    // adaptive step
     int lastAdaptivityStep = m_computation->solutionStore()->lastAdaptiveStep(m_activeViewField, m_activeTimeStep);
     if (m_activeAdaptivityStep == NOT_FOUND_SO_FAR || activeAdaptivityStep() > lastAdaptivityStep)
         setActiveAdaptivityStep(lastAdaptivityStep);
@@ -504,22 +504,13 @@ const double* SceneViewPostInterface::paletteColor(double x) const
 {
     switch ((PaletteType) m_computation->setting()->value(ProblemSetting::View_PaletteType).toInt())
     {
-    case Palette_Agros2D:
+    case Palette_Inferno:
     {
         if (x < 0.0) x = 0.0;
         else if (x > 1.0) x = 1.0;
         x *= PALETTEENTRIES;
         int n = (int) x;
-        return paletteDataAgros[n];
-    }
-        break;
-    case Palette_Jet:
-    {
-        if (x < 0.0) x = 0.0;
-        else if (x > 1.0) x = 1.0;
-        x *= PALETTEENTRIES;
-        int n = (int) x;
-        return paletteDataJet[n];
+        return paletteDataInferno[n];
     }
         break;
     case Palette_Parula:
@@ -531,24 +522,15 @@ const double* SceneViewPostInterface::paletteColor(double x) const
         return paletteDataParula[n];
     }
         break;
-    case Palette_Inferno:
+    case Palette_Jet:
     {
         if (x < 0.0) x = 0.0;
         else if (x > 1.0) x = 1.0;
         x *= PALETTEENTRIES;
         int n = (int) x;
-        return paletteDataInferno[n];
+        return paletteDataJet[n];
     }
         break;
-    case Palette_Viridis:
-    {
-        if (x < 0.0) x = 0.0;
-        else if (x > 1.0) x = 1.0;
-        x *= PALETTEENTRIES;
-        int n = (int) x;
-        return paletteDataViridis[n];
-    }
-        break;    
     case Palette_HSV:
     {
         if (x < 0.0) x = 0.0;
@@ -572,31 +554,36 @@ const double* SceneViewPostInterface::paletteColor(double x) const
         return color;
     }
         break;
+    case Palette_Viridis:
     default:
-        qWarning() << QString("Undefined: %1.").arg(((PaletteType) m_computation->setting()->value(ProblemSetting::View_PaletteType).toInt()));
-        return NULL;
+    {
+        if (x < 0.0) x = 0.0;
+        else if (x > 1.0) x = 1.0;
+        x *= PALETTEENTRIES;
+        int n = (int) x;
+        return paletteDataViridis[n];
+    }
+        break;
     }
 }
 
 const double* SceneViewPostInterface::paletteColorOrder(int n) const
 {
-    switch ((PaletteOrderType) m_computation->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt())
+    switch ((PaletteType) m_computation->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt())
     {
-    case PaletteOrder_Agros:
-        return paletteOrderAgros[n];
-    case PaletteOrder_Jet:
+    case Palette_Jet:
         return paletteOrderJet[n];
-    case PaletteOrder_Parula:
+    case Palette_Parula:
         return paletteOrderParula[n];
-    case PaletteOrder_Inferno:
+    case Palette_Inferno:
         return paletteOrderInferno[n];
-    case PaletteOrder_Viridis:
+    case Palette_Viridis:
         return paletteOrderViridis[n];
-    case PaletteOrder_HSV:
+    case Palette_HSV:
         return paletteOrderHSV[n];
-    case PaletteOrder_BWAsc:
+    case Palette_BWAsc:
         return paletteOrderBWAsc[n];
-    case PaletteOrder_BWDesc:
+    case Palette_BWDesc:
         return paletteOrderBWDesc[n];
     default:
         qWarning() << QString("Undefined: %1.").arg(m_computation->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt());

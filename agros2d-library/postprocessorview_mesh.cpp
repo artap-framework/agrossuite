@@ -76,14 +76,8 @@ void PostprocessorSceneMeshWidget::createControls()
 
     // layout order
     cmbOrderPaletteOrder = new QComboBox();
-    cmbOrderPaletteOrder->addItem(tr("Agros"), PaletteOrder_Agros);
-    cmbOrderPaletteOrder->addItem(tr("Jet"), PaletteOrder_Jet);
-    cmbOrderPaletteOrder->addItem(tr("Parula"), PaletteOrder_Parula);
-    cmbOrderPaletteOrder->addItem(tr("Inferno"), PaletteOrder_Inferno);
-    cmbOrderPaletteOrder->addItem(tr("Viridis"), PaletteOrder_Viridis);
-    cmbOrderPaletteOrder->addItem(tr("HSV"), PaletteOrder_HSV);
-    cmbOrderPaletteOrder->addItem(tr("B/W ascending"), PaletteOrder_BWAsc);
-    cmbOrderPaletteOrder->addItem(tr("B/W descending"), PaletteOrder_BWDesc);
+    foreach (QString key, paletteTypeStringKeys())
+        cmbOrderPaletteOrder->addItem(paletteTypeString(paletteTypeFromStringKey(key)), paletteTypeFromStringKey(key));
 
     chkShowOrderColorbar = new QCheckBox(tr("Show colorbar"), this);
     chkOrderLabel = new QCheckBox(tr("Show labels"), this);
@@ -161,7 +155,7 @@ void PostprocessorSceneMeshWidget::load()
 
     // order view
     chkShowOrderColorbar->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool());
-    cmbOrderPaletteOrder->setCurrentIndex(cmbOrderPaletteOrder->findData((PaletteOrderType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt()));
+    cmbOrderPaletteOrder->setCurrentIndex(cmbOrderPaletteOrder->findData((PaletteType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt()));
     chkOrderLabel->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderLabel).toBool());
 
     // mesh and polynomial info
@@ -196,6 +190,6 @@ void PostprocessorSceneMeshWidget::save()
 
     // order view
     m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderColorBar, chkShowOrderColorbar->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_OrderPaletteOrderType, (PaletteOrderType) cmbOrderPaletteOrder->itemData(cmbOrderPaletteOrder->currentIndex()).toInt());
+    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_OrderPaletteOrderType, (PaletteType) cmbOrderPaletteOrder->itemData(cmbOrderPaletteOrder->currentIndex()).toInt());
     m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderLabel, chkOrderLabel->isChecked());
 }
