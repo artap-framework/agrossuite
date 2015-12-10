@@ -145,16 +145,19 @@ int main(int argc, char *argv[])
         // parse the argv array.
         cmd.parse(argc, argv);
 
+        // read matrix pattern
         SparsityPatternRW system_matrix_pattern;
         std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
         system_matrix_pattern.block_read(readMatrixSparsityPattern);
         readMatrixSparsityPattern.close();
 
+        // read matrix
         SparseMatrixRW system_matrix;
         std::ifstream readMatrix(matrixArg.getValue());
         system_matrix.block_read(readMatrix);
         readMatrix.close();
 
+        // read rhs
         VectorRW system_rhs;
         std::ifstream readRHS(rhsArg.getValue());
         system_rhs.block_read(readRHS);
@@ -164,6 +167,7 @@ int main(int argc, char *argv[])
         std::cout << "TEST Trilinos matrixes -----" << std::endl;
         // system_rhs.block_write(std::cout);
 
+        // create empty solution vector (Agros2D)
         VectorRW solution(system_rhs.max_len);
 
         // number of unknowns
@@ -192,8 +196,12 @@ int main(int argc, char *argv[])
                 iRn[index] = row;
                 jCn[index] = system_matrix_pattern.colnums[i];
                 matrixA[index] = system_matrix.val[i];
+                // --- demo print
+                // std::cout << iRn[index] << ", " << jCn[index] << ", " << matrixA[index] << " || ";
                 ++index;
-            }            
+            }
+            // --- demo print
+            // std::cout << std::endl;
         }
 // -------------------------- Sparse serial version - TODO: separate to class ---
         Epetra_SerialComm comm;
@@ -202,25 +210,53 @@ int main(int argc, char *argv[])
         Epetra_Map epeMap(-1, numOfRows, 0, comm);
         int numGlobalElements = epeMap.NumGlobalElements();
         int numMyElements = epeMap.NumMyElements();
-
-        // ***** Create an Epetra_Matrix tridiag(-1,2,-1) *****
+        // create an Epetra_Matrix
         Epetra_CrsMatrix epeA(Copy, epeMap, 3);
 //        std::cout << epeA << std::endl;
 
-        int globalRow;
-// --- demo data
-        numOfRows = 1000;
-        Epetra_Map demoMap(-1, numOfRows, 0, comm);
+        // prepare data from Agros2D
+        // matrix
+        int globalRow;  // index of row in global matrix
+        for (int rawIndex = 0; rawIndex < numOfRows; rawIndex++) {
+            globalRow = epeA.GRID(rawIndex);
+
+            // TODO: create raw values into 1D array
+            // ---
+
+            // epeA.InsertGlobalValues(globalRow, 1, &posTwo, &globalRow);
+
+            // std::cout << epeA << std::endl;
+        }
+        epeA.FillComplete(); // Transform from GIDs to LIDs
+        // std::cout << epeA << std::endl;
+
+        // create Epetra_Vectors
+        // vectors x and b
+        Epetra_Vector epeX(epeMap);
+        Epetra_Vector epeB(epeMap);
+
+        // copy rhs values (Agros2D) into the Epetra vector b
+        for (int i = 0; i < numOfRows; i++)
+            epeB[i] = system_rhs[i];
+        // std::cout << "Epetra B vector" << std::endl << epeB << std::endl;
+
+        // create linear problem
+        // Epetra_LinearProblem problem(&epeA, &epeX, &epeB);
+
+
+// --- DEMO example
+        int demoNumOfRows = 10000;
+        Epetra_Map demoMap(-1, demoNumOfRows, 0, comm);
         numGlobalElements = demoMap.NumGlobalElements();
         numMyElements = demoMap.NumMyElements();
         Epetra_CrsMatrix demoEpeA(Copy, demoMap, 3);
-        std::cout << demoEpeA << std::endl;
+        //std::cout << demoEpeA << std::endl;
 
         double negOne = -1.0;
         double posTwo = 2.0;
 
-        for (int i = 0; i < numOfRows; i++) {
-          globalRow = demoEpeA.GRID(i);
+        for (int i = 0; i < demoNumOfRows; i++) {
+          int globalRow = demoEpeA.GRID(i);
           int rowLess1 = globalRow - 1;
           int rowPlus1 = globalRow + 1;
 
@@ -231,11 +267,13 @@ int main(int argc, char *argv[])
              demoEpeA.InsertGlobalValues(globalRow, 1, &negOne, &rowPlus1);
 
           demoEpeA.InsertGlobalValues(globalRow, 1, &posTwo, &globalRow);
+          // double p_testArr[9] = {3.1, 8.2, 0.0, 1.5, 0.0, 0.0, 0.0, 56.4, 0.0};
+          // demoEpeA.InsertGlobalValues(globalRow, 9, &p_testArr, &globalRow);
 
           // std::cout << demoEpeA << std::endl;
         }
         demoEpeA.FillComplete(); // Transform from GIDs to LIDs
-        std::cout << demoEpeA << std::endl;
+        // std::cout << demoEpeA << std::endl;
 
         // ---- demo x and b vectors ----
         Epetra_Vector demoEpeX(demoMap);
@@ -247,24 +285,25 @@ int main(int argc, char *argv[])
         // ------ DEMO Amesos solver
         Amesos_BaseSolver* solver;
         Amesos factory;
-        char* solverType = "Amesos_Klu"; // uses the KLU direct solver
+        char* solverType = (char *) "Amesos_Klu"; // uses the KLU direct solver
         solver = factory.Create(solverType, problem);
 
         AMESOS_CHK_ERR(solver->SymbolicFactorization());
 
         AMESOS_CHK_ERR(solver->NumericFactorization());
         AMESOS_CHK_ERR(solver->Solve());
-        std::cout << demoEpeX << std::endl;
+        std::cout << std::endl << "DEMO - Amesos Solution" << std::endl << demoEpeX << std::endl;
+
         // ------ End of DEMO Amesos
 
-//         ------ DEMO AztecOO solver - not work yet, problem with include ??
-//        AztecOO solver(problem);
-//        solver.SetAztecOption(AZ_precond, AZ_Jacobi);
-//        solver.Iterate(1000, 1.0E-8);
-//        std::cout << "Solver performed " << solver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << solver.TrueResidual() << std::endl;
+        //        ------ DEMO AztecOO solver - not work yet, problem with include ??
+        //        AztecOO solver(problem);
+        //        solver.SetAztecOption(AZ_precond, AZ_Jacobi);
+        //        solver.Iterate(1000, 1.0E-8);
+        //        std::cout << "Solver performed " << solver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << solver.TrueResidual() << std::endl;
         // ------ End of DEMO AztecOO
 
-// --- end of demo data
+// --- end of DEMO example
 
         // -------------------------- END of Sparse Serial version ------------------------------
 
@@ -272,6 +311,12 @@ int main(int argc, char *argv[])
 // prepared for MPI
 // -------------------------- END of Sparse Distributed version ------------------------------
 
+        // copy results into the solution vector (for Agros2D)
+        for (int i = 0; i < numOfRows; i++)
+            solution[i] = epeX[i];       //solution[i] = demoEpeX[i]; // for test of export to Agros2D
+
+
+        // write solution to file
         std::ofstream writeSln(solutionArg.getValue());
         solution.block_write(writeSln);
         writeSln.close();
