@@ -78,7 +78,9 @@ int main(int argc, char *argv[])
                 {
                     a.setFileName(QString::fromStdString(problemArg.getValue()));
                     QTimer::singleShot(0, &a, SLOT(solveProblem()));
-                    return a.exec();
+
+                    a.exec();
+                    return a.status();
                 }
                 else
                 {
@@ -96,7 +98,9 @@ int main(int argc, char *argv[])
                 {
                     a.setFileName(QString::fromStdString(scriptArg.getValue()));
                     QTimer::singleShot(0, &a, SLOT(runScript()));
-                    return a.exec();
+
+                    a.exec();
+                    return a.status();
                 }
                 else
                 {
@@ -116,7 +120,8 @@ int main(int argc, char *argv[])
             a.setTestName(QString::fromStdString(testArg.getValue()));
             QTimer::singleShot(0, &a, SLOT(runTest()));
 
-            return a.exec();
+            a.exec();
+            return a.status();
         }
         else
         {

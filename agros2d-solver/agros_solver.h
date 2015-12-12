@@ -41,6 +41,8 @@ public:
     inline void setEnableLog(bool enableLog = true) { m_enableLog = enableLog; }
     inline void setTestName(const QString &name) { m_testName = name; }
 
+    inline int status() const { return m_status; }
+
 public slots:
     void solveProblem();
     void runCommand();
@@ -57,6 +59,8 @@ private:
     QString m_testName;
     bool m_enableLog;
     LogStdOut *m_log;
+
+    bool m_status;
 };
 
 #endif // AGROS_SOLVER_H

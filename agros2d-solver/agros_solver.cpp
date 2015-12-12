@@ -27,7 +27,7 @@
 #include "pythonlab/pythonengine_agros.h"
 
 AgrosSolver::AgrosSolver(int &argc, char **argv)
-    : AgrosApplication(argc, argv), m_log(NULL), m_enableLog(false)
+    : AgrosApplication(argc, argv), m_log(NULL), m_enableLog(false), m_status(-1)
 {        
 }
 
@@ -93,6 +93,7 @@ void AgrosSolver::solveProblem()
         // clear all
         Agros2D::problem()->clearFieldsAndConfig();
 
+        m_status = 0;
         QApplication::exit(0);
     }
     catch (AgrosException &e)
@@ -135,6 +136,8 @@ void AgrosSolver::runCommand()
 
         Agros2D::problem()->scene()->clear();
         Agros2D::clear();
+
+        m_status = 0;
         QApplication::exit(0);
     }
     else
@@ -165,6 +168,8 @@ void AgrosSolver::runTest()
     {
         Agros2D::problem()->clearFieldsAndConfig();
         Agros2D::clear();
+
+        m_status = 0;
         QApplication::exit(0);
     }
     else
