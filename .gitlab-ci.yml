@@ -1,3 +1,9 @@
 build:
-  type: build
-  script: "git submodule init && git submodule update && cd dealii && mkdir build && cd build && cmake .. && make -j20 && cd ../../ && cmake . && make -j20"
+  stage: build
+  script: "git submodule update --init && cd dealii && mkdir build && cd build && cmake .. && make -j20 && cd ../../ && cmake . && make -j20"
+  stage: test
+  script: "cmake -D Experimental"
+  
+#build_update:
+#  type: build
+#  script: "git submodule update && cd dealii/build && cmake .. && make -j20 && cd ../../ && cmake . && make -j20"  
