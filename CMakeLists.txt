@@ -29,7 +29,7 @@ endif()
 # Policy handling
 if(POLICY CMP0043)
   cmake_policy(PUSH)
-  cmake_policy(SET CMP0020 OLD)
+  cmake_policy(SET CMP0043 OLD)
 endif()
 
 # Debug yes / no.
