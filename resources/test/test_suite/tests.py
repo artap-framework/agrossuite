@@ -156,4 +156,4 @@ def create_ctest(file = ""):
                 #agros_test("test_suite.fields.electrostatic.TestElectrostaticPlanar")
             print('ENDIF(TEST_' + g + ')\n', file=text_file)
 
-create_ctest()
+# create_ctest()
