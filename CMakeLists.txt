@@ -4,7 +4,16 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/dealii/cmake)
 
 # not fixed - disabled only!
-cmake_policy(SET CMP0050 OLD)
+# Policy handling
+if(POLICY CMP0020)
+  cmake_policy(SET CMP0020 OLD)
+endif()
+if(POLICY CMP0043)
+  cmake_policy(SET CMP0043 OLD)
+endif()
+if(POLICY CMP0050)
+  cmake_policy(SET CMP0050 OLD)
+endif()
 
 # For Win64
 IF(${CMAKE_CL_64})
@@ -21,17 +30,6 @@ IF(MSVC)
   ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
 ENDIF(MSVC)
   
-# Policy handling
-if(POLICY CMP0020)
-  cmake_policy(PUSH)
-  cmake_policy(SET CMP0020 OLD)
-endif()
-# Policy handling
-if(POLICY CMP0043)
-  cmake_policy(PUSH)
-  cmake_policy(SET CMP0043 OLD)
-endif()
-
 # Debug yes / no.
 SET(AGROS_DEBUG NO)
 SET(CMAKE_AGROS_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
@@ -370,11 +368,3 @@ SET(TEST_deal.II ON)
 SET(TEST_script OFF)
 INCLUDE(CMakeTests.cmake)
 #agros_test("test_suite.fields.electrostatic.TestElectrostaticAxisymmetric")
-
-# Policy handling
-if(POLICY CMP0020)
-  cmake_policy(POP)
-endif()
-if(POLICY CMP0043)
-  cmake_policy(POP)
-endif()
