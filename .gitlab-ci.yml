@@ -44,7 +44,7 @@ build_paralution:
     - cd paralution
     - mkdir -p build 
     - cd build 
-    - cmake 
+    - cmake .
     - make -j30    
     - cd ../../
     - cmake .
