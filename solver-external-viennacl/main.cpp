@@ -51,13 +51,16 @@ int main(int argc, char *argv[])
 {
     try
     {
+        int status = 0;
+
         // command line info
         TCLAP::CmdLine cmd("External solver - UMFPACK", ' ');
 
         TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
         TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
         TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
-        TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", true, "", "string");
+        TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", false, "", "string");
+        TCLAP::ValueArg<std::string> referenceSolutionArg("q", "reference_solution", "Reference solution", false, "", "string");
         TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
         TCLAP::ValueArg<std::string> preconditionerArg("c", "preconditioner", "Preconditioner", false, "", "string");
         TCLAP::ValueArg<std::string> solverArg("l", "solver", "Solver", false, "", "string");
@@ -68,6 +71,7 @@ int main(int argc, char *argv[])
         cmd.add(matrixPatternArg);
         cmd.add(rhsArg);
         cmd.add(solutionArg);
+        cmd.add(referenceSolutionArg);
         cmd.add(initialArg);
         cmd.add(preconditionerArg);
         cmd.add(solverArg);
@@ -76,6 +80,15 @@ int main(int argc, char *argv[])
 
         // parse the argv array.
         cmd.parse(argc, argv);
+
+        std::string slnFileName;
+        std::string slnRefFileName;
+
+        if (!solutionArg.getValue().empty())
+            slnFileName = solutionArg.getValue();
+
+        if (!referenceSolutionArg.getValue().empty())
+            slnRefFileName = referenceSolutionArg.getValue();
 
         SparsityPatternRW system_matrix_pattern;
         std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
@@ -168,11 +181,21 @@ int main(int argc, char *argv[])
         for (int row = 0; row < n; ++row)
             solution.val[row] = vcl_sln(row);
 
-        std::ofstream writeSln(solutionArg.getValue());
-        solution.block_write(writeSln);
-        writeSln.close();
+        if (!slnFileName.empty())
+        {
+            std::ofstream writeSln(slnFileName);
+            solution.block_write(writeSln);
+            writeSln.close();
+        }
 
-        exit(0);
+        if (!slnRefFileName.empty())
+        {
+            // check solution
+            if (!solution.compare(slnRefFileName))
+                status = -1;
+        }
+
+        exit(status);
     }
     catch (TCLAP::ArgException &e)
     {

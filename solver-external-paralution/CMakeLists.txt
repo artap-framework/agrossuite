@@ -37,3 +37,9 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PARALUTION_LIBRARY})
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/../libs)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
+ENABLE_TESTING()
+INCLUDE(CTest)
+
+add_test(NAME "PARALUTION-electrostatic-Jacobi-BiCGStab" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_PARALUTION -t 1e-6 -a 1e-16 -c Jacobi -m ../resources_source/linear_solvers/electrostatic.matrix -p ../resources_source/linear_solvers/electrostatic.matrix_pattern -r ../resources_source/linear_solvers/electrostatic.rhs -q  ../resources_source/linear_solvers/electrostatic.sln)
+add_test(NAME "PARALUTION-electrostatic-ILU-BiCGStab" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_PARALUTION -t 1e-6 -a 1e-16 -c ILU -m ../resources_source/linear_solvers/electrostatic.matrix -p ../resources_source/linear_solvers/electrostatic.matrix_pattern -r ../resources_source/linear_solvers/electrostatic.rhs -q  ../resources_source/linear_solvers/electrostatic.sln)
+add_test(NAME "PARALUTION-acoustic-ILU-IDR" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_PARALUTION -t 1e-6 -a 1e-16 -c ILU -l IDR -m ../resources_source/linear_solvers/acoustic.matrix -p ../resources_source/linear_solvers/acoustic.matrix_pattern -r ../resources_source/linear_solvers/acoustic.rhs -q  ../resources_source/linear_solvers/acoustic.sln)

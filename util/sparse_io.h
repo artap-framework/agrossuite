@@ -254,7 +254,7 @@ public:
         return compare(ref, tolerance);
     }
 
-    bool compare(const VectorRW &comp, double tolerance = 1e-3)
+    bool compare(const VectorRW &comp, double relative_tolerance = 1e-1)
     {
         if (comp.max_len != max_len)
         {
@@ -263,14 +263,16 @@ public:
         }
 
         double diff = 0.0;
-        for (unsigned int i; i < max_len; i++)
+        double sum = 0.0;
+        for (unsigned int i = 0; i < max_len; i++)
         {
+            sum += fabs(val[i]);
             diff += fabs(comp.val[i] - val[i]);
         }
 
-        if (diff > tolerance)
+        if (diff / sum > relative_tolerance)
         {
-            std::cerr << "Difference is greater then " << diff << std::endl;
+            std::cerr << "Difference is greater then " << (diff / sum) * 100 << " % " << std::endl;
             return false;
         }
 

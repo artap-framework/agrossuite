@@ -20,6 +20,8 @@ build:
     
 build_mumps:
   script: 
+    - export CC=/usr/bin/clang
+    - export CXX=/usr/bin/clang++    
     - cd solver-external-mumps
     - cmake .
     - make 
@@ -27,7 +29,33 @@ build_mumps:
     
 build_umfpack:
   script: 
+    - export CC=/usr/bin/clang
+    - export CXX=/usr/bin/clang++    
     - cd solver-external-umfpack
+    - cmake .
+    - make 
+    - ctest -D Experimental
+    
+build_paralution:
+  script: 
+    - export CC=/usr/bin/clang
+    - export CXX=/usr/bin/clang++    
+    - cd solver-external-paralution
+    - cd paralution
+    - mkdir -p build 
+    - cd build 
+    - cmake 
+    - make -j30    
+    - cd ../../
+    - cmake .
+    - make 
+    - ctest -D Experimental
+    
+build_viennacl:
+  script: 
+    - export CC=/usr/bin/clang
+    - export CXX=/usr/bin/clang++    
+    - cd solver-external-viennacl
     - cmake .
     - make 
     - ctest -D Experimental
