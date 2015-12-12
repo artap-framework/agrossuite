@@ -23,4 +23,4 @@ build_mumps:
     - cd solver-external-mumps
     - cmake .
     - make 
-    - ctest
+    - ctest -D Experimental

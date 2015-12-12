@@ -32,23 +32,36 @@ int main(int argc, char *argv[])
 {
     try
     {
+        int status = 0;
+
         // command line info
         TCLAP::CmdLine cmd("External solver - UMFPACK", ' ');
 
         TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
         TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
         TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
-        TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", true, "", "string");
+        TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", false, "", "string");
+        TCLAP::ValueArg<std::string> referenceSolutionArg("q", "reference_solution", "Reference solution", false, "", "string");
         TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
 
         cmd.add(matrixArg);
         cmd.add(matrixPatternArg);
         cmd.add(rhsArg);
         cmd.add(solutionArg);
+        cmd.add(referenceSolutionArg);
         cmd.add(initialArg);
 
         // parse the argv array.
         cmd.parse(argc, argv);
+
+        std::string slnFileName;
+        std::string slnRefFileName;
+
+        if (!solutionArg.getValue().empty())
+            slnFileName = solutionArg.getValue();
+
+        if (!referenceSolutionArg.getValue().empty())
+            slnRefFileName = referenceSolutionArg.getValue();
 
         SparsityPatternRW system_matrix_pattern;
         std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
@@ -153,11 +166,19 @@ int main(int argc, char *argv[])
 
                 if (statusSolve == UMFPACK_OK)
                 {
-                    // umfpack_di_report_vector (n, solution.val, Control) ;
+                    if (!slnFileName.empty())
+                    {
+                        std::ofstream writeSln(slnFileName);
+                        solution.block_write(writeSln);
+                        writeSln.close();
+                    }
 
-                    std::ofstream writeSln(solutionArg.getValue());
-                    solution.block_write(writeSln);
-                    writeSln.close();
+                    if (!slnRefFileName.empty())
+                    {
+                        // check solution
+                        if (!solution.compare(slnRefFileName))
+                            status = -1;
+                    }
 
                     system_rhs.clear();
 
@@ -165,7 +186,7 @@ int main(int argc, char *argv[])
                     delete [] Ai;
                     delete [] Ax;
 
-                    exit(0);
+                    exit(status);
                 }
                 else
                 {

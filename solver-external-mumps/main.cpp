@@ -88,7 +88,6 @@ int main(int argc, char *argv[])
             if (!solutionArg.getValue().empty())
                 slnFileName = solutionArg.getValue();
 
-
             if (!referenceSolutionArg.getValue().empty())
                 slnRefFileName = referenceSolutionArg.getValue();
 
