@@ -6,7 +6,14 @@ build:
     - cd build 
     - cmake 
     - make -j30 
-    - cd ../../ 
+    - cd ../../
+    - export CC=/usr/bin/clang
+    - export CXX=/usr/bin/clang++     
     - cmake . 
     - make -j30
+    - ./agros2d_generator
+    - cd plugins
+    - cmake .
+    - make -j30
+    - cd ..
     - ctest -D Experimental
