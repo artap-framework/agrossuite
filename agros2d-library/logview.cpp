@@ -646,27 +646,27 @@ LogStdOut::LogStdOut(QWidget *parent) : QObject(parent)
 
 void LogStdOut::printHeading(const QString &message)
 {
-    qDebug() << (QString("%1").arg(message).toLatin1());
+    std::cout << (QString("%1").arg(message).toLatin1()).toStdString() << std::endl;
 }
 
 void LogStdOut::printMessage(const QString &module, const QString &message)
 {
-    qDebug() << (QString("%1: %2").arg(module).arg(message).toLatin1());
+    std::cout << (QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString() << std::endl;
 }
 
 void LogStdOut::printError(const QString &module, const QString &message)
 {
-    qWarning() << (QString("%1: %2").arg(module).arg(message).toLatin1());
+    std::cout << (QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString() << std::endl;
 }
 
 void LogStdOut::printWarning(const QString &module, const QString &message)
 {
-    qDebug() << (QString("%1: %2").arg(module).arg(message).toLatin1());
+    std::cout << (QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString() << std::endl;
 }
 
 void LogStdOut::printDebug(const QString &module, const QString &message)
 {
-    qDebug() << (QString("%1: %2").arg(module).arg(message).toLatin1());
+    std::cout << (QString("%1: %2").arg(module).arg(message).toLatin1()).toStdString() << std::endl;
 }
 
 

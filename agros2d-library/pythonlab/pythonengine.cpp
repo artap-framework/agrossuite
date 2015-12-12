@@ -63,17 +63,6 @@ PythonEngine *currentPythonEngine()
     return pythonEngine;
 }
 
-// silent mode
-void setSilentMode(bool mode)
-{
-    m_silentMode = mode;
-}
-
-bool silentMode()
-{
-    return m_silentMode;
-}
-
 // ****************************************************************************
 
 // print stdout

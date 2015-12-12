@@ -3,6 +3,9 @@ PROJECT( agros2d )
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/dealii/cmake)
 
+# not fixed - disabled only!
+cmake_policy(SET CMP0050 OLD)
+
 # For Win64
 IF(${CMAKE_CL_64})
   SET(CMAKE_EXE_LINKER_FLAGS "/machine:X64")

@@ -26,6 +26,7 @@
 
 #include "agros_solver.h"
 #include "util/system_utils.h"
+#include "pythonlab/pythonengine_agros.h"
 
 #include "../3rdparty/tclap/CmdLine.h"
 
@@ -36,20 +37,18 @@ int main(int argc, char *argv[])
         // command line info
         TCLAP::CmdLine cmd("Agros2D solver", ' ', versionString().toStdString());
 
-        TCLAP::SwitchArg logArg("l", "enable-log", "Enable log", false);
+        TCLAP::SwitchArg logArg("l", "enable-log", "Enable log", true);
         TCLAP::SwitchArg remoteArg("r", "remote-server", "Run remote server", false);
         TCLAP::ValueArg<std::string> problemArg("p", "problem", "Solve problem", false, "", "string");
         TCLAP::ValueArg<std::string> scriptArg("s", "script", "Solve script", false, "", "string");
         TCLAP::ValueArg<std::string> commandArg("c", "command", "Run command", false, "", "string");
-        TCLAP::ValueArg<std::string> suiteArg("u", "suite", "Run test suite", false, "", "string");
-        TCLAP::ValueArg<std::string> testArg("t", "test", "Run tests", false, "list", "string");
+        TCLAP::ValueArg<std::string> testArg("t", "test", "Run test", false, "", "string");
 
         cmd.add(logArg);
         cmd.add(remoteArg);
         cmd.add(problemArg);
         cmd.add(commandArg);
         cmd.add(scriptArg);
-        cmd.add(suiteArg);
         cmd.add(testArg);
 
         // parse the argv array.
@@ -57,6 +56,8 @@ int main(int argc, char *argv[])
 
         CleanExit cleanExit;
         AgrosSolver a(argc, argv);
+
+        createPythonEngine(argc, argv, new PythonEngineAgros());
 
         // enable log
         a.setEnableLog(logArg.getValue());
@@ -108,19 +109,6 @@ int main(int argc, char *argv[])
         {
             a.setCommand(QString::fromStdString(commandArg.getValue()));
             QTimer::singleShot(0, &a, SLOT(runCommand()));
-            return a.exec();
-        }
-        else if (!suiteArg.getValue().empty())
-        {
-            if (QString::fromStdString(suiteArg.getValue()) == "list")
-            {
-                QTimer::singleShot(0, &a, SLOT(printTestSuites()));
-            }
-            else
-            {
-                a.setSuiteName(QString::fromStdString(suiteArg.getValue()));
-                QTimer::singleShot(0, &a, SLOT(runSuite()));
-            }
             return a.exec();
         }
         else if (!testArg.getValue().empty())

@@ -28,8 +28,7 @@
 
 AgrosSolver::AgrosSolver(int &argc, char **argv)
     : AgrosApplication(argc, argv), m_log(NULL), m_enableLog(false)
-{    
-    checkForNewVersion(true, true);
+{        
 }
 
 AgrosSolver::~AgrosSolver()
@@ -78,15 +77,16 @@ void AgrosSolver::solveProblem()
 
     try
     {
-        Agros2D::problem()->importProblemFromA2D(m_fileName);
+        Agros2D::problem()->readProblemFromArchive(m_fileName);
 
         Agros2D::log()->printMessage(tr("Problem"), tr("Problem '%1' successfuly loaded").arg(m_fileName));
 
         // solve
-        assert(0);
-        // Agros2D::xcomputation()->solve(true);
+        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true, true);
+        computation->solve();
+
         // save solution
-        // Agros2D::xcomputation()->writeSolutionToFile(m_fileName);
+        Agros2D::problem()->writeProblemToArchive(m_fileName, false);
 
         Agros2D::log()->printMessage(tr("Solver"), tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
 
@@ -124,9 +124,6 @@ void AgrosSolver::runCommand()
     QTime time;
     time.start();
 
-    // silent mode
-    setSilentMode(true);
-
     connect(currentPythonEngineAgros(), SIGNAL(pythonShowMessage(QString)), this, SLOT(stdOut(QString)));
     connect(currentPythonEngineAgros(), SIGNAL(pythonShowHtml(QString)), this, SLOT(stdHtml(QString)));
 
@@ -152,47 +149,11 @@ void AgrosSolver::runCommand()
     }
 }
 
-void AgrosSolver::runSuite()
-{
-    // log stdout
-    if (m_enableLog)
-         m_log = new LogStdOut();
-
-    // silent mode
-    setSilentMode(true);
-
-    connect(currentPythonEngineAgros(), SIGNAL(pythonShowMessage(QString)), this, SLOT(stdOut(QString)));
-    connect(currentPythonEngineAgros(), SIGNAL(pythonShowHtml(QString)), this, SLOT(stdHtml(QString)));
-
-    QString testSuite = QString("import test_suite; from test_suite.scenario import run_suite; from test_suite.tests import test; run_suite(test(\"%1\"))").arg(m_suiteName);
-    bool successfulRun = currentPythonEngineAgros()->runScript(testSuite);
-
-    if (successfulRun)
-    {
-        Agros2D::problem()->scene()->clear();
-        Agros2D::clear();
-        QApplication::exit(0);
-    }
-    else
-    {
-        ErrorResult result = currentPythonEngineAgros()->parseError();
-        Agros2D::log()->printMessage(tr("Scripting Engine"), tr("%1\nLine: %2\nStacktrace:\n%3\n").
-                                  arg(result.error()).
-                                  arg(result.line()).
-                                  arg(result.tracebackToString()));
-
-        QApplication::exit(-1);
-    }
-}
-
 void AgrosSolver::runTest()
 {
     // log stdout
     if (m_enableLog)
          m_log = new LogStdOut();
-
-    // silent mode
-    setSilentMode(true);
 
     connect(currentPythonEngineAgros(), SIGNAL(pythonShowMessage(QString)), this, SLOT(stdOut(QString)));
     connect(currentPythonEngineAgros(), SIGNAL(pythonShowHtml(QString)), this, SLOT(stdHtml(QString)));
@@ -202,7 +163,7 @@ void AgrosSolver::runTest()
 
     if (successfulRun)
     {
-        Agros2D::problem()->scene()->clear();
+        Agros2D::problem()->clearFieldsAndConfig();
         Agros2D::clear();
         QApplication::exit(0);
     }
@@ -216,18 +177,6 @@ void AgrosSolver::runTest()
 
         QApplication::exit(-1);
     }
-}
-
-void AgrosSolver::printTestSuites()
-{
-    QStringList list = currentPythonEngineAgros()->testSuiteScenarios();
-
-    foreach (QString test, list)
-    {
-        std::cout << test.remove("test_").toStdString() << std::endl;
-    }
-
-    QApplication::exit(0);
 }
 
 void AgrosSolver::stdOut(const QString &str)

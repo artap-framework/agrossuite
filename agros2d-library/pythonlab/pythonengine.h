@@ -215,8 +215,4 @@ AGROS_LIBRARY_API void createPythonEngine(int argc, char *argv[], PythonEngine *
 // current python engine
 AGROS_LIBRARY_API PythonEngine *currentPythonEngine();
 
-// silent mode
-AGROS_LIBRARY_API void setSilentMode(bool mode);
-AGROS_LIBRARY_API bool silentMode();
-
 #endif // PYTHONENGINE_H
