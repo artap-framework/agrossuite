@@ -1,4 +1,6 @@
 build:
+  tags:
+    - linux
   script: 
     - git submodule update --init 
     - cd dealii 
@@ -19,6 +21,8 @@ build:
     - ctest -D Experimental
     
 build_mumps:
+  tags:
+    - linux
   script: 
     - export CC=/usr/bin/clang
     - export CXX=/usr/bin/clang++    
@@ -28,6 +32,8 @@ build_mumps:
     - ctest -D Experimental
     
 build_umfpack:
+  tags:
+    - linux
   script: 
     - export CC=/usr/bin/clang
     - export CXX=/usr/bin/clang++    
@@ -37,6 +43,8 @@ build_umfpack:
     - ctest -D Experimental
     
 build_paralution:
+  tags:
+    - linux
   script: 
     - export CC=/usr/bin/clang
     - export CXX=/usr/bin/clang++    
@@ -52,6 +60,8 @@ build_paralution:
     - ctest -D Experimental
     
 build_viennacl:
+  tags:
+    - linux
   script: 
     - export CC=/usr/bin/clang
     - export CXX=/usr/bin/clang++    
