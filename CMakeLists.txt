@@ -360,7 +360,7 @@ add_custom_target(other SOURCES ${info})
 
 # tests
 MACRO(agros_test NAME)
-  add_test(NAME ${NAME} WORKING_DIRECTORY ${CMAKE_AGROS_DIRECTORY} COMMAND ${AGROS_SOLVER} -t ${NAME})
+  add_test(NAME ${NAME} WORKING_DIRECTORY ${CMAKE_AGROS_DIRECTORY} COMMAND xvfb-run -a ./${AGROS_SOLVER} -t ${NAME})
 ENDMACRO(agros_test)
 ENABLE_TESTING()
 INCLUDE(CTest)
