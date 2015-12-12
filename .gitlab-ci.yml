@@ -5,8 +5,8 @@ build:
     - mkdir -p build 
     - cd build 
     - cmake 
-    - make -j20 
+    - make -j30 
     - cd ../../ 
     - cmake . 
-    - make -j20
+    - make -j30
     - ctest -D Experimental
