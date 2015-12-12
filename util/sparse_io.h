@@ -242,6 +242,41 @@ public:
     std::size_t max_len;
     double *val;
 
+    bool compare(const std::string &fileName, double tolerance = 1e-3)
+    {
+        // read reference solution
+        VectorRW ref;
+        std::ifstream readSLN(fileName);
+        ref.block_read(readSLN);
+        readSLN.close();
+
+        // compare
+        return compare(ref, tolerance);
+    }
+
+    bool compare(const VectorRW &comp, double tolerance = 1e-3)
+    {
+        if (comp.max_len != max_len)
+        {
+            std::cerr << "Size doesn't match." << std::endl;
+            return false;
+        }
+
+        double diff = 0.0;
+        for (unsigned int i; i < max_len; i++)
+        {
+            diff += fabs(comp.val[i] - val[i]);
+        }
+
+        if (diff > tolerance)
+        {
+            std::cerr << "Difference is greater then " << diff << std::endl;
+            return false;
+        }
+
+        return true;
+    }
+
     inline double &operator[] (std::size_t idx) { return val[idx]; }
 
     void block_write(std::ostream &out) const
@@ -251,7 +286,7 @@ public:
         char buf[16];
 
         // DEAL_II_WITH_64BIT_INDICES - std::sprintf(buf, "%llu", sz);
-        sprintf(buf, "%u", max_len);
+        sprintf(buf, "%lu", max_len);
         strcat(buf, "\n[");
 
         out.write(buf, strlen(buf));

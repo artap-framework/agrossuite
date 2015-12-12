@@ -37,6 +37,8 @@ int main(int argc, char *argv[])
 {
     try
     {
+        int status = 0;
+
         int rank, ierr;
         ierr = MPI_Init(&argc, &argv);
         ierr = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -60,6 +62,7 @@ int main(int argc, char *argv[])
         SparseMatrixRW system_matrix;
         VectorRW system_rhs;
         std::string slnFileName;
+        std::string slnRefFileName;
         if (rank == 0)
         {
             // command line info
@@ -68,19 +71,26 @@ int main(int argc, char *argv[])
             TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
             TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
             TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
-            TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", true, "", "string");
+            TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", false, "", "string");
+            TCLAP::ValueArg<std::string> referenceSolutionArg("q", "reference_solution", "Reference solution", false, "", "string");
             TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
 
             cmd.add(matrixArg);
             cmd.add(matrixPatternArg);
             cmd.add(rhsArg);
             cmd.add(solutionArg);
+            cmd.add(referenceSolutionArg);
             cmd.add(initialArg);
 
             // parse the argv array.
             cmd.parse(argc, argv);
 
-            slnFileName = solutionArg.getValue();
+            if (!solutionArg.getValue().empty())
+                slnFileName = solutionArg.getValue();
+
+
+            if (!referenceSolutionArg.getValue().empty())
+                slnRefFileName = referenceSolutionArg.getValue();
 
             std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
             system_matrix_pattern.block_read(readMatrixSparsityPattern);
@@ -157,9 +167,19 @@ int main(int argc, char *argv[])
         if (rank == 0)
         {
             // system_rhs (solution)
-            std::ofstream writeSln(slnFileName);
-            system_rhs.block_write(writeSln);
-            writeSln.close();
+            if (!slnFileName.empty())
+            {
+                std::ofstream writeSln(slnFileName);
+                system_rhs.block_write(writeSln);
+                writeSln.close();
+            }
+
+            if (!slnRefFileName.empty())
+            {
+                // check solution
+                if (!system_rhs.compare(slnRefFileName))
+                    status = -1;
+            }
 
             delete [] id.irn;
             delete [] id.jcn;
@@ -169,7 +189,7 @@ int main(int argc, char *argv[])
 
         ierr = MPI_Finalize();
 
-        exit(0);
+        exit(status);
     }
     catch (TCLAP::ArgException &e)
     {

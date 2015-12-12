@@ -286,16 +286,12 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
 
     if (Agros2D::configComputer()->value(Config::Config_LinearSystemSave).toBool())
     {
-        // int timeStep = Agros2D::solutionStore()->lastTimeStep(m_fieldInfo);
-        // int adaptivityStep = Agros2D::solutionStore()->lastAdaptiveStep(m_fieldInfo);
-        // QString matrixName = QString("%1/%2_%3_%4_matrix.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
-        // QString rhsName = QString("%1/%2_%3_%4_rhs.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
-        // QString slnName = QString("%1/%2_%3_%4_sln.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+        int timeStep = m_computation->solutionStore()->lastTimeStep(m_fieldInfo);
+        int adaptivityStep = m_computation->solutionStore()->lastAdaptiveStep(m_fieldInfo);
 
-        qDebug() << "TODO: add time and adaptive step";
-        QString matrixName = QString("%1/%2_matrix.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
-        QString rhsName = QString("%1/%2_rhs.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
-        QString slnName = QString("%1/%2_sln.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
+        QString matrixName = QString("%1/%2/%3_%4_%5_matrix.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+        QString rhsName = QString("%1/%2/%3_%4_%5_rhs.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+        QString slnName = QString("%1/%2/%3_%4_%5_sln.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
 
         writeMatioMatrix(system, matrixName, "matrix");
         writeMatioVector(rhs, rhsName, "rhs");

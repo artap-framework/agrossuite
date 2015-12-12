@@ -17,3 +17,10 @@ build:
     - make -j30
     - cd ..
     - ctest -D Experimental
+    
+build_mumps:
+  script: 
+    - cd solver-external-mumps
+    - cmake .
+    - make 
+    - ctest

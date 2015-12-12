@@ -120,7 +120,7 @@ void AgrosExternalSolver::solve(const dealii::Vector<double> *initial_guess)
         QFile::remove(fileInitial);
     QFile::remove(fileMatrix);
     QFile::remove(fileMatrixPattern);
-    QFile::remove(fileRHS);
+    // QFile::remove(fileRHS);
     QFile::remove(fileSln);
 
     QFile::remove(tempProblemDir() + "/solver.out");
