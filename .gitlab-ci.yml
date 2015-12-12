@@ -24,3 +24,10 @@ build_mumps:
     - cmake .
     - make 
     - ctest -D Experimental
+    
+build_umfpack:
+  script: 
+    - cd solver-external-umfpack
+    - cmake .
+    - make 
+    - ctest -D Experimental
