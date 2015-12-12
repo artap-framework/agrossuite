@@ -1,0 +1,5 @@
+build_dealii:
+  type: build
+  tags:
+    - linux
+  script: "cd dealii && mdkir build && cd build && cmake .. && make -j20"
