@@ -25,6 +25,8 @@
 #include <assert.h>
 #include <cstring>
 
+#include "../3rdparty/tclap/CmdLine.h"
+
 class SparseMatrixRW
 {
 public:
@@ -239,6 +241,9 @@ public:
         }
     }
 
+    void resize(std::size_t len);
+
+
     std::size_t max_len;
     double *val;
 
@@ -336,8 +341,15 @@ inline VectorRW::VectorRW() : max_len(0), val(nullptr)
 
 inline VectorRW::VectorRW(std::size_t len) : max_len(len), val(nullptr)
 {
-    val = new double[len];
+    resize(len);
+}
 
+inline void VectorRW::resize(std::size_t len)
+{
+    clear();
+
+    max_len = len;
+    val = new double[len];
     // zeroes
     memset(val, 0, sizeof(double) * len);
 }
@@ -380,3 +392,157 @@ void csr2csc(int size, int nnz, double *data, int *ir, int *jc)
     delete [] tempdata;
     delete [] tempjc;
 }
+
+class LinearSystem
+{
+public:
+    LinearSystem()
+    {
+        // matrix system
+        system_matrix_pattern = new SparsityPatternRW();
+        system_matrix = new SparseMatrixRW();
+        // rhs
+        system_rhs = new VectorRW();
+        // solution
+        system_sln = new VectorRW();
+        // initial guess
+        initial_sln = new VectorRW();
+        // reference solution (for testing)
+        reference_sln = new VectorRW();
+    }
+
+    ~LinearSystem()
+    {
+        delete system_matrix_pattern;
+        delete system_matrix;
+        delete system_rhs;
+        delete system_sln;
+        delete initial_sln;
+        delete reference_sln;
+    }
+
+    // matrix system
+    SparsityPatternRW *system_matrix_pattern;
+    SparseMatrixRW *system_matrix;
+    // rhs
+    VectorRW *system_rhs;
+    // solution
+    VectorRW *system_sln;
+    // initial guess
+    VectorRW *initial_sln;
+    // reference solution (for testing)
+    VectorRW *reference_sln;
+
+    inline int n() { return system_matrix_pattern->rows; }
+    inline int nz() { return system_matrix->max_len; }
+
+    int compareWithReferenceSolution(double relative_tolerance = 1e-1)
+    {
+        return reference_sln->compare(*system_sln, relative_tolerance) ? 0 : -1;
+    }
+
+protected:
+    void readLinearSystemInternal(const std::string &matrixPaternFN,
+                                  const std::string &matrixFN,
+                                  const std::string &rhsFN,
+                                  const std::string &initialFN = "",
+                                  const std::string &referenceFN = "")
+    {
+        // TODO: check existence
+
+        std::ifstream readMatrixSparsityPattern(matrixPaternFN);
+        system_matrix_pattern->block_read(readMatrixSparsityPattern);
+        readMatrixSparsityPattern.close();
+
+        std::ifstream readMatrix(matrixFN);
+        system_matrix->block_read(readMatrix);
+        readMatrix.close();
+
+        std::ifstream readRHS(rhsFN);
+        system_rhs->block_read(readRHS);
+        readRHS.close();
+
+        if (!initialFN.empty())
+        {
+            std::ifstream readInitial(initialFN);
+            initial_sln->block_read(readInitial);
+            readInitial.close();
+        }
+
+        if (!referenceFN.empty())
+        {
+            std::ifstream readReference(referenceFN);
+            reference_sln->block_read(readReference);
+            readReference.close();
+        }
+    }
+
+    void writeSolutionInternal(const std::string &solutionFN = "")
+    {
+        // TODO: check existence
+        std::ofstream writeSln(solutionFN);
+        system_sln->block_write(writeSln);
+        writeSln.close();
+    }
+};
+
+class LinearSystemArgs : public LinearSystem
+{
+public:
+    LinearSystemArgs(const std::string &name, int argc, const char * const *argv) : LinearSystem(),
+        cmd(name, ' '),
+        matrixArg(TCLAP::ValueArg<std::string>("m", "matrix", "Matrix", true, "", "string")),
+        matrixPatternArg(TCLAP::ValueArg<std::string>("p", "matrix_pattern", "Matrix pattern", true, "", "string")),
+        rhsArg(TCLAP::ValueArg<std::string>("r", "rhs", "RHS", true, "", "string")),
+        solutionArg(TCLAP::ValueArg<std::string>("s", "solution", "Solution", false, "", "string")),
+        referenceSolutionArg(TCLAP::ValueArg<std::string>("q", "reference_solution", "Reference solution", false, "", "string")),
+        initialArg(TCLAP::ValueArg<std::string>("i", "initial", "Initial vector", false, "", "string")),
+        argc(argc),
+        argv(argv)
+    {
+        cmd.add(matrixArg);
+        cmd.add(matrixPatternArg);
+        cmd.add(rhsArg);
+        cmd.add(solutionArg);
+        cmd.add(referenceSolutionArg);
+        cmd.add(initialArg);
+    }
+
+    bool hasSolution() { return !solutionArg.getValue().empty(); }
+    std::string solutionFileName() { return solutionArg.getValue(); }
+    bool hasReferenceSolution() { return !referenceSolutionArg.getValue().empty(); }
+
+    virtual void readLinearSystem()
+    {
+        // parse the argv array.
+        cmd.parse(argc, argv);
+
+        readLinearSystemInternal(matrixPatternArg.getValue(),
+                                 matrixArg.getValue(),
+                                 rhsArg.getValue(),
+                                 initialArg.getValue(),
+                                 referenceSolutionArg.getValue());
+    }
+
+    void writeSolution()
+    {
+        // system_rhs (solution)
+        if (hasSolution())
+            writeSolutionInternal(solutionFileName());
+    }
+
+protected:
+    // command line info
+    TCLAP::CmdLine cmd;
+
+    TCLAP::ValueArg<std::string> matrixArg;
+    TCLAP::ValueArg<std::string> matrixPatternArg;
+    TCLAP::ValueArg<std::string> rhsArg;
+    TCLAP::ValueArg<std::string> solutionArg;
+    TCLAP::ValueArg<std::string> referenceSolutionArg;
+    TCLAP::ValueArg<std::string> initialArg;
+
+private:
+    int argc;
+    const char * const *argv;
+};

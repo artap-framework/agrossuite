@@ -56,6 +56,32 @@
 #include "../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
 
+class LinearSystemTrilinosArgs : public LinearSystemArgs
+{
+public:
+    LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
+        : LinearSystemArgs(name, argc, argv)
+          // preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
+          // solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
+          // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
+          // relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
+          // maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int"))
+    {
+        // cmd.add(preconditionerArg);
+        // cmd.add(solverArg);
+        // cmd.add(absTolArg);
+        // cmd.add(relTolArg);
+        // cmd.add(maxIterArg);
+    }
+
+public:
+    // TCLAP::ValueArg<std::string> preconditionerArg;
+    // TCLAP::ValueArg<std::string> solverArg;
+    // TCLAP::ValueArg<double> absTolArg;
+    // TCLAP::ValueArg<double> relTolArg;
+    // TCLAP::ValueArg<int> maxIterArg;
+};
+
 void denseVersion(int numOfRows, int numOfNonZero, VectorRW &system_rhs, VectorRW &solution, double *matrixA, int *iRn, int *jCn)
 {
     // -------------------------- Dense serial version - TODO: separate to class -----------
@@ -117,64 +143,22 @@ int main(int argc, char *argv[])
 {
     try
     {
-        // command line info
-        TCLAP::CmdLine cmd("External solver - TRILINOS", ' ');
+        int status = 0;
 
-        TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
-        TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
-        TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
-        TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", true, "", "string");
-//        TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
-//        TCLAP::ValueArg<std::string> preconditionerArg("c", "preconditioner", "Preconditioner", false, "", "string");
-//        TCLAP::ValueArg<std::string> solverArg("l", "solver", "Solver", false, "", "string");
-//        TCLAP::ValueArg<double> absTolArg("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double");
-//        TCLAP::ValueArg<double> relTolArg("t", "rel_tol", "Relative tolerance", false, 1e-9, "double");
-//        TCLAP::ValueArg<int> maxIterArg("x", "max_iter", "Maximum number of iterations", false, 1000, "int");
-
-        cmd.add(matrixArg);
-        cmd.add(matrixPatternArg);
-        cmd.add(rhsArg);
-        cmd.add(solutionArg);
-//        cmd.add(initialArg);
-//        cmd.add(preconditionerArg);
-//        cmd.add(solverArg);
-//        cmd.add(absTolArg);
-//        cmd.add(relTolArg);
-//        cmd.add(maxIterArg);
-
-        // parse the argv array.
-        cmd.parse(argc, argv);
-
-        // read matrix pattern
-        SparsityPatternRW system_matrix_pattern;
-        std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
-        system_matrix_pattern.block_read(readMatrixSparsityPattern);
-        readMatrixSparsityPattern.close();
-
-        // read matrix
-        SparseMatrixRW system_matrix;
-        std::ifstream readMatrix(matrixArg.getValue());
-        system_matrix.block_read(readMatrix);
-        readMatrix.close();
-
-        // read rhs
-        VectorRW system_rhs;
-        std::ifstream readRHS(rhsArg.getValue());
-        system_rhs.block_read(readRHS);
-        readRHS.close();
+        LinearSystemTrilinosArgs linearSystem("External solver - TRILINOS", argc, argv);
+        linearSystem.readLinearSystem();
+        // create empty solution vector (Agros2D)
+        linearSystem.system_sln->resize(linearSystem.system_rhs->max_len);
 
         // test of rhs values ---
         std::cout << "TEST Trilinos matrixes -----" << std::endl;
         // system_rhs.block_write(std::cout);
 
-        // create empty solution vector (Agros2D)
-        VectorRW solution(system_rhs.max_len);
-
         // number of unknowns
-        int numOfRows = system_matrix_pattern.rows;
+        int numOfRows = linearSystem.n();
 
         // number of nonzero elements in matrix
-        int numOfNonZero = system_matrix.max_len;
+        int numOfNonZero = linearSystem.nz();
 
         // representation of the matrix
         double *matrixA = new double[numOfNonZero];
@@ -186,16 +170,16 @@ int main(int argc, char *argv[])
         int index = 0;
 
         // loop over the elements of the matrix row by row
-        for (int row = 0; row < system_matrix_pattern.rows; ++row)
+        for (int row = 0; row < linearSystem.n(); ++row)
         {
-            std::size_t col_start = system_matrix_pattern.rowstart[row];
-            std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
+            std::size_t col_start = linearSystem.system_matrix_pattern->rowstart[row];
+            std::size_t col_end = linearSystem.system_matrix_pattern->rowstart[row + 1];
 
             for (int i = col_start; i < col_end; i++)
             {
                 iRn[index] = row;
-                jCn[index] = system_matrix_pattern.colnums[i];
-                matrixA[index] = system_matrix.val[i];
+                jCn[index] = linearSystem.system_matrix_pattern->colnums[i];
+                matrixA[index] = linearSystem.system_matrix->val[i];
                 // --- demo print
                 // std::cout << iRn[index] << ", " << jCn[index] << ", " << matrixA[index] << " || ";
                 ++index;
@@ -237,7 +221,7 @@ int main(int argc, char *argv[])
 
         // copy rhs values (Agros2D) into the Epetra vector b
         for (int i = 0; i < numOfRows; i++)
-            epeB[i] = system_rhs[i];
+            epeB[i] = linearSystem.system_rhs->val[i];
         // std::cout << "Epetra B vector" << std::endl << epeB << std::endl;
 
         // create linear problem
@@ -313,15 +297,16 @@ int main(int argc, char *argv[])
 
         // copy results into the solution vector (for Agros2D)
         for (int i = 0; i < numOfRows; i++)
-            solution[i] = epeX[i];       //solution[i] = demoEpeX[i]; // for test of export to Agros2D
+            linearSystem.system_sln->val[i] = epeX[i];       //solution[i] = demoEpeX[i]; // for test of export to Agros2D
 
+        // write solution
+        linearSystem.writeSolution();
 
-        // write solution to file
-        std::ofstream writeSln(solutionArg.getValue());
-        solution.block_write(writeSln);
-        writeSln.close();
+        // check solution
+        if (linearSystem.hasReferenceSolution())
+            status = linearSystem.compareWithReferenceSolution();
 
-        exit(0);
+        exit(status);
     }
     catch (TCLAP::ArgException &e)
     {

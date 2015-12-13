@@ -34,57 +34,15 @@ int main(int argc, char *argv[])
     {
         int status = 0;
 
-        // command line info
-        TCLAP::CmdLine cmd("External solver - UMFPACK", ' ');
-
-        TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
-        TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
-        TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
-        TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", false, "", "string");
-        TCLAP::ValueArg<std::string> referenceSolutionArg("q", "reference_solution", "Reference solution", false, "", "string");
-        TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
-
-        cmd.add(matrixArg);
-        cmd.add(matrixPatternArg);
-        cmd.add(rhsArg);
-        cmd.add(solutionArg);
-        cmd.add(referenceSolutionArg);
-        cmd.add(initialArg);
-
-        // parse the argv array.
-        cmd.parse(argc, argv);
-
-        std::string slnFileName;
-        std::string slnRefFileName;
-
-        if (!solutionArg.getValue().empty())
-            slnFileName = solutionArg.getValue();
-
-        if (!referenceSolutionArg.getValue().empty())
-            slnRefFileName = referenceSolutionArg.getValue();
-
-        SparsityPatternRW system_matrix_pattern;
-        std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
-        system_matrix_pattern.block_read(readMatrixSparsityPattern);
-        readMatrixSparsityPattern.close();
-
-        SparseMatrixRW system_matrix;
-        std::ifstream readMatrix(matrixArg.getValue());
-        system_matrix.block_read(readMatrix);
-        readMatrix.close();
-
-        VectorRW system_rhs;
-        std::ifstream readRHS(rhsArg.getValue());
-        system_rhs.block_read(readRHS);
-        readRHS.close();
-
-        VectorRW solution(system_rhs.max_len);
+        LinearSystemArgs linearSystem("External solver - UMFPACK", argc, argv);
+        linearSystem.readLinearSystem();
+        linearSystem.system_sln->resize(linearSystem.system_rhs->max_len);
 
         // number of unknowns
-        int n = system_matrix_pattern.rows;
+        int n = linearSystem.n();
 
         // number of nonzero elements in matrix
-        int nz = system_matrix.max_len;
+        int nz = linearSystem.nz();
 
         // representation of the matrix and rhs
         double *a = new double[nz];
@@ -96,23 +54,23 @@ int main(int argc, char *argv[])
         int index = 0;
 
         // loop over the elements of the matrix row by row
-        for (int row = 0; row < system_matrix_pattern.cols; ++row)
+        for (int row = 0; row < linearSystem.n(); ++row)
         {
-            std::size_t col_start = system_matrix_pattern.rowstart[row];
-            std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
+            std::size_t col_start = linearSystem.system_matrix_pattern->rowstart[row];
+            std::size_t col_end = linearSystem.system_matrix_pattern->rowstart[row + 1];
 
             for (int i = col_start; i < col_end; i++)
             {
                 irn[index] = row + 0;
-                jcn[index] = system_matrix_pattern.colnums[i] + 0;
-                a[index] = system_matrix.val[i];
+                jcn[index] = linearSystem.system_matrix_pattern->colnums[i] + 0;
+                a[index] = linearSystem.system_matrix->val[i];
 
                 ++index;
             }
         }
 
-        system_matrix.clear();
-        system_matrix_pattern.clear();
+        linearSystem.system_matrix->clear();
+        linearSystem.system_matrix_pattern->clear();
 
         int *Ap = new int[n+1];
         int *Ai = new int[nz];
@@ -158,7 +116,9 @@ int main(int argc, char *argv[])
             {
                 //  solve the linear system.
                 int statusSolve = umfpack_di_solve(UMFPACK_A, Ap, Ai, Ax,
-                                                   solution.val, system_rhs.val, numeric, Control, Info);
+                                                   linearSystem.system_sln->val,
+                                                   linearSystem.system_rhs->val,
+                                                   numeric, Control, Info);
 
                 // free the memory associated with the numeric factorization.
                 if (numeric)
@@ -166,21 +126,14 @@ int main(int argc, char *argv[])
 
                 if (statusSolve == UMFPACK_OK)
                 {
-                    if (!slnFileName.empty())
-                    {
-                        std::ofstream writeSln(slnFileName);
-                        solution.block_write(writeSln);
-                        writeSln.close();
-                    }
+                    // write solution
+                    linearSystem.writeSolution();
 
-                    if (!slnRefFileName.empty())
-                    {
-                        // check solution
-                        if (!solution.compare(slnRefFileName))
-                            status = -1;
-                    }
+                    // check solution
+                    if (linearSystem.hasReferenceSolution())
+                        status = linearSystem.compareWithReferenceSolution();
 
-                    system_rhs.clear();
+                    linearSystem.system_rhs->clear();
 
                     delete [] Ap;
                     delete [] Ai;

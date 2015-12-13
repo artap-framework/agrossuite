@@ -33,73 +33,47 @@ typedef double ScalarType;
 
 using namespace paralution;
 
+class LinearSystemParalutionArgs : public LinearSystemArgs
+{
+public:
+    LinearSystemParalutionArgs(const std::string &name, int argc, const char * const *argv)
+        : LinearSystemArgs(name, argc, argv),
+          preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
+          solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
+          absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
+          relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
+          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int"))
+    {
+        cmd.add(preconditionerArg);
+        cmd.add(solverArg);
+        cmd.add(absTolArg);
+        cmd.add(relTolArg);
+        cmd.add(maxIterArg);
+    }
+
+public:
+    TCLAP::ValueArg<std::string> preconditionerArg;
+    TCLAP::ValueArg<std::string> solverArg;
+    TCLAP::ValueArg<double> absTolArg;
+    TCLAP::ValueArg<double> relTolArg;
+    TCLAP::ValueArg<int> maxIterArg;
+};
+
 int main(int argc, char *argv[])
 {
     try
     {
         int status = 0;
 
-        // command line info
-        TCLAP::CmdLine cmd("External solver - PARALUTION", ' ');
-
-        TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
-        TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
-        TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
-        TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", false, "", "string");
-        TCLAP::ValueArg<std::string> referenceSolutionArg("q", "reference_solution", "Reference solution", false, "", "string");
-        TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
-        TCLAP::ValueArg<std::string> preconditionerArg("c", "preconditioner", "Preconditioner", false, "", "string");
-        TCLAP::ValueArg<std::string> solverArg("l", "solver", "Solver", false, "", "string");
-        TCLAP::ValueArg<double> absTolArg("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double");
-        TCLAP::ValueArg<double> relTolArg("t", "rel_tol", "Relative tolerance", false, 1e-9, "double");
-        TCLAP::ValueArg<int> maxIterArg("x", "max_iter", "Maximum number of iterations", false, 1000, "int");
-
-        cmd.add(matrixArg);
-        cmd.add(matrixPatternArg);
-        cmd.add(rhsArg);
-        cmd.add(solutionArg);
-        cmd.add(referenceSolutionArg);
-        cmd.add(initialArg);
-        cmd.add(preconditionerArg);
-        cmd.add(solverArg);
-        cmd.add(absTolArg);
-        cmd.add(relTolArg);
-        cmd.add(maxIterArg);
-
-        // parse the argv array.
-        cmd.parse(argc, argv);
-
-        std::string slnFileName;
-        std::string slnRefFileName;
-
-        if (!solutionArg.getValue().empty())
-            slnFileName = solutionArg.getValue();
-
-        if (!referenceSolutionArg.getValue().empty())
-            slnRefFileName = referenceSolutionArg.getValue();
-
-        SparsityPatternRW system_matrix_pattern;
-        std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
-        system_matrix_pattern.block_read(readMatrixSparsityPattern);
-        readMatrixSparsityPattern.close();
-
-        SparseMatrixRW system_matrix;
-        std::ifstream readMatrix(matrixArg.getValue());
-        system_matrix.block_read(readMatrix);
-        readMatrix.close();
-
-        VectorRW system_rhs;
-        std::ifstream readRHS(rhsArg.getValue());
-        system_rhs.block_read(readRHS);
-        readRHS.close();
-
-        VectorRW solution(system_rhs.max_len);
+        LinearSystemParalutionArgs linearSystem("External solver - PARALUTION", argc, argv);
+        linearSystem.readLinearSystem();
+        linearSystem.system_sln->resize(linearSystem.system_rhs->max_len);
 
         // number of unknowns
-        int n = system_matrix_pattern.rows;
+        int n = linearSystem.n();
 
         // number of nonzero elements in matrix
-        int nz = system_matrix.max_len;
+        int nz = linearSystem.nz();
 
         // representation of the matrix and rhs
         double *a = new double[nz];
@@ -111,16 +85,16 @@ int main(int argc, char *argv[])
         int index = 0;
 
         // loop over the elements of the matrix row by row
-        for (int row = 0; row < system_matrix_pattern.rows; ++row)
+        for (int row = 0; row < linearSystem.n(); ++row)
         {
-            std::size_t col_start = system_matrix_pattern.rowstart[row];
-            std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
+            std::size_t col_start = linearSystem.system_matrix_pattern->rowstart[row];
+            std::size_t col_end = linearSystem.system_matrix_pattern->rowstart[row + 1];
 
             for (int i = col_start; i < col_end; i++)
             {
                 irn[index] = row + 0;
-                jcn[index] = system_matrix_pattern.colnums[i] + 0;
-                a[index] = system_matrix.val[i];
+                jcn[index] = linearSystem.system_matrix_pattern->colnums[i] + 0;
+                a[index] = linearSystem.system_matrix->val[i];
 
                 ++index;
             }
@@ -149,9 +123,9 @@ int main(int argc, char *argv[])
         mat_paralution.ConvertToCSR();
 
         // rhs_paralution.Allocate("rhs", n);
-        rhs_paralution.SetDataPtr(&system_rhs.val, "rhs", n);
+        rhs_paralution.SetDataPtr(&linearSystem.system_rhs->val, "rhs", n);
         // sln_paralution.Allocate("sln", n);
-        sln_paralution.SetDataPtr(&solution.val, "sln", n);
+        sln_paralution.SetDataPtr(&linearSystem.system_sln->val, "sln", n);
 
         bool moveToAccelerator = false;
         if (moveToAccelerator)
@@ -162,45 +136,47 @@ int main(int argc, char *argv[])
         }
 
         // preconditioner
+        std::string preconditioner = linearSystem.preconditionerArg.getValue();
         Preconditioner<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType> *p = nullptr;
-        if (preconditionerArg.getValue() == "Jacobi" || preconditionerArg.getValue() == "") // default
+        if (preconditioner == "Jacobi" || preconditioner == "") // default
             p = new Jacobi<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (preconditionerArg.getValue() == "MultiColoredGS")
+        else if (preconditioner == "MultiColoredGS")
             p = new MultiColoredGS<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (preconditionerArg.getValue() == "MultiColoredSGS")
+        else if (preconditioner == "MultiColoredSGS")
             p = new MultiColoredSGS<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (preconditionerArg.getValue() == "ILU")
+        else if (preconditioner == "ILU")
             p = new ILU<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (preconditionerArg.getValue() == "MultiColoredILU")
+        else if (preconditioner == "MultiColoredILU")
             p = new MultiColoredILU<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (preconditionerArg.getValue() == "MultiElimination")
+        else if (preconditioner == "MultiElimination")
             p = new MultiElimination<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (preconditionerArg.getValue() == "FSAI")
+        else if (preconditioner == "FSAI")
             p = new FSAI<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
         else
-            std::cerr << "Preconditioner '" << preconditionerArg.getValue() << "' not found." << std::endl;
+            std::cerr << "Preconditioner '" << preconditioner << "' not found." << std::endl;
 
         // solver
+        std::string solver = linearSystem.solverArg.getValue();
         IterativeLinearSolver<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *ls = nullptr;
-        if (solverArg.getValue() == "BiCGStab" || solverArg.getValue() == "") // default
+        if (solver == "BiCGStab" || solver == "") // default
             ls = new BiCGStab<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (solverArg.getValue() == "CG")
+        else if (solver == "CG")
             ls = new CG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (solverArg.getValue() == "GMRES")
+        else if (solver == "GMRES")
             ls = new GMRES<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (solverArg.getValue() == "FGMRES")
+        else if (solver == "FGMRES")
             ls = new FGMRES<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (solverArg.getValue() == "CR")
+        else if (solver == "CR")
             ls = new CR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (solverArg.getValue() == "IDR")
+        else if (solver == "IDR")
             ls = new IDR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
         else
-            std::cerr << "Solver '" << solverArg.getValue() << "' not found." << std::endl;
+            std::cerr << "Solver '" << solver << "' not found." << std::endl;
 
         // tolerances
-        double absTol = absTolArg.getValue();
-        double relTol = relTolArg.getValue();
-        int maxIter = maxIterArg.getValue();
+        double absTol = linearSystem.absTolArg.getValue();
+        double relTol = linearSystem.relTolArg.getValue();
+        int maxIter = linearSystem.maxIterArg.getValue();
 
         ls->Init(absTol, relTol, 1e8, maxIter);
 
@@ -214,21 +190,14 @@ int main(int argc, char *argv[])
         ls->Build();
 
         ls->Solve(rhs_paralution, &sln_paralution);
-        sln_paralution.LeaveDataPtr(&solution.val);
+        sln_paralution.LeaveDataPtr(&linearSystem.system_sln->val);
 
-        if (!slnFileName.empty())
-        {
-            std::ofstream writeSln(solutionArg.getValue());
-            solution.block_write(writeSln);
-            writeSln.close();
-        }
+        // write solution
+        linearSystem.writeSolution();
 
-        if (!slnRefFileName.empty())
-        {
-            // check solution
-            if (!solution.compare(slnRefFileName))
-                status = -1;
-        }
+        // check solution
+        if (linearSystem.hasReferenceSolution())
+            status = linearSystem.compareWithReferenceSolution();
 
         ls->Clear();
         delete ls;

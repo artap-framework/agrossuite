@@ -58,63 +58,21 @@ int main(int argc, char *argv[])
         dmumps_c(&id);
 
         // define the problem on the host
-        SparsityPatternRW system_matrix_pattern;
-        SparseMatrixRW system_matrix;
-        VectorRW system_rhs;
-        std::string slnFileName;
-        std::string slnRefFileName;
+        LinearSystemArgs linearSystem("External solver - MUMPS", argc, argv);
+
         if (rank == 0)
-        {
-            // command line info
-            TCLAP::CmdLine cmd("External solver - MUMPS", ' ');
-
-            TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
-            TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
-            TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
-            TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", false, "", "string");
-            TCLAP::ValueArg<std::string> referenceSolutionArg("q", "reference_solution", "Reference solution", false, "", "string");
-            TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
-
-            cmd.add(matrixArg);
-            cmd.add(matrixPatternArg);
-            cmd.add(rhsArg);
-            cmd.add(solutionArg);
-            cmd.add(referenceSolutionArg);
-            cmd.add(initialArg);
-
-            // parse the argv array.
-            cmd.parse(argc, argv);
-
-            if (!solutionArg.getValue().empty())
-                slnFileName = solutionArg.getValue();
-
-            if (!referenceSolutionArg.getValue().empty())
-                slnRefFileName = referenceSolutionArg.getValue();
-
-            std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
-            system_matrix_pattern.block_read(readMatrixSparsityPattern);
-            readMatrixSparsityPattern.close();
-
-            std::ifstream readMatrix(matrixArg.getValue());
-            // system_matrix.reinit(system_matrix_pattern);
-            system_matrix.block_read(readMatrix);
-            readMatrix.close();
-
-            std::ifstream readRHS(rhsArg.getValue());
-            system_rhs.block_read(readRHS);
-            readRHS.close();
-
-            // std::cout << "Matrix size: " << system_rhs.max_len << std::endl;
+        {            
+            linearSystem.readLinearSystem();
 
             // number of unknowns
-            id.n = system_matrix_pattern.rows;
+            id.n = linearSystem.n();
 
             // number of nonzero elements in matrix
-            id.nz = system_matrix.max_len;
+            id.nz = linearSystem.nz();
 
             // representation of the matrix and rhs
-            id.a = system_matrix.val;
-            id.rhs = system_rhs.val;
+            id.a = linearSystem.system_matrix->val;
+            id.rhs = linearSystem.system_rhs->val;
 
             // matrix indices pointing to the row and column dimensions
             id.irn = new int[id.nz];
@@ -122,16 +80,16 @@ int main(int argc, char *argv[])
             int index = 0;
 
             // loop over the elements of the matrix row by row
-            for (int row = 0; row < system_matrix_pattern.cols; ++row)
+            for (int row = 0; row < linearSystem.n(); ++row)
             {
-                std::size_t col_start = system_matrix_pattern.rowstart[row];
-                std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
+                std::size_t col_start = linearSystem.system_matrix_pattern->rowstart[row];
+                std::size_t col_end = linearSystem.system_matrix_pattern->rowstart[row + 1];
 
                 for (int i = col_start; i < col_end; i++)
                 {
-                    id.a[index] = system_matrix.val[i];
+                    id.a[index] = linearSystem.system_matrix->val[i];
                     id.irn[index] = row + 1;
-                    id.jcn[index] = system_matrix_pattern.colnums[i] + 1;
+                    id.jcn[index] = linearSystem.system_matrix_pattern->colnums[i] + 1;
 
                     ++index;
                 }
@@ -165,20 +123,15 @@ int main(int argc, char *argv[])
 
         if (rank == 0)
         {
-            // system_rhs (solution)
-            if (!slnFileName.empty())
-            {
-                std::ofstream writeSln(slnFileName);
-                system_rhs.block_write(writeSln);
-                writeSln.close();
-            }
+            // MUMPS (rhs = sln)
+            linearSystem.system_sln = linearSystem.system_rhs;
 
-            if (!slnRefFileName.empty())
-            {
-                // check solution
-                if (!system_rhs.compare(slnRefFileName))
-                    status = -1;
-            }
+            // write solution
+            linearSystem.writeSolution();
+
+            // check solution
+            if (linearSystem.hasReferenceSolution())
+                status = linearSystem.compareWithReferenceSolution();
 
             delete [] id.irn;
             delete [] id.jcn;

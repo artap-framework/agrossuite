@@ -47,100 +47,73 @@
 typedef float ScalarType;
 //typedef double ScalarType;
 
+class LinearSystemViennaCLArgs : public LinearSystemArgs
+{
+public:
+    LinearSystemViennaCLArgs(const std::string &name, int argc, const char * const *argv)
+        : LinearSystemArgs(name, argc, argv),
+          preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
+          solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
+          relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
+          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int"))
+    {
+        cmd.add(preconditionerArg);
+        cmd.add(solverArg);
+        cmd.add(relTolArg);
+        cmd.add(maxIterArg);
+    }
+
+public:
+    TCLAP::ValueArg<std::string> preconditionerArg;
+    TCLAP::ValueArg<std::string> solverArg;
+    TCLAP::ValueArg<double> relTolArg;
+    TCLAP::ValueArg<int> maxIterArg;
+};
+
 int main(int argc, char *argv[])
 {
     try
     {
         int status = 0;
 
-        // command line info
-        TCLAP::CmdLine cmd("External solver - UMFPACK", ' ');
-
-        TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
-        TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
-        TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
-        TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", false, "", "string");
-        TCLAP::ValueArg<std::string> referenceSolutionArg("q", "reference_solution", "Reference solution", false, "", "string");
-        TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
-        TCLAP::ValueArg<std::string> preconditionerArg("c", "preconditioner", "Preconditioner", false, "", "string");
-        TCLAP::ValueArg<std::string> solverArg("l", "solver", "Solver", false, "", "string");
-        TCLAP::ValueArg<double> relTolArg("t", "rel_tol", "Relative tolerance", false, 1e-9, "double");
-        TCLAP::ValueArg<int> maxIterArg("x", "max_iter", "Maximum number of iterations", false, 1000, "int");
-
-        cmd.add(matrixArg);
-        cmd.add(matrixPatternArg);
-        cmd.add(rhsArg);
-        cmd.add(solutionArg);
-        cmd.add(referenceSolutionArg);
-        cmd.add(initialArg);
-        cmd.add(preconditionerArg);
-        cmd.add(solverArg);
-        cmd.add(relTolArg);
-        cmd.add(maxIterArg);
-
-        // parse the argv array.
-        cmd.parse(argc, argv);
-
-        std::string slnFileName;
-        std::string slnRefFileName;
-
-        if (!solutionArg.getValue().empty())
-            slnFileName = solutionArg.getValue();
-
-        if (!referenceSolutionArg.getValue().empty())
-            slnRefFileName = referenceSolutionArg.getValue();
-
-        SparsityPatternRW system_matrix_pattern;
-        std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
-        system_matrix_pattern.block_read(readMatrixSparsityPattern);
-        readMatrixSparsityPattern.close();
-
-        SparseMatrixRW system_matrix;
-        std::ifstream readMatrix(matrixArg.getValue());
-        system_matrix.block_read(readMatrix);
-        readMatrix.close();
-
-        VectorRW system_rhs;
-        std::ifstream readRHS(rhsArg.getValue());
-        system_rhs.block_read(readRHS);
-        readRHS.close();
+        LinearSystemViennaCLArgs linearSystem("External solver - ViennaCL", argc, argv);
+        linearSystem.readLinearSystem();
 
         // number of unknowns
-        int n = system_matrix_pattern.rows;
+        int n = linearSystem.n();
 
         // number of nonzero elements in matrix
-        int nz = system_matrix.max_len;
+        int nz = linearSystem.nz();
 
         boost::numeric::ublas::compressed_matrix<ScalarType> ublas_matrix(n, n, nz);
         viennacl::compressed_matrix<ScalarType> vcl_matrix(n, n, nz);
         viennacl::vector<ScalarType> vcl_rhs(n);
 
         // loop over the elements of the matrix row by row
-        for (int row = 0; row < system_matrix_pattern.cols; ++row)
+        for (int row = 0; row < linearSystem.n(); ++row)
         {
-            std::size_t col_start = system_matrix_pattern.rowstart[row];
-            std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
+            std::size_t col_start = linearSystem.system_matrix_pattern->rowstart[row];
+            std::size_t col_end = linearSystem.system_matrix_pattern->rowstart[row + 1];
 
             for (int i = col_start; i < col_end; i++)
             {
                 // vcl_matrix(row, system_matrix_pattern.colnums[i]) = system_matrix.val[i];
-                ublas_matrix(row, system_matrix_pattern.colnums[i]) = system_matrix.val[i];
+                ublas_matrix(row, linearSystem.system_matrix_pattern->colnums[i]) = linearSystem.system_matrix->val[i];
             }
 
-            vcl_rhs(row) = system_rhs.val[row];
+            vcl_rhs(row) = linearSystem.system_rhs->val[row];
         }
 
         copy(ublas_matrix, vcl_matrix);
 
         // clear ublas_matrix and other structures
         ublas_matrix.clear();
-        system_matrix.clear();
-        system_matrix_pattern.clear();
-        system_rhs.clear();
+        linearSystem.system_matrix->clear();
+        linearSystem.system_matrix_pattern->clear();
 
         // tolerances
-        double relTol = relTolArg.getValue();
-        int maxIter = maxIterArg.getValue();
+        double relTol = linearSystem.relTolArg.getValue();
+        int maxIter = linearSystem.maxIterArg.getValue();
 
         viennacl::vector<ScalarType> vcl_sln;
 
@@ -176,24 +149,18 @@ int main(int argc, char *argv[])
                   << ", presmooth_steps: " << custom_amg.get_presmooth_steps()
                   << ", postsmooth_steps: " << custom_amg.get_postsmooth_steps() << std::endl;
         */
-        // write solution
-        VectorRW solution(n);
+
+        // write solution - user RHS (memory saving)
+        linearSystem.system_sln = linearSystem.system_rhs;
         for (int row = 0; row < n; ++row)
-            solution.val[row] = vcl_sln(row);
+            linearSystem.system_sln->val[row] = vcl_sln(row);
 
-        if (!slnFileName.empty())
-        {
-            std::ofstream writeSln(slnFileName);
-            solution.block_write(writeSln);
-            writeSln.close();
-        }
+        // write solution
+        linearSystem.writeSolution();
 
-        if (!slnRefFileName.empty())
-        {
-            // check solution
-            if (!solution.compare(slnRefFileName))
-                status = -1;
-        }
+        // check solution
+        if (linearSystem.hasReferenceSolution())
+            status = linearSystem.compareWithReferenceSolution();
 
         exit(status);
     }

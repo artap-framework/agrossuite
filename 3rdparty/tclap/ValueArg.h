@@ -236,7 +236,6 @@ class ValueArg : public Arg
         
         virtual void reset() ;
 
-private:
        /**
         * Prevent accidental copying
         */

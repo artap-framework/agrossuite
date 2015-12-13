@@ -6,7 +6,7 @@ build:
     - cd dealii 
     - mkdir -p build 
     - cd build 
-    - cmake 
+    - cmake ..
     - make -j30 
     - cd ../../
     - export CC=/usr/bin/clang
@@ -69,3 +69,14 @@ build_viennacl:
     - cmake .
     - make 
     - ctest -D Experimental
+    
+build_trilinos:
+  tags:
+    - linux
+  script: 
+    - export CC=/usr/bin/clang
+    - export CXX=/usr/bin/clang++    
+    - cd solver-external-trilinos
+    - cmake .
+    - make 
+    # - ctest -D Experimental uncomment when ready
