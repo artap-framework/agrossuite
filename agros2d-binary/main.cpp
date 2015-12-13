@@ -34,12 +34,10 @@ int main(int argc, char *argv[])
         // command line info
         TCLAP::CmdLine cmd("Agros2D", ' ', versionString().toStdString());
 
-        TCLAP::SwitchArg remoteArg("r", "remote-server", "Run remote server", false);
         TCLAP::ValueArg<std::string> problemArg("p", "problem", "Open problem", false, "", "string");
         TCLAP::ValueArg<std::string> scriptArg("s", "script", "Open script", false, "", "string");
         TCLAP::SwitchArg executeArg("x", "execute", "Execute problem or script", false);
 
-        cmd.add(remoteArg);
         cmd.add(problemArg);
         cmd.add(scriptArg);
         cmd.add(executeArg);
@@ -59,12 +57,6 @@ int main(int argc, char *argv[])
         Indicator::init();
 
         MainWindow w(argc, argv);
-
-        // run remote server
-        if (remoteArg.getValue())
-        {
-            a.runRemoteServer();
-        }
 
         if (!problemArg.getValue().empty())
         {

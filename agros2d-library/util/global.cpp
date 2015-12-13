@@ -26,7 +26,6 @@
 #include "scene.h"
 
 #include "pythonlab/pythonengine_agros.h"
-#include "pythonlab/remotecontrol.h"
 
 #include "solver/module.h"
 
@@ -41,7 +40,7 @@
 
 #include "boost/archive/archive_exception.hpp"
 
-AgrosApplication::AgrosApplication(int& argc, char ** argv) : QApplication(argc, argv), m_scriptEngineRemote(NULL)
+AgrosApplication::AgrosApplication(int& argc, char ** argv) : QApplication(argc, argv)
 {
     setlocale (LC_NUMERIC, "C");
 
@@ -72,8 +71,6 @@ AgrosApplication::AgrosApplication(int& argc, char ** argv) : QApplication(argc,
 
 AgrosApplication::~AgrosApplication()
 {
-    if (m_scriptEngineRemote)
-        delete m_scriptEngineRemote;
 }
 
 // reimplemented from QApplication so we can throw exceptions in slots
@@ -254,7 +251,3 @@ PluginInterface *Agros2D::loadPlugin(const QString &pluginName)
     return plugin;
 }
 
-void AgrosApplication::runRemoteServer()
-{
-    m_scriptEngineRemote = new ScriptEngineRemote();
-}

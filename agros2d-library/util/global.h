@@ -29,7 +29,6 @@ class Config;
 class SolutionStore;
 class Log;
 class PluginInterface;
-class ScriptEngineRemote;
 
 class AGROS_LIBRARY_API AgrosApplication : public QApplication
 {
@@ -38,11 +37,6 @@ public:
     ~AgrosApplication();
 
     virtual bool notify(QObject *receiver, QEvent *event);
-
-    void runRemoteServer();
-
-private:
-    ScriptEngineRemote *m_scriptEngineRemote;
 };
 
 class AGROS_LIBRARY_API Agros2D : public QObject

@@ -38,14 +38,12 @@ int main(int argc, char *argv[])
         TCLAP::CmdLine cmd("Agros2D solver", ' ', versionString().toStdString());
 
         TCLAP::SwitchArg logArg("l", "enable-log", "Enable log", true);
-        TCLAP::SwitchArg remoteArg("r", "remote-server", "Run remote server", false);
         TCLAP::ValueArg<std::string> problemArg("p", "problem", "Solve problem", false, "", "string");
         TCLAP::ValueArg<std::string> scriptArg("s", "script", "Solve script", false, "", "string");
         TCLAP::ValueArg<std::string> commandArg("c", "command", "Run command", false, "", "string");
         TCLAP::ValueArg<std::string> testArg("t", "test", "Run test", false, "", "string");
 
         cmd.add(logArg);
-        cmd.add(remoteArg);
         cmd.add(problemArg);
         cmd.add(commandArg);
         cmd.add(scriptArg);
@@ -61,13 +59,6 @@ int main(int argc, char *argv[])
 
         // enable log
         a.setEnableLog(logArg.getValue());
-
-        // run remote server
-        if (remoteArg.getValue())
-        {
-            a.runRemoteServer();
-            return a.exec();
-        }
 
         if (!problemArg.getValue().empty())
         {
