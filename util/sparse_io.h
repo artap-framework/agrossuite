@@ -448,6 +448,11 @@ public:
 
     void convertToCOO()
     {
+        // coo
+        if (cooA) delete [] cooA;
+        if (cooIRN) delete [] cooIRN;
+        if (cooJCN) delete [] cooJCN;
+
         cooA = new double[nz()];
         cooIRN = new int[nz()];
         cooJCN = new int[nz()];
