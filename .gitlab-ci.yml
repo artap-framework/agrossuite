@@ -79,4 +79,4 @@ build_trilinos:
     - cd solver-external-trilinos
     - cmake .
     - make 
-    # - ctest -D Experimental uncomment when ready
+    - ctest -D Experimental
