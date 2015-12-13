@@ -396,7 +396,7 @@ void csr2csc(int size, int nnz, double *data, int *ir, int *jc)
 class LinearSystem
 {
 public:
-    LinearSystem()
+    LinearSystem() : cooA(nullptr), cooIRN(nullptr), cooJCN(nullptr)
     {
         // matrix system
         system_matrix_pattern = new SparsityPatternRW();
@@ -419,6 +419,11 @@ public:
         delete system_sln;
         delete initial_sln;
         delete reference_sln;
+
+        // coo
+        if (cooA) delete [] cooA;
+        if (cooIRN) delete [] cooIRN;
+        if (cooJCN) delete [] cooJCN;
     }
 
     // matrix system
@@ -440,6 +445,36 @@ public:
     {
         return reference_sln->compare(*system_sln, relative_tolerance) ? 0 : -1;
     }
+
+    void convertToCOO()
+    {
+        cooA = new double[nz()];
+        cooIRN = new int[nz()];
+        cooJCN = new int[nz()];
+
+        int index = 0;
+
+        // loop over the elements of the matrix row by row
+        for (int row = 0; row < n(); ++row)
+        {
+            std::size_t col_start = system_matrix_pattern->rowstart[row];
+            std::size_t col_end = system_matrix_pattern->rowstart[row + 1];
+
+            for (int i = col_start; i < col_end; i++)
+            {
+                cooIRN[index] = row + 0;
+                cooJCN[index] = system_matrix_pattern->colnums[i] + 0;
+                cooA[index] = system_matrix->val[i];
+
+                ++index;
+            }
+        }
+    }
+
+    // coo
+    double *cooA;
+    int *cooIRN;
+    int *cooJCN;
 
 protected:
     void readLinearSystemInternal(const std::string &matrixPaternFN,

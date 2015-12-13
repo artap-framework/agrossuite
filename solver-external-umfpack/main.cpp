@@ -37,37 +37,13 @@ int main(int argc, char *argv[])
         LinearSystemArgs linearSystem("External solver - UMFPACK", argc, argv);
         linearSystem.readLinearSystem();
         linearSystem.system_sln->resize(linearSystem.system_rhs->max_len);
+        linearSystem.convertToCOO();
 
         // number of unknowns
         int n = linearSystem.n();
 
         // number of nonzero elements in matrix
         int nz = linearSystem.nz();
-
-        // representation of the matrix and rhs
-        double *a = new double[nz];
-
-        // matrix indices pointing to the row and column dimensions
-        int *irn = new int[nz];
-        int *jcn = new int[nz];
-
-        int index = 0;
-
-        // loop over the elements of the matrix row by row
-        for (int row = 0; row < linearSystem.n(); ++row)
-        {
-            std::size_t col_start = linearSystem.system_matrix_pattern->rowstart[row];
-            std::size_t col_end = linearSystem.system_matrix_pattern->rowstart[row + 1];
-
-            for (int i = col_start; i < col_end; i++)
-            {
-                irn[index] = row + 0;
-                jcn[index] = linearSystem.system_matrix_pattern->colnums[i] + 0;
-                a[index] = linearSystem.system_matrix->val[i];
-
-                ++index;
-            }
-        }
 
         linearSystem.system_matrix->clear();
         linearSystem.system_matrix_pattern->clear();
@@ -81,17 +57,13 @@ int main(int argc, char *argv[])
         double Control[UMFPACK_CONTROL];
         // Control[UMFPACK_PRL] = 6;
 
-        int statusTripletToCol = umfpack_di_triplet_to_col (n, n, nz, irn, jcn, a, Ap, Ai, Ax, (int *) NULL);
+        int statusTripletToCol = umfpack_di_triplet_to_col (n, n, nz, linearSystem.cooIRN, linearSystem.cooJCN, linearSystem.cooA, Ap, Ai, Ax, (int *) NULL);
 
         if (statusTripletToCol != UMFPACK_OK)
         {
             std::cerr << "UMFPACK triplet to col: " << statusTripletToCol << std::endl;
             exit(1);
         }
-
-        delete [] irn;
-        delete [] jcn;
-        delete [] a;
 
         // umfpack_di_report_matrix(system_matrix_pattern.rows, system_matrix_pattern.cols, Ap, Ai, Ax, 1, Control);
 

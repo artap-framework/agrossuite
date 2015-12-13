@@ -68,37 +68,13 @@ int main(int argc, char *argv[])
         LinearSystemParalutionArgs linearSystem("External solver - PARALUTION", argc, argv);
         linearSystem.readLinearSystem();
         linearSystem.system_sln->resize(linearSystem.system_rhs->max_len);
+        linearSystem.convertToCOO();
 
         // number of unknowns
         int n = linearSystem.n();
 
         // number of nonzero elements in matrix
         int nz = linearSystem.nz();
-
-        // representation of the matrix and rhs
-        double *a = new double[nz];
-
-        // matrix indices pointing to the row and column dimensions
-        int *irn = new int[nz];
-        int *jcn = new int[nz];
-
-        int index = 0;
-
-        // loop over the elements of the matrix row by row
-        for (int row = 0; row < linearSystem.n(); ++row)
-        {
-            std::size_t col_start = linearSystem.system_matrix_pattern->rowstart[row];
-            std::size_t col_end = linearSystem.system_matrix_pattern->rowstart[row + 1];
-
-            for (int i = col_start; i < col_end; i++)
-            {
-                irn[index] = row + 0;
-                jcn[index] = linearSystem.system_matrix_pattern->colnums[i] + 0;
-                a[index] = linearSystem.system_matrix->val[i];
-
-                ++index;
-            }
-        }
 
         // init PARALUTION
         paralution::init_paralution();
@@ -119,7 +95,7 @@ int main(int argc, char *argv[])
         LocalVector<ScalarType> rhs_paralution;
         LocalMatrix<ScalarType> mat_paralution;
 
-        mat_paralution.SetDataPtrCOO(&irn, &jcn, &a, "matrix", nz, n, n);
+        mat_paralution.SetDataPtrCOO(&linearSystem.cooIRN, &linearSystem.cooJCN, &linearSystem.cooA, "matrix", nz, n, n);
         mat_paralution.ConvertToCSR();
 
         // rhs_paralution.Allocate("rhs", n);
@@ -208,10 +184,6 @@ int main(int argc, char *argv[])
         rhs_paralution.Clear();
         sln_paralution.Clear();
         mat_paralution.Clear();
-
-        delete [] irn;
-        delete [] jcn;
-        delete [] a;
 
         // stop PARALUTION
         paralution::stop_paralution();

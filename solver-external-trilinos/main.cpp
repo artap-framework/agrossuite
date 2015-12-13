@@ -149,6 +149,7 @@ int main(int argc, char *argv[])
         linearSystem.readLinearSystem();
         // create empty solution vector (Agros2D)
         linearSystem.system_sln->resize(linearSystem.system_rhs->max_len);
+        linearSystem.convertToCOO();
 
         // number of unknowns
         int numOfRows = linearSystem.n();
@@ -156,33 +157,6 @@ int main(int argc, char *argv[])
         // number of nonzero elements in matrix
         int numOfNonZero = linearSystem.nz();
 
-        // representation of the matrix
-        double *matrixA = new double[numOfNonZero];
-
-        // matrix indices pointing to the row and column dimensions
-        int *iRn = new int[numOfNonZero];
-        int *jCn = new int[numOfNonZero];
-
-        int index = 0;
-
-        // loop over the elements of the matrix row by row
-        for (int row = 0; row < linearSystem.n(); ++row)
-        {
-            std::size_t col_start = linearSystem.system_matrix_pattern->rowstart[row];
-            std::size_t col_end = linearSystem.system_matrix_pattern->rowstart[row + 1];
-
-            for (int i = col_start; i < col_end; i++)
-            {
-                iRn[index] = row;
-                jCn[index] = linearSystem.system_matrix_pattern->colnums[i];
-                matrixA[index] = linearSystem.system_matrix->val[i];
-                // --- demo print
-                // std::cout << iRn[index] << ", " << jCn[index] << ", " << matrixA[index] << " || ";
-                ++index;
-            }
-            // --- demo print
-            // std::cout << std::endl;
-        }
 // -------------------------- Sparse serial version - TODO: separate to class ---
         Epetra_SerialComm comm;
 
@@ -199,10 +173,11 @@ int main(int argc, char *argv[])
         // matrix
         // TODO: create raw values into 1D array
         // ---
-        int globalRow;  // index of row in global matrix
-        for (int index = 0; index < numOfNonZero; index++) {
-            globalRow = epeA.GRID(iRn[index]);
-            epeA.InsertGlobalValues(globalRow, 1, &matrixA[index], &jCn[index]);
+        int globalRow = 0;  // index of row in global matrix
+        for (int index = 0; index < numOfNonZero; index++)
+        {
+            globalRow = epeA.GRID(linearSystem.cooIRN[index]);
+            epeA.InsertGlobalValues(globalRow, 1, &linearSystem.cooA[index], &linearSystem.cooJCN[index]);
         }
 
         // std::cout << epeA << std::endl;
