@@ -132,7 +132,7 @@ test_suite.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsMany
 #test_suite.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsManyDomainsHardWeak,
 #test_suite.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsManyDomainsHardHard,
 # core
-test_suite.core.matrix_solvers.TestMatrixSolvers
+test_suite.core.matrix_solvers.TestMatrixSolversInternal
 ] + __tests__["script"]
 
 def all_tests():

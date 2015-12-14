@@ -19,9 +19,7 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
 
         void adaptivityInfo(int timeStep, vector[double] &error, vector[int] &dofs) except +
 
-        string filenameMatrix(int timeStep, int adaptivityStep) except +
-        string filenameRHS(int timeStep, int adaptivityStep) except +
-        string filenameSLN(int timeStep, int adaptivityStep) except +
+        string solution(int timeStep, int adaptivityStep, vector[double] &sln) except +
 
 cdef class __Solution__:
     cdef PySolution *_solution
@@ -212,17 +210,15 @@ cdef class __Solution__:
 
         return {'error' : error, 'dofs' : dofs}
 
-    # filename - matrix
-    def filename_matrix(self, time_step = None, adaptivity_step = None):
-        return self._solution.filenameMatrix(int(-1 if time_step is None else time_step),
-                                             int(-1 if adaptivity_step is None else adaptivity_step)).decode()
-
-    # filename - rhs
-    def filename_rhs(self, time_step = None, adaptivity_step = None):
-        return self._solution.filenameRHS(int(-1 if time_step is None else time_step),
-                                          int(-1 if adaptivity_step is None else adaptivity_step)).decode()
-                                        
-    # filename - sln
-    def filename_sln(self, time_step = None, adaptivity_step = None):
-        return self._solution.filenameSLN(int(-1 if time_step is None else time_step),
-                                          int(-1 if adaptivity_step is None else adaptivity_step)).decode()
+    # solution
+    def solution(self, time_step = None, adaptivity_step = None):
+        cdef vector[double] sln_vector
+        self._solution.solution(int(-1 if time_step is None else time_step),
+                                int(-1 if adaptivity_step is None else adaptivity_step), 
+                                sln_vector)
+                                
+        sln = list()
+        for i in range(sln_vector.size()):
+            sln.append(sln_vector[i])
+        
+        return sln

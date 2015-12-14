@@ -100,6 +100,7 @@ public:
         virtual void solve();
 
         void solveProblemLinear();
+
         // linear solver
         void solveLinearSystem(dealii::SparseMatrix<double> &system,
                                dealii::Vector<double> &rhs,
@@ -107,7 +108,6 @@ public:
                                bool reuseDecomposition = false);
 
         inline SolverDeal *solverDeal() { return m_solverDeal; }
-
 
     protected:
         // local references

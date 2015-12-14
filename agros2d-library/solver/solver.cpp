@@ -67,6 +67,7 @@
 #include <sstream>
 
 #include "solver.h"
+#include "solver_utils.h"
 #include "linear_solver.h"
 #include "estimators.h"
 
@@ -286,12 +287,12 @@ void SolverDeal::AssembleBase::solveLinearSystem(dealii::SparseMatrix<double> &s
 
     if (Agros2D::configComputer()->value(Config::Config_LinearSystemSave).toBool())
     {
-        int timeStep = m_computation->solutionStore()->lastTimeStep(m_fieldInfo);
-        int adaptivityStep = m_computation->solutionStore()->lastAdaptiveStep(m_fieldInfo);
+        QDateTime datetime(QDateTime::currentDateTime());
+        QString tm = QString("%1").arg(datetime.toString("yyyy-MM-dd-hh-mm-ss-zzz"));
 
-        QString matrixName = QString("%1/%2/%3_%4_%5_matrix.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
-        QString rhsName = QString("%1/%2/%3_%4_%5_rhs.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
-        QString slnName = QString("%1/%2/%3_%4_%5_sln.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
+        QString matrixName = QString("%1/%2/solver-%3-%4_matrix.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId()).arg(tm);
+        QString rhsName = QString("%1/%2/solver-%3-%4_rhs.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId()).arg(tm);
+        QString slnName = QString("%1/%2/solver-%3-%4_sln.mat").arg(cacheProblemDir()).arg(m_computation->problemDir()).arg(m_fieldInfo->fieldId()).arg(tm);
 
         writeMatioMatrix(system, matrixName, "matrix");
         writeMatioVector(rhs, rhsName, "rhs");
@@ -720,6 +721,7 @@ void SolverDeal::solveSteadyState()
         runTime.setValue(SolutionStore::SolutionRunTimeDetails::TimeStepLength, 0.0);
         runTime.setValue(SolutionStore::SolutionRunTimeDetails::AdaptivityError, 0.0);
         runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
+        // add solution to the store
         m_computation->solutionStore()->addSolution(solutionID, primal->doFHandler, primal->solution, runTime);
     }
     else
@@ -796,6 +798,7 @@ void SolverDeal::solveSteadyState()
             runTime.setValue(SolutionStore::SolutionRunTimeDetails::TimeStepLength, 0.0);
             runTime.setValue(SolutionStore::SolutionRunTimeDetails::AdaptivityError, relChangeSol);
             runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
+            // add solution to the store
             m_computation->solutionStore()->addSolution(solutionID, primal->doFHandler, primal->solution, runTime);
 
             if (adaptiveStep > 0)
@@ -866,6 +869,7 @@ void SolverDeal::solveTransient()
     runTime.setValue(SolutionStore::SolutionRunTimeDetails::TimeStepLength, 0.0);
     runTime.setValue(SolutionStore::SolutionRunTimeDetails::AdaptivityError, 0.0);
     runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
+    // add solution to the store
     m_computation->solutionStore()->addSolution(solutionID, primal->doFHandler, initialSolution, runTime);
 
     // Python callback
@@ -1078,6 +1082,7 @@ void SolverDeal::solveTransient()
                 runTime.setValue(SolutionStore::SolutionRunTimeDetails::TimeStepLength, actualTimeStep);
                 runTime.setValue(SolutionStore::SolutionRunTimeDetails::AdaptivityError, relChangeSol);
                 runTime.setValue(SolutionStore::SolutionRunTimeDetails::DOFs, (int) primal->doFHandler.n_dofs());
+                // add solution to the store
                 m_computation->solutionStore()->addSolution(solutionID, primal->doFHandler, primal->solution, runTime);
 
                 // Python callback

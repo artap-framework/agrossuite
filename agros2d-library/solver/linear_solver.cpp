@@ -121,6 +121,7 @@ void SolverLinearSolver::solveExternal(dealii::SparseMatrix<double> &system,
     ext.setCommandEnvironment(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandEnvironment).toString());
     ext.setCommandParameters(m_fieldInfo->value(FieldInfo::LinearSolverExternalCommandParameters).toString());
     ext.solve();
+
     sln = ext.solution();
 }
 

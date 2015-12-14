@@ -155,10 +155,8 @@ public:
     // adaptivity info
     void adaptivityInfo(int timeStep, vector<double> &error, vector<int> &dofs) const;
 
-    // matrix and RHS
-    std::string filenameMatrix(int timeStep, int adaptivityStep) const;
-    std::string filenameRHS(int timeStep, int adaptivityStep) const;
-    std::string filenameSLN(int timeStep, int adaptivityStep) const;
+    // solution (internal)
+    void solution(int timeStep, int adaptivityStep, vector<double> &sln) const;
 
 private:
     QSharedPointer<Computation> m_computation;

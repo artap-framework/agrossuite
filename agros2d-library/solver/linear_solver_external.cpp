@@ -44,8 +44,9 @@
 #include "pythonlab/pythonengine.h"
 
 AgrosExternalSolver::AgrosExternalSolver(const dealii::SparseMatrix<double> *system_matrix,
-                                         const dealii::Vector<double> *system_rhs)
-    : m_system_matrix(system_matrix), m_system_rhs(system_rhs), m_initial_guess(NULL)
+                                         const dealii::Vector<double> *system_rhs,
+                                         const dealii::Vector<double> *initial_guess)
+    : m_system_matrix(system_matrix), m_system_rhs(system_rhs), m_initial_guess(initial_guess)
 {
 }
 

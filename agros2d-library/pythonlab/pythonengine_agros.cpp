@@ -238,7 +238,7 @@ QString createPythonFromModel()
             str += QString("%1.matrix_solver_parameters[\"external_solver\"] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::LinearSolverExternalName).toString());
-            str += QString("%1.matrix_solver_parameters[\"external_enviroment\"] = \"%2\"\n").
+            str += QString("%1.matrix_solver_parameters[\"external_environment\"] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::LinearSolverExternalCommandEnvironment).toString());
             str += QString("%1.matrix_solver_parameters[\"external_parameters\"] = \"%2\"\n").

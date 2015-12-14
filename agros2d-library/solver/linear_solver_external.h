@@ -36,7 +36,8 @@ class AgrosExternalSolver : public QObject
 
 public:
     AgrosExternalSolver(const dealii::SparseMatrix<double> *system_matrix,
-                                const dealii::Vector<double> *system_rhs);
+                        const dealii::Vector<double> *system_rhs,
+                        const dealii::Vector<double> *initial_guess = nullptr);
 
     void setCommand(const QString &command) { m_command = command; }
     void setCommandEnvironment(const QString &command) { m_commandEnvironment = command; }
@@ -50,10 +51,14 @@ public:
 protected:
     QProcess *m_process;
 
+    // matrix
     const dealii::SparseMatrix<double> *m_system_matrix;
+    // rhs
     const dealii::Vector<double> *m_system_rhs;
-    dealii::Vector<double> m_solution;
+    // initial guess (previous solution)
     const dealii::Vector<double> *m_initial_guess;
+    // solution
+    dealii::Vector<double> m_solution;
 
     QString m_command;
     QString m_commandEnvironment;

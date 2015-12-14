@@ -301,7 +301,7 @@ cdef class __Field__:
                 'dealii_method' : self.thisptr.getLinearSolverDealIIMethod().decode(),
                 'dealii_preconditioner' : self.thisptr.getLinearSolverDealIIPreconditioner().decode(),
                 'external_solver' : self.thisptr.getExternalMatrixSolver().decode(),
-                'external_enviroment' : self.thisptr.getExternalMatrixSolverEnviroment().decode(),
+                'external_environment' : self.thisptr.getExternalMatrixSolverEnviroment().decode(),
                 'external_parameters' : self.thisptr.getExternalMatrixSolverParameters().decode()}
 
     def __set_matrix_solver_parameters__(self, parameters):
@@ -319,7 +319,7 @@ cdef class __Field__:
 
         # external solver
         self.thisptr.setExternalMatrixSolver(parameters['external_solver'].encode())
-        self.thisptr.setParameter(string(b'LinearSolverExternalCommandEnvironment'), <string>parameters['external_enviroment'].encode())
+        self.thisptr.setParameter(string(b'LinearSolverExternalCommandEnvironment'), <string>parameters['external_environment'].encode())
         self.thisptr.setParameter(string(b'LinearSolverExternalCommandParameters'), <string>parameters['external_parameters'].encode())
 
     # refinements

@@ -569,44 +569,22 @@ void PySolution::adaptivityInfo(int timeStep, vector<double> &error, vector<int>
     }
 }
 
-std::string PySolution::filenameMatrix(int timeStep, int adaptivityStep) const
+void PySolution::solution(int timeStep, int adaptivityStep, vector<double> &sln) const
 {
     timeStep = getTimeStep(timeStep);
     adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
 
-    qDebug() << "TODO: add time and adaptive step";
-    // QString name = QString("%1/%2_%3_%4_matrix.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
-    QString name = QString("%1/%2_matrix.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
-    if (QFile::exists(name))
-        return name.toStdString();
-    else
-        throw logic_error(QObject::tr("Matrix file does not exist.").toStdString());
-}
+    FieldSolutionID fsid(m_fieldInfo->fieldId(), timeStep, adaptivityStep);
+    if (m_computation->solutionStore()->contains(fsid))
+    {
+        MultiArray ma = m_computation->solutionStore()->multiArray(fsid);
+        sln = std::vector<double>(ma.solution().size());
+        for (unsigned int i = 0; i < sln.size(); i++)
+            sln[i] = ma.solution()[i];
 
-std::string PySolution::filenameRHS(int timeStep, int adaptivityStep) const
-{
-    timeStep = getTimeStep(timeStep);
-    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
+        return;
+    }
 
-    qDebug() << "TODO: add time and adaptive step";
-    // QString name = QString("%1/%2_%3_%4_RHS").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
-    QString name = QString("%1/%2_rhs.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
-    if (QFile::exists(name))
-        return name.toStdString();
-    else
-        throw logic_error(QObject::tr("RHS file does not exist.").toStdString());
-}
-
-std::string PySolution::filenameSLN(int timeStep, int adaptivityStep) const
-{
-    timeStep = getTimeStep(timeStep);
-    adaptivityStep = getAdaptivityStep(adaptivityStep, timeStep);
-
-    qDebug() << "TODO: add time and adaptive step";
-    // QString name = QString("%1/%2_%3_%4_RHS").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId()).arg(timeStep).arg(adaptivityStep);
-    QString name = QString("%1/%2_sln.mat").arg(cacheProblemDir()).arg(m_fieldInfo->fieldId());
-    if (QFile::exists(name))
-        return name.toStdString();
-    else
-        throw logic_error(QObject::tr("RHS file does not exist.").toStdString());
+    sln = std::vector<double>();
+    throw logic_error(QObject::tr("Solution does not exist.").toStdString());
 }
