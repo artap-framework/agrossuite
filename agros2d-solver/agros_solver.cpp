@@ -17,6 +17,8 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
+#include <Python.h>
+
 #include "agros_solver.h"
 
 #include "util/global.h"
@@ -95,11 +97,13 @@ void AgrosSolver::solveProblem()
 
         m_status = 0;
         QApplication::exit(0);
+        return;
     }
     catch (AgrosException &e)
     {
         Agros2D::log()->printError(tr("Problem"), e.toString());
         QApplication::exit(-1);
+        return;
     }
 }
 
@@ -139,6 +143,7 @@ void AgrosSolver::runCommand()
 
         m_status = 0;
         QApplication::exit(0);
+        return;
     }
     else
     {
@@ -149,6 +154,7 @@ void AgrosSolver::runCommand()
                                   arg(result.tracebackToString()));
 
         QApplication::exit(-1);
+        return;
     }
 }
 
@@ -161,26 +167,56 @@ void AgrosSolver::runTest()
     connect(currentPythonEngineAgros(), SIGNAL(pythonShowMessage(QString)), this, SLOT(stdOut(QString)));
     connect(currentPythonEngineAgros(), SIGNAL(pythonShowHtml(QString)), this, SLOT(stdHtml(QString)));
 
-    QString testSuite = QString("import test_suite; from test_suite.scenario import run_test; cls = eval(\"%1\"); run_test(cls)").arg(m_testName);
+    QString testSuite = QString("import test_suite; from test_suite.scenario import run_test; cls = eval(\"%1\"); agros2d_result_report = run_test(cls)").arg(m_testName);
     bool successfulRun = currentPythonEngineAgros()->runScript(testSuite);
 
     if (successfulRun)
     {
+        PyObject *result = PyDict_GetItemString(currentPythonEngine()->globalDict(), "agros2d_result_report");
+        if (result)
+        {
+            Py_INCREF(result);
+            for (int i = 0; i < PyList_Size(result); i++)
+            {
+                PyObject *list = PyList_GetItem(result, i);
+                Py_INCREF(list);
+
+                QString tmodule = QString::fromWCharArray(PyUnicode_AsUnicode(PyList_GetItem(list, 0)));
+                QString tcls = QString::fromWCharArray(PyUnicode_AsUnicode(PyList_GetItem(list, 1)));
+                QString ttest = QString::fromWCharArray(PyUnicode_AsUnicode(PyList_GetItem(list, 2)));
+                double telapsedTime = PyFloat_AsDouble(PyList_GetItem(list, 3));
+                QString tstatus = QString::fromWCharArray(PyUnicode_AsUnicode(PyList_GetItem(list, 4)));
+                QString terror = QString::fromWCharArray(PyUnicode_AsUnicode(PyList_GetItem(list, 5)));
+
+                if (tstatus != "OK")
+                {
+                    QApplication::exit(-1);
+                    return;
+                }
+
+                Py_XDECREF(list);
+
+            }
+            Py_XDECREF(result);
+        }
+
         Agros2D::problem()->clearFieldsAndConfig();
         Agros2D::clear();
 
         m_status = 0;
         QApplication::exit(0);
+        return;
     }
     else
     {
         ErrorResult result = currentPythonEngineAgros()->parseError();
         Agros2D::log()->printMessage(tr("Scripting Engine"), tr("%1\nLine: %2\nStacktrace:\n%3\n").
-                                  arg(result.error()).
-                                  arg(result.line()).
-                                  arg(result.tracebackToString()));
+                                     arg(result.error()).
+                                     arg(result.line()).
+                                     arg(result.tracebackToString()));
 
         QApplication::exit(-1);
+        return;
     }
 }
 

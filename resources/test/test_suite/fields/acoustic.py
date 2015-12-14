@@ -288,6 +288,6 @@ if __name__ == '__main__':
     result = Agros2DTestResult()
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticHarmonicPlanar))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticHarmonicAxisymmetric))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticTransientPlanar))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticTransientAxisymmetric))    
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticTransientPlanar))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestAcousticTransientAxisymmetric))    
     suite.run(result)

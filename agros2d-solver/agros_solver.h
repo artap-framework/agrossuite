@@ -60,7 +60,7 @@ private:
     bool m_enableLog;
     LogStdOut *m_log;
 
-    bool m_status;
+    int m_status;
 };
 
 #endif // AGROS_SOLVER_H
