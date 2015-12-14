@@ -26,6 +26,7 @@
 #include <string>
 #include <fstream>
 
+#include "Amesos_ConfigDefs.h"
 #include "Amesos.h"
 #include "Amesos_BaseSolver.h"
 #include "Amesos_ConfigDefs.h"
@@ -33,6 +34,9 @@
 #include <Epetra_Vector.h>
 #include <Epetra_CrsMatrix.h>
 #include <EpetraExt_MatrixMatrix.h>
+#include "Epetra_RowMatrix.h"
+#include "Epetra_MultiVector.h"
+#include "Epetra_LinearProblem.h"
 // develop. - Serial version, not yet prepared for MPI (page 14 of Trilinos pdf manual)
 #include <Epetra_SerialComm.h>
 #include <Epetra_SerialDenseMatrix.h>
@@ -44,6 +48,7 @@
 #include <Epetra_SerialDistributor.h>
 #include <Epetra_SerialSpdDenseSolver.h>
 #include <Epetra_SerialSymDenseMatrix.h>
+#include<Teuchos_ParameterList.hpp>
 //----
 // develop. - Serial version, not yet prepared for MPI (page 14 of Trilinos pdf manual)
 #include "mpi/mpi.h"
@@ -51,7 +56,9 @@
 #include <Epetra_CrsGraph.h>
 #include <EpetraExt_RowMatrixOut.h>
 #include <EpetraExt_VectorOut.h>
-#include <AztecOO.h>
+#include <EpetraExt_MultiComm.h>
+#include <EpetraExt_MultiMpiComm.h>
+// #include "AztecOO.h"
 //----
 #include "../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
@@ -82,62 +89,6 @@ public:
     // TCLAP::ValueArg<int> maxIterArg;
 };
 
-void denseVersion(int numOfRows, int numOfNonZero, VectorRW &system_rhs, VectorRW &solution, double *matrixA, int *iRn, int *jCn)
-{
-    // -------------------------- Dense serial version - TODO: separate to class -----------
-    // --- develop ---
-    // print elements in (of the matrix row by row)
-    //        std::cout << "Matrices -----" << std::endl;
-    //        for (int row = 0; row < system_matrix_pattern.rows; ++row)
-    //        {
-    //            std::size_t col_start = system_matrix_pattern.rowstart[row];
-    //            std::size_t col_end = system_matrix_pattern.rowstart[row + 1];
-
-    //            for (int i = col_start; i < col_end; i++)
-    //            {
-    //                std::cout << row << " " << system_matrix_pattern.colnums[i] << " " <<  system_matrix.val[i] << std::endl;
-    //            }
-    //        }
-
-            Epetra_SerialDenseVector epeRhs(numOfRows);     // it have automatic deletion of memory allocation when destructed
-            epeRhs.SetLabel("RHS - com Epetra");
-
-            // fill Epetra vector by rhs values
-            for (int i = 0; i < numOfRows; i++) {
-    //            std::cout << system_rhs[i] << " ";    // show original rhs values - develop
-                epeRhs(i)= system_rhs[i];             // (i) enforce bounds checking
-            }
-    //        std::cout << std::endl << "Filled RHS check" << std::endl << epeRhs << std::endl;  // develop
-
-
-            Epetra_SerialDenseMatrix epeA(numOfRows, numOfRows);
-            // fill the Epetra matrix A by solved system A matrix values
-            for (int index = 0; index < numOfNonZero; index++) {
-                epeA(iRn[index], jCn[index]) = matrixA[index];
-            }
-    //        std::cout << std::endl << "Filled A matrix check" << std::endl << epeA << std::endl;  // develop
-
-    //        develop - simple test of matrix multiplication
-    //        Epetra_SerialDenseMatrix epeMultiplication(numOfRows, numOfRows);
-    //        epeMultiplication.Multiply('Y', 'N', 1.0, epeA, epeA, 1.0);
-    //        std::cout << "Multiplication" << std::endl << epeMultiplication << std::endl;
-
-
-            Epetra_SerialDenseVector epeSolution(numOfRows);     // Epetra solution vector
-    // ---------------
-
-    //        Epetra_LinearProblem Problem(&A, &X, &rhs);
-            Epetra_SerialDenseSolver solver;
-            solver.SetMatrix(epeA);
-            solver.SetVectors(epeSolution, epeRhs);
-
-    //        solver.ApplyRefinement();
-            int solvStatus = solver.Solve();
-            std::cout << "Solver status: " << solvStatus << std::endl;
-            std::cout << "Solved ?: " << solver.Solved() << std::endl;
-            std::cout << "rcond = " << solver.RCOND() << std::endl;
-    // -------------------------- END of Dense version ------------------------------
-}
 
 int main(int argc, char *argv[])
 {
@@ -157,8 +108,11 @@ int main(int argc, char *argv[])
         // number of nonzero elements in matrix
         int numOfNonZero = linearSystem.nz();
 
-// -------------------------- Sparse serial version - TODO: separate to class ---
         Epetra_SerialComm comm;
+        // prepared for MPI
+        // MPI_Init(&argc,&argv); // Initialize MPI, MpiComm
+        // Epetra_MpiComm comm( MPI_COMM_WORLD );
+
 
         // map puts same number of equations on each pe
         Epetra_Map epeMap(-1, numOfRows, 0, comm);
@@ -167,12 +121,8 @@ int main(int argc, char *argv[])
 
         // create an Epetra_Matrix
         Epetra_CrsMatrix epeA(Copy, epeMap, 3);
-        // std::cout << epeA << std::endl;
 
-        // prepare data from Agros2D
-        // matrix
-        // TODO: create raw values into 1D array
-        // ---
+        // prepare data from Agros2D matrix
         int globalRow = 0;  // index of row in global matrix
         for (int index = 0; index < numOfNonZero; index++)
         {
@@ -180,10 +130,7 @@ int main(int argc, char *argv[])
             epeA.InsertGlobalValues(globalRow, 1, &linearSystem.cooA[index], &linearSystem.cooJCN[index]);
         }
 
-        // std::cout << epeA << std::endl;
-
         epeA.FillComplete(); // Transform from GIDs to LIDs
-        // std::cout << epeA << std::endl;
 
         // create Epetra_Vectors
         // vectors x and b
@@ -193,7 +140,6 @@ int main(int argc, char *argv[])
         // copy rhs values (Agros2D) into the Epetra vector b
         for (int i = 0; i < numOfRows; i++)
             epeB[i] = linearSystem.system_rhs->val[i];
-        // std::cout << "Epetra B vector" << std::endl << epeB << std::endl;
 
         // create linear problem
         Epetra_LinearProblem problem(&epeA, &epeX, &epeB);
@@ -202,28 +148,29 @@ int main(int argc, char *argv[])
         Amesos_BaseSolver* solver;
         Amesos factory;
         char* solverType = (char *) "Amesos_Klu"; // uses the KLU direct solver
+
         solver = factory.Create(solverType, problem);
+
+        // TODO: problem in linker - bad links to library ??
+//        Teuchos::ParameterList parList;
+//        parList.set ("PrintTiming", true); // test of parameter setting
+//        parList.set ("PrintStatus", true); // test of parameter setting
+//        solver->SetParameters(parList);
 
         AMESOS_CHK_ERR(solver->SymbolicFactorization());
 
         AMESOS_CHK_ERR(solver->NumericFactorization());
         AMESOS_CHK_ERR(solver->Solve());
-        // std::cout << std::endl << "Amesos Solution" << std::endl << epeX << std::endl;
-
         // ------ End of Amesos
 
-        // ------ DEMO AztecOO solver - not work yet, problem with include ??
-        //        AztecOO solver(problem);
-        //        solver.SetAztecOption(AZ_precond, AZ_Jacobi);
-        //        solver.Iterate(1000, 1.0E-8);
-        //        std::cout << "Solver performed " << solver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << solver.TrueResidual() << std::endl;
-        // ------ End of DEMO AztecOO
+        // ------ AztecOO solver - not work yet, problem with include ??
+//        AztecOO solver(problem);
+//        solver.SetAztecOption(AZ_precond, AZ_Jacobi);
+//        solver.Iterate(1000, 1.0E-8);
+//        std::cout << "Solver performed " << solver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << solver.TrueResidual() << std::endl;
+        // ------ End of AztecOO
 
 // -------------------------- END of Sparse Serial version ------------------------------
-
-// -------------------------- Distributed version - TODO: separate to class -----
-// prepared for MPI
-// -------------------------- END of Sparse Distributed version ------------------------------
 
         // copy results into the solution vector (for Agros2D)
         for (int i = 0; i < numOfRows; i++)
@@ -236,6 +183,10 @@ int main(int argc, char *argv[])
         if (linearSystem.hasReferenceSolution())
             status = linearSystem.compareWithReferenceSolution();
 
+        // free memory, final actions
+        delete solver;
+        // prepared for MPI
+        // MPI_Finalize() ;
         exit(status);
     }
     catch (TCLAP::ArgException &e)
