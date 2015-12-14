@@ -110,6 +110,9 @@ class TestMatrixSolversInternal(TestMatrixSolversGeneral):
     def setUp(self):  
         self.setUpGeneral()
         
+    def tearDown(self):
+        self.tearDownClass()
+        
     def test_umfpack(self):
         # UMFPACK
         sln = self.model("umfpack")       
@@ -123,6 +126,9 @@ class TestMatrixSolversInternal(TestMatrixSolversGeneral):
 class TestMatrixSolversExternal(TestMatrixSolversGeneral):
     def setUp(self):  
         self.setUpGeneral()
+
+    def tearDown(self):
+        self.tearDownClass()
         
     def test_external_umfpack(self):
         # UMFPACK
