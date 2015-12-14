@@ -30,14 +30,15 @@ SET(SOURCES main.cpp)
 file(WRITE "${CMAKE_HOME_DIRECTORY}/../libs/${PROJECT_NAME}.ext"
 "Trilinos\n\
 solver_TRILINOS\n\
-<b>-c</b> or <b>--preconditioner</b> (<i>string</i>) : Jacobi, MultiColoredGS, MultiColoredSGS, ILU, MultiColoredILU, MultiElimination, FSAI<br/>\
-<b>-l</b> or <b>--solver</b> (<i>string</i>) : BiCGStab, CG, GMRES, FGMRES, CR, IDR<br/>\
-<b>-x</b> or <b>--max_iter</b> (<i>int</i>)<br/>\
-<b>-t</b> or <b>--rel_tol</b> (<i>double</i>)<br/>\
-<b>-a</b> or <b>--abs_tol</b> (<i>double</i>)")
+
+#<b>-c</b> or <b>--preconditioner</b> (<i>string</i>) : Jacobi, MultiColoredGS, MultiColoredSGS, ILU, MultiColoredILU, MultiElimination, FSAI<br/>\
+#<b>-l</b> or <b>--solver</b> (<i>string</i>) : BiCGStab, CG, GMRES, FGMRES, CR, IDR<br/>\
+#<b>-x</b> or <b>--max_iter</b> (<i>int</i>)<br/>\
+#<b>-t</b> or <b>--rel_tol</b> (<i>double</i>)<br/>\
+#<b>-a</b> or <b>--abs_tol</b> (<i>double</i>)")
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MPI_LIBRARIES} ${AZTECOO_LIBRARIES} ${AMESOS_LIBRARY} ${TEUCHOS_LIBRARY} ${EPETRA_LIBRARY})  # slinkuje AMESOS atd. podobne
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MPI_LIBRARIES} ${EPETRA_LIBRARY} ${TRILINOS_LIBRARY} ${TEUCHOS_LIBRARY} ${AMESOS_LIBRARY} ${AZTECOO_LIBRARIES})  # slinkuje AMESOS atd. podobne
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/../libs)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
