@@ -291,7 +291,7 @@ void ProblemWidget::load()
     txtTransientInitialStepSize->setEnabled(chkTransientInitialStepSize->isChecked());
     txtTransientInitialStepSize->setValue(Agros2D::problem()->config()->value(ProblemConfig::TimeInitialStepSize).toDouble());
     txtTransientOrder->setValue(Agros2D::problem()->config()->value(ProblemConfig::TimeOrder).toInt());
-    cmbTransientMethod->setCurrentIndex(cmbTransientMethod->findData((dealii::TimeStepping::runge_kutta_method) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()));
+    cmbTransientMethod->setCurrentIndex(cmbTransientMethod->findData((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt()));
     if (cmbTransientMethod->currentIndex() == -1)
         cmbTransientMethod->setCurrentIndex(0);
 
@@ -345,7 +345,7 @@ void ProblemWidget::transientChanged()
     lblTransientTimeStep->setText(QString("%1 s").arg(txtTransientTimeTotal->value() / txtTransientSteps->value()));
     lblTransientSteps->setText(tr("Approx. number of steps:"));
 
-    switch ((TimeStepMethod) Agros2D::problem()->config()->value(ProblemConfig::TimeMethod).toInt())
+    switch ((TimeStepMethod) cmbTransientMethod->itemData(cmbTransientMethod->currentIndex()).toInt())
     {
     case TimeStepMethod_Fixed:
     {
