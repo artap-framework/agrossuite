@@ -46,7 +46,6 @@ int main(int argc, char *argv[])
     {
 
         LinearSystemArgs linearSystem("External solver - PETSc", argc, argv);
-
         linearSystem.readLinearSystem();
 
         Vec x,b;
@@ -135,6 +134,7 @@ int main(int argc, char *argv[])
             */
         ierr = KSPGetPC(ksp,&pc);CHKERRQ(ierr);
         ierr = PCSetType(pc, PCLU);CHKERRQ(ierr);
+        PCFactorSetShiftType(pc, MAT_SHIFT_NONZERO);
         ierr = KSPSetTolerances(ksp,1.e-10,PETSC_DEFAULT,PETSC_DEFAULT,PETSC_DEFAULT);CHKERRQ(ierr);
 
         /*
@@ -151,6 +151,7 @@ int main(int argc, char *argv[])
             ierr = VecSet(x,p);CHKERRQ(ierr);
             ierr = KSPSetInitialGuessNonzero(ksp,PETSC_TRUE);CHKERRQ(ierr);
         }
+
 
         /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                                 Solve the linear system
@@ -173,6 +174,7 @@ int main(int argc, char *argv[])
         for (int i = 0; i < n_rows; i++) {
             VecGetValues(x,1,&i, &linearSystem.system_rhs->val[i]);
         }
+        linearSystem.system_sln = linearSystem.system_rhs;
 
         // Check the error
 
