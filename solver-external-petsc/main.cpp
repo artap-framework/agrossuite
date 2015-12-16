@@ -45,56 +45,9 @@ int main(int argc, char *argv[])
     try
     {
 
-        //        ierr = MPI_Init(&argc, &argv);
-        //        ierr = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        LinearSystemArgs linearSystem("External solver - PETSc", argc, argv);
 
-        // std::cout << "Rank " << rank << " started." << std::endl;
-
-        // time
-        // MPI_Barrier(MPI_COMM_WORLD);
-        // double startTotal = MPI_Wtime();
-
-        // define the problem on the host
-        SparsityPatternRW system_matrix_pattern;
-        SparseMatrixRW system_matrix;
-        VectorRW system_rhs;
-
-        system_matrix_pattern.max_dim;
-
-        std::string slnFileName;
-        // command line info
-        TCLAP::CmdLine cmd("External solver - MUMPS", ' ');
-
-        TCLAP::ValueArg<std::string> matrixArg("m", "matrix", "Matrix", true, "", "string");
-        TCLAP::ValueArg<std::string> matrixPatternArg("p", "matrix_pattern", "Matrix pattern", true, "", "string");
-        TCLAP::ValueArg<std::string> rhsArg("r", "rhs", "RHS", true, "", "string");
-        TCLAP::ValueArg<std::string> solutionArg("s", "solution", "Solution", true, "", "string");
-        TCLAP::ValueArg<std::string> initialArg("i", "initial", "Initial vector", false, "", "string");
-
-        cmd.add(matrixArg);
-        cmd.add(matrixPatternArg);
-        cmd.add(rhsArg);
-        cmd.add(solutionArg);
-        cmd.add(initialArg);
-
-        // parse the argv array.
-        cmd.parse(argc, argv);
-
-        slnFileName = solutionArg.getValue();
-
-        std::ifstream readMatrixSparsityPattern(matrixPatternArg.getValue());
-        system_matrix_pattern.block_read(readMatrixSparsityPattern);
-        readMatrixSparsityPattern.close();
-
-        std::ifstream readMatrix(matrixArg.getValue());
-        // system_matrix.reinit(system_matrix_pattern);
-        system_matrix.block_read(readMatrix);
-        readMatrix.close();
-
-        std::ifstream readRHS(rhsArg.getValue());
-        system_rhs.block_read(readRHS);
-        readRHS.close();
-
+        linearSystem.readLinearSystem();
 
         Vec x,b;
         Mat A;
@@ -112,10 +65,10 @@ int main(int argc, char *argv[])
         // ierr = PetscOptionsGetInt(NULL,"-n",&m,NULL);CHKERRQ(ierr);  // read parameter from command line
         ierr = PetscOptionsGetBool(NULL,"-nonzero_guess",&nonzeroguess,NULL);CHKERRQ(ierr);
 
-        PetscInt n_rows = system_matrix_pattern.rows;
-        PetscInt n = system_matrix.max_len;
+        PetscInt n_rows = linearSystem.n();
+        PetscInt n = linearSystem.nz();
 
-        PetscScalar * Matrix = system_matrix.val;
+        PetscScalar * Matrix = linearSystem.system_matrix->val;
         PetscScalar * vector = new PetscScalar[n_rows];
         PetscInt  * row_indicies = new PetscInt[n_rows];
         PetscInt  * row_lengths = new PetscInt[n_rows];
@@ -128,11 +81,11 @@ int main(int argc, char *argv[])
 
         for(int i = 0; i < n_rows; i++)
         {
-            row_indicies[i] = system_matrix_pattern.rowstart[i];
-            vector[i] = system_rhs.val[i];
+            row_indicies[i] = linearSystem.system_matrix_pattern->rowstart[i];
+            vector[i] = linearSystem.system_rhs->val[i];
         }
 
-        PetscInt  * column_indicies = reinterpret_cast<PetscInt *>(system_matrix_pattern.colnums);
+        PetscInt  * column_indicies = reinterpret_cast<PetscInt *>(linearSystem.system_matrix_pattern->colnums);
 
         for(int i = 0; i < n_rows; i++)
         {
@@ -218,7 +171,7 @@ int main(int argc, char *argv[])
        //  VecGetArray1d(x,1,0, system_rhs.val);
 
         for (int i = 0; i < n_rows; i++) {
-            VecGetValues(x,1,&i, &system_rhs.val[i]);
+            VecGetValues(x,1,&i, &linearSystem.system_rhs->val[i]);
         }
 
         // Check the error
@@ -250,11 +203,7 @@ int main(int argc, char *argv[])
                    options are chosen (e.g., -log_summary).
             */
         ierr = PetscFinalize();        
-        std::ofstream writeSln(slnFileName);
-        system_rhs.block_write(writeSln);
-        writeSln.close();
-        // std::cout << "Total time: " << (end - startTotal) << std::endl;
-
+        linearSystem.writeSolution();
 
         exit(0);
     }
