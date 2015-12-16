@@ -48,7 +48,6 @@
 #include <Epetra_SerialDistributor.h>
 #include <Epetra_SerialSpdDenseSolver.h>
 #include <Epetra_SerialSymDenseMatrix.h>
-#include<Teuchos_ParameterList.hpp>
 //----
 // develop. - Serial version, not yet prepared for MPI (page 14 of Trilinos pdf manual)
 #include "mpi/mpi.h"
@@ -58,7 +57,14 @@
 #include <EpetraExt_VectorOut.h>
 #include <EpetraExt_MultiComm.h>
 #include <EpetraExt_MultiMpiComm.h>
-// #include "AztecOO.h"
+#include <Teuchos_RCP.hpp>
+#include <NOX_Common.H>
+#include "Teuchos_ParameterList.hpp"
+#include "Teuchos_XMLParameterListHelpers.hpp"
+#include "Teuchos_TestForException.hpp"
+#include "AztecOO.h"
+#include "Aztec2Petra.h"
+#include "AztecOOParameterList.hpp"
 //----
 #include "../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
@@ -68,12 +74,14 @@ class LinearSystemTrilinosArgs : public LinearSystemArgs
 public:
     LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
         : LinearSystemArgs(name, argc, argv)
+          // solverVariant(TCLAP::ValueArg<std::string>("l", "solverVariant", "SolverVariant", false, "Amesos_Klu", "string"))
           // preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
-          // solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
+          // solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string"))
           // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
           // relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
           // maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int"))
     {
+        // cmd.add(solverVariant);
         // cmd.add(preconditionerArg);
         // cmd.add(solverArg);
         // cmd.add(absTolArg);
@@ -82,6 +90,7 @@ public:
     }
 
 public:
+    // TCLAP::ValueArg<std::string> solverVariant;
     // TCLAP::ValueArg<std::string> preconditionerArg;
     // TCLAP::ValueArg<std::string> solverArg;
     // TCLAP::ValueArg<double> absTolArg;
@@ -108,10 +117,10 @@ int main(int argc, char *argv[])
         // number of nonzero elements in matrix
         int numOfNonZero = linearSystem.nz();
 
-        Epetra_SerialComm comm;
+        //Epetra_SerialComm comm;
         // prepared for MPI
-        // MPI_Init(&argc,&argv); // Initialize MPI, MpiComm
-        // Epetra_MpiComm comm( MPI_COMM_WORLD );
+        MPI_Init(&argc,&argv); // Initialize MPI, MpiComm
+        Epetra_MpiComm comm( MPI_COMM_WORLD );
 
 
         // map puts same number of equations on each pe
@@ -145,11 +154,11 @@ int main(int argc, char *argv[])
         Epetra_LinearProblem problem(&epeA, &epeX, &epeB);
 
         // ------ Amesos solver
-        Amesos_BaseSolver* solver;
         Amesos factory;
-        char* solverType = (char *) "Amesos_Klu"; // uses the KLU direct solver
+        char *solverType = (char *) "Amesos_Klu"; // in default uses the Amesos_Klu direct solver
 
-        solver = factory.Create(solverType, problem);
+        Amesos_BaseSolver *solver = factory.Create(solverType, problem);
+        assert(solver);
 
         // TODO: problem in linker - bad links to library ??
 //        Teuchos::ParameterList parList;
@@ -157,10 +166,13 @@ int main(int argc, char *argv[])
 //        parList.set ("PrintStatus", true); // test of parameter setting
 //        solver->SetParameters(parList);
 
-        AMESOS_CHK_ERR(solver->SymbolicFactorization());
+          AMESOS_CHK_ERR(solver->SymbolicFactorization());
 
-        AMESOS_CHK_ERR(solver->NumericFactorization());
-        AMESOS_CHK_ERR(solver->Solve());
+          AMESOS_CHK_ERR(solver->NumericFactorization());
+          AMESOS_CHK_ERR(solver->Solve());
+
+          delete solver;
+
         // ------ End of Amesos
 
         // ------ AztecOO solver - not work yet, problem with include ??
@@ -183,10 +195,8 @@ int main(int argc, char *argv[])
         if (linearSystem.hasReferenceSolution())
             status = linearSystem.compareWithReferenceSolution();
 
-        // free memory, final actions
-        delete solver;
         // prepared for MPI
-        // MPI_Finalize() ;
+        MPI_Finalize() ;
         exit(status);
     }
     catch (TCLAP::ArgException &e)
