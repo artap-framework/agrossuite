@@ -89,7 +89,6 @@ int main(int argc, char *argv[])
                 {
                     id.irn[index] = row + 1;
                     id.jcn[index] = linearSystem.system_matrix_pattern->colnums[i] + 1;
-                    id.a[index] = linearSystem.system_matrix->val[i];
 
                     ++index;
                 }
