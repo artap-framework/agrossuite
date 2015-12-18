@@ -130,19 +130,13 @@ int solveAztecOO(const Epetra_LinearProblem &problem)
     // std::cout << "Solver performed " << aztecooSolver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << aztecooSolver.TrueResidual() << std::endl;
 }
 
-LinearSystemTrilinosArgs *createLinearSystem(std::string extSolverName, int argc, char *argv[], int &numOfRows, int &numOfNonZero)
+LinearSystemTrilinosArgs *createLinearSystem(std::string extSolverName, int argc, char *argv[])
 {
     LinearSystemTrilinosArgs *linearSystem = new LinearSystemTrilinosArgs("External solver - TRILINOS", argc, argv);
     linearSystem->readLinearSystem();
     // create empty solution vector (Agros2D)
     linearSystem->system_sln->resize(linearSystem->system_rhs->max_len);
     linearSystem->convertToCOO();
-
-    // number of unknowns
-    numOfRows = linearSystem->n();
-
-    // number of nonzero elements in matrix
-    numOfNonZero = linearSystem->nz();
 
     return linearSystem;
 }
@@ -152,9 +146,6 @@ int main(int argc, char *argv[])
     try
     {
         int status = 0;
-
-        int numOfRows = 0;      // number of unknowns, i.e. number of global elements - variable init
-        int numOfNonZero = 0;   // number of nonzero elements in matrix, variable init
 
         int rank = 0;           // MPI process rank
         int numProcs = 0;       // total number of processes
@@ -184,12 +175,12 @@ int main(int argc, char *argv[])
 
         if (rank == 0)
         {
-            linearSystem = createLinearSystem("External solver - TRILINOS", argc, argv, numOfRows, numOfNonZero);
+            linearSystem = createLinearSystem("External solver - TRILINOS", argc, argv);
         }
 
         // Construct a Map that puts approximately the same number of equations on each processor
         const int indexBase = 0;
-        Epetra_Map epeMap(numOfRows, indexBase, comm);
+        Epetra_Map epeMap(linearSystem->n(), indexBase, comm);
         // Epetra_Map epeMap(-1, numOfRows, 0, comm);
 
 
@@ -204,20 +195,21 @@ int main(int argc, char *argv[])
         // processes.  However, the likely cause for this case is a
         // misconfiguration of Epetra, so we expect it to happen on all
         // processes, if it happens at all.
-        if ((numMyElements > 0) && (myGlobalElements == NULL)) {
+        if ((numMyElements > 0) && (myGlobalElements == NULL))
+        {
             throw std::logic_error ("Failed to get the list of global indices");
         }
 
         // print Epetra Map
-//        for (int i = 0; i < numProcs; ++i )
-//        {
-//            MPI_Barrier(MPI_COMM_WORLD);
-//            if (i == rank)
-//            {
-//                std::cout << "Epetra Map:" << std::endl << epeMap << std::endl;
+        for (int i = 0; i < numProcs; ++i )
+        {
+            MPI_Barrier(MPI_COMM_WORLD);
+            if (i == rank)
+            {
+                std::cout << "Epetra Map:" << std::endl << epeMap << std::endl;
 
-//            }
-//        }
+            }
+        }
 
         if (rank == 0) {
             std::cout << std::endl << "Creating the sparse matrix" << std::endl;
@@ -225,14 +217,13 @@ int main(int argc, char *argv[])
 
         // create an Epetra_Matrix (sparse) whose rows have distribution given
         // by the Map.  The max number of entries per row is maxNumPerRow (aproximation).
-        int maxNumPerRow = numOfRows / 10;
+        int maxNumPerRow = linearSystem->n() / 10;
         Epetra_CrsMatrix epeA(Copy, epeMap, maxNumPerRow);
 
         // prepare data from Agros2D matrix
-        int globalRow = 0;  // index of row in global matrix
-        for (int index = 0; index < numOfNonZero; index++)
+        for (int index = 0; index < linearSystem->nz(); index++)
         {
-            globalRow = epeA.GRID(linearSystem->cooIRN[index]);
+            int globalRow = epeA.GRID(linearSystem->cooIRN[index]);
             epeA.InsertGlobalValues(globalRow, 1, &linearSystem->cooA[index], &linearSystem->cooJCN[index]);
         }
 
@@ -244,7 +235,7 @@ int main(int argc, char *argv[])
         Epetra_Vector epeB(epeMap);
 
         // copy rhs values (Agros2D) into the Epetra vector b
-        for (int i = 0; i < numOfRows; i++)
+        for (int i = 0; i < linearSystem->n(); i++)
             epeB[i] = linearSystem->system_rhs->val[i];
 
         // create linear problem
@@ -265,7 +256,7 @@ int main(int argc, char *argv[])
         // copy results into the solution vector (for Agros2D)
         if (rank == 0)
         {
-            for (int i = 0; i < numOfRows; i++)
+            for (int i = 0; i < linearSystem->n(); i++)
                 linearSystem->system_sln->val[i] = epeX[i];       //solution[i] = demoEpeX[i]; // for test of export to Agros2D
 
             // write solution
