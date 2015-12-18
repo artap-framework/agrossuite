@@ -19,6 +19,7 @@
 
 // DEVELOPMENT TEMPORARY INFO - command line call:
 // ./solver_TRILINOS -s test.sol -r testmatice.rhs -p testmatice.matrix_pattern -m testmatice.matrix
+// mpi version tutorial - https://github.com/trilinos/Trilinos_tutorial/wiki/EpetraLesson03
 
 #include <streambuf>
 #include <iostream>
@@ -45,19 +46,6 @@
 #  include "Epetra_SerialComm.h"
 #endif
 
-// develop. - Serial version, not yet prepared for MPI (page 14 of Trilinos pdf manual)
-#include <Epetra_SerialComm.h>
-#include <Epetra_SerialDenseMatrix.h>
-#include <Epetra_SerialCommData.h>
-#include <Epetra_SerialDenseOperator.h>
-#include <Epetra_SerialDenseSolver.h>
-#include <Epetra_SerialDenseVector.h>
-#include <Epetra_SerialDenseSVD.h>
-#include <Epetra_SerialDistributor.h>
-#include <Epetra_SerialSpdDenseSolver.h>
-#include <Epetra_SerialSymDenseMatrix.h>
-// develop. - Serial version, not yet prepared for MPI (page 14 of Trilinos pdf manual)
-#include "mpi/mpi.h"
 #include <Epetra_Map.h>
 #include <Epetra_CrsGraph.h>
 #include <EpetraExt_RowMatrixOut.h>
@@ -80,15 +68,15 @@ class LinearSystemTrilinosArgs : public LinearSystemArgs
 {
 public:
     LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
-        : LinearSystemArgs(name, argc, argv)
-        // solverVariant(TCLAP::ValueArg<std::string>("l", "solverVariant", "SolverVariant", false, "Amesos_Klu", "string"))
+        : LinearSystemArgs(name, argc, argv),
+        solverVariant(TCLAP::ValueArg<int>("v", "solverVariant", "SolverVariant", false, 0, "int"))
         // preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
         // solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string"))
         // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
         // relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
         // maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int"))
     {
-        // cmd.add(solverVariant);
+        cmd.add(solverVariant);
         // cmd.add(preconditionerArg);
         // cmd.add(solverArg);
         // cmd.add(absTolArg);
@@ -97,7 +85,7 @@ public:
     }
 
 public:
-    // TCLAP::ValueArg<std::string> solverVariant;
+    TCLAP::ValueArg<int> solverVariant;
     // TCLAP::ValueArg<std::string> preconditionerArg;
     // TCLAP::ValueArg<std::string> solverArg;
     // TCLAP::ValueArg<double> absTolArg;
@@ -113,10 +101,10 @@ int solveAmesos(const Epetra_LinearProblem &problem, std::string solverTypeName 
     Amesos_BaseSolver *amesosSolver = amesosFactory.Create(amesosSolverType, problem);
     assert(amesosSolver);
 
-    // TODO: problem in linker - bad links to library ??
+    // create parameter list for solver
     Teuchos::ParameterList parList;
-    parList.set ("PrintTiming", true); // test of parameter setting
-    parList.set ("PrintStatus", true); // test of parameter setting
+    parList.set ("PrintTiming", false); // test of parameter setting
+    parList.set ("PrintStatus", false); // test of parameter setting
     amesosSolver->SetParameters(parList);
 
     AMESOS_CHK_ERR(amesosSolver->SymbolicFactorization());
@@ -131,6 +119,11 @@ int solveAmesos(const Epetra_LinearProblem &problem, std::string solverTypeName 
 int solveAztecOO(const Epetra_LinearProblem &problem)
 {
     AztecOO aztecooSolver(problem);
+    // create parameter list for solver
+    Teuchos::ParameterList parList;
+    parList.set ("PrintTiming", false); // test of parameter setting
+    parList.set ("PrintStatus", false); // test of parameter setting
+    aztecooSolver.SetParameters(parList);
     aztecooSolver.SetAztecOption(AZ_precond, AZ_Jacobi);
     aztecooSolver.SetAztecOption(AZ_solver, AZ_bicgstab);
     aztecooSolver.Iterate(1000, 1e-4);
@@ -160,12 +153,12 @@ int main(int argc, char *argv[])
     {
         int status = 0;
 
-        int numOfRows = 0;      // number of unknowns, variable init
+        int numOfRows = 0;      // number of unknowns, i.e. number of global elements - variable init
         int numOfNonZero = 0;   // number of nonzero elements in matrix, variable init
 
-        int rank = 0;
+        int rank = 0;           // MPI process rank
+        int numProcs = 0;       // total number of processes
 
-        // error !!!
         LinearSystemTrilinosArgs *linearSystem = nullptr;
 
 #ifdef HAVE_MPI       
@@ -175,7 +168,14 @@ int main(int argc, char *argv[])
         ierr = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
         Epetra_MpiComm comm(MPI_COMM_WORLD);
 
+        numProcs = comm.NumProc();
         std::cout << "MPI rank = " << rank << std::endl;
+
+        if (rank == 0)
+        {
+            // Print out the Epetra software version.
+            std::cout << "Total number of processes: " << numProcs << std::endl;
+        }
 
 #else
         // in case of serial version
@@ -187,13 +187,46 @@ int main(int argc, char *argv[])
             linearSystem = createLinearSystem("External solver - TRILINOS", argc, argv, numOfRows, numOfNonZero);
         }
 
-        // map puts same number of equations on each pe
-        Epetra_Map epeMap(-1, numOfRows, 0, comm);
-        int numGlobalElements = epeMap.NumGlobalElements();
-        int numMyElements = epeMap.NumMyElements();
+        // Construct a Map that puts approximately the same number of equations on each processor
+        const int indexBase = 0;
+        Epetra_Map epeMap(numOfRows, indexBase, comm);
+        // Epetra_Map epeMap(-1, numOfRows, 0, comm);
 
-        // create an Epetra_Matrix
-        Epetra_CrsMatrix epeA(Copy, epeMap, 3);
+
+        int numMyElements = epeMap.NumMyElements();
+        int numGlobalElements = epeMap.NumGlobalElements();
+        int *myGlobalElements = NULL;  // rename, remove "my"
+
+        // get the list of global indices that this process owns.
+        myGlobalElements = epeMap.MyGlobalElements();
+
+        // tests like this really should synchronize across all
+        // processes.  However, the likely cause for this case is a
+        // misconfiguration of Epetra, so we expect it to happen on all
+        // processes, if it happens at all.
+        if ((numMyElements > 0) && (myGlobalElements == NULL)) {
+            throw std::logic_error ("Failed to get the list of global indices");
+        }
+
+        // print Epetra Map
+//        for (int i = 0; i < numProcs; ++i )
+//        {
+//            MPI_Barrier(MPI_COMM_WORLD);
+//            if (i == rank)
+//            {
+//                std::cout << "Epetra Map:" << std::endl << epeMap << std::endl;
+
+//            }
+//        }
+
+        if (rank == 0) {
+            std::cout << std::endl << "Creating the sparse matrix" << std::endl;
+        }
+
+        // create an Epetra_Matrix (sparse) whose rows have distribution given
+        // by the Map.  The max number of entries per row is maxNumPerRow (aproximation).
+        int maxNumPerRow = numOfRows / 10;
+        Epetra_CrsMatrix epeA(Copy, epeMap, maxNumPerRow);
 
         // prepare data from Agros2D matrix
         int globalRow = 0;  // index of row in global matrix
@@ -217,15 +250,17 @@ int main(int argc, char *argv[])
         // create linear problem
         Epetra_LinearProblem problem(&epeA, &epeX, &epeB);
 
-        // ------ Amesos solver
-        solveAmesos(problem, "Amesos_Klu");
-        // ------ End of Amesos
-
-        // ------ AztecOO solver
-        // solveAztecOO(problem);
-        // ------ End of AztecOO
-
-        // -------------------------- END of Sparse Serial version ------------------------------
+        // solver calling
+        switch (linearSystem->solverVariant.getValue()) {
+        case 0: // ------ Amesos solver
+            solveAmesos(problem, "Amesos_Klu");
+        case 1: // ------ AztecOO solver
+            solveAztecOO(problem);
+            break;
+        default:
+            assert(0 && "No solver selected !!!");
+            break;
+        }
 
         // copy results into the solution vector (for Agros2D)
         if (rank == 0)
