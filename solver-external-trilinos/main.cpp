@@ -294,11 +294,12 @@ int main(int argc, char *argv[])
         int maxIter = linearSystem->maxIterArg.getValue();
 
         // solver calling
-        if (linearSystem->solverArg.getValue() == "Amesos_Klu")
+        std::string solver = linearSystem->solverArg.getValue();
+        if (solver == "Amesos_Klu" || solver == "") // default
             solveAmesos(problem, "Amesos_Klu");
-        else if (linearSystem->solverArg.getValue() == "AztecOO")
+        else if (solver == "AztecOO")
             solveAztecOO(problem, maxIter, relTol);
-        else if (linearSystem->solverArg.getValue() == "ML")
+        else if (solver == "ML")
             solveML(problem, maxIter, relTol);
         else
             assert(0 && "No solver selected !!!");
