@@ -57,9 +57,12 @@
 #include "Teuchos_ParameterList.hpp"
 #include "Teuchos_XMLParameterListHelpers.hpp"
 #include "Teuchos_TestForException.hpp"
+// required by AztecOO
 #include "AztecOO.h"
 #include "Aztec2Petra.h"
 #include "AztecOOParameterList.hpp"
+// required by ML
+#include "ml_MultiLevelPreconditioner.h"
 //----
 #include "../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
@@ -69,28 +72,25 @@ class LinearSystemTrilinosArgs : public LinearSystemArgs
 public:
     LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
         : LinearSystemArgs(name, argc, argv),
-        solverVariant(TCLAP::ValueArg<int>("v", "solverVariant", "SolverVariant", false, 0, "int"))
+          solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
         // preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
-        // solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string"))
         // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
-        // relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
-        // maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int"))
+        relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
+        maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int"))
     {
-        cmd.add(solverVariant);
+        cmd.add(solverArg);
         // cmd.add(preconditionerArg);
-        // cmd.add(solverArg);
         // cmd.add(absTolArg);
-        // cmd.add(relTolArg);
-        // cmd.add(maxIterArg);
+        cmd.add(relTolArg);
+        cmd.add(maxIterArg);
     }
 
 public:
-    TCLAP::ValueArg<int> solverVariant;
+    TCLAP::ValueArg<std::string> solverArg;
     // TCLAP::ValueArg<std::string> preconditionerArg;
-    // TCLAP::ValueArg<std::string> solverArg;
     // TCLAP::ValueArg<double> absTolArg;
-    // TCLAP::ValueArg<double> relTolArg;
-    // TCLAP::ValueArg<int> maxIterArg;
+    TCLAP::ValueArg<double> relTolArg;
+    TCLAP::ValueArg<int> maxIterArg;
 };
 
 int solveAmesos(const Epetra_LinearProblem &problem, std::string solverTypeName =  "Amesos_Klu")
@@ -115,8 +115,7 @@ int solveAmesos(const Epetra_LinearProblem &problem, std::string solverTypeName 
     delete amesosSolver;
 }
 
-// TODO:  - not work yet, problem with include ??
-int solveAztecOO(const Epetra_LinearProblem &problem)
+int solveAztecOO(const Epetra_LinearProblem &problem, int maxIter, double relTol)
 {
     AztecOO aztecooSolver(problem);
     // create parameter list for solver
@@ -126,8 +125,58 @@ int solveAztecOO(const Epetra_LinearProblem &problem)
     aztecooSolver.SetParameters(parList);
     aztecooSolver.SetAztecOption(AZ_precond, AZ_Jacobi);
     aztecooSolver.SetAztecOption(AZ_solver, AZ_bicgstab);
-    aztecooSolver.Iterate(1000, 1e-4);
+    aztecooSolver.Iterate(maxIter, relTol);
     // std::cout << "Solver performed " << aztecooSolver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << aztecooSolver.TrueResidual() << std::endl;
+}
+
+int solveML(const Epetra_LinearProblem &problem, int maxIter, double relTol)
+{
+    // create a parameter list for ML options
+    Teuchos::ParameterList mlList;
+    // Sets default parameters.
+    // After this call, MLList contains the default values for the ML parameters.
+    // - "SA" : classical smoothed aggregation preconditioners;
+    // - "NSSA" : default values for Petrov-Galerkin preconditioner for nonsymmetric systems
+    // - "maxwell" : default values for aggregation preconditioner for eddy current systems
+    // - "DD" : defaults for 2-level domain decomposition preconditioners based on aggregation;
+    // - "DD-LU" : Like "DD", but use exact LU decompositions on each subdomain;
+    // - "DD-ML" : 3-level domain decomposition preconditioners, with coarser spaces defined by aggregation;
+    // - "DD-ML-LU" : Like "DD-ML", but with LU decompositions on each subdomain.
+    ML_Epetra::SetDefaults("SA", mlList);
+    // overwrite some parameters. Please refer to the user's guide
+    // for more information
+    // some of the parameters do not differ from their default value,
+    // and they are here reported for the sake of clarity
+    // output level, 0 being silent and 10 verbose
+    mlList.set("ML output", 10);
+    // maximum number of levels
+    mlList.set("max levels", 5);
+    // set finest level to 0
+    mlList.set("increasing or decreasing", "increasing");
+    // use Uncoupled scheme to create the aggregate
+    mlList.set("aggregation: type", "Uncoupled");
+    // smoother is Chebyshev. Example file `ml/examples/TwoLevelDD/ml_2level_DD.cpp' shows how to use AZTEC's preconditioners as smoothers
+    mlList.set("smoother: type", "Chebyshev");
+    mlList.set("smoother: sweeps", 3);
+    // use both pre and post smoothing
+    mlList.set("smoother: pre or post", "both");
+    // solve with serial direct solver KLU
+    mlList.set("coarse: type", "Amesos-KLU");
+
+    // Creates the preconditioning object. We suggest to use `new' and
+    // `delete' because the destructor contains some calls to MPI (as
+    // required by ML and possibly Amesos). This is an issue only if the
+    // destructor is called **after** MPI_Finalize().
+    ML_Epetra::MultiLevelPreconditioner* mlPrec = new ML_Epetra::MultiLevelPreconditioner(*problem.GetMatrix(), mlList);
+    // verify unused parameters on process 0 (put -1 to print on all processes)
+    // mlPrec->PrintUnused(0);
+
+    AztecOO solver(problem);
+
+    solver.SetPrecOperator(mlPrec);
+    solver.SetAztecOption(AZ_solver, AZ_cg);
+    solver.SetAztecOption(AZ_output, 32);
+    solver.Iterate(maxIter, relTol);
 }
 
 LinearSystemTrilinosArgs *createLinearSystem(std::string extSolverName, int argc, char *argv[])
@@ -206,12 +255,12 @@ int main(int argc, char *argv[])
             MPI_Barrier(MPI_COMM_WORLD);
             if (i == rank)
             {
-                std::cout << "Epetra Map:" << std::endl << epeMap << std::endl;
-
+                // std::cout << "Epetra Map:" << std::endl << epeMap << std::endl;
             }
         }
 
-        if (rank == 0) {
+        if (rank == 0)
+        {
             std::cout << std::endl << "Creating the sparse matrix" << std::endl;
         }
 
@@ -241,17 +290,18 @@ int main(int argc, char *argv[])
         // create linear problem
         Epetra_LinearProblem problem(&epeA, &epeX, &epeB);
 
+        double relTol = linearSystem->relTolArg.getValue();
+        int maxIter = linearSystem->maxIterArg.getValue();
+
         // solver calling
-        switch (linearSystem->solverVariant.getValue()) {
-        case 0: // ------ Amesos solver
+        if (linearSystem->solverArg.getValue() == "Amesos_Klu")
             solveAmesos(problem, "Amesos_Klu");
-        case 1: // ------ AztecOO solver
-            solveAztecOO(problem);
-            break;
-        default:
+        else if (linearSystem->solverArg.getValue() == "AztecOO")
+            solveAztecOO(problem, maxIter, relTol);
+        else if (linearSystem->solverArg.getValue() == "ML")
+            solveML(problem, maxIter, relTol);
+        else
             assert(0 && "No solver selected !!!");
-            break;
-        }
 
         // copy results into the solution vector (for Agros2D)
         if (rank == 0)
