@@ -28,6 +28,7 @@
 
 #define JOB_INIT -1
 #define JOB_END -2
+#define JOB_SOLVE 6
 #define USE_COMM_WORLD -987654
 
 #include "../../3rdparty/tclap/CmdLine.h"
@@ -39,15 +40,18 @@ int main(int argc, char *argv[])
     {
         int status = 0;
 
-        int rank, ierr;
+        int rank = 0;
+        int ierr = 0;
+        int np = 1;
         ierr = MPI_Init(&argc, &argv);
-        ierr = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-        // std::cout << "Rank " << rank << " started." << std::endl;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_size(MPI_COMM_WORLD, &np);
 
         // time
         MPI_Barrier(MPI_COMM_WORLD);
-        double startTotal = MPI_Wtime();
+        double timeStart = 0;
+        if (rank == 0)
+            timeStart = MPI_Wtime();
 
         // initialize a MUMPS instance. Use MPI_COMM_WORLD
         DMUMPS_STRUC_C id;
@@ -59,6 +63,7 @@ int main(int argc, char *argv[])
 
         // define the problem on the host
         LinearSystemArgs linearSystem("External solver - MUMPS", argc, argv);
+        linearSystem.setInfoNumOfProc(np);
 
         if (rank == 0)
         {            
@@ -94,10 +99,7 @@ int main(int argc, char *argv[])
                 }
             }
 
-            // MPI_Barrier(MPI_COMM_WORLD);
-            double end = MPI_Wtime();
-
-            // std::cout << "Read matrix: " << (end - startTotal) << std::endl;
+            linearSystem.setInfoTimeReadMatrix(MPI_Wtime() - timeStart);
         }
 
         // no outputs
@@ -106,19 +108,18 @@ int main(int argc, char *argv[])
         id.icntl[2] = -1;
         id.icntl[3] =  0;
 
-        // MPI_Barrier(MPI_COMM_WORLD);
-        // double start = MPI_Wtime();
+        double timeSolveStart = 0;
+        if (rank == 0)
+            timeSolveStart = MPI_Wtime();
 
         // call the MUMPS package.
-        id.job = 6;
+        id.job = JOB_SOLVE;
         dmumps_c(&id);
         id.job = JOB_END;
         dmumps_c(&id); // Terminate instance
 
-        MPI_Barrier(MPI_COMM_WORLD);
-        double end = MPI_Wtime();
-
-        // std::cout << "Rank time: " << rank << " : " << (end - start) << std::endl;
+        if (rank == 0)
+            linearSystem.setInfoTimeSolveSystem(MPI_Wtime() - timeSolveStart);
 
         if (rank == 0)
         {
@@ -135,7 +136,9 @@ int main(int argc, char *argv[])
             delete [] id.irn;
             delete [] id.jcn;
 
-            // std::cout << "Total time: " << (end - startTotal) << std::endl;
+            linearSystem.setInfoTimeTotal(MPI_Wtime() - timeStart);
+            if (linearSystem.isVerbose())
+                linearSystem.printStatus();
         }
 
         ierr = MPI_Finalize();

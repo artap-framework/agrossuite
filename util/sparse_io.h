@@ -396,7 +396,8 @@ void csr2csc(int size, int nnz, double *data, int *ir, int *jc)
 class LinearSystem
 {
 public:
-    LinearSystem() : cooA(nullptr), cooIRN(nullptr), cooJCN(nullptr)
+    LinearSystem(const std::string &name = "") : cooA(nullptr), cooIRN(nullptr), cooJCN(nullptr),
+        infoName(name), infoNumOfProc(1), infoTimeReadMatrix(0.0), infoTimeSolveSystem(0.0), infoTimeTotal(0.0)
     {
         // matrix system
         system_matrix_pattern = new SparsityPatternRW();
@@ -440,6 +441,21 @@ public:
 
     inline int n() { return system_matrix_pattern->rows; }
     inline int nz() { return system_matrix->max_len; }
+
+    inline void setInfoNumOfProc(int num) { infoNumOfProc = num; }
+    inline void setInfoTimeReadMatrix(double time) { infoTimeReadMatrix = time; }
+    inline void setInfoTimeSolveSystem(double time) { infoTimeSolveSystem = time; }
+    inline void setInfoTimeTotal(double time) { infoTimeTotal = time; }
+
+    void printStatus()
+    {
+        std::cout << "Solver: " << infoName << std::endl;
+        std::cout << "Number of processes: " << infoNumOfProc << std::endl;
+        std::cout << "Matrix size: " << n() << " (" << 100 * nz() / pow(n(), 2.0) << " % of nonzero elements)" << std::endl;
+        std::cout << "Read matrix: " << infoTimeReadMatrix << " s" << std::endl;
+        std::cout << "Solve system: " << infoTimeSolveSystem << " s" << std::endl;
+        std::cout << "Total time: " << infoTimeTotal << " s" << std::endl;
+    }
 
     int compareWithReferenceSolution(double relative_tolerance = 1e-1)
     {
@@ -524,12 +540,18 @@ protected:
         system_sln->block_write(writeSln);
         writeSln.close();
     }
+
+    std::string infoName;
+    int infoNumOfProc;
+    double infoTimeReadMatrix;
+    double infoTimeSolveSystem;
+    double infoTimeTotal;
 };
 
 class LinearSystemArgs : public LinearSystem
 {
 public:
-    LinearSystemArgs(const std::string &name, int argc, const char * const *argv) : LinearSystem(),
+    LinearSystemArgs(const std::string &name, int argc, const char * const *argv) : LinearSystem(name),
         cmd(name, ' '),
         matrixArg(TCLAP::ValueArg<std::string>("m", "matrix", "Matrix", true, "", "string")),
         matrixPatternArg(TCLAP::ValueArg<std::string>("p", "matrix_pattern", "Matrix pattern", true, "", "string")),
@@ -537,6 +559,7 @@ public:
         solutionArg(TCLAP::ValueArg<std::string>("s", "solution", "Solution", false, "", "string")),
         referenceSolutionArg(TCLAP::ValueArg<std::string>("q", "reference_solution", "Reference solution", false, "", "string")),
         initialArg(TCLAP::ValueArg<std::string>("i", "initial", "Initial vector", false, "", "string")),
+        verboseArg(TCLAP::SwitchArg("v", "verbose", "Verbose mode", false)),
         argc(argc),
         argv(argv)
     {
@@ -546,11 +569,14 @@ public:
         cmd.add(solutionArg);
         cmd.add(referenceSolutionArg);
         cmd.add(initialArg);
+        cmd.add(verboseArg);
     }
 
-    bool hasSolution() { return !solutionArg.getValue().empty(); }
-    std::string solutionFileName() { return solutionArg.getValue(); }
-    bool hasReferenceSolution() { return !referenceSolutionArg.getValue().empty(); }
+    inline bool hasSolution() { return !solutionArg.getValue().empty(); }
+    inline std::string solutionFileName() { return solutionArg.getValue(); }
+    inline bool hasReferenceSolution() { return !referenceSolutionArg.getValue().empty(); }
+
+    inline bool isVerbose() { return verboseArg.getValue(); }
 
     virtual void readLinearSystem()
     {
@@ -581,6 +607,7 @@ protected:
     TCLAP::ValueArg<std::string> solutionArg;
     TCLAP::ValueArg<std::string> referenceSolutionArg;
     TCLAP::ValueArg<std::string> initialArg;
+    TCLAP::SwitchArg verboseArg;
 
 private:
     int argc;
