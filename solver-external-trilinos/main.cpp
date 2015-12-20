@@ -262,17 +262,22 @@ int main(int argc, char *argv[])
         if (rank == 0)
         {
             std::cout << std::endl << "Creating the sparse matrix" << std::endl;
+            std::cout << "Number of rows/equatins = " << linearSystem->n() << std::endl;
+            std::cout << "Number of non-zero elements = " << linearSystem->nz() << std::endl;
+            std::cout << "Max. num. per row = " << linearSystem->n() / ((linearSystem->n() * linearSystem->n()) / linearSystem->nz()) << std::endl;
         }
 
         // create an Epetra_Matrix (sparse) whose rows have distribution given
         // by the Map.  The max number of entries per row is maxNumPerRow (aproximation).
-        int maxNumPerRow = linearSystem->n() / 10;
+        // estimated number non-zero elements in the row based on total percentage on nz in matrix - TODO: approve to be sofisticated
+        int maxNumPerRow = linearSystem->n() / ((linearSystem->n() * linearSystem->n()) / linearSystem->nz());
         Epetra_CrsMatrix epeA(Copy, epeMap, maxNumPerRow);
 
         // prepare data from Agros2D matrix
         for (int index = 0; index < linearSystem->nz(); index++)
         {
             int globalRow = epeA.GRID(linearSystem->cooIRN[index]);
+            // epeA.InsertGlobalValues(globalRow, 1, &linearSystem->cooA[index], &linearSystem->cooJCN[index]);
             epeA.InsertGlobalValues(globalRow, 1, &linearSystem->cooA[index], &linearSystem->cooJCN[index]);
         }
 
