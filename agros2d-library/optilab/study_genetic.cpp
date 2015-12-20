@@ -48,76 +48,14 @@ class GeneticIndividualCompare
 public:
     GeneticIndividualCompare(const QString &parameterName) : m_parameterName(parameterName) {}
 
-    inline bool operator() (GeneticIndividual &i, GeneticIndividual &j)
+    inline bool operator() (QSharedPointer<Computation> i, QSharedPointer<Computation> j)
     {
-        return (i.computation()->result()->results()[m_parameterName] < j.computation()->result()->results()[m_parameterName]);
+        return (i->result()->results()[m_parameterName] < j->result()->results()[m_parameterName]);
     }
 
 protected:
     QString m_parameterName;
 };
-
-GeneticIndividual::GeneticIndividual(bool createComputation)
-{
-    if (createComputation)
-        m_computation = Agros2D::problem()->createComputation(true, false);
-}
-
-GeneticIndividual::~GeneticIndividual()
-{
-    m_computation.clear();
-}
-
-void GeneticIndividual::load(QJsonObject &object)
-{
-    QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
-    m_computation = computations[object[COMPUTATION].toString()];
-}
-
-void GeneticIndividual::save(QJsonObject &object)
-{
-    object[COMPUTATION] = m_computation->problemDir();
-}
-
-void GeneticIndividual::generateRandomly(QList<Parameter> parameters)
-{
-    assert(!m_computation.isNull());
-
-    // random parameters
-    foreach (Parameter parameter, parameters)
-        m_computation->config()->setParameter(parameter.name(), parameter.randomNumber());
-}
-
-void GeneticIndividual::mutate(QList<Parameter> parameters, double propability, double ratio)
-{
-    assert(!m_computation.isNull());
-
-    foreach (Parameter parameter, parameters)
-    {
-        if ((double) qrand() / RAND_MAX * 100 < propability)
-        {
-            // mutate
-            double value = m_computation->config()->parameter(parameter.name());
-
-            double pert = (double) qrand() / RAND_MAX * (parameter.upperBound() - parameter.lowerBound()) * ratio;
-
-            // 50 %
-            if (qrand() > RAND_MAX / 2)
-                value += pert;
-            else
-                value -= pert;
-
-            // check bounds
-            if (value < parameter.lowerBound())
-                value = parameter.lowerBound();
-            if (value > parameter.upperBound())
-                value = parameter.upperBound();
-
-            // set new value
-            m_computation->config()->setParameter(parameter.name(), value);
-        }
-    }
-}
 
 void GeneticPopulation::load(QJsonObject &object)
 {
@@ -127,8 +65,8 @@ void GeneticPopulation::load(QJsonObject &object)
     {
         QJsonObject individualJson = individualsJson[i].toObject();
 
-        GeneticIndividual individual;
-        individual.load(individualJson);
+        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
+        QSharedPointer<Computation> individual = computations[object[COMPUTATION].toString()];
 
         m_individuals.append(individual);
     }
@@ -138,10 +76,10 @@ void GeneticPopulation::save(QJsonObject &object)
 {
     // individuals
     QJsonArray individualsJson;
-    foreach (GeneticIndividual individual, m_individuals)
+    foreach (QSharedPointer<Computation> individual, m_individuals)
     {
         QJsonObject individualJson;
-        individual.save(individualJson);
+        individualJson[COMPUTATION] = individual->problemDir();
 
         individualsJson.append(individualJson);
     }
@@ -153,8 +91,11 @@ GeneticPopulationRandom::GeneticPopulationRandom(QList<Parameter> parameters, in
 {
     for (int i = 0; i < count; i++)
     {
-         GeneticIndividual individual(true);
-         individual.generateRandomly(parameters);
+         QSharedPointer<Computation> individual = Agros2D::problem()->createComputation(true, false);
+         assert(!individual.isNull());
+
+         foreach (Parameter parameter, parameters)
+             individual->config()->setParameter(parameter.name(), parameter.randomNumber());
 
          m_individuals.append(individual);
     }
@@ -216,7 +157,7 @@ void StudyGenetic::solve()
     {
         for (int index = 0; index < currentPopulation.individuals().size(); index++)
         {
-            GeneticIndividual individual = currentPopulation.individuals().at(index);
+            QSharedPointer<Computation> individual = currentPopulation.individuals().at(index);
 
             // solve
             // individual.computation()->solve();
@@ -227,13 +168,13 @@ void StudyGenetic::solve()
             // evaluate expressions
             foreach (Functional functional, m_functionals)
             {
-                bool successfulRun = functional.evaluateExpression(individual.computation());
+                bool successfulRun = functional.evaluateExpression(individual);
             }
             // global dict
             currentPythonEngine()->useGlobalDict();
 
             // save results
-            individual.computation()->saveResults();
+            individual->saveResults();
         }
 
         // TODO: multicriterion selector
@@ -252,16 +193,16 @@ void StudyGenetic::solve()
         // create new population
 
         // selection (sorted population)
-        QList<GeneticIndividual> selectedPopulation = selectIndividuals(currentPopulation.individuals());
+        QList<QSharedPointer<Computation>> selectedPopulation = selectIndividuals(currentPopulation.individuals());
 
         // elitism
-        QList<GeneticIndividual> elitePopulation = selectElite(selectedPopulation);
+        QList<QSharedPointer<Computation>> elitePopulation = selectElite(selectedPopulation);
 
         // crossover and mutation
-        QList<GeneticIndividual> crossBreeds = crossoverAndMutate(selectedPopulation);
+        QList<QSharedPointer<Computation>> crossBreeds = crossoverAndMutate(selectedPopulation);
 
         // add new population
-        QList<GeneticIndividual> finalPopulation;
+        QList<QSharedPointer<Computation>> finalPopulation;
         for (int i = 0; i < elitePopulation.size(); i++)
             finalPopulation.append(elitePopulation[i]);
         for (int i = 0; i < crossBreeds.size(); i++)
@@ -271,34 +212,34 @@ void StudyGenetic::solve()
     }
 }
 
-QList<GeneticIndividual> StudyGenetic::selectIndividuals(const QList<GeneticIndividual> &individuals)
+QList<QSharedPointer<Computation>> StudyGenetic::selectIndividuals(const QList<QSharedPointer<Computation>> &individuals)
 {
     int numberOfSelected = qMin((int) (m_selectionRatio * individuals.size()), individuals.size());
 
-    QList<GeneticIndividual> selectedPopulation;
+    QList<QSharedPointer<Computation>> selectedPopulation;
     for (int i = 0; i < numberOfSelected; i++)
         selectedPopulation.append(individuals.at(i));
 
     return selectedPopulation;
 }
 
-QList<GeneticIndividual> StudyGenetic::selectElite(const QList<GeneticIndividual> &individuals)
+QList<QSharedPointer<Computation>> StudyGenetic::selectElite(const QList<QSharedPointer<Computation>> &individuals)
 {
     int numberOfElite = qMax((int) (m_elitismRatio * individuals.size()), 1);
-    QList<GeneticIndividual> elitePopulation;
+    QList<QSharedPointer<Computation>> elitePopulation;
     for (int i = 0; i < numberOfElite; i++)
         elitePopulation.append(individuals[i]);
 
     return elitePopulation;
 }
 
-QList<GeneticIndividual> StudyGenetic::crossoverAndMutate(const QList<GeneticIndividual> &individuals)
+QList<QSharedPointer<Computation>> StudyGenetic::crossoverAndMutate(const QList<QSharedPointer<Computation>> &individuals)
 {
     int numberOfCrossBreeds = qMax((int) (m_crossoverRatio * individuals.size()),
                                    (int) (individuals.size() / 2.0));
 
     // crossover
-    QList<GeneticIndividual> crossBreeds;
+    QList<QSharedPointer<Computation>> crossBreeds;
     while (crossBreeds.size() < numberOfCrossBreeds)
     {
         int motherIndex = ((double) qrand() / RAND_MAX * individuals.size());
@@ -306,9 +247,9 @@ QList<GeneticIndividual> StudyGenetic::crossoverAndMutate(const QList<GeneticInd
         while (fatherIndex == motherIndex)
             fatherIndex = ((double) qrand() / RAND_MAX * individuals.size());
 
-        GeneticIndividual motherIndividial = individuals[motherIndex];
-        GeneticIndividual fatherIndividial = individuals[fatherIndex];
-        GeneticIndividual sonIndividual(true);
+        QSharedPointer<Computation> motherIndividial = individuals[motherIndex];
+        QSharedPointer<Computation> fatherIndividial = individuals[fatherIndex];
+        QSharedPointer<Computation> sonIndividual = Agros2D::problem()->createComputation(true, false);
 
         // random list
         QList<Parameter> parameters = m_parameters;
@@ -317,9 +258,9 @@ QList<GeneticIndividual> StudyGenetic::crossoverAndMutate(const QList<GeneticInd
         foreach (Parameter parameter, parameters)
         {
             if (index % 2 == 0)
-                sonIndividual.computation()->config()->setParameter(parameter.name(), motherIndividial.computation()->config()->parameter(parameter.name()));
+                sonIndividual->config()->setParameter(parameter.name(), motherIndividial->config()->parameter(parameter.name()));
             else
-                sonIndividual.computation()->config()->setParameter(parameter.name(), fatherIndividial.computation()->config()->parameter(parameter.name()));
+                sonIndividual->config()->setParameter(parameter.name(), fatherIndividial->config()->parameter(parameter.name()));
 
             index++;
         }
@@ -329,7 +270,36 @@ QList<GeneticIndividual> StudyGenetic::crossoverAndMutate(const QList<GeneticInd
 
     // mutation of crossbreeds
     for (int i = 0; i < numberOfCrossBreeds; i++)
-        crossBreeds[i].mutate(m_parameters, m_mutationProbability, m_mutationRatio);
+    {
+        QSharedPointer<Computation> individual = crossBreeds[i];
+        assert(!individual.isNull());
+
+        foreach (Parameter parameter, m_parameters)
+        {
+            if ((double) qrand() / RAND_MAX * 100 < m_mutationProbability)
+            {
+                // mutate
+                double value = individual->config()->parameter(parameter.name());
+
+                double pert = (double) qrand() / RAND_MAX * (parameter.upperBound() - parameter.lowerBound()) * m_mutationRatio;
+
+                // 50 %
+                if (qrand() > RAND_MAX / 2)
+                    value += pert;
+                else
+                    value -= pert;
+
+                // check bounds
+                if (value < parameter.lowerBound())
+                    value = parameter.lowerBound();
+                if (value > parameter.upperBound())
+                    value = parameter.upperBound();
+
+                // set new value
+                individual->config()->setParameter(parameter.name(), value);
+            }
+        }
+    }
 
     return crossBreeds;
 }
@@ -343,12 +313,12 @@ void StudyGenetic::fillTreeView(QTreeWidget *trvComputations)
         itemPopulation->setText(0, tr("Population %1 (%2 items)").arg(i + 1).arg(m_populations[i].individuals().size()));
         itemPopulation->setExpanded(true);
 
-        foreach (GeneticIndividual individual, m_populations[i].individuals())
+        foreach (QSharedPointer<Computation> individual, m_populations[i].individuals())
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(itemPopulation);
-            item->setText(0, individual.computation()->problemDir());
-            item->setText(1, QString("%1 / %2").arg(individual.computation()->isSolved() ? tr("solved") : tr("not solved")).arg(individual.computation()->result()->hasResults() ? tr("results") : tr("no results")));
-            item->setData(0, Qt::UserRole, individual.computation()->problemDir());
+            item->setText(0, individual->problemDir());
+            item->setText(1, QString("%1 / %2").arg(individual->isSolved() ? tr("solved") : tr("not solved")).arg(individual->result()->hasResults() ? tr("results") : tr("no results")));
+            item->setData(0, Qt::UserRole, individual->problemDir());
         }
     }
 }
