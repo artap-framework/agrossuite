@@ -65,10 +65,21 @@ int main(int argc, char *argv[])
     {
         int status = 0;
 
+        // init PARALUTION
+        paralution::init_paralution();
+        auto timeStart = std::chrono::steady_clock::now();
+
         LinearSystemParalutionArgs linearSystem("External solver - PARALUTION", argc, argv);
         linearSystem.readLinearSystem();
         linearSystem.system_sln->resize(linearSystem.system_rhs->max_len);
         linearSystem.convertToCOO();
+
+        linearSystem.setInfoTimeReadMatrix(elapsedSeconds(timeStart));
+
+        if (linearSystem.isVerbose())
+            paralution::info_paralution();
+
+        linearSystem.setInfoNumOfProc(paralution::_get_backend_descriptor()->OpenMP_threads);
 
         // number of unknowns
         int n = linearSystem.n();
@@ -76,9 +87,6 @@ int main(int argc, char *argv[])
         // number of nonzero elements in matrix
         int nz = linearSystem.nz();
 
-        // init PARALUTION
-        paralution::init_paralution();
-        // paralution::info_paralution();
 
         // info
         paralution::Paralution_Backend_Descriptor *desc = paralution::_get_backend_descriptor();
@@ -162,10 +170,14 @@ int main(int argc, char *argv[])
         // amg.InitMaxIter(1) ;
         // amg.Verbose(0);
         // ls->SetPreconditioner(amg);
-        ls->Verbose(1); // 2
+        if (linearSystem.isVerbose())
+            ls->Verbose(1); // 2
         ls->Build();
 
+        auto timeSolveStart = std::chrono::steady_clock::now();
         ls->Solve(rhs_paralution, &sln_paralution);
+        linearSystem.setInfoTimeSolveSystem(elapsedSeconds(timeSolveStart));
+
         sln_paralution.LeaveDataPtr(&linearSystem.system_sln->val);
 
         // write solution
@@ -174,6 +186,10 @@ int main(int argc, char *argv[])
         // check solution
         if (linearSystem.hasReferenceSolution())
             status = linearSystem.compareWithReferenceSolution();
+
+        linearSystem.setInfoTimeTotal(elapsedSeconds(timeStart));
+        if (linearSystem.isVerbose())
+            linearSystem.printStatus();
 
         ls->Clear();
         delete ls;

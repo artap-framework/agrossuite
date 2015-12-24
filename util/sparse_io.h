@@ -25,6 +25,8 @@
 #include <assert.h>
 #include <cstring>
 
+#include <chrono>
+
 #include "../3rdparty/tclap/CmdLine.h"
 
 class SparseMatrixRW
@@ -613,3 +615,9 @@ private:
     int argc;
     const char * const *argv;
 };
+
+double elapsedSeconds(std::chrono::time_point<std::chrono::steady_clock> start,
+                      std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now())
+{
+    return (end - start).count() * std::chrono::steady_clock::period::num / static_cast<double>(std::chrono::steady_clock::period::den);
+}
