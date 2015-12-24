@@ -112,8 +112,6 @@ int main(int argc, char *argv[])
 
         // clear ublas_matrix and other structures
         ublas_matrix.clear();
-        linearSystem.system_matrix->clear();
-        linearSystem.system_matrix_pattern->clear();
 
         // tolerances
         double relTol = linearSystem.relTolArg.getValue();

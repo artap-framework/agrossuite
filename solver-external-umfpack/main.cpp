@@ -49,9 +49,6 @@ int main(int argc, char *argv[])
         // number of nonzero elements in matrix
         int nz = linearSystem.nz();
 
-        linearSystem.system_matrix->clear();
-        linearSystem.system_matrix_pattern->clear();
-
         int *Ap = new int[n+1];
         int *Ai = new int[nz];
         double *Ax = new double[nz];

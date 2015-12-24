@@ -87,7 +87,6 @@ int main(int argc, char *argv[])
         // number of nonzero elements in matrix
         int nz = linearSystem.nz();
 
-
         // info
         paralution::Paralution_Backend_Descriptor *desc = paralution::_get_backend_descriptor();
 

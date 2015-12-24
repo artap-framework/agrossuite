@@ -424,9 +424,9 @@ public:
         delete reference_sln;
 
         // coo
-        if (cooA) delete [] cooA;
-        if (cooIRN) delete [] cooIRN;
-        if (cooJCN) delete [] cooJCN;
+        if (cooA) { delete [] cooA; cooA = nullptr; }
+        if (cooIRN) { delete [] cooIRN; cooIRN = nullptr; }
+        if (cooJCN) { delete [] cooJCN; cooJCN = nullptr; }
     }
 
     // matrix system
@@ -453,7 +453,7 @@ public:
     {
         std::cout << "Solver: " << infoName << std::endl;
         std::cout << "Number of processes: " << infoNumOfProc << std::endl;
-        std::cout << "Matrix size: " << infoN << " (" << 100 * infoNZ / pow(infoN, 2.0) << " % of nonzero elements)" << std::endl;
+        std::cout << "Matrix size: " << n() << " (" << 100 * nz() / pow(n(), 2.0) << " % of nonzero elements)" << std::endl;
         std::cout << "Read matrix: " << infoTimeReadMatrix << " s" << std::endl;
         std::cout << "Solve system: " << infoTimeSolveSystem << " s" << std::endl;
         std::cout << "Total time: " << infoTimeTotal << " s" << std::endl;
@@ -471,7 +471,7 @@ public:
         if (cooIRN) delete [] cooIRN;
         if (cooJCN) delete [] cooJCN;
 
-        cooA = new double[nz()];
+        cooA = system_matrix->val;
         cooIRN = new int[nz()];
         cooJCN = new int[nz()];
 
@@ -487,7 +487,6 @@ public:
             {
                 cooIRN[index] = row + 0;
                 cooJCN[index] = system_matrix_pattern->colnums[i] + 0;
-                cooA[index] = system_matrix->val[i];
 
                 ++index;
             }
