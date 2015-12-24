@@ -76,8 +76,12 @@ int main(int argc, char *argv[])
     {
         int status = 0;
 
+        auto timeStart = std::chrono::steady_clock::now();
+
         LinearSystemViennaCLArgs linearSystem("External solver - ViennaCL", argc, argv);
         linearSystem.readLinearSystem();
+
+        linearSystem.setInfoTimeReadMatrix(elapsedSeconds(timeStart));
 
         // number of unknowns
         int n = linearSystem.n();
@@ -120,6 +124,7 @@ int main(int argc, char *argv[])
         // incomplete LU factorization with threshold
         // if (preconditionerArg.getValue() == "ILUT" || preconditionerArg.getValue() == "") // default
 
+        auto timeSolveStart = std::chrono::steady_clock::now();
         // ilut
         viennacl::linalg::ilut_tag ilut_config(20, 1e-4, true);
         viennacl::linalg::ilut_precond<viennacl::compressed_matrix<ScalarType> > ilut_precond(vcl_matrix, ilut_config);
@@ -128,6 +133,7 @@ int main(int argc, char *argv[])
         viennacl::linalg::bicgstab_tag custom_bicgstab(relTol, maxIter);
         vcl_sln = viennacl::linalg::solve(vcl_matrix, vcl_rhs, custom_bicgstab, ilut_precond);
         std::cout << "BiCGStab: iters: " << custom_bicgstab.iters() << ", error: " << custom_bicgstab.error() << std::endl;
+        linearSystem.setInfoTimeSolveSystem(elapsedSeconds(timeSolveStart));
 
         // viennacl::context host_ctx(viennacl::MAIN_MEMORY);
         // viennacl::context target_ctx(viennacl::CUDA_MEMORY);
@@ -161,6 +167,10 @@ int main(int argc, char *argv[])
         // check solution
         if (linearSystem.hasReferenceSolution())
             status = linearSystem.compareWithReferenceSolution();
+
+        linearSystem.setInfoTimeTotal(elapsedSeconds(timeStart));
+        if (linearSystem.isVerbose())
+            linearSystem.printStatus();
 
         exit(status);
     }

@@ -453,7 +453,7 @@ public:
     {
         std::cout << "Solver: " << infoName << std::endl;
         std::cout << "Number of processes: " << infoNumOfProc << std::endl;
-        std::cout << "Matrix size: " << n() << " (" << 100 * nz() / pow(n(), 2.0) << " % of nonzero elements)" << std::endl;
+        std::cout << "Matrix size: " << infoN << " (" << 100 * infoNZ / pow(infoN, 2.0) << " % of nonzero elements)" << std::endl;
         std::cout << "Read matrix: " << infoTimeReadMatrix << " s" << std::endl;
         std::cout << "Solve system: " << infoTimeSolveSystem << " s" << std::endl;
         std::cout << "Total time: " << infoTimeTotal << " s" << std::endl;
@@ -533,6 +533,9 @@ protected:
             reference_sln->block_read(readReference);
             readReference.close();
         }
+
+        infoN = n();
+        infoNZ = nz();
     }
 
     void writeSolutionInternal(const std::string &solutionFN = "")
@@ -548,6 +551,8 @@ protected:
     double infoTimeReadMatrix;
     double infoTimeSolveSystem;
     double infoTimeTotal;
+    int infoN;
+    int infoNZ;
 };
 
 class LinearSystemArgs : public LinearSystem
