@@ -34,10 +34,14 @@ int main(int argc, char *argv[])
     {
         int status = 0;
 
+        auto timeStart = std::chrono::steady_clock::now();
+
         LinearSystemArgs linearSystem("External solver - UMFPACK", argc, argv);
         linearSystem.readLinearSystem();
         linearSystem.system_sln->resize(linearSystem.system_rhs->max_len);
         linearSystem.convertToCOO();
+
+        linearSystem.setInfoTimeReadMatrix(elapsedSeconds(timeStart));
 
         // number of unknowns
         int n = linearSystem.n();
@@ -67,6 +71,8 @@ int main(int argc, char *argv[])
 
         // umfpack_di_report_matrix(system_matrix_pattern.rows, system_matrix_pattern.cols, Ap, Ai, Ax, 1, Control);
 
+        auto timeSolveStart = std::chrono::steady_clock::now();
+
         // factorizing symbolically
         void *symbolic;
         int statusSymbolic = umfpack_di_symbolic(n, n,
@@ -92,6 +98,8 @@ int main(int argc, char *argv[])
                                                    linearSystem.system_rhs->val,
                                                    numeric, Control, Info);
 
+                linearSystem.setInfoTimeSolveSystem(elapsedSeconds(timeSolveStart));
+
                 // free the memory associated with the numeric factorization.
                 if (numeric)
                     umfpack_di_free_numeric(&numeric);
@@ -104,6 +112,10 @@ int main(int argc, char *argv[])
                     // check solution
                     if (linearSystem.hasReferenceSolution())
                         status = linearSystem.compareWithReferenceSolution();
+
+                    linearSystem.setInfoTimeTotal(elapsedSeconds(timeStart));
+                    if (linearSystem.isVerbose())
+                        linearSystem.printStatus();
 
                     linearSystem.system_rhs->clear();
 
