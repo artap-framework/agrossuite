@@ -8,7 +8,7 @@
 // Agros is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// GNU General Public License for more detaiamg->
 //
 // You should have received a copy of the GNU General Public License
 // along with Agros.  If not, see <http://www.gnu.org/licenses/>.
@@ -28,7 +28,7 @@
 #include "../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
 
-//typedef float ScalarType;
+// typedef float ScalarType;
 typedef double ScalarType;
 
 using namespace paralution;
@@ -59,6 +59,26 @@ public:
     TCLAP::ValueArg<int> maxIterArg;
 };
 
+bool isKrylovSubspaceSolver(const std::string &solver)
+{
+    return (solver == "BiCGStab" || solver == "CG" || solver == "CR" || solver == "GMRES" || solver == "FGMRES" || solver == "CR" || solver == "IDR");
+}
+
+bool isDirectSolver(const std::string &solver)
+{
+    return (solver == "LU" || solver == "QR" || solver == "Inversion");
+}
+
+bool isDeflatedPCG(const std::string &solver)
+{
+    return (solver == "DPCG");
+}
+
+bool isAMG(const std::string &solver)
+{
+    return (solver == "AMG");
+}
+
 int main(int argc, char *argv[])
 {
     try
@@ -73,8 +93,11 @@ int main(int argc, char *argv[])
         linearSystem.readLinearSystem();
         linearSystem.system_sln->resize(linearSystem.system_rhs->max_len);
         linearSystem.convertToCSR();
+        // linearSystem.convertToCOO();
 
         linearSystem.setInfoTimeReadMatrix(elapsedSeconds(timeStart));
+
+        // paralution::set_omp_threads_paralution(1);
 
         if (linearSystem.isVerbose())
             paralution::info_paralution();
@@ -103,11 +126,11 @@ int main(int argc, char *argv[])
         LocalMatrix<ScalarType> mat_paralution;
 
         mat_paralution.SetDataPtrCSR(&linearSystem.csrRowPtr, &linearSystem.csrColInd, &linearSystem.matA, "matrix", nz, n, n);
-
-        // rhs_paralution.Allocate("rhs", n);
         rhs_paralution.SetDataPtr(&linearSystem.system_rhs->val, "rhs", n);
-        // sln_paralution.Allocate("sln", n);
         sln_paralution.SetDataPtr(&linearSystem.system_sln->val, "sln", n);
+
+        // mat_paralution.SetDataPtrCOO(&linearSystem.cooRowInd, &linearSystem.cooColInd, &linearSystem.matA, "matrix", nz, n, n);
+        // mat_paralution.ConvertToCSR();
 
         bool moveToAccelerator = false;
         if (moveToAccelerator)
@@ -119,9 +142,16 @@ int main(int argc, char *argv[])
 
         // preconditioner
         std::string preconditioner = linearSystem.preconditionerArg.getValue();
+        // default
+        if (preconditioner.empty())
+            preconditioner = "Jacobi";
+
+        // default
         Preconditioner<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType> *p = nullptr;
-        if (preconditioner == "Jacobi" || preconditioner == "") // default
+        if (preconditioner == "Jacobi")
             p = new Jacobi<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+        else if (preconditioner == "SGS")
+            p = new SGS<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
         else if (preconditioner == "MultiColoredGS")
             p = new MultiColoredGS<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
         else if (preconditioner == "MultiColoredSGS")
@@ -139,37 +169,150 @@ int main(int argc, char *argv[])
 
         // solver
         std::string solver = linearSystem.solverArg.getValue();
-        IterativeLinearSolver<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *ls = nullptr;
-        if (solver == "BiCGStab" || solver == "") // default
-            ls = new BiCGStab<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (solver == "CG")
-            ls = new CG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (solver == "GMRES")
-            ls = new GMRES<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (solver == "FGMRES")
-            ls = new FGMRES<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (solver == "CR")
-            ls = new CR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else if (solver == "IDR")
-            ls = new IDR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
-        else
-            std::cerr << "Solver '" << solver << "' not found." << std::endl;
+        // default
+        if (solver.empty())
+            solver = "BiCGStab";
 
-        // tolerances
-        double absTol = linearSystem.absTolArg.getValue();
-        double relTol = linearSystem.relTolArg.getValue();
-        int maxIter = linearSystem.maxIterArg.getValue();
+        Solver<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *ls = nullptr;
 
-        ls->Init(absTol, relTol, 1e8, maxIter);
+        // Direct Solvers
+        if (isDirectSolver(solver))
+        {
+            if (solver == "LU")
+                ls = new LU<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+            else if (solver == "QR")
+                ls = new QR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+            else if (solver == "Inversion")
+                ls = new Inversion<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
 
-        ls->SetOperator(mat_paralution);
-        ls->SetPreconditioner(*p);
+            ls->SetOperator(mat_paralution);
+        }
+
+        // Krylov Subspace Solvers
+        if (isKrylovSubspaceSolver(solver))
+        {
+            IterativeLinearSolver<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *ils = nullptr;
+            if (solver == "BiCGStab")
+                ils = new BiCGStab<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+            else if (solver == "CG")
+                ils = new CG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+            else if (solver == "CR")
+                ils = new CR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+            else if (solver == "GMRES")
+                ils = new GMRES<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+            else if (solver == "FGMRES")
+                ils = new FGMRES<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+            else if (solver == "CR")
+                ils = new CR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+            else if (solver == "IDR")
+                ils = new IDR<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+            else
+                std::cerr << "Solver '" << solver << "' not found." << std::endl;
+
+            ils->SetOperator(mat_paralution);
+
+            // tolerances
+            double absTol = linearSystem.absTolArg.getValue();
+            double relTol = linearSystem.relTolArg.getValue();
+            int maxIter = linearSystem.maxIterArg.getValue();
+
+            ils->Init(absTol, relTol, 1e8, maxIter);
+            ils->SetPreconditioner(*p);
+
+            ls = ils;
+        }
+
+        // Deflated PCG
+        if (isDeflatedPCG(solver))
+        {
+            DPCG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *dpcg =
+                    new DPCG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+
+            dpcg->SetOperator(mat_paralution);
+
+            dpcg->SetNVectors(2);
+
+            ls = dpcg;
+        }
+
+        // AMG
+        if (isAMG(solver))
+        {
+            AMG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *amg =
+                    new AMG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+
+            amg->SetOperator(mat_paralution);
+
+            // coupling strength
+            amg->SetCouplingStrength(0.001);
+            // number of unknowns on coarsest level
+            amg->SetCoarsestLevel(300);
+            // interpolation type for grid transfer operators
+            amg->SetInterpolation(SmoothedAggregation);
+            // Relaxation parameter for smoothed interpolation aggregation
+            amg->SetInterpRelax(2./3.);
+            // Manual smoothers
+            amg->SetManualSmoothers(true);
+            // Manual course grid solver
+            amg->SetManualSolver(true);
+            // grid transfer scaling
+            amg->SetScaling(true);
+
+            amg->BuildHierarchy();
+
+            int levels = amg->GetNumLevels();
+
+            // Smoother for each level
+            IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double > **sm = NULL;
+            MultiColoredGS<LocalMatrix<double>, LocalVector<double>, double > **gs = NULL;
+
+            // Coarse Grid Solver
+            CG<LocalMatrix<double>, LocalVector<double>, double > cgs;
+            cgs.Verbose(0);
+
+            sm = new IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double >*[levels-1];
+            gs = new MultiColoredGS<LocalMatrix<double>, LocalVector<double>, double >*[levels-1];
+
+            // Preconditioner
+            //  MultiColoredILU<LocalMatrix<double>, LocalVector<double>, double > p;
+            //  cgs->SetPreconditioner(p);
+
+            for (int i=0; i<levels-1; ++i) {
+                FixedPoint<LocalMatrix<double>, LocalVector<double>, double > *fp;
+                fp = new FixedPoint<LocalMatrix<double>, LocalVector<double>, double >;
+                fp->SetRelaxation(1.3);
+                sm[i] = fp;
+
+                gs[i] = new MultiColoredGS<LocalMatrix<double>, LocalVector<double>, double >;
+                gs[i]->SetPrecondMatrixFormat(ELL);
+
+                sm[i]->SetPreconditioner(*gs[i]);
+                sm[i]->Verbose(0);
+            }
+
+            amg->SetOperatorFormat(CSR);
+            amg->SetSmoother(sm);
+            amg->SetSolver(cgs);
+            amg->SetSmootherPreIter(1);
+            amg->SetSmootherPostIter(2);
+
+            // tolerances
+            double absTol = linearSystem.absTolArg.getValue();
+            double relTol = linearSystem.relTolArg.getValue();
+            int maxIter = linearSystem.maxIterArg.getValue();
+
+            amg->Init(absTol, relTol, 1e8, maxIter);
+
+            ls = amg;
+        }
+
+        assert(ls);
+
         // AMG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, double > amg;
-        // amg.InitMaxIter(1) ;
-        // amg.Verbose(0);
+        //
         // ls->SetPreconditioner(amg);
         if (linearSystem.isVerbose())
-            ls->Verbose(1); // 2
+            ls->Verbose(2); // 2
         ls->Build();
 
         auto timeSolveStart = std::chrono::steady_clock::now();

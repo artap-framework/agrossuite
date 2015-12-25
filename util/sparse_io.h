@@ -423,6 +423,8 @@ public:
         delete initial_sln;
         delete reference_sln;
 
+        if (matA) { delete [] matA; matA = nullptr; }
+
         // coo
         if (cooRowInd) { delete [] cooRowInd; cooRowInd = nullptr; }
         if (cooColInd) { delete [] cooColInd; cooColInd = nullptr; }
@@ -522,7 +524,7 @@ public:
             }
         }
 
-        csrRowPtr[n()] = n();
+        csrRowPtr[n()] = nz();
     }
 
     double *matA;
