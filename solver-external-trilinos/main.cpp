@@ -276,9 +276,9 @@ int main(int argc, char *argv[])
         // prepare data from Agros2D matrix
         for (int index = 0; index < linearSystem->nz(); index++)
         {
-            int globalRow = epeA.GRID(linearSystem->cooIRN[index]);
+            int globalRow = epeA.GRID(linearSystem->cooRowInd[index]);
             // epeA.InsertGlobalValues(globalRow, 1, &linearSystem->cooA[index], &linearSystem->cooJCN[index]);
-            epeA.InsertGlobalValues(globalRow, 1, &linearSystem->cooA[index], &linearSystem->cooJCN[index]);
+            epeA.InsertGlobalValues(globalRow, 1, &linearSystem->matA[index], &linearSystem->cooColInd[index]);
         }
 
         epeA.FillComplete(); // Transform from GIDs to LIDs

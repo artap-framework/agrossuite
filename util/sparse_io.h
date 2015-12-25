@@ -398,7 +398,7 @@ void csr2csc(int size, int nnz, double *data, int *ir, int *jc)
 class LinearSystem
 {
 public:
-    LinearSystem(const std::string &name = "") : cooA(nullptr), cooIRN(nullptr), cooJCN(nullptr),
+    LinearSystem(const std::string &name = "") : matA(nullptr), cooRowInd(nullptr), cooColInd(nullptr), csrRowPtr(nullptr), csrColInd(nullptr),
         infoName(name), infoNumOfProc(1), infoTimeReadMatrix(0.0), infoTimeSolveSystem(0.0), infoTimeTotal(0.0)
     {
         // matrix system
@@ -424,9 +424,11 @@ public:
         delete reference_sln;
 
         // coo
-        if (cooA) { delete [] cooA; cooA = nullptr; }
-        if (cooIRN) { delete [] cooIRN; cooIRN = nullptr; }
-        if (cooJCN) { delete [] cooJCN; cooJCN = nullptr; }
+        if (cooRowInd) { delete [] cooRowInd; cooRowInd = nullptr; }
+        if (cooColInd) { delete [] cooColInd; cooColInd = nullptr; }
+        // csr
+        if (csrRowPtr) { delete [] csrRowPtr; csrRowPtr = nullptr; }
+        if (csrColInd) { delete [] csrColInd; csrColInd = nullptr; }
     }
 
     // matrix system
@@ -467,36 +469,71 @@ public:
     void convertToCOO()
     {
         // coo
-        if (cooA) delete [] cooA;
-        if (cooIRN) delete [] cooIRN;
-        if (cooJCN) delete [] cooJCN;
+        if (cooRowInd) delete [] cooRowInd;
+        if (cooColInd) delete [] cooColInd;
 
-        cooA = system_matrix->val;
-        cooIRN = new int[nz()];
-        cooJCN = new int[nz()];
+        cooRowInd = new int[nz()];
+        cooColInd = new int[nz()];
+        matA = system_matrix->val;
 
         int index = 0;
 
         // loop over the elements of the matrix row by row
-        for (int row = 0; row < n(); ++row)
+        for (int row = 0; row < n(); row++)
         {
             std::size_t col_start = system_matrix_pattern->rowstart[row];
             std::size_t col_end = system_matrix_pattern->rowstart[row + 1];
 
             for (int i = col_start; i < col_end; i++)
             {
-                cooIRN[index] = row + 0;
-                cooJCN[index] = system_matrix_pattern->colnums[i] + 0;
+                cooRowInd[index] = row + 0;
+                cooColInd[index] = system_matrix_pattern->colnums[i] + 0;
 
-                ++index;
+                index++;
             }
         }
     }
 
+    void convertToCSR()
+    {
+        // csr
+        if (csrRowPtr) delete [] csrRowPtr;
+        if (csrColInd) delete [] csrColInd;
+
+        csrRowPtr = new int[n() + 1];
+        csrColInd = new int[nz()];
+        matA = system_matrix->val;
+
+        int index = 0;
+
+        // loop over the elements of the matrix row by row
+        for (int row = 0; row < n(); row++)
+        {
+            std::size_t col_start = system_matrix_pattern->rowstart[row];
+            std::size_t col_end = system_matrix_pattern->rowstart[row + 1];
+
+            csrRowPtr[row] = index;
+
+            for (int i = col_start; i < col_end; i++)
+            {
+                csrColInd[index] = system_matrix_pattern->colnums[i];
+
+                index++;
+            }
+        }
+
+        csrRowPtr[n()] = n();
+    }
+
+    double *matA;
+
     // coo
-    double *cooA;
-    int *cooIRN;
-    int *cooJCN;
+    int *cooRowInd;
+    int *cooColInd;
+
+    // csr
+    int *csrRowPtr;
+    int *csrColInd;
 
 protected:
     void readLinearSystemInternal(const std::string &matrixPaternFN,

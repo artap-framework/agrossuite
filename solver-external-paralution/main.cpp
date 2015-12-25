@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
         LinearSystemParalutionArgs linearSystem("External solver - PARALUTION", argc, argv);
         linearSystem.readLinearSystem();
         linearSystem.system_sln->resize(linearSystem.system_rhs->max_len);
-        linearSystem.convertToCOO();
+        linearSystem.convertToCSR();
 
         linearSystem.setInfoTimeReadMatrix(elapsedSeconds(timeStart));
 
@@ -102,8 +102,7 @@ int main(int argc, char *argv[])
         LocalVector<ScalarType> rhs_paralution;
         LocalMatrix<ScalarType> mat_paralution;
 
-        mat_paralution.SetDataPtrCOO(&linearSystem.cooIRN, &linearSystem.cooJCN, &linearSystem.cooA, "matrix", nz, n, n);
-        mat_paralution.ConvertToCSR();
+        mat_paralution.SetDataPtrCSR(&linearSystem.csrRowPtr, &linearSystem.csrColInd, &linearSystem.matA, "matrix", nz, n, n);
 
         // rhs_paralution.Allocate("rhs", n);
         rhs_paralution.SetDataPtr(&linearSystem.system_rhs->val, "rhs", n);
