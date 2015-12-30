@@ -110,6 +110,8 @@ private:
     bool evaluateAndSave();
     bool evaluateExpression(const QString &expression, double time, const Point &point, double& evaluationResult) const ;
 
+    void lexicalAnalysis();
+
     friend class ValueLineEdit;
     friend class ValueTimeDialog;
     friend class PointValue;

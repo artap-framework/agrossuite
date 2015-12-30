@@ -947,10 +947,11 @@ void Scene::addBoundaryAndMaterialMenuItems(QMenu* menu, QWidget* parent)
 
 void Scene::doFieldsChanged()
 {
-    faces->doFieldsChanged();
-    labels->doFieldsChanged();
     boundaries->doFieldsChanged(parentProblem());
     materials->doFieldsChanged(parentProblem());
+
+    faces->doFieldsChanged();
+    labels->doFieldsChanged();
 }
 
 void Scene::exportVTKGeometry(const QString &fileName)

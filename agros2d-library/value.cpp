@@ -255,34 +255,7 @@ void Value::setText(const QString &str)
     m_isEvaluated = false;
     m_text = str;
 
-    m_isTimeDependent = false;
-    m_isCoordinateDependent = false;
-
-    LexicalAnalyser lex;
-
-    // ToDo: Improve
-    try
-    {
-        lex.setExpression(m_text);
-    }
-
-    catch(ParserException e)
-    {
-        // Nothing to do at this point.
-    }
-
-    foreach (Token token, lex.tokens())
-    {
-        if (token.type() == ParserTokenType_VARIABLE)
-        {
-            if (token.toString() == "time")
-                m_isTimeDependent = true;
-
-            if (token.toString() == "x" || token.toString() == "y" || token.toString() == "r" || token.toString() == "z")
-                m_isCoordinateDependent = true;
-        }
-    }
-
+    lexicalAnalysis();
     evaluateAndSave();
 }
 
@@ -419,6 +392,37 @@ bool Value::evaluateExpression(const QString &expression, double time, const Poi
         currentPythonEngineAgros()->blockSignals(false);
 
     return successfulRun;
+}
+
+void Value::lexicalAnalysis()
+{
+    m_isTimeDependent = false;
+    m_isCoordinateDependent = false;
+
+    LexicalAnalyser lex;
+
+    // ToDo: Improve
+    try
+    {
+        lex.setExpression(m_text);
+    }
+
+    catch (ParserException e)
+    {
+        // Nothing to do at this point.
+    }
+
+    foreach (Token token, lex.tokens())
+    {
+        if (token.type() == ParserTokenType_VARIABLE)
+        {
+            if (token.toString() == "time")
+                m_isTimeDependent = true;
+
+            if (token.toString() == "x" || token.toString() == "y" || token.toString() == "r" || token.toString() == "z")
+                m_isCoordinateDependent = true;
+        }
+    }
 }
 
 // ************************************************************************************************

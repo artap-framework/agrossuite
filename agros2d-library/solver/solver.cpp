@@ -1165,6 +1165,8 @@ void SolverDeal::solveTransient()
                     // remove interpolated solution
                     solutions.pop_back();
                 }
+
+                // primal->setup(true);
             }
         }
 

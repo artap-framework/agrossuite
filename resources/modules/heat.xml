@@ -186,7 +186,7 @@
         </module:boundary>
 
         <module:boundary equation="f = - \lambda \frac{\partial T}{\partial n_0} = f_0 + \alpha \left ( T_\mathrm{ext} - T \right) + \epsilon \sigma \left ( T_\mathrm{amb}^4 - T^4 \right)" id="heat_heat_flux" name="Heat flux">
-          <module:quantity id="heat_heat_flux"/>
+          <module:quantity id="heat_heat_flux" dependence="time" />
           <module:quantity id="heat_convection_heat_transfer_coefficient"/>
           <module:quantity id="heat_convection_external_temperature"/>
           <module:quantity id="heat_radiation_emissivity"/>

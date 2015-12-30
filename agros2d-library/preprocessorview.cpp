@@ -236,9 +236,8 @@ void PreprocessorWidget::refresh()
     // script speed improvement
     if (currentPythonEngine()->isScriptRunning()) return;
 
-    blockSignals(true);
-    setUpdatesEnabled(false);
-
+    trvWidget->blockSignals(true);
+    trvWidget->setUpdatesEnabled(false);
     trvWidget->clear();
 
     QFont fnt = trvWidget->font();
@@ -471,9 +470,8 @@ void PreprocessorWidget::refresh()
     }
 
     trvWidget->resizeColumnToContents(1);
-
-    setUpdatesEnabled(true);
-    blockSignals(false);
+    trvWidget->setUpdatesEnabled(true);
+    trvWidget->blockSignals(false);
 }
 
 void PreprocessorWidget::loadTooltip(SceneGeometryMode sceneMode)
@@ -615,6 +613,8 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
 
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
+
+            m_sceneViewPreprocessor->refresh();
         }
         else if (type == PreprocessorWidget::Boundary)
         {
@@ -627,6 +627,8 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
 
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
+
+            m_sceneViewPreprocessor->refresh();
         }
         else if (type == PreprocessorWidget::Material)
         {
@@ -639,6 +641,8 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
 
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
+
+            m_sceneViewPreprocessor->refresh();
         }
         else if (type == PreprocessorWidget::GeometryParameter)
         {
@@ -651,16 +655,12 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             // field properties
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
-
-            FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
         }
         else if (type == PreprocessorWidget::ProblemProperties)
         {
             // problem properties
             actProperties->setEnabled(true);
-        }
-
-        m_sceneViewPreprocessor->refresh();
+        }        
     }
 }
 

@@ -68,6 +68,11 @@ private:
 
     QSharedPointer<Computation> m_computation;
 
+    // stored values
+    QString m_lastFieldId;
+    int m_lastTimeStep;
+    int m_lastAdaptiveStep;
+
 public slots:
     void doComputation(int index = -1);
     void doFieldInfo(int index = -1);

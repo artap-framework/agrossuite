@@ -360,6 +360,12 @@ void MeshGenerator::writeTodealii()
             SceneFace* sceneEdge = m_computation->scene()->faces->at(edge.marker);
             if (sceneEdge->angle() > 0.0 && sceneEdge->isCurvilinear())
             {
+                double lengthPoints = (sceneEdge->nodeEnd()->point() - sceneEdge->nodeStart()->point()).magnitude();
+                double relDiff = (sceneEdge->length() - lengthPoints) / sceneEdge->length();
+                if (relDiff < 0.05)
+                    continue;
+                qDebug() << "length = " << sceneEdge->length() << ", points = " << lengthPoints << ", diff " << relDiff;
+
                 dealii::types::manifold_id edgeManifoldId = edge_i + 1;
                 dealii::types::manifold_id elementManifoldId[2] = { maxEdgeMarker + edge.neighElem[0], maxEdgeMarker + edge.neighElem[1] };
 
@@ -470,6 +476,7 @@ void MeshGenerator::writeTodealii()
     dealii::GridReordering<2>::invert_all_cells_of_negative_grid(vertices, cells);
     dealii::GridReordering<2>::reorder_cells(cells);
     m_triangulation.create_triangulation_compatibility(vertices, cells, subcelldata);
+    // m_triangulation.create_triangulation(vertices, cells, subcelldata);
 
     // Fix of dealII automatic marking of sub-objects with the same manifoldIds (quads -> lines).
     for (dealii::Triangulation<2>::face_iterator line = m_triangulation.begin_face(); line != m_triangulation.end_face(); ++line) {

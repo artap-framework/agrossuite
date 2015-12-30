@@ -2066,6 +2066,8 @@ void Problem::clearFieldsAndConfig()
     m_currentComputation.clear();
     Agros2D::clearComputations();
 
+    m_fileName = "";
+
     emit fileNameChanged(tr("unnamed"));
 }
 
