@@ -82,7 +82,7 @@ bool ProblemResult::save(const QString &fileName)
 
     // results
     QJsonObject resultsJson;
-    for (QMap<QString, double>::const_iterator i = m_results.constBegin(); i != m_results.constEnd(); ++i)
+    for (ParametersType::const_iterator i = m_results.constBegin(); i != m_results.constEnd(); ++i)
     {
         resultsJson[i.key()] = i.value();
     }

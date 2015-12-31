@@ -49,6 +49,7 @@ public:
     inline Operation operation() { return m_operation; }
     inline void setOperation(const Operation &operation) { m_operation = operation; }
 
+    bool checkExpression(QSharedPointer<Computation> computation);
     bool evaluateExpression(QSharedPointer<Computation> computation);
 
 protected:

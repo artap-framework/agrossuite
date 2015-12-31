@@ -51,11 +51,14 @@ void Functional::save(QJsonObject &object)
     object[EXPRESSION] = m_expression;
 }
 
+bool Functional::checkExpression(QSharedPointer<Computation> computation)
+{
+}
+
 bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
 {
     // parameters
     QString commandPre = "";
-
     ParametersType parameters = computation->config()->value(ProblemConfig::Parameters).value<ParametersType>();
     foreach (QString key, parameters.keys())
     {
@@ -65,14 +68,19 @@ bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
             commandPre += QString("; %1 = %2").arg(key).arg(parameters[key]);
     }
 
+    // resutls
+    ParametersType results = computation->result()->results();
+    foreach (QString key, results.keys())
+    {
+        if (commandPre.isEmpty())
+            commandPre += QString("%1 = %2").arg(key).arg(results[key]);
+        else
+            commandPre += QString("; %1 = %2").arg(key).arg(results[key]);
+    }
+
     // temporary dict
     currentPythonEngine()->useTemporaryDict();
 
-    // eval expression
-    QString command = QString("import agros2d; computation = agros2d.computation('%1')").arg(computation->problemDir());
-    currentPythonEngine()->runExpression(command);
-
-    // qDebug() << m_expression;
     double result = 0.0;
     bool successfulRun = currentPythonEngine()->runExpression(m_expression, &result, commandPre);
     if (successfulRun)

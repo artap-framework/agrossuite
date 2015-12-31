@@ -192,7 +192,7 @@ void OptiLabWidget::testSweep()
     // analysis->setParameter(Parameter::fromLinspace("R3", 0.05, 0.07, 3));
 
     // add functionals
-    analysis->addFunctional(Functional("We", Functional::Minimize, "computation.solution(\"electrostatic\").volume_integrals([0,1])[\"We\"]"));
+    analysis->addFunctional(Functional("We", Functional::Minimize, "R3**2")); //computation.solution(\"electrostatic\").volume_integrals([0,1])[\"We\"]
 
     // solve
     analysis->solve();

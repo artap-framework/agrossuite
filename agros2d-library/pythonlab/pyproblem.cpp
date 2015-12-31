@@ -282,7 +282,7 @@ void PyComputation::timeStepsTimes(vector<double> &times) const
 
 void PyComputation::getResults(std::vector<std::string> &keys) const
 {
-    QMap<QString, double> results = computation()->result()->results();
+    ParametersType results = computation()->result()->results();
 
     foreach (QString key, results.keys())
         keys.push_back(key.toStdString());
@@ -290,7 +290,7 @@ void PyComputation::getResults(std::vector<std::string> &keys) const
 
 double PyComputation::getResult(const std::string &key) const
 {
-    QMap<QString, double> results = computation()->result()->results();
+    ParametersType results = computation()->result()->results();
 
     if (results.contains(QString::fromStdString(key)))
     {
@@ -310,7 +310,7 @@ double PyComputation::getResult(const std::string &key) const
 
 void PyComputation::setResult(const string &key, double value)
 {
-    QMap<QString, double> results = computation()->result()->results();
+    ParametersType results = computation()->result()->results();
     results[QString::fromStdString(key)] = value;
 }
 

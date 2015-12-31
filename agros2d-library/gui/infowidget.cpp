@@ -163,7 +163,7 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
     // results (only for computation)
     if (Computation *computation = dynamic_cast<Computation *>(problem))
     {
-        QMap<QString, double> results = computation->result()->results();
+        ParametersType results = computation->result()->results();
         problemInfo.SetValue("RESULTS_MAIN_LABEL", tr("Results").toStdString());
         foreach (QString key, results.keys())
         {
