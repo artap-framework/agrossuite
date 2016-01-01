@@ -463,7 +463,7 @@ void PythonEditorDialog::showDialog()
 
 void PythonEditorDialog::createActions()
 {
-    actSceneModePythonEditor = new QAction(icon("script-python"), tr("PythonLab"), this);
+    actSceneModePythonEditor = new QAction(icon("pythonlab"), tr("PythonLab"), this);
     actSceneModePythonEditor->setShortcut(Qt::Key_F9);
     actSceneModePythonEditor->setCheckable(true);
 
@@ -494,7 +494,7 @@ void PythonEditorDialog::createActions()
     actFilePrint->setShortcuts(QKeySequence::Print);
     connect(actFilePrint, SIGNAL(triggered()), this, SLOT(doFilePrint()));
 
-    actExit = new QAction(icon("application-exit"), tr("E&xit"), this);
+    actExit = new QAction(tr("E&xit"), this);
     actExit->setShortcut(tr("Ctrl+Q"));
     actExit->setMenuRole(QAction::QuitRole);
     connect(actExit, SIGNAL(triggered()), QApplication::instance(), SLOT(quit()));
@@ -562,7 +562,7 @@ void PythonEditorDialog::createActions()
     actCreateFromModel->setShortcut(QKeySequence(tr("Ctrl+M")));
     connect(actCreateFromModel, SIGNAL(triggered()), this, SLOT(doCreatePythonFromModel()));
 
-    actHelpOnWord = new QAction(icon("help-contents"), tr("&Help"), this);
+    actHelpOnWord = new QAction(tr("&Help"), this);
     actHelpOnWord->setShortcut(QKeySequence::HelpContents);
     actHelpOnWord->setEnabled(true);
     connect(actHelpOnWord, SIGNAL(triggered()), this, SLOT(doHelpOnWord()));

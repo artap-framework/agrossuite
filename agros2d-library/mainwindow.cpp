@@ -232,10 +232,10 @@ void MainWindow::createActions()
     actDocumentSaveGeometry = new QAction(tr("Export geometry..."), this);
     connect(actDocumentSaveGeometry, SIGNAL(triggered()), this, SLOT(doDocumentSaveGeometry()));
 
-    actCreateVideo = new QAction(icon("video"), tr("Create &video..."), this);
+    actCreateVideo = new QAction(tr("Create &video..."), this);
     connect(actCreateVideo, SIGNAL(triggered()), this, SLOT(doCreateVideo()));
 
-    actExit = new QAction(icon("application-exit"), tr("E&xit"), this);
+    actExit = new QAction(tr("E&xit"), this);
     actExit->setShortcut(tr("Ctrl+Q"));
     actExit->setMenuRole(QAction::QuitRole);
     connect(actExit, SIGNAL(triggered()), this, SLOT(close()));
@@ -244,7 +244,7 @@ void MainWindow::createActions()
     // actCopy->setShortcuts(QKeySequence::Copy);
     connect(actCopy, SIGNAL(triggered()), this, SLOT(doCopy()));
 
-    actHelp = new QAction(icon("help-contents"), tr("&Help"), this);
+    actHelp = new QAction(tr("&Help"), this);
     actHelp->setShortcut(QKeySequence::HelpContents);
     // actHelp->setEnabled(false);
     connect(actHelp, SIGNAL(triggered()), this, SLOT(doHelp()));
@@ -260,7 +260,7 @@ void MainWindow::createActions()
     actAbout->setMenuRole(QAction::AboutRole);
     connect(actAbout, SIGNAL(triggered()), this, SLOT(doAbout()));
 
-    actAboutQt = new QAction(icon("help-about"), tr("About &Qt"), this);
+    actAboutQt = new QAction(tr("About &Qt"), this);
     actAboutQt->setMenuRole(QAction::AboutQtRole);
     connect(actAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
@@ -802,8 +802,7 @@ void MainWindow::doDocumentSave()
 
 void MainWindow::doDeleteSolutions()
 {
-    exampleWidget->actExamples->trigger();
-    sceneViewProblem->doZoomBestFit();
+    sceneViewProblem->actSceneModeProblem->trigger();
 
     // clear all computations
     Agros2D::clearComputations();

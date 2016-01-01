@@ -35,7 +35,6 @@ VideoDialog::VideoDialog(SceneViewPostInterface *sceneViewInterface, Computation
     : QDialog(parent), m_sceneViewInterface(sceneViewInterface), m_computation(computation)
 {
     setModal(true);
-    setWindowIcon(icon("video"));
     setWindowTitle(tr("Video"));
 
     // create directory
@@ -357,7 +356,6 @@ ImageSequenceDialog::ImageSequenceDialog(QWidget *parent)
     : QDialog(parent)
 {
     setModal(true);
-    setWindowIcon(icon("video"));
     setWindowTitle(tr("Video"));
 
     // read images
