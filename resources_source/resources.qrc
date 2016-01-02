@@ -5,6 +5,9 @@
         <file alias="agros2d.png">images/agros2d.png</file>
         <file alias="pythonlab.png">images/pythonlab.png</file>
         <file alias="optilab.png">images/optilab.png</file>
+        <file alias="problem.png">images/problem.png</file>
+        <file alias="results.png">images/results.png</file>            
+        <file alias="chart.png">images/chart.png</file>               
         <file alias="browser.png">images/browser.png</file>
         <file alias="document-new.png">images/document-new.png</file>
         <file alias="document-new-windows.png">images/document-new-windows.png</file>
@@ -28,7 +31,6 @@
         <file alias="edit-right.png">images/edit-right.png</file>
         <file alias="edit-down.png">images/edit-down.png</file>
         <file alias="edit-delete.png">images/edit-delete.png</file>
-        <file alias="chart.png">images/chart.png</file>
         <file alias="mode-nothing.png">images/mode-nothing.png</file>
         <file alias="mode-localpointvalue.png">images/mode-localpointvalue.png</file>
         <file alias="mode-surfaceintegral.png">images/mode-surfaceintegral.png</file>
@@ -40,11 +42,9 @@
         <file alias="scene-edge.png">images/scene-edge.png</file>
         <file alias="scene-label.png">images/scene-label.png</file>
         <file alias="scene-info.png">images/scene-info.png</file>
-        <file alias="scene-geometry.png">images/scene-geometry.png</file>
         <file alias="scene-mesh.png">images/scene-mesh.png</file>
         <file alias="scene-post2d.png">images/scene-post2d.png</file>
         <file alias="scene-post3d.png">images/scene-post3d.png</file>
-        <file alias="scene-particle.png">images/scene-particle.png</file>
         <file alias="scene-delete.png">images/scene-delete.png</file>
         <file alias="scene-select-region.png">images/scene-select-region.png</file>
         <file alias="scene-transform.png">images/scene-transform.png</file>
@@ -74,7 +74,6 @@
         <file alias="log.png">images/log.png</file>
         <file alias="three-dots.png">images/three-dots.png</file>
         <file alias="remove-item.png">images/remove-item.png</file>
-        <file alias="collaboration.png">images/collaboration.png</file>
         <file alias="check-convention.png">images/check-convention.png</file>
         <file alias="check-warning.png">images/check-warning.png</file>
         <file alias="check-error.png">images/check-error.png</file>

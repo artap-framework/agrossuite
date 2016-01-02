@@ -42,7 +42,6 @@ private:
     // main
     QComboBox *cmbGUIStyle;
     QComboBox *cmbLanguage;
-    // LineEditDouble *txtCollaborationServerURL;
 
     // show result in line edit value widget
     QCheckBox *chkLineEditValueShowResult;

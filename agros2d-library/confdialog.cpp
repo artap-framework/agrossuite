@@ -142,6 +142,9 @@ void ConfigComputerDialog::createControls()
     QTabWidget *tabConfig = new QTabWidget(this);
     tabConfig->addTab(createMainWidget(), tr("Main"));
     tabConfig->addTab(createSolverWidget(), tr("Solver"));
+    qDebug() << tabConfig->palette().background().color().red()
+                << tabConfig->palette().background().color().green()
+                   << tabConfig->palette().background().color().blue();
 
     // dialog buttons
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);

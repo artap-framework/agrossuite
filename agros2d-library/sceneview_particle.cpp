@@ -735,6 +735,7 @@ void SceneViewParticleTracing::paintParticleTracingColorBar(double min, double m
     glEnd();
 
     // labels
+    glColor3d(0.0, 0.0, 0.0);
     for (int i = 1; i < numTicks+1; i++)
     {
         double value = min + (double) (i-1) / (numTicks-1) * (max - min);

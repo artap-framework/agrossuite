@@ -119,7 +119,7 @@ void PostprocessorSceneMeshWidget::createControls()
 
     QScrollArea *widgetArea = new QScrollArea();
     widgetArea->setFrameShape(QFrame::NoFrame);
-    widgetArea->setWidgetResizable(true);
+    widgetArea->setWidgetResizable(true);    
     widgetArea->setWidget(widget);
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
