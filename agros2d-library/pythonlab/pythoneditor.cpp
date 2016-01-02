@@ -1254,33 +1254,37 @@ void PythonEditorDialog::doConsoleOutput()
 
 void PythonEditorDialog::setRecentFiles()
 {
-    if (!tabWidget) return;
-
     mnuRecentFiles->clear();
 
     // recent files
+    QSettings settings;
+    QStringList recentScripts = settings.value("RecentScripts").value<QStringList>();
+
     if (!scriptEditorWidget()->fileName().isEmpty())
     {
-        QSettings settings;
-        QStringList recentFiles = settings.value("RecentScripts").value<QStringList>();
-
         QFileInfo fileInfo(scriptEditorWidget()->fileName());
-        if (recentFiles.indexOf(fileInfo.absoluteFilePath()) == -1)
-            recentFiles.insert(0, fileInfo.absoluteFilePath());
+        if (recentScripts.indexOf(fileInfo.absoluteFilePath()) == -1)
+            recentScripts.insert(0, fileInfo.absoluteFilePath());
         else
-            recentFiles.move(recentFiles.indexOf(fileInfo.absoluteFilePath()), 0);
+            recentScripts.move(recentScripts.indexOf(fileInfo.absoluteFilePath()), 0);
+    }
 
-        while (recentFiles.count() > 15) recentFiles.removeLast();
+    while (recentScripts.count() > 15) recentScripts.removeLast();
 
-        settings.setValue("RecentScripts", recentFiles);
+    settings.setValue("RecentScripts", recentScripts);
 
-        for (int i = 0; i<recentFiles.count(); i++)
-        {
-            QAction *actMenuRecentItem = new QAction(recentFiles[i], this);
-            actFileOpenRecentGroup->addAction(actMenuRecentItem);
-            mnuRecentFiles->addAction(actMenuRecentItem);
-        }
-    }    
+    for (int i = 0; i < recentScripts.count(); i++)
+    {
+        QFileInfo fileInfo(recentScripts[i]);
+        if (fileInfo.isDir())
+            continue;
+        if (!QFile::exists(fileInfo.absoluteFilePath()))
+            continue;
+
+        QAction *actMenuRecentItem = new QAction(recentScripts[i], this);
+        actFileOpenRecentGroup->addAction(actMenuRecentItem);
+        mnuRecentFiles->addAction(actMenuRecentItem);
+    }
 }
 
 void PythonEditorDialog::closeTabs()

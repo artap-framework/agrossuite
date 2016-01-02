@@ -264,7 +264,7 @@ void MainWindow::createActions()
     actAboutQt->setMenuRole(QAction::AboutQtRole);
     connect(actAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-    actOptions = new QAction(icon("options"), tr("&Options"), this);
+    actOptions = new QAction(tr("&Options"), this);
     actOptions->setMenuRole(QAction::PreferencesRole);
     connect(actOptions, SIGNAL(triggered()), this, SLOT(doOptions()));
 
@@ -318,7 +318,7 @@ void MainWindow::createActions()
     actHideControlPanel = new QAction(icon("showhide"), tr("Show/hide control panel"), this);
     actHideControlPanel->setShortcut(tr("Alt+0"));
     actHideControlPanel->setCheckable(true);
-    connect(actHideControlPanel, SIGNAL(triggered()), this, SLOT(doHideControlPanel()));    
+    connect(actHideControlPanel, SIGNAL(triggered()), this, SLOT(doHideControlPanel()));
 }
 
 
@@ -628,27 +628,33 @@ void MainWindow::setRecentFiles()
     mnuRecentFiles->clear();
 
     // recent files
+    QSettings settings;
+    QStringList recentFiles = settings.value("RecentProblems").value<QStringList>();
+
     if (!Agros2D::problem()->archiveFileName().isEmpty())
     {
-        QSettings settings;
-        QStringList recentFiles = settings.value("RecentProblems").value<QStringList>();
-
         QFileInfo fileInfo(Agros2D::problem()->archiveFileName());
         if (recentFiles.indexOf(fileInfo.absoluteFilePath()) == -1)
             recentFiles.insert(0, fileInfo.absoluteFilePath());
         else
             recentFiles.move(recentFiles.indexOf(fileInfo.absoluteFilePath()), 0);
+    }
 
-        while (recentFiles.count() > 15) recentFiles.removeLast();
+    while (recentFiles.count() > 15) recentFiles.removeLast();
 
-        settings.setValue("RecentProblems", recentFiles);
+    settings.setValue("RecentProblems", recentFiles);
 
-        for (int i = 0; i<recentFiles.count(); i++)
-        {
-            QAction *actMenuRecentItem = new QAction(recentFiles[i], this);
-            actDocumentOpenRecentGroup->addAction(actMenuRecentItem);
-            mnuRecentFiles->addAction(actMenuRecentItem);
-        }
+    for (int i = 0; i < recentFiles.count(); i++)
+    {
+        QFileInfo fileInfo(recentFiles[i]);
+        if (fileInfo.isDir())
+            continue;
+        if (!QFile::exists(fileInfo.absoluteFilePath()))
+            continue;
+
+        QAction *actMenuRecentItem = new QAction(recentFiles[i], this);
+        actDocumentOpenRecentGroup->addAction(actMenuRecentItem);
+        mnuRecentFiles->addAction(actMenuRecentItem);
     }
 }
 
@@ -836,7 +842,7 @@ void MainWindow::doDocumentClose()
     exampleWidget->actExamples->trigger();
 
     // clear problem
-    Agros2D::problem()->clearFieldsAndConfig();    
+    Agros2D::problem()->clearFieldsAndConfig();
 }
 
 void MainWindow::doDocumentImportDXF()

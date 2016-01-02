@@ -27,7 +27,7 @@ FileBrowser::FileBrowser(QWidget *parent) : QListWidget(parent)
     setDir(QDir::currentPath());
     setContextMenuPolicy(Qt::CustomContextMenu);
 
-    actCreateDirectory = new QAction(icon("file-folder"), tr("&Create directory"), this);
+    actCreateDirectory = new QAction(icon("folder"), tr("&Create directory"), this);
     connect(actCreateDirectory, SIGNAL(triggered()), this, SLOT(createDir()));
 
     actCreateFile = new QAction(icon("file-text"), tr("Create &file"), this);
@@ -86,7 +86,7 @@ void FileBrowser::setDir(const QString &path, bool force)
         QFileInfo fileInfo(path + QDir::separator() + item);
         if (QDir(path + QDir::separator() + item).exists())
         {
-            addItem(new QListWidgetItem(icon("file-folder"), item));
+            addItem(new QListWidgetItem(icon("folder"), item));
         }
         else
         {
