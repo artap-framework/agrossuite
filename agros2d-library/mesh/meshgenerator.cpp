@@ -362,9 +362,9 @@ void MeshGenerator::writeTodealii()
             {
                 double lengthPoints = (sceneEdge->nodeEnd()->point() - sceneEdge->nodeStart()->point()).magnitude();
                 double relDiff = (sceneEdge->length() - lengthPoints) / sceneEdge->length();
-                if (relDiff < 0.05)
+                // qDebug() << "length = " << sceneEdge->length() << ", points = " << lengthPoints << ", diff " << relDiff;
+                if (relDiff < 0.01)
                     continue;
-                qDebug() << "length = " << sceneEdge->length() << ", points = " << lengthPoints << ", diff " << relDiff;
 
                 dealii::types::manifold_id edgeManifoldId = edge_i + 1;
                 dealii::types::manifold_id elementManifoldId[2] = { maxEdgeMarker + edge.neighElem[0], maxEdgeMarker + edge.neighElem[1] };
@@ -509,8 +509,8 @@ void MeshGenerator::writeTodealii()
                 }
                 else
                 {
-                    cell->face(neigh_i)->set_user_index((int)cell->face(neigh_i)->boundary_id());
-                    //std::cout << "cell cell_idx: " << cell_idx << ", face  " << neigh_i << " set to " << (int) cell->face(neigh_i)->boundary_indicator() << " -> value " << cell->face(neigh_i)->user_index() << std::endl;
+                    cell->face(neigh_i)->set_user_index(cell->face(neigh_i)->boundary_id());
+                    // std::cout << "cell cell_idx: " << cell_idx << ", face  " << neigh_i << " set to " << cell->face(neigh_i)->boundary_indicator() << " -> value " << cell->face(neigh_i)->user_index() << std::endl;
                 }
 
                 int neighbor_cell_idx = cell->neighbor_index(neigh_i);
