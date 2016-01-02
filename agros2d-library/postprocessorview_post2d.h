@@ -88,21 +88,8 @@ private:
 
     void createControls();
 
-    QWidget *groupPost2d;
-    CollapsableGroupBoxButton *groupPostScalar;
-    QWidget *groupPostScalarAdvanced;
-    CollapsableGroupBoxButton *groupPostContour;
-    QWidget *groupPostContourAdvanced;
-    CollapsableGroupBoxButton *groupPostVector;
-    QWidget *groupPostVectorAdvanced;
-
-    QWidget *post2DWidget();
-
-    CollapsableGroupBoxButton *postScalarWidget();
     QWidget *postScalarAdvancedWidget();
-    CollapsableGroupBoxButton *postContourWidget();
     QWidget *postContourAdvancedWidget();
-    CollapsableGroupBoxButton *postVectorWidget();
     QWidget *postVectorAdvancedWidget();
 
     ResultsView *resultsView;
@@ -121,10 +108,6 @@ private slots:
     // void doScalarFieldDefault();
     // void doContoursVectorsDefault();
     void doScalarFieldLog(int state);
-
-    void doScalarFieldExpandCollapse(bool collapsed);
-    void doContourFieldExpandCollapse(bool collapsed);
-    void doVectorFieldExpandCollapse(bool collapsed);
 };
 
 #endif // POSTPROCESSORVIEW_POST2D_H

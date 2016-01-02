@@ -121,21 +121,9 @@ void PostprocessorScenePost3DWidget::createControls()
     layoutAll->addWidget(viewWidget);
     layoutAll->addWidget(solidWidget, 1);
 
-    QWidget *widget = new QWidget(this);
-    widget->setLayout(layoutAll);
-
-    QScrollArea *widgetArea = new QScrollArea();
-    widgetArea->setFrameShape(QFrame::NoFrame);
-    widgetArea->setWidgetResizable(true);
-    widgetArea->setWidget(widget);
-
-    QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->setContentsMargins(0, 0, 0, 0);
-    layoutMain->addWidget(widgetArea, 1);
-
     refresh();
 
-    setLayout(layoutMain);
+    setLayout(layoutAll);
 }
 
 void PostprocessorScenePost3DWidget::refresh()

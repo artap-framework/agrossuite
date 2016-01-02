@@ -325,6 +325,7 @@ void PythonEditorWidget::createControls()
     splitter->addWidget(tab);
 
     toolBar = new QToolBar(this);
+    toolBar->addAction(pythonEditor->actFileNew);
     toolBar->addAction(pythonEditor->actFileOpen);
     toolBar->addAction(pythonEditor->actFileSave);
     toolBar->addSeparator();
@@ -339,7 +340,7 @@ void PythonEditorWidget::createControls()
     toolBar->addAction(pythonEditor->actConsoleOutput);
 
     QVBoxLayout *layout = new QVBoxLayout();
-    layout->setContentsMargins(1, 1, 1, 1);
+    layout->setContentsMargins(2, 2, 2, 3);
     layout->addWidget(toolBar);
     layout->addWidget(splitter);
 

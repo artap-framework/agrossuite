@@ -57,7 +57,7 @@ AgrosApplication::AgrosApplication(int& argc, char ** argv) : QApplication(argc,
 
 #ifdef Q_WS_X11
     // css fix for QScrollArea in QTabWidget
-    setStyleSheet("QScrollArea { background: transparent; } QScrollArea > QWidget > QWidget { background: transparent; }");
+    // setStyleSheet("QScrollArea { background: transparent; } QScrollArea > QWidget > QWidget { background: transparent; }");
 #endif
 
     // std::string codec

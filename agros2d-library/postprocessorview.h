@@ -30,7 +30,6 @@ class SceneViewPost3D;
 class SceneViewParticleTracing;
 class SceneViewChart;
 class LineEditDouble;
-class CollapsableGroupBoxButton;
 class FieldInfo;
 class ValueLineEdit;
 class PhysicalFieldWidget;

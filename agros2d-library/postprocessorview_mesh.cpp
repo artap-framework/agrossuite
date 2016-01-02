@@ -86,8 +86,8 @@ void PostprocessorSceneMeshWidget::createControls()
     gridLayoutOrder->setColumnStretch(1, 1);
     gridLayoutOrder->addWidget(new QLabel(tr("Palette:")), 0, 0);
     gridLayoutOrder->addWidget(cmbOrderPaletteOrder, 0, 1);
-    gridLayoutOrder->addWidget(chkShowOrderColorbar, 1, 0, 1, 2);
-    gridLayoutOrder->addWidget(chkOrderLabel, 2, 0, 1, 2);
+    gridLayoutOrder->addWidget(chkShowOrderColorbar, 1, 1);
+    gridLayoutOrder->addWidget(chkOrderLabel, 2, 1);
 
     QGroupBox *grpShowOrder = new QGroupBox(tr("Polynomial order"));
     grpShowOrder->setLayout(gridLayoutOrder);
@@ -114,19 +114,7 @@ void PostprocessorSceneMeshWidget::createControls()
     widgetsLayout->addStretch(1);
     widgetsLayout->addWidget(grpInfo);
 
-    QWidget *widget = new QWidget(this);
-    widget->setLayout(widgetsLayout);
-
-    QScrollArea *widgetArea = new QScrollArea();
-    widgetArea->setFrameShape(QFrame::NoFrame);
-    widgetArea->setWidgetResizable(true);    
-    widgetArea->setWidget(widget);
-
-    QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->setContentsMargins(0, 0, 0, 0);
-    layoutMain->addWidget(widgetArea, 1);
-
-    setLayout(layoutMain);
+    setLayout(widgetsLayout);
 }
 
 void PostprocessorSceneMeshWidget::refresh()

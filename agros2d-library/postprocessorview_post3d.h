@@ -26,7 +26,6 @@
 class PostDeal;
 class SceneViewPost3D;
 class LineEditDouble;
-class CollapsableGroupBoxButton;
 
 class PostprocessorScenePost3DWidget : public PostprocessorSceneWidget
 {
