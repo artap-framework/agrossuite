@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
         double Control[UMFPACK_CONTROL];
         // Control[UMFPACK_PRL] = 6;
 
-        int statusTripletToCol = umfpack_di_triplet_to_col (n, n, nz, linearSystem.cooRowInd, linearSystem.cooColInd, linearSystem.matA, Ap, Ai, Ax, (int *) NULL);
+        int statusTripletToCol = umfpack_di_triplet_to_col (n, n, nz, (int *) linearSystem.cooRowInd, (int *) linearSystem.cooColInd, linearSystem.matA, Ap, Ai, Ax, (int *) NULL);
 
         if (statusTripletToCol != UMFPACK_OK)
         {

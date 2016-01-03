@@ -443,10 +443,10 @@ public:
     // reference solution (for testing)
     VectorRW *reference_sln;
 
-    inline int n() { return system_matrix_pattern->rows; }
-    inline int nz() { return system_matrix->max_len; }
+    inline unsigned int n() { return system_matrix_pattern->rows; }
+    inline unsigned int nz() { return system_matrix->max_len; }
 
-    inline void setInfoNumOfProc(int num) { infoNumOfProc = num; }
+    inline void setInfoNumOfProc(unsigned int num) { infoNumOfProc = num; }
     inline void setInfoTimeReadMatrix(double time) { infoTimeReadMatrix = time; }
     inline void setInfoTimeSolveSystem(double time) { infoTimeSolveSystem = time; }
     inline void setInfoTimeTotal(double time) { infoTimeTotal = time; }
@@ -472,8 +472,8 @@ public:
         if (cooRowInd) delete [] cooRowInd;
         if (cooColInd) delete [] cooColInd;
 
-        cooRowInd = new int[nz()];
-        cooColInd = new int[nz()];
+        cooRowInd = new unsigned int[nz()];
+        cooColInd = new unsigned int[nz()];
         matA = system_matrix->val;
 
         int index = 0;
@@ -500,21 +500,21 @@ public:
         if (csrRowPtr) delete [] csrRowPtr;
         if (csrColInd) delete [] csrColInd;
 
-        csrRowPtr = new int[n() + 1];
-        csrColInd = new int[nz()];
+        csrRowPtr = new unsigned int[n() + 1];
+        csrColInd = new unsigned int[nz()];
         matA = system_matrix->val;
 
-        int index = 0;
+        unsigned int index = 0;
 
         // loop over the elements of the matrix row by row
-        for (int row = 0; row < n(); row++)
+        for (unsigned int row = 0; row < n(); row++)
         {
             std::size_t col_start = system_matrix_pattern->rowstart[row];
             std::size_t col_end = system_matrix_pattern->rowstart[row + 1];
 
             csrRowPtr[row] = index;
 
-            for (int i = col_start; i < col_end; i++)
+            for (unsigned int i = col_start; i < col_end; i++)
             {
                 csrColInd[index] = system_matrix_pattern->colnums[i];
 
@@ -528,12 +528,12 @@ public:
     double *matA;
 
     // coo
-    int *cooRowInd;
-    int *cooColInd;
+    unsigned int *cooRowInd;
+    unsigned int *cooColInd;
 
     // csr
-    int *csrRowPtr;
-    int *csrColInd;
+    unsigned int *csrRowPtr;
+    unsigned int *csrColInd;
 
 protected:
     void readLinearSystemInternal(const std::string &matrixPaternFN,
@@ -583,12 +583,12 @@ protected:
     }
 
     std::string infoName;
-    int infoNumOfProc;
+    unsigned int infoNumOfProc;
     double infoTimeReadMatrix;
     double infoTimeSolveSystem;
     double infoTimeTotal;
-    int infoN;
-    int infoNZ;
+    unsigned int infoN;
+    unsigned int infoNZ;
 };
 
 class LinearSystemArgs : public LinearSystem

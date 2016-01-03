@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
 
         // Construct a Map that puts approximately the same number of equations on each processor
         const int indexBase = 0;
-        Epetra_Map epeMap(linearSystem->n(), indexBase, comm);
+        Epetra_Map epeMap((int) linearSystem->n(), indexBase, comm);
         // Epetra_Map epeMap(-1, numOfRows, 0, comm);
 
 
@@ -279,7 +279,7 @@ int main(int argc, char *argv[])
         {
             int globalRow = epeA.GRID(linearSystem->cooRowInd[index]);
             // epeA.InsertGlobalValues(globalRow, 1, &linearSystem->cooA[index], &linearSystem->cooJCN[index]);
-            epeA.InsertGlobalValues(globalRow, 1, &linearSystem->matA[index], &linearSystem->cooColInd[index]);
+            epeA.InsertGlobalValues(globalRow, 1, &linearSystem->matA[index], (int *) &linearSystem->cooColInd[index]);
         }
 
         epeA.FillComplete(); // Transform from GIDs to LIDs
