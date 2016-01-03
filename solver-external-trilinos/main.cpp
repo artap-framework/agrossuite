@@ -121,8 +121,11 @@ void solveAztecOO(const Epetra_LinearProblem &problem, int maxIter, double relTo
     parList.set ("PrintTiming", false); // test of parameter setting
     parList.set ("PrintStatus", false); // test of parameter setting
     aztecooSolver.SetParameters(parList);
-    aztecooSolver.SetAztecOption(AZ_precond, AZ_Jacobi);
-    aztecooSolver.SetAztecOption(AZ_solver, AZ_bicgstab);
+    aztecooSolver.SetAztecOption(AZ_precond, AZ_dom_decomp);
+    aztecooSolver.SetAztecOption(AZ_subdomain_solve, AZ_ilut);
+    aztecooSolver.SetAztecOption(AZ_solver, AZ_tfqmr);
+    // aztecooSolver.SetAztecOption(AZ_precond, AZ_Jacobi);
+    // aztecooSolver.SetAztecOption(AZ_solver, AZ_bicgstab);
     aztecooSolver.Iterate(maxIter, relTol);
     // std::cout << "Solver performed " << aztecooSolver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << aztecooSolver.TrueResidual() << std::endl;
 }
@@ -169,12 +172,12 @@ void solveML(const Epetra_LinearProblem &problem, int maxIter, double relTol)
     // verify unused parameters on process 0 (put -1 to print on all processes)
     // mlPrec->PrintUnused(0);
 
-    AztecOO solver(problem);
+    AztecOO aztecooSolver(problem);
 
-    solver.SetPrecOperator(mlPrec);
-    solver.SetAztecOption(AZ_solver, AZ_cg);
-    solver.SetAztecOption(AZ_output, 32);
-    solver.Iterate(maxIter, relTol);
+    aztecooSolver.SetPrecOperator(mlPrec);
+    aztecooSolver.SetAztecOption(AZ_solver, AZ_cg);
+    aztecooSolver.SetAztecOption(AZ_output, 32);
+    aztecooSolver.Iterate(maxIter, relTol);
 }
 
 LinearSystemTrilinosArgs *createLinearSystem(std::string extSolverName, int argc, char *argv[])
