@@ -73,10 +73,10 @@ public:
     LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
         : LinearSystemArgs(name, argc, argv),
           solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
-        // preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
-        // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
-        relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
-        maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int"))
+          // preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
+          // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
+          relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
+          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int"))
     {
         cmd.add(solverArg);
         // cmd.add(preconditionerArg);
@@ -85,7 +85,6 @@ public:
         cmd.add(maxIterArg);
     }
 
-public:
     TCLAP::ValueArg<std::string> solverArg;
     // TCLAP::ValueArg<std::string> preconditionerArg;
     // TCLAP::ValueArg<double> absTolArg;
@@ -93,7 +92,7 @@ public:
     TCLAP::ValueArg<int> maxIterArg;
 };
 
-int solveAmesos(const Epetra_LinearProblem &problem, std::string solverTypeName =  "Amesos_Klu")
+void solveAmesos(const Epetra_LinearProblem &problem, std::string solverTypeName =  "Amesos_Klu")
 {
     Amesos amesosFactory;
     const char *amesosSolverType = solverTypeName.c_str(); // in default uses the Amesos_Klu direct solver
@@ -107,15 +106,14 @@ int solveAmesos(const Epetra_LinearProblem &problem, std::string solverTypeName 
     parList.set ("PrintStatus", false); // test of parameter setting
     amesosSolver->SetParameters(parList);
 
-    AMESOS_CHK_ERR(amesosSolver->SymbolicFactorization());
-
-    AMESOS_CHK_ERR(amesosSolver->NumericFactorization());
-    AMESOS_CHK_ERR(amesosSolver->Solve());
+    amesosSolver->SymbolicFactorization();
+    amesosSolver->NumericFactorization();
+    amesosSolver->Solve();
 
     delete amesosSolver;
 }
 
-int solveAztecOO(const Epetra_LinearProblem &problem, int maxIter, double relTol)
+void solveAztecOO(const Epetra_LinearProblem &problem, int maxIter, double relTol)
 {
     AztecOO aztecooSolver(problem);
     // create parameter list for solver
@@ -129,7 +127,7 @@ int solveAztecOO(const Epetra_LinearProblem &problem, int maxIter, double relTol
     // std::cout << "Solver performed " << aztecooSolver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << aztecooSolver.TrueResidual() << std::endl;
 }
 
-int solveML(const Epetra_LinearProblem &problem, int maxIter, double relTol)
+void solveML(const Epetra_LinearProblem &problem, int maxIter, double relTol)
 {
     // create a parameter list for ML options
     Teuchos::ParameterList mlList;
