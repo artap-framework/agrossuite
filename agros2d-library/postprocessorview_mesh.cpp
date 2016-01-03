@@ -63,13 +63,14 @@ void PostprocessorSceneMeshWidget::createControls()
 
     txtOrderComponent = new QSpinBox(this);
     txtOrderComponent->setMinimum(1);
+    txtOrderComponent->setVisible(false); // NOT IMPLEMENTED
 
     QGridLayout *gridLayoutMesh = new QGridLayout();
     gridLayoutMesh->addWidget(chkShowInitialMeshView, 0, 0, 1, 2);
     gridLayoutMesh->addWidget(chkShowSolutionMeshView, 1, 0, 1, 2);
     gridLayoutMesh->addWidget(chkShowOrderView, 2, 0, 1, 2);
-    gridLayoutMesh->addWidget(new QLabel(tr("Component:")), 3, 0);
-    gridLayoutMesh->addWidget(txtOrderComponent, 3, 1);
+    // gridLayoutMesh->addWidget(new QLabel(tr("Component:")), 3, 0);
+    // gridLayoutMesh->addWidget(txtOrderComponent, 3, 1);
 
     QGroupBox *grpShowMesh = new QGroupBox(tr("Mesh"));
     grpShowMesh->setLayout(gridLayoutMesh);
