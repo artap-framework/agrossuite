@@ -299,20 +299,19 @@ MACRO(ADD_INFO_FILES)
    ENDFOREACH()
 ENDMACRO()
 
-set(info #resources/modules/acoustic.xml
-         #resources/modules/current.xml
-         #resources/modules/elasticity.xml
-         #resources/modules/electrostatic.xml
-         #resources/modules/flow.xml
-         #resources/modules/heat.xml
-         #resources/modules/magnetic.xml
-         #resources/modules/rf_te.xml
-         #resources/modules/rf_tm.xml
-         #resources/modules/richards.xml
-         #resources/modules/math_coeff.xml
-         #resources/couplings/current-heat.xml
-         #resources/couplings/heat-elasticity.xml
-         #resources/couplings/magnetic-heat.xml
+set(info resources/modules/acoustic.xml
+         resources/modules/current.xml
+         resources/modules/elasticity.xml
+         resources/modules/electrostatic.xml
+         resources/modules/flow.xml
+         resources/modules/heat.xml
+         resources/modules/magnetic.xml
+         resources/modules/math_coeff.xml
+         resources/modules/rf_te.xml
+         resources/modules/rf_tm.xml
+         resources/couplings/current-heat.xml
+         resources/couplings/heat-elasticity.xml
+         resources/couplings/magnetic-heat.xml
          #resources/couplings/magnetic-flow.xml
          #resources/couplings/flow-heat.xml
          resources/python/functions_agros2d.py
