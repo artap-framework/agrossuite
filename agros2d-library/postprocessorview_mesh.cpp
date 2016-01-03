@@ -86,8 +86,8 @@ void PostprocessorSceneMeshWidget::createControls()
     gridLayoutOrder->setColumnStretch(1, 1);
     gridLayoutOrder->addWidget(new QLabel(tr("Palette:")), 0, 0);
     gridLayoutOrder->addWidget(cmbOrderPaletteOrder, 0, 1);
-    gridLayoutOrder->addWidget(chkShowOrderColorbar, 1, 1);
-    gridLayoutOrder->addWidget(chkOrderLabel, 2, 1);
+    gridLayoutOrder->addWidget(chkShowOrderColorbar, 0, 2);
+    gridLayoutOrder->addWidget(chkOrderLabel, 2, 2);
 
     QGroupBox *grpShowOrder = new QGroupBox(tr("Polynomial order"));
     grpShowOrder->setLayout(gridLayoutOrder);

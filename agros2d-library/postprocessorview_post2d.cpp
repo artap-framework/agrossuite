@@ -133,6 +133,14 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
     txtPaletteSteps->setMinimum(PALETTESTEPSMIN);
     txtPaletteSteps->setMaximum(PALETTESTEPSMAX);
 
+    // decimal places
+    txtScalarDecimalPlace = new QSpinBox(this);
+    txtScalarDecimalPlace->setMinimum(SCALARDECIMALPLACEMIN);
+    txtScalarDecimalPlace->setMaximum(SCALARDECIMALPLACEMAX);
+
+    // color bar
+    chkShowScalarColorBar = new QCheckBox(tr("Show colorbar"), this);
+
     // log scale
     chkScalarFieldRangeLog = new QCheckBox(tr("Log. scale"));
     txtScalarFieldRangeBase = new LineEditDouble(1);
@@ -173,39 +181,23 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
     gridLayoutScalarFieldPalette->setColumnMinimumWidth(0, columnMinimumWidth());
     gridLayoutScalarFieldPalette->setColumnStretch(1, 1);
     gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Palette:")), 0, 0);
-    gridLayoutScalarFieldPalette->addWidget(cmbPalette, 0, 1, 1, 2);
+    gridLayoutScalarFieldPalette->addWidget(cmbPalette, 0, 1);
+    gridLayoutScalarFieldPalette->addWidget(chkShowScalarColorBar, 0, 2);
     gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Steps:")), 2, 0);
     gridLayoutScalarFieldPalette->addWidget(txtPaletteSteps, 2, 1);
     gridLayoutScalarFieldPalette->addWidget(chkPaletteFilter, 2, 2);
-    gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Base:")), 3, 0);
-    gridLayoutScalarFieldPalette->addWidget(txtScalarFieldRangeBase, 3, 1);
-    gridLayoutScalarFieldPalette->addWidget(chkScalarFieldRangeLog, 3, 2);
+    gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Decimal places:")), 3, 0);
+    gridLayoutScalarFieldPalette->addWidget(txtScalarDecimalPlace, 3, 1);
+    gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Base:")), 4, 0);
+    gridLayoutScalarFieldPalette->addWidget(txtScalarFieldRangeBase, 4, 1);
+    gridLayoutScalarFieldPalette->addWidget(chkScalarFieldRangeLog, 4, 2);
 
-    QGroupBox *grpScalarFieldPalette = new QGroupBox(tr("Palette"));
+    QGroupBox *grpScalarFieldPalette = new QGroupBox(tr("Palette and colorbar"));
     grpScalarFieldPalette->setLayout(gridLayoutScalarFieldPalette);
-
-    // decimal places
-    txtScalarDecimalPlace = new QSpinBox(this);
-    txtScalarDecimalPlace->setMinimum(SCALARDECIMALPLACEMIN);
-    txtScalarDecimalPlace->setMaximum(SCALARDECIMALPLACEMAX);
-
-    // color bar
-    chkShowScalarColorBar = new QCheckBox(tr("Show colorbar"), this);
-
-    QGridLayout *gridLayoutScalarFieldColorbar = new QGridLayout();
-    gridLayoutScalarFieldColorbar->setColumnMinimumWidth(0, columnMinimumWidth());
-    gridLayoutScalarFieldColorbar->setColumnStretch(1, 1);
-    gridLayoutScalarFieldColorbar->addWidget(new QLabel(tr("Decimal places:")), 0, 0);
-    gridLayoutScalarFieldColorbar->addWidget(txtScalarDecimalPlace, 0, 1);
-    gridLayoutScalarFieldColorbar->addWidget(chkShowScalarColorBar, 0, 2);
-
-    QGroupBox *grpScalarFieldColorbar = new QGroupBox(tr("Colorbar"));
-    grpScalarFieldColorbar->setLayout(gridLayoutScalarFieldColorbar);
 
     QVBoxLayout *layoutScalarFieldAdvanced = new QVBoxLayout();
     layoutScalarFieldAdvanced->addWidget(grpScalarField);
     layoutScalarFieldAdvanced->addWidget(grpScalarFieldPalette);
-    layoutScalarFieldAdvanced->addWidget(grpScalarFieldColorbar);
     layoutScalarFieldAdvanced->addWidget(grpScalarFieldRange);
     layoutScalarFieldAdvanced->addStretch(1);
 
@@ -310,16 +302,16 @@ QWidget *PostprocessorScenePost2DWidget::postVectorAdvancedWidget()
     QGridLayout *layoutAdvancedVectors = new QGridLayout();
     layoutAdvancedVectors->setColumnMinimumWidth(0, columnMinimumWidth());
     layoutAdvancedVectors->setColumnStretch(1, 1);
-    layoutAdvancedVectors->addWidget(new QLabel(tr("Number of vec.:")), 0, 0);
+    layoutAdvancedVectors->addWidget(new QLabel(tr("Number of vectors:")), 0, 0);
     layoutAdvancedVectors->addWidget(txtVectorCount, 0, 1);
     layoutAdvancedVectors->addWidget(chkVectorProportional, 0, 2);
     layoutAdvancedVectors->addWidget(new QLabel(tr("Scale:")), 1, 0);
     layoutAdvancedVectors->addWidget(txtVectorScale, 1, 1);
     layoutAdvancedVectors->addWidget(chkVectorColor, 1, 2);
     layoutAdvancedVectors->addWidget(new QLabel(tr("Type:")), 2, 0);
-    layoutAdvancedVectors->addWidget(cmbVectorType, 2, 1, 1, 2);
+    layoutAdvancedVectors->addWidget(cmbVectorType, 2, 1);
     layoutAdvancedVectors->addWidget(new QLabel(tr("Center:")), 3, 0);
-    layoutAdvancedVectors->addWidget(cmbVectorCenter, 3, 1, 1, 2);
+    layoutAdvancedVectors->addWidget(cmbVectorCenter, 3, 1);
     layoutAdvancedVectors->setRowStretch(50, 1);
 
     QGroupBox *grpAdvancedVector = new QGroupBox(tr("Advanced"));
@@ -525,11 +517,13 @@ void PostprocessorScenePost2DWidget::load()
     doPaletteFilter(chkPaletteFilter->checkState());
     txtPaletteSteps->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_PaletteSteps).toInt());
     chkScalarDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformScalar).toBool());
+    chkScalarDeform->setVisible(m_postprocessorWidget->fieldWidget()->selectedField()->hasDeformableShape());
 
     // contours
     txtContoursCount->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ContoursCount).toInt());
     txtContourWidth->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ContoursWidth).toDouble());
     chkContourDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformContour).toBool());
+    chkContourDeform->setVisible(m_postprocessorWidget->fieldWidget()->selectedField()->hasDeformableShape());
 
     // vector field
     chkVectorProportional->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorProportional).toBool());
@@ -540,6 +534,7 @@ void PostprocessorScenePost2DWidget::load()
     cmbVectorType->setCurrentIndex(cmbVectorType->findData((VectorType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorType).toInt()));
     cmbVectorCenter->setCurrentIndex(cmbVectorCenter->findData((VectorCenter) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorCenter).toInt()));
     chkVectorDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformVector).toBool());
+    chkVectorDeform->setVisible(m_postprocessorWidget->fieldWidget()->selectedField()->hasDeformableShape());
 
     // advanced
     // scalar field
