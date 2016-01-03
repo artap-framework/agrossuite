@@ -231,19 +231,19 @@ SolverDeal::AssembleBase::AssembleBase(Computation *computation, SolverDeal *sol
 
 void SolverDeal::AssembleBase::recreateConstraints(bool zeroDirichletLift)
 {
+    // this function also resolves chains of constraints (from documentation)
     constraintsHangingNodes.clear();
     dealii::DoFTools::make_hanging_node_constraints(doFHandler, constraintsHangingNodes);
-    // (from documentation) - this function also resolves chains of constraints.
     constraintsHangingNodes.close();
 
-    // Assemble Dirichlet
+    // assemble Dirichlet
     // - may introduce additional constraints (but in a different entity, which will be taken care of by merging).
-    // Even Newton needs exact Dirichlet lift, so it is calculated always.
+    // even Newton needs exact Dirichlet lift, so it is calculated always.
     constraintsDirichlet.clear();
     assembleDirichlet(true);
     constraintsDirichlet.close();
 
-    // Zero Dirichlet lift for Newton
+    // zero Dirichlet lift for Newton
     if (zeroDirichletLift)
     {
         constraintsZeroDirichlet.clear();
@@ -251,7 +251,7 @@ void SolverDeal::AssembleBase::recreateConstraints(bool zeroDirichletLift)
         constraintsZeroDirichlet.close();
     }
 
-    // Merge constraints
+    // merge constraints
     constraintsAll.clear();
     constraintsAll.merge(constraintsHangingNodes);
     if (zeroDirichletLift)
@@ -1104,7 +1104,18 @@ void SolverDeal::solveTransient()
                 */
 
                 // adapt mesh
-                if (m_fieldInfo->adaptivityType() != AdaptivityMethod_None)
+                if (m_fieldInfo->adaptivityType() == AdaptivityMethod_None)
+                {
+                    // store current solution
+                    dealii::Vector<double> sln = primal->solution;
+
+                    // reinit system
+                    primal->setup(true);
+
+                    // restore current solution
+                    primal->solution = sln;
+                }
+                else
                 {
                     // compute difference between previous and current solution
                     if (adaptiveStep > 0)
@@ -1165,8 +1176,6 @@ void SolverDeal::solveTransient()
                     // remove interpolated solution
                     solutions.pop_back();
                 }
-
-                // primal->setup(true);
             }
         }
 
