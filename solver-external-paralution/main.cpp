@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
         LocalVector<ScalarType> rhs_paralution;
         LocalMatrix<ScalarType> mat_paralution;
 
-        mat_paralution.SetDataPtrCSR(&linearSystem.csrRowPtr, &linearSystem.csrColInd, &linearSystem.matA, "matrix", nz, n, n);
+        mat_paralution.SetDataPtrCSR((int **) &linearSystem.csrRowPtr, (int **) &linearSystem.csrColInd, &linearSystem.matA, "matrix", nz, n, n);
         rhs_paralution.SetDataPtr(&linearSystem.system_rhs->val, "rhs", n);
         sln_paralution.SetDataPtr(&linearSystem.system_sln->val, "sln", n);
 
