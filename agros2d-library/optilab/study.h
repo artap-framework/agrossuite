@@ -79,16 +79,16 @@ public:
 
     void addParameter(Parameter parameter) { m_parameters.append(parameter); }
     QList<Parameter> &parameters() { return m_parameters; }
+
     void addFunctional(Functional functional) { m_functionals.append(functional); }
     QList<Functional> &functionals() { return m_functionals; }
 
+    virtual void fillTreeView(QTreeWidget *trvComputations) = 0;
     QVariant variant();
 
-    virtual void fillTreeView(QTreeWidget *trvComputations) = 0;
-
 protected:
-    QList<Functional> m_functionals;
     QList<Parameter> m_parameters;
+    QList<Functional> m_functionals;
 
     void evaluateExpressions();
 };

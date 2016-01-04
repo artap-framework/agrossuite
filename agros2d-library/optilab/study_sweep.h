@@ -26,8 +26,6 @@
 #include "util/enums.h"
 #include "study.h"
 
-
-// only one parameter sweep
 class StudySweepAnalysis : public Study
 {
 public:
@@ -35,7 +33,6 @@ public:
 
     virtual inline StudyType type() { return StudyType_SweepAnalysis; }
 
-    void setParameter(Parameter parameter) { m_parameters.append(parameter); assert(m_parameters.size() == 1); }
     virtual void solve();
 
     virtual void load(QJsonObject &object);

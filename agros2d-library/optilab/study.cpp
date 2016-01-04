@@ -179,13 +179,6 @@ Study::~Study()
     clear();
 }
 
-QVariant Study::variant()
-{
-    QVariant v;
-    v.setValue(this);
-    return v;
-}
-
 void Study::clear()
 {
     m_parameters.clear();
@@ -242,3 +235,9 @@ void Study::save(QJsonObject &object)
     object[FUNCTIONAL] = functionalsJson;
 }
 
+QVariant Study::variant()
+{
+    QVariant v;
+    v.setValue(this);
+    return v;
+}

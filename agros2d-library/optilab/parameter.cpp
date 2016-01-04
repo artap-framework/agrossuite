@@ -83,10 +83,12 @@ double Parameter::randomValue(double mean, double deviation)
 
     std::default_random_engine generator;
     std::normal_distribution<double> distribution(mean, deviation);
-    double value = distribution(generator);
 
-    while ((value < m_lowerBound) || (value > m_upperBound))
+    double value;
+    do
+    {
        value = distribution(generator);
+    } while  ((value < m_lowerBound) || (value > m_upperBound));
 
     return value;
 }
@@ -152,4 +154,24 @@ Parameter Parameter::fromRandom(const QString &name, int count, double lowerBoun
         parameter.addValue(parameter.randomValue(mean, deviation));
 
     return parameter;
+}
+
+ParameterSpace::ParameterSpace(QList<Parameter> parameters) : m_parameters(parameters)
+{
+}
+
+ParameterSpace::~ParameterSpace()
+{
+    m_parameters.clear();
+}
+
+void ParameterSpace::random(int count)
+{
+    for (int i = 0; i < count; i++)
+    {
+        QMap<QString, double> set;
+        foreach (Parameter parameter, m_parameters)
+            set.insert(parameter.name(), parameter.values()[qrand() % parameter.values().length()]); // TODO: Is really random?
+        m_sets.append(set);
+    }
 }

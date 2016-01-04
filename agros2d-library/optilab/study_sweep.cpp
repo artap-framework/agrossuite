@@ -38,35 +38,23 @@ StudySweepAnalysis::StudySweepAnalysis() : Study()
 
 void StudySweepAnalysis::solve()
 {
-    // only one parameter
-    assert(m_parameters.size() == 1);
+    // parameter space
+    ParameterSpace space = ParameterSpace(m_parameters);
+    space.random(10);
 
-    Parameter parameter = m_parameters.first();
-
-    foreach (double value, parameter.values())
+    foreach (ParametersType set, space.sets())
     {
-        // create computation
+        // computation
         QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true, false);
-        // store computation
         m_computations.append(computation);
 
-        // set parameter
-        computation->config()->setParameter(parameter.name(), value);
+        foreach (QString parameter, set.keys())
+            computation->config()->setParameter(parameter, set[parameter]);
 
-        // solve
+        // solve and evaluate
         computation->solve();
-
-        // temporary dict
-        currentPythonEngine()->useTemporaryDict();
-
-        // evaluate expressions
         foreach (Functional functional, m_functionals)
-        {
             bool successfulRun = functional.evaluateExpression(computation);
-        }
-
-        // global dict
-        currentPythonEngine()->useGlobalDict();
 
         computation->saveResults();
     }

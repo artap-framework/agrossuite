@@ -66,14 +66,16 @@ protected:
 class ParameterSpace
 {
 public:
-    inline QMap<QString, Parameter> &parameters() { return m_parameters; }
-    //inline void &addParameter();
+    ParameterSpace(QList<Parameter> parameters);
+    virtual ~ParameterSpace();
 
-    Parameter &operator[] (const QString &key) { return m_parameters[key]; }
-    const Parameter operator[] (const QString &key) const { return m_parameters[key]; }
+    QList<QMap<QString, double> > sets() { return m_sets; }
+
+    void random(int count);
 
 private:
-    QMap<QString, Parameter> m_parameters;
+    QList<Parameter> m_parameters;
+    QList<QMap<QString, double> > m_sets;
 };
 
 #endif // PARAMETER_H
