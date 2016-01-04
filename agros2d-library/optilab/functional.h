@@ -20,8 +20,6 @@
 #ifndef FUNCTIONAL_H
 #define FUNCTIONAL_H
 
-#include <QWidget>
-
 #include "util.h"
 
 class Computation;
@@ -43,20 +41,19 @@ public:
     void save(QJsonObject &object);
 
     inline QString name() { return m_name; }
-    inline void setName(const QString &name) { m_name = name; }
-    inline QString expression() { return m_expression; }
-    inline void setExpression(const QString &expression) { m_expression = expression; }
+    //inline void setName(const QString &name) { m_name = name; }
     inline Operation operation() { return m_operation; }
-    inline void setOperation(const Operation &operation) { m_operation = operation; }
+    //inline void setOperation(const Operation &operation) { m_operation = operation; }
+    inline QString expression() { return m_expression; }
+    //inline void setExpression(const QString &expression) { m_expression = expression; }
 
     bool checkExpression(QSharedPointer<Computation> computation);
     bool evaluateExpression(QSharedPointer<Computation> computation);
 
 protected:
     QString m_name;
-    QString m_expression;
     Operation m_operation;
+    QString m_expression;
 };
-
 
 #endif // FUNCTIONAL_H

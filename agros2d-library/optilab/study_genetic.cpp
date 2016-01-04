@@ -95,7 +95,7 @@ GeneticPopulationRandom::GeneticPopulationRandom(QList<Parameter> parameters, in
          assert(!individual.isNull());
 
          foreach (Parameter parameter, parameters)
-             individual->config()->setParameter(parameter.name(), parameter.randomNumber());
+             individual->config()->setParameter(parameter.name(), parameter.randomValue());
 
          m_individuals.append(individual);
     }

@@ -188,8 +188,8 @@ void OptiLabWidget::testSweep()
     // QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
     // analysis->setParameter(Parameter::fromList("R3", params));
     // analysis->setParameter(Parameter::fromValue("R3", 0.06));
-    analysis->setParameter(Parameter::fromRandom("R3", 0.05, 0.07, 4));
-    // analysis->setParameter(Parameter::fromLinspace("R3", 0.05, 0.07, 3));
+    analysis->setParameter(Parameter::fromRandom("R3", 4, 0.05, 0.07));
+    // analysis->setParameter(Parameter::fromLinspace("R3", 3, 0.05, 0.07));
 
     // add functionals
     analysis->addFunctional(Functional("We", Functional::Minimize, "R3**2")); //computation.solution(\"electrostatic\").volume_integrals([0,1])[\"We\"]

@@ -18,17 +18,12 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "functional.h"
-
-#include "optilab.h"
-#include "util/global.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
-#include "solver/solutionstore.h"
 
 // consts
 const QString NAME = "name";
 const QString EXPRESSION = "expression";
-
 
 Functional::Functional(const QString &name, Operation operation, const QString &expression) :
     m_name(name), m_operation(operation), m_expression(expression)
@@ -78,18 +73,13 @@ bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
             commandPre += QString("; %1 = %2").arg(key).arg(results[key]);
     }
 
-    // temporary dict
-    currentPythonEngine()->useTemporaryDict();
-
     double result = 0.0;
+    currentPythonEngine()->useTemporaryDict();
     bool successfulRun = currentPythonEngine()->runExpression(m_expression, &result, commandPre);
-    if (successfulRun)
-    {
-        computation->result()->setResult(m_name, result);
-    }
-
-    // global dict
     currentPythonEngine()->useGlobalDict();
+
+    if (successfulRun)
+        computation->result()->setResult(m_name, result);
 
     return successfulRun;
 }
