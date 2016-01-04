@@ -30,8 +30,6 @@
 
 #include "scene.h"
 
-const QString COMPUTATIONS = "computations";
-
 StudySweepAnalysis::StudySweepAnalysis() : Study()
 {
 }
@@ -46,7 +44,7 @@ void StudySweepAnalysis::solve()
     {
         // computation
         QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true, false);
-        m_computations.append(computation);
+        computations().addComputation(computation);
 
         foreach (QString parameter, set.keys())
             computation->config()->setParameter(parameter, set[parameter]);
@@ -57,43 +55,5 @@ void StudySweepAnalysis::solve()
             bool successfulRun = functional.evaluateExpression(computation);
 
         computation->saveResults();
-    }
-}
-
-void StudySweepAnalysis::load(QJsonObject &object)
-{
-    // computations
-    QJsonArray computationsJson = object[COMPUTATIONS].toArray();
-    for (int i = 0; i < computationsJson.size(); i++)
-    {
-        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
-        m_computations.append(computations[computationsJson[i].toString()]);
-    }
-
-    Study::load(object);
-}
-
-void StudySweepAnalysis::save(QJsonObject &object)
-{
-    // computations
-    QJsonArray computationsJson;
-    foreach (QSharedPointer<Computation> computation, m_computations)
-    {
-        computationsJson.append(computation->problemDir());
-    }
-    object[COMPUTATIONS] = computationsJson;
-
-    Study::save(object);
-}
-
-// gui
-void StudySweepAnalysis::fillTreeView(QTreeWidget *trvComputations)
-{
-    foreach (QSharedPointer<Computation> computation, m_computations)
-    {
-        QTreeWidgetItem *item = new QTreeWidgetItem(trvComputations);
-        item->setText(0, computation->problemDir());
-        item->setText(1, (computation->isSolved() ? tr("solved") : "-"));
-        item->setData(0, Qt::UserRole, computation->problemDir());
     }
 }

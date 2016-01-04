@@ -30,18 +30,8 @@ class StudySweepAnalysis : public Study
 {
 public:
     StudySweepAnalysis();
-
     virtual inline StudyType type() { return StudyType_SweepAnalysis; }
-
     virtual void solve();
-
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
-
-    virtual void fillTreeView(QTreeWidget *trvComputations);
-
-protected:
-    QList<QSharedPointer<Computation> > m_computations;
 };
 
 #endif // STUDY_SWEEP_H

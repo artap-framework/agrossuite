@@ -303,22 +303,3 @@ QList<QSharedPointer<Computation>> StudyGenetic::crossoverAndMutate(const QList<
 
     return crossBreeds;
 }
-
-// gui
-void StudyGenetic::fillTreeView(QTreeWidget *trvComputations)
-{
-    for (int i = 0; i < m_populations.size(); i++)
-    {
-        QTreeWidgetItem *itemPopulation = new QTreeWidgetItem(trvComputations);
-        itemPopulation->setText(0, tr("Population %1 (%2 items)").arg(i + 1).arg(m_populations[i].individuals().size()));
-        itemPopulation->setExpanded(true);
-
-        foreach (QSharedPointer<Computation> individual, m_populations[i].individuals())
-        {
-            QTreeWidgetItem *item = new QTreeWidgetItem(itemPopulation);
-            item->setText(0, individual->problemDir());
-            item->setText(1, QString("%1 / %2").arg(individual->isSolved() ? tr("solved") : tr("not solved")).arg(individual->result()->hasResults() ? tr("results") : tr("no results")));
-            item->setData(0, Qt::UserRole, individual->problemDir());
-        }
-    }
-}

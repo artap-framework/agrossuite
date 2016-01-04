@@ -28,6 +28,7 @@
 #include "functional.h"
 
 class Computation;
+class ComputationSet;
 class Study;
 
 class Studies : public QObject
@@ -83,14 +84,39 @@ public:
     void addFunctional(Functional functional) { m_functionals.append(functional); }
     QList<Functional> &functionals() { return m_functionals; }
 
-    virtual void fillTreeView(QTreeWidget *trvComputations) = 0;
+    QList<ComputationSet> &computationSet() {return m_computationSet;}
+    ComputationSet &computations();
+
+    virtual void fillTreeView(QTreeWidget *trvComputations);
     QVariant variant();
 
 protected:
     QList<Parameter> m_parameters;
     QList<Functional> m_functionals;
 
+    QList<ComputationSet> m_computationSet;
+
     void evaluateExpressions();
+};
+
+class ComputationSet
+{
+public:
+    ComputationSet(QList<QSharedPointer<Computation>> computations = QList<QSharedPointer<Computation>>())
+        : m_computations(computations)
+    {
+    }
+
+    ~ComputationSet();
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+    inline void addComputation(QSharedPointer<Computation> computation) { m_computations.append(computation); }
+    QList<QSharedPointer<Computation>> &computations() { return m_computations; }
+
+protected:
+    QList<QSharedPointer<Computation>> m_computations;
 };
 
 #endif // STUDY_H

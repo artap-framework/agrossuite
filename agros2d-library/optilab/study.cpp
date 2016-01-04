@@ -38,8 +38,14 @@
 
 // consts
 const QString TYPE = "type";
+
 const QString PARAMETERS = "parameters";
 const QString FUNCTIONAL = "functionals";
+
+const QString COMPUTATIONSPACE = "computationspace";
+const QString COMPUTATIONS = "computations";
+const QString COMPUTATION = "computation";
+
 const QString STUDIES = "studies";
 
 Studies::Studies(QObject *parent) : QObject(parent)
@@ -233,6 +239,40 @@ void Study::save(QJsonObject &object)
         functionalsJson.append(functionalJson);
     }
     object[FUNCTIONAL] = functionalsJson;
+
+    // computation space
+    QJsonArray computationSpaceJson;
+    foreach (ComputationSet computationSpace, m_computationSet)
+    {
+        QJsonObject computationJson;
+        computationSpace.save(computationJson);
+        computationSpaceJson.append(computationJson);
+    }
+    object[COMPUTATIONSPACE] = computationSpaceJson;
+}
+
+ComputationSet& Study::computations()
+{
+    //if (m_computationSet.isEmpty())
+    return m_computationSet.last();
+}
+
+void Study::fillTreeView(QTreeWidget *trvComputations)
+{
+    for (int i = 0; i < m_computationSet.size(); i++)
+    {
+        QTreeWidgetItem *itemComputationSet = new QTreeWidgetItem(trvComputations);
+        itemComputationSet->setText(0, tr("Computation set %1 (%2 items)").arg(i + 1).arg(m_computationSet[i].computations().size()));
+        itemComputationSet->setExpanded(true);
+
+        foreach (QSharedPointer<Computation> computation, m_computationSet[i].computations())
+        {
+            QTreeWidgetItem *item = new QTreeWidgetItem(itemComputationSet);
+            item->setText(0, computation->problemDir());
+            item->setText(1, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->result()->hasResults() ? tr("results") : tr("no results")));
+            item->setData(0, Qt::UserRole, computation->problemDir());
+        }
+    }
 }
 
 QVariant Study::variant()
@@ -240,4 +280,32 @@ QVariant Study::variant()
     QVariant v;
     v.setValue(this);
     return v;
+}
+
+ComputationSet::~ComputationSet()
+{
+    m_computations.clear();
+}
+
+void ComputationSet::load(QJsonObject &object)
+{
+    QJsonArray computationsJson = object[COMPUTATIONS].toArray();
+    for (int i = 0; i < computationsJson.size(); i++)
+    {
+        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
+        QSharedPointer<Computation> computation = computations[object[COMPUTATION].toString()];
+        m_computations.append(computation);
+    }
+}
+
+void ComputationSet::save(QJsonObject &object)
+{
+    QJsonArray computationsJson;
+    foreach (QSharedPointer<Computation> computation, m_computations)
+    {
+        QJsonObject computationJson;
+        computationJson[COMPUTATION] = computation->problemDir();
+        computationsJson.append(computationJson);
+    }
+    object[COMPUTATIONS] = computationsJson;
 }

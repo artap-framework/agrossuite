@@ -69,8 +69,6 @@ public:
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
-    virtual void fillTreeView(QTreeWidget *trvComputations);
-
 protected:
     // settings
     int m_initialpopulationSize;
