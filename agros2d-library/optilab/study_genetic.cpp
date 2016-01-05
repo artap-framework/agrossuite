@@ -135,7 +135,7 @@ void StudyGenetic::save(QJsonObject &object)
 
     // populations
     QJsonArray populationsJson;
-    foreach (GeneticPopulation population, m_populations)
+    foreach (GeneticPopulation population, m_computations)
     {
         QJsonObject populationJson;
         population.save(populationJson);
@@ -184,10 +184,10 @@ void StudyGenetic::solve()
         // sort individuals
         std::sort(currentPopulation.individuals().begin(), currentPopulation.individuals().end(), GeneticIndividualCompare(parameterName));
 
-        m_populations.append(currentPopulation);
+        m_computations.append(currentPopulation);
 
         // check stopping criteria
-        if (m_populations.size() == 15)
+        if (m_computations.size() == 15)
             break;
 
         // create new population

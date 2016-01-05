@@ -22,7 +22,7 @@
 
 #include <QWidget>
 
-#include "util.h"
+//#include "util.h"
 #include "util/enums.h"
 #include "parameter.h"
 #include "functional.h"
@@ -67,7 +67,7 @@ class Study : public QObject
     Q_OBJECT
 
 public:
-    Study();
+    Study(QList<ComputationSet> computations = QList<ComputationSet>());
     virtual ~Study();
 
     virtual StudyType type() = 0;
@@ -84,8 +84,9 @@ public:
     void addFunctional(Functional functional) { m_functionals.append(functional); }
     QList<Functional> &functionals() { return m_functionals; }
 
-    QList<ComputationSet> &computationSet() {return m_computationSet;}
-    ComputationSet &computations();
+    QList<QSharedPointer<Computation>> computations();
+    QList<QSharedPointer<Computation>> computations(int setIndex);
+    void addComputation(QSharedPointer<Computation> computation, bool new_computationSet = false);
 
     virtual void fillTreeView(QTreeWidget *trvComputations);
     QVariant variant();
@@ -93,8 +94,7 @@ public:
 protected:
     QList<Parameter> m_parameters;
     QList<Functional> m_functionals;
-
-    QList<ComputationSet> m_computationSet;
+    QList<ComputationSet> m_computations;
 
     void evaluateExpressions();
 };
@@ -102,21 +102,17 @@ protected:
 class ComputationSet
 {
 public:
-    ComputationSet(QList<QSharedPointer<Computation>> computations = QList<QSharedPointer<Computation>>())
-        : m_computations(computations)
-    {
-    }
-
+    ComputationSet(QList<QSharedPointer<Computation>> set = QList<QSharedPointer<Computation>>());
     ~ComputationSet();
 
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
-    inline void addComputation(QSharedPointer<Computation> computation) { m_computations.append(computation); }
-    QList<QSharedPointer<Computation>> &computations() { return m_computations; }
+    inline void addComputation(QSharedPointer<Computation> computation) { m_computationSet.append(computation); }
+    QList<QSharedPointer<Computation>> &computations() { return m_computationSet; }
 
 protected:
-    QList<QSharedPointer<Computation>> m_computations;
+    QList<QSharedPointer<Computation>> m_computationSet;
 };
 
 #endif // STUDY_H

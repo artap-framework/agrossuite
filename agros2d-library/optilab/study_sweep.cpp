@@ -44,7 +44,7 @@ void StudySweepAnalysis::solve()
     {
         // computation
         QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true, false);
-        computations().addComputation(computation);
+        addComputation(computation);
 
         foreach (QString parameter, set.keys())
             computation->config()->setParameter(parameter, set[parameter]);

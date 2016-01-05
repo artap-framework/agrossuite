@@ -80,7 +80,7 @@ protected:
     double m_mutationProbability;
     double m_mutationRatio;
 
-    QList<GeneticPopulation> m_populations;
+    QList<GeneticPopulation> m_computations;
 
     QList<QSharedPointer<Computation>> selectIndividuals(const QList<QSharedPointer<Computation>> &individuals);
     QList<QSharedPointer<Computation>> selectElite(const QList<QSharedPointer<Computation>> &individuals);

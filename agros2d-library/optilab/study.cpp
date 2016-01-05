@@ -176,9 +176,8 @@ bool Studies::saveStudies()
 
 // *****************************************************************************************************************
 
-Study::Study()
-{
-}
+Study::Study(QList<ComputationSet> computations)
+    : m_computations(computations) { }
 
 Study::~Study()
 {
@@ -189,6 +188,7 @@ void Study::clear()
 {
     m_parameters.clear();
     m_functionals.clear();
+    m_computations.clear();
 }
 
 void Study::load(QJsonObject &object)
@@ -240,32 +240,43 @@ void Study::save(QJsonObject &object)
     }
     object[FUNCTIONAL] = functionalsJson;
 
-    // computation space
-    QJsonArray computationSpaceJson;
-    foreach (ComputationSet computationSpace, m_computationSet)
+    // computations
+    QJsonArray computationsJson;
+    foreach (ComputationSet computationSet, m_computations)
     {
         QJsonObject computationJson;
-        computationSpace.save(computationJson);
-        computationSpaceJson.append(computationJson);
+        computationSet.save(computationJson);
+        computationsJson.append(computationJson);
     }
-    object[COMPUTATIONSPACE] = computationSpaceJson;
+    object[COMPUTATIONSPACE] = computationsJson;
 }
 
-ComputationSet& Study::computations()
+QList<QSharedPointer<Computation>> Study::computations()
 {
-    //if (m_computationSet.isEmpty())
-    return m_computationSet.last();
+    return m_computations.last().computations();
+}
+
+QList<QSharedPointer<Computation>> Study::computations(int setIndex)
+{
+    return m_computations[setIndex].computations();
+}
+
+void Study::addComputation(QSharedPointer<Computation> computation, bool new_computationSet)
+{
+    if (m_computations.isEmpty() || new_computationSet)
+        m_computations.append(ComputationSet());
+    m_computations.last().addComputation(computation);
 }
 
 void Study::fillTreeView(QTreeWidget *trvComputations)
 {
-    for (int i = 0; i < m_computationSet.size(); i++)
+    for (int i = 0; i < m_computations.size(); i++)
     {
         QTreeWidgetItem *itemComputationSet = new QTreeWidgetItem(trvComputations);
-        itemComputationSet->setText(0, tr("Computation set %1 (%2 items)").arg(i + 1).arg(m_computationSet[i].computations().size()));
+        itemComputationSet->setText(0, tr("Computation set %1 (%2 items)").arg(i + 1).arg(m_computations[i].computations().size()));
         itemComputationSet->setExpanded(true);
 
-        foreach (QSharedPointer<Computation> computation, m_computationSet[i].computations())
+        foreach (QSharedPointer<Computation> computation, m_computations[i].computations())
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(itemComputationSet);
             item->setText(0, computation->problemDir());
@@ -282,9 +293,12 @@ QVariant Study::variant()
     return v;
 }
 
+ComputationSet::ComputationSet(QList<QSharedPointer<Computation>> set)
+    : m_computationSet(set) { }
+
 ComputationSet::~ComputationSet()
 {
-    m_computations.clear();
+    m_computationSet.clear();
 }
 
 void ComputationSet::load(QJsonObject &object)
@@ -294,14 +308,14 @@ void ComputationSet::load(QJsonObject &object)
     {
         QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
         QSharedPointer<Computation> computation = computations[object[COMPUTATION].toString()];
-        m_computations.append(computation);
+        m_computationSet.append(computation);
     }
 }
 
 void ComputationSet::save(QJsonObject &object)
 {
     QJsonArray computationsJson;
-    foreach (QSharedPointer<Computation> computation, m_computations)
+    foreach (QSharedPointer<Computation> computation, m_computationSet)
     {
         QJsonObject computationJson;
         computationJson[COMPUTATION] = computation->problemDir();
