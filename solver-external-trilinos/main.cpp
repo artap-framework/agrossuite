@@ -237,14 +237,15 @@ int main(int argc, char *argv[])
             numberOfNonZeros = (int) linearSystem->nz();
         }
         // send globalNumberOfRows from process 0 to all processes
-        MPI_Bcast(&globalNumberOfRows, 1, MPI_INT, 0,MPI_COMM_WORLD);
-        MPI_Bcast(&numberOfNonZeros, 1, MPI_INT, 0,MPI_COMM_WORLD);
-        std::cout << "Process ID " << rank << ": " << "Global number of rows/equatins = " << globalNumberOfRows << std::endl; // develop.
-        std::cout << "Process ID " << rank << ": " << "Number of nonzero elements = " << numberOfNonZeros << std::endl; // develop.
+//        MPI_Bcast(&globalNumberOfRows, 1, MPI_INT, 0,MPI_COMM_WORLD);
+//        MPI_Bcast(&numberOfNonZeros, 1, MPI_INT, 0,MPI_COMM_WORLD);
+//        std::cout << "Process ID " << rank << ": " << "Global number of rows/equatins = " << globalNumberOfRows << std::endl; // develop.
+//        std::cout << "Process ID " << rank << ": " << "Number of nonzero elements = " << numberOfNonZeros << std::endl; // develop.
 
         // Construct a Map that puts approximately the same number of equations on each processor
         const int indexBase = 0;
-        Epetra_Map epeMap(globalNumberOfRows, indexBase, comm);  // Epetra_Map epeMap(-1, numOfRows, 0, comm);
+        Epetra_Map epeMap(globalNumberOfRows, indexBase, comm);
+        // Epetra_Map epeMap(-1, numOfRows, 0, comm);
 
         // the number of elements on a specific (calling) process (given by the distribution of elements on the individual processes)
         int numMyElements = epeMap.NumMyElements();
@@ -267,75 +268,75 @@ int main(int argc, char *argv[])
         }
 
         // print Epetra Map
-        for (int i = 0; i < numProcs; ++i )
-        {
-            MPI_Barrier(MPI_COMM_WORLD);
-            if (i == rank)
-            {
-                std::cout << "*** Process ID: " << rank << std::endl;
-                // std::cout << "Epetra Map:" << std::endl << epeMap << std::endl;
-                std::cout << "numMyElements:" << numMyElements << std::endl;
-                std::cout << "numGlobalElements:" << numGlobalElements << std::endl;
-                std::cout << "myGlobalElements:" << std::endl;
-                for (int j = 0; j < numMyElements; j++)
-                {
-                    std::cout <<  *(myGlobalElements + j) << "\t";
-                }
-                std::cout << std::endl;
-            }
-        }
+//        for (int i = 0; i < numProcs; ++i )
+//        {
+//            // MPI_Barrier(MPI_COMM_WORLD);
+//            if (i == rank)
+//            {
+//                std::cout << "*** Process ID: " << rank << std::endl;
+//                // std::cout << "Epetra Map:" << std::endl << epeMap << std::endl;
+//                std::cout << "numMyElements:" << numMyElements << std::endl;
+//                std::cout << "numGlobalElements:" << numGlobalElements << std::endl;
+//                std::cout << "myGlobalElements:" << std::endl;
+//                for (int j = 0; j < numMyElements; j++)
+//                {
+//                    std::cout <<  *(myGlobalElements + j) << "\t";
+//                }
+//                std::cout << std::endl;
+//            }
+//        }
 
-        if (rank == 0)
-        {
-            std::cout << std::endl << "Creating the sparse matrix" << std::endl;
-            std::cout << "Number of rows/equatins = " << linearSystem->n() << std::endl;
-            std::cout << "Number of non-zero elements = " << linearSystem->nz() << std::endl;
-            std::cout << "Max. num. per row = " << linearSystem->n() / ((linearSystem->n() * linearSystem->n()) / linearSystem->nz()) << std::endl;
-        }
+//        if (rank == 0)
+//        {
+//            std::cout << std::endl << "Creating the sparse matrix" << std::endl;
+//            std::cout << "Number of rows/equatins = " << linearSystem->n() << std::endl;
+//            std::cout << "Number of non-zero elements = " << linearSystem->nz() << std::endl;
+//            std::cout << "Max. num. per row = " << linearSystem->n() / ((linearSystem->n() * linearSystem->n()) / linearSystem->nz()) << std::endl;
+//        }
 
         // create an Epetra_Matrix (sparse) whose rows have distribution given
         // by the Map.  The max number of entries per row is maxNumPerRow (aproximation).
         // estimated number non-zero elements in the row based on total percentage on nz in matrix - TODO: approve to be sofisticated
         int maxNumPerRow = globalNumberOfRows / ((globalNumberOfRows * globalNumberOfRows) / numberOfNonZeros);
 
-//        Epetra_CrsMatrix epeA(Copy, epeMap, maxNumPerRow);
+        // no MPI
+        Epetra_CrsMatrix epeA(Copy, epeMap, maxNumPerRow);
 
-//        // prepare data from Agros2D matrix
-//        for (int index = 0; index < linearSystem->nz(); index++)
-//        {
-//            int globalRow = epeA.GRID(linearSystem->cooRowInd[index]);
-//            // epeA.InsertGlobalValues(globalRow, 1, &linearSystem->cooA[index], &linearSystem->cooJCN[index]);
-//            epeA.InsertGlobalValues(globalRow, 1, &linearSystem->matA[index], (int *) &linearSystem->cooColInd[index]);   // develop - change to Epetra_FECrsMatrix ???
-//        }
-
-//        epeA.FillComplete(); // Transform from GIDs to LIDs
-
-        // prepare distributed Epetra matrix
-        Epetra_FECrsMatrix epeA(Copy, epeMap, maxNumPerRow);
-
-        // prepare data on process 0
-        if (rank == 0)
+        // prepare data from Agros2D matrix
+        for (int index = 0; index < linearSystem->nz(); index++)
         {
-            // prepare data from Agros2D matrix
-            for (int index = 0; index < numberOfNonZeros; index++)
-            {
-                int indices[2] = {0,0};
-                indices[0] = linearSystem->cooRowInd[index];
-                indices[1] = linearSystem->cooColInd[index];
-                epeA.SumIntoGlobalValues(1, indices, &linearSystem->matA[index]);
-                //epeA.InsertGlobalValues(globalRow, 1, &linearSystem->matA[index], (int *) &linearSystem->cooColInd[index]);   // develop - change to Epetra_FECrsMatrix ???
-            }
+            int globalRow = epeA.GRID(linearSystem->cooRowInd[index]);
+            // epeA.InsertGlobalValues(globalRow, 1, &linearSystem->cooA[index], &linearSystem->cooJCN[index]);
+            epeA.InsertGlobalValues(globalRow, 1, &linearSystem->matA[index], (int *) &linearSystem->cooColInd[index]);
         }
-        // send appropriate part of matrix to the processes
-        epeA.GlobalAssemble();
-        std::cout << "Process ID " << rank << std::endl << "epeA" << std::endl << epeA << std::endl;
+        epeA.FillComplete(); // Transform from GIDs to LIDs
+
+//        // prepare distributed Epetra matrix
+//        Epetra_FECrsMatrix epeA(Copy, epeMap, maxNumPerRow);
+
+//        // prepare data on process 0
+//        if (rank == 0)
+//        {
+//            // prepare data from Agros2D matrix
+//            for (int index = 0; index < numberOfNonZeros; index++)
+//            {
+//                int indices[2] = {0,0};
+//                indices[0] = linearSystem->cooRowInd[index];
+//                indices[1] = linearSystem->cooColInd[index];
+//                epeA.SumIntoGlobalValues(1, indices, &linearSystem->matA[index]);
+//                //epeA.InsertGlobalValues(globalRow, 1, &linearSystem->matA[index], (int *) &linearSystem->cooColInd[index]);   // develop - change to Epetra_FECrsMatrix ???
+//            }
+//        }
+//        // send appropriate part of matrix to the processes
+//        epeA.GlobalAssemble();
+//        std::cout << "Process ID " << rank << std::endl << "epeA" << std::endl << epeA << std::endl;
 
         // test !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        #ifdef HAVE_MPI
-                                // for MPI version
-                                MPI_Finalize() ;
-                        #endif
-                                return 0;
+//                        #ifdef HAVE_MPI
+//                                // for MPI version
+//                                MPI_Finalize() ;
+//                        #endif
+//                                return 0;
         // end of test !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         // create Epetra_Vectors
