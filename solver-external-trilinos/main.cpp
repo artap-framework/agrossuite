@@ -79,6 +79,7 @@ public:
           preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
           aggregationTypeArg(TCLAP::ValueArg<std::string>("e", "aggregationType", "AggregationType", false, "", "string")),
           smootherTypeArg(TCLAP::ValueArg<std::string>("o", "smootherType", "SmootherType", false, "", "string")),
+          coarseTypeArg(TCLAP::ValueArg<std::string>("z", "coarseType", "CoarseType", false, "", "string")),
           // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
           relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
           maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
@@ -88,6 +89,7 @@ public:
         cmd.add(preconditionerArg);
         cmd.add(aggregationTypeArg);
         cmd.add(smootherTypeArg);
+        cmd.add(coarseTypeArg);
         // cmd.add(absTolArg);
         cmd.add(relTolArg);
         cmd.add(maxIterArg);
@@ -98,6 +100,7 @@ public:
     TCLAP::ValueArg<std::string> preconditionerArg;
     TCLAP::ValueArg<std::string> aggregationTypeArg;
     TCLAP::ValueArg<std::string> smootherTypeArg;
+    TCLAP::ValueArg<std::string> coarseTypeArg;
     // TCLAP::ValueArg<double> absTolArg;
     TCLAP::ValueArg<double> relTolArg;
     TCLAP::ValueArg<int> maxIterArg;
@@ -142,7 +145,7 @@ void solveAztecOO(const Epetra_LinearProblem &problem, int maxIter, double relTo
     // std::cout << "Solver performed " << aztecooSolver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << aztecooSolver.TrueResidual() << std::endl;
 }
 
-void solveAztecOOML(const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType, std::string smootherType)
+void solveAztecOOML(const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType, std::string smootherType, std::string coarseType)
 {
     // create a parameter list for ML options
     Teuchos::ParameterList mlList;
@@ -166,8 +169,8 @@ void solveAztecOOML(const Epetra_LinearProblem &problem, int maxIter, double rel
     mlList.set("smoother: sweeps", 3);
     // use both pre and post smoothing
     mlList.set("smoother: pre or post", "both");
-    // solve with serial direct solver KLU
-    mlList.set("coarse: type", "Amesos-KLU");
+    // solve with solver in "coarseType"
+    mlList.set("coarse: type", coarseType);
 
     // Creates the preconditioning object. We suggest to use `new' and
     // `delete' because the destructor contains some calls to MPI (as
@@ -269,6 +272,7 @@ std::string getMLsmootherType(std::string smootherType)
 //  "line Jacobi"
 //  "line Gauss-Seidel"
 //  "SILU"
+
     if ((smootherType == "Aztec")
             || (smootherType == "IFPACK")
             || (smootherType == "Jacobi")
@@ -308,6 +312,51 @@ std::string getMLsmootherType(std::string smootherType)
     {
         std::cout << "ML smoother type is set to default (Chebyshev)" << std::endl;
         return "Chebyshev";
+    }
+}
+
+std::string getMLcoarseType(std::string coarseType)
+{
+//  same as in getMLsmootherType()
+    if ((coarseType == "Aztec")
+            || (coarseType == "IFPACK")
+            || (coarseType == "Jacobi")
+            || (coarseType == "ML symmetric Gauss-Seidel")
+            || (coarseType == "symmetric Gauss-Seidel")
+            || (coarseType == "ML Gauss-Seidel")
+            || (coarseType == "Gauss-Seidel")
+            || (coarseType == "block Gauss-Seidel")
+            || (coarseType == "symmetric block Gauss-Seidel")
+            || (coarseType == "Chebyshev")
+            || (coarseType == "MLS")
+            || (coarseType == "Hiptmair")
+            || (coarseType == "Amesos-KLU")
+            || (coarseType == "Amesos-Superlu")
+            || (coarseType == "Amesos-UMFPACK")
+            || (coarseType == "Amesos-Superludist")
+            || (coarseType == "Amesos-MUMPS")
+            || (coarseType == "user-defined")
+            || (coarseType == "SuperLU")
+            || (coarseType == "IFPACK-Chebyshev")
+            || (coarseType == "self")
+            || (coarseType == "do-nothing")
+            || (coarseType == "IC")
+            || (coarseType == "ICT")
+            || (coarseType == "ILU")
+            || (coarseType == "ILUT")
+            || (coarseType == "Block Chebyshev")
+            || (coarseType == "IFPACK-Block Chebyshev")
+            || (coarseType == "line Jacobi")
+            || (coarseType == "line Gauss-Seidel")
+            || (coarseType == "SILU"))
+    {
+        std::cout << "ML coarse type is set to: " << coarseType << std::endl;
+        return coarseType;
+    }
+    else
+    {
+        std::cout << "ML coarse type is set to default (Amesos-KLU)" << std::endl;
+        return "Amesos-KLU";
     }
 }
 
@@ -497,7 +546,8 @@ int main(int argc, char *argv[])
                 solveAztecOOML(problem, maxIter, relTol,
                                getMLpreconditioner(linearSystem->preconditionerArg.getValue()),
                                getMLaggregationType(linearSystem->aggregationTypeArg.getValue()),
-                               getMLsmootherType(linearSystem->smootherTypeArg.getValue()));
+                               getMLsmootherType(linearSystem->smootherTypeArg.getValue()),
+                               getMLcoarseType(linearSystem->coarseTypeArg.getValue()));
             else
                 assert(0 && "No solver selected !!!");
         }
