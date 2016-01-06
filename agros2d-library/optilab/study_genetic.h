@@ -48,6 +48,7 @@ public:
     virtual void save(QJsonObject &object);
 
 protected:
+    int m_numberOfPopulation;
     int m_initialpopulationSize;
     double m_selectionRatio;
     double m_elitismRatio;

@@ -68,10 +68,14 @@ public:
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
+    inline QString name() { return m_name; }
+    inline void setName(const QString name) { m_name = name; }
+
     inline void addComputation(QSharedPointer<Computation> computation) { m_computationSet.append(computation); }
     QList<QSharedPointer<Computation> > &computations() { return m_computationSet; }
 
 protected:
+    QString m_name;
     QList<QSharedPointer<Computation> > m_computationSet;
 };
 
@@ -93,6 +97,9 @@ public:
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
+    inline QString name() { return m_name; }
+    inline void seName(const QString name) { m_name = name; }
+
     void addParameter(Parameter parameter) { m_parameters.append(parameter); }
     QList<Parameter> &parameters() { return m_parameters; }
 
@@ -108,6 +115,8 @@ public:
     QVariant variant();
 
 protected:
+    QString m_name;
+
     QList<Parameter> m_parameters;
     QList<Functional> m_functionals;
     QList<ComputationSet> m_computations;

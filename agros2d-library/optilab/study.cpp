@@ -275,7 +275,12 @@ void Study::fillTreeView(QTreeWidget *trvComputations)
     for (int i = 0; i < m_computations.size(); i++)
     {
         QTreeWidgetItem *itemComputationSet = new QTreeWidgetItem(trvComputations);
-        itemComputationSet->setText(0, tr("Computation set %1 (%2 items)").arg(i + 1).arg(m_computations[i].computations().size()));
+
+        QString computationSetName= tr("Computation set %1").arg(i + 1);
+        if (!m_computations[i].name().isEmpty())
+            computationSetName = m_computations[i].name();
+
+        itemComputationSet->setText(0, tr("%1 (%2 items)").arg(computationSetName).arg(m_computations[i].computations().size()));
         itemComputationSet->setExpanded(true);
 
         foreach (QSharedPointer<Computation> computation, m_computations[i].computations())

@@ -32,6 +32,7 @@
 
 #include <algorithm>
 
+const QString NUMBEROFPOPULATION = "numberofpopulation";
 const QString INITIALPOPULATIONSIZE = "initialpopulationsize";
 const QString SELECTIONRATIO = "selectionratio";
 const QString ELITISMRATIO = "elitismratio";
@@ -74,6 +75,7 @@ GeneticPopulationRandom::GeneticPopulationRandom(QList<Parameter> parameters, in
 
 StudyGenetic::StudyGenetic() : Study()
 {
+    m_numberOfPopulation = 10;
     m_initialpopulationSize = 20;
     m_selectionRatio = 0.8;
     m_elitismRatio = 0.1;
@@ -84,6 +86,7 @@ StudyGenetic::StudyGenetic() : Study()
 
 void StudyGenetic::load(QJsonObject &object)
 {
+    m_numberOfPopulation = object[NUMBEROFPOPULATION].toInt();
     m_initialpopulationSize = object[INITIALPOPULATIONSIZE].toInt();
     m_selectionRatio = object[SELECTIONRATIO].toDouble();
     m_elitismRatio = object[ELITISMRATIO].toDouble();
@@ -96,6 +99,7 @@ void StudyGenetic::load(QJsonObject &object)
 
 void StudyGenetic::save(QJsonObject &object)
 {
+    object[NUMBEROFPOPULATION] = m_numberOfPopulation;
     object[INITIALPOPULATIONSIZE] = m_initialpopulationSize;
     object[SELECTIONRATIO] = m_selectionRatio;
     object[ELITISMRATIO] = m_elitismRatio;
@@ -111,8 +115,9 @@ void StudyGenetic::solve()
     // create initial population
     ComputationSet currentPopulation = GeneticPopulationRandom(m_parameters, m_initialpopulationSize);
 
-    while (true)
+    for (int population = 0; population < m_numberOfPopulation; population++)
     {
+        currentPopulation.setName(tr("Population %1").arg(population));
         for (int index = 0; index < currentPopulation.computations().size(); index++)
         {
             QSharedPointer<Computation> individual = currentPopulation.computations().at(index);
