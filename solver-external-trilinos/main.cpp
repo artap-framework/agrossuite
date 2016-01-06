@@ -141,14 +141,7 @@ void solveAztecOOML(const Epetra_LinearProblem &problem, int maxIter, double rel
     Teuchos::ParameterList mlList;
     // Sets default parameters.
     // After this call, MLList contains the default values for the ML parameters.
-    // - "SA" : classical smoothed aggregation preconditioners;
-    // - "NSSA" : default values for Petrov-Galerkin preconditioner for nonsymmetric systems
-    // - "maxwell" : default values for aggregation preconditioner for eddy current systems
-    // - "DD" : defaults for 2-level domain decomposition preconditioners based on aggregation;
-    // - "DD-LU" : Like "DD", but use exact LU decompositions on each subdomain;
-    // - "DD-ML" : 3-level domain decomposition preconditioners, with coarser spaces defined by aggregation;
-    // - "DD-ML-LU" : Like "DD-ML", but with LU decompositions on each subdomain.
-    ML_Epetra::SetDefaults("SA", mlList);
+    ML_Epetra::SetDefaults(preconditioner, mlList);
     // overwrite some parameters. Please refer to the user's guide
     // for more information
     // some of the parameters do not differ from their default value,
@@ -192,7 +185,7 @@ std::string getMLpreconditioner(std::string preconditioner)
             || (preconditioner == "NSSA")           // - "NSSA" : default values for Petrov-Galerkin preconditioner for nonsymmetric systems
             || (preconditioner == "maxwell")        // - "maxwell" : default values for aggregation preconditioner for eddy current systems
             || (preconditioner == "DD")             // - "DD" : defaults for 2-level domain decomposition preconditioners based on aggregation;
-            || (preconditioner == "DD-LU")          // - "DD-LU" : Like "DD", but use exact LU decompositions on each subdomain;
+            || (preconditioner == "RefMaxwell")     // - ?? instead of "DD-LU" : Like "DD", but use exact LU decompositions on each subdomain;
             || (preconditioner == "DD-ML")          // - "DD-ML" : 3-level domain decomposition preconditioners, with coarser spaces defined by aggregation;
             || (preconditioner == "DD-ML-LU"))      // - "DD-ML-LU" : Like "DD-ML", but with LU decompositions on each subdomain.
     {
