@@ -35,7 +35,7 @@ public:
     bool save(const QString &fileName);
 
     inline double resultValue(const QString &key) const { return m_results[key]; }
-    inline ParametersType &results() { return m_results; }
+    inline StringToDoubleMap &results() { return m_results; }
     inline bool hasResults() const { return !m_results.isEmpty(); }
     inline void setResult(const QString &key, double value) { m_results[key] = value; }
     inline void removeResult(const QString &key) { m_results.remove(key); }
@@ -43,7 +43,7 @@ public:
     inline QMap<QString, QVariant> &info() { return m_info; }
 
 private:
-    ParametersType m_results;
+    StringToDoubleMap m_results;
     QMap<QString, QVariant> m_info;
 };
 

@@ -54,7 +54,7 @@ bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
 {
     // parameters
     QString commandPre = "";
-    ParametersType parameters = computation->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parameters = computation->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
     foreach (QString key, parameters.keys())
     {
         if (commandPre.isEmpty())
@@ -64,7 +64,7 @@ bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
     }
 
     // resutls
-    ParametersType results = computation->result()->results();
+    StringToDoubleMap results = computation->result()->results();
     foreach (QString key, results.keys())
     {
         if (commandPre.isEmpty())

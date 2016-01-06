@@ -40,7 +40,7 @@ void StudySweepAnalysis::solve()
     ParameterSpace space = ParameterSpace(m_parameters);
     space.random(10);
 
-    foreach (ParametersType set, space.sets())
+    foreach (StringToDoubleMap set, space.sets())
     {
         // computation
         QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true, false);

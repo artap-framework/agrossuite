@@ -187,10 +187,10 @@ bool ProblemBase::determineIsNonlinear() const
     return false;
 }
 
-bool ProblemBase::checkAndApplyParameters(ParametersType parameters, bool apply)
+bool ProblemBase::checkAndApplyParameters(StringToDoubleMap parameters, bool apply)
 {
     // store original parameters
-    ParametersType parametersOriginal = m_config->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parametersOriginal = m_config->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
 
     // set new parameters
     m_config->setValue(ProblemConfig::Parameters, parameters);

@@ -24,7 +24,7 @@
 
 void PyProblemBase::getParameters(std::vector<std::string> &keys) const
 {
-    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parameters = m_problem->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
 
     foreach (QString key, parameters.keys())
         keys.push_back(key.toStdString());
@@ -32,7 +32,7 @@ void PyProblemBase::getParameters(std::vector<std::string> &keys) const
 
 double PyProblemBase::getParameter(const string &key) const
 {
-    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parameters = m_problem->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
 
     if (parameters.contains(QString::fromStdString(key)))
     {
@@ -99,7 +99,7 @@ void PyProblem::clear()
 
 void PyProblem::setParameter(const string &key, double value)
 {
-    ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parameters = m_problem->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
     parameters[QString::fromStdString(key)] = value;
 
     m_problem->config()->setValue(ProblemConfig::Parameters, parameters);
@@ -282,7 +282,7 @@ void PyComputation::timeStepsTimes(vector<double> &times) const
 
 void PyComputation::getResults(std::vector<std::string> &keys) const
 {
-    ParametersType results = computation()->result()->results();
+    StringToDoubleMap results = computation()->result()->results();
 
     foreach (QString key, results.keys())
         keys.push_back(key.toStdString());
@@ -290,7 +290,7 @@ void PyComputation::getResults(std::vector<std::string> &keys) const
 
 double PyComputation::getResult(const std::string &key) const
 {
-    ParametersType results = computation()->result()->results();
+    StringToDoubleMap results = computation()->result()->results();
 
     if (results.contains(QString::fromStdString(key)))
     {
@@ -310,7 +310,7 @@ double PyComputation::getResult(const std::string &key) const
 
 void PyComputation::setResult(const string &key, double value)
 {
-    ParametersType results = computation()->result()->results();
+    StringToDoubleMap results = computation()->result()->results();
     results[QString::fromStdString(key)] = value;
 }
 

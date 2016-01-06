@@ -260,7 +260,7 @@ void PreprocessorWidget::refresh()
     problemPropertiesNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
     problemProperties(problemPropertiesNode);
 
-    ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
     if (parameters.count() > 0)
     {
         QTreeWidgetItem *parametersNode = new QTreeWidgetItem(problemNode);
@@ -784,7 +784,7 @@ void PreprocessorWidget::doDelete()
         {
             // parameter
             QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
-            ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+            StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
             parameters.remove(key);
 
             Agros2D::problem()->checkAndApplyParameters(parameters);
