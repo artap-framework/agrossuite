@@ -28,7 +28,6 @@
 #include "functional.h"
 
 class Computation;
-class ComputationSet;
 class Study;
 
 class Studies : public QObject
@@ -60,6 +59,22 @@ private:
     QList<Study *> m_studies;
 };
 
+class ComputationSet
+{
+public:
+    ComputationSet(QList<QSharedPointer<Computation> > set = QList<QSharedPointer<Computation> >());
+    virtual ~ComputationSet();
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+    inline void addComputation(QSharedPointer<Computation> computation) { m_computationSet.append(computation); }
+    QList<QSharedPointer<Computation> > computations() { return m_computationSet; }
+
+protected:
+    QList<QSharedPointer<Computation> > m_computationSet;
+};
+
 Q_DECLARE_METATYPE(Study *)
 
 class Study : public QObject
@@ -83,9 +98,10 @@ public:
 
     void addFunctional(Functional functional) { m_functionals.append(functional); }
     QList<Functional> &functionals() { return m_functionals; }
+    bool evaluateFunctionals(QSharedPointer<Computation> computation);
 
-    QList<QSharedPointer<Computation>> computations();
-    QList<QSharedPointer<Computation>> computations(int setIndex);
+    QList<QSharedPointer<Computation> > computations() { return m_computations.last().computations(); }
+    QList<QSharedPointer<Computation> > computations(int setIndex) { return m_computations[setIndex].computations(); }
     void addComputation(QSharedPointer<Computation> computation, bool new_computationSet = false);
 
     virtual void fillTreeView(QTreeWidget *trvComputations);
@@ -95,24 +111,6 @@ protected:
     QList<Parameter> m_parameters;
     QList<Functional> m_functionals;
     QList<ComputationSet> m_computations;
-
-    void evaluateExpressions();
-};
-
-class ComputationSet
-{
-public:
-    ComputationSet(QList<QSharedPointer<Computation>> set = QList<QSharedPointer<Computation>>());
-    ~ComputationSet();
-
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
-
-    inline void addComputation(QSharedPointer<Computation> computation) { m_computationSet.append(computation); }
-    QList<QSharedPointer<Computation>> &computations() { return m_computationSet; }
-
-protected:
-    QList<QSharedPointer<Computation>> m_computationSet;
 };
 
 #endif // STUDY_H

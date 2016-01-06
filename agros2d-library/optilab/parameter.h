@@ -26,7 +26,7 @@ class Parameter
 {
 public:
     Parameter(const QString &name = "", double lowerBound = 0.0, double upperBound = 1.0);
-    virtual ~Parameter();
+    ~Parameter();
 
     void load(QJsonObject &object);
     void save(QJsonObject &object);
@@ -34,12 +34,9 @@ public:
 
     inline QString name() { return m_name; }
     inline double lowerBound() const { return m_lowerBound; }
+    void setLowerBound(double lowerBound);
     inline double upperBound() const { return m_upperBound; }
-
-    /* TODO: Check values
-    void setLowerBound(double &lowerBound);
-    void setUpperBound(double &upperBound);
-    */
+    void setUpperBound(double upperBound);
 
     inline QList<double> values() { return m_values; }
     void addValue(double value);
@@ -67,7 +64,9 @@ class ParameterSpace
 {
 public:
     ParameterSpace(QList<Parameter> parameters);
-    virtual ~ParameterSpace();
+    ~ParameterSpace();
+
+    void clear();
 
     QList<QMap<QString, double> > sets() { return m_sets; }
 

@@ -143,16 +143,16 @@ void StudyGenetic::solve()
             break;
 
         // selection (sorted population)
-        QList<QSharedPointer<Computation>> selectedPopulation = selectIndividuals(currentPopulation.computations());
+        QList<QSharedPointer<Computation> > selectedPopulation = selectIndividuals(currentPopulation.computations());
 
         // elitism
-        QList<QSharedPointer<Computation>> elitePopulation = selectElite(selectedPopulation);
+        QList<QSharedPointer<Computation> > elitePopulation = selectElite(selectedPopulation);
 
         // crossover and mutation
-        QList<QSharedPointer<Computation>> crossBreeds = crossoverAndMutate(selectedPopulation);
+        QList<QSharedPointer<Computation> > crossBreeds = crossoverAndMutate(selectedPopulation);
 
         // add new population
-        QList<QSharedPointer<Computation>> finalPopulation;
+        QList<QSharedPointer<Computation> > finalPopulation;
         for (int i = 0; i < elitePopulation.size(); i++)
             finalPopulation.append(elitePopulation[i]);
         for (int i = 0; i < crossBreeds.size(); i++)
@@ -162,34 +162,34 @@ void StudyGenetic::solve()
     }
 }
 
-QList<QSharedPointer<Computation>> StudyGenetic::selectIndividuals(const QList<QSharedPointer<Computation>> &individuals)
+QList<QSharedPointer<Computation> > StudyGenetic::selectIndividuals(const QList<QSharedPointer<Computation> > &individuals)
 {
     int numberOfSelected = qMin((int) (m_selectionRatio * individuals.size()), individuals.size());
 
-    QList<QSharedPointer<Computation>> selectedPopulation;
+    QList<QSharedPointer<Computation> > selectedPopulation;
     for (int i = 0; i < numberOfSelected; i++)
         selectedPopulation.append(individuals.at(i));
 
     return selectedPopulation;
 }
 
-QList<QSharedPointer<Computation>> StudyGenetic::selectElite(const QList<QSharedPointer<Computation>> &individuals)
+QList<QSharedPointer<Computation> > StudyGenetic::selectElite(const QList<QSharedPointer<Computation> > &individuals)
 {
     int numberOfElite = qMax((int) (m_elitismRatio * individuals.size()), 1);
-    QList<QSharedPointer<Computation>> elitePopulation;
+    QList<QSharedPointer<Computation> > elitePopulation;
     for (int i = 0; i < numberOfElite; i++)
         elitePopulation.append(individuals[i]);
 
     return elitePopulation;
 }
 
-QList<QSharedPointer<Computation>> StudyGenetic::crossoverAndMutate(const QList<QSharedPointer<Computation>> &individuals)
+QList<QSharedPointer<Computation> > StudyGenetic::crossoverAndMutate(const QList<QSharedPointer<Computation> > &individuals)
 {
     int numberOfCrossBreeds = qMax((int) (m_crossoverRatio * individuals.size()),
                                    (int) (individuals.size() / 2.0));
 
     // crossover
-    QList<QSharedPointer<Computation>> crossBreeds;
+    QList<QSharedPointer<Computation> > crossBreeds;
     while (crossBreeds.size() < numberOfCrossBreeds)
     {
         int motherIndex = ((double) qrand() / RAND_MAX * individuals.size());

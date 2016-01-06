@@ -55,9 +55,9 @@ protected:
     double m_mutationProbability;
     double m_mutationRatio;
 
-    QList<QSharedPointer<Computation>> selectIndividuals(const QList<QSharedPointer<Computation>> &individuals);
-    QList<QSharedPointer<Computation>> selectElite(const QList<QSharedPointer<Computation>> &individuals);
-    QList<QSharedPointer<Computation>> crossoverAndMutate(const QList<QSharedPointer<Computation>> &individuals);
+    QList<QSharedPointer<Computation> > selectIndividuals(const QList<QSharedPointer<Computation> > &individuals);
+    QList<QSharedPointer<Computation> > selectElite(const QList<QSharedPointer<Computation> > &individuals);
+    QList<QSharedPointer<Computation> > crossoverAndMutate(const QList<QSharedPointer<Computation> > &individuals);
 
 };
 

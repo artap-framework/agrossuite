@@ -51,8 +51,7 @@ void StudySweepAnalysis::solve()
 
         // solve and evaluate
         computation->solve();
-        foreach (Functional functional, m_functionals)
-            bool successfulRun = functional.evaluateExpression(computation);
+        evaluateFunctionals(computation);
 
         computation->saveResults();
     }

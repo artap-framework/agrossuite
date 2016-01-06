@@ -45,6 +45,22 @@ void Parameter::clear()
     m_values.clear();
 }
 
+void Parameter::setLowerBound(double lowerBound)
+{
+    foreach (double value, m_values)
+       assert(lowerBound <= value);
+
+    m_lowerBound = lowerBound;
+}
+
+void Parameter::setUpperBound(double upperBound)
+{
+    foreach (double value, m_values)
+       assert(upperBound >= value);
+
+    m_upperBound = upperBound;
+}
+
 void Parameter::load(QJsonObject &object)
 {
     m_name = object[NAME].toString();
@@ -156,13 +172,18 @@ Parameter Parameter::fromRandom(const QString &name, int count, double lowerBoun
     return parameter;
 }
 
-ParameterSpace::ParameterSpace(QList<Parameter> parameters) : m_parameters(parameters)
-{
-}
+ParameterSpace::ParameterSpace(QList<Parameter> parameters) :
+    m_parameters(parameters) { }
 
 ParameterSpace::~ParameterSpace()
 {
+    clear();
+}
+
+void ParameterSpace::clear()
+{
     m_parameters.clear();
+    m_sets.clear();
 }
 
 void ParameterSpace::random(int count)

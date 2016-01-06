@@ -251,20 +251,22 @@ void Study::save(QJsonObject &object)
     object[COMPUTATIONSPACE] = computationsJson;
 }
 
-QList<QSharedPointer<Computation>> Study::computations()
+bool Study::evaluateFunctionals(QSharedPointer<Computation> computation)
 {
-    return m_computations.last().computations();
-}
+    bool successfulRun = false;
+    currentPythonEngine()->useTemporaryDict();
+    foreach (Functional functional, m_functionals)
+        successfulRun = functional.evaluateExpression(computation);
+    currentPythonEngine()->useGlobalDict();
 
-QList<QSharedPointer<Computation>> Study::computations(int setIndex)
-{
-    return m_computations[setIndex].computations();
+    return successfulRun;
 }
 
 void Study::addComputation(QSharedPointer<Computation> computation, bool new_computationSet)
 {
     if (m_computations.isEmpty() || new_computationSet)
         m_computations.append(ComputationSet());
+
     m_computations.last().addComputation(computation);
 }
 
@@ -293,7 +295,7 @@ QVariant Study::variant()
     return v;
 }
 
-ComputationSet::ComputationSet(QList<QSharedPointer<Computation>> set)
+ComputationSet::ComputationSet(QList<QSharedPointer<Computation> > set)
     : m_computationSet(set) { }
 
 ComputationSet::~ComputationSet()
