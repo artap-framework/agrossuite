@@ -23,6 +23,22 @@
 #include <string>
 #include <fstream>
 
+// ublas
+#ifndef NDEBUG
+ // necessary to obtain a suitable performance in ublas
+ #define BOOST_UBLAS_NDEBUG
+#endif
+
+#include <boost/numeric/ublas/io.hpp>
+#include <boost/numeric/ublas/triangular.hpp>
+#include <boost/numeric/ublas/matrix_sparse.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
+#include <boost/numeric/ublas/operation.hpp>
+#include <boost/numeric/ublas/operation_sparse.hpp>
+
+#define VIENNACL_WITH_UBLAS 1
+
 #include "viennacl/compressed_matrix.hpp"
 #include "viennacl/matrix.hpp"
 #include "viennacl/vector.hpp"
@@ -38,8 +54,6 @@
 
 // amg
 #include "viennacl/linalg/amg.hpp"
-
-#include <boost/numeric/ublas/matrix_sparse.hpp>
 
 #include "../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
@@ -89,9 +103,10 @@ int main(int argc, char *argv[])
         // number of nonzero elements in matrix
         int nz = linearSystem.nz();
 
+        // auto timeConvertStart = std::chrono::steady_clock::now();
+
         boost::numeric::ublas::compressed_matrix<ScalarType> ublas_matrix(n, n, nz);
-        viennacl::compressed_matrix<ScalarType> vcl_matrix(n, n, nz);
-        viennacl::vector<ScalarType> vcl_rhs(n);
+        boost::numeric::ublas::vector<ScalarType> ublas_rhs(n);
 
         // loop over the elements of the matrix row by row
         for (int row = 0; row < linearSystem.n(); ++row)
@@ -100,24 +115,18 @@ int main(int argc, char *argv[])
             std::size_t col_end = linearSystem.system_matrix_pattern->rowstart[row + 1];
 
             for (int i = col_start; i < col_end; i++)
-            {
-                // vcl_matrix(row, system_matrix_pattern.colnums[i]) = system_matrix.val[i];
-                ublas_matrix(row, linearSystem.system_matrix_pattern->colnums[i]) = linearSystem.system_matrix->val[i];
-            }
+                ublas_matrix.insert_element(row, linearSystem.system_matrix_pattern->colnums[i], linearSystem.system_matrix->val[i]);
 
-            vcl_rhs(row) = linearSystem.system_rhs->val[row];
+            ublas_rhs(row) = linearSystem.system_rhs->val[row];
         }
 
-        copy(ublas_matrix, vcl_matrix);
-
-        // clear ublas_matrix and other structures
-        ublas_matrix.clear();
+        // std::cout << "convert = " << elapsedSeconds(timeConvertStart) << std::endl;
 
         // tolerances
         double relTol = linearSystem.relTolArg.getValue();
         int maxIter = linearSystem.maxIterArg.getValue();
 
-        viennacl::vector<ScalarType> vcl_sln;
+        boost::numeric::ublas::vector<ScalarType> ublas_sln;
 
         // incomplete LU factorization with threshold
         // if (preconditionerArg.getValue() == "ILUT" || preconditionerArg.getValue() == "") // default
@@ -125,11 +134,11 @@ int main(int argc, char *argv[])
         auto timeSolveStart = std::chrono::steady_clock::now();
         // ilut
         viennacl::linalg::ilut_tag ilut_config(20, 1e-4, true);
-        viennacl::linalg::ilut_precond<viennacl::compressed_matrix<ScalarType> > ilut_precond(vcl_matrix, ilut_config);
+        viennacl::linalg::ilut_precond<boost::numeric::ublas::compressed_matrix<ScalarType> > ilut_precond(ublas_matrix, ilut_config);
 
         // bicgstab
         viennacl::linalg::bicgstab_tag custom_bicgstab(relTol, maxIter);
-        vcl_sln = viennacl::linalg::solve(vcl_matrix, vcl_rhs, custom_bicgstab, ilut_precond);
+        ublas_sln = viennacl::linalg::solve(ublas_matrix, ublas_rhs, custom_bicgstab, ilut_precond);
         std::cout << "BiCGStab: iters: " << custom_bicgstab.iters() << ", error: " << custom_bicgstab.error() << std::endl;
         linearSystem.setInfoTimeSolveSystem(elapsedSeconds(timeSolveStart));
 
@@ -157,7 +166,7 @@ int main(int argc, char *argv[])
         // write solution - user RHS (memory saving)
         linearSystem.system_sln = linearSystem.system_rhs;
         for (int row = 0; row < n; ++row)
-            linearSystem.system_sln->val[row] = vcl_sln(row);
+            linearSystem.system_sln->val[row] = ublas_sln(row);
 
         // write solution
         linearSystem.writeSolution();
