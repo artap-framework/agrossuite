@@ -57,37 +57,8 @@ protected:
     QString m_parameterName;
 };
 
-void GeneticPopulation::load(QJsonObject &object)
-{
-    // individuals
-    QJsonArray individualsJson = object[INDIVIDUALS].toArray();
-    for (int i = 0; i < individualsJson.size(); i++)
-    {
-        QJsonObject individualJson = individualsJson[i].toObject();
-
-        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
-        QSharedPointer<Computation> individual = computations[object[COMPUTATION].toString()];
-
-        m_individuals.append(individual);
-    }
-}
-
-void GeneticPopulation::save(QJsonObject &object)
-{
-    // individuals
-    QJsonArray individualsJson;
-    foreach (QSharedPointer<Computation> individual, m_individuals)
-    {
-        QJsonObject individualJson;
-        individualJson[COMPUTATION] = individual->problemDir();
-
-        individualsJson.append(individualJson);
-    }
-    object[INDIVIDUALS] = individualsJson;
-}
-
 GeneticPopulationRandom::GeneticPopulationRandom(QList<Parameter> parameters, int count)
-    : GeneticPopulation()
+    : ComputationSet()
 {
     for (int i = 0; i < count; i++)
     {
@@ -97,14 +68,13 @@ GeneticPopulationRandom::GeneticPopulationRandom(QList<Parameter> parameters, in
          foreach (Parameter parameter, parameters)
              individual->config()->setParameter(parameter.name(), parameter.randomValue());
 
-         m_individuals.append(individual);
+         addComputation(individual);
     }
 }
 
 StudyGenetic::StudyGenetic() : Study()
 {
     m_initialpopulationSize = 20;
-
     m_selectionRatio = 0.8;
     m_elitismRatio = 0.1;
     m_crossoverRatio = 1.2;
@@ -133,44 +103,26 @@ void StudyGenetic::save(QJsonObject &object)
     object[CROSSOVERRATIO] = m_crossoverRatio;
     object[MUTATIONRATIO] = m_mutationRatio;
 
-    // populations
-    QJsonArray populationsJson;
-    foreach (GeneticPopulation population, m_computations)
-    {
-        QJsonObject populationJson;
-        population.save(populationJson);
-
-        populationsJson.append(populationJson);
-    }
-    object[POPULATIONS] = populationsJson;
-
     Study::save(object);
 }
 
 void StudyGenetic::solve()
 {
     // create initial population
-    GeneticPopulationRandom initialPopulation(m_parameters, m_initialpopulationSize);
-    GeneticPopulation currentPopulation = initialPopulation;
+    ComputationSet currentPopulation = GeneticPopulationRandom(m_parameters, m_initialpopulationSize);
 
     while (true)
     {
-        for (int index = 0; index < currentPopulation.individuals().size(); index++)
+        for (int index = 0; index < currentPopulation.computations().size(); index++)
         {
-            QSharedPointer<Computation> individual = currentPopulation.individuals().at(index);
+            QSharedPointer<Computation> individual = currentPopulation.computations().at(index);
 
-            // solve
+            // solve and evaluate
             // individual.computation()->solve();
 
-            // temporary dict
             currentPythonEngine()->useTemporaryDict();
-
-            // evaluate expressions
             foreach (Functional functional, m_functionals)
-            {
                 bool successfulRun = functional.evaluateExpression(individual);
-            }
-            // global dict
             currentPythonEngine()->useGlobalDict();
 
             // save results
@@ -182,7 +134,7 @@ void StudyGenetic::solve()
         QString parameterName = m_functionals[0].name();
 
         // sort individuals
-        std::sort(currentPopulation.individuals().begin(), currentPopulation.individuals().end(), GeneticIndividualCompare(parameterName));
+        std::sort(currentPopulation.computations().begin(), currentPopulation.computations().end(), GeneticIndividualCompare(parameterName));
 
         m_computations.append(currentPopulation);
 
@@ -190,10 +142,8 @@ void StudyGenetic::solve()
         if (m_computations.size() == 15)
             break;
 
-        // create new population
-
         // selection (sorted population)
-        QList<QSharedPointer<Computation>> selectedPopulation = selectIndividuals(currentPopulation.individuals());
+        QList<QSharedPointer<Computation>> selectedPopulation = selectIndividuals(currentPopulation.computations());
 
         // elitism
         QList<QSharedPointer<Computation>> elitePopulation = selectElite(selectedPopulation);
@@ -208,7 +158,7 @@ void StudyGenetic::solve()
         for (int i = 0; i < crossBreeds.size(); i++)
             finalPopulation.append(crossBreeds[i]);
 
-        currentPopulation = GeneticPopulation(finalPopulation);
+        currentPopulation = ComputationSet(finalPopulation);
     }
 }
 

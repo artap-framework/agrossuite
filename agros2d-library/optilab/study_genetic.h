@@ -29,29 +29,7 @@
 
 class ProblemResult;
 
-class GeneticPopulation
-{
-public:
-    GeneticPopulation(QList<QSharedPointer<Computation>> individuals = QList<QSharedPointer<Computation>>())
-        : m_individuals(individuals)
-    {
-    }
-
-    ~GeneticPopulation()
-    {
-        m_individuals.clear();
-    }
-
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
-
-    QList<QSharedPointer<Computation>> &individuals() { return m_individuals; }
-
-protected:
-    QList<QSharedPointer<Computation>> m_individuals;
-};
-
-class GeneticPopulationRandom : public GeneticPopulation
+class GeneticPopulationRandom : public ComputationSet
 {
 public:
     GeneticPopulationRandom(QList<Parameter> parameters, int count);
@@ -70,17 +48,12 @@ public:
     virtual void save(QJsonObject &object);
 
 protected:
-    // settings
     int m_initialpopulationSize;
-
     double m_selectionRatio;
     double m_elitismRatio;
     double m_crossoverRatio;
-
     double m_mutationProbability;
     double m_mutationRatio;
-
-    QList<GeneticPopulation> m_computations;
 
     QList<QSharedPointer<Computation>> selectIndividuals(const QList<QSharedPointer<Computation>> &individuals);
     QList<QSharedPointer<Computation>> selectElite(const QList<QSharedPointer<Computation>> &individuals);
