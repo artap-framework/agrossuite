@@ -63,6 +63,7 @@
 #include "Aztec2Petra.h"
 #include "AztecOOParameterList.hpp"
 // required by ML
+#include "ml_include.h"
 #include "ml_MultiLevelPreconditioner.h"
 //----
 #include "../3rdparty/tclap/CmdLine.h"
@@ -70,27 +71,40 @@
 
 class LinearSystemTrilinosArgs : public LinearSystemArgs
 {
+// another used args (not listed here): -s, -r, -p, -m, -q
 public:
     LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
         : LinearSystemArgs(name, argc, argv),
           solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
-          // preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
+          preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
+          aggregationTypeArg(TCLAP::ValueArg<std::string>("e", "aggregationType", "AggregationType", false, "", "string")),
+          smootherTypeArg(TCLAP::ValueArg<std::string>("o", "smootherType", "SmootherType", false, "", "string")),
+          coarseTypeArg(TCLAP::ValueArg<std::string>("z", "coarseType", "CoarseType", false, "", "string")),
           // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
           relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
-          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int"))
+          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
+          multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false))
     {
         cmd.add(solverArg);
-        // cmd.add(preconditionerArg);
+        cmd.add(preconditionerArg);
+        cmd.add(aggregationTypeArg);
+        cmd.add(smootherTypeArg);
+        cmd.add(coarseTypeArg);
         // cmd.add(absTolArg);
         cmd.add(relTolArg);
         cmd.add(maxIterArg);
+        cmd.add(multigridArg);
     }
 
     TCLAP::ValueArg<std::string> solverArg;
-    // TCLAP::ValueArg<std::string> preconditionerArg;
+    TCLAP::ValueArg<std::string> preconditionerArg;
+    TCLAP::ValueArg<std::string> aggregationTypeArg;
+    TCLAP::ValueArg<std::string> smootherTypeArg;
+    TCLAP::ValueArg<std::string> coarseTypeArg;
     // TCLAP::ValueArg<double> absTolArg;
     TCLAP::ValueArg<double> relTolArg;
     TCLAP::ValueArg<int> maxIterArg;
+    TCLAP::SwitchArg multigridArg;
 };
 
 void solveAmesos(const Epetra_LinearProblem &problem, std::string solverTypeName =  "Amesos_Klu")
@@ -102,10 +116,10 @@ void solveAmesos(const Epetra_LinearProblem &problem, std::string solverTypeName
     assert(amesosSolver);
 
     // create parameter list for solver
-    Teuchos::ParameterList parList;
-    parList.set ("PrintTiming", false); // test of parameter setting
-    parList.set ("PrintStatus", false); // test of parameter setting
-    amesosSolver->SetParameters(parList);
+    Teuchos::ParameterList parListAmesos;
+    parListAmesos.set ("PrintTiming", false); // test of parameter setting
+    parListAmesos.set ("PrintStatus", false); // test of parameter setting
+    amesosSolver->SetParameters(parListAmesos);
 
     amesosSolver->SymbolicFactorization();
     amesosSolver->NumericFactorization();
@@ -118,10 +132,10 @@ void solveAztecOO(const Epetra_LinearProblem &problem, int maxIter, double relTo
 {
     AztecOO aztecooSolver(problem);
     // create parameter list for solver
-    Teuchos::ParameterList parList;
-    parList.set ("PrintTiming", false); // test of parameter setting
-    parList.set ("PrintStatus", false); // test of parameter setting
-    aztecooSolver.SetParameters(parList);
+    Teuchos::ParameterList parListAztec00;
+    parListAztec00.set ("PrintTiming", false); // test of parameter setting
+    parListAztec00.set ("PrintStatus", false); // test of parameter setting
+    aztecooSolver.SetParameters(parListAztec00);
     aztecooSolver.SetAztecOption(AZ_precond, AZ_dom_decomp);
     aztecooSolver.SetAztecOption(AZ_subdomain_solve, AZ_ilut);
     aztecooSolver.SetAztecOption(AZ_solver, AZ_tfqmr);
@@ -131,20 +145,13 @@ void solveAztecOO(const Epetra_LinearProblem &problem, int maxIter, double relTo
     // std::cout << "Solver performed " << aztecooSolver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << aztecooSolver.TrueResidual() << std::endl;
 }
 
-void solveML(const Epetra_LinearProblem &problem, int maxIter, double relTol)
+void solveAztecOOML(const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType, std::string smootherType, std::string coarseType)
 {
     // create a parameter list for ML options
     Teuchos::ParameterList mlList;
     // Sets default parameters.
     // After this call, MLList contains the default values for the ML parameters.
-    // - "SA" : classical smoothed aggregation preconditioners;
-    // - "NSSA" : default values for Petrov-Galerkin preconditioner for nonsymmetric systems
-    // - "maxwell" : default values for aggregation preconditioner for eddy current systems
-    // - "DD" : defaults for 2-level domain decomposition preconditioners based on aggregation;
-    // - "DD-LU" : Like "DD", but use exact LU decompositions on each subdomain;
-    // - "DD-ML" : 3-level domain decomposition preconditioners, with coarser spaces defined by aggregation;
-    // - "DD-ML-LU" : Like "DD-ML", but with LU decompositions on each subdomain.
-    ML_Epetra::SetDefaults("SA", mlList);
+    ML_Epetra::SetDefaults(preconditioner, mlList);
     // overwrite some parameters. Please refer to the user's guide
     // for more information
     // some of the parameters do not differ from their default value,
@@ -156,14 +163,14 @@ void solveML(const Epetra_LinearProblem &problem, int maxIter, double relTol)
     // set finest level to 0
     mlList.set("increasing or decreasing", "increasing");
     // use Uncoupled scheme to create the aggregate
-    mlList.set("aggregation: type", "Uncoupled");
+    mlList.set("aggregation: type", aggregationType);
     // smoother is Chebyshev. Example file `ml/examples/TwoLevelDD/ml_2level_DD.cpp' shows how to use AZTEC's preconditioners as smoothers
-    mlList.set("smoother: type", "Chebyshev");
+    mlList.set("smoother: type", smootherType);
     mlList.set("smoother: sweeps", 3);
     // use both pre and post smoothing
     mlList.set("smoother: pre or post", "both");
-    // solve with serial direct solver KLU
-    mlList.set("coarse: type", "Amesos-KLU");
+    // solve with solver in "coarseType"
+    mlList.set("coarse: type", coarseType);
 
     // Creates the preconditioning object. We suggest to use `new' and
     // `delete' because the destructor contains some calls to MPI (as
@@ -179,6 +186,178 @@ void solveML(const Epetra_LinearProblem &problem, int maxIter, double relTol)
     aztecooSolver.SetAztecOption(AZ_solver, AZ_cg);
     aztecooSolver.SetAztecOption(AZ_output, 32);
     aztecooSolver.Iterate(maxIter, relTol);
+}
+
+std::string getMLpreconditioner(std::string preconditioner)
+{
+    if ((preconditioner == "SA")
+            || (preconditioner == "SA")             // - "SA" : classical smoothed aggregation preconditioners;
+            || (preconditioner == "NSSA")           // - "NSSA" : default values for Petrov-Galerkin preconditioner for nonsymmetric systems
+            || (preconditioner == "maxwell")        // - "maxwell" : default values for aggregation preconditioner for eddy current systems
+            || (preconditioner == "DD")             // - "DD" : defaults for 2-level domain decomposition preconditioners based on aggregation;
+            || (preconditioner == "RefMaxwell")     // - ?? instead of "DD-LU" : Like "DD", but use exact LU decompositions on each subdomain;
+            || (preconditioner == "DD-ML")          // - "DD-ML" : 3-level domain decomposition preconditioners, with coarser spaces defined by aggregation;
+            || (preconditioner == "DD-ML-LU"))      // - "DD-ML-LU" : Like "DD-ML", but with LU decompositions on each subdomain.
+    {
+        std::cout << "ML preconditioner is set to: " << preconditioner << std::endl;
+        return preconditioner;
+    }
+    else
+    {
+        std::cout << "ML preconditioner is set to default (SA)" << std::endl;
+        return "SA";
+    }
+}
+
+std::string getMLaggregationType(std::string aggregationType)
+{
+    // aggregationType
+    //"Uncoupled"
+    //"Coupled"
+    //"MIS"
+    //"Uncoupled-MIS"
+    //"METIS"
+    //"ParMETIS"
+    //"Zoltan"
+    //"user"
+    if ((aggregationType == "Uncoupled")
+            || (aggregationType == "Coupled")
+            || (aggregationType == "MIS")
+            || (aggregationType == "Uncoupled-MIS")
+            || (aggregationType == "METIS")
+            || (aggregationType == "ParMETIS")
+            || (aggregationType == "Zoltan")   // does not work, yet
+            || (aggregationType == "user"))    // does not work, yet
+    {
+        std::cout << "ML aggregation type is set to: " << aggregationType << std::endl;
+        return aggregationType;
+    }
+    else
+    {
+        std::cout << "ML aggregation type is set to default (Uncoupled)" << std::endl;
+        return "Uncoupled";
+    }
+}
+
+std::string getMLsmootherType(std::string smootherType)
+{
+//  "Aztec"
+//  "IFPACK"
+//  "Jacobi"
+//  "ML symmetric Gauss-Seidel"
+//  "symmetric Gauss-Seidel"
+//  "ML Gauss-Seidel"
+//  "Gauss-Seidel"
+//  "block Gauss-Seidel"
+//  "symmetric block Gauss-Seidel"
+//  "Chebyshev"
+//  "MLS"
+//  "Hiptmair"
+//  "Amesos-KLU"
+//  "Amesos-Superlu"
+//  "Amesos-UMFPACK"
+//  "Amesos-Superludist"
+//  "Amesos-MUMPS"
+//  "user-defined"
+//  "SuperLU"
+//  "IFPACK-Chebyshev"
+//  "self"
+//  "do-nothing"
+//  "IC"
+//  "ICT"
+//  "ILU"
+//  "ILUT"
+//  "Block Chebyshev"
+//  "IFPACK-Block Chebyshev"
+//  "line Jacobi"
+//  "line Gauss-Seidel"
+//  "SILU"
+
+    if ((smootherType == "Aztec")
+            || (smootherType == "IFPACK")
+            || (smootherType == "Jacobi")
+            || (smootherType == "ML symmetric Gauss-Seidel")
+            || (smootherType == "symmetric Gauss-Seidel")
+            || (smootherType == "ML Gauss-Seidel")
+            || (smootherType == "Gauss-Seidel")
+            || (smootherType == "block Gauss-Seidel")
+            || (smootherType == "symmetric block Gauss-Seidel")
+            || (smootherType == "Chebyshev")
+            || (smootherType == "MLS")
+            || (smootherType == "Hiptmair")
+            || (smootherType == "Amesos-KLU")
+            || (smootherType == "Amesos-Superlu")
+            || (smootherType == "Amesos-UMFPACK")
+            || (smootherType == "Amesos-Superludist")
+            || (smootherType == "Amesos-MUMPS")
+            || (smootherType == "user-defined")
+            || (smootherType == "SuperLU")
+            || (smootherType == "IFPACK-Chebyshev")
+            || (smootherType == "self")
+            || (smootherType == "do-nothing")
+            || (smootherType == "IC")
+            || (smootherType == "ICT")
+            || (smootherType == "ILU")
+            || (smootherType == "ILUT")
+            || (smootherType == "Block Chebyshev")
+            || (smootherType == "IFPACK-Block Chebyshev")
+            || (smootherType == "line Jacobi")
+            || (smootherType == "line Gauss-Seidel")
+            || (smootherType == "SILU"))
+    {
+        std::cout << "ML smoother type is set to: " << smootherType << std::endl;
+        return smootherType;
+    }
+    else
+    {
+        std::cout << "ML smoother type is set to default (Chebyshev)" << std::endl;
+        return "Chebyshev";
+    }
+}
+
+std::string getMLcoarseType(std::string coarseType)
+{
+//  same as in getMLsmootherType()
+    if ((coarseType == "Aztec")
+            || (coarseType == "IFPACK")
+            || (coarseType == "Jacobi")
+            || (coarseType == "ML symmetric Gauss-Seidel")
+            || (coarseType == "symmetric Gauss-Seidel")
+            || (coarseType == "ML Gauss-Seidel")
+            || (coarseType == "Gauss-Seidel")
+            || (coarseType == "block Gauss-Seidel")
+            || (coarseType == "symmetric block Gauss-Seidel")
+            || (coarseType == "Chebyshev")
+            || (coarseType == "MLS")
+            || (coarseType == "Hiptmair")
+            || (coarseType == "Amesos-KLU")
+            || (coarseType == "Amesos-Superlu")
+            || (coarseType == "Amesos-UMFPACK")
+            || (coarseType == "Amesos-Superludist")
+            || (coarseType == "Amesos-MUMPS")
+            || (coarseType == "user-defined")
+            || (coarseType == "SuperLU")
+            || (coarseType == "IFPACK-Chebyshev")
+            || (coarseType == "self")
+            || (coarseType == "do-nothing")
+            || (coarseType == "IC")
+            || (coarseType == "ICT")
+            || (coarseType == "ILU")
+            || (coarseType == "ILUT")
+            || (coarseType == "Block Chebyshev")
+            || (coarseType == "IFPACK-Block Chebyshev")
+            || (coarseType == "line Jacobi")
+            || (coarseType == "line Gauss-Seidel")
+            || (coarseType == "SILU"))
+    {
+        std::cout << "ML coarse type is set to: " << coarseType << std::endl;
+        return coarseType;
+    }
+    else
+    {
+        std::cout << "ML coarse type is set to default (Amesos-KLU)" << std::endl;
+        return "Amesos-KLU";
+    }
 }
 
 LinearSystemTrilinosArgs *createLinearSystem(std::string extSolverName, int argc, char *argv[])
@@ -236,6 +415,7 @@ int main(int argc, char *argv[])
             globalNumberOfRows = (int) linearSystem->n();
             numberOfNonZeros = (int) linearSystem->nz();
         }
+// MPI
         // send globalNumberOfRows from process 0 to all processes
 //        MPI_Bcast(&globalNumberOfRows, 1, MPI_INT, 0,MPI_COMM_WORLD);
 //        MPI_Bcast(&numberOfNonZeros, 1, MPI_INT, 0,MPI_COMM_WORLD);
@@ -266,6 +446,7 @@ int main(int argc, char *argv[])
         {
             throw std::logic_error ("Failed to get the list of global indices");
         }
+// MPI
 
         // print Epetra Map
 //        for (int i = 0; i < numProcs; ++i )
@@ -311,7 +492,8 @@ int main(int argc, char *argv[])
         }
         epeA.FillComplete(); // Transform from GIDs to LIDs
 
-//        // prepare distributed Epetra matrix
+// MPI
+          // prepare distributed Epetra matrix
 //        Epetra_FECrsMatrix epeA(Copy, epeMap, maxNumPerRow);
 
 //        // prepare data on process 0
@@ -331,13 +513,13 @@ int main(int argc, char *argv[])
 //        epeA.GlobalAssemble();
 //        std::cout << "Process ID " << rank << std::endl << "epeA" << std::endl << epeA << std::endl;
 
-        // test !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// for testing MPI !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //                        #ifdef HAVE_MPI
 //                                // for MPI version
 //                                MPI_Finalize() ;
 //                        #endif
 //                                return 0;
-        // end of test !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// end of test !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         // create Epetra_Vectors
         // vectors x and b
@@ -351,19 +533,34 @@ int main(int argc, char *argv[])
         // create linear problem
         Epetra_LinearProblem problem(&epeA, &epeX, &epeB);
 
+        // get parameters to local value
         double relTol = linearSystem->relTolArg.getValue();
         int maxIter = linearSystem->maxIterArg.getValue();
 
+
         // solver calling
         std::string solver = linearSystem->solverArg.getValue();
-        if (solver == "Amesos_Klu" || solver == "") // default
-            solveAmesos(problem, "Amesos_Klu");
-        else if (solver == "AztecOO")
-            solveAztecOO(problem, maxIter, relTol);
-        else if (solver == "ML")
-            solveML(problem, maxIter, relTol);
+        if (linearSystem->multigridArg.getValue())
+        {
+            if (solver == "AztecOOML" || solver == "") // default for AMG
+                solveAztecOOML(problem, maxIter, relTol,
+                               getMLpreconditioner(linearSystem->preconditionerArg.getValue()),
+                               getMLaggregationType(linearSystem->aggregationTypeArg.getValue()),
+                               getMLsmootherType(linearSystem->smootherTypeArg.getValue()),
+                               getMLcoarseType(linearSystem->coarseTypeArg.getValue()));
+            else
+                assert(0 && "No solver selected !!!");
+        }
         else
-            assert(0 && "No solver selected !!!");
+        {
+            if (solver == "Amesos_Klu" || solver == "") // default
+                solveAmesos(problem, "Amesos_Klu");
+            else if (solver == "AztecOO")
+                solveAztecOO(problem, maxIter, relTol);
+            else
+                assert(0 && "No solver selected !!!");
+
+        }
 
         // copy results into the solution vector (for Agros2D)
         if (rank == 0)
