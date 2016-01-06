@@ -71,12 +71,14 @@
 
 class LinearSystemTrilinosArgs : public LinearSystemArgs
 {
+// another used args (not listed here): -s, -r, -p, -m, -q
 public:
     LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
         : LinearSystemArgs(name, argc, argv),
           solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
           preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
           aggregationTypeArg(TCLAP::ValueArg<std::string>("e", "aggregationType", "AggregationType", false, "", "string")),
+          smootherTypeArg(TCLAP::ValueArg<std::string>("o", "smootherType", "SmootherType", false, "", "string")),
           // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
           relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
           maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
@@ -85,6 +87,7 @@ public:
         cmd.add(solverArg);
         cmd.add(preconditionerArg);
         cmd.add(aggregationTypeArg);
+        cmd.add(smootherTypeArg);
         // cmd.add(absTolArg);
         cmd.add(relTolArg);
         cmd.add(maxIterArg);
@@ -94,6 +97,7 @@ public:
     TCLAP::ValueArg<std::string> solverArg;
     TCLAP::ValueArg<std::string> preconditionerArg;
     TCLAP::ValueArg<std::string> aggregationTypeArg;
+    TCLAP::ValueArg<std::string> smootherTypeArg;
     // TCLAP::ValueArg<double> absTolArg;
     TCLAP::ValueArg<double> relTolArg;
     TCLAP::ValueArg<int> maxIterArg;
@@ -138,7 +142,7 @@ void solveAztecOO(const Epetra_LinearProblem &problem, int maxIter, double relTo
     // std::cout << "Solver performed " << aztecooSolver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << aztecooSolver.TrueResidual() << std::endl;
 }
 
-void solveAztecOOML(const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType)
+void solveAztecOOML(const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType, std::string smootherType)
 {
     // create a parameter list for ML options
     Teuchos::ParameterList mlList;
@@ -158,7 +162,7 @@ void solveAztecOOML(const Epetra_LinearProblem &problem, int maxIter, double rel
     // use Uncoupled scheme to create the aggregate
     mlList.set("aggregation: type", aggregationType);
     // smoother is Chebyshev. Example file `ml/examples/TwoLevelDD/ml_2level_DD.cpp' shows how to use AZTEC's preconditioners as smoothers
-    mlList.set("smoother: type", "Chebyshev");
+    mlList.set("smoother: type", smootherType);
     mlList.set("smoother: sweeps", 3);
     // use both pre and post smoothing
     mlList.set("smoother: pre or post", "both");
@@ -229,6 +233,81 @@ std::string getMLaggregationType(std::string aggregationType)
     {
         std::cout << "ML aggregation type is set to default (Uncoupled)" << std::endl;
         return "Uncoupled";
+    }
+}
+
+std::string getMLsmootherType(std::string smootherType)
+{
+//  "Aztec"
+//  "IFPACK"
+//  "Jacobi"
+//  "ML symmetric Gauss-Seidel"
+//  "symmetric Gauss-Seidel"
+//  "ML Gauss-Seidel"
+//  "Gauss-Seidel"
+//  "block Gauss-Seidel"
+//  "symmetric block Gauss-Seidel"
+//  "Chebyshev"
+//  "MLS"
+//  "Hiptmair"
+//  "Amesos-KLU"
+//  "Amesos-Superlu"
+//  "Amesos-UMFPACK"
+//  "Amesos-Superludist"
+//  "Amesos-MUMPS"
+//  "user-defined"
+//  "SuperLU"
+//  "IFPACK-Chebyshev"
+//  "self"
+//  "do-nothing"
+//  "IC"
+//  "ICT"
+//  "ILU"
+//  "ILUT"
+//  "Block Chebyshev"
+//  "IFPACK-Block Chebyshev"
+//  "line Jacobi"
+//  "line Gauss-Seidel"
+//  "SILU"
+    if ((smootherType == "Aztec")
+            || (smootherType == "IFPACK")
+            || (smootherType == "Jacobi")
+            || (smootherType == "ML symmetric Gauss-Seidel")
+            || (smootherType == "symmetric Gauss-Seidel")
+            || (smootherType == "ML Gauss-Seidel")
+            || (smootherType == "Gauss-Seidel")
+            || (smootherType == "block Gauss-Seidel")
+            || (smootherType == "symmetric block Gauss-Seidel")
+            || (smootherType == "Chebyshev")
+            || (smootherType == "MLS")
+            || (smootherType == "Hiptmair")
+            || (smootherType == "Amesos-KLU")
+            || (smootherType == "Amesos-Superlu")
+            || (smootherType == "Amesos-UMFPACK")
+            || (smootherType == "Amesos-Superludist")
+            || (smootherType == "Amesos-MUMPS")
+            || (smootherType == "user-defined")
+            || (smootherType == "SuperLU")
+            || (smootherType == "IFPACK-Chebyshev")
+            || (smootherType == "self")
+            || (smootherType == "do-nothing")
+            || (smootherType == "IC")
+            || (smootherType == "ICT")
+            || (smootherType == "ILU")
+            || (smootherType == "ILUT")
+            || (smootherType == "Block Chebyshev")
+            || (smootherType == "IFPACK-Block Chebyshev")
+            || (smootherType == "line Jacobi")
+            || (smootherType == "line Gauss-Seidel")
+            || (smootherType == "SILU"))
+    {
+        std::cout << "ML smoother type is set to: " << smootherType << std::endl;
+        return smootherType;
+    }
+    else
+    {
+        std::cout << "ML smoother type is set to default (Chebyshev)" << std::endl;
+        return "Chebyshev";
     }
 }
 
@@ -415,7 +494,10 @@ int main(int argc, char *argv[])
         if (linearSystem->multigridArg.getValue())
         {
             if (solver == "AztecOOML" || solver == "") // default for AMG
-                solveAztecOOML(problem, maxIter, relTol, getMLpreconditioner(linearSystem->preconditionerArg.getValue()), getMLaggregationType(linearSystem->aggregationTypeArg.getValue()));
+                solveAztecOOML(problem, maxIter, relTol,
+                               getMLpreconditioner(linearSystem->preconditionerArg.getValue()),
+                               getMLaggregationType(linearSystem->aggregationTypeArg.getValue()),
+                               getMLsmootherType(linearSystem->smootherTypeArg.getValue()));
             else
                 assert(0 && "No solver selected !!!");
         }
