@@ -76,6 +76,7 @@ public:
         : LinearSystemArgs(name, argc, argv),
           solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
           preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
+          aggregationTypeArg(TCLAP::ValueArg<std::string>("e", "aggregationType", "AggregationType", false, "", "string")),
           // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
           relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
           maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
@@ -83,6 +84,7 @@ public:
     {
         cmd.add(solverArg);
         cmd.add(preconditionerArg);
+        cmd.add(aggregationTypeArg);
         // cmd.add(absTolArg);
         cmd.add(relTolArg);
         cmd.add(maxIterArg);
@@ -91,6 +93,7 @@ public:
 
     TCLAP::ValueArg<std::string> solverArg;
     TCLAP::ValueArg<std::string> preconditionerArg;
+    TCLAP::ValueArg<std::string> aggregationTypeArg;
     // TCLAP::ValueArg<double> absTolArg;
     TCLAP::ValueArg<double> relTolArg;
     TCLAP::ValueArg<int> maxIterArg;
@@ -135,7 +138,7 @@ void solveAztecOO(const Epetra_LinearProblem &problem, int maxIter, double relTo
     // std::cout << "Solver performed " << aztecooSolver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << aztecooSolver.TrueResidual() << std::endl;
 }
 
-void solveAztecOOML(const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner)
+void solveAztecOOML(const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType)
 {
     // create a parameter list for ML options
     Teuchos::ParameterList mlList;
@@ -153,7 +156,7 @@ void solveAztecOOML(const Epetra_LinearProblem &problem, int maxIter, double rel
     // set finest level to 0
     mlList.set("increasing or decreasing", "increasing");
     // use Uncoupled scheme to create the aggregate
-    mlList.set("aggregation: type", "Uncoupled");
+    mlList.set("aggregation: type", aggregationType);
     // smoother is Chebyshev. Example file `ml/examples/TwoLevelDD/ml_2level_DD.cpp' shows how to use AZTEC's preconditioners as smoothers
     mlList.set("smoother: type", "Chebyshev");
     mlList.set("smoother: sweeps", 3);
@@ -196,6 +199,36 @@ std::string getMLpreconditioner(std::string preconditioner)
     {
         std::cout << "ML preconditioner is set to default (SA)" << std::endl;
         return "SA";
+    }
+}
+
+std::string getMLaggregationType(std::string aggregationType)
+{
+    // aggregationType
+    //"Uncoupled"
+    //"Coupled"
+    //"MIS"
+    //"Uncoupled-MIS"
+    //"METIS"
+    //"ParMETIS"
+    //"Zoltan"
+    //"user"
+    if ((aggregationType == "Uncoupled")
+            || (aggregationType == "Coupled")
+            || (aggregationType == "MIS")
+            || (aggregationType == "Uncoupled-MIS")
+            || (aggregationType == "METIS")
+            || (aggregationType == "ParMETIS")
+            || (aggregationType == "Zoltan")   // does not work, yet
+            || (aggregationType == "user"))    // does not work, yet
+    {
+        std::cout << "ML aggregation type is set to: " << aggregationType << std::endl;
+        return aggregationType;
+    }
+    else
+    {
+        std::cout << "ML aggregation type is set to default (Uncoupled)" << std::endl;
+        return "Uncoupled";
     }
 }
 
@@ -382,7 +415,7 @@ int main(int argc, char *argv[])
         if (linearSystem->multigridArg.getValue())
         {
             if (solver == "AztecOOML" || solver == "") // default for AMG
-                solveAztecOOML(problem, maxIter, relTol, getMLpreconditioner(linearSystem->preconditionerArg.getValue()));
+                solveAztecOOML(problem, maxIter, relTol, getMLpreconditioner(linearSystem->preconditionerArg.getValue()), getMLaggregationType(linearSystem->aggregationTypeArg.getValue()));
             else
                 assert(0 && "No solver selected !!!");
         }
