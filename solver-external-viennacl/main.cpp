@@ -25,8 +25,8 @@
 
 // ublas
 #ifndef NDEBUG
- // necessary to obtain a suitable performance in ublas
- #define BOOST_UBLAS_NDEBUG
+// necessary to obtain a suitable performance in ublas
+#define BOOST_UBLAS_NDEBUG
 #endif
 
 #include <boost/numeric/ublas/io.hpp>
@@ -38,10 +38,7 @@
 #include <boost/numeric/ublas/operation_sparse.hpp>
 
 #define VIENNACL_WITH_UBLAS 1
-
-#include "viennacl/compressed_matrix.hpp"
-#include "viennacl/matrix.hpp"
-#include "viennacl/vector.hpp"
+#define VIENNACL_WITH_OPENMP
 
 // solvers
 #include "viennacl/linalg/cg.hpp"
@@ -51,6 +48,7 @@
 
 // preconditioners
 #include "viennacl/linalg/ilu.hpp"
+#include "viennacl/linalg/jacobi_precond.hpp"
 
 // amg
 #include "viennacl/linalg/amg.hpp"
@@ -69,12 +67,14 @@ public:
           preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
           solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
           relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
-          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int"))
+          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
+          multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false))
     {
         cmd.add(preconditionerArg);
         cmd.add(solverArg);
         cmd.add(relTolArg);
         cmd.add(maxIterArg);
+        cmd.add(multigridArg);
     }
 
 public:
@@ -82,7 +82,13 @@ public:
     TCLAP::ValueArg<std::string> solverArg;
     TCLAP::ValueArg<double> relTolArg;
     TCLAP::ValueArg<int> maxIterArg;
+    TCLAP::SwitchArg multigridArg;
 };
+
+bool isKrylovSubspaceSolver(const std::string &solver)
+{
+    return (solver == "bicgstab");
+}
 
 int main(int argc, char *argv[])
 {
@@ -131,37 +137,65 @@ int main(int argc, char *argv[])
         // incomplete LU factorization with threshold
         // if (preconditionerArg.getValue() == "ILUT" || preconditionerArg.getValue() == "") // default
 
+        // solver
+        std::string solver = linearSystem.solverArg.getValue();
+        if (solver.empty()) solver = "bicgstab"; // default
+
         auto timeSolveStart = std::chrono::steady_clock::now();
-        // ilut
-        viennacl::linalg::ilut_tag ilut_config(20, 1e-4, true);
-        viennacl::linalg::ilut_precond<boost::numeric::ublas::compressed_matrix<ScalarType> > ilut_precond(ublas_matrix, ilut_config);
+        // Krylov Subspace Solvers
+        if (isKrylovSubspaceSolver(solver))
+        {
+            // ilu
+            viennacl::linalg::ilut_tag ilut_config(20, 1e-4, true);
+            viennacl::linalg::ilut_precond<boost::numeric::ublas::compressed_matrix<ScalarType> > ilut_precond(ublas_matrix, ilut_config);
 
-        // bicgstab
-        viennacl::linalg::bicgstab_tag custom_bicgstab(relTol, maxIter);
-        ublas_sln = viennacl::linalg::solve(ublas_matrix, ublas_rhs, custom_bicgstab, ilut_precond);
-        std::cout << "BiCGStab: iters: " << custom_bicgstab.iters() << ", error: " << custom_bicgstab.error() << std::endl;
+            // ilu0
+            // viennacl::linalg::ilut_tag ilu0_config;
+            // viennacl::linalg::ilu0_precond<boost::numeric::ublas::compressed_matrix<ScalarType> > ilut_precond(ublas_matrix, ilu0_config);
+
+            // Jacobi
+            // viennacl::linalg::jacobi_tag jacobi_config;
+            // viennacl::linalg::jacobi_precond<boost::numeric::ublas::compressed_matrix<ScalarType> > jacobi_precond(ublas_matrix, jacobi_config);
+
+            // bicgstab
+            // viennacl::linalg::bicgstab_tag custom_bicgstab(relTol, maxIter);
+            // ublas_sln = viennacl::linalg::solve(ublas_matrix, ublas_rhs, custom_bicgstab, ilut_precond);
+            // std::cout << "BiCGStab: iters: " << custom_bicgstab.iters() << ", error: " << custom_bicgstab.error() << std::endl;
+
+            // gmres
+            viennacl::linalg::gmres_tag custom_gmres(relTol, maxIter);
+            // ublas_sln = viennacl::linalg::solve(ublas_matrix, ublas_rhs, custom_gmres, jacobi_precond);
+            ublas_sln = viennacl::linalg::solve(ublas_matrix, ublas_rhs, custom_gmres, ilut_precond);
+        }
+
+        if (linearSystem.multigridArg.getValue())
+        {
+            // viennacl::context host_ctx(viennacl::MAIN_MEMORY);
+            // viennacl::context target_ctx(viennacl::CUDA_MEMORY);
+            /*
+            viennacl::linalg::amg_tag custom_amg;
+            custom_amg.set_coarsening_method(viennacl::linalg::AMG_COARSENING_METHOD_ONEPASS);
+            custom_amg.set_interpolation_method(viennacl::linalg::AMG_INTERPOLATION_METHOD_DIRECT);
+            custom_amg.set_strong_connection_threshold(0.25);
+            custom_amg.set_jacobi_weight(0.67);
+            custom_amg.set_presmooth_steps(1);
+            custom_amg.set_postsmooth_steps(1);
+            // custom_amg.set_setup_context(host_ctx);    // run setup on host
+            // custom_amg.set_target_context(target_ctx); // run solver cycles on device
+
+            viennacl::linalg::amg_precond<boost::numeric::ublas::compressed_matrix<ScalarType> >
+                    amg_precond(
+                        ublas_matrix,
+                        custom_amg);
+            amg_precond.setup();
+            ublas_sln = viennacl::linalg::solve(ublas_matrix, ublas_rhs, viennacl::linalg::bicgstab_tag(), amg_precond);
+            std::cout << "AMG: coarse_levels: " << custom_amg.get_coarse_levels()
+                      << ", presmooth_steps: " << custom_amg.get_presmooth_steps()
+                      << ", postsmooth_steps: " << custom_amg.get_postsmooth_steps() << std::endl;
+            */
+        }
+
         linearSystem.setInfoTimeSolveSystem(elapsedSeconds(timeSolveStart));
-
-        // viennacl::context host_ctx(viennacl::MAIN_MEMORY);
-        // viennacl::context target_ctx(viennacl::CUDA_MEMORY);
-        /*
-        viennacl::linalg::amg_tag custom_amg;
-        // custom_amg.set_coarsening_method(viennacl::linalg::AMG_COARSENING_METHOD_ONEPASS);
-        // custom_amg.set_interpolation_method(viennacl::linalg::AMG_INTERPOLATION_METHOD_DIRECT);
-        // custom_amg.set_strong_connection_threshold(0.25);
-        // custom_amg.set_jacobi_weight(0.67);
-        // custom_amg.set_presmooth_steps(1);
-        // custom_amg.set_postsmooth_steps(1);
-        // custom_amg.set_setup_context(host_ctx);    // run setup on host
-        // custom_amg.set_target_context(target_ctx); // run solver cycles on device
-
-        viennacl::linalg::amg_precond<viennacl::compressed_matrix<ScalarType> > amg_precond(vcl_matrix, custom_amg);
-        amg_precond.setup();
-        vcl_sln = viennacl::linalg::solve(vcl_matrix, vcl_rhs, viennacl::linalg::bicgstab_tag(), amg_precond);
-        std::cout << "AMG: coarse_levels: " << custom_amg.get_coarse_levels()
-                  << ", presmooth_steps: " << custom_amg.get_presmooth_steps()
-                  << ", postsmooth_steps: " << custom_amg.get_postsmooth_steps() << std::endl;
-        */
 
         // write solution - user RHS (memory saving)
         linearSystem.system_sln = linearSystem.system_rhs;

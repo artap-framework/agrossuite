@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/../deali
 
 # Set global compiler parameters.
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-deprecated")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-deprecated -Ofast")
 ENDIF()
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unsupported-friend")
@@ -30,7 +30,8 @@ solver_PARALUTION\n\
 <b>-l</b> or <b>--solver</b> (<i>string</i>) : BiCGStab, CG, GMRES, FGMRES, CR, IDR<br/>\
 <b>-x</b> or <b>--max_iter</b> (<i>int</i>)<br/>\
 <b>-t</b> or <b>--rel_tol</b> (<i>double</i>)<br/>\
-<b>-a</b> or <b>--abs_tol</b> (<i>double</i>)")
+<b>-a</b> or <b>--abs_tol</b> (<i>double</i>)<br/>\
+<b>-g</b> or <b>--multigrid</b>")
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${PARALUTION_LIBRARY})
@@ -40,8 +41,8 @@ INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 ENABLE_TESTING()
 INCLUDE(CTest)
 
-add_test(NAME "PARALUTION-electrostatic-QR" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_PARALUTION -v -l QR -m ../resources_source/linear_solvers/electrostatic.matrix -p ../resources_source/linear_solvers/electrostatic.matrix_pattern -r ../resources_source/linear_solvers/electrostatic.rhs -q  ../resources_source/linear_solvers/electrostatic.sln)
+#add_test(NAME "PARALUTION-electrostatic-QR" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_PARALUTION -v -l QR -m ../resources_source/linear_solvers/electrostatic.matrix -p ../resources_source/linear_solvers/electrostatic.matrix_pattern -r ../resources_source/linear_solvers/electrostatic.rhs -q  ../resources_source/linear_solvers/electrostatic.sln)
 add_test(NAME "PARALUTION-electrostatic-AMG-MultiColoredILU-BiCGStab" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_PARALUTION -v -g -t 1e-6 -a 1e-14 -c MultiColoredILU -l BiCGStab -m ../resources_source/linear_solvers/electrostatic.matrix -p ../resources_source/linear_solvers/electrostatic.matrix_pattern -r ../resources_source/linear_solvers/electrostatic.rhs -q  ../resources_source/linear_solvers/electrostatic.sln)
 add_test(NAME "PARALUTION-electrostatic-Jacobi-BiCGStab" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_PARALUTION -v -t 1e-6 -a 1e-16 -c Jacobi -l BiCGStab -m ../resources_source/linear_solvers/electrostatic.matrix -p ../resources_source/linear_solvers/electrostatic.matrix_pattern -r ../resources_source/linear_solvers/electrostatic.rhs -q  ../resources_source/linear_solvers/electrostatic.sln)
 add_test(NAME "PARALUTION-electrostatic-ILU-BiCGStab" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_PARALUTION -v -t 1e-6 -a 1e-16 -c ILU -l BiCGStab -m ../resources_source/linear_solvers/electrostatic.matrix -p ../resources_source/linear_solvers/electrostatic.matrix_pattern -r ../resources_source/linear_solvers/electrostatic.rhs -q  ../resources_source/linear_solvers/electrostatic.sln)
-add_test(NAME "PARALUTION-acoustic-ILU-IDR" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_PARALUTION -v -t 1e-6 -a 1e-16 -c ILU -l IDR -m ../resources_source/linear_solvers/acoustic.matrix -p ../resources_source/linear_solvers/acoustic.matrix_pattern -r ../resources_source/linear_solvers/acoustic.rhs -q  ../resources_source/linear_solvers/acoustic.sln)
+add_test(NAME "PARALUTION-acoustic-ILU-IDR" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_PARALUTION -v -t 1e-6 -a 1e-16 -c MultiColoredILU -l IDR -m ../resources_source/linear_solvers/acoustic.matrix -p ../resources_source/linear_solvers/acoustic.matrix_pattern -r ../resources_source/linear_solvers/acoustic.rhs -q  ../resources_source/linear_solvers/acoustic.sln)

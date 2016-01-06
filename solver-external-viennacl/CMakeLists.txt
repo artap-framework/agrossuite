@@ -9,10 +9,13 @@ find_package(OpenMP REQUIRED)
 
 # Set global compiler parameters.
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-deprecated ${OpenMP_CXX_FLAGS} -DVIENNACL_WITH_OPENMP")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-deprecated -Ofast ${OpenMP_CXX_FLAGS}")
+ENDIF()
+IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 ENDIF()
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unsupported-friend ${OpenMP_CXX_FLAGS} -DVIENNACL_WITH_OPENMP")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unsupported-friend")
   SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-export-dynamic")
 ENDIF()
 
@@ -30,7 +33,8 @@ solver_ViennaCL\n\
 <b>-c</b> or <b>--preconditioner</b> (<i>string</i>) : ilut<br/>\
 <b>-l</b> or <b>--solver</b> (<i>string</i>) : bicgstab<br/>\
 <b>-x</b> or <b>--max_iter</b> (<i>int</i>)<br/>\
-<b>-t</b> or <b>--rel_tol</b> (<i>double</i>)")
+<b>-t</b> or <b>--rel_tol</b> (<i>double</i>)<br/>\
+<b>-g</b> or <b>--multigrid</b>")
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME})
@@ -40,5 +44,5 @@ INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 ENABLE_TESTING()
 INCLUDE(CTest)
 
-add_test(NAME "ViennaCL-electrostatic-ilut-bicgstab" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_ViennaCL -v -t 1e-6 -c bicgstab -m ../resources_source/linear_solvers/electrostatic.matrix -p ../resources_source/linear_solvers/electrostatic.matrix_pattern -r ../resources_source/linear_solvers/electrostatic.rhs -q  ../resources_source/linear_solvers/electrostatic.sln)
-add_test(NAME "ViennaCL-acoustic-ilut-bicgstab" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_ViennaCL -v -t 1e-5 -x 3000 -c bicgstab -m ../resources_source/linear_solvers/acoustic.matrix -p ../resources_source/linear_solvers/acoustic.matrix_pattern -r ../resources_source/linear_solvers/acoustic.rhs -q  ../resources_source/linear_solvers/acoustic.sln)
+add_test(NAME "ViennaCL-electrostatic-ilut-gmres" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_ViennaCL -v -t 1e-6 -c gmres -m ../resources_source/linear_solvers/electrostatic.matrix -p ../resources_source/linear_solvers/electrostatic.matrix_pattern -r ../resources_source/linear_solvers/electrostatic.rhs -q  ../resources_source/linear_solvers/electrostatic.sln)
+add_test(NAME "ViennaCL-acoustic-ilut-gmres" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND ../libs/solver_ViennaCL -v -t 1e-5 -x 3000 -c gmres -m ../resources_source/linear_solvers/acoustic.matrix -p ../resources_source/linear_solvers/acoustic.matrix_pattern -r ../resources_source/linear_solvers/acoustic.rhs -q  ../resources_source/linear_solvers/acoustic.sln)
