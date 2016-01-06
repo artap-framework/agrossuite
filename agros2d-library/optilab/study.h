@@ -69,7 +69,7 @@ public:
     virtual void save(QJsonObject &object);
 
     inline void addComputation(QSharedPointer<Computation> computation) { m_computationSet.append(computation); }
-    QList<QSharedPointer<Computation> > computations() { return m_computationSet; }
+    QList<QSharedPointer<Computation> > &computations() { return m_computationSet; }
 
 protected:
     QList<QSharedPointer<Computation> > m_computationSet;
