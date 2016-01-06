@@ -63,6 +63,7 @@
 #include "Aztec2Petra.h"
 #include "AztecOOParameterList.hpp"
 // required by ML
+#include "ml_include.h"
 #include "ml_MultiLevelPreconditioner.h"
 //----
 #include "../3rdparty/tclap/CmdLine.h"
@@ -74,23 +75,26 @@ public:
     LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
         : LinearSystemArgs(name, argc, argv),
           solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
-          // preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
+          preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
           // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
           relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
-          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int"))
+          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
+          multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false))
     {
         cmd.add(solverArg);
-        // cmd.add(preconditionerArg);
+        cmd.add(preconditionerArg);
         // cmd.add(absTolArg);
         cmd.add(relTolArg);
         cmd.add(maxIterArg);
+        cmd.add(multigridArg);
     }
 
     TCLAP::ValueArg<std::string> solverArg;
-    // TCLAP::ValueArg<std::string> preconditionerArg;
+    TCLAP::ValueArg<std::string> preconditionerArg;
     // TCLAP::ValueArg<double> absTolArg;
     TCLAP::ValueArg<double> relTolArg;
     TCLAP::ValueArg<int> maxIterArg;
+    TCLAP::SwitchArg multigridArg;
 };
 
 void solveAmesos(const Epetra_LinearProblem &problem, std::string solverTypeName =  "Amesos_Klu")
@@ -102,10 +106,10 @@ void solveAmesos(const Epetra_LinearProblem &problem, std::string solverTypeName
     assert(amesosSolver);
 
     // create parameter list for solver
-    Teuchos::ParameterList parList;
-    parList.set ("PrintTiming", false); // test of parameter setting
-    parList.set ("PrintStatus", false); // test of parameter setting
-    amesosSolver->SetParameters(parList);
+    Teuchos::ParameterList parListAmesos;
+    parListAmesos.set ("PrintTiming", false); // test of parameter setting
+    parListAmesos.set ("PrintStatus", false); // test of parameter setting
+    amesosSolver->SetParameters(parListAmesos);
 
     amesosSolver->SymbolicFactorization();
     amesosSolver->NumericFactorization();
@@ -118,10 +122,10 @@ void solveAztecOO(const Epetra_LinearProblem &problem, int maxIter, double relTo
 {
     AztecOO aztecooSolver(problem);
     // create parameter list for solver
-    Teuchos::ParameterList parList;
-    parList.set ("PrintTiming", false); // test of parameter setting
-    parList.set ("PrintStatus", false); // test of parameter setting
-    aztecooSolver.SetParameters(parList);
+    Teuchos::ParameterList parListAztec00;
+    parListAztec00.set ("PrintTiming", false); // test of parameter setting
+    parListAztec00.set ("PrintStatus", false); // test of parameter setting
+    aztecooSolver.SetParameters(parListAztec00);
     aztecooSolver.SetAztecOption(AZ_precond, AZ_dom_decomp);
     aztecooSolver.SetAztecOption(AZ_subdomain_solve, AZ_ilut);
     aztecooSolver.SetAztecOption(AZ_solver, AZ_tfqmr);
@@ -131,7 +135,7 @@ void solveAztecOO(const Epetra_LinearProblem &problem, int maxIter, double relTo
     // std::cout << "Solver performed " << aztecooSolver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << aztecooSolver.TrueResidual() << std::endl;
 }
 
-void solveML(const Epetra_LinearProblem &problem, int maxIter, double relTol)
+void solveAztecOOML(const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner)
 {
     // create a parameter list for ML options
     Teuchos::ParameterList mlList;
@@ -179,6 +183,27 @@ void solveML(const Epetra_LinearProblem &problem, int maxIter, double relTol)
     aztecooSolver.SetAztecOption(AZ_solver, AZ_cg);
     aztecooSolver.SetAztecOption(AZ_output, 32);
     aztecooSolver.Iterate(maxIter, relTol);
+}
+
+std::string getMLpreconditioner(std::string preconditioner)
+{
+    if ((preconditioner == "SA")
+            || (preconditioner == "SA")             // - "SA" : classical smoothed aggregation preconditioners;
+            || (preconditioner == "NSSA")           // - "NSSA" : default values for Petrov-Galerkin preconditioner for nonsymmetric systems
+            || (preconditioner == "maxwell")        // - "maxwell" : default values for aggregation preconditioner for eddy current systems
+            || (preconditioner == "DD")             // - "DD" : defaults for 2-level domain decomposition preconditioners based on aggregation;
+            || (preconditioner == "DD-LU")          // - "DD-LU" : Like "DD", but use exact LU decompositions on each subdomain;
+            || (preconditioner == "DD-ML")          // - "DD-ML" : 3-level domain decomposition preconditioners, with coarser spaces defined by aggregation;
+            || (preconditioner == "DD-ML-LU"))      // - "DD-ML-LU" : Like "DD-ML", but with LU decompositions on each subdomain.
+    {
+        std::cout << "ML preconditioner is set to: " << preconditioner << std::endl;
+        return preconditioner;
+    }
+    else
+    {
+        std::cout << "ML preconditioner is set to default (SA)" << std::endl;
+        return "SA";
+    }
 }
 
 LinearSystemTrilinosArgs *createLinearSystem(std::string extSolverName, int argc, char *argv[])
@@ -236,6 +261,7 @@ int main(int argc, char *argv[])
             globalNumberOfRows = (int) linearSystem->n();
             numberOfNonZeros = (int) linearSystem->nz();
         }
+// MPI
         // send globalNumberOfRows from process 0 to all processes
 //        MPI_Bcast(&globalNumberOfRows, 1, MPI_INT, 0,MPI_COMM_WORLD);
 //        MPI_Bcast(&numberOfNonZeros, 1, MPI_INT, 0,MPI_COMM_WORLD);
@@ -266,6 +292,7 @@ int main(int argc, char *argv[])
         {
             throw std::logic_error ("Failed to get the list of global indices");
         }
+// MPI
 
         // print Epetra Map
 //        for (int i = 0; i < numProcs; ++i )
@@ -311,7 +338,8 @@ int main(int argc, char *argv[])
         }
         epeA.FillComplete(); // Transform from GIDs to LIDs
 
-//        // prepare distributed Epetra matrix
+// MPI
+          // prepare distributed Epetra matrix
 //        Epetra_FECrsMatrix epeA(Copy, epeMap, maxNumPerRow);
 
 //        // prepare data on process 0
@@ -331,13 +359,13 @@ int main(int argc, char *argv[])
 //        epeA.GlobalAssemble();
 //        std::cout << "Process ID " << rank << std::endl << "epeA" << std::endl << epeA << std::endl;
 
-        // test !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// for testing MPI !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //                        #ifdef HAVE_MPI
 //                                // for MPI version
 //                                MPI_Finalize() ;
 //                        #endif
 //                                return 0;
-        // end of test !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// end of test !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         // create Epetra_Vectors
         // vectors x and b
@@ -351,19 +379,30 @@ int main(int argc, char *argv[])
         // create linear problem
         Epetra_LinearProblem problem(&epeA, &epeX, &epeB);
 
+        // get parameters to local value
         double relTol = linearSystem->relTolArg.getValue();
         int maxIter = linearSystem->maxIterArg.getValue();
 
+
         // solver calling
         std::string solver = linearSystem->solverArg.getValue();
-        if (solver == "Amesos_Klu" || solver == "") // default
-            solveAmesos(problem, "Amesos_Klu");
-        else if (solver == "AztecOO")
-            solveAztecOO(problem, maxIter, relTol);
-        else if (solver == "ML")
-            solveML(problem, maxIter, relTol);
+        if (linearSystem->multigridArg.getValue())
+        {
+            if (solver == "AztecOOML" || solver == "") // default for AMG
+                solveAztecOOML(problem, maxIter, relTol, getMLpreconditioner(linearSystem->preconditionerArg.getValue()));
+            else
+                assert(0 && "No solver selected !!!");
+        }
         else
-            assert(0 && "No solver selected !!!");
+        {
+            if (solver == "Amesos_Klu" || solver == "") // default
+                solveAmesos(problem, "Amesos_Klu");
+            else if (solver == "AztecOO")
+                solveAztecOO(problem, maxIter, relTol);
+            else
+                assert(0 && "No solver selected !!!");
+
+        }
 
         // copy results into the solution vector (for Agros2D)
         if (rank == 0)
