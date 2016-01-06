@@ -63,8 +63,6 @@ build_viennacl:
   tags:
     - linux
   script: 
-    - export CC=/usr/bin/clang
-    - export CXX=/usr/bin/clang++    
     - cd solver-external-viennacl
     - cmake .
     - make 
