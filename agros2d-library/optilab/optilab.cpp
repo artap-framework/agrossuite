@@ -188,13 +188,11 @@ void OptiLabWidget::testSweep()
     // add to list
     Agros2D::problem()->studies()->addStudy(analysis);
 
-    // only one parameter
-    // QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
-    // analysis->setParameter(Parameter::fromList("R3", params));
-    // analysis->setParameter(Parameter::fromValue("R3", 0.06));
-    analysis->addParameter(Parameter::fromRandom("R3", 4, 0.05, 0.07));
+    //QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
+    //analysis->addParameter(Parameter::fromList("R1", params));
+    //analysis->addParameter(Parameter::fromRandom("R2", 4, 0.05, 0.07));
+    analysis->addParameter(Parameter::fromLinspace("R3", 3, 0.05, 0.07));
     analysis->addParameter(Parameter::fromRandom("C", 10, 1, 5));
-    // analysis->setParameter(Parameter::fromLinspace("R3", 3, 0.05, 0.07));
 
     // add functionals
     analysis->addFunctional(Functional("We", FunctionalType_Result, "C+R3**2")); //computation.solution(\"electrostatic\").volume_integrals([0,1])[\"We\"]

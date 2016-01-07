@@ -2156,7 +2156,7 @@ void Problem::readProblemFromArchive(const QString &fileName)
         emit post->solved();
 
         // read studies
-        m_studies->loadStudies();
+        m_studies->load();
     }
 }
 
@@ -2186,7 +2186,7 @@ void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFil
     else
     {
         // save studies
-        m_studies->saveStudies();
+        m_studies->save();
 
         // whole directory
         JlCompress::compressDir(fileName, cacheProblemDir());

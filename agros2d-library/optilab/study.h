@@ -22,41 +22,11 @@
 
 #include <QWidget>
 
-//#include "util.h"
 #include "util/enums.h"
 #include "parameter.h"
 #include "functional.h"
 
 class Computation;
-class Study;
-
-class Studies : public QObject
-{
-    Q_OBJECT
-
-public:
-    Studies(QObject *parent = 0);
-    ~Studies();
-
-    void addStudy(Study *study);
-    void removeStudy(Study *study);
-    inline QList<Study *> &studies() { return m_studies; }
-
-    Study * operator[] (int idx) { return m_studies[idx]; }
-    const Study * operator[] (int idx) const { return m_studies[idx]; }
-
-signals:
-    void invalidated();
-
-public slots:
-    void clear();
-
-    bool loadStudies();
-    bool saveStudies();
-
-private:
-    QList<Study *> m_studies;
-};
 
 class ComputationSet
 {
@@ -77,8 +47,6 @@ protected:
     QString m_name;
     QList<QSharedPointer<Computation> > m_computationSet;
 };
-
-Q_DECLARE_METATYPE(Study *)
 
 class Study : public QObject
 {
@@ -119,6 +87,36 @@ protected:
     QList<Parameter> m_parameters;
     QList<Functional> m_functionals;
     QList<ComputationSet> m_computations;
+};
+
+Q_DECLARE_METATYPE(Study *)
+
+class Studies : public QObject
+{
+    Q_OBJECT
+
+public:
+    Studies(QObject *parent = 0);
+    ~Studies();
+
+    void addStudy(Study *study);
+    void removeStudy(Study *study);
+    inline QList<Study *> &studies() { return m_studies; }
+
+    Study * operator[] (int idx) { return m_studies[idx]; }
+    const Study * operator[] (int idx) const { return m_studies[idx]; }
+
+signals:
+    void invalidated();
+
+public slots:
+    void clear();
+
+    bool load();
+    bool save();
+
+private:
+    QList<Study *> m_studies;
 };
 
 #endif // STUDY_H

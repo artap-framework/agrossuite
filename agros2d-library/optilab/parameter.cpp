@@ -172,6 +172,8 @@ Parameter Parameter::fromRandom(const QString &name, int count, double lowerBoun
     return parameter;
 }
 
+// *****************************************************************************************************************
+
 ParameterSpace::ParameterSpace(QList<Parameter> parameters) :
     m_parameters(parameters) { }
 
