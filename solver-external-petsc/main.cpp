@@ -24,6 +24,7 @@
 #include <sstream>
 #include <string>
 #include <fstream>
+#include <set>
 
 #define JOB_INIT -1
 #define JOB_END -2
@@ -38,10 +39,93 @@
 #include "../../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
 
-class LinearSystemPetscArgs : public LinearSystemArgs
-{
 
+class LinearSystemPETScArgs : public LinearSystemArgs
+{
+    // another used args (not listed here): -s, -r, -p, -m, -q
+public:
+    LinearSystemPETScArgs(const std::string &name, int argc, const char * const *argv)
+        : LinearSystemArgs(name, argc, argv),
+          solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
+          preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
+          aggregationTypeArg(TCLAP::ValueArg<std::string>("e", "aggregationType", "AggregationType", false, "", "string")),
+          smootherTypeArg(TCLAP::ValueArg<std::string>("o", "smootherType", "SmootherType", false, "", "string")),
+          coarseTypeArg(TCLAP::ValueArg<std::string>("z", "coarseType", "CoarseType", false, "", "string")),
+          // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
+          relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
+          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
+          multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false))
+    {
+        cmd.add(solverArg);
+        cmd.add(preconditionerArg);
+        cmd.add(aggregationTypeArg);
+        cmd.add(smootherTypeArg);
+        cmd.add(coarseTypeArg);
+        // cmd.add(absTolArg);
+        cmd.add(relTolArg);
+        cmd.add(maxIterArg);
+        cmd.add(multigridArg);
+    }
+
+    TCLAP::ValueArg<std::string> solverArg;
+    TCLAP::ValueArg<std::string> preconditionerArg;
+    TCLAP::ValueArg<std::string> aggregationTypeArg;
+    TCLAP::ValueArg<std::string> smootherTypeArg;
+    TCLAP::ValueArg<std::string> coarseTypeArg;
+    // TCLAP::ValueArg<double> absTolArg;
+    TCLAP::ValueArg<double> relTolArg;
+    TCLAP::ValueArg<int> maxIterArg;
+    TCLAP::SwitchArg multigridArg;
 };
+
+LinearSystemPETScArgs *createLinearSystem(std::string extSolverName, int argc, char *argv[])
+{
+    LinearSystemPETScArgs *linearSystem = new LinearSystemPETScArgs(extSolverName, argc, argv);
+    linearSystem->readLinearSystem();
+    return linearSystem;
+}
+
+// usage:
+// LinearSystemTrilinosArgs *linearSystem = nullptr;
+// ...
+// linearSystem = createLinearSystem("External solver - TRILINOS", argc, argv);
+// -----
+// get parameters to local value
+// double relTol = linearSystem->relTolArg.getValue();
+// int maxIter = linearSystem->maxIterArg.getValue();
+
+KSPType solver(std::string solver)
+{
+    if( solver == "richardson")
+        return KSPRICHARDSON;
+    else if( solver == "chebyshev")
+        return KSPCHEBYSHEV;
+    else
+        return "none";
+}
+
+
+PCType preConditioner(std::string preConditioner)
+{
+    if( preConditioner == "jacobi")
+        return PCJACOBI;
+    else if (preConditioner == "hypre")
+        return PCHYPRE;
+    else if (preConditioner == "sor")
+        return PCSOR;
+    else if (preConditioner == "lu")
+        return PCLU;
+    else if (preConditioner == "mg")
+        return PCMG;
+    else if (preConditioner == "shell")
+        return PCSHELL;
+    else if (preConditioner == "bjacobi")
+        return PCBJACOBI;
+    else if (preConditioner == "eisenstat")
+        return PCEISENSTAT;
+    else
+        return "none";
+}
 
 int main(int argc, char *argv[])
 {
@@ -49,7 +133,9 @@ int main(int argc, char *argv[])
     {
         int status = 0;
 
-        LinearSystemArgs linearSystem("External solver - PETSc", argc, argv);
+        LinearSystemPETScArgs *linearSystem = NULL;
+        linearSystem = createLinearSystem("External solver - PETSc", argc, argv);
+
 
         Vec x,b;
         Mat  A;
@@ -66,49 +152,28 @@ int main(int argc, char *argv[])
         ierr = MPI_Comm_size(PETSC_COMM_WORLD, &size); CHKERRQ(ierr);
         int rank;
         ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-        std::cout << "rank =  " << rank << std::endl;
+        // std::cout << "rank =  " << rank << std::endl;
         ierr = PetscOptionsGetBool(NULL,"-nonzero_guess", &nonzeroguess,NULL); CHKERRQ(ierr);
 
 
         PetscInt *row_indicies = NULL;
         PetscInt *row_lengths = NULL;
 
-        //        double  * globaldata = NULL;
-        //        double localdata[3];
-        //        const int N = 12;
-
-        //        if (rank == 0)
-        //        {
-        //            globaldata = new double[N];
-
-        //            for(int i = 0; i < N; i++)
-        //            {
-        //                globaldata[i] = i+1;
-        //            }
-        //        }
-        //        MPI_Scatter(globaldata, 3, MPI_DOUBLE, localdata, 3, MPI_DOUBLE, 0, PETSC_COMM_WORLD);
-        //        for(int i = 0; i < 3; i++)
-        //        {
-        //            std::cout << "Rank:" << rank << "  " << localdata[i] << std::endl;
-        //        }
-
-
 
 
         //   if (rank == 0)
         {
-            linearSystem.readLinearSystem();
-            n_rows = linearSystem.n();
-            n = linearSystem.nz();
+            n_rows = linearSystem->n();
+            n = linearSystem->nz();
             row_indicies = new PetscInt[n_rows];
             row_lengths = new PetscInt[n_rows];
 
             for (int i = 0; i < n_rows; i++)
             {
-                row_indicies[i] = linearSystem.system_matrix_pattern->rowstart[i];
+                row_indicies[i] = linearSystem->system_matrix_pattern->rowstart[i];
             }
 
-            column_indicies = reinterpret_cast<PetscInt *>(linearSystem.system_matrix_pattern->colnums);
+            column_indicies = reinterpret_cast<PetscInt *>(linearSystem->system_matrix_pattern->colnums);
 
             for(int i = 0; i < n_rows; i++)
             {
@@ -127,11 +192,9 @@ int main(int argc, char *argv[])
         ierr = MatCreate(PETSC_COMM_WORLD, &A); CHKERRQ(ierr);
         ierr = MatSetType(A, MATMPIAIJ); CHKERRQ(ierr);
         ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, n_rows, n_rows); CHKERRQ(ierr);
-        ierr = MatMPIAIJSetPreallocation(A, 7, PETSC_NULL, 7, PETSC_NULL); CHKERRQ(ierr);
-        ierr = MatSeqAIJSetPreallocation(A, 7, NULL);CHKERRQ(ierr);
+        ierr = MatMPIAIJSetPreallocation(A, n_rows, PETSC_NULL, n_rows, PETSC_NULL); CHKERRQ(ierr);
+        ierr = MatSeqAIJSetPreallocation(A, n_rows, NULL);CHKERRQ(ierr);
         ierr = MatSetFromOptions(A);
-
-
 
 
         int istart, iend;
@@ -139,19 +202,20 @@ int main(int argc, char *argv[])
         ierr = MatGetOwnershipRange(A, &istart,&iend); CHKERRQ(ierr);
         int mm, nn;
         ierr = MatGetLocalSize(A, &mm, &nn);
-        std::cout << rank << "   " << mm << "  " << nn << "  " << "\n";
+        // std::cout << rank << "   " << mm << "  " << nn << "  " << "\n";
+
 
         int l = 0;
         for (int i = istart; (i < iend) && (i < n_rows); i++)
         {
-            MatSetValues(A, 1, &i, row_lengths[i], &column_indicies[row_indicies[i]],&linearSystem.system_matrix->val[row_indicies[i]], INSERT_VALUES);
+            MatSetValues(A, 1, &i, row_lengths[i], &column_indicies[row_indicies[i]],&linearSystem->system_matrix->val[row_indicies[i]], INSERT_VALUES);
             l++;
         }
 
         ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
         ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
 
-        MatView(A, PETSC_VIEWER_STDOUT_SELF);
+        // MatView(A, PETSC_VIEWER_STDOUT_SELF);
 
         ierr = VecCreateMPI(PETSC_COMM_WORLD, PETSC_DECIDE, n_rows, &x); CHKERRQ(ierr);
         ierr = PetscObjectSetName((PetscObject) x, "Solution"); CHKERRQ(ierr);
@@ -160,25 +224,33 @@ int main(int argc, char *argv[])
 
 
         ierr = VecGetOwnershipRange(x,&istart,&iend); CHKERRQ(ierr);
-        std::cout << istart << "  ";
+        // std::cout << istart << "  ";
         for (int i = istart; i < iend; i++)
         {
-            VecSetValues(b, 1, &i, &linearSystem.system_rhs->val[i], INSERT_VALUES);
+            VecSetValues(b, 1, &i, &linearSystem->system_rhs->val[i], INSERT_VALUES);
         }
 
         ierr = VecAssemblyBegin(b); CHKERRQ(ierr);
         ierr = VecAssemblyEnd(b); CHKERRQ(ierr);
-        VecView(b, PETSC_VIEWER_STDOUT_SELF);
+        // VecView(b, PETSC_VIEWER_STDOUT_SELF);
 
         //       Create linear solver context
         ierr = KSPCreate(PETSC_COMM_WORLD,&ksp);CHKERRQ(ierr);
         ierr = KSPSetOperators(ksp,A,A,DIFFERENT_NONZERO_PATTERN);CHKERRQ(ierr);
 
 
+        PCType pcArg = preConditioner(linearSystem->preconditionerArg.getValue());
+        // pcArg = PCNONE;
         ierr = KSPGetPC(ksp,&pc);CHKERRQ(ierr);
-        ierr = PCSetType(pc, PCHYPRE);CHKERRQ(ierr);
+        ierr = PCSetType(pc, pcArg);CHKERRQ(ierr);
+
+        KSPType kspArg = solver(linearSystem->solverArg.getValue());
+        if(kspArg != "none")
+        {
+            ierr = KSPSetType(ksp, kspArg);
+        }
         PCFactorSetShiftType(pc, MAT_SHIFT_NONZERO);
-        ierr = KSPSetTolerances(ksp,1.e-10,PETSC_DEFAULT,PETSC_DEFAULT,PETSC_DEFAULT);CHKERRQ(ierr);
+        ierr = KSPSetTolerances(ksp,1.e-4,PETSC_DEFAULT,PETSC_DEFAULT,PETSC_DEFAULT);CHKERRQ(ierr);
 
         ierr = KSPSetFromOptions(ksp);CHKERRQ(ierr);
 
@@ -194,23 +266,23 @@ int main(int argc, char *argv[])
             ierr = KSPSolve(ksp, b, x); CHKERRQ(ierr);
         }
 
-        MatView(A, PETSC_VIEWER_STDOUT_SELF);
+        // MatView(A, PETSC_VIEWER_STDOUT_SELF);
 
 
         //       if (rank == 0)
         {
-            for (int i = 0; i < linearSystem.n(); i++)
+            for (int i = 0; i < linearSystem->n(); i++)
             {
-                VecGetValues(x,1,&i, &linearSystem.system_rhs->val[i]);
+                VecGetValues(x,1,&i, &linearSystem->system_rhs->val[i]);
             }
 
-            linearSystem.system_sln = linearSystem.system_rhs;
+            linearSystem->system_sln = linearSystem->system_rhs;
 
-            linearSystem.writeSolution();
+            linearSystem->writeSolution();
 
             // check solution
-            if (linearSystem.hasReferenceSolution())
-                status = linearSystem.compareWithReferenceSolution();
+            if (linearSystem->hasReferenceSolution())
+                status = linearSystem->compareWithReferenceSolution();
 
             delete [] row_indicies;
             delete [] row_lengths;
