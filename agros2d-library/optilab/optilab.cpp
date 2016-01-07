@@ -197,7 +197,7 @@ void OptiLabWidget::testSweep()
     // analysis->setParameter(Parameter::fromLinspace("R3", 3, 0.05, 0.07));
 
     // add functionals
-    analysis->addFunctional(Functional("We", Functional::Minimize, "C+R3**2")); //computation.solution(\"electrostatic\").volume_integrals([0,1])[\"We\"]
+    analysis->addFunctional(Functional("We", FunctionalType_Result, "C+R3**2")); //computation.solution(\"electrostatic\").volume_integrals([0,1])[\"We\"]
 
     // solve
     analysis->solve();
@@ -218,9 +218,9 @@ void OptiLabWidget::testGenetic()
     analysis->addParameter(Parameter("py", -10.0, 10.0));
 
     // add functionals
-    // analysis->addFunctional(Functional("f", Functional::Minimize, "-(sin(px) * cos(py) * exp((1 - (sqrt(px**2 + py**2)/pi))))"));
-    // analysis->addFunctional(Functional("f", Functional::Minimize, "px**2 + py**2"));
-    analysis->addFunctional(Functional("f", Functional::Minimize, "(px+2*py-7)**2 + (2*px+py-5)**2"));
+    // analysis->addFunctional(Functional("f", FunctionalType_Minimize, "-(sin(px) * cos(py) * exp((1 - (sqrt(px**2 + py**2)/pi))))"));
+    // analysis->addFunctional(Functional("f", FunctionalType_Minimize, "px**2 + py**2"));
+    analysis->addFunctional(Functional("f", FunctionalType_Minimize, "(px+2*py-7)**2 + (2*px+py-5)**2"));
 
     // solve
     analysis->solve();

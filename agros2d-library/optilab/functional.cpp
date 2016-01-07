@@ -23,23 +23,23 @@
 
 // consts
 const QString NAME = "name";
-const QString OPERATION = "operation";
+const QString TYPE = "type";
 const QString EXPRESSION = "expression";
 
-Functional::Functional(const QString &name, Operation operation, const QString &expression) :
-    m_name(name), m_operation(operation), m_expression(expression) { }
+Functional::Functional(const QString &name, FunctionalType type, const QString &expression) :
+    m_name(name), m_type(type), m_expression(expression) { }
 
 void Functional::load(QJsonObject &object)
 {
     m_name = object[NAME].toString();
-    //TODO: m_operation = object[OPERATION];
+    m_type = functionalTypeFromStringKey(object[TYPE].toString());
     m_expression = object[EXPRESSION].toString();
 }
 
 void Functional::save(QJsonObject &object)
 {
     object[NAME] = m_name;
-    //TODO: object[OPERATION] = m_operation;
+    object[TYPE] = functionalTypeString(m_type);
     object[EXPRESSION] = m_expression;
 }
 
@@ -56,7 +56,7 @@ bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
             commandPre += QString("; %1 = %2").arg(key).arg(parameters[key]);
     }
 
-    // resutls
+    // results
     StringToDoubleMap results = computation->result()->results();
     foreach (QString key, results.keys())
     {
