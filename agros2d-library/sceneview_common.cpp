@@ -156,8 +156,6 @@ void SceneViewCommon::printRulersAt(int penX, int penY, const QString &text)
 
 void SceneViewCommon::printPostAt(int penX, int penY, const QString &text)
 {
-    glColor3d(0.0, 0.0, 0.0);
-
     glBindTexture(GL_TEXTURE_2D, m_textureLabelPost);
     printAt(penX, penY, text, m_charDataPost);
 }

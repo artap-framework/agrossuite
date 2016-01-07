@@ -153,7 +153,6 @@ void PostprocessorSceneParticleTracingWidget::createControls()
 
     // reflection
     QGridLayout *gridLayoutReflection = new QGridLayout();
-    gridLayoutReflection->setContentsMargins(5, 5, 0, 0);
     gridLayoutReflection->setColumnMinimumWidth(0, columnMinimumWidth());
     gridLayoutReflection->setColumnStretch(1, 1);
     gridLayoutReflection->addWidget(chkParticleReflectOnDifferentMaterial, 0, 0, 1, 2);
@@ -166,12 +165,20 @@ void PostprocessorSceneParticleTracingWidget::createControls()
     QGroupBox *grpReflection = new QGroupBox(tr("Reflection"));
     grpReflection->setLayout(gridLayoutReflection);
 
+    QVBoxLayout *layoutReflection = new QVBoxLayout();
+    layoutReflection->addWidget(grpReflection);
+    layoutReflection->addStretch(1);
+
+    QWidget *widgetReflection = new QWidget(this);
+    widgetReflection->setLayout(layoutReflection);
+
     // Lorentz force
     QGridLayout *gridLayoutLorentzForce = new QGridLayout();
     gridLayoutLorentzForce->addWidget(new QLabel(tr("Equation:")), 0, 0);
     gridLayoutLorentzForce->addWidget(new QLabel(QString("<i><b>F</b></i><sub>L</sub> = <i>Q</i> (<i><b>E</b></i> + <i><b>v</b></i> x <i><b>B</b></i>)")), 0, 1);
     gridLayoutLorentzForce->addWidget(new QLabel(tr("Charge (C):")), 1, 0);
     gridLayoutLorentzForce->addWidget(txtParticleConstant, 1, 1);
+    gridLayoutLorentzForce->setRowStretch(50, 1);
 
     QGroupBox *grpLorentzForce = new QGroupBox(tr("Lorentz force"));
     grpLorentzForce->setLayout(gridLayoutLorentzForce);
@@ -184,10 +191,11 @@ void PostprocessorSceneParticleTracingWidget::createControls()
     gridLayoutDragForce->addWidget(new QLabel(QString("<i><b>F</b></i><sub>D</sub> = - &frac12; <i>&rho;</i> <i>v</i><sup>2</sup> <i>C</i><sub>D</sub> <i>S</i> &sdot; <i><b>v</b></i><sub>0</sub>")), 0, 1);
     gridLayoutDragForce->addWidget(new QLabel(tr("Density (kg/m<sup>3</sup>):")), 1, 0);
     gridLayoutDragForce->addWidget(txtParticleDragDensity, 1, 1);
-    gridLayoutDragForce->addWidget(new QLabel(tr("Reference area (m<sup>2</sup>):")), 2, 0);
+    gridLayoutDragForce->addWidget(new QLabel(tr("Ref. area (m<sup>2</sup>):")), 2, 0);
     gridLayoutDragForce->addWidget(txtParticleDragReferenceArea, 2, 1);
     gridLayoutDragForce->addWidget(new QLabel(tr("Coefficient (-):")), 3, 0);
     gridLayoutDragForce->addWidget(txtParticleDragCoefficient, 3, 1);
+    gridLayoutDragForce->setRowStretch(50, 1);
 
     QGroupBox *grpDragForce = new QGroupBox(tr("Drag force"));
     grpDragForce->setLayout(gridLayoutDragForce);
@@ -200,9 +208,23 @@ void PostprocessorSceneParticleTracingWidget::createControls()
     gridCustomForce->addWidget(txtParticleCustomForceY, 1, 1);
     gridCustomForce->addWidget(lblParticleCustomForceZ, 2, 0);
     gridCustomForce->addWidget(txtParticleCustomForceZ, 2, 1);
+    gridCustomForce->setRowStretch(50, 1);
 
     QGroupBox *grpCustomForce = new QGroupBox(tr("Custom force"));
     grpCustomForce->setLayout(gridCustomForce);
+
+    // forces
+    QVBoxLayout *layoutForces = new QVBoxLayout();
+    layoutForces->addWidget(grpLorentzForce);
+    layoutForces->addWidget(grpDragForce);
+    layoutForces->addStretch(1);
+
+    QHBoxLayout *layoutForcesHorizontal = new QHBoxLayout();
+    layoutForcesHorizontal->addLayout(layoutForces);
+    layoutForcesHorizontal->addWidget(grpCustomForce);
+
+    QWidget *widgetForces = new QWidget(this);
+    widgetForces->setLayout(layoutForcesHorizontal);
 
     // particle to particle
     QGridLayout *gridP2PForce = new QGridLayout();
@@ -212,17 +234,12 @@ void PostprocessorSceneParticleTracingWidget::createControls()
     QGroupBox *grpP2PForce = new QGroupBox(tr("Particle to particle"));
     grpP2PForce->setLayout(gridP2PForce);
 
-    // forces
-    QVBoxLayout *layoutForces = new QVBoxLayout();
-    layoutForces->setContentsMargins(5, 5, 0, 0);
-    layoutForces->addWidget(grpLorentzForce);
-    layoutForces->addWidget(grpDragForce);
-    layoutForces->addWidget(grpCustomForce);
-    layoutForces->addWidget(grpP2PForce);
-    layoutForces->addStretch(1);
+    QVBoxLayout *layoutP2P = new QVBoxLayout();
+    layoutP2P->addWidget(grpP2PForce);
+    layoutP2P->addStretch(1);
 
-    QWidget *widgetForces = new QWidget(this);
-    widgetForces->setLayout(layoutForces);
+    QWidget *widgetP2P = new QWidget(this);
+    widgetP2P->setLayout(layoutP2P);
 
     // solver
     QGridLayout *gridLayoutSolver = new QGridLayout();
@@ -242,10 +259,16 @@ void PostprocessorSceneParticleTracingWidget::createControls()
     QGroupBox *grpSolver = new QGroupBox(tr("Solver"));
     grpSolver->setLayout(gridLayoutSolver);
 
+    QVBoxLayout *layoutSolver = new QVBoxLayout();
+    layoutSolver->addWidget(grpSolver);
+    layoutSolver->addStretch(1);
+
+    QWidget *widgetSolver = new QWidget(this);
+    widgetSolver->setLayout(layoutSolver);
+
     // settings
     QGridLayout *gridLayoutSettings = new QGridLayout();
     gridLayoutSettings->setColumnStretch(1, 1);
-    gridLayoutSettings->setContentsMargins(5, 5, 0, 0);
     gridLayoutSettings->addWidget(chkParticleColorByVelocity, 2, 0, 1, 2);
     gridLayoutSettings->addWidget(chkParticleShowPoints, 3, 0, 1, 2);
     gridLayoutSettings->addWidget(chkParticleShowBlendedFaces, 4, 0, 1, 2);
@@ -257,34 +280,31 @@ void PostprocessorSceneParticleTracingWidget::createControls()
     QGroupBox *grpSettings = new QGroupBox(tr("Settings"));
     grpSettings->setLayout(gridLayoutSettings);
 
+    QVBoxLayout *layoutSettings = new QVBoxLayout();
+    layoutSettings->addWidget(grpSettings);
+    layoutSettings->addStretch(1);
+
+    QWidget *widgetSettings = new QWidget(this);
+    widgetSettings->setLayout(layoutSettings);
+
     // tab widget
-    QToolBox *tbxWorkspace = new QToolBox();
-    tbxWorkspace->addItem(widgetForces, icon(""), tr("Forces"));
-    tbxWorkspace->addItem(grpReflection, icon(""), tr("Reflection"));
-    tbxWorkspace->addItem(grpSolver, icon(""), tr("Solver"));
-    tbxWorkspace->addItem(grpSettings, icon(""), tr("Settings"));
+    QTabWidget *tabWorkspace = new QTabWidget();
+    tabWorkspace->addTab(widgetForces, tr("Forces"));
+    tabWorkspace->addTab(widgetP2P, tr("Particle interaction"));
+    tabWorkspace->addTab(widgetReflection, tr("Reflection"));
+    tabWorkspace->addTab(widgetSolver, tr("Solver"));
+    tabWorkspace->addTab(widgetSettings, tr("Settings"));
+
+    QHBoxLayout *layoutParticleInitial = new QHBoxLayout();
+    layoutParticleInitial->addWidget(grpInitialPosition);
+    layoutParticleInitial->addWidget(grpInitialVelocity);
 
     QVBoxLayout *layoutParticle = new QVBoxLayout();
-    layoutParticle->setContentsMargins(2, 2, 2, 3);
     layoutParticle->addWidget(grpGeneral);
-    layoutParticle->addWidget(grpInitialPosition);
-    layoutParticle->addWidget(grpInitialVelocity);
-    layoutParticle->addWidget(tbxWorkspace);
+    layoutParticle->addLayout(layoutParticleInitial);
+    layoutParticle->addWidget(tabWorkspace);
 
-    QWidget *widget = new QWidget(this);
-    widget->setLayout(layoutParticle);
-
-    QScrollArea *widgetArea = new QScrollArea();
-    widgetArea->setContentsMargins(0, 0, 0, 0);
-    widgetArea->setFrameShape(QFrame::NoFrame);
-    widgetArea->setWidgetResizable(true);
-    widgetArea->setWidget(widget);
-
-    QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->setContentsMargins(0, 0, 0, 0);
-    layoutMain->addWidget(widgetArea, 1);
-
-    setLayout(layoutMain);
+    setLayout(layoutParticle);
 }
 
 void PostprocessorSceneParticleTracingWidget::refresh()

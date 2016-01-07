@@ -325,6 +325,7 @@ void PythonEditorWidget::createControls()
     splitter->addWidget(tab);
 
     toolBar = new QToolBar(this);
+    toolBar->addAction(pythonEditor->actFileNew);
     toolBar->addAction(pythonEditor->actFileOpen);
     toolBar->addAction(pythonEditor->actFileSave);
     toolBar->addSeparator();
@@ -339,7 +340,7 @@ void PythonEditorWidget::createControls()
     toolBar->addAction(pythonEditor->actConsoleOutput);
 
     QVBoxLayout *layout = new QVBoxLayout();
-    layout->setContentsMargins(1, 1, 1, 1);
+    layout->setContentsMargins(2, 2, 2, 3);
     layout->addWidget(toolBar);
     layout->addWidget(splitter);
 
@@ -463,7 +464,7 @@ void PythonEditorDialog::showDialog()
 
 void PythonEditorDialog::createActions()
 {
-    actSceneModePythonEditor = new QAction(icon("script-python"), tr("PythonLab"), this);
+    actSceneModePythonEditor = new QAction(icon("pythonlab"), tr("PythonLab"), this);
     actSceneModePythonEditor->setShortcut(Qt::Key_F9);
     actSceneModePythonEditor->setCheckable(true);
 
@@ -494,7 +495,7 @@ void PythonEditorDialog::createActions()
     actFilePrint->setShortcuts(QKeySequence::Print);
     connect(actFilePrint, SIGNAL(triggered()), this, SLOT(doFilePrint()));
 
-    actExit = new QAction(icon("application-exit"), tr("E&xit"), this);
+    actExit = new QAction(tr("E&xit"), this);
     actExit->setShortcut(tr("Ctrl+Q"));
     actExit->setMenuRole(QAction::QuitRole);
     connect(actExit, SIGNAL(triggered()), QApplication::instance(), SLOT(quit()));
@@ -562,7 +563,7 @@ void PythonEditorDialog::createActions()
     actCreateFromModel->setShortcut(QKeySequence(tr("Ctrl+M")));
     connect(actCreateFromModel, SIGNAL(triggered()), this, SLOT(doCreatePythonFromModel()));
 
-    actHelpOnWord = new QAction(icon("help-contents"), tr("&Help"), this);
+    actHelpOnWord = new QAction(tr("&Help"), this);
     actHelpOnWord->setShortcut(QKeySequence::HelpContents);
     actHelpOnWord->setEnabled(true);
     connect(actHelpOnWord, SIGNAL(triggered()), this, SLOT(doHelpOnWord()));
@@ -1254,33 +1255,37 @@ void PythonEditorDialog::doConsoleOutput()
 
 void PythonEditorDialog::setRecentFiles()
 {
-    if (!tabWidget) return;
-
     mnuRecentFiles->clear();
 
     // recent files
+    QSettings settings;
+    QStringList recentScripts = settings.value("RecentScripts").value<QStringList>();
+
     if (!scriptEditorWidget()->fileName().isEmpty())
     {
-        QSettings settings;
-        QStringList recentFiles = settings.value("RecentScripts").value<QStringList>();
-
         QFileInfo fileInfo(scriptEditorWidget()->fileName());
-        if (recentFiles.indexOf(fileInfo.absoluteFilePath()) == -1)
-            recentFiles.insert(0, fileInfo.absoluteFilePath());
+        if (recentScripts.indexOf(fileInfo.absoluteFilePath()) == -1)
+            recentScripts.insert(0, fileInfo.absoluteFilePath());
         else
-            recentFiles.move(recentFiles.indexOf(fileInfo.absoluteFilePath()), 0);
+            recentScripts.move(recentScripts.indexOf(fileInfo.absoluteFilePath()), 0);
+    }
 
-        while (recentFiles.count() > 15) recentFiles.removeLast();
+    while (recentScripts.count() > 15) recentScripts.removeLast();
 
-        settings.setValue("RecentScripts", recentFiles);
+    settings.setValue("RecentScripts", recentScripts);
 
-        for (int i = 0; i<recentFiles.count(); i++)
-        {
-            QAction *actMenuRecentItem = new QAction(recentFiles[i], this);
-            actFileOpenRecentGroup->addAction(actMenuRecentItem);
-            mnuRecentFiles->addAction(actMenuRecentItem);
-        }
-    }    
+    for (int i = 0; i < recentScripts.count(); i++)
+    {
+        QFileInfo fileInfo(recentScripts[i]);
+        if (fileInfo.isDir())
+            continue;
+        if (!QFile::exists(fileInfo.absoluteFilePath()))
+            continue;
+
+        QAction *actMenuRecentItem = new QAction(recentScripts[i], this);
+        actFileOpenRecentGroup->addAction(actMenuRecentItem);
+        mnuRecentFiles->addAction(actMenuRecentItem);
+    }
 }
 
 void PythonEditorDialog::closeTabs()

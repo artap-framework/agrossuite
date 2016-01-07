@@ -38,7 +38,7 @@
 
 ConfigComputerDialog::ConfigComputerDialog(QWidget *parent) : QDialog(parent)
 {
-    setWindowIcon(icon("options"));
+    setWindowIcon(icon("preferences-other"));
     setWindowTitle(tr("Options"));
 
     createControls();
@@ -139,53 +139,16 @@ void ConfigComputerDialog::save()
 
 void ConfigComputerDialog::createControls()
 {
-    lstView = new QListWidget(this);
-    pages = new QStackedWidget(this);
-
-    panMain = createMainWidget();
-    panSolver = createSolverWidget();
-
-    // List View
-    lstView->setCurrentRow(0);
-    lstView->setViewMode(QListView::IconMode);
-    lstView->setResizeMode(QListView::Adjust);
-    lstView->setMovement(QListView::Static);
-    lstView->setFlow(QListView::TopToBottom);
-    lstView->setIconSize(QSize(60, 60));
-    lstView->setMinimumWidth(135);
-    lstView->setMaximumWidth(135);
-    lstView->setMinimumHeight((45+fontMetrics().height()*4)*5);
-    connect(lstView, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
-            this, SLOT(doCurrentItemChanged(QListWidgetItem *, QListWidgetItem *)));
-
-    QSize sizeItem(131, 85);
-
-    // listView items
-    QListWidgetItem *itemMain = new QListWidgetItem(icon("options-main"), tr("Main"), lstView);
-    itemMain->setTextAlignment(Qt::AlignHCenter);
-    itemMain->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    itemMain->setSizeHint(sizeItem);
-
-    QListWidgetItem *itemSolver = new QListWidgetItem(icon("options-solver"), tr("Solver"), lstView);
-    itemSolver->setTextAlignment(Qt::AlignHCenter);
-    itemSolver->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    itemSolver->setSizeHint(sizeItem);
-
-    pages->addWidget(panMain);
-    pages->addWidget(panSolver);
-
-    QHBoxLayout *layoutHorizontal = new QHBoxLayout();
-    layoutHorizontal->addWidget(lstView);
-    layoutHorizontal->addWidget(pages);
-
+    QTabWidget *tabConfig = new QTabWidget(this);
+    tabConfig->addTab(createMainWidget(), tr("Main"));
+    tabConfig->addTab(createSolverWidget(), tr("Solver"));
     // dialog buttons
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(doAccept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(doReject()));
 
     QVBoxLayout *layout = new QVBoxLayout();
-    layout->addLayout(layoutHorizontal);
-    // layout->addStretch();
+    layout->addWidget(tabConfig);
     layout->addWidget(buttonBox);
 
     setLayout(layout);
@@ -340,11 +303,6 @@ void ConfigComputerDialog::fillComboBoxPhysicField(QComboBox *cmbPhysicField)
     // physic field
     if (cmbPhysicField->currentIndex() == -1)
         cmbPhysicField->setCurrentIndex(0);
-}
-
-void ConfigComputerDialog::doCurrentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
-{
-    pages->setCurrentIndex(lstView->row(current));
 }
 
 void ConfigComputerDialog::doAccept()

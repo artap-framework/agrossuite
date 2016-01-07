@@ -421,6 +421,7 @@ void SceneViewMesh::paintOrder()
     {
         loadProjectionViewPort();
 
+        glColor3d(1.0, 1.0, 1.0);
         glScaled(2.0 / width(), 2.0 / height(), 1.0);
         glTranslated(-width() / 2.0, -height() / 2.0, 0.0);
 
@@ -501,7 +502,7 @@ void SceneViewMesh::paintOrderColorBar()
 
     // bars
     glBegin(GL_QUADS);
-    for (int i = 1; i < maxDegree+1; i++)
+    for (int i = 1; i < maxDegree + 1; i++)
     {
         glColor3d(0.0, 0.0, 0.0);
         glVertex2d(scaleLeft + 10,                             scaleBorder.y + 10 + (i-1)*(2 * textHeight));
@@ -520,10 +521,10 @@ void SceneViewMesh::paintOrderColorBar()
     glDisable(GL_POLYGON_OFFSET_FILL);
 
     // labels
-    glColor3d(1.0, 1.0, 1.0);
+    glColor3d(0.0, 0.0, 0.0);
     for (int i = 1; i < maxDegree + 1; i++)
     {
-        printPostAt(scaleLeft + 10 + 3.5 * (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) - 2 - scaleBorder.x,
+        printPostAt(scaleLeft + 10 + textWidth / 2.0 - (QString::number(i).size() - 1) * (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) / 2.0 - scaleBorder.x,
                     scaleBorder.y + 10.0 + (i-1)*(2.0 * textHeight) + textHeight / 2.0,
                     QString::number(i));
     }

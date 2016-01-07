@@ -240,17 +240,8 @@ void PostprocessorSceneChartWidget::createControls()
     controlsLayout->addWidget(tbxAnalysisType, 1);
     controlsLayout->addLayout(layoutChart, 1);
 
-    QWidget *widget = new QWidget(this);
-    widget->setLayout(controlsLayout);
-
-    QScrollArea *widgetArea = new QScrollArea();
-    widgetArea->setFrameShape(QFrame::NoFrame);
-    widgetArea->setWidgetResizable(true);
-    widgetArea->setWidget(widget);
-
     QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->setContentsMargins(0, 0, 0, 0);
-    layoutMain->addWidget(widgetArea);
+    layoutMain->addLayout(controlsLayout);
     layoutMain->addWidget(widButton);
 
     setLayout(layoutMain);

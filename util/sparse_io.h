@@ -25,6 +25,8 @@
 #include <assert.h>
 #include <cstring>
 
+#include <chrono>
+
 #include "../3rdparty/tclap/CmdLine.h"
 
 class SparseMatrixRW
@@ -396,7 +398,8 @@ void csr2csc(int size, int nnz, double *data, int *ir, int *jc)
 class LinearSystem
 {
 public:
-    LinearSystem() : cooA(nullptr), cooIRN(nullptr), cooJCN(nullptr)
+    LinearSystem(const std::string &name = "") : matA(nullptr), cooRowInd(nullptr), cooColInd(nullptr), csrRowPtr(nullptr), csrColInd(nullptr),
+        infoName(name), infoNumOfProc(1), infoTimeReadMatrix(0.0), infoTimeSolveSystem(0.0), infoTimeTotal(0.0)
     {
         // matrix system
         system_matrix_pattern = new SparsityPatternRW();
@@ -421,9 +424,11 @@ public:
         delete reference_sln;
 
         // coo
-        if (cooA) delete [] cooA;
-        if (cooIRN) delete [] cooIRN;
-        if (cooJCN) delete [] cooJCN;
+        if (cooRowInd) { delete [] cooRowInd; cooRowInd = nullptr; }
+        if (cooColInd) { delete [] cooColInd; cooColInd = nullptr; }
+        // csr
+        if (csrRowPtr) { delete [] csrRowPtr; csrRowPtr = nullptr; }
+        if (csrColInd) { delete [] csrColInd; csrColInd = nullptr; }
     }
 
     // matrix system
@@ -438,8 +443,23 @@ public:
     // reference solution (for testing)
     VectorRW *reference_sln;
 
-    inline int n() { return system_matrix_pattern->rows; }
-    inline int nz() { return system_matrix->max_len; }
+    inline unsigned int n() { return system_matrix_pattern->rows; }
+    inline unsigned int nz() { return system_matrix->max_len; }
+
+    inline void setInfoNumOfProc(unsigned int num) { infoNumOfProc = num; }
+    inline void setInfoTimeReadMatrix(double time) { infoTimeReadMatrix = time; }
+    inline void setInfoTimeSolveSystem(double time) { infoTimeSolveSystem = time; }
+    inline void setInfoTimeTotal(double time) { infoTimeTotal = time; }
+
+    void printStatus()
+    {
+        std::cout << "Solver: " << infoName << std::endl;
+        std::cout << "Number of processes: " << infoNumOfProc << std::endl;
+        std::cout << "Matrix size: " << n() << " (" << 100 * nz() / pow(n(), 2.0) << " % of nonzero elements)" << std::endl;
+        std::cout << "Read matrix: " << infoTimeReadMatrix << " s" << std::endl;
+        std::cout << "Solve system: " << infoTimeSolveSystem << " s" << std::endl;
+        std::cout << "Total time: " << infoTimeTotal << " s" << std::endl;
+    }
 
     int compareWithReferenceSolution(double relative_tolerance = 1e-1)
     {
@@ -449,37 +469,71 @@ public:
     void convertToCOO()
     {
         // coo
-        if (cooA) delete [] cooA;
-        if (cooIRN) delete [] cooIRN;
-        if (cooJCN) delete [] cooJCN;
+        if (cooRowInd) delete [] cooRowInd;
+        if (cooColInd) delete [] cooColInd;
 
-        cooA = new double[nz()];
-        cooIRN = new int[nz()];
-        cooJCN = new int[nz()];
+        cooRowInd = new unsigned int[nz()];
+        cooColInd = new unsigned int[nz()];
+        matA = system_matrix->val;
 
         int index = 0;
 
         // loop over the elements of the matrix row by row
-        for (int row = 0; row < n(); ++row)
+        for (int row = 0; row < n(); row++)
         {
             std::size_t col_start = system_matrix_pattern->rowstart[row];
             std::size_t col_end = system_matrix_pattern->rowstart[row + 1];
 
             for (int i = col_start; i < col_end; i++)
             {
-                cooIRN[index] = row + 0;
-                cooJCN[index] = system_matrix_pattern->colnums[i] + 0;
-                cooA[index] = system_matrix->val[i];
+                cooRowInd[index] = row + 0;
+                cooColInd[index] = system_matrix_pattern->colnums[i] + 0;
 
-                ++index;
+                index++;
             }
         }
     }
 
+    void convertToCSR()
+    {
+        // csr
+        if (csrRowPtr) delete [] csrRowPtr;
+        if (csrColInd) delete [] csrColInd;
+
+        csrRowPtr = new unsigned int[n() + 1];
+        csrColInd = new unsigned int[nz()];
+        matA = system_matrix->val;
+
+        unsigned int index = 0;
+
+        // loop over the elements of the matrix row by row
+        for (unsigned int row = 0; row < n(); row++)
+        {
+            std::size_t col_start = system_matrix_pattern->rowstart[row];
+            std::size_t col_end = system_matrix_pattern->rowstart[row + 1];
+
+            csrRowPtr[row] = index;
+
+            for (unsigned int i = col_start; i < col_end; i++)
+            {
+                csrColInd[index] = system_matrix_pattern->colnums[i];
+
+                index++;
+            }
+        }
+
+        csrRowPtr[n()] = nz();
+    }
+
+    double *matA;
+
     // coo
-    double *cooA;
-    int *cooIRN;
-    int *cooJCN;
+    unsigned int *cooRowInd;
+    unsigned int *cooColInd;
+
+    // csr
+    unsigned int *csrRowPtr;
+    unsigned int *csrColInd;
 
 protected:
     void readLinearSystemInternal(const std::string &matrixPaternFN,
@@ -515,6 +569,9 @@ protected:
             reference_sln->block_read(readReference);
             readReference.close();
         }
+
+        infoN = n();
+        infoNZ = nz();
     }
 
     void writeSolutionInternal(const std::string &solutionFN = "")
@@ -524,12 +581,20 @@ protected:
         system_sln->block_write(writeSln);
         writeSln.close();
     }
+
+    std::string infoName;
+    unsigned int infoNumOfProc;
+    double infoTimeReadMatrix;
+    double infoTimeSolveSystem;
+    double infoTimeTotal;
+    unsigned int infoN;
+    unsigned int infoNZ;
 };
 
 class LinearSystemArgs : public LinearSystem
 {
 public:
-    LinearSystemArgs(const std::string &name, int argc, const char * const *argv) : LinearSystem(),
+    LinearSystemArgs(const std::string &name, int argc, const char * const *argv) : LinearSystem(name),
         cmd(name, ' '),
         matrixArg(TCLAP::ValueArg<std::string>("m", "matrix", "Matrix", true, "", "string")),
         matrixPatternArg(TCLAP::ValueArg<std::string>("p", "matrix_pattern", "Matrix pattern", true, "", "string")),
@@ -537,6 +602,7 @@ public:
         solutionArg(TCLAP::ValueArg<std::string>("s", "solution", "Solution", false, "", "string")),
         referenceSolutionArg(TCLAP::ValueArg<std::string>("q", "reference_solution", "Reference solution", false, "", "string")),
         initialArg(TCLAP::ValueArg<std::string>("i", "initial", "Initial vector", false, "", "string")),
+        verboseArg(TCLAP::SwitchArg("v", "verbose", "Verbose mode", false)),
         argc(argc),
         argv(argv)
     {
@@ -546,11 +612,14 @@ public:
         cmd.add(solutionArg);
         cmd.add(referenceSolutionArg);
         cmd.add(initialArg);
+        cmd.add(verboseArg);
     }
 
-    bool hasSolution() { return !solutionArg.getValue().empty(); }
-    std::string solutionFileName() { return solutionArg.getValue(); }
-    bool hasReferenceSolution() { return !referenceSolutionArg.getValue().empty(); }
+    inline bool hasSolution() { return !solutionArg.getValue().empty(); }
+    inline std::string solutionFileName() { return solutionArg.getValue(); }
+    inline bool hasReferenceSolution() { return !referenceSolutionArg.getValue().empty(); }
+
+    inline bool isVerbose() { return verboseArg.getValue(); }
 
     virtual void readLinearSystem()
     {
@@ -581,8 +650,15 @@ protected:
     TCLAP::ValueArg<std::string> solutionArg;
     TCLAP::ValueArg<std::string> referenceSolutionArg;
     TCLAP::ValueArg<std::string> initialArg;
+    TCLAP::SwitchArg verboseArg;
 
 private:
     int argc;
     const char * const *argv;
 };
+
+double elapsedSeconds(std::chrono::time_point<std::chrono::steady_clock> start,
+                      std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now())
+{
+    return (end - start).count() * std::chrono::steady_clock::period::num / static_cast<double>(std::chrono::steady_clock::period::den);
+}

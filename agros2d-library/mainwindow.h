@@ -166,7 +166,6 @@ private:
     QAction *actHelp;
     QAction *actHelpShortCut;
     QAction *actOnlineHelp;
-    // QAction *actCollaborationServer;
     QAction *actCheckVersion;
     QAction *actAbout;
     QAction *actAboutQt;

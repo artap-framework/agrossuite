@@ -234,9 +234,7 @@ QIcon icon(const QString &name)
 #endif
 
 #ifdef Q_WS_X11
-#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
     iconCache->insert(name, QIcon::fromTheme(name, QIcon(":/" + name + ".png")));
-#endif
 #endif
 
     if (!iconCache->contains(name))

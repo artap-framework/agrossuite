@@ -35,21 +35,13 @@ public:
     ConfigComputerDialog(QWidget *parent);
 
 private slots:
-    void doCurrentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
-
     void doAccept();
     void doReject();
 
 private:
-    QListWidget *lstView;
-    QStackedWidget *pages;
-    QWidget *panMain;
-    QWidget *panSolver;
-
     // main
     QComboBox *cmbGUIStyle;
     QComboBox *cmbLanguage;
-    // LineEditDouble *txtCollaborationServerURL;
 
     // show result in line edit value widget
     QCheckBox *chkLineEditValueShowResult;

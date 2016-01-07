@@ -91,12 +91,10 @@ void SceneViewPost2D::connectComputation(QSharedPointer<Computation> computation
     {
         connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
         connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-        connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
+        connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));                
 
-        clearGLLists();
-    }
-
-    refresh();
+        refresh();
+    }    
 }
 
 void SceneViewPost2D::createActionsPost2D()

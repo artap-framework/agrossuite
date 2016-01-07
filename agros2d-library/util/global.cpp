@@ -55,6 +55,11 @@ AgrosApplication::AgrosApplication(int& argc, char ** argv) : QApplication(argc,
     setAttribute(Qt::AA_DontShowIconsInMenus, true);
 #endif
 
+#ifdef Q_WS_X11
+    // css fix for QScrollArea in QTabWidget
+    // setStyleSheet("QScrollArea { background: transparent; } QScrollArea > QWidget > QWidget { background: transparent; }");
+#endif
+
     // std::string codec
 #if QT_VERSION < 0x050000
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));

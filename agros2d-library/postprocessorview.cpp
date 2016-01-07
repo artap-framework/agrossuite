@@ -53,7 +53,7 @@
 PostprocessorWidget::PostprocessorWidget()
 {
     // scene mode
-    actSceneModeResults = new QAction(icon("scene-post2d"), tr("Results"), this);
+    actSceneModeResults = new QAction(icon("results"), tr("Results"), this);
     actSceneModeResults->setShortcut(tr("Ctrl+3"));
     actSceneModeResults->setCheckable(true);
     actSceneModeResults->setEnabled(false);
@@ -93,11 +93,11 @@ void PostprocessorWidget::createControls()
     connect(btnApply, SIGNAL(clicked()), SLOT(doApply()));
 
     tabWidget = new QTabWidget();
-    tabWidget->addTab(m_meshWidget, icon("scene-mesh"), tr("Mesh"));
-    tabWidget->addTab(m_post2DWidget, icon("scene-post2d"), tr("2D"));
-    tabWidget->addTab(m_post3DWidget, icon("scene-post3d"), tr("3D"));
-    tabWidget->addTab(m_chartWidget, icon("chart"), tr("Chart"));
-    tabWidget->addTab(m_particleTracingWidget, icon("scene-particle"), tr("PT"));
+    tabWidget->addTab(m_meshWidget, tr("Mesh"));
+    tabWidget->addTab(m_post2DWidget, tr("2D view"));
+    tabWidget->addTab(m_post3DWidget, tr("3D view"));
+    tabWidget->addTab(m_chartWidget, tr("Chart"));
+    tabWidget->addTab(m_particleTracingWidget, tr("Part. tracing"));
     connect(tabWidget, SIGNAL(currentChanged(int)), SIGNAL(modeChanged()));
 
     QVBoxLayout *layoutMain = new QVBoxLayout();
@@ -188,7 +188,7 @@ void PostprocessorWidget::connectComputation(QSharedPointer<Computation> computa
         connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doCalculationFinished()));
         connect(m_computation.data(), SIGNAL(solved()), this, SLOT(doCalculationFinished()));
         connect(this, SIGNAL(apply()), m_computation.data()->postDeal(), SLOT(refresh()));
-    }    
+    }
 
     refresh();
 }

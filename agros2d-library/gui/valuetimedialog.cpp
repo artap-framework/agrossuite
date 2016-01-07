@@ -52,8 +52,8 @@ ValueTimeDialog::~ValueTimeDialog()
 
 void ValueTimeDialog::setValue(Value value)
 {
-    txtLineEdit->setText(value.text());
     m_problem = value.m_problem;
+    txtLineEdit->setText(value.text());
     // plot
     plotFunction();
 }
@@ -142,12 +142,17 @@ void ValueTimeDialog::presetsChanged(int index)
 
 void ValueTimeDialog::checkExpression()
 {
+    // temporary dict
+    currentPythonEngineAgros()->useTemporaryDict();
+
     // eval expression
     double out;
     bool successfulRun = currentPythonEngineAgros()->runExpression(txtLineEdit->text(), &out, QString("time = %1").arg(0.0));
     if (successfulRun)
     {
         plotFunction();
+
+        lblInfoError->clear();
     }
     else
     {
@@ -156,8 +161,8 @@ void ValueTimeDialog::checkExpression()
         txtLineEdit->setFocus();
     }
 
-    // delete reserved variable
-    currentPythonEngineAgros()->runExpression("del time");
+    // global dict
+    currentPythonEngineAgros()->useGlobalDict();
 }
 
 void ValueTimeDialog::plotFunction()

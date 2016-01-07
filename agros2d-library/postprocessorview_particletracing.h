@@ -26,7 +26,6 @@
 class PostDeal;
 class SceneViewPost2D;
 class LineEditDouble;
-class CollapsableGroupBoxButton;
 class SceneViewParticleTracing;
 
 class PostprocessorSceneParticleTracingWidget : public PostprocessorSceneWidget

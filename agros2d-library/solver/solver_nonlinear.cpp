@@ -371,8 +371,8 @@ void AssembleNonlinear::solveProblemNonLinearNewton()
             // automatic damping factor
             if ((DampingType) m_fieldInfo->value(FieldInfo::NonlinearDampingType).toInt() == DampingType_Automatic)
             {
-                previousResidualNorm = residualNorm;
-                assert(previousResidualNorm > 0.0);
+                // previousResidualNorm = residualNorm;
+                // assert(previousResidualNorm > 0.0);
 
                 // todo: code repetition, get rid of it together with jacobian reuse
                 time.start();
@@ -380,7 +380,11 @@ void AssembleNonlinear::solveProblemNonLinearNewton()
                 residualNorm = systemRHS.l2_norm();
                 // std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
 
-                while(residualNorm > previousResidualNorm * m_fieldInfo->value(FieldInfo::NonlinearDampingFactorDecreaseRatio).toDouble())
+                // qDebug() << "residualNorm = " << residualNorm << "previousResidualNorm = " << previousResidualNorm
+                //          << "previousResidualNorm * coeff = " << previousResidualNorm * m_fieldInfo->value(FieldInfo::NonlinearDampingFactorDecreaseRatio).toDouble()
+                //          << "cond = " << (residualNorm > previousResidualNorm * m_fieldInfo->value(FieldInfo::NonlinearDampingFactorDecreaseRatio).toDouble());
+
+                while (residualNorm > previousResidualNorm * m_fieldInfo->value(FieldInfo::NonlinearDampingFactorDecreaseRatio).toDouble())
                 {
                     dampingSuccessfulSteps = -1;
                     double previousDampingFactor = dampingFactor;
@@ -403,6 +407,7 @@ void AssembleNonlinear::solveProblemNonLinearNewton()
                     // todo: code repetition, get rid of it together with jacobian reuse
                     time.start();
                     assembleSystem(solutionNonlinearPrevious, false);
+                    previousResidualNorm = residualNorm;
                     residualNorm = systemRHS.l2_norm();
                     // std::cout << "assemble residual (" << time.elapsed() << "ms ), norm: "  << residualNorm << std::endl;
                 }

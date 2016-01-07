@@ -34,19 +34,20 @@ int main(int argc, char *argv[])
     {
         int status = 0;
 
+        auto timeStart = std::chrono::steady_clock::now();
+
         LinearSystemArgs linearSystem("External solver - UMFPACK", argc, argv);
         linearSystem.readLinearSystem();
         linearSystem.system_sln->resize(linearSystem.system_rhs->max_len);
         linearSystem.convertToCOO();
+
+        linearSystem.setInfoTimeReadMatrix(elapsedSeconds(timeStart));
 
         // number of unknowns
         int n = linearSystem.n();
 
         // number of nonzero elements in matrix
         int nz = linearSystem.nz();
-
-        linearSystem.system_matrix->clear();
-        linearSystem.system_matrix_pattern->clear();
 
         int *Ap = new int[n+1];
         int *Ai = new int[nz];
@@ -57,7 +58,7 @@ int main(int argc, char *argv[])
         double Control[UMFPACK_CONTROL];
         // Control[UMFPACK_PRL] = 6;
 
-        int statusTripletToCol = umfpack_di_triplet_to_col (n, n, nz, linearSystem.cooIRN, linearSystem.cooJCN, linearSystem.cooA, Ap, Ai, Ax, (int *) NULL);
+        int statusTripletToCol = umfpack_di_triplet_to_col (n, n, nz, (int *) linearSystem.cooRowInd, (int *) linearSystem.cooColInd, linearSystem.matA, Ap, Ai, Ax, (int *) NULL);
 
         if (statusTripletToCol != UMFPACK_OK)
         {
@@ -66,6 +67,8 @@ int main(int argc, char *argv[])
         }
 
         // umfpack_di_report_matrix(system_matrix_pattern.rows, system_matrix_pattern.cols, Ap, Ai, Ax, 1, Control);
+
+        auto timeSolveStart = std::chrono::steady_clock::now();
 
         // factorizing symbolically
         void *symbolic;
@@ -92,6 +95,8 @@ int main(int argc, char *argv[])
                                                    linearSystem.system_rhs->val,
                                                    numeric, Control, Info);
 
+                linearSystem.setInfoTimeSolveSystem(elapsedSeconds(timeSolveStart));
+
                 // free the memory associated with the numeric factorization.
                 if (numeric)
                     umfpack_di_free_numeric(&numeric);
@@ -104,6 +109,10 @@ int main(int argc, char *argv[])
                     // check solution
                     if (linearSystem.hasReferenceSolution())
                         status = linearSystem.compareWithReferenceSolution();
+
+                    linearSystem.setInfoTimeTotal(elapsedSeconds(timeStart));
+                    if (linearSystem.isVerbose())
+                        linearSystem.printStatus();
 
                     linearSystem.system_rhs->clear();
 

@@ -236,9 +236,8 @@ void PreprocessorWidget::refresh()
     // script speed improvement
     if (currentPythonEngine()->isScriptRunning()) return;
 
-    blockSignals(true);
-    setUpdatesEnabled(false);
-
+    trvWidget->blockSignals(true);
+    trvWidget->setUpdatesEnabled(false);
     trvWidget->clear();
 
     QFont fnt = trvWidget->font();
@@ -367,7 +366,6 @@ void PreprocessorWidget::refresh()
         item->setText(0, QString("[%1; %2]").
                       arg(node->point().x, 0, 'e', 2).
                       arg(node->point().y, 0, 'e', 2));
-        item->setIcon(0, icon("scene-node"));
         item->setData(0, Qt::UserRole, node->variant());
         item->setText(1, QString("%1").arg(inode));
         item->setData(1, Qt::UserRole, PreprocessorWidget::GeometryNode);
@@ -471,9 +469,8 @@ void PreprocessorWidget::refresh()
     }
 
     trvWidget->resizeColumnToContents(1);
-
-    setUpdatesEnabled(true);
-    blockSignals(false);
+    trvWidget->setUpdatesEnabled(true);
+    trvWidget->blockSignals(false);
 }
 
 void PreprocessorWidget::loadTooltip(SceneGeometryMode sceneMode)
@@ -615,6 +612,8 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
 
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
+
+            m_sceneViewPreprocessor->refresh();
         }
         else if (type == PreprocessorWidget::Boundary)
         {
@@ -627,6 +626,8 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
 
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
+
+            m_sceneViewPreprocessor->refresh();
         }
         else if (type == PreprocessorWidget::Material)
         {
@@ -639,6 +640,8 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
 
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
+
+            m_sceneViewPreprocessor->refresh();
         }
         else if (type == PreprocessorWidget::GeometryParameter)
         {
@@ -651,16 +654,12 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             // field properties
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
-
-            FieldInfo *fieldInfo = Agros2D::problem()->fieldInfo(trvWidget->currentItem()->data(0, Qt::UserRole).toString());
         }
         else if (type == PreprocessorWidget::ProblemProperties)
         {
             // problem properties
             actProperties->setEnabled(true);
-        }
-
-        m_sceneViewPreprocessor->refresh();
+        }        
     }
 }
 

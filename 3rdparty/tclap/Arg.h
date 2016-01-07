@@ -63,8 +63,8 @@ namespace TCLAP {
  */
 class Arg
 {
-	private:
-		/**
+public:
+                /**
 		 * Prevent accidental copying.
 		 */
 		Arg(const Arg& rhs);
@@ -74,7 +74,8 @@ class Arg
 		 */
 		Arg& operator=(const Arg& rhs);
 
-		/**
+private:
+                /**
 		 * Indicates whether the rest of the arguments should be ignored.
 		 */
 		static bool& ignoreRestRef() { static bool ign = false; return ign; }

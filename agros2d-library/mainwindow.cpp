@@ -232,10 +232,10 @@ void MainWindow::createActions()
     actDocumentSaveGeometry = new QAction(tr("Export geometry..."), this);
     connect(actDocumentSaveGeometry, SIGNAL(triggered()), this, SLOT(doDocumentSaveGeometry()));
 
-    actCreateVideo = new QAction(icon("video"), tr("Create &video..."), this);
+    actCreateVideo = new QAction(tr("Create &video..."), this);
     connect(actCreateVideo, SIGNAL(triggered()), this, SLOT(doCreateVideo()));
 
-    actExit = new QAction(icon("application-exit"), tr("E&xit"), this);
+    actExit = new QAction(tr("E&xit"), this);
     actExit->setShortcut(tr("Ctrl+Q"));
     actExit->setMenuRole(QAction::QuitRole);
     connect(actExit, SIGNAL(triggered()), this, SLOT(close()));
@@ -244,7 +244,7 @@ void MainWindow::createActions()
     // actCopy->setShortcuts(QKeySequence::Copy);
     connect(actCopy, SIGNAL(triggered()), this, SLOT(doCopy()));
 
-    actHelp = new QAction(icon("help-contents"), tr("&Help"), this);
+    actHelp = new QAction(tr("&Help"), this);
     actHelp->setShortcut(QKeySequence::HelpContents);
     // actHelp->setEnabled(false);
     connect(actHelp, SIGNAL(triggered()), this, SLOT(doHelp()));
@@ -260,11 +260,11 @@ void MainWindow::createActions()
     actAbout->setMenuRole(QAction::AboutRole);
     connect(actAbout, SIGNAL(triggered()), this, SLOT(doAbout()));
 
-    actAboutQt = new QAction(icon("help-about"), tr("About &Qt"), this);
+    actAboutQt = new QAction(tr("About &Qt"), this);
     actAboutQt->setMenuRole(QAction::AboutQtRole);
     connect(actAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-    actOptions = new QAction(icon("options"), tr("&Options"), this);
+    actOptions = new QAction(tr("&Options"), this);
     actOptions->setMenuRole(QAction::PreferencesRole);
     connect(actOptions, SIGNAL(triggered()), this, SLOT(doOptions()));
 
@@ -318,7 +318,7 @@ void MainWindow::createActions()
     actHideControlPanel = new QAction(icon("showhide"), tr("Show/hide control panel"), this);
     actHideControlPanel->setShortcut(tr("Alt+0"));
     actHideControlPanel->setCheckable(true);
-    connect(actHideControlPanel, SIGNAL(triggered()), this, SLOT(doHideControlPanel()));    
+    connect(actHideControlPanel, SIGNAL(triggered()), this, SLOT(doHideControlPanel()));
 }
 
 
@@ -520,7 +520,7 @@ void MainWindow::createMain()
 #endif
     tlbLeftBar->setStyleSheet(QString("QToolBar { border: 1px solid rgba(70, 70, 70, 255); }"
                                       "QToolBar { background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(70, 70, 70, 255), stop:1 rgba(120, 120, 120, 255)); }"
-                                      "QToolButton { border: 0px; color: rgba(230, 230, 230, 255); font: bold; font-size: %1pt; width: 70px; }"
+                                      "QToolButton { border: 0px; color: rgba(230, 230, 230, 255); font: bold; font-size: %1pt; width: 60px; }"
                                       "QToolButton:hover { border: 0px; background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(70, 70, 70, 255), stop:0.5 rgba(160, 160, 160, 255), stop:1 rgba(150, 150, 150, 255)); }"
                                       "QToolButton:checked:hover, QToolButton:checked { border: 0px; color: rgba(30, 30, 30, 255); background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(160, 160, 160, 255), stop:0.5 rgba(220, 220, 220, 255), stop:1 rgba(160, 160, 160, 255)); }").arg(fontSize));
     // system layout
@@ -628,27 +628,33 @@ void MainWindow::setRecentFiles()
     mnuRecentFiles->clear();
 
     // recent files
+    QSettings settings;
+    QStringList recentFiles = settings.value("RecentProblems").value<QStringList>();
+
     if (!Agros2D::problem()->archiveFileName().isEmpty())
     {
-        QSettings settings;
-        QStringList recentFiles = settings.value("RecentProblems").value<QStringList>();
-
         QFileInfo fileInfo(Agros2D::problem()->archiveFileName());
         if (recentFiles.indexOf(fileInfo.absoluteFilePath()) == -1)
             recentFiles.insert(0, fileInfo.absoluteFilePath());
         else
             recentFiles.move(recentFiles.indexOf(fileInfo.absoluteFilePath()), 0);
+    }
 
-        while (recentFiles.count() > 15) recentFiles.removeLast();
+    while (recentFiles.count() > 15) recentFiles.removeLast();
 
-        settings.setValue("RecentProblems", recentFiles);
+    settings.setValue("RecentProblems", recentFiles);
 
-        for (int i = 0; i<recentFiles.count(); i++)
-        {
-            QAction *actMenuRecentItem = new QAction(recentFiles[i], this);
-            actDocumentOpenRecentGroup->addAction(actMenuRecentItem);
-            mnuRecentFiles->addAction(actMenuRecentItem);
-        }
+    for (int i = 0; i < recentFiles.count(); i++)
+    {
+        QFileInfo fileInfo(recentFiles[i]);
+        if (fileInfo.isDir())
+            continue;
+        if (!QFile::exists(fileInfo.absoluteFilePath()))
+            continue;
+
+        QAction *actMenuRecentItem = new QAction(recentFiles[i], this);
+        actDocumentOpenRecentGroup->addAction(actMenuRecentItem);
+        mnuRecentFiles->addAction(actMenuRecentItem);
     }
 }
 
@@ -802,8 +808,7 @@ void MainWindow::doDocumentSave()
 
 void MainWindow::doDeleteSolutions()
 {
-    exampleWidget->actExamples->trigger();
-    sceneViewProblem->doZoomBestFit();
+    sceneViewProblem->actSceneModeProblem->trigger();
 
     // clear all computations
     Agros2D::clearComputations();
@@ -837,7 +842,7 @@ void MainWindow::doDocumentClose()
     exampleWidget->actExamples->trigger();
 
     // clear problem
-    Agros2D::problem()->clearFieldsAndConfig();    
+    Agros2D::problem()->clearFieldsAndConfig();
 }
 
 void MainWindow::doDocumentImportDXF()

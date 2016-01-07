@@ -531,9 +531,9 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleDirichlet(bool calculateDir
                                 {
                                     if (cell->get_fe().face_system_to_component_index(i).first == comp)
                                     {
-                                        // todo: nonconstant essential BC
                                         if (calculateDirichletLiftValue)
                                         {
+                                            // Dirichlet lift (linear solution, Picard's method)
                                             constraintsDirichlet.add_line(local_face_dof_indices[i]);
 
                                             dealii::Point<2> p = points[i];
@@ -553,6 +553,7 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleDirichlet(bool calculateDir
                                         }
                                         else
                                         {
+                                            // zero Dirichlet lift (Newton's method)
                                             constraintsZeroDirichlet.add_line (local_face_dof_indices[i]);
                                             constraintsZeroDirichlet.set_inhomogeneity(local_face_dof_indices[i], 0.0);
                                         }

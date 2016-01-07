@@ -67,11 +67,6 @@ void PostprocessorScenePost2DWidget::createControls()
     toolBar->addAction(m_scenePost2D->actSelectPoint);
     toolBar->addAction(m_scenePost2D->actSelectByMarker);
 
-    groupPost2d = post2DWidget();
-    groupPostScalar = postScalarWidget();
-    groupPostContour = postContourWidget();
-    groupPostVector = postVectorWidget();
-
     resultsView = new ResultsView(this);
     connect(m_scenePost2D, SIGNAL(mousePressed()), resultsView, SLOT(doShowResults()));
     connect(m_scenePost2D, SIGNAL(mousePressed(const Point &)), resultsView, SLOT(showPoint(const Point &)));
@@ -81,136 +76,50 @@ void PostprocessorScenePost2DWidget::createControls()
     layoutResults->addWidget(toolBar);
     layoutResults->addWidget(resultsView);
 
-    QGroupBox *grpResults = new QGroupBox(tr("Local values and integrals"));
-    grpResults->setLayout(layoutResults);
+    QWidget *widResults = new QWidget();
+    widResults->setLayout(layoutResults);
+
+    QTabWidget *tabWidget = new QTabWidget();
+    tabWidget->addTab(postScalarAdvancedWidget(), tr("Scalar field"));
+    tabWidget->addTab(postContourAdvancedWidget(), tr("Contours"));
+    tabWidget->addTab(postVectorAdvancedWidget(), tr("Vector field"));
+    tabWidget->addTab(widResults, tr("Local values and integrals"));
 
     QVBoxLayout *layoutArea = new QVBoxLayout();
-    layoutArea->addWidget(groupPost2d);
-    layoutArea->addWidget(groupPostScalar);
-    layoutArea->addWidget(groupPostContour);
-    layoutArea->addWidget(groupPostVector);
-    layoutArea->addWidget(grpResults, 1);
-    // layoutArea->addStretch(1);
-
-    QWidget *widget = new QWidget(this);
-    widget->setLayout(layoutArea);
-
-    QScrollArea *widgetArea = new QScrollArea();
-    widgetArea->setFrameShape(QFrame::NoFrame);
-    widgetArea->setWidgetResizable(true);
-    widgetArea->setWidget(widget);
-
-    QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->setContentsMargins(0, 0, 0, 0);
-    layoutMain->addWidget(widgetArea, 1);
+    layoutArea->addWidget(tabWidget);
+    // layoutArea->addStretch(0);
 
     refresh();
 
-    groupPostScalarAdvanced->setVisible(false);
-    groupPostContourAdvanced->setVisible(false);
-    groupPostVectorAdvanced->setVisible(false);
-
-    setLayout(layoutMain);
-}
-
-QWidget *PostprocessorScenePost2DWidget::post2DWidget()
-{
-    // layout post2d
-    chkShowPost2DContourView = new QCheckBox(tr("Contours"));
-    connect(chkShowPost2DContourView, SIGNAL(clicked()), this, SLOT(refresh()));
-    chkShowPost2DVectorView = new QCheckBox(tr("Vectors"));
-    connect(chkShowPost2DVectorView, SIGNAL(clicked()), this, SLOT(refresh()));
-    chkShowPost2DScalarView = new QCheckBox(tr("Scalar view"));
-    connect(chkShowPost2DScalarView, SIGNAL(clicked()), this, SLOT(refresh()));
-
-    QGridLayout *layoutPost2D = new QGridLayout();
-    layoutPost2D->addWidget(chkShowPost2DScalarView, 0, 0);
-    layoutPost2D->addWidget(chkShowPost2DContourView, 1, 0);
-    layoutPost2D->addWidget(chkShowPost2DVectorView, 2, 0);
-    layoutPost2D->setRowStretch(50, 1);
-
-    QGroupBox *grpShowPost2D = new QGroupBox(tr("Postprocessor 2D"));
-    grpShowPost2D->setLayout(layoutPost2D);
-
-    return grpShowPost2D;
-}
-
-CollapsableGroupBoxButton *PostprocessorScenePost2DWidget::postScalarWidget()
-{
-    // layout scalar field
-    cmbPostScalarFieldVariable = new QComboBox();
-    connect(cmbPostScalarFieldVariable, SIGNAL(currentIndexChanged(int)), this, SLOT(doScalarFieldVariable(int)));
-    cmbPostScalarFieldVariableComp = new QComboBox();
-
-    chkScalarFieldRangeAuto = new QCheckBox(tr("Auto range"));
-    connect(chkScalarFieldRangeAuto, SIGNAL(stateChanged(int)), this, SLOT(doScalarFieldRangeAuto(int)));
-
-    groupPostScalarAdvanced = postScalarAdvancedWidget();
-
-    QGridLayout *layoutScalarField = new QGridLayout();
-    layoutScalarField->setColumnMinimumWidth(0, columnMinimumWidth());
-    layoutScalarField->setColumnStretch(1, 1);
-    layoutScalarField->addWidget(new QLabel(tr("Variable:")), 0, 0);
-    layoutScalarField->addWidget(cmbPostScalarFieldVariable, 0, 1);
-    layoutScalarField->addWidget(new QLabel(tr("Component:")), 1, 0);
-    layoutScalarField->addWidget(cmbPostScalarFieldVariableComp, 1, 1);
-    layoutScalarField->addWidget(groupPostScalarAdvanced, 2, 0, 1, 2);
-
-    CollapsableGroupBoxButton *grpScalarField = new CollapsableGroupBoxButton(tr("Scalar field"));
-    connect(grpScalarField, SIGNAL(collapseEvent(bool)), this, SLOT(doScalarFieldExpandCollapse(bool)));
-    grpScalarField->setCollapsed(true);
-    grpScalarField->setLayout(layoutScalarField);
-
-    return grpScalarField;
-}
-
-CollapsableGroupBoxButton *PostprocessorScenePost2DWidget::postContourWidget()
-{
-    // contour field
-    cmbPost2DContourVariable = new QComboBox();
-
-    groupPostContourAdvanced = postContourAdvancedWidget();
-
-    QGridLayout *layoutContourField = new QGridLayout();
-    layoutContourField->setColumnMinimumWidth(0, columnMinimumWidth());
-    layoutContourField->setColumnStretch(1, 1);
-    layoutContourField->addWidget(new QLabel(tr("Variable:")), 0, 0);
-    layoutContourField->addWidget(cmbPost2DContourVariable, 0, 1);
-    layoutContourField->addWidget(groupPostContourAdvanced, 1, 0, 1, 2);
-
-    CollapsableGroupBoxButton *grpContourField = new CollapsableGroupBoxButton(tr("Contour field"));
-    connect(grpContourField, SIGNAL(collapseEvent(bool)), this, SLOT(doContourFieldExpandCollapse(bool)));
-    grpContourField->setCollapsed(true);
-    grpContourField->setLayout(layoutContourField);
-
-    return grpContourField;
-}
-
-CollapsableGroupBoxButton *PostprocessorScenePost2DWidget::postVectorWidget()
-{
-    // vector field
-    cmbPost2DVectorFieldVariable = new QComboBox();
-
-    groupPostVectorAdvanced = postVectorAdvancedWidget();
-
-    QGridLayout *layoutVectorField = new QGridLayout();
-    layoutVectorField->setColumnMinimumWidth(0, columnMinimumWidth());
-    layoutVectorField->setColumnStretch(1, 1);
-    layoutVectorField->addWidget(new QLabel(tr("Variable:")), 0, 0);
-    layoutVectorField->addWidget(cmbPost2DVectorFieldVariable, 0, 1);
-    layoutVectorField->addWidget(groupPostVectorAdvanced, 1, 0, 1, 2);
-
-    CollapsableGroupBoxButton *grpVectorField = new CollapsableGroupBoxButton(tr("Vector field"));
-    connect(grpVectorField, SIGNAL(collapseEvent(bool)), this, SLOT(doVectorFieldExpandCollapse(bool)));
-    grpVectorField->setCollapsed(true);
-    grpVectorField->setLayout(layoutVectorField);
-
-    return grpVectorField;
+    setLayout(layoutArea);
 }
 
 QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
 {
     // scalar field
+    chkShowPost2DScalarView = new QCheckBox(tr("Show scalar field"));
+    connect(chkShowPost2DScalarView, SIGNAL(clicked()), this, SLOT(refresh()));
+
+    chkScalarDeform = new QCheckBox(tr("Deform shape"), this);
+
+    // layout scalar field
+    cmbPostScalarFieldVariable = new QComboBox();
+    connect(cmbPostScalarFieldVariable, SIGNAL(currentIndexChanged(int)), this, SLOT(doScalarFieldVariable(int)));
+    cmbPostScalarFieldVariableComp = new QComboBox();
+
+    QGridLayout *layoutScalarField = new QGridLayout();
+    layoutScalarField->setColumnMinimumWidth(0, columnMinimumWidth());
+    layoutScalarField->setColumnStretch(1, 1);
+    layoutScalarField->addWidget(chkShowPost2DScalarView, 0, 1);
+    layoutScalarField->addWidget(chkScalarDeform, 0, 2);
+    layoutScalarField->addWidget(new QLabel(tr("Variable:")), 1, 0);
+    layoutScalarField->addWidget(cmbPostScalarFieldVariable, 1, 1, 1, 2);
+    layoutScalarField->addWidget(new QLabel(tr("Component:")), 2, 0);
+    layoutScalarField->addWidget(cmbPostScalarFieldVariableComp, 2, 1, 1, 2);
+
+    QGroupBox *grpScalarField = new QGroupBox(tr("Variable"));
+    grpScalarField->setLayout(layoutScalarField);
+
     // palette
     cmbPalette = new QComboBox();
     foreach (QString key, paletteTypeStringKeys())
@@ -223,6 +132,14 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
     txtPaletteSteps = new QSpinBox(this);
     txtPaletteSteps->setMinimum(PALETTESTEPSMIN);
     txtPaletteSteps->setMaximum(PALETTESTEPSMAX);
+
+    // decimal places
+    txtScalarDecimalPlace = new QSpinBox(this);
+    txtScalarDecimalPlace->setMinimum(SCALARDECIMALPLACEMIN);
+    txtScalarDecimalPlace->setMaximum(SCALARDECIMALPLACEMAX);
+
+    // color bar
+    chkShowScalarColorBar = new QCheckBox(tr("Show colorbar"), this);
 
     // log scale
     chkScalarFieldRangeLog = new QCheckBox(tr("Log. scale"));
@@ -243,6 +160,9 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
     lblScalarFieldRangeMaxError->setPalette(palette);
     lblScalarFieldRangeMaxError->setVisible(false);
 
+    chkScalarFieldRangeAuto = new QCheckBox(tr("Auto range"));
+    connect(chkScalarFieldRangeAuto, SIGNAL(stateChanged(int)), this, SLOT(doScalarFieldRangeAuto(int)));
+
     QGridLayout *layoutScalarFieldRange = new QGridLayout();
     lblScalarFieldRangeMin = new QLabel(tr("Minimum:"));
     layoutScalarFieldRange->addWidget(lblScalarFieldRangeMin, 0, 0);
@@ -261,48 +181,25 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
     gridLayoutScalarFieldPalette->setColumnMinimumWidth(0, columnMinimumWidth());
     gridLayoutScalarFieldPalette->setColumnStretch(1, 1);
     gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Palette:")), 0, 0);
-    gridLayoutScalarFieldPalette->addWidget(cmbPalette, 0, 1, 1, 2);
+    gridLayoutScalarFieldPalette->addWidget(cmbPalette, 0, 1);
+    gridLayoutScalarFieldPalette->addWidget(chkShowScalarColorBar, 0, 2);
     gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Steps:")), 2, 0);
     gridLayoutScalarFieldPalette->addWidget(txtPaletteSteps, 2, 1);
     gridLayoutScalarFieldPalette->addWidget(chkPaletteFilter, 2, 2);
-    gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Base:")), 3, 0);
-    gridLayoutScalarFieldPalette->addWidget(txtScalarFieldRangeBase, 3, 1);
-    gridLayoutScalarFieldPalette->addWidget(chkScalarFieldRangeLog, 3, 2);
+    gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Decimal places:")), 3, 0);
+    gridLayoutScalarFieldPalette->addWidget(txtScalarDecimalPlace, 3, 1);
+    gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Base:")), 4, 0);
+    gridLayoutScalarFieldPalette->addWidget(txtScalarFieldRangeBase, 4, 1);
+    gridLayoutScalarFieldPalette->addWidget(chkScalarFieldRangeLog, 4, 2);
 
-    QGroupBox *grpScalarFieldPalette = new QGroupBox(tr("Palette"));
+    QGroupBox *grpScalarFieldPalette = new QGroupBox(tr("Palette and colorbar"));
     grpScalarFieldPalette->setLayout(gridLayoutScalarFieldPalette);
 
-    // decimal places
-    txtScalarDecimalPlace = new QSpinBox(this);
-    txtScalarDecimalPlace->setMinimum(SCALARDECIMALPLACEMIN);
-    txtScalarDecimalPlace->setMaximum(SCALARDECIMALPLACEMAX);
-
-    // color bar
-    chkShowScalarColorBar = new QCheckBox(tr("Show colorbar"), this);
-
-    QGridLayout *gridLayoutScalarFieldColorbar = new QGridLayout();
-    gridLayoutScalarFieldColorbar->setColumnMinimumWidth(0, columnMinimumWidth());
-    gridLayoutScalarFieldColorbar->setColumnStretch(1, 1);
-    gridLayoutScalarFieldColorbar->addWidget(new QLabel(tr("Decimal places:")), 0, 0);
-    gridLayoutScalarFieldColorbar->addWidget(txtScalarDecimalPlace, 0, 1);
-    gridLayoutScalarFieldColorbar->addWidget(chkShowScalarColorBar, 0, 2);
-
-    QGroupBox *grpScalarFieldColorbar = new QGroupBox(tr("Colorbar"));
-    grpScalarFieldColorbar->setLayout(gridLayoutScalarFieldColorbar);
-
-    chkScalarDeform = new QCheckBox(tr("Deform shape"), this);
-
-    QGridLayout *layoutDeformShape = new QGridLayout();
-    layoutDeformShape->addWidget(chkScalarDeform, 0, 0);
-
-    QGroupBox *grpScalarDeformShape = new QGroupBox(tr("Displacement"));
-    grpScalarDeformShape->setLayout(layoutDeformShape);
-
     QVBoxLayout *layoutScalarFieldAdvanced = new QVBoxLayout();
+    layoutScalarFieldAdvanced->addWidget(grpScalarField);
     layoutScalarFieldAdvanced->addWidget(grpScalarFieldPalette);
-    layoutScalarFieldAdvanced->addWidget(grpScalarFieldColorbar);
     layoutScalarFieldAdvanced->addWidget(grpScalarFieldRange);
-    layoutScalarFieldAdvanced->addWidget(grpScalarDeformShape);
+    layoutScalarFieldAdvanced->addStretch(1);
 
     QWidget *scalarWidget = new QWidget();
     scalarWidget->setLayout(layoutScalarFieldAdvanced);
@@ -312,6 +209,26 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
 
 QWidget *PostprocessorScenePost2DWidget::postContourAdvancedWidget()
 {
+    // contours field
+    chkShowPost2DContourView = new QCheckBox(tr("Show contours"));
+    connect(chkShowPost2DContourView, SIGNAL(clicked()), this, SLOT(refresh()));
+
+    chkContourDeform = new QCheckBox(tr("Deform shape"), this);
+
+    // contour field
+    cmbPost2DContourVariable = new QComboBox();
+
+    QGridLayout *layoutContourField = new QGridLayout();
+    layoutContourField->setColumnMinimumWidth(0, columnMinimumWidth());
+    layoutContourField->setColumnStretch(1, 1);
+    layoutContourField->addWidget(chkShowPost2DContourView, 0, 1);
+    layoutContourField->addWidget(chkContourDeform, 0, 2);
+    layoutContourField->addWidget(new QLabel(tr("Variable:")), 1, 0);
+    layoutContourField->addWidget(cmbPost2DContourVariable, 1, 1, 1, 2);
+
+    QGroupBox *grpContourField = new QGroupBox(tr("Variable"));
+    grpContourField->setLayout(layoutContourField);
+
     // contours
     txtContoursCount = new QSpinBox(this);
     txtContoursCount->setMinimum(CONTOURSCOUNTMIN);
@@ -321,31 +238,49 @@ QWidget *PostprocessorScenePost2DWidget::postContourAdvancedWidget()
     txtContourWidth->setMaximum(CONTOURSWIDTHMAX);
     txtContourWidth->setSingleStep(0.1);
 
-    chkContourDeform = new QCheckBox(tr("Deform shape"), this);
+    QGridLayout *layoutAdvancedContours = new QGridLayout();
+    layoutAdvancedContours->setColumnMinimumWidth(0, columnMinimumWidth());
+    layoutAdvancedContours->setColumnStretch(1, 1);
+    layoutAdvancedContours->addWidget(new QLabel(tr("Number of contours:")), 1, 0);
+    layoutAdvancedContours->addWidget(txtContoursCount, 1, 1);
+    layoutAdvancedContours->addWidget(new QLabel(tr("Contour width:")), 2, 0);
+    layoutAdvancedContours->addWidget(txtContourWidth, 2, 1);
 
-    QGridLayout *layoutDeformShape = new QGridLayout();
-    layoutDeformShape->addWidget(chkContourDeform, 0, 0);
+    QGroupBox *grpAdvancedContour = new QGroupBox(tr("Advanced"));
+    grpAdvancedContour->setLayout(layoutAdvancedContours);
 
-    QGroupBox *grpContourDeformShape = new QGroupBox(tr("Displacement"));
-    grpContourDeformShape->setLayout(layoutDeformShape);
-
-    QGridLayout *gridLayoutContours = new QGridLayout();
-    gridLayoutContours->setColumnMinimumWidth(0, columnMinimumWidth());
-    gridLayoutContours->setColumnStretch(1, 1);
-    gridLayoutContours->addWidget(new QLabel(tr("Number of contours:")), 0, 0);
-    gridLayoutContours->addWidget(txtContoursCount, 0, 1);
-    gridLayoutContours->addWidget(new QLabel(tr("Contour width:")), 1, 0);
-    gridLayoutContours->addWidget(txtContourWidth, 1, 1);
-    gridLayoutContours->addWidget(grpContourDeformShape, 2, 0, 1, 2);
+    QVBoxLayout *layoutArea = new QVBoxLayout();
+    layoutArea->addWidget(grpContourField);
+    layoutArea->addWidget(grpAdvancedContour);
+    layoutArea->addStretch(1);
 
     QWidget *contourWidget = new QWidget();
-    contourWidget->setLayout(gridLayoutContours);
+    contourWidget->setLayout(layoutArea);
 
     return contourWidget;
 }
 
 QWidget *PostprocessorScenePost2DWidget::postVectorAdvancedWidget()
 {
+    chkShowPost2DVectorView = new QCheckBox(tr("Show vectors"));
+    connect(chkShowPost2DVectorView, SIGNAL(clicked()), this, SLOT(refresh()));
+
+    chkVectorDeform = new QCheckBox(tr("Deform shape"), this);
+
+    // vector field
+    cmbPost2DVectorFieldVariable = new QComboBox();
+
+    QGridLayout *layoutVectorField = new QGridLayout();
+    layoutVectorField->setColumnMinimumWidth(0, columnMinimumWidth());
+    layoutVectorField->setColumnStretch(1, 1);
+    layoutVectorField->addWidget(chkShowPost2DVectorView, 0, 1);
+    layoutVectorField->addWidget(chkVectorDeform, 0, 2);
+    layoutVectorField->addWidget(new QLabel(tr("Variable:")), 1, 0);
+    layoutVectorField->addWidget(cmbPost2DVectorFieldVariable, 1, 1, 1, 2);
+
+    QGroupBox *grpVectorField = new QGroupBox(tr("Variable"));
+    grpVectorField->setLayout(layoutVectorField);
+
     // vectors
     chkVectorProportional = new QCheckBox(tr("Proportional"), this);
     chkVectorColor = new QCheckBox(tr("Color (b/w)"), this);
@@ -364,48 +299,33 @@ QWidget *PostprocessorScenePost2DWidget::postVectorAdvancedWidget()
     foreach (QString key, vectorCenterStringKeys())
         cmbVectorCenter->addItem(vectorCenterString(vectorCenterFromStringKey(key)), vectorCenterFromStringKey(key));
 
-    chkVectorDeform = new QCheckBox(tr("Deform shape"), this);
+    QGridLayout *layoutAdvancedVectors = new QGridLayout();
+    layoutAdvancedVectors->setColumnMinimumWidth(0, columnMinimumWidth());
+    layoutAdvancedVectors->setColumnStretch(1, 1);
+    layoutAdvancedVectors->addWidget(new QLabel(tr("Number of vectors:")), 0, 0);
+    layoutAdvancedVectors->addWidget(txtVectorCount, 0, 1);
+    layoutAdvancedVectors->addWidget(chkVectorProportional, 0, 2);
+    layoutAdvancedVectors->addWidget(new QLabel(tr("Scale:")), 1, 0);
+    layoutAdvancedVectors->addWidget(txtVectorScale, 1, 1);
+    layoutAdvancedVectors->addWidget(chkVectorColor, 1, 2);
+    layoutAdvancedVectors->addWidget(new QLabel(tr("Type:")), 2, 0);
+    layoutAdvancedVectors->addWidget(cmbVectorType, 2, 1);
+    layoutAdvancedVectors->addWidget(new QLabel(tr("Center:")), 3, 0);
+    layoutAdvancedVectors->addWidget(cmbVectorCenter, 3, 1);
+    layoutAdvancedVectors->setRowStretch(50, 1);
 
-    QGridLayout *layoutDeformShape = new QGridLayout();
-    layoutDeformShape->addWidget(chkVectorDeform, 0, 0);
+    QGroupBox *grpAdvancedVector = new QGroupBox(tr("Advanced"));
+    grpAdvancedVector->setLayout(layoutAdvancedVectors);
 
-    QGroupBox *grpVectorDeformShape = new QGroupBox(tr("Displacement"));
-    grpVectorDeformShape->setLayout(layoutDeformShape);
-
-    QGridLayout *gridLayoutVectors = new QGridLayout();
-    gridLayoutVectors->setColumnMinimumWidth(0, columnMinimumWidth());
-    gridLayoutVectors->setColumnStretch(1, 1);
-    gridLayoutVectors->addWidget(new QLabel(tr("Number of vec.:")), 0, 0);
-    gridLayoutVectors->addWidget(txtVectorCount, 0, 1);
-    gridLayoutVectors->addWidget(chkVectorProportional, 0, 2);
-    gridLayoutVectors->addWidget(new QLabel(tr("Scale:")), 1, 0);
-    gridLayoutVectors->addWidget(txtVectorScale, 1, 1);
-    gridLayoutVectors->addWidget(chkVectorColor, 1, 2);
-    gridLayoutVectors->addWidget(new QLabel(tr("Type:")), 2, 0);
-    gridLayoutVectors->addWidget(cmbVectorType, 2, 1, 1, 2);
-    gridLayoutVectors->addWidget(new QLabel(tr("Center:")), 3, 0);
-    gridLayoutVectors->addWidget(cmbVectorCenter, 3, 1, 1, 2);
-    gridLayoutVectors->addWidget(grpVectorDeformShape, 4, 0, 1, 2);
+    QVBoxLayout *layoutArea = new QVBoxLayout();
+    layoutArea->addWidget(grpVectorField);
+    layoutArea->addWidget(grpAdvancedVector);
+    layoutArea->addStretch(1);
 
     QWidget *vectorWidget = new QWidget();
-    vectorWidget->setLayout(gridLayoutVectors);
+    vectorWidget->setLayout(layoutArea);
 
     return vectorWidget;
-}
-
-void PostprocessorScenePost2DWidget::doScalarFieldExpandCollapse(bool collapsed)
-{
-    groupPostScalarAdvanced->setVisible(!collapsed);
-}
-
-void PostprocessorScenePost2DWidget::doContourFieldExpandCollapse(bool collapsed)
-{
-    groupPostContourAdvanced->setVisible(!collapsed);
-}
-
-void PostprocessorScenePost2DWidget::doVectorFieldExpandCollapse(bool collapsed)
-{
-    groupPostVectorAdvanced->setVisible(!collapsed);
 }
 
 /*
@@ -553,7 +473,7 @@ void PostprocessorScenePost2DWidget::load()
     if (cmbPost2DContourVariable->count() > 0 && cmbPost2DContourVariable->itemData(cmbPost2DContourVariable->currentIndex()) != QVariant::Invalid)
     {
         m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ContourVariable,
-                                                    cmbPost2DContourVariable->itemData(cmbPost2DContourVariable->currentIndex()).toString());
+                                                                  cmbPost2DContourVariable->itemData(cmbPost2DContourVariable->currentIndex()).toString());
     }
     if (cmbPost2DContourVariable->currentIndex() == -1 && cmbPost2DContourVariable->count() > 0)
     {
@@ -597,11 +517,13 @@ void PostprocessorScenePost2DWidget::load()
     doPaletteFilter(chkPaletteFilter->checkState());
     txtPaletteSteps->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_PaletteSteps).toInt());
     chkScalarDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformScalar).toBool());
+    chkScalarDeform->setVisible(m_postprocessorWidget->fieldWidget()->selectedField()->hasDeformableShape());
 
     // contours
     txtContoursCount->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ContoursCount).toInt());
     txtContourWidth->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ContoursWidth).toDouble());
     chkContourDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformContour).toBool());
+    chkContourDeform->setVisible(m_postprocessorWidget->fieldWidget()->selectedField()->hasDeformableShape());
 
     // vector field
     chkVectorProportional->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorProportional).toBool());
@@ -612,6 +534,7 @@ void PostprocessorScenePost2DWidget::load()
     cmbVectorType->setCurrentIndex(cmbVectorType->findData((VectorType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorType).toInt()));
     cmbVectorCenter->setCurrentIndex(cmbVectorCenter->findData((VectorCenter) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_VectorCenter).toInt()));
     chkVectorDeform->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_DeformVector).toBool());
+    chkVectorDeform->setVisible(m_postprocessorWidget->fieldWidget()->selectedField()->hasDeformableShape());
 
     // advanced
     // scalar field

@@ -95,18 +95,25 @@ void CheckVersion::downloadFinished(QNetworkReply *networkReply)
 
         if (text > versionString())
         {
-            QString str(tr("<b>New version available.</b><br/><br/>"
-                           "Actual version: %1<br/>"
-                           "New version: %2<br/><br/>"
-                           "URL: <a href=\"http://www.agros2d.org/down/\">http://www.agros2d.org/down/</a>").
-                        arg(versionString()).
-                        arg(text));
+            QString str = tr("<b>New version available.</b><br/><br/>"
+                             "Actual version: %1<br/>"
+                             "Available version: %2<br/><br/>"
+                             "URL: <a href=\"http://www.agros2d.org/down/\">http://www.agros2d.org/down/</a>").
+                    arg(versionString()).
+                    arg(text);
 
             QMessageBox::information(QApplication::activeWindow(), tr("New version"), str);
         }
         else if (!m_quiet)
         {
-            QMessageBox::information(QApplication::activeWindow(), tr("New version"), tr("You are using actual version."));
+            QString str = tr("<b>You are using actual version.</b><br/><br/>"
+                             "Actual version: %1<br/>"
+                             "Available version: %2<br/><br/>"
+                             "URL: <a href=\"http://www.agros2d.org/down/\">http://www.agros2d.org/down/</a>").
+                    arg(versionString()).
+                    arg(text);
+
+            QMessageBox::information(QApplication::activeWindow(), tr("Actual version"), str);
         }
     }
 }
