@@ -112,6 +112,8 @@ void solveAmesos(const Epetra_LinearProblem &problem, std::string solverTypeName
     Amesos amesosFactory;
     const char *amesosSolverType = solverTypeName.c_str(); // in default uses the Amesos_Klu direct solver
 
+    std::cout << "Amesos solver variant: " << solverTypeName << std::endl;
+
     Amesos_BaseSolver *amesosSolver = amesosFactory.Create(amesosSolverType, problem);
     assert(amesosSolver);
 
@@ -561,6 +563,10 @@ int main(int argc, char *argv[])
             if (solver == "Amesos_Klu" || solver == "") // default
             {
                 solveAmesos(problem, "Amesos_Klu");
+            }
+            else if (solver == "Amesos_Paraklete")
+            {
+                solveAmesos(problem, "Amesos_Paraklete");
             }
             else if (solver == "AztecOO")
             {
