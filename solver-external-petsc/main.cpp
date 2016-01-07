@@ -38,13 +38,71 @@
 #include "../../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
 
+
+class LinearSystemPETScArgs : public LinearSystemArgs
+{
+// another used args (not listed here): -s, -r, -p, -m, -q
+public:
+    LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
+        : LinearSystemArgs(name, argc, argv),
+          solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
+          preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
+          aggregationTypeArg(TCLAP::ValueArg<std::string>("e", "aggregationType", "AggregationType", false, "", "string")),
+          smootherTypeArg(TCLAP::ValueArg<std::string>("o", "smootherType", "SmootherType", false, "", "string")),
+          coarseTypeArg(TCLAP::ValueArg<std::string>("z", "coarseType", "CoarseType", false, "", "string")),
+          // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
+          relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
+          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
+          multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false))
+    {
+        cmd.add(solverArg);
+        cmd.add(preconditionerArg);
+        cmd.add(aggregationTypeArg);
+        cmd.add(smootherTypeArg);
+        cmd.add(coarseTypeArg);
+        // cmd.add(absTolArg);
+        cmd.add(relTolArg);
+        cmd.add(maxIterArg);
+        cmd.add(multigridArg);
+    }
+
+    TCLAP::ValueArg<std::string> solverArg;
+    TCLAP::ValueArg<std::string> preconditionerArg;
+    TCLAP::ValueArg<std::string> aggregationTypeArg;
+    TCLAP::ValueArg<std::string> smootherTypeArg;
+    TCLAP::ValueArg<std::string> coarseTypeArg;
+    // TCLAP::ValueArg<double> absTolArg;
+    TCLAP::ValueArg<double> relTolArg;
+    TCLAP::ValueArg<int> maxIterArg;
+    TCLAP::SwitchArg multigridArg;
+};
+
+LinearSystemPETScArgs *createLinearSystem(std::string extSolverName, int argc, char *argv[])
+{
+    LinearSystemPETScArgs *linearSystem = new LinearSystemPETScArgs(extSolverName, argc, argv);
+    linearSystem->readLinearSystem();
+    // create empty solution vector (Agros2D)
+    linearSystem->system_sln->resize(linearSystem->system_rhs->max_len);
+    linearSystem->convertToCOO();
+
+    return linearSystem;
+}
+// usage:
+// LinearSystemTrilinosArgs *linearSystem = nullptr;
+// ...
+// linearSystem = createLinearSystem("External solver - TRILINOS", argc, argv);
+// -----
+// get parameters to local value
+// double relTol = linearSystem->relTolArg.getValue();
+// int maxIter = linearSystem->maxIterArg.getValue();
+
 int main(int argc, char *argv[])
 {
     try
     {
         int status = 0;
 
-        LinearSystemArgs linearSystem("External solver - PETSc", argc, argv);
+        LinearSystemPETScArgs linearSystem("External solver - PETSc", argc, argv);
 
         Vec x,b;
         Mat A;
