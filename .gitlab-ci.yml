@@ -29,7 +29,7 @@ build_mumps:
     - cd solver-external-mumps
     - cmake .
     - make 
-    - ctest -V -D Experimental
+    - ctest --output-on-failure -D Experimental
     
 build_umfpack:
   tags:
@@ -40,7 +40,7 @@ build_umfpack:
     - cd solver-external-umfpack
     - cmake .
     - make 
-    - ctest -V -D Experimental
+    - ctest --output-on-failure -D Experimental
     
 build_paralution:
   tags:
@@ -68,7 +68,7 @@ build_trilinos:
     - cd solver-external-trilinos
     - cmake .
     - make 
-    - ctest -V -D Experimental
+    - ctest --output-on-failure -D Experimental
     
 build_petsc:
   tags:
@@ -79,4 +79,4 @@ build_petsc:
     - cd solver-external-petsc
     - cmake .
     - make 
-    - ctest -V -D Experimental
+    - ctest --output-on-failure -D Experimental
