@@ -43,7 +43,7 @@ class LinearSystemPETScArgs : public LinearSystemArgs
 {
 // another used args (not listed here): -s, -r, -p, -m, -q
 public:
-    LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
+    LinearSystemPETScArgs(const std::string &name, int argc, const char * const *argv)
         : LinearSystemArgs(name, argc, argv),
           solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
           preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
