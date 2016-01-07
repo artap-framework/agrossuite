@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
                                                    linearSystem.system_rhs->val,
                                                    numeric, Control, Info);
 
-                linearSystem.setInfoTimeSolveSystem(elapsedSeconds(timeSolveStart));
+                linearSystem.setInfoTimeSolver(elapsedSeconds(timeSolveStart));
 
                 // free the memory associated with the numeric factorization.
                 if (numeric)
@@ -111,8 +111,14 @@ int main(int argc, char *argv[])
                         status = linearSystem.compareWithReferenceSolution();
 
                     linearSystem.setInfoTimeTotal(elapsedSeconds(timeStart));
-                    if (linearSystem.isVerbose())
+
+                    if (linearSystem.verbose() > 0)
+                    {
                         linearSystem.printStatus();
+
+                        if (linearSystem.verbose() > 2)
+                            linearSystem.exportStatusToFile();
+                    }
 
                     linearSystem.system_rhs->clear();
 
