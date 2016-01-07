@@ -59,15 +59,6 @@ build_paralution:
     - make 
     - ctest -V -D Experimental
     
-build_viennacl:
-  tags:
-    - linux
-  script: 
-    - cd solver-external-viennacl
-    - cmake .
-    - make 
-    - ctest -V -D Experimental
-    
 build_trilinos:
   tags:
     - linux

@@ -150,11 +150,6 @@ class TestMatrixSolversExternal(TestMatrixSolversGeneral):
         sln = self.model("external", "solver_TRILINOS.ext")        
         self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), "TRILINOS (external) sln failed.")
 
-    def test_external_viennacl(self):
-        # ViennaCL
-        sln = self.model("external", "solver_ViennaCL.ext", "-t 1e-12")        
-        self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-5), "ViennaCL (external) sln failed.")
-
     def test_external_petsc(self):
         # PETSC
         sln = self.model("external", "solver_PETSC.ext")        
