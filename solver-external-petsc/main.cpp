@@ -38,6 +38,11 @@
 #include "../../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
 
+class LinearSystemPetscArgs : public LinearSystemArgs
+{
+
+};
+
 int main(int argc, char *argv[])
 {
     try
@@ -47,50 +52,63 @@ int main(int argc, char *argv[])
         LinearSystemArgs linearSystem("External solver - PETSc", argc, argv);
 
         Vec x,b;
-        Mat A;
+        Mat  A;
         PetscMPIInt size;
         PetscErrorCode ierr;
         PetscBool nonzeroguess = PETSC_FALSE;
         KSP ksp;
         PC pc;
-        // PetscInt m = 5;
+        PetscInt n_rows = 0;
+        PetscInt n = 0;
+        PetscInt *column_indicies = NULL;
 
         PetscInitialize(&argc,&argv, (char*)0," ");
         ierr = MPI_Comm_size(PETSC_COMM_WORLD, &size); CHKERRQ(ierr);
         int rank;
         ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
         std::cout << "rank =  " << rank << std::endl;
-        // if (size != 1) SETERRQ(PETSC_COMM_WORLD, 1, "This is a uniprocessor example only!");
         ierr = PetscOptionsGetBool(NULL,"-nonzero_guess", &nonzeroguess,NULL); CHKERRQ(ierr);
 
-        if (rank == 0)
+
+        PetscInt *row_indicies = NULL;
+        PetscInt *row_lengths = NULL;
+
+        //        double  * globaldata = NULL;
+        //        double localdata[3];
+        //        const int N = 12;
+
+        //        if (rank == 0)
+        //        {
+        //            globaldata = new double[N];
+
+        //            for(int i = 0; i < N; i++)
+        //            {
+        //                globaldata[i] = i+1;
+        //            }
+        //        }
+        //        MPI_Scatter(globaldata, 3, MPI_DOUBLE, localdata, 3, MPI_DOUBLE, 0, PETSC_COMM_WORLD);
+        //        for(int i = 0; i < 3; i++)
+        //        {
+        //            std::cout << "Rank:" << rank << "  " << localdata[i] << std::endl;
+        //        }
+
+
+
+
+        //   if (rank == 0)
         {
             linearSystem.readLinearSystem();
-            PetscInt n_rows = linearSystem.n();
-            PetscInt n = linearSystem.nz();
-
-            PetscScalar *matrix = linearSystem.system_matrix->val;
-            PetscScalar *vector = linearSystem.system_rhs->val;
-            PetscInt *row_indicies = new PetscInt[n_rows];
-            PetscInt *row_lengths = new PetscInt[n_rows];
-
-            ierr = VecCreate(PETSC_COMM_WORLD,&x); CHKERRQ(ierr);
-            ierr = PetscObjectSetName((PetscObject) x, "Solution"); CHKERRQ(ierr);
-            ierr = VecSetSizes(x,PETSC_DECIDE,n_rows); CHKERRQ(ierr);
-            ierr = VecSetFromOptions(x); CHKERRQ(ierr);
-            ierr = VecDuplicate(x,&b); CHKERRQ(ierr);
+            n_rows = linearSystem.n();
+            n = linearSystem.nz();
+            row_indicies = new PetscInt[n_rows];
+            row_lengths = new PetscInt[n_rows];
 
             for (int i = 0; i < n_rows; i++)
             {
                 row_indicies[i] = linearSystem.system_matrix_pattern->rowstart[i];
             }
 
-            PetscInt *column_indicies = reinterpret_cast<PetscInt *>(linearSystem.system_matrix_pattern->colnums);
-
-            for (int i = 0; i < n_rows; i++)
-            {
-                VecSetValues(b, 1, &i, &linearSystem.system_rhs->val[i], INSERT_VALUES);
-            }
+            column_indicies = reinterpret_cast<PetscInt *>(linearSystem.system_matrix_pattern->colnums);
 
             for(int i = 0; i < n_rows; i++)
             {
@@ -103,52 +121,65 @@ int main(int argc, char *argv[])
                     row_lengths[i] = row_indicies[i+1] - row_indicies[i];
                 }
             }
-
-            ierr = MatCreateSeqAIJ(PETSC_COMM_WORLD, n_rows, n_rows, 0, row_lengths, &A);
-            ierr = MatSetType(A, MATSEQAIJ);
-
-            for (int i = 0; i < n_rows; i++)
-            {
-                MatSetValues(A, 1, &i, row_lengths[i], &column_indicies[row_indicies[i]],&matrix[row_indicies[i]], INSERT_VALUES);
-            }
-
-            ierr = MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
-            ierr = MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
-            // MatView(A, PETSC_VIEWER_STDOUT_SELF);
-
-            VecAssemblyBegin(b);
-            VecAssemblyEnd(b);
-            // VecView(b, PETSC_VIEWER_STDOUT_SELF);
-
-            delete [] row_indicies;
-            delete [] row_lengths;
         }
+
+
+        ierr = MatCreate(PETSC_COMM_WORLD, &A); CHKERRQ(ierr);
+        ierr = MatSetType(A, MATMPIAIJ); CHKERRQ(ierr);
+        ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, n_rows, n_rows); CHKERRQ(ierr);
+        ierr = MatMPIAIJSetPreallocation(A, 7, PETSC_NULL, 7, PETSC_NULL); CHKERRQ(ierr);
+        ierr = MatSeqAIJSetPreallocation(A, 7, NULL);CHKERRQ(ierr);
+        ierr = MatSetFromOptions(A);
+
+
+
+
+        int istart, iend;
+
+        ierr = MatGetOwnershipRange(A, &istart,&iend); CHKERRQ(ierr);
+        int mm, nn;
+        ierr = MatGetLocalSize(A, &mm, &nn);
+        std::cout << rank << "   " << mm << "  " << nn << "  " << "\n";
+
+        int l = 0;
+        for (int i = istart; (i < iend) && (i < n_rows); i++)
+        {
+            MatSetValues(A, 1, &i, row_lengths[i], &column_indicies[row_indicies[i]],&linearSystem.system_matrix->val[row_indicies[i]], INSERT_VALUES);
+            l++;
+        }
+
+        ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
+        ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
+
+        MatView(A, PETSC_VIEWER_STDOUT_SELF);
+
+        ierr = VecCreateMPI(PETSC_COMM_WORLD, PETSC_DECIDE, n_rows, &x); CHKERRQ(ierr);
+        ierr = PetscObjectSetName((PetscObject) x, "Solution"); CHKERRQ(ierr);
+        ierr = VecSetFromOptions(x); CHKERRQ(ierr);
+        ierr = VecDuplicate(x,&b); CHKERRQ(ierr);
+
+
+        ierr = VecGetOwnershipRange(x,&istart,&iend); CHKERRQ(ierr);
+        std::cout << istart << "  ";
+        for (int i = istart; i < iend; i++)
+        {
+            VecSetValues(b, 1, &i, &linearSystem.system_rhs->val[i], INSERT_VALUES);
+        }
+
+        ierr = VecAssemblyBegin(b); CHKERRQ(ierr);
+        ierr = VecAssemblyEnd(b); CHKERRQ(ierr);
+        VecView(b, PETSC_VIEWER_STDOUT_SELF);
 
         //       Create linear solver context
         ierr = KSPCreate(PETSC_COMM_WORLD,&ksp);CHKERRQ(ierr);
         ierr = KSPSetOperators(ksp,A,A,DIFFERENT_NONZERO_PATTERN);CHKERRQ(ierr);
 
-        /*
-               Set linear solver defaults for this problem (optional).
-               - By extracting the KSP and PC contexts from the KSP context,
-                 we can then directly call any KSP and PC routines to set
-                 various options.
-               - The following four statements are optional; all of these
-                 parameters could alternatively be specified at runtime via
-                 KSPSetFromOptions();
-            */
+
         ierr = KSPGetPC(ksp,&pc);CHKERRQ(ierr);
-        ierr = PCSetType(pc, PCLU);CHKERRQ(ierr);
+        ierr = PCSetType(pc, PCHYPRE);CHKERRQ(ierr);
         PCFactorSetShiftType(pc, MAT_SHIFT_NONZERO);
         ierr = KSPSetTolerances(ksp,1.e-10,PETSC_DEFAULT,PETSC_DEFAULT,PETSC_DEFAULT);CHKERRQ(ierr);
 
-        /*
-              Set runtime options, e.g.,
-                  -ksp_type <type> -pc_type <type> -ksp_monitor -ksp_rtol <rtol>
-              These options will override those specified above as long as
-              KSPSetFromOptions() is called _after_ any other customization
-              routines.
-            */
         ierr = KSPSetFromOptions(ksp);CHKERRQ(ierr);
 
         if (nonzeroguess)
@@ -158,47 +189,15 @@ int main(int argc, char *argv[])
             ierr = KSPSetInitialGuessNonzero(ksp,PETSC_TRUE);CHKERRQ(ierr);
         }
 
-        /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                                Solve the linear system
-               - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-        /*
-               Solve linear system
-            */
-        ierr = KSPSolve(ksp, b, x); CHKERRQ(ierr);
+        for(int i = 0; i < 1; i++)
+        {
+            ierr = KSPSolve(ksp, b, x); CHKERRQ(ierr);
+        }
 
-        /*
-               View solver info; we could instead use the option -ksp_view to
-               print this info to the screen at the conclusion of KSPSolve().
-            */
-        // ierr = KSPView(ksp,PETSC_VIEWER_STDOUT_WORLD);CHKERRQ(ierr);
+        MatView(A, PETSC_VIEWER_STDOUT_SELF);
 
 
-        //  VecView(x, PETSC_VIEWER_STDOUT_SELF);
-        //  VecGetArray1d(x,1,0, system_rhs.val);
-
-        // Check the error
-
-        // ierr = VecAXPY(x,neg_one,u);CHKERRQ(ierr);
-        // ierr = VecNorm(x,NORM_2,&norm);CHKERRQ(ierr);
-        // ierr = KSPGetIterationNumber(ksp,&its);CHKERRQ(ierr);
-        //if (norm > tol) {
-        //    ierr = PetscPrintf(PETSC_COMM_WORLD,"Norm of error %G, Iterations %D\n",norm,its);CHKERRQ(ierr);
-        //}
-
-        /*
-               Free work space.  All PETSc objects should be destroyed when they
-               are no longer needed.
-            */
-
-
-        /*
-               Always call PetscFinalize() before exiting a program.  This routine
-                 - finalizes the PETSc libraries as well as MPI
-                 - provides summary and diagnostic information if certain runtime
-                   options are chosen (e.g., -log_summary).
-            */
-
-        if (rank == 0)
+        //       if (rank == 0)
         {
             for (int i = 0; i < linearSystem.n(); i++)
             {
@@ -212,6 +211,10 @@ int main(int argc, char *argv[])
             // check solution
             if (linearSystem.hasReferenceSolution())
                 status = linearSystem.compareWithReferenceSolution();
+
+            delete [] row_indicies;
+            delete [] row_lengths;
+
         }
 
         ierr = VecDestroy(&x); CHKERRQ(ierr);
