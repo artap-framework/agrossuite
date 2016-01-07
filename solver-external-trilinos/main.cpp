@@ -540,26 +540,37 @@ int main(int argc, char *argv[])
 
         // solver calling
         std::string solver = linearSystem->solverArg.getValue();
+        linearSystem->setInfoSolverSolverName(solver);
         if (linearSystem->multigridArg.getValue())
         {
             if (solver == "AztecOOML" || solver == "") // default for AMG
+            {
+                linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
+
                 solveAztecOOML(problem, maxIter, relTol,
                                getMLpreconditioner(linearSystem->preconditionerArg.getValue()),
                                getMLaggregationType(linearSystem->aggregationTypeArg.getValue()),
                                getMLsmootherType(linearSystem->smootherTypeArg.getValue()),
                                getMLcoarseType(linearSystem->coarseTypeArg.getValue()));
+            }
             else
                 assert(0 && "No solver selected !!!");
         }
         else
         {
             if (solver == "Amesos_Klu" || solver == "") // default
+            {
                 solveAmesos(problem, "Amesos_Klu");
+            }
             else if (solver == "AztecOO")
+            {
+                linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
                 solveAztecOO(problem, maxIter, relTol);
+            }
             else
+            {
                 assert(0 && "No solver selected !!!");
-
+            }
         }
 
         // copy results into the solution vector (for Agros2D)
@@ -574,6 +585,14 @@ int main(int argc, char *argv[])
             // check solution
             if (linearSystem->hasReferenceSolution())
                 status = linearSystem->compareWithReferenceSolution();
+
+            if (linearSystem->verbose() > 0)
+            {
+                linearSystem->printStatus();
+
+                if (linearSystem->verbose() > 2)
+                    linearSystem->exportStatusToFile();
+            }
         }
         delete linearSystem;
 

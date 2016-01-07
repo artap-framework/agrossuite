@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
             paralution::set_omp_threads_paralution(num);
         }
 
-        if (linearSystem.isVerbose())
+        if (linearSystem.verbose() > 0)
             paralution::info_paralution();
 
         linearSystem.setInfoNumOfProc(paralution::_get_backend_descriptor()->OpenMP_threads);
@@ -203,10 +203,12 @@ int main(int argc, char *argv[])
         // preconditioner
         std::string preconditioner = linearSystem.preconditionerArg.getValue();
         if (preconditioner.empty()) preconditioner = "Jacobi"; // default
+        linearSystem.setInfoSolverPreconditionerName(preconditioner);
 
         // solver
         std::string solver = linearSystem.solverArg.getValue();
         if (solver.empty()) solver = "BiCGStab"; // default
+        linearSystem.setInfoSolverSolverName(solver);
 
         // main solver and preconditioner
         Preconditioner<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType> *p = nullptr;
@@ -322,7 +324,7 @@ int main(int argc, char *argv[])
 
         assert(ls);
 
-        if (linearSystem.isVerbose())
+        if (linearSystem.verbose() > 1)
         {
             mat_paralution.info();
             rhs_paralution.info();
@@ -334,7 +336,7 @@ int main(int argc, char *argv[])
 
         auto timeSolveStart = std::chrono::steady_clock::now();
         ls->Solve(rhs_paralution, &sln_paralution);
-        linearSystem.setInfoTimeSolveSystem(elapsedSeconds(timeSolveStart));
+        linearSystem.setInfoTimeSolver(elapsedSeconds(timeSolveStart));
 
         sln_paralution.LeaveDataPtr(&linearSystem.system_sln->val);
 
@@ -346,8 +348,46 @@ int main(int argc, char *argv[])
             status = linearSystem.compareWithReferenceSolution();
 
         linearSystem.setInfoTimeTotal(elapsedSeconds(timeStart));
-        if (linearSystem.isVerbose())
+        if (linearSystem.verbose() > 0)
+        {
+            // Krylov Subspace Solvers
+            if (isKrylovSubspaceSolver(solver))
+            {
+
+                IterativeLinearSolver<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *ils
+                        = dynamic_cast<IterativeLinearSolver<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *>(ls);
+
+                linearSystem.setInfoSolverNumOfIterations(ils->GetIterationCount());
+            }
+
+            // Deflated PCG
+            if (isDeflatedPCG(solver))
+            {
+                DPCG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *dpcg =
+                        dynamic_cast<DPCG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *>(ls);
+
+
+                linearSystem.setInfoSolverNumOfIterations(dpcg->GetIterationCount());
+            }
+
+            // AMG
+            IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double > **amgLS = nullptr;
+            Preconditioner<LocalMatrix<double>, LocalVector<double>, double > **amgP = nullptr;
+            int amgLevels = 0;
+
+            if (linearSystem.multigridArg.getValue())
+            {
+                AMG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *amg =
+                        dynamic_cast<AMG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *>(ls);
+
+                linearSystem.setInfoSolverNumOfIterations(amg->GetIterationCount());
+            }
+
             linearSystem.printStatus();
+
+            if (linearSystem.verbose() > 2)
+                linearSystem.exportStatusToFile();
+        }
 
         if (ls)
         {
