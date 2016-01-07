@@ -33,7 +33,6 @@
 #include "solver/plugin_interface.h"
 
 #include "scene.h"
-
 #include <typeinfo>
 
 // consts
@@ -86,14 +85,13 @@ void Studies::clear()
 bool Studies::loadStudies()
 {
     blockSignals(true);
-
     clear();
 
     QString fn = QString("%1/studies.json").arg(cacheProblemDir());
 
     QFile file(fn);
     if (!file.exists())
-        return true; // OK - no study
+        return true; // no study
 
     if (!file.open(QIODevice::ReadOnly))
     {
@@ -102,7 +100,6 @@ bool Studies::loadStudies()
     }
 
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-
     QJsonObject rootJson = doc.object();
 
     QJsonArray studiesJson = rootJson[STUDIES].toArray();
@@ -126,7 +123,6 @@ bool Studies::loadStudies()
     }
 
     blockSignals(false);
-
     emit invalidated();
 
     return true;
@@ -276,11 +272,11 @@ void Study::fillTreeView(QTreeWidget *trvComputations)
     {
         QTreeWidgetItem *itemComputationSet = new QTreeWidgetItem(trvComputations);
 
-        QString computationSetName= tr("Computation set %1").arg(i + 1);
+        QString computationSetName= tr("Set %1").arg(i + 1);
         if (!m_computations[i].name().isEmpty())
             computationSetName = m_computations[i].name();
 
-        itemComputationSet->setText(0, tr("%1 (%2 items)").arg(computationSetName).arg(m_computations[i].computations().size()));
+        itemComputationSet->setText(0, tr("%1 (%2 computations)").arg(computationSetName).arg(m_computations[i].computations().size()));
         itemComputationSet->setExpanded(true);
 
         foreach (QSharedPointer<Computation> computation, m_computations[i].computations())
@@ -299,6 +295,8 @@ QVariant Study::variant()
     v.setValue(this);
     return v;
 }
+
+// *****************************************************************************************************************
 
 ComputationSet::ComputationSet(QList<QSharedPointer<Computation> > set)
     : m_computationSet(set) { }

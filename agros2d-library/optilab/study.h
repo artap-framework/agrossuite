@@ -40,7 +40,7 @@ public:
 
     void addStudy(Study *study);
     void removeStudy(Study *study);
-    inline QList<Study *> &items() { return m_studies; }
+    inline QList<Study *> &studies() { return m_studies; }
 
     Study * operator[] (int idx) { return m_studies[idx]; }
     const Study * operator[] (int idx) const { return m_studies[idx]; }
@@ -55,7 +55,6 @@ public slots:
     bool saveStudies();
 
 private:
-    // studies
     QList<Study *> m_studies;
 };
 
@@ -98,7 +97,7 @@ public:
     virtual void save(QJsonObject &object);
 
     inline QString name() { return m_name; }
-    inline void seName(const QString name) { m_name = name; }
+    inline void setName(const QString name) { m_name = name; }
 
     void addParameter(Parameter parameter) { m_parameters.append(parameter); }
     QList<Parameter> &parameters() { return m_parameters; }

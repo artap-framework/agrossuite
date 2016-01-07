@@ -417,7 +417,7 @@ void PreprocessorWidget::refresh()
     }
 
     // optilab
-    if (Agros2D::problem()->studies()->items().count() > 0)
+    if (Agros2D::problem()->studies()->studies().count() > 0)
     {
         QTreeWidgetItem *optilabNode = new QTreeWidgetItem(trvWidget);
         optilabNode->setText(0, tr("OptiLab"));
@@ -425,7 +425,7 @@ void PreprocessorWidget::refresh()
         optilabNode->setFont(0, fnt);
         optilabNode->setExpanded(true);
 
-        foreach (Study *study, Agros2D::problem()->studies()->items())
+        foreach (Study *study, Agros2D::problem()->studies()->studies())
         {
             // study
             QTreeWidgetItem *studyNode = new QTreeWidgetItem(optilabNode);

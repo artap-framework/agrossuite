@@ -110,9 +110,13 @@ void OptiLabWidget::refresh()
 
     cmbStudies->clear();
     trvComputations->clear();
-    foreach (Study *study, Agros2D::problem()->studies()->items())
+    foreach (Study *study, Agros2D::problem()->studies()->studies())
     {
-        cmbStudies->addItem(studyTypeString(study->type()));
+        if (study->name().isEmpty())
+            cmbStudies->addItem(studyTypeString(study->type()));
+        else
+            cmbStudies->addItem(study->name());
+
     }
 
     cmbStudies->blockSignals(false);
@@ -134,7 +138,7 @@ void OptiLabWidget::refresh()
     // parameters
     if (cmbStudies->currentIndex() != -1)
     {
-        Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
+        Study *study = Agros2D::problem()->studies()->studies().at(cmbStudies->currentIndex());
         foreach (Parameter parameter, study->parameters())
         {
             cmbChartX->addItem(QString("%1 (par.)").arg(parameter.name()), QString("parameter:%1").arg(parameter.name()));
@@ -151,7 +155,7 @@ void OptiLabWidget::refresh()
 void OptiLabWidget::studyChanged(int index)
 {
     // study
-    Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
+    Study *study = Agros2D::problem()->studies()->studies().at(cmbStudies->currentIndex());
 
     trvComputations->blockSignals(true);
 

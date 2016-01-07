@@ -80,7 +80,6 @@ public slots:
 private:
     OptiLabWidget *m_optiLabWidget;
     InfoWidgetGeneral *m_infoWidget;
-
     QCustomPlot *m_chart;
 
     void createControls();
