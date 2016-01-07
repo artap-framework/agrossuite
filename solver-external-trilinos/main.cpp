@@ -362,7 +362,7 @@ std::string getMLcoarseType(std::string coarseType)
 
 LinearSystemTrilinosArgs *createLinearSystem(std::string extSolverName, int argc, char *argv[])
 {
-    LinearSystemTrilinosArgs *linearSystem = new LinearSystemTrilinosArgs("External solver - TRILINOS", argc, argv);
+    LinearSystemTrilinosArgs *linearSystem = new LinearSystemTrilinosArgs(extSolverName, argc, argv);
     linearSystem->readLinearSystem();
     // create empty solution vector (Agros2D)
     linearSystem->system_sln->resize(linearSystem->system_rhs->max_len);
