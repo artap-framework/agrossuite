@@ -71,7 +71,7 @@
 
 class LinearSystemTrilinosArgs : public LinearSystemArgs
 {
-// another used args (not listed here): -s, -r, -p, -m, -q
+// another used args (not listed here): -s, -r, -p, -m, -q, -i, -v
 public:
     LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
         : LinearSystemArgs(name, argc, argv),
