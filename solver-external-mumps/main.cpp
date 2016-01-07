@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
         dmumps_c(&id); // Terminate instance
 
         if (rank == 0)
-            linearSystem.setInfoTimeSolveSystem(MPI_Wtime() - timeSolveStart);
+            linearSystem.setInfoTimeSolver(MPI_Wtime() - timeSolveStart);
 
         if (rank == 0)
         {
@@ -137,8 +137,13 @@ int main(int argc, char *argv[])
             delete [] id.jcn;
 
             linearSystem.setInfoTimeTotal(MPI_Wtime() - timeStart);
-            if (linearSystem.isVerbose())
+            if (linearSystem.verbose() > 0)
+            {
                 linearSystem.printStatus();
+
+                if (linearSystem.verbose() > 2)
+                    linearSystem.exportStatusToFile();
+            }
         }
 
         ierr = MPI_Finalize();

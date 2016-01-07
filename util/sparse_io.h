@@ -399,7 +399,7 @@ class LinearSystem
 {
 public:
     LinearSystem(const std::string &name = "") : matA(nullptr), cooRowInd(nullptr), cooColInd(nullptr), csrRowPtr(nullptr), csrColInd(nullptr),
-        infoName(name), infoNumOfProc(1), infoTimeReadMatrix(0.0), infoTimeSolveSystem(0.0), infoTimeTotal(0.0)
+        infoName(name), infoNumOfProc(1), infoTimeReadMatrix(0.0), infoTimeSolver(0.0), infoTimeTotal(0.0), infoNumOfIterations(0)
     {
         // matrix system
         system_matrix_pattern = new SparsityPatternRW();
@@ -448,17 +448,61 @@ public:
 
     inline void setInfoNumOfProc(unsigned int num) { infoNumOfProc = num; }
     inline void setInfoTimeReadMatrix(double time) { infoTimeReadMatrix = time; }
-    inline void setInfoTimeSolveSystem(double time) { infoTimeSolveSystem = time; }
+    inline void setInfoTimeSolver(double time) { infoTimeSolver = time; }
+    inline void setInfoSolverNumOfIterations(int num) { infoNumOfIterations = num; }
+    inline void setInfoSolverPreconditionerName(std::string name) { infoSolverPreconditionerName = name; }
+    inline void setInfoSolverSolverName(std::string name) { infoSolverSolverName = name; }
     inline void setInfoTimeTotal(double time) { infoTimeTotal = time; }
 
     void printStatus()
     {
         std::cout << "Solver: " << infoName << std::endl;
-        std::cout << "Number of processes: " << infoNumOfProc << std::endl;
-        std::cout << "Matrix size: " << n() << " (" << 100 * nz() / pow(n(), 2.0) << " % of nonzero elements)" << std::endl;
-        std::cout << "Read matrix: " << infoTimeReadMatrix << " s" << std::endl;
-        std::cout << "Solve system: " << infoTimeSolveSystem << " s" << std::endl;
-        std::cout << "Total time: " << infoTimeTotal << " s" << std::endl;
+        std::cout << " - preconditioner: " << infoSolverPreconditionerName << std::endl;
+        std::cout << " - solver: " << infoSolverSolverName << std::endl;
+        std::cout << " - number of iterations: " << infoNumOfIterations << std::endl;
+        std::cout << " - number of processes: " << infoNumOfProc << std::endl;
+        std::cout << " - matrix size: " << n() << " (" << 100 * nz() / pow(n(), 2.0) << " % of nonzero elements)" << std::endl;
+
+        std::cout << "Elapsed times" << std::endl;
+        std::cout << " - read matrix: " << infoTimeReadMatrix << " s" << std::endl;
+        std::cout << " - solver: " << infoTimeSolver << " s" << std::endl;
+        std::cout << " - total time: " << infoTimeTotal << " s" << std::endl;
+    }
+
+    void exportStatusToFile()
+    {
+        auto tp = std::chrono::system_clock::now();
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>( tp.time_since_epoch() );
+        size_t modulo = ms.count() % 1000;
+        time_t seconds = std::chrono::duration_cast<std::chrono::seconds>( ms ).count();
+
+        std::stringstream ss;
+        ss << std::put_time(localtime(&seconds), "output_%Y-%m-%d %H:%M:%S.") << modulo << ".out";
+        std::string fn = ss.str();
+
+        std::ofstream file(fn);
+
+        if (file.is_open())
+        {
+            file << "solver_name = " << infoName << "\n";
+            file << "solver_preconditioner = " << infoSolverPreconditionerName << "\n";
+            file << "solver_solver = " << infoSolverSolverName << "\n";
+            file << "solver_preconditioner = " << infoNumOfIterations << "\n";
+            file << "solver_num_of_iterations = " << infoNumOfIterations << "\n";
+            file << "solver_num_of_proc = " << infoNumOfProc << "\n";
+            file << "solver_matrix_size = " << n() << "\n";
+            file << "solver_matrix_nonzeros = " << nz() << "\n";
+
+            file << "time_read_matrix = " << infoTimeReadMatrix << "\n";
+            file << "time_solver = " << infoTimeSolver << "\n";
+            file << "time_total = " << infoTimeTotal << "\n";
+
+            file.close();
+        }
+        else
+        {
+            std::cerr << "Could not open file." << std::endl;
+        }
     }
 
     int compareWithReferenceSolution(double relative_tolerance = 1e-1)
@@ -585,10 +629,13 @@ protected:
     std::string infoName;
     unsigned int infoNumOfProc;
     double infoTimeReadMatrix;
-    double infoTimeSolveSystem;
+    double infoTimeSolver;
     double infoTimeTotal;
+    unsigned int infoNumOfIterations;
     unsigned int infoN;
     unsigned int infoNZ;
+    std::string infoSolverPreconditionerName;
+    std::string infoSolverSolverName;
 };
 
 class LinearSystemArgs : public LinearSystem
@@ -602,7 +649,7 @@ public:
         solutionArg(TCLAP::ValueArg<std::string>("s", "solution", "Solution", false, "", "string")),
         referenceSolutionArg(TCLAP::ValueArg<std::string>("q", "reference_solution", "Reference solution", false, "", "string")),
         initialArg(TCLAP::ValueArg<std::string>("i", "initial", "Initial vector", false, "", "string")),
-        verboseArg(TCLAP::SwitchArg("v", "verbose", "Verbose mode", false)),
+        verboseArg(TCLAP::ValueArg<int>("v", "verbose", "Verbose mode", false, 0, "int")),
         argc(argc),
         argv(argv)
     {
@@ -619,7 +666,7 @@ public:
     inline std::string solutionFileName() { return solutionArg.getValue(); }
     inline bool hasReferenceSolution() { return !referenceSolutionArg.getValue().empty(); }
 
-    inline bool isVerbose() { return verboseArg.getValue(); }
+    inline int verbose() { return verboseArg.getValue(); }
 
     virtual void readLinearSystem()
     {
@@ -650,7 +697,7 @@ protected:
     TCLAP::ValueArg<std::string> solutionArg;
     TCLAP::ValueArg<std::string> referenceSolutionArg;
     TCLAP::ValueArg<std::string> initialArg;
-    TCLAP::SwitchArg verboseArg;
+    TCLAP::ValueArg<int> verboseArg;
 
 private:
     int argc;
