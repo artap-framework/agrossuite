@@ -47,19 +47,16 @@ public:
 
 private:
     // computations
-    QGroupBox *grpComputation;
     QComboBox *cmbComputation;
 
     // field
     QComboBox *cmbFieldInfo;
 
     // transient
-    QGroupBox *grpTime;
     QLabel *lblTimeStep;
     QComboBox *cmbTimeStep;
 
     // adaptivity
-    QGroupBox *grpAdaptivity;
     QLabel *lblAdaptivityStep;
     QComboBox *cmbAdaptivityStep;
 

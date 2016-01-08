@@ -83,11 +83,10 @@ void PostprocessorScenePost2DWidget::createControls()
     tabWidget->addTab(postScalarAdvancedWidget(), tr("Scalar field"));
     tabWidget->addTab(postContourAdvancedWidget(), tr("Contours"));
     tabWidget->addTab(postVectorAdvancedWidget(), tr("Vector field"));
-    tabWidget->addTab(widResults, tr("Local values and integrals"));
 
     QVBoxLayout *layoutArea = new QVBoxLayout();
     layoutArea->addWidget(tabWidget);
-    // layoutArea->addStretch(0);
+    layoutArea->addWidget(widResults);
 
     refresh();
 
@@ -150,32 +149,9 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
     palette.setColor(QPalette::WindowText, Qt::red);
 
     txtScalarFieldRangeMin = new LineEditDouble(0.1);
-    connect(txtScalarFieldRangeMin, SIGNAL(textChanged(QString)), this, SLOT(doScalarFieldRangeMinChanged()));
-    lblScalarFieldRangeMinError = new QLabel("");
-    lblScalarFieldRangeMinError->setPalette(palette);
-    lblScalarFieldRangeMinError->setVisible(false);
     txtScalarFieldRangeMax = new LineEditDouble(0.1);
-    connect(txtScalarFieldRangeMax, SIGNAL(textChanged(QString)), this, SLOT(doScalarFieldRangeMaxChanged()));
-    lblScalarFieldRangeMaxError = new QLabel("");
-    lblScalarFieldRangeMaxError->setPalette(palette);
-    lblScalarFieldRangeMaxError->setVisible(false);
-
     chkScalarFieldRangeAuto = new QCheckBox(tr("Auto range"));
     connect(chkScalarFieldRangeAuto, SIGNAL(stateChanged(int)), this, SLOT(doScalarFieldRangeAuto(int)));
-
-    QGridLayout *layoutScalarFieldRange = new QGridLayout();
-    lblScalarFieldRangeMin = new QLabel(tr("Minimum:"));
-    layoutScalarFieldRange->addWidget(lblScalarFieldRangeMin, 0, 0);
-    layoutScalarFieldRange->addWidget(txtScalarFieldRangeMin, 0, 1);
-    layoutScalarFieldRange->addWidget(lblScalarFieldRangeMinError, 0, 2);
-    layoutScalarFieldRange->addWidget(chkScalarFieldRangeAuto, 0, 3);
-    lblScalarFieldRangeMax = new QLabel(tr("Maximum:"));
-    layoutScalarFieldRange->addWidget(lblScalarFieldRangeMax, 1, 0);
-    layoutScalarFieldRange->addWidget(txtScalarFieldRangeMax, 1, 1);
-    layoutScalarFieldRange->addWidget(lblScalarFieldRangeMaxError, 1, 2);
-
-    QGroupBox *grpScalarFieldRange = new QGroupBox(tr("Range"));
-    grpScalarFieldRange->setLayout(layoutScalarFieldRange);
 
     QGridLayout *gridLayoutScalarFieldPalette = new QGridLayout();
     gridLayoutScalarFieldPalette->setColumnMinimumWidth(0, columnMinimumWidth());
@@ -191,6 +167,11 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
     gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Base:")), 4, 0);
     gridLayoutScalarFieldPalette->addWidget(txtScalarFieldRangeBase, 4, 1);
     gridLayoutScalarFieldPalette->addWidget(chkScalarFieldRangeLog, 4, 2);
+    gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Minimum range:")), 5, 0);
+    gridLayoutScalarFieldPalette->addWidget(txtScalarFieldRangeMin, 5, 1);
+    gridLayoutScalarFieldPalette->addWidget(chkScalarFieldRangeAuto, 5, 2);
+    gridLayoutScalarFieldPalette->addWidget(new QLabel(tr("Maximum range:")), 6, 0);
+    gridLayoutScalarFieldPalette->addWidget(txtScalarFieldRangeMax, 6, 1);
 
     QGroupBox *grpScalarFieldPalette = new QGroupBox(tr("Palette and colorbar"));
     grpScalarFieldPalette->setLayout(gridLayoutScalarFieldPalette);
@@ -198,7 +179,6 @@ QWidget *PostprocessorScenePost2DWidget::postScalarAdvancedWidget()
     QVBoxLayout *layoutScalarFieldAdvanced = new QVBoxLayout();
     layoutScalarFieldAdvanced->addWidget(grpScalarField);
     layoutScalarFieldAdvanced->addWidget(grpScalarFieldPalette);
-    layoutScalarFieldAdvanced->addWidget(grpScalarFieldRange);
     layoutScalarFieldAdvanced->addStretch(1);
 
     QWidget *scalarWidget = new QWidget();
@@ -355,46 +335,6 @@ void PostprocessorScenePost2DWidget::doContoursVectorsDefault()
     chkVectorDeform->setChecked(m_postprocessorWidget->computation()->setting()->defaultValue(ProblemSetting::View_DeformVector).toBool());
 }
 */
-
-void PostprocessorScenePost2DWidget::doScalarFieldRangeMinChanged()
-{
-    lblScalarFieldRangeMinError->clear();
-    lblScalarFieldRangeMinError->setVisible(false);
-    lblScalarFieldRangeMaxError->clear();
-    lblScalarFieldRangeMaxError->setVisible(false);
-
-    if (txtScalarFieldRangeMin->value() > txtScalarFieldRangeMax->value())
-    {
-        lblScalarFieldRangeMinError->setText(QString("> %1").arg(txtScalarFieldRangeMax->value()));
-        lblScalarFieldRangeMinError->setVisible(true);
-    }
-    /*
-    else if (txtScalarFieldRangeMin->value() == txtScalarFieldRangeMax->value())
-    {
-        lblScalarFieldRangeMinError->setText(QString("= %1").arg(txtScalarFieldRangeMax->value()));
-        btnOK->setDisabled(true);
-    }
-    */
-}
-
-void PostprocessorScenePost2DWidget::doScalarFieldRangeMaxChanged()
-{
-    lblScalarFieldRangeMaxError->clear();
-    lblScalarFieldRangeMinError->clear();
-
-    if (txtScalarFieldRangeMax->value() < txtScalarFieldRangeMin->value())
-    {
-        lblScalarFieldRangeMaxError->setText(QString("< %1").arg(txtScalarFieldRangeMin->value()));
-        //btnOK->setDisabled(true);
-    }
-    /*
-    else if (txtScalarFieldRangeMax->value() == txtScalarFieldRangeMin->value())
-    {
-        lblScalarFieldRangeMaxError->setText(QString("= %1").arg(txtScalarFieldRangeMin->value()));
-        btnOK->setDisabled(true);
-    }
-    */
-}
 
 void PostprocessorScenePost2DWidget::doScalarFieldVariable(int index)
 {

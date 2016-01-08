@@ -96,8 +96,8 @@ void PostprocessorWidget::createControls()
     tabWidget->addTab(m_meshWidget, tr("Mesh"));
     tabWidget->addTab(m_post2DWidget, tr("2D view"));
     tabWidget->addTab(m_post3DWidget, tr("3D view"));
-    tabWidget->addTab(m_chartWidget, tr("Chart"));
     tabWidget->addTab(m_particleTracingWidget, tr("Part. tracing"));
+    tabWidget->addTab(m_chartWidget, tr("Chart"));
     connect(tabWidget, SIGNAL(currentChanged(int)), SIGNAL(modeChanged()));
 
     QVBoxLayout *layoutMain = new QVBoxLayout();

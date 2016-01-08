@@ -47,7 +47,7 @@ FieldSelectDialog::FieldSelectDialog(QList<QString> fields, QWidget *parent) : Q
 
     lstFields = new QListWidget(this);
     lstFields->setIconSize(QSize(32, 32));
-    lstFields->setMinimumHeight(36*9);
+    lstFields->setMinimumHeight(36*7);
 
     QMapIterator<QString, QString> it(Module::availableModules());
     while (it.hasNext())

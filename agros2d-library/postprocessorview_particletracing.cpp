@@ -117,13 +117,13 @@ void PostprocessorSceneParticleTracingWidget::createControls()
     // initial particle position
     QGridLayout *gridLayoutGeneral = new QGridLayout();
     gridLayoutGeneral->addWidget(new QLabel(tr("Equations:")), 0, 0);
-    gridLayoutGeneral->addWidget(lblParticleMotionEquations, 1, 0, 1, 2);
-    gridLayoutGeneral->addWidget(new QLabel(tr("Number of particles:")), 2, 0);
-    gridLayoutGeneral->addWidget(txtParticleNumberOfParticles, 2, 1);
-    gridLayoutGeneral->addWidget(new QLabel(tr("Particles dispersion (m):")), 3, 0);
-    gridLayoutGeneral->addWidget(txtParticleStartingRadius, 3, 1);
-    gridLayoutGeneral->addWidget(new QLabel(tr("Mass (kg):")), 4, 0);
-    gridLayoutGeneral->addWidget(txtParticleMass, 4, 1);
+    gridLayoutGeneral->addWidget(lblParticleMotionEquations, 0, 1);
+    gridLayoutGeneral->addWidget(new QLabel(tr("Number of particles:")), 1, 0);
+    gridLayoutGeneral->addWidget(txtParticleNumberOfParticles, 1, 1);
+    gridLayoutGeneral->addWidget(new QLabel(tr("Particles dispersion (m):")), 2, 0);
+    gridLayoutGeneral->addWidget(txtParticleStartingRadius, 2, 1);
+    gridLayoutGeneral->addWidget(new QLabel(tr("Mass (kg):")), 3, 0);
+    gridLayoutGeneral->addWidget(txtParticleMass, 3, 1);
 
     QGroupBox *grpGeneral = new QGroupBox(tr("General"));
     grpGeneral->setLayout(gridLayoutGeneral);

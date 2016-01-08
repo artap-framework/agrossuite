@@ -85,21 +85,16 @@ void PostprocessorSceneChartWidget::createControls()
     // component
     cmbFieldVariableComp = new QComboBox();
 
-    QFormLayout *layoutVariable = new QFormLayout();
-    layoutVariable->addRow(tr("Variable:"), cmbFieldVariable);
-    layoutVariable->addRow(tr("Component:"), cmbFieldVariableComp);
-
-    QGroupBox *grpVariable = new QGroupBox(tr("Variable"));
-    grpVariable->setLayout(layoutVariable);
+    QGridLayout *layoutVariable = new QGridLayout();
+    layoutVariable->addWidget(new QLabel(tr("Variable:")), 0, 0);
+    layoutVariable->addWidget(cmbFieldVariable, 0, 1);
+    layoutVariable->addWidget(new QLabel(tr("Component:")), 1, 0);
+    layoutVariable->addWidget(cmbFieldVariableComp, 1, 1);
 
     // viewer
     geometryViewer = new SceneViewPreprocessorChart(this);
-    geometryViewer->setMinimumHeight(150);
-    // geometryViewer->setMaximumHeight(150);
-
-    QVBoxLayout *layoutChart = new QVBoxLayout();
-    layoutChart->addWidget(geometryViewer);
-
+    geometryViewer->setMinimumHeight(100);
+    
     btnSaveImage = new QPushButton();
     btnSaveImage->setDefault(false);
     btnSaveImage->setEnabled(false);
@@ -132,8 +127,8 @@ void PostprocessorSceneChartWidget::createControls()
     QGridLayout *layoutStart = new QGridLayout();
     layoutStart->addWidget(lblStartX, 0, 0);
     layoutStart->addWidget(txtStartX, 0, 1);
-    layoutStart->addWidget(lblStartY, 0, 2);
-    layoutStart->addWidget(txtStartY, 0, 3);
+    layoutStart->addWidget(lblStartY, 1, 0);
+    layoutStart->addWidget(txtStartY, 1, 1);
 
     QGroupBox *grpStart = new QGroupBox(tr("Start"));
     grpStart->setLayout(layoutStart);
@@ -142,11 +137,15 @@ void PostprocessorSceneChartWidget::createControls()
     QGridLayout *layoutEnd = new QGridLayout();
     layoutEnd->addWidget(lblEndX, 0, 0);
     layoutEnd->addWidget(txtEndX, 0, 1);
-    layoutEnd->addWidget(lblEndY, 0, 2);
-    layoutEnd->addWidget(txtEndY, 0, 3);
+    layoutEnd->addWidget(lblEndY, 1, 0);
+    layoutEnd->addWidget(txtEndY, 1, 1);
 
     QGroupBox *grpEnd = new QGroupBox(tr("End"));
     grpEnd->setLayout(layoutEnd);
+
+    QHBoxLayout *layoutStartEnd = new QHBoxLayout();
+    layoutStartEnd->addWidget(grpStart);
+    layoutStartEnd->addWidget(grpEnd);
 
     // x - axis
     radHorizontalAxisLength = new QRadioButton(tr("Length"));
@@ -160,7 +159,7 @@ void PostprocessorSceneChartWidget::createControls()
     axisGroup->addButton(radHorizontalAxisY);
 
     // axis
-    QHBoxLayout *layoutAxis = new QHBoxLayout(this);
+    QHBoxLayout *layoutAxis = new QHBoxLayout();
     layoutAxis->addWidget(radHorizontalAxisLength);
     layoutAxis->addWidget(radHorizontalAxisX);
     layoutAxis->addWidget(radHorizontalAxisY);
@@ -180,7 +179,8 @@ void PostprocessorSceneChartWidget::createControls()
     layoutAxisPointsAndTimeStep->setColumnStretch(1, 1);
     layoutAxisPointsAndTimeStep->addWidget(new QLabel(tr("Points:")), 0, 0);
     layoutAxisPointsAndTimeStep->addWidget(txtHorizontalAxisPoints, 0, 1);
-    layoutAxisPointsAndTimeStep->addWidget(chkHorizontalAxisReverse, 1, 0, 1, 2);
+    layoutAxisPointsAndTimeStep->addWidget(chkHorizontalAxisReverse, 0, 2);
+    layoutAxisPointsAndTimeStep->setColumnStretch(1, 1);
 
     QGroupBox *grpAxisPointsAndTimeStep = new QGroupBox(tr("Points and time step"), this);
     grpAxisPointsAndTimeStep->setLayout(layoutAxisPointsAndTimeStep);
@@ -204,44 +204,47 @@ void PostprocessorSceneChartWidget::createControls()
     grpTime->setLayout(layoutTime);
 
     // button bar
-    QHBoxLayout *layoutButton = new QHBoxLayout();
-    layoutButton->setContentsMargins(2, 0, 0, 0);
+    QVBoxLayout *layoutButton = new QVBoxLayout();
+    layoutButton->setContentsMargins(0, 0, 0, 0);
     layoutButton->addStretch();
     layoutButton->addWidget(btnSaveImage);
     layoutButton->addWidget(btnExportData);
 
+    QHBoxLayout *layoutChart = new QHBoxLayout();
+    layoutChart->setContentsMargins(0, 0, 0, 0);
+    layoutChart->addWidget(geometryViewer, 1);
+    layoutChart->addLayout(layoutButton);
+
     QWidget *widButton = new QWidget();
-    widButton->setLayout(layoutButton);
+    widButton->setLayout(layoutChart);
 
     // controls geometry
-    widGeometry = new QWidget();
     QVBoxLayout *controlsGeometryLayout = new QVBoxLayout();
-    widGeometry->setLayout(controlsGeometryLayout);
-    controlsGeometryLayout->addWidget(grpStart);
-    controlsGeometryLayout->addWidget(grpEnd);
+    controlsGeometryLayout->addLayout(layoutStartEnd);
     controlsGeometryLayout->addWidget(grpAxis);
     controlsGeometryLayout->addWidget(grpAxisPointsAndTimeStep);
     controlsGeometryLayout->addStretch();
 
+    widGeometry = new QWidget();
+    widGeometry->setLayout(controlsGeometryLayout);
+
     // controls time
-    widTime = new QWidget();
     QVBoxLayout *controlsTimeLayout = new QVBoxLayout();
-    widTime->setLayout(controlsTimeLayout);
     controlsTimeLayout->addWidget(grpTime);
     controlsTimeLayout->addStretch();
+
+    widTime = new QWidget();
+    widTime->setLayout(controlsTimeLayout);
 
     tbxAnalysisType = new QTabWidget();
     tbxAnalysisType->addTab(widGeometry, icon(""), tr("Geometry"));
     tbxAnalysisType->addTab(widTime, icon(""), tr("Time"));
 
     // controls
-    QVBoxLayout *controlsLayout = new QVBoxLayout();
-    controlsLayout->addWidget(grpVariable);
-    controlsLayout->addWidget(tbxAnalysisType, 1);
-    controlsLayout->addLayout(layoutChart, 1);
-
     QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->addLayout(controlsLayout);
+    layoutMain->addLayout(layoutVariable);
+    layoutMain->addWidget(tbxAnalysisType);
+    layoutMain->addLayout(layoutChart, 1);
     layoutMain->addWidget(widButton);
 
     setLayout(layoutMain);
