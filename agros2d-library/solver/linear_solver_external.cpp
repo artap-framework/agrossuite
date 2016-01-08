@@ -141,11 +141,10 @@ void AgrosExternalSolver::processError(QProcess::ProcessError error)
 
 void AgrosExternalSolver::processFinished(int exitCode)
 {
-    QString solverOutputMessage = readFileContent(tempProblemDir() + "/solver.out");
+    QString solverOutputMessage = readFileContent(tempProblemDir() + "/solver.out").trimmed();
     if (!solverOutputMessage.isEmpty())
     {
         solverOutputMessage.insert(0, "\n");
-        solverOutputMessage.append("\n");
         Agros2D::log()->printWarning(tr("External solver"), solverOutputMessage);
     }
 

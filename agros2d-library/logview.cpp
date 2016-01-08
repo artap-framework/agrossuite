@@ -166,17 +166,11 @@ void LogWidget::print(const QString &module, const QString &message, const QStri
     QString strTime = "";
     if (actShowTimestamp->isChecked())
     {
-#if QT_VERSION < 0x050000
-        strTime = Qt::escape(QDateTime::currentDateTime().toString("hh:mm:ss.zzz") + ": ");
-#else
         strTime = QString(QDateTime::currentDateTime().toString("hh:mm:ss.zzz") + ": ").toHtmlEscaped();
-#endif
     }
-#if QT_VERSION < 0x050000
-    QString strMessage = Qt::escape(message);
-#else
-    QString strMessage = QString(message).toHtmlEscaped();
-#endif
+
+    // QString strMessage = QString(message).toHtmlEscaped();
+    QString strMessage = QString(message).toHtmlEscaped().replace("\n", "<br/>");
     
     QString html = QString("<div><span style=\"color: gray;\">%1</span><span style=\"color: %2;\"><strong>%3</strong>: %4</span></div>").
             arg(strTime).
