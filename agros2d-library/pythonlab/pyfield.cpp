@@ -75,10 +75,10 @@ void PyField::setAnalysisType(const std::string &analysisType)
 
 void PyField::setNumberOfRefinements(int numberOfRefinements)
 {
-    if (numberOfRefinements >= 0 && numberOfRefinements <= 5)
+    if (numberOfRefinements >= 0 && numberOfRefinements <= 10)
         m_fieldInfo->setValue(FieldInfo::SpaceNumberOfRefinements, numberOfRefinements);
     else
-        throw out_of_range(QObject::tr("Number of refinements is out of range (0 - 5).").toStdString());
+        throw out_of_range(QObject::tr("Number of refinements is out of range (0 - 10).").toStdString());
 }
 
 void PyField::setPolynomialOrder(int polynomialOrder)

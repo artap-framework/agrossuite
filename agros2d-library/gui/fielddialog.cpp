@@ -165,7 +165,7 @@ void FieldWidget::createContent()
     // mesh
     txtNumberOfRefinements = new QSpinBox(this);
     txtNumberOfRefinements->setMinimum(0);
-    txtNumberOfRefinements->setMaximum(5);
+    txtNumberOfRefinements->setMaximum(10);
     txtPolynomialOrder = new QSpinBox(this);
     txtPolynomialOrder->setMinimum(1);
     txtPolynomialOrder->setMaximum(10);

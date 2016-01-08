@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
             paralution::set_omp_threads_paralution(num);
         }
 
-        if (linearSystem.verbose() > 0)
+        if (linearSystem.verbose() > 1)
             paralution::info_paralution();
 
         linearSystem.setInfoNumOfProc(paralution::_get_backend_descriptor()->OpenMP_threads);
@@ -287,7 +287,10 @@ int main(int argc, char *argv[])
 
             // Coarse Grid Solver
             CG<LocalMatrix<double>, LocalVector<double>, double > cgs;
-            cgs.Verbose(1);
+            if (linearSystem.verbose() > 1)
+                cgs.Verbose(1);
+            else
+                cgs.Verbose(0);
 
             // Coarse Grid Preconditioner
             MultiColoredILU<LocalMatrix<double>, LocalVector<double>, double > p;
@@ -332,6 +335,11 @@ int main(int argc, char *argv[])
 
             ls->Verbose(2); // 2
         }
+        else
+        {
+            ls->Verbose(0);
+        }
+
         ls->Build();
 
         auto timeSolveStart = std::chrono::steady_clock::now();

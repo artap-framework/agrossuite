@@ -467,6 +467,9 @@ public:
         std::cout << " - read matrix: " << infoTimeReadMatrix << " s" << std::endl;
         std::cout << " - solver: " << infoTimeSolver << " s" << std::endl;
         std::cout << " - total time: " << infoTimeTotal << " s" << std::endl;
+
+        std::cout << "Filename: " << infoFileName << std::endl;
+        std::cout << "Arguments: " << infoArgs << std::endl;
     }
 
     void exportStatusToFile()
@@ -487,7 +490,6 @@ public:
             file << "solver_name = " << infoName << "\n";
             file << "solver_preconditioner = " << infoSolverPreconditionerName << "\n";
             file << "solver_solver = " << infoSolverSolverName << "\n";
-            file << "solver_preconditioner = " << infoNumOfIterations << "\n";
             file << "solver_num_of_iterations = " << infoNumOfIterations << "\n";
             file << "solver_num_of_proc = " << infoNumOfProc << "\n";
             file << "solver_matrix_size = " << n() << "\n";
@@ -496,6 +498,9 @@ public:
             file << "time_read_matrix = " << infoTimeReadMatrix << "\n";
             file << "time_solver = " << infoTimeSolver << "\n";
             file << "time_total = " << infoTimeTotal << "\n";
+
+            file << "filename = " << infoFileName << "\n";
+            file << "arguments = " << infoArgs << "\n";
 
             file.close();
         }
@@ -636,6 +641,8 @@ protected:
     unsigned int infoNZ;
     std::string infoSolverPreconditionerName;
     std::string infoSolverSolverName;
+    std::string infoArgs;
+    std::string infoFileName;
 };
 
 class LinearSystemArgs : public LinearSystem
@@ -672,6 +679,16 @@ public:
     {
         // parse the argv array.
         cmd.parse(argc, argv);
+
+        for (int i = 0; i < argc; i++)
+        {
+            if (i > 0)
+                infoArgs += " ";
+
+            infoArgs += argv[i];
+        }
+
+        infoFileName = matrixArg.getValue().substr(0, matrixArg.getValue().length() - 7);
 
         readLinearSystemInternal(matrixPatternArg.getValue(),
                                  matrixArg.getValue(),

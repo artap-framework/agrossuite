@@ -590,7 +590,7 @@ QLayout* SceneFaceDialog::createContent()
     txtAngle->setMinimum(0.0);
     txtAngle->setMaximum(90.0);
     txtSegments = new QSpinBox();
-    txtSegments->setMinimum(3);
+    txtSegments->setMinimum(4);
     txtSegments->setMaximum(20);
     chkIsCurvilinear = new QCheckBox(tr("Curvilinear"));
     connect(txtAngle, SIGNAL(evaluated(bool)), this, SLOT(evaluated(bool)));

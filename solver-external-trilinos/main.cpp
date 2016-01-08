@@ -71,7 +71,7 @@
 
 class LinearSystemTrilinosArgs : public LinearSystemArgs
 {
-// another used args (not listed here): -s, -r, -p, -m, -q
+// another used args (not listed here): -s, -r, -p, -m, -q, -i, -v
 public:
     LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
         : LinearSystemArgs(name, argc, argv),
@@ -111,6 +111,8 @@ void solveAmesos(const Epetra_LinearProblem &problem, std::string solverTypeName
 {
     Amesos amesosFactory;
     const char *amesosSolverType = solverTypeName.c_str(); // in default uses the Amesos_Klu direct solver
+
+    std::cout << "Amesos solver variant: " << solverTypeName << std::endl;
 
     Amesos_BaseSolver *amesosSolver = amesosFactory.Create(amesosSolverType, problem);
     assert(amesosSolver);
@@ -362,7 +364,7 @@ std::string getMLcoarseType(std::string coarseType)
 
 LinearSystemTrilinosArgs *createLinearSystem(std::string extSolverName, int argc, char *argv[])
 {
-    LinearSystemTrilinosArgs *linearSystem = new LinearSystemTrilinosArgs("External solver - TRILINOS", argc, argv);
+    LinearSystemTrilinosArgs *linearSystem = new LinearSystemTrilinosArgs(extSolverName, argc, argv);
     linearSystem->readLinearSystem();
     // create empty solution vector (Agros2D)
     linearSystem->system_sln->resize(linearSystem->system_rhs->max_len);
@@ -561,6 +563,10 @@ int main(int argc, char *argv[])
             if (solver == "Amesos_Klu" || solver == "") // default
             {
                 solveAmesos(problem, "Amesos_Klu");
+            }
+            else if (solver == "Amesos_Paraklete")
+            {
+                solveAmesos(problem, "Amesos_Paraklete");
             }
             else if (solver == "AztecOO")
             {

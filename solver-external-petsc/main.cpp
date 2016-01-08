@@ -42,7 +42,8 @@
 
 class LinearSystemPETScArgs : public LinearSystemArgs
 {
-    // another used args (not listed here): -s, -r, -p, -m, -q
+
+// another used args (not listed here): -s, -r, -p, -m, -q
 public:
     LinearSystemPETScArgs(const std::string &name, int argc, const char * const *argv)
         : LinearSystemArgs(name, argc, argv),
@@ -82,6 +83,11 @@ LinearSystemPETScArgs *createLinearSystem(std::string extSolverName, int argc, c
 {
     LinearSystemPETScArgs *linearSystem = new LinearSystemPETScArgs(extSolverName, argc, argv);
     linearSystem->readLinearSystem();
+
+    // create empty solution vector (Agros2D)
+    linearSystem->system_sln->resize(linearSystem->system_rhs->max_len);
+    linearSystem->convertToCOO();
+
     return linearSystem;
 }
 
@@ -93,6 +99,7 @@ LinearSystemPETScArgs *createLinearSystem(std::string extSolverName, int argc, c
 // get parameters to local value
 // double relTol = linearSystem->relTolArg.getValue();
 // int maxIter = linearSystem->maxIterArg.getValue();
+
 
 KSPType solver(std::string solver)
 {
@@ -133,9 +140,9 @@ int main(int argc, char *argv[])
     {
         int status = 0;
 
+
         LinearSystemPETScArgs *linearSystem = NULL;
         linearSystem = createLinearSystem("External solver - PETSc", argc, argv);
-
 
         Vec x,b;
         Mat  A;
