@@ -18,12 +18,9 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "parameter.h"
+//#include "solver/problem.h"
 
-#include "optilab.h"
-#include "util/global.h"
-#include "solver/problem.h"
-#include "solver/problem_result.h"
-#include "solver/solutionstore.h"
+#include <random>
 
 // consts
 const QString NAME = "name";
@@ -34,6 +31,7 @@ const QString UPPER_BOUND = "upper_bound";
 Parameter::Parameter(const QString &name, double lowerBound, double upperBound) :
     m_name(name), m_values(QList<double>()), m_lowerBound(lowerBound), m_upperBound(upperBound)
 {
+    //assert(computation->config()->value(ProblemConfig::Parameters).value<ParametersType>().contains(name));
     assert(lowerBound <= upperBound);
 }
 
@@ -44,8 +42,23 @@ Parameter::~Parameter()
 
 void Parameter::clear()
 {
-    m_name = "";
     m_values.clear();
+}
+
+void Parameter::setLowerBound(double lowerBound)
+{
+    foreach (double value, m_values)
+       assert(lowerBound <= value);
+
+    m_lowerBound = lowerBound;
+}
+
+void Parameter::setUpperBound(double upperBound)
+{
+    foreach (double value, m_values)
+       assert(upperBound >= value);
+
+    m_upperBound = upperBound;
 }
 
 void Parameter::load(QJsonObject &object)
@@ -56,9 +69,7 @@ void Parameter::load(QJsonObject &object)
 
     QJsonArray valuesJson = object[VALUES].toArray();
     for (int i = 0; i < valuesJson.size(); i++)
-    {
         m_values.append(valuesJson[i].toDouble());
-    }
 }
 
 void Parameter::save(QJsonObject &object)
@@ -67,27 +78,38 @@ void Parameter::save(QJsonObject &object)
     object[LOWER_BOUND] = m_lowerBound;
     object[UPPER_BOUND] = m_upperBound;
 
-    // values
     QJsonArray valuesJson;
     foreach (double value, m_values)
-    {
         valuesJson.append(value);
-    }
+
     object[VALUES] = valuesJson;
 }
 
-QString Parameter::toString() const
+void Parameter::addValue(double value)
 {
-    QString str = "";
-    foreach (double value, m_values)
-        str += QString("%1, ").arg(value);
-    if (str.endsWith(", "))
-        str = str.left(str.length() - 2);
-
-    return QString("%1: %2").arg(m_name).arg(str);
+    assert(m_lowerBound <= value);
+    assert(m_upperBound >= value);
+    m_values.append(value);
 }
 
-// static factories
+double Parameter::randomValue(double mean, double deviation)
+{
+    assert(m_lowerBound <= mean);
+    assert(m_upperBound >= mean);
+
+    std::default_random_engine generator;
+    std::normal_distribution<double> distribution(mean, deviation);
+
+    double value;
+    do
+    {
+       value = distribution(generator);
+    } while  ((value < m_lowerBound) || (value > m_upperBound));
+
+    return value;
+}
+
+
 Parameter Parameter::fromValue(const QString &name, double value)
 {
     Parameter parameter(name, value, value);
@@ -98,49 +120,81 @@ Parameter Parameter::fromValue(const QString &name, double value)
 
 Parameter Parameter::fromList(const QString &name, QList<double> values)
 {
-    assert(values.size() > 0);
+    assert(!values.isEmpty());
 
-    double low =  numeric_limits<double>::max();
-    double high = -numeric_limits<double>::max();
+    double lower = numeric_limits<double>::max();
+    double upper = -numeric_limits<double>::max();
 
     foreach (double value, values)
     {
-        if (value > high) high = value;
-        if (value < low) low = value;
+        if (value > upper) upper = value;
+        if (value < lower) lower = value;
     }
 
-    Parameter parameter(name, low, high);
-
+    Parameter parameter(name, lower, upper);
     foreach (double value, values)
         parameter.addValue(value);
 
     return parameter;
 }
 
-Parameter Parameter::fromLinspace(const QString &name, double low, double high, int count)
+Parameter Parameter::fromLinspace(const QString &name, int count, double lowerBound, double upperBound)
 {
     assert(count > 0);
-    assert(low <= high);
+    Parameter parameter(name, lowerBound, upperBound);
 
-    Parameter parameter(name, low, high);
-
-    double step = (high - low) / (count - 1);
+    double step = (upperBound - lowerBound) / (count - 1);
     for (int i = 0; i < count; i++)
-        parameter.addValue(low + i * step);
+        parameter.addValue(lowerBound + i * step);
 
     return parameter;
 }
 
-Parameter Parameter::fromRandom(const QString &name, double low, double high, int count)
+Parameter Parameter::fromRandom(const QString &name, int count, double lowerBound, double upperBound)
 {
     assert(count > 0);
-    assert(low <= high);
-
-    Parameter parameter(name, low, high);
+    Parameter parameter(name, lowerBound, upperBound);
 
     for (int i = 0; i < count; i++)
-        parameter.addValue(parameter.randomNumber());
+        parameter.addValue(parameter.randomValue());
 
     return parameter;
 }
 
+Parameter Parameter::fromRandom(const QString &name, int count, double lowerBound, double upperBound, double mean, double deviation)
+{
+    assert(count > 0);
+    Parameter parameter(name, lowerBound, upperBound);
+
+    for (int i = 0; i < count; i++)
+        parameter.addValue(parameter.randomValue(mean, deviation));
+
+    return parameter;
+}
+
+// *****************************************************************************************************************
+
+ParameterSpace::ParameterSpace(QList<Parameter> parameters) :
+    m_parameters(parameters) { }
+
+ParameterSpace::~ParameterSpace()
+{
+    clear();
+}
+
+void ParameterSpace::clear()
+{
+    m_parameters.clear();
+    m_sets.clear();
+}
+
+void ParameterSpace::random(int count)
+{
+    for (int i = 0; i < count; i++)
+    {
+        QMap<QString, double> set;
+        foreach (Parameter parameter, m_parameters)
+            set.insert(parameter.name(), parameter.values()[qrand() % parameter.values().length()]); // TODO: Is really random?
+        m_sets.append(set);
+    }
+}

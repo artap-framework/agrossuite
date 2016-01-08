@@ -353,7 +353,7 @@ bool Value::evaluateExpression(const QString &expression, double time, const Poi
     // problem
     if (m_problem)
     {
-        ParametersType parameters = m_problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+        StringToDoubleMap parameters = m_problem->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
 
         foreach (QString key, parameters.keys())
         {

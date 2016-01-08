@@ -30,82 +30,29 @@
 
 #include "scene.h"
 
-const QString COMPUTATIONS = "computations";
-
 StudySweepAnalysis::StudySweepAnalysis() : Study()
 {
 }
 
 void StudySweepAnalysis::solve()
 {
-    // only one parameter
-    assert(m_parameters.size() == 1);
+    // parameter space
+    ParameterSpace space = ParameterSpace(m_parameters);
+    space.random(10);
 
-    Parameter parameter = m_parameters.first();
-
-    foreach (double value, parameter.values())
+    foreach (StringToDoubleMap set, space.sets())
     {
-        // create computation
+        // computation
         QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true, false);
-        // store computation
-        m_computations.append(computation);
+        addComputation(computation);
 
-        // set parameter
-        computation->config()->setParameter(parameter.name(), value);
+        foreach (QString parameter, set.keys())
+            computation->config()->setParameter(parameter, set[parameter]);
 
-        // solve
+        // solve and evaluate
         computation->solve();
-
-        // temporary dict
-        currentPythonEngine()->useTemporaryDict();
-
-        // evaluate expressions
-        foreach (Functional functional, m_functionals)
-        {
-            bool successfulRun = functional.evaluateExpression(computation);
-        }
-
-        // global dict
-        currentPythonEngine()->useGlobalDict();
+        evaluateFunctionals(computation);
 
         computation->saveResults();
-    }
-}
-
-void StudySweepAnalysis::load(QJsonObject &object)
-{
-    // computations
-    QJsonArray computationsJson = object[COMPUTATIONS].toArray();
-    for (int i = 0; i < computationsJson.size(); i++)
-    {
-        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
-        m_computations.append(computations[computationsJson[i].toString()]);
-    }
-
-    Study::load(object);
-}
-
-void StudySweepAnalysis::save(QJsonObject &object)
-{
-    // computations
-    QJsonArray computationsJson;
-    foreach (QSharedPointer<Computation> computation, m_computations)
-    {
-        computationsJson.append(computation->problemDir());
-    }
-    object[COMPUTATIONS] = computationsJson;
-
-    Study::save(object);
-}
-
-// gui
-void StudySweepAnalysis::fillTreeView(QTreeWidget *trvComputations)
-{
-    foreach (QSharedPointer<Computation> computation, m_computations)
-    {
-        QTreeWidgetItem *item = new QTreeWidgetItem(trvComputations);
-        item->setText(0, computation->problemDir());
-        item->setText(1, (computation->isSolved() ? tr("solved") : "-"));
-        item->setData(0, Qt::UserRole, computation->problemDir());
     }
 }

@@ -150,7 +150,7 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
     problemInfo.SetValue("GEOMETRY_SVG", generateSvgGeometry(problem->scene()->faces->items()).toStdString());
 
     // parameters
-    ParametersType parameters = problem->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parameters = problem->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
     problemInfo.SetValue("PARAMETERS_MAIN_LABEL", tr("Parameters").toStdString());
     foreach (QString key, parameters.keys())
     {
@@ -163,7 +163,7 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
     // results (only for computation)
     if (Computation *computation = dynamic_cast<Computation *>(problem))
     {
-        QMap<QString, double> results = computation->result()->results();
+        StringToDoubleMap results = computation->result()->results();
         problemInfo.SetValue("RESULTS_MAIN_LABEL", tr("Results").toStdString());
         foreach (QString key, results.keys())
         {

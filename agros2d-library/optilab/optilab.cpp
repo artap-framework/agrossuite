@@ -110,9 +110,13 @@ void OptiLabWidget::refresh()
 
     cmbStudies->clear();
     trvComputations->clear();
-    foreach (Study *study, Agros2D::problem()->studies()->items())
+    foreach (Study *study, Agros2D::problem()->studies()->studies())
     {
-        cmbStudies->addItem(studyTypeString(study->type()));
+        if (study->name().isEmpty())
+            cmbStudies->addItem(studyTypeString(study->type()));
+        else
+            cmbStudies->addItem(study->name());
+
     }
 
     cmbStudies->blockSignals(false);
@@ -134,7 +138,7 @@ void OptiLabWidget::refresh()
     // parameters
     if (cmbStudies->currentIndex() != -1)
     {
-        Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
+        Study *study = Agros2D::problem()->studies()->studies().at(cmbStudies->currentIndex());
         foreach (Parameter parameter, study->parameters())
         {
             cmbChartX->addItem(QString("%1 (par.)").arg(parameter.name()), QString("parameter:%1").arg(parameter.name()));
@@ -151,7 +155,7 @@ void OptiLabWidget::refresh()
 void OptiLabWidget::studyChanged(int index)
 {
     // study
-    Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
+    Study *study = Agros2D::problem()->studies()->studies().at(cmbStudies->currentIndex());
 
     trvComputations->blockSignals(true);
 
@@ -184,15 +188,14 @@ void OptiLabWidget::testSweep()
     // add to list
     Agros2D::problem()->studies()->addStudy(analysis);
 
-    // only one parameter
-    // QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
-    // analysis->setParameter(Parameter::fromList("R3", params));
-    // analysis->setParameter(Parameter::fromValue("R3", 0.06));
-    analysis->setParameter(Parameter::fromRandom("R3", 0.05, 0.07, 4));
-    // analysis->setParameter(Parameter::fromLinspace("R3", 0.05, 0.07, 3));
+    //QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
+    //analysis->addParameter(Parameter::fromList("R1", params));
+    //analysis->addParameter(Parameter::fromRandom("R2", 4, 0.05, 0.07));
+    analysis->addParameter(Parameter::fromLinspace("R3", 3, 0.05, 0.07));
+    analysis->addParameter(Parameter::fromRandom("C", 10, 1, 5));
 
     // add functionals
-    analysis->addFunctional(Functional("We", Functional::Minimize, "computation.solution(\"electrostatic\").volume_integrals([0,1])[\"We\"]"));
+    analysis->addFunctional(Functional("We", FunctionalType_Result, "C+R3**2")); //computation.solution(\"electrostatic\").volume_integrals([0,1])[\"We\"]
 
     // solve
     analysis->solve();
@@ -213,9 +216,9 @@ void OptiLabWidget::testGenetic()
     analysis->addParameter(Parameter("py", -10.0, 10.0));
 
     // add functionals
-    // analysis->addFunctional(Functional("f", Functional::Minimize, "-(sin(px) * cos(py) * exp((1 - (sqrt(px**2 + py**2)/pi))))"));
-    // analysis->addFunctional(Functional("f", Functional::Minimize, "px**2 + py**2"));
-    analysis->addFunctional(Functional("f", Functional::Minimize, "(px+2*py-7)**2 + (2*px+py-5)**2"));
+    // analysis->addFunctional(Functional("f", FunctionalType_Minimize, "-(sin(px) * cos(py) * exp((1 - (sqrt(px**2 + py**2)/pi))))"));
+    // analysis->addFunctional(Functional("f", FunctionalType_Minimize, "px**2 + py**2"));
+    analysis->addFunctional(Functional("f", FunctionalType_Minimize, "(px+2*py-7)**2 + (2*px+py-5)**2"));
 
     // solve
     analysis->solve();

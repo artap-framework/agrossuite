@@ -20,42 +20,32 @@
 #ifndef FUNCTIONAL_H
 #define FUNCTIONAL_H
 
-#include <QWidget>
-
 #include "util.h"
+#include "util/enums.h"
 
 class Computation;
 
 class Functional
 {
 public:
-    enum Operation
-    {
-        Minimize,
-        Maximize,
-        Result
-    };
-
-    Functional(const QString &name = "", Operation operation = Minimize, const QString &expression = "");
-    virtual ~Functional();
+    Functional(const QString &name = "", FunctionalType type = FunctionalType_Minimize, const QString &expression = "");
 
     void load(QJsonObject &object);
     void save(QJsonObject &object);
 
     inline QString name() { return m_name; }
-    inline void setName(const QString &name) { m_name = name; }
+    inline FunctionalType type() { return m_type; }
+    inline void setType(const FunctionalType &type) { m_type = type; }
     inline QString expression() { return m_expression; }
     inline void setExpression(const QString &expression) { m_expression = expression; }
-    inline Operation operation() { return m_operation; }
-    inline void setOperation(const Operation &operation) { m_operation = operation; }
 
+    bool checkExpression(QSharedPointer<Computation> computation);
     bool evaluateExpression(QSharedPointer<Computation> computation);
 
 protected:
     QString m_name;
+    FunctionalType m_type;
     QString m_expression;
-    Operation m_operation;
 };
-
 
 #endif // FUNCTIONAL_H

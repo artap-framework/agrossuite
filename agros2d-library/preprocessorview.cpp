@@ -260,7 +260,7 @@ void PreprocessorWidget::refresh()
     problemPropertiesNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
     problemProperties(problemPropertiesNode);
 
-    ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
     if (parameters.count() > 0)
     {
         QTreeWidgetItem *parametersNode = new QTreeWidgetItem(problemNode);
@@ -417,7 +417,7 @@ void PreprocessorWidget::refresh()
     }
 
     // optilab
-    if (Agros2D::problem()->studies()->items().count() > 0)
+    if (Agros2D::problem()->studies()->studies().count() > 0)
     {
         QTreeWidgetItem *optilabNode = new QTreeWidgetItem(trvWidget);
         optilabNode->setText(0, tr("OptiLab"));
@@ -425,7 +425,7 @@ void PreprocessorWidget::refresh()
         optilabNode->setFont(0, fnt);
         optilabNode->setExpanded(true);
 
-        foreach (Study *study, Agros2D::problem()->studies()->items())
+        foreach (Study *study, Agros2D::problem()->studies()->studies())
         {
             // study
             QTreeWidgetItem *studyNode = new QTreeWidgetItem(optilabNode);
@@ -784,7 +784,7 @@ void PreprocessorWidget::doDelete()
         {
             // parameter
             QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
-            ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+            StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
             parameters.remove(key);
 
             Agros2D::problem()->checkAndApplyParameters(parameters);

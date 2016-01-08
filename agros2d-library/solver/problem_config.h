@@ -35,8 +35,8 @@ namespace XMLProblem
     class problem_config;
 }
 
-typedef QMap<QString, double> ParametersType;
-Q_DECLARE_METATYPE(ParametersType)
+typedef QMap<QString, double> StringToDoubleMap;
+Q_DECLARE_METATYPE(StringToDoubleMap)
 
 class ProblemConfig : public QObject
 {
@@ -88,15 +88,15 @@ public:
     inline void setValue(Type type, bool value, bool emitChanged = true) {  m_setting[type] = value; emit changed(); if (emitChanged) emit changed(); }
     inline void setValue(Type type, const QString &value, bool emitChanged = true) { m_setting[type] = value; emit changed(); if (emitChanged) emit changed(); }
     inline void setValue(Type type, Value value, bool emitChanged = true) { m_setting[type] = QVariant::fromValue(value); emit changed(); if (emitChanged) emit changed(); }
-    inline void setValue(Type type, ParametersType parameters, bool emitChanged = true) { m_setting[type] = QVariant::fromValue(parameters); emit changed(); if (emitChanged) emit changed(); }
+    inline void setValue(Type type, StringToDoubleMap parameters, bool emitChanged = true) { m_setting[type] = QVariant::fromValue(parameters); emit changed(); if (emitChanged) emit changed(); }
     inline void setValue(Type type, QMap<QString, QVariant> parameters, bool emitChanged = true) { m_setting[type] = parameters; emit changed(); if (emitChanged) emit changed(); }
 
     inline QVariant defaultValue(Type type) {  return m_settingDefault[type]; }
 
     // parameters
     void setParameter(const QString &key, double val);
-    inline double parameter(const QString &key) const { assert(m_setting[ProblemConfig::Parameters].value<ParametersType>().contains(key)); return m_setting[ProblemConfig::Parameters].value<ParametersType>()[key]; }
-    inline ParametersType parameters() const { return m_setting[ProblemConfig::Parameters].value<ParametersType>(); }
+    inline double parameter(const QString &key) const { assert(m_setting[ProblemConfig::Parameters].value<StringToDoubleMap>().contains(key)); return m_setting[ProblemConfig::Parameters].value<StringToDoubleMap>()[key]; }
+    inline StringToDoubleMap parameters() const { return m_setting[ProblemConfig::Parameters].value<StringToDoubleMap>(); }
     void checkParameterName(const QString &key);
 
     inline double constantTimeStepLength() { return value(ProblemConfig::TimeTotal).toDouble() / value(ProblemConfig::TimeConstantTimeSteps).toInt(); }

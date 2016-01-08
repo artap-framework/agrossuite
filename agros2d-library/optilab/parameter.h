@@ -20,61 +20,61 @@
 #ifndef PARAMETER_H
 #define PARAMETER_H
 
-#include <QWidget>
-
 #include "util.h"
 
 class Parameter
 {
 public:
     Parameter(const QString &name = "", double lowerBound = 0.0, double upperBound = 1.0);
-    virtual ~Parameter();
-
-    void clear();
+    ~Parameter();
 
     void load(QJsonObject &object);
     void save(QJsonObject &object);
+    void clear();
 
     inline QString name() { return m_name; }
-
-    inline void addValue(double value) { m_values.append(value); }
-    inline QList<double> values() { return m_values; }
-
     inline double lowerBound() const { return m_lowerBound; }
+    void setLowerBound(double lowerBound);
     inline double upperBound() const { return m_upperBound; }
+    void setUpperBound(double upperBound);
 
-    inline double randomNumber() { return m_lowerBound + (double) qrand() / RAND_MAX * (m_upperBound - m_lowerBound); }
+    inline QList<double> values() { return m_values; }
+    void addValue(double value);
 
-    QString toString() const;
+    inline double randomValue() { return m_lowerBound + (double) qrand() / RAND_MAX * (m_upperBound - m_lowerBound); }
+    double randomValue(double mean, double deviation);
 
     // static factories
     static Parameter fromValue(const QString &name, double value);
     static Parameter fromList(const QString &name, QList<double> values);
-    static Parameter fromLinspace(const QString &name, double low, double high, int count);
-    static Parameter fromRandom(const QString &name, double low, double high, int count);
+
+    static Parameter fromLinspace(const QString &name, int count, double lowerBound, double upperBound);
+    static Parameter fromRandom(const QString &name, int count, double lowerBound, double upperBound);
+    static Parameter fromRandom(const QString &name, int count, double lowerBound, double upperBound, double mean, double deviation);
 
 protected:
     QString m_name;
-    QList<double> m_values;
-
     double m_lowerBound;
     double m_upperBound;
+
+    QList<double> m_values;
 };
 
-// Q_DECLARE_METATYPE(Parameters)
-
-class Parameters
+class ParameterSpace
 {
 public:
-    // void checkName(const QString &key);
+    ParameterSpace(QList<Parameter> parameters);
+    ~ParameterSpace();
 
-    inline QMap<QString, Parameter> &items() { return m_parameters; }
+    void clear();
 
-    Parameter &operator[] (const QString &key) { return m_parameters[key]; }
-    const Parameter operator[] (const QString &key) const { return m_parameters[key]; }
+    QList<QMap<QString, double> > sets() { return m_sets; }
+
+    void random(int count);
 
 private:
-    QMap<QString, Parameter> m_parameters;
+    QList<Parameter> m_parameters;
+    QList<QMap<QString, double> > m_sets;
 };
 
 #endif // PARAMETER_H

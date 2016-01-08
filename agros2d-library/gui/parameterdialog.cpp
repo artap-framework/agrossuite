@@ -35,7 +35,7 @@ ParameterDialog::ParameterDialog(QWidget *parent)
 ParameterDialog::ParameterDialog(const QString &key, QWidget *parent)
     : QDialog(parent), m_key(key)
 {
-    ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
     m_value = parameters[key];
 
     createControls();
@@ -108,7 +108,7 @@ bool ParameterDialog::save()
         return false;
     }
 
-    ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
     parameters[txtParameterName->text()] = txtParameterValue->value();
 
     // remove old parameter
@@ -126,7 +126,7 @@ bool ParameterDialog::save()
 
 bool ParameterDialog::remove()
 {
-    ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
     parameters.remove(m_key);
 
     if (Agros2D::problem()->checkAndApplyParameters(parameters))
@@ -143,7 +143,7 @@ void ParameterDialog::parameterNameTextChanged(const QString &str)
     lblParametersError->setVisible(false);
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
 
-    ParametersType parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
 
     if (str.isEmpty())
     {

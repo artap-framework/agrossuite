@@ -102,7 +102,7 @@ public:
     int numAdaptiveFields() const;
 
     // check and apply parameters
-    bool checkAndApplyParameters(ParametersType parameters, bool apply = true);
+    bool checkAndApplyParameters(StringToDoubleMap parameters, bool apply = true);
 
     inline QMap<QString, FieldInfo *> fieldInfos() const { return m_fieldInfos; }
     inline FieldInfo *fieldInfo(const QString &fieldId) { assert(m_fieldInfos.contains(fieldId));

@@ -22,13 +22,74 @@
 
 #include <QWidget>
 
-#include "util.h"
 #include "util/enums.h"
 #include "parameter.h"
 #include "functional.h"
 
 class Computation;
-class Study;
+
+class ComputationSet
+{
+public:
+    ComputationSet(QList<QSharedPointer<Computation> > set = QList<QSharedPointer<Computation> >());
+    virtual ~ComputationSet();
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+    inline QString name() { return m_name; }
+    inline void setName(const QString name) { m_name = name; }
+
+    inline void addComputation(QSharedPointer<Computation> computation) { m_computationSet.append(computation); }
+    QList<QSharedPointer<Computation> > &computations() { return m_computationSet; }
+
+protected:
+    QString m_name;
+    QList<QSharedPointer<Computation> > m_computationSet;
+};
+
+class Study : public QObject
+{
+    Q_OBJECT
+
+public:
+    Study(QList<ComputationSet> computations = QList<ComputationSet>());
+    virtual ~Study();
+
+    virtual StudyType type() = 0;
+
+    void clear();
+    virtual void solve() = 0;
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+    inline QString name() { return m_name; }
+    inline void setName(const QString name) { m_name = name; }
+
+    void addParameter(Parameter parameter) { m_parameters.append(parameter); }
+    QList<Parameter> &parameters() { return m_parameters; }
+
+    void addFunctional(Functional functional) { m_functionals.append(functional); }
+    QList<Functional> &functionals() { return m_functionals; }
+    bool evaluateFunctionals(QSharedPointer<Computation> computation);
+
+    QList<QSharedPointer<Computation> > computations() { return m_computations.last().computations(); }
+    QList<QSharedPointer<Computation> > computations(int setIndex) { return m_computations[setIndex].computations(); }
+    void addComputation(QSharedPointer<Computation> computation, bool new_computationSet = false);
+
+    virtual void fillTreeView(QTreeWidget *trvComputations);
+    QVariant variant();
+
+protected:
+    QString m_name;
+
+    QList<Parameter> m_parameters;
+    QList<Functional> m_functionals;
+    QList<ComputationSet> m_computations;
+};
+
+Q_DECLARE_METATYPE(Study *)
 
 class Studies : public QObject
 {
@@ -40,7 +101,7 @@ public:
 
     void addStudy(Study *study);
     void removeStudy(Study *study);
-    inline QList<Study *> &items() { return m_studies; }
+    inline QList<Study *> &studies() { return m_studies; }
 
     Study * operator[] (int idx) { return m_studies[idx]; }
     const Study * operator[] (int idx) const { return m_studies[idx]; }
@@ -51,46 +112,11 @@ signals:
 public slots:
     void clear();
 
-    bool loadStudies();
-    bool saveStudies();
+    bool load();
+    bool save();
 
 private:
-    // studies
     QList<Study *> m_studies;
-};
-
-Q_DECLARE_METATYPE(Study *)
-
-class Study : public QObject
-{
-    Q_OBJECT
-
-public:
-    Study();
-    virtual ~Study();
-
-    virtual StudyType type() = 0;
-
-    void clear();
-    virtual void solve() = 0;
-
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
-
-    void addParameter(Parameter parameter) { m_parameters.append(parameter); }
-    QList<Parameter> &parameters() { return m_parameters; }
-    void addFunctional(Functional functional) { m_functionals.append(functional); }
-    QList<Functional> &functionals() { return m_functionals; }
-
-    QVariant variant();
-
-    virtual void fillTreeView(QTreeWidget *trvComputations) = 0;
-
-protected:
-    QList<Functional> m_functionals;
-    QList<Parameter> m_parameters;
-
-    void evaluateExpressions();
 };
 
 #endif // STUDY_H

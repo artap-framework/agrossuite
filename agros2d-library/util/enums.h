@@ -318,6 +318,13 @@ enum StudyType
     StudyType_Genetic
 };
 
+enum FunctionalType
+{
+    FunctionalType_Minimize,
+    FunctionalType_Maximize,
+    FunctionalType_Result
+};
+
 // keys
 AGROS_LIBRARY_API void initLists();
 
@@ -476,5 +483,11 @@ AGROS_LIBRARY_API QString studyTypeString(StudyType type);
 AGROS_LIBRARY_API QStringList studyTypeStringKeys();
 AGROS_LIBRARY_API QString studyTypeToStringKey(StudyType type);
 AGROS_LIBRARY_API StudyType studyTypeFromStringKey(const QString &type);
+
+// functional type
+AGROS_LIBRARY_API QString functionalTypeString(FunctionalType type);
+AGROS_LIBRARY_API QStringList functionalTypeStringKeys();
+AGROS_LIBRARY_API QString functionalTypeToStringKey(FunctionalType type);
+AGROS_LIBRARY_API FunctionalType functionalTypeFromStringKey(const QString &type);
 
 #endif // UTIL_ENUMS_H
