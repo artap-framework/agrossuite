@@ -143,6 +143,7 @@ int main(int argc, char *argv[])
 
         LinearSystemPETScArgs *linearSystem = NULL;
         linearSystem = createLinearSystem("External solver - PETSc", argc, argv);
+        auto timeStart = std::chrono::steady_clock::now();
 
         Vec x,b;
         Mat  A;
@@ -196,6 +197,9 @@ int main(int argc, char *argv[])
         }
 
 
+        linearSystem->setInfoTimeReadMatrix(elapsedSeconds(timeStart));
+        linearSystem->setInfoNumOfProc(size);
+
         ierr = MatCreate(PETSC_COMM_WORLD, &A); CHKERRQ(ierr);
         ierr = MatSetType(A, MATMPIAIJ); CHKERRQ(ierr);
         ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, n_rows, n_rows); CHKERRQ(ierr);
@@ -213,7 +217,7 @@ int main(int argc, char *argv[])
 
 
         int l = 0;
-        for (int i = istart; (i < iend) && (i < n_rows); i++)
+        for (int i = istart; i < iend && i < n_rows; i++)
         {
             MatSetValues(A, 1, &i, row_lengths[i], &column_indicies[row_indicies[i]],&linearSystem->system_matrix->val[row_indicies[i]], INSERT_VALUES);
             l++;
@@ -245,17 +249,26 @@ int main(int argc, char *argv[])
         ierr = KSPCreate(PETSC_COMM_WORLD,&ksp);CHKERRQ(ierr);
         ierr = KSPSetOperators(ksp,A,A,DIFFERENT_NONZERO_PATTERN);CHKERRQ(ierr);
 
+        std::string preconditioner = linearSystem->preconditionerArg.getValue();
 
-        PCType pcArg = preConditioner(linearSystem->preconditionerArg.getValue());
-        // pcArg = PCNONE;
+        // preconditioner
+        PCType pcArg = preConditioner(preconditioner);
         ierr = KSPGetPC(ksp,&pc);CHKERRQ(ierr);
         ierr = PCSetType(pc, pcArg);CHKERRQ(ierr);
+        linearSystem->setInfoSolverPreconditionerName(preconditioner);
 
-        KSPType kspArg = solver(linearSystem->solverArg.getValue());
+        // solver
+        std::string solver_name = linearSystem->solverArg.getValue();
+        KSPType kspArg = solver(solver_name);
         if(kspArg != "none")
         {
             ierr = KSPSetType(ksp, kspArg);
-        }
+            linearSystem->setInfoSolverSolverName(solver_name);
+        }        
+        else
+            linearSystem->setInfoSolverSolverName("default");
+
+
         PCFactorSetShiftType(pc, MAT_SHIFT_NONZERO);
         ierr = KSPSetTolerances(ksp,1.e-4,PETSC_DEFAULT,PETSC_DEFAULT,PETSC_DEFAULT);CHKERRQ(ierr);
 
@@ -268,10 +281,9 @@ int main(int argc, char *argv[])
             ierr = KSPSetInitialGuessNonzero(ksp,PETSC_TRUE);CHKERRQ(ierr);
         }
 
-        for(int i = 0; i < 1; i++)
-        {
-            ierr = KSPSolve(ksp, b, x); CHKERRQ(ierr);
-        }
+        auto timeSolveStart = std::chrono::steady_clock::now();
+        ierr = KSPSolve(ksp, b, x); CHKERRQ(ierr);
+        linearSystem->setInfoTimeSolver(elapsedSeconds(timeSolveStart));
 
         // MatView(A, PETSC_VIEWER_STDOUT_SELF);
 
@@ -290,6 +302,8 @@ int main(int argc, char *argv[])
             // check solution
             if (linearSystem->hasReferenceSolution())
                 status = linearSystem->compareWithReferenceSolution();
+
+            linearSystem->setInfoTimeTotal(elapsedSeconds(timeStart));
 
             delete [] row_indicies;
             delete [] row_lengths;
