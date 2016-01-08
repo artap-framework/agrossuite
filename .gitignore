@@ -116,3 +116,5 @@ install_manifest.txt
 standalone
 *.supp
 optilab
+solver-external-paralution/paralution/build/
+
