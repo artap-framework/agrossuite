@@ -53,7 +53,7 @@ class TestField(Agros2DTestCase):
             self.field.number_of_refinements = -1
 
         with self.assertRaises(IndexError):
-            self.field.number_of_refinements = 6
+            self.field.number_of_refinements = 20
 
     """ polynomial_order """
     def test_polynomial_order(self):
