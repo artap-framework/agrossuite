@@ -264,10 +264,11 @@ void initLists()
     dampingTypeList.insert(DampingType_Fixed, "fixed");
 
     // PaletteType
+    paletteTypeList.insert(Palette_Paruly, "paruly");
     paletteTypeList.insert(Palette_Viridis, "viridis");
     paletteTypeList.insert(Palette_Inferno, "inferno");
-    paletteTypeList.insert(Palette_Parula, "parula");
     paletteTypeList.insert(Palette_Jet, "jet");
+    paletteTypeList.insert(Palette_Agros, "agros");
     paletteTypeList.insert(Palette_HSV, "hsv");
     paletteTypeList.insert(Palette_BWAsc, "bw_ascending");
     paletteTypeList.insert(Palette_BWDesc, "bw_descending");
@@ -589,10 +590,12 @@ QString paletteTypeString(PaletteType paletteType)
         return QObject::tr("Viridis");
     case Palette_Inferno:
         return QObject::tr("Inferno");
-    case Palette_Parula:
-        return QObject::tr("Parula");
+    case Palette_Paruly:
+        return QObject::tr("Paruly");
     case Palette_Jet:
         return QObject::tr("Jet");
+    case Palette_Agros:
+        return QObject::tr("Agros");
     case Palette_HSV:
         return QObject::tr("HSV");
     case Palette_BWAsc:
