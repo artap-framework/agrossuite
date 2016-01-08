@@ -294,6 +294,14 @@ int main(int argc, char *argv[])
             delete [] row_indicies;
             delete [] row_lengths;
 
+            if (linearSystem->verbose() > 0)
+            {
+                linearSystem->printStatus();
+
+                if (linearSystem->verbose() > 2)
+                    linearSystem->exportStatusToFile();
+            }
+
         }
 
         ierr = VecDestroy(&x); CHKERRQ(ierr);
