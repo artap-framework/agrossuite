@@ -215,9 +215,6 @@ void PostprocessorSceneChartWidget::createControls()
     layoutChart->addWidget(geometryViewer, 1);
     layoutChart->addLayout(layoutButton);
 
-    QWidget *widButton = new QWidget();
-    widButton->setLayout(layoutChart);
-
     // controls geometry
     QVBoxLayout *controlsGeometryLayout = new QVBoxLayout();
     controlsGeometryLayout->addLayout(layoutStartEnd);
@@ -245,7 +242,6 @@ void PostprocessorSceneChartWidget::createControls()
     layoutMain->addLayout(layoutVariable);
     layoutMain->addWidget(tbxAnalysisType);
     layoutMain->addLayout(layoutChart, 1);
-    layoutMain->addWidget(widButton);
 
     setLayout(layoutMain);
 }
