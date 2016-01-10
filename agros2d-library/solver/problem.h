@@ -42,7 +42,7 @@ class PyProblem;
 class Computation;
 class PostDeal;
 class SolutionStore;
-class ProblemResult;
+class ProblemResults;
 class Studies;
 
 class CalculationThread : public QThread
@@ -210,7 +210,7 @@ public:
     inline PostDeal *postDeal() { return m_postDeal; }
     inline ProblemSolver *problemSolver() { return m_problemSolver; }
     inline SolutionStore *solutionStore() { return m_solutionStore; }
-    inline ProblemResult *result() const { return m_result; }
+    inline ProblemResults *result() const { return m_result; }
 
     bool isSolved() const;
     bool isSolving() const { return m_isSolving; }
@@ -277,7 +277,7 @@ protected:
     dealii::Triangulation<2> m_initialUnrefinedMesh;
     // calculation mesh - at the present moment we do not use multimesh
     dealii::Triangulation<2> m_calculationMesh;
-    ProblemResult *m_result;
+    ProblemResults *m_result;
 
     // solution store
     SolutionStore *m_solutionStore;

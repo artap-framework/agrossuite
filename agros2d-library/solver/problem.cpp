@@ -1465,7 +1465,7 @@ Computation::Computation(const QString &problemDir) : ProblemBase()
     m_problemSolver = new ProblemSolver(this);
     m_postDeal = new PostDeal(this);
     m_solutionStore = new SolutionStore(this);
-    m_result = new ProblemResult();
+    m_result = new ProblemResults();
 
     if (problemDir.isEmpty())
     {

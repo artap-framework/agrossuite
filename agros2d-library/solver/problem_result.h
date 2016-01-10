@@ -66,11 +66,11 @@ protected:
     QString m_component;
 };
 
-class ProblemResult
+class ProblemResults
 {
 public:
-    ProblemResult();
-    ~ProblemResult() {}
+    ProblemResults();
+    ~ProblemResults() {}
 
     void clear();
 

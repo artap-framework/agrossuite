@@ -115,19 +115,19 @@ object[ENTITIES] = entitiesJson;
 
 // *****************************************************************************************************************
 
-ProblemResult::ProblemResult()
+ProblemResults::ProblemResults()
 {
     clear();
 }
 
-void ProblemResult::clear()
+void ProblemResults::clear()
 {
     // clear results
     m_results.clear();
     m_info.clear();
 }
 
-bool ProblemResult::load(const QString &fileName)
+bool ProblemResults::load(const QString &fileName)
 {
     QFile file(fileName);
 
@@ -168,7 +168,7 @@ bool ProblemResult::load(const QString &fileName)
     return true;
 }
 
-bool ProblemResult::save(const QString &fileName)
+bool ProblemResults::save(const QString &fileName)
 {
     if (m_results.isEmpty() && m_info.isEmpty())
     {
@@ -210,7 +210,7 @@ bool ProblemResult::save(const QString &fileName)
     return true;
 }
 
-void ProblemResult::evaluate(QSharedPointer<Computation> computation)
+void ProblemResults::evaluate(QSharedPointer<Computation> computation)
 {
     foreach (ResultRecipe *recipe, m_recipes)
         m_results[recipe->name()] = recipe->evaluate(computation);
