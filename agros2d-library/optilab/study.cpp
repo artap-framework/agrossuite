@@ -182,7 +182,7 @@ void Study::fillTreeView(QTreeWidget *trvComputations)
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(itemComputationSet);
             item->setText(0, computation->problemDir());
-            item->setText(1, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->result()->hasResults() ? tr("results") : tr("no results")));
+            item->setText(1, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->results()->hasResults() ? tr("results") : tr("no results")));
             item->setData(0, Qt::UserRole, computation->problemDir());
         }
     }

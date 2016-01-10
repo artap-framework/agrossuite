@@ -104,6 +104,12 @@ public:
     // check and apply parameters
     bool checkAndApplyParameters(StringToDoubleMap parameters, bool apply = true);
 
+    // results
+    inline ProblemResults *results() const { return m_results; }
+    virtual void loadResults() = 0;
+    virtual void saveResults() = 0;
+    void clearResults();
+
     inline QMap<QString, FieldInfo *> fieldInfos() const { return m_fieldInfos; }
     inline FieldInfo *fieldInfo(const QString &fieldId) { assert(m_fieldInfos.contains(fieldId));
                                                           return m_fieldInfos[fieldId]; }
@@ -147,6 +153,9 @@ protected:
     // private local dict
     PyObject *m_dictLocal;
 
+    // results
+    ProblemResults *m_results;
+
     friend class CalculationThread;
     friend class PyProblem;
     friend class AgrosSolver;
@@ -179,6 +188,10 @@ public:
     virtual QString problemFileName() const;
     inline QString archiveFileName() const { return m_fileName; }
 
+    // results
+    virtual void loadResults();
+    virtual void saveResults();
+
 signals:
     void fileNameChanged(const QString &archiveFileName);
 
@@ -210,7 +223,6 @@ public:
     inline PostDeal *postDeal() { return m_postDeal; }
     inline ProblemSolver *problemSolver() { return m_problemSolver; }
     inline SolutionStore *solutionStore() { return m_solutionStore; }
-    inline ProblemResults *result() const { return m_result; }
 
     bool isSolved() const;
     bool isSolving() const { return m_isSolving; }
@@ -218,10 +230,6 @@ public:
     bool isMeshing() const { return m_isMeshing; }
     bool isAborted() const { return m_abort; }
     bool isPreparedForAction() const { return !isMeshing() && !isSolving() && !m_isPostprocessingRunning; }
-
-    // results
-    bool loadResults();
-    bool saveResults();
 
     inline QTime timeElapsed() const { return m_lastTimeElapsed; }
 
@@ -255,13 +263,16 @@ public:
     virtual QString problemFileName() const;
     inline QString problemDir() { return m_problemDir; }
 
+    // results
+    virtual void loadResults();
+    virtual void saveResults();
+
 signals:
     void meshed();
     void solved();
 
 public slots:    
     void clearSolution();
-    void clearResults();
     void doAbortSolve();
     virtual void clearFieldsAndConfig();
 
@@ -277,7 +288,6 @@ protected:
     dealii::Triangulation<2> m_initialUnrefinedMesh;
     // calculation mesh - at the present moment we do not use multimesh
     dealii::Triangulation<2> m_calculationMesh;
-    ProblemResults *m_result;
 
     // solution store
     SolutionStore *m_solutionStore;

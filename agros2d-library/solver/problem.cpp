@@ -134,6 +134,8 @@ ProblemBase::ProblemBase()
     m_isNonlinear = false;
 
     m_timeStepLengths.append(0.0);
+
+    m_results = new ProblemResults();
 }
 
 ProblemBase::~ProblemBase()
@@ -144,6 +146,8 @@ ProblemBase::~ProblemBase()
     delete m_setting;
 
     delete m_scene;
+
+    delete m_results;
 }
 
 int ProblemBase::numAdaptiveFields() const
@@ -344,6 +348,11 @@ bool ProblemBase::applyParametersInternal()
     currentPythonEngineAgros()->blockSignals(false);
 
     return successfulRun;
+}
+
+void ProblemBase::clearResults()
+{
+    m_results->clear();
 }
 
 void ProblemBase::clearFieldsAndConfig()
@@ -1465,7 +1474,6 @@ Computation::Computation(const QString &problemDir) : ProblemBase()
     m_problemSolver = new ProblemSolver(this);
     m_postDeal = new PostDeal(this);
     m_solutionStore = new SolutionStore(this);
-    m_result = new ProblemResults();
 
     if (problemDir.isEmpty())
     {
@@ -1486,13 +1494,12 @@ Computation::Computation(const QString &problemDir) : ProblemBase()
 Computation::~Computation()
 {   
     clearSolution();
-    clearResults();
+    //clearResults();
 
     delete m_calculationThread;
     delete m_problemSolver;
     delete m_postDeal;
     delete m_solutionStore;
-    delete m_result;
 
     removeDirectory(QString("%1/%2").arg(cacheProblemDir(), m_problemDir));
 }
@@ -1668,7 +1675,7 @@ void Computation::solve()
         Indicator::closeProgress();
 
         // evaluate results recipes
-        result()->evaluate(Agros2D::problem()->currentComputation());
+        results()->evaluate(Agros2D::problem()->currentComputation());
     }
     /*
     catch (Exceptions::NonlinearException &e)
@@ -1971,12 +1978,6 @@ void Computation::clearSolution()
     m_solutionStore->clear();
 }
 
-void Computation::clearResults()
-{
-    m_result->clear();
-    saveResults();
-}
-
 void Computation::clearFieldsAndConfig()
 {
     m_solutionStore->clear();
@@ -1990,16 +1991,14 @@ void Computation::clearFieldsAndConfig()
     ProblemBase::clearFieldsAndConfig();
 }
 
-bool Computation::loadResults()
+void Computation::loadResults()
 {
-    QString fnResults = QString("%1/%2/results.json").arg(cacheProblemDir()).arg(m_problemDir);
-    return m_result->load(fnResults);
+    results()->load(QString("%1/%2/results.json").arg(cacheProblemDir()).arg(problemDir()));
 }
 
-bool Computation::saveResults()
+void Computation::saveResults()
 {
-    QString fnResults = QString("%1/%2/results.json").arg(cacheProblemDir()).arg(m_problemDir);
-    return m_result->save(fnResults);
+    results()->save(QString("%1/%2/results.json").arg(cacheProblemDir()).arg(problemDir()));
 }
 
 // preprocessor
@@ -2017,6 +2016,16 @@ Problem::~Problem()
 QString Problem::problemFileName() const
 {
     return QString("%1/problem.json").arg(cacheProblemDir());
+}
+
+void Problem::loadResults()
+{
+
+}
+
+void Problem::saveResults()
+{
+
 }
 
 QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool setCurrentComputation)

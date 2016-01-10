@@ -51,7 +51,7 @@ public:
 
     inline bool operator() (QSharedPointer<Computation> i, QSharedPointer<Computation> j)
     {
-        return (i->result()->results()[m_parameterName] < j->result()->results()[m_parameterName]);
+        return (i->results()->results()[m_parameterName] < j->results()->results()[m_parameterName]);
     }
 
 protected:
