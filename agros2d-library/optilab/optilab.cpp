@@ -193,7 +193,7 @@ void OptiLabWidget::testSweep()
     recipe.setFieldID("electrostatic");
     recipe.setVariable("electrostatic_potential");
     recipe.setPoint(Point(0.02, 0.05));
-    Agros2D::problem()->results()->addRecipe(&recipe);
+    Agros2D::problem()->recipes()->addRecipe(&recipe);
 
     //QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
     //analysis->addParameter(Parameter::fromList("R1", params));

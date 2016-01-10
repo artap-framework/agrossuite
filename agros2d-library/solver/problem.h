@@ -24,6 +24,7 @@
 #include "value.h"
 #include "solutiontypes.h"
 #include "problem_config.h"
+#include "problem_result.h"
 
 #include "mesh/meshgenerator.h"
 
@@ -42,7 +43,7 @@ class PyProblem;
 class Computation;
 class PostDeal;
 class SolutionStore;
-class ProblemResults;
+class ComputationResults;
 class Studies;
 
 class CalculationThread : public QThread
@@ -104,12 +105,6 @@ public:
     // check and apply parameters
     bool checkAndApplyParameters(StringToDoubleMap parameters, bool apply = true);
 
-    // results
-    inline ProblemResults *results() const { return m_results; }
-    virtual void loadResults() = 0;
-    virtual void saveResults() = 0;
-    void clearResults();
-
     inline QMap<QString, FieldInfo *> fieldInfos() const { return m_fieldInfos; }
     inline FieldInfo *fieldInfo(const QString &fieldId) { assert(m_fieldInfos.contains(fieldId));
                                                           return m_fieldInfos[fieldId]; }
@@ -153,9 +148,6 @@ protected:
     // private local dict
     PyObject *m_dictLocal;
 
-    // results
-    ProblemResults *m_results;
-
     friend class CalculationThread;
     friend class PyProblem;
     friend class AgrosSolver;
@@ -188,9 +180,11 @@ public:
     virtual QString problemFileName() const;
     inline QString archiveFileName() const { return m_fileName; }
 
-    // results
-    virtual void loadResults();
-    virtual void saveResults();
+    // recipes
+    inline ResultRecipes *recipes() const { return m_recipes; }
+    inline void clearRecipes() { m_recipes->clear(); }
+    void loadRecipes();
+    void saveRecipes();
 
 signals:
     void fileNameChanged(const QString &archiveFileName);
@@ -202,6 +196,9 @@ private:
     QString m_fileName;
     QSharedPointer<Computation> m_currentComputation;
     Studies *m_studies;
+
+    // recipes
+    ResultRecipes *m_recipes;
 
     friend class PyComputation;
     friend class PyProblem;
@@ -264,8 +261,10 @@ public:
     inline QString problemDir() { return m_problemDir; }
 
     // results
-    virtual void loadResults();
-    virtual void saveResults();
+    inline ComputationResults *results() const { return m_results; }
+    inline void clearResults() { m_results->clear(); }
+    void loadResults();
+    void saveResults();
 
 signals:
     void meshed();
@@ -306,6 +305,9 @@ protected:
     void solveInit(); // called by solve, can throw SolverException
     void solveAction(); // called by solve, can throw SolverException
     bool meshAction(bool emitMeshed);
+
+    // results
+    ComputationResults *m_results;
 };
 
 #endif // PROBLEM_H

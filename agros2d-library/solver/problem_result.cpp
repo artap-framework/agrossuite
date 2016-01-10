@@ -46,11 +46,6 @@ void ResultRecipe::save(QJsonObject &object)
     object[VARIABLE] = m_variable;
 }
 
-/*
-LocalValueRecipe::LocalValueRecipe(Point point, QString component)
-    : m_point(point), m_component(component) { }
-*/
-
 void LocalValueRecipe::load(QJsonObject &object)
 {
     QJsonArray pointJson = object[POINT].toArray();
@@ -100,37 +95,9 @@ double LocalValueRecipe::evaluate(QSharedPointer<Computation> computation)
     }
 }
 
-/*
-QJsonArray entitiesJson = object[ENTITIES].toArray();
-for (int i = 0; i < entitiesJson .size(); i++)
-    m_entities.append(entitiesJson[i].toInt());
-*/
-
-/*
-QJsonArray entitiesJson;
-foreach (int entity, m_entities)
-    entitiesJson.append(entity);
-object[ENTITIES] = entitiesJson;
-*/
-
-// *****************************************************************************************************************
-
-ProblemResults::ProblemResults()
-{
-    clear();
-}
-
-void ProblemResults::clear()
-{
-    // clear results
-    m_results.clear();
-    m_info.clear();
-}
-
-bool ProblemResults::load(const QString &fileName)
+bool ResultRecipes::load(const QString &fileName)
 {
     QFile file(fileName);
-
     if (!file.open(QIODevice::ReadOnly))
     {
         qWarning("Couldn't open result file.");
@@ -138,17 +105,8 @@ bool ProblemResults::load(const QString &fileName)
     }
 
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-
     QJsonObject storeJson = doc.object();
 
-    // results
-    QJsonObject resultsJson = storeJson[RESULTS].toObject();
-    foreach (QString key, resultsJson.keys())
-    {
-        m_results[key] = resultsJson[key].toDouble();
-    }
-
-    // recipes
     QJsonArray recipesJson = storeJson[RECIPES].toArray();
     for (int i = 0; i < recipesJson.size(); i++)
     {
@@ -168,7 +126,80 @@ bool ProblemResults::load(const QString &fileName)
     return true;
 }
 
-bool ProblemResults::save(const QString &fileName)
+bool ResultRecipes::save(const QString &fileName)
+{
+    if (m_recipes.isEmpty())
+    {
+        if (QFile::exists(fileName))
+            QFile::remove(fileName);
+        return true;
+    }
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        qWarning("Couldn't open result file.");
+        return false;
+    }
+
+    QJsonObject storeJson;
+    QJsonObject recipesJson;
+    foreach (ResultRecipe *recipe, m_recipes)
+        recipe->save(recipesJson);
+    storeJson[RECIPES] = recipesJson;
+
+    // save to file
+    QJsonDocument doc(storeJson);
+    file.write(doc.toJson());
+
+    return true;
+}
+
+void ResultRecipes::evaluate(QSharedPointer<Computation> computation)
+{
+    foreach (ResultRecipe *recipe, m_recipes)
+        computation->results()->setResult(recipe->name(), recipe->evaluate(computation));
+}
+
+// *****************************************************************************************************************
+
+ComputationResults::ComputationResults()
+{
+    clear();
+}
+
+void ComputationResults::clear()
+{
+    m_results.clear();
+    m_info.clear();
+}
+
+bool ComputationResults::load(const QString &fileName)
+{
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qWarning("Couldn't open result file.");
+        return false;
+    }
+
+    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+
+    QJsonObject storeJson = doc.object();
+
+    // results
+    QJsonObject resultsJson = storeJson[RESULTS].toObject();
+    foreach (QString key, resultsJson.keys())
+    {
+        m_results[key] = resultsJson[key].toDouble();
+    }
+
+    //TODO: info
+
+    return true;
+}
+
+bool ComputationResults::save(const QString &fileName)
 {
     if (m_results.isEmpty() && m_info.isEmpty())
     {
@@ -179,7 +210,6 @@ bool ProblemResults::save(const QString &fileName)
     }
 
     QFile file(fileName);
-
     if (!file.open(QIODevice::WriteOnly))
     {
         qWarning("Couldn't open result file.");
@@ -197,21 +227,11 @@ bool ProblemResults::save(const QString &fileName)
     }
     storeJson[RESULTS] = resultsJson;
 
-    // recipes
-    QJsonObject recipesJson;
-    foreach (ResultRecipe *recipe, m_recipes)
-        recipe->save(recipesJson);
-    storeJson[RECIPES] = recipesJson;
+    //TODO: info
 
     // save to file
     QJsonDocument doc(storeJson);
     file.write(doc.toJson());
 
     return true;
-}
-
-void ProblemResults::evaluate(QSharedPointer<Computation> computation)
-{
-    foreach (ResultRecipe *recipe, m_recipes)
-        computation->results()->setResult(recipe->name(), recipe->evaluate(computation));
 }

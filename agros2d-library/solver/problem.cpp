@@ -128,14 +128,9 @@ ProblemBase::ProblemBase()
 {
     m_config = new ProblemConfig(this);
     m_setting = new ProblemSetting(this);
-
     m_scene = new Scene(this);
-
     m_isNonlinear = false;
-
     m_timeStepLengths.append(0.0);
-
-    m_results = new ProblemResults();
 }
 
 ProblemBase::~ProblemBase()
@@ -144,10 +139,7 @@ ProblemBase::~ProblemBase()
 
     delete m_config;
     delete m_setting;
-
     delete m_scene;
-
-    delete m_results;
 }
 
 int ProblemBase::numAdaptiveFields() const
@@ -348,11 +340,6 @@ bool ProblemBase::applyParametersInternal()
     currentPythonEngineAgros()->blockSignals(false);
 
     return successfulRun;
-}
-
-void ProblemBase::clearResults()
-{
-    m_results->clear();
 }
 
 void ProblemBase::clearFieldsAndConfig()
@@ -1474,6 +1461,7 @@ Computation::Computation(const QString &problemDir) : ProblemBase()
     m_problemSolver = new ProblemSolver(this);
     m_postDeal = new PostDeal(this);
     m_solutionStore = new SolutionStore(this);
+    m_results = new ComputationResults();
 
     if (problemDir.isEmpty())
     {
@@ -1494,12 +1482,13 @@ Computation::Computation(const QString &problemDir) : ProblemBase()
 Computation::~Computation()
 {   
     clearSolution();
-    //clearResults();
+    clearResults();
 
     delete m_calculationThread;
     delete m_problemSolver;
     delete m_postDeal;
     delete m_solutionStore;
+    delete m_results;
 
     removeDirectory(QString("%1/%2").arg(cacheProblemDir(), m_problemDir));
 }
@@ -1675,7 +1664,7 @@ void Computation::solve()
         Indicator::closeProgress();
 
         // evaluate results recipes
-        Agros2D::problem()->results()->evaluate(Agros2D::problem()->currentComputation());
+        Agros2D::problem()->recipes()->evaluate(Agros2D::problem()->currentComputation());
     }
     /*
     catch (Exceptions::NonlinearException &e)
@@ -1993,12 +1982,12 @@ void Computation::clearFieldsAndConfig()
 
 void Computation::loadResults()
 {
-    results()->load(QString("%1/%2/results.json").arg(cacheProblemDir()).arg(problemDir()));
+    m_results->load(QString("%1/%2/results.json").arg(cacheProblemDir()).arg(problemDir()));
 }
 
 void Computation::saveResults()
 {
-    results()->save(QString("%1/%2/results.json").arg(cacheProblemDir()).arg(problemDir()));
+    m_results->save(QString("%1/%2/results.json").arg(cacheProblemDir()).arg(problemDir()));
 }
 
 // preprocessor
@@ -2006,11 +1995,13 @@ void Computation::saveResults()
 Problem::Problem() : ProblemBase()
 {
     m_studies = new Studies();
+    m_recipes = new ResultRecipes();
 }
 
 Problem::~Problem()
 {
     delete m_studies;
+    delete m_recipes;
 }
 
 QString Problem::problemFileName() const
@@ -2018,14 +2009,14 @@ QString Problem::problemFileName() const
     return QString("%1/problem.json").arg(cacheProblemDir());
 }
 
-void Problem::loadResults()
+void Problem::loadRecipes()
 {
-
+    m_recipes->load(QString("%1/recipes.json").arg(cacheProblemDir()));
 }
 
-void Problem::saveResults()
+void Problem::saveRecipes()
 {
-
+    m_recipes->load(QString("%1/recipes.json").arg(cacheProblemDir()));
 }
 
 QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool setCurrentComputation)
@@ -2169,6 +2160,9 @@ void Problem::readProblemFromArchive(const QString &fileName)
 
         // read studies
         m_studies->load();
+
+        // read recipes
+        loadRecipes();
     }
 }
 
@@ -2199,6 +2193,9 @@ void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFil
     {
         // save studies
         m_studies->save();
+
+        // save recipes
+        saveRecipes();
 
         // whole directory
         JlCompress::compressDir(fileName, cacheProblemDir());

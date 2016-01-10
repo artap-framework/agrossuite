@@ -50,7 +50,6 @@ protected:
 class LocalValueRecipe : public ResultRecipe
 {
 public:
-    //LocalValueRecipe(Point point, QString component);
     virtual ResultRecipeType type() { return ResultRecipeType_LocalValue; }
 
     virtual void load(QJsonObject &object);
@@ -66,11 +65,26 @@ protected:
     QString m_component;
 };
 
-class ProblemResults
+class ResultRecipes
 {
 public:
-    ProblemResults();
-    ~ProblemResults() {}
+    inline void clear() { m_recipes.clear(); }
+
+    bool load(const QString &fileName);
+    bool save(const QString &fileName);
+
+    inline void addRecipe(ResultRecipe *recipe) { m_recipes.append(recipe); }
+    void evaluate(QSharedPointer<Computation> computation);
+
+protected:
+    QList<ResultRecipe *> m_recipes;
+};
+
+class ComputationResults
+{
+public:
+    ComputationResults();
+    ~ComputationResults() {}
 
     void clear();
 
@@ -83,15 +97,11 @@ public:
     inline void setResult(const QString &key, double value) { m_results[key] = value; }
     inline void removeResult(const QString &key) { m_results.remove(key); }
 
-    inline void addRecipe(ResultRecipe *recipe) { m_recipes.append(recipe); }
-    void evaluate(QSharedPointer<Computation> computation);
-
     inline QMap<QString, QVariant> &info() { return m_info; }
 
 private:
     StringToDoubleMap m_results;
     QMap<QString, QVariant> m_info;
-    QList<ResultRecipe *> m_recipes;
 };
 
 #endif // PROBLEM_CONFIG_H
