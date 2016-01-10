@@ -213,5 +213,5 @@ bool ProblemResults::save(const QString &fileName)
 void ProblemResults::evaluate(QSharedPointer<Computation> computation)
 {
     foreach (ResultRecipe *recipe, m_recipes)
-        m_results[recipe->name()] = recipe->evaluate(computation);
+        computation->results()->setResult(recipe->name(), recipe->evaluate(computation));
 }

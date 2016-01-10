@@ -1675,7 +1675,7 @@ void Computation::solve()
         Indicator::closeProgress();
 
         // evaluate results recipes
-        results()->evaluate(Agros2D::problem()->currentComputation());
+        Agros2D::problem()->results()->evaluate(Agros2D::problem()->currentComputation());
     }
     /*
     catch (Exceptions::NonlinearException &e)
