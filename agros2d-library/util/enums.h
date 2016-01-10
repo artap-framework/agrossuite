@@ -325,6 +325,13 @@ enum FunctionalType
     FunctionalType_Result
 };
 
+enum ResultRecipeType
+{
+    ResultRecipeType_LocalValue,
+    ResultRecipeType_SurfaceIntegral,
+    ResultRecipeType_VolumeIntegral
+};
+
 // keys
 AGROS_LIBRARY_API void initLists();
 
@@ -489,5 +496,11 @@ AGROS_LIBRARY_API QString functionalTypeString(FunctionalType type);
 AGROS_LIBRARY_API QStringList functionalTypeStringKeys();
 AGROS_LIBRARY_API QString functionalTypeToStringKey(FunctionalType type);
 AGROS_LIBRARY_API FunctionalType functionalTypeFromStringKey(const QString &type);
+
+// recipe type
+AGROS_LIBRARY_API QString resultRecipeTypeString(ResultRecipeType type);
+AGROS_LIBRARY_API QStringList resultRecipeTypeStringKeys();
+AGROS_LIBRARY_API QString resultRecipeTypeToStringKey(ResultRecipeType type);
+AGROS_LIBRARY_API ResultRecipeType resultRecipeTypeFromStringKey(const QString &type);
 
 #endif // UTIL_ENUMS_H

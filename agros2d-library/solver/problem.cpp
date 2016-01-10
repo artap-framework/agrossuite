@@ -1666,6 +1666,9 @@ void Computation::solve()
 
         // close indicator progress
         Indicator::closeProgress();
+
+        // evaluate results recipes
+        result()->evaluate(Agros2D::problem()->currentComputation());
     }
     /*
     catch (Exceptions::NonlinearException &e)

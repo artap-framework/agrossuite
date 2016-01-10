@@ -18,10 +18,102 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "problem_result.h"
+#include "problem.h"
+#include "solver/solutionstore.h"
+#include "solver/plugin_interface.h"
 
 // consts
 const QString RESULTS = "results";
 const QString INFO = "info";
+
+const QString RECIPES = "recipes";
+const QString TYPE = "type";
+const QString FIELD = "field";
+const QString VARIABLE = "variable";
+
+const QString POINT = "point";
+const QString COMPONENT = "component";
+
+void ResultRecipe::load(QJsonObject &object)
+{
+    m_fieldID = object[FIELD].toString();
+    m_variable = object[VARIABLE].toString();
+}
+
+void ResultRecipe::save(QJsonObject &object)
+{
+    object[FIELD] = m_fieldID;
+    object[VARIABLE] = m_variable;
+}
+
+/*
+LocalValueRecipe::LocalValueRecipe(Point point, QString component)
+    : m_point(point), m_component(component) { }
+*/
+
+void LocalValueRecipe::load(QJsonObject &object)
+{
+    QJsonArray pointJson = object[POINT].toArray();
+    assert(pointJson.size() == 2);
+    m_point = Point(pointJson.first().toDouble(), pointJson.last().toDouble());
+
+    m_component = object[COMPONENT].toString();
+}
+
+void LocalValueRecipe::save(QJsonObject &object)
+{
+    QJsonArray pointJson;
+    pointJson.append(m_point.x);
+    pointJson.append(m_point.y);
+    object[POINT] = pointJson;
+
+    object[COMPONENT] = m_component;
+}
+
+double LocalValueRecipe::evaluate(QSharedPointer<Computation> computation)
+{
+    if (computation->isSolved() or computation->isSolving())
+    {
+        FieldInfo *fieldInfo = computation->fieldInfo(fieldID());
+
+        // TODO: optional time and adaptivity step
+        int timeStep = computation->solutionStore()->lastTimeStep(fieldInfo);
+        int adaptivityStep = computation->solutionStore()->lastAdaptiveStep(fieldInfo, timeStep);
+
+        std::shared_ptr<LocalValue> localValue = fieldInfo->plugin()->localValue(computation.data(), fieldInfo, timeStep, adaptivityStep, m_point);
+        QMap<QString, LocalPointValue> values(localValue->values());
+
+        Module::LocalVariable localVariable = fieldInfo->localVariable(computation->config()->coordinateType(), variable());
+        if (localVariable.isScalar())
+        {
+            return values[variable()].scalar;
+        }
+        else
+        {
+            // TODO: component
+            return values[variable()].vector.magnitude();
+        }
+    }
+    else
+    {
+        throw logic_error(QObject::tr("Problem is not solved.").toStdString());
+    }
+}
+
+/*
+QJsonArray entitiesJson = object[ENTITIES].toArray();
+for (int i = 0; i < entitiesJson .size(); i++)
+    m_entities.append(entitiesJson[i].toInt());
+*/
+
+/*
+QJsonArray entitiesJson;
+foreach (int entity, m_entities)
+    entitiesJson.append(entity);
+object[ENTITIES] = entitiesJson;
+*/
+
+// *****************************************************************************************************************
 
 ProblemResult::ProblemResult()
 {
@@ -56,6 +148,23 @@ bool ProblemResult::load(const QString &fileName)
         m_results[key] = resultsJson[key].toDouble();
     }
 
+    // recipes
+    QJsonArray recipesJson = storeJson[RECIPES].toArray();
+    for (int i = 0; i < recipesJson.size(); i++)
+    {
+        QJsonObject recipeJson = recipesJson[i].toObject();
+        ResultRecipeType type = resultRecipeTypeFromStringKey(recipeJson[TYPE].toString());
+
+        ResultRecipe *recipe= nullptr;
+        if (type == ResultRecipeType_LocalValue)
+            recipe = new LocalValueRecipe();
+        else
+            assert(0);
+
+        recipe->load(recipeJson);
+        m_recipes.append(recipe);
+    }
+
     return true;
 }
 
@@ -88,9 +197,21 @@ bool ProblemResult::save(const QString &fileName)
     }
     storeJson[RESULTS] = resultsJson;
 
+    // recipes
+    QJsonObject recipesJson;
+    foreach (ResultRecipe *recipe, m_recipes)
+        recipe->save(recipesJson);
+    storeJson[RECIPES] = recipesJson;
+
     // save to file
     QJsonDocument doc(storeJson);
     file.write(doc.toJson());
 
     return true;
+}
+
+void ProblemResult::evaluate(QSharedPointer<Computation> computation)
+{
+    foreach (ResultRecipe *recipe, m_recipes)
+        m_results[recipe->name()] = recipe->evaluate(computation);
 }

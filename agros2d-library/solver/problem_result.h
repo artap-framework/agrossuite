@@ -22,6 +22,49 @@
 
 #include "util.h"
 #include "problem_config.h"
+#include "util/enums.h"
+
+class ResultRecipe
+{
+public:
+    virtual ResultRecipeType type() = 0;
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+    inline QString name() { return m_name; }
+    inline void setName(const QString name) { m_name = name; }
+    inline QString fieldID() { return m_fieldID; }
+    inline void setFieldID(const QString fieldID) { m_fieldID = fieldID; }
+    inline QString variable() { return m_variable; }
+    inline void setVariable(const QString variable) { m_variable = variable; }
+
+    virtual double evaluate(QSharedPointer<Computation> computation) = 0;
+
+protected:
+    QString m_name;
+    QString m_fieldID;
+    QString m_variable;
+};
+
+class LocalValueRecipe : public ResultRecipe
+{
+public:
+    //LocalValueRecipe(Point point, QString component);
+    virtual ResultRecipeType type() { return ResultRecipeType_LocalValue; }
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+    inline Point point() { return m_point; }
+    inline void setPoint(Point point) { m_point = point; }
+
+    virtual double evaluate(QSharedPointer<Computation> computation);
+
+protected:
+    Point m_point;
+    QString m_component;
+};
 
 class ProblemResult
 {
@@ -40,11 +83,15 @@ public:
     inline void setResult(const QString &key, double value) { m_results[key] = value; }
     inline void removeResult(const QString &key) { m_results.remove(key); }
 
+    inline void addRecipe(ResultRecipe *recipe) { m_recipes.append(recipe); }
+    void evaluate(QSharedPointer<Computation> computation);
+
     inline QMap<QString, QVariant> &info() { return m_info; }
 
 private:
     StringToDoubleMap m_results;
     QMap<QString, QVariant> m_info;
+    QList<ResultRecipe *> m_recipes;
 };
 
 #endif // PROBLEM_CONFIG_H
