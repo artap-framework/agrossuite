@@ -28,40 +28,78 @@ const QString INFO = "info";
 
 const QString RECIPES = "recipes";
 const QString TYPE = "type";
+const QString NAME = "name";
 const QString FIELD = "field";
 const QString VARIABLE = "variable";
+const QString TIMESTEP = "timestep";
+const QString ADAPTIVITYSTEP = "adaptivitystep";
 
 const QString POINT = "point";
+const QString POINTX = "x";
+const QString POINTY = "y";
 const QString COMPONENT = "component";
+
+ResultRecipe::ResultRecipe(const QString &name, const QString &fieldID, const QString &variable, int timeStep, int adaptivityStep)
+    : m_name(name), m_fieldID(fieldID), m_variable(variable), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep) { }
 
 void ResultRecipe::load(QJsonObject &object)
 {
+    m_name= object[NAME].toString();
     m_fieldID = object[FIELD].toString();
     m_variable = object[VARIABLE].toString();
+    m_timeStep = object[TIMESTEP].toInt();
+    m_adaptivityStep = object[ADAPTIVITYSTEP].toInt();
 }
 
 void ResultRecipe::save(QJsonObject &object)
 {
+    object[NAME] = m_name;
     object[FIELD] = m_fieldID;
     object[VARIABLE] = m_variable;
+    object[TIMESTEP] = m_timeStep;
+    object[ADAPTIVITYSTEP] = m_adaptivityStep;
+}
+
+int ResultRecipe::timeStep(QSharedPointer<Computation> computation, FieldInfo *fieldInfo)
+{
+    assert(m_timeStep > 0 || m_timeStep <= computation->solutionStore()->lastTimeStep(fieldInfo));
+
+    if (m_timeStep == -1)
+        return computation->solutionStore()->lastTimeStep(fieldInfo);
+    else
+        return m_timeStep;
+}
+
+int ResultRecipe::adaptivityStep(QSharedPointer<Computation> computation, FieldInfo *fieldInfo)
+{
+    assert(m_adaptivityStep > 0 || m_adaptivityStep <= computation->solutionStore()->lastAdaptiveStep(fieldInfo, timeStep(computation, fieldInfo)));
+
+    if (m_adaptivityStep == -1)
+        return computation->solutionStore()->lastAdaptiveStep(fieldInfo, timeStep(computation, fieldInfo));
+    else
+        return m_adaptivityStep;
+}
+
+LocalValueRecipe::LocalValueRecipe(const QString &name, const QString &fieldID, const QString &variable, int timeStep, int adaptivityStep)
+    : ResultRecipe(name, fieldID, variable, timeStep, adaptivityStep)
+{
+    m_point = Point(0, 0);
+    // TODO: component
 }
 
 void LocalValueRecipe::load(QJsonObject &object)
 {
-    QJsonArray pointJson = object[POINT].toArray();
-    assert(pointJson.size() == 2);
-    m_point = Point(pointJson.first().toDouble(), pointJson.last().toDouble());
-
+    QJsonObject pointJson = object[POINT].toObject();
+    m_point = Point(pointJson[POINTX].toDouble(), pointJson[POINTX].toDouble());
     m_component = object[COMPONENT].toString();
 }
 
 void LocalValueRecipe::save(QJsonObject &object)
 {
-    QJsonArray pointJson;
-    pointJson.append(m_point.x);
-    pointJson.append(m_point.y);
+    QJsonObject pointJson;
+    pointJson[POINTX] = m_point.x;
+    pointJson[POINTY] = m_point.y;
     object[POINT] = pointJson;
-
     object[COMPONENT] = m_component;
 }
 
@@ -70,12 +108,11 @@ double LocalValueRecipe::evaluate(QSharedPointer<Computation> computation)
     if (computation->isSolved() or computation->isSolving())
     {
         FieldInfo *fieldInfo = computation->fieldInfo(fieldID());
+        std::shared_ptr<LocalValue> localValue = fieldInfo->plugin()->localValue(computation.data(), fieldInfo,
+                                                                                 timeStep(computation, fieldInfo),
+                                                                                 adaptivityStep(computation, fieldInfo),
+                                                                                 m_point);
 
-        // TODO: optional time and adaptivity step
-        int timeStep = computation->solutionStore()->lastTimeStep(fieldInfo);
-        int adaptivityStep = computation->solutionStore()->lastAdaptiveStep(fieldInfo, timeStep);
-
-        std::shared_ptr<LocalValue> localValue = fieldInfo->plugin()->localValue(computation.data(), fieldInfo, timeStep, adaptivityStep, m_point);
         QMap<QString, LocalPointValue> values(localValue->values());
 
         Module::LocalVariable localVariable = fieldInfo->localVariable(computation->config()->coordinateType(), variable());
@@ -89,22 +126,21 @@ double LocalValueRecipe::evaluate(QSharedPointer<Computation> computation)
             return values[variable()].vector.magnitude();
         }
     }
-    else
-    {
-        throw logic_error(QObject::tr("Problem is not solved.").toStdString());
-    }
 }
 
 // *****************************************************************************************************************
 
-QString ResultRecipes::fileName()
+ResultRecipes::ResultRecipes(QList<ResultRecipe *> recipes)
+    : m_recipes(recipes) { }
+
+ResultRecipes::~ResultRecipes()
 {
-    return QString("%1/recipes.json").arg(cacheProblemDir());
+    //delete m_recipes;
 }
 
-bool ResultRecipes::load()
+bool ResultRecipes::load(const QString &fileName)
 {
-    QFile file(fileName());
+    QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly))
     {
         qWarning("Couldn't open result file.");
@@ -120,7 +156,7 @@ bool ResultRecipes::load()
         QJsonObject recipeJson = recipesJson[i].toObject();
         ResultRecipeType type = resultRecipeTypeFromStringKey(recipeJson[TYPE].toString());
 
-        ResultRecipe *recipe= nullptr;
+        ResultRecipe *recipe = nullptr;
         if (type == ResultRecipeType_LocalValue)
             recipe = new LocalValueRecipe();
         else
@@ -133,17 +169,16 @@ bool ResultRecipes::load()
     return true;
 }
 
-bool ResultRecipes::save()
+bool ResultRecipes::save(const QString &fileName)
 {
-    QString fn = fileName();
     if (m_recipes.isEmpty())
     {
-        if (QFile::exists(fn))
-            QFile::remove(fn);
+        if (QFile::exists(fileName))
+            QFile::remove(fileName);
         return true;
     }
 
-    QFile file(fn);
+    QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly))
     {
         qWarning("Couldn't open result file.");
@@ -171,9 +206,13 @@ void ResultRecipes::evaluate(QSharedPointer<Computation> computation)
 
 // *****************************************************************************************************************
 
-ComputationResults::ComputationResults()
+ComputationResults::ComputationResults(StringToDoubleMap results, StringToVariantMap info)
+    : m_results(results), m_info(info) { }
+
+ComputationResults::~ComputationResults()
 {
-    clear();
+    //delete m_results;
+    //delete m_info;
 }
 
 void ComputationResults::clear()
@@ -182,14 +221,9 @@ void ComputationResults::clear()
     m_info.clear();
 }
 
-QString ComputationResults::fileName()
+bool ComputationResults::load(const QString &fileName)
 {
-    return QString("%1/%2/results.json").arg(cacheProblemDir()).arg(Agros2D::problem()->currentComputation()->problemDir());
-}
-
-bool ComputationResults::load()
-{
-    QFile file(fileName());
+    QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly))
     {
         qWarning("Couldn't open result file.");
@@ -197,7 +231,6 @@ bool ComputationResults::load()
     }
 
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-
     QJsonObject storeJson = doc.object();
 
     // results
@@ -207,23 +240,27 @@ bool ComputationResults::load()
         m_results[key] = resultsJson[key].toDouble();
     }
 
-    //TODO: info
+    // info
+    QJsonObject infoJson = storeJson[INFO].toObject();
+    foreach (QString key, infoJson.keys())
+    {
+        m_info[key] = QVariant::fromValue(infoJson[key].toObject());
+    }
 
     return true;
 }
 
-bool ComputationResults::save()
+bool ComputationResults::save(const QString &fileName)
 {
-    QString fn = fileName();
     if (m_results.isEmpty() && m_info.isEmpty())
     {
-        if (QFile::exists(fn))
-            QFile::remove(fn);
+        if (QFile::exists(fileName))
+            QFile::remove(fileName);
 
         return true;
     }
 
-    QFile file(fn);
+    QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly))
     {
         qWarning("Couldn't open result file.");
@@ -241,7 +278,13 @@ bool ComputationResults::save()
     }
     storeJson[RESULTS] = resultsJson;
 
-    //TODO: info
+    // info
+    QJsonObject infoJson;
+    for (StringToVariantMap::const_iterator i = m_info.constBegin(); i != m_info.constEnd(); ++i)
+    {
+        infoJson[i.key()] = i.value().toJsonValue();
+    }
+    storeJson[INFO] = infoJson;
 
     // save to file
     QJsonDocument doc(storeJson);

@@ -51,6 +51,8 @@
 #include "mesh/meshgenerator_cubit.h"
 #include "mesh/meshgenerator_gmsh.h"
 
+#include "optilab/study.h"
+
 #include "../3rdparty/quazip/JlCompress.h"
 #include "../resources_source/classes/problem_a2d_31_xml.h"
 
@@ -1496,6 +1498,21 @@ QString Computation::problemFileName() const
     return QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(m_problemDir);
 }
 
+void Computation::clearResults()
+{
+    m_results->clear();
+}
+
+void Computation::loadResults()
+{
+    m_results->load(QString("%1/%2/results.json").arg(cacheProblemDir()).arg(m_problemDir));
+}
+
+void Computation::saveResults()
+{
+    m_results->save(QString("%1/%2/results.json").arg(cacheProblemDir()).arg(m_problemDir));
+}
+
 QList<double> Computation::timeStepTimes() const
 {
     QList<double> times;
@@ -1993,6 +2010,36 @@ Problem::~Problem()
 QString Problem::problemFileName() const
 {
     return QString("%1/problem.json").arg(cacheProblemDir());
+}
+
+void Problem::clearRecipes()
+{
+    m_recipes->clear();
+}
+
+void Problem::loadRecipes()
+{
+    m_recipes->load(QString("%1/recipes.json").arg(cacheProblemDir()));
+}
+
+void Problem::saveRecipes()
+{
+    m_recipes->save(QString("%1/recipes.json").arg(cacheProblemDir()));
+}
+
+void Problem::clearStudies()
+{
+    m_studies->clear();
+}
+
+void Problem::loadStudies()
+{
+    m_studies->load();
+}
+
+void Problem::saveStudies()
+{
+    m_studies->save();
 }
 
 QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool setCurrentComputation)

@@ -24,12 +24,8 @@
 #include "value.h"
 #include "solutiontypes.h"
 #include "problem_config.h"
-#include "problem_result.h"
-
-#include "optilab/study.h"
 
 #include "mesh/meshgenerator.h"
-
 #include "pythonlab/pythonengine.h"
 
 class ProblemSolver;
@@ -45,6 +41,7 @@ class PyProblem;
 class Computation;
 class PostDeal;
 class SolutionStore;
+class ResultRecipes;
 class ComputationResults;
 class Studies;
 
@@ -182,15 +179,15 @@ public:
 
     // recipes
     inline ResultRecipes *recipes() const { return m_recipes; }
-    inline void clearRecipes() { m_recipes->clear(); }
-    inline void loadRecipes() { m_recipes->load(); }
-    inline void saveRecipes() { m_recipes->save(); }
+    inline void clearRecipes();
+    inline void loadRecipes();
+    inline void saveRecipes();
 
     // studies
     inline Studies *studies() { return m_studies; }
-    inline void clearStudies() { m_studies->clear(); }
-    inline void loadStudies() { m_studies->load(); }
-    inline void saveStudies() { m_studies->save(); }
+    void clearStudies();
+    void loadStudies();
+    void saveStudies();
 
 signals:
     void fileNameChanged(const QString &archiveFileName);
@@ -270,9 +267,9 @@ public:
 
     // results
     inline ComputationResults *results() const { return m_results; }
-    inline void clearResults() { m_results->clear(); }
-    inline void loadResults() { m_results->load(); }
-    inline void saveResults() { m_results->save(); }
+    void clearResults();
+    void loadResults();
+    void saveResults();
 
 signals:
     void meshed();

@@ -188,12 +188,9 @@ void OptiLabWidget::testSweep()
     // add to list
     Agros2D::problem()->studies()->addStudy(analysis);
 
-    LocalValueRecipe recipe = LocalValueRecipe();
-    recipe.setName("R");
-    recipe.setFieldID("electrostatic");
-    recipe.setVariable("electrostatic_potential");
-    recipe.setPoint(Point(0.02, 0.05));
-    Agros2D::problem()->recipes()->addRecipe(&recipe);
+    LocalValueRecipe *recipe = new LocalValueRecipe("R", "electrostatic", "electrostatic_potential");
+    recipe->setPoint(Point(0.02, 0.05));
+    Agros2D::problem()->recipes()->addRecipe(recipe);
 
     //QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
     //analysis->addParameter(Parameter::fromList("R1", params));
