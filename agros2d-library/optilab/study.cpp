@@ -27,13 +27,10 @@
 
 // consts
 const QString TYPE = "type";
-
 const QString PARAMETERS = "parameters";
 const QString FUNCTIONAL = "functionals";
-
 const QString COMPUTATIONS = "computations";
 const QString COMPUTATIONSET = "computationset";
-
 const QString STUDIES = "studies";
 
 ComputationSet::ComputationSet(QList<QSharedPointer<Computation> > set)
@@ -204,22 +201,24 @@ Studies::Studies(QObject *parent) : QObject(parent)
 
 Studies::~Studies()
 {
-    QString fn = QString("%1/studies.json").arg(cacheProblemDir());
-    if (QFile::exists(fn))
-        QFile::remove(fn);
+    if (QFile::exists(fileName()))
+        QFile::remove(fileName());
+}
+
+QString Studies::fileName()
+{
+    return QString("%1/studies.json").arg(cacheProblemDir());
 }
 
 void Studies::addStudy(Study *study)
 {
     m_studies.append(study);
-
     emit invalidated();
 }
 
 void Studies::removeStudy(Study *study)
 {
     m_studies.removeOne(study);
-
     emit invalidated();
 }
 
@@ -228,7 +227,6 @@ void Studies::clear()
     for (int i = 0; i < m_studies.size(); i++)
         delete m_studies[i];
     m_studies.clear();
-
     emit invalidated();
 }
 
@@ -237,9 +235,7 @@ bool Studies::load()
     blockSignals(true);
     clear();
 
-    QString fn = QString("%1/studies.json").arg(cacheProblemDir());
-
-    QFile file(fn);
+    QFile file(fileName());
     if (!file.exists())
         return true; // no study
 
@@ -278,8 +274,7 @@ bool Studies::load()
 
 bool Studies::save()
 {
-    QString fn = QString("%1/studies.json").arg(cacheProblemDir());
-
+    QString fn = fileName();
     if (m_studies.isEmpty())
     {
         if (QFile::exists(fn))
@@ -289,7 +284,6 @@ bool Studies::save()
     }
 
     QFile file(fn);
-
     if (!file.open(QIODevice::WriteOnly))
     {
         qWarning("Couldn't open studies file.");
@@ -299,7 +293,6 @@ bool Studies::save()
     QJsonObject rootJson;
     QJsonArray studiesJson;
 
-    // studies
     foreach (Study *study, m_studies)
     {
         QJsonObject studyJson;
@@ -309,7 +302,7 @@ bool Studies::save()
     }
     rootJson[STUDIES] = studiesJson;
 
-    // save to file
+    // save
     QJsonDocument doc(rootJson);
     file.write(doc.toJson());
 

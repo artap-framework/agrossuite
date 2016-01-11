@@ -89,8 +89,6 @@ protected:
     QList<ComputationSet> m_computations;
 };
 
-Q_DECLARE_METATYPE(Study *)
-
 class Studies : public QObject
 {
     Q_OBJECT
@@ -99,9 +97,11 @@ public:
     Studies(QObject *parent = 0);
     ~Studies();
 
+    QString fileName();
+
+    inline QList<Study *> &studies() { return m_studies; }
     void addStudy(Study *study);
     void removeStudy(Study *study);
-    inline QList<Study *> &studies() { return m_studies; }
 
     Study * operator[] (int idx) { return m_studies[idx]; }
     const Study * operator[] (int idx) const { return m_studies[idx]; }
@@ -111,7 +111,6 @@ signals:
 
 public slots:
     void clear();
-
     bool load();
     bool save();
 

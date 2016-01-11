@@ -95,9 +95,16 @@ double LocalValueRecipe::evaluate(QSharedPointer<Computation> computation)
     }
 }
 
-bool ResultRecipes::load(const QString &fileName)
+// *****************************************************************************************************************
+
+QString ResultRecipes::fileName()
 {
-    QFile file(fileName);
+    return QString("%1/recipes.json").arg(cacheProblemDir());
+}
+
+bool ResultRecipes::load()
+{
+    QFile file(fileName());
     if (!file.open(QIODevice::ReadOnly))
     {
         qWarning("Couldn't open result file.");
@@ -126,16 +133,17 @@ bool ResultRecipes::load(const QString &fileName)
     return true;
 }
 
-bool ResultRecipes::save(const QString &fileName)
+bool ResultRecipes::save()
 {
+    QString fn = fileName();
     if (m_recipes.isEmpty())
     {
-        if (QFile::exists(fileName))
-            QFile::remove(fileName);
+        if (QFile::exists(fn))
+            QFile::remove(fn);
         return true;
     }
 
-    QFile file(fileName);
+    QFile file(fn);
     if (!file.open(QIODevice::WriteOnly))
     {
         qWarning("Couldn't open result file.");
@@ -174,9 +182,14 @@ void ComputationResults::clear()
     m_info.clear();
 }
 
-bool ComputationResults::load(const QString &fileName)
+QString ComputationResults::fileName()
 {
-    QFile file(fileName);
+    return QString("%1/%2/results.json").arg(cacheProblemDir()).arg(Agros2D::problem()->currentComputation()->problemDir());
+}
+
+bool ComputationResults::load()
+{
+    QFile file(fileName());
     if (!file.open(QIODevice::ReadOnly))
     {
         qWarning("Couldn't open result file.");
@@ -199,17 +212,18 @@ bool ComputationResults::load(const QString &fileName)
     return true;
 }
 
-bool ComputationResults::save(const QString &fileName)
+bool ComputationResults::save()
 {
+    QString fn = fileName();
     if (m_results.isEmpty() && m_info.isEmpty())
     {
-        if (QFile::exists(fileName))
-            QFile::remove(fileName);
+        if (QFile::exists(fn))
+            QFile::remove(fn);
 
         return true;
     }
 
-    QFile file(fileName);
+    QFile file(fn);
     if (!file.open(QIODevice::WriteOnly))
     {
         qWarning("Couldn't open result file.");

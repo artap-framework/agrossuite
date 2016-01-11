@@ -70,8 +70,9 @@ class ResultRecipes
 public:
     inline void clear() { m_recipes.clear(); }
 
-    bool load(const QString &fileName);
-    bool save(const QString &fileName);
+    QString fileName();
+    bool load();
+    bool save();
 
     inline void addRecipe(ResultRecipe *recipe) { m_recipes.append(recipe); }
     void evaluate(QSharedPointer<Computation> computation);
@@ -85,11 +86,11 @@ class ComputationResults
 public:
     ComputationResults();
     ~ComputationResults() {}
-
     void clear();
 
-    bool load(const QString &fileName);
-    bool save(const QString &fileName);
+    QString fileName();
+    bool load();
+    bool save();
 
     inline double resultValue(const QString &key) const { return m_results[key]; }
     inline StringToDoubleMap &results() { return m_results; }

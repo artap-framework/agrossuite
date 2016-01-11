@@ -47,8 +47,6 @@
 #include "pythonlab/pythonengine.h"
 #include "pythonlab/pythonengine_agros.h"
 
-#include "optilab/study.h"
-
 #include "mesh/meshgenerator_triangle.h"
 #include "mesh/meshgenerator_cubit.h"
 #include "mesh/meshgenerator_gmsh.h"
@@ -1980,18 +1978,6 @@ void Computation::clearFieldsAndConfig()
     ProblemBase::clearFieldsAndConfig();
 }
 
-void Computation::loadResults()
-{
-    m_results->load(QString("%1/%2/results.json").arg(cacheProblemDir()).arg(problemDir()));
-}
-
-void Computation::saveResults()
-{
-    m_results->save(QString("%1/%2/results.json").arg(cacheProblemDir()).arg(problemDir()));
-}
-
-// preprocessor
-
 Problem::Problem() : ProblemBase()
 {
     m_studies = new Studies();
@@ -2007,16 +1993,6 @@ Problem::~Problem()
 QString Problem::problemFileName() const
 {
     return QString("%1/problem.json").arg(cacheProblemDir());
-}
-
-void Problem::loadRecipes()
-{
-    m_recipes->load(QString("%1/recipes.json").arg(cacheProblemDir()));
-}
-
-void Problem::saveRecipes()
-{
-    m_recipes->load(QString("%1/recipes.json").arg(cacheProblemDir()));
 }
 
 QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool setCurrentComputation)
@@ -2059,7 +2035,7 @@ QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool
 void Problem::clearFieldsAndConfig()
 {
     ProblemBase::clearFieldsAndConfig();
-    m_studies->clear();
+    clearStudies();
 
     QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
     QFile::remove(QString("%1/problem.json").arg(cacheProblemDir()));
@@ -2158,11 +2134,11 @@ void Problem::readProblemFromArchive(const QString &fileName)
         Agros2D::setCurrentComputation(post->problemDir());
         emit post->solved();
 
-        // read studies
-        m_studies->load();
-
-        // read recipes
+        // load recipes
         loadRecipes();
+
+        // load studies
+        loadStudies();
     }
 }
 
@@ -2191,11 +2167,11 @@ void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFil
     }
     else
     {
-        // save studies
-        m_studies->save();
-
         // save recipes
         saveRecipes();
+
+        // save studies
+        saveStudies();
 
         // whole directory
         JlCompress::compressDir(fileName, cacheProblemDir());

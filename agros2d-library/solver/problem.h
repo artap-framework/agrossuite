@@ -26,6 +26,8 @@
 #include "problem_config.h"
 #include "problem_result.h"
 
+#include "optilab/study.h"
+
 #include "mesh/meshgenerator.h"
 
 #include "pythonlab/pythonengine.h"
@@ -174,8 +176,6 @@ public:
     void writeProblemToArchive(const QString &archiveFileName, bool onlyProblemFile = true);
     void readProblemFromFile(const QString &archiveFileName);
 
-    inline Studies *studies() { return m_studies; }
-
     // filenames
     virtual QString problemFileName() const;
     inline QString archiveFileName() const { return m_fileName; }
@@ -183,8 +183,14 @@ public:
     // recipes
     inline ResultRecipes *recipes() const { return m_recipes; }
     inline void clearRecipes() { m_recipes->clear(); }
-    void loadRecipes();
-    void saveRecipes();
+    inline void loadRecipes() { m_recipes->load(); }
+    inline void saveRecipes() { m_recipes->save(); }
+
+    // studies
+    inline Studies *studies() { return m_studies; }
+    inline void clearStudies() { m_studies->clear(); }
+    inline void loadStudies() { m_studies->load(); }
+    inline void saveStudies() { m_studies->save(); }
 
 signals:
     void fileNameChanged(const QString &archiveFileName);
@@ -195,13 +201,15 @@ public slots:
 private:
     QString m_fileName;
     QSharedPointer<Computation> m_currentComputation;
-    Studies *m_studies;
+
+    friend class PyComputation;
+    friend class PyProblem;
 
     // recipes
     ResultRecipes *m_recipes;
 
-    friend class PyComputation;
-    friend class PyProblem;
+    // studies
+    Studies *m_studies;
 };
 
 class AGROS_LIBRARY_API Computation : public ProblemBase
@@ -263,8 +271,8 @@ public:
     // results
     inline ComputationResults *results() const { return m_results; }
     inline void clearResults() { m_results->clear(); }
-    void loadResults();
-    void saveResults();
+    inline void loadResults() { m_results->load(); }
+    inline void saveResults() { m_results->save(); }
 
 signals:
     void meshed();
