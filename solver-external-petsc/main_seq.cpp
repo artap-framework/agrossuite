@@ -157,9 +157,9 @@ int main(int argc, char *argv[])
         PetscInt *column_indicies = NULL;
 
         PetscInitialize(&argc,&argv, (char*)0," ");
-        ierr = MPI_Comm_size(PETSC_COMM_WORLD, &size); CHKERRQ(ierr);
+        // ierr = MPI_Comm_size(PETSC_COMM_WORLD, &size); CHKERRQ(ierr);
         int rank;
-        ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+        // ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
         // std::cout << "rank =  " << rank << std::endl;
         ierr = PetscOptionsGetBool(NULL,"-nonzero_guess", &nonzeroguess,NULL); CHKERRQ(ierr);
 
@@ -168,32 +168,29 @@ int main(int argc, char *argv[])
         PetscInt *row_lengths = NULL;
 
 
+
+        //   if (rank == 0)
+        {
             n_rows = linearSystem->n();
             n = linearSystem->nz();
-            column_indicies = new PetscInt[n];
             row_indicies = new PetscInt[n_rows];
             row_lengths = new PetscInt[n_rows];
-            int * diagonal = new PetscInt[n_rows];
-            int * offDiagonal = new PetscInt[n_rows];
+            // diagonal = new PetscInt[n_rows];
+            // offDiagonal = new PetscInt[n_rows];
 
             for (int i = 0; i < n_rows; i++)
             {
                 row_indicies[i] = linearSystem->system_matrix_pattern->rowstart[i];
             }
 
-            for (int i = 0; i < n; i++)
-            {
-                column_indicies[i] = linearSystem->system_matrix_pattern->colnums[i];
-            }
+            column_indicies = reinterpret_cast<PetscInt *>(linearSystem->system_matrix_pattern->colnums);
 
             int localSize  = n_rows / size;
             int localSizeLast = n_rows % size;
 
 
-
             for(int i = 0; i < n_rows; i++)
             {
-
                 if (i == (n_rows - 1))
                 {
                     row_lengths[i] = n - row_indicies[i];
@@ -203,69 +200,59 @@ int main(int argc, char *argv[])
                     row_lengths[i] = row_indicies[i+1] - row_indicies[i];
                 }
             }
+        }
 
-            if(localSizeLast < localSize / 2)
-            {
-                localSize --;
-            }
+//        for(int i = 0; i < n_rows; i++)
+//        {
+//            std::cout << row_indicies[i] << "  ";
+//        }
+//        std::cout << std::endl;
+//        std::cout << "Columns:";
+//        std::cout << std::endl;
 
-            localSizeLast +=  size;
+//        std::cout << std::endl;
 
-            // std::cout << "Local size:" << localSize << std::endl;
-            // std::cout << "Local size last:" << localSizeLast << std::endl;
-
-            for(int i = 0; i < n_rows; i++)
-            {
-                int diag = 0;
-                int offDiag = 0;
-                // std::cout << row_indicies[i] << "  ";
-                for(int k = 0, j = column_indicies[row_indicies[i]]; k <= row_lengths[i]; k++, j++)
-                {
-
-                    int blockSize = (i == n_rows -1) ? localSizeLast : localSize;
-
-                    if (j < blockSize){
-                        diag++;
-                    } else
-                    {
-                        offDiag++;
-                    }
-                    // std::cout << j << std::endl;
-                }
-                diagonal[i] = diag;
-                offDiagonal[i] = offDiag;
-            }
+//        for(int i = 0; i < n; i++)
+//        {
+//            std::cout << column_indicies[i] << "  ";
+//        }
 
 
+//        std::cout << std::endl;
 
-//            for(int i = 0; i < n_rows; i++)
-//            {
-//                std::cout << diagonal[i] << "   " << offDiagonal[i] << std::endl;
-//            }
+//        for(int j = 0; j < n; j++)
+//        {
+//            std::cout << linearSystem->system_matrix->val[j] << "  ";
+//        }
+//        std::cout << std::endl;
+
 
 
         linearSystem->setInfoNumOfProc(size);
         ierr = MatCreate(PETSC_COMM_WORLD, &A); CHKERRQ(ierr);
-        ierr = MatSetType(A, MATMPIAIJ); CHKERRQ(ierr);
+        ierr = MatSetType(A, MATSEQAIJ); CHKERRQ(ierr);
         int istart, iend;
 
 
         ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, n_rows, n_rows); CHKERRQ(ierr);
 
-        ierr = MatGetOwnershipRange(A, &istart,&iend); CHKERRQ(ierr);
+        // ierr = MatGetOwnershipRange(A, &istart,&iend); CHKERRQ(ierr);
         // std::cout << rank << "   " << istart << "  " << iend << "  " << "\n";
 
-        ierr = MatMPIAIJSetPreallocation(A, n_rows, NULL, n_rows, NULL); CHKERRQ(ierr);
+        // ierr = MatMPIAIJSetPreallocation(A, n_rows, PETSC_NULL, n_rows, PETSC_NULL); CHKERRQ(ierr);
         ierr = MatSeqAIJSetPreallocation(A, 0, row_lengths);CHKERRQ(ierr);
         ierr = MatSetFromOptions(A);
 
-        ierr = MatGetOwnershipRange(A, &istart,&iend); CHKERRQ(ierr);
+
+
+
+        // ierr = MatGetOwnershipRange(A, &istart,&iend); CHKERRQ(ierr);
         // int mm, nn;
         // ierr = MatGetLocalSize(A, &mm, &nn);
         // std::cout << rank << "   " << mm << "  " << nn << "  " << "\n";
 
         linearSystem->setInfoTimeReadMatrix(elapsedSeconds(timeStart));
-        for (int i = istart; i < iend; i++)
+        for (int i = 0; i < n_rows; i++)
         {
             MatSetValues(A, 1, &i, row_lengths[i], &column_indicies[row_indicies[i]],&linearSystem->system_matrix->val[row_indicies[i]], INSERT_VALUES);
 
@@ -277,20 +264,20 @@ int main(int argc, char *argv[])
 
         // MatView(A, PETSC_VIEWER_STDOUT_SELF);
 
-        ierr = VecCreateMPI(PETSC_COMM_WORLD, PETSC_DECIDE, n_rows, &x); CHKERRQ(ierr);
+        ierr = VecCreateSeq(PETSC_COMM_WORLD, n_rows, &x); CHKERRQ(ierr);
         ierr = PetscObjectSetName((PetscObject) x, "Solution"); CHKERRQ(ierr);
         ierr = VecSetFromOptions(x); CHKERRQ(ierr);
         ierr = VecDuplicate(x,&b); CHKERRQ(ierr);
 
 
-        ierr = VecGetOwnershipRange(x,&istart,&iend); CHKERRQ(ierr);
+        // ierr = VecGetOwnershipRange(x,&istart,&iend); CHKERRQ(ierr);
         // std::cout << istart << "  ";
-        for (int i = istart; i < iend; i++)
+        // for (int i = istart; i < iend; i++)
 
-            for (int istart = 0; (i < iend); i++)
-            {
-                VecSetValues(b, 1, &i, &linearSystem->system_rhs->val[i], INSERT_VALUES);
-            }
+        for (int i = 0; (i < n_rows); i++)
+        {
+            VecSetValues(b, 1, &i, &linearSystem->system_rhs->val[i], INSERT_VALUES);
+        }
 
         ierr = VecAssemblyBegin(b); CHKERRQ(ierr);
         ierr = VecAssemblyEnd(b); CHKERRQ(ierr);
