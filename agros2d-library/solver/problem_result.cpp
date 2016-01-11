@@ -92,6 +92,8 @@ void LocalValueRecipe::load(QJsonObject &object)
     QJsonObject pointJson = object[POINT].toObject();
     m_point = Point(pointJson[POINTX].toDouble(), pointJson[POINTX].toDouble());
     m_component = object[COMPONENT].toString();
+
+    ResultRecipe::load(object);
 }
 
 void LocalValueRecipe::save(QJsonObject &object)
@@ -101,6 +103,8 @@ void LocalValueRecipe::save(QJsonObject &object)
     pointJson[POINTY] = m_point.y;
     object[POINT] = pointJson;
     object[COMPONENT] = m_component;
+
+    ResultRecipe::save(object);
 }
 
 double LocalValueRecipe::evaluate(QSharedPointer<Computation> computation)
