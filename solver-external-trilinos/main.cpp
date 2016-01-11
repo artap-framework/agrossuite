@@ -81,7 +81,7 @@ public:
           smootherTypeArg(TCLAP::ValueArg<std::string>("o", "smootherType", "SmootherType", false, "", "string")),
           coarseTypeArg(TCLAP::ValueArg<std::string>("z", "coarseType", "CoarseType", false, "", "string")),
           // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
-          relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
+          relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-6, "double")),
           maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
           multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false))
     {
@@ -217,33 +217,36 @@ int getAztecOOsolver(std::string solverName)
 {
     int solver;
 
-    if (solverName == "AztecOO_cg")                  // Conjugate gradient (Applicable to symmetric positive definite matrices, sometimes usable with mildly non-symmetric matrices).
+    if ((solverName == "AztecOO_cg") || (solverName == "AztecOOML_cg"))                       // Conjugate gradient (Applicable to symmetric positive definite matrices, sometimes usable with mildly non-symmetric matrices).
         solver = AZ_cg;
-    else if (solverName == "AztecOO_cg_condnum")     // Conjugate gradient with condition number estimation.(Similar to AZ cg. Additionally computes extreme eigenvalue estimates using the generated Lanczos matrix).
+    else if ((solverName == "AztecOO_cg_condnum") || (solverName == "AztecOOML_cg_condnum"))  // Conjugate gradient with condition number estimation.(Similar to AZ cg. Additionally computes extreme eigenvalue estimates using the generated Lanczos matrix).
         solver = AZ_cg_condnum;
-    else if (solverName == "AztecOO_gmres")          // Restarted generalized minimal residual.
+    else if ((solverName == "AztecOO_gmres") || (solverName == "AztecOOML_gmres"))            // Restarted generalized minimal residual.
         solver = AZ_gmres;
-    else if (solverName == "AztecOO_gmres_condnum")  // Restarted GMRES with condition number estimation. (Similar to AZ gmres. Additionally computes extreme eigenvalues using the generated Hessenberg matrix.)
+    else if ((solverName == "AztecOO_gmres_condnum") || (solverName == "AztecOOML_gmres_condnum"))  // Restarted GMRES with condition number estimation. (Similar to AZ gmres. Additionally computes extreme eigenvalues using the generated Hessenberg matrix.)
         solver = AZ_gmres_condnum;
-    else if (solverName == "AztecOO_cgs")            // Conjugate gradient squared.
+    else if ((solverName == "AztecOO_cgs") || (solverName == "AztecOOML_cgs"))                // Conjugate gradient squared.
         solver = AZ_cgs;
-    else if (solverName == "AztecOO_tfqmr")          // Transpose-free quasi-minimal residual.
+    else if ((solverName == "AztecOO_tfqmr") || (solverName == "AztecOOML_tfqmr"))            // Transpose-free quasi-minimal residual.
         solver = AZ_tfqmr;
-    else if (solverName == "AztecOO_bicgstab")       // Bi-conjugate gradient with stabilization.
+    else if ((solverName == "AztecOO_bicgstab") || (solverName == "AztecOOML_bicgstab"))      // Bi-conjugate gradient with stabilization.
         solver = AZ_bicgstab;
-    else if (solverName == "AztecOO_lu")             // Sparse direct solver (single processor only). Note: This option is available only when –enable-aztecoo-azlu is specified on the AztecOO configure script invocation command
+    else if (solverName == "AztecOO_lu")      // Sparse direct solver (single processor only). Note: This option is available only when –enable-aztecoo-azlu is specified on the AztecOO configure script invocation command
         solver = AZ_lu;
     else
     {
         solver = AZ_tfqmr;
-        solverName = "AztecOO_tfqmr";
+        if (solverName.compare(0, 9, "Aztec00ML"))
+            solverName = "AztecOOML_tfqmr";
+        else
+            solverName = "AztecOO_tfqmr";
     }
 
     std::cout << "AztecOO solver is set to: " << solverName << std::endl;
     return solver;
 }
 
-void solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType, std::string smootherType, std::string coarseType)
+void solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType, std::string smootherType, std::string coarseType, int solver)
 {
     // create a parameter list for ML options
     Teuchos::ParameterList mlList;
@@ -282,8 +285,8 @@ void solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearP
 
     aztecooSolver.SetPrecOperator(mlPrec);
     // aztecooSolver.SetAztecOption(AZ_solver, AZ_cg);
-    aztecooSolver.SetAztecOption(AZ_solver, AZ_tfqmr);
-    aztecooSolver.SetAztecOption(AZ_output, 32);
+    aztecooSolver.SetAztecOption(AZ_solver, solver);
+    aztecooSolver.SetAztecOption(AZ_output, 32);   // ??
     aztecooSolver.Iterate(maxIter, relTol);
     // on process 0 fill info for testing
     if (linearSystem != nullptr)
@@ -717,13 +720,14 @@ int main(int argc, char *argv[])
         auto timeSolveStart = std::chrono::steady_clock::now();
         if (linearSystem->multigridArg.getValue())
         {
-            if (solver == "AztecOOML" || solver == "") // default for AMG
+            if (solver.compare(0, 9, "AztecOOML") == 0) // one of multigrid AztecOOML solvers selected
             {
                 solveAztecOOML(linearSystem, problem, maxIter, relTol,
                                getMLpreconditioner(linearSystem->preconditionerArg.getValue()),
                                getMLaggregationType(linearSystem->aggregationTypeArg.getValue()),
                                getMLsmootherType(linearSystem->smootherTypeArg.getValue()),
-                               getMLcoarseType(linearSystem->coarseTypeArg.getValue()));
+                               getMLcoarseType(linearSystem->coarseTypeArg.getValue()),
+                               getAztecOOsolver(solver));
             }
             else
                 assert(0 && "No solver selected !!!");
