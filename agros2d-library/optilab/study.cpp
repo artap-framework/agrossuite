@@ -196,18 +196,7 @@ QVariant Study::variant()
 
 Studies::Studies(QObject *parent) : QObject(parent)
 {
-    connect(this, SIGNAL(invalidated()), this, SLOT(save()));
-}
-
-Studies::~Studies()
-{
-    if (QFile::exists(fileName()))
-        QFile::remove(fileName());
-}
-
-QString Studies::fileName()
-{
-    return QString("%1/studies.json").arg(cacheProblemDir());
+    //connect(this, SIGNAL(invalidated()), this, SLOT(save())); TODO: only GUI
 }
 
 void Studies::addStudy(Study *study)
@@ -230,12 +219,12 @@ void Studies::clear()
     emit invalidated();
 }
 
-bool Studies::load()
+bool Studies::load(const QString &fileName)
 {
     blockSignals(true);
     clear();
 
-    QFile file(fileName());
+    QFile file(fileName);
     if (!file.exists())
         return true; // no study
 
@@ -272,18 +261,17 @@ bool Studies::load()
     return true;
 }
 
-bool Studies::save()
+bool Studies::save(const QString &fileName)
 {
-    QString fn = fileName();
     if (m_studies.isEmpty())
     {
-        if (QFile::exists(fn))
-            QFile::remove(fn);
+        if (QFile::exists(fileName))
+            QFile::remove(fileName);
 
         return true;
     }
 
-    QFile file(fn);
+    QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly))
     {
         qWarning("Couldn't open studies file.");

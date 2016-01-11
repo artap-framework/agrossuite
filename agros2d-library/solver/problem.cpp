@@ -2034,12 +2034,12 @@ void Problem::clearStudies()
 
 void Problem::loadStudies()
 {
-    m_studies->load();
+    m_studies->load(QString("%1/studies.json").arg(cacheProblemDir()));
 }
 
 void Problem::saveStudies()
 {
-    m_studies->save();
+    m_studies->save(QString("%1/studies.json").arg(cacheProblemDir()));
 }
 
 QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool setCurrentComputation)

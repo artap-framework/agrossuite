@@ -37,11 +37,11 @@ public:
     virtual void save(QJsonObject &object);
 
     inline QString name() { return m_name; }
-    inline void setName(const QString name) { m_name = name; }
+    inline void setName(const QString &name) { m_name = name; }
     inline QString fieldID() { return m_fieldID; }
-    inline void setFieldID(const QString fieldID) { m_fieldID = fieldID; }
+    inline void setFieldID(const QString &fieldID) { m_fieldID = fieldID; }
     inline QString variable() { return m_variable; }
-    inline void setVariable(const QString variable) { m_variable = variable; }
+    inline void setVariable(const QString &variable) { m_variable = variable; }
 
     int timeStep(QSharedPointer<Computation> computation, FieldInfo *fieldInfo);
     inline void setTimeStep(int step) { m_timeStep = step; }

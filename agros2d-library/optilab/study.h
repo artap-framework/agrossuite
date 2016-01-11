@@ -38,7 +38,7 @@ public:
     virtual void save(QJsonObject &object);
 
     inline QString name() { return m_name; }
-    inline void setName(const QString name) { m_name = name; }
+    inline void setName(const QString &name) { m_name = name; }
 
     inline void addComputation(QSharedPointer<Computation> computation) { m_computationSet.append(computation); }
     QList<QSharedPointer<Computation> > &computations() { return m_computationSet; }
@@ -65,7 +65,7 @@ public:
     virtual void save(QJsonObject &object);
 
     inline QString name() { return m_name; }
-    inline void setName(const QString name) { m_name = name; }
+    inline void setName(const QString &name) { m_name = name; }
 
     void addParameter(Parameter parameter) { m_parameters.append(parameter); }
     QList<Parameter> &parameters() { return m_parameters; }
@@ -95,9 +95,12 @@ class Studies : public QObject
 
 public:
     Studies(QObject *parent = 0);
-    ~Studies();
+    ~Studies() {}
 
-    QString fileName();
+    void clear();
+
+    bool load(const QString &fileName);
+    bool save(const QString &fileName);
 
     inline QList<Study *> &studies() { return m_studies; }
     void addStudy(Study *study);
@@ -108,11 +111,6 @@ public:
 
 signals:
     void invalidated();
-
-public slots:
-    void clear();
-    bool load();
-    bool save();
 
 private:
     QList<Study *> m_studies;
