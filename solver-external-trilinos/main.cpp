@@ -146,8 +146,7 @@ void solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPro
     aztecooSolver.SetAztecOption(AZ_precond, preconditioner);
 
     aztecooSolver.SetAztecOption(AZ_subdomain_solve, AZ_ilut);
-    aztecooSolver.SetAztecOption(AZ_solver, AZ_tfqmr);  // solver
-    // aztecooSolver.SetAztecOption(AZ_solver, AZ_bicgstab);
+    aztecooSolver.SetAztecOption(AZ_solver, solver);  // solver
     aztecooSolver.Iterate(maxIter, relTol);
     // std::cout << "Solver performed " << aztecooSolver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << aztecooSolver.TrueResidual() << std::endl;
 
@@ -282,7 +281,8 @@ void solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearP
     AztecOO aztecooSolver(problem);
 
     aztecooSolver.SetPrecOperator(mlPrec);
-    aztecooSolver.SetAztecOption(AZ_solver, AZ_cg);
+    // aztecooSolver.SetAztecOption(AZ_solver, AZ_cg);
+    aztecooSolver.SetAztecOption(AZ_solver, AZ_tfqmr);
     aztecooSolver.SetAztecOption(AZ_output, 32);
     aztecooSolver.Iterate(maxIter, relTol);
     // on process 0 fill info for testing
