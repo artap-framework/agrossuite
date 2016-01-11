@@ -135,7 +135,7 @@ void solveAmesos(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProb
     delete amesosSolver;
 }
 
-void solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol)
+void solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, int preconditioner)
 {
     AztecOO aztecooSolver(problem);
     // create parameter list for solver
@@ -143,7 +143,7 @@ void solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPro
     parListAztecOO.set ("PrintTiming", false); // test of parameter setting
     parListAztecOO.set ("PrintStatus", false); // test of parameter setting
     aztecooSolver.SetParameters(parListAztecOO);
-    aztecooSolver.SetAztecOption(AZ_precond, AZ_dom_decomp);
+    aztecooSolver.SetAztecOption(AZ_precond, preconditioner);
     aztecooSolver.SetAztecOption(AZ_subdomain_solve, AZ_ilut);
     aztecooSolver.SetAztecOption(AZ_solver, AZ_tfqmr);
     // aztecooSolver.SetAztecOption(AZ_precond, AZ_Jacobi);
@@ -184,6 +184,29 @@ void solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPro
         linearSystem->setInfoSolverPreconditionerName(precondName);
         linearSystem->setInfoSolverNumOfIterations(aztecooSolver.GetAztecOption(AZ_its));
     }
+}
+
+int getAztecOOpreconditioner(std::string precondName)
+{
+    int preconditioner;
+
+    if (precondName == "AZ_none")
+        preconditioner = AZ_none;
+    else if (precondName == "AZ_Jacobi")
+        preconditioner = AZ_Jacobi;
+    else if (precondName == "AZ_Neumann")
+        preconditioner = AZ_Neumann;
+    else if (precondName == "AZ_ls")
+        preconditioner = AZ_ls;
+    else if (precondName == "AZ_sym_GS")
+        preconditioner = AZ_sym_GS;
+    else if (precondName == "AZ_dom_decomp")
+        preconditioner = AZ_dom_decomp;
+    else
+        preconditioner = AZ_dom_decomp;
+
+    std::cout << "AztecOO preconditioner is set to: " << precondName << std::endl;
+    return preconditioner;
 }
 
 void solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType, std::string smootherType, std::string coarseType)
@@ -238,19 +261,19 @@ void solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearP
     }
 }
 
-std::string getMLpreconditioner(std::string preconditioner)
+std::string getMLpreconditioner(std::string precondName)
 {
-    if ((preconditioner == "SA")
-            || (preconditioner == "SA")             // - "SA" : classical smoothed aggregation preconditioners;
-            || (preconditioner == "NSSA")           // - "NSSA" : default values for Petrov-Galerkin preconditioner for nonsymmetric systems
-            || (preconditioner == "maxwell")        // - "maxwell" : default values for aggregation preconditioner for eddy current systems
-            || (preconditioner == "DD")             // - "DD" : defaults for 2-level domain decomposition preconditioners based on aggregation;
-            || (preconditioner == "RefMaxwell")     // - ?? instead of "DD-LU" : Like "DD", but use exact LU decompositions on each subdomain;
-            || (preconditioner == "DD-ML")          // - "DD-ML" : 3-level domain decomposition preconditioners, with coarser spaces defined by aggregation;
-            || (preconditioner == "DD-ML-LU"))      // - "DD-ML-LU" : Like "DD-ML", but with LU decompositions on each subdomain.
+    if ((precondName == "SA")
+            || (precondName == "SA")             // - "SA" : classical smoothed aggregation preconditioners;
+            || (precondName == "NSSA")           // - "NSSA" : default values for Petrov-Galerkin preconditioner for nonsymmetric systems
+            || (precondName == "maxwell")        // - "maxwell" : default values for aggregation preconditioner for eddy current systems
+            || (precondName == "DD")             // - "DD" : defaults for 2-level domain decomposition preconditioners based on aggregation;
+            || (precondName == "RefMaxwell")     // - ?? instead of "DD-LU" : Like "DD", but use exact LU decompositions on each subdomain;
+            || (precondName == "DD-ML")          // - "DD-ML" : 3-level domain decomposition preconditioners, with coarser spaces defined by aggregation;
+            || (precondName == "DD-ML-LU"))      // - "DD-ML-LU" : Like "DD-ML", but with LU decompositions on each subdomain.
     {
-        std::cout << "ML preconditioner is set to: " << preconditioner << std::endl;
-        return preconditioner;
+        std::cout << "ML preconditioner is set to: " << precondName << std::endl;
+        return precondName;
     }
     else
     {
@@ -580,6 +603,7 @@ int main(int argc, char *argv[])
             // int globalRow = epeA.GRID(linearSystem->cooRowInd[index]);
             // epeA.InsertGlobalValues(globalRow, 1, &linearSystem->matA[index], (int *) &linearSystem->cooColInd[index]);
 
+            // evaluate number of entries per row and create matrix
             int nCols = numEntriesPerRow[row];
             int *localColInd = new int[nCols];
             double *localMatA = new double[nCols];
@@ -605,7 +629,7 @@ int main(int argc, char *argv[])
 
         // MPI
         // prepare distributed Epetra matrix
-        //        Epetra_FECrsMatrix epeA(Copy, epeMap, maxNumPerRow);
+        //        Epetra_FECrsMatrix epeA(Copy, epeMap, maxNumPerRow); // upravit dle no MPI verze - Epetra_FECrsMatrix epeA(Copy, epeMap, numEntriesPerRow);
 
         //        // prepare data on process 0
         //        if (rank == 0)
@@ -680,7 +704,7 @@ int main(int argc, char *argv[])
             }
             else if (solver == "AztecOO")
             {
-                solveAztecOO(linearSystem, problem, maxIter, relTol);
+                solveAztecOO(linearSystem, problem, maxIter, relTol, getAztecOOpreconditioner(linearSystem->preconditionerArg.getValue()));
             }
             else
             {
