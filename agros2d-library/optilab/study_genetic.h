@@ -29,49 +29,7 @@
 
 class ProblemResult;
 
-class GeneticIndividual
-{
-public:
-    GeneticIndividual(bool createComputation = false);
-    ~GeneticIndividual();
-
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
-
-    // computation
-    inline QSharedPointer<Computation> computation() { return m_computation; }
-
-    void generateRandomly(QList<Parameter> parameters);
-    void mutate(QList<Parameter> parameters, double propability, double ratio);
-
-protected:
-    // computation
-    QSharedPointer<Computation> m_computation;
-};
-
-class GeneticPopulation
-{
-public:
-    GeneticPopulation(QList<GeneticIndividual> individuals = QList<GeneticIndividual>())
-        : m_individuals(individuals)
-    {
-    }
-
-    ~GeneticPopulation()
-    {
-        m_individuals.clear();
-    }
-
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
-
-    QList<GeneticIndividual> &individuals() { return m_individuals; }
-
-protected:
-    QList<GeneticIndividual> m_individuals;
-};
-
-class GeneticPopulationRandom : public GeneticPopulation
+class GeneticPopulationRandom : public ComputationSet
 {
 public:
     GeneticPopulationRandom(QList<Parameter> parameters, int count);
@@ -89,28 +47,19 @@ public:
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
-    virtual void fillTreeView(QTreeWidget *trvComputations);
-
 protected:
-    // settings
+    int m_numberOfPopulation;
     int m_initialpopulationSize;
-
     double m_selectionRatio;
     double m_elitismRatio;
     double m_crossoverRatio;
-
     double m_mutationProbability;
     double m_mutationRatio;
 
-    QList<GeneticPopulation> m_populations;
-
-    QList<GeneticIndividual> selectIndividuals(const QList<GeneticIndividual> &individuals);
-    QList<GeneticIndividual> selectElite(const QList<GeneticIndividual> &individuals);
-    QList<GeneticIndividual> crossoverAndMutate(const QList<GeneticIndividual> &individuals);
-
-private:
+    QList<QSharedPointer<Computation> > selectIndividuals(const QList<QSharedPointer<Computation> > &individuals);
+    QList<QSharedPointer<Computation> > selectElite(const QList<QSharedPointer<Computation> > &individuals);
+    QList<QSharedPointer<Computation> > crossoverAndMutate(const QList<QSharedPointer<Computation> > &individuals);
 
 };
-
 
 #endif // STUDY_GENETIC_H

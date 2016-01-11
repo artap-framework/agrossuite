@@ -513,13 +513,13 @@ const double* SceneViewPostInterface::paletteColor(double x) const
         return paletteDataInferno[n];
     }
         break;
-    case Palette_Parula:
+    case Palette_Viridis:
     {
         if (x < 0.0) x = 0.0;
         else if (x > 1.0) x = 1.0;
         x *= PALETTEENTRIES;
         int n = (int) x;
-        return paletteDataParula[n];
+        return paletteDataViridis[n];
     }
         break;
     case Palette_Jet:
@@ -529,6 +529,15 @@ const double* SceneViewPostInterface::paletteColor(double x) const
         x *= PALETTEENTRIES;
         int n = (int) x;
         return paletteDataJet[n];
+    }
+        break;
+    case Palette_Agros:
+    {
+        if (x < 0.0) x = 0.0;
+        else if (x > 1.0) x = 1.0;
+        x *= PALETTEENTRIES;
+        int n = (int) x;
+        return paletteDataAgros[n];
     }
         break;
     case Palette_HSV:
@@ -554,14 +563,14 @@ const double* SceneViewPostInterface::paletteColor(double x) const
         return color;
     }
         break;
-    case Palette_Viridis:
+    case Palette_Paruly:
     default:
     {
         if (x < 0.0) x = 0.0;
         else if (x > 1.0) x = 1.0;
         x *= PALETTEENTRIES;
         int n = (int) x;
-        return paletteDataViridis[n];
+        return paletteDataParuly[n];
     }
         break;
     }
@@ -573,21 +582,21 @@ const double* SceneViewPostInterface::paletteColorOrder(int n) const
     {
     case Palette_Jet:
         return paletteOrderJet[n];
-    case Palette_Parula:
-        return paletteOrderParula[n];
     case Palette_Inferno:
         return paletteOrderInferno[n];
     case Palette_Viridis:
         return paletteOrderViridis[n];
+    case Palette_Agros:
+        return paletteOrderAgros[n];
     case Palette_HSV:
         return paletteOrderHSV[n];
     case Palette_BWAsc:
         return paletteOrderBWAsc[n];
     case Palette_BWDesc:
         return paletteOrderBWDesc[n];
+    case Palette_Paruly:
     default:
-        qWarning() << QString("Undefined: %1.").arg(m_computation->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt());
-        return NULL;
+        return paletteOrderParuly[n];
     }
 }
 

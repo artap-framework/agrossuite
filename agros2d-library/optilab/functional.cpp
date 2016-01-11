@@ -18,36 +18,28 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "functional.h"
-
-#include "optilab.h"
-#include "util/global.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
-#include "solver/solutionstore.h"
 
 // consts
 const QString NAME = "name";
+const QString TYPE = "type";
 const QString EXPRESSION = "expression";
 
-
-Functional::Functional(const QString &name, Operation operation, const QString &expression) :
-    m_name(name), m_operation(operation), m_expression(expression)
-{
-}
-
-Functional::~Functional()
-{
-}
+Functional::Functional(const QString &name, FunctionalType type, const QString &expression) :
+    m_name(name), m_type(type), m_expression(expression) { }
 
 void Functional::load(QJsonObject &object)
 {
     m_name = object[NAME].toString();
+    m_type = functionalTypeFromStringKey(object[TYPE].toString());
     m_expression = object[EXPRESSION].toString();
 }
 
 void Functional::save(QJsonObject &object)
 {
     object[NAME] = m_name;
+    object[TYPE] = functionalTypeString(m_type);
     object[EXPRESSION] = m_expression;
 }
 
@@ -55,8 +47,7 @@ bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
 {
     // parameters
     QString commandPre = "";
-
-    ParametersType parameters = computation->config()->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parameters = computation->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
     foreach (QString key, parameters.keys())
     {
         if (commandPre.isEmpty())
@@ -65,23 +56,23 @@ bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
             commandPre += QString("; %1 = %2").arg(key).arg(parameters[key]);
     }
 
-    // temporary dict
-    currentPythonEngine()->useTemporaryDict();
-
-    // eval expression
-    QString command = QString("import agros2d; computation = agros2d.computation('%1')").arg(computation->problemDir());
-    currentPythonEngine()->runExpression(command);
-
-    // qDebug() << m_expression;
-    double result = 0.0;
-    bool successfulRun = currentPythonEngine()->runExpression(m_expression, &result, commandPre);
-    if (successfulRun)
+    // results
+    StringToDoubleMap results = computation->result()->results();
+    foreach (QString key, results.keys())
     {
-        computation->result()->setResult(m_name, result);
+        if (commandPre.isEmpty())
+            commandPre += QString("%1 = %2").arg(key).arg(results[key]);
+        else
+            commandPre += QString("; %1 = %2").arg(key).arg(results[key]);
     }
 
-    // global dict
+    double result = 0.0;
+    currentPythonEngine()->useTemporaryDict();
+    bool successfulRun = currentPythonEngine()->runExpression(m_expression, &result, commandPre);
     currentPythonEngine()->useGlobalDict();
+
+    if (successfulRun)
+        computation->result()->setResult(m_name, result);
 
     return successfulRun;
 }

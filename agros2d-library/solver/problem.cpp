@@ -187,10 +187,10 @@ bool ProblemBase::determineIsNonlinear() const
     return false;
 }
 
-bool ProblemBase::checkAndApplyParameters(ParametersType parameters, bool apply)
+bool ProblemBase::checkAndApplyParameters(StringToDoubleMap parameters, bool apply)
 {
     // store original parameters
-    ParametersType parametersOriginal = m_config->value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parametersOriginal = m_config->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
 
     // set new parameters
     m_config->setValue(ProblemConfig::Parameters, parameters);
@@ -2156,7 +2156,7 @@ void Problem::readProblemFromArchive(const QString &fileName)
         emit post->solved();
 
         // read studies
-        m_studies->loadStudies();
+        m_studies->load();
     }
 }
 
@@ -2186,7 +2186,7 @@ void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFil
     else
     {
         // save studies
-        m_studies->saveStudies();
+        m_studies->save();
 
         // whole directory
         JlCompress::compressDir(fileName, cacheProblemDir());

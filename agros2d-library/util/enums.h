@@ -173,25 +173,14 @@ enum SceneModePostprocessor
 
 enum PaletteType
 {
-    Palette_Viridis = 0,
-    Palette_Jet = 1,
-    Palette_Parula = 2,
-    Palette_Inferno = 3,
+    Palette_Paruly = 0,
+    Palette_Viridis = 1,
+    Palette_Inferno = 2,
+    Palette_Jet = 3,
+    Palette_Agros = 4,
     Palette_HSV = 11,
     Palette_BWAsc = 12,
     Palette_BWDesc = 13
-};
-
-enum PaletteOrderType
-{
-    PaletteOrder_Agros = 0,
-    PaletteOrder_Jet = 1,
-    PaletteOrder_Parula = 2,
-    PaletteOrder_Inferno = 3,
-    PaletteOrder_Viridis = 4,
-    PaletteOrder_HSV = 11,
-    PaletteOrder_BWAsc = 12,
-    PaletteOrder_BWDesc = 13
 };
 
 enum ChartAxisType
@@ -327,6 +316,13 @@ enum StudyType
 {
     StudyType_SweepAnalysis,
     StudyType_Genetic
+};
+
+enum FunctionalType
+{
+    FunctionalType_Minimize,
+    FunctionalType_Maximize,
+    FunctionalType_Result
 };
 
 // keys
@@ -487,5 +483,11 @@ AGROS_LIBRARY_API QString studyTypeString(StudyType type);
 AGROS_LIBRARY_API QStringList studyTypeStringKeys();
 AGROS_LIBRARY_API QString studyTypeToStringKey(StudyType type);
 AGROS_LIBRARY_API StudyType studyTypeFromStringKey(const QString &type);
+
+// functional type
+AGROS_LIBRARY_API QString functionalTypeString(FunctionalType type);
+AGROS_LIBRARY_API QStringList functionalTypeStringKeys();
+AGROS_LIBRARY_API QString functionalTypeToStringKey(FunctionalType type);
+AGROS_LIBRARY_API FunctionalType functionalTypeFromStringKey(const QString &type);
 
 #endif // UTIL_ENUMS_H

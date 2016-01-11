@@ -18,33 +18,188 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "study.h"
-#include "study_sweep.h"
-#include "study_genetic.h"
-#include "study.h"
-#include "parameter.h"
-
-#include "pythonlab/pythonengine.h"
-
-#include "optilab.h"
 #include "util/global.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
-#include "solver/solutionstore.h"
-#include "solver/plugin_interface.h"
 
-#include "scene.h"
-
-#include <typeinfo>
+#include "study_sweep.h"
+#include "study_genetic.h"
 
 // consts
 const QString TYPE = "type";
+
 const QString PARAMETERS = "parameters";
 const QString FUNCTIONAL = "functionals";
+
+const QString COMPUTATIONS = "computations";
+const QString COMPUTATIONSET = "computationset";
+
 const QString STUDIES = "studies";
+
+ComputationSet::ComputationSet(QList<QSharedPointer<Computation> > set)
+    : m_computationSet(set) { }
+
+ComputationSet::~ComputationSet()
+{
+    m_computationSet.clear();
+}
+
+void ComputationSet::load(QJsonObject &object)
+{
+    QJsonArray computationSetJson = object[COMPUTATIONSET].toArray();
+    for (int i = 0; i < computationSetJson.size(); i++)
+    {
+        QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
+        QSharedPointer<Computation> computation = computations[computationSetJson[i].toString()];
+        m_computationSet.append(computation);
+    }
+}
+
+void ComputationSet::save(QJsonObject &object)
+{
+    QJsonArray computationSetJson;
+    foreach (QSharedPointer<Computation> computation, m_computationSet)
+        computationSetJson.append(computation->problemDir());
+    object[COMPUTATIONSET] = computationSetJson;
+}
+
+// *****************************************************************************************************************
+
+Study::Study(QList<ComputationSet> computations)
+    : m_computations(computations) { }
+
+Study::~Study()
+{
+    clear();
+}
+
+void Study::clear()
+{
+    m_parameters.clear();
+    m_functionals.clear();
+    m_computations.clear();
+}
+
+void Study::load(QJsonObject &object)
+{
+    // parameters
+    QJsonArray parametersJson = object[PARAMETERS].toArray();
+    for (int i = 0; i < parametersJson.size(); i++)
+    {
+        QJsonObject parameterJson = parametersJson[i].toObject();
+        Parameter parameter;
+        parameter.load(parameterJson);
+        m_parameters.append(parameter);
+    }
+
+    // functionals
+    QJsonArray functionalsJson = object[FUNCTIONAL].toArray();
+    for (int i = 0; i < functionalsJson.size(); i++)
+    {
+        QJsonObject parameterJson = functionalsJson[i].toObject();
+        Functional functional;
+        functional.load(parameterJson);
+        m_functionals.append(functional);
+    }
+
+    // computations
+    QJsonArray computationsJson = object[COMPUTATIONS].toArray();
+    for (int i = 0; i < computationsJson.size(); i++)
+    {
+        QJsonObject computationSetJson = computationsJson[i].toObject();
+        ComputationSet computationSet;
+        computationSet.load(computationSetJson);
+        m_computations.append(computationSet);
+    }
+}
+
+void Study::save(QJsonObject &object)
+{
+    // parameters
+    QJsonArray parametersJson;
+    foreach (Parameter parameter, m_parameters)
+    {
+        QJsonObject parameterJson;
+        parameter.save(parameterJson);
+        parametersJson.append(parameterJson);
+    }
+    object[PARAMETERS] = parametersJson;
+
+    // functionals
+    QJsonArray functionalsJson;
+    foreach (Functional functional, m_functionals)
+    {
+        QJsonObject functionalJson;
+        functional.save(functionalJson);
+        functionalsJson.append(functionalJson);
+    }
+    object[FUNCTIONAL] = functionalsJson;
+
+    // computations
+    QJsonArray computationsJson;
+    foreach (ComputationSet computationSet, m_computations)
+    {
+        QJsonObject computationSetJson;
+        computationSet.save(computationSetJson);
+        computationsJson.append(computationSetJson);
+    }
+    object[COMPUTATIONS] = computationsJson;
+}
+
+bool Study::evaluateFunctionals(QSharedPointer<Computation> computation)
+{
+    bool successfulRun = false;
+    currentPythonEngine()->useTemporaryDict();
+    foreach (Functional functional, m_functionals)
+        successfulRun = functional.evaluateExpression(computation);
+    currentPythonEngine()->useGlobalDict();
+
+    return successfulRun;
+}
+
+void Study::addComputation(QSharedPointer<Computation> computation, bool new_computationSet)
+{
+    if (m_computations.isEmpty() || new_computationSet)
+        m_computations.append(ComputationSet());
+
+    m_computations.last().addComputation(computation);
+}
+
+void Study::fillTreeView(QTreeWidget *trvComputations)
+{
+    for (int i = 0; i < m_computations.size(); i++)
+    {
+        QTreeWidgetItem *itemComputationSet = new QTreeWidgetItem(trvComputations);
+
+        QString computationSetName= tr("Set %1").arg(i + 1);
+        if (!m_computations[i].name().isEmpty())
+            computationSetName = m_computations[i].name();
+
+        itemComputationSet->setText(0, tr("%1 (%2 computations)").arg(computationSetName).arg(m_computations[i].computations().size()));
+        itemComputationSet->setExpanded(true);
+
+        foreach (QSharedPointer<Computation> computation, m_computations[i].computations())
+        {
+            QTreeWidgetItem *item = new QTreeWidgetItem(itemComputationSet);
+            item->setText(0, computation->problemDir());
+            item->setText(1, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->result()->hasResults() ? tr("results") : tr("no results")));
+            item->setData(0, Qt::UserRole, computation->problemDir());
+        }
+    }
+}
+
+QVariant Study::variant()
+{
+    QVariant v;
+    v.setValue(this);
+    return v;
+}
+
+// *****************************************************************************************************************
 
 Studies::Studies(QObject *parent) : QObject(parent)
 {
-    connect(this, SIGNAL(invalidated()), this, SLOT(saveStudies()));
+    connect(this, SIGNAL(invalidated()), this, SLOT(save()));
 }
 
 Studies::~Studies()
@@ -77,17 +232,16 @@ void Studies::clear()
     emit invalidated();
 }
 
-bool Studies::loadStudies()
+bool Studies::load()
 {
     blockSignals(true);
-
     clear();
 
     QString fn = QString("%1/studies.json").arg(cacheProblemDir());
 
     QFile file(fn);
     if (!file.exists())
-        return true; // OK - no study
+        return true; // no study
 
     if (!file.open(QIODevice::ReadOnly))
     {
@@ -96,15 +250,12 @@ bool Studies::loadStudies()
     }
 
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-
     QJsonObject rootJson = doc.object();
 
     QJsonArray studiesJson = rootJson[STUDIES].toArray();
     for (int i = 0; i < studiesJson.size(); i++)
     {
         QJsonObject studyJson = studiesJson[i].toObject();
-
-        // type
         StudyType type = studyTypeFromStringKey(studyJson[TYPE].toString());
 
         Study *study = nullptr;
@@ -120,13 +271,12 @@ bool Studies::loadStudies()
     }
 
     blockSignals(false);
-
     emit invalidated();
 
     return true;
 }
 
-bool Studies::saveStudies()
+bool Studies::save()
 {
     QString fn = QString("%1/studies.json").arg(cacheProblemDir());
 
@@ -146,17 +296,15 @@ bool Studies::saveStudies()
         return false;
     }
 
-    // root object
     QJsonObject rootJson;
+    QJsonArray studiesJson;
 
     // studies
-    QJsonArray studiesJson;
     foreach (Study *study, m_studies)
     {
         QJsonObject studyJson;
         studyJson[TYPE] = studyTypeToStringKey(study->type());
         study->save(studyJson);
-
         studiesJson.append(studyJson);
     }
     rootJson[STUDIES] = studiesJson;
@@ -167,78 +315,3 @@ bool Studies::saveStudies()
 
     return true;
 }
-
-// *****************************************************************************************************************
-
-Study::Study()
-{
-}
-
-Study::~Study()
-{
-    clear();
-}
-
-QVariant Study::variant()
-{
-    QVariant v;
-    v.setValue(this);
-    return v;
-}
-
-void Study::clear()
-{
-    m_parameters.clear();
-    m_functionals.clear();
-}
-
-void Study::load(QJsonObject &object)
-{
-    // parameters
-    QJsonArray parametersJson = object[PARAMETERS].toArray();
-    for (int i = 0; i < parametersJson.size(); i++)
-    {
-        QJsonObject parameterJson = parametersJson[i].toObject();
-        Parameter parameter;
-        parameter.load(parameterJson);
-
-        m_parameters.append(parameter);
-    }
-
-    // functionals
-    QJsonArray functionalsJson = object[FUNCTIONAL].toArray();
-    for (int i = 0; i < functionalsJson.size(); i++)
-    {
-        QJsonObject parameterJson = functionalsJson[i].toObject();
-        Functional functional;
-        functional.load(parameterJson);
-
-        m_functionals.append(functional);
-    }
-}
-
-void Study::save(QJsonObject &object)
-{    
-    // parameters
-    QJsonArray parametersJson;
-    foreach (Parameter parameter, m_parameters)
-    {
-        QJsonObject parameterJson;
-        parameter.save(parameterJson);
-
-        parametersJson.append(parameterJson);
-    }
-    object[PARAMETERS] = parametersJson;
-
-    // functionals
-    QJsonArray functionalsJson;
-    foreach (Functional functional, m_functionals)
-    {
-        QJsonObject functionalJson;
-        functional.save(functionalJson);
-
-        functionalsJson.append(functionalJson);
-    }
-    object[FUNCTIONAL] = functionalsJson;
-}
-

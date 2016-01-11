@@ -50,12 +50,8 @@ private:
     QComboBox *cmbPostScalarFieldVariable;
     QComboBox *cmbPostScalarFieldVariableComp;
     QCheckBox *chkScalarFieldRangeAuto;
-    QLabel *lblScalarFieldRangeMin;
-    QLabel *lblScalarFieldRangeMax;
     LineEditDouble *txtScalarFieldRangeMin;
     LineEditDouble *txtScalarFieldRangeMax;
-    QLabel *lblScalarFieldRangeMinError;
-    QLabel *lblScalarFieldRangeMaxError;
     QCheckBox *chkScalarDeform;
 
     // vector field
@@ -101,8 +97,6 @@ public slots:
 private slots:
     void doScalarFieldVariable(int index);
     void doScalarFieldRangeAuto(int state);
-    void doScalarFieldRangeMinChanged();
-    void doScalarFieldRangeMaxChanged();
     void doPaletteFilter(int state);
     // void doScalarFieldDefault();
     // void doContoursVectorsDefault();

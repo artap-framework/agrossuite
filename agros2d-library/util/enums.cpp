@@ -52,6 +52,7 @@ static QMap<ButcherTableType, QString> butcherTableTypeList;
 static QMap<IterSolverDealII, QString> iterLinearSolverDealIIMethodList;
 static QMap<PreconditionerDealII, QString> iterLinearSolverDealIIPreconditionerList;
 static QMap<StudyType, QString> studyTypeList;
+static QMap<FunctionalType, QString> functionalTypeList;
 
 QStringList coordinateTypeStringKeys() { return coordinateTypeList.values(); }
 QString coordinateTypeToStringKey(CoordinateType coordinateType) { return coordinateTypeList[coordinateType]; }
@@ -156,6 +157,10 @@ PreconditionerDealII iterLinearSolverDealIIPreconditionerFromStringKey(const QSt
 QStringList studyTypeStringKeys() { return studyTypeList.values(); }
 QString studyTypeToStringKey(StudyType type) { return studyTypeList[type]; }
 StudyType studyTypeFromStringKey(const QString &type) { return studyTypeList.key(type); }
+
+QStringList functionalTypeStringKeys() { return functionalTypeList.values(); }
+QString functionalTypeToStringKey(FunctionalType type) { return functionalTypeList[type]; }
+FunctionalType functionalTypeFromStringKey(const QString &type) { return functionalTypeList.key(type); }
 
 void initLists()
 {
@@ -264,10 +269,11 @@ void initLists()
     dampingTypeList.insert(DampingType_Fixed, "fixed");
 
     // PaletteType
+    paletteTypeList.insert(Palette_Paruly, "paruly");
     paletteTypeList.insert(Palette_Viridis, "viridis");
     paletteTypeList.insert(Palette_Inferno, "inferno");
-    paletteTypeList.insert(Palette_Parula, "parula");
     paletteTypeList.insert(Palette_Jet, "jet");
+    paletteTypeList.insert(Palette_Agros, "agros");
     paletteTypeList.insert(Palette_HSV, "hsv");
     paletteTypeList.insert(Palette_BWAsc, "bw_ascending");
     paletteTypeList.insert(Palette_BWDesc, "bw_descending");
@@ -589,10 +595,12 @@ QString paletteTypeString(PaletteType paletteType)
         return QObject::tr("Viridis");
     case Palette_Inferno:
         return QObject::tr("Inferno");
-    case Palette_Parula:
-        return QObject::tr("Parula");
+    case Palette_Paruly:
+        return QObject::tr("Paruly");
     case Palette_Jet:
         return QObject::tr("Jet");
+    case Palette_Agros:
+        return QObject::tr("Agros");
     case Palette_HSV:
         return QObject::tr("HSV");
     case Palette_BWAsc:
@@ -806,6 +814,22 @@ QString studyTypeString(StudyType type)
         return QObject::tr("Genetic");
     default:
         std::cerr << "Study type '" + QString::number(type).toStdString() + "' is not implemented. studyTypeString(StudyType type)" << endl;
+        throw;
+    }
+}
+
+QString functionalTypeString(FunctionalType type)
+{
+    switch (type)
+    {
+    case FunctionalType_Maximize:
+        return QObject::tr("maximize");
+    case FunctionalType_Minimize:
+        return QObject::tr("minimize");
+    case FunctionalType_Result:
+        return QObject::tr("result");
+    default:
+        std::cerr << "Functional type'" + QString::number(type).toStdString() + "' is not implemented. functionalTypeString(FunctionalType type)" << endl;
         throw;
     }
 }

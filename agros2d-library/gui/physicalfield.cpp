@@ -144,6 +144,15 @@ PhysicalFieldWidget::PhysicalFieldWidget(QWidget *parent) : QWidget(parent),
     cmbFieldInfo = new QComboBox();
     connect(cmbFieldInfo, SIGNAL(currentIndexChanged(int)), this, SLOT(doFieldInfo(int)));
 
+    // transient
+    lblTimeStep = new QLabel(tr("Time step:"));
+    cmbTimeStep = new QComboBox(this);
+    connect(cmbTimeStep, SIGNAL(currentIndexChanged(int)), this, SLOT(doTimeStep(int)));
+
+    // adaptivity
+    lblAdaptivityStep = new QLabel(tr("Adaptivity step:"));
+    cmbAdaptivityStep = new QComboBox(this);
+
     QGridLayout *layoutComputation = new QGridLayout();
     layoutComputation->setColumnMinimumWidth(0, columnMinimumWidth());
     layoutComputation->setColumnStretch(1, 1);
@@ -151,46 +160,12 @@ PhysicalFieldWidget::PhysicalFieldWidget(QWidget *parent) : QWidget(parent),
     layoutComputation->addWidget(cmbComputation, 0, 1);
     layoutComputation->addWidget(new QLabel(tr("Physical field:")), 1, 0);
     layoutComputation->addWidget(cmbFieldInfo, 1, 1);
+    layoutComputation->addWidget(lblTimeStep, 2, 0);
+    layoutComputation->addWidget(cmbTimeStep, 2, 1);
+    layoutComputation->addWidget(lblAdaptivityStep, 3, 0);
+    layoutComputation->addWidget(cmbAdaptivityStep, 3, 1);
 
-    grpComputation = new QGroupBox(tr("Postprocessor settings"), this);
-    grpComputation->setLayout(layoutComputation);
-
-    // transient
-    lblTimeStep = new QLabel(tr("Time step:"));
-    cmbTimeStep = new QComboBox(this);
-    connect(cmbTimeStep, SIGNAL(currentIndexChanged(int)), this, SLOT(doTimeStep(int)));
-
-    QGridLayout *layoutTransient = new QGridLayout();
-    layoutTransient->setColumnMinimumWidth(0, columnMinimumWidth());
-    layoutTransient->setColumnStretch(1, 1);
-    layoutTransient->addWidget(lblTimeStep, 0, 0);
-    layoutTransient->addWidget(cmbTimeStep, 0, 1);
-
-    grpTime = new QGroupBox(tr("Transient analysis"), this);
-    grpTime->setVisible(false);
-    grpTime->setLayout(layoutTransient);
-
-    // adaptivity
-    lblAdaptivityStep = new QLabel(tr("Adaptivity step:"));
-    cmbAdaptivityStep = new QComboBox(this);
-
-    QGridLayout *layoutAdaptivity = new QGridLayout();
-    layoutAdaptivity->setColumnMinimumWidth(0, columnMinimumWidth());
-    layoutAdaptivity->setColumnStretch(1, 1);
-    layoutAdaptivity->addWidget(lblAdaptivityStep, 0, 0);
-    layoutAdaptivity->addWidget(cmbAdaptivityStep, 0, 1);
-
-    grpAdaptivity = new QGroupBox(tr("Space adaptivity"), this);
-    grpAdaptivity->setVisible(false);
-    grpAdaptivity->setLayout(layoutAdaptivity);
-
-    QVBoxLayout *layoutMain = new QVBoxLayout();
-    layoutMain->setContentsMargins(0, 0, 0, 0);
-    layoutMain->addWidget(grpComputation);
-    layoutMain->addWidget(grpTime);
-    layoutMain->addWidget(grpAdaptivity);
-
-    setLayout(layoutMain);
+    setLayout(layoutComputation);
 
     // reconnect computation slots
     connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
@@ -367,7 +342,9 @@ void PhysicalFieldWidget::doTimeStep(int index)
         cmbAdaptivityStep->clear();
     }
 
-    grpTime->setVisible(cmbTimeStep->count() > 1);
-    grpAdaptivity->setVisible(cmbAdaptivityStep->count() > 1);
+    lblTimeStep->setVisible(cmbTimeStep->count() > 1);
+    cmbTimeStep->setVisible(cmbTimeStep->count() > 1);
+    lblAdaptivityStep->setVisible(cmbAdaptivityStep->count() > 1);
+    cmbAdaptivityStep->setVisible(cmbAdaptivityStep->count() > 1);
 }
 

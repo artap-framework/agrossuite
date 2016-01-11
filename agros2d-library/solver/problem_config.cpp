@@ -41,7 +41,7 @@
 
 ProblemConfig::ProblemConfig(ProblemBase *parentProblem) : QObject(), m_problem(parentProblem)
 {
-    qRegisterMetaType<ParametersType>("ParametersType");
+    qRegisterMetaType<StringToDoubleMap>("ParametersType");
     qRegisterMetaType<Value>("Value");
 
     setStringKeys();
@@ -89,7 +89,7 @@ void ProblemConfig::load(XMLProblem::problem_config *configxsd)
                     m_setting[key] = QVariant::fromValue(meshTypeFromStringKey(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
                 else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
                     m_setting[key] = QVariant::fromValue(Value(m_problem, QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
-                else if (m_settingDefault[key].userType() == qMetaTypeId<ParametersType>())
+                else if (m_settingDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
                 {
                     QString str = QString::fromStdString(configxsd->problem_item().at(i).problem_value());
                     QStringList strKeysAndValues = str.split(":");
@@ -97,7 +97,7 @@ void ProblemConfig::load(XMLProblem::problem_config *configxsd)
                     QStringList strValues = (strKeysAndValues[1].size() > 0) ? strKeysAndValues[1].split("|") : QStringList();
                     assert(strKeys.count() == strValues.count());
 
-                    ParametersType parameters;
+                    StringToDoubleMap parameters;
                     for (int i = 0; i < strKeys.count(); i++)
                         parameters[strKeys[i]] = strValues[i].toDouble();
 
@@ -132,15 +132,15 @@ void ProblemConfig::save(XMLProblem::problem_config *configxsd)
                 configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), meshTypeToStringKey(m_setting[key].value<MeshType>()).toStdString()));
             else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
                 configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_setting[key].value<Value>().toString().toStdString()));
-            else if (m_settingDefault[key].userType() == qMetaTypeId<ParametersType>())
+            else if (m_settingDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
             {
-                assert(m_setting[key].value<ParametersType>().keys().count() == m_setting[key].value<ParametersType>().values().count());
+                assert(m_setting[key].value<StringToDoubleMap>().keys().count() == m_setting[key].value<StringToDoubleMap>().values().count());
 
                 QString outKeys;
                 QString outValues;
-                int cnt = m_setting[key].value<ParametersType>().keys().count();
-                QList<QString> keys = m_setting[key].value<ParametersType>().keys();
-                QList<double> values = m_setting[key].value<ParametersType>().values();
+                int cnt = m_setting[key].value<StringToDoubleMap>().keys().count();
+                QList<QString> keys = m_setting[key].value<StringToDoubleMap>().keys();
+                QList<double> values = m_setting[key].value<StringToDoubleMap>().values();
                 for (int i = 0; i < cnt; i++)
                 {
                     outKeys += keys[i] + ((i < cnt - 1) ? "|" : "");
@@ -180,7 +180,7 @@ void ProblemConfig::load(QJsonObject &object)
                 m_setting[key] = QVariant::fromValue(meshTypeFromStringKey(object[typeToStringKey(key)].toString()));
             else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
                 m_setting[key] = QVariant::fromValue(Value(m_problem, object[typeToStringKey(key)].toString()));
-            else if (m_settingDefault[key].userType() == qMetaTypeId<ParametersType>())
+            else if (m_settingDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
             {
                 QString str = object[typeToStringKey(key)].toString();
                 QStringList strKeysAndValues = str.split(":");
@@ -188,7 +188,7 @@ void ProblemConfig::load(QJsonObject &object)
                 QStringList strValues = (strKeysAndValues[1].size() > 0) ? strKeysAndValues[1].split("|") : QStringList();
                 assert(strKeys.count() == strValues.count());
 
-                ParametersType parameters;
+                StringToDoubleMap parameters;
                 for (int i = 0; i < strKeys.count(); i++)
                     parameters[strKeys[i]] = strValues[i].toDouble();
 
@@ -222,15 +222,15 @@ void ProblemConfig::save(QJsonObject &object)
                 object[typeToStringKey(key)] = meshTypeToStringKey(m_setting[key].value<MeshType>());
             else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
                 object[typeToStringKey(key)] = m_setting[key].value<Value>().toString();
-            else if (m_settingDefault[key].userType() == qMetaTypeId<ParametersType>())
+            else if (m_settingDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
             {
-                assert(m_setting[key].value<ParametersType>().keys().count() == m_setting[key].value<ParametersType>().values().count());
+                assert(m_setting[key].value<StringToDoubleMap>().keys().count() == m_setting[key].value<StringToDoubleMap>().values().count());
 
                 QString outKeys;
                 QString outValues;
-                int cnt = m_setting[key].value<ParametersType>().keys().count();
-                QList<QString> keys = m_setting[key].value<ParametersType>().keys();
-                QList<double> values = m_setting[key].value<ParametersType>().values();
+                int cnt = m_setting[key].value<StringToDoubleMap>().keys().count();
+                QList<QString> keys = m_setting[key].value<StringToDoubleMap>().keys();
+                QList<double> values = m_setting[key].value<StringToDoubleMap>().values();
                 for (int i = 0; i < cnt; i++)
                 {
                     outKeys += keys[i] + ((i < cnt - 1) ? "|" : "");
@@ -270,7 +270,7 @@ void ProblemConfig::setDefaultValues()
     m_settingDefault[TimeOrder] = 2;
     m_settingDefault[TimeConstantTimeSteps] = 10;
     m_settingDefault[TimeTotal] = 10.0;
-    m_settingDefault[Parameters] = QVariant::fromValue(ParametersType());
+    m_settingDefault[Parameters] = QVariant::fromValue(StringToDoubleMap());
     m_settingDefault[Coordinate] = QVariant::fromValue(CoordinateType_Planar);
     m_settingDefault[Mesh] = QVariant::fromValue(MeshType_Triangle);
 }
@@ -278,7 +278,7 @@ void ProblemConfig::setDefaultValues()
 // parameters
 void ProblemConfig::setParameter(const QString &key, double val)
 {
-    ParametersType parameters = value(ProblemConfig::Parameters).value<ParametersType>();
+    StringToDoubleMap parameters = value(ProblemConfig::Parameters).value<StringToDoubleMap>();
 
     try
     {
@@ -441,7 +441,7 @@ void ProblemSetting::setDefaultValues()
     m_settingDefault[View_ShowScalarColorBar] = true;
     m_settingDefault[View_ScalarVariable] = QString();
     m_settingDefault[View_ScalarVariableComp] = PhysicFieldVariableComp_Undefined;
-    m_settingDefault[View_PaletteType] = Palette_Viridis;
+    m_settingDefault[View_PaletteType] = Palette_Paruly;
     m_settingDefault[View_PaletteFilter] = false;
     m_settingDefault[View_PaletteSteps] = 30;
     m_settingDefault[View_ScalarRangeLog] = false;

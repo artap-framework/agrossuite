@@ -108,10 +108,10 @@ void PostprocessorScenePost3DWidget::createControls()
     layout3D->addWidget(txtView3DAngle, 0, 1);
     layout3D->addWidget(new QLabel(tr("Height:")), 1, 0);
     layout3D->addWidget(txtView3DHeight, 1, 1);
-    layout3D->addWidget(chkView3DLighting, 2, 0, 1, 2);
-    layout3D->addWidget(chkView3DBackground, 3, 0, 1, 2);
-    layout3D->addWidget(chkView3DBoundingBox, 4, 0, 1, 2);
-    layout3D->addWidget(chkView3DSolidGeometry, 5, 0, 1, 2);
+    layout3D->addWidget(chkView3DLighting, 2, 0);
+    layout3D->addWidget(chkView3DBackground, 3, 0);
+    layout3D->addWidget(chkView3DBoundingBox, 2, 1);
+    layout3D->addWidget(chkView3DSolidGeometry, 3, 1);
 
     QGroupBox *viewWidget = new QGroupBox(tr("Settings"));
     viewWidget->setLayout(layout3D);

@@ -143,6 +143,16 @@ bool isDeflatedPCG(const std::string &solver)
     return (solver == "DPCG");
 }
 
+bool isChebyshev(const std::string &solver)
+{
+    return (solver == "Chebyshev");
+}
+
+bool isMixedPrecisionDC(const std::string &solver)
+{
+    return (solver == "MixedPrecisionDC");
+}
+
 int main(int argc, char *argv[])
 {
     try
@@ -192,6 +202,7 @@ int main(int argc, char *argv[])
         rhs_paralution.SetDataPtr(&linearSystem.system_rhs->val, "rhs", n);
         sln_paralution.SetDataPtr(&linearSystem.system_sln->val, "sln", n);
 
+        // move to accelerator
         bool moveToAccelerator = false;
         if (moveToAccelerator)
         {
@@ -221,16 +232,17 @@ int main(int argc, char *argv[])
             ls->SetOperator(mat_paralution);
         }
 
+        // tolerances
+        double absTol = linearSystem.absTolArg.getValue();
+        double relTol = linearSystem.relTolArg.getValue();
+        int maxIter = linearSystem.maxIterArg.getValue();
+
         // Krylov Subspace Solvers
         if (isKrylovSubspaceSolver(solver))
         {
-            // tolerances
-            double absTol = linearSystem.absTolArg.getValue();
-            double relTol = linearSystem.relTolArg.getValue();
-            int maxIter = linearSystem.maxIterArg.getValue();
-
             p = getPrecoditioner(preconditioner);
             IterativeLinearSolver<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *ils = getKrylovSubspaceSolver(solver);
+
             ils->SetOperator(mat_paralution);
             ils->Init(absTol, relTol, 1e8, maxIter);
             ils->SetPreconditioner(*p);
@@ -245,9 +257,41 @@ int main(int argc, char *argv[])
                     new DPCG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
 
             dpcg->SetOperator(mat_paralution);
+            dpcg->Init(absTol, relTol, 1e8, maxIter);
             dpcg->SetNVectors(2);
 
             ls = dpcg;
+        }
+
+        // Chebyshev solver
+        if (isChebyshev(solver))
+        {
+            Chebyshev<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *chebyshev =
+                    new Chebyshev<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
+
+            chebyshev->SetOperator(mat_paralution);
+            // TODO: estimate minimum and the maximum eigenvalue of the matrix => not working
+            chebyshev->Set(0, 100);
+            chebyshev->Init(absTol, relTol, 1e8, maxIter);
+
+            ls = chebyshev;
+        }
+
+        // Mixed-precision solver
+        if (isMixedPrecisionDC(solver))
+        {
+            MixedPrecisionDC<LocalMatrix<double>, LocalVector<double>, double, LocalMatrix<float>, LocalVector<float>, float> *mp =
+                    new MixedPrecisionDC<LocalMatrix<double>, LocalVector<double>, double, LocalMatrix<float>, LocalVector<float>, float>();
+
+            CG<LocalMatrix<float>, LocalVector<float>, float> cg;
+            MultiColoredILU<LocalMatrix<float>, LocalVector<float>, float> p;
+            cg.SetPreconditioner(p);
+            cg.Init(absTol, relTol, 1e8, maxIter);
+
+            mp->SetOperator(mat_paralution);
+            mp->Set(cg);
+
+            ls = mp;
         }
 
         // AMG
@@ -315,11 +359,6 @@ int main(int argc, char *argv[])
             amg->SetSmootherPreIter(1);
             amg->SetSmootherPostIter(2);
 
-            // tolerances
-            double absTol = linearSystem.absTolArg.getValue();
-            double relTol = linearSystem.relTolArg.getValue();
-            int maxIter = linearSystem.maxIterArg.getValue();
-
             amg->Init(absTol, relTol, 1e8, maxIter);
 
             ls = amg;
@@ -345,6 +384,10 @@ int main(int argc, char *argv[])
         auto timeSolveStart = std::chrono::steady_clock::now();
         ls->Solve(rhs_paralution, &sln_paralution);
         linearSystem.setInfoTimeSolver(elapsedSeconds(timeSolveStart));
+
+        // move to host
+        if (moveToAccelerator)
+            sln_paralution.MoveToHost();
 
         sln_paralution.LeaveDataPtr(&linearSystem.system_sln->val);
 
