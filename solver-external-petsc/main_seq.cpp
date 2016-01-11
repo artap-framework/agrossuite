@@ -91,6 +91,15 @@ LinearSystemPETScArgs *createLinearSystem(std::string extSolverName, int argc, c
     return linearSystem;
 }
 
+// usage:
+// LinearSystemTrilinosArgs *linearSystem = nullptr;
+// ...
+// linearSystem = createLinearSystem("External solver - TRILINOS", argc, argv);
+// -----
+// get parameters to local value
+// double relTol = linearSystem->relTolArg.getValue();
+// int maxIter = linearSystem->maxIterArg.getValue();
+
 
 KSPType solver(std::string solver)
 {
@@ -146,33 +155,22 @@ int main(int argc, char *argv[])
         PetscInt n_rows = 0;
         PetscInt n = 0;
         PetscInt *column_indicies = NULL;
-        PetscInt  istart, iend;
 
         PetscInitialize(&argc,&argv, (char*)0," ");
-        ierr = MPI_Comm_size(PETSC_COMM_WORLD, &size); CHKERRQ(ierr);
+        // ierr = MPI_Comm_size(PETSC_COMM_WORLD, &size); CHKERRQ(ierr);
         int rank;
-        ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+        // ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+        // std::cout << "rank =  " << rank << std::endl;
         ierr = PetscOptionsGetBool(NULL,"-nonzero_guess", &nonzeroguess,NULL); CHKERRQ(ierr);
 
 
         PetscInt *row_indicies = NULL;
         PetscInt *row_lengths = NULL;
 
-        ierr = MatCreate(PETSC_COMM_WORLD, &A); CHKERRQ(ierr);
-        ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, n_rows, n_rows); CHKERRQ(ierr);
-        ierr = MatSetType(A, MATMPIAIJ); CHKERRQ(ierr);
-        ierr = MatMPIAIJSetPreallocation(A, n_rows, PETSC_NULL, n_rows, PETSC_NULL); CHKERRQ(ierr);
-        ierr = MatSeqAIJSetPreallocation(A, 0, row_lengths);CHKERRQ(ierr);
-        ierr = MatSetFromOptions(A);
 
-        ierr = VecCreateMPI(PETSC_COMM_WORLD, PETSC_DECIDE, n_rows, &x); CHKERRQ(ierr);
-        ierr = PetscObjectSetName((PetscObject) x, "Solution"); CHKERRQ(ierr);
-        ierr = VecSetFromOptions(x); CHKERRQ(ierr);
-        ierr = VecDuplicate(x,&b); CHKERRQ(ierr);
 
-        if (rank == 0)
+        //   if (rank == 0)
         {
-
             n_rows = linearSystem->n();
             n = linearSystem->nz();
             row_indicies = new PetscInt[n_rows];
@@ -187,6 +185,8 @@ int main(int argc, char *argv[])
 
             column_indicies = reinterpret_cast<PetscInt *>(linearSystem->system_matrix_pattern->colnums);
 
+            int localSize  = n_rows / size;
+            int localSizeLast = n_rows % size;
 
 
             for(int i = 0; i < n_rows; i++)
@@ -200,38 +200,87 @@ int main(int argc, char *argv[])
                     row_lengths[i] = row_indicies[i+1] - row_indicies[i];
                 }
             }
+        }
+
+//        for(int i = 0; i < n_rows; i++)
+//        {
+//            std::cout << row_indicies[i] << "  ";
+//        }
+//        std::cout << std::endl;
+//        std::cout << "Columns:";
+//        std::cout << std::endl;
+
+//        std::cout << std::endl;
+
+//        for(int i = 0; i < n; i++)
+//        {
+//            std::cout << column_indicies[i] << "  ";
+//        }
+
+
+//        std::cout << std::endl;
+
+//        for(int j = 0; j < n; j++)
+//        {
+//            std::cout << linearSystem->system_matrix->val[j] << "  ";
+//        }
+//        std::cout << std::endl;
 
 
 
-            linearSystem->setInfoNumOfProc(size);
+        linearSystem->setInfoNumOfProc(size);
+        ierr = MatCreate(PETSC_COMM_WORLD, &A); CHKERRQ(ierr);
+        ierr = MatSetType(A, MATSEQAIJ); CHKERRQ(ierr);
+        int istart, iend;
 
 
-            // ierr = MatGetOwnershipRange(A, &istart,&iend); CHKERRQ(ierr);
+        ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, n_rows, n_rows); CHKERRQ(ierr);
+
+        // ierr = MatGetOwnershipRange(A, &istart,&iend); CHKERRQ(ierr);
+        // std::cout << rank << "   " << istart << "  " << iend << "  " << "\n";
+
+        // ierr = MatMPIAIJSetPreallocation(A, n_rows, PETSC_NULL, n_rows, PETSC_NULL); CHKERRQ(ierr);
+        ierr = MatSeqAIJSetPreallocation(A, 0, row_lengths);CHKERRQ(ierr);
+        ierr = MatSetFromOptions(A);
 
 
-            linearSystem->setInfoTimeReadMatrix(elapsedSeconds(timeStart));
 
-            for (int i = i; i < n_rows; i++)
-            {
-                MatSetValues(A, 1, &i, row_lengths[i], &column_indicies[row_indicies[i]], &linearSystem->system_matrix->val[row_indicies[i]], INSERT_VALUES);
-            }
 
-            for (int i = 0; (i < n_rows); i++)
-            {
-                VecSetValues(b, 1, &i, &linearSystem->system_rhs->val[i], INSERT_VALUES);
-            }
+        // ierr = MatGetOwnershipRange(A, &istart,&iend); CHKERRQ(ierr);
+        // int mm, nn;
+        // ierr = MatGetLocalSize(A, &mm, &nn);
+        // std::cout << rank << "   " << mm << "  " << nn << "  " << "\n";
+
+        linearSystem->setInfoTimeReadMatrix(elapsedSeconds(timeStart));
+        for (int i = 0; i < n_rows; i++)
+        {
+            MatSetValues(A, 1, &i, row_lengths[i], &column_indicies[row_indicies[i]],&linearSystem->system_matrix->val[row_indicies[i]], INSERT_VALUES);
+
         }
 
 
         ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
         ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
 
+        // MatView(A, PETSC_VIEWER_STDOUT_SELF);
+
+        ierr = VecCreateSeq(PETSC_COMM_WORLD, n_rows, &x); CHKERRQ(ierr);
+        ierr = PetscObjectSetName((PetscObject) x, "Solution"); CHKERRQ(ierr);
+        ierr = VecSetFromOptions(x); CHKERRQ(ierr);
+        ierr = VecDuplicate(x,&b); CHKERRQ(ierr);
+
 
         // ierr = VecGetOwnershipRange(x,&istart,&iend); CHKERRQ(ierr);
+        // std::cout << istart << "  ";
+        // for (int i = istart; i < iend; i++)
 
-        ierr = VecAssemblyBegin(x); CHKERRQ(ierr);
-        ierr = VecAssemblyEnd(x); CHKERRQ(ierr);
+        for (int i = 0; (i < n_rows); i++)
+        {
+            VecSetValues(b, 1, &i, &linearSystem->system_rhs->val[i], INSERT_VALUES);
+        }
 
+        ierr = VecAssemblyBegin(b); CHKERRQ(ierr);
+        ierr = VecAssemblyEnd(b); CHKERRQ(ierr);
         // VecView(b, PETSC_VIEWER_STDOUT_SELF);
 
         //       Create linear solver context
@@ -245,8 +294,6 @@ int main(int argc, char *argv[])
         ierr = KSPGetPC(ksp,&pc);CHKERRQ(ierr);
         ierr = PCSetType(pc, pcArg);CHKERRQ(ierr);
         linearSystem->setInfoSolverPreconditionerName(preconditioner);
-
-
 
         // solver
         std::string solver_name = linearSystem->solverArg.getValue();
@@ -273,23 +320,21 @@ int main(int argc, char *argv[])
         }
 
         auto timeSolveStart = std::chrono::steady_clock::now();
-        ierr = KSPSolve(ksp, x, x); CHKERRQ(ierr);
+        ierr = KSPSolve(ksp, b, x); CHKERRQ(ierr);
         linearSystem->setInfoTimeSolver(elapsedSeconds(timeSolveStart));
 
+        // MatView(A, PETSC_VIEWER_STDOUT_SELF);
 
 
-        if (rank == 0)
+        //       if (rank == 0)
         {
-            MatView(A, PETSC_VIEWER_STDOUT_SELF);
-
             for (int i = 0; i < linearSystem->n(); i++)
             {
                 VecGetValues(x,1,&i, &linearSystem->system_rhs->val[i]);
             }
 
-
-            std::cout << "OK" << std::endl;
             linearSystem->system_sln = linearSystem->system_rhs;
+
             linearSystem->writeSolution();
 
             // check solution
