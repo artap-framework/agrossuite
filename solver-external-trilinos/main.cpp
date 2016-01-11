@@ -135,7 +135,7 @@ void solveAmesos(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProb
     delete amesosSolver;
 }
 
-void solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, int preconditioner)
+void solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, int preconditioner, int solver)
 {
     AztecOO aztecooSolver(problem);
     // create parameter list for solver
@@ -144,9 +144,9 @@ void solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPro
     parListAztecOO.set ("PrintStatus", false); // test of parameter setting
     aztecooSolver.SetParameters(parListAztecOO);
     aztecooSolver.SetAztecOption(AZ_precond, preconditioner);
+
     aztecooSolver.SetAztecOption(AZ_subdomain_solve, AZ_ilut);
-    aztecooSolver.SetAztecOption(AZ_solver, AZ_tfqmr);
-    // aztecooSolver.SetAztecOption(AZ_precond, AZ_Jacobi);
+    aztecooSolver.SetAztecOption(AZ_solver, AZ_tfqmr);  // solver
     // aztecooSolver.SetAztecOption(AZ_solver, AZ_bicgstab);
     aztecooSolver.Iterate(maxIter, relTol);
     // std::cout << "Solver performed " << aztecooSolver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << aztecooSolver.TrueResidual() << std::endl;
@@ -186,6 +186,7 @@ void solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPro
     }
 }
 
+// TODO: prepare reverse function to get preconditioner name from AZ constant
 int getAztecOOpreconditioner(std::string precondName)
 {
     int preconditioner;
@@ -203,10 +204,44 @@ int getAztecOOpreconditioner(std::string precondName)
     else if (precondName == "AZ_dom_decomp")
         preconditioner = AZ_dom_decomp;
     else
+    {
         preconditioner = AZ_dom_decomp;
+        precondName = "AZ_dom_decomp";
+    }
 
     std::cout << "AztecOO preconditioner is set to: " << precondName << std::endl;
     return preconditioner;
+}
+
+// TODO: prepare reverse function to get solver name from AZ constant
+int getAztecOOsolver(std::string solverName)
+{
+    int solver;
+
+    if (solverName == "AztecOO_cg")                  // Conjugate gradient (Applicable to symmetric positive definite matrices, sometimes usable with mildly non-symmetric matrices).
+        solver = AZ_cg;
+    else if (solverName == "AztecOO_cg_condnum")     // Conjugate gradient with condition number estimation.(Similar to AZ cg. Additionally computes extreme eigenvalue estimates using the generated Lanczos matrix).
+        solver = AZ_cg_condnum;
+    else if (solverName == "AztecOO_gmres")          // Restarted generalized minimal residual.
+        solver = AZ_gmres;
+    else if (solverName == "AztecOO_gmres_condnum")  // Restarted GMRES with condition number estimation. (Similar to AZ gmres. Additionally computes extreme eigenvalues using the generated Hessenberg matrix.)
+        solver = AZ_gmres_condnum;
+    else if (solverName == "AztecOO_cgs")            // Conjugate gradient squared.
+        solver = AZ_cgs;
+    else if (solverName == "AztecOO_tfqmr")          // Transpose-free quasi-minimal residual.
+        solver = AZ_tfqmr;
+    else if (solverName == "AztecOO_bicgstab")       // Bi-conjugate gradient with stabilization.
+        solver = AZ_bicgstab;
+    else if (solverName == "AztecOO_lu")             // Sparse direct solver (single processor only). Note: This option is available only when –enable-aztecoo-azlu is specified on the AztecOO configure script invocation command
+        solver = AZ_lu;
+    else
+    {
+        solver = AZ_tfqmr;
+        solverName = "AztecOO_tfqmr";
+    }
+
+    std::cout << "AztecOO solver is set to: " << solverName << std::endl;
+    return solver;
 }
 
 void solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType, std::string smootherType, std::string coarseType)
@@ -675,6 +710,8 @@ int main(int argc, char *argv[])
 
         // solver calling
         std::string solver = linearSystem->solverArg.getValue();
+        std::cout << "Solver: " << solver << std::endl;
+
         // add solver name to test info
         linearSystem->setInfoSolverSolverName(solver);
         auto timeSolveStart = std::chrono::steady_clock::now();
@@ -702,9 +739,9 @@ int main(int argc, char *argv[])
             {
                 solveAmesos(linearSystem, problem, "Amesos_Paraklete");
             }
-            else if (solver == "AztecOO")
+            else if (solver.compare(0, 7, "AztecOO") == 0)   // one of AztecOO solvers selected
             {
-                solveAztecOO(linearSystem, problem, maxIter, relTol, getAztecOOpreconditioner(linearSystem->preconditionerArg.getValue()));
+                solveAztecOO(linearSystem, problem, maxIter, relTol, getAztecOOpreconditioner(linearSystem->preconditionerArg.getValue()), getAztecOOsolver(solver));
             }
             else
             {
