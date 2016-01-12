@@ -276,11 +276,6 @@ int main(int argc, char *argv[])
     {
         int status = 0;
 
-
-        LinearSystemPETScArgs *linearSystem = NULL;
-        linearSystem = createLinearSystem("External solver - PETSc", argc, argv);
-        auto timeStart = std::chrono::steady_clock::now();
-
         Vec x,b;
         Mat  A;
         PetscMPIInt size;
@@ -299,161 +294,129 @@ int main(int argc, char *argv[])
         // std::cout << "rank =  " << rank << std::endl;
         ierr = PetscOptionsGetBool(NULL,"-nonzero_guess", &nonzeroguess,NULL); CHKERRQ(ierr);
 
+        LinearSystemPETScArgs *linearSystem = nullptr;
+        linearSystem = createLinearSystem("External solver - PETSc", argc, argv);
 
-        PetscInt *row_indicies = NULL;
-        PetscInt *row_lengths = NULL;
-
+        auto timeStart = std::chrono::steady_clock::now();
 
         n_rows = linearSystem->n();
         n = linearSystem->nz();
-        column_indicies = new PetscInt[n];
-        row_indicies = new PetscInt[n_rows];
-        row_lengths = new PetscInt[n_rows];
-        int * diagonal = new PetscInt[n_rows];
-        int * offDiagonal = new PetscInt[n_rows];
-
-        for (int i = 0; i < n_rows; i++)
-        {
-            row_indicies[i] = linearSystem->system_matrix_pattern->rowstart[i];
-        }
-
-        for (int i = 0; i < n; i++)
-        {
-            column_indicies[i] = linearSystem->system_matrix_pattern->colnums[i];
-
-        }
-
-
-        int maxlen = 0;
-        for(int i = 0; i < n_rows; i++)
-        {
-            if (i == (n_rows - 1))
-            {
-                row_lengths[i] = n - row_indicies[i];
-            }
-            else
-            {
-                row_lengths[i] = row_indicies[i+1] - row_indicies[i];
-            }
-            // std::cout << row_lengths[i] << "  ";
-            if ((row_lengths[i]) > maxlen)
-            {
-                maxlen = row_lengths[i];
-            }
-
-        }
-
-
 
         linearSystem->setInfoNumOfProc(size);
-        ierr = MatCreate(PETSC_COMM_WORLD, &A); CHKERRQ(ierr);
-        ierr = MatSetType(A, MATMPIAIJ); CHKERRQ(ierr);
-        int istart, iend;
-        ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, n_rows, n_rows); CHKERRQ(ierr);
 
-        ierr = MatSeqAIJSetPreallocation(A, 0, row_lengths);CHKERRQ(ierr);
-        ierr = MatMPIAIJSetPreallocation(A, n_rows, NULL, n_rows, NULL); CHKERRQ(ierr);
-        ierr = MatSetFromOptions(A);
-        ierr = MatGetOwnershipRange(A, &istart,&iend); CHKERRQ(ierr);
-        // std::cout << "Process:" << rank << " Local Size:" << localSize << " istart:" << istart << " iend:" << iend << std::endl;
+        auto timeSetMatrixStart = std::chrono::steady_clock::now();
 
-        int j = 0;
-        for(int i = 0; i < n_rows; i++)
-        {
-            int diag = 0;
-            int offDiag = 0;
-
-            for(int k = 0; k < row_lengths[i]; k++)
-            {
-                if((column_indicies[j] >= istart ) && (column_indicies[j] < iend ))
-                {
-                    diag++;
-                } else
-                {
-                    offDiag++;
-                }
-                j++;
-            }
-
-            diagonal[i] = row_lengths[i] +1;
-            offDiagonal[i] = offDiag;
-        }
-
-        //        if(rank == 0)
-        //        {
-        //            for(int i = 0; i < n_rows; i++)
-        //            {
-        //                std::cout << diagonal[i] + offDiagonal[i] << "  " <<  row_lengths[i] << std::endl;
-        //            }
-        //        }
+        int istart = 0;
+        int iend = 0;
 
 
-
-        ierr = MatMPIAIJSetPreallocation(A, maxlen, NULL, maxlen, NULL); CHKERRQ(ierr);
-        // ierr = MatMPIAIJSetPreallocationCSR(A, row_indicies, column_indicies, NULL); CHKERRQ(ierr);
-
-        linearSystem->setInfoTimeReadMatrix(elapsedSeconds(timeStart));
-
-        for (int i = istart; i < iend; i++)
-        {
-            // std::cout << "row:" << i << " row lengths:" << row_lengths[i] << "  " << column_indicies[row_indicies[i]+1] << std::endl;
-            MatSetValues(A, 1, &i, row_lengths[i], &column_indicies[row_indicies[i]],&linearSystem->system_matrix->val[row_indicies[i]], INSERT_VALUES);
-        }
-
-
-        ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
-        ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
-
-        MatInfo matinfo;
-        MatGetInfo(A,MAT_LOCAL,&matinfo);
-        // std::cout  << "Dnnz:" << (PetscInt)matinfo.nz_used << std::endl;
-
-        // MatView(A, PETSC_VIEWER_STDOUT_SELF);
-
+        // create vector
         ierr = VecCreateMPI(PETSC_COMM_WORLD, PETSC_DECIDE, n_rows, &x); CHKERRQ(ierr);
+        ierr = VecCreateMPI(PETSC_COMM_WORLD, PETSC_DECIDE, n_rows, &b); CHKERRQ(ierr);
         ierr = PetscObjectSetName((PetscObject) x, "Solution"); CHKERRQ(ierr);
+        ierr = PetscObjectSetName((PetscObject) b, "RHS"); CHKERRQ(ierr);
         ierr = VecSetFromOptions(x); CHKERRQ(ierr);
-        ierr = VecDuplicate(x,&b); CHKERRQ(ierr);
+        ierr = VecSetFromOptions(b); CHKERRQ(ierr);
 
+        // local assemble
 
-        ierr = VecGetOwnershipRange(x,&istart,&iend); CHKERRQ(ierr);
+        ierr = VecGetOwnershipRange(b, &istart, &iend); CHKERRQ(ierr);
+//         PetscInt *vecIdx = new PetscInt[iend - istart];
+//         PetscScalar *vecVal = new PetscScalar[iend - istart];
+//                for (int i = istart; i < iend; i++)
+//                {
+//                    vecIdx[i] = i;
+//                    vecVal[i] = linearSystem->system_rhs->val[i];
+//                }
+
         for (int i = istart; i < iend; i++)
-
-            for (int i = istart; (i < iend); i++)
-            {
-                VecSetValues(b, 1, &i, &linearSystem->system_rhs->val[i], INSERT_VALUES);
-            }
+        {
+            VecSetValues(b, 1, &i, &linearSystem->system_rhs->val[i], INSERT_VALUES);
+        }
 
         ierr = VecAssemblyBegin(b); CHKERRQ(ierr);
         ierr = VecAssemblyEnd(b); CHKERRQ(ierr);
         // VecView(b, PETSC_VIEWER_STDOUT_SELF);
 
-        //       Create linear solver context
-        ierr = KSPCreate(PETSC_COMM_WORLD,&ksp);CHKERRQ(ierr);
-        ierr = KSPSetOperators(ksp,A,A,DIFFERENT_NONZERO_PATTERN);CHKERRQ(ierr);
+        // create matrix
+        ierr = MatCreate(PETSC_COMM_WORLD, &A); CHKERRQ(ierr);
+        ierr = MatSetType(A, MATMPIAIJ); CHKERRQ(ierr);
+        ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, n_rows, n_rows); CHKERRQ(ierr);
+        ierr = MatSetFromOptions(A); CHKERRQ(ierr);
 
-        std::string preconditioner = linearSystem->preconditionerArg.getValue();
+        PetscInt *csrRowPtr = new PetscInt[n_rows + 1];
+        PetscInt *csrColInd = new PetscInt[linearSystem->nz()];
 
-        // preconditioner
-        PCType pcArg = preConditioner(preconditioner);
-        ierr = KSPGetPC(ksp,&pc);CHKERRQ(ierr);
-        ierr = PCSetType(pc, pcArg);CHKERRQ(ierr);
-        PCHYPRESetType(pc, "boomeramg");
-        linearSystem->setInfoSolverPreconditionerName(preconditioner);
-
-        // solver
-        std::string solver_name = linearSystem->solverArg.getValue();
-        KSPType kspArg = solver(solver_name);
-        if(kspArg != "none")
+        // loop over the elements of the matrix row by row
+        unsigned int index = 0;
+        for (unsigned int row = 0; row < linearSystem->n(); row++)
         {
-            ierr = KSPSetType(ksp, kspArg);
-            linearSystem->setInfoSolverSolverName(solver_name);
+            std::size_t col_start = linearSystem->system_matrix_pattern->rowstart[row];
+            std::size_t col_end = linearSystem->system_matrix_pattern->rowstart[row + 1];
+
+            csrRowPtr[row] = index;
+
+            for (unsigned int i = col_start; i < col_end; i++)
+            {
+                csrColInd[index] = linearSystem->system_matrix_pattern->colnums[i];
+
+                index++;
+            }
         }
-        else
-            linearSystem->setInfoSolverSolverName("default");
+        csrRowPtr[linearSystem->n()] = linearSystem->nz();
 
+        // preallocate whole matrix
+        ierr = MatMPIAIJSetPreallocationCSR(A, csrRowPtr, csrColInd, PETSC_NULL); CHKERRQ(ierr);
+        ierr = MatSeqAIJSetPreallocationCSR(A, csrRowPtr, csrColInd, PETSC_NULL); CHKERRQ(ierr);
 
-        PCFactorSetShiftType(pc, MAT_SHIFT_NONZERO);
+        // local assemble
+        ierr = MatGetOwnershipRange(A, &istart, &iend); CHKERRQ(ierr);
+        int nzLocal = 0;
+        for (unsigned int row = istart; row < iend; row++)
+            nzLocal += linearSystem->system_matrix_pattern->rowstart[row + 1] - linearSystem->system_matrix_pattern->rowstart[row];
+
+        PetscInt *csrRowPtrLocal = new PetscInt[iend - istart + 1];
+        PetscInt *csrColIndLocal = new PetscInt[nzLocal];
+        PetscScalar *csrValLocal = new PetscScalar[nzLocal];
+
+        // loop over the elements of the matrix row by row
+        unsigned int indexLocal = 0;
+        int j = 0;
+        for (unsigned int row = istart; row < iend; row++)
+        {
+            std::size_t col_start = linearSystem->system_matrix_pattern->rowstart[row];
+            std::size_t col_end = linearSystem->system_matrix_pattern->rowstart[row + 1];
+
+            csrRowPtrLocal[j] = indexLocal;
+            j++;
+
+            for (unsigned int i = col_start; i < col_end; i++)
+            {
+                csrColIndLocal[indexLocal] = linearSystem->system_matrix_pattern->colnums[i];
+                csrValLocal[indexLocal] = linearSystem->matA[i];
+
+                indexLocal++;
+            }
+        }
+        csrRowPtrLocal[iend - istart] = nzLocal;
+
+        ierr = MatCreateMPIAIJWithArrays(PETSC_COMM_WORLD, iend - istart, PETSC_DECIDE,
+                                         PETSC_DETERMINE, n_rows,
+                                         csrRowPtrLocal, csrColIndLocal, linearSystem->system_matrix->val, &A); CHKERRQ(ierr);
+       //  MatView(A, PETSC_VIEWER_STDOUT_SELF);
+
+        ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+        ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+
+        MatInfo matinfo;
+        MatGetInfo(A, MAT_LOCAL, &matinfo);
+        std::cout  << "nnz: " << (PetscInt) matinfo.nz_used << ", n: " << (PetscInt) matinfo.block_size << std::endl;
+
+        std::cout << "elapsedSeconds = " << elapsedSeconds(timeSetMatrixStart) << std::endl;
+
+        // Create linear solver context
+        ierr = KSPCreate(PETSC_COMM_WORLD, &ksp);CHKERRQ(ierr);
+        ierr = KSPSetOperators(ksp, A, A, DIFFERENT_NONZERO_PATTERN); CHKERRQ(ierr);
 
         PetscReal relTol;
         if (linearSystem->relTolArg.isSet())
@@ -476,34 +439,23 @@ int main(int argc, char *argv[])
         }
         else maxIter = PETSC_DEFAULT;
 
-
-        ierr = KSPSetTolerances(ksp, relTol, absTol, PETSC_DEFAULT, maxIter);CHKERRQ(ierr);
-
-        ierr = KSPSetFromOptions(ksp);CHKERRQ(ierr);
-
-        if (nonzeroguess)
-        {
-            PetscScalar p = .1;
-            ierr = VecSet(x,p); CHKERRQ(ierr);
-            ierr = KSPSetInitialGuessKnoll(ksp,PETSC_TRUE);CHKERRQ(ierr);
-        }
+        ierr = KSPSetTolerances(ksp, relTol, absTol, PETSC_DEFAULT, maxIter); CHKERRQ(ierr);
+        ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);
 
         auto timeSolveStart = std::chrono::steady_clock::now();
         ierr = KSPSolve(ksp, b, x); CHKERRQ(ierr);
         linearSystem->setInfoTimeSolver(elapsedSeconds(timeSolveStart));
 
-        // MatView(A, PETSC_VIEWER_STDOUT_SELF);
+        // VecView(x, PETSC_VIEWER_STDOUT_SELF);
 
-
-        //       if (rank == 0)
+        for (int i = 0; i < linearSystem->n(); i++)
         {
-            for (int i = 0; i < linearSystem->n(); i++)
-            {
-                VecGetValues(x,1,&i, &linearSystem->system_rhs->val[i]);
-            }
+            VecGetValues(x, 1, &i, &linearSystem->system_rhs->val[i]);
+        }
 
+        if (rank == 0)
+        {
             linearSystem->system_sln = linearSystem->system_rhs;
-
             linearSystem->writeSolution();
 
             // check solution
@@ -511,9 +463,6 @@ int main(int argc, char *argv[])
                 status = linearSystem->compareWithReferenceSolution();
 
             linearSystem->setInfoTimeTotal(elapsedSeconds(timeStart));
-
-            delete [] row_indicies;
-            delete [] row_lengths;
 
             if (linearSystem->verbose() > 0)
             {
@@ -525,8 +474,14 @@ int main(int argc, char *argv[])
 
         }
 
+        // PetscFree(vecIdx);
+        // PetscFree(vecVal);
+        PetscFree(csrRowPtr);
+        PetscFree(csrColInd);
+
         ierr = VecDestroy(&x); CHKERRQ(ierr);
-        ierr = VecDestroy(&b); CHKERRQ(ierr); ierr = MatDestroy(&A);CHKERRQ(ierr);
+        ierr = VecDestroy(&b); CHKERRQ(ierr);
+        ierr = MatDestroy(&A);CHKERRQ(ierr);
         ierr = KSPDestroy(&ksp); CHKERRQ(ierr);
 
         ierr = PetscFinalize();
