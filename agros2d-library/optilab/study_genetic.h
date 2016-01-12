@@ -27,7 +27,7 @@
 #include "study.h"
 #include "parameter.h"
 
-class ProblemResult;
+class ComputationResults;
 
 class GeneticPopulationRandom : public ComputationSet
 {

@@ -26,7 +26,6 @@
 #include "problem_config.h"
 
 #include "mesh/meshgenerator.h"
-
 #include "pythonlab/pythonengine.h"
 
 class ProblemSolver;
@@ -42,7 +41,8 @@ class PyProblem;
 class Computation;
 class PostDeal;
 class SolutionStore;
-class ProblemResult;
+class ResultRecipes;
+class ComputationResults;
 class Studies;
 
 class CalculationThread : public QThread
@@ -173,11 +173,21 @@ public:
     void writeProblemToArchive(const QString &archiveFileName, bool onlyProblemFile = true);
     void readProblemFromFile(const QString &archiveFileName);
 
-    inline Studies *studies() { return m_studies; }
-
     // filenames
     virtual QString problemFileName() const;
     inline QString archiveFileName() const { return m_fileName; }
+
+    // recipes
+    inline ResultRecipes *recipes() const { return m_recipes; }
+    inline void clearRecipes();
+    inline void loadRecipes();
+    inline void saveRecipes();
+
+    // studies
+    inline Studies *studies() { return m_studies; }
+    void clearStudies();
+    void loadStudies();
+    void saveStudies();
 
 signals:
     void fileNameChanged(const QString &archiveFileName);
@@ -188,10 +198,15 @@ public slots:
 private:
     QString m_fileName;
     QSharedPointer<Computation> m_currentComputation;
-    Studies *m_studies;
 
     friend class PyComputation;
     friend class PyProblem;
+
+    // recipes
+    ResultRecipes *m_recipes;
+
+    // studies
+    Studies *m_studies;
 };
 
 class AGROS_LIBRARY_API Computation : public ProblemBase
@@ -210,7 +225,6 @@ public:
     inline PostDeal *postDeal() { return m_postDeal; }
     inline ProblemSolver *problemSolver() { return m_problemSolver; }
     inline SolutionStore *solutionStore() { return m_solutionStore; }
-    inline ProblemResult *result() const { return m_result; }
 
     bool isSolved() const;
     bool isSolving() const { return m_isSolving; }
@@ -218,10 +232,6 @@ public:
     bool isMeshing() const { return m_isMeshing; }
     bool isAborted() const { return m_abort; }
     bool isPreparedForAction() const { return !isMeshing() && !isSolving() && !m_isPostprocessingRunning; }
-
-    // results
-    bool loadResults();
-    bool saveResults();
 
     inline QTime timeElapsed() const { return m_lastTimeElapsed; }
 
@@ -255,13 +265,18 @@ public:
     virtual QString problemFileName() const;
     inline QString problemDir() { return m_problemDir; }
 
+    // results
+    inline ComputationResults *results() const { return m_results; }
+    void clearResults();
+    void loadResults();
+    void saveResults();
+
 signals:
     void meshed();
     void solved();
 
 public slots:    
     void clearSolution();
-    void clearResults();
     void doAbortSolve();
     virtual void clearFieldsAndConfig();
 
@@ -277,7 +292,6 @@ protected:
     dealii::Triangulation<2> m_initialUnrefinedMesh;
     // calculation mesh - at the present moment we do not use multimesh
     dealii::Triangulation<2> m_calculationMesh;
-    ProblemResult *m_result;
 
     // solution store
     SolutionStore *m_solutionStore;
@@ -296,6 +310,9 @@ protected:
     void solveInit(); // called by solve, can throw SolverException
     void solveAction(); // called by solve, can throw SolverException
     bool meshAction(bool emitMeshed);
+
+    // results
+    ComputationResults *m_results;
 };
 
 #endif // PROBLEM_H

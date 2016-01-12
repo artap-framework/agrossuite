@@ -27,13 +27,10 @@
 
 // consts
 const QString TYPE = "type";
-
 const QString PARAMETERS = "parameters";
 const QString FUNCTIONAL = "functionals";
-
 const QString COMPUTATIONS = "computations";
 const QString COMPUTATIONSET = "computationset";
-
 const QString STUDIES = "studies";
 
 ComputationSet::ComputationSet(QList<QSharedPointer<Computation> > set)
@@ -182,7 +179,7 @@ void Study::fillTreeView(QTreeWidget *trvComputations)
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(itemComputationSet);
             item->setText(0, computation->problemDir());
-            item->setText(1, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->result()->hasResults() ? tr("results") : tr("no results")));
+            item->setText(1, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->results()->hasResults() ? tr("results") : tr("no results")));
             item->setData(0, Qt::UserRole, computation->problemDir());
         }
     }
@@ -199,27 +196,18 @@ QVariant Study::variant()
 
 Studies::Studies(QObject *parent) : QObject(parent)
 {
-    connect(this, SIGNAL(invalidated()), this, SLOT(save()));
-}
-
-Studies::~Studies()
-{
-    QString fn = QString("%1/studies.json").arg(cacheProblemDir());
-    if (QFile::exists(fn))
-        QFile::remove(fn);
+    //connect(this, SIGNAL(invalidated()), this, SLOT(save())); TODO: only GUI
 }
 
 void Studies::addStudy(Study *study)
 {
     m_studies.append(study);
-
     emit invalidated();
 }
 
 void Studies::removeStudy(Study *study)
 {
     m_studies.removeOne(study);
-
     emit invalidated();
 }
 
@@ -228,18 +216,15 @@ void Studies::clear()
     for (int i = 0; i < m_studies.size(); i++)
         delete m_studies[i];
     m_studies.clear();
-
     emit invalidated();
 }
 
-bool Studies::load()
+bool Studies::load(const QString &fileName)
 {
     blockSignals(true);
     clear();
 
-    QString fn = QString("%1/studies.json").arg(cacheProblemDir());
-
-    QFile file(fn);
+    QFile file(fileName);
     if (!file.exists())
         return true; // no study
 
@@ -276,20 +261,17 @@ bool Studies::load()
     return true;
 }
 
-bool Studies::save()
+bool Studies::save(const QString &fileName)
 {
-    QString fn = QString("%1/studies.json").arg(cacheProblemDir());
-
     if (m_studies.isEmpty())
     {
-        if (QFile::exists(fn))
-            QFile::remove(fn);
+        if (QFile::exists(fileName))
+            QFile::remove(fileName);
 
         return true;
     }
 
-    QFile file(fn);
-
+    QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly))
     {
         qWarning("Couldn't open studies file.");
@@ -299,7 +281,6 @@ bool Studies::save()
     QJsonObject rootJson;
     QJsonArray studiesJson;
 
-    // studies
     foreach (Study *study, m_studies)
     {
         QJsonObject studyJson;
@@ -309,7 +290,7 @@ bool Studies::save()
     }
     rootJson[STUDIES] = studiesJson;
 
-    // save to file
+    // save
     QJsonDocument doc(rootJson);
     file.write(doc.toJson());
 

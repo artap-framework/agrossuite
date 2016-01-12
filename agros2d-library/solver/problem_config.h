@@ -38,6 +38,9 @@ namespace XMLProblem
 typedef QMap<QString, double> StringToDoubleMap;
 Q_DECLARE_METATYPE(StringToDoubleMap)
 
+typedef QMap<QString, QVariant> StringToVariantMap;
+Q_DECLARE_METATYPE(StringToVariantMap)
+
 class ProblemConfig : public QObject
 {
     Q_OBJECT
@@ -89,7 +92,7 @@ public:
     inline void setValue(Type type, const QString &value, bool emitChanged = true) { m_setting[type] = value; emit changed(); if (emitChanged) emit changed(); }
     inline void setValue(Type type, Value value, bool emitChanged = true) { m_setting[type] = QVariant::fromValue(value); emit changed(); if (emitChanged) emit changed(); }
     inline void setValue(Type type, StringToDoubleMap parameters, bool emitChanged = true) { m_setting[type] = QVariant::fromValue(parameters); emit changed(); if (emitChanged) emit changed(); }
-    inline void setValue(Type type, QMap<QString, QVariant> parameters, bool emitChanged = true) { m_setting[type] = parameters; emit changed(); if (emitChanged) emit changed(); }
+    inline void setValue(Type type, StringToVariantMap parameters, bool emitChanged = true) { m_setting[type] = parameters; emit changed(); if (emitChanged) emit changed(); }
 
     inline QVariant defaultValue(Type type) {  return m_settingDefault[type]; }
 
