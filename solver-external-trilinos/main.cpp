@@ -220,7 +220,7 @@ int getAztecOOsolver(std::string solverName)
     else
     {
         solver = AZ_tfqmr;
-        if (solverName.compare(0, 9, "Aztec00ML"))
+        if (solverName.compare(0, 9, "AztecOOML"))
             solverName = "AztecOOML_tfqmr";
         else
             solverName = "AztecOO_tfqmr";
