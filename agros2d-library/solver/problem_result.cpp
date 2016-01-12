@@ -39,6 +39,9 @@ const QString POINTX = "x";
 const QString POINTY = "y";
 const QString COMPONENT = "component";
 
+const QString EDGES = "edges";
+const QString LABELS = "labels";
+
 ResultRecipe::ResultRecipe(const QString &name, const QString &fieldID, const QString &variable, int timeStep, int adaptivityStep)
     : m_name(name), m_fieldID(fieldID), m_variable(variable), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep) { }
 
@@ -129,6 +132,115 @@ double LocalValueRecipe::evaluate(QSharedPointer<Computation> computation)
             // TODO: component
             return values[variable()].vector.magnitude();
         }
+    }
+}
+
+SurfaceIntegralRecipe::SurfaceIntegralRecipe(const QString &name, const QString &fieldID, const QString &variable, int timeStep, int adaptivityStep)
+    : ResultRecipe(name, fieldID, variable, timeStep, adaptivityStep)
+{
+    m_edges = QList<int>();
+}
+
+void SurfaceIntegralRecipe::load(QJsonObject &object)
+{
+    QJsonArray edgesJson = object[EDGES].toArray();
+    for (int i = 0; i < edgesJson.size(); i++)
+        m_edges.append(edgesJson[i].toInt());
+
+    ResultRecipe::load(object);
+}
+
+void SurfaceIntegralRecipe::save(QJsonObject &object)
+{
+    QJsonArray edgesJson;
+    foreach (int label, m_edges)
+        edgesJson.append(label);
+    object[EDGES] = edgesJson;
+
+    ResultRecipe::save(object);
+}
+
+double SurfaceIntegralRecipe::evaluate(QSharedPointer<Computation> computation)
+{
+    if (computation->isSolved() or computation->isSolving())
+    {
+        FieldInfo *fieldInfo = computation->fieldInfo(fieldID());
+        computation->scene()->selectNone();
+
+        if (!m_edges.isEmpty())
+        {
+            foreach (int edge, m_edges)
+            {
+                assert((edge >= 0) && (edge < computation->scene()->faces->length()));
+                computation->scene()->faces->at(edge)->setSelected(true);
+            }
+        }
+        else
+        {
+            computation->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
+        }
+
+        std::shared_ptr<IntegralValue> integralValue = fieldInfo->plugin()->surfaceIntegral(computation.data(), fieldInfo,
+                                                                                            timeStep(computation, fieldInfo),
+                                                                                            adaptivityStep(computation, fieldInfo));
+
+        QMap<QString, double> values(integralValue->values());
+        return values[variable()];
+    }
+}
+
+VolumeIntegralRecipe::VolumeIntegralRecipe(const QString &name, const QString &fieldID, const QString &variable, int timeStep, int adaptivityStep)
+    : ResultRecipe(name, fieldID, variable, timeStep, adaptivityStep)
+{
+    m_labels = QList<int>();
+}
+
+void VolumeIntegralRecipe::load(QJsonObject &object)
+{
+    QJsonArray labelsJson = object[LABELS].toArray();
+    for (int i = 0; i < labelsJson.size(); i++)
+        m_labels.append(labelsJson[i].toInt());
+
+    ResultRecipe::load(object);
+}
+
+void VolumeIntegralRecipe::save(QJsonObject &object)
+{
+    QJsonArray labelsJson;
+    foreach (int label, m_labels)
+        labelsJson.append(label);
+    object[LABELS] = labelsJson;
+
+    ResultRecipe::save(object);
+}
+
+double VolumeIntegralRecipe::evaluate(QSharedPointer<Computation> computation)
+{
+    if (computation->isSolved() or computation->isSolving())
+    {
+        FieldInfo *fieldInfo = computation->fieldInfo(fieldID());
+        computation->scene()->selectNone();
+
+        if (!m_labels.isEmpty())
+        {
+            foreach (int label, m_labels)
+            {
+                assert((label >= 0) && (label < computation->scene()->labels->length()));
+                assert(computation->scene()->labels->at(label)->marker(fieldInfo) != computation->scene()->materials->getNone(fieldInfo));
+                computation->scene()->labels->at(label)->setSelected(true);
+            }
+        }
+        else
+        {
+            computation->scene()->selectAll(SceneGeometryMode_OperateOnLabels);
+        }
+
+        std::shared_ptr<IntegralValue> integralValue = fieldInfo->plugin()->volumeIntegral(computation.data(), fieldInfo,
+                                                                                           timeStep(computation, fieldInfo),
+                                                                                           adaptivityStep(computation, fieldInfo));
+
+        QMap<QString, double> values(integralValue->values());
+        return values[variable()];
     }
 }
 

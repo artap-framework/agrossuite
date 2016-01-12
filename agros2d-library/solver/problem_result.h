@@ -82,6 +82,48 @@ protected:
     QString m_component;
 };
 
+class SurfaceIntegralRecipe : public ResultRecipe
+{
+public:
+    SurfaceIntegralRecipe(const QString &name = "", const QString &fieldID = "", const QString &variable = "",
+                     int timeStep = -1, int adaptivityStep = -1);
+    ~SurfaceIntegralRecipe() {}
+
+    virtual ResultRecipeType type() { return ResultRecipeType_SurfaceIntegral; }
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+    inline QList<int> edges() { return m_edges; }
+    inline void addEdge(int edge) { m_edges.append(edge); }
+
+    virtual double evaluate(QSharedPointer<Computation> computation);
+
+protected:
+    QList<int> m_edges;
+};
+
+class VolumeIntegralRecipe : public ResultRecipe
+{
+public:
+    VolumeIntegralRecipe(const QString &name = "", const QString &fieldID = "", const QString &variable = "",
+                     int timeStep = -1, int adaptivityStep = -1);
+    ~VolumeIntegralRecipe() {}
+
+    virtual ResultRecipeType type() { return ResultRecipeType_VolumeIntegral; }
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+    inline QList<int> labels() { return m_labels; }
+    inline void addLabel(int label) { m_labels.append(label); }
+
+    virtual double evaluate(QSharedPointer<Computation> computation);
+
+protected:
+    QList<int> m_labels;
+};
+
 class ResultRecipes
 {
 public:
