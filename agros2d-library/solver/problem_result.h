@@ -79,7 +79,7 @@ public:
 
 protected:
     Point m_point;
-    QString m_component;
+    PhysicFieldVariableComp m_component;
 };
 
 class SurfaceIntegralRecipe : public ResultRecipe

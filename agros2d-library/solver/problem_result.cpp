@@ -87,14 +87,14 @@ LocalValueRecipe::LocalValueRecipe(const QString &name, const QString &fieldID, 
     : ResultRecipe(name, fieldID, variable, timeStep, adaptivityStep)
 {
     m_point = Point(0, 0);
-    // TODO: component
+    m_component = PhysicFieldVariableComp_Magnitude;
 }
 
 void LocalValueRecipe::load(QJsonObject &object)
 {
     QJsonObject pointJson = object[POINT].toObject();
     m_point = Point(pointJson[POINTX].toDouble(), pointJson[POINTX].toDouble());
-    m_component = object[COMPONENT].toString();
+    m_component = physicFieldVariableCompFromStringKey(object[COMPONENT].toString());
 
     ResultRecipe::load(object);
 }
@@ -105,7 +105,7 @@ void LocalValueRecipe::save(QJsonObject &object)
     pointJson[POINTX] = m_point.x;
     pointJson[POINTY] = m_point.y;
     object[POINT] = pointJson;
-    object[COMPONENT] = m_component;
+    object[COMPONENT] = physicFieldVariableCompToStringKey(m_component);
 
     ResultRecipe::save(object);
 }
@@ -129,8 +129,18 @@ double LocalValueRecipe::evaluate(QSharedPointer<Computation> computation)
         }
         else
         {
-            // TODO: component
-            return values[variable()].vector.magnitude();
+            switch(m_component)
+            {
+            case PhysicFieldVariableComp_Magnitude:
+                return values[variable()].vector.magnitude();
+                break;
+            case PhysicFieldVariableComp_X:
+                return values[variable()].vector.x;
+                break;
+            case PhysicFieldVariableComp_Y:
+                return values[variable()].vector.y;
+                break;
+            }
         }
     }
 }
@@ -266,6 +276,7 @@ bool ResultRecipes::load(const QString &fileName)
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
     QJsonObject storeJson = doc.object();
 
+    clear();
     QJsonArray recipesJson = storeJson[RECIPES].toArray();
     for (int i = 0; i < recipesJson.size(); i++)
     {
@@ -302,9 +313,13 @@ bool ResultRecipes::save(const QString &fileName)
     }
 
     QJsonObject storeJson;
-    QJsonObject recipesJson;
+    QJsonArray recipesJson;
     foreach (ResultRecipe *recipe, m_recipes)
-        recipe->save(recipesJson);
+    {
+        QJsonObject recipeJson;
+        recipe->save(recipeJson);
+        recipesJson.append(recipeJson);
+    }
     storeJson[RECIPES] = recipesJson;
 
     // save to file
