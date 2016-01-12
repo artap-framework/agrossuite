@@ -52,7 +52,7 @@ public:
           aggregationTypeArg(TCLAP::ValueArg<std::string>("e", "aggregationType", "AggregationType", false, "", "string")),
           smootherTypeArg(TCLAP::ValueArg<std::string>("o", "smootherType", "SmootherType", false, "", "string")),
           coarseTypeArg(TCLAP::ValueArg<std::string>("z", "coarseType", "CoarseType", false, "", "string")),
-          // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
+          absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
           relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
           maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
           multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false))
@@ -62,7 +62,7 @@ public:
         cmd.add(aggregationTypeArg);
         cmd.add(smootherTypeArg);
         cmd.add(coarseTypeArg);
-        // cmd.add(absTolArg);
+        cmd.add(absTolArg);
         cmd.add(relTolArg);
         cmd.add(maxIterArg);
         cmd.add(multigridArg);
@@ -73,7 +73,7 @@ public:
     TCLAP::ValueArg<std::string> aggregationTypeArg;
     TCLAP::ValueArg<std::string> smootherTypeArg;
     TCLAP::ValueArg<std::string> coarseTypeArg;
-    // TCLAP::ValueArg<double> absTolArg;
+    TCLAP::ValueArg<double> absTolArg;
     TCLAP::ValueArg<double> relTolArg;
     TCLAP::ValueArg<int> maxIterArg;
     TCLAP::SwitchArg multigridArg;
@@ -103,12 +103,76 @@ LinearSystemPETScArgs *createLinearSystem(std::string extSolverName, int argc, c
 
 KSPType solver(std::string solver)
 {
-    if( solver == "richardson")
+    if(solver == "richardson")
         return KSPRICHARDSON;
     else if( solver == "chebyshev")
         return KSPCHEBYSHEV;
+    else if( solver == "cg")
+        return KSPCG;
+    else if (solver == "groppcg")
+        return KSPGROPPCG;
+    else if (solver == "pipecg")
+        return KSPPIPECG;
+    else if (solver == "cgne")
+        return   KSPCGNE;
+    else if (solver == "nash")
+        return KSPNASH;
+    else if (solver == "stcg")
+        return KSPSTCG;
+    else if (solver == "gltr")
+        return KSPGLTR;
+    else if (solver == "gmres")
+        return KSPGMRES;
+    else if (solver == "fgmres")
+        return KSPFGMRES;
+    else if (solver == "lgmres")
+        return KSPLGMRES;
+    else if (solver == "dgmres")
+        return KSPLGMRES;
+    else if (solver == "pgmres")
+        return KSPPGMRES;
+    else if (solver == "tcqmr")
+        return KSPTCQMR;
+    else if (solver == "bcgs")
+        return KSPBCGS;
+    else if (solver == "ibcgs")
+        return KSPIBCGS;
+    else if (solver == "fbcgs")
+        return KSPFBCGS;
+    else if (solver == "fbcgsr")
+        return KSPFBCGSR;
+    else if (solver == "bcgsl")
+        return KSPBCGSL;
+    else if (solver == "cgs")
+        return KSPCGS;
+    else if (solver == "tfqmr")
+        return KSPTFQMR;
+    else if (solver == "cr")
+        return KSPCR;
+    else if (solver == "pipecr")
+        return KSPPIPECR;
+    else if (solver == "lsqr")
+        return KSPLSQR;
+    else if (solver == "preonly")
+        return KSPPREONLY;
+    else if (solver == "qcg")
+        return KSPQCG;
+    else if (solver == "bicg")
+        return KSPBICG;
+    else if (solver == "minres")
+        return KSPMINRES;
+    else if (solver == "symmlq")
+        return KSPSYMMLQ;
+    else if (solver == "lcd")
+        return KSPLCD;
+    else if (solver == "python")
+        return KSPPYTHON;
+    else if (solver == "gcr")
+        return KSPGCR;
+    else if (solver == "specest")
+        return KSPSPECEST;
     else
-        return "none";
+        return KSPRICHARDSON;
 }
 
 
@@ -130,6 +194,78 @@ PCType preConditioner(std::string preConditioner)
         return PCBJACOBI;
     else if (preConditioner == "eisenstat")
         return PCEISENSTAT;
+    else if (preConditioner == "ilu")
+        return PCILU;
+    else if (preConditioner == "icc")
+        return PCICC;
+    else if (preConditioner == "asm")
+        return PCASM;
+    else if (preConditioner == "gasm")
+        return PCGASM;
+    else if (preConditioner == "ksp")
+        return PCKSP;
+    else if (preConditioner == "composite")
+        return PCCOMPOSITE;
+    else if (preConditioner == "redundant")
+        return PCREDUNDANT;
+    else if (preConditioner == "spai")
+        return PCSPAI;
+    else if (preConditioner == "nn")
+        return PCNN;
+    else if (preConditioner == "cholesky")
+        return PCCHOLESKY;
+    else if (preConditioner == "pbjacobi")
+        return PCPBJACOBI;
+    else if (preConditioner == "mat")
+        return PCMAT;
+    else if (preConditioner == "parms")
+        return PCPARMS;
+    else if (preConditioner == "fieldsplit")
+        return PCFIELDSPLIT;
+    else if (preConditioner == "fieldsplit")
+        return PCFIELDSPLIT;
+    else if (preConditioner == "tfs")
+        return PCTFS;
+    else if (preConditioner == "ml")
+        return PCML;
+    else if (preConditioner == "galerkin")
+        return PCGALERKIN;
+    else if (preConditioner == "exotic")
+        return PCEXOTIC;
+    else if (preConditioner == "hmpi")
+        return PCHMPI;
+    else if (preConditioner == "supportgraph")
+        return PCSUPPORTGRAPH;
+    else if (preConditioner == "asa")
+        return PCASA;
+    else if (preConditioner == "cp")
+        return PCCP;
+    else if (preConditioner == "bfbt")
+        return PCBFBT;
+    else if (preConditioner == "lsc")
+        return PCLSC;
+    else if (preConditioner == "python")
+        return PCPYTHON;
+    else if (preConditioner == "pfmg")
+        return PCPFMG;
+    else if (preConditioner == "syspfmg")
+        return PCSYSPFMG;
+    else if (preConditioner == "redistribute")
+        return PCREDISTRIBUTE;
+    else if (preConditioner == "svd")
+        return PCSVD;
+    else if (preConditioner == "gamg")
+        return PCSVD;
+    else if (preConditioner == "sacusp")
+        return PCSACUSP; /* these four run on NVIDIA GPUs using CUSP */
+    else if (preConditioner == "sacusppoly")
+        return PCSACUSPPOLY;
+    else if (preConditioner == "bicgstabcusp")
+        return PCBICGSTABCUSP;
+    else if (preConditioner == "ainvcusp")
+        return PCAINVCUSP;
+    else if (preConditioner == "bddc")
+        return PCBDDC;
     else
         return "none";
 }
@@ -168,112 +304,109 @@ int main(int argc, char *argv[])
         PetscInt *row_lengths = NULL;
 
 
-            n_rows = linearSystem->n();
-            n = linearSystem->nz();
-            column_indicies = new PetscInt[n];
-            row_indicies = new PetscInt[n_rows];
-            row_lengths = new PetscInt[n_rows];
-            int * diagonal = new PetscInt[n_rows];
-            int * offDiagonal = new PetscInt[n_rows];
+        n_rows = linearSystem->n();
+        n = linearSystem->nz();
+        column_indicies = new PetscInt[n];
+        row_indicies = new PetscInt[n_rows];
+        row_lengths = new PetscInt[n_rows];
+        int * diagonal = new PetscInt[n_rows];
+        int * offDiagonal = new PetscInt[n_rows];
 
-            for (int i = 0; i < n_rows; i++)
+        for (int i = 0; i < n_rows; i++)
+        {
+            row_indicies[i] = linearSystem->system_matrix_pattern->rowstart[i];
+        }
+
+        for (int i = 0; i < n; i++)
+        {
+            column_indicies[i] = linearSystem->system_matrix_pattern->colnums[i];
+
+        }
+
+
+        int maxlen = 0;
+        for(int i = 0; i < n_rows; i++)
+        {
+            if (i == (n_rows - 1))
             {
-                row_indicies[i] = linearSystem->system_matrix_pattern->rowstart[i];
+                row_lengths[i] = n - row_indicies[i];
+            }
+            else
+            {
+                row_lengths[i] = row_indicies[i+1] - row_indicies[i];
+            }
+            // std::cout << row_lengths[i] << "  ";
+            if ((row_lengths[i]) > maxlen)
+            {
+                maxlen = row_lengths[i];
             }
 
-            for (int i = 0; i < n; i++)
-            {
-                column_indicies[i] = linearSystem->system_matrix_pattern->colnums[i];
-            }
+        }
 
-            int localSize  = n_rows / size;
-            int localSizeLast = n_rows % size;
-
-
-
-            for(int i = 0; i < n_rows; i++)
-            {
-
-                if (i == (n_rows - 1))
-                {
-                    row_lengths[i] = n - row_indicies[i];
-                }
-                else
-                {
-                    row_lengths[i] = row_indicies[i+1] - row_indicies[i];
-                }
-            }
-
-            if(localSizeLast < localSize / 2)
-            {
-                localSize --;
-            }
-
-            localSizeLast +=  size;
-
-            // std::cout << "Local size:" << localSize << std::endl;
-            // std::cout << "Local size last:" << localSizeLast << std::endl;
-
-            for(int i = 0; i < n_rows; i++)
-            {
-                int diag = 0;
-                int offDiag = 0;
-                // std::cout << row_indicies[i] << "  ";
-                for(int k = 0, j = column_indicies[row_indicies[i]]; k <= row_lengths[i]; k++, j++)
-                {
-
-                    int blockSize = (i == n_rows -1) ? localSizeLast : localSize;
-
-                    if (j < blockSize){
-                        diag++;
-                    } else
-                    {
-                        offDiag++;
-                    }
-                    // std::cout << j << std::endl;
-                }
-                diagonal[i] = diag;
-                offDiagonal[i] = offDiag;
-            }
-
-
-
-//            for(int i = 0; i < n_rows; i++)
-//            {
-//                std::cout << diagonal[i] << "   " << offDiagonal[i] << std::endl;
-//            }
 
 
         linearSystem->setInfoNumOfProc(size);
         ierr = MatCreate(PETSC_COMM_WORLD, &A); CHKERRQ(ierr);
         ierr = MatSetType(A, MATMPIAIJ); CHKERRQ(ierr);
         int istart, iend;
-
-
         ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, n_rows, n_rows); CHKERRQ(ierr);
 
-        ierr = MatGetOwnershipRange(A, &istart,&iend); CHKERRQ(ierr);
-        // std::cout << rank << "   " << istart << "  " << iend << "  " << "\n";
-
-        ierr = MatMPIAIJSetPreallocation(A, n_rows, NULL, n_rows, NULL); CHKERRQ(ierr);
         ierr = MatSeqAIJSetPreallocation(A, 0, row_lengths);CHKERRQ(ierr);
+        ierr = MatMPIAIJSetPreallocation(A, n_rows, NULL, n_rows, NULL); CHKERRQ(ierr);
         ierr = MatSetFromOptions(A);
-
         ierr = MatGetOwnershipRange(A, &istart,&iend); CHKERRQ(ierr);
-        // int mm, nn;
-        // ierr = MatGetLocalSize(A, &mm, &nn);
-        // std::cout << rank << "   " << mm << "  " << nn << "  " << "\n";
+        // std::cout << "Process:" << rank << " Local Size:" << localSize << " istart:" << istart << " iend:" << iend << std::endl;
+
+        int j = 0;
+        for(int i = 0; i < n_rows; i++)
+        {
+            int diag = 0;
+            int offDiag = 0;
+
+            for(int k = 0; k < row_lengths[i]; k++)
+            {
+                if((column_indicies[j] >= istart ) && (column_indicies[j] < iend ))
+                {
+                    diag++;
+                } else
+                {
+                    offDiag++;
+                }
+                j++;
+            }
+
+            diagonal[i] = row_lengths[i] +1;
+            offDiagonal[i] = offDiag;
+        }
+
+        //        if(rank == 0)
+        //        {
+        //            for(int i = 0; i < n_rows; i++)
+        //            {
+        //                std::cout << diagonal[i] + offDiagonal[i] << "  " <<  row_lengths[i] << std::endl;
+        //            }
+        //        }
+
+
+
+        ierr = MatMPIAIJSetPreallocation(A, maxlen, NULL, maxlen, NULL); CHKERRQ(ierr);
+        // ierr = MatMPIAIJSetPreallocationCSR(A, row_indicies, column_indicies, NULL); CHKERRQ(ierr);
 
         linearSystem->setInfoTimeReadMatrix(elapsedSeconds(timeStart));
+
         for (int i = istart; i < iend; i++)
         {
+            // std::cout << "row:" << i << " row lengths:" << row_lengths[i] << "  " << column_indicies[row_indicies[i]+1] << std::endl;
             MatSetValues(A, 1, &i, row_lengths[i], &column_indicies[row_indicies[i]],&linearSystem->system_matrix->val[row_indicies[i]], INSERT_VALUES);
-
         }
 
 
         ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
         ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY);CHKERRQ(ierr);
+
+        MatInfo matinfo;
+        MatGetInfo(A,MAT_LOCAL,&matinfo);
+        // std::cout  << "Dnnz:" << (PetscInt)matinfo.nz_used << std::endl;
 
         // MatView(A, PETSC_VIEWER_STDOUT_SELF);
 
@@ -284,10 +417,9 @@ int main(int argc, char *argv[])
 
 
         ierr = VecGetOwnershipRange(x,&istart,&iend); CHKERRQ(ierr);
-        // std::cout << istart << "  ";
         for (int i = istart; i < iend; i++)
 
-            for (int istart = 0; (i < iend); i++)
+            for (int i = istart; (i < iend); i++)
             {
                 VecSetValues(b, 1, &i, &linearSystem->system_rhs->val[i], INSERT_VALUES);
             }
@@ -306,6 +438,7 @@ int main(int argc, char *argv[])
         PCType pcArg = preConditioner(preconditioner);
         ierr = KSPGetPC(ksp,&pc);CHKERRQ(ierr);
         ierr = PCSetType(pc, pcArg);CHKERRQ(ierr);
+        PCHYPRESetType(pc, "boomeramg");
         linearSystem->setInfoSolverPreconditionerName(preconditioner);
 
         // solver
@@ -321,15 +454,38 @@ int main(int argc, char *argv[])
 
 
         PCFactorSetShiftType(pc, MAT_SHIFT_NONZERO);
-        ierr = KSPSetTolerances(ksp,1.e-4,PETSC_DEFAULT,PETSC_DEFAULT,PETSC_DEFAULT);CHKERRQ(ierr);
+
+        PetscReal relTol;
+        if (linearSystem->relTolArg.isSet())
+        {
+            relTol = linearSystem->relTolArg.getValue();
+        }
+        else relTol = PETSC_DEFAULT;
+
+        PetscReal absTol;
+        if (linearSystem-> absTolArg.isSet())
+        {
+            absTol = linearSystem->absTolArg.getValue();
+        }
+        else absTol = PETSC_DEFAULT;
+
+        PetscInt maxIter;
+        if (linearSystem-> maxIterArg.isSet())
+        {
+            maxIter = linearSystem->maxIterArg.getValue();
+        }
+        else maxIter = PETSC_DEFAULT;
+
+
+        ierr = KSPSetTolerances(ksp, relTol, absTol, PETSC_DEFAULT, maxIter);CHKERRQ(ierr);
 
         ierr = KSPSetFromOptions(ksp);CHKERRQ(ierr);
 
         if (nonzeroguess)
         {
-            PetscScalar p = .5;
+            PetscScalar p = .1;
             ierr = VecSet(x,p); CHKERRQ(ierr);
-            ierr = KSPSetInitialGuessNonzero(ksp,PETSC_TRUE);CHKERRQ(ierr);
+            ierr = KSPSetInitialGuessKnoll(ksp,PETSC_TRUE);CHKERRQ(ierr);
         }
 
         auto timeSolveStart = std::chrono::steady_clock::now();
