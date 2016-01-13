@@ -71,9 +71,7 @@ build_trilinos:
 build_petsc:
   tags:
     - linux
-  script: 
-    - export CC=/usr/bin/clang
-    - export CXX=/usr/bin/clang++    
+  script:    
     - cd solver-external-petsc
     - cmake .
     - make 
