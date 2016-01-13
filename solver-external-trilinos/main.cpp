@@ -793,6 +793,7 @@ int main(int argc, char *argv[])
         }
         linearSystem->setInfoTimeSolver(elapsedSeconds(timeSolveStart));
         // copy results into the solution vector (for Agros2D)
+        MPI_Barrier(MPI_COMM_WORLD);
         if (rank == 0)
         {
             for (int i = 0; i < linearSystem->n(); i++)
