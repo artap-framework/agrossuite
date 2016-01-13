@@ -57,7 +57,7 @@ bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
     }
 
     // results
-    StringToDoubleMap results = computation->result()->results();
+    StringToDoubleMap results = computation->results()->results();
     foreach (QString key, results.keys())
     {
         if (commandPre.isEmpty())
@@ -71,8 +71,10 @@ bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
     bool successfulRun = currentPythonEngine()->runExpression(m_expression, &result, commandPre);
     currentPythonEngine()->useGlobalDict();
 
+    //qDebug() << result;
+
     if (successfulRun)
-        computation->result()->setResult(m_name, result);
+        computation->results()->setResult(m_name, result);
 
     return successfulRun;
 }

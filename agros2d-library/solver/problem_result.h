@@ -22,29 +22,155 @@
 
 #include "util.h"
 #include "problem_config.h"
+#include "util/enums.h"
 
-class ProblemResult
+class ResultRecipe
 {
 public:
-    ProblemResult();
-    ~ProblemResult() {}
+    ResultRecipe(const QString &name, const QString &fieldID, const QString &variable,
+                 int timeStep, int adaptivityStep);
+    ~ResultRecipe() {}
+
+    virtual ResultRecipeType type() = 0;
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+    inline QString name() { return m_name; }
+    inline void setName(const QString &name) { m_name = name; }
+    inline QString fieldID() { return m_fieldID; }
+    inline void setFieldID(const QString &fieldID) { m_fieldID = fieldID; }
+    inline QString variable() { return m_variable; }
+    inline void setVariable(const QString &variable) { m_variable = variable; }
+
+    int timeStep(QSharedPointer<Computation> computation, FieldInfo *fieldInfo);
+    inline void setTimeStep(int step) { m_timeStep = step; }
+    int adaptivityStep(QSharedPointer<Computation> computation, FieldInfo *fieldInfo);
+    inline void setAdaptivityStep(int step) { m_adaptivityStep = step; }
+
+    virtual double evaluate(QSharedPointer<Computation> computation) = 0;
+
+protected:
+    QString m_name;
+    QString m_fieldID;
+    QString m_variable;
+
+    int m_timeStep;
+    int m_adaptivityStep;
+};
+
+class LocalValueRecipe : public ResultRecipe
+{
+public:
+    LocalValueRecipe(const QString &name = "", const QString &fieldID = "", const QString &variable = "",
+                     int timeStep = -1, int adaptivityStep = -1);
+    ~LocalValueRecipe() {}
+
+    virtual ResultRecipeType type() { return ResultRecipeType_LocalValue; }
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+    inline Point point() { return m_point; }
+    inline void setPoint(Point point) { m_point = point; }
+    inline void setPoint(double x, double y) { m_point = Point(x, y); }
+
+    virtual double evaluate(QSharedPointer<Computation> computation);
+
+protected:
+    Point m_point;
+    PhysicFieldVariableComp m_component;
+};
+
+class SurfaceIntegralRecipe : public ResultRecipe
+{
+public:
+    SurfaceIntegralRecipe(const QString &name = "", const QString &fieldID = "", const QString &variable = "",
+                     int timeStep = -1, int adaptivityStep = -1);
+    ~SurfaceIntegralRecipe() {}
+
+    virtual ResultRecipeType type() { return ResultRecipeType_SurfaceIntegral; }
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+    inline QList<int> edges() { return m_edges; }
+    inline void addEdge(int edge) { m_edges.append(edge); }
+
+    virtual double evaluate(QSharedPointer<Computation> computation);
+
+protected:
+    QList<int> m_edges;
+};
+
+class VolumeIntegralRecipe : public ResultRecipe
+{
+public:
+    VolumeIntegralRecipe(const QString &name = "", const QString &fieldID = "", const QString &variable = "",
+                     int timeStep = -1, int adaptivityStep = -1);
+    ~VolumeIntegralRecipe() {}
+
+    virtual ResultRecipeType type() { return ResultRecipeType_VolumeIntegral; }
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+    inline QList<int> labels() { return m_labels; }
+    inline void addLabel(int label) { m_labels.append(label); }
+
+    virtual double evaluate(QSharedPointer<Computation> computation);
+
+protected:
+    QList<int> m_labels;
+};
+
+class ResultRecipes
+{
+public:
+    ResultRecipes(QList<ResultRecipe *> recipes = QList<ResultRecipe *>());
+    ~ResultRecipes();
+
+    inline void clear() { m_recipes.clear(); }
+
+    bool load(const QString &fileName);
+    bool save(const QString &fileName);
+
+    inline void addRecipe(ResultRecipe *recipe) { m_recipes.append(recipe); }
+    void evaluate(QSharedPointer<Computation> computation);
+
+protected:
+    QList<ResultRecipe *> m_recipes;
+};
+
+class ComputationResults
+{
+public:
+    ComputationResults(StringToDoubleMap results = StringToDoubleMap(),
+                       StringToVariantMap info = StringToVariantMap());
+    ~ComputationResults();
 
     void clear();
 
     bool load(const QString &fileName);
     bool save(const QString &fileName);
 
-    inline double resultValue(const QString &key) const { return m_results[key]; }
+    // results
     inline StringToDoubleMap &results() { return m_results; }
+    inline double resultValue(const QString &key) const { return m_results[key]; }
     inline bool hasResults() const { return !m_results.isEmpty(); }
     inline void setResult(const QString &key, double value) { m_results[key] = value; }
     inline void removeResult(const QString &key) { m_results.remove(key); }
 
-    inline QMap<QString, QVariant> &info() { return m_info; }
+    // info
+    inline StringToVariantMap &info() { return m_info; }
+    inline QVariant infoValue(const QString &key) const { return m_info[key]; }
+    inline bool hasInfo() const { return !m_info.isEmpty(); }
+    inline void setInfo(const QString &key, QVariant value) { m_info[key] = value; }
+    inline void removeInfo(const QString &key) { m_info.remove(key); }
 
 private:
     StringToDoubleMap m_results;
-    QMap<QString, QVariant> m_info;
+    StringToVariantMap m_info;
 };
 
 #endif // PROBLEM_CONFIG_H

@@ -54,5 +54,7 @@ void StudySweepAnalysis::solve()
         evaluateFunctionals(computation);
 
         computation->saveResults();
+        //qDebug() << computation->config()->parameters();
+        //qDebug() << computation->results()->results();
     }
 }

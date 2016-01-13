@@ -53,6 +53,7 @@ static QMap<IterSolverDealII, QString> iterLinearSolverDealIIMethodList;
 static QMap<PreconditionerDealII, QString> iterLinearSolverDealIIPreconditionerList;
 static QMap<StudyType, QString> studyTypeList;
 static QMap<FunctionalType, QString> functionalTypeList;
+static QMap<ResultRecipeType, QString> resultRecipeTypeList;
 
 QStringList coordinateTypeStringKeys() { return coordinateTypeList.values(); }
 QString coordinateTypeToStringKey(CoordinateType coordinateType) { return coordinateTypeList[coordinateType]; }
@@ -161,6 +162,10 @@ StudyType studyTypeFromStringKey(const QString &type) { return studyTypeList.key
 QStringList functionalTypeStringKeys() { return functionalTypeList.values(); }
 QString functionalTypeToStringKey(FunctionalType type) { return functionalTypeList[type]; }
 FunctionalType functionalTypeFromStringKey(const QString &type) { return functionalTypeList.key(type); }
+
+QStringList resultRecipeTypeStringKeys() { return resultRecipeTypeList.values(); }
+QString resultRecipeTypeToStringKey(ResultRecipeType type) { return resultRecipeTypeList[type]; }
+ResultRecipeType resultRecipeTypeFromStringKey(const QString &type) { return resultRecipeTypeList.key(type); }
 
 void initLists()
 {
@@ -830,6 +835,22 @@ QString functionalTypeString(FunctionalType type)
         return QObject::tr("result");
     default:
         std::cerr << "Functional type'" + QString::number(type).toStdString() + "' is not implemented. functionalTypeString(FunctionalType type)" << endl;
+        throw;
+    }
+}
+
+QString resultRecipeTypeString(ResultRecipeType type)
+{
+    switch (type)
+    {
+    case ResultRecipeType_LocalValue:
+        return QObject::tr("local_value");
+    case ResultRecipeType_SurfaceIntegral:
+        return QObject::tr("surface_integral");
+    case ResultRecipeType_VolumeIntegral:
+        return QObject::tr("volume_integral");
+    default:
+        std::cerr << "Result recipe type'" + QString::number(type).toStdString() + "' is not implemented. resultRecipeTypeString(resultRecipeType type)" << endl;
         throw;
     }
 }

@@ -188,14 +188,28 @@ void OptiLabWidget::testSweep()
     // add to list
     Agros2D::problem()->studies()->addStudy(analysis);
 
-    //QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
-    //analysis->addParameter(Parameter::fromList("R1", params));
-    //analysis->addParameter(Parameter::fromRandom("R2", 4, 0.05, 0.07));
-    analysis->addParameter(Parameter::fromLinspace("R3", 3, 0.05, 0.07));
-    analysis->addParameter(Parameter::fromRandom("C", 10, 1, 5));
+    // result recipes
+    LocalValueRecipe *localValueRecipe = new LocalValueRecipe("V", "electrostatic", "electrostatic_potential");
+    localValueRecipe->setPoint(0.02, 0.05);
+    Agros2D::problem()->recipes()->addRecipe(localValueRecipe);
 
-    // add functionals
-    analysis->addFunctional(Functional("We", FunctionalType_Result, "C+R3**2")); //computation.solution(\"electrostatic\").volume_integrals([0,1])[\"We\"]
+    SurfaceIntegralRecipe *surfaceIntegralRecipe = new SurfaceIntegralRecipe("Q", "electrostatic", "electrostatic_charge");
+    surfaceIntegralRecipe->addEdge(1);
+    surfaceIntegralRecipe->addEdge(12);
+    Agros2D::problem()->recipes()->addRecipe(surfaceIntegralRecipe);
+
+    VolumeIntegralRecipe *volumeIntegralRecipe = new VolumeIntegralRecipe("We", "electrostatic", "electrostatic_energy");
+    Agros2D::problem()->recipes()->addRecipe(volumeIntegralRecipe);
+
+    // parameters
+    QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
+    analysis->addParameter(Parameter::fromList("R1", params));
+    //analysis->addParameter(Parameter::fromRandom("R2", 4, 0.05, 0.07));
+    //analysis->addParameter(Parameter::fromLinspace("R3", 3, 0.05, 0.07));
+    //analysis->addParameter(Parameter::fromRandom("C", 10, 1, 5));
+
+    // functionals
+    //analysis->addFunctional(Functional("C", FunctionalType_Result, "2*We/U**2"));
 
     // solve
     analysis->solve();
