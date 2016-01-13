@@ -2,7 +2,7 @@ PROJECT(solver_PETSC C CXX)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/../dealii/cmake)
 
-SET(DEBUG_FLAGS "-g")
+# SET(DEBUG_FLAGS "-g")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DEBUG_FLAGS}")
 
 # Set global compiler parameters.
@@ -39,12 +39,8 @@ INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 ENABLE_TESTING()
 INCLUDE(CTest)
 
-add_test(NAME "PETSc-electrostatic-KSPSolve-PCNONE-seq" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND    mpirun -np 1 ../libs/solver_PETSC -v 2 -m ../resources_source/linear_solvers/electrostatic.matrix -p ../resources_source/linear_solvers/electrostatic.matrix_pattern -r ../resources_source/linear_solvers/electrostatic.rhs -q  ../resources_source/linear_solvers/electrostatic.sln)
-add_test(NAME "PETSc-acoustic-KSPSolve-PCNONE-seq" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND   mpirun -np 1 ../libs/solver_PETSC -l chebyshev -m ../resources_source/linear_solvers/acoustic.matrix -p ../resources_source/linear_solvers/acoustic.matrix_pattern -r ../resources_source/linear_solvers/acoustic.rhs -q  ../resources_source/linear_solvers/acoustic.sln)
-add_test(NAME "PETSc-electrostatic-KSPSolve-PCHYPRE-seq" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND   mpirun -np 1 ../libs/solver_PETSC -v 2 -c hypre -m ../resources_source/linear_solvers/electrostatic.matrix -p ../resources_source/linear_solvers/electrostatic.matrix_pattern -r ../resources_source/linear_solvers/electrostatic.rhs -q ../resources_source/linear_solvers/electrostatic.sln)
-add_test(NAME "PETSc-acoustic-KSPSolve-PCHYPRE-seq" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND   mpirun -np 1 ../libs/solver_PETSC -v 2 -l richardson -c hypre -m ../resources_source/linear_solvers/acoustic.matrix -p ../resources_source/linear_solvers/acoustic.matrix_pattern -r ../resources_source/linear_solvers/acoustic.rhs -q  ../resources_source/linear_solvers/acoustic.sln)
-add_test(NAME "PETSc-electrostatic-KSPSolve-PCJACOBI-seq" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND   mpirun -np 1  ../libs/solver_PETSC -v 2 -l chebyshev -c jacobi -m ../resources_source/linear_solvers/electrostatic.matrix -p ../resources_source/linear_solvers/electrostatic.matrix_pattern -r ../resources_source/linear_solvers/electrostatic.rhs -q  ../resources_source/linear_solvers/electrostatic.sln)
-add_test(NAME "PETSc-acoustic-KSPSolve-PCJACOBI-seq" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND   mpirun -np 1  ../libs/solver_PETSC -v 2 -l chebyshev -c jacobi -m ../resources_source/linear_solvers/acoustic.matrix -p ../resources_source/linear_solvers/acoustic.matrix_pattern -r ../resources_source/linear_solvers/acoustic.rhs -q  ../resources_source/linear_solvers/acoustic.sln)
-add_test(NAME "PETSc-electrostatic-KSPSolve-PCSOR-seq" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND   mpirun -np 1 ../libs/solver_PETSC -v 2 -l chebyshev -c sor -m ../resources_source/linear_solvers/electrostatic.matrix -p ../resources_source/linear_solvers/electrostatic.matrix_pattern -r ../resources_source/linear_solvers/electrostatic.rhs -q  ../resources_source/linear_solvers/electrostatic.sln )
-add_test(NAME "PETSc-acoustic-KSPSolve-PCSOR-seq" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND   mpirun -np 1 ../libs/solver_PETSC -v 2 -l chebyshev -c sor -m ../resources_source/linear_solvers/acoustic.matrix -p ../resources_source/linear_solvers/acoustic.matrix_pattern -r ../resources_source/linear_solvers/acoustic.rhs -q  ../resources_source/linear_solvers/acoustic.sln)
-add_test(NAME "PETSc-acoustic-KSPSolve-KSPCGS-seq" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND   mpirun -np 1 ../libs/solver_PETSC -v 2 -l chebyshev -c sor -m ../resources_source/linear_solvers/acoustic.matrix -p ../resources_source/linear_solvers/acoustic.matrix_pattern -r ../resources_source/linear_solvers/acoustic.rhs -q  ../resources_source/linear_solvers/acoustic.sln)
+add_test(NAME "PETSc-acoustic-KSPSolve-RICHARDSON-PCHYPRE-mpi" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND mpirun -np 4 ../libs/solver_PETSC -v 3 -l richardson -c hypre -m ../resources_source/linear_solvers/acoustic.matrix -p ../resources_source/linear_solvers/acoustic.matrix_pattern -r ../resources_source/linear_solvers/acoustic.rhs -q  ../resources_source/linear_solvers/acoustic.sln)
+
+add_test(NAME "PETSc-acoustic-KSPSolve-CHEBYSHEV-JACOBI-mpi" WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY} COMMAND mpirun -np 4 ../libs/solver_PETSC -v 3 -l chebyshev -c jacobi -m ../resources_source/linear_solvers/acoustic.matrix -p ../resources_source/linear_solvers/acoustic.matrix_pattern -r ../resources_source/linear_solvers/acoustic.rhs -q  ../resources_source/linear_solvers/acoustic.sln)
+
+

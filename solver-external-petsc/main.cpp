@@ -285,7 +285,6 @@ int main(int argc, char *argv[])
         PC pc;
         PetscInt n_rows = 0;
         PetscInt n = 0;
-        PetscInt *column_indicies = NULL;
 
         PetscInitialize(&argc,&argv, (char*)0," ");
         ierr = MPI_Comm_size(PETSC_COMM_WORLD, &size); CHKERRQ(ierr);
@@ -321,18 +320,15 @@ int main(int argc, char *argv[])
         // local assemble
 
         ierr = VecGetOwnershipRange(b, &istart, &iend); CHKERRQ(ierr);
-//         PetscInt *vecIdx = new PetscInt[iend - istart];
-//         PetscScalar *vecVal = new PetscScalar[iend - istart];
-//                for (int i = istart; i < iend; i++)
-//                {
-//                    vecIdx[i] = i;
-//                    vecVal[i] = linearSystem->system_rhs->val[i];
-//                }
-
-        for (int i = istart; i < iend; i++)
+        PetscInt *vecIdx = new PetscInt[iend - istart];
+        PetscScalar *vecVal = new PetscScalar[iend - istart];
+        for (int i = 0; i < iend - istart; i++)
         {
-            VecSetValues(b, 1, &i, &linearSystem->system_rhs->val[i], INSERT_VALUES);
+            vecIdx[i] = istart + i;
+            vecVal[i] = linearSystem->system_rhs->val[istart + i];
         }
+
+        VecSetValues(b, iend - istart, vecIdx, vecVal, INSERT_VALUES);
 
         ierr = VecAssemblyBegin(b); CHKERRQ(ierr);
         ierr = VecAssemblyEnd(b); CHKERRQ(ierr);
@@ -381,14 +377,12 @@ int main(int argc, char *argv[])
 
         // loop over the elements of the matrix row by row
         unsigned int indexLocal = 0;
-        int j = 0;
-        for (unsigned int row = istart; row < iend; row++)
+        for (unsigned int row = 0; row < iend - istart; row++)
         {
-            std::size_t col_start = linearSystem->system_matrix_pattern->rowstart[row];
-            std::size_t col_end = linearSystem->system_matrix_pattern->rowstart[row + 1];
+            std::size_t col_start = linearSystem->system_matrix_pattern->rowstart[row + istart];
+            std::size_t col_end = linearSystem->system_matrix_pattern->rowstart[row + 1 + istart];
 
-            csrRowPtrLocal[j] = indexLocal;
-            j++;
+            csrRowPtrLocal[row] = indexLocal;
 
             for (unsigned int i = col_start; i < col_end; i++)
             {
@@ -402,8 +396,8 @@ int main(int argc, char *argv[])
 
         ierr = MatCreateMPIAIJWithArrays(PETSC_COMM_WORLD, iend - istart, PETSC_DECIDE,
                                          PETSC_DETERMINE, n_rows,
-                                         csrRowPtrLocal, csrColIndLocal, linearSystem->system_matrix->val, &A); CHKERRQ(ierr);
-       //  MatView(A, PETSC_VIEWER_STDOUT_SELF);
+                                         csrRowPtrLocal, csrColIndLocal, csrValLocal, &A); CHKERRQ(ierr);
+        //  MatView(A, PETSC_VIEWER_STDOUT_SELF);
 
         ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
         ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
@@ -439,7 +433,14 @@ int main(int argc, char *argv[])
         }
         else maxIter = PETSC_DEFAULT;
 
+        ierr = KSPGetPC(ksp,&pc);
+
+        PCSetType(pc, preConditioner(linearSystem->solverArg.getValue()));
+        linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
+        linearSystem->setInfoSolverSolverName(linearSystem->solverArg.getValue());
+
         ierr = KSPSetTolerances(ksp, relTol, absTol, PETSC_DEFAULT, maxIter); CHKERRQ(ierr);
+        ierr = KSPSetType(ksp, solver(linearSystem->solverArg.getValue()));
         ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);
 
         auto timeSolveStart = std::chrono::steady_clock::now();
@@ -474,8 +475,8 @@ int main(int argc, char *argv[])
 
         }
 
-        // PetscFree(vecIdx);
-        // PetscFree(vecVal);
+        PetscFree(vecIdx);
+        PetscFree(vecVal);
         PetscFree(csrRowPtr);
         PetscFree(csrColInd);
 
