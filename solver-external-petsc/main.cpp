@@ -172,9 +172,8 @@ KSPType solver(std::string solver)
     else if (solver == "specest")
         return KSPSPECEST;
     else
-        return KSPRICHARDSON;
+        return KSPCG;
 }
-
 
 PCType preConditioner(std::string preConditioner)
 {
@@ -255,7 +254,7 @@ PCType preConditioner(std::string preConditioner)
     else if (preConditioner == "svd")
         return PCSVD;
     else if (preConditioner == "gamg")
-        return PCSVD;
+        return PCGAMG;
     else if (preConditioner == "sacusp")
         return PCSACUSP; /* these four run on NVIDIA GPUs using CUSP */
     else if (preConditioner == "sacusppoly")
@@ -267,7 +266,99 @@ PCType preConditioner(std::string preConditioner)
     else if (preConditioner == "bddc")
         return PCBDDC;
     else
-        return "none";
+        return PCBJACOBI;
+}
+
+PetscErrorCode assembleRHS(LinearSystemPETScArgs *linearSystem, Vec &b)
+{
+    int ierr = -1;
+    int istart = 0;
+    int iend = 0;
+
+    // local assemble
+    ierr = VecGetOwnershipRange(b, &istart, &iend); CHKERRQ(ierr);
+    PetscInt *vecIdx = new PetscInt[iend - istart];
+    PetscScalar *vecVal = new PetscScalar[iend - istart];
+    for (int i = 0; i < iend - istart; i++)
+    {
+        vecIdx[i] = istart + i;
+        vecVal[i] = linearSystem->system_rhs->val[istart + i];
+    }
+
+    VecSetValues(b, iend - istart, vecIdx, vecVal, INSERT_VALUES);
+
+    ierr = VecAssemblyBegin(b); CHKERRQ(ierr);
+    ierr = VecAssemblyEnd(b); CHKERRQ(ierr);
+
+    PetscFree(vecIdx);
+    PetscFree(vecVal);
+}
+
+void getCSR(LinearSystemPETScArgs *linearSystem, int start, int end,
+            PetscInt *csrRowPtr, PetscInt *csrColInd, PetscScalar *csrVal = nullptr)
+{
+    // loop over the elements of the matrix row by row
+    unsigned int index = 0;
+    for (unsigned int row = 0; row < end - start; row++)
+    {
+        std::size_t col_start = linearSystem->system_matrix_pattern->rowstart[row + start];
+        std::size_t col_end = linearSystem->system_matrix_pattern->rowstart[row + start + 1];
+
+        csrRowPtr[row] = index;
+
+        for (unsigned int i = col_start; i < col_end; i++)
+        {
+            csrColInd[index] = linearSystem->system_matrix_pattern->colnums[i];
+            if (csrVal)
+                csrVal[index] = linearSystem->matA[i];
+
+            index++;
+        }
+    }
+    csrRowPtr[end - start] = index;
+}
+
+PetscErrorCode assembleMatrix(LinearSystemPETScArgs *linearSystem, Mat &A)
+{
+    int ierr = -1;
+    int istart = 0;
+    int iend = 0;
+
+    PetscInt *csrRowPtr = new PetscInt[linearSystem->n() + 1];
+    PetscInt *csrColInd = new PetscInt[linearSystem->nz()];
+
+    getCSR(linearSystem, 0, linearSystem->n(), csrRowPtr, csrColInd);
+
+    // preallocate whole matrix
+    ierr = MatMPIAIJSetPreallocationCSR(A, csrRowPtr, csrColInd, PETSC_NULL); CHKERRQ(ierr);
+    // ierr = MatSeqAIJSetPreallocationCSR(A, csrRowPtr, csrColInd, PETSC_NULL); CHKERRQ(ierr);
+
+    // local assemble
+    ierr = MatGetOwnershipRange(A, &istart, &iend); CHKERRQ(ierr);
+    int nzLocal = 0;
+    for (unsigned int row = istart; row < iend; row++)
+        nzLocal += linearSystem->system_matrix_pattern->rowstart[row + 1] - linearSystem->system_matrix_pattern->rowstart[row];
+
+    PetscInt *csrRowPtrLocal = new PetscInt[iend - istart + 1];
+    PetscInt *csrColIndLocal = new PetscInt[nzLocal];
+    PetscScalar *csrValLocal = new PetscScalar[nzLocal];
+
+    getCSR(linearSystem, istart, iend, csrRowPtrLocal, csrColIndLocal, csrValLocal);
+
+    ierr = MatCreateMPIAIJWithArrays(PETSC_COMM_WORLD, iend - istart, PETSC_DECIDE,
+                                     PETSC_DETERMINE, linearSystem->n(),
+                                     csrRowPtrLocal, csrColIndLocal, csrValLocal, &A); CHKERRQ(ierr);
+    //  MatView(A, PETSC_VIEWER_STDOUT_SELF);
+
+    ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+    ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+
+    PetscFree(csrRowPtr);
+    PetscFree(csrColInd);
+
+    PetscFree(csrRowPtrLocal);
+    PetscFree(csrColIndLocal);
+    PetscFree(csrValLocal);
 }
 
 int main(int argc, char *argv[])
@@ -308,7 +399,6 @@ int main(int argc, char *argv[])
         int istart = 0;
         int iend = 0;
 
-
         // create vector
         ierr = VecCreateMPI(PETSC_COMM_WORLD, PETSC_DECIDE, n_rows, &x); CHKERRQ(ierr);
         ierr = VecCreateMPI(PETSC_COMM_WORLD, PETSC_DECIDE, n_rows, &b); CHKERRQ(ierr);
@@ -318,20 +408,7 @@ int main(int argc, char *argv[])
         ierr = VecSetFromOptions(b); CHKERRQ(ierr);
 
         // local assemble
-
-        ierr = VecGetOwnershipRange(b, &istart, &iend); CHKERRQ(ierr);
-        PetscInt *vecIdx = new PetscInt[iend - istart];
-        PetscScalar *vecVal = new PetscScalar[iend - istart];
-        for (int i = 0; i < iend - istart; i++)
-        {
-            vecIdx[i] = istart + i;
-            vecVal[i] = linearSystem->system_rhs->val[istart + i];
-        }
-
-        VecSetValues(b, iend - istart, vecIdx, vecVal, INSERT_VALUES);
-
-        ierr = VecAssemblyBegin(b); CHKERRQ(ierr);
-        ierr = VecAssemblyEnd(b); CHKERRQ(ierr);
+        assembleRHS(linearSystem, b);
         // VecView(b, PETSC_VIEWER_STDOUT_SELF);
 
         // create matrix
@@ -340,72 +417,11 @@ int main(int argc, char *argv[])
         ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, n_rows, n_rows); CHKERRQ(ierr);
         ierr = MatSetFromOptions(A); CHKERRQ(ierr);
 
-        PetscInt *csrRowPtr = new PetscInt[n_rows + 1];
-        PetscInt *csrColInd = new PetscInt[linearSystem->nz()];
-
-        // loop over the elements of the matrix row by row
-        unsigned int index = 0;
-        for (unsigned int row = 0; row < linearSystem->n(); row++)
-        {
-            std::size_t col_start = linearSystem->system_matrix_pattern->rowstart[row];
-            std::size_t col_end = linearSystem->system_matrix_pattern->rowstart[row + 1];
-
-            csrRowPtr[row] = index;
-
-            for (unsigned int i = col_start; i < col_end; i++)
-            {
-                csrColInd[index] = linearSystem->system_matrix_pattern->colnums[i];
-
-                index++;
-            }
-        }
-        csrRowPtr[linearSystem->n()] = linearSystem->nz();
-
-        // preallocate whole matrix
-        ierr = MatMPIAIJSetPreallocationCSR(A, csrRowPtr, csrColInd, PETSC_NULL); CHKERRQ(ierr);
-        ierr = MatSeqAIJSetPreallocationCSR(A, csrRowPtr, csrColInd, PETSC_NULL); CHKERRQ(ierr);
-
-        // local assemble
-        ierr = MatGetOwnershipRange(A, &istart, &iend); CHKERRQ(ierr);
-        int nzLocal = 0;
-        for (unsigned int row = istart; row < iend; row++)
-            nzLocal += linearSystem->system_matrix_pattern->rowstart[row + 1] - linearSystem->system_matrix_pattern->rowstart[row];
-
-        PetscInt *csrRowPtrLocal = new PetscInt[iend - istart + 1];
-        PetscInt *csrColIndLocal = new PetscInt[nzLocal];
-        PetscScalar *csrValLocal = new PetscScalar[nzLocal];
-
-        // loop over the elements of the matrix row by row
-        unsigned int indexLocal = 0;
-        for (unsigned int row = 0; row < iend - istart; row++)
-        {
-            std::size_t col_start = linearSystem->system_matrix_pattern->rowstart[row + istart];
-            std::size_t col_end = linearSystem->system_matrix_pattern->rowstart[row + 1 + istart];
-
-            csrRowPtrLocal[row] = indexLocal;
-
-            for (unsigned int i = col_start; i < col_end; i++)
-            {
-                csrColIndLocal[indexLocal] = linearSystem->system_matrix_pattern->colnums[i];
-                csrValLocal[indexLocal] = linearSystem->matA[i];
-
-                indexLocal++;
-            }
-        }
-        csrRowPtrLocal[iend - istart] = nzLocal;
-
-        ierr = MatCreateMPIAIJWithArrays(PETSC_COMM_WORLD, iend - istart, PETSC_DECIDE,
-                                         PETSC_DETERMINE, n_rows,
-                                         csrRowPtrLocal, csrColIndLocal, csrValLocal, &A); CHKERRQ(ierr);
-        //  MatView(A, PETSC_VIEWER_STDOUT_SELF);
-
-        ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-        ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+        assembleMatrix(linearSystem, A);
 
         MatInfo matinfo;
         MatGetInfo(A, MAT_LOCAL, &matinfo);
-        std::cout  << "nnz: " << (PetscInt) matinfo.nz_used << ", n: " << (PetscInt) matinfo.block_size << std::endl;
-
+        // std::cout  << "nnz: " << (PetscInt) matinfo.nz_used << ", n: " << (PetscInt) matinfo.block_size << std::endl;
         std::cout << "elapsedSeconds = " << elapsedSeconds(timeSetMatrixStart) << std::endl;
 
         // Create linear solver context
@@ -433,9 +449,9 @@ int main(int argc, char *argv[])
         }
         else maxIter = PETSC_DEFAULT;
 
-        ierr = KSPGetPC(ksp,&pc);
+        ierr = KSPGetPC(ksp, &pc);
 
-        PCSetType(pc, preConditioner(linearSystem->solverArg.getValue()));
+        PCSetType(pc, preConditioner(linearSystem->preconditionerArg.getValue()));
         linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
         linearSystem->setInfoSolverSolverName(linearSystem->solverArg.getValue());
 
@@ -472,17 +488,11 @@ int main(int argc, char *argv[])
                 if (linearSystem->verbose() > 2)
                     linearSystem->exportStatusToFile();
             }
-
         }
-
-        PetscFree(vecIdx);
-        PetscFree(vecVal);
-        PetscFree(csrRowPtr);
-        PetscFree(csrColInd);
 
         ierr = VecDestroy(&x); CHKERRQ(ierr);
         ierr = VecDestroy(&b); CHKERRQ(ierr);
-        ierr = MatDestroy(&A);CHKERRQ(ierr);
+        ierr = MatDestroy(&A); CHKERRQ(ierr);
         ierr = KSPDestroy(&ksp); CHKERRQ(ierr);
 
         ierr = PetscFinalize();
