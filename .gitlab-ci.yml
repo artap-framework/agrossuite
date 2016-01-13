@@ -46,8 +46,6 @@ build_paralution:
   tags:
     - linux
   script: 
-    - export CC=/usr/bin/clang
-    - export CXX=/usr/bin/clang++    
     - cd solver-external-paralution
     - cd paralution
     - mkdir -p build 

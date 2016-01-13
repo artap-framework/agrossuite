@@ -58,7 +58,7 @@ set(PARALUTION_LIBRARY agros2d_paralution)
 
 set(BIN_BUILD_DIR ${CMAKE_BINARY_DIR}/bin)
 set(INC_BUILD_DIR ${CMAKE_BINARY_DIR}/inc)
-set(LIB_BUILD_DIR ${CMAKE_BINARY_DIR}/../../../libs)
+set(LIB_BUILD_DIR ${CMAKE_BINARY_DIR}/libs)
 set(PLUGINS_BUILD_DIR ${CMAKE_BINARY_DIR}/inc/plug-ins)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_BUILD_DIR})
@@ -73,7 +73,7 @@ configure_file(${UTILS_DIR}/paralution.ptk.in ${CMAKE_BINARY_DIR}/paralution.ptk
 
 #######################################################################################################################
 # Determine if library should be build shared or static
-option(BUILD_SHARED "Build the PARALUTION library shared." ON)
+option(BUILD_SHARED "Build the PARALUTION library shared." OFF)
 if(BUILD_SHARED)
   SET(LIBRARY_TYPE SHARED)
 else()
