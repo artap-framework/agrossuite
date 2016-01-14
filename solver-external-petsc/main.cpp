@@ -384,17 +384,15 @@ int main(int argc, char *argv[])
         // std::cout << "rank =  " << rank << std::endl;
         ierr = PetscOptionsGetBool(NULL,"-nonzero_guess", &nonzeroguess,NULL); CHKERRQ(ierr);
 
+        auto timeStart = std::chrono::steady_clock::now();
+
         LinearSystemPETScArgs *linearSystem = nullptr;
         linearSystem = createLinearSystem("External solver - PETSc", argc, argv);
-
-        auto timeStart = std::chrono::steady_clock::now();
 
         n_rows = linearSystem->n();
         n = linearSystem->nz();
 
         linearSystem->setInfoNumOfProc(size);
-
-        auto timeSetMatrixStart = std::chrono::steady_clock::now();
 
         int istart = 0;
         int iend = 0;
@@ -422,7 +420,7 @@ int main(int argc, char *argv[])
         MatInfo matinfo;
         MatGetInfo(A, MAT_LOCAL, &matinfo);
         // std::cout  << "nnz: " << (PetscInt) matinfo.nz_used << ", n: " << (PetscInt) matinfo.block_size << std::endl;
-        std::cout << "elapsedSeconds = " << elapsedSeconds(timeSetMatrixStart) << std::endl;
+        linearSystem->setInfoTimeReadMatrix(elapsedSeconds(timeStart));
 
         // Create linear solver context
         ierr = KSPCreate(PETSC_COMM_WORLD, &ksp);CHKERRQ(ierr);
