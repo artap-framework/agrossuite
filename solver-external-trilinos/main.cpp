@@ -109,7 +109,7 @@ public:
 
 // Amesos part ------------------------
 
-void solveAmesos(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, std::string solverTypeName =  "Amesos_Klu")
+int solveAmesos(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, std::string solverTypeName =  "Amesos_Klu")
 {
     Amesos amesosFactory;
     const char *amesosSolverType = solverTypeName.c_str(); // in default uses the Amesos_Klu direct solver
@@ -127,7 +127,7 @@ void solveAmesos(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProb
 
     amesosSolver->SymbolicFactorization();
     amesosSolver->NumericFactorization();
-    amesosSolver->Solve();
+    int status = amesosSolver->Solve();
 
     // on process 0 fill info for testing
     if (linearSystem != nullptr)
@@ -136,6 +136,8 @@ void solveAmesos(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProb
         linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
     }
     delete amesosSolver;
+
+    return status;
 }
 
 // AztecOO part ------------------------
@@ -261,7 +263,7 @@ std::string getAztecOOsolverName(int solver, bool isMultigrid)
     return solverName;
 }
 
-void solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, int preconditioner, int solver)
+int solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, int preconditioner, int solver)
 {
     AztecOO aztecooSolver(problem);
     // create parameter list for solver
@@ -273,7 +275,7 @@ void solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPro
 
     aztecooSolver.SetAztecOption(AZ_subdomain_solve, AZ_ilut);
     aztecooSolver.SetAztecOption(AZ_solver, solver);  // solver
-    aztecooSolver.Iterate(maxIter, relTol);
+    int status = aztecooSolver.Iterate(maxIter, relTol);
     // std::cout << "Solver performed " << aztecooSolver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << aztecooSolver.TrueResidual() << std::endl;
 
     // on process 0 fill info for testing
@@ -285,9 +287,11 @@ void solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPro
         linearSystem->setInfoSolverPreconditionerName(getAztecOOprecondName(aztecooSolver.GetAztecOption(AZ_precond)));
         linearSystem->setInfoSolverNumOfIterations(aztecooSolver.GetAztecOption(AZ_its));
     }
+
+    return status;
 }
 
-void solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType, std::string smootherType, std::string coarseType, int solver)
+int solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType, std::string smootherType, std::string coarseType, int solver)
 {
     // create a parameter list for ML options
     Teuchos::ParameterList mlList;
@@ -328,7 +332,9 @@ void solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearP
     // aztecooSolver.SetAztecOption(AZ_solver, AZ_cg);
     aztecooSolver.SetAztecOption(AZ_solver, solver);
     aztecooSolver.SetAztecOption(AZ_output, 32);   // ??
-    aztecooSolver.Iterate(maxIter, relTol);
+
+    int status = aztecooSolver.Iterate(maxIter, relTol);
+
     // on process 0 fill info for testing
     if (linearSystem != nullptr)
     {
@@ -339,6 +345,8 @@ void solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearP
 
         //linearSystem->setInfoSolverNumOfIterations(aztecooSolver.GetAztecOption(AZ_its));  // ???
     }
+
+    return status;
 }
 
 std::string getMLpreconditioner(std::string precondName)
@@ -761,12 +769,13 @@ int main(int argc, char *argv[])
         {
             if (solver.compare(0, 9, "AztecOOML") == 0) // one of multigrid AztecOOML solvers selected
             {
-                solveAztecOOML(linearSystem, problem, maxIter, relTol,
+                int notSolved = solveAztecOOML(linearSystem, problem, maxIter, relTol,
                                getMLpreconditioner(linearSystem->preconditionerArg.getValue()),
                                getMLaggregationType(linearSystem->aggregationTypeArg.getValue()),
                                getMLsmootherType(linearSystem->smootherTypeArg.getValue()),
                                getMLcoarseType(linearSystem->coarseTypeArg.getValue()),
                                getAztecOOsolver(solver));
+                assert(!notSolved);
             }
             else
                 assert(0 && "No solver selected !!!");
@@ -776,15 +785,18 @@ int main(int argc, char *argv[])
             if (solver == "Amesos_Klu" || solver == "") // default
             {
                 linearSystem->setInfoSolverSolverName("Amesos_Klu");
-                solveAmesos(linearSystem, problem, "Amesos_Klu");
+                int notSolved = solveAmesos(linearSystem, problem, "Amesos_Klu");
+                assert(!notSolved);
             }
             else if (solver == "Amesos_Paraklete")
             {
-                solveAmesos(linearSystem, problem, "Amesos_Paraklete");
+                int notSolved = solveAmesos(linearSystem, problem, "Amesos_Paraklete");
+                assert(!notSolved);
             }
             else if (solver.compare(0, 7, "AztecOO") == 0)   // one of AztecOO solvers selected
             {
-                solveAztecOO(linearSystem, problem, maxIter, relTol, getAztecOOpreconditioner(linearSystem->preconditionerArg.getValue()), getAztecOOsolver(solver));
+                int notSolved = solveAztecOO(linearSystem, problem, maxIter, relTol, getAztecOOpreconditioner(linearSystem->preconditionerArg.getValue()), getAztecOOsolver(solver));
+                assert(!notSolved);
             }
             else
             {
