@@ -169,8 +169,6 @@ KSPType solver(std::string solver)
         return KSPPYTHON;
     else if (solver == "gcr")
         return KSPGCR;
-    else if (solver == "specest")
-        return KSPSPECEST;
     else
         return KSPCG;
 }
@@ -231,12 +229,6 @@ PCType preConditioner(std::string preConditioner)
         return PCGALERKIN;
     else if (preConditioner == "exotic")
         return PCEXOTIC;
-    else if (preConditioner == "hmpi")
-        return PCHMPI;
-    else if (preConditioner == "supportgraph")
-        return PCSUPPORTGRAPH;
-    else if (preConditioner == "asa")
-        return PCASA;
     else if (preConditioner == "cp")
         return PCCP;
     else if (preConditioner == "bfbt")
@@ -424,8 +416,11 @@ int main(int argc, char *argv[])
 
         // Create linear solver context
         ierr = KSPCreate(PETSC_COMM_WORLD, &ksp);CHKERRQ(ierr);
+#if (PETSC_VERSION_GT(3,6,0))
+        ierr = KSPSetOperators(ksp, A, A); CHKERRQ(ierr);
+#else
         ierr = KSPSetOperators(ksp, A, A, DIFFERENT_NONZERO_PATTERN); CHKERRQ(ierr);
-
+#endif
         PetscReal relTol;
         if (linearSystem->relTolArg.isSet())
         {
