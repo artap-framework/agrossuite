@@ -451,17 +451,26 @@ int main(int argc, char *argv[])
 
         ierr = KSPGetPC(ksp, &pc);
 
-        PCSetType(pc, preConditioner(linearSystem->preconditionerArg.getValue()));
-        linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
+        std::string preconditioner = linearSystem->preconditionerArg.getValue();
+        if (preconditioner == "hypre")
+        {
+           PCHYPRESetType(pc, "boomeramg");
+           preconditioner += "_AMG";
+        }
+
+        PCSetType(pc, preConditioner(preconditioner));
+        linearSystem->setInfoSolverPreconditionerName(preconditioner);
         linearSystem->setInfoSolverSolverName(linearSystem->solverArg.getValue());
 
         ierr = KSPSetTolerances(ksp, relTol, absTol, PETSC_DEFAULT, maxIter); CHKERRQ(ierr);
         ierr = KSPSetType(ksp, solver(linearSystem->solverArg.getValue()));
         ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);
-
         auto timeSolveStart = std::chrono::steady_clock::now();
         ierr = KSPSolve(ksp, b, x); CHKERRQ(ierr);
         linearSystem->setInfoTimeSolver(elapsedSeconds(timeSolveStart));
+        PetscInt iterations = 0;
+        ierr = KSPGetIterationNumber(ksp, &iterations); CHKERRQ(ierr);
+        linearSystem->setInfoSolverNumOfIterations(iterations);
 
         // VecView(x, PETSC_VIEWER_STDOUT_SELF);
 
