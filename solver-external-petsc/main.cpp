@@ -34,15 +34,11 @@
 #include <petscmat.h>
 #include <petscblaslapack.h>
 
-
-
 #include "../../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
 
-
 class LinearSystemPETScArgs : public LinearSystemArgs
 {
-
     // another used args (not listed here): -s, -r, -p, -m, -q
 public:
     LinearSystemPETScArgs(const std::string &name, int argc, const char * const *argv)
@@ -55,7 +51,8 @@ public:
           absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
           relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
           maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
-          multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false))
+          multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false)),
+          comm(PETSC_COMM_WORLD)
     {
         cmd.add(solverArg);
         cmd.add(preconditionerArg);
@@ -77,6 +74,8 @@ public:
     TCLAP::ValueArg<double> relTolArg;
     TCLAP::ValueArg<int> maxIterArg;
     TCLAP::SwitchArg multigridArg;
+
+    MPI_Comm comm;
 };
 
 LinearSystemPETScArgs *createLinearSystem(std::string extSolverName, int argc, char *argv[])
@@ -101,7 +100,7 @@ LinearSystemPETScArgs *createLinearSystem(std::string extSolverName, int argc, c
 // int maxIter = linearSystem->maxIterArg.getValue();
 
 
-KSPType solver(std::string solver)
+KSPType solver(LinearSystemPETScArgs *linearSystem, std::string solver)
 {
     if(solver == "richardson")
         return KSPRICHARDSON;
@@ -169,13 +168,11 @@ KSPType solver(std::string solver)
         return KSPPYTHON;
     else if (solver == "gcr")
         return KSPGCR;
-    else if (solver == "specest")
-        return KSPSPECEST;
     else
         return KSPCG;
 }
 
-PCType preConditioner(std::string preConditioner)
+PCType preConditioner(LinearSystemPETScArgs *linearSystem, std::string preConditioner)
 {
     if( preConditioner == "jacobi")
         return PCJACOBI;
@@ -231,12 +228,6 @@ PCType preConditioner(std::string preConditioner)
         return PCGALERKIN;
     else if (preConditioner == "exotic")
         return PCEXOTIC;
-    else if (preConditioner == "hmpi")
-        return PCHMPI;
-    else if (preConditioner == "supportgraph")
-        return PCSUPPORTGRAPH;
-    else if (preConditioner == "asa")
-        return PCASA;
     else if (preConditioner == "cp")
         return PCCP;
     else if (preConditioner == "bfbt")
@@ -266,17 +257,24 @@ PCType preConditioner(std::string preConditioner)
     else if (preConditioner == "bddc")
         return PCBDDC;
     else
-        return PCBJACOBI;
+    {
+        if (linearSystem->comm == PETSC_COMM_WORLD)
+            return PCBJACOBI;
+        else
+            return PCJACOBI;
+    }
 }
 
 PetscErrorCode assembleRHS(LinearSystemPETScArgs *linearSystem, Vec &b)
 {
     int ierr = -1;
     int istart = 0;
-    int iend = 0;
+    int iend = linearSystem->n();
+
+    if (linearSystem->comm == PETSC_COMM_WORLD)
+        ierr = VecGetOwnershipRange(b, &istart, &iend); CHKERRQ(ierr);
 
     // local assemble
-    ierr = VecGetOwnershipRange(b, &istart, &iend); CHKERRQ(ierr);
     PetscInt *vecIdx = new PetscInt[iend - istart];
     PetscScalar *vecVal = new PetscScalar[iend - istart];
     for (int i = 0; i < iend - istart; i++)
@@ -321,44 +319,63 @@ void getCSR(LinearSystemPETScArgs *linearSystem, int start, int end,
 PetscErrorCode assembleMatrix(LinearSystemPETScArgs *linearSystem, Mat &A)
 {
     int ierr = -1;
-    int istart = 0;
-    int iend = 0;
-
-    PetscInt *csrRowPtr = new PetscInt[linearSystem->n() + 1];
-    PetscInt *csrColInd = new PetscInt[linearSystem->nz()];
-
-    getCSR(linearSystem, 0, linearSystem->n(), csrRowPtr, csrColInd);
 
     // preallocate whole matrix
-    ierr = MatMPIAIJSetPreallocationCSR(A, csrRowPtr, csrColInd, PETSC_NULL); CHKERRQ(ierr);
-    // ierr = MatSeqAIJSetPreallocationCSR(A, csrRowPtr, csrColInd, PETSC_NULL); CHKERRQ(ierr);
+    if (linearSystem->comm == PETSC_COMM_WORLD)
+    {
+        int istart = 0;
+        int iend = linearSystem->n();
 
-    // local assemble
-    ierr = MatGetOwnershipRange(A, &istart, &iend); CHKERRQ(ierr);
-    int nzLocal = 0;
-    for (unsigned int row = istart; row < iend; row++)
-        nzLocal += linearSystem->system_matrix_pattern->rowstart[row + 1] - linearSystem->system_matrix_pattern->rowstart[row];
+        PetscInt *csrRowPtr = new PetscInt[linearSystem->n() + 1];
+        PetscInt *csrColInd = new PetscInt[linearSystem->nz()];
 
-    PetscInt *csrRowPtrLocal = new PetscInt[iend - istart + 1];
-    PetscInt *csrColIndLocal = new PetscInt[nzLocal];
-    PetscScalar *csrValLocal = new PetscScalar[nzLocal];
+        getCSR(linearSystem, 0, linearSystem->n(), csrRowPtr, csrColInd);
 
-    getCSR(linearSystem, istart, iend, csrRowPtrLocal, csrColIndLocal, csrValLocal);
+        // preallocate whole matrix
+        ierr = MatMPIAIJSetPreallocationCSR(A, csrRowPtr, csrColInd, PETSC_NULL); CHKERRQ(ierr);
+        ierr = MatGetOwnershipRange(A, &istart, &iend); CHKERRQ(ierr);
 
-    ierr = MatCreateMPIAIJWithArrays(PETSC_COMM_WORLD, iend - istart, PETSC_DECIDE,
-                                     PETSC_DETERMINE, linearSystem->n(),
-                                     csrRowPtrLocal, csrColIndLocal, csrValLocal, &A); CHKERRQ(ierr);
+        PetscFree(csrRowPtr);
+        PetscFree(csrColInd);
+
+        // local assemble
+        int nzLocal = 0;
+        for (unsigned int row = istart; row < iend; row++)
+            nzLocal += linearSystem->system_matrix_pattern->rowstart[row + 1] - linearSystem->system_matrix_pattern->rowstart[row];
+
+        PetscInt *csrRowPtrLocal = new PetscInt[iend - istart + 1];
+        PetscInt *csrColIndLocal = new PetscInt[nzLocal];
+        PetscScalar *csrValLocal = new PetscScalar[nzLocal];
+
+        getCSR(linearSystem, istart, iend, csrRowPtrLocal, csrColIndLocal, csrValLocal);
+
+        // the i, j, and a arrays ARE copied by this routine
+        ierr = MatCreateMPIAIJWithArrays(linearSystem->comm, iend - istart, PETSC_DECIDE, PETSC_DETERMINE, linearSystem->n(),
+                                         csrRowPtrLocal, csrColIndLocal, csrValLocal, &A); CHKERRQ(ierr);
+
+        PetscFree(csrRowPtrLocal);
+        PetscFree(csrColIndLocal);
+        PetscFree(csrValLocal);
+    }
+    else
+    {
+        PetscInt *csrRowPtr = new PetscInt[linearSystem->n() + 1];
+        PetscInt *csrColInd = new PetscInt[linearSystem->nz()];
+        PetscScalar *csrVal = new PetscScalar[linearSystem->nz()];
+
+        getCSR(linearSystem, 0, linearSystem->n(), csrRowPtr, csrColInd, csrVal);
+
+        ierr = MatSeqAIJSetPreallocationCSR(A, csrRowPtr, csrColInd, csrVal); CHKERRQ(ierr);
+        // the i, j, and a arrays are not copied by this routine
+        ierr = MatCreateSeqAIJWithArrays(linearSystem->comm, linearSystem->n(), linearSystem->n(),
+                                         csrRowPtr, csrColInd, csrVal, &A); CHKERRQ(ierr);
+
+    }
+
     //  MatView(A, PETSC_VIEWER_STDOUT_SELF);
 
     ierr = MatAssemblyBegin(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
     ierr = MatAssemblyEnd(A, MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-
-    PetscFree(csrRowPtr);
-    PetscFree(csrColInd);
-
-    PetscFree(csrRowPtrLocal);
-    PetscFree(csrColIndLocal);
-    PetscFree(csrValLocal);
 }
 
 int main(int argc, char *argv[])
@@ -370,38 +387,38 @@ int main(int argc, char *argv[])
         Vec x,b;
         Mat  A;
         PetscMPIInt size;
-        PetscErrorCode ierr;
+        PetscErrorCode ierr = -1;
         PetscBool nonzeroguess = PETSC_FALSE;
-        KSP ksp;
-        PC pc;
-        PetscInt n_rows = 0;
-        PetscInt n = 0;
 
-        PetscInitialize(&argc,&argv, (char*)0," ");
+        PetscInitialize(&argc, &argv, (char*) 0," ");
         ierr = MPI_Comm_size(PETSC_COMM_WORLD, &size); CHKERRQ(ierr);
-        int rank;
+        int rank = 0;
         ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
-        // std::cout << "rank =  " << rank << std::endl;
-        ierr = PetscOptionsGetBool(NULL,"-nonzero_guess", &nonzeroguess,NULL); CHKERRQ(ierr);
-
-        LinearSystemPETScArgs *linearSystem = nullptr;
-        linearSystem = createLinearSystem("External solver - PETSc", argc, argv);
 
         auto timeStart = std::chrono::steady_clock::now();
 
-        n_rows = linearSystem->n();
-        n = linearSystem->nz();
-
+        LinearSystemPETScArgs *linearSystem = nullptr;
+        linearSystem = createLinearSystem("External solver - PETSc", argc, argv);
         linearSystem->setInfoNumOfProc(size);
+        // linearSystem->comm = (size == 1) ? PETSC_COMM_SELF : PETSC_COMM_WORLD;
 
-        auto timeSetMatrixStart = std::chrono::steady_clock::now();
-
-        int istart = 0;
-        int iend = 0;
+        if (rank == 0)
+        {
+            if (linearSystem->comm == PETSC_COMM_WORLD)
+                std::cout << "version: mpi" << std::endl;
+            else
+                std::cout << "version: seq" << std::endl;
+        }
 
         // create vector
-        ierr = VecCreateMPI(PETSC_COMM_WORLD, PETSC_DECIDE, n_rows, &x); CHKERRQ(ierr);
-        ierr = VecCreateMPI(PETSC_COMM_WORLD, PETSC_DECIDE, n_rows, &b); CHKERRQ(ierr);
+        ierr = VecCreateMPI(linearSystem->comm, PETSC_DECIDE, linearSystem->n(), &x); CHKERRQ(ierr);
+        ierr = VecCreateMPI(linearSystem->comm, PETSC_DECIDE, linearSystem->n(), &b); CHKERRQ(ierr);
+        /*
+        ierr = VecCreate(linearSystem->comm, &x); CHKERRQ(ierr);
+        ierr = VecCreate(linearSystem->comm, &b); CHKERRQ(ierr);
+        ierr = VecSetSizes(x, PETSC_DECIDE, linearSystem->n()); CHKERRQ(ierr);
+        ierr = VecSetSizes(b, PETSC_DECIDE, linearSystem->n()); CHKERRQ(ierr);
+        */
         ierr = PetscObjectSetName((PetscObject) x, "Solution"); CHKERRQ(ierr);
         ierr = PetscObjectSetName((PetscObject) b, "RHS"); CHKERRQ(ierr);
         ierr = VecSetFromOptions(x); CHKERRQ(ierr);
@@ -412,43 +429,40 @@ int main(int argc, char *argv[])
         // VecView(b, PETSC_VIEWER_STDOUT_SELF);
 
         // create matrix
-        ierr = MatCreate(PETSC_COMM_WORLD, &A); CHKERRQ(ierr);
+        ierr = MatCreate(linearSystem->comm, &A); CHKERRQ(ierr);
+        // this matrix type is identical to MATSEQAIJ when constructed with a single process communicator, and MATMPIAIJ otherwise
         ierr = MatSetType(A, MATMPIAIJ); CHKERRQ(ierr);
-        ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, n_rows, n_rows); CHKERRQ(ierr);
+        ierr = MatSetSizes(A, PETSC_DECIDE, PETSC_DECIDE, linearSystem->n(), linearSystem->n()); CHKERRQ(ierr);
         ierr = MatSetFromOptions(A); CHKERRQ(ierr);
 
         assembleMatrix(linearSystem, A);
 
         MatInfo matinfo;
         MatGetInfo(A, MAT_LOCAL, &matinfo);
-        // std::cout  << "nnz: " << (PetscInt) matinfo.nz_used << ", n: " << (PetscInt) matinfo.block_size << std::endl;
-        std::cout << "elapsedSeconds = " << elapsedSeconds(timeSetMatrixStart) << std::endl;
+        // std::cout << "rank: " << rank << ", nnz: " << (PetscInt) matinfo.nz_used << std::endl;
+        linearSystem->setInfoTimeReadMatrix(elapsedSeconds(timeStart));
 
         // Create linear solver context
-        ierr = KSPCreate(PETSC_COMM_WORLD, &ksp);CHKERRQ(ierr);
+        KSP ksp;
+        ierr = KSPCreate(linearSystem->comm, &ksp);CHKERRQ(ierr);
+#if (PETSC_VERSION_GT(3,6,0))
+        ierr = KSPSetOperators(ksp, A, A); CHKERRQ(ierr);
+#else
         ierr = KSPSetOperators(ksp, A, A, DIFFERENT_NONZERO_PATTERN); CHKERRQ(ierr);
-
-        PetscReal relTol;
+#endif
+        PetscReal relTol = PETSC_DEFAULT;
         if (linearSystem->relTolArg.isSet())
-        {
             relTol = linearSystem->relTolArg.getValue();
-        }
-        else relTol = PETSC_DEFAULT;
 
-        PetscReal absTol;
+        PetscReal absTol = PETSC_DEFAULT;
         if (linearSystem-> absTolArg.isSet())
-        {
             absTol = linearSystem->absTolArg.getValue();
-        }
-        else absTol = PETSC_DEFAULT;
 
-        PetscInt maxIter;
+        PetscInt maxIter = PETSC_DEFAULT;
         if (linearSystem-> maxIterArg.isSet())
-        {
             maxIter = linearSystem->maxIterArg.getValue();
-        }
-        else maxIter = PETSC_DEFAULT;
 
+        PC pc;
         ierr = KSPGetPC(ksp, &pc);
 
         std::string preconditioner = linearSystem->preconditionerArg.getValue();
@@ -460,10 +474,13 @@ int main(int argc, char *argv[])
 
         PCSetType(pc, preConditioner(preconditioner));
         linearSystem->setInfoSolverPreconditionerName(preconditioner);
+        PCSetType(pc, preConditioner(linearSystem, linearSystem->preconditionerArg.getValue()));
+        linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
+
         linearSystem->setInfoSolverSolverName(linearSystem->solverArg.getValue());
 
         ierr = KSPSetTolerances(ksp, relTol, absTol, PETSC_DEFAULT, maxIter); CHKERRQ(ierr);
-        ierr = KSPSetType(ksp, solver(linearSystem->solverArg.getValue()));
+        ierr = KSPSetType(ksp, solver(linearSystem, linearSystem->solverArg.getValue()));
         ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);
         auto timeSolveStart = std::chrono::steady_clock::now();
         ierr = KSPSolve(ksp, b, x); CHKERRQ(ierr);
