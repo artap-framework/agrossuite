@@ -39,13 +39,11 @@
 #include "Epetra_RowMatrix.h"
 #include "Epetra_MultiVector.h"
 #include "Epetra_LinearProblem.h"
+#include <Epetra_Export.h>
+#include <Epetra_Import.h>
 
-#ifdef HAVE_MPI
-#  include "mpi.h"
-#  include "Epetra_MpiComm.h"
-#else
-#  include "Epetra_SerialComm.h"
-#endif
+#include "mpi.h"
+#include "Epetra_MpiComm.h"
 
 #include <Epetra_Map.h>
 #include <Epetra_CrsGraph.h>
@@ -68,6 +66,8 @@
 //----
 #include "../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
+
+int rank = 0; // MPI process rank
 
 class LinearSystemTrilinosArgs : public LinearSystemArgs
 {
@@ -114,7 +114,8 @@ int solveAmesos(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProbl
     Amesos amesosFactory;
     const char *amesosSolverType = solverTypeName.c_str(); // in default uses the Amesos_Klu direct solver
 
-    std::cout << "Amesos solver variant: " << solverTypeName << std::endl;
+    if (rank == 0)
+        std::cout << "Amesos solver variant: " << solverTypeName << std::endl;
 
     Amesos_BaseSolver *amesosSolver = amesosFactory.Create(amesosSolverType, problem);
     assert(amesosSolver);
@@ -130,7 +131,7 @@ int solveAmesos(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProbl
     int status = amesosSolver->Solve();
 
     // on process 0 fill info for testing
-    if (linearSystem != nullptr)
+    if (linearSystem)
     {
         linearSystem->setInfoSolverSolverName(solverTypeName);
         linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
@@ -164,7 +165,9 @@ int getAztecOOpreconditioner(std::string precondName)
         precondName = "AZ_dom_decomp";
     }
 
-    std::cout << "AztecOO preconditioner is set to: " << precondName << std::endl;
+    if (rank == 0)
+        std::cout << "AztecOO preconditioner is set to: " << precondName << std::endl;
+
     return preconditioner;
 }
 
@@ -228,7 +231,9 @@ int getAztecOOsolver(std::string solverName)
             solverName = "AztecOO_tfqmr";
     }
 
-    std::cout << "AztecOO solver is set to: " << solverName << std::endl;
+    if (rank == 0)
+        std::cout << "AztecOO solver is set to: " << solverName << std::endl;
+
     return solver;
 }
 
@@ -279,7 +284,7 @@ int solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProb
     // std::cout << "Solver performed " << aztecooSolver.NumIters() << " iterations." << std::endl << "Norm of true residual = " << aztecooSolver.TrueResidual() << std::endl;
 
     // on process 0 fill info for testing
-    if (linearSystem != nullptr)
+    if (linearSystem)
     {
         linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
         linearSystem->setInfoSolverNumOfIterations(aztecooSolver.NumIters());
@@ -336,7 +341,7 @@ int solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPr
     int status = aztecooSolver.Iterate(maxIter, relTol);
 
     // on process 0 fill info for testing
-    if (linearSystem != nullptr)
+    if (linearSystem)
     {
         linearSystem->setInfoSolverSolverName(getAztecOOsolverName(aztecooSolver.GetAztecOption(AZ_solver), true));
         linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
@@ -360,12 +365,16 @@ std::string getMLpreconditioner(std::string precondName)
             || (precondName == "DD-ML")          // - "DD-ML" : 3-level domain decomposition preconditioners, with coarser spaces defined by aggregation;
             || (precondName == "DD-ML-LU"))      // - "DD-ML-LU" : Like "DD-ML", but with LU decompositions on each subdomain.
     {
-        std::cout << "ML preconditioner is set to: " << precondName << std::endl;
+        if (rank == 0)
+            std::cout << "ML preconditioner is set to: " << precondName << std::endl;
+
         return precondName;
     }
     else
     {
-        std::cout << "ML preconditioner is set to default (SA)" << std::endl;
+        if (rank == 0)
+            std::cout << "ML preconditioner is set to default (SA)" << std::endl;
+
         return "SA";
     }
 }
@@ -390,12 +399,16 @@ std::string getMLaggregationType(std::string aggregationType)
             || (aggregationType == "Zoltan")   // does not work, yet
             || (aggregationType == "user"))    // does not work, yet
     {
-        std::cout << "ML aggregation type is set to: " << aggregationType << std::endl;
+        if (rank == 0)
+            std::cout << "ML aggregation type is set to: " << aggregationType << std::endl;
+
         return aggregationType;
     }
     else
     {
-        std::cout << "ML aggregation type is set to default (Uncoupled)" << std::endl;
+        if (rank == 0)
+            std::cout << "ML aggregation type is set to default (Uncoupled)" << std::endl;
+
         return "Uncoupled";
     }
 }
@@ -466,12 +479,16 @@ std::string getMLsmootherType(std::string smootherType)
             || (smootherType == "line Gauss-Seidel")
             || (smootherType == "SILU"))
     {
-        std::cout << "ML smoother type is set to: " << smootherType << std::endl;
+        if (rank == 0)
+            std::cout << "ML smoother type is set to: " << smootherType << std::endl;
+
         return smootherType;
     }
     else
     {
-        std::cout << "ML smoother type is set to default (Chebyshev)" << std::endl;
+        if (rank == 0)
+            std::cout << "ML smoother type is set to default (Chebyshev)" << std::endl;
+
         return "Chebyshev";
     }
 }
@@ -511,12 +528,16 @@ std::string getMLcoarseType(std::string coarseType)
             || (coarseType == "line Gauss-Seidel")
             || (coarseType == "SILU"))
     {
-        std::cout << "ML coarse type is set to: " << coarseType << std::endl;
+        if (rank == 0)
+            std::cout << "ML coarse type is set to: " << coarseType << std::endl;
+
         return coarseType;
     }
     else
     {
-        std::cout << "ML coarse type is set to default (Amesos-KLU)" << std::endl;
+        if (rank == 0)
+            std::cout << "ML coarse type is set to default (Amesos-KLU)" << std::endl;
+
         return "Amesos-KLU";
     }
 }
@@ -537,157 +558,67 @@ int main(int argc, char *argv[])
     {
         int status = 0;
 
-        int rank = 0;           // MPI process rank
-        int numProcs = 0;       // total number of processes
-
-        LinearSystemTrilinosArgs *linearSystem = nullptr;
-
-        int *numEntriesPerRow = nullptr;
-
-#ifdef HAVE_MPI       
-        // Initialize MPI, MpiComm
+        // initialize MPI, MpiComm
         int ierr;
         MPI_Init (&argc, &argv);
         ierr = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
         Epetra_MpiComm comm(MPI_COMM_WORLD);
 
-        numProcs = comm.NumProc();
-
-        MPI_Barrier(MPI_COMM_WORLD);
-        {
-            std::cout << "MPI rank = " << rank << std::endl;
-
-            if (rank == 0)
-            {
-                std::cout << "Total number of processes: " << numProcs << std::endl;
-            }
-        }
-#else
-        // in case of serial version
-        Epetra_SerialComm comm;
-#endif
-
-
-        int globalNumberOfRows = 0;  // it is necessary to variable, it is necesary on each process
-        int numberOfNonZeros = 0;  // it is necessary to variable, it is necesary on each process
-        MPI_Barrier(MPI_COMM_WORLD);
+        int numProcs = comm.NumProc();
+        int numProcZeroElements = 0;
 
         // start stop watch
         auto timeStart = std::chrono::steady_clock::now();
 
+        // read matrixes, parameters etc. onlzy on process 0, on other processe linearSystem == nullptr
+        LinearSystemTrilinosArgs *linearSystem = createLinearSystem("External solver - TRILINOS", argc, argv);
+
+        // save number of processes
         if (rank == 0)
         {
-            // read matrixes, parameters etc. onlzy on process 0, on other processe linearSystem == nullptr
-            linearSystem = createLinearSystem("External solver - TRILINOS", argc, argv);
-            // save time of marix reading
-            linearSystem->setInfoTimeReadMatrix(elapsedSeconds(timeStart));
-
-            // save number of processes
+            numProcZeroElements = (int) linearSystem->n();
             linearSystem->setInfoNumOfProc(numProcs);
-
-            globalNumberOfRows = (int) linearSystem->n();
-            numberOfNonZeros = (int) linearSystem->nz();
-
-            // integer array of length NumRows
-            numEntriesPerRow = new int[linearSystem->n()];
-            // loop over the elements of the matrix row by row
-            for (unsigned int row = 0; row < linearSystem->n(); row++)
-            {
-                std::size_t col_start = linearSystem->system_matrix_pattern->rowstart[row];
-                std::size_t col_end = linearSystem->system_matrix_pattern->rowstart[row + 1];
-
-                int index = 0;
-                for (unsigned int i = col_start; i < col_end; i++)
-                    index++;
-
-                numEntriesPerRow[row] = index;
-            }
+            std::cout << "Total number of processes: " << numProcs << std::endl;
         }
-        // MPI
-        // send globalNumberOfRows from process 0 to all processes
-        //        MPI_Bcast(&globalNumberOfRows, 1, MPI_INT, 0,MPI_COMM_WORLD);
-        //        MPI_Bcast(&numberOfNonZeros, 1, MPI_INT, 0,MPI_COMM_WORLD);
-        //        std::cout << "Process ID " << rank << ": " << "Global number of rows/equatins = " << globalNumberOfRows << std::endl; // develop.
-        //        std::cout << "Process ID " << rank << ": " << "Number of nonzero elements = " << numberOfNonZeros << std::endl; // develop.
 
-        // Construct a Map that puts approximately the same number of equations on each processor
-        const int indexBase = 0;
-        Epetra_Map epeMap(globalNumberOfRows, indexBase, comm);
-        // Epetra_Map epeMap(-1, numOfRows, 0, comm);
+        // construct a map that puts approximately the same number of equations on each processor
+        Epetra_Map epeGlobalMap((int) linearSystem->n(), 0, comm);
+
+        // local map
+        Epetra_Map epeProcZeroMap(numProcZeroElements, numProcZeroElements, 0, comm);
+        // exporter
+        Epetra_Import importer(epeProcZeroMap, epeGlobalMap);
 
         // the number of elements on a specific (calling) process (given by the distribution of elements on the individual processes)
-        int numMyElements = epeMap.NumMyElements();
-
-        // the total number of elemnts across all processes
-        int numGlobalElements = epeMap.NumGlobalElements();
+        int numMyElements = epeGlobalMap.NumMyElements();
 
         // vector of global IDs of local elements
-        int *myGlobalElements = NULL;
+        int *myGlobalElements = new int[numMyElements];
         // get the list of global indices that this process owns.
-        myGlobalElements = epeMap.MyGlobalElements();
+        epeGlobalMap.MyGlobalElements(myGlobalElements);
 
-        // tests like this really should synchronize across all
-        // processes.  However, the likely cause for this case is a
-        // misconfiguration of Epetra, so we expect it to happen on all
-        // processes, if it happens at all.
-        if ((numMyElements > 0) && (myGlobalElements == NULL))
+        // integer array of length NumRows
+        int *numEntriesPerRow = new int[linearSystem->n()];
+        // loop over the elements of the matrix row by row
+        for (unsigned int row = 0; row < linearSystem->n(); row++)
         {
-            throw std::logic_error ("Failed to get the list of global indices");
+            std::size_t col_start = linearSystem->system_matrix_pattern->rowstart[row];
+            std::size_t col_end = linearSystem->system_matrix_pattern->rowstart[row + 1];
+
+            numEntriesPerRow[row] = col_end - col_start;
         }
-        // MPI
 
-        // print Epetra Map
-        //        for (int i = 0; i < numProcs; ++i )
-        //        {
-        //            // MPI_Barrier(MPI_COMM_WORLD);
-        //            if (i == rank)
-        //            {
-        //                std::cout << "*** Process ID: " << rank << std::endl;
-        //                // std::cout << "Epetra Map:" << std::endl << epeMap << std::endl;
-        //                std::cout << "numMyElements:" << numMyElements << std::endl;
-        //                std::cout << "numGlobalElements:" << numGlobalElements << std::endl;
-        //                std::cout << "myGlobalElements:" << std::endl;
-        //                for (int j = 0; j < numMyElements; j++)
-        //                {
-        //                    std::cout <<  *(myGlobalElements + j) << "\t";
-        //                }
-        //                std::cout << std::endl;
-        //            }
-        //        }
-
-        //        if (rank == 0)
-        //        {
-        //            std::cout << std::endl << "Creating the sparse matrix" << std::endl;
-        //            std::cout << "Number of rows/equatins = " << linearSystem->n() << std::endl;
-        //            std::cout << "Number of non-zero elements = " << linearSystem->nz() << std::endl;
-        //            std::cout << "Max. num. per row = " << linearSystem->n() / ((linearSystem->n() * linearSystem->n()) / linearSystem->nz()) << std::endl;
-        //        }
-
-        /*
-        // create an Epetra_Matrix (sparse) whose rows have distribution given
-        // by the Map.  The max number of entries per row is maxNumPerRow (aproximation).
-        // estimated number non-zero elements in the row based on total percentage on nz in matrix - TODO: approve to be sofisticated
-        int maxNumPerRow = globalNumberOfRows / ((globalNumberOfRows * globalNumberOfRows) / numberOfNonZeros);
-
-        // no MPI
-        Epetra_CrsMatrix epeA(Copy, epeMap, maxNumPerRow);
+        // create Epetra FECrsMatrix
+        Epetra_FECrsMatrix epeA(Copy, epeGlobalMap, numEntriesPerRow);
+        // create Epetra vectors x and b
+        Epetra_Vector epeX(epeGlobalMap);
+        Epetra_Vector epeB(epeGlobalMap);
 
         // prepare data from Agros2D matrix
-        for (int index = 0; index < linearSystem->nz(); index++)
+        for (int localIndex = 0; localIndex < numMyElements; localIndex++)
         {
-            int globalRow = epeA.GRID(linearSystem->cooRowInd[index]);
-            // epeA.InsertGlobalValues(globalRow, 1, &linearSystem->cooA[index], &linearSystem->cooJCN[index]);
-            epeA.InsertGlobalValues(globalRow, 1, &linearSystem->matA[index], (int *) &linearSystem->cooColInd[index]);
-        }
-        */
+            int row = myGlobalElements[localIndex];
 
-        // no MPI
-        Epetra_FECrsMatrix epeA(Copy, epeMap, numEntriesPerRow);
-
-        // prepare data from Agros2D matrix
-        int indexGlobal = 0;
-        for (int row = 0; row < linearSystem->n(); row++)
-        {
             // evaluate number of entries per row and create matrix
             int nCols = numEntriesPerRow[row];
             int *localColInd = new int[nCols];
@@ -696,59 +627,34 @@ int main(int argc, char *argv[])
             std::size_t col_start = linearSystem->system_matrix_pattern->rowstart[row];
             std::size_t col_end = linearSystem->system_matrix_pattern->rowstart[row + 1];
             int index = 0;
-            for (int i = col_start; i < col_end; i++)
+            for (int j = col_start; j < col_end; j++)
             {
-                localColInd[index] = linearSystem->system_matrix_pattern->colnums[i];
-                localMatA[index] = linearSystem->system_matrix->val[indexGlobal];
+                localColInd[index] = linearSystem->system_matrix_pattern->colnums[j];
+                localMatA[index] = linearSystem->system_matrix->val[j];
 
                 index++;
-                indexGlobal++;
             }
+            assert(index == nCols);
 
-            epeA.InsertGlobalValues(1, (int *) &row, nCols, localColInd, localMatA, Epetra_FECrsMatrix::ROW_MAJOR);
+            // matrix
+            epeA.InsertGlobalValues(row, nCols, localMatA, localColInd);
+
+            // fill vectors with local indices
+            epeB[localIndex] = linearSystem->system_rhs->val[row];
+            epeX[localIndex] = 0.0;
 
             delete [] localColInd;
             delete [] localMatA;
         }
-        epeA.FillComplete(); // Transform from GIDs to LIDs
 
-        // MPI
-        // prepare distributed Epetra matrix
-        //        Epetra_FECrsMatrix epeA(Copy, epeMap, maxNumPerRow); // upravit dle no MPI verze - Epetra_FECrsMatrix epeA(Copy, epeMap, numEntriesPerRow);
+        delete [] numEntriesPerRow;
 
-        //        // prepare data on process 0
-        //        if (rank == 0)
-        //        {
-        //            // prepare data from Agros2D matrix
-        //            for (int index = 0; index < numberOfNonZeros; index++)
-        //            {
-        //                int indices[2] = {0,0};
-        //                indices[0] = linearSystem->cooRowInd[index];
-        //                indices[1] = linearSystem->cooColInd[index];
-        //                epeA.SumIntoGlobalValues(1, indices, &linearSystem->matA[index]);
-        //                //epeA.InsertGlobalValues(globalRow, 1, &linearSystem->matA[index], (int *) &linearSystem->cooColInd[index]);   // develop - change to Epetra_FECrsMatrix ???
-        //            }
-        //        }
-        //        // send appropriate part of matrix to the processes
-        //        epeA.GlobalAssemble();
-        //        std::cout << "Process ID " << rank << std::endl << "epeA" << std::endl << epeA << std::endl;
+        // transform from GIDs to LIDs
+        epeA.FillComplete();
 
-        // for testing MPI !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //                        #ifdef HAVE_MPI
-        //                                // for MPI version
-        //                                MPI_Finalize() ;
-        //                        #endif
-        //                                return 0;
-        // end of test !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        // create Epetra_Vectors
-        // vectors x and b
-        Epetra_Vector epeX(epeMap);
-        Epetra_Vector epeB(epeMap);
-
-        // copy rhs values (Agros2D) into the Epetra vector b
-        for (int i = 0; i < linearSystem->n(); i++)
-            epeB[i] = linearSystem->system_rhs->val[i];
+        MPI_Barrier(MPI_COMM_WORLD);
+        if (rank == 0)
+            linearSystem->setInfoTimeReadMatrix(elapsedSeconds(timeStart));
 
         // create linear problem
         Epetra_LinearProblem problem(&epeA, &epeX, &epeB);
@@ -757,10 +663,10 @@ int main(int argc, char *argv[])
         double relTol = linearSystem->relTolArg.getValue();
         int maxIter = linearSystem->maxIterArg.getValue();
 
-
         // solver calling
         std::string solver = linearSystem->solverArg.getValue();
-        std::cout << "Solver: " << solver << std::endl;
+        if (rank == 0)
+            std::cout << "Solver: " << solver << std::endl;
 
         // start of solver stop watch
         auto timeSolveStart = std::chrono::steady_clock::now();
@@ -770,11 +676,11 @@ int main(int argc, char *argv[])
             if (solver.compare(0, 9, "AztecOOML") == 0) // one of multigrid AztecOOML solvers selected
             {
                 int notSolved = solveAztecOOML(linearSystem, problem, maxIter, relTol,
-                               getMLpreconditioner(linearSystem->preconditionerArg.getValue()),
-                               getMLaggregationType(linearSystem->aggregationTypeArg.getValue()),
-                               getMLsmootherType(linearSystem->smootherTypeArg.getValue()),
-                               getMLcoarseType(linearSystem->coarseTypeArg.getValue()),
-                               getAztecOOsolver(solver));
+                                               getMLpreconditioner(linearSystem->preconditionerArg.getValue()),
+                                               getMLaggregationType(linearSystem->aggregationTypeArg.getValue()),
+                                               getMLsmootherType(linearSystem->smootherTypeArg.getValue()),
+                                               getMLcoarseType(linearSystem->coarseTypeArg.getValue()),
+                                               getAztecOOsolver(solver));
                 assert(!notSolved);
             }
             else
@@ -803,13 +709,18 @@ int main(int argc, char *argv[])
                 assert(0 && "No solver selected !!!");
             }
         }
-        linearSystem->setInfoTimeSolver(elapsedSeconds(timeSolveStart));
-        // copy results into the solution vector (for Agros2D)
+
+        // local matrix
+        Epetra_Vector localX(epeProcZeroMap);
+        int lclerr = localX.Import(epeX, importer, Insert);
+
         MPI_Barrier(MPI_COMM_WORLD);
         if (rank == 0)
         {
-            for (int i = 0; i < linearSystem->n(); i++)
-                linearSystem->system_sln->val[i] = epeX[i];       //solution[i] = demoEpeX[i]; // for test of export to Agros2D
+            linearSystem->setInfoTimeSolver(elapsedSeconds(timeSolveStart));
+
+            // copy results into the solution vector (for Agros2D)
+            linearSystem->system_sln->val = localX.Values();
 
             // write solution
             linearSystem->writeSolution();
@@ -830,10 +741,8 @@ int main(int argc, char *argv[])
         }
         delete linearSystem;
 
-#ifdef HAVE_MPI
-        // for MPI version
         MPI_Finalize() ;
-#endif
+
         exit(status);
     }
     catch (TCLAP::ArgException &e)
