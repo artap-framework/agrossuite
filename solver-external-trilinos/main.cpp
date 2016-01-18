@@ -310,7 +310,7 @@ int solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPr
     // output level, 0 being silent and 10 verbose
     mlList.set("ML output", 10);
     // maximum number of levels
-    mlList.set("max levels", 5);
+    mlList.set("max levels", 10);
     // set finest level to 0
     mlList.set("increasing or decreasing", "increasing");
     // use Uncoupled scheme to create the aggregate
@@ -570,8 +570,10 @@ int main(int argc, char *argv[])
         // start stop watch
         auto timeStart = std::chrono::steady_clock::now();
 
-        // read matrixes, parameters etc. onlzy on process 0, on other processe linearSystem == nullptr
+        // read matrices and parameters
         LinearSystemTrilinosArgs *linearSystem = createLinearSystem("External solver - TRILINOS", argc, argv);
+        // std::cout << "rank = " << rank << ", linear system - read = " << elapsedSeconds(timeStart) << std::endl;
+        // auto timeStartAssemble = std::chrono::steady_clock::now();
 
         // save number of processes
         if (rank == 0)
@@ -652,6 +654,8 @@ int main(int argc, char *argv[])
         // transform from GIDs to LIDs
         epeA.FillComplete();
 
+        // std::cout << "rank = " << rank << ", assemble = " << elapsedSeconds(timeStartAssemble) << std::endl;
+
         MPI_Barrier(MPI_COMM_WORLD);
         if (rank == 0)
             linearSystem->setInfoTimeReadMatrix(elapsedSeconds(timeStart));
@@ -712,7 +716,7 @@ int main(int argc, char *argv[])
 
         // local matrix
         Epetra_Vector localX(epeProcZeroMap);
-        int lclerr = localX.Import(epeX, importer, Insert);
+        localX.Import(epeX, importer, Insert);
 
         MPI_Barrier(MPI_COMM_WORLD);
         if (rank == 0)
