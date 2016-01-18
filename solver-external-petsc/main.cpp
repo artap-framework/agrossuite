@@ -489,16 +489,18 @@ int main(int argc, char *argv[])
         ierr = KSPGetIterationNumber(ksp, &iterations); CHKERRQ(ierr);
         linearSystem->setInfoSolverNumOfIterations(iterations);
 
-        // VecView(x, PETSC_VIEWER_STDOUT_SELF);
+        // convert to local vector
+        Vec localX;
+        VecScatter scatter;
+        VecScatterCreateToZero(x, &scatter, &localX);
+        VecScatterBegin(scatter, x, localX, INSERT_VALUES, SCATTER_FORWARD);
+        VecScatterEnd(scatter, x, localX, INSERT_VALUES, SCATTER_FORWARD);
 
-        for (int i = 0; i < linearSystem->n(); i++)
-        {
-            VecGetValues(x, 1, &i, &linearSystem->system_rhs->val[i]);
-        }
-
+        MPI_Barrier(linearSystem->comm);
         if (rank == 0)
         {
-            linearSystem->system_sln = linearSystem->system_rhs;
+            // get pointers to vector data
+            VecGetArray(localX, &linearSystem->system_sln->val);
             linearSystem->writeSolution();
 
             // check solution
@@ -515,6 +517,9 @@ int main(int argc, char *argv[])
                     linearSystem->exportStatusToFile();
             }
         }
+
+        // destroy scatter context
+        ierr = VecScatterDestroy(&scatter); CHKERRQ(ierr);
 
         ierr = VecDestroy(&x); CHKERRQ(ierr);
         ierr = VecDestroy(&b); CHKERRQ(ierr);
