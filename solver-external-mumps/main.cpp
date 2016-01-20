@@ -100,6 +100,10 @@ int main(int argc, char *argv[])
             }
 
             linearSystem.setInfoTimeReadMatrix(MPI_Wtime() - timeStart);
+
+
+            // clear structures
+            linearSystem.system_matrix_pattern->clear();
         }
 
         // no outputs

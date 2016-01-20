@@ -90,16 +90,6 @@ LinearSystemPETScArgs *createLinearSystem(std::string extSolverName, int argc, c
     return linearSystem;
 }
 
-// usage:
-// LinearSystemTrilinosArgs *linearSystem = nullptr;
-// ...
-// linearSystem = createLinearSystem("External solver - TRILINOS", argc, argv);
-// -----
-// get parameters to local value
-// double relTol = linearSystem->relTolArg.getValue();
-// int maxIter = linearSystem->maxIterArg.getValue();
-
-
 KSPType solver(LinearSystemPETScArgs *linearSystem, std::string solver)
 {
     if(solver == "richardson")
@@ -441,6 +431,11 @@ int main(int argc, char *argv[])
         MatGetInfo(A, MAT_LOCAL, &matinfo);
         // std::cout << "rank: " << rank << ", nnz: " << (PetscInt) matinfo.nz_used << std::endl;
         linearSystem->setInfoTimeReadMatrix(elapsedSeconds(timeStart));
+
+        // clear structures
+        linearSystem->system_matrix->clear();
+        linearSystem->system_matrix_pattern->clear();
+        linearSystem->system_rhs->clear();
 
         // Create linear solver context
         KSP ksp;

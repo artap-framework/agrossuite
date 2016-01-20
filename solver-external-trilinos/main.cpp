@@ -613,7 +613,7 @@ int main(int argc, char *argv[])
         }
 
         // create Epetra CrsMatrix
-        Epetra_CrsMatrix epeA(Copy, epeGlobalMap, numEntriesPerRow, true);
+        Epetra_CrsMatrix epeA(View, epeGlobalMap, numEntriesPerRow, true);
         // create Epetra vectors x and b
         Epetra_Vector epeX(epeGlobalMap);
         Epetra_Vector epeB(epeGlobalMap);
@@ -647,8 +647,8 @@ int main(int argc, char *argv[])
             epeB[localIndex] = linearSystem->system_rhs->val[row];
             epeX[localIndex] = 0.0;
 
-            delete [] localColInd;
-            delete [] localMatA;
+            // delete [] localColInd;
+            // delete [] localMatA;
         }
 
         delete [] numEntriesPerRow;
@@ -656,7 +656,10 @@ int main(int argc, char *argv[])
         // transform from GIDs to LIDs
         epeA.FillComplete();
 
-        // std::cout << "rank = " << rank << ", assemble = " << elapsedSeconds(timeStartAssemble) << std::endl;
+        // clear structures
+        linearSystem->system_matrix->clear();
+        linearSystem->system_matrix_pattern->clear();
+        linearSystem->system_rhs->clear();
 
         MPI_Barrier(MPI_COMM_WORLD);
         if (rank == 0)

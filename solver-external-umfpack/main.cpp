@@ -60,6 +60,10 @@ int main(int argc, char *argv[])
 
         int statusTripletToCol = umfpack_di_triplet_to_col (n, n, nz, (int *) linearSystem.cooRowInd, (int *) linearSystem.cooColInd, linearSystem.matA, Ap, Ai, Ax, (int *) NULL);
 
+        // clear structures
+        linearSystem.system_matrix->clear();
+        linearSystem.system_matrix_pattern->clear();
+
         if (statusTripletToCol != UMFPACK_OK)
         {
             std::cerr << "UMFPACK triplet to col: " << statusTripletToCol << std::endl;
