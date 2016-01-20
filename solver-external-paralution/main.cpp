@@ -185,9 +185,6 @@ int main(int argc, char *argv[])
 
         linearSystem.setInfoNumOfProc(paralution::_get_backend_descriptor()->OpenMP_threads);
 
-        // clear structures
-        linearSystem.system_matrix_pattern->clear();
-
         // info
         paralution::Paralution_Backend_Descriptor *desc = paralution::_get_backend_descriptor();
 
