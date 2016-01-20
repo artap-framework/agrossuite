@@ -84,7 +84,6 @@
 #endif
 
 #include "util/point.h"
-#include "indicators/indicators.h"
 
 // zero
 #define EPS_ZERO 1e-10

@@ -1565,9 +1565,6 @@ void Computation::solveInit()
             throw AgrosSolverException(tr("Initial step size is negative"));
     }
 
-    // open indicator progress
-    Indicator::openProgress();
-
     // control geometry
     m_scene->checkGeometryResult();
     m_scene->checkGeometryAssignement();
@@ -1674,9 +1671,6 @@ void Computation::solve()
         m_postDeal->problemSolved();
 
         emit solved();
-
-        // close indicator progress
-        Indicator::closeProgress();
 
         // evaluate results recipes
         Agros2D::problem()->recipes()->evaluate(Agros2D::problem()->currentComputation());

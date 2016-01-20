@@ -6,7 +6,7 @@ IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 ENDIF()
 
-SET(SOURCES util.cpp 
+SET(SOURCES util.cpp
     util/checkversion.cpp 
     util/point.cpp 
     util/system_utils.cpp 
@@ -16,11 +16,9 @@ SET(SOURCES util.cpp
     gui/filebrowser.cpp 
     gui/lineeditdouble.cpp 
     gui/systemoutput.cpp 
-    gui/textedit.cpp 
-    indicators/indicators.cpp 
-    indicators/indicator_unity.cpp)
+    gui/textedit.cpp)
 
-SET(HEADERS util.h 
+SET(HEADERS util.h
     sparse_io.h
     util/checkversion.h 
     util/point.h 
@@ -31,9 +29,7 @@ SET(HEADERS util.h
     gui/filebrowser.h 
     gui/lineeditdouble.h 
     gui/systemoutput.h 
-    gui/textedit.h 
-    indicators/indicators.h 
-    indicators/indicator_unity.h)
+    gui/textedit.h)
     
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_LIBRARIES})
