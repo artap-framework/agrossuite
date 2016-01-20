@@ -22,6 +22,7 @@
 #include "solver/plugin_interface.h"
 
 #include "util/global.h"
+#include "util/constants.h"
 
 #include "scene.h"
 #include "scenenode.h"
@@ -168,7 +169,7 @@ void FieldWidget::createContent()
     txtNumberOfRefinements->setMaximum(10);
     txtPolynomialOrder = new QSpinBox(this);
     txtPolynomialOrder->setMinimum(1);
-    txtPolynomialOrder->setMaximum(10);
+    txtPolynomialOrder->setMaximum(DEALII_MAX_ORDER);
 
     // table
     QGridLayout *layoutGeneral = new QGridLayout();
