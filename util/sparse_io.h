@@ -443,8 +443,8 @@ public:
     // reference solution (for testing)
     VectorRW *reference_sln;
 
-    inline unsigned int n() { return system_matrix_pattern->rows; }
-    inline unsigned int nz() { return system_matrix->max_len; }
+    inline unsigned int n() { return infoN; }
+    inline unsigned int nz() { return infoNZ; }
 
     inline void setInfoNumOfProc(unsigned int num) { infoNumOfProc = num; }
     inline void setInfoTimeReadMatrix(double time) { infoTimeReadMatrix = time; }
@@ -590,24 +590,26 @@ protected:
                                   const std::string &rhsFN,
                                   const std::string &initialFN = "",
                                   const std::string &referenceFN = "")
-    {
-        // TODO: check existence
-
+    {        
         std::ifstream readMatrixSparsityPattern(matrixPaternFN);
+        assert(readMatrixSparsityPattern.is_open());
         system_matrix_pattern->block_read(readMatrixSparsityPattern);
         readMatrixSparsityPattern.close();
 
         std::ifstream readMatrix(matrixFN);
+        assert(readMatrix.is_open());
         system_matrix->block_read(readMatrix);
         readMatrix.close();
 
         std::ifstream readRHS(rhsFN);
+        assert(readRHS.is_open());
         system_rhs->block_read(readRHS);
         readRHS.close();
 
         if (!initialFN.empty())
         {
             std::ifstream readInitial(initialFN);
+            assert(readInitial.is_open());
             initial_sln->block_read(readInitial);
             readInitial.close();
         }
@@ -619,8 +621,8 @@ protected:
             readReference.close();
         }
 
-        infoN = n();
-        infoNZ = nz();
+        infoN = system_matrix_pattern->rows;
+        infoNZ = system_matrix->max_len;
     }
 
     void writeSolutionInternal(const std::string &solutionFN = "")

@@ -185,12 +185,6 @@ int main(int argc, char *argv[])
 
         linearSystem.setInfoNumOfProc(paralution::_get_backend_descriptor()->OpenMP_threads);
 
-        // number of unknowns
-        int n = linearSystem.n();
-
-        // number of nonzero elements in matrix
-        int nz = linearSystem.nz();
-
         // info
         paralution::Paralution_Backend_Descriptor *desc = paralution::_get_backend_descriptor();
 
@@ -198,9 +192,9 @@ int main(int argc, char *argv[])
         LocalVector<ScalarType> rhs_paralution;
         LocalMatrix<ScalarType> mat_paralution;
 
-        mat_paralution.SetDataPtrCSR((int **) &linearSystem.csrRowPtr, (int **) &linearSystem.csrColInd, &linearSystem.matA, "matrix", nz, n, n);
-        rhs_paralution.SetDataPtr(&linearSystem.system_rhs->val, "rhs", n);
-        sln_paralution.SetDataPtr(&linearSystem.system_sln->val, "sln", n);
+        mat_paralution.SetDataPtrCSR((int **) &linearSystem.csrRowPtr, (int **) &linearSystem.csrColInd, &linearSystem.matA, "matrix", linearSystem.nz(), linearSystem.n(), linearSystem.n());
+        rhs_paralution.SetDataPtr(&linearSystem.system_rhs->val, "rhs", linearSystem.n());
+        sln_paralution.SetDataPtr(&linearSystem.system_sln->val, "sln", linearSystem.n());
 
         // move to accelerator
         bool moveToAccelerator = false;

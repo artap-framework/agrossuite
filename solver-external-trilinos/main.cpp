@@ -600,18 +600,20 @@ int main(int argc, char *argv[])
         epeGlobalMap.MyGlobalElements(myGlobalElements);
 
         // integer array of length NumRows
-        int *numEntriesPerRow = new int[linearSystem->n()];
+        int *numEntriesPerRow = new int[numMyElements];
         // loop over the elements of the matrix row by row
-        for (unsigned int row = 0; row < linearSystem->n(); row++)
+        for (int localIndex = 0; localIndex < numMyElements; localIndex++)
         {
+            int row = myGlobalElements[localIndex];
+
             std::size_t col_start = linearSystem->system_matrix_pattern->rowstart[row];
             std::size_t col_end = linearSystem->system_matrix_pattern->rowstart[row + 1];
 
-            numEntriesPerRow[row] = col_end - col_start;
+            numEntriesPerRow[localIndex] = col_end - col_start;
         }
 
-        // create Epetra FECrsMatrix
-        Epetra_FECrsMatrix epeA(Copy, epeGlobalMap, numEntriesPerRow);
+        // create Epetra CrsMatrix
+        Epetra_CrsMatrix epeA(View, epeGlobalMap, numEntriesPerRow, true);
         // create Epetra vectors x and b
         Epetra_Vector epeX(epeGlobalMap);
         Epetra_Vector epeB(epeGlobalMap);
@@ -622,7 +624,7 @@ int main(int argc, char *argv[])
             int row = myGlobalElements[localIndex];
 
             // evaluate number of entries per row and create matrix
-            int nCols = numEntriesPerRow[row];
+            int nCols = numEntriesPerRow[localIndex];
             int *localColInd = new int[nCols];
             double *localMatA = new double[nCols];
 
@@ -645,8 +647,8 @@ int main(int argc, char *argv[])
             epeB[localIndex] = linearSystem->system_rhs->val[row];
             epeX[localIndex] = 0.0;
 
-            delete [] localColInd;
-            delete [] localMatA;
+            // delete [] localColInd;
+            // delete [] localMatA;
         }
 
         delete [] numEntriesPerRow;
@@ -654,7 +656,10 @@ int main(int argc, char *argv[])
         // transform from GIDs to LIDs
         epeA.FillComplete();
 
-        // std::cout << "rank = " << rank << ", assemble = " << elapsedSeconds(timeStartAssemble) << std::endl;
+        // clear structures
+        linearSystem->system_matrix->clear();
+        linearSystem->system_matrix_pattern->clear();
+        linearSystem->system_rhs->clear();
 
         MPI_Barrier(MPI_COMM_WORLD);
         if (rank == 0)

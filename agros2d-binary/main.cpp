@@ -53,9 +53,6 @@ int main(int argc, char *argv[])
         setLocale(Agros2D::configComputer()->value(Config::Config_Locale).toString());
         a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
 
-        // init indicator (ubuntu - unity, windows - overlay icon, macosx - ???)
-        Indicator::init();
-
         MainWindow w(argc, argv);
 
         if (!problemArg.getValue().empty())
