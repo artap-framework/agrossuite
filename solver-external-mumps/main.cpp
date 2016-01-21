@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
         linearSystem.setInfoNumOfProc(np);
 
         if (rank == 0)
-        {            
+        {
             linearSystem.readLinearSystem();
 
             // number of unknowns
@@ -122,32 +122,86 @@ int main(int argc, char *argv[])
         id.job = JOB_END;
         dmumps_c(&id); // Terminate instance
 
-        if (rank == 0)
-            linearSystem.setInfoTimeSolver(MPI_Wtime() - timeSolveStart);
-
-        if (rank == 0)
+        switch (id.infog[1])
         {
-            // MUMPS (rhs = sln)
-            linearSystem.system_sln = linearSystem.system_rhs;
-
-            // write solution
-            linearSystem.writeSolution();
-
-            // check solution
-            if (linearSystem.hasReferenceSolution())
-                status = linearSystem.compareWithReferenceSolution();
-
-            delete [] id.irn;
-            delete [] id.jcn;
-
-            linearSystem.setInfoTimeTotal(MPI_Wtime() - timeStart);
-            if (linearSystem.verbose() > 0)
+        case 0:  // no error
+        {
+            if (rank == 0)
             {
-                linearSystem.printStatus();
+                linearSystem.setInfoTimeSolver(MPI_Wtime() - timeSolveStart);
 
-                if (linearSystem.verbose() > 2)
-                    linearSystem.exportStatusToFile();
+                // MUMPS (rhs = sln)
+                linearSystem.system_sln = linearSystem.system_rhs;
+
+                // write solution
+                linearSystem.writeSolution();
+
+                // check solution
+                if (linearSystem.hasReferenceSolution())
+                    status = linearSystem.compareWithReferenceSolution();
+
+                delete [] id.irn;
+                delete [] id.jcn;
+
+                linearSystem.setInfoTimeTotal(MPI_Wtime() - timeStart);
+                if (linearSystem.verbose() > 0)
+                {
+                    linearSystem.printStatus();
+
+                    if (linearSystem.verbose() > 2)
+                        linearSystem.exportStatusToFile();
+                }
             }
+        }
+            break;
+        case -1:
+        {
+            std::cerr << "Error occured on processor " << id.infog[2] << std::endl;
+            status = -1;
+        }
+            break;
+        case -2:
+        {
+            std::cerr << "Number of nonzeros (NNZ) is out of range." << std::endl;
+            status = -1;
+        }
+            break;
+        case -3:
+        {
+            std::cerr << "MUMPS called with an invalid option for JOB." << std::endl;
+            status = -1;
+        }
+            break;
+        case -5:
+        {
+            std::cerr << "Problem of REAL or COMPLEX workspace allocation of size " << id.infog[2] << " during analysis." << std::endl;
+            status = -1;
+        }
+            break;
+        case -6:
+        {
+            std::cerr << "Matrix is singular in structure." << std::endl;
+            status = -1;
+        }
+            break;
+        case -7:
+        {
+            std::cerr << "Problem of INTEGER workspace allocation of size " << id.infog[2] << " during analysis."<< std::endl;
+            status = -1;
+        }
+            break;
+        case -10:
+        {
+            std::cerr << "Numerically singular matrix." << std::endl;
+            status = -1;
+        }
+            break;
+        default:
+        {
+            std::cerr << "Non-detailed exception in MUMPS: INFOG(1) = " << id.infog[1] << std::endl;
+            status = -1;
+        }
+            break;
         }
 
         ierr = MPI_Finalize();
