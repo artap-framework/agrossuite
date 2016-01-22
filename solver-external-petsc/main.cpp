@@ -423,8 +423,8 @@ int main(int argc, char *argv[])
             relTol = linearSystem->infoParameterRelTol;
 
         PetscReal absTol = PETSC_DEFAULT;
-        if (linearSystem->infoParameterRelTol != PETSC_DEFAULT)
-            absTol = linearSystem->infoParameterRelTol;
+        if (linearSystem->infoParameterAbsTol != PETSC_DEFAULT)
+            absTol = linearSystem->infoParameterAbsTol;
 
         PetscInt maxIter = PETSC_DEFAULT;
         if (linearSystem->infoParameterMaxIter != PETSC_DEFAULT)
@@ -433,15 +433,23 @@ int main(int argc, char *argv[])
         PC pc;
         ierr = KSPGetPC(ksp, &pc);
 
+
+        if (linearSystem->infoParameterPreconditioner == "hypre")
+        {
+           PCHYPRESetType(pc, "boomeramg");
+        }
+
         PCSetType(pc, preConditioner(linearSystem, linearSystem->infoParameterPreconditioner));
 
         ierr = KSPSetTolerances(ksp, relTol, absTol, PETSC_DEFAULT, maxIter); CHKERRQ(ierr);
         ierr = KSPSetType(ksp, solver(linearSystem, linearSystem->infoParameterSolver));
         ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);
-
         auto timeSolveStart = std::chrono::steady_clock::now();
         ierr = KSPSolve(ksp, b, x); CHKERRQ(ierr);
         linearSystem->setInfoTimeSolver(elapsedSeconds(timeSolveStart));
+        PetscInt iterations = 0;
+        ierr = KSPGetIterationNumber(ksp, &iterations); CHKERRQ(ierr);
+        linearSystem->setInfoSolverNumOfIterations(iterations);        
 
         // convert to local vector
         Vec localX;
