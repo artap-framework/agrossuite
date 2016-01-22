@@ -467,9 +467,8 @@ int main(int argc, char *argv[])
            preconditioner += "_AMG";
         }
 
-        PCSetType(pc, preConditioner(preconditioner));
         linearSystem->setInfoSolverPreconditionerName(preconditioner);
-        PCSetType(pc, preConditioner(linearSystem, linearSystem->preconditionerArg.getValue()));
+        PCSetType(pc, preConditioner(linearSystem,  linearSystem->preconditionerArg.getValue()));
         linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
 
         linearSystem->setInfoSolverSolverName(linearSystem->solverArg.getValue());
@@ -482,7 +481,7 @@ int main(int argc, char *argv[])
         linearSystem->setInfoTimeSolver(elapsedSeconds(timeSolveStart));
         PetscInt iterations = 0;
         ierr = KSPGetIterationNumber(ksp, &iterations); CHKERRQ(ierr);
-        linearSystem->setInfoSolverNumOfIterations(iterations);
+        linearSystem->setInfoSolverNumOfIterations(iterations);        
 
         // convert to local vector
         Vec localX;
