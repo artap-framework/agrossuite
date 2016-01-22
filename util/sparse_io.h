@@ -245,11 +245,10 @@ public:
 
     void resize(std::size_t len);
 
-
     std::size_t max_len;
     double *val;
 
-    bool compare(const std::string &fileName, double tolerance = 1e-3)
+    bool compare(const std::string &fileName, double tolerance = 1e-3, double *diff_out = nullptr)
     {
         // read reference solution
         VectorRW ref;
@@ -258,10 +257,10 @@ public:
         readSLN.close();
 
         // compare
-        return compare(ref, tolerance);
+        return compare(ref, tolerance, diff_out);
     }
 
-    bool compare(const VectorRW &comp, double relative_tolerance = 1e-1)
+    bool compare(const VectorRW &comp, double relative_tolerance = 1e-1, double *diff_out = nullptr)
     {
         if (comp.max_len != max_len)
         {
@@ -276,6 +275,9 @@ public:
             sum += fabs(val[i]);
             diff += fabs(comp.val[i] - val[i]);
         }
+
+        if (diff_out)
+            *diff_out = diff / sum * 100;
 
         if (diff / sum > relative_tolerance)
         {
@@ -399,7 +401,8 @@ class LinearSystem
 {
 public:
     LinearSystem(const std::string &name = "") : matA(nullptr), cooRowInd(nullptr), cooColInd(nullptr), csrRowPtr(nullptr), csrColInd(nullptr),
-        infoName(name), infoNumOfProc(1), infoTimeReadMatrix(0.0), infoTimeSolver(0.0), infoTimeTotal(0.0), infoNumOfIterations(0)
+        infoName(name), infoNumOfProc(1), infoTimeReadMatrix(0.0), infoTimeSolver(0.0), infoTimeTotal(0.0), infoNumOfIterations(0),
+        infoState("not_solved"), infoRelativeDiff(0.0)
     {
         // matrix system
         system_matrix_pattern = new SparsityPatternRW();
@@ -450,23 +453,33 @@ public:
     inline void setInfoTimeReadMatrix(double time) { infoTimeReadMatrix = time; }
     inline void setInfoTimeSolver(double time) { infoTimeSolver = time; }
     inline void setInfoSolverNumOfIterations(int num) { infoNumOfIterations = num; }
-    inline void setInfoSolverPreconditionerName(std::string name) { infoSolverPreconditionerName = name; }
-    inline void setInfoSolverSolverName(std::string name) { infoSolverSolverName = name; }
     inline void setInfoTimeTotal(double time) { infoTimeTotal = time; }
+    inline void setInfoSolverStateSolved() { infoState = "solved"; }
 
-    void printStatus()
+    virtual void printStatus()
     {
         std::cout << "Solver: " << infoName << std::endl;
-        std::cout << " - preconditioner: " << infoSolverPreconditionerName << std::endl;
-        std::cout << " - solver: " << infoSolverSolverName << std::endl;
+        std::cout << " - state: " << infoState << std::endl;
         std::cout << " - number of iterations: " << infoNumOfIterations << std::endl;
         std::cout << " - number of processes: " << infoNumOfProc << std::endl;
-        std::cout << " - matrix size: " << n() << " (" << 100 * nz() / pow(n(), 2.0) << " % of nonzero elements)" << std::endl;
+        std::cout << " - matrix size: " << n() << " (" << nz() << " nonzeros, " << 100 * nz() / pow(n(), 2.0) << " % of nonzero elements)" << std::endl;
+        std::cout << " - relative diff.: " << infoRelativeDiff << std::endl;
 
         std::cout << "Elapsed times" << std::endl;
         std::cout << " - read matrix: " << infoTimeReadMatrix << " s" << std::endl;
         std::cout << " - solver: " << infoTimeSolver << " s" << std::endl;
         std::cout << " - total time: " << infoTimeTotal << " s" << std::endl;
+
+        std::cout << "Arguments" << std::endl;
+        std::cout << " - preconditioner: " << infoParameterPreconditioner << std::endl;
+        std::cout << " - solver: " << infoParameterSolver << std::endl;
+        std::cout << " - absolute tolerance: " << infoParameterAbsTol << std::endl;
+        std::cout << " - relative tolerance: " << infoParameterRelTol << std::endl;
+        std::cout << " - maximum number of iterations: " << infoParameterMaxIter << std::endl;
+        std::cout << " - multigrid: " << infoParameterMultigrid << std::endl;
+        std::cout << " - multigrid aggregator: " << infoParameterMultigridAggregator << std::endl;
+        std::cout << " - multigrid smoother: " << infoParameterMultigridSmoother << std::endl;
+        std::cout << " - multigrid coarser: " << infoParameterMultigridCoarser << std::endl;
 
         std::cout << "Filename: " << infoFileName << std::endl;
         std::cout << "Arguments: " << infoArgs << std::endl;
@@ -480,7 +493,7 @@ public:
         time_t seconds = std::chrono::duration_cast<std::chrono::seconds>( ms ).count();
 
         std::stringstream ss;
-        ss << std::put_time(localtime(&seconds), "output_%Y-%m-%d %H:%M:%S.") << modulo << "_" << infoName << "_" << infoSolverPreconditionerName << "_" << infoSolverSolverName << ".out";
+        ss << std::put_time(localtime(&seconds), "output_%Y-%m-%d %H:%M:%S.") << modulo << "_" << infoName << "_" << infoParameterPreconditioner << "_" << infoParameterSolver << ".out";
         std::string fn = ss.str();
 
         std::ofstream file(fn);
@@ -488,16 +501,27 @@ public:
         if (file.is_open())
         {
             file << "solver_name = " << infoName << "\n";
-            file << "solver_preconditioner = " << infoSolverPreconditionerName << "\n";
-            file << "solver_solver = " << infoSolverSolverName << "\n";
+            file << "solver_state = " << infoState << "\n";
             file << "solver_num_of_iterations = " << infoNumOfIterations << "\n";
             file << "solver_num_of_proc = " << infoNumOfProc << "\n";
             file << "solver_matrix_size = " << n() << "\n";
             file << "solver_matrix_nonzeros = " << nz() << "\n";
+            file << "solver_rel_diff = " << infoRelativeDiff << "\n";
 
             file << "time_read_matrix = " << infoTimeReadMatrix << "\n";
             file << "time_solver = " << infoTimeSolver << "\n";
             file << "time_total = " << infoTimeTotal << "\n";
+
+            file << "parameter_preconditioner = " << infoParameterPreconditioner << "\n";
+            file << "parameter_solver = " << infoParameterSolver << "\n";
+
+            file << "parameter_abs_tol = " << infoParameterAbsTol << "\n";
+            file << "parameter_rel_tol = " << infoParameterRelTol << "\n";
+            file << "parameter_max_iter = " << infoParameterMaxIter << "\n";
+            file << "parameter_multigrid = " << infoParameterMultigrid << "\n";
+            file << "parameter_multigrid_aggregator = " << infoParameterMultigridAggregator << "\n";
+            file << "parameter_multigrid_smoother = " << infoParameterMultigridSmoother << "\n";
+            file << "parameter_multigrid_coarser = " << infoParameterMultigridCoarser << "\n";
 
             file << "filename = " << infoFileName << "\n";
             file << "arguments = " << infoArgs << "\n";
@@ -512,7 +536,7 @@ public:
 
     int compareWithReferenceSolution(double relative_tolerance = 1e-1)
     {
-        return reference_sln->compare(*system_sln, relative_tolerance) ? 0 : -1;
+        return reference_sln->compare(*system_sln, relative_tolerance, &infoRelativeDiff) ? 0 : -1;
     }
 
     void convertToCOO()
@@ -584,6 +608,16 @@ public:
     unsigned int *csrRowPtr;
     unsigned int *csrColInd;
 
+    std::string infoParameterPreconditioner;
+    std::string infoParameterSolver;
+    double infoParameterAbsTol;
+    double infoParameterRelTol;
+    int infoParameterMaxIter;
+    bool infoParameterMultigrid;
+    std::string infoParameterMultigridAggregator;
+    std::string infoParameterMultigridSmoother;
+    std::string infoParameterMultigridCoarser;
+
 protected:
     void readLinearSystemInternal(const std::string &matrixPaternFN,
                                   const std::string &matrixFN,
@@ -634,15 +668,17 @@ protected:
     }
 
     std::string infoName;
-    unsigned int infoNumOfProc;
+
+    int infoNumOfProc;
     double infoTimeReadMatrix;
     double infoTimeSolver;
     double infoTimeTotal;
+    std::string infoState;
     unsigned int infoNumOfIterations;
     unsigned int infoN;
     unsigned int infoNZ;
-    std::string infoSolverPreconditionerName;
-    std::string infoSolverSolverName;
+    double infoRelativeDiff;
+
     std::string infoArgs;
     std::string infoFileName;
 };
@@ -652,13 +688,28 @@ class LinearSystemArgs : public LinearSystem
 public:
     LinearSystemArgs(const std::string &name, int argc, const char * const *argv) : LinearSystem(name),
         cmd(name, ' '),
+
         matrixArg(TCLAP::ValueArg<std::string>("m", "matrix", "Matrix", true, "", "string")),
         matrixPatternArg(TCLAP::ValueArg<std::string>("p", "matrix_pattern", "Matrix pattern", true, "", "string")),
         rhsArg(TCLAP::ValueArg<std::string>("r", "rhs", "RHS", true, "", "string")),
         solutionArg(TCLAP::ValueArg<std::string>("s", "solution", "Solution", false, "", "string")),
         referenceSolutionArg(TCLAP::ValueArg<std::string>("q", "reference_solution", "Reference solution", false, "", "string")),
         initialArg(TCLAP::ValueArg<std::string>("i", "initial", "Initial vector", false, "", "string")),
+
+        solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
+        preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
+
+        multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false)),
+        multigridAggregatorTypeArg(TCLAP::ValueArg<std::string>("e", "aggregationType", "AggregationType", false, "", "string")),
+        multigridSmootherTypeArg(TCLAP::ValueArg<std::string>("o", "smootherType", "SmootherType", false, "", "string")),
+        multigridCoarserTypeArg(TCLAP::ValueArg<std::string>("z", "coarseType", "CoarseType", false, "", "string")),
+
+        absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
+        relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
+        maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
+
         verboseArg(TCLAP::ValueArg<int>("v", "verbose", "Verbose mode", false, 0, "int")),
+
         argc(argc),
         argv(argv)
     {
@@ -668,7 +719,35 @@ public:
         cmd.add(solutionArg);
         cmd.add(referenceSolutionArg);
         cmd.add(initialArg);
+
+        cmd.add(solverArg);
+        cmd.add(preconditionerArg);
+
+        cmd.add(multigridArg);
+        cmd.add(multigridAggregatorTypeArg);
+        cmd.add(multigridSmootherTypeArg);
+        cmd.add(multigridCoarserTypeArg);
+
+        cmd.add(absTolArg);
+        cmd.add(relTolArg);
+        cmd.add(maxIterArg);
+
         cmd.add(verboseArg);
+
+        // parse the argv array.
+        cmd.parse(argc, argv);
+
+        infoParameterSolver = solverArg.getValue();
+        infoParameterPreconditioner = preconditionerArg.getValue();
+
+        infoParameterMultigrid = multigridArg.getValue();
+        infoParameterMultigridAggregator = multigridAggregatorTypeArg.getValue();
+        infoParameterMultigridSmoother = multigridSmootherTypeArg.getValue();
+        infoParameterMultigridCoarser = multigridCoarserTypeArg.getValue();
+
+        infoParameterAbsTol = absTolArg.getValue();
+        infoParameterRelTol = relTolArg.getValue();
+        infoParameterMaxIter = maxIterArg.getValue();
     }
 
     inline bool hasSolution() { return !solutionArg.getValue().empty(); }
@@ -679,9 +758,6 @@ public:
 
     virtual void readLinearSystem()
     {
-        // parse the argv array.
-        cmd.parse(argc, argv);
-
         for (int i = 0; i < argc; i++)
         {
             if (i > 0)
@@ -706,17 +782,32 @@ public:
             writeSolutionInternal(solutionFileName());
     }
 
-protected:
-    // command line info
-    TCLAP::CmdLine cmd;
-
+    // matrices and vectors
     TCLAP::ValueArg<std::string> matrixArg;
     TCLAP::ValueArg<std::string> matrixPatternArg;
     TCLAP::ValueArg<std::string> rhsArg;
     TCLAP::ValueArg<std::string> solutionArg;
     TCLAP::ValueArg<std::string> referenceSolutionArg;
     TCLAP::ValueArg<std::string> initialArg;
+    // verbose mode (0 .. disabled, 1 .. simple verbose, 2 .. details, 3 .. file output)
     TCLAP::ValueArg<int> verboseArg;
+
+protected:
+    // command line info
+    TCLAP::CmdLine cmd;
+
+    // iterative solver
+    TCLAP::ValueArg<std::string> solverArg;
+    TCLAP::ValueArg<std::string> preconditionerArg;
+    // iterative solver control
+    TCLAP::ValueArg<double> absTolArg;
+    TCLAP::ValueArg<double> relTolArg;
+    TCLAP::ValueArg<int> maxIterArg;
+    // multigrid
+    TCLAP::SwitchArg multigridArg;
+    TCLAP::ValueArg<std::string> multigridAggregatorTypeArg;
+    TCLAP::ValueArg<std::string> multigridSmootherTypeArg;
+    TCLAP::ValueArg<std::string> multigridCoarserTypeArg;
 
 private:
     int argc;

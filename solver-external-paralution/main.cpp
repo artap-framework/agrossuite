@@ -37,29 +37,16 @@ class LinearSystemParalutionArgs : public LinearSystemArgs
 {
 public:
     LinearSystemParalutionArgs(const std::string &name, int argc, const char * const *argv)
-        : LinearSystemArgs(name, argc, argv),
-          preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
-          solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
-          absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
-          relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
-          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
-          multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false))
+        : LinearSystemArgs(name, argc, argv)
     {
-        cmd.add(preconditionerArg);
-        cmd.add(solverArg);
-        cmd.add(absTolArg);
-        cmd.add(relTolArg);
-        cmd.add(maxIterArg);
-        cmd.add(multigridArg);
+        // default
+        if (infoParameterPreconditioner.empty())
+            infoParameterPreconditioner = "Jacobi";
+        if (infoParameterSolver.empty())
+            infoParameterSolver = "BiCGStab";
     }
 
 public:
-    TCLAP::ValueArg<std::string> preconditionerArg;
-    TCLAP::ValueArg<std::string> solverArg;
-    TCLAP::ValueArg<double> absTolArg;
-    TCLAP::ValueArg<double> relTolArg;
-    TCLAP::ValueArg<int> maxIterArg;
-    TCLAP::SwitchArg multigridArg;
 };
 
 Preconditioner<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType> *getPrecoditioner(const std::string &preconditioner)
@@ -205,60 +192,45 @@ int main(int argc, char *argv[])
             rhs_paralution.MoveToAccelerator();
         }
 
-        // preconditioner
-        std::string preconditioner = linearSystem.preconditionerArg.getValue();
-        if (preconditioner.empty()) preconditioner = "Jacobi"; // default
-        linearSystem.setInfoSolverPreconditionerName(preconditioner);
-
-        // solver
-        std::string solver = linearSystem.solverArg.getValue();
-        if (solver.empty()) solver = "BiCGStab"; // default
-        linearSystem.setInfoSolverSolverName(solver);
-
         // main solver and preconditioner
         Preconditioner<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType> *p = nullptr;
         Solver<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *ls = nullptr;
 
         // Direct Solvers
-        if (isDirectSolver(solver))
+        if (isDirectSolver(linearSystem.infoParameterSolver))
         {
-            ls = getDirectSolver(solver);
+            ls = getDirectSolver(linearSystem.infoParameterSolver);
             ls->SetOperator(mat_paralution);
         }
 
-        // tolerances
-        double absTol = linearSystem.absTolArg.getValue();
-        double relTol = linearSystem.relTolArg.getValue();
-        int maxIter = linearSystem.maxIterArg.getValue();
-
         // Krylov Subspace Solvers
-        if (isKrylovSubspaceSolver(solver))
+        if (isKrylovSubspaceSolver(linearSystem.infoParameterSolver))
         {
-            p = getPrecoditioner(preconditioner);
-            IterativeLinearSolver<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *ils = getKrylovSubspaceSolver(solver);
+            p = getPrecoditioner(linearSystem.infoParameterPreconditioner);
+            IterativeLinearSolver<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *ils = getKrylovSubspaceSolver(linearSystem.infoParameterSolver);
 
             ils->SetOperator(mat_paralution);
-            ils->Init(absTol, relTol, 1e8, maxIter);
+            ils->Init(linearSystem.infoParameterAbsTol, linearSystem.infoParameterRelTol, 1e8, linearSystem.infoParameterMaxIter);
             ils->SetPreconditioner(*p);
 
             ls = ils;
         }
 
         // Deflated PCG
-        if (isDeflatedPCG(solver))
+        if (isDeflatedPCG(linearSystem.infoParameterSolver))
         {
             DPCG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *dpcg =
                     new DPCG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
 
             dpcg->SetOperator(mat_paralution);
-            dpcg->Init(absTol, relTol, 1e8, maxIter);
+            dpcg->Init(linearSystem.infoParameterAbsTol, linearSystem.infoParameterRelTol, 1e8, linearSystem.infoParameterMaxIter);
             dpcg->SetNVectors(2);
 
             ls = dpcg;
         }
 
         // Chebyshev solver
-        if (isChebyshev(solver))
+        if (isChebyshev(linearSystem.infoParameterSolver))
         {
             Chebyshev<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *chebyshev =
                     new Chebyshev<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
@@ -266,13 +238,13 @@ int main(int argc, char *argv[])
             chebyshev->SetOperator(mat_paralution);
             // TODO: estimate minimum and the maximum eigenvalue of the matrix => not working
             chebyshev->Set(0, 100);
-            chebyshev->Init(absTol, relTol, 1e8, maxIter);
+            chebyshev->Init(linearSystem.infoParameterAbsTol, linearSystem.infoParameterRelTol, 1e8, linearSystem.infoParameterMaxIter);
 
             ls = chebyshev;
         }
 
         // Mixed-precision solver
-        if (isMixedPrecisionDC(solver))
+        if (isMixedPrecisionDC(linearSystem.infoParameterSolver))
         {
             MixedPrecisionDC<LocalMatrix<double>, LocalVector<double>, double, LocalMatrix<float>, LocalVector<float>, float> *mp =
                     new MixedPrecisionDC<LocalMatrix<double>, LocalVector<double>, double, LocalMatrix<float>, LocalVector<float>, float>();
@@ -280,7 +252,7 @@ int main(int argc, char *argv[])
             CG<LocalMatrix<float>, LocalVector<float>, float> cg;
             MultiColoredILU<LocalMatrix<float>, LocalVector<float>, float> p;
             cg.SetPreconditioner(p);
-            cg.Init(absTol, relTol, 1e8, maxIter);
+            cg.Init(linearSystem.infoParameterAbsTol, linearSystem.infoParameterRelTol, 1e8, linearSystem.infoParameterMaxIter);
 
             mp->SetOperator(mat_paralution);
             mp->Set(cg);
@@ -293,7 +265,7 @@ int main(int argc, char *argv[])
         Preconditioner<LocalMatrix<double>, LocalVector<double>, double > **amgP = nullptr;
         int amgLevels = 0;
 
-        if (linearSystem.multigridArg.getValue())
+        if (linearSystem.infoParameterMultigrid)
         {
             AMG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *amg =
                     new AMG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType >();
@@ -341,8 +313,8 @@ int main(int argc, char *argv[])
                 // FixedPoint<LocalMatrix<double>, LocalVector<double>, double > *fp = new FixedPoint<LocalMatrix<double>, LocalVector<double>, double >;
                 // fp->SetRelaxation(1.3);
 
-                amgP[i] = getPrecoditioner(preconditioner);
-                amgLS[i] = getKrylovSubspaceSolver(solver);
+                amgP[i] = getPrecoditioner(linearSystem.infoParameterPreconditioner);
+                amgLS[i] = getKrylovSubspaceSolver(linearSystem.infoParameterSolver);
                 amgLS[i]->SetPreconditioner(*amgP[i]);
                 amgLS[i]->Verbose(0);
             }
@@ -353,7 +325,7 @@ int main(int argc, char *argv[])
             amg->SetSmootherPreIter(1);
             amg->SetSmootherPostIter(2);
 
-            amg->Init(absTol, relTol, 1e8, maxIter);
+            amg->Init(linearSystem.infoParameterAbsTol, linearSystem.infoParameterRelTol, 1e8, linearSystem.infoParameterMaxIter);
 
             ls = amg;
         }
@@ -393,10 +365,12 @@ int main(int argc, char *argv[])
             status = linearSystem.compareWithReferenceSolution();
 
         linearSystem.setInfoTimeTotal(elapsedSeconds(timeStart));
+        linearSystem.setInfoSolverStateSolved();
+
         if (linearSystem.verbose() > 0)
         {
             // Krylov Subspace Solvers
-            if (isKrylovSubspaceSolver(solver))
+            if (isKrylovSubspaceSolver(linearSystem.infoParameterSolver))
             {
 
                 IterativeLinearSolver<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *ils
@@ -406,7 +380,7 @@ int main(int argc, char *argv[])
             }
 
             // Deflated PCG
-            if (isDeflatedPCG(solver))
+            if (isDeflatedPCG(linearSystem.infoParameterSolver))
             {
                 DPCG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *dpcg =
                         dynamic_cast<DPCG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *>(ls);
@@ -420,7 +394,7 @@ int main(int argc, char *argv[])
             Preconditioner<LocalMatrix<double>, LocalVector<double>, double > **amgP = nullptr;
             int amgLevels = 0;
 
-            if (linearSystem.multigridArg.getValue())
+            if (linearSystem.infoParameterMultigrid)
             {
                 AMG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *amg =
                         dynamic_cast<AMG<LocalMatrix<ScalarType>, LocalVector<ScalarType>, ScalarType > *>(ls);

@@ -71,40 +71,315 @@ int rank = 0; // MPI process rank
 
 class LinearSystemTrilinosArgs : public LinearSystemArgs
 {
-    // another used args (not listed here): -s, -r, -p, -m, -q, -i, -v
 public:
     LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
-        : LinearSystemArgs(name, argc, argv),
-          solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
-          preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
-          aggregationTypeArg(TCLAP::ValueArg<std::string>("e", "aggregationType", "AggregationType", false, "", "string")),
-          smootherTypeArg(TCLAP::ValueArg<std::string>("o", "smootherType", "SmootherType", false, "", "string")),
-          coarseTypeArg(TCLAP::ValueArg<std::string>("z", "coarseType", "CoarseType", false, "", "string")),
-          // absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
-          relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-6, "double")),
-          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
-          multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false))
+        : LinearSystemArgs(name, argc, argv)
     {
-        cmd.add(solverArg);
-        cmd.add(preconditionerArg);
-        cmd.add(aggregationTypeArg);
-        cmd.add(smootherTypeArg);
-        cmd.add(coarseTypeArg);
-        // cmd.add(absTolArg);
-        cmd.add(relTolArg);
-        cmd.add(maxIterArg);
-        cmd.add(multigridArg);
+        // defaults
+        if (infoParameterSolver.empty())
+            infoParameterSolver = "Amesos_Klu";
+
+        // TODO: Not good - new paremeter!
+        if (infoParameterMultigrid && infoParameterPreconditioner.empty())
+            infoParameterPreconditioner = "SA";
+
+        if (infoParameterMultigrid && infoParameterMultigridAggregator.empty())
+            infoParameterMultigridAggregator = "Uncoupled";
+        if (infoParameterMultigrid && infoParameterMultigridCoarser.empty())
+            infoParameterMultigridCoarser = "Chebyshev";
+        if (infoParameterMultigrid && infoParameterMultigridSmoother.empty())
+            infoParameterMultigridSmoother = "Amesos-KLU";
     }
 
-    TCLAP::ValueArg<std::string> solverArg;
-    TCLAP::ValueArg<std::string> preconditionerArg;
-    TCLAP::ValueArg<std::string> aggregationTypeArg;
-    TCLAP::ValueArg<std::string> smootherTypeArg;
-    TCLAP::ValueArg<std::string> coarseTypeArg;
-    // TCLAP::ValueArg<double> absTolArg;
-    TCLAP::ValueArg<double> relTolArg;
-    TCLAP::ValueArg<int> maxIterArg;
-    TCLAP::SwitchArg multigridArg;
+    // AztecOO part ------------------------
+
+    int getAztecOOpreconditioner(const std::string precondName)
+    {
+        // default
+        int preconditioner = AZ_none;
+
+        if (precondName == "AZ_none")
+            preconditioner = AZ_none;
+        else if (precondName == "AZ_Jacobi")
+            preconditioner = AZ_Jacobi;
+        else if (precondName == "AZ_Neumann")
+            preconditioner = AZ_Neumann;
+        else if (precondName == "AZ_ls")
+            preconditioner = AZ_ls;
+        else if (precondName == "AZ_sym_GS")
+            preconditioner = AZ_sym_GS;
+        else if (precondName == "AZ_dom_decomp")
+            preconditioner = AZ_dom_decomp;
+        else
+            preconditioner = AZ_dom_decomp; // default
+
+        return preconditioner;
+    }
+
+    // TODO: prepare reverse function to get preconditioner name from AZ constant
+    std::string getAztecOOpreconditionerName(const int preconditioner)
+    {
+        std::string precondName = "";
+
+        switch (preconditioner)
+        {
+        case AZ_none:
+            precondName = "AZ_none";
+            break;
+        case AZ_Jacobi:
+            precondName = "AZ_Jacobi";
+            break;
+        case AZ_Neumann:
+            precondName = "AZ_Neumann";
+            break;
+        case AZ_ls:
+            precondName = "AZ_ls";
+            break;
+        case AZ_sym_GS:
+            precondName = "AZ_sym_GS";
+            break;
+        case AZ_dom_decomp:
+            precondName = "AZ_dom_decomp";
+            break;
+        default:
+            precondName = "UNRECOGNIZED";
+        }
+        return precondName;
+    }
+
+    int getAztecOOsolver(const std::string solverName)
+    {
+        int solver;
+
+        if ((solverName == "AztecOO_cg") || (solverName == "AztecOOML_cg"))                       // Conjugate gradient (Applicable to symmetric positive definite matrices, sometimes usable with mildly non-symmetric matrices).
+            solver = AZ_cg;
+        else if ((solverName == "AztecOO_cg_condnum") || (solverName == "AztecOOML_cg_condnum"))  // Conjugate gradient with condition number estimation.(Similar to AZ cg. Additionally computes extreme eigenvalue estimates using the generated Lanczos matrix).
+            solver = AZ_cg_condnum;
+        else if ((solverName == "AztecOO_gmres") || (solverName == "AztecOOML_gmres"))            // Restarted generalized minimal residual.
+            solver = AZ_gmres;
+        else if ((solverName == "AztecOO_gmres_condnum") || (solverName == "AztecOOML_gmres_condnum"))  // Restarted GMRES with condition number estimation. (Similar to AZ gmres. Additionally computes extreme eigenvalues using the generated Hessenberg matrix.)
+            solver = AZ_gmres_condnum;
+        else if ((solverName == "AztecOO_cgs") || (solverName == "AztecOOML_cgs"))                // Conjugate gradient squared.
+            solver = AZ_cgs;
+        else if ((solverName == "AztecOO_tfqmr") || (solverName == "AztecOOML_tfqmr"))            // Transpose-free quasi-minimal residual.
+            solver = AZ_tfqmr;
+        else if ((solverName == "AztecOO_bicgstab") || (solverName == "AztecOOML_bicgstab"))      // Bi-conjugate gradient with stabilization.
+            solver = AZ_bicgstab;
+        else if (solverName == "AztecOO_lu")      // Sparse direct solver (single processor only). Note: This option is available only when –enable-aztecoo-azlu is specified on the AztecOO configure script invocation command
+            solver = AZ_lu;
+        else
+            solver = AZ_tfqmr; // default
+
+        return solver;
+    }
+
+    // reverse function to get solver name from AZ constant
+    std::string getAztecOOsolverName(const int solver, const bool isMultigrid)
+    {
+        std::string solverName = "AztecOO";
+        if (isMultigrid)
+            solverName = solverName + "ML";
+
+        if (solver == AZ_cg)                       // Conjugate gradient (Applicable to symmetric positive definite matrices, sometimes usable with mildly non-symmetric matrices).
+            solverName = solverName + "_cg";
+        else if (solver == AZ_cg_condnum)  // Conjugate gradient with condition number estimation.(Similar to AZ cg. Additionally computes extreme eigenvalue estimates using the generated Lanczos matrix).
+            solverName = solverName + "_cg_condnum";
+        else if (solver == AZ_gmres)            // Restarted generalized minimal residual.
+            solverName = solverName + "_gmres";
+        else if (solver == AZ_gmres_condnum)  // Restarted GMRES with condition number estimation. (Similar to AZ gmres. Additionally computes extreme eigenvalues using the generated Hessenberg matrix.)
+            solverName = solverName + "_gmres_condnum";
+        else if (solver == AZ_cgs)                // Conjugate gradient squared.
+            solverName = solverName + "_cgs";
+        else if (solver == AZ_tfqmr)            // Transpose-free quasi-minimal residual.
+            solverName = solverName + "_tfqmr";
+        else if (solver == AZ_bicgstab)      // Bi-conjugate gradient with stabilization.
+            solverName = solverName + "_bicgstab";
+        else if (solver == AZ_lu)      // Sparse direct solver (single processor only). Note: This option is available only when –enable-aztecoo-azlu is specified on the AztecOO configure script invocation command
+            solverName = solverName + "_lu";
+        else
+        {
+            solverName = "_UNRECOGNIZED";
+        }
+
+        return solverName;
+    }
+
+    std::string getMLpreconditioner(const std::string precondName)
+    {
+        if ((precondName == "SA")
+                || (precondName == "SA")             // - "SA" : classical smoothed aggregation preconditioners;
+                || (precondName == "NSSA")           // - "NSSA" : default values for Petrov-Galerkin preconditioner for nonsymmetric systems
+                || (precondName == "maxwell")        // - "maxwell" : default values for aggregation preconditioner for eddy current systems
+                || (precondName == "DD")             // - "DD" : defaults for 2-level domain decomposition preconditioners based on aggregation;
+                || (precondName == "RefMaxwell")     // - ?? instead of "DD-LU" : Like "DD", but use exact LU decompositions on each subdomain;
+                || (precondName == "DD-ML")          // - "DD-ML" : 3-level domain decomposition preconditioners, with coarser spaces defined by aggregation;
+                || (precondName == "DD-ML-LU"))      // - "DD-ML-LU" : Like "DD-ML", but with LU decompositions on each subdomain.
+        {
+            if (rank == 0)
+                std::cout << "ML preconditioner is set to: " << precondName << std::endl;
+
+            return precondName;
+        }
+        else
+        {
+            assert(0);
+        }
+    }
+
+    std::string getMLaggregationType(const std::string aggregationType)
+    {
+        // aggregationType
+        //"Uncoupled"
+        //"Coupled"
+        //"MIS"
+        //"Uncoupled-MIS"
+        //"METIS"
+        //"ParMETIS"
+        //"Zoltan"
+        //"user"
+        if ((aggregationType == "Uncoupled")
+                || (aggregationType == "Coupled")
+                || (aggregationType == "MIS")
+                || (aggregationType == "Uncoupled-MIS")
+                || (aggregationType == "METIS")
+                || (aggregationType == "ParMETIS")
+                || (aggregationType == "Zoltan")   // does not work, yet
+                || (aggregationType == "user"))    // does not work, yet
+        {
+            if (rank == 0)
+                std::cout << "ML aggregation type is set to: " << aggregationType << std::endl;
+
+            return aggregationType;
+        }
+        else
+        {
+            assert(0);
+        }
+    }
+
+
+    std::string getMLcoarseType(const std::string coarseType)
+    {
+        //  same as in getMLsmootherType()
+        if ((coarseType == "Aztec")
+                || (coarseType == "IFPACK")
+                || (coarseType == "Jacobi")
+                || (coarseType == "ML symmetric Gauss-Seidel")
+                || (coarseType == "symmetric Gauss-Seidel")
+                || (coarseType == "ML Gauss-Seidel")
+                || (coarseType == "Gauss-Seidel")
+                || (coarseType == "block Gauss-Seidel")
+                || (coarseType == "symmetric block Gauss-Seidel")
+                || (coarseType == "Chebyshev")
+                || (coarseType == "MLS")
+                || (coarseType == "Hiptmair")
+                || (coarseType == "Amesos-KLU")
+                || (coarseType == "Amesos-Superlu")
+                || (coarseType == "Amesos-UMFPACK")
+                || (coarseType == "Amesos-Superludist")
+                || (coarseType == "Amesos-MUMPS")
+                || (coarseType == "user-defined")
+                || (coarseType == "SuperLU")
+                || (coarseType == "IFPACK-Chebyshev")
+                || (coarseType == "self")
+                || (coarseType == "do-nothing")
+                || (coarseType == "IC")
+                || (coarseType == "ICT")
+                || (coarseType == "ILU")
+                || (coarseType == "ILUT")
+                || (coarseType == "Block Chebyshev")
+                || (coarseType == "IFPACK-Block Chebyshev")
+                || (coarseType == "line Jacobi")
+                || (coarseType == "line Gauss-Seidel")
+                || (coarseType == "SILU"))
+        {
+            if (rank == 0)
+                std::cout << "ML coarse type is set to: " << coarseType << std::endl;
+
+            return coarseType;
+        }
+        else
+        {
+            assert(0);
+        }
+    }
+
+    std::string getMLsmootherType(const std::string smootherType)
+    {
+        //  "Aztec"
+        //  "IFPACK"
+        //  "Jacobi"
+        //  "ML symmetric Gauss-Seidel"
+        //  "symmetric Gauss-Seidel"
+        //  "ML Gauss-Seidel"
+        //  "Gauss-Seidel"
+        //  "block Gauss-Seidel"
+        //  "symmetric block Gauss-Seidel"
+        //  "Chebyshev"
+        //  "MLS"
+        //  "Hiptmair"
+        //  "Amesos-KLU"
+        //  "Amesos-Superlu"
+        //  "Amesos-UMFPACK"
+        //  "Amesos-Superludist"
+        //  "Amesos-MUMPS"
+        //  "user-defined"
+        //  "SuperLU"
+        //  "IFPACK-Chebyshev"
+        //  "self"
+        //  "do-nothing"
+        //  "IC"
+        //  "ICT"
+        //  "ILU"
+        //  "ILUT"
+        //  "Block Chebyshev"
+        //  "IFPACK-Block Chebyshev"
+        //  "line Jacobi"
+        //  "line Gauss-Seidel"
+        //  "SILU"
+
+        if ((smootherType == "Aztec")
+                || (smootherType == "IFPACK")
+                || (smootherType == "Jacobi")
+                || (smootherType == "ML symmetric Gauss-Seidel")
+                || (smootherType == "symmetric Gauss-Seidel")
+                || (smootherType == "ML Gauss-Seidel")
+                || (smootherType == "Gauss-Seidel")
+                || (smootherType == "block Gauss-Seidel")
+                || (smootherType == "symmetric block Gauss-Seidel")
+                || (smootherType == "Chebyshev")
+                || (smootherType == "MLS")
+                || (smootherType == "Hiptmair")
+                || (smootherType == "Amesos-KLU")
+                || (smootherType == "Amesos-Superlu")
+                || (smootherType == "Amesos-UMFPACK")
+                || (smootherType == "Amesos-Superludist")
+                || (smootherType == "Amesos-MUMPS")
+                || (smootherType == "user-defined")
+                || (smootherType == "SuperLU")
+                || (smootherType == "IFPACK-Chebyshev")
+                || (smootherType == "self")
+                || (smootherType == "do-nothing")
+                || (smootherType == "IC")
+                || (smootherType == "ICT")
+                || (smootherType == "ILU")
+                || (smootherType == "ILUT")
+                || (smootherType == "Block Chebyshev")
+                || (smootherType == "IFPACK-Block Chebyshev")
+                || (smootherType == "line Jacobi")
+                || (smootherType == "line Gauss-Seidel")
+                || (smootherType == "SILU"))
+        {
+            if (rank == 0)
+                std::cout << "ML smoother type is set to: " << smootherType << std::endl;
+
+            return smootherType;
+        }
+        else
+        {
+            assert(0);
+        }
+    }
 };
 
 // Amesos part ------------------------
@@ -130,142 +405,9 @@ int solveAmesos(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProbl
     amesosSolver->NumericFactorization();
     int status = amesosSolver->Solve();
 
-    // on process 0 fill info for testing
-    if (linearSystem)
-    {
-        linearSystem->setInfoSolverSolverName(solverTypeName);
-        linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
-    }
     delete amesosSolver;
 
     return status;
-}
-
-// AztecOO part ------------------------
-
-int getAztecOOpreconditioner(std::string precondName)
-{
-    int preconditioner;
-
-    if (precondName == "AZ_none")
-        preconditioner = AZ_none;
-    else if (precondName == "AZ_Jacobi")
-        preconditioner = AZ_Jacobi;
-    else if (precondName == "AZ_Neumann")
-        preconditioner = AZ_Neumann;
-    else if (precondName == "AZ_ls")
-        preconditioner = AZ_ls;
-    else if (precondName == "AZ_sym_GS")
-        preconditioner = AZ_sym_GS;
-    else if (precondName == "AZ_dom_decomp")
-        preconditioner = AZ_dom_decomp;
-    else
-    {
-        preconditioner = AZ_dom_decomp;
-        precondName = "AZ_dom_decomp";
-    }
-
-    if (rank == 0)
-        std::cout << "AztecOO preconditioner is set to: " << precondName << std::endl;
-
-    return preconditioner;
-}
-
-// TODO: prepare reverse function to get preconditioner name from AZ constant
-std::string getAztecOOprecondName(int preconditioner)
-{
-    std::string precondName = "";
-
-    switch (preconditioner)
-    {
-    case AZ_none:
-        precondName = "AZ_none";
-        break;
-    case AZ_Jacobi:
-        precondName = "AZ_Jacobi";
-        break;
-    case AZ_Neumann:
-        precondName = "AZ_Neumann";
-        break;
-    case AZ_ls:
-        precondName = "AZ_ls";
-        break;
-    case AZ_sym_GS:
-        precondName = "AZ_sym_GS";
-        break;
-    case AZ_dom_decomp:
-        precondName = "AZ_dom_decomp";
-        break;
-    default:
-        precondName = "UNRECOGNIZED";
-    }
-    return precondName;
-}
-
-int getAztecOOsolver(std::string solverName)
-{
-    int solver;
-
-    if ((solverName == "AztecOO_cg") || (solverName == "AztecOOML_cg"))                       // Conjugate gradient (Applicable to symmetric positive definite matrices, sometimes usable with mildly non-symmetric matrices).
-        solver = AZ_cg;
-    else if ((solverName == "AztecOO_cg_condnum") || (solverName == "AztecOOML_cg_condnum"))  // Conjugate gradient with condition number estimation.(Similar to AZ cg. Additionally computes extreme eigenvalue estimates using the generated Lanczos matrix).
-        solver = AZ_cg_condnum;
-    else if ((solverName == "AztecOO_gmres") || (solverName == "AztecOOML_gmres"))            // Restarted generalized minimal residual.
-        solver = AZ_gmres;
-    else if ((solverName == "AztecOO_gmres_condnum") || (solverName == "AztecOOML_gmres_condnum"))  // Restarted GMRES with condition number estimation. (Similar to AZ gmres. Additionally computes extreme eigenvalues using the generated Hessenberg matrix.)
-        solver = AZ_gmres_condnum;
-    else if ((solverName == "AztecOO_cgs") || (solverName == "AztecOOML_cgs"))                // Conjugate gradient squared.
-        solver = AZ_cgs;
-    else if ((solverName == "AztecOO_tfqmr") || (solverName == "AztecOOML_tfqmr"))            // Transpose-free quasi-minimal residual.
-        solver = AZ_tfqmr;
-    else if ((solverName == "AztecOO_bicgstab") || (solverName == "AztecOOML_bicgstab"))      // Bi-conjugate gradient with stabilization.
-        solver = AZ_bicgstab;
-    else if (solverName == "AztecOO_lu")      // Sparse direct solver (single processor only). Note: This option is available only when –enable-aztecoo-azlu is specified on the AztecOO configure script invocation command
-        solver = AZ_lu;
-    else
-    {
-        solver = AZ_tfqmr;
-        if (solverName.compare(0, 9, "AztecOOML"))
-            solverName = "AztecOOML_tfqmr";
-        else
-            solverName = "AztecOO_tfqmr";
-    }
-
-    if (rank == 0)
-        std::cout << "AztecOO solver is set to: " << solverName << std::endl;
-
-    return solver;
-}
-
-// reverse function to get solver name from AZ constant
-std::string getAztecOOsolverName(int solver, bool isMultigrid)
-{
-    std::string solverName = "AztecOO";
-    if (isMultigrid)
-        solverName = solverName + "ML";
-
-    if (solver == AZ_cg)                       // Conjugate gradient (Applicable to symmetric positive definite matrices, sometimes usable with mildly non-symmetric matrices).
-        solverName = solverName + "_cg";
-    else if (solver == AZ_cg_condnum)  // Conjugate gradient with condition number estimation.(Similar to AZ cg. Additionally computes extreme eigenvalue estimates using the generated Lanczos matrix).
-        solverName = solverName + "_cg_condnum";
-    else if (solver == AZ_gmres)            // Restarted generalized minimal residual.
-        solverName = solverName + "_gmres";
-    else if (solver == AZ_gmres_condnum)  // Restarted GMRES with condition number estimation. (Similar to AZ gmres. Additionally computes extreme eigenvalues using the generated Hessenberg matrix.)
-        solverName = solverName + "_gmres_condnum";
-    else if (solver == AZ_cgs)                // Conjugate gradient squared.
-        solverName = solverName + "_cgs";
-    else if (solver == AZ_tfqmr)            // Transpose-free quasi-minimal residual.
-        solverName = solverName + "_tfqmr";
-    else if (solver == AZ_bicgstab)      // Bi-conjugate gradient with stabilization.
-        solverName = solverName + "_bicgstab";
-    else if (solver == AZ_lu)      // Sparse direct solver (single processor only). Note: This option is available only when –enable-aztecoo-azlu is specified on the AztecOO configure script invocation command
-        solverName = solverName + "_lu";
-    else
-    {
-        solverName = "_UNRECOGNIZED";
-    }
-
-    return solverName;
 }
 
 int solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, int preconditioner, int solver)
@@ -286,11 +428,7 @@ int solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProb
     // on process 0 fill info for testing
     if (linearSystem)
     {
-        linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
         linearSystem->setInfoSolverNumOfIterations(aztecooSolver.NumIters());
-        linearSystem->setInfoSolverSolverName(getAztecOOsolverName(aztecooSolver.GetAztecOption(AZ_solver), false));
-        linearSystem->setInfoSolverPreconditionerName(getAztecOOprecondName(aztecooSolver.GetAztecOption(AZ_precond)));
-        linearSystem->setInfoSolverNumOfIterations(aztecooSolver.GetAztecOption(AZ_its));
     }
 
     return status;
@@ -343,203 +481,10 @@ int solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPr
     // on process 0 fill info for testing
     if (linearSystem)
     {
-        linearSystem->setInfoSolverSolverName(getAztecOOsolverName(aztecooSolver.GetAztecOption(AZ_solver), true));
-        linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
         linearSystem->setInfoSolverNumOfIterations(aztecooSolver.NumIters());
-        linearSystem->setInfoSolverPreconditionerName("AMG-" + preconditioner + "-" + aggregationType + "-" + smootherType + "-" + coarseType);
-
-        //linearSystem->setInfoSolverNumOfIterations(aztecooSolver.GetAztecOption(AZ_its));  // ???
     }
 
     return status;
-}
-
-std::string getMLpreconditioner(std::string precondName)
-{
-    if ((precondName == "SA")
-            || (precondName == "SA")             // - "SA" : classical smoothed aggregation preconditioners;
-            || (precondName == "NSSA")           // - "NSSA" : default values for Petrov-Galerkin preconditioner for nonsymmetric systems
-            || (precondName == "maxwell")        // - "maxwell" : default values for aggregation preconditioner for eddy current systems
-            || (precondName == "DD")             // - "DD" : defaults for 2-level domain decomposition preconditioners based on aggregation;
-            || (precondName == "RefMaxwell")     // - ?? instead of "DD-LU" : Like "DD", but use exact LU decompositions on each subdomain;
-            || (precondName == "DD-ML")          // - "DD-ML" : 3-level domain decomposition preconditioners, with coarser spaces defined by aggregation;
-            || (precondName == "DD-ML-LU"))      // - "DD-ML-LU" : Like "DD-ML", but with LU decompositions on each subdomain.
-    {
-        if (rank == 0)
-            std::cout << "ML preconditioner is set to: " << precondName << std::endl;
-
-        return precondName;
-    }
-    else
-    {
-        if (rank == 0)
-            std::cout << "ML preconditioner is set to default (SA)" << std::endl;
-
-        return "SA";
-    }
-}
-
-std::string getMLaggregationType(std::string aggregationType)
-{
-    // aggregationType
-    //"Uncoupled"
-    //"Coupled"
-    //"MIS"
-    //"Uncoupled-MIS"
-    //"METIS"
-    //"ParMETIS"
-    //"Zoltan"
-    //"user"
-    if ((aggregationType == "Uncoupled")
-            || (aggregationType == "Coupled")
-            || (aggregationType == "MIS")
-            || (aggregationType == "Uncoupled-MIS")
-            || (aggregationType == "METIS")
-            || (aggregationType == "ParMETIS")
-            || (aggregationType == "Zoltan")   // does not work, yet
-            || (aggregationType == "user"))    // does not work, yet
-    {
-        if (rank == 0)
-            std::cout << "ML aggregation type is set to: " << aggregationType << std::endl;
-
-        return aggregationType;
-    }
-    else
-    {
-        if (rank == 0)
-            std::cout << "ML aggregation type is set to default (Uncoupled)" << std::endl;
-
-        return "Uncoupled";
-    }
-}
-
-std::string getMLsmootherType(std::string smootherType)
-{
-    //  "Aztec"
-    //  "IFPACK"
-    //  "Jacobi"
-    //  "ML symmetric Gauss-Seidel"
-    //  "symmetric Gauss-Seidel"
-    //  "ML Gauss-Seidel"
-    //  "Gauss-Seidel"
-    //  "block Gauss-Seidel"
-    //  "symmetric block Gauss-Seidel"
-    //  "Chebyshev"
-    //  "MLS"
-    //  "Hiptmair"
-    //  "Amesos-KLU"
-    //  "Amesos-Superlu"
-    //  "Amesos-UMFPACK"
-    //  "Amesos-Superludist"
-    //  "Amesos-MUMPS"
-    //  "user-defined"
-    //  "SuperLU"
-    //  "IFPACK-Chebyshev"
-    //  "self"
-    //  "do-nothing"
-    //  "IC"
-    //  "ICT"
-    //  "ILU"
-    //  "ILUT"
-    //  "Block Chebyshev"
-    //  "IFPACK-Block Chebyshev"
-    //  "line Jacobi"
-    //  "line Gauss-Seidel"
-    //  "SILU"
-
-    if ((smootherType == "Aztec")
-            || (smootherType == "IFPACK")
-            || (smootherType == "Jacobi")
-            || (smootherType == "ML symmetric Gauss-Seidel")
-            || (smootherType == "symmetric Gauss-Seidel")
-            || (smootherType == "ML Gauss-Seidel")
-            || (smootherType == "Gauss-Seidel")
-            || (smootherType == "block Gauss-Seidel")
-            || (smootherType == "symmetric block Gauss-Seidel")
-            || (smootherType == "Chebyshev")
-            || (smootherType == "MLS")
-            || (smootherType == "Hiptmair")
-            || (smootherType == "Amesos-KLU")
-            || (smootherType == "Amesos-Superlu")
-            || (smootherType == "Amesos-UMFPACK")
-            || (smootherType == "Amesos-Superludist")
-            || (smootherType == "Amesos-MUMPS")
-            || (smootherType == "user-defined")
-            || (smootherType == "SuperLU")
-            || (smootherType == "IFPACK-Chebyshev")
-            || (smootherType == "self")
-            || (smootherType == "do-nothing")
-            || (smootherType == "IC")
-            || (smootherType == "ICT")
-            || (smootherType == "ILU")
-            || (smootherType == "ILUT")
-            || (smootherType == "Block Chebyshev")
-            || (smootherType == "IFPACK-Block Chebyshev")
-            || (smootherType == "line Jacobi")
-            || (smootherType == "line Gauss-Seidel")
-            || (smootherType == "SILU"))
-    {
-        if (rank == 0)
-            std::cout << "ML smoother type is set to: " << smootherType << std::endl;
-
-        return smootherType;
-    }
-    else
-    {
-        if (rank == 0)
-            std::cout << "ML smoother type is set to default (Chebyshev)" << std::endl;
-
-        return "Chebyshev";
-    }
-}
-
-std::string getMLcoarseType(std::string coarseType)
-{
-    //  same as in getMLsmootherType()
-    if ((coarseType == "Aztec")
-            || (coarseType == "IFPACK")
-            || (coarseType == "Jacobi")
-            || (coarseType == "ML symmetric Gauss-Seidel")
-            || (coarseType == "symmetric Gauss-Seidel")
-            || (coarseType == "ML Gauss-Seidel")
-            || (coarseType == "Gauss-Seidel")
-            || (coarseType == "block Gauss-Seidel")
-            || (coarseType == "symmetric block Gauss-Seidel")
-            || (coarseType == "Chebyshev")
-            || (coarseType == "MLS")
-            || (coarseType == "Hiptmair")
-            || (coarseType == "Amesos-KLU")
-            || (coarseType == "Amesos-Superlu")
-            || (coarseType == "Amesos-UMFPACK")
-            || (coarseType == "Amesos-Superludist")
-            || (coarseType == "Amesos-MUMPS")
-            || (coarseType == "user-defined")
-            || (coarseType == "SuperLU")
-            || (coarseType == "IFPACK-Chebyshev")
-            || (coarseType == "self")
-            || (coarseType == "do-nothing")
-            || (coarseType == "IC")
-            || (coarseType == "ICT")
-            || (coarseType == "ILU")
-            || (coarseType == "ILUT")
-            || (coarseType == "Block Chebyshev")
-            || (coarseType == "IFPACK-Block Chebyshev")
-            || (coarseType == "line Jacobi")
-            || (coarseType == "line Gauss-Seidel")
-            || (coarseType == "SILU"))
-    {
-        if (rank == 0)
-            std::cout << "ML coarse type is set to: " << coarseType << std::endl;
-
-        return coarseType;
-    }
-    else
-    {
-        if (rank == 0)
-            std::cout << "ML coarse type is set to default (Amesos-KLU)" << std::endl;
-
-        return "Amesos-KLU";
-    }
 }
 
 LinearSystemTrilinosArgs *createLinearSystem(std::string extSolverName, int argc, char *argv[])
@@ -668,50 +613,49 @@ int main(int argc, char *argv[])
         // create linear problem
         Epetra_LinearProblem problem(&epeA, &epeX, &epeB);
 
-        // get parameters to local value
-        double relTol = linearSystem->relTolArg.getValue();
-        int maxIter = linearSystem->maxIterArg.getValue();
-
-        // solver calling
-        std::string solver = linearSystem->solverArg.getValue();
-        if (rank == 0)
-            std::cout << "Solver: " << solver << std::endl;
-
         // start of solver stop watch
         auto timeSolveStart = std::chrono::steady_clock::now();
 
-        if (linearSystem->multigridArg.getValue())
+        int solved = false;
+        if (linearSystem->infoParameterMultigrid)
         {
-            if (solver.compare(0, 9, "AztecOOML") == 0) // one of multigrid AztecOOML solvers selected
+            linearSystem->infoParameterPreconditioner = linearSystem->getMLpreconditioner(linearSystem->infoParameterPreconditioner);
+            linearSystem->infoParameterSolver = linearSystem->getAztecOOsolverName(linearSystem->getAztecOOsolver(linearSystem->infoParameterSolver), true);
+
+            if (linearSystem->infoParameterSolver.compare(0, 9, "AztecOOML") == 0) // one of multigrid AztecOOML solvers selected
             {
-                int notSolved = solveAztecOOML(linearSystem, problem, maxIter, relTol,
-                                               getMLpreconditioner(linearSystem->preconditionerArg.getValue()),
-                                               getMLaggregationType(linearSystem->aggregationTypeArg.getValue()),
-                                               getMLsmootherType(linearSystem->smootherTypeArg.getValue()),
-                                               getMLcoarseType(linearSystem->coarseTypeArg.getValue()),
-                                               getAztecOOsolver(solver));
-                assert(!notSolved);
+                solved = !solveAztecOOML(linearSystem, problem,
+                                         linearSystem->infoParameterMaxIter,
+                                         linearSystem->infoParameterRelTol,
+                                         linearSystem->getMLpreconditioner(linearSystem->infoParameterPreconditioner),
+                                         linearSystem->getMLaggregationType(linearSystem->infoParameterMultigridAggregator),
+                                         linearSystem->getMLsmootherType(linearSystem->infoParameterMultigridSmoother),
+                                         linearSystem->getMLcoarseType(linearSystem->infoParameterMultigridCoarser),
+                                         linearSystem->getAztecOOsolver(linearSystem->infoParameterSolver));
             }
             else
                 assert(0 && "No solver selected !!!");
         }
         else
         {
-            if (solver == "Amesos_Klu" || solver == "") // default
+            if (linearSystem->infoParameterSolver == "Amesos_Klu")
             {
-                linearSystem->setInfoSolverSolverName("Amesos_Klu");
-                int notSolved = solveAmesos(linearSystem, problem, "Amesos_Klu");
-                assert(!notSolved);
+                solved = !solveAmesos(linearSystem, problem, "Amesos_Klu");
             }
-            else if (solver == "Amesos_Paraklete")
+            else if (linearSystem->infoParameterSolver == "Amesos_Paraklete")
             {
-                int notSolved = solveAmesos(linearSystem, problem, "Amesos_Paraklete");
-                assert(!notSolved);
+                solved = !solveAmesos(linearSystem, problem, "Amesos_Paraklete");
             }
-            else if (solver.compare(0, 7, "AztecOO") == 0)   // one of AztecOO solvers selected
+            else if (linearSystem->infoParameterSolver.compare(0, 7, "AztecOO") == 0)   // one of AztecOO solvers selected
             {
-                int notSolved = solveAztecOO(linearSystem, problem, maxIter, relTol, getAztecOOpreconditioner(linearSystem->preconditionerArg.getValue()), getAztecOOsolver(solver));
-                assert(!notSolved);
+                linearSystem->infoParameterPreconditioner = linearSystem->getAztecOOpreconditionerName(linearSystem->getAztecOOpreconditioner(linearSystem->infoParameterPreconditioner));
+                linearSystem->infoParameterSolver = linearSystem->getAztecOOsolverName(linearSystem->getAztecOOsolver(linearSystem->infoParameterSolver), false);
+
+                solved = !solveAztecOO(linearSystem, problem,
+                                       linearSystem->infoParameterMaxIter,
+                                       linearSystem->infoParameterRelTol,
+                                       linearSystem->getAztecOOpreconditioner(linearSystem->infoParameterPreconditioner),
+                                       linearSystem->getAztecOOsolver(linearSystem->infoParameterSolver));
             }
             else
             {
@@ -726,19 +670,23 @@ int main(int argc, char *argv[])
         MPI_Barrier(MPI_COMM_WORLD);
         if (rank == 0)
         {
-            linearSystem->setInfoTimeSolver(elapsedSeconds(timeSolveStart));
+            if (solved)
+            {
+                linearSystem->setInfoTimeSolver(elapsedSeconds(timeSolveStart));
 
-            // copy results into the solution vector (for Agros2D)
-            linearSystem->system_sln->val = localX.Values();
+                // copy results into the solution vector (for Agros2D)
+                linearSystem->system_sln->val = localX.Values();
 
-            // write solution
-            linearSystem->writeSolution();
+                // write solution
+                linearSystem->writeSolution();
 
-            // check solution
-            if (linearSystem->hasReferenceSolution())
-                status = linearSystem->compareWithReferenceSolution();
+                // check solution
+                if (linearSystem->hasReferenceSolution())
+                    status = linearSystem->compareWithReferenceSolution();
 
-            linearSystem->setInfoTimeTotal(elapsedSeconds(timeStart));
+                linearSystem->setInfoTimeTotal(elapsedSeconds(timeStart));
+                linearSystem->setInfoSolverStateSolved();
+            }
 
             if (linearSystem->verbose() > 0)
             {
@@ -750,7 +698,7 @@ int main(int argc, char *argv[])
         }
         delete linearSystem;
 
-        MPI_Finalize() ;
+        MPI_Finalize();
 
         exit(status);
     }
