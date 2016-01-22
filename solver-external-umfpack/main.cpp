@@ -115,6 +115,7 @@ int main(int argc, char *argv[])
                         status = linearSystem.compareWithReferenceSolution();
 
                     linearSystem.setInfoTimeTotal(elapsedSeconds(timeStart));
+                    linearSystem.setInfoSolverStateSolved();
 
                     if (linearSystem.verbose() > 0)
                     {

@@ -37,43 +37,31 @@
 #include "../../3rdparty/tclap/CmdLine.h"
 #include "../util/sparse_io.h"
 
+int rank = 0; // MPI process rank
+
 class LinearSystemPETScArgs : public LinearSystemArgs
 {
     // another used args (not listed here): -s, -r, -p, -m, -q
 public:
-    LinearSystemPETScArgs(const std::string &name, int argc, const char * const *argv)
+    LinearSystemPETScArgs(const std::string &name, int argc, char *argv[])
         : LinearSystemArgs(name, argc, argv),
-          solverArg(TCLAP::ValueArg<std::string>("l", "solver", "Solver", false, "", "string")),
-          preconditionerArg(TCLAP::ValueArg<std::string>("c", "preconditioner", "Preconditioner", false, "", "string")),
-          aggregationTypeArg(TCLAP::ValueArg<std::string>("e", "aggregationType", "AggregationType", false, "", "string")),
-          smootherTypeArg(TCLAP::ValueArg<std::string>("o", "smootherType", "SmootherType", false, "", "string")),
-          coarseTypeArg(TCLAP::ValueArg<std::string>("z", "coarseType", "CoarseType", false, "", "string")),
-          absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
-          relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
-          maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 1000, "int")),
-          multigridArg(TCLAP::SwitchArg("g", "multigrid", "Algebraic multigrid", false)),
           comm(PETSC_COMM_WORLD)
     {
-        cmd.add(solverArg);
-        cmd.add(preconditionerArg);
-        cmd.add(aggregationTypeArg);
-        cmd.add(smootherTypeArg);
-        cmd.add(coarseTypeArg);
-        cmd.add(absTolArg);
-        cmd.add(relTolArg);
-        cmd.add(maxIterArg);
-        cmd.add(multigridArg);
-    }
+        MPI_Comm_size(PETSC_COMM_WORLD, &infoNumOfProc);
+        MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
+        // comm = (size == 1) ? PETSC_COMM_SELF : PETSC_COMM_WORLD;
 
-    TCLAP::ValueArg<std::string> solverArg;
-    TCLAP::ValueArg<std::string> preconditionerArg;
-    TCLAP::ValueArg<std::string> aggregationTypeArg;
-    TCLAP::ValueArg<std::string> smootherTypeArg;
-    TCLAP::ValueArg<std::string> coarseTypeArg;
-    TCLAP::ValueArg<double> absTolArg;
-    TCLAP::ValueArg<double> relTolArg;
-    TCLAP::ValueArg<int> maxIterArg;
-    TCLAP::SwitchArg multigridArg;
+        if (infoParameterPreconditioner.empty())
+        {
+            if (comm == PETSC_COMM_WORLD)
+                infoParameterPreconditioner = "bjacobi";
+            else
+                infoParameterPreconditioner = "jacobi";
+        }
+
+        if (infoParameterSolver.empty())
+            infoParameterSolver = "richardson";
+    }
 
     MPI_Comm comm;
 };
@@ -92,11 +80,11 @@ LinearSystemPETScArgs *createLinearSystem(std::string extSolverName, int argc, c
 
 KSPType solver(LinearSystemPETScArgs *linearSystem, std::string solver)
 {
-    if(solver == "richardson")
+    if (solver == "richardson")
         return KSPRICHARDSON;
-    else if( solver == "chebyshev")
+    else if (solver == "chebyshev")
         return KSPCHEBYSHEV;
-    else if( solver == "cg")
+    else if (solver == "cg")
         return KSPCG;
     else if (solver == "groppcg")
         return KSPGROPPCG;
@@ -159,7 +147,7 @@ KSPType solver(LinearSystemPETScArgs *linearSystem, std::string solver)
     else if (solver == "gcr")
         return KSPGCR;
     else
-        return KSPCG;
+        assert(0);
 }
 
 PCType preConditioner(LinearSystemPETScArgs *linearSystem, std::string preConditioner)
@@ -247,12 +235,7 @@ PCType preConditioner(LinearSystemPETScArgs *linearSystem, std::string preCondit
     else if (preConditioner == "bddc")
         return PCBDDC;
     else
-    {
-        if (linearSystem->comm == PETSC_COMM_WORLD)
-            return PCBJACOBI;
-        else
-            return PCJACOBI;
-    }
+        assert(0);
 }
 
 PetscErrorCode assembleRHS(LinearSystemPETScArgs *linearSystem, Vec &b)
@@ -373,24 +356,12 @@ int main(int argc, char *argv[])
     try
     {
         int status = 0;
-
-        Vec x,b;
-        Mat  A;
-        PetscMPIInt size;
         PetscErrorCode ierr = -1;
-        PetscBool nonzeroguess = PETSC_FALSE;
-
-        PetscInitialize(&argc, &argv, (char*) 0," ");
-        ierr = MPI_Comm_size(PETSC_COMM_WORLD, &size); CHKERRQ(ierr);
-        int rank = 0;
-        ierr = MPI_Comm_rank(PETSC_COMM_WORLD, &rank);
 
         auto timeStart = std::chrono::steady_clock::now();
 
-        LinearSystemPETScArgs *linearSystem = nullptr;
-        linearSystem = createLinearSystem("External solver - PETSc", argc, argv);
-        linearSystem->setInfoNumOfProc(size);
-        // linearSystem->comm = (size == 1) ? PETSC_COMM_SELF : PETSC_COMM_WORLD;
+        PetscInitialize(&argc, &argv, (char*) 0, " ");
+        LinearSystemPETScArgs *linearSystem = createLinearSystem("External solver - PETSc", argc, argv);
 
         if (rank == 0)
         {
@@ -401,6 +372,7 @@ int main(int argc, char *argv[])
         }
 
         // create vector
+        Vec x,b;
         ierr = VecCreateMPI(linearSystem->comm, PETSC_DECIDE, linearSystem->n(), &x); CHKERRQ(ierr);
         ierr = VecCreateMPI(linearSystem->comm, PETSC_DECIDE, linearSystem->n(), &b); CHKERRQ(ierr);
         /*
@@ -419,6 +391,7 @@ int main(int argc, char *argv[])
         // VecView(b, PETSC_VIEWER_STDOUT_SELF);
 
         // create matrix
+        Mat A;
         ierr = MatCreate(linearSystem->comm, &A); CHKERRQ(ierr);
         // this matrix type is identical to MATSEQAIJ when constructed with a single process communicator, and MATMPIAIJ otherwise
         ierr = MatSetType(A, MATMPIAIJ); CHKERRQ(ierr);
@@ -446,26 +419,24 @@ int main(int argc, char *argv[])
         ierr = KSPSetOperators(ksp, A, A, DIFFERENT_NONZERO_PATTERN); CHKERRQ(ierr);
 #endif
         PetscReal relTol = PETSC_DEFAULT;
-        if (linearSystem->relTolArg.isSet())
-            relTol = linearSystem->relTolArg.getValue();
+        if (linearSystem->infoParameterRelTol != PETSC_DEFAULT)
+            relTol = linearSystem->infoParameterRelTol;
 
         PetscReal absTol = PETSC_DEFAULT;
-        if (linearSystem-> absTolArg.isSet())
-            absTol = linearSystem->absTolArg.getValue();
+        if (linearSystem->infoParameterRelTol != PETSC_DEFAULT)
+            absTol = linearSystem->infoParameterRelTol;
 
         PetscInt maxIter = PETSC_DEFAULT;
-        if (linearSystem-> maxIterArg.isSet())
-            maxIter = linearSystem->maxIterArg.getValue();
+        if (linearSystem->infoParameterMaxIter != PETSC_DEFAULT)
+            maxIter = linearSystem->infoParameterMaxIter;
 
         PC pc;
         ierr = KSPGetPC(ksp, &pc);
 
-        PCSetType(pc, preConditioner(linearSystem, linearSystem->preconditionerArg.getValue()));
-        linearSystem->setInfoSolverPreconditionerName(linearSystem->preconditionerArg.getValue());
-        linearSystem->setInfoSolverSolverName(linearSystem->solverArg.getValue());
+        PCSetType(pc, preConditioner(linearSystem, linearSystem->infoParameterPreconditioner));
 
         ierr = KSPSetTolerances(ksp, relTol, absTol, PETSC_DEFAULT, maxIter); CHKERRQ(ierr);
-        ierr = KSPSetType(ksp, solver(linearSystem, linearSystem->solverArg.getValue()));
+        ierr = KSPSetType(ksp, solver(linearSystem, linearSystem->infoParameterSolver));
         ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);
 
         auto timeSolveStart = std::chrono::steady_clock::now();
@@ -491,6 +462,7 @@ int main(int argc, char *argv[])
                 status = linearSystem->compareWithReferenceSolution();
 
             linearSystem->setInfoTimeTotal(elapsedSeconds(timeStart));
+            linearSystem->setInfoSolverStateSolved();
 
             if (linearSystem->verbose() > 0)
             {

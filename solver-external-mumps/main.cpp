@@ -144,13 +144,7 @@ int main(int argc, char *argv[])
                 delete [] id.jcn;
 
                 linearSystem.setInfoTimeTotal(MPI_Wtime() - timeStart);
-                if (linearSystem.verbose() > 0)
-                {
-                    linearSystem.printStatus();
-
-                    if (linearSystem.verbose() > 2)
-                        linearSystem.exportStatusToFile();
-                }
+                linearSystem.setInfoSolverStateSolved();
             }
         }
             break;
@@ -202,6 +196,17 @@ int main(int argc, char *argv[])
             status = -1;
         }
             break;
+        }
+
+        if (rank == 0)
+        {
+            if (linearSystem.verbose() > 0)
+            {
+                linearSystem.printStatus();
+
+                if (linearSystem.verbose() > 2)
+                    linearSystem.exportStatusToFile();
+            }
         }
 
         ierr = MPI_Finalize();
