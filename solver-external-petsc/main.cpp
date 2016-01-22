@@ -436,12 +436,12 @@ int main(int argc, char *argv[])
 
         if (linearSystem->infoParameterPreconditioner == "hypre")
         {
-           PCHYPRESetType(pc, "boomeramg");           
+           PCHYPRESetType(pc, "boomeramg");
         }
 
         PCSetType(pc, preConditioner(linearSystem, linearSystem->infoParameterPreconditioner));
 
-        ierr = KSPSetTolerances(ksp, relTol, absTol, PETSC_DEFAULT, PETSC_DEFAULT); CHKERRQ(ierr);
+        ierr = KSPSetTolerances(ksp, relTol, absTol, PETSC_DEFAULT, maxIter); CHKERRQ(ierr);
         ierr = KSPSetType(ksp, solver(linearSystem, linearSystem->infoParameterSolver));
         ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);
         auto timeSolveStart = std::chrono::steady_clock::now();
