@@ -558,7 +558,7 @@ int main(int argc, char *argv[])
         }
 
         // create Epetra CrsMatrix
-        Epetra_CrsMatrix epeA(View, epeGlobalMap, numEntriesPerRow, true);
+        Epetra_CrsMatrix epeA(Copy, epeGlobalMap, numEntriesPerRow, true);
         // create Epetra vectors x and b
         Epetra_Vector epeX(epeGlobalMap);
         Epetra_Vector epeB(epeGlobalMap);
@@ -592,8 +592,8 @@ int main(int argc, char *argv[])
             epeB[localIndex] = linearSystem->system_rhs->val[row];
             epeX[localIndex] = 0.0;
 
-            // delete [] localColInd;
-            // delete [] localMatA;
+            delete [] localColInd;
+            delete [] localMatA;
         }
 
         delete [] numEntriesPerRow;

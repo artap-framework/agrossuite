@@ -256,7 +256,7 @@ PetscErrorCode assembleRHS(LinearSystemPETScArgs *linearSystem, Vec &b)
         vecVal[i] = linearSystem->system_rhs->val[istart + i];
     }
 
-    VecSetValues(b, iend - istart, vecIdx, vecVal, INSERT_VALUES);
+    ierr = VecSetValues(b, iend - istart, vecIdx, vecVal, INSERT_VALUES); CHKERRQ(ierr);
 
     ierr = VecAssemblyBegin(b); CHKERRQ(ierr);
     ierr = VecAssemblyEnd(b); CHKERRQ(ierr);
@@ -412,7 +412,7 @@ int main(int argc, char *argv[])
 
         // Create linear solver context
         KSP ksp;
-        ierr = KSPCreate(linearSystem->comm, &ksp);CHKERRQ(ierr);
+        ierr = KSPCreate(linearSystem->comm, &ksp); CHKERRQ(ierr);
 #if (PETSC_VERSION_GT(3,6,0))
         ierr = KSPSetOperators(ksp, A, A); CHKERRQ(ierr);
 #else
@@ -439,10 +439,10 @@ int main(int argc, char *argv[])
            PCHYPRESetType(pc, "boomeramg");
         }
 
-        PCSetType(pc, preConditioner(linearSystem, linearSystem->infoParameterPreconditioner));
+        ierr = PCSetType(pc, preConditioner(linearSystem, linearSystem->infoParameterPreconditioner)); CHKERRQ(ierr);
 
         ierr = KSPSetTolerances(ksp, relTol, absTol, PETSC_DEFAULT, maxIter); CHKERRQ(ierr);
-        ierr = KSPSetType(ksp, solver(linearSystem, linearSystem->infoParameterSolver));
+        ierr = KSPSetType(ksp, solver(linearSystem, linearSystem->infoParameterSolver)); CHKERRQ(ierr);
         ierr = KSPSetFromOptions(ksp); CHKERRQ(ierr);
         auto timeSolveStart = std::chrono::steady_clock::now();
         ierr = KSPSolve(ksp, b, x); CHKERRQ(ierr);
@@ -454,9 +454,9 @@ int main(int argc, char *argv[])
         // convert to local vector
         Vec localX;
         VecScatter scatter;
-        VecScatterCreateToZero(x, &scatter, &localX);
-        VecScatterBegin(scatter, x, localX, INSERT_VALUES, SCATTER_FORWARD);
-        VecScatterEnd(scatter, x, localX, INSERT_VALUES, SCATTER_FORWARD);
+        ierr = VecScatterCreateToZero(x, &scatter, &localX); CHKERRQ(ierr);
+        ierr = VecScatterBegin(scatter, x, localX, INSERT_VALUES, SCATTER_FORWARD); CHKERRQ(ierr);
+        ierr = VecScatterEnd(scatter, x, localX, INSERT_VALUES, SCATTER_FORWARD); CHKERRQ(ierr);
 
         MPI_Barrier(linearSystem->comm);
         if (rank == 0)
