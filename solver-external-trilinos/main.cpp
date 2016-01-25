@@ -71,6 +71,110 @@ int rank = 0; // MPI process rank
 
 class LinearSystemTrilinosArgs : public LinearSystemArgs
 {
+private:
+    std::string selectMLsmootherCoarserType(std::string scType)
+    {
+        //  "Aztec"
+        //  "IFPACK"
+        //  "Jacobi"
+        //  "ML symmetric Gauss-Seidel"
+        //  "symmetric Gauss-Seidel"
+        //  "ML Gauss-Seidel"
+        //  "Gauss-Seidel"
+        //  "block Gauss-Seidel"
+        //  "symmetric block Gauss-Seidel"
+        //  "Chebyshev"
+        //  "MLS"
+        //  "Hiptmair"
+        //  "Amesos-KLU"
+        //  "Amesos-Superlu"
+        //  "Amesos-UMFPACK"
+        //  "Amesos-Superludist"
+        //  "Amesos-MUMPS"
+        //  "user-defined"
+        //  "SuperLU"
+        //  "IFPACK-Chebyshev"
+        //  "self"
+        //  "do-nothing"
+        //  "IC"
+        //  "ICT"
+        //  "ILU"
+        //  "ILUT"
+        //  "Block Chebyshev"
+        //  "IFPACK-Block Chebyshev"
+        //  "line Jacobi"
+        //  "line Gauss-Seidel"
+        //  "SILU"
+
+        if ((scType == "Aztec")
+                || (scType == "IFPACK")
+                || (scType == "Jacobi")
+                || (scType == "ML_symmetric_Gauss-Seidel")
+                || (scType == "symmetric_Gauss-Seidel")
+                || (scType == "ML_Gauss-Seidel")
+                || (scType == "Gauss-Seidel")
+                || (scType == "block_Gauss-Seidel")
+                || (scType == "symmetric_block_Gauss-Seidel")
+                || (scType == "Chebyshev")
+                || (scType == "MLS")
+                || (scType == "Hiptmair")
+                || (scType == "Amesos-KLU")
+                || (scType == "Amesos-Superlu")
+                || (scType == "Amesos-UMFPACK")
+                || (scType == "Amesos-Superludist")
+                || (scType == "Amesos-MUMPS")
+                || (scType == "user-defined")
+                || (scType == "SuperLU")
+                || (scType == "IFPACK-Chebyshev")
+                || (scType == "self")
+                || (scType == "do-nothing")
+                || (scType == "IC")
+                || (scType == "ICT")
+                || (scType == "ILU")
+                || (scType == "ILUT")
+                || (scType == "Block_Chebyshev")
+                || (scType == "IFPACK-Block_Chebyshev")
+                || (scType == "line_Jacobi")
+                || (scType == "line_Gauss-Seidel")
+                || (scType == "SILU"))
+        {
+            if (scType == "ML_symmetric_Gauss-Seidel")
+                scType = "ML symmetric Gauss-Seidel";
+
+            if (scType == "symmetric_Gauss-Seidel")
+                scType = "symmetric Gauss-Seidel";
+
+            if (scType == "ML_Gauss-Seidel")
+                scType = "ML Gauss-Seidel";
+
+            if (scType == "block_Gauss-Seidel")
+                scType = "block Gauss-Seidel";
+
+            if (scType == "symmetric_block_Gauss-Seidel")
+                scType = "symmetric block Gauss-Seidel";
+
+            if (scType == "Block_Chebyshev")
+                scType = "Block Chebyshev";
+
+            if (scType == "IFPACK-Block_Chebyshev")
+                scType = "IFPACK-Block Chebyshev";
+
+            if (scType == "line_Jacobi")
+                scType = "line Jacobi";
+
+            if (scType == "line_Gauss-Seidel")
+                scType = "line Gauss-Seidel";
+
+            if (rank == 0)
+                    std::cout << scType << std::endl;
+
+            return scType;
+        }
+        else
+        {
+            assert(0);
+        }
+    }
 public:
     LinearSystemTrilinosArgs(const std::string &name, int argc, const char * const *argv)
         : LinearSystemArgs(name, argc, argv)
@@ -116,7 +220,6 @@ public:
         return preconditioner;
     }
 
-    // TODO: prepare reverse function to get preconditioner name from AZ constant
     std::string getAztecOOpreconditionerName(const int preconditioner)
     {
         std::string precondName = "";
@@ -258,127 +361,20 @@ public:
     }
 
 
-    std::string getMLcoarseType(const std::string coarseType)
+    std::string getMLcoarseType(std::string coarseType)
     {
-        //  same as in getMLsmootherType()
-        if ((coarseType == "Aztec")
-                || (coarseType == "IFPACK")
-                || (coarseType == "Jacobi")
-                || (coarseType == "ML symmetric Gauss-Seidel")
-                || (coarseType == "symmetric Gauss-Seidel")
-                || (coarseType == "ML Gauss-Seidel")
-                || (coarseType == "Gauss-Seidel")
-                || (coarseType == "block Gauss-Seidel")
-                || (coarseType == "symmetric block Gauss-Seidel")
-                || (coarseType == "Chebyshev")
-                || (coarseType == "MLS")
-                || (coarseType == "Hiptmair")
-                || (coarseType == "Amesos-KLU")
-                || (coarseType == "Amesos-Superlu")
-                || (coarseType == "Amesos-UMFPACK")
-                || (coarseType == "Amesos-Superludist")
-                || (coarseType == "Amesos-MUMPS")
-                || (coarseType == "user-defined")
-                || (coarseType == "SuperLU")
-                || (coarseType == "IFPACK-Chebyshev")
-                || (coarseType == "self")
-                || (coarseType == "do-nothing")
-                || (coarseType == "IC")
-                || (coarseType == "ICT")
-                || (coarseType == "ILU")
-                || (coarseType == "ILUT")
-                || (coarseType == "Block Chebyshev")
-                || (coarseType == "IFPACK-Block Chebyshev")
-                || (coarseType == "line Jacobi")
-                || (coarseType == "line Gauss-Seidel")
-                || (coarseType == "SILU"))
-        {
-            if (rank == 0)
-                std::cout << "ML coarse type is set to: " << coarseType << std::endl;
+        if (rank == 0)
+            std::cout << "ML coarse type is set to: ";
 
-            return coarseType;
-        }
-        else
-        {
-            assert(0);
-        }
+        return selectMLsmootherCoarserType(coarseType);
     }
 
-    std::string getMLsmootherType(const std::string smootherType)
+    std::string getMLsmootherType(std::string smootherType)
     {
-        //  "Aztec"
-        //  "IFPACK"
-        //  "Jacobi"
-        //  "ML symmetric Gauss-Seidel"
-        //  "symmetric Gauss-Seidel"
-        //  "ML Gauss-Seidel"
-        //  "Gauss-Seidel"
-        //  "block Gauss-Seidel"
-        //  "symmetric block Gauss-Seidel"
-        //  "Chebyshev"
-        //  "MLS"
-        //  "Hiptmair"
-        //  "Amesos-KLU"
-        //  "Amesos-Superlu"
-        //  "Amesos-UMFPACK"
-        //  "Amesos-Superludist"
-        //  "Amesos-MUMPS"
-        //  "user-defined"
-        //  "SuperLU"
-        //  "IFPACK-Chebyshev"
-        //  "self"
-        //  "do-nothing"
-        //  "IC"
-        //  "ICT"
-        //  "ILU"
-        //  "ILUT"
-        //  "Block Chebyshev"
-        //  "IFPACK-Block Chebyshev"
-        //  "line Jacobi"
-        //  "line Gauss-Seidel"
-        //  "SILU"
+        if (rank == 0)
+            std::cout << "ML smoother type is set to: ";
 
-        if ((smootherType == "Aztec")
-                || (smootherType == "IFPACK")
-                || (smootherType == "Jacobi")
-                || (smootherType == "ML symmetric Gauss-Seidel")
-                || (smootherType == "symmetric Gauss-Seidel")
-                || (smootherType == "ML Gauss-Seidel")
-                || (smootherType == "Gauss-Seidel")
-                || (smootherType == "block Gauss-Seidel")
-                || (smootherType == "symmetric block Gauss-Seidel")
-                || (smootherType == "Chebyshev")
-                || (smootherType == "MLS")
-                || (smootherType == "Hiptmair")
-                || (smootherType == "Amesos-KLU")
-                || (smootherType == "Amesos-Superlu")
-                || (smootherType == "Amesos-UMFPACK")
-                || (smootherType == "Amesos-Superludist")
-                || (smootherType == "Amesos-MUMPS")
-                || (smootherType == "user-defined")
-                || (smootherType == "SuperLU")
-                || (smootherType == "IFPACK-Chebyshev")
-                || (smootherType == "self")
-                || (smootherType == "do-nothing")
-                || (smootherType == "IC")
-                || (smootherType == "ICT")
-                || (smootherType == "ILU")
-                || (smootherType == "ILUT")
-                || (smootherType == "Block Chebyshev")
-                || (smootherType == "IFPACK-Block Chebyshev")
-                || (smootherType == "line Jacobi")
-                || (smootherType == "line Gauss-Seidel")
-                || (smootherType == "SILU"))
-        {
-            if (rank == 0)
-                std::cout << "ML smoother type is set to: " << smootherType << std::endl;
-
-            return smootherType;
-        }
-        else
-        {
-            assert(0);
-        }
+        return selectMLsmootherCoarserType(smootherType);
     }
 };
 
@@ -558,7 +554,7 @@ int main(int argc, char *argv[])
         }
 
         // create Epetra CrsMatrix
-        Epetra_CrsMatrix epeA(View, epeGlobalMap, numEntriesPerRow, true);
+        Epetra_CrsMatrix epeA(Copy, epeGlobalMap, numEntriesPerRow, true);
         // create Epetra vectors x and b
         Epetra_Vector epeX(epeGlobalMap);
         Epetra_Vector epeB(epeGlobalMap);
@@ -592,8 +588,8 @@ int main(int argc, char *argv[])
             epeB[localIndex] = linearSystem->system_rhs->val[row];
             epeX[localIndex] = 0.0;
 
-            // delete [] localColInd;
-            // delete [] localMatA;
+            delete [] localColInd;
+            delete [] localMatA;
         }
 
         delete [] numEntriesPerRow;
