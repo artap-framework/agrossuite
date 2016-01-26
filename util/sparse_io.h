@@ -363,40 +363,6 @@ inline VectorRW::~VectorRW()
     clear();
 }
 
-void csr2csc(int size, int nnz, double *data, int *ir, int *jc)
-{
-    int *tempjc = new int[size + 1];
-    int *tempir = new int[nnz];
-    double *tempdata = new double[nnz];
-
-    int run_i = 0;
-    for (int target_row = 0; target_row < size; target_row++)
-    {
-        tempjc[target_row] = run_i;
-        for (int src_column = 0; src_column < size; src_column++)
-        {
-            for (int src_row = jc[src_column]; src_row < jc[src_column + 1]; src_row++)
-            {
-                if (ir[src_row] == target_row)
-                {
-                    tempir[run_i] = src_column;
-                    tempdata[run_i++] = data[src_row];
-                }
-            }
-        }
-    }
-
-    tempjc[size] = nnz;
-
-    memcpy(ir, tempir, sizeof(int) * nnz);
-    memcpy(jc, tempjc, sizeof(int) * (size + 1));
-    memcpy(data, tempdata, sizeof(double) * nnz);
-
-    delete [] tempir;
-    delete [] tempdata;
-    delete [] tempjc;
-}
-
 class LinearSystem
 {
 public:
@@ -618,6 +584,21 @@ public:
     std::string infoParameterMultigridSmoother;
     std::string infoParameterMultigridCoarser;
 
+    std::string infoName;
+
+    int infoNumOfProc;
+    double infoTimeReadMatrix;
+    double infoTimeSolver;
+    double infoTimeTotal;
+    std::string infoState;
+    unsigned int infoNumOfIterations;
+    unsigned int infoN;
+    unsigned int infoNZ;
+    double infoRelativeDiff;
+
+    std::string infoArgs;
+    std::string infoFileName;
+
 protected:
     void readLinearSystemInternal(const std::string &matrixPaternFN,
                                   const std::string &matrixFN,
@@ -666,21 +647,6 @@ protected:
         system_sln->block_write(writeSln);
         writeSln.close();
     }
-
-    std::string infoName;
-
-    int infoNumOfProc;
-    double infoTimeReadMatrix;
-    double infoTimeSolver;
-    double infoTimeTotal;
-    std::string infoState;
-    unsigned int infoNumOfIterations;
-    unsigned int infoN;
-    unsigned int infoNZ;
-    double infoRelativeDiff;
-
-    std::string infoArgs;
-    std::string infoFileName;
 };
 
 class LinearSystemArgs : public LinearSystem

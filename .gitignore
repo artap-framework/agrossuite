@@ -117,4 +117,4 @@ standalone
 *.supp
 optilab
 solver-external-paralution/paralution/build/
-
+libs/solver_stat
