@@ -2,7 +2,7 @@
  * MAT File I/O Utility Functions
  */
 /*
- * Copyright (C) 2005-2011   Christopher C. Hulbert
+ * Copyright (C) 2005-2016   Christopher C. Hulbert
  *
  * All rights reserved.
  *
@@ -428,7 +428,7 @@ Mat_SizeOf(enum matio_types data_type)
         case MAT_T_INT64:
             return sizeof(mat_int64_t);
 #endif
-#ifdef HAVE_MAT_INT64_T
+#ifdef HAVE_MAT_UINT64_T
         case MAT_T_UINT64:
             return sizeof(mat_uint64_t);
 #endif
@@ -444,6 +444,12 @@ Mat_SizeOf(enum matio_types data_type)
             return sizeof(mat_int8_t);
         case MAT_T_UINT8:
             return sizeof(mat_uint8_t);
+        case MAT_T_UTF8:
+            return 1;
+        case MAT_T_UTF16:
+            return 2;
+        case MAT_T_UTF32:
+            return 4;
         default:
             return 0;
     }

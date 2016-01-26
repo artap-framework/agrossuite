@@ -1,9 +1,9 @@
 /** @file mat73.c
- * Matlab MAT version 5 file functions
+ * Matlab MAT version 7.3 file functions
  * @ingroup MAT
  */
 /*
- * Copyright (C) 2005-2011   Christopher C. Hulbert
+ * Copyright (C) 2005-2016   Christopher C. Hulbert
  *
  * All rights reserved.
  *
@@ -297,8 +297,8 @@ Mat_class_type_to_hid_t(enum matio_classes class_type)
 #       elif CHAR_BIT*SIZEOF_LONG_LONG == 8
             return H5T_NATIVE_ULLONG;
 #       endif
-       default:
-           return -1;
+        default:
+            return -1;
     }
 }
 
@@ -402,8 +402,10 @@ Mat_data_type_to_hid_t(enum matio_types data_type)
 #       elif CHAR_BIT*SIZEOF_LONG_LONG == 8
             return H5T_NATIVE_ULLONG;
 #       endif
-       default:
-           return -1;
+        case MAT_T_UTF8:
+            return H5T_NATIVE_CHAR;
+        default:
+            return -1;
     }
 }
 
@@ -558,6 +560,7 @@ Mat_H5ReadDatasetInfo(mat_t *mat,matvar_t *matvar,hid_t dset_id)
         H5Aclose(attr_id);
         if ( empty ) {
             matvar->rank = matvar->dims[0];
+            free(matvar->dims);
             matvar->dims = calloc(matvar->rank,sizeof(*matvar->dims));
             H5Dread(dset_id,Mat_dims_type_to_hid_t(),H5S_ALL,H5S_ALL,
                     H5P_DEFAULT,matvar->dims);
@@ -2024,8 +2027,9 @@ Mat_VarWriteStruct73(hid_t id,matvar_t *matvar,const char *name,hid_t *refs_id)
                         for ( l = 0; l < nfields; l++ ) {
                             (void)H5Gget_num_objs(*refs_id,&num_obj);
                             sprintf(name,"%lld",num_obj);
-                            fields[k*nfields+l]->compression =
-                                matvar->compression;
+                            if ( NULL != fields[k*nfields+l] )
+                                fields[k*nfields+l]->compression =
+                                    matvar->compression;
                             Mat_VarWriteNext73(*refs_id,fields[k*nfields+l],
                                 name,refs_id);
                             sprintf(name,"/#refs#/%lld",num_obj);
@@ -2161,10 +2165,10 @@ Mat_Create73(const char *matname,const char *hdr_str)
     mat->mode     = MAT_ACC_RDWR;
     mat->byteswap = 0;
     mat->header   = calloc(1,128);
-    mat->subsys_offset = calloc(1,16);
+    mat->subsys_offset = calloc(1,8);
     memset(mat->header,' ',128);
     if ( hdr_str == NULL ) {
-        err = mat_snprintf(mat->header,116,"MATLAB 7.0 MAT-file, Platform: %s,"
+        err = mat_snprintf(mat->header,116,"MATLAB 7.3 MAT-file, Platform: %s, "
                 "Created by libmatio v%d.%d.%d on %s HDF5 schema 0.5",
                 MATIO_PLATFORM,MATIO_MAJOR_VERSION,MATIO_MINOR_VERSION,
                 MATIO_RELEASE_LEVEL,ctime(&t));
@@ -2172,7 +2176,7 @@ Mat_Create73(const char *matname,const char *hdr_str)
         err = mat_snprintf(mat->header,116,"%s",hdr_str);
     }
     mat->header[err] = ' ';
-    mat_snprintf(mat->subsys_offset,15,"            ");
+    memset(mat->subsys_offset,' ',8);
     mat->version = (int)0x0200;
     endian = 0x4d49;
 

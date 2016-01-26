@@ -3,7 +3,7 @@
  * @ingroup MAT
  */
 /*
- * Copyright (C) 2005-2011   Christopher C. Hulbert
+ * Copyright (C) 2005-2016   Christopher C. Hulbert
  *
  * All rights reserved.
  *
@@ -121,8 +121,8 @@ Mat_PrintNumber(enum matio_types type, void *data)
  *
  * Gets the version number of the library
  * @param major Pointer to store the library major version number
- * @param major Pointer to store the library major version number
- * @param major Pointer to store the library major version number
+ * @param minor Pointer to store the library minor version number
+ * @param release Pointer to store the library release version number
  */
 void
 Mat_GetLibraryVersion(int *major,int *minor,int *release)
@@ -157,6 +157,7 @@ Mat_CreateVer(const char *matname,const char *hdr_str,enum mat_ft mat_file_ver)
 
     switch ( mat_file_ver ) {
         case MAT_FT_MAT4:
+            mat = Mat_Create4(matname);
             break;
         case MAT_FT_MAT5:
             mat = Mat_Create5(matname,hdr_str);
@@ -188,19 +189,19 @@ Mat_Open(const char *matname,int mode)
     mat_t *mat = NULL;
     size_t bytesread = 0;
 
-    if ( (mode & 0x00000001) == MAT_ACC_RDONLY ) {
+    if ( (mode & 0x01) == MAT_ACC_RDONLY ) {
         fp = fopen( matname, "rb" );
         if ( !fp )
             return NULL;
-    } else if ( (mode & 0x00000001) == MAT_ACC_RDWR ) {
+    } else if ( (mode & 0x01) == MAT_ACC_RDWR ) {
         fp = fopen( matname, "r+b" );
         if ( !fp ) {
             mat = Mat_CreateVer(matname,NULL,mode&0xfffffffe);
             return mat;
         }
     } else {
-        mat = Mat_CreateVer(matname,NULL,mode&0xfffffffe);
-        return mat;
+        Mat_Critical("Invalid file open mode");
+        return NULL;
     }
 
     mat = malloc(sizeof(*mat));
@@ -216,6 +217,7 @@ Mat_Open(const char *matname,int mode)
     mat->filename      = NULL;
     mat->byteswap      = 0;
     mat->version       = 0;
+    mat->refs_id       = -1;
 
     bytesread += fread(mat->header,1,116,fp);
     mat->header[116] = '\0';
@@ -259,12 +261,14 @@ Mat_Open(const char *matname,int mode)
         mat->mode          = mode;
         mat->bof           = 0;
         mat->next_index    = 0;
+        mat->refs_id       = -1;
 
         Mat_Rewind(mat);
         var = Mat_VarReadNextInfo4(mat);
-        if ( NULL == var ) {
+        if ( NULL == var &&
+             bytesread != 0 ) { /* Accept 0 bytes files as a valid V4 file */
             /* Does not seem to be a valid V4 file */
-            Mat_Critical("%s does not seem to be a valid MAT file",matname);
+            Mat_Critical("\"%s\" does not seem to be a valid MAT file",matname);
             Mat_Close(mat);
             mat = NULL;
         } else {
@@ -285,9 +289,9 @@ Mat_Open(const char *matname,int mode)
 
         mat->fp = malloc(sizeof(hid_t));
 
-        if ( (mode & 0x00ff) == MAT_ACC_RDONLY )
+        if ( (mode & 0x01) == MAT_ACC_RDONLY )
             *(hid_t*)mat->fp=H5Fopen(mat->filename,H5F_ACC_RDONLY,H5P_DEFAULT);
-        else if ( (mode & 0x00ff) == MAT_ACC_RDWR )
+        else if ( (mode & 0x01) == MAT_ACC_RDWR )
             *(hid_t*)mat->fp=H5Fopen(mat->filename,H5F_ACC_RDWR,H5P_DEFAULT);
 
         if ( -1 < *(hid_t*)mat->fp ) {
@@ -730,6 +734,46 @@ Mat_VarCreate(const char *name,enum matio_classes class_type,
     return matvar;
 }
 
+/** @brief Copies a file
+ *
+ * @param src source file path
+ * @param dst destination file path
+ * @retval 0 on success
+ */
+static int
+mat_copy(const char* src, const char* dst)
+{
+    size_t len;
+    char buf[BUFSIZ] = {'\0'};
+    FILE* in;
+    FILE* out;
+
+    in = fopen(src, "rb");
+    if (in == NULL) {
+        Mat_Critical("Cannot open file \"%s\" for reading.", src);
+        return -1;
+    }
+
+    out = fopen(dst, "wb");
+    if (out == NULL) {
+        fclose(in);
+        Mat_Critical("Cannot open file \"%s\" for writing.", dst);
+        return -1;
+    }
+
+    while ((len = fread(buf, sizeof(char), BUFSIZ, in)) > 0) {
+        if (len != fwrite(buf, sizeof(char), len, out)) {
+            fclose(in);
+            fclose(out);
+            Mat_Critical("Error writing to file \"%s\".", dst);
+            return -1;
+        }
+    }
+    fclose(in);
+    fclose(out);
+    return 0;
+}
+
 /** @brief Deletes a variable from a file
  *
  * @ingroup MAT
@@ -741,55 +785,84 @@ int
 Mat_VarDelete(mat_t *mat, const char *name)
 {
     int   err = 1;
-    enum mat_ft mat_file_ver = MAT_FT_DEFAULT;
-    char *tmp_name, *new_name, *temp;
-    mat_t *tmp;
-    matvar_t *matvar;
+    char *tmp_name;
+    char temp[7] = "XXXXXX";
 
     if ( NULL == mat || NULL == name )
         return err;
 
-    switch ( mat->version ) {
-        case 0x0200:
-            mat_file_ver = MAT_FT_MAT73;
-            break;
-        case 0x0100:
-            mat_file_ver = MAT_FT_MAT5;
-            break;
-        case 0x0010:
-            mat_file_ver = MAT_FT_MAT4;
-            break;
-    }
+    if ( (tmp_name = mktemp(temp)) != NULL ) {
+        enum mat_ft mat_file_ver = MAT_FT_DEFAULT;
+        mat_t *tmp;
 
-    temp     = strdup_printf("XXXXXX");
-    tmp_name = mktemp(temp);
-    tmp      = Mat_CreateVer(tmp_name,mat->header,mat_file_ver);
-    if ( tmp != NULL ) {
-        while ( NULL != (matvar = Mat_VarReadNext(mat)) ) {
-            if ( strcmp(matvar->name,name) )
-                Mat_VarWrite(tmp,matvar,0);
-            else
-                err = 0;
-            Mat_VarFree(matvar);
+        switch ( mat->version ) {
+            case 0x0200:
+                mat_file_ver = MAT_FT_MAT73;
+                break;
+            case 0x0100:
+                mat_file_ver = MAT_FT_MAT5;
+                break;
+            case 0x0010:
+                mat_file_ver = MAT_FT_MAT4;
+                break;
         }
-        /* FIXME: Memory leak */
-        new_name = strdup_printf("%s",mat->filename);
-        fclose(mat->fp);
 
-        if ( (err = remove(new_name)) == -1 ) {
-            Mat_Critical("remove of %s failed",new_name);
-        } else if ( !Mat_Close(tmp) && (err=rename(tmp_name,new_name))==-1) {
-            Mat_Critical("rename failed oldname=%s,newname=%s",tmp_name,
-                new_name);
-        } else {
-            tmp = Mat_Open(new_name,mat->mode);
-            if ( NULL != tmp )
-                memcpy(mat,tmp,sizeof(mat_t));
+        tmp = Mat_CreateVer(tmp_name,mat->header,mat_file_ver);
+        if ( tmp != NULL ) {
+            matvar_t *matvar;
+            while ( NULL != (matvar = Mat_VarReadNext(mat)) ) {
+                if ( strcmp(matvar->name,name) )
+                    Mat_VarWrite(tmp,matvar,matvar->compression);
+                else
+                    err = 0;
+                Mat_VarFree(matvar);
+            }
+            Mat_Close(tmp);
+
+            if (err == 0) {
+                char *new_name = strdup_printf("%s",mat->filename);
+#if defined(MAT73) && MAT73
+                if ( mat_file_ver == MAT_FT_MAT73 ) {
+                    if ( mat->refs_id > -1 )
+                        H5Gclose(mat->refs_id);
+                    H5Fclose(*(hid_t*)mat->fp);
+                    free(mat->fp);
+                    mat->fp = NULL;
+                }
+#endif
+                if ( mat->fp ) {
+                    fclose(mat->fp);
+                    mat->fp = NULL;
+                }
+
+                if ( (err = mat_copy(tmp_name,new_name)) == -1 ) {
+                    Mat_Critical("Cannot copy file from \"%s\" to \"%s\".",
+                        tmp_name, new_name);
+                } else if ( (err = remove(tmp_name)) == -1 ) {
+                    Mat_Critical("Cannot remove file \"%s\".",tmp_name);
+                } else {
+                    tmp = Mat_Open(new_name,mat->mode);
+                    if ( NULL != tmp ) {
+                        if ( mat->header )
+                            free(mat->header);
+                        if ( mat->subsys_offset )
+                            free(mat->subsys_offset);
+                        if ( mat->filename )
+                            free(mat->filename);
+                        memcpy(mat,tmp,sizeof(mat_t));
+                        free(tmp);
+                    } else {
+                        Mat_Critical("Cannot open file \"%s\".",new_name);
+                    }
+                }
+                free(new_name);
+            } else if ( (err = remove(tmp_name)) == -1 ) {
+                Mat_Critical("Cannot remove file \"%s\".",tmp_name);
+            }
         }
-        free(tmp);
-        free(new_name);
+    } else {
+        Mat_Critical("Cannot create a unique file name.");
     }
-    free(temp);
     return err;
 }
 
@@ -936,7 +1009,7 @@ Mat_VarFree(matvar_t *matvar)
     if ( matvar->data != NULL) {
         switch (matvar->class_type ) {
             case MAT_C_STRUCT:
-                if ( !matvar->mem_conserve && NULL != matvar->data ) {
+                if ( !matvar->mem_conserve ) {
                     matvar_t **fields = matvar->data;
                     int nfields = matvar->internal->num_fields;
                     for ( i = 0; i < nmemb*nfields; i++ )
@@ -946,7 +1019,7 @@ Mat_VarFree(matvar_t *matvar)
                     break;
                 }
             case MAT_C_CELL:
-                if ( !matvar->mem_conserve && NULL != matvar->data ) {
+                if ( !matvar->mem_conserve ) {
                     matvar_t **cells = matvar->data;
                     for ( i = 0; i < nmemb; i++ )
                         Mat_VarFree(cells[i]);
@@ -984,7 +1057,7 @@ Mat_VarFree(matvar_t *matvar)
             case MAT_C_INT8:
             case MAT_C_UINT8:
             case MAT_C_CHAR:
-                if ( !matvar->mem_conserve && NULL != matvar->data ) {
+                if ( !matvar->mem_conserve ) {
                     if ( matvar->isComplex ) {
                         mat_complex_split_t *complex_data = matvar->data;
                         free(complex_data->Re);
@@ -1116,8 +1189,8 @@ Mat_VarFree2(matvar_t *matvar)
  * \f]
  * @ingroup MAT
  * @param rank Rank of the variable
- * @param dims dimensions of the variable
- * @param subs Dimension subscripts
+ * @param dims Dimensions of the variable
+ * @param subs Array of dimension subscripts
  * @return Single (linear) subscript
  */
 int
@@ -1146,6 +1219,47 @@ Mat_CalcSingleSubscript(int rank,int *dims,int *subs)
     return index;
 }
 
+/** @brief Calculate a single subscript from a set of subscript values
+ *
+ * Calculates a single linear subscript (0-relative) given a 1-relative
+ * subscript for each dimension.  The calculation uses the formula below where
+ * index is the linear index, s is an array of length RANK where each element
+ * is the subscript for the correspondind dimension, D is an array whose
+ * elements are the dimensions of the variable.
+ * \f[
+ *   index = \sum\limits_{k=0}^{RANK-1} [(s_k - 1) \prod\limits_{l=0}^{k} D_l ]
+ * \f]
+ * @ingroup MAT
+ * @param rank Rank of the variable
+ * @param dims Dimensions of the variable
+ * @param subs Array of dimension subscripts
+ * @param[out] index Single (linear) subscript
+ * @retval 0 on success
+ */
+int
+Mat_CalcSingleSubscript2(int rank,size_t *dims,size_t *subs,size_t *index)
+{
+    int i, err = 0;
+
+    for ( i = 0; i < rank; i++ ) {
+        int j;
+        size_t k = subs[i];
+        if ( k > dims[i] ) {
+            err = 1;
+            Mat_Critical("Mat_CalcSingleSubscript2: index out of bounds");
+            break;
+        } else if ( k < 1 ) {
+            err = 1;
+            break;
+        }
+        k--;
+        for ( j = i; j--; )
+            k *= dims[j];
+        *index += k;
+    }
+
+    return err;
+}
 
 /** @brief Calculate a set of subscript values from a single(linear) subscript
  *
@@ -1161,8 +1275,8 @@ Mat_CalcSingleSubscript(int rank,int *dims,int *subs)
  * \f]
  * @ingroup MAT
  * @param rank Rank of the variable
- * @param dims dimensions of the variable
- * @param index linear index
+ * @param dims Dimensions of the variable
+ * @param index Linear index
  * @return Array of dimension subscripts
  */
 int *
@@ -1178,6 +1292,46 @@ Mat_CalcSubscripts(int rank,int *dims,int index)
         for ( j = i; j--; )
             k *= dims[j];
         subs[i] = floor(l / (double)k);
+        l -= subs[i]*k;
+        subs[i]++;
+    }
+
+    return subs;
+}
+
+/** @brief Calculate a set of subscript values from a single(linear) subscript
+ *
+ * Calculates 1-relative subscripts for each dimension given a 0-relative
+ * linear index.  Subscripts are calculated as follows where s is the array
+ * of dimension subscripts, D is the array of dimensions, and index is the
+ * linear index.
+ * \f[
+ *   s_k = \lfloor\frac{1}{L} \prod\limits_{l = 0}^{k} D_l\rfloor + 1
+ * \f]
+ * \f[
+ *   L = index - \sum\limits_{l = k}^{RANK - 1} s_k \prod\limits_{m = 0}^{k} D_m
+ * \f]
+ * @ingroup MAT
+ * @param rank Rank of the variable
+ * @param dims Dimensions of the variable
+ * @param index Linear index
+ * @return Array of dimension subscripts
+ */
+size_t *
+Mat_CalcSubscripts2(int rank,size_t *dims,size_t index)
+{
+    int i;
+    size_t *subs;
+    double l;
+
+    subs = malloc(rank*sizeof(size_t));
+    l = (double)index;
+    for ( i = rank; i--; ) {
+        int j;
+        size_t k = 1;
+        for ( j = i; j--; )
+            k *= dims[j];
+        subs[i] = (size_t)floor(l / (double)k);
         l -= subs[i]*k;
         subs[i]++;
     }
@@ -1441,7 +1595,7 @@ Mat_VarPrint( matvar_t *matvar, int printdata )
  * @param mat MAT file to read data from
  * @param matvar MAT variable information
  * @param data pointer to store data in (must be pre-allocated)
- * @param start array of starting indeces
+ * @param start array of starting indices
  * @param stride stride of data
  * @param edge array specifying the number to read in each direction
  * @retval 0 on success
@@ -1618,6 +1772,8 @@ Mat_VarReadInfo( mat_t *mat, const char *name )
         return NULL;
 
     if ( mat->version == MAT_FT_MAT73 ) {
+        fpos = mat->next_index;
+        mat->next_index = 0;
         do {
             matvar = Mat_VarReadNextInfo(mat);
             if ( matvar != NULL ) {
@@ -1633,6 +1789,7 @@ Mat_VarReadInfo( mat_t *mat, const char *name )
                 break;
             }
         } while ( NULL == matvar && mat->next_index < mat->num_datasets);
+        mat->next_index = fpos;
     } else {
         fpos = ftell(mat->fp);
         fseek(mat->fp,mat->bof,SEEK_SET);
@@ -1677,6 +1834,10 @@ Mat_VarRead( mat_t *mat, const char *name )
 
     if ( MAT_FT_MAT73 != mat->version )
         fpos = ftell(mat->fp);
+    else {
+        fpos = mat->next_index;
+        mat->next_index = 0;
+    }
 
     matvar = Mat_VarReadInfo(mat,name);
     if ( matvar )
@@ -1684,6 +1845,9 @@ Mat_VarRead( mat_t *mat, const char *name )
 
     if ( MAT_FT_MAT73 != mat->version )
         fseek(mat->fp,fpos,SEEK_SET);
+    else {
+        mat->next_index = fpos;
+    }
     return matvar;
 }
 
@@ -1747,7 +1911,7 @@ Mat_VarWriteInfo(mat_t *mat, matvar_t *matvar )
  * @param mat MAT file to write to
  * @param matvar MAT variable information to write
  * @param data pointer to the data to write
- * @param start array of starting indeces
+ * @param start array of starting indices
  * @param stride stride of data
  * @param edge array specifying the number to read in each direction
  * @retval 0 on success
@@ -1826,12 +1990,14 @@ Mat_VarWrite(mat_t *mat,matvar_t *matvar,enum matio_compression compress)
 {
     if ( mat == NULL || matvar == NULL )
         return -1;
+    else if ( mat->version == MAT_FT_MAT4 )
+        return Mat_VarWrite4(mat,matvar);
     else if ( mat->version == MAT_FT_MAT5 )
-        Mat_VarWrite5(mat,matvar,compress);
+        return Mat_VarWrite5(mat,matvar,compress);
 #if defined(MAT73) && MAT73
     else if ( mat->version == MAT_FT_MAT73 )
-        Mat_VarWrite73(mat,matvar,compress);
+        return Mat_VarWrite73(mat,matvar,compress);
 #endif
 
-    return 0;
+    return 1;
 }

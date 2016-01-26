@@ -3,7 +3,7 @@
  * @ingroup MAT
  */
 /*
- * Copyright (C) 2005-2011   Christopher C. Hulbert
+ * Copyright (C) 2005-2016   Christopher C. Hulbert
  *
  * All rights reserved.
  *
@@ -894,6 +894,7 @@ ReadInt64Data(mat_t *mat,mat_int64_t *data,enum matio_types data_type,int len)
             }
             break;
         }
+#ifdef HAVE_MAT_UINT64_T
         case MAT_T_UINT64:
         {
             mat_uint64_t ui64;
@@ -912,6 +913,7 @@ ReadInt64Data(mat_t *mat,mat_int64_t *data,enum matio_types data_type,int len)
             }
             break;
         }
+#endif /* HAVE_MAT_UINT64_T */
         case MAT_T_INT32:
         {
             mat_int32_t i32;
@@ -1286,6 +1288,7 @@ ReadUInt64Data(mat_t *mat,mat_uint64_t *data,enum matio_types data_type,int len)
             }
             break;
         }
+#ifdef HAVE_MAT_INT64_T
         case MAT_T_INT64:
         {
             mat_int64_t i64;
@@ -1304,6 +1307,7 @@ ReadUInt64Data(mat_t *mat,mat_uint64_t *data,enum matio_types data_type,int len)
             }
             break;
         }
+#endif /* HAVE_MAT_INT64_T */
         case MAT_T_UINT64:
         {
             mat_uint64_t ui64;
@@ -4731,7 +4735,7 @@ ReadCompressedDataSlabN(mat_t *mat,z_stream *z,void *data,
                 N *= edge[i];
                 I += dimp[i-1]*start[i];
             }
-            /* Skip all data to the starting indeces */
+            /* Skip all data to the starting indices */
             InflateSkipData(mat,&z_copy,data_type,I);
             if ( stride[0] == 1 ) {
                 for ( i = 0; i < N; i+=edge[0] ) {
@@ -4827,7 +4831,7 @@ ReadCompressedDataSlabN(mat_t *mat,z_stream *z,void *data,
                 N *= edge[i];
                 I += dimp[i-1]*start[i];
             }
-            /* Skip all data to the starting indeces */
+            /* Skip all data to the starting indices */
             InflateSkipData(mat,&z_copy,data_type,I);
             if ( stride[0] == 1 ) {
                 for ( i = 0; i < N; i+=edge[0] ) {
@@ -4919,7 +4923,7 @@ ReadCompressedDataSlabN(mat_t *mat,z_stream *z,void *data,
                 N *= edge[i];
                 I += dimp[i-1]*start[i];
             }
-            /* Skip all data to the starting indeces */
+            /* Skip all data to the starting indices */
             InflateSkipData(mat,&z_copy,data_type,I);
             if ( stride[0] == 1 ) {
                 for ( i = 0; i < N; i+=edge[0] ) {
@@ -4992,7 +4996,7 @@ ReadCompressedDataSlabN(mat_t *mat,z_stream *z,void *data,
             break;
         }
 #endif /* HAVE_MAT_INT64_T */
-#ifdef HAVE_MAT_INT64_T
+#ifdef HAVE_MAT_UINT64_T
         case MAT_C_UINT64:
         {
             mat_uint64_t *ptr;
@@ -5012,7 +5016,7 @@ ReadCompressedDataSlabN(mat_t *mat,z_stream *z,void *data,
                 N *= edge[i];
                 I += dimp[i-1]*start[i];
             }
-            /* Skip all data to the starting indeces */
+            /* Skip all data to the starting indices */
             InflateSkipData(mat,&z_copy,data_type,I);
             if ( stride[0] == 1 ) {
                 for ( i = 0; i < N; i+=edge[0] ) {
@@ -5104,7 +5108,7 @@ ReadCompressedDataSlabN(mat_t *mat,z_stream *z,void *data,
                 N *= edge[i];
                 I += dimp[i-1]*start[i];
             }
-            /* Skip all data to the starting indeces */
+            /* Skip all data to the starting indices */
             InflateSkipData(mat,&z_copy,data_type,I);
             if ( stride[0] == 1 ) {
                 for ( i = 0; i < N; i+=edge[0] ) {
@@ -5195,7 +5199,7 @@ ReadCompressedDataSlabN(mat_t *mat,z_stream *z,void *data,
                 N *= edge[i];
                 I += dimp[i-1]*start[i];
             }
-            /* Skip all data to the starting indeces */
+            /* Skip all data to the starting indices */
             InflateSkipData(mat,&z_copy,data_type,I);
             if ( stride[0] == 1 ) {
                 for ( i = 0; i < N; i+=edge[0] ) {
@@ -5286,7 +5290,7 @@ ReadCompressedDataSlabN(mat_t *mat,z_stream *z,void *data,
                 N *= edge[i];
                 I += dimp[i-1]*start[i];
             }
-            /* Skip all data to the starting indeces */
+            /* Skip all data to the starting indices */
             InflateSkipData(mat,&z_copy,data_type,I);
             if ( stride[0] == 1 ) {
                 for ( i = 0; i < N; i+=edge[0] ) {
@@ -5377,7 +5381,7 @@ ReadCompressedDataSlabN(mat_t *mat,z_stream *z,void *data,
                 N *= edge[i];
                 I += dimp[i-1]*start[i];
             }
-            /* Skip all data to the starting indeces */
+            /* Skip all data to the starting indices */
             InflateSkipData(mat,&z_copy,data_type,I);
             if ( stride[0] == 1 ) {
                 for ( i = 0; i < N; i+=edge[0] ) {
@@ -5468,7 +5472,7 @@ ReadCompressedDataSlabN(mat_t *mat,z_stream *z,void *data,
                 N *= edge[i];
                 I += dimp[i-1]*start[i];
             }
-            /* Skip all data to the starting indeces */
+            /* Skip all data to the starting indices */
             InflateSkipData(mat,&z_copy,data_type,I);
             if ( stride[0] == 1 ) {
                 for ( i = 0; i < N; i+=edge[0] ) {
@@ -5559,7 +5563,7 @@ ReadCompressedDataSlabN(mat_t *mat,z_stream *z,void *data,
                 N *= edge[i];
                 I += dimp[i-1]*start[i];
             }
-            /* Skip all data to the starting indeces */
+            /* Skip all data to the starting indices */
             InflateSkipData(mat,&z_copy,data_type,I);
             if ( stride[0] == 1 ) {
                 for ( i = 0; i < N; i+=edge[0] ) {
@@ -6293,7 +6297,7 @@ ReadCompressedDataSlab2(mat_t *mat,z_stream *z,void *data,
             }
             break;
         }
-#ifdef HAVE_MAT_UINT64_T
+#ifdef HAVE_MAT_INT64_T
         case MAT_C_INT64:
         {
             mat_int64_t *ptr;
