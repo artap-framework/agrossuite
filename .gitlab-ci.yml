@@ -7,16 +7,16 @@ build:
     - mkdir -p build 
     - cd build 
     - cmake ..
-    - make -j30 
+    - make -j12 
     - cd ../../
     - export CC=/usr/bin/clang
     - export CXX=/usr/bin/clang++     
     - cmake . 
-    - make -j30
+    - make -j12
     - ./agros2d_generator
     - cd plugins
     - cmake .
-    - make -j30
+    - make -j12
     - cd ..
     - ctest -D Experimental
     
@@ -51,7 +51,7 @@ build_paralution:
     - mkdir -p build 
     - cd build 
     - cmake ..
-    - make -j30    
+    - make -j12    
     - cd ../../
     - cmake .
     - make 
