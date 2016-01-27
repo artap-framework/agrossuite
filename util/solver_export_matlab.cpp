@@ -58,29 +58,46 @@ int main(int argc, char *argv[])
     dimsMat[0] = linearSystem.n();
     dimsMat[1] = linearSystem.n();
 
-    // transpose
+    // allocate space for the transposed matrix
     int *cscColPtr = new int[linearSystem.n() + 1];
     int *cscRowInd = new int[linearSystem.nz()];
     double *cscA = new double[linearSystem.nz()];
 
-    int run_i = 0;
-    for (int target_row = 0; target_row < linearSystem.n(); target_row++)
+    // compute number of non-zero entries per column of A
+    std::fill(cscColPtr, cscColPtr + linearSystem.n(), 0);
+
+    for (int n = 0; n < linearSystem.nz(); n++)
+        cscColPtr[linearSystem.csrColInd[n]]++;
+
+    // cumsum the nz per column to get ptr[]
+    for(int col = 0, cumsum = 0; col < linearSystem.n(); col++)
     {
-        cscColPtr[target_row] = run_i;
-        for (int src_column = 0; src_column < linearSystem.n(); src_column++)
+        int temp = cscColPtr[col];
+        cscColPtr[col] = cumsum;
+        cumsum += temp;
+    }
+    cscColPtr[linearSystem.n()] = linearSystem.nz();
+
+    for (int row = 0; row < linearSystem.n(); row++)
+    {
+        for (int jj = linearSystem.csrRowPtr[row]; jj < linearSystem.csrRowPtr[row+1]; jj++)
         {
-            for (int src_row = linearSystem.csrRowPtr[src_column]; src_row < linearSystem.csrRowPtr[src_column + 1]; src_row++)
-            {
-                if (linearSystem.csrColInd[src_row] == target_row)
-                {
-                    cscRowInd[run_i] = src_column;
-                    cscA[run_i++] = linearSystem.matA[src_row];
-                }
-            }
+            int col = linearSystem.csrColInd[jj];
+            int dest = cscColPtr[col];
+
+            cscRowInd[dest] = row;
+            cscA[dest] = linearSystem.matA[jj];
+
+            cscColPtr[col]++;
         }
     }
 
-    cscColPtr[linearSystem.n()] = linearSystem.nz();
+    for (int col = 0, last = 0; col <= linearSystem.n(); col++)
+    {
+        int temp = cscColPtr[col];
+        cscColPtr[col] = last;
+        last = temp;
+    }
 
     sparse.data = cscA;
     sparse.jc = cscColPtr;

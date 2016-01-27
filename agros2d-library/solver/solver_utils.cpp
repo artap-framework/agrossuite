@@ -121,15 +121,15 @@ void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, co
 
     mat_t *mat = Mat_CreateVer(name.toStdString().c_str(), "", MAT_FT_MAT5);
 
-    double *data = new double[mtx.n_nonzero_elements()];
-    int *ir = new int[mtx.n_nonzero_elements()];
-    int *jc = new int[mtx.n() + 1];
+    double *csrA = new double[mtx.n_nonzero_elements()];
+    int *csrRowPtr = new int[mtx.n() + 1];
+    int *csrColInd = new int[mtx.n_nonzero_elements()];
 
     int index = 0;
     int rowIndex = 0;
     for (unsigned int i = 0; i < mtx.n(); i++)
     {
-        jc[rowIndex] = index + 0;
+        csrRowPtr[rowIndex] = index + 0;
         rowIndex++;
 
         dealii::SparseMatrix<double>::iterator it = mtx.begin(i);
@@ -137,22 +137,64 @@ void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, co
         {
             if (it->is_valid_entry())
             {
-                data[index] = it->value();
-                ir[index] = it->column() + 0;
+                csrA[index] = it->value();
+                csrColInd[index] = it->column() + 0;
                 index++;
             }
         }
     }
 
     // by convention, we define jc[n+1] = nzz + 1
-    jc[mtx.n()] = mtx.n_nonzero_elements(); // indices from 0
+    csrRowPtr[mtx.n()] = mtx.n_nonzero_elements(); // indices from 0
 
-    // transpose
-    csr2csc(mtx.n(), mtx.n_nonzero_elements(), data, ir, jc);
+    // allocate space for the transposed matrix
+    int *cscColPtr = new int[mtx.m() + 1];
+    int *cscRowInd = new int[mtx.n_nonzero_elements()];
+    double *cscA = new double[mtx.n_nonzero_elements()];
 
-    sparse.data = data;
-    sparse.jc = jc;
-    sparse.ir = ir;
+    // compute number of non-zero entries per column of A
+    std::fill(cscColPtr, cscColPtr + mtx.n(), 0);
+
+    for (int n = 0; n < mtx.n_nonzero_elements(); n++)
+        cscColPtr[csrColInd[n]]++;
+
+    // cumsum the nz per column to get ptr[]
+    for(int col = 0, cumsum = 0; col < mtx.m(); col++)
+    {
+        int temp = cscColPtr[col];
+        cscColPtr[col] = cumsum;
+        cumsum += temp;
+    }
+    cscColPtr[mtx.n()] = mtx.n_nonzero_elements();
+
+    for (int row = 0; row < mtx.n(); row++)
+    {
+        for (int jj = csrRowPtr[row]; jj < csrRowPtr[row+1]; jj++)
+        {
+            int col = csrColInd[jj];
+            int dest = cscColPtr[col];
+
+            cscRowInd[dest] = row;
+            cscA[dest] = csrA[jj];
+
+            cscColPtr[col]++;
+        }
+    }
+
+    for (int col = 0, last = 0; col <= mtx.n(); col++)
+    {
+        int temp = cscColPtr[col];
+        cscColPtr[col] = last;
+        last = temp;
+    }
+
+    delete [] csrA;
+    delete [] csrRowPtr;
+    delete [] csrColInd;
+
+    sparse.data = cscA;
+    sparse.jc = cscColPtr;
+    sparse.ir = cscRowInd;
 
     matvar_t *matvar = Mat_VarCreate(varName.toStdString().c_str(), MAT_C_SPARSE, MAT_T_DOUBLE, 2, dims, &sparse, MAT_F_DONT_COPY_DATA);
 
@@ -160,9 +202,9 @@ void writeMatioMatrix(dealii::SparseMatrix<double> &mtx, const QString &name, co
     Mat_VarFree(matvar);
     Mat_Close(mat);
 
-    delete [] data;
-    delete [] jc;
-    delete [] ir;
+    delete [] cscA;
+    delete [] cscColPtr;
+    delete [] cscRowInd;
 }
 
 ProblemSolver::ProblemSolver(Computation *parentProblem) : m_computation(parentProblem)
