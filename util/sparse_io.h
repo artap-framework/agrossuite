@@ -472,6 +472,7 @@ public:
             file << "solver_num_of_proc = " << infoNumOfProc << "\n";
             file << "solver_matrix_size = " << n() << "\n";
             file << "solver_matrix_nonzeros = " << nz() << "\n";
+            file << "solver_matrix_nonzeros_percentage = " << 100 * nz() / pow(n(), 2.0) << "\n";
             file << "solver_rel_diff = " << infoRelativeDiff << "\n";
 
             file << "time_read_matrix = " << infoTimeReadMatrix << "\n";
@@ -637,7 +638,7 @@ protected:
         }
 
         infoN = system_matrix_pattern->rows;
-        infoNZ = system_matrix->max_len;
+        infoNZ = system_matrix_pattern->rowstart[system_matrix_pattern->rows]-system_matrix_pattern->rowstart[0];
     }
 
     void writeSolutionInternal(const std::string &solutionFN = "")
