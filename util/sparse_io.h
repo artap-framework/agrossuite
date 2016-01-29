@@ -459,7 +459,7 @@ public:
         time_t seconds = std::chrono::duration_cast<std::chrono::seconds>( ms ).count();
 
         std::stringstream ss;
-        ss << std::put_time(localtime(&seconds), "output_%Y-%m-%d %H:%M:%S.") << modulo << "_" << infoName << "_" << infoParameterPreconditioner << "_" << infoParameterSolver << ".out";
+        ss << std::put_time(localtime(&seconds), "output_%Y-%m-%d %H-%M-%S.") << modulo << "_" << infoName << "_" << infoParameterPreconditioner << "_" << infoParameterSolver << ".out";
         std::string fn = ss.str();
 
         std::ofstream file(fn);
