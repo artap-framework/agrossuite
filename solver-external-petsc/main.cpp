@@ -363,14 +363,6 @@ int main(int argc, char *argv[])
         PetscInitialize(&argc, &argv, (char*) 0, " ");
         LinearSystemPETScArgs *linearSystem = createLinearSystem("External solver - PETSc", argc, argv);
 
-        if (rank == 0)
-        {
-            if (linearSystem->comm == PETSC_COMM_WORLD)
-                std::cout << "version: mpi" << std::endl;
-            else
-                std::cout << "version: seq" << std::endl;
-        }
-
         // create vector
         Vec x,b;
         ierr = VecCreateMPI(linearSystem->comm, PETSC_DECIDE, linearSystem->n(), &x); CHKERRQ(ierr);

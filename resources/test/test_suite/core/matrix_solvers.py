@@ -152,10 +152,8 @@ class TestMatrixSolversExternal(TestMatrixSolversGeneral):
 
     def test_external_petsc(self):
         # PETSC
-        sln = self.model("external", "solver_PETSC.ext")        
+        sln = self.model("external", "solver_PETSC.ext", "-l richardson -c hypre")     
         self.assertTrue(np.allclose(self.reference_sln, sln, rtol=1e-6), "PETSC (external) sln failed.")
-
-
 
 if __name__ == '__main__':
     import unittest as ut
