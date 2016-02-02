@@ -20,7 +20,6 @@
 #include "particle_tracing.h"
 
 #include "util.h"
-#include "util/xml.h"
 #include "util/constants.h"
 
 #include "solver/problem.h"

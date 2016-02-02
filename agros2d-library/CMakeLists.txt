@@ -182,7 +182,6 @@ SET(SOURCES
     util/form_script.cpp
     util/global.cpp
     util/loops.cpp
-    util/xml.cpp
     value.cpp
     videodialog.cpp
   )
@@ -406,7 +405,6 @@ SET(HEADERS
   util/form_script.h
   util/global.h
   util/loops.h
-  util/xml.h
   value.h
   videodialog.h
 )
@@ -514,7 +512,6 @@ SOURCE_GROUP(
   util/form_script.h
   util/global.h
   util/loops.h
-  util/xml.h
 )
 
 SET(RESOURCES ../resources_source/resources.qrc)

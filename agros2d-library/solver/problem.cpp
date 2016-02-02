@@ -28,7 +28,6 @@
 
 #include "util/global.h"
 #include "util/constants.h"
-#include "util/xml.h"
 
 #include "field.h"
 #include "solutionstore.h"

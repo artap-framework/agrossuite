@@ -56,7 +56,6 @@ __tests__["examples"] = test_suite.examples.examples.tests
 # core
 __tests__["core"] = __get_tests__(test_suite.core.matrix_solvers) + \
                     __get_tests__(test_suite.core.mesh_generator)
-# __get_tests__(test_suite.core.generator) + test_suite.core.xslt.tests
 
 # complete 
 __tests__["complete"] = __tests__["fields"] + __tests__["coupled"] + __tests__["nonlin"] + \

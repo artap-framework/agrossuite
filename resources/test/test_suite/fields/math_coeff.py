@@ -84,8 +84,8 @@ class TestMathCoeffAxisymmetric(Agros2DTestCase):
         # fields
         self.math_coeff = problem.field("math_coeff")
         self.math_coeff.analysis_type = "steadystate"
-        self.math_coeff.number_of_refinements = 3
-        self.math_coeff.polynomial_order = 3
+        self.math_coeff.number_of_refinements = 0
+        self.math_coeff.polynomial_order = 2
         self.math_coeff.solver = "linear"
         
         self.math_coeff.add_boundary("Dirichlet 1", "math_coeff_solution", {"math_coeff_solution" : 10})
@@ -294,8 +294,8 @@ if __name__ == '__main__':
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffPlanar))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffAxisymmetric))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffPlanar))
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffAxisymmetric))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffTransientPlanar))
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffTransientAxisymmetric))    
+    #suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestMathCoeffTransientAxisymmetric))    
     suite.run(result)
