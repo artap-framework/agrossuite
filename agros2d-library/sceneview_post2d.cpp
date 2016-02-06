@@ -34,7 +34,9 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 #include "scenemarker.h"
+#include "postprocessorview.h"
 #include "scenemarkerselectdialog.h"
+
 #include "gui/resultsview.h"
 
 #include "solver/module.h"
@@ -52,8 +54,8 @@
 #include <deal.II/hp/dof_handler.h>
 
 
-SceneViewPost2D::SceneViewPost2D(QWidget *parent)
-    : SceneViewCommon2D(parent),
+SceneViewPost2D::SceneViewPost2D(PostprocessorWidget *postprocessorWidget)
+    : SceneViewCommon2D(postprocessorWidget),
       m_listContours(-1),
       m_listVectors(-1),
       m_listScalarField(-1),
@@ -64,7 +66,7 @@ SceneViewPost2D::SceneViewPost2D(QWidget *parent)
     connect(this, SIGNAL(mousePressed(Point)), this, SLOT(selectedPoint(Point)));
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
+    connect(postprocessorWidget, SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 SceneViewPost2D::~SceneViewPost2D()
@@ -80,8 +82,6 @@ void SceneViewPost2D::connectComputation(QSharedPointer<Computation> computation
 {
     if (!m_computation.isNull())
     {
-        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
-        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         disconnect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
     }
 
@@ -89,8 +89,6 @@ void SceneViewPost2D::connectComputation(QSharedPointer<Computation> computation
 
     if (!m_computation.isNull())
     {
-        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
-        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));                
 
         refresh();

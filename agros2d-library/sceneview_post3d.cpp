@@ -32,6 +32,7 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 #include "scenemarker.h"
+#include "postprocessorview.h"
 
 #include "solver/module.h"
 
@@ -60,8 +61,8 @@ void computeNormal(double p0x, double p0y, double p0z,
     // double p[3] = { nx*l, ny*l, nz*l };
 }
 
-SceneViewPost3D::SceneViewPost3D(QWidget *parent)
-    : SceneViewCommon3D(parent),
+SceneViewPost3D::SceneViewPost3D(PostprocessorWidget *postprocessorWidget)
+    : SceneViewCommon3D(postprocessorWidget),
       m_listScalarField3D(-1),
       m_listScalarField3DSolid(-1),
       m_listModel(-1)
@@ -69,7 +70,7 @@ SceneViewPost3D::SceneViewPost3D(QWidget *parent)
     createActionsPost3D();
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
+    connect(postprocessorWidget, SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 SceneViewPost3D::~SceneViewPost3D()
@@ -85,8 +86,6 @@ void SceneViewPost3D::connectComputation(QSharedPointer<Computation> computation
 {
     if (!m_computation.isNull())
     {
-        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
-        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         disconnect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
     }
 
@@ -94,8 +93,6 @@ void SceneViewPost3D::connectComputation(QSharedPointer<Computation> computation
 
     if (!m_computation.isNull())
     {
-        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
-        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
 
         clearGLLists();

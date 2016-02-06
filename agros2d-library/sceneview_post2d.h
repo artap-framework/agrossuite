@@ -42,7 +42,7 @@ public slots:
     void exportVTKContourView(const QString &fileName = QString());
 
 public:
-    SceneViewPost2D(QWidget *parent = 0);
+    SceneViewPost2D(PostprocessorWidget *postprocessorWidget);
     ~SceneViewPost2D();
 
     QAction *actSelectPoint;
@@ -59,6 +59,8 @@ public:
 
     virtual QIcon iconView() { return icon("scene-post2d"); }
     virtual QString labelView() { return tr("Postprocessor 2D"); }
+
+    void setControls();
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);
@@ -99,9 +101,7 @@ private slots:
     void selectedPoint(const Point &p);
 
     virtual void refresh();
-    virtual void clearGLLists();
-
-    void setControls();
+    virtual void clearGLLists();    
 
     void connectComputation(QSharedPointer<Computation> computation);
 };

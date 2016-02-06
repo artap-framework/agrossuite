@@ -63,7 +63,7 @@ GeneticPopulationRandom::GeneticPopulationRandom(QList<Parameter> parameters, in
 {
     for (int i = 0; i < count; i++)
     {
-         QSharedPointer<Computation> individual = Agros2D::problem()->createComputation(true, false);
+         QSharedPointer<Computation> individual = Agros2D::problem()->createComputation(true);
          assert(!individual.isNull());
 
          foreach (Parameter parameter, parameters)
@@ -204,7 +204,7 @@ QList<QSharedPointer<Computation> > StudyGenetic::crossoverAndMutate(const QList
 
         QSharedPointer<Computation> motherIndividial = individuals[motherIndex];
         QSharedPointer<Computation> fatherIndividial = individuals[fatherIndex];
-        QSharedPointer<Computation> sonIndividual = Agros2D::problem()->createComputation(true, false);
+        QSharedPointer<Computation> sonIndividual = Agros2D::problem()->createComputation(true);
 
         // random list
         QList<Parameter> parameters = m_parameters;

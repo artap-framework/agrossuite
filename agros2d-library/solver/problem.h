@@ -84,6 +84,7 @@ signals:
     void couplingsChanged();
 
 public slots:
+    virtual void clearFields();
     virtual void clearFieldsAndConfig();
 
 public:
@@ -126,7 +127,7 @@ public:
     void importProblemFromA2D(const QString &fileName);
     void exportProblemToA2D(const QString &fileName);
 
-    void readProblemFromJson(const QString &fileName = "");
+    void readProblemFromJson(const QString &fileName = "", bool readSettings = true);
     void writeProblemToJson(const QString &fileName = "");
 
 protected:
@@ -166,7 +167,7 @@ public:
     Problem();
     ~Problem();
 
-    QSharedPointer<Computation> createComputation(bool newComputation = false, bool setCurrentComputation = true);
+    QSharedPointer<Computation> createComputation(bool newComputation);
     inline QSharedPointer<Computation> currentComputation() { return m_currentComputation; }
 
     void readProblemFromArchive(const QString &archiveFileName);
@@ -276,9 +277,11 @@ signals:
     void solved();
 
 public slots:    
+    virtual void clearFields();
     void clearSolution();
-    void doAbortSolve();
     virtual void clearFieldsAndConfig();
+
+    void doAbortSolve();
 
 protected:
     bool m_isSolving;

@@ -84,7 +84,7 @@ void AgrosSolver::solveProblem()
         Agros2D::log()->printMessage(tr("Problem"), tr("Problem '%1' successfuly loaded").arg(m_fileName));
 
         // solve
-        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true, true);
+        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
         computation->solve();
 
         // save solution
@@ -93,7 +93,7 @@ void AgrosSolver::solveProblem()
         Agros2D::log()->printMessage(tr("Solver"), tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
 
         // clear all
-        Agros2D::problem()->clearFieldsAndConfig();
+        Agros2D::problem()->clearFields();
 
         m_status = 0;
         QApplication::exit(0);

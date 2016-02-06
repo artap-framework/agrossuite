@@ -32,6 +32,7 @@ class SceneMaterial;
 class Solution;
 class PostDeal;
 class Computation;
+class PostprocessorWidget;
 
 class ResultsView : public QWidget
 {
@@ -48,7 +49,7 @@ public slots:
     void showSurfaceIntegral();
 
 public:
-    ResultsView(QWidget *parent = 0);
+    ResultsView(QWidget *parent, PostprocessorWidget *postprocessorWidget);
     ~ResultsView();
 
     QPushButton *btnSelectMarker;

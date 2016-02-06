@@ -92,7 +92,7 @@ void PostprocessorSceneChartWidget::createControls()
     layoutVariable->addWidget(cmbFieldVariableComp, 1, 1);
 
     // viewer
-    geometryViewer = new SceneViewPreprocessorChart(this);
+    geometryViewer = new SceneViewPreprocessorChart(this, m_postprocessorWidget);
     geometryViewer->setMinimumHeight(100);
     
     btnSaveImage = new QPushButton();
@@ -248,7 +248,7 @@ void PostprocessorSceneChartWidget::createControls()
 
 void PostprocessorSceneChartWidget::doFieldVariable(int index)
 {
-    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+    if (!(index >= 0 && m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
         return;
 
     Module::LocalVariable physicFieldVariable = m_postprocessorWidget->fieldWidget()->selectedField()->localVariable(m_postprocessorWidget->computation()->config()->coordinateType(), cmbFieldVariable->itemData(index).toString());

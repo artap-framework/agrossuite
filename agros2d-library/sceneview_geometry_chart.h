@@ -25,6 +25,8 @@
 #include "sceneview_common2d.h"
 #include "postprocessorview_chart.h"
 
+class PostprocessorWidget;
+
 class SceneViewPreprocessorChart : public SceneViewCommon2D
 {
     Q_OBJECT
@@ -34,7 +36,7 @@ public slots:
     virtual void refresh();
 
 public:
-    SceneViewPreprocessorChart(QWidget *parent = 0);
+    SceneViewPreprocessorChart(QWidget *parent, PostprocessorWidget *postprocessorWidget);
     ~SceneViewPreprocessorChart();
 
     void setChartLine(ChartLine chartLine);

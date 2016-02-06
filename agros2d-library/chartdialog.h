@@ -35,13 +35,14 @@ class QCPBars;
 class QCPItemTracer;
 class QCPItemText;
 class ChartLine;
+class PostprocessorWidget;
 
 class SceneViewChart : public QWidget
 {
     Q_OBJECT
 
 public:
-    SceneViewChart(QWidget *parent = 0);
+    SceneViewChart(PostprocessorWidget *postprocessorWidget);
 
     inline QCustomPlot *chart() { return m_chart; }
 

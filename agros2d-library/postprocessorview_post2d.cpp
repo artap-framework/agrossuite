@@ -67,7 +67,7 @@ void PostprocessorScenePost2DWidget::createControls()
     toolBar->addAction(m_scenePost2D->actSelectPoint);
     toolBar->addAction(m_scenePost2D->actSelectByMarker);
 
-    resultsView = new ResultsView(this);
+    resultsView = new ResultsView(this, m_postprocessorWidget);
     connect(m_scenePost2D, SIGNAL(mousePressed()), resultsView, SLOT(doShowResults()));
     connect(m_scenePost2D, SIGNAL(mousePressed(const Point &)), resultsView, SLOT(showPoint(const Point &)));
     connect(m_scenePost2D, SIGNAL(postprocessorModeGroupChanged(SceneModePostprocessor)), resultsView, SLOT(doPostprocessorModeGroupChanged(SceneModePostprocessor)));

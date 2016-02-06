@@ -107,7 +107,7 @@ public:
                                                   PhysicFieldVariableComp physicFieldVariableComp);
 
     // view
-    inline FieldInfo* activeViewField() const { return m_activeViewField; } // assert(m_activeViewField);
+    inline FieldInfo* activeViewField() const { return m_activeViewField; }
     void setActiveViewField(FieldInfo* fieldInfo);
 
     inline int activeTimeStep() const { return m_activeTimeStep; }
@@ -119,9 +119,6 @@ public:
     MultiArray activeMultiSolutionArray();
 
     inline bool isProcessed() const { return m_isProcessed; }
-
-    void problemMeshed();
-    void problemSolved();
 
 signals:
     void processed();

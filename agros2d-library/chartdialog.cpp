@@ -41,7 +41,7 @@
 #include <QSvgRenderer>
 #include "qcustomplot/qcustomplot.h"
 
-SceneViewChart::SceneViewChart(QWidget *parent) : QWidget(parent)
+SceneViewChart::SceneViewChart(PostprocessorWidget *postprocessorWidget) : QWidget(postprocessorWidget)
 {
     QPen chartPen;
     chartPen.setColor(QColor(129, 17, 19));
@@ -71,7 +71,7 @@ SceneViewChart::SceneViewChart(QWidget *parent) : QWidget(parent)
     refresh();
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
+    connect(postprocessorWidget, SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 void SceneViewChart::chartMouseMoved(QMouseEvent *event)
@@ -132,9 +132,6 @@ void SceneViewChart::connectComputation(QSharedPointer<Computation> computation)
 {
     if (!m_computation.isNull())
     {
-        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(refresh()));
-        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(refresh()));
-
         disconnect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
     }
 
@@ -142,9 +139,6 @@ void SceneViewChart::connectComputation(QSharedPointer<Computation> computation)
 
     if (!m_computation.isNull())
     {
-        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(refresh()));
-        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(refresh()));
-
         connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
     }
 }

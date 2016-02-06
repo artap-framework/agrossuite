@@ -23,6 +23,8 @@
 #include "util.h"
 #include "sceneview_common3d.h"
 
+class PostprocessorWidget;
+
 class SceneViewParticleTracing : public SceneViewCommon3D
 {
     Q_OBJECT
@@ -32,13 +34,15 @@ public slots:
     void processParticleTracing();
 
 public:
-    SceneViewParticleTracing(QWidget *parent = 0);
+    SceneViewParticleTracing(PostprocessorWidget *postprocessorWidget);
     ~SceneViewParticleTracing();
 
     QAction *actSceneModeParticleTracing;
 
     virtual QIcon iconView() { return icon("scene-particle"); }
     virtual QString labelView() { return tr("Particle Tracing"); }
+
+    void setControls();
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
@@ -74,8 +78,6 @@ private slots:
     virtual void refresh();
     virtual void clearGLLists();
     void clearParticleLists();
-
-    void setControls();
 
     void connectComputation(QSharedPointer<Computation> computation);
 };

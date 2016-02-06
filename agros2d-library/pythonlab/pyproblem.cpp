@@ -355,7 +355,7 @@ void PySolution::localValues(double x, double y, int timeStep, int adaptivitySte
 {
     map<std::string, double> values;
 
-    if (m_computation->isSolved() or m_computation->isSolving())
+    if (m_computation->isSolved() || m_computation->isSolving())
     {
         Point point(x, y);
 
@@ -395,7 +395,7 @@ void PySolution::surfaceIntegrals(const vector<int> &edges, int timeStep, int ad
 {
     map<std::string, double> values;
 
-    if (m_computation->isSolved() or m_computation->isSolving())
+    if (m_computation->isSolved() || m_computation->isSolving())
     {
         m_computation->scene()->selectNone();
 
@@ -445,7 +445,7 @@ void PySolution::volumeIntegrals(const vector<int> &labels, int timeStep, int ad
                                  map<std::string, double> &results) const
 {
     map<std::string, double> values;
-    if (m_computation->isSolved() or m_computation->isSolving())
+    if (m_computation->isSolved() || m_computation->isSolving())
     {
         m_computation->scene()->selectNone();
 

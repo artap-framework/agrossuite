@@ -294,6 +294,15 @@ void PostDeal::processRangeVector()
     }
 }
 
+void PostDeal::clear()
+{
+    clearView();
+
+    m_activeViewField = nullptr;
+    m_activeTimeStep = NOT_FOUND_SO_FAR;
+    m_activeAdaptivityStep = NOT_FOUND_SO_FAR;
+}
+
 void PostDeal::clearView()
 {
     m_isProcessed = false;
@@ -310,47 +319,11 @@ void PostDeal::refresh()
     clearView();
 
     if (m_computation->isSolved())
-    {
-        problemSolved();
         processSolved();
-    }
 
     m_isProcessed = true;
     emit processed();
     m_computation->setIsPostprocessingRunning(false);
-}
-
-void PostDeal::clear()
-{
-    clearView();
-
-    m_activeViewField = NULL;
-    m_activeTimeStep = NOT_FOUND_SO_FAR;
-    m_activeAdaptivityStep = NOT_FOUND_SO_FAR;
-}
-
-void PostDeal::problemMeshed()
-{
-    if (!m_activeViewField)
-    {
-        setActiveViewField(m_computation->fieldInfos().begin().value());
-    }
-}
-
-void PostDeal::problemSolved()
-{
-    if (!m_activeViewField)
-        setActiveViewField(m_computation->fieldInfos().begin().value());
-
-    // time step
-    int lastTimeStep = m_computation->solutionStore()->lastTimeStep(m_activeViewField);
-    if (m_activeTimeStep == NOT_FOUND_SO_FAR || activeTimeStep() > lastTimeStep)
-        setActiveTimeStep(lastTimeStep);
-
-    // adaptive step
-    int lastAdaptivityStep = m_computation->solutionStore()->lastAdaptiveStep(m_activeViewField, m_activeTimeStep);
-    if (m_activeAdaptivityStep == NOT_FOUND_SO_FAR || activeAdaptivityStep() > lastAdaptivityStep)
-        setActiveAdaptivityStep(lastAdaptivityStep);
 }
 
 void PostDeal::processSolved()
@@ -370,7 +343,6 @@ void PostDeal::processSolved()
         processRangeVector();
     }
 }
-
 
 std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariable,
                                                         PhysicFieldVariableComp physicFieldVariableComp)

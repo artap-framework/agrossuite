@@ -23,12 +23,14 @@
 #include "util.h"
 #include "sceneview_common2d.h"
 
+class PostprocessorWidget;
+
 class SceneViewMesh : public SceneViewCommon2D
 {
     Q_OBJECT
 
 public:
-    SceneViewMesh(QWidget *parent = 0);
+    SceneViewMesh(PostprocessorWidget *postprocessorWidget);
     ~SceneViewMesh();
 
     QAction *actExportVTKOrder;
@@ -37,8 +39,9 @@ public:
     virtual QIcon iconView() { return icon("scene-mesh"); }
     virtual QString labelView() { return tr("Mesh and polynomial order view"); }
 
-public slots:
     void setControls();
+
+public slots:    
     virtual void clear();
     void exportVTK(const QString &fileName = QString(), bool exportMeshOnly = false);
     void exportVTKMesh(const QString &fileName = QString());

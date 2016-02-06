@@ -33,10 +33,11 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 #include "sceneview_post.h"
+#include "postprocessorview.h"
 
 #include <ctemplate/template.h>
 
-ResultsView::ResultsView(QWidget *parent) : QWidget(parent),
+ResultsView::ResultsView(QWidget *parent, PostprocessorWidget *postprocessorWidget) : QWidget(parent),
     m_sceneModePostprocessor(SceneModePostprocessor_Empty)
 {
     setObjectName("ResultsView");
@@ -65,7 +66,7 @@ ResultsView::ResultsView(QWidget *parent) : QWidget(parent),
     setLayout(layout);
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
+    connect(postprocessorWidget, SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 ResultsView::~ResultsView()

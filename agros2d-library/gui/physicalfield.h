@@ -30,14 +30,13 @@ class PhysicalFieldWidget : public QWidget
 signals:
     void fieldChanged();
 
-public slots:
-    void updateControls();
-    void connectComputation(QSharedPointer<Computation> computation);
-
 public:
     PhysicalFieldWidget(QWidget *parent = 0);
     ~PhysicalFieldWidget();
 
+    void updateControls();
+
+    QSharedPointer<Computation> selectedComputation();
     FieldInfo *selectedField();
     void selectField(const FieldInfo *fieldInfo);
     int selectedTimeStep();
@@ -60,13 +59,10 @@ private:
     QLabel *lblAdaptivityStep;
     QComboBox *cmbAdaptivityStep;
 
-    QString m_currentFieldName;
-    AnalysisType m_currentAnalysisType;
-
-    QSharedPointer<Computation> m_computation;
-
     // stored values
+    QString m_lastComputation;
     QString m_lastFieldId;
+    AnalysisType m_lastFieldAnalysisType;
     int m_lastTimeStep;
     int m_lastAdaptiveStep;
 
@@ -74,6 +70,7 @@ public slots:
     void doComputation(int index = -1);
     void doFieldInfo(int index = -1);
     void doTimeStep(int index = -1);
+    void doAdaptivityStep(int index = -1);
 };
 
 #endif // GUI_PHYSICALFIELD_H

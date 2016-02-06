@@ -41,13 +41,13 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-SceneViewPreprocessorChart::SceneViewPreprocessorChart(QWidget *parent)
+SceneViewPreprocessorChart::SceneViewPreprocessorChart(QWidget *parent, PostprocessorWidget *postprocessorWidget)
     : SceneViewCommon2D(parent)
 {
     setMinimumSize(100, 50);
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
+    connect(postprocessorWidget, SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 SceneViewPreprocessorChart::~SceneViewPreprocessorChart()

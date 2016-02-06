@@ -74,12 +74,13 @@ public:
     QAction *actSceneModeResults;
 
 signals:
-    void apply();
     void modeChanged();
+    void changed();
+    void connectComputation(QSharedPointer<Computation>);
 
 public slots:
     void refresh();
-    void doApply();
+    void updateSettings();
 
 private:
     PhysicalFieldWidget *m_fieldWidget;
@@ -103,11 +104,6 @@ private:
     void createControls();
 
     friend class PostprocessorSceneWidget;
-
-private slots:
-    void connectComputation(QSharedPointer<Computation> computation);
-
-    void doCalculationFinished();
 };
 
 class PostprocessorSceneWidget : public QWidget

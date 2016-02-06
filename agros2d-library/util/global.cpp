@@ -172,14 +172,6 @@ void Agros2D::clear()
     removeDirectory(tempProblemDir());
 }
 
-void Agros2D::setCurrentComputation(const QString &problemDir)
-{
-    assert(Agros2D::singleton()->m_computations.contains(problemDir));
-
-    // connect computation
-    emit Agros2D::singleton()->connectComputation(Agros2D::singleton()->m_computations[problemDir]);
-}
-
 void Agros2D::addComputation(const QString &problemDir, QSharedPointer<Computation> comp)
 {
     Agros2D::singleton()->m_computations[problemDir] = comp;

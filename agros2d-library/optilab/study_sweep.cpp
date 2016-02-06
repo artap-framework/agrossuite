@@ -43,7 +43,7 @@ void StudySweepAnalysis::solve()
     foreach (StringToDoubleMap set, space.sets())
     {
         // computation
-        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true, false);
+        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
         addComputation(computation);
 
         foreach (QString parameter, set.keys())

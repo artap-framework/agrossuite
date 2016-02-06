@@ -25,6 +25,7 @@
 
 template <typename Scalar> class SceneSolution;
 template <typename Scalar> class ViewScalarFilter;
+class PostprocessorWidget;
 
 class SceneViewPost3D : public SceneViewCommon3D
 {
@@ -34,13 +35,15 @@ public slots:
     virtual void clear();
 
 public:
-    SceneViewPost3D(QWidget *parent = 0);
+    SceneViewPost3D(PostprocessorWidget *postprocessorWidget);
     ~SceneViewPost3D();
 
     QAction *actSceneModePost3D;
 
     virtual QIcon iconView() { return icon("scene-post3d"); }
     virtual QString labelView() { return tr("Postprocessor 3D"); }
+
+    void setControls();
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
@@ -64,8 +67,6 @@ private:
 private slots:
     virtual void refresh();
     virtual void clearGLLists();
-
-    void setControls();
 
     void connectComputation(QSharedPointer<Computation> computation);
 };

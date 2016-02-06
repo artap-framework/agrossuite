@@ -205,7 +205,7 @@ private:
     QStackedLayout *tabControlsLayout;
     ExamplesWidget *exampleWidget;
     PreprocessorWidget *problemWidget;
-    PostprocessorWidget *resultsWidget;
+    PostprocessorWidget *postprocessorWidget;
 
     PythonScriptingConsoleView *consoleView;
     LogView *logView;

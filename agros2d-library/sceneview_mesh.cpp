@@ -31,6 +31,7 @@
 #include "scenenode.h"
 #include "sceneedge.h"
 #include "scenelabel.h"
+#include "postprocessorview.h"
 
 #include "solver/problem.h"
 #include "solver/problem_config.h"
@@ -41,13 +42,13 @@
 #include <deal.II/dofs/dof_handler.h>
 #include <deal.II/hp/dof_handler.h>
 
-SceneViewMesh::SceneViewMesh(QWidget *parent)
-    : SceneViewCommon2D(parent)
+SceneViewMesh::SceneViewMesh(PostprocessorWidget *postprocessorWidget)
+    : SceneViewCommon2D(postprocessorWidget)
 {
     createActionsMesh();
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
+    connect(postprocessorWidget, SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 SceneViewMesh::~SceneViewMesh()
@@ -63,8 +64,6 @@ void SceneViewMesh::connectComputation(QSharedPointer<Computation> computation)
 {
     if (!m_computation.isNull())
     {
-        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
-        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         disconnect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
     }
 
@@ -72,8 +71,6 @@ void SceneViewMesh::connectComputation(QSharedPointer<Computation> computation)
 
     if (!m_computation.isNull())
     {
-        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
-        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
 
         clearGLLists();

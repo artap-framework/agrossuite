@@ -76,21 +76,14 @@ PostprocessorWidget::PostprocessorWidget()
     m_sceneViewParticleTracing = new SceneViewParticleTracing(this);
     m_particleTracingWidget = new PostprocessorSceneParticleTracingWidget(this, m_sceneViewParticleTracing);
 
-    // sceneViewPost3D = new SceneViewPost3D(postDeal, this);
-
     createControls();
-
-    // connect(currentPythonEngine(), SIGNAL(executedScript()), this, SLOT(doCalculationFinished()));
-
-    // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 void PostprocessorWidget::createControls()
 {    
     // dialog buttons
     btnApply = new QPushButton(tr("Apply"));
-    connect(btnApply, SIGNAL(clicked()), SLOT(doApply()));
+    connect(btnApply, SIGNAL(clicked()), SLOT(updateSettings()));
 
     tabWidget = new QTabWidget();
     tabWidget->addTab(m_meshWidget, tr("Mesh"));
@@ -109,14 +102,10 @@ void PostprocessorWidget::createControls()
     setLayout(layoutMain);
 }
 
-void PostprocessorWidget::doApply()
+void PostprocessorWidget::updateSettings()
 {
-    if (m_computation->isSolved())
-    {
-        m_computation->postDeal()->setActiveViewField(fieldWidget()->selectedField());
-        m_computation->postDeal()->setActiveTimeStep(fieldWidget()->selectedTimeStep());
-        m_computation->postDeal()->setActiveAdaptivityStep(fieldWidget()->selectedAdaptivityStep());
-    }
+    // update field widget
+    m_fieldWidget->updateControls();
 
     // PostprocessorSceneWidget *widget = qobject_cast<PostprocessorSceneWidget>(tabWidget->currentWidget());
     // widget->save();
@@ -143,18 +132,66 @@ void PostprocessorWidget::doApply()
         m_particleTracingWidget->save();
     }
 
-    // update field widget
-    m_fieldWidget->updateControls();
+    // refresh view
+    refresh();
 
-    // refresh
-    emit apply();
+    // refresh view
+    m_computation->postDeal()->refresh();
 
-    activateWindow();
+    emit changed();
 }
 
 void PostprocessorWidget::refresh()
 {
-    actSceneModeResults->setEnabled(m_computation && m_computation->isMeshed());
+    if (currentPythonEngine()->isScriptRunning())
+        return;
+
+    actSceneModeResults->setEnabled(Agros2D::computations().count() > 0);
+    if (Agros2D::computations().count() == 0)
+    {
+        if (!m_computation.isNull())
+        {
+            m_computation = QSharedPointer<Computation>(nullptr);
+            // connect computation
+            emit connectComputation(m_computation);
+        }
+
+        return;
+    }
+
+    // update field widget
+    m_fieldWidget->updateControls();
+
+    // set current computation
+    if (m_computation != m_fieldWidget->selectedComputation())
+    {
+        m_computation = m_fieldWidget->selectedComputation();
+        // connect computation
+        emit connectComputation(m_computation);
+
+        if (!m_computation.isNull())
+        {
+            // refresh widgets
+            m_meshWidget->refresh();
+            m_post2DWidget->refresh();
+            m_post3DWidget->refresh();
+            m_chartWidget->refresh();
+            m_particleTracingWidget->refresh();
+
+            // default widget
+            if (m_computation->isMeshed() && !m_computation->isSolved())
+                tabWidget->setCurrentWidget(m_meshWidget);
+            else if (m_computation->isSolved())
+                tabWidget->setCurrentWidget(m_post2DWidget);
+
+            // refresh views
+            m_sceneViewMesh->setControls();
+            m_sceneViewPost2D->setControls();
+            m_sceneViewPost3D->setControls();
+            m_sceneViewParticleTracing->setControls();
+            m_sceneViewChart->refresh();
+        }
+    }
 
     if (m_computation.isNull())
         return;
@@ -170,65 +207,13 @@ void PostprocessorWidget::refresh()
     m_post3DWidget->load();
     m_chartWidget->load();
     m_particleTracingWidget->load();
-}
 
-void PostprocessorWidget::connectComputation(QSharedPointer<Computation> computation)
-{
-    if (!m_computation.isNull())
+    if (m_computation->isSolved())
     {
-        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doCalculationFinished()));
-        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(doCalculationFinished()));
-        disconnect(this, SIGNAL(apply()), m_computation.data()->postDeal(), SLOT(refresh()));
+        m_computation->postDeal()->setActiveViewField(m_fieldWidget->selectedField());
+        m_computation->postDeal()->setActiveTimeStep(m_fieldWidget->selectedTimeStep());
+        m_computation->postDeal()->setActiveAdaptivityStep(m_fieldWidget->selectedAdaptivityStep());
     }
-
-    m_computation = computation;
-
-    if (!m_computation.isNull())
-    {
-        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doCalculationFinished()));
-        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(doCalculationFinished()));
-        connect(this, SIGNAL(apply()), m_computation.data()->postDeal(), SLOT(refresh()));
-    }
-
-    refresh();
-}
-
-void PostprocessorWidget::doCalculationFinished()
-{
-    if (!m_computation)
-        return;
-
-    if (currentPythonEngine()->isScriptRunning())
-        return;
-
-    actSceneModeResults->setEnabled(m_computation->isMeshed());
-
-    if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
-    {
-        m_fieldWidget->selectField(m_computation->postDeal()->activeViewField());
-        m_fieldWidget->selectTimeStep(m_computation->postDeal()->activeTimeStep());
-        m_fieldWidget->selectAdaptivityStep(m_computation->postDeal()->activeAdaptivityStep());
-    }
-
-    m_meshWidget->refresh();
-    m_meshWidget->load();
-    m_post2DWidget->refresh();
-    m_post2DWidget->load();
-    m_post3DWidget->refresh();
-    m_post3DWidget->load();
-    m_chartWidget->refresh();
-    m_chartWidget->load();
-    m_particleTracingWidget->refresh();
-    m_particleTracingWidget->load();
-
-    // default widget
-    if (m_computation->isMeshed() && !m_computation->isSolved())
-        tabWidget->setCurrentWidget(m_meshWidget);
-    else if (m_computation->isSolved())
-        tabWidget->setCurrentWidget(m_post2DWidget);
-
-    if (m_computation->isMeshed() || m_computation->isSolved())
-        emit apply();
 }
 
 PostprocessorWidgetMode PostprocessorWidget::mode()

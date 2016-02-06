@@ -55,7 +55,6 @@ public:
 
     static inline Problem *problem() { return Agros2D::singleton()->m_problem; }
 
-    static void setCurrentComputation(const QString &problemDir);
     static inline QMap<QString, QSharedPointer<Computation> > computations() { return Agros2D::singleton()->m_computations; }
     static void addComputation(const QString &problemDir, QSharedPointer<Computation> comp);
     static void clearComputations();

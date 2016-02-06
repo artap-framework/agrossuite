@@ -341,7 +341,7 @@ bool ProblemBase::applyParametersInternal()
     return successfulRun;
 }
 
-void ProblemBase::clearFieldsAndConfig()
+void ProblemBase::clearFields()
 {
     // clear couplings
     foreach (CouplingInfo* couplingInfo, m_couplingInfos)
@@ -357,12 +357,15 @@ void ProblemBase::clearFieldsAndConfig()
     }
     m_fieldInfos.clear();
 
+    // clear scene
+    m_scene->clear();
+}
+
+void ProblemBase::clearFieldsAndConfig()
+{
     // clear config
     m_config->clear();
     m_setting->clear();
-
-    // clear scene
-    m_scene->clear();
 }
 
 void ProblemBase::addField(FieldInfo *field)
@@ -446,7 +449,7 @@ void ProblemBase::synchronizeCouplings()
         emit couplingsChanged();
 }
 
-void ProblemBase::readProblemFromJson(const QString &fileName)
+void ProblemBase::readProblemFromJson(const QString &fileName, bool readSettings)
 {
     // QTime time;
     // time.start();
@@ -473,8 +476,11 @@ void ProblemBase::readProblemFromJson(const QString &fileName)
     QJsonObject rootJson = doc.object();
 
     // settings
-    QJsonObject settingsJson = rootJson[SETTINGS].toObject();
-    m_setting->load(settingsJson);
+    if (readSettings)
+    {
+        QJsonObject settingsJson = rootJson[SETTINGS].toObject();
+        m_setting->load(settingsJson);
+    }
 
     // config
     QJsonObject configJson = rootJson[CONFIG].toObject();
@@ -705,8 +711,8 @@ void ProblemBase::readProblemFromJson(const QString &fileName)
     // qDebug() << "readProblemFromJson" << time.elapsed();
 
     // default values
-    emit m_scene->invalidated();
     emit m_scene->defaultValues();
+    emit m_scene->invalidated();
 }
 
 void ProblemBase::importProblemFromA2D(const QString &fileName)
@@ -1666,12 +1672,10 @@ void Computation::solve()
         m_abort = false;
         m_isSolving = false;
 
-        // refresh post deal
-        m_postDeal->problemSolved();
-
         emit solved();
 
         // evaluate results recipes
+        // TODO: replace Agros2D::problem()->currentComputation()
         Agros2D::problem()->recipes()->evaluate(Agros2D::problem()->currentComputation());
     }
     /*
@@ -1818,9 +1822,6 @@ bool Computation::mesh(bool emitMeshed)
 
     m_isMeshing = false;
 
-    // refreh post
-    m_postDeal->problemMeshed();
-
     return result;
 }
 
@@ -1955,6 +1956,13 @@ bool Computation::isSolved() const
     return (!m_solutionStore->isEmpty());
 }
 
+void Computation::clearFields()
+{
+    clearSolution();
+
+    ProblemBase::clearFields();
+}
+
 void Computation::clearSolution()
 {
     m_abort = false;
@@ -1977,9 +1985,7 @@ void Computation::clearSolution()
 
 void Computation::clearFieldsAndConfig()
 {
-    m_solutionStore->clear();
-    m_postDeal->clear();
-    clearSolution();
+    clearFields();
 
     QString fn = QString("%1/%2/problem.a2d").arg(cacheProblemDir()).arg(m_problemDir);
     if (QFile::exists(fn))
@@ -2035,7 +2041,7 @@ void Problem::saveStudies()
     m_studies->save(QString("%1/studies.json").arg(cacheProblemDir()));
 }
 
-QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool setCurrentComputation)
+QSharedPointer<Computation> Problem::createComputation(bool newComputation)
 {
     QSharedPointer<Computation> computation;
     if (newComputation || m_currentComputation.isNull() || Agros2D::computations().isEmpty())
@@ -2043,47 +2049,38 @@ QSharedPointer<Computation> Problem::createComputation(bool newComputation, bool
         computation = QSharedPointer<Computation>(new Computation());
         m_currentComputation = computation;
         Agros2D::addComputation(computation->problemDir(), computation);
-
-        if (setCurrentComputation)
-            Agros2D::setCurrentComputation(computation->problemDir());
     }
     else
     {
         computation = m_currentComputation;
-        computation->clearFieldsAndConfig();
+        computation->clearFields();
     }
-
-    // QString fn = QString("%1/%2/problem.a2d").
-    //         arg(cacheProblemDir()).
-    //         arg(computation->problemDir());
-
-    // exportProblemToA2D(fn);
-    // computation->importProblemFromA2D(fn);
-    // computation->clearFieldsAndConfig();
 
     // write problem
     writeProblemToJson();
     // copy file
-    QFile::remove(QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(computation->problemDir()));
-    QFile::copy(problemFileName(), QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(computation->problemDir()));
+    QString fn = QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(computation->problemDir());
+    QFile::remove(fn);
+    QFile::copy(problemFileName(), fn);
     // read problem
-    computation->readProblemFromJson();
+    computation->readProblemFromJson(fn, false);
 
     return computation;
 }
 
 void Problem::clearFieldsAndConfig()
 {
+    // clear all computations
+    m_currentComputation.clear();
+    Agros2D::clearComputations();
+
     ProblemBase::clearFieldsAndConfig();
+    clearFields();
     clearStudies();
 
     QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
     QFile::remove(QString("%1/problem.json").arg(cacheProblemDir()));
     QFile::remove(QString("%1/studies.json").arg(cacheProblemDir()));
-
-    // clear all computations
-    m_currentComputation.clear();
-    Agros2D::clearComputations();
 
     m_fileName = "";
 
@@ -2092,7 +2089,7 @@ void Problem::clearFieldsAndConfig()
 
 void Problem::readProblemFromArchive(const QString &fileName)
 {
-    clearFieldsAndConfig();
+    clearFieldsAndConfig();    
 
     QSettings settings;
     QFileInfo fileInfo(fileName);
@@ -2170,9 +2167,6 @@ void Problem::readProblemFromArchive(const QString &fileName)
             post = Agros2D::computations().last();
             m_currentComputation = post;
         }
-
-        Agros2D::setCurrentComputation(post->problemDir());
-        emit post->solved();
 
         // load recipes
         loadRecipes();

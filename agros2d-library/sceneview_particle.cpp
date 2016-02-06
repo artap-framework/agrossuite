@@ -40,6 +40,7 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 #include "scenemarker.h"
+#include "postprocessorview.h"
 
 #include "solver/module.h"
 
@@ -81,14 +82,14 @@
 
 // *************************************************************************************************
 
-SceneViewParticleTracing::SceneViewParticleTracing(QWidget *parent)
-    : SceneViewCommon3D(parent),
+SceneViewParticleTracing::SceneViewParticleTracing(PostprocessorWidget *postprocessorWidget)
+    : SceneViewCommon3D(postprocessorWidget),
       m_listParticleTracing(-1)
 {
     createActionsParticleTracing();
 
     // reconnect computation slots
-    connect(Agros2D::singleton(), SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
+    connect(postprocessorWidget, SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 SceneViewParticleTracing::~SceneViewParticleTracing()
@@ -104,8 +105,6 @@ void SceneViewParticleTracing::connectComputation(QSharedPointer<Computation> co
 {
     if (!m_computation.isNull())
     {
-        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
-        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         disconnect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
     }
 
@@ -113,8 +112,6 @@ void SceneViewParticleTracing::connectComputation(QSharedPointer<Computation> co
 
     if (!m_computation.isNull())
     {
-        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
-        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
         connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
 
         clearGLLists();
