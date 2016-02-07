@@ -43,12 +43,12 @@ public:
     inline QString variable() { return m_variable; }
     inline void setVariable(const QString &variable) { m_variable = variable; }
 
-    int timeStep(QSharedPointer<Computation> computation, FieldInfo *fieldInfo);
+    int timeStep(Computation *computation, FieldInfo *fieldInfo);
     inline void setTimeStep(int step) { m_timeStep = step; }
-    int adaptivityStep(QSharedPointer<Computation> computation, FieldInfo *fieldInfo);
+    int adaptivityStep(Computation *computation, FieldInfo *fieldInfo);
     inline void setAdaptivityStep(int step) { m_adaptivityStep = step; }
 
-    virtual double evaluate(QSharedPointer<Computation> computation) = 0;
+    virtual double evaluate(Computation *computation) = 0;
 
 protected:
     QString m_name;
@@ -75,7 +75,7 @@ public:
     inline void setPoint(Point point) { m_point = point; }
     inline void setPoint(double x, double y) { m_point = Point(x, y); }
 
-    virtual double evaluate(QSharedPointer<Computation> computation);
+    virtual double evaluate(Computation *computation);
 
 protected:
     Point m_point;
@@ -97,7 +97,7 @@ public:
     inline QList<int> edges() { return m_edges; }
     inline void addEdge(int edge) { m_edges.append(edge); }
 
-    virtual double evaluate(QSharedPointer<Computation> computation);
+    virtual double evaluate(Computation *computation);
 
 protected:
     QList<int> m_edges;
@@ -118,7 +118,7 @@ public:
     inline QList<int> labels() { return m_labels; }
     inline void addLabel(int label) { m_labels.append(label); }
 
-    virtual double evaluate(QSharedPointer<Computation> computation);
+    virtual double evaluate(Computation *computation);
 
 protected:
     QList<int> m_labels;
@@ -136,7 +136,7 @@ public:
     bool save(const QString &fileName);
 
     inline void addRecipe(ResultRecipe *recipe) { m_recipes.append(recipe); }
-    void evaluate(QSharedPointer<Computation> computation);
+    void evaluate(Computation *computation);
 
 protected:
     QList<ResultRecipe *> m_recipes;

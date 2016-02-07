@@ -65,9 +65,6 @@ public:
 
     static void clear();
 
-signals:
-    void connectComputation(QSharedPointer<Computation>);
-
 private:    
     // computer config
     Config *m_configComputer;

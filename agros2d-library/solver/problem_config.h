@@ -121,7 +121,7 @@ private:
     ProblemBase *m_problem;
 };
 
-class ProblemSetting : public QObject
+class PostprocessorSetting : public QObject
 {
     Q_OBJECT
 
@@ -216,8 +216,8 @@ public:
         View_SolidViewHide
     };
 
-    ProblemSetting(ProblemBase *parentProblem);
-    ~ProblemSetting();
+    PostprocessorSetting(ProblemBase *parentProblem);
+    ~PostprocessorSetting();
 
     // load and save
     void load(XMLProblem::config *configxsd);

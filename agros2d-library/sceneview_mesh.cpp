@@ -198,13 +198,13 @@ void SceneViewMesh::paintGL()
     // view
     if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
     {
-        if (m_computation->setting()->value(ProblemSetting::View_ShowOrderView).toBool()) paintOrder();
-        if (m_computation->setting()->value(ProblemSetting::View_ShowSolutionMeshView).toBool()) paintSolutionMesh();
+        if (m_computation->setting()->value(PostprocessorSetting::View_ShowOrderView).toBool()) paintOrder();
+        if (m_computation->setting()->value(PostprocessorSetting::View_ShowSolutionMeshView).toBool()) paintSolutionMesh();
     }
 
     // initial mesh
     if (m_computation->isMeshed() && m_computation->postDeal()->isProcessed())
-        if (m_computation->setting()->value(ProblemSetting::View_ShowInitialMeshView).toBool()) paintInitialMesh();
+        if (m_computation->setting()->value(PostprocessorSetting::View_ShowInitialMeshView).toBool()) paintInitialMesh();
 
     // geometry
     paintGeometry();
@@ -212,8 +212,8 @@ void SceneViewMesh::paintGL()
     if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
     {
         // bars
-        if (m_computation->setting()->value(ProblemSetting::View_ShowOrderView).toBool()
-                && m_computation->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool())
+        if (m_computation->setting()->value(PostprocessorSetting::View_ShowOrderView).toBool()
+                && m_computation->setting()->value(PostprocessorSetting::View_ShowOrderColorBar).toBool())
             paintOrderColorBar();
     }
 
@@ -414,7 +414,7 @@ void SceneViewMesh::paintOrder()
     }
 
     // paint labels
-    if (m_computation->setting()->value(ProblemSetting::View_ShowOrderLabel).toBool())
+    if (m_computation->setting()->value(PostprocessorSetting::View_ShowOrderLabel).toBool())
     {
         loadProjectionViewPort();
 
@@ -459,7 +459,7 @@ void SceneViewMesh::paintOrder()
 
 void SceneViewMesh::paintOrderColorBar()
 {
-    if (!m_computation->isSolved() || !m_computation->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool()) return;
+    if (!m_computation->isSolved() || !m_computation->setting()->value(PostprocessorSetting::View_ShowOrderColorBar).toBool()) return;
 
     int minDegree = 100;
     int maxDegree = 1;

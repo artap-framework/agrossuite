@@ -401,7 +401,7 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
     }
 
     // snap to grid - nodes
-    m_snapToGrid = ((Agros2D::problem()->setting()->value(ProblemSetting::View_SnapToGrid).toBool())
+    m_snapToGrid = ((Agros2D::problem()->setting()->value(PostprocessorSetting::View_SnapToGrid).toBool())
                     && ((event->modifiers() & Qt::ControlModifier) && !(event->modifiers() & Qt::ShiftModifier))
                     && (m_sceneMode == SceneGeometryMode_OperateOnNodes));
 
@@ -425,21 +425,21 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
             static Point len;
             len = len + dp;
 
-            if (Agros2D::problem()->setting()->value(ProblemSetting::View_SnapToGrid).toBool())
+            if (Agros2D::problem()->setting()->value(PostprocessorSetting::View_SnapToGrid).toBool())
             {
-                if (fabs(len.x) > Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble())
+                if (fabs(len.x) > Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble())
                 {
-                    dp.x = (len.x > 0) ? Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() : -Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
+                    dp.x = (len.x > 0) ? Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() : -Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble();
                     dp.y = 0;
                     len.x = 0;
 
                     Agros2D::problem()->scene()->transformTranslate(dp, false, true);
                 }
 
-                if (fabs(len.y) > Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble())
+                if (fabs(len.y) > Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble())
                 {
                     dp.x = 0;
-                    dp.y = (len.y > 0) ? Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() : -Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
+                    dp.y = (len.y > 0) ? Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() : -Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble();
                     len.y = 0;
 
                     Agros2D::problem()->scene()->transformTranslate(dp, false, true);
@@ -455,21 +455,21 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
             static Point len;
             len = len + dp;
 
-            if (Agros2D::problem()->setting()->value(ProblemSetting::View_SnapToGrid).toBool())
+            if (Agros2D::problem()->setting()->value(PostprocessorSetting::View_SnapToGrid).toBool())
             {
-                if (fabs(len.x) > Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble())
+                if (fabs(len.x) > Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble())
                 {
-                    dp.x = (len.x > 0) ? Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() : -Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
+                    dp.x = (len.x > 0) ? Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() : -Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble();
                     dp.y = 0;
                     len.x = 0;
 
                     Agros2D::problem()->scene()->transformTranslate(dp, false, true);
                 }
 
-                if (fabs(len.y) > Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble())
+                if (fabs(len.y) > Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble())
                 {
                     dp.x = 0;
-                    dp.y = (len.y > 0) ? Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() : -Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
+                    dp.y = (len.y > 0) ? Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() : -Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble();
                     len.y = 0;
 
                     Agros2D::problem()->scene()->transformTranslate(dp, false, true);
@@ -491,8 +491,8 @@ void SceneViewPreprocessor::mouseMoveEvent(QMouseEvent *event)
     if (m_snapToGrid)
     {
         Point snapPoint;
-        snapPoint.x = floor(p.x / Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
-        snapPoint.y = floor(p.y / Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
+        snapPoint.x = floor(p.x / Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble();
+        snapPoint.y = floor(p.y / Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble();
 
         emit mouseMoved(snapPoint);
     }
@@ -537,8 +537,8 @@ void SceneViewPreprocessor::mousePressEvent(QMouseEvent *event)
             {
                 Point snapPoint = transform(Point(m_lastPos.x(), m_lastPos.y()));
 
-                pointNode.x = floor(snapPoint.x / Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
-                pointNode.y = floor(snapPoint.y / Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
+                pointNode.x = floor(snapPoint.x / Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble();
+                pointNode.y = floor(snapPoint.y / Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble();
             }
             else
             {
@@ -774,7 +774,7 @@ void SceneViewPreprocessor::keyPressEvent(QKeyEvent *event)
     SceneViewCommon2D::keyPressEvent(event);
 
     // snap to grid
-    m_snapToGrid = ((Agros2D::problem()->setting()->value(ProblemSetting::View_SnapToGrid).toBool())
+    m_snapToGrid = ((Agros2D::problem()->setting()->value(PostprocessorSetting::View_SnapToGrid).toBool())
                     && (event->modifiers() & Qt::ControlModifier) && !(event->modifiers() & Qt::ShiftModifier)
                     && (m_sceneMode == SceneGeometryMode_OperateOnNodes));
 }
@@ -832,8 +832,8 @@ void SceneViewPreprocessor::paintRulersHintsEdges()
     Point snapPoint = p;
     if (m_snapToGrid)
     {
-        snapPoint.x = floor(p.x / Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
-        snapPoint.y = floor(p.y / Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
+        snapPoint.x = floor(p.x / Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble();
+        snapPoint.y = floor(p.y / Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble();
 
         // hint line
         glEnable(GL_LINE_STIPPLE);
@@ -1203,8 +1203,8 @@ void SceneViewPreprocessor::paintSnapToGrid()
         Point p = transform(Point(m_lastPos.x(), m_lastPos.y()));
 
         Point snapPoint;
-        snapPoint.x = floor(p.x / Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
-        snapPoint.y = floor(p.y / Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
+        snapPoint.x = floor(p.x / Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble();
+        snapPoint.y = floor(p.y / Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() + 0.5) * Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble();
 
         glColor3d(COLORHIGHLIGHTED[0], COLORHIGHLIGHTED[1], COLORHIGHLIGHTED[2]);
         glPointSize(EDGEWIDTH - 1.0);

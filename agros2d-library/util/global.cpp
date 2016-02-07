@@ -191,9 +191,6 @@ void Agros2D::clearComputations()
         // remove from list
         Agros2D::singleton()->m_computations.remove(computation->problemDir());
     }
-
-    // connect computation
-    emit Agros2D::singleton()->connectComputation(QSharedPointer<Computation>(nullptr));
 }
 
 void Agros2D::createSingleton()

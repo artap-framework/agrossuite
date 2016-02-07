@@ -137,15 +137,15 @@ void PostprocessorSceneMeshWidget::load()
         return;
 
     // show
-    chkShowInitialMeshView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowInitialMeshView).toBool());
-    chkShowSolutionMeshView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowSolutionMeshView).toBool());
-    chkShowOrderView->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderView).toBool());
-    txtOrderComponent->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_OrderComponent).toInt());
+    chkShowInitialMeshView->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ShowInitialMeshView).toBool());
+    chkShowSolutionMeshView->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ShowSolutionMeshView).toBool());
+    chkShowOrderView->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ShowOrderView).toBool());
+    txtOrderComponent->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_OrderComponent).toInt());
 
     // order view
-    chkShowOrderColorbar->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderColorBar).toBool());
-    cmbOrderPaletteOrder->setCurrentIndex(cmbOrderPaletteOrder->findData((PaletteType) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt()));
-    chkOrderLabel->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ShowOrderLabel).toBool());
+    chkShowOrderColorbar->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ShowOrderColorBar).toBool());
+    cmbOrderPaletteOrder->setCurrentIndex(cmbOrderPaletteOrder->findData((PaletteType) m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_OrderPaletteOrderType).toInt()));
+    chkOrderLabel->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ShowOrderLabel).toBool());
 
     // mesh and polynomial info
     int dofs = 0;
@@ -172,13 +172,13 @@ void PostprocessorSceneMeshWidget::load()
 
 void PostprocessorSceneMeshWidget::save()
 {
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowInitialMeshView, chkShowInitialMeshView->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowSolutionMeshView, chkShowSolutionMeshView->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderView, chkShowOrderView->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_OrderComponent, txtOrderComponent->value());
+    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ShowInitialMeshView, chkShowInitialMeshView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ShowSolutionMeshView, chkShowSolutionMeshView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ShowOrderView, chkShowOrderView->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_OrderComponent, txtOrderComponent->value());
 
     // order view
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderColorBar, chkShowOrderColorbar->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_OrderPaletteOrderType, (PaletteType) cmbOrderPaletteOrder->itemData(cmbOrderPaletteOrder->currentIndex()).toInt());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ShowOrderLabel, chkOrderLabel->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ShowOrderColorBar, chkShowOrderColorbar->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_OrderPaletteOrderType, (PaletteType) cmbOrderPaletteOrder->itemData(cmbOrderPaletteOrder->currentIndex()).toInt());
+    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ShowOrderLabel, chkOrderLabel->isChecked());
 }

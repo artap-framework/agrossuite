@@ -137,17 +137,17 @@ void PostprocessorScenePost3DWidget::load()
     if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
         return;
 
-    radPost3DNone->setChecked((SceneViewPost3DMode) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarView3DMode).toInt() == SceneViewPost3DMode_None);
-    radPost3DScalarField3D->setChecked((SceneViewPost3DMode) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarView3DMode).toInt() == SceneViewPost3DMode_ScalarView3D);
-    radPost3DScalarField3DSolid->setChecked((SceneViewPost3DMode) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarView3DMode).toInt() == SceneViewPost3DMode_ScalarView3DSolid);
-    radPost3DModel->setChecked((SceneViewPost3DMode) m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarView3DMode).toInt() == SceneViewPost3DMode_Model);
+    radPost3DNone->setChecked((SceneViewPost3DMode) m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt() == SceneViewPost3DMode_None);
+    radPost3DScalarField3D->setChecked((SceneViewPost3DMode) m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt() == SceneViewPost3DMode_ScalarView3D);
+    radPost3DScalarField3DSolid->setChecked((SceneViewPost3DMode) m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt() == SceneViewPost3DMode_ScalarView3DSolid);
+    radPost3DModel->setChecked((SceneViewPost3DMode) m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt() == SceneViewPost3DMode_Model);
 
-    chkView3DLighting->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarView3DLighting).toBool());
-    txtView3DAngle->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarView3DAngle).toDouble());
-    chkView3DBackground->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarView3DBackground).toBool());
-    txtView3DHeight->setValue(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarView3DHeight).toDouble());
-    chkView3DBoundingBox->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarView3DBoundingBox).toBool());
-    chkView3DSolidGeometry->setChecked(m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_ScalarView3DSolidGeometry).toBool());
+    chkView3DLighting->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ScalarView3DLighting).toBool());
+    txtView3DAngle->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ScalarView3DAngle).toDouble());
+    chkView3DBackground->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ScalarView3DBackground).toBool());
+    txtView3DHeight->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ScalarView3DHeight).toDouble());
+    chkView3DBoundingBox->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ScalarView3DBoundingBox).toBool());
+    chkView3DSolidGeometry->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_ScalarView3DSolidGeometry).toBool());
 
     // solid
     lstSolidMaterials->clear();
@@ -158,7 +158,7 @@ void PostprocessorScenePost3DWidget::load()
             QListWidgetItem *item = new QListWidgetItem(lstSolidMaterials);
             item->setText(material->name());
             item->setData(Qt::UserRole, material->variant());
-            if (m_postprocessorWidget->computation()->setting()->value(ProblemSetting::View_SolidViewHide).toStringList().contains(material->name()))
+            if (m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::View_SolidViewHide).toStringList().contains(material->name()))
                 item->setCheckState(Qt::Unchecked);
             else
                 item->setCheckState(Qt::Checked);
@@ -170,15 +170,15 @@ void PostprocessorScenePost3DWidget::load()
 
 void PostprocessorScenePost3DWidget::save()
 {
-    if (radPost3DNone->isChecked()) m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarView3DMode, SceneViewPost3DMode_None);
-    if (radPost3DScalarField3D->isChecked()) m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarView3DMode, SceneViewPost3DMode_ScalarView3D);
-    if (radPost3DScalarField3DSolid->isChecked()) m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarView3DMode, SceneViewPost3DMode_ScalarView3DSolid);
-    if (radPost3DModel->isChecked()) m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarView3DMode, SceneViewPost3DMode_Model);
+    if (radPost3DNone->isChecked()) m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ScalarView3DMode, SceneViewPost3DMode_None);
+    if (radPost3DScalarField3D->isChecked()) m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ScalarView3DMode, SceneViewPost3DMode_ScalarView3D);
+    if (radPost3DScalarField3DSolid->isChecked()) m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ScalarView3DMode, SceneViewPost3DMode_ScalarView3DSolid);
+    if (radPost3DModel->isChecked()) m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ScalarView3DMode, SceneViewPost3DMode_Model);
 
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarView3DLighting, chkView3DLighting->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarView3DAngle, txtView3DAngle->value());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarView3DBackground, chkView3DBackground->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarView3DHeight, txtView3DHeight->value());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarView3DBoundingBox, chkView3DBoundingBox->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(ProblemSetting::View_ScalarView3DSolidGeometry, chkView3DSolidGeometry->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ScalarView3DLighting, chkView3DLighting->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ScalarView3DAngle, txtView3DAngle->value());
+    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ScalarView3DBackground, chkView3DBackground->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ScalarView3DHeight, txtView3DHeight->value());
+    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ScalarView3DBoundingBox, chkView3DBoundingBox->isChecked());
+    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::View_ScalarView3DSolidGeometry, chkView3DSolidGeometry->isChecked());
 }

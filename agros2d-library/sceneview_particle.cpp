@@ -147,14 +147,14 @@ void SceneViewParticleTracing::paintGL()
     {
         // todo: what is better?
         //paintGeometrySurface(Agros2D::problem()->configView()->particleShowBlendedFaces);
-        if(m_computation->setting()->value(ProblemSetting::View_ParticleShowBlendedFaces).toBool())
+        if(m_computation->setting()->value(PostprocessorSetting::View_ParticleShowBlendedFaces).toBool())
             paintGeometrySurface(true);
 
         paintGeometryOutline();
         paintParticleTracing();
 
         // bars
-        if (m_computation->setting()->value(ProblemSetting::View_ParticleColorByVelocity).toInt())
+        if (m_computation->setting()->value(PostprocessorSetting::View_ParticleColorByVelocity).toInt())
             paintParticleTracingColorBar(m_velocityMin, m_velocityMax);
     }
 
@@ -178,7 +178,7 @@ void SceneViewParticleTracing::paintGeometryOutline()
 
     RectPoint rect = m_computation->scene()->boundingBox();
     double max = qMax(rect.width(), rect.height());
-    double depth = max / m_computation->setting()->value(ProblemSetting::View_ScalarView3DHeight).toDouble();
+    double depth = max / m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DHeight).toDouble();
 
     glPushMatrix();
 
@@ -335,7 +335,7 @@ void SceneViewParticleTracing::paintGeometrySurface(bool blend)
 
     RectPoint rect = m_computation->scene()->boundingBox();
     double max = qMax(rect.width(), rect.height());
-    double depth = max / m_computation->setting()->value(ProblemSetting::View_ScalarView3DHeight).toDouble();
+    double depth = max / m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DHeight).toDouble();
 
     glPushMatrix();
 
@@ -519,7 +519,7 @@ void SceneViewParticleTracing::paintParticleTracing()
 
         RectPoint rect = m_computation->scene()->boundingBox();
         double max = qMax(rect.width(), rect.height());
-        double depth = max / m_computation->setting()->value(ProblemSetting::View_ScalarView3DHeight).toDouble();
+        double depth = max / m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DHeight).toDouble();
 
         glPushMatrix();
 
@@ -548,7 +548,7 @@ void SceneViewParticleTracing::paintParticleTracing()
         glEnable(GL_POINT_SMOOTH);
 
         // particle visualization
-        for (int k = 0; k < m_computation->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt(); k++)
+        for (int k = 0; k < m_computation->setting()->value(PostprocessorSetting::View_ParticleNumberOfParticles).toInt(); k++)
         {
             // starting point
             /*
@@ -574,7 +574,7 @@ void SceneViewParticleTracing::paintParticleTracing()
                 glBegin(GL_LINES);
                 for (int i = 0; i < m_positionsList[k].length() - 1; i++)
                 {
-                    if (m_computation->setting()->value(ProblemSetting::View_ParticleColorByVelocity).toBool())
+                    if (m_computation->setting()->value(PostprocessorSetting::View_ParticleColorByVelocity).toBool())
                         glColor3d(1.0 - 0.8 * (m_velocitiesList[k][i].magnitude() - velocityMin) / (velocityMax - velocityMin),
                                   1.0 - 0.8 * (m_velocitiesList[k][i].magnitude() - velocityMin) / (velocityMax - velocityMin),
                                   1.0 - 0.8 * (m_velocitiesList[k][i].magnitude() - velocityMin) / (velocityMax - velocityMin));
@@ -589,7 +589,7 @@ void SceneViewParticleTracing::paintParticleTracing()
                 glEnd();
 
                 // points
-                if (m_computation->setting()->value(ProblemSetting::View_ParticleShowPoints).toBool())
+                if (m_computation->setting()->value(PostprocessorSetting::View_ParticleShowPoints).toBool())
                 {
                     glColor3d(0.0, 0.0, 0.0);
                     glPointSize(NODESIZE);
@@ -606,16 +606,16 @@ void SceneViewParticleTracing::paintParticleTracing()
             }
             else
             {
-                double stepAngle = 360.0 / m_computation->setting()->value(ProblemSetting::View_ParticleNumShowParticlesAxi).toInt();
+                double stepAngle = 360.0 / m_computation->setting()->value(PostprocessorSetting::View_ParticleNumShowParticlesAxi).toInt();
 
-                for (int l = 0; l < m_computation->setting()->value(ProblemSetting::View_ParticleNumShowParticlesAxi).toInt(); l++)
+                for (int l = 0; l < m_computation->setting()->value(PostprocessorSetting::View_ParticleNumShowParticlesAxi).toInt(); l++)
                 {
                     glLineWidth(1.5 * EDGEWIDTH);
 
                     glBegin(GL_LINES);
                     for (int i = 0; i < m_positionsList[k].length() - 1; i++)
                     {
-                        if (m_computation->setting()->value(ProblemSetting::View_ParticleColorByVelocity).toBool())
+                        if (m_computation->setting()->value(PostprocessorSetting::View_ParticleColorByVelocity).toBool())
                             glColor3d(1.0 - 0.8 * (m_velocitiesList[k][i].magnitude() - velocityMin) / (velocityMax - velocityMin),
                                       1.0 - 0.8 * (m_velocitiesList[k][i].magnitude() - velocityMin) / (velocityMax - velocityMin),
                                       1.0 - 0.8 * (m_velocitiesList[k][i].magnitude() - velocityMin) / (velocityMax - velocityMin));
@@ -631,7 +631,7 @@ void SceneViewParticleTracing::paintParticleTracing()
                     glEnd();
 
                     // points
-                    if (m_computation->setting()->value(ProblemSetting::View_ParticleShowPoints).toBool())
+                    if (m_computation->setting()->value(PostprocessorSetting::View_ParticleShowPoints).toBool())
                     {
                         glColor3d(0.0, 0.0, 0.0);
                         glPointSize(NODESIZE);
@@ -673,7 +673,7 @@ void SceneViewParticleTracing::paintParticleTracingColorBar(double min, double m
     glTranslated(-width() / 2.0, -height() / 2.0, 0.0);
 
     // dimensions
-    int textWidth = (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) * (QString::number(-1.0, 'e', m_computation->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt()).length() + 1);
+    int textWidth = (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) * (QString::number(-1.0, 'e', m_computation->setting()->value(PostprocessorSetting::View_ScalarDecimalPlace).toInt()).length() + 1);
     int textHeight = 2 * (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0);
     Point scaleSize = Point(45.0 + textWidth, 20*textHeight); // contextHeight() - 20.0
     Point scaleBorder = Point(10.0, (Agros2D::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
@@ -742,7 +742,7 @@ void SceneViewParticleTracing::paintParticleTracingColorBar(double min, double m
 
         printPostAt(scaleLeft + 33.0 + ((value >= 0.0) ? (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) : 0.0),
                     scaleBorder.y + 10.0 + (i-1)*tickY - textHeight / 4.0,
-                    QString::number(value, 'e', m_computation->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt()));
+                    QString::number(value, 'e', m_computation->setting()->value(PostprocessorSetting::View_ScalarDecimalPlace).toInt()));
     }
 
     // variable
@@ -833,36 +833,36 @@ void SceneViewParticleTracing::processParticleTracing()
 
         try
         {
-            for (int k = 0; k < m_computation->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt(); k++)
+            for (int k = 0; k < m_computation->setting()->value(PostprocessorSetting::View_ParticleNumberOfParticles).toInt(); k++)
             {
                 // initial position
                 Point3 initialPosition;
-                initialPosition.x = m_computation->setting()->value(ProblemSetting::View_ParticleStartX).toDouble();
-                initialPosition.y = m_computation->setting()->value(ProblemSetting::View_ParticleStartY).toDouble();
+                initialPosition.x = m_computation->setting()->value(PostprocessorSetting::View_ParticleStartX).toDouble();
+                initialPosition.y = m_computation->setting()->value(PostprocessorSetting::View_ParticleStartY).toDouble();
                 initialPosition.z = 0.0;
 
                 // initial velocity
                 Point3 initialVelocity;
-                initialVelocity.x = m_computation->setting()->value(ProblemSetting::View_ParticleStartVelocityX).toDouble();
-                initialVelocity.y = m_computation->setting()->value(ProblemSetting::View_ParticleStartVelocityY).toDouble();
+                initialVelocity.x = m_computation->setting()->value(PostprocessorSetting::View_ParticleStartVelocityX).toDouble();
+                initialVelocity.y = m_computation->setting()->value(PostprocessorSetting::View_ParticleStartVelocityY).toDouble();
                 initialVelocity.z = 0.0;
 
                 // random point
                 if (k > 0)
                 {
-                    Point3 dp(rand() * (m_computation->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble()) / RAND_MAX,
-                              rand() * (m_computation->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble()) / RAND_MAX,
+                    Point3 dp(rand() * (m_computation->setting()->value(PostprocessorSetting::View_ParticleStartingRadius).toDouble()) / RAND_MAX,
+                              rand() * (m_computation->setting()->value(PostprocessorSetting::View_ParticleStartingRadius).toDouble()) / RAND_MAX,
                               (m_computation->config()->coordinateType() == CoordinateType_Planar) ? 0.0 : rand() * 2.0*M_PI / RAND_MAX);
 
-                    initialPosition = Point3(-m_computation->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble() / 2,
-                                             -m_computation->setting()->value(ProblemSetting::View_ParticleStartingRadius).toDouble() / 2,
+                    initialPosition = Point3(-m_computation->setting()->value(PostprocessorSetting::View_ParticleStartingRadius).toDouble() / 2,
+                                             -m_computation->setting()->value(PostprocessorSetting::View_ParticleStartingRadius).toDouble() / 2,
                                              (m_computation->config()->coordinateType() == CoordinateType_Planar) ? 0.0 : -1.0*M_PI) + initialPosition + dp;
                 }
 
                 initialPositions.append(initialPosition);
                 initialVelocities.append(initialVelocity);
-                particleCharges.append(m_computation->setting()->value(ProblemSetting::View_ParticleConstant).toDouble());
-                particleMasses.append(m_computation->setting()->value(ProblemSetting::View_ParticleMass).toDouble());
+                particleCharges.append(m_computation->setting()->value(PostprocessorSetting::View_ParticleConstant).toDouble());
+                particleMasses.append(m_computation->setting()->value(PostprocessorSetting::View_ParticleMass).toDouble());
             }
 
             // position and velocity cache
@@ -899,7 +899,7 @@ void SceneViewParticleTracing::processParticleTracing()
             return;
         }
 
-        for (int k = 0; k < m_computation->setting()->value(ProblemSetting::View_ParticleNumberOfParticles).toInt(); k++)
+        for (int k = 0; k < m_computation->setting()->value(PostprocessorSetting::View_ParticleNumberOfParticles).toInt(); k++)
             Agros2D::log()->printMessage(tr("Particle Tracing"), tr("Particle %1: %2 steps, final time %3 s").
                                          arg(k + 1).
                                          arg(m_timesList[k].count()).

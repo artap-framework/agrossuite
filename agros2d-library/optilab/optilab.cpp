@@ -202,14 +202,14 @@ void OptiLabWidget::testSweep()
     Agros2D::problem()->recipes()->addRecipe(volumeIntegralRecipe);
 
     // parameters
-    QList<double> params; params << 0.05 << 0.055 << 0.06 << 0.065;
+    QList<double> params; params << 0.005 << 0.01 << 0.015;
     analysis->addParameter(Parameter::fromList("R1", params));
     //analysis->addParameter(Parameter::fromRandom("R2", 4, 0.05, 0.07));
     //analysis->addParameter(Parameter::fromLinspace("R3", 3, 0.05, 0.07));
     //analysis->addParameter(Parameter::fromRandom("C", 10, 1, 5));
 
     // functionals
-    //analysis->addFunctional(Functional("C", FunctionalType_Result, "2*We/U**2"));
+    analysis->addFunctional(Functional("C", FunctionalType_Result, "2*We/U**2"));
 
     // solve
     analysis->solve();

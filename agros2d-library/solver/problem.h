@@ -35,7 +35,7 @@ class CouplingInfo;
 
 class ProblemBase;
 class ProblemConfig;
-class ProblemSetting;
+class PostprocessorSetting;
 class PyProblem;
 
 class Computation;
@@ -92,7 +92,7 @@ public:
     virtual ~ProblemBase();
 
     inline ProblemConfig *config() const { return m_config; }
-    inline ProblemSetting *setting() const { return m_setting; }
+    inline PostprocessorSetting *setting() const { return m_setting; }
     inline Scene *scene() { return m_scene; }
 
     bool isTransient() const;
@@ -134,7 +134,7 @@ protected:
     Scene *m_scene;
 
     ProblemConfig *m_config;
-    ProblemSetting *m_setting;
+    PostprocessorSetting *m_setting;
 
     QMap<QString, FieldInfo *> m_fieldInfos;
     QMap<QPair<FieldInfo *, FieldInfo *>, CouplingInfo *> m_couplingInfos;

@@ -48,7 +48,7 @@ void Parameter::clear()
 void Parameter::setLowerBound(double lowerBound)
 {
     foreach (double value, m_values)
-       assert(lowerBound <= value);
+        assert(lowerBound <= value);
 
     m_lowerBound = lowerBound;
 }
@@ -56,7 +56,7 @@ void Parameter::setLowerBound(double lowerBound)
 void Parameter::setUpperBound(double upperBound)
 {
     foreach (double value, m_values)
-       assert(upperBound >= value);
+        assert(upperBound >= value);
 
     m_upperBound = upperBound;
 }
@@ -103,7 +103,7 @@ double Parameter::randomValue(double mean, double deviation)
     double value;
     do
     {
-       value = distribution(generator);
+        value = distribution(generator);
     } while  ((value < m_lowerBound) || (value > m_upperBound));
 
     return value;
@@ -194,7 +194,11 @@ void ParameterSpace::random(int count)
     {
         QMap<QString, double> set;
         foreach (Parameter parameter, m_parameters)
-            set.insert(parameter.name(), parameter.values()[qrand() % parameter.values().length()]); // TODO: Is really random?
+        {
+            // TODO: is it really random?
+            set.insert(parameter.name(), parameter.values()[qrand() % parameter.values().length()]);
+        }
+
         m_sets.append(set);
     }
 }

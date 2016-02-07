@@ -121,31 +121,31 @@ void SceneViewCommon2D::paintGrid()
     glLineStipple(1, 0x1C47);
     glBegin(GL_LINES);
 
-    if ((((cornerMax.x-cornerMin.x)/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + (cornerMin.y-cornerMax.y)/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble()) < 200) &&
-            ((cornerMax.x-cornerMin.x)/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() > 0) && ((cornerMin.y-cornerMax.y)/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() > 0))
+    if ((((cornerMax.x-cornerMin.x)/problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() + (cornerMin.y-cornerMax.y)/problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble()) < 200) &&
+            ((cornerMax.x-cornerMin.x)/problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() > 0) && ((cornerMin.y-cornerMax.y)/problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() > 0))
     {
         // vertical lines
-        for (int i = cornerMin.x/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() - 1; i < cornerMax.x/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 1; i++)
+        for (int i = cornerMin.x/problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() - 1; i < cornerMax.x/problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() + 1; i++)
         {
             if (i % heavyLine == 0)
                 glColor3d(COLORCROSS[0] * 2.0/3.0, COLORCROSS[1] * 2.0/3.0, COLORCROSS[2] * 2.0/3.0);
             else
                 glColor3d(COLORGRID[0], COLORGRID[1], COLORGRID[2]);
 
-            glVertex2d(i*problem()->setting()->value(ProblemSetting::View_GridStep).toDouble(), cornerMin.y);
-            glVertex2d(i*problem()->setting()->value(ProblemSetting::View_GridStep).toDouble(), cornerMax.y);
+            glVertex2d(i*problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble(), cornerMin.y);
+            glVertex2d(i*problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble(), cornerMax.y);
         }
 
         // horizontal lines
-        for (int i = cornerMax.y/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() - 1; i < cornerMin.y/problem()->setting()->value(ProblemSetting::View_GridStep).toDouble() + 1; i++)
+        for (int i = cornerMax.y/problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() - 1; i < cornerMin.y/problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble() + 1; i++)
         {
             if (i % heavyLine == 0)
                 glColor3d(COLORCROSS[0] * 2.0/3.0, COLORCROSS[1] * 2.0/3.0, COLORCROSS[2] * 2.0/3.0);
             else
                 glColor3d(COLORGRID[0], COLORGRID[1], COLORGRID[2]);
 
-            glVertex2d(cornerMin.x, i*problem()->setting()->value(ProblemSetting::View_GridStep).toDouble());
-            glVertex2d(cornerMax.x, i*problem()->setting()->value(ProblemSetting::View_GridStep).toDouble());
+            glVertex2d(cornerMin.x, i*problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble());
+            glVertex2d(cornerMax.x, i*problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble());
         }
     }
     glEnd();
@@ -233,7 +233,7 @@ void SceneViewCommon2D::paintRulers()
     Point cornerMin = transform(Point(0, 0));
     Point cornerMax = transform(Point(width(), height()));
 
-    double gridStep = problem()->setting()->value(ProblemSetting::View_GridStep).toDouble();
+    double gridStep = problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble();
     if (gridStep < EPS_ZERO)
         return;
 

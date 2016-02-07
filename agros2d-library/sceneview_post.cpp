@@ -213,11 +213,11 @@ PostDeal::~PostDeal()
 
 void PostDeal::processRangeContour()
 {
-    if (m_computation->isSolved() && m_activeViewField && (m_computation->setting()->value(ProblemSetting::View_ShowContourView).toBool()))
+    if (m_computation->isSolved() && m_activeViewField && (m_computation->setting()->value(PostprocessorSetting::View_ShowContourView).toBool()))
     {
-        Agros2D::log()->printMessage(tr("Post View"), tr("Contour view (%1)").arg(m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString()));
+        Agros2D::log()->printMessage(tr("Post View"), tr("Contour view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::View_ContourVariable).toString()));
 
-        QString variableName = m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString();
+        QString variableName = m_computation->setting()->value(PostprocessorSetting::View_ContourVariable).toString();
         Module::LocalVariable variable = m_activeViewField->localVariable(m_computation->config()->coordinateType(), variableName);
 
         m_contourValues.clear();
@@ -226,67 +226,67 @@ void PostDeal::processRangeContour()
 
         if (variable.isScalar())
             data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                                         m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString()),
+                                                                         m_computation->setting()->value(PostprocessorSetting::View_ContourVariable).toString()),
                                         PhysicFieldVariableComp_Scalar);
 
         else
             data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                                         m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString()),
+                                                                         m_computation->setting()->value(PostprocessorSetting::View_ContourVariable).toString()),
                                         PhysicFieldVariableComp_Magnitude);
 
-        data_out->compute_nodes(m_contourValues, (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(ProblemSetting::View_DeformContour).toBool()));
+        data_out->compute_nodes(m_contourValues, (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::View_DeformContour).toBool()));
     }
 }
 
 void PostDeal::processRangeScalar()
 {
-    if (m_computation->setting()->value(ProblemSetting::View_ScalarRangeAuto).toBool())
+    if (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeAuto).toBool())
     {
-        m_computation->setting()->setValue(ProblemSetting::View_ScalarRangeMin, 0.0);
-        m_computation->setting()->setValue(ProblemSetting::View_ScalarRangeMax, 0.0);
+        m_computation->setting()->setValue(PostprocessorSetting::View_ScalarRangeMin, 0.0);
+        m_computation->setting()->setValue(PostprocessorSetting::View_ScalarRangeMax, 0.0);
     }
 
     if ((m_computation->isSolved()) && (m_activeViewField)
-            && ((m_computation->setting()->value(ProblemSetting::View_ShowScalarView).toBool())
-                || (((SceneViewPost3DMode) m_computation->setting()->value(ProblemSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D)))
+            && ((m_computation->setting()->value(PostprocessorSetting::View_ShowScalarView).toBool())
+                || (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D)))
     {
-        Agros2D::log()->printMessage(tr("Post View"), tr("Scalar view (%1)").arg(m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString()));
+        Agros2D::log()->printMessage(tr("Post View"), tr("Scalar view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::View_ScalarVariable).toString()));
 
         std::shared_ptr<PostDataOut> data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                                                                  m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString()),
-                                                                 (PhysicFieldVariableComp) m_computation->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt());
-        data_out->compute_nodes(m_scalarValues, (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(ProblemSetting::View_DeformContour).toBool()));
+                                                                                                  m_computation->setting()->value(PostprocessorSetting::View_ScalarVariable).toString()),
+                                                                 (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::View_ScalarVariableComp).toInt());
+        data_out->compute_nodes(m_scalarValues, (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::View_DeformContour).toBool()));
 
-        if (m_computation->setting()->value(ProblemSetting::View_ScalarRangeAuto).toBool())
+        if (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeAuto).toBool())
         {
-            m_computation->setting()->setValue(ProblemSetting::View_ScalarRangeMin, data_out->min());
-            m_computation->setting()->setValue(ProblemSetting::View_ScalarRangeMax, data_out->max());
+            m_computation->setting()->setValue(PostprocessorSetting::View_ScalarRangeMin, data_out->min());
+            m_computation->setting()->setValue(PostprocessorSetting::View_ScalarRangeMax, data_out->max());
         }
     }
 }
 
 void PostDeal::processRangeVector()
 {
-    if ((m_computation->isSolved()) && (m_activeViewField) && (m_computation->setting()->value(ProblemSetting::View_ShowVectorView).toBool()))
+    if ((m_computation->isSolved()) && (m_activeViewField) && (m_computation->setting()->value(PostprocessorSetting::View_ShowVectorView).toBool()))
     {
         bool contains = false;
         foreach (Module::LocalVariable variable, m_activeViewField->viewVectorVariables(m_computation->config()->coordinateType()))
         {
-            if (variable.id() == m_computation->setting()->value(ProblemSetting::View_VectorVariable).toString())
+            if (variable.id() == m_computation->setting()->value(PostprocessorSetting::View_VectorVariable).toString())
             {
                 contains = true;
                 break;
             }
         }
 
-        Agros2D::log()->printMessage(tr("Post View"), tr("Vector view (%1)").arg(m_computation->setting()->value(ProblemSetting::View_VectorVariable).toString()));
+        Agros2D::log()->printMessage(tr("Post View"), tr("Vector view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::View_VectorVariable).toString()));
 
         std::shared_ptr<PostDataOut> data_outX = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                                                                   m_computation->setting()->value(ProblemSetting::View_VectorVariable).toString()),
+                                                                                                   m_computation->setting()->value(PostprocessorSetting::View_VectorVariable).toString()),
                                                                   PhysicFieldVariableComp_X);
 
         std::shared_ptr<PostDataOut> data_outY = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
-                                                                                                   m_computation->setting()->value(ProblemSetting::View_VectorVariable).toString()),
+                                                                                                   m_computation->setting()->value(PostprocessorSetting::View_VectorVariable).toString()),
                                                                   PhysicFieldVariableComp_Y);
 
         data_outX->compute_nodes(m_vectorXValues);
@@ -410,31 +410,31 @@ void PostDeal::setActiveViewField(FieldInfo* fieldInfo)
 
         foreach (Module::LocalVariable local, m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
         {
-            if (m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString() == local.id())
+            if (m_computation->setting()->value(PostprocessorSetting::View_ScalarVariable).toString() == local.id())
             {
-                scalarVariableDefault = m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString();
-                scalarVariableCompDefault = (PhysicFieldVariableComp) m_computation->setting()->value(ProblemSetting::View_ScalarVariableComp).toInt();
+                scalarVariableDefault = m_computation->setting()->value(PostprocessorSetting::View_ScalarVariable).toString();
+                scalarVariableCompDefault = (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::View_ScalarVariableComp).toInt();
             }
-            if (m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString() == local.id())
+            if (m_computation->setting()->value(PostprocessorSetting::View_ContourVariable).toString() == local.id())
             {
-                contourVariableDefault = m_computation->setting()->value(ProblemSetting::View_ContourVariable).toString();
+                contourVariableDefault = m_computation->setting()->value(PostprocessorSetting::View_ContourVariable).toString();
             }
         }
         foreach (Module::LocalVariable local, m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
         {
-            if (m_computation->setting()->value(ProblemSetting::View_VectorVariable).toString() == local.id())
+            if (m_computation->setting()->value(PostprocessorSetting::View_VectorVariable).toString() == local.id())
             {
-                vectorVariableDefault = m_computation->setting()->value(ProblemSetting::View_VectorVariable).toString();
+                vectorVariableDefault = m_computation->setting()->value(PostprocessorSetting::View_VectorVariable).toString();
             }
         }
 
-        m_computation->setting()->setValue(ProblemSetting::View_ScalarVariable, scalarVariableDefault);
-        m_computation->setting()->setValue(ProblemSetting::View_ScalarVariableComp, scalarVariableCompDefault);
-        m_computation->setting()->setValue(ProblemSetting::View_ContourVariable, contourVariableDefault);
-        m_computation->setting()->setValue(ProblemSetting::View_VectorVariable, vectorVariableDefault);
+        m_computation->setting()->setValue(PostprocessorSetting::View_ScalarVariable, scalarVariableDefault);
+        m_computation->setting()->setValue(PostprocessorSetting::View_ScalarVariableComp, scalarVariableCompDefault);
+        m_computation->setting()->setValue(PostprocessorSetting::View_ContourVariable, contourVariableDefault);
+        m_computation->setting()->setValue(PostprocessorSetting::View_VectorVariable, vectorVariableDefault);
 
         // order component
-        m_computation->setting()->setValue(ProblemSetting::View_OrderComponent, 1);
+        m_computation->setting()->setValue(PostprocessorSetting::View_OrderComponent, 1);
     }
 }
 
@@ -474,7 +474,7 @@ void SceneViewPostInterface::initializeGL()
 
 const double* SceneViewPostInterface::paletteColor(double x) const
 {
-    switch ((PaletteType) m_computation->setting()->value(ProblemSetting::View_PaletteType).toInt())
+    switch ((PaletteType) m_computation->setting()->value(PostprocessorSetting::View_PaletteType).toInt())
     {
     case Palette_Inferno:
     {
@@ -550,7 +550,7 @@ const double* SceneViewPostInterface::paletteColor(double x) const
 
 const double* SceneViewPostInterface::paletteColorOrder(int n) const
 {
-    switch ((PaletteType) m_computation->setting()->value(ProblemSetting::View_OrderPaletteOrderType).toInt())
+    switch ((PaletteType) m_computation->setting()->value(PostprocessorSetting::View_OrderPaletteOrderType).toInt())
     {
     case Palette_Jet:
         return paletteOrderJet[n];
@@ -574,8 +574,8 @@ const double* SceneViewPostInterface::paletteColorOrder(int n) const
 
 void SceneViewPostInterface::paletteCreate()
 {
-    int paletteSteps = m_computation->setting()->value(ProblemSetting::View_PaletteFilter).toBool()
-            ? 100 : m_computation->setting()->value(ProblemSetting::View_PaletteSteps).toInt();
+    int paletteSteps = m_computation->setting()->value(PostprocessorSetting::View_PaletteFilter).toBool()
+            ? 100 : m_computation->setting()->value(PostprocessorSetting::View_PaletteSteps).toInt();
 
     unsigned char palette[256][3];
     for (int i = 0; i < paletteSteps; i++)
@@ -595,7 +595,7 @@ void SceneViewPostInterface::paletteCreate()
 
     glBindTexture(GL_TEXTURE_1D, m_textureScalar);
     glTexParameteri(GL_TEXTURE_1D, GL_GENERATE_MIPMAP, GL_TRUE);
-    if (m_computation->setting()->value(ProblemSetting::View_PaletteFilter).toBool())
+    if (m_computation->setting()->value(PostprocessorSetting::View_PaletteFilter).toBool())
     {
 #ifdef Q_WS_WIN
         glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -617,7 +617,7 @@ void SceneViewPostInterface::paletteCreate()
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 
     // adjust palette
-    if (m_computation->setting()->value(ProblemSetting::View_PaletteFilter).toBool())
+    if (m_computation->setting()->value(PostprocessorSetting::View_PaletteFilter).toBool())
     {
         m_texScale = (double) (paletteSteps-1) / 256.0;
         m_texShift = 0.5 / 256.0;
@@ -631,7 +631,7 @@ void SceneViewPostInterface::paletteCreate()
 
 void SceneViewPostInterface::paintScalarFieldColorBar(double min, double max)
 {
-    if (!m_computation->isSolved() || !m_computation->setting()->value(ProblemSetting::View_ShowScalarColorBar).toBool()) return;
+    if (!m_computation->isSolved() || !m_computation->setting()->value(PostprocessorSetting::View_ShowScalarColorBar).toBool()) return;
 
     loadProjectionViewPort();
 
@@ -640,7 +640,7 @@ void SceneViewPostInterface::paintScalarFieldColorBar(double min, double max)
 
     // dimensions
     int textWidth = (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0)
-            * (QString::number(-1.0, 'e', m_computation->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt()).length() + 1);
+            * (QString::number(-1.0, 'e', m_computation->setting()->value(PostprocessorSetting::View_ScalarDecimalPlace).toInt()).length() + 1);
     int textHeight = 2 * (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0);
     Point scaleSize = Point(45.0 + textWidth, 20*textHeight); // height() - 20.0
     Point scaleBorder = Point(10.0, (Agros2D::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
@@ -711,26 +711,26 @@ void SceneViewPostInterface::paintScalarFieldColorBar(double min, double max)
     for (int i = 1; i < numTicks+1; i++)
     {
         double value = 0.0;
-        if (!m_computation->setting()->value(ProblemSetting::View_ScalarRangeLog).toBool())
+        if (!m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeLog).toBool())
             value = min + (double) (i-1) / (numTicks-1) * (max - min);
         else
-            value = min + (double) pow((double) m_computation->setting()->value(ProblemSetting::View_ScalarRangeBase).toInt(),
-                                       ((i-1) / (numTicks-1)))/m_computation->setting()->value(ProblemSetting::View_ScalarRangeBase).toInt() * (max - min);
+            value = min + (double) pow((double) m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeBase).toInt(),
+                                       ((i-1) / (numTicks-1)))/m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeBase).toInt() * (max - min);
 
         if (fabs(value) < EPS_ZERO) value = 0.0;
         double tickY = (scaleSize.y - 60.0) / (numTicks - 1.0);
 
         printPostAt(scaleLeft + 33.0 + ((value >= 0.0) ? (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) : 0.0),
                     scaleBorder.y + 10.0 + (i-1)*tickY - textHeight / 4.0,
-                    QString::number(value, 'e', m_computation->setting()->value(ProblemSetting::View_ScalarDecimalPlace).toInt()));
+                    QString::number(value, 'e', m_computation->setting()->value(PostprocessorSetting::View_ScalarDecimalPlace).toInt()));
     }
 
     // variable
     Module::LocalVariable localVariable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),
-                                                                                                      m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString());
+                                                                                                      m_computation->setting()->value(PostprocessorSetting::View_ScalarVariable).toString());
     QString str = QString("%1 (%2)").
-            arg(m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString().isEmpty() ? "" : localVariable.shortname()).
-            arg(m_computation->setting()->value(ProblemSetting::View_ScalarVariable).toString().isEmpty() ? "" : localVariable.unit());
+            arg(m_computation->setting()->value(PostprocessorSetting::View_ScalarVariable).toString().isEmpty() ? "" : localVariable.shortname()).
+            arg(m_computation->setting()->value(PostprocessorSetting::View_ScalarVariable).toString().isEmpty() ? "" : localVariable.unit());
 
     printPostAt(scaleLeft + scaleSize.x / 2.0 - (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) * str.count() / 2.0,
                 scaleBorder.y + scaleSize.y - 20.0,

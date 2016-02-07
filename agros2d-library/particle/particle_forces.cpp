@@ -47,9 +47,9 @@ ParticleTracingForce::ParticleTracingForce(ParticleTracing *particleTracing)
 
 Point3 ParticleTracingForceCustom::force(int particleIndex, const Point3 &position, const Point3 &velocity)
 {
-    return Point3(m_particleTracing->computation()->setting()->value(ProblemSetting::View_ParticleCustomForceX).toDouble(),
-                  m_particleTracing->computation()->setting()->value(ProblemSetting::View_ParticleCustomForceY).toDouble(),
-                  m_particleTracing->computation()->setting()->value(ProblemSetting::View_ParticleCustomForceZ).toDouble());
+    return Point3(m_particleTracing->computation()->setting()->value(PostprocessorSetting::View_ParticleCustomForceX).toDouble(),
+                  m_particleTracing->computation()->setting()->value(PostprocessorSetting::View_ParticleCustomForceY).toDouble(),
+                  m_particleTracing->computation()->setting()->value(PostprocessorSetting::View_ParticleCustomForceZ).toDouble());
 }
 
 Point3 ParticleTracingForceDrag::force(int particleIndex, const Point3 &position, const Point3 &velocity)
@@ -60,10 +60,10 @@ Point3 ParticleTracingForceDrag::force(int particleIndex, const Point3 &position
     Point3 forceDrag;
     if (velocityReal.magnitude() > 0.0)
         forceDrag = velocityReal.normalizePoint() *
-                - 0.5 * m_particleTracing->computation()->setting()->value(ProblemSetting::View_ParticleDragDensity).toDouble()
+                - 0.5 * m_particleTracing->computation()->setting()->value(PostprocessorSetting::View_ParticleDragDensity).toDouble()
                 * velocityReal.magnitude() * velocityReal.magnitude()
-                * m_particleTracing->computation()->setting()->value(ProblemSetting::View_ParticleDragCoefficient).toDouble()
-                * m_particleTracing->computation()->setting()->value(ProblemSetting::View_ParticleDragReferenceArea).toDouble();
+                * m_particleTracing->computation()->setting()->value(PostprocessorSetting::View_ParticleDragCoefficient).toDouble()
+                * m_particleTracing->computation()->setting()->value(PostprocessorSetting::View_ParticleDragReferenceArea).toDouble();
 
     return forceDrag;
 }
@@ -120,8 +120,8 @@ Point3 ParticleTracingForceFieldP2P::force(int particleIndex, const Point3 &posi
     Point3 forceP2PElectric;
     Point3 forceP2PMagnetic;
 
-    if (m_particleTracing->computation()->setting()->value(ProblemSetting::View_ParticleP2PElectricForce).toBool() ||
-            m_particleTracing->computation()->setting()->value(ProblemSetting::View_ParticleP2PMagneticForce).toBool())
+    if (m_particleTracing->computation()->setting()->value(PostprocessorSetting::View_ParticleP2PElectricForce).toBool() ||
+            m_particleTracing->computation()->setting()->value(PostprocessorSetting::View_ParticleP2PMagneticForce).toBool())
     {
         for (int i = 0; i < m_particleTracing->positions().size(); i++)
         {
@@ -144,7 +144,7 @@ Point3 ParticleTracingForceFieldP2P::force(int particleIndex, const Point3 &posi
 
             if (distance > 0)
             {
-                if (m_particleTracing->computation()->setting()->value(ProblemSetting::View_ParticleP2PElectricForce).toBool())
+                if (m_particleTracing->computation()->setting()->value(PostprocessorSetting::View_ParticleP2PElectricForce).toBool())
                 {
                     if (m_particleTracing->computation()->config()->coordinateType() == CoordinateType_Planar)
                         forceP2PElectric = forceP2PElectric + Point3(
@@ -159,7 +159,7 @@ Point3 ParticleTracingForceFieldP2P::force(int particleIndex, const Point3 &posi
                                     (position.x * sin(position.z) - particlePosition.x * sin(particlePosition.z)) / distance)
                                 * (m_particleChargesList[particleIndex] * m_particleChargesList[i] / (4 * M_PI * EPS0 * distance * distance));
                 }
-                if (m_particleTracing->computation()->setting()->value(ProblemSetting::View_ParticleP2PMagneticForce).toBool())
+                if (m_particleTracing->computation()->setting()->value(PostprocessorSetting::View_ParticleP2PMagneticForce).toBool())
                 {
                     Point3 r0, v0;
                     if (m_particleTracing->computation()->config()->coordinateType() == CoordinateType_Planar)

@@ -309,24 +309,24 @@ void ProblemConfig::checkParameterName(const QString &key)
 
 // ********************************************************************************************
 
-ProblemSetting::ProblemSetting(ProblemBase *parentProblem) : QObject(), m_problem(parentProblem)
+PostprocessorSetting::PostprocessorSetting(ProblemBase *parentProblem) : QObject(), m_problem(parentProblem)
 {
     setStringKeys();
     clear();
 }
 
-ProblemSetting::~ProblemSetting()
+PostprocessorSetting::~PostprocessorSetting()
 {
 }
 
-void ProblemSetting::clear()
+void PostprocessorSetting::clear()
 {
     // set default values and types
     setDefaultValues();
     m_setting = m_settingDefault;
 }
 
-void ProblemSetting::setStringKeys()
+void PostprocessorSetting::setStringKeys()
 {
     m_settingKey[View_GridStep] = "View_GridStep";
     m_settingKey[View_SnapToGrid] = "View_SnapToGrid";
@@ -415,7 +415,7 @@ void ProblemSetting::setStringKeys()
     m_settingKey[View_SolidViewHide] = "View_SolidViewHide";
 }
 
-void ProblemSetting::setDefaultValues()
+void PostprocessorSetting::setDefaultValues()
 {
     m_settingDefault.clear();
 
@@ -506,7 +506,7 @@ void ProblemSetting::setDefaultValues()
     m_settingDefault[View_SolidViewHide] = QStringList();
 }
 
-void ProblemSetting::load(XMLProblem::config *configxsd)
+void PostprocessorSetting::load(XMLProblem::config *configxsd)
 {
     // default
     m_setting = m_settingDefault;
@@ -533,7 +533,7 @@ void ProblemSetting::load(XMLProblem::config *configxsd)
     }
 }
 
-void ProblemSetting::save(XMLProblem::config *configxsd)
+void PostprocessorSetting::save(XMLProblem::config *configxsd)
 {    
     foreach (Type key, m_setting.keys())
     {
@@ -546,7 +546,7 @@ void ProblemSetting::save(XMLProblem::config *configxsd)
     }
 }
 
-void ProblemSetting::load(QJsonObject &object)
+void PostprocessorSetting::load(QJsonObject &object)
 {
     // default
     m_setting = m_settingDefault;
@@ -566,7 +566,7 @@ void ProblemSetting::load(QJsonObject &object)
     }
 }
 
-void ProblemSetting::save(QJsonObject &object)
+void PostprocessorSetting::save(QJsonObject &object)
 {
     foreach (Type key, m_settingDefault.keys())
     {

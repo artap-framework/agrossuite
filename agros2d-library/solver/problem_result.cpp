@@ -63,7 +63,7 @@ void ResultRecipe::save(QJsonObject &object)
     object[ADAPTIVITYSTEP] = m_adaptivityStep;
 }
 
-int ResultRecipe::timeStep(QSharedPointer<Computation> computation, FieldInfo *fieldInfo)
+int ResultRecipe::timeStep(Computation *computation, FieldInfo *fieldInfo)
 {
     assert(m_timeStep > 0 || m_timeStep <= computation->solutionStore()->lastTimeStep(fieldInfo));
 
@@ -73,7 +73,7 @@ int ResultRecipe::timeStep(QSharedPointer<Computation> computation, FieldInfo *f
         return m_timeStep;
 }
 
-int ResultRecipe::adaptivityStep(QSharedPointer<Computation> computation, FieldInfo *fieldInfo)
+int ResultRecipe::adaptivityStep(Computation *computation, FieldInfo *fieldInfo)
 {
     assert(m_adaptivityStep > 0 || m_adaptivityStep <= computation->solutionStore()->lastAdaptiveStep(fieldInfo, timeStep(computation, fieldInfo)));
 
@@ -110,12 +110,12 @@ void LocalValueRecipe::save(QJsonObject &object)
     ResultRecipe::save(object);
 }
 
-double LocalValueRecipe::evaluate(QSharedPointer<Computation> computation)
+double LocalValueRecipe::evaluate(Computation *computation)
 {
-    if (computation->isSolved() or computation->isSolving())
+    if (computation->isSolved() || computation->isSolving())
     {
         FieldInfo *fieldInfo = computation->fieldInfo(fieldID());
-        std::shared_ptr<LocalValue> localValue = fieldInfo->plugin()->localValue(computation.data(), fieldInfo,
+        std::shared_ptr<LocalValue> localValue = fieldInfo->plugin()->localValue(computation, fieldInfo,
                                                                                  timeStep(computation, fieldInfo),
                                                                                  adaptivityStep(computation, fieldInfo),
                                                                                  m_point);
@@ -129,7 +129,7 @@ double LocalValueRecipe::evaluate(QSharedPointer<Computation> computation)
         }
         else
         {
-            switch(m_component)
+            switch (m_component)
             {
             case PhysicFieldVariableComp_Magnitude:
                 return values[variable()].vector.magnitude();
@@ -140,9 +140,13 @@ double LocalValueRecipe::evaluate(QSharedPointer<Computation> computation)
             case PhysicFieldVariableComp_Y:
                 return values[variable()].vector.y;
                 break;
+            default:
+                assert(0);
             }
         }
     }
+
+    return 0;
 }
 
 SurfaceIntegralRecipe::SurfaceIntegralRecipe(const QString &name, const QString &fieldID, const QString &variable, int timeStep, int adaptivityStep)
@@ -170,7 +174,7 @@ void SurfaceIntegralRecipe::save(QJsonObject &object)
     ResultRecipe::save(object);
 }
 
-double SurfaceIntegralRecipe::evaluate(QSharedPointer<Computation> computation)
+double SurfaceIntegralRecipe::evaluate(Computation *computation)
 {
     if (computation->isSolved() or computation->isSolving())
     {
@@ -190,13 +194,15 @@ double SurfaceIntegralRecipe::evaluate(QSharedPointer<Computation> computation)
             computation->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
         }
 
-        std::shared_ptr<IntegralValue> integralValue = fieldInfo->plugin()->surfaceIntegral(computation.data(), fieldInfo,
+        std::shared_ptr<IntegralValue> integralValue = fieldInfo->plugin()->surfaceIntegral(computation, fieldInfo,
                                                                                             timeStep(computation, fieldInfo),
                                                                                             adaptivityStep(computation, fieldInfo));
 
         QMap<QString, double> values(integralValue->values());
         return values[variable()];
     }
+
+    return 0.0;
 }
 
 VolumeIntegralRecipe::VolumeIntegralRecipe(const QString &name, const QString &fieldID, const QString &variable, int timeStep, int adaptivityStep)
@@ -224,7 +230,7 @@ void VolumeIntegralRecipe::save(QJsonObject &object)
     ResultRecipe::save(object);
 }
 
-double VolumeIntegralRecipe::evaluate(QSharedPointer<Computation> computation)
+double VolumeIntegralRecipe::evaluate(Computation *computation)
 {
     if (computation->isSolved() or computation->isSolving())
     {
@@ -245,13 +251,15 @@ double VolumeIntegralRecipe::evaluate(QSharedPointer<Computation> computation)
             computation->scene()->selectAll(SceneGeometryMode_OperateOnLabels);
         }
 
-        std::shared_ptr<IntegralValue> integralValue = fieldInfo->plugin()->volumeIntegral(computation.data(), fieldInfo,
+        std::shared_ptr<IntegralValue> integralValue = fieldInfo->plugin()->volumeIntegral(computation, fieldInfo,
                                                                                            timeStep(computation, fieldInfo),
                                                                                            adaptivityStep(computation, fieldInfo));
 
         QMap<QString, double> values(integralValue->values());
         return values[variable()];
     }
+
+    return 0.0;
 }
 
 // *****************************************************************************************************************
@@ -329,7 +337,7 @@ bool ResultRecipes::save(const QString &fileName)
     return true;
 }
 
-void ResultRecipes::evaluate(QSharedPointer<Computation> computation)
+void ResultRecipes::evaluate(Computation *computation)
 {
     foreach (ResultRecipe *recipe, m_recipes)
         computation->results()->setResult(recipe->name(), recipe->evaluate(computation));

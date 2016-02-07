@@ -126,7 +126,7 @@ void CalculationThread::run()
 ProblemBase::ProblemBase()
 {
     m_config = new ProblemConfig(this);
-    m_setting = new ProblemSetting(this);
+    m_setting = new PostprocessorSetting(this);
     m_scene = new Scene(this);
     m_isNonlinear = false;
     m_timeStepLengths.append(0.0);
@@ -1570,6 +1570,9 @@ void Computation::solveInit()
             throw AgrosSolverException(tr("Initial step size is negative"));
     }
 
+    // invalidate scene (parameter update)
+    m_scene->invalidate();
+
     // control geometry
     m_scene->checkGeometryResult();
     m_scene->checkGeometryAssignement();
@@ -1637,9 +1640,6 @@ void Computation::solve()
     if (!isPreparedForAction())
         return;
 
-    // clear solution
-    clearSolution();
-
     if ((m_fieldInfos.size() > 1) && isTransient() && (numAdaptiveFields() >= 1))
     {
         Agros2D::log()->printError(tr("Solver"), tr("Space adaptivity for transient coupled problems not possible at the moment."));
@@ -1675,48 +1675,8 @@ void Computation::solve()
         emit solved();
 
         // evaluate results recipes
-        // TODO: replace Agros2D::problem()->currentComputation()
-        Agros2D::problem()->recipes()->evaluate(Agros2D::problem()->currentComputation());
+        Agros2D::problem()->recipes()->evaluate(this);
     }
-    /*
-    catch (Exceptions::NonlinearException &e)
-    {
-        Solvers::NonlinearConvergenceState convergenceState = e.get_exception_state();
-        switch(convergenceState)
-        {
-        case Solvers::NotConverged:
-        {
-            Agros2D::log()->printError(QObject::tr("Solver (Newton)"), QObject::tr("Newton solver did not converge."));
-            break;
-        }
-        case Solvers::BelowMinDampingCoeff:
-        {
-            Agros2D::log()->printError(QObject::tr("Solver (Newton)"), QObject::tr("Damping coefficient below minimum."));
-            break;
-        }
-        case Solvers::AboveMaxAllowedResidualNorm:
-        {
-            Agros2D::log()->printError(QObject::tr("Solver (Newton)"), QObject::tr("Residual norm exceeded limit."));
-            break;
-        }
-        case Solvers::AboveMaxIterations:
-        {
-            Agros2D::log()->printError(QObject::tr("Solver (Newton)"), QObject::tr("Number of iterations exceeded limit."));
-            break;
-        }
-        case Solvers::Error:
-        {
-            Agros2D::log()->printError(QObject::tr("Solver (Newton)"), QObject::tr("An error occurred in Newton solver."));
-            break;
-        }
-        default:
-            Agros2D::log()->printError(QObject::tr("Solver (Newton)"), QObject::tr("Newton solver failed from unknown reason."));
-        }
-
-        m_isSolving = false;
-        return;
-    }
-    */
     catch (AgrosGeometryException& e)
     {
         Agros2D::log()->printError(QObject::tr("Geometry"), e.what());
@@ -1743,7 +1703,7 @@ void Computation::solve()
     }
     catch (...)
     {
-        // todo: dangerous
+        // TODO: dangerous
         // catching all other exceptions. This is not save at all
         m_isSolving = false;
         Agros2D::log()->printError(tr("Solver"), tr("An unknown exception occurred in solver and has been ignored"));

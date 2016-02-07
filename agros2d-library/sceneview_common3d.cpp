@@ -109,14 +109,14 @@ void SceneViewCommon3D::paintBackground()
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     glBegin(GL_QUADS);
-    if (problem()->setting()->value(ProblemSetting::View_ScalarView3DBackground).toBool())
+    if (problem()->setting()->value(PostprocessorSetting::View_ScalarView3DBackground).toBool())
         glColor3d(0.99, 0.99, 0.99);
     else
         glColor3d(COLORBACKGROUND[0], COLORBACKGROUND[1], COLORBACKGROUND[2]);
 
     glVertex3d(-1.0, -1.0, 0.0);
     glVertex3d(1.0, -1.0, 0.0);
-    if (problem()->setting()->value(ProblemSetting::View_ScalarView3DBackground).toBool())
+    if (problem()->setting()->value(PostprocessorSetting::View_ScalarView3DBackground).toBool())
         glColor3d(0.44, 0.56, 0.89);
     glVertex3d(1.0, 1.0, 0.0);
     glVertex3d(-1.0, 1.0, 0.0);
@@ -273,7 +273,7 @@ void SceneViewCommon3D::setZoom(double power)
 
 void SceneViewCommon3D::initLighting()
 {
-    if (problem()->setting()->value(ProblemSetting::View_ScalarView3DLighting).toBool()) // || Agros2D::problem()->configView()->showPost3D == SceneViewPost3DMode_Model)
+    if (problem()->setting()->value(PostprocessorSetting::View_ScalarView3DLighting).toBool()) // || Agros2D::problem()->configView()->showPost3D == SceneViewPost3DMode_Model)
     {
         // environment
         float light_specular[] = {  1.0f, 1.0f, 1.0f, 1.0f };
