@@ -26,10 +26,27 @@
 #include "util/enums.h"
 #include "study.h"
 
+#include "bayesopt/bayesopt.hpp"
+
+class StudyBayesOptAnalysis;
+
+class BayesOptProblem : public bayesopt::ContinuousModel
+{
+public:
+    BayesOptProblem(StudyBayesOptAnalysis *study, bayesopt::Parameters par);
+
+    double evaluateSample(const vectord& x);
+    bool checkReachability(const vectord &query) { return true; }
+
+private:
+    StudyBayesOptAnalysis *m_study;
+};
+
 class StudyBayesOptAnalysis : public Study
 {
 public:
     StudyBayesOptAnalysis();
+
     virtual inline StudyType type() { return StudyType_BayesOptAnalysis; }
     virtual void solve();
 };

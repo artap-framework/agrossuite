@@ -30,31 +30,78 @@
 
 #include "scene.h"
 
-StudyBayesOptAnalysis::StudyBayesOptAnalysis() : Study()
+
+BayesOptProblem::BayesOptProblem(StudyBayesOptAnalysis *study, bayesopt::Parameters par)
+    : ContinuousModel(study->parameters().count(), par), m_study(study)
 {
+    vectord lowerBound(m_study->parameters().count());
+    vectord upperBound(m_study->parameters().count());
+
+    // set bounding box
+    for (int i = 0; i < m_study->parameters().count(); i++)
+    {
+        Parameter parameter = m_study->parameters()[i];
+
+        lowerBound.insert_element(i, parameter.lowerBound());
+        upperBound.insert_element(i, parameter.upperBound());
+    }
+
+    setBoundingBox(lowerBound, upperBound);
+}
+
+double BayesOptProblem::evaluateSample(const vectord& x)
+{
+    // computation
+    QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+    m_study->addComputation(computation);
+
+    // set parameters
+    for (int i = 0; i < m_study->parameters().count(); i++)
+    {
+        Parameter parameter = m_study->parameters()[i];
+        computation->config()->setParameter(parameter.name(), x[i]);
+    }
+
+    // solve
+    computation->solve();
+
+    // evaluate functionals
+    m_study->evaluateFunctionals(computation);
+
+    // TODO: more functionals !!!
+    assert(m_study->functionals().size() == 1);
+    QString parameterName = m_study->functionals()[0].name();
+
+    double value = computation->results()->resultValue(parameterName);
+    computation->saveResults();
+
+    return value;
+}
+
+StudyBayesOptAnalysis::StudyBayesOptAnalysis() : Study()
+{    
 }
 
 void StudyBayesOptAnalysis::solve()
 {
-    // parameter space
-    ParameterSpace space = ParameterSpace(m_parameters);
-    space.random(10);
+    // parameters
+    bayesopt::Parameters par = initialize_parameters_to_default();
+    par.n_iterations = 20;
+    par.n_init_samples = 15;
+    par.noise = 1e-10;
+    par.random_seed = 0;
+    par.verbose_level = 1;
 
-    foreach (StringToDoubleMap set, space.sets())
+    // init BayesOpt problem
+    BayesOptProblem bayesOptProblem(this, par);
+    bayesOptProblem.initializeOptimization();
+
+    // steps
+    for (int i = 0; i < bayesOptProblem.getParameters()->n_iterations; i++)
     {
-        // computation
-        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
-        addComputation(computation);
-
-        foreach (QString parameter, set.keys())
-            computation->config()->setParameter(parameter, set[parameter]);
-
-        // solve and evaluate
-        computation->solve();
-        evaluateFunctionals(computation);
-
-        computation->saveResults();
-        //qDebug() << computation->config()->parameters();
-        //qDebug() << computation->results()->results();
+        // step
+        bayesOptProblem.stepOptimization();
     }
+
+    // vectord result = bayesOptProblem.getFinalResult();
 }

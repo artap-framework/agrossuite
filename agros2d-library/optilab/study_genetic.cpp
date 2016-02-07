@@ -137,10 +137,10 @@ void StudyGenetic::solve()
         // sort individuals
         std::sort(currentPopulation.computations().begin(), currentPopulation.computations().end(), GeneticIndividualCompare(parameterName));
 
-        m_computations.append(currentPopulation);
+        m_computationSets.append(currentPopulation);
 
         // check stopping criteria
-        if (m_computations.size() == 15)
+        if (m_computationSets.size() == 15)
             break;
 
         // selection (sorted population)

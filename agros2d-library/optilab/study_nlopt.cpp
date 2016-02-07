@@ -36,25 +36,6 @@ StudyNLoptAnalysis::StudyNLoptAnalysis() : Study()
 
 void StudyNLoptAnalysis::solve()
 {
-    // parameter space
-    ParameterSpace space = ParameterSpace(m_parameters);
-    space.random(10);
-
-    foreach (StringToDoubleMap set, space.sets())
-    {
-        // computation
-        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
-        addComputation(computation);
-
-        foreach (QString parameter, set.keys())
-            computation->config()->setParameter(parameter, set[parameter]);
-
-        // solve and evaluate
-        computation->solve();
-        evaluateFunctionals(computation);
-
-        computation->saveResults();
-        //qDebug() << computation->config()->parameters();
-        //qDebug() << computation->results()->results();
-    }
+    // TODO: not implemented
+    assert(0);
 }

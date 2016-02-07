@@ -23,6 +23,7 @@
 #include <QWidget>
 
 #include "util.h"
+#include "util/enums.h"
 #include "gui/textedit.h"
 
 class OptiLab;
@@ -60,6 +61,10 @@ private slots:
 
     void testSweep();
     void testGenetic();
+    void testBayesOpt();
+    void testNLopt();
+
+    void testOptimization(StudyType type);
 };
 
 class OptiLab : public QWidget

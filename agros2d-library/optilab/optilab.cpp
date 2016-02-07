@@ -22,6 +22,8 @@
 #include "study.h"
 #include "study_sweep.h"
 #include "study_genetic.h"
+#include "study_bayesopt.h"
+#include "study_nlopt.h"
 #include "util/global.h"
 
 #include "study.h"
@@ -80,14 +82,20 @@ void OptiLabWidget::createControls()
     layoutChartXYControls->addWidget(cmbChartY, 1, 1);
     layoutChartXYControls->addWidget(new QLabel(""), 19, 0);
 
-    QPushButton *btnTESTSWEEP = new QPushButton(tr("TEST SWEEP"));
-    connect(btnTESTSWEEP, SIGNAL(clicked()), this, SLOT(testSweep()));
-    QPushButton *btnTESTGENETIC = new QPushButton(tr("TEST GEN."));
-    connect(btnTESTGENETIC, SIGNAL(clicked()), this, SLOT(testGenetic()));
+    QPushButton *btnTESTSweep = new QPushButton(tr("TEST Sweep"));
+    connect(btnTESTSweep, SIGNAL(clicked()), this, SLOT(testSweep()));
+    QPushButton *btnTESTGenetic = new QPushButton(tr("TEST Gen."));
+    connect(btnTESTGenetic, SIGNAL(clicked()), this, SLOT(testGenetic()));
+    QPushButton *btnTESTBayesOpt = new QPushButton(tr("TEST BayesOpt"));
+    connect(btnTESTBayesOpt, SIGNAL(clicked()), this, SLOT(testBayesOpt()));
+    QPushButton *btnTESTNLopt = new QPushButton(tr("TEST NLopt"));
+    connect(btnTESTNLopt, SIGNAL(clicked()), this, SLOT(testNLopt()));
 
     QHBoxLayout *layoutParametersButton = new QHBoxLayout();
-    layoutParametersButton->addWidget(btnTESTSWEEP);
-    layoutParametersButton->addWidget(btnTESTGENETIC);
+    layoutParametersButton->addWidget(btnTESTSweep);
+    layoutParametersButton->addWidget(btnTESTGenetic);
+    layoutParametersButton->addWidget(btnTESTNLopt);
+    layoutParametersButton->addWidget(btnTESTBayesOpt);
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(2, 2, 2, 3);
@@ -217,10 +225,26 @@ void OptiLabWidget::testSweep()
     refresh();
 }
 
-void OptiLabWidget::testGenetic()
+void OptiLabWidget::testOptimization(StudyType type)
 {
-    // sweep analysis
-    StudyGenetic *analysis = new StudyGenetic();
+    Study *analysis= nullptr;
+    if (type == StudyType_Genetic)
+    {
+        // genetic
+        analysis = new StudyGenetic();
+    }
+    else if (type == StudyType_BayesOptAnalysis)
+    {
+        // BayesOpt
+        analysis = new StudyBayesOptAnalysis();
+    }
+    else if (type == StudyType_NLoptAnalysis)
+    {
+        // NLopt
+        analysis = new StudyNLoptAnalysis();
+    }
+
+    assert(analysis);
 
     // add to list
     Agros2D::problem()->studies()->addStudy(analysis);
@@ -238,6 +262,21 @@ void OptiLabWidget::testGenetic()
     analysis->solve();
 
     refresh();
+}
+
+void OptiLabWidget::testGenetic()
+{
+    testOptimization(StudyType_Genetic);
+}
+
+void OptiLabWidget::testBayesOpt()
+{
+    testOptimization(StudyType_BayesOptAnalysis);
+}
+
+void OptiLabWidget::testNLopt()
+{
+    testOptimization(StudyType_NLoptAnalysis);
 }
 
 void OptiLabWidget::computationSelect(const QString &key)

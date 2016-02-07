@@ -53,7 +53,7 @@ class Study : public QObject
     Q_OBJECT
 
 public:
-    Study(QList<ComputationSet> computations = QList<ComputationSet>());
+    Study(QList<ComputationSet> computationSets = QList<ComputationSet>());
     virtual ~Study();
 
     virtual StudyType type() = 0;
@@ -74,8 +74,8 @@ public:
     QList<Functional> &functionals() { return m_functionals; }
     bool evaluateFunctionals(QSharedPointer<Computation> computation);
 
-    QList<QSharedPointer<Computation> > computations() { return m_computations.last().computations(); }
-    QList<QSharedPointer<Computation> > computations(int setIndex) { return m_computations[setIndex].computations(); }
+    QList<QSharedPointer<Computation> > computationSets() { return m_computationSets.last().computations(); }
+    QList<QSharedPointer<Computation> > computationSets(int setIndex) { return m_computationSets[setIndex].computations(); }
     void addComputation(QSharedPointer<Computation> computation, bool new_computationSet = false);
 
     virtual void fillTreeView(QTreeWidget *trvComputations);
@@ -86,7 +86,7 @@ protected:
 
     QList<Parameter> m_parameters;
     QList<Functional> m_functionals;
-    QList<ComputationSet> m_computations;
+    QList<ComputationSet> m_computationSets;
 };
 
 class Studies : public QObject

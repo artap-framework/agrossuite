@@ -141,7 +141,7 @@ SET ( NLOPT_SOURCES
 	stogo/global.cc stogo/linalg.cc stogo/local.cc stogo/stogo.cc stogo/tools.cc stogo/global.h stogo/linalg.h stogo/local.h stogo/stogo_config.h stogo/stogo.h stogo/tools.h 
         )
 
-set(NLOPT_BUILD_SHARED "Build NLOPT as a shared library" OFF )
+set(NLOPT_BUILD_SHARED OFF) # "Build NLOPT as a shared library"
 
 IF(NLOPT_BUILD_SHARED)
   ADD_DEFINITIONS(-DNLOPT_DLL)

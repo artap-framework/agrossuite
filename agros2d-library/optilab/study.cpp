@@ -24,6 +24,8 @@
 
 #include "study_sweep.h"
 #include "study_genetic.h"
+#include "study_nlopt.h"
+#include "study_bayesopt.h"
 
 // consts
 const QString TYPE = "type";
@@ -63,7 +65,7 @@ void ComputationSet::save(QJsonObject &object)
 // *****************************************************************************************************************
 
 Study::Study(QList<ComputationSet> computations)
-    : m_computations(computations) { }
+    : m_computationSets(computations) { }
 
 Study::~Study()
 {
@@ -74,7 +76,7 @@ void Study::clear()
 {
     m_parameters.clear();
     m_functionals.clear();
-    m_computations.clear();
+    m_computationSets.clear();
 }
 
 void Study::load(QJsonObject &object)
@@ -106,7 +108,7 @@ void Study::load(QJsonObject &object)
         QJsonObject computationSetJson = computationsJson[i].toObject();
         ComputationSet computationSet;
         computationSet.load(computationSetJson);
-        m_computations.append(computationSet);
+        m_computationSets.append(computationSet);
     }
 }
 
@@ -134,7 +136,7 @@ void Study::save(QJsonObject &object)
 
     // computations
     QJsonArray computationsJson;
-    foreach (ComputationSet computationSet, m_computations)
+    foreach (ComputationSet computationSet, m_computationSets)
     {
         QJsonObject computationSetJson;
         computationSet.save(computationSetJson);
@@ -156,26 +158,27 @@ bool Study::evaluateFunctionals(QSharedPointer<Computation> computation)
 
 void Study::addComputation(QSharedPointer<Computation> computation, bool new_computationSet)
 {
-    if (m_computations.isEmpty() || new_computationSet)
-        m_computations.append(ComputationSet());
+    if (m_computationSets.isEmpty() || new_computationSet)
+        m_computationSets.append(ComputationSet());
 
-    m_computations.last().addComputation(computation);
+    m_computationSets.last().addComputation(computation);
 }
 
 void Study::fillTreeView(QTreeWidget *trvComputations)
 {
-    for (int i = 0; i < m_computations.size(); i++)
+    for (int i = 0; i < m_computationSets.size(); i++)
     {
         QTreeWidgetItem *itemComputationSet = new QTreeWidgetItem(trvComputations);
 
         QString computationSetName= tr("Set %1").arg(i + 1);
-        if (!m_computations[i].name().isEmpty())
-            computationSetName = m_computations[i].name();
+        if (!m_computationSets[i].name().isEmpty())
+            computationSetName = m_computationSets[i].name();
 
-        itemComputationSet->setText(0, tr("%1 (%2 computations)").arg(computationSetName).arg(m_computations[i].computations().size()));
-        itemComputationSet->setExpanded(true);
+        itemComputationSet->setText(0, tr("%1 (%2 computations)").arg(computationSetName).arg(m_computationSets[i].computations().size()));
+        if (i == m_computationSets.size() - 1)
+            itemComputationSet->setExpanded(true);
 
-        foreach (QSharedPointer<Computation> computation, m_computations[i].computations())
+        foreach (QSharedPointer<Computation> computation, m_computationSets[i].computations())
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(itemComputationSet);
             item->setText(0, computation->problemDir());
@@ -248,6 +251,10 @@ bool Studies::load(const QString &fileName)
             study = new StudySweepAnalysis();
         else if (type == StudyType_Genetic)
             study = new StudyGenetic();
+        else if (type == StudyType_BayesOptAnalysis)
+            study = new StudyBayesOptAnalysis();
+        else if (type == StudyType_NLoptAnalysis)
+            study = new StudyNLoptAnalysis();
         else
             assert(0);
 
