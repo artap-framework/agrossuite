@@ -123,12 +123,8 @@ void StudyGenetic::solve()
             QSharedPointer<Computation> individual = currentPopulation.computations().at(index);
 
             // solve and evaluate
-            // individual.computation()->solve();
-
-            currentPythonEngine()->useTemporaryDict();
-            foreach (Functional functional, m_functionals)
-                bool successfulRun = functional.evaluateExpression(individual);
-            currentPythonEngine()->useGlobalDict();
+            individual->solve();
+            evaluateFunctionals(individual);
 
             // save results
             individual->saveResults();
