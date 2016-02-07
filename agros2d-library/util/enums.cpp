@@ -327,6 +327,8 @@ void initLists()
     // study type
     studyTypeList.insert(StudyType_SweepAnalysis, "sweepanalysis");
     studyTypeList.insert(StudyType_Genetic, "genetic");
+    studyTypeList.insert(StudyType_BayesOptAnalysis, "bayesopt");
+    studyTypeList.insert(StudyType_NLoptAnalysis, "nlopt");
 }
 
 QString errorNormString(NormType projNormType)
@@ -817,6 +819,10 @@ QString studyTypeString(StudyType type)
         return QObject::tr("Sweep analysis");
     case StudyType_Genetic:
         return QObject::tr("Genetic");
+    case StudyType_BayesOptAnalysis:
+        return QObject::tr("BayesOpt");
+    case StudyType_NLoptAnalysis:
+        return QObject::tr("NLopt");
     default:
         std::cerr << "Study type '" + QString::number(type).toStdString() + "' is not implemented. studyTypeString(StudyType type)" << endl;
         throw;

@@ -1,0 +1,924 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+   <FileVersion major="1" minor="6" />
+   <Project>
+      <Option title="BayesOpt" />
+      <Option makefile_is_custom="1" />
+      <Option compiler="gcc" />
+      <Option virtualFolders="CMake Files\;CMake Files\cmake\;CMake Files\nlopt2\;CMake Files\examples\;" />
+      <Build>
+      <Target title="all">
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 all" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="install/strip">
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 install/strip" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="edit_cache">
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 edit_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="rebuild_cache">
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 rebuild_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="install">
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 install" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bayesopt">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/lib/libbayesopt.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 bayesopt" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bayesopt/fast">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/lib/libbayesopt.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 bayesopt/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="doc">
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 doc" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="list_install_components">
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 list_install_components" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="doxygen">
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 doxygen" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="install/local">
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 install/local" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="nlopt">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/lib/libnlopt.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/nlopt2" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/auglag" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/bobyqa" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/cdirect" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/cobyla" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/crs" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/direct" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/esch" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/isres" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/luksan" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/mlsl" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/mma" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/neldermead" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/newuoa" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/praxis" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/slsqp" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/stogo" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/util" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/nlopt2/Makefile&quot;  VERBOSE=1 nlopt" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/nlopt2/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/nlopt2/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/nlopt2/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="nlopt/fast">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/lib/libnlopt.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/nlopt2" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/auglag" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/bobyqa" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/cdirect" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/cobyla" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/crs" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/direct" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/esch" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/isres" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/luksan" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/mlsl" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/mma" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/neldermead" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/newuoa" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/praxis" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/slsqp" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/stogo" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/util" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/nlopt2/Makefile&quot;  VERBOSE=1 nlopt/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/nlopt2/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/nlopt2/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/nlopt2/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_hartmann">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_hartmann" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_hartmann" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_hartmann/fast">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_hartmann" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_hartmann/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_oned">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_oned" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_oned" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_oned/fast">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_oned" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_oned/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="branin_xml">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/branin_xml" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 branin_xml" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="branin_xml/fast">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/branin_xml" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 branin_xml/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_compare">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_compare" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_compare" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_compare/fast">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_compare" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_compare/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_branin_timed">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_branin_timed" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_branin_timed" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_branin_timed/fast">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_branin_timed" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_branin_timed/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="branin_system_calls">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/branin_system_calls" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 branin_system_calls" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="branin_system_calls/fast">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/branin_system_calls" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 branin_system_calls/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_disc">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_disc" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_disc" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_disc/fast">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_disc" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_disc/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_cont">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_cont" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_cont" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_cont/fast">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_cont" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_cont/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_branin">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_branin" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_branin" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_branin/fast">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_branin" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_branin/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_camelback">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_camelback" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_camelback" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_camelback/fast">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_camelback" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_camelback/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_branin_mcmc">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_branin_mcmc" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_branin_mcmc" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="bo_branin_mcmc/fast">
+         <Option output="/home/karban/Projects/3rdparty/bayesopt/bin/bo_branin_mcmc" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/home/karban/Projects/3rdparty/bayesopt/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add option="-DUSE_SOBOL" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/include" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/sobol" />
+            <Add directory="/home/karban/Projects/3rdparty/bayesopt/utils" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 bo_branin_mcmc/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+            <DistClean command="/usr/bin/make -f &quot;/home/karban/Projects/3rdparty/bayesopt/examples/Makefile&quot;  VERBOSE=1 clean" />
+         </MakeCommands>
+      </Target>
+      </Build>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/examples/bo_branin.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/examples/bo_branin_mcmc.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/examples/bo_branin_timed.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/examples/bo_camelback.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/examples/bo_compare.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/examples/bo_cont.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/examples/bo_disc.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/examples/bo_hartmann.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/examples/bo_oned.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/examples/branin_system_calls.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/examples/branin_xml.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api/deprecated.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api/f77api.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api/general.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api/optimize.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api/options.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/auglag/auglag.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/bobyqa/bobyqa.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/cdirect/cdirect.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/cdirect/hybrid.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/cobyla/cobyla.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/crs/crs.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/direct/DIRect.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/direct/DIRserial.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/direct/DIRsubrout.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/direct/direct_wrap.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/esch/esch.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/isres/isres.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/luksan/mssubs.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/luksan/plip.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/luksan/plis.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/luksan/pnet.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/luksan/pssubs.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/mlsl/mlsl.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/mma/ccsa_quadratic.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/mma/mma.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/neldermead/nldrmd.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/neldermead/sbplx.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/newuoa/newuoa.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/praxis/praxis.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/slsqp/slsqp.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/stogo/global.cc">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/stogo/linalg.cc">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/stogo/local.cc">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/stogo/stogo.cc">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/stogo/tools.cc">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/util/mt19937ar.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/util/qsort_r.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/util/redblack.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/util/rescale.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/util/sobolseq.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/util/stop.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/util/timer.c">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/sobol/sobol.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/sobol/sobol_i4.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/sobol/sobol_i8.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/bayesoptbase.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/bayesoptcont.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/bayesoptdisc.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/bopt_state.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/conditionalbayesprocess.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/criteria_functors.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/criteria_hedge.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/dataset.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/gauss_distribution.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/gaussian_process.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/gaussian_process_hierarchical.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/gaussian_process_ml.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/gaussian_process_normal.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/inneroptimization.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/kernel_functors.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/kernelregressor.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/mcmc_sampler.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/mean_functors.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/nonparametricprocess.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/parameters.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/posterior_empirical.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/posterior_fixed.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/posterior_mcmc.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/posteriormodel.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/student_t_distribution.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/student_t_process_jef.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/student_t_process_nig.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/src/wrappers/bayesoptwpr.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/utils/fileparser.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/utils/param_loader.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/utils/parser.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/utils/ublas_extra.cpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api/f77funcs.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api/f77funcs_.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api/nlopt-in.hpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api/nlopt-internal.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api/nlopt.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/api/nlopt.hpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/auglag/auglag.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/bobyqa/bobyqa.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/cdirect/cdirect.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/cobyla/cobyla.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/crs/crs.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/direct/direct-internal.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/direct/direct.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/esch/esch.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/isres/isres.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/luksan/luksan.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/mlsl/mlsl.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/mma/mma.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/neldermead/neldermead.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/newuoa/newuoa.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/praxis/praxis.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/slsqp/slsqp.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/stogo/global.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/stogo/linalg.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/stogo/local.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/stogo/stogo.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/stogo/stogo_config.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/stogo/tools.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/util/nlopt-util.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/util/redblack.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/util/soboldata.h">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/sobol/sobol.hpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/utils/fileparser.hpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/utils/param_loader.hpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/utils/parser.hpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/utils/ublas_extra.hpp">
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/Doxyfile.in">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/cmake/UseDoxygen.cmake">
+          <Option virtualFolder="CMake Files\cmake\" />
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\nlopt2\" />
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/nlopt2/config.cmake.h.in">
+          <Option virtualFolder="CMake Files\nlopt2\" />
+      </Unit>
+      <Unit filename="/home/karban/Projects/3rdparty/bayesopt/examples/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\examples\" />
+      </Unit>
+   </Project>
+</CodeBlocks_project_file>

@@ -123,6 +123,8 @@ SET(SOURCES
     optilab/study.cpp
     optilab/study_sweep.cpp
     optilab/study_genetic.cpp
+    optilab/study_bayesopt.cpp
+    optilab/study_nlopt.cpp
     optilab/parameter.cpp
     optilab/functional.cpp
     pythonlab/pythonconsole.cpp
@@ -344,6 +346,8 @@ SET(HEADERS
   optilab/study.h
   optilab/study_sweep.h
   optilab/study_genetic.h
+  optilab/study_bayesopt.h
+  optilab/study_nlopt.h
   optilab/parameter.h
   optilab/functional.h
   pythonlab/pythonconsole.h

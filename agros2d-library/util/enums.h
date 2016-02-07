@@ -315,7 +315,9 @@ enum SymFlag
 enum StudyType
 {
     StudyType_SweepAnalysis,
-    StudyType_Genetic
+    StudyType_Genetic,
+    StudyType_BayesOptAnalysis,
+    StudyType_NLoptAnalysis
 };
 
 enum FunctionalType

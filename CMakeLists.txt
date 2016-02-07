@@ -102,6 +102,8 @@ SET(STB_TRUETYPE_LIBRARY agros2d_3dparty_stb_truetype)
 SET(QTSINGLEAPPLICATION_LIBRARY agros2d_3dparty_qtsingleapplication)
 SET(MATIO_LIBRARY agros2d_3dparty_matio)
 SET(TRIANGLE_LIBRARY agros2d_3dparty_triangle)
+SET(NLOPTLIB_LIBRARY agros2d_3dparty_nlopt2)
+SET(BAYESOPTLIB_LIBRARY agros2d_3dparty_bayesopt)
 
 # xerces
 find_package(XSD 4.0 REQUIRED)
