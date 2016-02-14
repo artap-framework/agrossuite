@@ -25,13 +25,30 @@
 #include "util/enums.h"
 #include "parameter.h"
 #include "functional.h"
+#include "solver/problem.h"
+#include "solver/problem_result.h"
 
 class Computation;
+
+
+class ComputationParameterCompare
+{
+public:
+    ComputationParameterCompare(const QString &parameterName) : m_parameterName(parameterName) {}
+
+    inline bool operator() (QSharedPointer<Computation> i, QSharedPointer<Computation> j)
+    {
+        return (i->results()->results()[m_parameterName] > j->results()->results()[m_parameterName]);
+    }
+
+protected:
+    QString m_parameterName;
+};
 
 class ComputationSet
 {
 public:
-    ComputationSet(QList<QSharedPointer<Computation> > set = QList<QSharedPointer<Computation> >());
+    ComputationSet(QList<QSharedPointer<Computation> > set = QList<QSharedPointer<Computation> >(), const QString &name = "");
     virtual ~ComputationSet();
 
     virtual void load(QJsonObject &object);
@@ -40,12 +57,14 @@ public:
     inline QString name() { return m_name; }
     inline void setName(const QString &name) { m_name = name; }
 
-    inline void addComputation(QSharedPointer<Computation> computation) { m_computationSet.append(computation); }
-    QList<QSharedPointer<Computation> > &computations() { return m_computationSet; }
+    inline void addComputation(QSharedPointer<Computation> computation) { m_computations.append(computation); }
+    QList<QSharedPointer<Computation> > &computations() { return m_computations; }
+
+    void sort(const QString &parameterName);
 
 protected:
     QString m_name;
-    QList<QSharedPointer<Computation> > m_computationSet;
+    QList<QSharedPointer<Computation> > m_computations;
 };
 
 class Study : public QObject
@@ -53,7 +72,7 @@ class Study : public QObject
     Q_OBJECT
 
 public:
-    Study(QList<ComputationSet> computationSets = QList<ComputationSet>());
+    Study(QList<ComputationSet> computations = QList<ComputationSet>());
     virtual ~Study();
 
     virtual StudyType type() = 0;
@@ -74,9 +93,9 @@ public:
     QList<Functional> &functionals() { return m_functionals; }
     bool evaluateFunctionals(QSharedPointer<Computation> computation);
 
-    QList<QSharedPointer<Computation> > computationSets() { return m_computationSets.last().computations(); }
-    QList<QSharedPointer<Computation> > computationSets(int setIndex) { return m_computationSets[setIndex].computations(); }
-    void addComputation(QSharedPointer<Computation> computation, bool new_computationSet = false);
+    QList<QSharedPointer<Computation> > &computations(int index = -1);
+    void addComputationSet(const QString &name = "") { m_computationSets.append(ComputationSet(QList<QSharedPointer<Computation> >(), name)); }
+    void addComputation(QSharedPointer<Computation> computation, bool newComputationSet = false);
 
     virtual void fillTreeView(QTreeWidget *trvComputations);
     QVariant variant();

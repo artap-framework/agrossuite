@@ -50,10 +50,12 @@ BayesOptProblem::BayesOptProblem(StudyBayesOptAnalysis *study, bayesopt::Paramet
 }
 
 double BayesOptProblem::evaluateSample(const vectord& x)
-{
+{   
     // computation
     QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
     m_study->addComputation(computation);
+
+    // static BayesOptPhase currentPhase = m_phase;
 
     // set parameters
     for (int i = 0; i < m_study->parameters().count(); i++)
@@ -64,6 +66,12 @@ double BayesOptProblem::evaluateSample(const vectord& x)
 
     // solve
     computation->solve();
+
+    // TODO: better error handling
+    if (!computation->isSolved())
+    {
+        return numeric_limits<double>::max();
+    }
 
     // evaluate functionals
     m_study->evaluateFunctionals(computation);
@@ -86,22 +94,30 @@ void StudyBayesOptAnalysis::solve()
 {
     // parameters
     bayesopt::Parameters par = initialize_parameters_to_default();
-    par.n_iterations = 20;
-    par.n_init_samples = 15;
+    par.n_iterations = 40;
+    par.n_init_samples = 10;
+    par.init_method = 1; // 1-LHS, 2-Sobol
     par.noise = 1e-10;
     par.random_seed = 0;
     par.verbose_level = 1;
 
-    // init BayesOpt problem
     BayesOptProblem bayesOptProblem(this, par);
+
+    // init BayesOpt problem
+    addComputationSet(tr("Initialization"));
     bayesOptProblem.initializeOptimization();
 
-    // steps
+    // steps   
+    addComputationSet(tr("Steps"));
     for (int i = 0; i < bayesOptProblem.getParameters()->n_iterations; i++)
     {
         // step
         bayesOptProblem.stepOptimization();
     }
+
+    // sort computations
+    QString parameterName = m_functionals[0].name();
+    m_computationSets.last().sort(parameterName);
 
     // vectord result = bayesOptProblem.getFinalResult();
 }

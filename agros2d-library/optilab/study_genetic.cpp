@@ -44,20 +44,6 @@ const QString POPULATIONS = "populations";
 const QString INDIVIDUALS = "individuals";
 const QString COMPUTATION = "computation";
 
-class GeneticIndividualCompare
-{
-public:
-    GeneticIndividualCompare(const QString &parameterName) : m_parameterName(parameterName) {}
-
-    inline bool operator() (QSharedPointer<Computation> i, QSharedPointer<Computation> j)
-    {
-        return (i->results()->results()[m_parameterName] < j->results()->results()[m_parameterName]);
-    }
-
-protected:
-    QString m_parameterName;
-};
-
 GeneticPopulationRandom::GeneticPopulationRandom(QList<Parameter> parameters, int count)
     : ComputationSet()
 {
@@ -135,7 +121,7 @@ void StudyGenetic::solve()
         QString parameterName = m_functionals[0].name();
 
         // sort individuals
-        std::sort(currentPopulation.computations().begin(), currentPopulation.computations().end(), GeneticIndividualCompare(parameterName));
+        currentPopulation.sort(parameterName);
 
         m_computationSets.append(currentPopulation);
 

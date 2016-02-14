@@ -35,12 +35,14 @@ const QString COMPUTATIONS = "computations";
 const QString COMPUTATIONSET = "computationset";
 const QString STUDIES = "studies";
 
-ComputationSet::ComputationSet(QList<QSharedPointer<Computation> > set)
-    : m_computationSet(set) { }
+ComputationSet::ComputationSet(QList<QSharedPointer<Computation> > set, const QString &name)
+    : m_computations(set), m_name(name)
+{
+}
 
 ComputationSet::~ComputationSet()
 {
-    m_computationSet.clear();
+    m_computations.clear();
 }
 
 void ComputationSet::load(QJsonObject &object)
@@ -50,16 +52,22 @@ void ComputationSet::load(QJsonObject &object)
     {
         QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
         QSharedPointer<Computation> computation = computations[computationSetJson[i].toString()];
-        m_computationSet.append(computation);
+        m_computations.append(computation);
     }
 }
 
 void ComputationSet::save(QJsonObject &object)
 {
     QJsonArray computationSetJson;
-    foreach (QSharedPointer<Computation> computation, m_computationSet)
+    foreach (QSharedPointer<Computation> computation, m_computations)
         computationSetJson.append(computation->problemDir());
     object[COMPUTATIONSET] = computationSetJson;
+}
+
+void ComputationSet::sort(const QString &parameterName)
+{
+    // sort individuals
+    std::sort(m_computations.begin(), m_computations.end(), ComputationParameterCompare(parameterName));
 }
 
 // *****************************************************************************************************************
@@ -156,9 +164,9 @@ bool Study::evaluateFunctionals(QSharedPointer<Computation> computation)
     return successfulRun;
 }
 
-void Study::addComputation(QSharedPointer<Computation> computation, bool new_computationSet)
+void Study::addComputation(QSharedPointer<Computation> computation, bool newComputationSet)
 {
-    if (m_computationSets.isEmpty() || new_computationSet)
+    if (m_computationSets.isEmpty() || newComputationSet)
         m_computationSets.append(ComputationSet());
 
     m_computationSets.last().addComputation(computation);
@@ -186,6 +194,14 @@ void Study::fillTreeView(QTreeWidget *trvComputations)
             item->setData(0, Qt::UserRole, computation->problemDir());
         }
     }
+}
+
+QList<QSharedPointer<Computation> > &Study::computations(int index)
+{
+    if (index == -1)
+        return m_computationSets.last().computations();
+    else
+        return m_computationSets[index].computations();
 }
 
 QVariant Study::variant()

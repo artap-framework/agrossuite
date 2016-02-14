@@ -62,9 +62,14 @@ private slots:
     void testSweep();
     void testGenetic();
     void testBayesOpt();
-    void testNLopt();
 
     void testOptimization(StudyType type);
+
+    void testNLoptTEAM22();
+    void testBayesOptTEAM22();
+    void testBayesOptTEAM25();
+    void testTEAM22(StudyType type);
+    void testTEAM25(StudyType type);
 };
 
 class OptiLab : public QWidget

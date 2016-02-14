@@ -27,6 +27,7 @@
 #include "util/global.h"
 
 #include "study.h"
+#include "logview.h"
 
 #include "solver/problem.h"
 #include "solver/problem_result.h"
@@ -88,21 +89,30 @@ void OptiLabWidget::createControls()
     connect(btnTESTGenetic, SIGNAL(clicked()), this, SLOT(testGenetic()));
     QPushButton *btnTESTBayesOpt = new QPushButton(tr("TEST BayesOpt"));
     connect(btnTESTBayesOpt, SIGNAL(clicked()), this, SLOT(testBayesOpt()));
-    QPushButton *btnTESTNLopt = new QPushButton(tr("TEST NLopt"));
-    connect(btnTESTNLopt, SIGNAL(clicked()), this, SLOT(testNLopt()));
+    QPushButton *btnTESTNLoptTEAM22 = new QPushButton(tr("TEAM 22 NLopt"));
+    connect(btnTESTNLoptTEAM22, SIGNAL(clicked()), this, SLOT(testNLoptTEAM22()));
+    QPushButton *testBayesOptTEAM22 = new QPushButton(tr("TEAM 22 BayesOpt"));
+    connect(testBayesOptTEAM22, SIGNAL(clicked()), this, SLOT(testBayesOptTEAM22()));
+    QPushButton *testBayesOptTEAM25 = new QPushButton(tr("TEAM 25 BayesOpt"));
+    connect(testBayesOptTEAM25, SIGNAL(clicked()), this, SLOT(testBayesOptTEAM25()));
 
-    QHBoxLayout *layoutParametersButton = new QHBoxLayout();
-    layoutParametersButton->addWidget(btnTESTSweep);
-    layoutParametersButton->addWidget(btnTESTGenetic);
-    layoutParametersButton->addWidget(btnTESTNLopt);
-    layoutParametersButton->addWidget(btnTESTBayesOpt);
+    QHBoxLayout *layoutParametersButton1 = new QHBoxLayout();
+    layoutParametersButton1->addWidget(btnTESTSweep);
+    layoutParametersButton1->addWidget(btnTESTGenetic);
+    layoutParametersButton1->addWidget(btnTESTNLoptTEAM22);
+    layoutParametersButton1->addWidget(btnTESTBayesOpt);
+
+    QHBoxLayout *layoutParametersButton2 = new QHBoxLayout();
+    layoutParametersButton2->addWidget(testBayesOptTEAM22);
+    layoutParametersButton2->addWidget(testBayesOptTEAM25);
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(2, 2, 2, 3);
     layout->addWidget(grpStudies);
     layout->addWidget(trvComputations);
     layout->addLayout(layoutChartXYControls);
-    layout->addLayout(layoutParametersButton);
+    layout->addLayout(layoutParametersButton1);
+    layout->addLayout(layoutParametersButton2);
 
     setLayout(layout);
 }
@@ -249,7 +259,7 @@ void OptiLabWidget::testOptimization(StudyType type)
     // add to list
     Agros2D::problem()->studies()->addStudy(analysis);
 
-    // only one parameter
+    // parameters
     analysis->addParameter(Parameter("px", -10.0, 10.0));
     analysis->addParameter(Parameter("py", -10.0, 10.0));
 
@@ -257,6 +267,161 @@ void OptiLabWidget::testOptimization(StudyType type)
     // analysis->addFunctional(Functional("f", FunctionalType_Minimize, "-(sin(px) * cos(py) * exp((1 - (sqrt(px**2 + py**2)/pi))))"));
     // analysis->addFunctional(Functional("f", FunctionalType_Minimize, "px**2 + py**2"));
     analysis->addFunctional(Functional("f", FunctionalType_Minimize, "(px+2*py-7)**2 + (2*px+py-5)**2"));
+
+    // solve
+    analysis->solve();
+
+    refresh();
+}
+
+void OptiLabWidget::testTEAM22(StudyType type)
+{   
+    Study *analysis= nullptr;
+    if (type == StudyType_Genetic)
+    {
+        // genetic
+        analysis = new StudyGenetic();
+    }
+    else if (type == StudyType_BayesOptAnalysis)
+    {
+        // BayesOpt
+        analysis = new StudyBayesOptAnalysis();
+    }
+    else if (type == StudyType_NLoptAnalysis)
+    {
+        // NLopt
+        analysis = new StudyNLoptAnalysis();
+    }
+
+    assert(analysis);
+
+    // add to list
+    Agros2D::problem()->studies()->addStudy(analysis);
+
+    // parameters
+    analysis->addParameter(Parameter("R2", 2.6, 3.4));
+    analysis->addParameter(Parameter("h2", 0.204*2, 1.1*2));
+    analysis->addParameter(Parameter("d2", 0.1, 0.4));
+    // QString func = "abs(2*Wm - 180e6) / 180e6 + 1.0/(22*3e-6**2) * (0 ";
+    QString func = "abs(2*Wm - 180e6) / 180e6";
+
+    // analysis->addParameter(Parameter("R1", 1.0, 1.5));
+    // analysis->addParameter(Parameter("R2", 1.6, 5.0));
+    // analysis->addParameter(Parameter("h1", 0.1*2, 1.8*2));
+    // analysis->addParameter(Parameter("h2", 0.1*2, 1.8*2));
+    // analysis->addParameter(Parameter("d1", 0.1, 0.8));
+    // analysis->addParameter(Parameter("d2", 0.1, 0.8));
+    // analysis->addParameter(Parameter("J1", 10e6, 30e6));
+    // analysis->addParameter(Parameter("J2", -30e6, -10e6));
+    // QString func = "abs(2*Wm - 180e6) / 180e6 + 1.0/(22*200e-6**2) * (0 ";
+
+    // result recipes
+
+    /*int N = 11;
+    double step = 10.0 / (N-1);
+    for (int i = 0; i < N; i++)
+    {
+        Point point(i*step, 10.0);
+        LocalValueRecipe *localValueP = new LocalValueRecipe(QString("B%1").arg(i), "magnetic", "magnetic_flux_density_real");
+        localValueP->setPoint(point);
+        localValueP->setComponent(PhysicFieldVariableComp_Magnitude);
+        Agros2D::problem()->recipes()->addRecipe(localValueP);
+
+        // qDebug() << point.toString();
+        func += QString("+ %1**2 ").arg(QString("B%1").arg(i));
+    }
+
+    N = 11;
+    step = 10.0 / N;
+    for (int i = 0; i < N; i++)
+    {
+        Point point(10.0, i*step);
+        LocalValueRecipe *localValueP = new LocalValueRecipe(QString("B%1").arg(i+N+1), "magnetic", "magnetic_flux_density_real");
+        localValueP->setPoint(point);
+        localValueP->setComponent(PhysicFieldVariableComp_Magnitude);
+        Agros2D::problem()->recipes()->addRecipe(localValueP);
+
+        // qDebug() << point.toString();
+        func += QString("+ %1**2 ").arg(QString("B%1").arg(i+N+1));
+    }
+    func += ")";
+    */
+
+    VolumeIntegralRecipe *volumeIntegralRecipe = new VolumeIntegralRecipe("Wm", "magnetic", "magnetic_energy");
+    Agros2D::problem()->recipes()->addRecipe(volumeIntegralRecipe);
+
+    qDebug() << func;
+
+    // add functionals
+    analysis->addFunctional(Functional("OF", FunctionalType_Minimize, func));
+
+    // solve
+    analysis->solve();
+
+    refresh();
+}
+
+void OptiLabWidget::testTEAM25(StudyType type)
+{
+    Study *analysis= nullptr;
+    if (type == StudyType_Genetic)
+    {
+        // genetic
+        analysis = new StudyGenetic();
+    }
+    else if (type == StudyType_BayesOptAnalysis)
+    {
+        // BayesOpt
+        analysis = new StudyBayesOptAnalysis();
+    }
+    else if (type == StudyType_NLoptAnalysis)
+    {
+        // NLopt
+        analysis = new StudyNLoptAnalysis();
+    }
+
+    assert(analysis);
+
+    // add to list
+    Agros2D::problem()->studies()->addStudy(analysis);
+
+    // parameters
+    analysis->addParameter(Parameter("R1", 5e-3, 9e-3));
+    analysis->addParameter(Parameter("L2", 12.6e-3, 18e-3));
+    analysis->addParameter(Parameter("L3", 14e-3, 45e-3));
+    analysis->addParameter(Parameter("L4", 4e-3, 19e-3));
+
+    QString func = "0 ";
+
+    // result recipes
+    double R = 9.5e-3 + 2.25e-3;
+
+    int N = 10;
+    double step = 45.0/(N-1)/180.0*M_PI;
+    for (int i = 0; i < N; i++)
+    {
+        Point point(R*cos(i*step), R*sin(i*step));
+        LocalValueRecipe *localValuePx = new LocalValueRecipe(QString("B%1x").arg(i), "magnetic", "magnetic_flux_density_real");
+        localValuePx->setPoint(point);
+        localValuePx->setComponent(PhysicFieldVariableComp_X);
+        Agros2D::problem()->recipes()->addRecipe(localValuePx);
+
+        LocalValueRecipe *localValuePy = new LocalValueRecipe(QString("B%1y").arg(i), "magnetic", "magnetic_flux_density_real");
+        localValuePy->setPoint(point);
+        localValuePy->setComponent(PhysicFieldVariableComp_Y);
+        Agros2D::problem()->recipes()->addRecipe(localValuePy);
+
+        double B0 = 0.35; // 4253 Amps
+        // double B0 = 1.5; // 17500 Amps
+        func += QString("+ ((%1-%3)**2 + (%2-%4)**2)").
+                arg(QString("B%1x").arg(i)).
+                arg(QString("B%1y").arg(i)).
+                arg(B0*cos(i*step)).
+                arg(B0*sin(i*step));
+    }
+
+    // add functionals
+    analysis->addFunctional(Functional("W", FunctionalType_Minimize, func));
 
     // solve
     analysis->solve();
@@ -274,9 +439,19 @@ void OptiLabWidget::testBayesOpt()
     testOptimization(StudyType_BayesOptAnalysis);
 }
 
-void OptiLabWidget::testNLopt()
+void OptiLabWidget::testNLoptTEAM22()
 {
-    testOptimization(StudyType_NLoptAnalysis);
+    testTEAM22(StudyType_NLoptAnalysis);
+}
+
+void OptiLabWidget::testBayesOptTEAM22()
+{
+    testTEAM22(StudyType_BayesOptAnalysis);
+}
+
+void OptiLabWidget::testBayesOptTEAM25()
+{
+    testTEAM25(StudyType_BayesOptAnalysis);
 }
 
 void OptiLabWidget::computationSelect(const QString &key)

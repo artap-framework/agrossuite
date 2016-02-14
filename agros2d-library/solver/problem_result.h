@@ -71,9 +71,11 @@ public:
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
-    inline Point point() { return m_point; }
+    inline Point point() const { return m_point; }
     inline void setPoint(Point point) { m_point = point; }
     inline void setPoint(double x, double y) { m_point = Point(x, y); }
+    inline PhysicFieldVariableComp component() const  { return m_component; }
+    inline void setComponent(PhysicFieldVariableComp component) { m_component = component; }
 
     virtual double evaluate(Computation *computation);
 

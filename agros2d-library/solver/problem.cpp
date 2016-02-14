@@ -1685,6 +1685,7 @@ void Computation::solve()
     }
     catch (AgrosSolverException& e)
     {
+        qDebug() << e.what();
         Agros2D::log()->printError(QObject::tr("Solver"), e.what());
         m_isSolving = false;
         return;
@@ -1766,6 +1767,7 @@ bool Computation::mesh(bool emitMeshed)
     }
     catch (dealii::ExceptionBase &e)
     {
+        qDebug() << e.what();
         m_isMeshing = false;
         Agros2D::log()->printWarning(tr("Mesh (deal.II)"), e.what());
         return false;

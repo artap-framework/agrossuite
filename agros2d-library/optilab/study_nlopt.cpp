@@ -30,12 +30,107 @@
 
 #include "scene.h"
 
+#include "nlopt.hpp"
+
+class NLoptProblem
+{
+public:
+    NLoptProblem(StudyNLoptAnalysis *study) :  m_study(study)
+    {
+
+    }
+
+    double objectiveFunction(const std::vector<double> &x, std::vector<double> &grad, void *data)
+    {
+        // computation
+        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+        m_study->addComputation(computation);
+
+        // static BayesOptPhase currentPhase = m_phase;
+
+        // set parameters
+        for (int i = 0; i < m_study->parameters().count(); i++)
+        {
+            Parameter parameter = m_study->parameters()[i];
+            computation->config()->setParameter(parameter.name(), x[i]);
+        }
+
+        // solve
+        computation->solve();
+
+        // TODO: better error handling
+        if (!computation->isSolved())
+        {
+            return numeric_limits<double>::max();
+        }
+
+        // evaluate functionals
+        m_study->evaluateFunctionals(computation);
+
+        // TODO: more functionals !!!
+        assert(m_study->functionals().size() == 1);
+        QString parameterName = m_study->functionals()[0].name();
+
+        double value = computation->results()->resultValue(parameterName);
+        computation->saveResults();
+
+        qDebug() << "variant: " << value;
+        for (int i = 0; i < x.size(); i++)
+            qDebug() << x[i];
+
+        return value;
+    }
+
+private:
+    StudyNLoptAnalysis *m_study;
+};
+
+double objFunctionWrapper(const std::vector<double> &x, std::vector<double> &grad, void *data)
+{
+    NLoptProblem *obj = static_cast<NLoptProblem *>(data);
+    return obj->objectiveFunction(x, grad, data);
+}
+
 StudyNLoptAnalysis::StudyNLoptAnalysis() : Study()
 {
 }
 
 void StudyNLoptAnalysis::solve()
 {
-    // TODO: not implemented
-    assert(0);
+    std::vector<double> initialGuess(m_parameters.count());
+    std::vector<double> lowerBound(m_parameters.count());
+    std::vector<double> upperBound(m_parameters.count());
+
+    // set bounding box
+    for (int i = 0; i < m_parameters.count(); i++)
+    {
+        Parameter parameter = m_parameters[i];
+
+        lowerBound[i] = parameter.lowerBound();
+        upperBound[i] = parameter.upperBound();
+        initialGuess[i] = (parameter.lowerBound() + parameter.upperBound()) / 2.0;
+    }
+
+    NLoptProblem nLoptProblem(this);
+
+    nlopt::opt opt(nlopt::LN_BOBYQA, m_parameters.count());
+    opt.set_min_objective(objFunctionWrapper, &nLoptProblem);
+    opt.set_lower_bounds(lowerBound);
+    opt.set_upper_bounds(upperBound);
+    opt.set_xtol_rel(1e-4);
+    opt.set_ftol_rel(1e-4);
+
+    double minimum = 0.0; // numeric_limits<double>::max();
+    nlopt::result result = opt.optimize(initialGuess, minimum);
+
+    if (result == nlopt::SUCCESS)
+    {
+        qDebug() << "optimized variant: " << minimum;
+        for (int i = 0; i < m_parameters.count(); i++)
+            qDebug() << initialGuess[i];
+    }
+    else
+    {
+        qDebug() << "err ";
+    }
 }
