@@ -39,7 +39,7 @@ void Functional::load(QJsonObject &object)
 void Functional::save(QJsonObject &object)
 {
     object[NAME] = m_name;
-    object[TYPE] = functionalTypeString(m_type);
+    object[TYPE] = functionalTypeToStringKey(m_type);
     object[EXPRESSION] = m_expression;
 }
 

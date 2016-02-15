@@ -178,15 +178,7 @@ void LogWidget::print(const QString &module, const QString &message, const QStri
             arg(module).
             arg(strMessage);
     
-    plainLog->append(html);
-    
-    // force run process events
-    m_printCounter++;
-    if (m_printCounter == 20)
-    {
-        // reset counter and process events
-        m_printCounter = 0;
-    }
+    plainLog->append(html);   
     
     ensureCursorVisible();
 }

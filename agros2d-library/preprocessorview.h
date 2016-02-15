@@ -66,6 +66,7 @@ private:
         OptilabStudy,
         OptilabParameter,
         OptilabFunctional,
+        OptilabRecipe,
         ProblemProperties,
         FieldProperties
     };

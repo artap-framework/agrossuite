@@ -269,7 +269,7 @@ ResultRecipes::ResultRecipes(QList<ResultRecipe *> recipes)
 
 ResultRecipes::~ResultRecipes()
 {
-    //delete m_recipes;
+    clear();
 }
 
 bool ResultRecipes::load(const QString &fileName)
@@ -335,6 +335,13 @@ bool ResultRecipes::save(const QString &fileName)
     file.write(doc.toJson());
 
     return true;
+}
+
+void ResultRecipes::clear()
+{
+    for (int i = 0; i < m_recipes.count(); i++)
+        delete m_recipes[i];
+    m_recipes.clear();
 }
 
 void ResultRecipes::evaluate(Computation *computation)

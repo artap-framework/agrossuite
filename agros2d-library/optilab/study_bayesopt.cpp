@@ -55,8 +55,6 @@ double BayesOptProblem::evaluateSample(const vectord& x)
     QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
     m_study->addComputation(computation);
 
-    // static BayesOptPhase currentPhase = m_phase;
-
     // set parameters
     for (int i = 0; i < m_study->parameters().count(); i++)
     {
@@ -83,6 +81,9 @@ double BayesOptProblem::evaluateSample(const vectord& x)
     double value = computation->results()->resultValue(parameterName);
     computation->saveResults();
 
+    m_study->updateParameters(m_study->parameters(), computation.data());
+    m_study->updateChart();
+
     return value;
 }
 
@@ -92,10 +93,12 @@ StudyBayesOptAnalysis::StudyBayesOptAnalysis() : Study()
 
 void StudyBayesOptAnalysis::solve()
 {
+    m_isSolving = true;
+
     // parameters
     bayesopt::Parameters par = initialize_parameters_to_default();
-    par.n_iterations = 40;
-    par.n_init_samples = 10;
+    par.n_init_samples = 2;
+    par.n_iterations = 3;
     par.init_method = 1; // 1-LHS, 2-Sobol
     par.noise = 1e-10;
     par.random_seed = 0;
@@ -120,4 +123,8 @@ void StudyBayesOptAnalysis::solve()
     m_computationSets.last().sort(parameterName);
 
     // vectord result = bayesOptProblem.getFinalResult();
+
+    m_isSolving = false;
+
+    emit solved();
 }

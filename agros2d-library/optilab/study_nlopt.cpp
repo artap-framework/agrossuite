@@ -74,9 +74,8 @@ public:
         double value = computation->results()->resultValue(parameterName);
         computation->saveResults();
 
-        qDebug() << "variant: " << value;
-        for (int i = 0; i < x.size(); i++)
-            qDebug() << x[i];
+        m_study->updateParameters(m_study->parameters(), computation.data());
+        m_study->updateChart();
 
         return value;
     }

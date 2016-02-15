@@ -329,6 +329,16 @@ void initLists()
     studyTypeList.insert(StudyType_Genetic, "genetic");
     studyTypeList.insert(StudyType_BayesOptAnalysis, "bayesopt");
     studyTypeList.insert(StudyType_NLoptAnalysis, "nlopt");
+
+    // functionals
+    functionalTypeList.insert(FunctionalType_Maximize, "maximize");
+    functionalTypeList.insert(FunctionalType_Minimize, "minimize");
+    functionalTypeList.insert(FunctionalType_Result, "result");
+
+    // recipes
+    resultRecipeTypeList.insert(ResultRecipeType_LocalValue, "local_value");
+    resultRecipeTypeList.insert(ResultRecipeType_SurfaceIntegral, "surface_integral");
+    resultRecipeTypeList.insert(ResultRecipeType_VolumeIntegral, "volume_integral");
 }
 
 QString errorNormString(NormType projNormType)
@@ -834,11 +844,11 @@ QString functionalTypeString(FunctionalType type)
     switch (type)
     {
     case FunctionalType_Maximize:
-        return QObject::tr("maximize");
+        return QObject::tr("Maximize");
     case FunctionalType_Minimize:
-        return QObject::tr("minimize");
+        return QObject::tr("Minimize");
     case FunctionalType_Result:
-        return QObject::tr("result");
+        return QObject::tr("Result");
     default:
         std::cerr << "Functional type'" + QString::number(type).toStdString() + "' is not implemented. functionalTypeString(FunctionalType type)" << endl;
         throw;
@@ -850,11 +860,11 @@ QString resultRecipeTypeString(ResultRecipeType type)
     switch (type)
     {
     case ResultRecipeType_LocalValue:
-        return QObject::tr("local_value");
+        return QObject::tr("Local value");
     case ResultRecipeType_SurfaceIntegral:
-        return QObject::tr("surface_integral");
+        return QObject::tr("Surface integral");
     case ResultRecipeType_VolumeIntegral:
-        return QObject::tr("volume_integral");
+        return QObject::tr("Volume integral");
     default:
         std::cerr << "Result recipe type'" + QString::number(type).toStdString() + "' is not implemented. resultRecipeTypeString(resultRecipeType type)" << endl;
         throw;

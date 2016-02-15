@@ -23,13 +23,50 @@
 #include <QWidget>
 
 #include "util/enums.h"
+#include "logview.h"
 #include "parameter.h"
 #include "functional.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
 
 class Computation;
+class Study;
+class QCustomPlot;
+class QCPGraph;
 
+class AGROS_LIBRARY_API LogOptimizationDialog : public QDialog
+{
+    Q_OBJECT
+public:
+    LogOptimizationDialog(Study *study);
+    ~LogOptimizationDialog();
+
+protected:
+    virtual void closeEvent(QCloseEvent *e);
+    virtual void reject();
+
+private:
+    Study *m_study;
+
+    LogWidget *m_logWidget;
+
+    QPushButton *btnClose;
+    QPushButton *btnAbort;
+
+    QCustomPlot *m_chart;
+    QProgressBar *m_progress;
+    QCPGraph *m_objectiveGraph;
+
+    void createControls();
+
+private slots:
+    void updateChart();
+    void updateParameters(QList<Parameter> parameters, const Computation *computation);
+
+    void solved();
+
+    void tryClose();
+};
 
 class ComputationParameterCompare
 {
@@ -94,11 +131,21 @@ public:
     bool evaluateFunctionals(QSharedPointer<Computation> computation);
 
     QList<QSharedPointer<Computation> > &computations(int index = -1);
+    QList<ComputationSet> &computationSets() { return m_computationSets; }
     void addComputationSet(const QString &name = "") { m_computationSets.append(ComputationSet(QList<QSharedPointer<Computation> >(), name)); }
     void addComputation(QSharedPointer<Computation> computation, bool newComputationSet = false);
 
     virtual void fillTreeView(QTreeWidget *trvComputations);
     QVariant variant();
+
+    bool isSolving() const { return m_isSolving; }
+    void doAbortSolve();
+
+signals:
+    void updateChart();
+    void updateParameters(QList<Parameter> parameters, const Computation *computation);
+
+    void solved();
 
 protected:
     QString m_name;
@@ -106,6 +153,9 @@ protected:
     QList<Parameter> m_parameters;
     QList<Functional> m_functionals;
     QList<ComputationSet> m_computationSets;
+
+    bool m_isSolving;
+    bool m_abort;
 };
 
 class Studies : public QObject

@@ -31,7 +31,7 @@ public:
                  int timeStep, int adaptivityStep);
     ~ResultRecipe() {}
 
-    virtual ResultRecipeType type() = 0;
+    virtual ResultRecipeType type() const = 0;
 
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
@@ -66,7 +66,7 @@ public:
                      int timeStep = -1, int adaptivityStep = -1);
     ~LocalValueRecipe() {}
 
-    virtual ResultRecipeType type() { return ResultRecipeType_LocalValue; }
+    virtual ResultRecipeType type() const { return ResultRecipeType_LocalValue; }
 
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
@@ -91,7 +91,7 @@ public:
                      int timeStep = -1, int adaptivityStep = -1);
     ~SurfaceIntegralRecipe() {}
 
-    virtual ResultRecipeType type() { return ResultRecipeType_SurfaceIntegral; }
+    virtual ResultRecipeType type() const { return ResultRecipeType_SurfaceIntegral; }
 
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
@@ -112,7 +112,7 @@ public:
                      int timeStep = -1, int adaptivityStep = -1);
     ~VolumeIntegralRecipe() {}
 
-    virtual ResultRecipeType type() { return ResultRecipeType_VolumeIntegral; }
+    virtual ResultRecipeType type() const { return ResultRecipeType_VolumeIntegral; }
 
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
@@ -129,16 +129,18 @@ protected:
 class ResultRecipes
 {
 public:
-    ResultRecipes(QList<ResultRecipe *> recipes = QList<ResultRecipe *>());
+    ResultRecipes(QList<ResultRecipe *> items = QList<ResultRecipe *>());
     ~ResultRecipes();
 
-    inline void clear() { m_recipes.clear(); }
+    void clear();
 
     bool load(const QString &fileName);
     bool save(const QString &fileName);
 
     inline void addRecipe(ResultRecipe *recipe) { m_recipes.append(recipe); }
     void evaluate(Computation *computation);
+
+    QList<ResultRecipe *> items() const { return m_recipes; }
 
 protected:
     QList<ResultRecipe *> m_recipes;

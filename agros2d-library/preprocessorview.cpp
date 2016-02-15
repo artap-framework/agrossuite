@@ -279,6 +279,25 @@ void PreprocessorWidget::refresh()
         }
     }
 
+    // recipes
+    if (Agros2D::problem()->recipes()->items().count() > 0)
+    {
+        QTreeWidgetItem *recipesNode = new QTreeWidgetItem(problemNode);
+        recipesNode->setText(0, tr("Recipes"));
+        recipesNode->setFont(0, fnt);
+        recipesNode->setExpanded(true);
+
+        foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
+        {
+            QTreeWidgetItem *item = new QTreeWidgetItem(recipesNode);
+
+            item->setText(0, QString("%1").arg(recipe->name()));
+            item->setData(0, Qt::UserRole, recipe->name());
+            item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);
+            item->setText(1, QString("%1").arg(resultRecipeTypeString(recipe->type())));
+        }
+    }
+
     // fields
     QTreeWidgetItem *fieldsNode = new QTreeWidgetItem(trvWidget);
     fieldsNode->setText(0, tr("Fields"));
@@ -449,6 +468,7 @@ void PreprocessorWidget::refresh()
                 item->setText(0, QString("%1").arg(parameter.name()));
                 item->setData(0, Qt::UserRole, parameter.name());
                 item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabParameter);
+                item->setText(1, QString("%1 - %2").arg(parameter.lowerBound()).arg(parameter.upperBound()));
             }
 
             // functionals
@@ -464,6 +484,7 @@ void PreprocessorWidget::refresh()
                 item->setText(0, QString("%1").arg(functional.name()));
                 item->setData(0, Qt::UserRole, functional.name());
                 item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);
+                item->setText(1, QString("%1").arg(functional.expression()));
             }
         }
     }
@@ -659,7 +680,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
         {
             // problem properties
             actProperties->setEnabled(true);
-        }        
+        }
     }
 }
 

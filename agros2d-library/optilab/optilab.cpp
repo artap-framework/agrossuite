@@ -294,6 +294,8 @@ void OptiLabWidget::testTEAM22(StudyType type)
     }
 
     assert(analysis);
+    LogOptimizationDialog *log = new LogOptimizationDialog(analysis);
+    log->show();
 
     // add to list
     Agros2D::problem()->studies()->addStudy(analysis);
@@ -349,8 +351,6 @@ void OptiLabWidget::testTEAM22(StudyType type)
 
     VolumeIntegralRecipe *volumeIntegralRecipe = new VolumeIntegralRecipe("Wm", "magnetic", "magnetic_energy");
     Agros2D::problem()->recipes()->addRecipe(volumeIntegralRecipe);
-
-    qDebug() << func;
 
     // add functionals
     analysis->addFunctional(Functional("OF", FunctionalType_Minimize, func));
