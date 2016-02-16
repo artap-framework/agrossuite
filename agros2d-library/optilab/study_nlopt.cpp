@@ -30,7 +30,8 @@
 
 #include "scene.h"
 
-#include "nlopt.hpp"
+const QString ALGORITHM = "algorithm";
+const QString TOL_REL = "tol_rel";
 
 class NLoptProblem
 {
@@ -90,12 +91,17 @@ double objFunctionWrapper(const std::vector<double> &x, std::vector<double> &gra
     return obj->objectiveFunction(x, grad, data);
 }
 
-StudyNLoptAnalysis::StudyNLoptAnalysis() : Study()
+StudyNLoptAnalysis::StudyNLoptAnalysis() : Study(),
+    m_tol_rel(1e-3),
+    m_algorithm(nlopt::LN_BOBYQA)
 {
 }
 
 void StudyNLoptAnalysis::solve()
 {
+    m_computationSets.clear();
+    m_isSolving = true;
+
     std::vector<double> initialGuess(m_parameters.count());
     std::vector<double> lowerBound(m_parameters.count());
     std::vector<double> upperBound(m_parameters.count());
@@ -112,24 +118,49 @@ void StudyNLoptAnalysis::solve()
 
     NLoptProblem nLoptProblem(this);
 
-    nlopt::opt opt(nlopt::LN_BOBYQA, m_parameters.count());
+    nlopt::opt opt(m_algorithm, m_parameters.count());
     opt.set_min_objective(objFunctionWrapper, &nLoptProblem);
     opt.set_lower_bounds(lowerBound);
     opt.set_upper_bounds(upperBound);
-    opt.set_xtol_rel(1e-4);
-    opt.set_ftol_rel(1e-4);
+    opt.set_xtol_rel(m_tol_rel);
+    opt.set_ftol_rel(m_tol_rel);
 
     double minimum = 0.0; // numeric_limits<double>::max();
     nlopt::result result = opt.optimize(initialGuess, minimum);
 
-    if (result == nlopt::SUCCESS)
+    m_isSolving = false;
+
+    if (result > 0)
     {
-        qDebug() << "optimized variant: " << minimum;
-        for (int i = 0; i < m_parameters.count(); i++)
-            qDebug() << initialGuess[i];
+        // qDebug() << "optimized variant: " << minimum;
+        // for (int i = 0; i < m_parameters.count(); i++)
+        //     qDebug() << initialGuess[i];
+
+        // sort computations
+        QString parameterName = m_functionals[0].name();
+        m_computationSets.last().sort(parameterName);
+
+        emit solved();
     }
     else
     {
         qDebug() << "err ";
     }
+}
+
+
+void StudyNLoptAnalysis::load(QJsonObject &object)
+{
+    m_tol_rel = object[TOL_REL].toInt();
+    m_algorithm = (nlopt::algorithm) object[ALGORITHM].toInt();
+
+    Study::load(object);
+}
+
+void StudyNLoptAnalysis::save(QJsonObject &object)
+{
+    object[TOL_REL] = m_tol_rel;
+    object[ALGORITHM] = m_algorithm;
+
+    Study::save(object);
 }

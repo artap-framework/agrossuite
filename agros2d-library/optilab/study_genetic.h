@@ -26,7 +26,7 @@
 #include "util/enums.h"
 #include "study.h"
 #include "parameter.h"
-
+/*
 class ComputationResults;
 
 class GeneticPopulationRandom : public ComputationSet
@@ -61,5 +61,5 @@ protected:
     QList<QSharedPointer<Computation> > crossoverAndMutate(const QList<QSharedPointer<Computation> > &individuals);
 
 };
-
+*/
 #endif // STUDY_GENETIC_H

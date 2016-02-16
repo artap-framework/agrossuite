@@ -49,6 +49,14 @@ public:
 
     virtual inline StudyType type() { return StudyType_BayesOptAnalysis; }
     virtual void solve();
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+private:
+    int m_n_init_samples;
+    int m_n_iterations;
+    int m_init_method; // 1-LHS, 2-Sobol
 };
 
 #endif // STUDY_BAYESOPT_H

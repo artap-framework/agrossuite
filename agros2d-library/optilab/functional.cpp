@@ -57,7 +57,7 @@ bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
     }
 
     // results
-    StringToDoubleMap results = computation->results()->results();
+    StringToDoubleMap results = computation->results()->items();
     foreach (QString key, results.keys())
     {
         if (commandPre.isEmpty())

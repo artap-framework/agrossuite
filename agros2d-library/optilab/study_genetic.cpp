@@ -31,7 +31,7 @@
 #include "scene.h"
 
 #include <algorithm>
-
+/*
 const QString NUMBEROFPOPULATION = "numberofpopulation";
 const QString INITIALPOPULATIONSIZE = "initialpopulationsize";
 const QString SELECTIONRATIO = "selectionratio";
@@ -240,3 +240,4 @@ QList<QSharedPointer<Computation> > StudyGenetic::crossoverAndMutate(const QList
 
     return crossBreeds;
 }
+*/

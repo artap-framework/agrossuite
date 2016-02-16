@@ -30,7 +30,9 @@ class StudySweepAnalysis : public Study
 {
 public:
     StudySweepAnalysis();
+
     virtual inline StudyType type() { return StudyType_SweepAnalysis; }
+
     virtual void solve();
 };
 

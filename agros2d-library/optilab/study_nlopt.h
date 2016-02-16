@@ -26,12 +26,22 @@
 #include "util/enums.h"
 #include "study.h"
 
+#include "nlopt.hpp"
+
 class StudyNLoptAnalysis : public Study
 {
 public:
     StudyNLoptAnalysis();
+
     virtual inline StudyType type() { return StudyType_NLoptAnalysis; }
     virtual void solve();
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
+
+private:
+    double m_tol_rel;
+    nlopt::algorithm m_algorithm;
 };
 
 #endif // STUDY_NLOPT_H

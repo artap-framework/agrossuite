@@ -83,24 +83,22 @@ void OptiLabWidget::createControls()
     layoutChartXYControls->addWidget(cmbChartY, 1, 1);
     layoutChartXYControls->addWidget(new QLabel(""), 19, 0);
 
-    QPushButton *btnTESTSweep = new QPushButton(tr("TEST Sweep"));
-    connect(btnTESTSweep, SIGNAL(clicked()), this, SLOT(testSweep()));
-    QPushButton *btnTESTGenetic = new QPushButton(tr("TEST Gen."));
-    connect(btnTESTGenetic, SIGNAL(clicked()), this, SLOT(testGenetic()));
-    QPushButton *btnTESTBayesOpt = new QPushButton(tr("TEST BayesOpt"));
-    connect(btnTESTBayesOpt, SIGNAL(clicked()), this, SLOT(testBayesOpt()));
+    QPushButton *btnTEST = new QPushButton(tr("TEST"));
+    connect(btnTEST, SIGNAL(clicked()), this, SLOT(test()));
     QPushButton *btnTESTNLoptTEAM22 = new QPushButton(tr("TEAM 22 NLopt"));
     connect(btnTESTNLoptTEAM22, SIGNAL(clicked()), this, SLOT(testNLoptTEAM22()));
+    QPushButton *btnTESTNLoptTEAM25 = new QPushButton(tr("TEAM 25 NLopt"));
+    connect(btnTESTNLoptTEAM25, SIGNAL(clicked()), this, SLOT(testNLoptTEAM25()));
     QPushButton *testBayesOptTEAM22 = new QPushButton(tr("TEAM 22 BayesOpt"));
     connect(testBayesOptTEAM22, SIGNAL(clicked()), this, SLOT(testBayesOptTEAM22()));
     QPushButton *testBayesOptTEAM25 = new QPushButton(tr("TEAM 25 BayesOpt"));
     connect(testBayesOptTEAM25, SIGNAL(clicked()), this, SLOT(testBayesOptTEAM25()));
 
     QHBoxLayout *layoutParametersButton1 = new QHBoxLayout();
-    layoutParametersButton1->addWidget(btnTESTSweep);
-    layoutParametersButton1->addWidget(btnTESTGenetic);
+    layoutParametersButton1->addWidget(btnTEST);
+    // layoutParametersButton1->addWidget(btnTESTGenetic);
     layoutParametersButton1->addWidget(btnTESTNLoptTEAM22);
-    layoutParametersButton1->addWidget(btnTESTBayesOpt);
+    layoutParametersButton1->addWidget(btnTESTNLoptTEAM25);
 
     QHBoxLayout *layoutParametersButton2 = new QHBoxLayout();
     layoutParametersButton2->addWidget(testBayesOptTEAM22);
@@ -128,7 +126,7 @@ void OptiLabWidget::refresh()
 
     cmbStudies->clear();
     trvComputations->clear();
-    foreach (Study *study, Agros2D::problem()->studies()->studies())
+    foreach (Study *study, Agros2D::problem()->studies()->items())
     {
         if (study->name().isEmpty())
             cmbStudies->addItem(studyTypeString(study->type()));
@@ -156,7 +154,7 @@ void OptiLabWidget::refresh()
     // parameters
     if (cmbStudies->currentIndex() != -1)
     {
-        Study *study = Agros2D::problem()->studies()->studies().at(cmbStudies->currentIndex());
+        Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
         foreach (Parameter parameter, study->parameters())
         {
             cmbChartX->addItem(QString("%1 (par.)").arg(parameter.name()), QString("parameter:%1").arg(parameter.name()));
@@ -173,7 +171,7 @@ void OptiLabWidget::refresh()
 void OptiLabWidget::studyChanged(int index)
 {
     // study
-    Study *study = Agros2D::problem()->studies()->studies().at(cmbStudies->currentIndex());
+    Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
 
     trvComputations->blockSignals(true);
 
@@ -196,6 +194,21 @@ void OptiLabWidget::studyChanged(int index)
     // if not selected -> select first
     if (trvComputations->topLevelItemCount() > 0 && !trvComputations->currentItem())
         trvComputations->setCurrentItem(trvComputations->topLevelItem(0));
+}
+
+void OptiLabWidget::test()
+{
+    // TODO: more studies
+    Study *analysis = Agros2D::problem()->studies()->items()[0];
+    assert(analysis);
+
+    LogOptimizationDialog *log = new LogOptimizationDialog(analysis);
+    log->show();
+
+    // solve
+    analysis->solve();
+
+    refresh();
 }
 
 void OptiLabWidget::testSweep()
@@ -235,52 +248,13 @@ void OptiLabWidget::testSweep()
     refresh();
 }
 
-void OptiLabWidget::testOptimization(StudyType type)
-{
-    Study *analysis= nullptr;
-    if (type == StudyType_Genetic)
-    {
-        // genetic
-        analysis = new StudyGenetic();
-    }
-    else if (type == StudyType_BayesOptAnalysis)
-    {
-        // BayesOpt
-        analysis = new StudyBayesOptAnalysis();
-    }
-    else if (type == StudyType_NLoptAnalysis)
-    {
-        // NLopt
-        analysis = new StudyNLoptAnalysis();
-    }
-
-    assert(analysis);
-
-    // add to list
-    Agros2D::problem()->studies()->addStudy(analysis);
-
-    // parameters
-    analysis->addParameter(Parameter("px", -10.0, 10.0));
-    analysis->addParameter(Parameter("py", -10.0, 10.0));
-
-    // add functionals
-    // analysis->addFunctional(Functional("f", FunctionalType_Minimize, "-(sin(px) * cos(py) * exp((1 - (sqrt(px**2 + py**2)/pi))))"));
-    // analysis->addFunctional(Functional("f", FunctionalType_Minimize, "px**2 + py**2"));
-    analysis->addFunctional(Functional("f", FunctionalType_Minimize, "(px+2*py-7)**2 + (2*px+py-5)**2"));
-
-    // solve
-    analysis->solve();
-
-    refresh();
-}
-
 void OptiLabWidget::testTEAM22(StudyType type)
 {   
     Study *analysis= nullptr;
     if (type == StudyType_Genetic)
     {
         // genetic
-        analysis = new StudyGenetic();
+        // analysis = new StudyGenetic();
     }
     else if (type == StudyType_BayesOptAnalysis)
     {
@@ -367,7 +341,7 @@ void OptiLabWidget::testTEAM25(StudyType type)
     if (type == StudyType_Genetic)
     {
         // genetic
-        analysis = new StudyGenetic();
+        // analysis = new StudyGenetic();
     }
     else if (type == StudyType_BayesOptAnalysis)
     {
@@ -381,6 +355,8 @@ void OptiLabWidget::testTEAM25(StudyType type)
     }
 
     assert(analysis);
+    LogOptimizationDialog *log = new LogOptimizationDialog(analysis);
+    log->show();
 
     // add to list
     Agros2D::problem()->studies()->addStudy(analysis);
@@ -421,7 +397,7 @@ void OptiLabWidget::testTEAM25(StudyType type)
     }
 
     // add functionals
-    analysis->addFunctional(Functional("W", FunctionalType_Minimize, func));
+    analysis->addFunctional(Functional("OF", FunctionalType_Minimize, func));
 
     // solve
     analysis->solve();
@@ -429,19 +405,14 @@ void OptiLabWidget::testTEAM25(StudyType type)
     refresh();
 }
 
-void OptiLabWidget::testGenetic()
-{
-    testOptimization(StudyType_Genetic);
-}
-
-void OptiLabWidget::testBayesOpt()
-{
-    testOptimization(StudyType_BayesOptAnalysis);
-}
-
 void OptiLabWidget::testNLoptTEAM22()
 {
     testTEAM22(StudyType_NLoptAnalysis);
+}
+
+void OptiLabWidget::testNLoptTEAM25()
+{
+    testTEAM25(StudyType_NLoptAnalysis);
 }
 
 void OptiLabWidget::testBayesOptTEAM22()

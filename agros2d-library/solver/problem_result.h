@@ -50,6 +50,8 @@ public:
 
     virtual double evaluate(Computation *computation) = 0;
 
+    static ResultRecipe *factory(ResultRecipeType type);
+
 protected:
     QString m_name;
     QString m_fieldID;
@@ -134,9 +136,6 @@ public:
 
     void clear();
 
-    bool load(const QString &fileName);
-    bool save(const QString &fileName);
-
     inline void addRecipe(ResultRecipe *recipe) { m_recipes.append(recipe); }
     void evaluate(Computation *computation);
 
@@ -149,7 +148,7 @@ protected:
 class ComputationResults
 {
 public:
-    ComputationResults(StringToDoubleMap results = StringToDoubleMap(),
+    ComputationResults(StringToDoubleMap items = StringToDoubleMap(),
                        StringToVariantMap info = StringToVariantMap());
     ~ComputationResults();
 
@@ -159,7 +158,7 @@ public:
     bool save(const QString &fileName);
 
     // results
-    inline StringToDoubleMap &results() { return m_results; }
+    inline StringToDoubleMap &items() { return m_results; }
     inline double resultValue(const QString &key) const { return m_results[key]; }
     inline bool hasResults() const { return !m_results.isEmpty(); }
     inline void setResult(const QString &key, double value) { m_results[key] = value; }

@@ -30,13 +30,10 @@
 #include "qcustomplot/qcustomplot.h"
 
 // consts
-const QString TYPE = "type";
 const QString PARAMETERS = "parameters";
-const QString FUNCTIONAL = "functionals";
+const QString FUNCTIONALS = "functionals";
 const QString COMPUTATIONS = "computations";
 const QString COMPUTATIONSET = "computationset";
-const QString STUDIES = "studies";
-
 
 LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplication::activeWindow()),
     m_study(study), m_chart(nullptr), m_objectiveGraph(nullptr), m_progress(nullptr)
@@ -221,7 +218,7 @@ void LogOptimizationDialog::updateParameters(QList<Parameter> parameters, const 
         params = params.left(params.size() - 2);
 
     QString res = "";
-    foreach (QString name, computation->results()->results().keys())
+    foreach (QString name, computation->results()->items().keys())
     {
         res += QString("%1 = %2, ").arg(name).arg(computation->results()->resultValue(name));
     }
@@ -268,6 +265,23 @@ void ComputationSet::sort(const QString &parameterName)
 
 // *****************************************************************************************************************
 
+Study *Study::factory(StudyType type)
+{
+    Study *study = nullptr;
+    if (type == StudyType_SweepAnalysis)
+        study = new StudySweepAnalysis();
+    // else if (type == StudyType_Genetic)
+    //    study = new StudyGenetic();
+    else if (type == StudyType_BayesOptAnalysis)
+        study = new StudyBayesOptAnalysis();
+    else if (type == StudyType_NLoptAnalysis)
+        study = new StudyNLoptAnalysis();
+    else
+        assert(0);
+
+    return study;
+}
+
 Study::Study(QList<ComputationSet> computations)
     : m_computationSets(computations), m_name(""), m_abort(false), m_isSolving(false)
 {
@@ -298,7 +312,7 @@ void Study::load(QJsonObject &object)
     }
 
     // functionals
-    QJsonArray functionalsJson = object[FUNCTIONAL].toArray();
+    QJsonArray functionalsJson = object[FUNCTIONALS].toArray();
     for (int i = 0; i < functionalsJson.size(); i++)
     {
         QJsonObject parameterJson = functionalsJson[i].toObject();
@@ -338,7 +352,7 @@ void Study::save(QJsonObject &object)
         functional.save(functionalJson);
         functionalsJson.append(functionalJson);
     }
-    object[FUNCTIONAL] = functionalsJson;
+    object[FUNCTIONALS] = functionalsJson;
 
     // computations
     QJsonArray computationsJson;
@@ -425,12 +439,14 @@ Studies::Studies(QObject *parent) : QObject(parent)
 void Studies::addStudy(Study *study)
 {
     m_studies.append(study);
+
     emit invalidated();
 }
 
 void Studies::removeStudy(Study *study)
 {
     m_studies.removeOne(study);
+
     emit invalidated();
 }
 
@@ -439,87 +455,13 @@ void Studies::clear()
     for (int i = 0; i < m_studies.size(); i++)
         delete m_studies[i];
     m_studies.clear();
+
     emit invalidated();
 }
 
-bool Studies::load(const QString &fileName)
+void Studies::removeComputation(QSharedPointer<Computation> computation)
 {
-    blockSignals(true);
-    clear();
-
-    QFile file(fileName);
-    if (!file.exists())
-        return true; // no study
-
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qWarning("Couldn't open study file.");
-        return false;
-    }
-
-    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-    QJsonObject rootJson = doc.object();
-
-    QJsonArray studiesJson = rootJson[STUDIES].toArray();
-    for (int i = 0; i < studiesJson.size(); i++)
-    {
-        QJsonObject studyJson = studiesJson[i].toObject();
-        StudyType type = studyTypeFromStringKey(studyJson[TYPE].toString());
-
-        Study *study = nullptr;
-        if (type == StudyType_SweepAnalysis)
-            study = new StudySweepAnalysis();
-        else if (type == StudyType_Genetic)
-            study = new StudyGenetic();
-        else if (type == StudyType_BayesOptAnalysis)
-            study = new StudyBayesOptAnalysis();
-        else if (type == StudyType_NLoptAnalysis)
-            study = new StudyNLoptAnalysis();
-        else
-            assert(0);
-
-        study->load(studyJson);
-        m_studies.append(study);
-    }
-
-    blockSignals(false);
-    emit invalidated();
-
-    return true;
-}
-
-bool Studies::save(const QString &fileName)
-{
-    if (m_studies.isEmpty())
-    {
-        if (QFile::exists(fileName))
-            QFile::remove(fileName);
-
-        return true;
-    }
-
-    QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly))
-    {
-        qWarning("Couldn't open studies file.");
-        return false;
-    }
-
-    QJsonObject rootJson;
-    QJsonArray studiesJson;
-
-    foreach (Study *study, m_studies)
-    {
-        QJsonObject studyJson;
-        studyJson[TYPE] = studyTypeToStringKey(study->type());
-        study->save(studyJson);
-        studiesJson.append(studyJson);
-    }
-    rootJson[STUDIES] = studiesJson;
-
-    // save
-    QJsonDocument doc(rootJson);
-    file.write(doc.toJson());
-
-    return true;
+    for (int i = 0; i < m_studies.size(); i++)
+        for (int j = 0; j < m_studies[i]->computationSets().size(); j++)
+            m_studies[i]->computationSets()[i].removeComputation(computation);
 }

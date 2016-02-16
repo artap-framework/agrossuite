@@ -813,7 +813,7 @@ void MainWindow::doDeleteSolutions()
     sceneViewProblem->actSceneModeProblem->trigger();
 
     // clear all computations
-    Agros2D::clearComputations();
+    Agros2D::clearComputations();    
     sceneViewProblem->refresh();
 }
 

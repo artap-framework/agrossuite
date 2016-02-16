@@ -30,6 +30,9 @@
 
 #include "scene.h"
 
+const QString N_INIT_SAMPLES = "n_init_samples";
+const QString N_ITERATIONS = "n_iterations";
+const QString INIT_METHOD = "init_method";
 
 BayesOptProblem::BayesOptProblem(StudyBayesOptAnalysis *study, bayesopt::Parameters par)
     : ContinuousModel(study->parameters().count(), par), m_study(study)
@@ -87,19 +90,23 @@ double BayesOptProblem::evaluateSample(const vectord& x)
     return value;
 }
 
-StudyBayesOptAnalysis::StudyBayesOptAnalysis() : Study()
+StudyBayesOptAnalysis::StudyBayesOptAnalysis() : Study(),
+    m_n_init_samples(5),
+    m_n_iterations(10),
+    m_init_method(1)
 {    
 }
 
 void StudyBayesOptAnalysis::solve()
 {
+    m_computationSets.clear();
     m_isSolving = true;
 
     // parameters
     bayesopt::Parameters par = initialize_parameters_to_default();
-    par.n_init_samples = 2;
-    par.n_iterations = 3;
-    par.init_method = 1; // 1-LHS, 2-Sobol
+    par.n_init_samples = m_n_init_samples;
+    par.n_iterations = m_n_iterations;
+    par.init_method = m_init_method; // 1-LHS, 2-Sobol
     par.noise = 1e-10;
     par.random_seed = 0;
     par.verbose_level = 1;
@@ -127,4 +134,22 @@ void StudyBayesOptAnalysis::solve()
     m_isSolving = false;
 
     emit solved();
+}
+
+void StudyBayesOptAnalysis::load(QJsonObject &object)
+{
+    m_n_init_samples = object[N_INIT_SAMPLES].toInt();
+    m_n_iterations = object[N_ITERATIONS].toInt();
+    m_init_method = object[INIT_METHOD].toDouble();
+
+    Study::load(object);
+}
+
+void StudyBayesOptAnalysis::save(QJsonObject &object)
+{
+    object[N_INIT_SAMPLES] = m_n_init_samples;
+    object[N_ITERATIONS] = m_n_iterations;
+    object[INIT_METHOD] = m_init_method;
+
+    Study::save(object);
 }

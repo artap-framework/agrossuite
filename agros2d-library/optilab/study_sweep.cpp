@@ -36,6 +36,9 @@ StudySweepAnalysis::StudySweepAnalysis() : Study()
 
 void StudySweepAnalysis::solve()
 {
+    m_computationSets.clear();
+    m_isSolving = true;
+
     // parameter space
     ParameterSpace space = ParameterSpace(m_parameters);
     space.random(10);
@@ -57,4 +60,8 @@ void StudySweepAnalysis::solve()
         //qDebug() << computation->config()->parameters();
         //qDebug() << computation->results()->results();
     }
+
+    m_isSolving = false;
+
+    emit solved();
 }

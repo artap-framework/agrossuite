@@ -59,13 +59,11 @@ private slots:
     void studyChanged(int index);
     void refresh();
 
+    void test();
     void testSweep();
-    void testGenetic();
-    void testBayesOpt();
-
-    void testOptimization(StudyType type);
 
     void testNLoptTEAM22();
+    void testNLoptTEAM25();
     void testBayesOptTEAM22();
     void testBayesOptTEAM25();
     void testTEAM22(StudyType type);

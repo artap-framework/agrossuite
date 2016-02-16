@@ -148,6 +148,9 @@ protected:
     // private local dict
     PyObject *m_dictLocal;
 
+    virtual void readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettings = true);
+    virtual void writeProblemToJsonInternal(QJsonObject &rootJson);
+
     friend class CalculationThread;
     friend class PyProblem;
     friend class AgrosSolver;
@@ -180,15 +183,9 @@ public:
 
     // recipes
     inline ResultRecipes *recipes() const { return m_recipes; }
-    inline void clearRecipes();
-    inline void loadRecipes();
-    inline void saveRecipes();
 
     // studies
     inline Studies *studies() { return m_studies; }
-    void clearStudies();
-    void loadStudies();
-    void saveStudies();
 
 signals:
     void fileNameChanged(const QString &archiveFileName);
@@ -203,11 +200,14 @@ private:
     friend class PyComputation;
     friend class PyProblem;
 
+protected:
     // recipes
     ResultRecipes *m_recipes;
-
     // studies
     Studies *m_studies;
+
+    virtual void readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettings = true);
+    virtual void writeProblemToJsonInternal(QJsonObject &rootJson);
 };
 
 class AGROS_LIBRARY_API Computation : public ProblemBase

@@ -75,7 +75,7 @@ public:
 
     inline bool operator() (QSharedPointer<Computation> i, QSharedPointer<Computation> j)
     {
-        return (i->results()->results()[m_parameterName] > j->results()->results()[m_parameterName]);
+        return (i->results()->items()[m_parameterName] > j->results()->items()[m_parameterName]);
     }
 
 protected:
@@ -95,6 +95,7 @@ public:
     inline void setName(const QString &name) { m_name = name; }
 
     inline void addComputation(QSharedPointer<Computation> computation) { m_computations.append(computation); }
+    inline void removeComputation(QSharedPointer<Computation> computation) { m_computations.removeAll(computation); }
     QList<QSharedPointer<Computation> > &computations() { return m_computations; }
 
     void sort(const QString &parameterName);
@@ -141,6 +142,8 @@ public:
     bool isSolving() const { return m_isSolving; }
     void doAbortSolve();
 
+    static Study *factory(StudyType type);
+
 signals:
     void updateChart();
     void updateParameters(QList<Parameter> parameters, const Computation *computation);
@@ -168,12 +171,11 @@ public:
 
     void clear();
 
-    bool load(const QString &fileName);
-    bool save(const QString &fileName);
-
-    inline QList<Study *> &studies() { return m_studies; }
+    inline QList<Study *> &items() { return m_studies; }
     void addStudy(Study *study);
     void removeStudy(Study *study);
+
+    void removeComputation(QSharedPointer<Computation> computation);
 
     Study * operator[] (int idx) { return m_studies[idx]; }
     const Study * operator[] (int idx) const { return m_studies[idx]; }

@@ -91,6 +91,9 @@ const QString COUPLINGS = "couplings";
 const QString SOURCE_FIELDID = "source_field";
 const QString TARGET_FIELDID = "target_field";
 
+const QString STUDIES = "studies";
+const QString RECIPES = "recipes";
+
 CalculationThread::CalculationThread(Computation *parentProblem) : QThread(), m_computation(parentProblem)
 {
 }
@@ -472,238 +475,9 @@ void ProblemBase::readProblemFromJson(const QString &fileName, bool readSettings
     }
 
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-
     QJsonObject rootJson = doc.object();
 
-    // settings
-    if (readSettings)
-    {
-        QJsonObject settingsJson = rootJson[SETTINGS].toObject();
-        m_setting->load(settingsJson);
-    }
-
-    // config
-    QJsonObject configJson = rootJson[CONFIG].toObject();
-    m_config->load(configJson);
-
-    // geometry
-    QJsonObject geometryJson = rootJson[GEOMETRY].toObject();
-
-    // nodes
-    QJsonArray nodesJson = geometryJson[NODES].toArray();
-    for (int i = 0; i < nodesJson.size(); i++)
-    {
-        QJsonObject nodeJson = nodesJson[i].toObject();
-
-        Value x = Value(this, nodeJson[X].toString());
-        if (!x.isEvaluated())
-        {
-            ErrorResult result = currentPythonEngineAgros()->parseError();
-            throw AgrosException(result.error());
-        }
-
-        Value y = Value(this, nodeJson[Y].toString());
-        if (!y.isEvaluated())
-        {
-            ErrorResult result = currentPythonEngineAgros()->parseError();
-            throw AgrosException(result.error());
-        }
-
-        m_scene->addNode(new SceneNode(m_scene, PointValue(x, y)));
-    }
-
-    // edges
-    QJsonArray facesJson = geometryJson[FACES].toArray();
-    for (int i = 0; i < facesJson.size(); i++)
-    {
-        QJsonObject faceJson = facesJson[i].toObject();
-
-        QJsonArray listJson = faceJson[LIST].toArray();
-        SceneNode *nodeFrom = m_scene->nodes->at(listJson[0].toInt());
-        SceneNode *nodeTo = m_scene->nodes->at(listJson[1].toInt());
-
-        int segments = faceJson[SEGMENTS].toInt();
-
-        Value angle = Value(this, faceJson[ANGLE].toString());
-        if (!angle.isEvaluated())
-        {
-            ErrorResult result = currentPythonEngineAgros()->parseError();
-            throw AgrosException(result.error());
-        }
-        if (angle.number() < 0.0) angle.setNumber(0.0);
-        if (angle.number() > 90.0) angle.setNumber(90.0);
-
-        bool isCurvilinear = (angle.number() > 0);
-
-        m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, angle, segments, isCurvilinear));
-    }
-
-    // labels
-    QJsonArray labelsJson = geometryJson[LABELS].toArray();
-    for (int i = 0; i < labelsJson.size(); i++)
-    {
-        QJsonObject labelJson = labelsJson[i].toObject();
-
-        Value x = Value(this, labelJson[X].toString());
-        if (!x.isEvaluated())
-        {
-            ErrorResult result = currentPythonEngineAgros()->parseError();
-            throw AgrosException(result.error());
-        }
-
-        Value y = Value(this, labelJson[Y].toString());
-        if (!y.isEvaluated())
-        {
-            ErrorResult result = currentPythonEngineAgros()->parseError();
-            throw AgrosException(result.error());
-        }
-
-        double area = labelJson[AREA].toDouble();
-
-        m_scene->addLabel(new SceneLabel(m_scene, PointValue(x, y), area));
-    }
-
-    // fields
-    QJsonArray fieldsJson = rootJson[FIELDS].toArray();
-    for (int i = 0; i < fieldsJson.size(); i++)
-    {
-        QJsonObject fieldJson = fieldsJson[i].toObject();
-
-        FieldInfo *fieldInfo = new FieldInfo(fieldJson[FIELDID].toString());
-
-        // settings
-        QJsonObject settingsJson = fieldJson[SETTINGS].toObject();
-        fieldInfo->load(settingsJson);
-
-        // label refinement
-        QJsonArray labelRefinementJson = fieldJson[REFINEMENT_NUMBER].toArray();
-        for (int i = 0; i < labelRefinementJson.size(); i++)
-        {
-            QJsonObject refinement = labelRefinementJson[i].toObject();
-
-            // if (label.refinement_label_id() != -1)
-            fieldInfo->setLabelRefinement(m_scene->labels->items().at(refinement[ID].toInt()), refinement[VALUE].toInt());
-        }
-
-        // polynomial order
-        QJsonArray labelOrderJson = fieldJson[REFINEMENT_ORDER].toArray();
-        for (int i = 0; i < labelOrderJson.size(); i++)
-        {
-            QJsonObject order = labelOrderJson[i].toObject();
-
-            fieldInfo->setLabelPolynomialOrder(m_scene->labels->items().at(order[ID].toInt()), order[VALUE].toInt());
-        }
-
-        // boundary conditions
-        QJsonArray boundariesJson = fieldJson[BOUNDARIES].toArray();
-        for (int j = 0; j < boundariesJson.size(); j++)
-        {
-            QJsonObject boundaryJson = boundariesJson[j].toObject();
-
-            // read marker
-            SceneBoundary *bound = new SceneBoundary(m_scene,
-                                                     fieldInfo,
-                                                     boundaryJson[NAME].toString(),
-                                                     boundaryJson[TYPE].toString());
-
-            // default values
-            Module::BoundaryType boundaryType = fieldInfo->boundaryType(boundaryJson[TYPE].toString());
-            foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
-                bound->setValue(variable.id(), Value(this));
-
-            QJsonArray boundaryTypesJson = boundaryJson[BOUNDARY_TYPES].toArray();
-            for (int k = 0; k < boundaryTypesJson.size(); k++)
-            {
-                QJsonObject type = boundaryTypesJson[k].toObject();
-
-                Value m = Value(this, type[VALUE].toString());
-                if (!m.isEvaluated())
-                {
-                    ErrorResult result = currentPythonEngineAgros()->parseError();
-                    throw AgrosException(result.error());
-                }
-
-                bound->setValue(type[ID].toString(), m);
-            }
-
-            m_scene->addBoundary(bound);
-
-            // add boundary to the edge marker
-            QJsonArray boundaryFacesJson = boundaryJson[BOUNDARY_FACES].toArray();
-            for (unsigned int k = 0; k < boundaryFacesJson.size(); k++)
-            {
-                int face = boundaryFacesJson[k].toInt();
-
-                m_scene->faces->at(face)->addMarker(bound);
-            }
-        }
-
-        // materials
-        QJsonArray materialsJson = fieldJson[MATERIALS].toArray();
-        for (int j = 0; j < materialsJson.size(); j++)
-        {
-            QJsonObject materialJson = materialsJson[j].toObject();
-
-            // read marker
-            SceneMaterial *mat = new SceneMaterial(m_scene,
-                                                   fieldInfo,
-                                                   materialJson[NAME].toString());
-
-            // default values
-            foreach (Module::MaterialTypeVariable variable, fieldInfo->materialTypeVariables())
-                mat->setValue(variable.id(), Value(this));
-
-            QJsonArray materialTypesJson = materialJson[MATERIAL_TYPES].toArray();
-            for (int k = 0; k < materialTypesJson.size(); k++)
-            {
-                QJsonObject type = materialTypesJson[k].toObject();
-
-                Value m = Value(this, type[VALUE].toString());
-                if (!m.isEvaluated())
-                {
-                    ErrorResult result = currentPythonEngineAgros()->parseError();
-                    throw AgrosException(result.error());
-                }
-
-                mat->setValue(type[ID].toString(), m);
-            }
-
-            m_scene->addMaterial(mat);
-
-            // add label to the label marker
-            QJsonArray materialLabelsJson = materialJson[MATERIAL_LABELS].toArray();
-            for (unsigned int k = 0; k < materialLabelsJson.size(); k++)
-            {
-                int label = materialLabelsJson[k].toInt();
-
-                m_scene->labels->at(label)->addMarker(mat);
-            }
-        }
-
-        // add missing none markers
-        m_scene->faces->addMissingFieldMarkers(fieldInfo);
-        m_scene->labels->addMissingFieldMarkers(fieldInfo);
-
-        // add field
-        addField(fieldInfo);
-    }
-
-    // couplings
-    synchronizeCouplings();
-
-    QJsonArray couplingsJson = rootJson[COUPLINGS].toArray();
-    for (int i = 0; i < couplingsJson.size(); i++)
-    {
-        QJsonObject couplingJson = couplingsJson[i].toObject();
-
-        if (hasCoupling(couplingJson[SOURCE_FIELDID].toString(),
-                        couplingJson[TARGET_FIELDID].toString()))
-        {
-            CouplingInfo *cpl = couplingInfo(couplingJson[SOURCE_FIELDID].toString(),
-                                             couplingJson[TARGET_FIELDID].toString());
-            cpl->setCouplingType(couplingTypeFromStringKey(couplingJson[TYPE].toString()));
-        }
-    }
+    readProblemFromJsonInternal(rootJson);
 
     m_scene->stopInvalidating(false);
     m_scene->blockSignals(false);
@@ -1232,6 +1006,251 @@ void ProblemBase::writeProblemToJson(const QString &fileName)
     QJsonObject rootJson;
     rootJson[VERSION] = 1;
 
+    writeProblemToJsonInternal(rootJson);
+
+    // save to file
+    QJsonDocument doc(rootJson);
+    file.write(doc.toJson(QJsonDocument::Indented));
+    // file.write(doc.toJson(QJsonDocument::Compact));
+
+    // qDebug() << "writeProblemToJson" << time.elapsed();
+}
+
+void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettings)
+{
+    // settings
+    if (readSettings)
+    {
+        QJsonObject settingsJson = rootJson[SETTINGS].toObject();
+        m_setting->load(settingsJson);
+    }
+
+    // config
+    QJsonObject configJson = rootJson[CONFIG].toObject();
+    m_config->load(configJson);
+
+    // geometry
+    QJsonObject geometryJson = rootJson[GEOMETRY].toObject();
+
+    // nodes
+    QJsonArray nodesJson = geometryJson[NODES].toArray();
+    for (int i = 0; i < nodesJson.size(); i++)
+    {
+        QJsonObject nodeJson = nodesJson[i].toObject();
+
+        Value x = Value(this, nodeJson[X].toString());
+        if (!x.isEvaluated())
+        {
+            ErrorResult result = currentPythonEngineAgros()->parseError();
+            throw AgrosException(result.error());
+        }
+
+        Value y = Value(this, nodeJson[Y].toString());
+        if (!y.isEvaluated())
+        {
+            ErrorResult result = currentPythonEngineAgros()->parseError();
+            throw AgrosException(result.error());
+        }
+
+        m_scene->addNode(new SceneNode(m_scene, PointValue(x, y)));
+    }
+
+    // edges
+    QJsonArray facesJson = geometryJson[FACES].toArray();
+    for (int i = 0; i < facesJson.size(); i++)
+    {
+        QJsonObject faceJson = facesJson[i].toObject();
+
+        QJsonArray listJson = faceJson[LIST].toArray();
+        SceneNode *nodeFrom = m_scene->nodes->at(listJson[0].toInt());
+        SceneNode *nodeTo = m_scene->nodes->at(listJson[1].toInt());
+
+        int segments = faceJson[SEGMENTS].toInt();
+
+        Value angle = Value(this, faceJson[ANGLE].toString());
+        if (!angle.isEvaluated())
+        {
+            ErrorResult result = currentPythonEngineAgros()->parseError();
+            throw AgrosException(result.error());
+        }
+        if (angle.number() < 0.0) angle.setNumber(0.0);
+        if (angle.number() > 90.0) angle.setNumber(90.0);
+
+        bool isCurvilinear = (angle.number() > 0);
+
+        m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, angle, segments, isCurvilinear));
+    }
+
+    // labels
+    QJsonArray labelsJson = geometryJson[LABELS].toArray();
+    for (int i = 0; i < labelsJson.size(); i++)
+    {
+        QJsonObject labelJson = labelsJson[i].toObject();
+
+        Value x = Value(this, labelJson[X].toString());
+        if (!x.isEvaluated())
+        {
+            ErrorResult result = currentPythonEngineAgros()->parseError();
+            throw AgrosException(result.error());
+        }
+
+        Value y = Value(this, labelJson[Y].toString());
+        if (!y.isEvaluated())
+        {
+            ErrorResult result = currentPythonEngineAgros()->parseError();
+            throw AgrosException(result.error());
+        }
+
+        double area = labelJson[AREA].toDouble();
+
+        m_scene->addLabel(new SceneLabel(m_scene, PointValue(x, y), area));
+    }
+
+    // fields
+    QJsonArray fieldsJson = rootJson[FIELDS].toArray();
+    for (int i = 0; i < fieldsJson.size(); i++)
+    {
+        QJsonObject fieldJson = fieldsJson[i].toObject();
+
+        FieldInfo *fieldInfo = new FieldInfo(fieldJson[FIELDID].toString());
+
+        // settings
+        QJsonObject settingsJson = fieldJson[SETTINGS].toObject();
+        fieldInfo->load(settingsJson);
+
+        // label refinement
+        QJsonArray labelRefinementJson = fieldJson[REFINEMENT_NUMBER].toArray();
+        for (int i = 0; i < labelRefinementJson.size(); i++)
+        {
+            QJsonObject refinement = labelRefinementJson[i].toObject();
+
+            // if (label.refinement_label_id() != -1)
+            fieldInfo->setLabelRefinement(m_scene->labels->items().at(refinement[ID].toInt()), refinement[VALUE].toInt());
+        }
+
+        // polynomial order
+        QJsonArray labelOrderJson = fieldJson[REFINEMENT_ORDER].toArray();
+        for (int i = 0; i < labelOrderJson.size(); i++)
+        {
+            QJsonObject order = labelOrderJson[i].toObject();
+
+            fieldInfo->setLabelPolynomialOrder(m_scene->labels->items().at(order[ID].toInt()), order[VALUE].toInt());
+        }
+
+        // boundary conditions
+        QJsonArray boundariesJson = fieldJson[BOUNDARIES].toArray();
+        for (int j = 0; j < boundariesJson.size(); j++)
+        {
+            QJsonObject boundaryJson = boundariesJson[j].toObject();
+
+            // read marker
+            SceneBoundary *bound = new SceneBoundary(m_scene,
+                                                     fieldInfo,
+                                                     boundaryJson[NAME].toString(),
+                                                     boundaryJson[TYPE].toString());
+
+            // default values
+            Module::BoundaryType boundaryType = fieldInfo->boundaryType(boundaryJson[TYPE].toString());
+            foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
+                bound->setValue(variable.id(), Value(this));
+
+            QJsonArray boundaryTypesJson = boundaryJson[BOUNDARY_TYPES].toArray();
+            for (int k = 0; k < boundaryTypesJson.size(); k++)
+            {
+                QJsonObject type = boundaryTypesJson[k].toObject();
+
+                Value m = Value(this, type[VALUE].toString());
+                if (!m.isEvaluated())
+                {
+                    ErrorResult result = currentPythonEngineAgros()->parseError();
+                    throw AgrosException(result.error());
+                }
+
+                bound->setValue(type[ID].toString(), m);
+            }
+
+            m_scene->addBoundary(bound);
+
+            // add boundary to the edge marker
+            QJsonArray boundaryFacesJson = boundaryJson[BOUNDARY_FACES].toArray();
+            for (unsigned int k = 0; k < boundaryFacesJson.size(); k++)
+            {
+                int face = boundaryFacesJson[k].toInt();
+
+                m_scene->faces->at(face)->addMarker(bound);
+            }
+        }
+
+        // materials
+        QJsonArray materialsJson = fieldJson[MATERIALS].toArray();
+        for (int j = 0; j < materialsJson.size(); j++)
+        {
+            QJsonObject materialJson = materialsJson[j].toObject();
+
+            // read marker
+            SceneMaterial *mat = new SceneMaterial(m_scene,
+                                                   fieldInfo,
+                                                   materialJson[NAME].toString());
+
+            // default values
+            foreach (Module::MaterialTypeVariable variable, fieldInfo->materialTypeVariables())
+                mat->setValue(variable.id(), Value(this));
+
+            QJsonArray materialTypesJson = materialJson[MATERIAL_TYPES].toArray();
+            for (int k = 0; k < materialTypesJson.size(); k++)
+            {
+                QJsonObject type = materialTypesJson[k].toObject();
+
+                Value m = Value(this, type[VALUE].toString());
+                if (!m.isEvaluated())
+                {
+                    ErrorResult result = currentPythonEngineAgros()->parseError();
+                    throw AgrosException(result.error());
+                }
+
+                mat->setValue(type[ID].toString(), m);
+            }
+
+            m_scene->addMaterial(mat);
+
+            // add label to the label marker
+            QJsonArray materialLabelsJson = materialJson[MATERIAL_LABELS].toArray();
+            for (unsigned int k = 0; k < materialLabelsJson.size(); k++)
+            {
+                int label = materialLabelsJson[k].toInt();
+
+                m_scene->labels->at(label)->addMarker(mat);
+            }
+        }
+
+        // add missing none markers
+        m_scene->faces->addMissingFieldMarkers(fieldInfo);
+        m_scene->labels->addMissingFieldMarkers(fieldInfo);
+
+        // add field
+        addField(fieldInfo);
+    }
+
+    // couplings
+    synchronizeCouplings();
+
+    QJsonArray couplingsJson = rootJson[COUPLINGS].toArray();
+    for (int i = 0; i < couplingsJson.size(); i++)
+    {
+        QJsonObject couplingJson = couplingsJson[i].toObject();
+
+        if (hasCoupling(couplingJson[SOURCE_FIELDID].toString(),
+                        couplingJson[TARGET_FIELDID].toString()))
+        {
+            CouplingInfo *cpl = couplingInfo(couplingJson[SOURCE_FIELDID].toString(),
+                                             couplingJson[TARGET_FIELDID].toString());
+            cpl->setCouplingType(couplingTypeFromStringKey(couplingJson[TYPE].toString()));
+        }
+    }
+}
+
+void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
+{
     // settings
     QJsonObject settingsJson;
     m_setting->save(settingsJson);
@@ -1440,13 +1459,6 @@ void ProblemBase::writeProblemToJson(const QString &fileName)
         couplingsJson.append(couplingJson);
     }
     rootJson[COUPLINGS] = couplingsJson;
-
-    // save to file
-    QJsonDocument doc(rootJson);
-    file.write(doc.toJson(QJsonDocument::Indented));
-    // file.write(doc.toJson(QJsonDocument::Compact));
-
-    // qDebug() << "writeProblemToJson" << time.elapsed();
 }
 
 // computation
@@ -1973,34 +1985,65 @@ QString Problem::problemFileName() const
     return QString("%1/problem.json").arg(cacheProblemDir());
 }
 
-void Problem::clearRecipes()
+void Problem::readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettings)
 {
-    m_recipes->clear();
-}
+    ProblemBase::readProblemFromJsonInternal(rootJson, readSettings);
 
-void Problem::loadRecipes()
-{
-    m_recipes->load(QString("%1/recipes.json").arg(cacheProblemDir()));
-}
-
-void Problem::saveRecipes()
-{
-    m_recipes->save(QString("%1/recipes.json").arg(cacheProblemDir()));
-}
-
-void Problem::clearStudies()
-{
+    // studies
     m_studies->clear();
+    QJsonArray studiesJson = rootJson[STUDIES].toArray();
+    for (int i = 0; i < studiesJson.size(); i++)
+    {
+        QJsonObject studyJson = studiesJson[i].toObject();
+        StudyType type = studyTypeFromStringKey(studyJson[TYPE].toString());
+
+        Study *study = Study::factory(type);
+        study->load(studyJson);
+
+        m_studies->blockSignals(true);
+        m_studies->addStudy(study);
+        m_studies->blockSignals(false);        
+    }
+
+    // recipes
+    m_recipes->clear();
+    QJsonArray recipesJson = rootJson[RECIPES].toArray();
+    for (int i = 0; i < recipesJson.size(); i++)
+    {
+        QJsonObject recipeJson = recipesJson[i].toObject();
+        ResultRecipeType type = resultRecipeTypeFromStringKey(recipeJson[TYPE].toString());
+
+        ResultRecipe *recipe = ResultRecipe::factory(type);
+        recipe->load(recipeJson);
+
+        m_recipes->addRecipe(recipe);
+    }
 }
 
-void Problem::loadStudies()
+void Problem::writeProblemToJsonInternal(QJsonObject &rootJson)
 {
-    m_studies->load(QString("%1/studies.json").arg(cacheProblemDir()));
-}
+    ProblemBase::writeProblemToJsonInternal(rootJson);
 
-void Problem::saveStudies()
-{
-    m_studies->save(QString("%1/studies.json").arg(cacheProblemDir()));
+    // studies
+    QJsonArray studiesJson;
+    foreach (Study *study, m_studies->items())
+    {
+        QJsonObject studyJson;
+        studyJson[TYPE] = studyTypeToStringKey(study->type());
+        study->save(studyJson);
+        studiesJson.append(studyJson);
+    }
+    rootJson[STUDIES] = studiesJson;
+
+    // recipes
+    QJsonArray recipesJson;
+    foreach (ResultRecipe *recipe, m_recipes->items())
+    {
+        QJsonObject recipeJson;
+        recipe->save(recipeJson);
+        recipesJson.append(recipeJson);
+    }
+    rootJson[RECIPES] = recipesJson;
 }
 
 QSharedPointer<Computation> Problem::createComputation(bool newComputation)
@@ -2038,11 +2081,11 @@ void Problem::clearFieldsAndConfig()
 
     ProblemBase::clearFieldsAndConfig();
     clearFields();
-    clearStudies();
+    m_recipes->clear();
+    m_studies->clear();
 
     QFile::remove(QString("%1/problem.a2d").arg(cacheProblemDir()));
     QFile::remove(QString("%1/problem.json").arg(cacheProblemDir()));
-    QFile::remove(QString("%1/studies.json").arg(cacheProblemDir()));
 
     m_fileName = "";
 
@@ -2129,12 +2172,6 @@ void Problem::readProblemFromArchive(const QString &fileName)
             post = Agros2D::computations().last();
             m_currentComputation = post;
         }
-
-        // load recipes
-        loadRecipes();
-
-        // load studies
-        loadStudies();
     }
 }
 
@@ -2163,12 +2200,6 @@ void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFil
     }
     else
     {
-        // save recipes
-        saveRecipes();
-
-        // save studies
-        saveStudies();
-
         // whole directory
         JlCompress::compressDir(fileName, cacheProblemDir());
     }

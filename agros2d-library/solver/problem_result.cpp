@@ -26,7 +26,6 @@
 const QString RESULTS = "results";
 const QString INFO = "info";
 
-const QString RECIPES = "recipes";
 const QString TYPE = "type";
 const QString NAME = "name";
 const QString FIELD = "field";
@@ -42,12 +41,27 @@ const QString COMPONENT = "component";
 const QString EDGES = "edges";
 const QString LABELS = "labels";
 
+ResultRecipe *ResultRecipe::factory(ResultRecipeType type)
+{
+    ResultRecipe *recipe = nullptr;
+    if (type == ResultRecipeType_LocalValue)
+        recipe = new LocalValueRecipe();
+    else if (type == ResultRecipeType_SurfaceIntegral)
+        recipe = new SurfaceIntegralRecipe();
+    else if (type == ResultRecipeType_VolumeIntegral)
+        recipe = new VolumeIntegralRecipe();
+    else
+        assert(0);
+
+    return recipe;
+}
+
 ResultRecipe::ResultRecipe(const QString &name, const QString &fieldID, const QString &variable, int timeStep, int adaptivityStep)
     : m_name(name), m_fieldID(fieldID), m_variable(variable), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep) { }
 
 void ResultRecipe::load(QJsonObject &object)
 {
-    m_name= object[NAME].toString();
+    m_name = object[NAME].toString();
     m_fieldID = object[FIELD].toString();
     m_variable = object[VARIABLE].toString();
     m_timeStep = object[TIMESTEP].toInt();
@@ -57,6 +71,7 @@ void ResultRecipe::load(QJsonObject &object)
 void ResultRecipe::save(QJsonObject &object)
 {
     object[NAME] = m_name;
+    object[TYPE] = resultRecipeTypeToStringKey(type());
     object[FIELD] = m_fieldID;
     object[VARIABLE] = m_variable;
     object[TIMESTEP] = m_timeStep;
@@ -270,71 +285,6 @@ ResultRecipes::ResultRecipes(QList<ResultRecipe *> recipes)
 ResultRecipes::~ResultRecipes()
 {
     clear();
-}
-
-bool ResultRecipes::load(const QString &fileName)
-{
-    QFile file(fileName);
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qWarning("Couldn't open result file.");
-        return false;
-    }
-
-    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-    QJsonObject storeJson = doc.object();
-
-    clear();
-    QJsonArray recipesJson = storeJson[RECIPES].toArray();
-    for (int i = 0; i < recipesJson.size(); i++)
-    {
-        QJsonObject recipeJson = recipesJson[i].toObject();
-        ResultRecipeType type = resultRecipeTypeFromStringKey(recipeJson[TYPE].toString());
-
-        ResultRecipe *recipe = nullptr;
-        if (type == ResultRecipeType_LocalValue)
-            recipe = new LocalValueRecipe();
-        else
-            assert(0);
-
-        recipe->load(recipeJson);
-        m_recipes.append(recipe);
-    }
-
-    return true;
-}
-
-bool ResultRecipes::save(const QString &fileName)
-{
-    if (m_recipes.isEmpty())
-    {
-        if (QFile::exists(fileName))
-            QFile::remove(fileName);
-        return true;
-    }
-
-    QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly))
-    {
-        qWarning("Couldn't open result file.");
-        return false;
-    }
-
-    QJsonObject storeJson;
-    QJsonArray recipesJson;
-    foreach (ResultRecipe *recipe, m_recipes)
-    {
-        QJsonObject recipeJson;
-        recipe->save(recipeJson);
-        recipesJson.append(recipeJson);
-    }
-    storeJson[RECIPES] = recipesJson;
-
-    // save to file
-    QJsonDocument doc(storeJson);
-    file.write(doc.toJson());
-
-    return true;
 }
 
 void ResultRecipes::clear()
