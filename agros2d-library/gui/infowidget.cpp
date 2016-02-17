@@ -101,7 +101,7 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
         problemInfo.SetValue("NAME", QFileInfo(preprocessor->archiveFileName()).baseName().toStdString());
 
     // general
-    problemInfo.SetValue("GENERAL_LABEL", tr("General:").toStdString());
+    problemInfo.SetValue("GENERAL_LABEL", tr("General").toStdString());
     problemInfo.SetValue("COORDINATE_TYPE_LABEL", tr("Coordinate type:").toStdString());
     problemInfo.SetValue("COORDINATE_TYPE", coordinateTypeString(problem->config()->coordinateType()).toStdString());
     problemInfo.SetValue("MESH_TYPE_LABEL", tr("Mesh type:").toStdString());
@@ -137,43 +137,40 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
 
     // geometry
     problemInfo.SetValue("GEOMETRY_LABEL", tr("Geometry").toStdString());
-    problemInfo.SetValue("GEOMETRY_NODES_LABEL", tr("Nodes:").toStdString());
-    problemInfo.SetValue("GEOMETRY_NODES", QString::number(problem->scene()->nodes->count()).toStdString());
-    problemInfo.SetValue("GEOMETRY_EDGES_LABEL", tr("Edges:").toStdString());
-    problemInfo.SetValue("GEOMETRY_EDGES", QString::number(problem->scene()->faces->count()).toStdString());
-    problemInfo.SetValue("GEOMETRY_LABELS_LABEL", tr("Labels:").toStdString());
-    problemInfo.SetValue("GEOMETRY_LABELS", QString::number(problem->scene()->labels->count()).toStdString());
-    problemInfo.SetValue("GEOMETRY_MATERIALS_LABEL", tr("Materials:").toStdString());
-    problemInfo.SetValue("GEOMETRY_MATERIALS", QString::number(problem->scene()->materials->items().count() - 1).toStdString());
-    problemInfo.SetValue("GEOMETRY_BOUNDARIES_LABEL", tr("Boundaries:").toStdString());
-    problemInfo.SetValue("GEOMETRY_BOUNDARIES", QString::number(problem->scene()->boundaries->items().count() - 1).toStdString());
     problemInfo.SetValue("GEOMETRY_SVG", generateSvgGeometry(problem->scene()->faces->items()).toStdString());
 
     // parameters
     StringToDoubleMap parameters = problem->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
-    problemInfo.SetValue("PARAMETERS_MAIN_LABEL", tr("Parameters").toStdString());
-    foreach (QString key, parameters.keys())
+    if (parameters.count() > 0)
     {
-        ctemplate::TemplateDictionary *parametersSection = problemInfo.AddSectionDictionary("PARAMETERS_SECTION");
+        problemInfo.SetValue("PARAMETERS_MAIN_LABEL", tr("Parameters").toStdString());
+        foreach (QString key, parameters.keys())
+        {
+            ctemplate::TemplateDictionary *parametersSection = problemInfo.AddSectionDictionary("PARAMETERS_SECTION");
 
-        parametersSection->SetValue("PARAMETERS_VARIABLE_NAME", key.toStdString());
-        parametersSection->SetValue("PARAMETERS_VARIABLE_VALUE", QString::number(parameters[key]).toStdString());
+            parametersSection->SetValue("PARAMETERS_VARIABLE_NAME", key.toStdString());
+            parametersSection->SetValue("PARAMETERS_VARIABLE_VALUE", QString::number(parameters[key]).toStdString());
+        }
+        problemInfo.ShowSection("PARAMETERS");
     }
 
     // results (only for computation)
     if (Computation *computation = dynamic_cast<Computation *>(problem))
     {
         StringToDoubleMap results = computation->results()->items();
-        problemInfo.SetValue("RESULTS_MAIN_LABEL", tr("Results").toStdString());
-        foreach (QString key, results.keys())
+        if (results.count() > 0)
         {
-            ctemplate::TemplateDictionary *resultsSection = problemInfo.AddSectionDictionary("RESULTS_SECTION");
+            problemInfo.SetValue("RESULTS_MAIN_LABEL", tr("Results").toStdString());
+            foreach (QString key, results.keys())
+            {
+                ctemplate::TemplateDictionary *resultsSection = problemInfo.AddSectionDictionary("RESULTS_SECTION");
 
-            resultsSection->SetValue("RESULTS_VARIABLE_NAME", key.toStdString());
-            resultsSection->SetValue("RESULTS_VARIABLE_VALUE", QString::number(results[key]).toStdString());
+                resultsSection->SetValue("RESULTS_VARIABLE_NAME", key.toStdString());
+                resultsSection->SetValue("RESULTS_VARIABLE_VALUE", QString::number(results[key]).toStdString());
+            }
+
+            problemInfo.ShowSection("RESULTS");
         }
-
-        problemInfo.ShowSection("RESULTS");
     }
 
     // fields
@@ -263,6 +260,7 @@ void InfoWidgetGeneral::showPythonInfo(const QString &fileName)
     ctemplate::TemplateDictionary problemInfo("info");
 
     problemInfo.SetValue("AGROS2D", "file:///" + compatibleFilename(QDir(datadir() + TEMPLATEROOT + "/panels/agros2d_logo.png").absolutePath()).toStdString());
+    problemInfo.SetValue("PANELS_DIRECTORY", QUrl::fromLocalFile(QString("%1%2").arg(QDir(datadir()).absolutePath()).arg(TEMPLATEROOT + "/panels")).toString().toStdString());
 
     // python
     if (QFile::exists(fileName))

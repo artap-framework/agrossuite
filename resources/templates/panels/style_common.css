@@ -57,7 +57,7 @@ table {
 td {
 	padding-left: 10px;
 	padding-right: 10px;
-        width: 50%;
+    width: 50%;
 }
 
 tr {
@@ -68,8 +68,8 @@ hr {
 	border: 1px;
 	margin-top: 3px;
 	margin-bottom: 5px;
-	color: rgb(207, 174, 133);
-	background-color: rgb(207, 174, 133);
+	color: rgb(132, 22, 24);
+	background-color: rgb(132, 22, 24);
 	height: 2px;
 }
 

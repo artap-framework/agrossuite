@@ -18,7 +18,7 @@
 <table>
 <tr>
 <!-- general -->
-<td style="width: 25%;">
+<td style="width: 50%;">
 <div class="section">
 <h2>{{GENERAL_LABEL}}</h2>
 <hr/>
@@ -26,55 +26,16 @@
     <tr><td><b>{{COORDINATE_TYPE_LABEL}}</b></td><td>{{COORDINATE_TYPE}}</td></tr>
     <tr><td><b>{{MESH_TYPE_LABEL}}</b></td><td>{{MESH_TYPE}}</td></tr>
 </table>
-</td>
+</div>
 
-<!-- harmonic -->
-{{#HARMONIC}}
-<td style="width: 15%;">
-<div class="section">
-<h2>{{HARMONIC_LABEL}}</h2>
-<hr/>
-<table>
-    <tr><td><b>{{HARMONIC_FREQUENCY_LABEL}}</b></td><td>{{HARMONIC_FREQUENCY}}</td></tr>
-</table>
-</td>
-{{/HARMONIC}}
-
-{{#TRANSIENT}}
-<td style="width: 40%;">
-<div class="section">
-<h2>{{TRANSIENT_LABEL}}</h2>
-<hr/>
-<table>
-    <tr><td><b>{{TRANSIENT_STEP_METHOD_LABEL}}</b></td><td>{{TRANSIENT_STEP_METHOD}}</td></tr>
-    <tr><td><b>{{TRANSIENT_STEP_ORDER_LABEL}}</b></td><td>{{TRANSIENT_STEP_ORDER}}</td></tr>
-    <tr><td><b>{{TRANSIENT_TOLERANCE_LABEL}}</b></td><td>{{TRANSIENT_TOLERANCE}}</td></tr>
-    <tr><td><b>{{TRANSIENT_INITIALTIMESTEP_LABEL}}</b></td><td>{{TRANSIENT_INITIALTIMESTEP}}</td></tr>
-    <tr><td><b>{{TRANSIENT_CONSTANT_NUM_STEPS_LABEL}}</b></td><td>{{TRANSIENT_CONSTANT_NUM_STEPS}}</td></tr>
-    <tr><td><b>{{TRANSIENT_CONSTANT_STEP_LABEL}}</b></td><td>{{TRANSIENT_CONSTANT_STEP}}</td></tr>
-    <tr><td><b>{{TRANSIENT_TOTAL_LABEL}}</b></td><td>{{TRANSIENT_TOTAL}}</td></tr>
-</table>
-</td>
-{{/TRANSIENT}}
-
-</tr>
-
-<tr>
 <!-- geometry -->
-<td style="width: 25%;">
 <div class="section">
 <h2>{{GEOMETRY_LABEL}}</h2>
 <hr/>
-<table>
-    <tr><td rowspan="6"><div class="figure">{{GEOMETRY_SVG}}</div></td><td><b>{{GEOMETRY_NODES_LABEL}}</b></td><td>{{GEOMETRY_NODES}}</td></tr>
-    <tr><td><b>{{GEOMETRY_EDGES_LABEL}}</b></td><td>{{GEOMETRY_EDGES}}</td></tr>
-    <tr><td><b>{{GEOMETRY_LABELS_LABEL}}</b></td><td>{{GEOMETRY_LABELS}}</td></tr>
-    <tr><td><b>&nbsp;</b></td><td>&nbsp;</td></tr>
-    <tr><td><b>{{GEOMETRY_MATERIALS_LABEL}}</b></td><td>{{GEOMETRY_MATERIALS}}</td></tr>
-    <tr><td><b>{{GEOMETRY_BOUNDARIES_LABEL}}</b></td><td>{{GEOMETRY_BOUNDARIES}}</td></tr>
-</table>
+    <div class="figure">{{GEOMETRY_SVG}}</div>
 </div>
 
+<!-- coupling -->
 {{#COUPLING}}
 <div class="section">
 <h2>{{COUPLING_MAIN_LABEL}}</h2>
@@ -90,30 +51,63 @@
 </div>
 {{/COUPLING}}
 
+<!-- harmonic -->
+{{#HARMONIC}}
+<div class="section">
+<h2>{{HARMONIC_LABEL}}</h2>
+<hr/>
+<table>
+    <tr><td><b>{{HARMONIC_FREQUENCY_LABEL}}</b></td><td>{{HARMONIC_FREQUENCY}}</td></tr>
+</table>
+</div>
+{{/HARMONIC}}
+
+<!-- transient -->
+{{#TRANSIENT}}
+<div class="section">
+<h2>{{TRANSIENT_LABEL}}</h2>
+<hr/>
+<table>
+    <tr><td><b>{{TRANSIENT_STEP_METHOD_LABEL}}</b></td><td>{{TRANSIENT_STEP_METHOD}}</td></tr>
+    <tr><td><b>{{TRANSIENT_STEP_ORDER_LABEL}}</b></td><td>{{TRANSIENT_STEP_ORDER}}</td></tr>
+    <tr><td><b>{{TRANSIENT_TOLERANCE_LABEL}}</b></td><td>{{TRANSIENT_TOLERANCE}}</td></tr>
+    <tr><td><b>{{TRANSIENT_INITIALTIMESTEP_LABEL}}</b></td><td>{{TRANSIENT_INITIALTIMESTEP}}</td></tr>
+    <tr><td><b>{{TRANSIENT_CONSTANT_NUM_STEPS_LABEL}}</b></td><td>{{TRANSIENT_CONSTANT_NUM_STEPS}}</td></tr>
+    <tr><td><b>{{TRANSIENT_CONSTANT_STEP_LABEL}}</b></td><td>{{TRANSIENT_CONSTANT_STEP}}</td></tr>
+    <tr><td><b>{{TRANSIENT_TOTAL_LABEL}}</b></td><td>{{TRANSIENT_TOTAL}}</td></tr>
+</table>
+</div>
+{{/TRANSIENT}}
+
 <!-- parameters -->
-<td style="width: 25%;">
+{{#PARAMETERS}}
 <div class="section">
 <h2>{{PARAMETERS_MAIN_LABEL}}</h2>
 <hr/>
 <table>
 {{#PARAMETERS_SECTION}}
-    <tr><td><b>{{PARAMETERS_VARIABLE_NAME}}</b></td><td>{{PARAMETERS_VARIABLE_VALUE}}</td>
+    <tr><td><b>{{PARAMETERS_VARIABLE_NAME}}</b></td><td>{{PARAMETERS_VARIABLE_VALUE}}</td></tr>
 {{/PARAMETERS_SECTION}}
 </table>
+</div>
+{{/PARAMETERS}}
+
 {{#RESULTS}}
+<div class="section">
 <h2>{{RESULTS_MAIN_LABEL}}</h2>
 <hr/>
 <table>
 {{#RESULTS_SECTION}}
-    <tr><td><b>{{RESULTS_VARIABLE_NAME}}</b></td><td>{{RESULTS_VARIABLE_VALUE}}</td>
+    <tr><td><b>{{RESULTS_VARIABLE_NAME}}</b></td><td>{{RESULTS_VARIABLE_VALUE}}</td></tr>
 {{/RESULTS_SECTION}}
 </table>
-{{/RESULTS}}
 </div>
+{{/RESULTS}}
+
 </td>
+<td style="width: 50%;">
 
 <!-- fields -->
-<td style="width: 30%;">
 {{#FIELD}}
 {{#FIELD_SECTION}}
 <div class="section">
@@ -128,48 +122,17 @@
     <tr><td><b>{{ADAPTIVITY_TYPE_LABEL}}</b></td><td>{{ADAPTIVITY_TYPE}}</td></tr>
 </table>
 {{/FIELD_SECTION}}
+</div>
 {{/FIELD}}
+
 </td>
 </tr>
 </table>
-
-{{#SOLUTION_PARAMETERS_SECTION}}
-<div class="section">
-<h2>{{SOLUTION_LABEL}}</h2>
-<hr/>
-<table>
-    <tr><td><b>{{SOLUTION_ELAPSED_TIME_LABEL}}</b></td><td>{{SOLUTION_ELAPSED_TIME}}</td></tr>
-    <tr><td><b>{{NUM_THREADS_LABEL}}</b></td><td>{{NUM_THREADS}}</td></tr>
-</table>
-{{#TRANSIENT_ADAPTIVE}}
-<div style="text-align: center; width: 50%; height: 160px;">Time step length<br/><div id="chart_time_step_length" style="width: 100%; height: 90%;"></div></div>
-{{TIME_STEPS_CHART}}
-{{/TRANSIENT_ADAPTIVE}}
-</div>
-{{/SOLUTION_PARAMETERS_SECTION}}
-</td>
 
 {{PROBLEM_DETAILS}}
 
 <div class="cleaner"></div>
 
-<!--
-<script type="text/javascript">
-function showTooltip(x, y, contents) 
-{
-    $('<div id="tooltip">' + contents + '</div>').css({
-        position: 'absolute',
-        display: 'none',
-        top: y + 5,
-        left: x + 5,
-        border: '1px solid #fdd',
-        padding: '2px', 
-        background-color: '#fee',
-        opacity: 0.80
-    }).appendTo("body").fadeIn(200);
-}
-</script>
--->
 </body>
 </html>
 
