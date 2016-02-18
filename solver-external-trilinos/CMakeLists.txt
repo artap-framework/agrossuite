@@ -62,15 +62,15 @@ SET(SOURCES main.cpp)
 file(WRITE "${CMAKE_HOME_DIRECTORY}/../libs/${PROJECT_NAME}.ext"
 "Trilinos\n\
 solver_TRILINOS\n\
-<b>-v</b> or <b>--verbose</b> (<i>int</i>) : verbose mode 0 .. disabled, 1 .. simple verbose, 2 .. details, 3 .. file output<br/>
-<b>-g</b> or <b>--multigrid</b> : use algebraic multigrid<br/>
+<b>-v</b> or <b>--verbose</b> (<i>int</i>) : verbose mode 0 .. disabled, 1 .. simple verbose, 2 .. details, 3 .. file output<br/>\
+<b>-g</b> or <b>--multigrid</b> : use algebraic multigrid<br/>\
 <b>-t</b> or <b>--rel_tol</b> (<i>double</i>)<br/>\
 <b>-l</b> or <b>--solver</b> (<i>string</i>) : Non-Multigrid solvers: Amesos_Klu, Amesos_Paraklete, AztecOO. Multigrid solver variants: AztecOO_cg, AztecOO_cg_condnum, AztecOO_gmres, AztecOO_gmres_condnum, AztecOO_cgs, AztecOO_tfqmr, AztecOO_bicgstab, AztecOO_lu, AztecOOML_cg, AztecOOML_cg_condnum, AztecOOML_gmres, AztecOOML_gmres_condnum, AztecOOML_cgs, AztecOOML_tfqmr, AztecOOML_bicgstab<br/>\
 <b>-c</b> or <b>--preconditioner</b> (<i>string</i>) : Multigrid preconditioner set of parameters: SA, NSSA, maxwell, DD, RefMaxwell, DD-ML, DD-ML-LU<br/>\
 <b>-e</b> or <b>--aggregationType</b> (<i>string</i>) : Multigrid aggregation type: Uncoupled, Coupled, MIS, Uncoupled-MIS, METIS, ParMETIS<br/>\
 <b>-o</b> or <b>--smootherType</b> (<i>string</i>) : Multigrid smoother type: Aztec, IFPACK, Jacobi, ML_symmetric_Gauss-Seidel, symmetric_Gauss-Seidel, ML_Gauss-Seidel, Gauss-Seidel, block_Gauss-Seidel, symmetric_block_Gauss-Seidel, Chebyshev, MLS, Hiptmair, Amesos-KLU, Amesos-Superlu, Amesos-UMFPACK, Amesos-Superludist, Amesos-MUMPS, user-defined, SuperLU, IFPACK-Chebyshev, self, do-nothing, IC, ICT, ILU, ILUT, Block_Chebyshev, IFPACK-Block_Chebyshev, line_Jacobi, line_Gauss-Seidel, SILU<br/>\
 <b>-z</b> or <b>--coarseType</b> (<i>string</i>) : Multigrid coarser type: Aztec, IFPACK, Jacobi, ML_symmetric_Gauss-Seidel, symmetric_Gauss-Seidel, ML_Gauss-Seidel, Gauss-Seidel, block_Gauss-Seidel, symmetric_block_Gauss-Seidel, Chebyshev, MLS, Hiptmair, Amesos-KLU, Amesos-Superlu, Amesos-UMFPACK, Amesos-Superludist, Amesos-MUMPS, user-defined, SuperLU, IFPACK-Chebyshev, self, do-nothing, IC, ICT, ILU, ILUT, Block_Chebyshev, IFPACK-Block_Chebyshev, line_Jacobi, line_Gauss-Seidel, SILU<br/>\
-<b>-x</b> or <b>--max_iter</b> (<i>int</i>)<br/>")
+<b>-x</b> or <b>--max_iter</b> (<i>int</i>)")
 
 #<b>-a</b> or <b>--abs_tol</b> (<i>double</i>)
 
