@@ -29,6 +29,13 @@ git checkout dealii
 Compilation
 ===========
 
+Notice:
+If you have more than one CPU/core use command:
+
+make -jN
+
+where N is the number of CPUs of your computer, instead of "make".
+
 In the first step of compilation, you have to generate makefiles and compile the code by issuing the following commands:
 
 Linux:
@@ -40,33 +47,18 @@ cd build
 cmake ..
 make
 
-or to run compilation on N cores:
-make -jN
-
 Return back to the Agros2D directory
 cd ../../
 
 cmake .
 make 
-or to run compilation on N cores:
-make -jN
-
-cd solver-external-paralution
-mkdir build
-cd build
-cmake ..
-
-make
-or to run compilation on N cores:
-make -jN
-
-cd ../..
 
 Next step is generating of plugins source code and their compilation:
 
 ./agros2d_generator
 cd plugins
 cmake .
+make
 
 Building of the external solvers:
 --------------------------------
@@ -104,10 +96,10 @@ sudo add-apt-repository ppa:nschloe/trilinos-nightly
 sudo apt-get install trilinos-all-dev trilinos-dev trilinos-doc
 sudo apt-get install libtrilinos-*
 
-After the solvers compilation, You can control if the solvers binaries has been ganarated in /agros2d/libs.
+- Trilinos (!in development!)
 
-Notice:
-If you have more than one CPU, you can use “make -jN” where N is the number of CPUs of your computer.
+
+After the solvers compilation, You can control if the solvers binaries has been ganarated in /agros2d/libs.
 
 Windows:
 ~~~~~~~~
