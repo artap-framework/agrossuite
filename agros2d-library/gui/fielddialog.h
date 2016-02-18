@@ -126,7 +126,7 @@ private:
     QComboBox *cmbExternalLinearSolverCommand;
     QLineEdit *txtExternalLinearSolverCommandEnvironment;
     QLineEdit *txtExternalLinearSolverCommandParameters;
-    QLabel *lblExternalLinearSolverHint;
+    QTextEdit *txtExternalLinearSolverHint;
 
     // equation
     // LaTeXViewer *equationLaTeX;

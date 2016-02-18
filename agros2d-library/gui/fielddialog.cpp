@@ -471,25 +471,28 @@ QWidget *FieldWidget::createLinearSolverWidget()
     connect(cmbExternalLinearSolverCommand, SIGNAL(currentIndexChanged(int)), this, SLOT(doExternalSolverChanged(int)));
     txtExternalLinearSolverCommandEnvironment = new QLineEdit();
     txtExternalLinearSolverCommandParameters = new QLineEdit();
-    lblExternalLinearSolverHint = new QLabel();
-    lblExternalLinearSolverHint->setWordWrap(false);
-    lblExternalLinearSolverHint->setTextFormat(Qt::RichText);
-    QFont fnt = lblExternalLinearSolverHint->font();
+    txtExternalLinearSolverHint = new QTextEdit();
+    txtExternalLinearSolverHint->setWordWrapMode(QTextOption::WordWrap);
+    txtExternalLinearSolverHint->setReadOnly(true);
+    QFont fnt = txtExternalLinearSolverHint->font();
     fnt.setPointSize(fnt.pointSize() - 2);
-    lblExternalLinearSolverHint->setFont(fnt);
-    QPalette palette = lblExternalLinearSolverHint->palette();
-    palette.setColor(QPalette::WindowText, QColor(Qt::darkBlue));
-    lblExternalLinearSolverHint->setPalette(palette);
+    txtExternalLinearSolverHint->setFont(fnt);
+    QPalette palette = txtExternalLinearSolverHint->palette();
+    palette.setColor(QPalette::Text, QColor(Qt::darkBlue));
+    txtExternalLinearSolverHint->setPalette(palette);
+    QFontMetrics m(txtExternalLinearSolverHint->font());
+    int rowHeight = m.lineSpacing();
+    txtExternalLinearSolverHint->setMinimumHeight(8 * rowHeight);
 
     QGridLayout *iterSolverDealIILayout = new QGridLayout();
     iterSolverDealIILayout->addWidget(new QLabel(tr("Method:")), 0, 0);
     iterSolverDealIILayout->addWidget(cmbIterLinearSolverDealIIMethod, 0, 1);
     iterSolverDealIILayout->addWidget(new QLabel(tr("Preconditioner:")), 1, 0);
     iterSolverDealIILayout->addWidget(cmbIterLinearSolverDealIIPreconditioner, 1, 1);
-    iterSolverDealIILayout->addWidget(new QLabel(tr("Absolute tolerance:")), 2, 0);
-    iterSolverDealIILayout->addWidget(txtIterLinearSolverToleranceAbsolute, 2, 1);
-    iterSolverDealIILayout->addWidget(new QLabel(tr("Maximum number of iterations:")), 3, 0);
-    iterSolverDealIILayout->addWidget(txtIterLinearSolverIters, 3, 1);
+    iterSolverDealIILayout->addWidget(new QLabel(tr("Absolute tolerance:")), 0, 2);
+    iterSolverDealIILayout->addWidget(txtIterLinearSolverToleranceAbsolute, 0, 3);
+    iterSolverDealIILayout->addWidget(new QLabel(tr("Maximum number of iterations:")), 1, 2);
+    iterSolverDealIILayout->addWidget(txtIterLinearSolverIters, 1, 3);
 
     QGroupBox *iterSolverDealIIGroup = new QGroupBox(tr("deal.II"));
     iterSolverDealIIGroup->setLayout(iterSolverDealIILayout);
@@ -501,7 +504,7 @@ QWidget *FieldWidget::createLinearSolverWidget()
     externalSolverLayout->addWidget(txtExternalLinearSolverCommandEnvironment, 1, 1);
     externalSolverLayout->addWidget(new QLabel(tr("Parameters:")), 2, 0);
     externalSolverLayout->addWidget(txtExternalLinearSolverCommandParameters, 2, 1);
-    externalSolverLayout->addWidget(lblExternalLinearSolverHint, 3, 0, 1, 2);
+    externalSolverLayout->addWidget(txtExternalLinearSolverHint, 3, 0, 1, 2);
 
     QGroupBox *externalSolverGroup = new QGroupBox(tr("External (out of core)"));
     externalSolverGroup->setLayout(externalSolverLayout);
@@ -865,7 +868,8 @@ void FieldWidget::doExternalSolverChanged(int index)
             QStringList commandContent = in.readAll().split("\n");
 
             // hint at third line
-            lblExternalLinearSolverHint->setText(commandContent.at(2));
+            txtExternalLinearSolverHint->setVisible(!commandContent.at(2).trimmed().isEmpty());
+            txtExternalLinearSolverHint->setText(commandContent.at(2));
         }
     }
 }
