@@ -20,7 +20,7 @@
     <message>
         <location filename="../../util/gui/about.cpp" line="49"/>
         <source>deal.ii</source>
-        <translation type="unfinished"></translation>
+        <translation>deal.ii</translation>
     </message>
     <message>
         <location filename="../../util/gui/about.cpp" line="50"/>
@@ -50,27 +50,27 @@
     <message>
         <location filename="../../util/gui/about.cpp" line="75"/>
         <source>&lt;h3&gt;Agros2D %1&lt;/h3&gt;Agros2D is a multiplatform multiphysics application for the solution of partial differential equations (PDE) based on the &lt;a href=&quot;http://dealii.org/&quot;&gt;deal.ii&lt;/a&gt; library using higher order finite element method (&lt;i&gt;hp&lt;/i&gt;-FEM) with automatic adaptivity.&lt;br/&gt;&lt;br/&gt;Web page: &lt;a href=&quot;http://agros2d.org/&quot;&gt;http://agros2d.org/&lt;/a&gt;&lt;br/&gt;Facebook: &lt;a href=&quot;http://www.facebook.com/pages/Agros2D/132524130149770?sk=info&quot;&gt;http://www.facebook.com/pages/Agros2D/...&lt;/a&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Authors:&lt;/b&gt;&lt;p&gt;&lt;b&gt;Pavel Karban&lt;/b&gt; - main developer (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;František Mach&lt;/b&gt; - developer, Python script (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Pavel Kůs&lt;/b&gt; - developer, coupled problems, time domain adaptivity (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;David Pánek&lt;/b&gt; - developer (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Lukáš Korous&lt;/b&gt; - developer (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Lukáš Koudela&lt;/b&gt; - developer - RF module (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Bartosz Sawicki&lt;/b&gt; - Polish translation (Warsaw University of Technology, Warsaw)&lt;br/&gt;&lt;b&gt;Václav Kotlan&lt;/b&gt; - German translation (University of West Bohemia, Pilsen, Czech Republic)&lt;br/&gt;&lt;b&gt;Petr Kropík&lt;/b&gt; - University of West Bohemia, Pilsen, Czech Republic&lt;br/&gt;&lt;b&gt;Denys Nikolayev&lt;/b&gt; - Russion and French translation, University of West Bohemia, Pilsen, Czech Republic&lt;br/&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../util/gui/about.cpp" line="119"/>
         <source>&lt;h3&gt;dealii&lt;/h3&gt;Web page: &lt;a href=&quot;http://dealii.org/&quot;&gt;http://dealii.org/&lt;/a&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Authors:&lt;/b&gt;&lt;p&gt;&lt;b&gt;Principal developers&lt;/b&gt;&lt;br/&gt;Wolfgang Bangerth, Texas A&amp;M University, TX, USA&lt;br/&gt;Timo Heister, Clemson University, SC, USA&lt;br/&gt;Guido Kanschat, Universität Heidelberg, Germany&lt;br/&gt;Matthias Maier, Universität Heidelberg, Germany&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Developers&lt;/b&gt;&lt;br/&gt;Luca Heltai, SISSA, Trieste, Italy&lt;br/&gt;Martin Kronbichler, Technische Universität München, Germany&lt;br/&gt;Bruno Turcksin, Texas A&amp;M University, TX, USA&lt;br/&gt;Toby D. Young, Polish Academy of Sciences, Poland&lt;br/&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../util/gui/about.cpp" line="152"/>
         <source>&lt;h3&gt;Libraries&lt;/h3&gt;&lt;b&gt;Digia Qt:&lt;/b&gt; Digia Qt (&lt;a href=&quot;http://qt.digia.com/&quot;&gt;Qt - Cross-platform application and UI development framework&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;QCustomChart:&lt;/b&gt; QCustomChart (&lt;a href=&quot;http://www.workslikeclockwork.com/index.php/components/qt-plotting-widget/&quot;&gt;Qt Plotting Widget&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Python:&lt;/b&gt; Python Programming Language (&lt;a href=&quot;http://www.python.org&quot;&gt;Python&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;libdxfrw:&lt;/b&gt; LibreCAD DXF library (&lt;a href=&quot;http://sourceforge.net/projects/libdxfrw/&quot;&gt;libdxfrw&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;ctemplate:&lt;/b&gt; Simple but powerful template language for C++ (&lt;a href=&quot;http://code.google.com/p/ctemplate/&quot;&gt;ctemplate&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;matio:&lt;/b&gt; MAT File I/O Library (&lt;a href=&quot;http://sourceforge.net/projects/matio/&quot;&gt;matio&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;poly2tri:&lt;/b&gt; A 2D constrained Delaunay triangulation library (&lt;a href=&quot;http://code.google.com/p/poly2tri/&quot;&gt;poly2tri&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;stb_truetype.h:&lt;/b&gt; TrueType processing library - Sean Barrett / RAD Game Tools (&lt;a href=&quot;http://nothings.org/&quot;&gt;stb&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Triangle:&lt;/b&gt; Jonathan Richard Shewchuk (&lt;a href=&quot;http://www.cs.cmu.edu/~quake/triangle.html&quot;&gt;Triangle&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;Gmsh:&lt;/b&gt; A three-dimensional finite element mesh generator (&lt;a href=&quot;http://geuz.org/gmsh&quot;&gt;Gmsh&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;UMFPACK:&lt;/b&gt; unsymmetric multifrontal sparse LU factorization package (&lt;a href=&quot;http://www.cise.ufl.edu/research/sparse/umfpack/&quot;&gt;UMFPACK&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;MUMPS:&lt;/b&gt; A MUltifrontal Massively Parallel sparse direct Solver (&lt;a href=&quot;http://graal.ens-lyon.fr/MUMPS/&quot;&gt;MUMPS&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;PARALUTION:&lt;/b&gt; Sparse iterative solvers on multi-core CPU and GPU devices (&lt;a href=&quot;http://www.paralution.com/&quot;&gt;PARALUTION&lt;/a&gt;)&lt;br/&gt;&lt;b&gt;ViennaCL:&lt;/b&gt; Linear algebra library for computations on many-core architectures (GPUs, MIC) and multi-core CPUs (&lt;a href=&quot;http://viennacl.sourceforge.net/&quot;&gt;ViennaCL&lt;/a&gt;)&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../util/gui/about.cpp" line="183"/>
         <source>&lt;h3&gt;License:&lt;/h3&gt;&lt;p&gt;Agros is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or (at your option) any later version.&lt;/p&gt;&lt;p&gt;Agros is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;/p&gt;&lt;p&gt;You should have received a copy of the GNU General Public License along with Agros. If not, see &lt;a href=&quot;http://www.gnu.org/licenses/&quot;&gt;http://www.gnu.org/licenses/&lt;/a&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../util/gui/about.cpp" line="223"/>
         <source>System</source>
-        <translation type="unfinished"></translation>
+        <translation>Systém</translation>
     </message>
     <message>
         <source>&lt;h3&gt;Agros2D %1&lt;/h3&gt;Agros2D is a multiplatform multiphysics application for the solution of partial differential equations (PDE) based on the &lt;a href=&quot;http://hpfem.org/hermes2d/&quot;&gt;Hermes2D&lt;/a&gt; library using higher order finite element method (&lt;i&gt;hp&lt;/i&gt;-FEM) with automatic adaptivity.&lt;br/&gt;&lt;br/&gt;Web page: &lt;a href=&quot;http://agros2d.org/&quot;&gt;http://agros2d.org/&lt;/a&gt;&lt;br/&gt;Facebook: &lt;a href=&quot;http://www.facebook.com/pages/Agros2D/132524130149770?sk=info&quot;&gt;http://www.facebook.com/pages/Agros2D/...&lt;/a&gt;&lt;br/&gt;Issues: &lt;a href=&quot;http://github.com/hpfem/agros2d/issues&quot;&gt;http://github.com/hpfem/agros2d/issues&lt;/a&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Authors:&lt;/b&gt;&lt;p&gt;&lt;b&gt;Pavel Karban&lt;/b&gt; - main developer (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;František Mach&lt;/b&gt; - developer, Python script (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Pavel Kůs&lt;/b&gt; - developer, coupled problems, time domain adaptivity (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;David Pánek&lt;/b&gt; - developer (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Lukáš Korous&lt;/b&gt; - developer (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Lukáš Koudela&lt;/b&gt; - developer - RF module (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Bartosz Sawicki&lt;/b&gt; - Polish translation (Warsaw University of Technology, Warsaw)&lt;br/&gt;&lt;b&gt;Václav Kotlan&lt;/b&gt; - German translation (University of West Bohemia, Pilsen)&lt;br/&gt;&lt;b&gt;Petr Kropík&lt;/b&gt; - University of West Bohemia, Pilsen&lt;br/&gt;&lt;b&gt;Denys Nikolayev&lt;/b&gt; - Russion and French translation, University of West Bohemia, Pilsen&lt;br/&gt;&lt;/p&gt;</source>
@@ -214,8 +214,8 @@
         <translation>Externí řešič nelze spustit</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/linear_solver_external.cpp" line="149"/>
-        <location filename="../../agros2d-library/solver/linear_solver_external.cpp" line="160"/>
+        <location filename="../../agros2d-library/solver/linear_solver_external.cpp" line="148"/>
+        <location filename="../../agros2d-library/solver/linear_solver_external.cpp" line="159"/>
         <source>External solver</source>
         <translation>Externí řešič</translation>
     </message>
@@ -327,12 +327,12 @@ Výstup:
     <message>
         <location filename="../../agros2d-library/gui/chart.cpp" line="129"/>
         <source>Step length</source>
-        <translation type="unfinished"></translation>
+        <translation>Krok</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/chart.cpp" line="135"/>
         <source>Total time</source>
-        <translation type="unfinished">Celkový čas</translation>
+        <translation>Celkový čas</translation>
     </message>
 </context>
 <context>
@@ -448,24 +448,36 @@ Výstup:
         <translation type="obsolete">&lt;b&gt;Nová verze aplikace.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Aktuální verze: %1&lt;br/&gt;Nová verze: %2&lt;br/&gt;&lt;br/&gt;URL: &lt;a href=&quot;%3&quot;&gt;%3&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../util/util/checkversion.cpp" line="98"/>
         <source>&lt;b&gt;New version available.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Actual version: %1&lt;br/&gt;New version: %2&lt;br/&gt;&lt;br/&gt;URL: &lt;a href=&quot;http://www.agros2d.org/down/&quot;&gt;http://www.agros2d.org/down/&lt;/a&gt;</source>
-        <translation>&lt;b&gt;Je dostupná nová verze.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Aktuální verze: %1&lt;br/&gt;Nová verze: %2&lt;br/&gt;&lt;br/&gt;URL: &lt;a href=&quot;http://www.agros2d.org/down/&quot;&gt;http://www.agros2d.org/down/&lt;/a&gt;</translation>
+        <translation type="vanished">&lt;b&gt;Je dostupná nová verze.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Aktuální verze: %1&lt;br/&gt;Nová verze: %2&lt;br/&gt;&lt;br/&gt;URL: &lt;a href=&quot;http://www.agros2d.org/down/&quot;&gt;http://www.agros2d.org/down/&lt;/a&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../util/util/checkversion.cpp" line="98"/>
+        <source>&lt;b&gt;New version available.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Actual version: %1&lt;br/&gt;Available version: %2&lt;br/&gt;&lt;br/&gt;URL: &lt;a href=&quot;http://www.agros2d.org/down/&quot;&gt;http://www.agros2d.org/down/&lt;/a&gt;</source>
+        <translation>&lt;b&gt;Nová verze aplikace.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Aktuální verze: %1&lt;br/&gt;Nová verze: %2&lt;br/&gt;&lt;br/&gt;URL: &lt;a href=&quot;http://www.agros2d.org/down/&quot;&gt;http://www.agros2d.org/down/&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../../util/util/checkversion.cpp" line="105"/>
-        <location filename="../../util/util/checkversion.cpp" line="109"/>
         <source>New version</source>
         <translation>Nová verze</translation>
+    </message>
+    <message>
+        <location filename="../../util/util/checkversion.cpp" line="109"/>
+        <source>&lt;b&gt;You are using actual version.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Actual version: %1&lt;br/&gt;Available version: %2&lt;br/&gt;&lt;br/&gt;URL: &lt;a href=&quot;http://www.agros2d.org/down/&quot;&gt;http://www.agros2d.org/down/&lt;/a&gt;</source>
+        <translation>&lt;b&gt;Je dostupná nová verze.&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Aktuální verze: %1&lt;br/&gt;Nová verze: %2&lt;br/&gt;&lt;br/&gt;URL: &lt;a href=&quot;http://www.agros2d.org/down/&quot;&gt;http://www.agros2d.org/down/&lt;/a&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../util/util/checkversion.cpp" line="116"/>
+        <source>Actual version</source>
+        <translation>Aktuální verze</translation>
     </message>
     <message>
         <source>File is corrupted or network is disconnected.</source>
         <translation type="obsolete">Soubor je poškozen nebo není připojena síť.</translation>
     </message>
     <message>
-        <location filename="../../util/util/checkversion.cpp" line="109"/>
         <source>You are using actual version.</source>
-        <translation>Používáte aktuální verzi aplikace.</translation>
+        <translation type="vanished">Používáte aktuální verzi aplikace.</translation>
     </message>
 </context>
 <context>
@@ -490,106 +502,106 @@ Výstup:
 <context>
     <name>Computation</name>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1543"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1571"/>
         <source>No field defined</source>
         <translation>Není definované žádné fyzikální pole</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1550"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1578"/>
         <source>Total time is zero</source>
         <translation>Celkový čas je nulový</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1552"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1580"/>
         <source>Time method tolerance is zero</source>
         <translation>Tolerance časové metody je nulová</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1554"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1582"/>
         <source>Initial step size is negative</source>
         <translation>Počáteční krok je záporný</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1570"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1598"/>
         <source>Could not create mesh</source>
         <translation>Nelze vytvořit výpočetní síť</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1587"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1762"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1785"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1793"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1807"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1615"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1746"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1769"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1777"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1792"/>
         <source>Mesh</source>
         <translation>Síť</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1599"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1632"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1638"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1643"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1738"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1627"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1657"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1663"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1668"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1722"/>
         <source>Solver</source>
         <translation>Řešič</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1632"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1657"/>
         <source>Space adaptivity for transient coupled problems not possible at the moment.</source>
         <translation>Prostorovou adaptivitu není možné využít pro přechodové děje u sdružených úloh.</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1638"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1762"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1663"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1746"/>
         <source>No fields defined</source>
         <translation>Není definované žádné fyzikální pole</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1643"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1668"/>
         <source>Matrix and RHS will be saved on the disk and this will slow down the calculation. You may disable it in application settings.</source>
         <translation>Matice a RHS budou uloženy na disk a to velmi zpomalí výpočet (ukládání můžete zakázat v nastavení aplikace).</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1738"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1722"/>
         <source>An unknown exception occurred in solver and has been ignored</source>
         <translation>Nastala neznámá vyjímka, která byla ignorována</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1777"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1761"/>
         <source>Geometry</source>
         <translation>Geometrie</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1799"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1784"/>
         <source>Mesh (deal.II)</source>
         <translation>Síť (deal.II)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1807"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1792"/>
         <source>An unknown exception occurred and has been ignored</source>
         <translation>Nastala neznámá vyjímka, která byla ignorována</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1858"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1840"/>
         <source>Mesh generator
 %1</source>
         <translation>Generátor sítě
 %1</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1887"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1892"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1869"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1874"/>
         <source>Mesh Generator</source>
         <translation>Generátor sítě</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1887"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1869"/>
         <source>Reading initial mesh from disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Načítání výchozí sítě z disku</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1892"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1874"/>
         <source>Reading initial mesh from memory</source>
-        <translation type="unfinished">Načítání počáteční sítě z paměti</translation>
+        <translation>Načítání výchozí sítě z paměti</translation>
     </message>
 </context>
 <context>
@@ -616,49 +628,49 @@ Výstup:
     </message>
     <message>
         <location filename="../../agros2d-library/confdialog.cpp" line="144"/>
-        <location filename="../../agros2d-library/confdialog.cpp" line="263"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="259"/>
         <source>Solver</source>
         <translation>Řešič</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="194"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="190"/>
         <source>Show grid</source>
         <translation>Zobrazit mřížku</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="195"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="191"/>
         <source>Show rulers</source>
         <translation>Zobrazit pravítka</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="196"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="192"/>
         <source>Show axes</source>
         <translation>Zobrazit osy</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="203"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="199"/>
         <source>Grid</source>
         <translation>Mřížka</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="220"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="216"/>
         <source>Rulers:</source>
         <translation>Pravítka:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="223"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="219"/>
         <source>Postprocessor:</source>
         <translation>Postprocesor:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="227"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="223"/>
         <source>Fonts</source>
         <translation>Fonty</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="254"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="250"/>
         <source>Disable accelerator</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypnout akcelerátor</translation>
     </message>
     <message>
         <source>Plugins</source>
@@ -669,22 +681,22 @@ Výstup:
         <translation type="obsolete">Python</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="173"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="169"/>
         <source>UI:</source>
         <translation>UR:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="175"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="171"/>
         <source>Language:</source>
         <translation>Jazyk:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="178"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="174"/>
         <source>General</source>
         <translation>Základní</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="182"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="178"/>
         <source>Show value result in line edit input</source>
         <translation>Zobrazit výsledek u textových polí</translation>
     </message>
@@ -693,12 +705,12 @@ Výstup:
         <translation type="obsolete">Detekovat novou verzi během spouštění</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="184"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="180"/>
         <source>Print application log to standard output.</source>
         <translation>Tisknout výstup aplikace na standardní výstup.</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="190"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="186"/>
         <source>Other</source>
         <translation>Ostatní</translation>
     </message>
@@ -719,27 +731,27 @@ Výstup:
         <translation type="obsolete">Použít vyrovnávací paměť při řešení (vysoké nároky na paměti)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="257"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="253"/>
         <source>Number of threads:</source>
         <translation>Počet vláken:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="259"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="255"/>
         <source>Number of cache slots:</source>
         <translation>Počet slotů mezipaměti:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="266"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="262"/>
         <source>Save matrix and RHS</source>
         <translation>Uložit matici a RHS</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="274"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="270"/>
         <source>Matrix format</source>
         <translation>Formát matice</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/confdialog.cpp" line="277"/>
+        <location filename="../../agros2d-library/confdialog.cpp" line="273"/>
         <source>Development</source>
         <translation>Vývoj</translation>
     </message>
@@ -843,17 +855,17 @@ Výstup:
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="1976"/>
         <source>Line</source>
-        <translation type="unfinished"></translation>
+        <translation>Řádka</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="1976"/>
         <source>Name</source>
-        <translation type="unfinished">Název</translation>
+        <translation>Název</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="1976"/>
         <source>Filename</source>
-        <translation type="unfinished"></translation>
+        <translation>Název souboru</translation>
     </message>
 </context>
 <context>
@@ -912,38 +924,38 @@ Výstup:
     <message>
         <location filename="../../agros2d-library/examplesdialog.cpp" line="66"/>
         <source>Recent files</source>
-        <translation type="unfinished"></translation>
+        <translation>Naposledy otevřené</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/examplesdialog.cpp" line="81"/>
         <source>Examples</source>
-        <translation type="unfinished">Příklady</translation>
+        <translation>Příklady</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/examplesdialog.cpp" line="114"/>
         <source>Welcome</source>
-        <translation type="unfinished"></translation>
+        <translation>Vítejte</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/examplesdialog.cpp" line="115"/>
         <source>Ctrl+1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../agros2d-library/examplesdialog.cpp" line="198"/>
         <source>Recent problems</source>
-        <translation type="unfinished"></translation>
+        <translation>Nedávné problémy</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/examplesdialog.cpp" line="221"/>
         <source>Recent scripts</source>
-        <translation type="unfinished"></translation>
+        <translation>Naposledy otevřené skripty</translation>
     </message>
 </context>
 <context>
     <name>FieldDialog</name>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="881"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="882"/>
         <source>Delete field</source>
         <translation>Smazat pole</translation>
     </message>
@@ -952,22 +964,22 @@ Výstup:
         <translation type="vanished">Editor modulu</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="918"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="919"/>
         <source>Delete</source>
         <translation>Smazat</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="918"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="919"/>
         <source>Physical field &apos;%1&apos; will be pernamently deleted. Are you sure?</source>
         <translation>Fyzikální pole &apos;%1&apos; bude trvale smazáno. Jste si jistý(á)?</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="919"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="920"/>
         <source>&amp;Yes</source>
         <translation>&amp;Ano</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="919"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="920"/>
         <source>&amp;No</source>
         <translation>&amp;Ne</translation>
     </message>
@@ -975,7 +987,7 @@ Výstup:
 <context>
     <name>FieldSelectDialog</name>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="43"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="44"/>
         <source>Select field</source>
         <translation>Vyber pole</translation>
     </message>
@@ -987,33 +999,33 @@ Výstup:
         <translation type="obsolete">Druh analýzy:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="448"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="449"/>
         <source>Initial condition:</source>
         <translation>Počáteční podmínka:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="227"/>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="423"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="228"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="424"/>
         <source>Transient analysis</source>
         <translation>Přechodový děj</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="181"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="182"/>
         <source>Matrix solver:</source>
         <translation>Maticový řešič:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="191"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="192"/>
         <source>Number of refinements:</source>
         <translation>Počet zjemnění:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="195"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="196"/>
         <source>Space adaptivity:</source>
         <translation>Prostorová adaptivita:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="228"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="229"/>
         <source>Matrix solver</source>
         <translation>Maticový řešič</translation>
     </message>
@@ -1026,7 +1038,7 @@ Výstup:
         <translation type="obsolete">Měření konvergence:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="281"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="282"/>
         <source>Damping type:</source>
         <translation>Typ tlumení:</translation>
     </message>
@@ -1039,12 +1051,12 @@ Výstup:
         <translation type="obsolete">Min. počet kroků ke zvýšení faktoru:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="303"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="304"/>
         <source>Max. residual ratio for Jacobian reuse:</source>
         <translation>Max. poměr residuálů pro znovupoužití Jacobiánu:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="305"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="306"/>
         <source>Max. steps with the same Jacobian:</source>
         <translation>Max. počet kroků se stejným Jacobiánem:</translation>
     </message>
@@ -1069,23 +1081,23 @@ Výstup:
         <translation type="obsolete">Tlumení:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="283"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="284"/>
         <source>Factor:</source>
         <translation>Faktor:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="293"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="294"/>
         <source>Reuse Jacobian if possible</source>
         <translation>Umožnit opětovné použití Jacobiánu</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="177"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="178"/>
         <source>Analysis:</source>
         <translation>Analýza:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="179"/>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="497"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="180"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="498"/>
         <source>Solver:</source>
         <translation>Řešič:</translation>
     </message>
@@ -1098,12 +1110,12 @@ Výstup:
         <translation type="obsolete">Řešič:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="193"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="194"/>
         <source>Polynomial order:</source>
         <translation>Řád polynomu:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="199"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="200"/>
         <source>Mesh parameters</source>
         <translation>Parametry sítě</translation>
     </message>
@@ -1112,7 +1124,7 @@ Výstup:
         <translation type="obsolete">Linearita:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="397"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="398"/>
         <source>Tolerance (%):</source>
         <translation>Tolerance (%):</translation>
     </message>
@@ -1129,104 +1141,104 @@ Výstup:
         <translation type="obsolete">Počet kroků ke zvýšení TF:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="313"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="314"/>
         <source>Use Anderson acceleration</source>
         <translation>Použít Andersonovo zrychlení</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="324"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="325"/>
         <source>Anderson beta:</source>
         <translation>Andersonova beta:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="326"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="327"/>
         <source>Num. of last used iter.:</source>
         <translation>Poč. posled. použ. iter.:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="184"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="185"/>
         <source>General</source>
         <translation>Základní</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="260"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="261"/>
         <source>Relative change of solutions (%):</source>
         <translation>Relativní změna řešení (%):</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="263"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="264"/>
         <source>Residual:</source>
         <translation>Residual:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="267"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="268"/>
         <source>Convergence (all selected conditions have to be satisfied)</source>
         <translation>Konvergence (všechmy vybrané podmínky musí být splněny)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="285"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="286"/>
         <source>Min. residual ratio for factor decrease:</source>
         <translation>Min. poměr residuálů pro snížení faktoru:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="287"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="288"/>
         <source>Min. steps for factor increase:</source>
         <translation>Min. počet kroků ke zvýšení faktoru:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="334"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="335"/>
         <source>Newton&apos;s solver</source>
         <translation>Newton</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="335"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="336"/>
         <source>Picard&apos;s solver</source>
         <translation>Picard</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="400"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="401"/>
         <source>Error estimator:</source>
-        <translation type="unfinished"></translation>
+        <translation>Odhad chyby:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="402"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="403"/>
         <source>Control strategy:</source>
-        <translation type="unfinished"></translation>
+        <translation>Řídící strategie:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="404"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="405"/>
         <source>Percentage to be refined:</source>
-        <translation type="unfinished"></translation>
+        <translation>Zbývající procenta ke zjemnění:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="406"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="407"/>
         <source>Percentage to be coarsened:</source>
-        <translation type="unfinished"></translation>
+        <translation>Zbývající procenta přepočtu na hrubou matici:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="408"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="409"/>
         <source>&lt;i&gt;hp&lt;/i&gt;-adaptivity strategy:</source>
-        <translation type="unfinished"></translation>
+        <translation>strategie &lt;i&gt;hp&lt;/i&gt;-adaptivity:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="493"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="494"/>
         <source>deal.II</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="499"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="500"/>
         <source>Environment:</source>
-        <translation type="unfinished"></translation>
+        <translation>Prostředí:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="501"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="502"/>
         <source>Parameters:</source>
-        <translation type="unfinished"></translation>
+        <translation>Parametry:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="505"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="506"/>
         <source>External (out of core)</source>
-        <translation type="unfinished">Externí</translation>
+        <translation>Externí řešič</translation>
     </message>
     <message>
         <source>Use space refinement for error estimation</source>
@@ -1237,7 +1249,7 @@ Výstup:
         <translation type="obsolete">Zjemnění sítě pro hp adaptivitu</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="395"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="396"/>
         <source>Maximum steps:</source>
         <translation>Max. počet kroků:</translation>
     </message>
@@ -1246,7 +1258,7 @@ Výstup:
         <translation type="vanished">Práh:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="412"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="413"/>
         <source>Control</source>
         <translation>Kontrola</translation>
     </message>
@@ -1263,7 +1275,7 @@ Výstup:
         <translation type="vanished">Referenční řešení</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="450"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="451"/>
         <source>Time skip (s):</source>
         <translation>Časový skok (s):</translation>
     </message>
@@ -1304,7 +1316,7 @@ Výstup:
         <translation type="obsolete">Konvergence</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="290"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="291"/>
         <source>Damping</source>
         <translation>Tlumení</translation>
     </message>
@@ -1333,32 +1345,32 @@ Výstup:
         <translation type="obsolete">Norma:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="417"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="418"/>
         <source>Steps back in transient:</source>
         <translation>Počet kroků zpět v přech. ději:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="419"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="420"/>
         <source>Redone each trans. step:</source>
         <translation>Přepočítat každý krok přech. děje:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="484"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="485"/>
         <source>Method:</source>
         <translation>Metoda:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="486"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="487"/>
         <source>Preconditioner:</source>
         <translation>Předpodmiňovač:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="488"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="489"/>
         <source>Absolute tolerance:</source>
         <translation>Absolutní tolerance:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="490"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="491"/>
         <source>Maximum number of iterations:</source>
         <translation>Maximální počet iterací:</translation>
     </message>
@@ -1367,12 +1379,12 @@ Výstup:
         <translation type="vanished">Iterativní řešič</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="226"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="227"/>
         <source>Space adaptivity</source>
         <translation>Prostorová adaptivita</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="225"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="226"/>
         <source>Solver</source>
         <translation>Řešič</translation>
     </message>
@@ -1381,7 +1393,7 @@ Výstup:
         <translation type="obsolete">Lineární řešič</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="230"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="231"/>
         <source>Partial differential equation</source>
         <translation>Parciální diferenciální rovnice</translation>
     </message>
@@ -1389,12 +1401,12 @@ Výstup:
 <context>
     <name>FieldsToobar</name>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="979"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="980"/>
         <source>Add field</source>
         <translation>Přidat pole</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="1008"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="1009"/>
         <source>&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Analysis:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Solver:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%3&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Adaptivity:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%2&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Number of ref. / order:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%4 / %5&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</source>
         <translation>&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Analýza:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Řešič:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%3&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Adaptivita:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%2&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Počet zjemnění /řád:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%4 / %5&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</translation>
     </message>
@@ -1842,178 +1854,173 @@ Výstup:
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="97"/>
         <source>Basic informations</source>
-        <translation type="unfinished">Základní informace</translation>
+        <translation>Základní informace</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="99"/>
         <source>Name:</source>
-        <translation type="unfinished">Název:</translation>
+        <translation>Název:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="104"/>
-        <source>General:</source>
-        <translation type="unfinished"></translation>
+        <source>General</source>
+        <translation>Obecné</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="105"/>
         <source>Coordinate type:</source>
-        <translation type="unfinished">Souřadnicový systém:</translation>
+        <translation>Souřadnicový systém:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="107"/>
         <source>Mesh type:</source>
-        <translation type="unfinished">Typ sítě:</translation>
+        <translation>Typ sítě:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="114"/>
         <source>Harmonic analysis</source>
-        <translation type="unfinished">Harmonická analýza</translation>
+        <translation>Harmonická analýza</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="115"/>
         <source>Frequency:</source>
-        <translation type="unfinished">Frekvence:</translation>
+        <translation>Frekvence:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="122"/>
         <source>Transient analysis</source>
-        <translation type="unfinished">Přechodový děj</translation>
+        <translation>Přechodový děj</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="123"/>
         <source>Method:</source>
-        <translation type="unfinished">Metoda:</translation>
+        <translation>Metoda:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="125"/>
         <source>Order:</source>
-        <translation type="unfinished">Řád:</translation>
+        <translation>Řád:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="127"/>
         <source>Tolerance (%):</source>
-        <translation type="unfinished">Tolerance (%):</translation>
+        <translation>Tolerance (%):</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="129"/>
         <source>Initial step size:</source>
-        <translation type="unfinished">Velikost poč. kroku:</translation>
+        <translation>Velikost poč. kroku:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="131"/>
         <source>Constant time step:</source>
-        <translation type="unfinished"></translation>
+        <translation>Konstantní časový krok:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="133"/>
         <source>Number of const. time steps:</source>
-        <translation type="unfinished">Počet konst. časových kroků:</translation>
+        <translation>Počet konst. časových kroků:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="135"/>
         <source>Total time:</source>
-        <translation type="unfinished">Celkový čas:</translation>
+        <translation>Celkový čas:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="139"/>
         <source>Geometry</source>
-        <translation type="unfinished">Geometrie</translation>
+        <translation>Geometrie</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="140"/>
         <source>Nodes:</source>
-        <translation type="unfinished">Uzly:</translation>
+        <translation type="obsolete">Uzly:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="142"/>
         <source>Edges:</source>
-        <translation type="unfinished">Hrany:</translation>
+        <translation type="obsolete">Hrany:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="144"/>
         <source>Labels:</source>
-        <translation type="unfinished">Značky oblastí:</translation>
+        <translation type="obsolete">Značky oblastí:</translation>
+    </message>
+    <message>
+        <source>Materials:</source>
+        <translation type="obsolete">Materiály:</translation>
+    </message>
+    <message>
+        <source>Boundaries:</source>
+        <translation type="obsolete">Hranice:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/infowidget.cpp" line="146"/>
-        <source>Materials:</source>
-        <translation type="unfinished">Materiály:</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="148"/>
-        <source>Boundaries:</source>
-        <translation type="unfinished">Hranice:</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="154"/>
         <source>Parameters</source>
-        <translation type="unfinished">Parametry</translation>
+        <translation>Parametry</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="167"/>
+        <location filename="../../agros2d-library/gui/infowidget.cpp" line="163"/>
         <source>Results</source>
-        <translation type="unfinished"></translation>
+        <translation>Výsledky</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="182"/>
+        <location filename="../../agros2d-library/gui/infowidget.cpp" line="179"/>
         <source>Physical fields</source>
-        <translation type="unfinished">Fyzikální pole</translation>
+        <translation>Fyzikální pole</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="190"/>
+        <location filename="../../agros2d-library/gui/infowidget.cpp" line="187"/>
         <source>Analysis:</source>
-        <translation type="unfinished">Analýza:</translation>
+        <translation>Analýza:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="192"/>
+        <location filename="../../agros2d-library/gui/infowidget.cpp" line="189"/>
         <source>Solver:</source>
-        <translation type="unfinished">Řešič:</translation>
+        <translation>Řešič:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="194"/>
+        <location filename="../../agros2d-library/gui/infowidget.cpp" line="191"/>
         <source>Number of refinements:</source>
-        <translation type="unfinished">Počet zjemnění:</translation>
+        <translation>Počet zjemnění:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="196"/>
+        <location filename="../../agros2d-library/gui/infowidget.cpp" line="193"/>
         <source>Polynomial order:</source>
-        <translation type="unfinished">Řád polynomu:</translation>
+        <translation>Řád polynomu:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="198"/>
+        <location filename="../../agros2d-library/gui/infowidget.cpp" line="195"/>
         <source>Adaptivity:</source>
-        <translation type="unfinished">Adaptivita:</translation>
+        <translation>Adaptivita:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="200"/>
+        <location filename="../../agros2d-library/gui/infowidget.cpp" line="197"/>
         <source>Matrix solver:</source>
-        <translation type="unfinished">Maticový řešič:</translation>
+        <translation>Maticový řešič:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="209"/>
+        <location filename="../../agros2d-library/gui/infowidget.cpp" line="206"/>
         <source>Coupled fields</source>
-        <translation type="unfinished">Sdružená pole</translation>
+        <translation>Sdružená pole</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="217"/>
+        <location filename="../../agros2d-library/gui/infowidget.cpp" line="214"/>
         <source>Source:</source>
-        <translation type="unfinished">Zdroj:</translation>
+        <translation>Zdroj:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="219"/>
+        <location filename="../../agros2d-library/gui/infowidget.cpp" line="216"/>
         <source>Target:</source>
-        <translation type="unfinished">Cíl:</translation>
+        <translation>Cíl:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/infowidget.cpp" line="221"/>
+        <location filename="../../agros2d-library/gui/infowidget.cpp" line="218"/>
         <source>Coupling type:</source>
-        <translation type="unfinished">Typ sdružení:</translation>
+        <translation>Typ sdružení:</translation>
     </message>
 </context>
 <context>
     <name>LocalPointValueDialog</name>
     <message>
-        <location filename="../../agros2d-library/gui/resultsview.cpp" line="331"/>
+        <location filename="../../agros2d-library/gui/resultsview.cpp" line="332"/>
         <source>Local point value</source>
         <translation>Lokální veličina v bodě</translation>
     </message>
@@ -2021,8 +2028,8 @@ Výstup:
 <context>
     <name>LogDialog</name>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="477"/>
-        <location filename="../../agros2d-library/logview.cpp" line="487"/>
+        <location filename="../../agros2d-library/logview.cpp" line="463"/>
+        <location filename="../../agros2d-library/logview.cpp" line="473"/>
         <source>error</source>
         <translation>chyba</translation>
     </message>
@@ -2031,7 +2038,7 @@ Výstup:
         <translation type="obsolete">iterace</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="347"/>
+        <location filename="../../agros2d-library/logview.cpp" line="333"/>
         <source>Close</source>
         <translation>Zavřít</translation>
     </message>
@@ -2040,70 +2047,70 @@ Výstup:
         <translation type="vanished">Zobrazit/skrýt záznam</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="351"/>
+        <location filename="../../agros2d-library/logview.cpp" line="337"/>
         <source>Abort</source>
         <translation>Přerušit</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="378"/>
+        <location filename="../../agros2d-library/logview.cpp" line="364"/>
         <source>Transient problem</source>
         <translation>Přechodový děj</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="389"/>
+        <location filename="../../agros2d-library/logview.cpp" line="375"/>
         <source>number of steps</source>
         <translation>počet kroků</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="393"/>
-        <location filename="../../agros2d-library/logview.cpp" line="404"/>
+        <location filename="../../agros2d-library/logview.cpp" line="379"/>
+        <location filename="../../agros2d-library/logview.cpp" line="390"/>
         <source>step length</source>
         <translation>délka kroku</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="397"/>
-        <location filename="../../agros2d-library/logview.cpp" line="409"/>
+        <location filename="../../agros2d-library/logview.cpp" line="383"/>
+        <location filename="../../agros2d-library/logview.cpp" line="395"/>
         <source>total time</source>
         <translation>celkový čas</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="425"/>
+        <location filename="../../agros2d-library/logview.cpp" line="411"/>
         <source>Nonlinear solver</source>
         <translation>Nelineární řešič</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="435"/>
-        <location filename="../../agros2d-library/logview.cpp" line="472"/>
+        <location filename="../../agros2d-library/logview.cpp" line="421"/>
+        <location filename="../../agros2d-library/logview.cpp" line="458"/>
         <source>number of iterations</source>
         <translation>počet iterací</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="440"/>
+        <location filename="../../agros2d-library/logview.cpp" line="426"/>
         <source>rel. change of sln. (%)</source>
         <translation>rel. změna řešení (%)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="461"/>
+        <location filename="../../agros2d-library/logview.cpp" line="447"/>
         <source>Adaptivity</source>
         <translation>Adaptivita</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="481"/>
+        <location filename="../../agros2d-library/logview.cpp" line="467"/>
         <source>number of DOFs</source>
         <translation>počet st. volnosti</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="492"/>
+        <location filename="../../agros2d-library/logview.cpp" line="478"/>
         <source>DOFs</source>
         <translation>stupně volnosti</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="627"/>
+        <location filename="../../agros2d-library/logview.cpp" line="613"/>
         <source>Solver</source>
         <translation>Řešič</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="627"/>
+        <location filename="../../agros2d-library/logview.cpp" line="613"/>
         <source>Solution is being aborted.</source>
         <translation>Řešení bude zastaveno.</translation>
     </message>
@@ -2118,6 +2125,55 @@ Výstup:
     </message>
 </context>
 <context>
+    <name>LogOptimizationDialog</name>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="86"/>
+        <source>Solver</source>
+        <translation>Řešič</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="86"/>
+        <source>Stydy is being aborted.</source>
+        <translation>Výpočet byl přerušen.</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="108"/>
+        <source>Close</source>
+        <translation>Zavřít</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="112"/>
+        <source>Abort</source>
+        <translation>Přerušit</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="135"/>
+        <source>Optimization</source>
+        <translation>Optimalizace</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="146"/>
+        <source>number of steps</source>
+        <translation>počet kroků</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="151"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="157"/>
+        <source>objective function</source>
+        <translation>kriteriální funkce</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="228"/>
+        <source>Study</source>
+        <translation>Studie</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="228"/>
+        <source>Parameters: %1, results: %2</source>
+        <translation>Parametry: %1, výsledky: %2</translation>
+    </message>
+</context>
+<context>
     <name>LogView</name>
     <message>
         <source>Applicaton log</source>
@@ -2128,9 +2184,9 @@ Výstup:
         <translation type="vanished">Záznam aplikace</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="242"/>
+        <location filename="../../agros2d-library/logview.cpp" line="228"/>
         <source>Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Záznam</translation>
     </message>
 </context>
 <context>
@@ -2165,7 +2221,7 @@ Výstup:
         <translation type="obsolete">Kopírovat</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/logview.cpp" line="212"/>
+        <location filename="../../agros2d-library/logview.cpp" line="198"/>
         <source>version: %1</source>
         <translation>verze: %1</translation>
     </message>
@@ -2211,7 +2267,7 @@ Výstup:
     <message>
         <location filename="../../agros2d-library/util/loops.cpp" line="701"/>
         <source>There are multiple labels in the domain</source>
-        <translation type="unfinished"></translation>
+        <translation>V oblasti jsou duplicitní značky</translation>
     </message>
     <message>
         <source>There is multiple labels in the domain</source>
@@ -2257,7 +2313,7 @@ krok</translation>
         <translation type="vanished">Spustit skript: %1</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="1280"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="1291"/>
         <source>Export mesh file</source>
         <translation>Exportovat soubor se sítí</translation>
     </message>
@@ -2272,7 +2328,7 @@ krok</translation>
         <translation>Export obrázku...</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="887"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="890"/>
         <source>Export image to file</source>
         <translation>Export obrázku do souboru</translation>
     </message>
@@ -2282,7 +2338,7 @@ krok</translation>
         <translation>Export geometrie...</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="916"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="919"/>
         <source>Export geometry to file</source>
         <translation>Export geometrie do souboru</translation>
     </message>
@@ -2344,7 +2400,7 @@ krok</translation>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="288"/>
         <source>&amp;Solve</source>
-        <translation type="unfinished">&amp;Spustit
+        <translation>&amp;Spustit
 řešení</translation>
     </message>
     <message>
@@ -2426,27 +2482,27 @@ krok</translation>
         <translation type="vanished">Řešení &apos;%1&apos; neexistuje.</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="917"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="920"/>
         <source>SVG files (*.svg)</source>
         <translation>SVG soubory (*.svg)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="1309"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="1320"/>
         <source>Export VTK file</source>
         <translation>Export VTK souboru</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="1309"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="1320"/>
         <source>VTK files (*.vtk)</source>
         <translation>VTK soubory (*.vtk)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="1358"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="1369"/>
         <source>Script</source>
         <translation>Skript</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="1359"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="1370"/>
         <source>Cannot close main window. Script is still running.</source>
         <translation>Není možné zavřít hlavní okno. Vykonávání skriptu ještě nezkončilo.</translation>
     </message>
@@ -2463,29 +2519,29 @@ krok</translation>
         <translation type="obsolete">Adaptivní krok</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="1280"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="1291"/>
         <source>Mesh files (*.msh)</source>
         <translation>Soubory sítí (*.msh)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="1299"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="1310"/>
         <source>The problem is not meshed</source>
         <translation>Problém není diskretizován</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="707"/>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="752"/>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="756"/>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="800"/>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="835"/>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="1299"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="754"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="758"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="802"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="838"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="1310"/>
         <source>Problem</source>
         <translation>Problém</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="203"/>
         <source>Delete solutions</source>
-        <translation type="unfinished"></translation>
+        <translation>Smazat řešení</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="274"/>
@@ -2505,22 +2561,22 @@ krok</translation>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="285"/>
         <source>Alt+W</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="289"/>
         <source>Alt+S</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="292"/>
         <source>&amp;Solve new</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Spustit řešení znovu</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="293"/>
         <source>Alt+Shift+S</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="358"/>
@@ -2599,7 +2655,7 @@ krok</translation>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="284"/>
         <source>&amp;Mesh area</source>
-        <translation type="unfinished">&amp;Diskretizace
+        <translation>&amp;Diskretizace
 oblasti</translation>
     </message>
     <message>
@@ -2632,20 +2688,20 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="426"/>
         <source>S&amp;ettings</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastav&amp;ení</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="721"/>
         <source>Agros2D files (*.ags *.a2d *.py);;Agros2D data files (*.ags);;Python script (*.py);;Agros2D data files - deprecated (*.a2d)</source>
-        <translation type="unfinished"></translation>
+        <translation>Soubory Agros2D (*.ags *.a2d *.py);;datové soubory pro Agros2D (*.ags);;Python skripty (*.py);;datové soubory pro Agros2D - zastaralé (*.a2d)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="752"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="754"/>
         <source>Unknown suffix.</source>
         <translation>Neznámá přípona.</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="756"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="758"/>
         <source>File &apos;%1&apos; is not found.</source>
         <translation>Soubor &apos;%1&apos; nebyl nalezen.</translation>
     </message>
@@ -2676,33 +2732,33 @@ oblasti</translation>
         <translation type="vanished">Soubory Agros2D (*.a2d)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="822"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="825"/>
         <source>Save file</source>
         <translation>Uložit soubor</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="822"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="825"/>
         <source>Agros2D files (*.ags)</source>
-        <translation type="unfinished"></translation>
+        <translation>Soubory Agros2D (*.ags)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="853"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="856"/>
         <source>Import file</source>
         <translation>Importovat soubor</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="853"/>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="870"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="856"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="873"/>
         <source>DXF files (*.dxf)</source>
         <translation>Soubory AUTOCAD DXF (*.dxf)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="870"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="873"/>
         <source>Export file</source>
         <translation>Exportovat soubor</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/mainwindow.cpp" line="887"/>
+        <location filename="../../agros2d-library/mainwindow.cpp" line="890"/>
         <source>PNG files (*.png)</source>
         <translation>Soubory PNG (*.png)</translation>
     </message>
@@ -3048,32 +3104,32 @@ oblasti</translation>
         <location filename="../../agros2d-library/mesh/meshgenerator_cubit.cpp" line="220"/>
         <location filename="../../agros2d-library/mesh/meshgenerator_cubit.cpp" line="290"/>
         <source>Mesh generator</source>
-        <translation type="unfinished">Generátor sítě</translation>
+        <translation>Generátor sítě</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mesh/meshgenerator_cubit.cpp" line="93"/>
         <source>Could not start Triangle</source>
-        <translation type="unfinished">Triangle nelze spustit</translation>
+        <translation>Triangle nelze spustit</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mesh/meshgenerator_cubit.cpp" line="137"/>
         <source>Invalid number of nodes (%1 &lt; 3)</source>
-        <translation type="unfinished">Chybný počet uzlů (%1 &lt; 3)</translation>
+        <translation>Chybný počet uzlů (%1 &lt; 3)</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mesh/meshgenerator_cubit.cpp" line="142"/>
         <source>Invalid number of edges (%1 &lt; 3)</source>
-        <translation type="unfinished">Chybný počet hran (%1 &lt; 3)</translation>
+        <translation>Chybný počet hran (%1 &lt; 3)</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mesh/meshgenerator_cubit.cpp" line="150"/>
         <source>Could not create CUBIT journal file (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze vytvořit žurnální soubor pro CUBIT</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mesh/meshgenerator_cubit.cpp" line="290"/>
         <source>Could not read LSDyna node file</source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze číst ze souboru uzlů LSDyna</translation>
     </message>
 </context>
 <context>
@@ -3143,22 +3199,22 @@ oblasti</translation>
         <location filename="../../agros2d-library/mesh/meshgenerator_netgen.cpp" line="85"/>
         <location filename="../../agros2d-library/mesh/meshgenerator_netgen.cpp" line="98"/>
         <source>Mesh generator</source>
-        <translation type="unfinished">Generátor sítě</translation>
+        <translation>Generátor sítě</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mesh/meshgenerator_netgen.cpp" line="80"/>
         <source>Invalid number of nodes (%1 &lt; 3)</source>
-        <translation type="unfinished">Chybný počet uzlů (%1 &lt; 3)</translation>
+        <translation>Chybný počet uzlů (%1 &lt; 3)</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mesh/meshgenerator_netgen.cpp" line="85"/>
         <source>Invalid number of edges (%1 &lt; 3)</source>
-        <translation type="unfinished">Chybný počet hran (%1 &lt; 3)</translation>
+        <translation>Chybný počet hran (%1 &lt; 3)</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mesh/meshgenerator_netgen.cpp" line="98"/>
         <source>Could not create NETGEN geometry file (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze vytvořit soubor geometrie NETGEN (%1)</translation>
     </message>
 </context>
 <context>
@@ -3808,47 +3864,62 @@ oblasti</translation>
 <context>
     <name>OptiLab</name>
     <message>
-        <location filename="../../agros2d-library/optilab/optilab.cpp" line="242"/>
+        <location filename="../../agros2d-library/optilab/optilab.cpp" line="444"/>
         <source>OptiLab</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
     <name>OptiLabWidget</name>
     <message>
-        <location filename="../../agros2d-library/optilab/optilab.cpp" line="57"/>
+        <location filename="../../agros2d-library/optilab/optilab.cpp" line="60"/>
         <source>Studies</source>
-        <translation type="unfinished"></translation>
+        <translation>Studie</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/optilab.cpp" line="68"/>
+        <location filename="../../agros2d-library/optilab/optilab.cpp" line="71"/>
         <source>Computation</source>
-        <translation type="unfinished"></translation>
+        <translation>Výpočet - </translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/optilab.cpp" line="68"/>
+        <location filename="../../agros2d-library/optilab/optilab.cpp" line="71"/>
         <source>State</source>
-        <translation type="unfinished"></translation>
+        <translation>Stav</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/optilab.cpp" line="77"/>
+        <location filename="../../agros2d-library/optilab/optilab.cpp" line="80"/>
         <source>Variable X:</source>
-        <translation type="unfinished"></translation>
+        <translation>Proměnná X:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/optilab.cpp" line="79"/>
+        <location filename="../../agros2d-library/optilab/optilab.cpp" line="82"/>
         <source>Variable Y:</source>
-        <translation type="unfinished"></translation>
+        <translation>Proměnná Y:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/optilab.cpp" line="83"/>
-        <source>TEST SWEEP</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../agros2d-library/optilab/optilab.cpp" line="86"/>
+        <source>TEST</source>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/optilab.cpp" line="85"/>
-        <source>TEST GEN.</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../agros2d-library/optilab/optilab.cpp" line="88"/>
+        <source>TEAM 22 NLopt</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/optilab.cpp" line="90"/>
+        <source>TEAM 25 NLopt</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/optilab.cpp" line="92"/>
+        <source>TEAM 22 BayesOpt</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/optilab.cpp" line="94"/>
+        <source>TEAM 25 BayesOpt</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -3856,17 +3927,17 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/gui/parameterdialog.cpp" line="46"/>
         <source>Parameter: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Parametr: %1</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/parameterdialog.cpp" line="55"/>
         <source>Name</source>
-        <translation type="unfinished">Název</translation>
+        <translation>Název</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/gui/parameterdialog.cpp" line="57"/>
         <source>Value</source>
-        <translation type="unfinished">Hodnota</translation>
+        <translation>Hodnota</translation>
     </message>
 </context>
 <context>
@@ -4038,17 +4109,16 @@ oblasti</translation>
 <context>
     <name>PhysicalFieldWidget</name>
     <message>
-        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="159"/>
+        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="147"/>
         <source>Time step:</source>
         <translation>Časový krok:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="169"/>
         <source>Transient analysis</source>
-        <translation>Přechodový děj</translation>
+        <translation type="vanished">Přechodový děj</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="174"/>
+        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="152"/>
         <source>Adaptivity step:</source>
         <translation>Adaptivní krok:</translation>
     </message>
@@ -4061,24 +4131,22 @@ oblasti</translation>
         <translation type="obsolete">Typ řešení:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="183"/>
         <source>Space adaptivity</source>
-        <translation>Prostorová adaptivita</translation>
+        <translation type="vanished">Prostorová adaptivita</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="152"/>
+        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="161"/>
         <source>Physical field:</source>
         <translation>Fyzikální pole:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="150"/>
+        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="159"/>
         <source>Computation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Výpočet:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="155"/>
         <source>Postprocessor settings</source>
-        <translation>Nastavení postprocesoru</translation>
+        <translation type="vanished">Nastavení postprocesoru</translation>
     </message>
 </context>
 <context>
@@ -4088,27 +4156,27 @@ oblasti</translation>
         <location filename="../../agros2d-library/sceneview_post.cpp" line="253"/>
         <location filename="../../agros2d-library/sceneview_post.cpp" line="282"/>
         <source>Post View</source>
-        <translation type="unfinished">Zobrazení výsledků</translation>
+        <translation>Zobrazení výsledků</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/sceneview_post.cpp" line="218"/>
         <source>Contour view (%1)</source>
-        <translation type="unfinished">Zobrazení kontur (%1)</translation>
+        <translation>Zobrazení kontur (%1)</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/sceneview_post.cpp" line="253"/>
         <source>Scalar view (%1)</source>
-        <translation type="unfinished">Skalární zobrazení (%1)</translation>
+        <translation>Skalární zobrazení (%1)</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/sceneview_post.cpp" line="282"/>
         <source>Vector view (%1)</source>
-        <translation type="unfinished">Zobrazení vektorů (%1)</translation>
+        <translation>Zobrazení vektorů (%1)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post.cpp" line="366"/>
+        <location filename="../../agros2d-library/sceneview_post.cpp" line="339"/>
         <source>Postprocessor</source>
-        <translation type="unfinished">Postprocesor</translation>
+        <translation>Postprocesor</translation>
     </message>
 </context>
 <context>
@@ -4155,87 +4223,86 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="89"/>
         <source>Variable:</source>
-        <translation type="unfinished"></translation>
+        <translation>Proměnná:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="90"/>
+        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="91"/>
         <source>Component:</source>
-        <translation type="unfinished">Složka:</translation>
+        <translation>Složka:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="92"/>
         <source>Variable</source>
-        <translation type="unfinished">Veličina</translation>
+        <translation type="obsolete">Veličina</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="106"/>
+        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="101"/>
         <source>Save image</source>
-        <translation type="unfinished">Uložit obrázek</translation>
+        <translation>Uložit obrázek</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="112"/>
+        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="107"/>
         <source>Export</source>
-        <translation type="unfinished">Export</translation>
+        <translation>Export</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="138"/>
+        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="133"/>
         <source>Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="148"/>
+        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="143"/>
         <source>End</source>
-        <translation type="unfinished">Konec</translation>
+        <translation>Konec</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="152"/>
+        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="151"/>
         <source>Length</source>
-        <translation type="unfinished">Délka</translation>
+        <translation>Délka</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="168"/>
+        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="167"/>
         <source>Horizontal axis</source>
-        <translation type="unfinished">Horizontální osa</translation>
+        <translation>Horizontální osa</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="176"/>
+        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="175"/>
         <source>Reverse</source>
-        <translation type="unfinished">Opač. směr</translation>
+        <translation>Opač. směr</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="181"/>
+        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="180"/>
         <source>Points:</source>
-        <translation type="unfinished">Počet bodů:</translation>
+        <translation>Počet bodů:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="185"/>
         <source>Points and time step</source>
-        <translation type="unfinished">Body a časový krok</translation>
+        <translation>Body a časový krok</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="203"/>
         <source>Point</source>
-        <translation type="unfinished">Bod</translation>
+        <translation>Bod</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="234"/>
+        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="237"/>
         <source>Geometry</source>
-        <translation type="unfinished">Geometrie</translation>
+        <translation>Geometrie</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="235"/>
+        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="238"/>
         <source>Time</source>
-        <translation type="unfinished">Čas</translation>
+        <translation>Čas</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="260"/>
+        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="259"/>
         <source>Scalar</source>
-        <translation type="unfinished">Skalár</translation>
+        <translation>Skalár</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="264"/>
+        <location filename="../../agros2d-library/postprocessorview_chart.cpp" line="263"/>
         <source>Magnitude</source>
-        <translation type="unfinished">Modul</translation>
+        <translation>Modul</translation>
     </message>
 </context>
 <context>
@@ -4243,69 +4310,69 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="59"/>
         <source>Initial mesh</source>
-        <translation type="unfinished">Počáteční síť</translation>
+        <translation>Počáteční síť</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="60"/>
         <source>Solution mesh</source>
-        <translation type="unfinished">Řešená síť</translation>
+        <translation>Řešená síť</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="61"/>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="93"/>
         <source>Polynomial order</source>
-        <translation type="unfinished">Řád polynomu</translation>
+        <translation>Řád polynomu</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="75"/>
         <source>Mesh</source>
-        <translation type="unfinished">Síť</translation>
+        <translation>Síť</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="83"/>
         <source>Show colorbar</source>
-        <translation type="unfinished">Zob. stupnici</translation>
+        <translation>Zob. stupnici</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="84"/>
         <source>Show labels</source>
-        <translation type="unfinished">Zobrazit popisky</translation>
+        <translation>Zobrazit popisky</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="88"/>
         <source>Palette:</source>
-        <translation type="unfinished">Paleta:</translation>
+        <translation>Paleta:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="102"/>
         <source>Initial mesh:</source>
-        <translation type="unfinished">Počáteční síť:</translation>
+        <translation>Počáteční síť:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="104"/>
         <source>Solution mesh:</source>
-        <translation type="unfinished">Řešená síť:</translation>
+        <translation>Řešená síť:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="106"/>
         <source>Number of DOFs:</source>
-        <translation type="unfinished">Počet stupňů volnosti:</translation>
+        <translation>Počet stupňů volnosti:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="109"/>
         <source>Mesh and polynomial order</source>
-        <translation type="unfinished"></translation>
+        <translation>Síť a řád polynomu</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="154"/>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="157"/>
         <source>%1 nodes, %2 elements</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 uzlů, %2 elementů</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_mesh.cpp" line="170"/>
         <source>%1 DOFs</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 stupňů volnosti</translation>
     </message>
 </context>
 <context>
@@ -4313,181 +4380,181 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="65"/>
         <source>Relativistic correction</source>
-        <translation type="unfinished">Relativistická korekce</translation>
+        <translation>Relativistická korekce</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="92"/>
         <source>Reflection on different material</source>
-        <translation type="unfinished">Odraz na rozhraní růz. materiálů</translation>
+        <translation>Odraz na rozhraní růz. materiálů</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="93"/>
         <source>Reflection on boundary</source>
-        <translation type="unfinished">Odraz na hranici</translation>
+        <translation>Odraz na hranici</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="97"/>
         <source>Line color is controlled by velocity</source>
-        <translation type="unfinished">Barva čáry je kontrolována rychlostí</translation>
+        <translation>Barva čáry je nastavena dle rychlosti</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="98"/>
         <source>Show points</source>
-        <translation type="unfinished">Zobrazit body</translation>
+        <translation>Zobrazit body</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="99"/>
         <source>Show blended faces</source>
-        <translation type="unfinished">Zobrazit částečně průhledné stěny</translation>
+        <translation>Zobrazit částečně průhledné stěny</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="114"/>
         <source>Electrostatic interaction</source>
-        <translation type="unfinished">Elektrostatická interakce</translation>
+        <translation>Elektrostatická interakce</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="115"/>
         <source>Magnetic interaction</source>
-        <translation type="unfinished">Magnetická interakce</translation>
+        <translation>Magnetická interakce</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="119"/>
         <source>Equations:</source>
-        <translation type="unfinished">Rovnice:</translation>
+        <translation>Rovnice:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="121"/>
         <source>Number of particles:</source>
-        <translation type="unfinished">Počet částic:</translation>
+        <translation>Počet částic:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="123"/>
         <source>Particles dispersion (m):</source>
-        <translation type="unfinished">Rozptyl částic (m):</translation>
+        <translation>Rozptyl částic (m):</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="125"/>
         <source>Mass (kg):</source>
-        <translation type="unfinished">Hmotnost (kg):</translation>
+        <translation>Hmotnost (kg):</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="128"/>
         <source>General</source>
-        <translation type="unfinished">Základní</translation>
+        <translation>Obecné</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="141"/>
         <source>Initial particle position</source>
-        <translation type="unfinished">Počáteční pozice částice</translation>
+        <translation>Počáteční pozice částice</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="151"/>
         <source>Initial particle velocity</source>
-        <translation type="unfinished">Počáteční rychlost částice</translation>
+        <translation>Počáteční rychlost částice</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="160"/>
         <source>Coefficient of restitution (-):</source>
-        <translation type="unfinished">Souč. restituce (-):</translation>
+        <translation>Souč. restituce (-):</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="165"/>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="294"/>
         <source>Reflection</source>
-        <translation type="unfinished">Odraz</translation>
+        <translation>Odraz</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="177"/>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="190"/>
         <source>Equation:</source>
-        <translation type="unfinished">Rovnice:</translation>
+        <translation>Rovnice:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="179"/>
         <source>Charge (C):</source>
-        <translation type="unfinished">Náboj (C):</translation>
+        <translation>Náboj (C):</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="183"/>
         <source>Lorentz force</source>
-        <translation type="unfinished">Lorentzova síla</translation>
+        <translation>Lorentzova síla</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="192"/>
         <source>Density (kg/m&lt;sup&gt;3&lt;/sup&gt;):</source>
-        <translation type="unfinished">Hustota (kg/m&lt;sup&gt;3&lt;/sup):</translation>
+        <translation>Hustota (kg/m&lt;sup&gt;3&lt;/sup):</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="194"/>
         <source>Ref. area (m&lt;sup&gt;2&lt;/sup&gt;):</source>
-        <translation type="unfinished"></translation>
+        <translation>Ref. oblast (m&lt;sup&gt;2&lt;/sup&gt;):</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="196"/>
         <source>Coefficient (-):</source>
-        <translation type="unfinished">Koeficient (-):</translation>
+        <translation>Koeficient (-):</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="200"/>
         <source>Drag force</source>
-        <translation type="unfinished">Odpor prostředí</translation>
+        <translation>Odpor prostředí</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="213"/>
         <source>Custom force</source>
-        <translation type="unfinished">Ostatní síly</translation>
+        <translation>Ostatní síly</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="234"/>
         <source>Particle to particle</source>
-        <translation type="unfinished">Ovlivňování částic</translation>
+        <translation>Vzájemné ovlivňování částic</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="246"/>
         <source>Butcher tableau:</source>
-        <translation type="unfinished">Butcherova tabulka:</translation>
+        <translation>Butcherova tabulka:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="250"/>
         <source>Max. relative error (%):</source>
-        <translation type="unfinished">Mas. relativní chyba (%):</translation>
+        <translation>Max. relativní chyba (%):</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="252"/>
         <source>Max. step (m):</source>
-        <translation type="unfinished">Max. krok (m):</translation>
+        <translation>Max. krok (m):</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="254"/>
         <source>Max. number of steps:</source>
-        <translation type="unfinished">Max. počet kroků:</translation>
+        <translation>Max. počet kroků:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="259"/>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="295"/>
         <source>Solver</source>
-        <translation type="unfinished">Řešič</translation>
+        <translation>Řešič</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="275"/>
         <source>Show particle multiple times:</source>
-        <translation type="unfinished">Vícenás. zob. částic:</translation>
+        <translation>Vícenás. zob. částic:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="280"/>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="296"/>
         <source>Settings</source>
-        <translation type="unfinished">Nastavení</translation>
+        <translation>Nastavení</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="292"/>
         <source>Forces</source>
-        <translation type="unfinished">Síly</translation>
+        <translation>Síly</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_particletracing.cpp" line="293"/>
         <source>Particle interaction</source>
-        <translation type="unfinished"></translation>
+        <translation>Interakce částic</translation>
     </message>
 </context>
 <context>
@@ -4495,184 +4562,186 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="83"/>
         <source>Scalar field</source>
-        <translation type="unfinished">Skalární pole</translation>
+        <translation>Skalární pole</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="84"/>
         <source>Contours</source>
-        <translation type="unfinished">Kontury</translation>
+        <translation>Kontury</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="85"/>
         <source>Vector field</source>
-        <translation type="unfinished"></translation>
+        <translation>Vektorové pole</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="86"/>
-        <source>Local values and integrals</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="100"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="99"/>
         <source>Show scalar field</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobrazit skalární pole</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="103"/>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="216"/>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="268"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="102"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="196"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="248"/>
         <source>Deform shape</source>
-        <translation type="unfinished">Deformace tvaru</translation>
+        <translation>Deformace tvaru</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="115"/>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="226"/>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="278"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="114"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="206"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="258"/>
         <source>Variable:</source>
-        <translation type="unfinished"></translation>
+        <translation>Veličina:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="117"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="116"/>
         <source>Component:</source>
-        <translation type="unfinished">Složka:</translation>
+        <translation>Složka:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="120"/>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="229"/>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="281"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="119"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="209"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="261"/>
         <source>Variable</source>
-        <translation type="unfinished">Veličina</translation>
+        <translation>Veličina</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="128"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="127"/>
         <source>Filter</source>
-        <translation type="unfinished">Filtr</translation>
+        <translation>Filtr</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="142"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="141"/>
         <source>Show colorbar</source>
-        <translation type="unfinished">Zob. stupnici</translation>
+        <translation>Zob. stupnici</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="145"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="144"/>
         <source>Log. scale</source>
-        <translation type="unfinished">Log. škála</translation>
+        <translation>Log. škála</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="163"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="153"/>
         <source>Auto range</source>
-        <translation type="unfinished">Aut. rozsah</translation>
+        <translation>Aut. rozsah</translation>
+    </message>
+    <message>
+        <source>Minimum:</source>
+        <translation type="obsolete">Minimum:</translation>
+    </message>
+    <message>
+        <source>Maximum:</source>
+        <translation type="obsolete">Maximum:</translation>
+    </message>
+    <message>
+        <source>Range</source>
+        <translation type="obsolete">Rozsah</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="159"/>
+        <source>Palette:</source>
+        <translation>Paleta:</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="162"/>
+        <source>Steps:</source>
+        <translation>Počet kroků:</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="165"/>
+        <source>Decimal places:</source>
+        <translation>Des. místa:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="167"/>
-        <source>Minimum:</source>
-        <translation type="unfinished">Minimum:</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="172"/>
-        <source>Maximum:</source>
-        <translation type="unfinished">Maximum:</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="177"/>
-        <source>Range</source>
-        <translation type="unfinished">Rozsah</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="183"/>
-        <source>Palette:</source>
-        <translation type="unfinished">Paleta:</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="186"/>
-        <source>Steps:</source>
-        <translation type="unfinished">Počet kroků:</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="189"/>
-        <source>Decimal places:</source>
-        <translation type="unfinished">Des. místa:</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="191"/>
         <source>Base:</source>
-        <translation type="unfinished">Základ:</translation>
+        <translation>Základ:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="195"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="170"/>
+        <source>Minimum range:</source>
+        <translation>Dolní mez:</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="173"/>
+        <source>Maximum range:</source>
+        <translation>Horní mez:</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="176"/>
         <source>Palette and colorbar</source>
-        <translation type="unfinished"></translation>
+        <translation>Paleta a stupnice</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="213"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="193"/>
         <source>Show contours</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobrazit kontury</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="244"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="224"/>
         <source>Number of contours:</source>
-        <translation type="unfinished">Počet kontur:</translation>
+        <translation>Počet kontur:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="246"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="226"/>
         <source>Contour width:</source>
-        <translation type="unfinished">Šířka kontur:</translation>
+        <translation>Šířka kontur:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="249"/>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="317"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="229"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="297"/>
         <source>Advanced</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozšířené</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="245"/>
+        <source>Show vectors</source>
+        <translation>Zobrazit vektory</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="265"/>
-        <source>Show vectors</source>
-        <translation type="unfinished"></translation>
+        <source>Proportional</source>
+        <translation>Proporční</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="266"/>
+        <source>Color (b/w)</source>
+        <translation>Barva (čb.)</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="285"/>
-        <source>Proportional</source>
-        <translation type="unfinished">Proporční</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="286"/>
-        <source>Color (b/w)</source>
-        <translation type="unfinished">Barva (čb.)</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="305"/>
         <source>Number of vectors:</source>
-        <translation type="unfinished">Počet vektorů:</translation>
+        <translation>Počet vektorů:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="308"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="288"/>
         <source>Scale:</source>
-        <translation type="unfinished">Měřítko:</translation>
+        <translation>Měřítko:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="311"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="291"/>
         <source>Type:</source>
-        <translation type="unfinished">Typ:</translation>
+        <translation>Typ:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="313"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="293"/>
         <source>Center:</source>
-        <translation type="unfinished">Střed:</translation>
+        <translation>Střed:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="417"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="357"/>
         <source>Scalar</source>
-        <translation type="unfinished">Skalár</translation>
+        <translation>Skalár</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="421"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="361"/>
         <source>Magnitude</source>
-        <translation type="unfinished">Modul</translation>
+        <translation>Modul</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="532"/>
+        <location filename="../../agros2d-library/postprocessorview_post2d.cpp" line="472"/>
         <source>Width and height of bounding box over vector count.</source>
-        <translation type="unfinished">Šířka a výška ohraničujícího boxu nad počtem vektorů.</translation>
+        <translation>Šířka a výška ohraničujícího boxu nad počtem vektorů.</translation>
     </message>
 </context>
 <context>
@@ -4755,27 +4824,27 @@ oblasti</translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview.cpp" line="92"/>
+        <location filename="../../agros2d-library/postprocessorview.cpp" line="85"/>
         <source>Apply</source>
         <translation>Potvrdit</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview.cpp" line="97"/>
+        <location filename="../../agros2d-library/postprocessorview.cpp" line="90"/>
         <source>2D view</source>
         <translation>2D pohled</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview.cpp" line="98"/>
+        <location filename="../../agros2d-library/postprocessorview.cpp" line="91"/>
         <source>3D view</source>
         <translation>3D pohled</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview.cpp" line="99"/>
+        <location filename="../../agros2d-library/postprocessorview.cpp" line="93"/>
         <source>Chart</source>
         <translation>Graf</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview.cpp" line="100"/>
+        <location filename="../../agros2d-library/postprocessorview.cpp" line="92"/>
         <source>Part. tracing</source>
         <translation>Sled. částic</translation>
     </message>
@@ -4792,7 +4861,7 @@ oblasti</translation>
         <translation type="vanished">Řád polynomu</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/postprocessorview.cpp" line="96"/>
+        <location filename="../../agros2d-library/postprocessorview.cpp" line="89"/>
         <source>Mesh</source>
         <translation>Síť</translation>
     </message>
@@ -5060,7 +5129,7 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="93"/>
         <source>New parameter</source>
-        <translation type="unfinished"></translation>
+        <translation>Nový parametr</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="96"/>
@@ -5109,245 +5178,250 @@ oblasti</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="257"/>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="304"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="323"/>
         <source>Properties</source>
         <translation>Vlastnosti</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="267"/>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="441"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="460"/>
         <source>Parameters</source>
         <translation>Parametry</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="284"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="286"/>
+        <source>Recipes</source>
+        <translation>Předpisy</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="303"/>
         <source>Fields</source>
         <translation>Pole</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="311"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="330"/>
         <source>Materials</source>
         <translation>Materiály</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="329"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="348"/>
         <source>Boundary conditions</source>
         <translation>Okrajové podmínky</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="350"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="369"/>
         <source>Geometry</source>
         <translation>Geometrie</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="357"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="376"/>
         <source>Nodes</source>
         <translation>Uzly</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="378"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="397"/>
         <source>Edges</source>
         <translation>Hrany</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="400"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="419"/>
         <source>Labels</source>
         <translation>Značky oblastí</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="423"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="442"/>
         <source>OptiLab</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="456"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="476"/>
         <source>Functionals</source>
-        <translation type="unfinished"></translation>
+        <translation>Funkcionály</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="487"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="508"/>
         <source>Problem properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Vlastnosti problému</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="489"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="510"/>
         <source>Coordinate type:</source>
-        <translation type="unfinished">Souřadnicový systém:</translation>
+        <translation>Souřadnicový systém:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="490"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="511"/>
         <source>Mesh type:</source>
-        <translation type="unfinished">Typ sítě:</translation>
+        <translation>Typ sítě:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="493"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="514"/>
         <source>Frequency:</source>
-        <translation type="unfinished">Frekvence:</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="497"/>
-        <source>Method:</source>
-        <translation type="unfinished">Metoda:</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="498"/>
-        <source>Order:</source>
-        <translation type="unfinished">Řád:</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="499"/>
-        <source>Tolerance (%):</source>
-        <translation type="unfinished">Tolerance (%):</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="500"/>
-        <source>Initial step size:</source>
-        <translation type="unfinished">Velikost poč. kroku:</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="501"/>
-        <source>Constant time step:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="502"/>
-        <source>Number of const. time steps:</source>
-        <translation type="unfinished">Počet konst. časových kroků:</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="503"/>
-        <source>Total time:</source>
-        <translation type="unfinished">Celkový čas:</translation>
+        <translation>Frekvence:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="518"/>
-        <source>Analysis:</source>
-        <translation type="unfinished">Analýza:</translation>
+        <source>Method:</source>
+        <translation>Metoda:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="519"/>
-        <source>Solver:</source>
-        <translation type="unfinished">Řešič:</translation>
+        <source>Order:</source>
+        <translation>Řád:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="520"/>
-        <source>Number of refinements:</source>
-        <translation type="unfinished">Počet zjemnění:</translation>
+        <source>Tolerance (%):</source>
+        <translation>Tolerance (%):</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="521"/>
-        <source>Polynomial order:</source>
-        <translation type="unfinished">Řád polynomu:</translation>
+        <source>Initial step size:</source>
+        <translation>Velikost poč. kroku:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="522"/>
-        <source>Adaptivity:</source>
-        <translation type="unfinished">Adaptivita:</translation>
+        <source>Constant time step:</source>
+        <translation>Konstantní čas. krok:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="523"/>
-        <source>Matrix solver:</source>
-        <translation type="unfinished">Maticový řešič:</translation>
+        <source>Number of const. time steps:</source>
+        <translation>Počet konst. časových kroků:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="532"/>
-        <source>Coordinate type</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="524"/>
+        <source>Total time:</source>
+        <translation>Celkový čas:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="533"/>
-        <source>Mesh type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="536"/>
-        <source>Frequency</source>
-        <translation type="unfinished"></translation>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="539"/>
+        <source>Analysis:</source>
+        <translation>Analýza:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="540"/>
-        <source>Method</source>
-        <translation type="unfinished"></translation>
+        <source>Solver:</source>
+        <translation>Řešič:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="541"/>
-        <source>Order</source>
-        <translation type="unfinished">Řád polynomu</translation>
+        <source>Number of refinements:</source>
+        <translation>Počet zjemnění:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="542"/>
-        <source>Tolerance</source>
-        <translation type="unfinished"></translation>
+        <source>Polynomial order:</source>
+        <translation>Řád polynomu:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="543"/>
-        <source>Initial step size</source>
-        <translation type="unfinished"></translation>
+        <source>Adaptivity:</source>
+        <translation>Adaptivita:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="544"/>
-        <source>Constant time step</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="545"/>
-        <source>Number of const. time steps</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="546"/>
-        <source>Total time</source>
-        <translation type="unfinished">Celkový čas</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="552"/>
-        <source>Analysis</source>
-        <translation type="unfinished"></translation>
+        <source>Matrix solver:</source>
+        <translation>Maticový řešič:</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="553"/>
-        <source>Solver</source>
-        <translation type="unfinished">Řešič</translation>
+        <source>Coordinate type</source>
+        <translation>Souřadnicový systém</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="554"/>
-        <source>Number of refinements</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="555"/>
-        <source>Polynomial order</source>
-        <translation type="unfinished">Řád polynomu</translation>
-    </message>
-    <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="556"/>
-        <source>Adaptivity</source>
-        <translation type="unfinished">Adaptivita</translation>
+        <source>Mesh type</source>
+        <translation>Typ sítě</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="557"/>
+        <source>Frequency</source>
+        <translation>Frekvence</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="561"/>
+        <source>Method</source>
+        <translation>Metoda</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="562"/>
+        <source>Order</source>
+        <translation>Řád polynomu</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="563"/>
+        <source>Tolerance</source>
+        <translation>Tolerance</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="564"/>
+        <source>Initial step size</source>
+        <translation>Velikost poč. kroku</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="565"/>
+        <source>Constant time step</source>
+        <translation>Konstantní čas. krok</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="566"/>
+        <source>Number of const. time steps</source>
+        <translation>Počet konst. časových kroků</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="567"/>
+        <source>Total time</source>
+        <translation>Celkový čas</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="573"/>
+        <source>Analysis</source>
+        <translation>Analýza</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="574"/>
+        <source>Solver</source>
+        <translation>Řešič</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="575"/>
+        <source>Number of refinements</source>
+        <translation>Počet zjemnění</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="576"/>
+        <source>Polynomial order</source>
+        <translation>Řád polynomu</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="577"/>
+        <source>Adaptivity</source>
+        <translation>Adaptivita</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="578"/>
         <source>Matrix solver</source>
-        <translation type="unfinished">Maticový řešič</translation>
+        <translation>Maticový řešič</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="797"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="818"/>
         <source>Delete</source>
-        <translation type="unfinished">Smazat</translation>
+        <translation>Smazat</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="797"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="818"/>
         <source>Physical field &apos;%1&apos; will be pernamently deleted. Are you sure?</source>
-        <translation type="unfinished">Fyzikální pole &apos;%1&apos; bude trvale smazáno. Jste si jistý(á)?</translation>
+        <translation>Fyzikální pole &apos;%1&apos; bude trvale smazáno. Jste si jistý(á)?</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="798"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="819"/>
         <source>&amp;Yes</source>
-        <translation type="unfinished">&amp;Ano</translation>
+        <translation>&amp;Ano</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="798"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="819"/>
         <source>&amp;No</source>
-        <translation type="unfinished">&amp;Ne</translation>
+        <translation>&amp;Ne</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/preprocessorview.cpp" line="162"/>
@@ -5478,29 +5552,29 @@ oblasti</translation>
 <context>
     <name>Problem</name>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="2071"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="2092"/>
         <source>unnamed</source>
-        <translation type="unfinished">nepojmenovaný</translation>
+        <translation>nepojmenovaný</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="2121"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="2142"/>
         <source>Loading solution from disk: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nahrávání řešení z disku: %1</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="2136"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="2157"/>
         <source>Mesh</source>
         <translation>Síť</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="2136"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="2157"/>
         <source>Initial mesh is corrupted (%1)</source>
-        <translation type="unfinished">Počáteční síť je poškozena (%1)</translation>
+        <translation>Počáteční síť je poškozena (%1)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="2213"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="2225"/>
         <source>A2D file is deprecated.</source>
-        <translation type="unfinished"></translation>
+        <translation>Formát souboru A2D je zastaralý.</translation>
     </message>
     <message>
         <source>No fields defined</source>
@@ -5559,11 +5633,11 @@ oblasti</translation>
         <translation type="vanished">Nelze vytvořit řešič.</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="2121"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="2213"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="2231"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="2236"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="2241"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="2142"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="2225"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="2243"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="2248"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="2253"/>
         <source>Problem</source>
         <translation>Problém</translation>
     </message>
@@ -5631,12 +5705,12 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/solver/problem_config.cpp" line="300"/>
         <source>Variable is keyword: %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Název prom. je klíčovým slovem: %1.</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/solver/problem_config.cpp" line="306"/>
         <source>Invalid variable name: %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>Neplatný název proměnné &apos;%1&apos;.</translation>
     </message>
 </context>
 <context>
@@ -5644,7 +5718,7 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/gui/problemdialog.cpp" line="384"/>
         <source>Problem properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Vlastnosti problému</translation>
     </message>
 </context>
 <context>
@@ -5704,7 +5778,7 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/gui/problemdialog.cpp" line="214"/>
         <source>Tolerance (%):</source>
-        <translation type="unfinished">Tolerance (%):</translation>
+        <translation>Tolerance (%):</translation>
     </message>
     <message>
         <source>Tolerance:</source>
@@ -5762,52 +5836,52 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythonbrowser.cpp" line="51"/>
         <source>Name</source>
-        <translation type="unfinished">Název</translation>
+        <translation>Název</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythonbrowser.cpp" line="51"/>
         <source>Type</source>
-        <translation type="unfinished">Typ</translation>
+        <translation>Typ</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythonbrowser.cpp" line="51"/>
         <source>Value</source>
-        <translation type="unfinished">Hodnota</translation>
+        <translation>Hodnota</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythonbrowser.cpp" line="70"/>
         <source>Copy name</source>
-        <translation type="unfinished">Kopírovat název</translation>
+        <translation>Kopírovat název</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythonbrowser.cpp" line="73"/>
         <source>Copy value</source>
-        <translation type="unfinished">Kopírovat hodnotu</translation>
+        <translation>Kopírovat hodnotu</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythonbrowser.cpp" line="76"/>
         <source>&amp;Delete</source>
-        <translation type="unfinished">&amp;Smazat</translation>
+        <translation>&amp;Smazat</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythonbrowser.cpp" line="123"/>
         <source>Variables</source>
-        <translation type="unfinished">Proměnné</translation>
+        <translation>Proměnné</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythonbrowser.cpp" line="127"/>
         <source>Other</source>
-        <translation type="unfinished">Ostatní</translation>
+        <translation>Ostatní</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythonbrowser.cpp" line="131"/>
         <source>Functions</source>
-        <translation type="unfinished">Funkce</translation>
+        <translation>Funkce</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythonbrowser.cpp" line="135"/>
         <source>Classes</source>
-        <translation type="unfinished">Třídy</translation>
+        <translation>Třídy</translation>
     </message>
 </context>
 <context>
@@ -5905,7 +5979,7 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="467"/>
         <source>PythonLab</source>
-        <translation type="unfinished">PythonLab</translation>
+        <translation>PythonLab</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="490"/>
@@ -5976,32 +6050,32 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="571"/>
         <source>Goto definition</source>
-        <translation type="unfinished"></translation>
+        <translation>Přejít k definici</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="572"/>
         <source>F2</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="575"/>
         <source>Print selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Tisk výběru</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="576"/>
         <source>F5</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="579"/>
         <source>Profiler</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="584"/>
         <source>Console output</source>
-        <translation type="unfinished">Výstup konzole</translation>
+        <translation>Konzolový výstup</translation>
     </message>
     <message>
         <source>Comment</source>
@@ -6039,7 +6113,7 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="547"/>
         <source>Goto file directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Přejít do složky souborů</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="549"/>
@@ -6100,12 +6174,12 @@ oblasti</translation>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="562"/>
         <source>&amp;Create script from model</source>
-        <translation type="unfinished">&amp;Vytvořit skript z modelu</translation>
+        <translation>&amp;Vytvořit skript z modelu</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="563"/>
         <source>Ctrl+M</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="566"/>
@@ -6291,24 +6365,24 @@ Chcete tyto změny uložit?</translation>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="172"/>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="217"/>
         <source>Convention</source>
-        <translation type="unfinished">Konvence</translation>
+        <translation>Konvence</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="175"/>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="222"/>
         <source>Warning</source>
-        <translation type="unfinished">Varování</translation>
+        <translation>Varování</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="179"/>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="227"/>
         <source>Error</source>
-        <translation type="unfinished">Chyba</translation>
+        <translation>Chyba</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="186"/>
         <source>Could not read PyLint output.</source>
-        <translation type="unfinished">Nelze načíst výstup z PyLint.</translation>
+        <translation>Nelze načíst výstup z PyLint.</translation>
     </message>
 </context>
 <context>
@@ -6332,12 +6406,12 @@ Chcete tyto změny uložit?</translation>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="316"/>
         <source>History</source>
-        <translation type="unfinished">Historie</translation>
+        <translation>Historie</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pythoneditor.cpp" line="317"/>
         <source>Variables</source>
-        <translation type="unfinished">Proměnné</translation>
+        <translation>Proměnné</translation>
     </message>
 </context>
 <context>
@@ -6390,12 +6464,12 @@ Chcete tyto změny uložit?</translation>
     <message>
         <location filename="../../dealii/contrib/parameter_gui/info_message.cpp" line="46"/>
         <source>&amp;Show this message again</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Zobrazit tuto zprávu znovu</translation>
     </message>
     <message>
         <location filename="../../dealii/contrib/parameter_gui/info_message.cpp" line="50"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -6403,250 +6477,295 @@ Chcete tyto změny uložit?</translation>
     <message>
         <location filename="../../dealii/contrib/parameter_gui/mainwindow.cpp" line="133"/>
         <source>&lt;h3&gt;parameterGUI: A GraphicalUserInterface for parameter handling in deal.II&lt;/h3&gt;&lt;p&gt;This program uses Qt version %1.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h3&gt;parameterGUI: Grafické rozhraní pro zpracování parametrů deal.II&lt;/h3&gt;&lt;p&gt;Tento program využívá Qt verzi %1.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../../dealii/contrib/parameter_gui/mainwindow.cpp" line="139"/>
         <source>&lt;p&gt;The parameterGUI is a graphical user interface for editing XML parameter files created by the ParameterHandler class of deal.II. Please see &lt;a href=&quot;http://www.dealii.org/7.0.0/doxygen/deal.II/classParameterHandler.html&quot;&gt;dealii.org/doc&lt;/a&gt; for more information. The parameterGUI parses XML files into a tree structure and provides  special editors for different types of parameters.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Editing parameter values:&lt;/b&gt;&lt;br&gt;Parameters can be edited by (double-)clicking on the value or by pressing the platform edit key (F2 on Linux) over an parameter item.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Editors for parameter values:&lt;/b&gt; &lt;ul&gt;  &lt;li&gt;Integer- and Double-type parameters: SpinBox&lt;/li&gt;  &lt;li&gt;Booleans: ComboBox&lt;/li&gt;  &lt;li&gt;Selection: ComboBox&lt;/li&gt;  &lt;li&gt;File- and DirectoryName parameters: BrowseLineEditor&lt;/li&gt;  &lt;li&gt;Anything|MultipleSelection|List: LineEditor&lt;/li&gt; &lt;/ul&gt;&lt;/p&gt;&lt;p&gt;Please see &lt;a href=&quot;http://www.dealii.org&quot;&gt;dealii.org&lt;/a&gt; for more information&lt;/p&gt;&lt;p&gt;&lt;b&gt;Authors:&lt;/b&gt;&lt;br&gt; Martin Steigemann,  &lt;a href=&quot;mailto:martin.steigemann@mathematik.uni-kassel.de&quot;&gt;martin.steigemann@mathematik.uni-kassel.de&lt;/a&gt;&lt;br&gt;Wolfgang Bangerth,  &lt;a href=&quot;mailto:bangerth@math.tamu.edu&quot;&gt;bangerth@math.tamu.edu&lt;/a&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="394"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="417"/>
         <source>Planar</source>
         <translation>Kartézský</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="394"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="417"/>
         <source>Axisymmetric</source>
         <translation>Osově symetrický</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="420"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="443"/>
         <source>Kelly error estimator</source>
-        <translation type="unfinished"></translation>
+        <translation>Kellyův odhad chyb</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="422"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="445"/>
         <source>Gradient error estimator</source>
-        <translation type="unfinished"></translation>
+        <translation>Gradientní odhad chyb</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="424"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="447"/>
         <source>Uniform refinement</source>
-        <translation type="unfinished"></translation>
+        <translation>Rovnoměrné zjemnění</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="426"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="449"/>
         <source>Reference solution - spatial and order</source>
-        <translation type="unfinished"></translation>
+        <translation>Referenční řešení - prostor a řád</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="428"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="451"/>
         <source>Reference solution - spatial</source>
-        <translation type="unfinished"></translation>
+        <translation>Referenční řešení - prostor</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="430"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="453"/>
         <source>Reference solution - order increase</source>
-        <translation type="unfinished"></translation>
+        <translation>Referenční řešení - zvýšení řádu</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="442"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="465"/>
         <source>Fixed fraction of number of cells</source>
-        <translation type="unfinished"></translation>
+        <translation>Pevná část počtu buněk</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="444"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="467"/>
         <source>Fixed fraction of total error</source>
-        <translation type="unfinished"></translation>
+        <translation>Pevná část celkové chyby</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="446"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="469"/>
         <source>Balance reducing error and numerical cost</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="458"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="481"/>
         <source>Smoother based on Fourier series</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="460"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="483"/>
         <source>Alternate h and p</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="472"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="495"/>
         <source>BDF2 Fixed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="474"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="497"/>
         <source>BDF2 adaptive (tolerance)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="476"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="499"/>
         <source>BDF2 adaptive (num. steps)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="489"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="512"/>
         <source>Forward Euler (expl.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="491"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="514"/>
         <source>Runge-Kutta 3rd order (expl.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="493"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="516"/>
         <source>Runge-Kutta 4th order (expl.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="497"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="520"/>
         <source>Backward Euler (impl.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="499"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="522"/>
         <source>Midpoint (impl.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="501"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="524"/>
         <source>Crank Nicolson (impl.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="503"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="526"/>
         <source>SDIRK two stages (impl.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="507"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="530"/>
         <source>Heun Euler (embed.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="509"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="532"/>
         <source>Bogacki-Shampine (embed.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="511"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="534"/>
         <source>Dopri (embed.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="513"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="536"/>
         <source>Fehlberg (embed.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="515"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="538"/>
         <source>Cash-Karp (embed.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="545"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="568"/>
         <source>Normal</source>
         <translation>Normální</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="559"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="582"/>
         <source>Triangle (quad)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="577"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="600"/>
         <source>CUBIT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="589"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="612"/>
         <source>Viridis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="591"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="614"/>
         <source>Inferno</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="593"/>
-        <source>Parula</source>
+        <location filename="../../agros2d-library/util/enums.cpp" line="616"/>
+        <source>Paruly</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="647"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="620"/>
+        <source>Agros</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/util/enums.cpp" line="833"/>
+        <source>BayesOpt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/util/enums.cpp" line="835"/>
+        <source>NLopt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/util/enums.cpp" line="847"/>
+        <source>Maximize</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/util/enums.cpp" line="849"/>
+        <source>Minimize</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/util/enums.cpp" line="851"/>
+        <source>Result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/util/enums.cpp" line="863"/>
+        <source>Local value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/util/enums.cpp" line="865"/>
+        <source>Surface integral</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/util/enums.cpp" line="867"/>
+        <source>Volume integral</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/util/enums.cpp" line="672"/>
         <source>deal.II (iter.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="758"/>
-        <location filename="../../agros2d-library/util/enums.cpp" line="776"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="783"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="801"/>
         <source>Richardson</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="760"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="785"/>
         <source>MinRes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="762"/>
-        <location filename="../../agros2d-library/util/enums.cpp" line="780"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="787"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="805"/>
         <source>Relaxation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="774"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="799"/>
         <source>Identity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="778"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="803"/>
         <source>UseMatrix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="784"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="809"/>
         <source>SOR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="786"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="811"/>
         <source>SSOR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="788"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="813"/>
         <source>PSOR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="790"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="815"/>
         <source>LACSolver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="792"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="817"/>
         <source>Chebyshev</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="804"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="829"/>
         <source>Sweep analysis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="806"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="831"/>
         <source>Genetic</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6659,22 +6778,22 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">Jemnější</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="402"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="425"/>
         <source>Disabled</source>
         <translation>Vypnuto</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="404"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="427"/>
         <source>h-adaptivity</source>
         <translation>h-adaptivita</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="406"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="429"/>
         <source>p-adaptivity</source>
         <translation>p-adaptivita</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="408"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="431"/>
         <source>hp-adaptivity</source>
         <translation>hp-adaptivita</translation>
     </message>
@@ -6703,29 +6822,29 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">Adaptivní (počet kroků)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="527"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="550"/>
         <source>Matrix volume</source>
         <translatorcomment>upřesnit pojem</translatorcomment>
         <translation>Moticová objemová</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="529"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="552"/>
         <source>Matrix surface</source>
         <translation>Maticová povrchová</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="531"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="554"/>
         <source>Vector volume</source>
         <translation>Vektorová objemová</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="533"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="556"/>
         <source>Vector surface</source>
         <translatorcomment>upřesnit </translatorcomment>
         <translation>Vektorová povrchová</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="547"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="570"/>
         <source>Residual</source>
         <translation>Residual</translation>
     </message>
@@ -6766,12 +6885,12 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">GMSH (exp.) - trojúhelníky</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="569"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="592"/>
         <source>GMSH (exp.) - quad</source>
         <translation>GMSH (exp.) - čtyřúhelníky</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="571"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="594"/>
         <source>GMSH (exp.) - quad Delaunay</source>
         <translation>GMSH (exp.) - čtyř. Delaunayho</translation>
     </message>
@@ -6804,7 +6923,7 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">Agros2D</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="595"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="618"/>
         <source>Jet</source>
         <translation>Tryskáč</translation>
     </message>
@@ -6845,67 +6964,67 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">Zima</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="597"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="622"/>
         <source>HSV</source>
         <translation>HSV</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="599"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="624"/>
         <source>B/W ascending</source>
         <translation>ČB stoupající</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="601"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="626"/>
         <source>B/W descending</source>
         <translation>ČB klesající</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="613"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="638"/>
         <source>Arrow</source>
         <translation>Šipka</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="615"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="640"/>
         <source>Cone</source>
         <translation>Kužel</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="627"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="652"/>
         <source>Tail</source>
         <translation>Ocas</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="629"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="654"/>
         <source>Head</source>
         <translation>Hlava</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="631"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="656"/>
         <source>Center</source>
         <translation>Střed</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="643"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="668"/>
         <source>EMPTY</source>
         <translation>Prázdný</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="651"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="676"/>
         <source>External (out of core)</source>
         <translation type="unfinished">Externí</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="663"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="688"/>
         <source>MATLAB MAT</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="665"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="690"/>
         <source>Matrix Market</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="667"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="692"/>
         <source>Plain ASCII</source>
         <translation>Prostý text ASCII</translation>
     </message>
@@ -6914,32 +7033,32 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">1D funkce</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="752"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="777"/>
         <source>CG</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="754"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="779"/>
         <source>GMRES</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="756"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="781"/>
         <source>BiCGStab</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="782"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="807"/>
         <source>Jacobi</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="686"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="711"/>
         <source>Picard&apos;s method</source>
         <translation>Picardova metoda</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="336"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="359"/>
         <source>Custom norm</source>
         <translation>Už. definovaná norma</translation>
     </message>
@@ -6960,62 +7079,62 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">Triangle - čtyř. spojené</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="688"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="713"/>
         <source>Newton&apos;s method</source>
         <translation>Newtonova metoda</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="700"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="725"/>
         <source>No damping</source>
         <translation>Nepoužitý</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="702"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="727"/>
         <source>Fixed</source>
         <translation>Fixní</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="704"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="729"/>
         <source>Automatic</source>
         <translation>Automatický</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="716"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="741"/>
         <source>Cubic spline</source>
         <translation>Kubický splajn</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="718"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="743"/>
         <source>Piecewise linear</source>
         <translation>Po částech lineární</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="720"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="745"/>
         <source>Constant</source>
         <translation>Konstanta</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="732"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="757"/>
         <source>Heun-Euler (2,1)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="734"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="759"/>
         <source>Bogacki-Shampine (2,3)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="736"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="761"/>
         <source>Fehlberg (4,5)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="738"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="763"/>
         <source>Cash-Karp (4,5)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="740"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="765"/>
         <source>Dormand-Prince (4,5)</source>
         <translation></translation>
     </message>
@@ -7048,12 +7167,12 @@ Chcete tyto změny uložit?</translation>
         <translation type="obsolete">Relativní rozdíl řešení oproti předchozímu</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="380"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="403"/>
         <source>Scalar</source>
         <translation>Skalár</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="364"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="387"/>
         <source>Not used</source>
         <translation>Nepoužité</translation>
     </message>
@@ -7062,42 +7181,42 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">Silné</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="368"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="391"/>
         <source>Weak</source>
         <translation>Slabé</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="382"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="405"/>
         <source>Magnitude</source>
         <translation>Modul</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="388"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="411"/>
         <source>Undefined</source>
         <translation>Nedefinovaný</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="326"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="349"/>
         <source>H1 norm</source>
         <translation>H1 norma</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="328"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="351"/>
         <source>L2 norm</source>
         <translation>L2 norma</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="330"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="353"/>
         <source>H1 seminorm</source>
         <translation>H1 seminorma</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="332"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="355"/>
         <source>Hdiv norm</source>
         <translation>Hdiv norma</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="334"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="357"/>
         <source>Hcurl norm</source>
         <translation>Hcurl norma</translation>
     </message>
@@ -7106,12 +7225,12 @@ Chcete tyto změny uložit?</translation>
         <translation type="obsolete">Trojúhelníková</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="684"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="709"/>
         <source>Linear</source>
         <translation>Lineární</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="645"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="670"/>
         <source>UMFPACK</source>
         <translation></translation>
     </message>
@@ -7120,22 +7239,22 @@ Chcete tyto změny uložit?</translation>
         <translation type="obsolete">GMSH - čtyř. Delaunay</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="649"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="674"/>
         <source>MUMPS</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="348"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="371"/>
         <source>Steady state</source>
         <translation>Ustálený stav</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="350"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="373"/>
         <source>Transient</source>
         <translation>Přechodový děj</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/enums.cpp" line="352"/>
+        <location filename="../../agros2d-library/util/enums.cpp" line="375"/>
         <source>Harmonic</source>
         <translation>Harmonická analýza</translation>
     </message>
@@ -7260,7 +7379,13 @@ Chcete tyto změny uložit?</translation>
         <translation>Neplatné id pole. Platné id: %1</translation>
     </message>
     <message>
+        <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="49"/>
+        <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="113"/>
+        <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="121"/>
+        <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="137"/>
+        <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="307"/>
         <location filename="../../agros2d-library/pythonlab/pythonengine_agros.cpp" line="727"/>
+        <location filename="../../agros2d-library/pythonlab/pyparticletracing.cpp" line="274"/>
         <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="72"/>
         <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="98"/>
         <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="106"/>
@@ -7272,19 +7397,12 @@ Chcete tyto změny uložit?</translation>
         <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="161"/>
         <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="169"/>
         <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="177"/>
-        <location filename="../../agros2d-library/pythonlab/pyparticletracing.cpp" line="274"/>
-        <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="49"/>
-        <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="113"/>
-        <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="121"/>
-        <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="137"/>
-        <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="307"/>
         <source>Invalid argument. Valid keys: %1</source>
         <translation>Neplatný argument. Platné hodnoty: %1</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="81"/>
         <source>Number of refinements is out of range (0 - 5).</source>
-        <translation>Počet zjemnění je mimo rozsah (0 - 5).</translation>
+        <translation type="vanished">Počet zjemnění je mimo rozsah (0 - 5).</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="89"/>
@@ -7388,6 +7506,11 @@ Chcete tyto změny uložit?</translation>
         <translation type="obsolete">Počet zpětných kroků adaptivity ke mimo rozsah (0 - 100).</translation>
     </message>
     <message>
+        <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="81"/>
+        <source>Number of refinements is out of range (0 - 10).</source>
+        <translation type="unfinished">Počet zjemnění je mimo rozsah (0 - 5). {0 ?} {10)?}</translation>
+    </message>
+    <message>
         <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="190"/>
         <source>Time skip must be greater than or equal to zero.</source>
         <translation>Časový skok musí být větší nebo roven nule.</translation>
@@ -7425,9 +7548,9 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">Soubor s uloženým vektorem pravých stra neexistuje.</translation>
     </message>
     <message>
+        <location filename="../../agros2d-library/pythonlab/pygeometry.cpp" line="209"/>
         <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="240"/>
         <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="281"/>
-        <location filename="../../agros2d-library/pythonlab/pygeometry.cpp" line="209"/>
         <source>Boundary condition &apos;%1&apos; doesn&apos;t exists.</source>
         <translation>Okrajová podmínka &apos;%1&apos; neexistuje.</translation>
     </message>
@@ -7468,9 +7591,9 @@ Chcete tyto změny uložit?</translation>
         <translation>Nesprávný parameter &apos;%1&apos;. Správné parametry jsou &apos;first&apos; a &apos;second&apos;.</translation>
     </message>
     <message>
+        <location filename="../../agros2d-library/pythonlab/pygeometry.cpp" line="297"/>
         <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="405"/>
         <location filename="../../agros2d-library/pythonlab/pyfield.cpp" line="497"/>
-        <location filename="../../agros2d-library/pythonlab/pygeometry.cpp" line="297"/>
         <source>Material &apos;%1&apos; doesn&apos;t exists.</source>
         <translation>Materiál &apos;%1&apos; neexistuje.</translation>
     </message>
@@ -7531,7 +7654,6 @@ Chcete tyto změny uložit?</translation>
         <translation>Úhel &apos;%1&apos; je mimo rozsah.</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/pythonlab/pyparticletracing.cpp" line="33"/>
         <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="223"/>
         <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="244"/>
         <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="250"/>
@@ -7543,6 +7665,7 @@ Chcete tyto změny uložit?</translation>
         <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="510"/>
         <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="529"/>
         <location filename="../../agros2d-library/pythonlab/pyproblem.cpp" line="553"/>
+        <location filename="../../agros2d-library/pythonlab/pyparticletracing.cpp" line="33"/>
         <source>Problem is not solved.</source>
         <translation>Problém nebyl vyřešen.</translation>
     </message>
@@ -7632,12 +7755,12 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">Počáteční časový krok</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="97"/>
+        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="96"/>
         <source>Initial step</source>
         <translation>Počáteční krok</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="99"/>
+        <location filename="../../agros2d-library/gui/physicalfield.cpp" line="98"/>
         <source>%1 s (step: %2)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7657,7 +7780,7 @@ Chcete tyto změny uložit?</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/solver_nonlinear.cpp" line="443"/>
+        <location filename="../../agros2d-library/solver/solver_nonlinear.cpp" line="448"/>
         <source>Iteration: %1 (rel. change of sol.: %2 %, residual: %3, damping: %4)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7686,20 +7809,21 @@ Chcete tyto změny uložit?</translation>
         <translation type="obsolete">Není možné načíst soubor sdružení %1: %2</translation>
     </message>
     <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="429"/>
         <location filename="../../agros2d-library/solver/linear_solver.cpp" line="89"/>
         <location filename="../../agros2d-library/solver/linear_solver.cpp" line="116"/>
         <location filename="../../agros2d-library/solver/linear_solver.cpp" line="132"/>
         <location filename="../../agros2d-library/solver/linear_solver.cpp" line="149"/>
         <location filename="../../agros2d-library/solver/linear_solver.cpp" line="178"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1542"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1579"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1657"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1717"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1723"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1729"/>
         <location filename="../../agros2d-library/solver/solver.cpp" line="284"/>
         <location filename="../../agros2d-library/solver/solver.cpp" line="807"/>
         <location filename="../../agros2d-library/solver/solver.cpp" line="1139"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1570"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1607"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1682"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1701"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1707"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1713"/>
         <source>Solver</source>
         <translation>Řešič</translation>
     </message>
@@ -7738,64 +7862,65 @@ Chcete tyto změny uložit?</translation>
         <translation type="obsolete">Generování sítě</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="234"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="244"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="266"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="287"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="297"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="232"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="242"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="264"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="285"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="295"/>
         <source>Parameters</source>
         <translation type="unfinished">Parametry</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="234"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="244"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="232"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="242"/>
         <source>Node %1%2: %3</source>
         <translation type="unfinished">Uzel %1: %3 {1%2:?}</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="287"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="297"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="285"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="295"/>
         <source>Label %1%2: %3</source>
         <translation type="unfinished">Značka oblasti %1: %3 {1%2:?}</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="338"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="336"/>
         <source>Frequency</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="338"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="336"/>
         <source>Value: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1542"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1570"/>
         <source>No fields defined</source>
         <translation>Není definované žádné fyzikální pole</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1579"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="429"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1607"/>
         <source>Aborting calculation...</source>
         <translation>Ukončování řešení...</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1657"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1682"/>
         <source>Elapsed time: %1 s</source>
         <translation>Celkový čas výpočtu: %1 s</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/solver/solver_nonlinear.cpp" line="274"/>
-        <location filename="../../agros2d-library/solver/solver_nonlinear.cpp" line="443"/>
+        <location filename="../../agros2d-library/solver/solver_nonlinear.cpp" line="448"/>
         <source>Solver (Newton)</source>
         <translation>Rešič (Newton)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1824"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1806"/>
         <source>Mesh Generator</source>
         <translation>Generátor sítě</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1824"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1806"/>
         <source>Initial mesh generation</source>
         <translation>Generování počáteční sítě</translation>
     </message>
@@ -7832,7 +7957,7 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">Newton řešič neočekávaně zkončil s neznámého důvodu.</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="1711"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="1694"/>
         <source>Geometry</source>
         <translation>Geometrie</translation>
     </message>
@@ -8200,12 +8325,12 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">Chyba: %1</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/global.cpp" line="240"/>
+        <location filename="../../agros2d-library/util/global.cpp" line="228"/>
         <source>Could not find &apos;agros2d_plugin_%1&apos;</source>
         <translation>Nelze najít &apos;agros2d_plugin_%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/global.cpp" line="247"/>
+        <location filename="../../agros2d-library/util/global.cpp" line="235"/>
         <source>Could not load &apos;agros2d_plugin_%1&apos; (%2)</source>
         <translation>Plugin &apos;agros2d_plugin_%1&apos; nemohl být načten (%2).</translation>
     </message>
@@ -8214,14 +8339,12 @@ Chcete tyto změny uložit?</translation>
         <translation type="obsolete">Nelze nahrát &apos;agros2d_plugin_%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/xml.cpp" line="45"/>
         <source>Schema &apos;%1&apos; is not valid. %2</source>
-        <translation>Šablona &apos;%1&apos; není platná. %2</translation>
+        <translation type="vanished">Šablona &apos;%1&apos; není platná. %2</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/util/xml.cpp" line="58"/>
         <source>File &apos;%1&apos; is not valid Agros2D problem file. Error (line %3, column %4): %2</source>
-        <translation>Soubor &apos;%1&apos; není platným souborem Agros2D. Chyba (řádek %3, sloupec %4): %2</translation>
+        <translation type="vanished">Soubor &apos;%1&apos; není platným souborem Agros2D. Chyba (řádek %3, sloupec %4): %2</translation>
     </message>
     <message>
         <source>Catched unknown exception while loading solution</source>
@@ -8265,8 +8388,8 @@ Chcete tyto změny uložit?</translation>
         <translation>Není možné načíst &apos;%1&apos;. %2</translation>
     </message>
     <message>
-        <location filename="../../agros2d-binary/main.cpp" line="75"/>
-        <location filename="../../agros2d-binary/main.cpp" line="93"/>
+        <location filename="../../agros2d-binary/main.cpp" line="72"/>
+        <location filename="../../agros2d-binary/main.cpp" line="90"/>
         <location filename="../../agros2d-solver/main.cpp" line="78"/>
         <location filename="../../agros2d-solver/main.cpp" line="98"/>
         <source>Unknown suffix.</source>
@@ -8322,7 +8445,7 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">Uzel %1: %2</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="266"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="264"/>
         <source>Edge %1: %2</source>
         <translation>Hrana %1: %2</translation>
     </message>
@@ -8331,18 +8454,18 @@ Chcete tyto změny uložit?</translation>
         <translation type="vanished">Značka oblasti %1: %2</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="314"/>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="328"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="312"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="326"/>
         <source>Marker</source>
         <translation>Značka</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="314"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="312"/>
         <source>Material %1: %2</source>
         <translation>Materiál %1: %2</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/solver/problem.cpp" line="328"/>
+        <location filename="../../agros2d-library/solver/problem.cpp" line="326"/>
         <source>Boundary %1: %2</source>
         <translation>Okr. podmínka %1: %2</translation>
     </message>
@@ -8604,27 +8727,27 @@ Line %2, column %3</source>
         <translation type="vanished">Hodnoty v lokálních bodech</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/resultsview.cpp" line="47"/>
+        <location filename="../../agros2d-library/gui/resultsview.cpp" line="48"/>
         <source>Name</source>
         <translation>Název</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/resultsview.cpp" line="47"/>
+        <location filename="../../agros2d-library/gui/resultsview.cpp" line="48"/>
         <source>Var.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/resultsview.cpp" line="47"/>
+        <location filename="../../agros2d-library/gui/resultsview.cpp" line="48"/>
         <source>Value</source>
         <translation type="unfinished">Hodnota</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/resultsview.cpp" line="85"/>
+        <location filename="../../agros2d-library/gui/resultsview.cpp" line="86"/>
         <source>Copy value</source>
         <translation type="unfinished">Kopírovat hodnotu</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/resultsview.cpp" line="157"/>
+        <location filename="../../agros2d-library/gui/resultsview.cpp" line="158"/>
         <source>Point</source>
         <translation>Bod</translation>
     </message>
@@ -9313,32 +9436,32 @@ Line %2, column %3</source>
         <translation type="unfinished">Pozice: [%1; %2]</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/chartdialog.cpp" line="207"/>
+        <location filename="../../agros2d-library/chartdialog.cpp" line="201"/>
         <source>Length (m)</source>
         <translation type="unfinished">Délka (m)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/chartdialog.cpp" line="298"/>
+        <location filename="../../agros2d-library/chartdialog.cpp" line="292"/>
         <source>time (s)</source>
         <translation type="unfinished">čas (s)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/chartdialog.cpp" line="355"/>
+        <location filename="../../agros2d-library/chartdialog.cpp" line="349"/>
         <source>Save image</source>
         <translation type="unfinished">Uložit obrázek</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/chartdialog.cpp" line="355"/>
+        <location filename="../../agros2d-library/chartdialog.cpp" line="349"/>
         <source>PNG files (*.png)</source>
         <translation type="unfinished">Soubory PNG (*.png)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/chartdialog.cpp" line="384"/>
+        <location filename="../../agros2d-library/chartdialog.cpp" line="378"/>
         <source>Export data to file</source>
         <translation type="unfinished">Export dat do souboru</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/chartdialog.cpp" line="384"/>
+        <location filename="../../agros2d-library/chartdialog.cpp" line="378"/>
         <source>CSV files (*.csv)</source>
         <translation type="unfinished">CSV soubory (*.csv)</translation>
     </message>
@@ -9386,27 +9509,27 @@ Line %2, column %3</source>
         <translation type="vanished">Síť</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_mesh.cpp" line="87"/>
+        <location filename="../../agros2d-library/sceneview_mesh.cpp" line="84"/>
         <source>Export VTK order...</source>
         <translation>Export pol. řádu do VTK...</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_mesh.cpp" line="90"/>
+        <location filename="../../agros2d-library/sceneview_mesh.cpp" line="87"/>
         <source>Export VTK mesh...</source>
         <translation>Export výp. sítě do VTK...</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_mesh.cpp" line="151"/>
+        <location filename="../../agros2d-library/sceneview_mesh.cpp" line="148"/>
         <source>Export VTK file</source>
         <translation>Export VTK souboru</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_mesh.cpp" line="151"/>
+        <location filename="../../agros2d-library/sceneview_mesh.cpp" line="148"/>
         <source>VTK files (*.vtk)</source>
         <translation>VTK soubor (*.vtk)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_mesh.h" line="38"/>
+        <location filename="../../agros2d-library/sceneview_mesh.h" line="40"/>
         <source>Mesh and polynomial order view</source>
         <translation>Zobrazení sítě a řádu polynomu</translation>
     </message>
@@ -9414,63 +9537,63 @@ Line %2, column %3</source>
 <context>
     <name>SceneViewParticleTracing</name>
     <message>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="128"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="125"/>
         <source>Particle
 Tracing</source>
         <translation>Trasování
 částic</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="906"/>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="911"/>
-        <location filename="../../agros2d-library/sceneview_particle.h" line="41"/>
+        <location filename="../../agros2d-library/sceneview_particle.h" line="43"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="903"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="908"/>
         <source>Particle Tracing</source>
         <translation>Trasování částic</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="164"/>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="890"/>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="898"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="161"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="887"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="895"/>
         <source>Particle tracing</source>
         <translation>Trasování částic</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="129"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="126"/>
         <source>Ctrl+6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="752"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="749"/>
         <source>Vel.</source>
         <translation>Rych.</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="827"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="824"/>
         <source>Post View</source>
         <translation>Zobrazení výsledků</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="827"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="824"/>
         <source>Particle view</source>
         <translation>Zobrazení částic</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="890"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="887"/>
         <source>Particle tracing failed (%1)</source>
         <translation>Trasování částic selhalo (%1)</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="898"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="895"/>
         <source>Catched unknown exception in particle tracing</source>
         <translation>Nastala neznámá vyjímka v trasování částic</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="906"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="903"/>
         <source>Particle %1: %2 steps, final time %3 s</source>
         <translation>Částice %1: %2 kroků, výsledný čas %3 s</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_particle.cpp" line="911"/>
+        <location filename="../../agros2d-library/sceneview_particle.cpp" line="908"/>
         <source>Total cpu time %1 ms</source>
         <translation>Celkový CPU čas %1 ms</translation>
     </message>
@@ -9483,57 +9606,57 @@ Tracing</source>
     </message>
     <message>
         <location filename="../../agros2d-library/sceneview_post2d.h" line="61"/>
-        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="280"/>
+        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="278"/>
         <source>Postprocessor 2D</source>
         <translation>Postprocesor 2D</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="103"/>
+        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="101"/>
         <source>Local point value</source>
         <translation>Hodnota veličiny v bodě</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="107"/>
+        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="105"/>
         <source>Select by marker</source>
         <translation>Vybrat podle značky</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="111"/>
+        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="109"/>
         <source>Nothing</source>
         <translation>Bez zobrazení</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="114"/>
+        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="112"/>
         <source>Local Values</source>
         <translation>Lokální hodnoty</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="117"/>
+        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="115"/>
         <source>Surface Integrals</source>
         <translation>Povrchové integrály</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="120"/>
+        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="118"/>
         <source>Volume Integrals</source>
         <translation>Objemové integrály</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="130"/>
+        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="128"/>
         <source>Export VTK scalar...</source>
         <translation>Export skalárního zob. do VTK...</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="133"/>
+        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="131"/>
         <source>Export VTK contours...</source>
         <translation>Export kontur do VTK</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="882"/>
+        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="880"/>
         <source>Export VTK file</source>
         <translation>Eportovat VTK soubor</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="882"/>
+        <location filename="../../agros2d-library/sceneview_post2d.cpp" line="880"/>
         <source>VTK files (*.vtk)</source>
         <translation>VTK soubory (*.vtk)</translation>
     </message>
@@ -9541,23 +9664,23 @@ Tracing</source>
 <context>
     <name>SceneViewPost3D</name>
     <message>
-        <location filename="../../agros2d-library/sceneview_post3d.cpp" line="108"/>
+        <location filename="../../agros2d-library/sceneview_post3d.cpp" line="105"/>
         <source>Post 3D</source>
         <translation>Post 3D</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post3d.cpp" line="109"/>
+        <location filename="../../agros2d-library/sceneview_post3d.cpp" line="106"/>
         <source>Ctrl+5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post3d.cpp" line="167"/>
-        <location filename="../../agros2d-library/sceneview_post3d.h" line="43"/>
+        <location filename="../../agros2d-library/sceneview_post3d.cpp" line="164"/>
+        <location filename="../../agros2d-library/sceneview_post3d.h" line="44"/>
         <source>Postprocessor 3D</source>
         <translation>Postprocesor 3D</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/sceneview_post3d.cpp" line="164"/>
+        <location filename="../../agros2d-library/sceneview_post3d.cpp" line="161"/>
         <source>Model</source>
         <translation>Model</translation>
     </message>
@@ -10183,38 +10306,48 @@ Tracing</source>
     </message>
 </context>
 <context>
-    <name>StudyGenetic</name>
+    <name>Study</name>
     <message>
-        <location filename="../../agros2d-library/optilab/study_genetic.cpp" line="343"/>
-        <source>Population %1 (%2 items)</source>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="393"/>
+        <source>Set %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study_genetic.cpp" line="350"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="397"/>
+        <source>%1 (%2 computations)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="405"/>
         <source>solved</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study_genetic.cpp" line="350"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="405"/>
         <source>not solved</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study_genetic.cpp" line="350"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="405"/>
         <source>results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study_genetic.cpp" line="350"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="405"/>
         <source>no results</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>StudySweepAnalysis</name>
+    <name>StudyBayesOptAnalysis</name>
     <message>
-        <location filename="../../agros2d-library/optilab/study_sweep.cpp" line="108"/>
-        <source>solved</source>
+        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="117"/>
+        <source>Initialization</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="121"/>
+        <source>Steps</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
