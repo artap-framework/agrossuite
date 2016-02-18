@@ -760,6 +760,17 @@ void PreprocessorWidget::doProperties()
                 // emit changed();
             }
         }
+        else if (type == PreprocessorWidget::OptilabStudy)
+        {
+            // study
+            Study *study = trvWidget->currentItem()->data(0, Qt::UserRole).value<Study *>();
+
+            StudyDialog *studyDialog = StudyDialog::factory(study, this);
+            if (studyDialog->showDialog() == QDialog::Accepted)
+            {
+                refresh();
+            }
+        }
     }
 }
 

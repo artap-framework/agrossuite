@@ -64,6 +64,7 @@ private slots:
     void updateParameters(QList<Parameter> parameters, const Computation *computation);
 
     void solved();
+    void aborted();
 
     void tryClose();
 };
@@ -110,6 +111,19 @@ class Study : public QObject
     Q_OBJECT
 
 public:
+    enum Type
+    {
+        NLopt_tol_rel,
+        NLopt_tol_abs,
+        NLopt_n_iterations,
+        NLopt_algorithm,
+
+        BayesOpt_n_init_samples,
+        BayesOpt_n_iterations,
+        BayesOpt_n_iter_relearn,
+        BayesOpt_init_method
+    };
+
     Study(QList<ComputationSet> computations = QList<ComputationSet>());
     virtual ~Study();
 
@@ -140,9 +154,20 @@ public:
     QVariant variant();
 
     bool isSolving() const { return m_isSolving; }
-    void doAbortSolve();
+    bool isAborted() const { return m_abort; }
+
+    // config
+    inline QVariant value(Type type) const { return m_setting[type]; }
+    inline void setValue(Type type, int value) {  m_setting[type] = value; }
+    inline void setValue(Type type, double value) {  m_setting[type] = value;}
+    inline void setValue(Type type, bool value) {  m_setting[type] = value;}
+    inline void setValue(Type type, const std::string &value) { setValue(type, QString::fromStdString(value)); }
+    inline void setValue(Type type, const QString &value) { m_setting[type] = value;}
 
     static Study *factory(StudyType type);
+
+public slots:
+    void doAbortSolve();
 
 signals:
     void updateChart();
@@ -159,6 +184,19 @@ protected:
 
     bool m_isSolving;
     bool m_abort;
+
+    inline QVariant defaultValue(Type type) {  return m_settingDefault[type]; }
+
+    QMap<Type, QVariant> m_setting;
+    QMap<Type, QVariant> m_settingDefault;
+    QMap<Type, QString> m_settingKey;
+
+    inline QString typeToStringKey(Type type) { return m_settingKey[type]; }
+    inline Type stringKeyToType(const QString &key) { return m_settingKey.key(key); }
+    inline QStringList stringKeys() { return m_settingKey.values(); }
+
+    virtual void setDefaultValues() {}
+    virtual void setStringKeys() {}
 };
 
 class Studies : public QObject
@@ -185,6 +223,32 @@ signals:
 
 private:
     QList<Study *> m_studies;
+};
+
+class StudyDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    StudyDialog(Study *study, QWidget *parent = 0);
+
+    int showDialog();
+
+    static StudyDialog *factory(Study *study, QWidget *parent = 0);
+
+protected:
+    Study *m_study;
+
+    void createControls();
+    virtual QWidget *createStudyControls() { return new QWidget(this); }
+    QWidget *createParameters();
+    QWidget *createFunctionals();
+
+    virtual void load() = 0;
+    virtual void save() = 0;
+
+private slots:
+    void doAccept();
 };
 
 #endif // STUDY_H

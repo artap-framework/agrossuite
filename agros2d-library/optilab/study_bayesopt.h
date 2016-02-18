@@ -50,13 +50,31 @@ public:
     virtual inline StudyType type() { return StudyType_BayesOptAnalysis; }
     virtual void solve();
 
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
+protected:
+    virtual void setDefaultValues();
+    virtual void setStringKeys();
+
+    friend class StudyBayesOptAnalysisDialog;
+};
+
+class StudyBayesOptAnalysisDialog : public StudyDialog
+{
+public:
+    StudyBayesOptAnalysisDialog(Study *study, QWidget *parent = 0);
+
+protected:
+    virtual inline StudyBayesOptAnalysis *study() { return dynamic_cast<StudyBayesOptAnalysis *>(m_study); }
+
+    virtual QWidget *createStudyControls();
+
+    virtual void load();
+    virtual void save();
 
 private:
-    int m_n_init_samples;
-    int m_n_iterations;
-    int m_init_method; // 1-LHS, 2-Sobol
+    QSpinBox *txtNInitSamples;
+    QSpinBox *txtNIterations;
+    QSpinBox *txtNIterRelearn;
+    QComboBox *cmbInitMethod;
 };
 
 #endif // STUDY_BAYESOPT_H

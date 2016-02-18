@@ -34,6 +34,9 @@ public:
     virtual inline StudyType type() { return StudyType_SweepAnalysis; }
 
     virtual void solve();
+
+    virtual void setDefaultValues();
+    virtual void setStringKeys();
 };
 
 #endif // STUDY_SWEEP_H

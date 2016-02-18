@@ -32,6 +32,7 @@
 
 const QString N_INIT_SAMPLES = "n_init_samples";
 const QString N_ITERATIONS = "n_iterations";
+const QString N_ITER_RELEARN = "n_iter_relearn";
 const QString INIT_METHOD = "init_method";
 
 BayesOptProblem::BayesOptProblem(StudyBayesOptAnalysis *study, bayesopt::Parameters par)
@@ -90,10 +91,7 @@ double BayesOptProblem::evaluateSample(const vectord& x)
     return value;
 }
 
-StudyBayesOptAnalysis::StudyBayesOptAnalysis() : Study(),
-    m_n_init_samples(5),
-    m_n_iterations(10),
-    m_init_method(1)
+StudyBayesOptAnalysis::StudyBayesOptAnalysis() : Study()
 {    
 }
 
@@ -104,9 +102,10 @@ void StudyBayesOptAnalysis::solve()
 
     // parameters
     bayesopt::Parameters par = initialize_parameters_to_default();
-    par.n_init_samples = m_n_init_samples;
-    par.n_iterations = m_n_iterations;
-    par.init_method = m_init_method; // 1-LHS, 2-Sobol
+    par.n_init_samples = value(BayesOpt_n_init_samples).toInt();
+    par.n_iterations = value(BayesOpt_n_iterations).toInt();
+    par.n_iter_relearn = value(BayesOpt_n_iter_relearn).toInt();
+    par.init_method = value(BayesOpt_init_method).toInt();
     par.noise = 1e-10;
     par.random_seed = 0;
     par.verbose_level = 1;
@@ -117,10 +116,13 @@ void StudyBayesOptAnalysis::solve()
     addComputationSet(tr("Initialization"));
     bayesOptProblem.initializeOptimization();
 
-    // steps   
+    // steps
     addComputationSet(tr("Steps"));
     for (int i = 0; i < bayesOptProblem.getParameters()->n_iterations; i++)
     {
+        if (isAborted())
+            break;
+
         // step
         bayesOptProblem.stepOptimization();
     }
@@ -136,20 +138,85 @@ void StudyBayesOptAnalysis::solve()
     emit solved();
 }
 
-void StudyBayesOptAnalysis::load(QJsonObject &object)
+void StudyBayesOptAnalysis::setDefaultValues()
 {
-    m_n_init_samples = object[N_INIT_SAMPLES].toInt();
-    m_n_iterations = object[N_ITERATIONS].toInt();
-    m_init_method = object[INIT_METHOD].toDouble();
+    m_settingDefault.clear();
 
-    Study::load(object);
+    m_settingDefault[BayesOpt_n_init_samples] = 5;
+    m_settingDefault[BayesOpt_n_iterations] = 10;
+    m_settingDefault[BayesOpt_n_iter_relearn] = 5;
+    m_settingDefault[BayesOpt_init_method] = 1; // 1-LHS, 2-Sobol
 }
 
-void StudyBayesOptAnalysis::save(QJsonObject &object)
+void StudyBayesOptAnalysis::setStringKeys()
 {
-    object[N_INIT_SAMPLES] = m_n_init_samples;
-    object[N_ITERATIONS] = m_n_iterations;
-    object[INIT_METHOD] = m_init_method;
+    m_settingKey[BayesOpt_n_init_samples] = "BayesOpt_n_init_samples";
+    m_settingKey[BayesOpt_n_iterations] = "BayesOpt_n_iterations";
+    m_settingKey[BayesOpt_n_iter_relearn] = "BayesOpt_n_iter_relearn";
+    m_settingKey[BayesOpt_init_method] = "BayesOpt_init_method";
+}
 
-    Study::save(object);
+// *****************************************************************************************************
+
+StudyBayesOptAnalysisDialog::StudyBayesOptAnalysisDialog(Study *study, QWidget *parent)
+    : StudyDialog(study, parent)
+{
+
+}
+
+QWidget *StudyBayesOptAnalysisDialog::createStudyControls()
+{
+    txtNInitSamples = new QSpinBox(this);
+    txtNInitSamples->setMinimum(1);
+    txtNInitSamples->setMaximum(1000);
+
+    txtNIterations = new QSpinBox(this);
+    txtNIterations->setMinimum(0);
+    txtNIterations->setMaximum(10000);
+
+    txtNIterRelearn = new QSpinBox(this);
+    txtNIterRelearn->setMinimum(1);
+    txtNIterRelearn->setMaximum(10000);
+
+    cmbInitMethod = new QComboBox(this);
+    cmbInitMethod->addItem(tr("Latin Hypercube Sampling (LHS)"), 1);
+    cmbInitMethod->addItem(tr("Sobol Sequences"), 2);
+    cmbInitMethod->addItem(tr("Uniform Sampling"), 3);
+
+    QGridLayout *layoutInitialization = new QGridLayout(this);
+    layoutInitialization->addWidget(new QLabel(tr("Number of initial samples:")), 0, 0);
+    layoutInitialization->addWidget(txtNInitSamples, 0, 1);
+    layoutInitialization->addWidget(new QLabel(tr("Initial strategy:")), 1, 0);
+    layoutInitialization->addWidget(cmbInitMethod, 1, 1);
+    layoutInitialization->addWidget(new QLabel(tr("Number of iterations:")), 2, 0);
+    layoutInitialization->addWidget(txtNIterations, 2, 1);
+    layoutInitialization->addWidget(new QLabel(tr("Number of iterations between re-learning:")), 3, 0);
+    layoutInitialization->addWidget(txtNIterRelearn, 3, 1);
+
+    QGroupBox *grpInitialization = new QGroupBox(tr("Initialization"), this);
+    grpInitialization->setLayout(layoutInitialization);
+
+    QVBoxLayout *layoutMain = new QVBoxLayout(this);
+    layoutMain->addWidget(grpInitialization);
+
+    QWidget *widget = new QWidget(this);
+    widget->setLayout(layoutMain);
+
+    return widget;
+}
+
+void StudyBayesOptAnalysisDialog::load()
+{
+    txtNInitSamples->setValue(study()->value(Study::BayesOpt_n_init_samples).toInt());
+    txtNIterations->setValue(study()->value(Study::BayesOpt_n_iterations).toInt());
+    txtNIterRelearn->setValue(study()->value(Study::BayesOpt_n_iter_relearn).toInt());
+    cmbInitMethod->setCurrentIndex(cmbInitMethod->findData(study()->value(Study::BayesOpt_init_method).toInt()));
+}
+
+void StudyBayesOptAnalysisDialog::save()
+{
+    study()->setValue(Study::BayesOpt_n_init_samples, txtNInitSamples->value());
+    study()->setValue(Study::BayesOpt_n_iterations, txtNIterations->value());
+    study()->setValue(Study::BayesOpt_n_iter_relearn, txtNIterRelearn->value());
+    study()->setValue(Study::BayesOpt_init_method, cmbInitMethod->itemData(cmbInitMethod->currentIndex()).toInt());
 }

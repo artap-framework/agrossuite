@@ -28,6 +28,8 @@
 
 #include "nlopt.hpp"
 
+class LineEditDouble;
+
 class StudyNLoptAnalysis : public Study
 {
 public:
@@ -36,12 +38,32 @@ public:
     virtual inline StudyType type() { return StudyType_NLoptAnalysis; }
     virtual void solve();
 
-    virtual void load(QJsonObject &object);
-    virtual void save(QJsonObject &object);
+protected:
+    virtual void setDefaultValues();
+    virtual void setStringKeys();
 
 private:
-    double m_tol_rel;
-    nlopt::algorithm m_algorithm;
+    friend class StudyNLoptAnalysisDialog;
+};
+
+class StudyNLoptAnalysisDialog : public StudyDialog
+{
+public:
+    StudyNLoptAnalysisDialog(Study *study, QWidget *parent = 0);
+
+protected:
+    virtual inline StudyNLoptAnalysis *study() { return dynamic_cast<StudyNLoptAnalysis *>(m_study); }
+
+    virtual QWidget *createStudyControls();
+
+    virtual void load();
+    virtual void save();
+
+private:
+    QSpinBox *txtNIterations;
+    LineEditDouble *txtRelTol;
+    LineEditDouble *txtAbsTol;
+    QComboBox *cmbAlgorithm;
 };
 
 #endif // STUDY_NLOPT_H

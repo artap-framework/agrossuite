@@ -34,6 +34,7 @@ const QString PARAMETERS = "parameters";
 const QString FUNCTIONALS = "functionals";
 const QString COMPUTATIONS = "computations";
 const QString COMPUTATIONSET = "computationset";
+const QString CONFIG = "config";
 
 LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplication::activeWindow()),
     m_study(study), m_chart(nullptr), m_objectiveGraph(nullptr), m_progress(nullptr)
@@ -47,6 +48,7 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
     createControls();
 
     connect(btnAbort, SIGNAL(clicked()), m_study, SLOT(doAbortSolve()));
+    connect(btnAbort, SIGNAL(clicked()), this, SLOT(aborted()));
     connect(m_study, SIGNAL(updateChart()), this, SLOT(updateChart()));
     connect(m_study, SIGNAL(solved()), this, SLOT(solved()));
     connect(m_study, SIGNAL(updateParameters(QList<Parameter>, const Computation *)), this, SLOT(updateParameters(QList<Parameter>, const Computation *)));
@@ -207,6 +209,12 @@ void LogOptimizationDialog::solved()
     btnClose->setEnabled(true);
 }
 
+void LogOptimizationDialog::aborted()
+{
+    btnAbort->setEnabled(false);
+    btnClose->setEnabled(true);
+}
+
 void LogOptimizationDialog::updateParameters(QList<Parameter> parameters, const Computation *computation)
 {
     QString params = "";
@@ -279,12 +287,15 @@ Study *Study::factory(StudyType type)
     else
         assert(0);
 
+    study->setStringKeys();
+    study->clear();
+
     return study;
 }
 
 Study::Study(QList<ComputationSet> computations)
     : m_computationSets(computations), m_name(""), m_abort(false), m_isSolving(false)
-{
+{    
 }
 
 Study::~Study()
@@ -294,6 +305,10 @@ Study::~Study()
 
 void Study::clear()
 {
+    // set default values and types
+    setDefaultValues();
+    m_setting = m_settingDefault;
+
     m_parameters.clear();
     m_functionals.clear();
     m_computationSets.clear();
@@ -330,6 +345,23 @@ void Study::load(QJsonObject &object)
         computationSet.load(computationSetJson);
         m_computationSets.append(computationSet);
     }
+
+    // config
+    QJsonObject configJson = object[CONFIG].toObject();
+    m_setting = m_settingDefault;
+    foreach (Type key, m_settingDefault.keys())
+    {
+        if (m_settingDefault[key].type() == QVariant::Bool)
+            m_setting[key] = configJson[typeToStringKey(key)].toBool();
+        else if (m_settingDefault[key].type() == QVariant::String)
+            m_setting[key] = configJson[typeToStringKey(key)].toString();
+        else if (m_settingDefault[key].type() == QVariant::Double)
+            m_setting[key] = configJson[typeToStringKey(key)].toDouble();
+        else if (m_settingDefault[key].type() == QVariant::Int)
+            m_setting[key] = configJson[typeToStringKey(key)].toInt();
+        else
+            assert(0);
+    }
 }
 
 void Study::save(QJsonObject &object)
@@ -363,6 +395,23 @@ void Study::save(QJsonObject &object)
         computationsJson.append(computationSetJson);
     }
     object[COMPUTATIONS] = computationsJson;
+
+    // config
+    QJsonObject configJson;
+    foreach (Type key, m_settingDefault.keys())
+    {
+        if (m_settingDefault[key].type() == QVariant::Bool)
+            configJson[typeToStringKey(key)] = m_setting[key].toBool();
+        else if (m_settingDefault[key].type() == QVariant::String)
+            configJson[typeToStringKey(key)] = m_setting[key].toString();
+        else if (m_settingDefault[key].type() == QVariant::Double)
+            configJson[typeToStringKey(key)] = m_setting[key].toDouble();
+        else if (m_settingDefault[key].type() == QVariant::Int)
+            configJson[typeToStringKey(key)] = m_setting[key].toInt();
+        else
+            assert(0);
+    }
+    object[CONFIG] = configJson;
 }
 
 bool Study::evaluateFunctionals(QSharedPointer<Computation> computation)
@@ -464,4 +513,68 @@ void Studies::removeComputation(QSharedPointer<Computation> computation)
     for (int i = 0; i < m_studies.size(); i++)
         for (int j = 0; j < m_studies[i]->computationSets().size(); j++)
             m_studies[i]->computationSets()[i].removeComputation(computation);
+}
+
+// ******************************************************************************************************************
+
+StudyDialog *StudyDialog::factory(Study *study, QWidget *parent)
+{
+    if (study->type() == StudyType_BayesOptAnalysis)
+        return new StudyBayesOptAnalysisDialog(study, parent);
+    else if (study->type() == StudyType_NLoptAnalysis)
+        return new StudyNLoptAnalysisDialog(study, parent);
+
+    assert(0);
+    return nullptr;
+}
+
+StudyDialog::StudyDialog(Study *study, QWidget *parent) : QDialog(parent),
+    m_study(study)
+{
+    setWindowTitle(tr("Study - %1").arg(studyTypeString(study->type())));
+    setAttribute(Qt::WA_DeleteOnClose);
+}
+
+int StudyDialog::showDialog()
+{
+    createControls();
+    load();
+
+    return exec();
+}
+
+void StudyDialog::createControls()
+{
+    // dialog buttons
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(doAccept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(close()));
+
+    QTabWidget *tabStudy = new QTabWidget();
+    tabStudy->addTab(createStudyControls(), tr("Study"));
+    tabStudy->addTab(createParameters(), tr("Parameters"));
+    tabStudy->addTab(createFunctionals(), tr("Functionals"));
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(tabStudy);
+    layout->addStretch();
+    layout->addWidget(buttonBox);
+
+    setLayout(layout);
+}
+
+QWidget *StudyDialog::createParameters()
+{
+    return new QWidget(this);
+}
+
+QWidget *StudyDialog::createFunctionals()
+{
+    return new QWidget(this);
+}
+
+void StudyDialog::doAccept()
+{
+    save();
+    accept();
 }
