@@ -2571,7 +2571,9 @@ krok</translation>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="292"/>
         <source>&amp;Solve new</source>
-        <translation>&amp;Spustit řešení znovu</translation>
+        <translation>&amp;Spustit
+řešení
+znovu</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/mainwindow.cpp" line="293"/>
