@@ -172,7 +172,10 @@ private:
         }
         else
         {
-            assert(0);
+            if (rank == 0)
+                    std::cout << "default" << std::endl;
+
+            return "";
         }
     }
 public:
@@ -187,12 +190,13 @@ public:
         if (infoParameterMultigrid && infoParameterPreconditioner.empty())
             infoParameterPreconditioner = "SA";
 
+        // TODO: if use default for set of param, get param. from solver object
         if (infoParameterMultigrid && infoParameterMultigridAggregator.empty())
-            infoParameterMultigridAggregator = "Uncoupled";
+            infoParameterMultigridAggregator = "";
         if (infoParameterMultigrid && infoParameterMultigridCoarser.empty())
-            infoParameterMultigridCoarser = "Chebyshev";
+            infoParameterMultigridCoarser = "";
         if (infoParameterMultigrid && infoParameterMultigridSmoother.empty())
-            infoParameterMultigridSmoother = "Amesos-KLU";
+            infoParameterMultigridSmoother = "";
     }
 
     // AztecOO part ------------------------
@@ -356,7 +360,9 @@ public:
         }
         else
         {
-            assert(0);
+            if (rank == 0)
+                std::cout << "ML aggregation type is set to: default" << std::endl;
+            return "";
         }
     }
 
@@ -437,25 +443,40 @@ int solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPr
     // Sets default parameters.
     // After this call, MLList contains the default values for the ML parameters.
     ML_Epetra::SetDefaults(preconditioner, mlList);
-    // overwrite some parameters. Please refer to the user's guide
-    // for more information
-    // some of the parameters do not differ from their default value,
-    // and they are here reported for the sake of clarity
-    // output level, 0 being silent and 10 verbose
+
+    // overwrite some parameters. Please refer to the Trilinos user's guide for more information
+
+    // TODO: set as cmd line parameter - output level, 0 being silent and 10 verbose
     mlList.set("ML output", 10);
-    // maximum number of levels
-    mlList.set("max levels", 10);
-    // set finest level to 0
-    mlList.set("increasing or decreasing", "increasing");
-    // use Uncoupled scheme to create the aggregate
-    mlList.set("aggregation: type", aggregationType);
-    // smoother is Chebyshev. Example file `ml/examples/TwoLevelDD/ml_2level_DD.cpp' shows how to use AZTEC's preconditioners as smoothers
-    mlList.set("smoother: type", smootherType);
-    mlList.set("smoother: sweeps", 3);
-    // use both pre and post smoothing
-    mlList.set("smoother: pre or post", "both");
+
+    // TODO: set as cmd line parameter - maximum number of levels
+    // mlList.set("max levels", 10);
+
+    // TODO: set as cmd line parameter
+    // mlList.set("increasing or decreasing", "increasing");
+
+    // used scheme to create the aggregate
+    if (aggregationType != "")
+    {
+        mlList.set("aggregation: type", aggregationType);
+    }
+
+    // smoother type (example file `ml/examples/TwoLevelDD/ml_2level_DD.cpp' shows how to use AZTEC's preconditioners as smoothers)
+    if (smootherType != "")
+    {
+        mlList.set("smoother: type", smootherType);
+    }
+
+    // TODO: set as cmd line parameter
+    //mlList.set("smoother: sweeps", 3);
+
+    // TODO: set as cmd line parameter - use both pre and post smoothing
+    // mlList.set("smoother: pre or post", "both");
     // solve with solver in "coarseType"
-    mlList.set("coarse: type", coarseType);
+    if (coarseType != "")
+    {
+        mlList.set("coarse: type", coarseType);
+    }
 
     // Creates the preconditioning object. We suggest to use `new' and
     // `delete' because the destructor contains some calls to MPI (as
@@ -470,7 +491,7 @@ int solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPr
     aztecooSolver.SetPrecOperator(mlPrec);
     // aztecooSolver.SetAztecOption(AZ_solver, AZ_cg);
     aztecooSolver.SetAztecOption(AZ_solver, solver);
-    aztecooSolver.SetAztecOption(AZ_output, 32);   // ??
+    aztecooSolver.SetAztecOption(AZ_output, 32);   // ?? TODO: what is it?
 
     int status = aztecooSolver.Iterate(maxIter, relTol);
 
