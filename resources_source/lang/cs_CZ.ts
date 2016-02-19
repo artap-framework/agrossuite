@@ -596,12 +596,12 @@ Výstup:
     <message>
         <location filename="../../agros2d-library/solver/problem.cpp" line="1869"/>
         <source>Reading initial mesh from disk</source>
-        <translation>Načítání výchozí sítě z disku</translation>
+        <translation>Načítání počáteční sítě z disku</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/solver/problem.cpp" line="1874"/>
         <source>Reading initial mesh from memory</source>
-        <translation>Načítání výchozí sítě z paměti</translation>
+        <translation>Načítání počáteční sítě z paměti</translation>
     </message>
 </context>
 <context>
@@ -955,7 +955,7 @@ Výstup:
 <context>
     <name>FieldDialog</name>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="882"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="886"/>
         <source>Delete field</source>
         <translation>Smazat pole</translation>
     </message>
@@ -964,22 +964,22 @@ Výstup:
         <translation type="vanished">Editor modulu</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="919"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="923"/>
         <source>Delete</source>
         <translation>Smazat</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="919"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="923"/>
         <source>Physical field &apos;%1&apos; will be pernamently deleted. Are you sure?</source>
         <translation>Fyzikální pole &apos;%1&apos; bude trvale smazáno. Jste si jistý(á)?</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="920"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="924"/>
         <source>&amp;Yes</source>
         <translation>&amp;Ano</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="920"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="924"/>
         <source>&amp;No</source>
         <translation>&amp;Ne</translation>
     </message>
@@ -1097,7 +1097,7 @@ Výstup:
     </message>
     <message>
         <location filename="../../agros2d-library/gui/fielddialog.cpp" line="180"/>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="498"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="501"/>
         <source>Solver:</source>
         <translation>Řešič:</translation>
     </message>
@@ -1221,22 +1221,22 @@ Výstup:
         <translation>strategie &lt;i&gt;hp&lt;/i&gt;-adaptivity:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="494"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="497"/>
         <source>deal.II</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="500"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="503"/>
         <source>Environment:</source>
         <translation>Prostředí:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="502"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="505"/>
         <source>Parameters:</source>
         <translation>Parametry:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="506"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="509"/>
         <source>External (out of core)</source>
         <translation>Externí řešič</translation>
     </message>
@@ -1355,22 +1355,22 @@ Výstup:
         <translation>Přepočítat každý krok přech. děje:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="485"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="488"/>
         <source>Method:</source>
         <translation>Metoda:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="487"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="490"/>
         <source>Preconditioner:</source>
         <translation>Předpodmiňovač:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="489"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="492"/>
         <source>Absolute tolerance:</source>
         <translation>Absolutní tolerance:</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="491"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="494"/>
         <source>Maximum number of iterations:</source>
         <translation>Maximální počet iterací:</translation>
     </message>
@@ -1401,12 +1401,12 @@ Výstup:
 <context>
     <name>FieldsToobar</name>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="980"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="984"/>
         <source>Add field</source>
         <translation>Přidat pole</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="1009"/>
+        <location filename="../../agros2d-library/gui/fielddialog.cpp" line="1013"/>
         <source>&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Analysis:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Solver:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%3&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Adaptivity:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%2&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Number of ref. / order:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%4 / %5&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</source>
         <translation>&lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Analýza:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Řešič:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%3&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Adaptivita:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%2&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;Počet zjemnění /řád:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%4 / %5&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</translation>
     </message>
@@ -2127,48 +2127,48 @@ Výstup:
 <context>
     <name>LogOptimizationDialog</name>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="86"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="88"/>
         <source>Solver</source>
         <translation>Řešič</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="86"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="88"/>
         <source>Stydy is being aborted.</source>
         <translation>Výpočet byl přerušen.</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="108"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="110"/>
         <source>Close</source>
         <translation>Zavřít</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="112"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="114"/>
         <source>Abort</source>
         <translation>Přerušit</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="135"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="137"/>
         <source>Optimization</source>
         <translation>Optimalizace</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="146"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="148"/>
         <source>number of steps</source>
         <translation>počet kroků</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="151"/>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="157"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="153"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="159"/>
         <source>objective function</source>
         <translation>kriteriální funkce</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="228"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="236"/>
         <source>Study</source>
         <translation>Studie</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="228"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="236"/>
         <source>Parameters: %1, results: %2</source>
         <translation>Parametry: %1, výsledky: %2</translation>
     </message>
@@ -5406,22 +5406,22 @@ oblasti</translation>
         <translation>Maticový řešič</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="818"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="829"/>
         <source>Delete</source>
         <translation>Smazat</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="818"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="829"/>
         <source>Physical field &apos;%1&apos; will be pernamently deleted. Are you sure?</source>
         <translation>Fyzikální pole &apos;%1&apos; bude trvale smazáno. Jste si jistý(á)?</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="819"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="830"/>
         <source>&amp;Yes</source>
         <translation>&amp;Ano</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/preprocessorview.cpp" line="819"/>
+        <location filename="../../agros2d-library/preprocessorview.cpp" line="830"/>
         <source>&amp;No</source>
         <translation>&amp;Ne</translation>
     </message>
@@ -7811,7 +7811,7 @@ Chcete tyto změny uložit?</translation>
         <translation type="obsolete">Není možné načíst soubor sdružení %1: %2</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="429"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="478"/>
         <location filename="../../agros2d-library/solver/linear_solver.cpp" line="89"/>
         <location filename="../../agros2d-library/solver/linear_solver.cpp" line="116"/>
         <location filename="../../agros2d-library/solver/linear_solver.cpp" line="132"/>
@@ -7887,7 +7887,7 @@ Chcete tyto změny uložit?</translation>
     <message>
         <location filename="../../agros2d-library/solver/problem.cpp" line="336"/>
         <source>Frequency</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Frekvence</translation>
     </message>
     <message>
         <location filename="../../agros2d-library/solver/problem.cpp" line="336"/>
@@ -7900,7 +7900,7 @@ Chcete tyto změny uložit?</translation>
         <translation>Není definované žádné fyzikální pole</translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="429"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="478"/>
         <location filename="../../agros2d-library/solver/problem.cpp" line="1607"/>
         <source>Aborting calculation...</source>
         <translation>Ukončování řešení...</translation>
@@ -10310,32 +10310,32 @@ Tracing</source>
 <context>
     <name>Study</name>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="393"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="442"/>
         <source>Set %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="397"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="446"/>
         <source>%1 (%2 computations)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="405"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="454"/>
         <source>solved</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="405"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="454"/>
         <source>not solved</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="405"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="454"/>
         <source>results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study.cpp" line="405"/>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="454"/>
         <source>no results</source>
         <translation type="unfinished"></translation>
     </message>
@@ -10343,13 +10343,189 @@ Tracing</source>
 <context>
     <name>StudyBayesOptAnalysis</name>
     <message>
-        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="117"/>
+        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="116"/>
         <source>Initialization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="121"/>
+        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="120"/>
         <source>Steps</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StudyBayesOptAnalysisDialog</name>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="182"/>
+        <source>Latin Hypercube Sampling (LHS)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="183"/>
+        <source>Sobol Sequences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="184"/>
+        <source>Uniform Sampling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="187"/>
+        <source>Number of initial samples:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="189"/>
+        <source>Initial strategy:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="191"/>
+        <source>Number of iterations:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="193"/>
+        <source>Number of iterations between re-learning:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_bayesopt.cpp" line="196"/>
+        <source>Initialization</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StudyDialog</name>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="534"/>
+        <source>Study - %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="554"/>
+        <source>Study</source>
+        <translation type="unfinished">Studie</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="555"/>
+        <source>Parameters</source>
+        <translation type="unfinished">Parametry</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study.cpp" line="556"/>
+        <source>Functionals</source>
+        <translation type="unfinished">Funkcionály</translation>
+    </message>
+</context>
+<context>
+    <name>StudyNLoptAnalysis</name>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="143"/>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="145"/>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="147"/>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="149"/>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="164"/>
+        <source>NLopt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="143"/>
+        <source>Successful</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="145"/>
+        <source>Functional tolerance reached</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="147"/>
+        <source>Parameter tolerance reached</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="149"/>
+        <source>Maximum iterations reached</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StudyNLoptAnalysisDialog</name>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="205"/>
+        <source>Global - DIviding RECTangles (locally biased)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="206"/>
+        <source>Global - Multi-Level Single-Linkage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="207"/>
+        <source>Global - Controlled Random Search (local mutation)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="208"/>
+        <source>Global - Improved Stochastic Ranking Evolution Strategy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="209"/>
+        <source>Global - ESCH (evolutionary algorithm)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="210"/>
+        <source>Local - BOBYQA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="211"/>
+        <source>Local - COBYLA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="212"/>
+        <source>Local - Nelder-Mead Simplex</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="213"/>
+        <source>Local - Sbplx</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="216"/>
+        <source>Algorithm:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="218"/>
+        <source>Number of iterations:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="221"/>
+        <source>Initialization</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="225"/>
+        <source>Relative tolerance:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="227"/>
+        <source>Absolute tolerance:</source>
+        <translation type="unfinished">Absolutní tolerance:</translation>
+    </message>
+    <message>
+        <location filename="../../agros2d-library/optilab/study_nlopt.cpp" line="230"/>
+        <source>Config</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
