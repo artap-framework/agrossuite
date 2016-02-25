@@ -1,3 +1,19 @@
+#### Version 1.3.2 released on 22.12.15 ####
+
+  Bugfixes [Backported from 2.0.0 branch]:
+    - Fixed possible crash when having a QCPGraph with scatters only and a non-transparent main/fill brush of the graph
+    - Fixed QCPItemPixmap not updating internally cached scaled pixmap if new pixmap set with same scaled dimensions
+    - When using log axis scale and zooming out as far as possible (~1e-280..1e280), axis doesn't end up in (via mouse) unrecoverable range with strange axis ticks anymore
+    - Axis tick label algorithm for beautifully typeset powers now checks whether "e" in tick label is actually part of a number before converting the exponent to superscript
+    - Fixed QCustomPlot::moveLayer performing incorrect move and possible crash in certain situations
+    - Fixed possible crash on QCustomPlot destruction due to wrong QObject-hierarchy. Only occurs if a QCPAxisRect is removed from the normal QCustomPlot destruction hierarchy by taking it out of its layout
+    - Fixed possible freeze when data values become infinity after coord-to-pixel transformation (e.g. maximally zoomed out log axis), and line style is not solid (e.g. dashed) or phFastPolylines is disabled
+    
+  Other [Backported from 2.0.0 branch]:
+    - A few documentation fixes/improvements
+    - Qt5.5 compatibility (If you use PDF export, test your outputs, as output dimensions might change when switching Qt versions -- QCP does not try to emulate previous Qt version behaviour here)
+    - QCP now includes <QtPrintSupport/QtPrintSupport> instead of just <QtPrintSupport> because some users had problems with the latter. Please report if you now experience issues due to the new include.
+
 #### Version 1.3.1 released on 25.04.15 ####
 
   Bugfixes:
