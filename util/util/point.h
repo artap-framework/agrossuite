@@ -49,8 +49,8 @@ struct AGROS_UTIL_API  Point
 {
     double x, y;
 
-    Point() { this->x = 0; this->y = 0; }
-    Point(double x, double y) { this->x = x; this->y = y; }
+    Point() : x(0), y(0) {}
+    Point(double x, double y) : x(x), y(y) {}
 
     inline Point operator+(const Point &vec) const { return Point(x + vec.x, y + vec.y); }
     inline Point operator-(const Point &vec) const { return Point(x - vec.x, y - vec.y); }
@@ -90,8 +90,8 @@ struct Point3
 {
     double x, y, z;
 
-    Point3() { this->x = 0; this->y = 0; this->z = 0; }
-    Point3(double x, double y, double z) { this->x = x; this->y = y; this->z = z; }
+    Point3() : x(0), y(0), z(0) {}
+    Point3(double x, double y, double z) : x(x), y(y), z(z) {}
 
     inline Point3 operator+(const Point3 &vec) const { return Point3(x + vec.x, y + vec.y, z + vec.z); }
     inline Point3 operator-(const Point3 &vec) const { return Point3(x - vec.x, y - vec.y, z - vec.z); }
@@ -131,8 +131,8 @@ struct RectPoint
     Point start;
     Point end;
 
-    inline RectPoint(const Point &start, const Point &end) { this->start = start; this->end = end; }
-    inline RectPoint() { this->start = Point(); this->end = Point(); }
+    inline RectPoint(const Point &start, const Point &end) : start(start), end(end) {}
+    inline RectPoint() : start(Point()), end(Point()) {}
 
     inline void set(const Point &start, const Point &end) { this->start = start; this->end = end; }
     inline double width() const { return fabs(end.x - start.x); }

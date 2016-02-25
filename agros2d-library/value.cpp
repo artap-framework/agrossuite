@@ -188,7 +188,7 @@ void Value::setNumber(double value)
 
 double Value::number() const
 {
-    assert(m_isEvaluated);
+    // assert(m_isEvaluated);
     return m_number;
 }
 

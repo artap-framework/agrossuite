@@ -75,19 +75,13 @@ QString Agros2DGenerator::couplingTypeStringEnum(CouplingType couplingType)
 {
     switch (couplingType)
     {
-    case WeakForm_MatVol:
+    case CouplingType_Weak:
         return("CouplingType_Weak");
         break;
-    case WeakForm_MatSurf:
-        return("CouplingType_Hard");
-        break;
-    case WeakForm_VecVol:
-        return("WeakForm_VecVol");
-        break;
-    case WeakForm_VecSurf:
-        return("CouplingType_None");
-        break;
-    case WeakForm_ExactSol:
+        // case CouplingType_Hard:
+        //     return("CouplingType_Hard");
+        //     break;
+    case CouplingType_Undefined:
         return("CouplingType_Undefined");
         break;
     default:
@@ -97,14 +91,16 @@ QString Agros2DGenerator::couplingTypeStringEnum(CouplingType couplingType)
 
 QString Agros2DGenerator::couplingTypeToString(QString couplingType)
 {
-    if(couplingType == "hard")
+    if (couplingType == "hard")
         return ("CouplingType_Hard");
-    if(couplingType == "weak")
+    if (couplingType == "weak")
         return ("CouplingType_Weak");
-    if(couplingType == "none")
+    if (couplingType == "none")
         return ("CouplingType_None");
-    if(couplingType == "undefined")
+    if (couplingType == "undefined")
         return ("CouplingType_Undefined");
+    else
+        assert(0);
 }
 
 CouplingType Agros2DGenerator::couplingTypeFromString(QString couplingType)
@@ -117,6 +113,8 @@ CouplingType Agros2DGenerator::couplingTypeFromString(QString couplingType)
         return CouplingType_None;
     if (couplingType == "undefined")
         return CouplingType_Undefined;
+    else
+        assert(0);
 }
 
 QList<LinearityType> Agros2DGenerator::linearityTypeList()
@@ -183,7 +181,7 @@ QString Agros2DGenerator::coordinateTypeStringEnum(CoordinateType coordinateType
 QString Agros2DGenerator::analysisTypeStringEnum(AnalysisType analysisType)
 {
     if (analysisType == AnalysisType_SteadyState)
-        return "AnalysisType_SteadyState";    
+        return "AnalysisType_SteadyState";
     else if (analysisType == AnalysisType_Transient)
         return "AnalysisType_Transient";
     else if (analysisType == AnalysisType_Harmonic)
@@ -274,11 +272,11 @@ void Agros2DGenerator::createStructure()
         field->SetValue("ID", moduleId.toStdString());
     }
 
-//    foreach (QString couplingId, couplings)
-//    {
-//        ctemplate::TemplateDictionary *field = output.AddSectionDictionary("SOURCE");
-//        field->SetValue("ID", couplingId.toStdString());
-//    }
+    //    foreach (QString couplingId, couplings)
+    //    {
+    //        ctemplate::TemplateDictionary *field = output.AddSectionDictionary("SOURCE");
+    //        field->SetValue("ID", couplingId.toStdString());
+    //    }
 
     // generate plugins project file
     // expand template
@@ -307,10 +305,10 @@ void Agros2DGenerator::generateSources()
         generateDocumentation(moduleId);
     }
 
-//    foreach (QString couplingId, couplings)
-//    {
-//        generateCoupling(couplingId);
-//    }
+    //    foreach (QString couplingId, couplings)
+    //    {
+    //        generateCoupling(couplingId);
+    //    }
 }
 
 void Agros2DGenerator::generateModule(const QString &moduleId)

@@ -357,11 +357,13 @@ void MeshGenerator::writeTodealii()
         MeshEdge edge = edgeList[edge_i];
         if (edge.marker != -1)
         {
-            SceneFace* sceneEdge = m_computation->scene()->faces->at(edge.marker);
-            if (sceneEdge->angle() > 0.0 && sceneEdge->isCurvilinear())
+            SceneFace* sceneFace = m_computation->scene()->faces->at(edge.marker);
+            if (sceneFace->angle() > 0.0 && sceneFace->isCurvilinear())
             {
-                double lengthPoints = (sceneEdge->nodeEnd()->point() - sceneEdge->nodeStart()->point()).magnitude();
-                double relDiff = (sceneEdge->length() - lengthPoints) / sceneEdge->length();
+                double lengthPoints = (sceneFace->nodeEnd()->point()
+                                       - sceneFace->nodeStart()->point())
+                        .magnitude();
+                double relDiff = (sceneFace->length() - lengthPoints) / sceneFace->length();
                 // qDebug() << "length = " << sceneEdge->length() << ", points = " << lengthPoints << ", diff " << relDiff;
                 if (relDiff < 0.01)
                     continue;
@@ -372,7 +374,7 @@ void MeshGenerator::writeTodealii()
                 if (surfManifolds.find(edgeManifoldId) == surfManifolds.end())
                     surfManifolds.insert(std::pair<dealii::types::manifold_id, AgrosManifoldSurface<2>*>(edgeManifoldId,
                                                                                                          new AgrosManifoldSurface<2>(edgeManifoldId,
-                                                                                                                                     sceneEdge->center(), sceneEdge->radius())));
+                                                                                                                                     sceneFace->center(), sceneFace->radius())));
 
                 for (int neighElem_i = 0; neighElem_i < 2; neighElem_i++)
                 {
