@@ -66,10 +66,10 @@ enum mat_acc {
  */
 enum mat_ft {
     MAT_FT_MAT73  = 0x0200,   /**< @brief Matlab version 7.3 file             */
-    MAT_FT_MAT5   = 0x0100,   /**< @brief Matlab level-5 file                 */
-    MAT_FT_MAT4   = 0x0010    /**< @brief Version 4 file                      */
+    MAT_FT_MAT5   = 0x0100,   /**< @brief Matlab version 5 file               */
+    MAT_FT_MAT4   = 0x0010,   /**< @brief Matlab version 4 file               */
+    MAT_FT_UNDEFINED =   0    /**< @brief Undefined version                   */
 };
-
 
 /** @brief Matlab data types
  *
@@ -77,7 +77,7 @@ enum mat_ft {
  * Matlab data types
  */
 enum matio_types {
-    MAT_T_UNKNOWN    =  0,    /**< @brief UNKOWN data type                    */
+    MAT_T_UNKNOWN    =  0,    /**< @brief UNKNOWN data type                    */
     MAT_T_INT8       =  1,    /**< @brief 8-bit signed integer data type      */
     MAT_T_UINT8      =  2,    /**< @brief 8-bit unsigned integer data type    */
     MAT_T_INT16      =  3,    /**< @brief 16-bit signed integer data type     */
@@ -184,15 +184,15 @@ struct matvar_internal;
  * @ingroup MAT
  */
 typedef struct matvar_t {
-    size_t nbytes;                     /**< Number of bytes for the MAT variable */
-    int    rank;                       /**< Rank (Number of dimensions) of the data */
+    size_t nbytes;                    /**< Number of bytes for the MAT variable */
+    int    rank;                      /**< Rank (Number of dimensions) of the data */
     enum matio_types   data_type;     /**< Data type(MAT_T_*) */
     int   data_size;                  /**< Bytes / element for the data */
     enum matio_classes class_type;    /**< Class type in Matlab(MAT_C_DOUBLE, etc) */
     int   isComplex;                  /**< non-zero if the data is complex, 0 if real */
     int   isGlobal;                   /**< non-zero if the variable is global */
     int   isLogical;                  /**< non-zero if the variable is logical */
-    size_t *dims;                    /**< Array of lengths for each dimension */
+    size_t *dims;                     /**< Array of lengths for each dimension */
     char *name;                       /**< Name of the variable */
     void *data;                       /**< Pointer to the data */
     int   mem_conserve;               /**< 1 if Memory was conserved with data */
@@ -229,7 +229,7 @@ EXTERN char  *strdup_printf(const char *format, ...);
 EXTERN int    Mat_SetVerbose( int verb, int s );
 EXTERN int    Mat_SetDebug( int d );
 EXTERN void   Mat_Critical( const char *format, ... );
-EXTERN void   Mat_Error( const char *format, ... );
+EXTERN MATIO_NORETURN void Mat_Error( const char *format, ... ) MATIO_NORETURNATTR;
 EXTERN void   Mat_Help( const char *helpstr[] );
 EXTERN int    Mat_LogInit( const char *progname );
 EXTERN int    Mat_LogClose(void);
@@ -243,6 +243,7 @@ EXTERN size_t Mat_SizeOf(enum matio_types data_type);
 EXTERN size_t Mat_SizeOfClass(int class_type);
 
 /*   MAT File functions   */
+/** Create new Matlab MAT file */
 #define            Mat_Create(a,b) Mat_CreateVer(a,b,MAT_FT_DEFAULT)
 EXTERN mat_t      *Mat_CreateVer(const char *matname,const char *hdr_str,
                        enum mat_ft mat_file_ver);
