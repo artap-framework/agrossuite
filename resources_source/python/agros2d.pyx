@@ -135,9 +135,6 @@ cdef extern from "../../agros2d-library/pythonlab/pythonengine_agros.h":
         bool getSaveMatrixRHS()
         void setSaveMatrixRHS(bool save)
         
-        bool getDisableAccelerator()
-        void setDisableAccelerator(bool disable)
-
         string getDumpFormat()
         void setDumpFormat(string format) except +
 
@@ -181,12 +178,6 @@ cdef class __Options__:
             return self.thisptr.getSaveMatrixRHS()
         def __set__(self, save):
             self.thisptr.setSaveMatrixRHS(save)
-            
-    property disable_accelerator:
-        def __get__(self):
-            return self.thisptr.getDisableAccelerator()
-        def __set__(self, disable):
-            self.thisptr.setDisableAccelerator(disable)
 
     property dump_format:
         def __get__(self):

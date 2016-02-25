@@ -118,10 +118,6 @@ struct PyOptions
     inline int getCacheSize() const { return Agros2D::configComputer()->value(Config::Config_CacheSize).toInt(); }
     void setCacheSize(int size);
 
-    // disable accelerator
-    inline bool getDisableAccelerator() const { return Agros2D::configComputer()->value(Config::Config_DisableAccelerator).toBool(); }
-    inline void setDisableAccelerator(bool disable) { Agros2D::configComputer()->setValue(Config::Config_DisableAccelerator, disable); }
-
     // save matrix and rhs
     inline bool getSaveMatrixRHS() const { return Agros2D::configComputer()->value(Config::Config_LinearSystemSave).toBool(); }
     inline void setSaveMatrixRHS(bool save) { Agros2D::configComputer()->setValue(Config::Config_LinearSystemSave, save); }

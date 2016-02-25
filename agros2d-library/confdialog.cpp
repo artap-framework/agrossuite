@@ -70,9 +70,6 @@ void ConfigComputerDialog::load()
     // number of threads
     txtNumOfThreads->setValue(Agros2D::configComputer()->value(Config::Config_NumberOfThreads).toInt());
 
-    // accelerator
-    chkDisableAccelerator->setChecked(Agros2D::configComputer()->value(Config::Config_DisableAccelerator).toBool());
-
     // cache size
     txtCacheSize->setValue(Agros2D::configComputer()->value(Config::Config_CacheSize).toInt());
 
@@ -113,9 +110,6 @@ void ConfigComputerDialog::save()
     // number of threads
     Agros2D::configComputer()->setValue(Config::Config_NumberOfThreads, txtNumOfThreads->value());
     dealii::MultithreadInfo::set_thread_limit(txtNumOfThreads->value());
-
-    // accelerator
-    Agros2D::configComputer()->setValue(Config::Config_DisableAccelerator, chkDisableAccelerator->isChecked());
 
     // cache size
     Agros2D::configComputer()->setValue(Config::Config_CacheSize, txtCacheSize->value());
@@ -247,14 +241,11 @@ QWidget *ConfigComputerDialog::createSolverWidget()
     txtNumOfThreads->setMinimum(1);
     txtNumOfThreads->setMaximum(SystemUtils::numberOfThreads());
 
-    chkDisableAccelerator = new QCheckBox(tr("Disable accelerator"));
-
     QGridLayout *layoutSolver = new QGridLayout();
     layoutSolver->addWidget(new QLabel(tr("Number of threads:")), 0, 0);
     layoutSolver->addWidget(txtNumOfThreads, 0, 1);
     layoutSolver->addWidget(new QLabel(tr("Number of cache slots:")), 1, 0);
     layoutSolver->addWidget(txtCacheSize, 1, 1);
-    layoutSolver->addWidget(chkDisableAccelerator, 2, 0, 1, 2);
 
     QGroupBox *grpSolver = new QGroupBox(tr("Solver"));
     grpSolver->setLayout(layoutSolver);
