@@ -279,25 +279,6 @@ void PreprocessorWidget::refresh()
         }
     }
 
-    // recipes
-    if (Agros2D::problem()->recipes()->items().count() > 0)
-    {
-        QTreeWidgetItem *recipesNode = new QTreeWidgetItem(problemNode);
-        recipesNode->setText(0, tr("Recipes"));
-        recipesNode->setFont(0, fnt);
-        recipesNode->setExpanded(true);
-
-        foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
-        {
-            QTreeWidgetItem *item = new QTreeWidgetItem(recipesNode);
-
-            item->setText(0, QString("%1").arg(recipe->name()));
-            item->setData(0, Qt::UserRole, recipe->name());
-            item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);
-            item->setText(1, QString("%1").arg(resultRecipeTypeString(recipe->type())));
-        }
-    }
-
     // fields
     QTreeWidgetItem *fieldsNode = new QTreeWidgetItem(trvWidget);
     fieldsNode->setText(0, tr("Fields"));
@@ -436,19 +417,38 @@ void PreprocessorWidget::refresh()
     }
 
     // optilab
+    QTreeWidgetItem *optilabNode = new QTreeWidgetItem(trvWidget);
+    optilabNode->setText(0, tr("OptiLab"));
+    optilabNode->setIcon(0, iconAlphabet('O', AlphabetColor_Brown));
+    optilabNode->setFont(0, fnt);
+    optilabNode->setExpanded(true);
+
+    // recipes
+    if (Agros2D::problem()->recipes()->items().count() > 0)
+    {
+        QTreeWidgetItem *recipesNode = new QTreeWidgetItem(optilabNode);
+        recipesNode->setText(0, tr("Recipes"));
+        recipesNode->setFont(0, fnt);
+        recipesNode->setExpanded(true);
+
+        foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
+        {
+            QTreeWidgetItem *item = new QTreeWidgetItem(recipesNode);
+
+            item->setText(0, QString("%1").arg(recipe->name()));
+            item->setData(0, Qt::UserRole, recipe->name());
+            item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);
+            item->setText(1, QString("%1").arg(resultRecipeTypeString(recipe->type())));
+        }
+    }
+
     if (Agros2D::problem()->studies()->items().count() > 0)
     {
-        QTreeWidgetItem *optilabNode = new QTreeWidgetItem(trvWidget);
-        optilabNode->setText(0, tr("OptiLab"));
-        optilabNode->setIcon(0, iconAlphabet('O', AlphabetColor_Brown));
-        optilabNode->setFont(0, fnt);
-        optilabNode->setExpanded(true);
-
         foreach (Study *study, Agros2D::problem()->studies()->items())
         {
             // study
             QTreeWidgetItem *studyNode = new QTreeWidgetItem(optilabNode);
-            studyNode->setText(0, studyTypeString(study->type()));
+            studyNode->setText(0, tr("Study - %1").arg(studyTypeString(study->type())));
             studyNode->setIcon(0, iconAlphabet(studyTypeString(study->type()).at(0), AlphabetColor_Green));
             studyNode->setFont(0, fnt);
             studyNode->setData(0, Qt::UserRole, study->variant());

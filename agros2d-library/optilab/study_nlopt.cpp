@@ -233,6 +233,7 @@ QWidget *StudyNLoptAnalysisDialog::createStudyControls()
     QVBoxLayout *layoutMain = new QVBoxLayout(this);
     layoutMain->addWidget(grpInitialization);
     layoutMain->addWidget(grpConfig);
+    layoutMain->addStretch();
 
     QWidget *widget = new QWidget(this);
     widget->setLayout(layoutMain);

@@ -198,6 +198,7 @@ QWidget *StudyBayesOptAnalysisDialog::createStudyControls()
 
     QVBoxLayout *layoutMain = new QVBoxLayout(this);
     layoutMain->addWidget(grpInitialization);
+    layoutMain->addStretch();
 
     QWidget *widget = new QWidget(this);
     widget->setLayout(layoutMain);

@@ -457,6 +457,30 @@ void Study::fillTreeView(QTreeWidget *trvComputations)
     }
 }
 
+void Study::removeParameter(const QString &name)
+{
+    for (int i = 0; i < m_parameters.count(); i++)
+    {
+        if (m_parameters[i].name() == name)
+        {
+            m_parameters.removeAt(i);
+            break;
+        }
+    }
+}
+
+void Study::removeFunctional(const QString &name)
+{
+    for (int i = 0; i < m_functionals.count(); i++)
+    {
+        if (m_functionals[i].name() == name)
+        {
+            m_functionals.removeAt(i);
+            break;
+        }
+    }
+}
+
 QList<QSharedPointer<Computation> > &Study::computations(int index)
 {
     if (index == -1)
@@ -561,16 +585,168 @@ void StudyDialog::createControls()
     layout->addWidget(buttonBox);
 
     setLayout(layout);
+
+    readParameters();
+    readFunctionals();
 }
 
 QWidget *StudyDialog::createParameters()
 {
-    return new QWidget(this);
+    trvParameterWidget = new QTreeWidget(this);
+    trvParameterWidget->setExpandsOnDoubleClick(false);
+    trvParameterWidget->setHeaderHidden(false);
+    trvParameterWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Lower bound") << tr("Upper bound"));
+    trvParameterWidget->setColumnCount(3);
+    trvParameterWidget->setIndentation(trvParameterWidget->indentation() - 4);
+
+    // connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
+    connect(trvParameterWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doParameterItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+    connect(trvParameterWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doParameterItemDoubleClicked(QTreeWidgetItem *, int)));
+
+    btnParameterAdd = new QPushButton(tr("Add"), this);
+    btnParameterEdit = new QPushButton(tr("Edit"), this);
+    btnParameterRemove = new QPushButton(tr("Remove"), this);
+    connect(btnParameterRemove, SIGNAL(clicked(bool)), this, SLOT(doParameterRemove(bool)));
+
+    QHBoxLayout *buttonsLayout = new QHBoxLayout();
+    buttonsLayout->addStretch();
+    buttonsLayout->addWidget(btnParameterAdd);
+    buttonsLayout->addWidget(btnParameterEdit);
+    buttonsLayout->addWidget(btnParameterRemove);
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(trvParameterWidget);
+    layout->addLayout(buttonsLayout);
+
+    QWidget *widget = new QWidget(this);
+    widget->setLayout(layout);
+
+    return widget;
+}
+
+void StudyDialog::readParameters()
+{
+    trvParameterWidget->clear();
+
+    foreach (Parameter parameter, m_study->parameters())
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem(trvParameterWidget);
+
+        item->setText(0, QString("%1").arg(parameter.name()));
+        item->setData(0, Qt::UserRole, parameter.name());
+        item->setText(1, QString("%1").arg(parameter.lowerBound()));
+        item->setText(2, QString("%1").arg(parameter.upperBound()));
+        item->setTextAlignment(1, Qt::AlignRight);
+        item->setTextAlignment(2, Qt::AlignRight);
+    }
+
+    doParameterItemChanged(nullptr, nullptr);
+}
+
+void StudyDialog::doParameterItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+    btnParameterEdit->setEnabled(trvParameterWidget->currentItem());
+    btnParameterRemove->setEnabled(trvParameterWidget->currentItem());
+
+    if (trvParameterWidget->currentItem())
+    {
+
+    }
+}
+
+void StudyDialog::doParameterItemDoubleClicked(QTreeWidgetItem *item, int role)
+{
+
+}
+
+void StudyDialog::doParameterRemove(bool checked)
+{
+    if (trvParameterWidget->currentItem())
+    {
+        m_study->removeParameter(trvParameterWidget->currentItem()->data(0, Qt::UserRole).toString());
+
+        readParameters();
+    }
 }
 
 QWidget *StudyDialog::createFunctionals()
 {
-    return new QWidget(this);
+    trvFunctionalWidget = new QTreeWidget(this);
+    trvFunctionalWidget->setExpandsOnDoubleClick(false);
+    trvFunctionalWidget->setHeaderHidden(false);
+    trvFunctionalWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Expression"));
+    trvFunctionalWidget->setColumnCount(2);
+    trvFunctionalWidget->setIndentation(trvFunctionalWidget->indentation() - 4);
+
+    // connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
+    connect(trvFunctionalWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doFunctionalItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+    connect(trvFunctionalWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doFunctionalItemDoubleClicked(QTreeWidgetItem *, int)));
+
+    btnFunctionalAdd = new QPushButton(tr("Add"), this);
+    btnFunctionalEdit = new QPushButton(tr("Edit"), this);
+    btnFunctionalRemove = new QPushButton(tr("Remove"), this);
+    connect(btnFunctionalRemove, SIGNAL(clicked(bool)), this, SLOT(doFunctionalRemove(bool)));
+
+    QHBoxLayout *buttonsLayout = new QHBoxLayout();
+    buttonsLayout->addStretch();
+    buttonsLayout->addWidget(btnFunctionalAdd);
+    buttonsLayout->addWidget(btnFunctionalEdit);
+    buttonsLayout->addWidget(btnFunctionalRemove);
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(trvFunctionalWidget);
+    layout->addLayout(buttonsLayout);
+
+    QWidget *widget = new QWidget(this);
+    widget->setLayout(layout);
+
+
+    return widget;
+}
+
+void StudyDialog::readFunctionals()
+{
+    trvFunctionalWidget->clear();
+
+    foreach (Functional functional, m_study->functionals())
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem(trvFunctionalWidget);
+
+        item->setText(0, QString("%1").arg(functional.name()));
+        item->setData(0, Qt::UserRole, functional.name());
+        item->setText(1, QString("%1").arg(functional.expression()));
+    }
+
+    // if (trvFunctionalWidget->selectedItems().count() == 0)
+
+
+    doFunctionalItemChanged(nullptr, nullptr);
+}
+
+void StudyDialog::doFunctionalItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+    btnFunctionalEdit->setEnabled(trvFunctionalWidget->currentItem());
+    btnFunctionalRemove->setEnabled(trvFunctionalWidget->currentItem());
+
+    if (trvFunctionalWidget->currentItem())
+    {
+
+    }
+}
+
+void StudyDialog::doFunctionalItemDoubleClicked(QTreeWidgetItem *item, int role)
+{
+
+}
+
+void StudyDialog::doFunctionalRemove(bool checked)
+{
+    if (trvFunctionalWidget->currentItem())
+    {
+        m_study->removeFunctional(trvFunctionalWidget->currentItem()->data(0, Qt::UserRole).toString());
+
+        readFunctionals();
+    }
 }
 
 void StudyDialog::doAccept()

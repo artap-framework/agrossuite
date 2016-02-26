@@ -139,9 +139,11 @@ public:
     inline void setName(const QString &name) { m_name = name; }
 
     void addParameter(Parameter parameter) { m_parameters.append(parameter); }
+    void removeParameter(const QString &name);
     QList<Parameter> &parameters() { return m_parameters; }
 
     void addFunctional(Functional functional) { m_functionals.append(functional); }
+    void removeFunctional(const QString &name);
     QList<Functional> &functionals() { return m_functionals; }
     bool evaluateFunctionals(QSharedPointer<Computation> computation);
 
@@ -244,11 +246,31 @@ protected:
     QWidget *createParameters();
     QWidget *createFunctionals();
 
+    QTreeWidget *trvParameterWidget;
+    QPushButton *btnParameterAdd;
+    QPushButton *btnParameterEdit;
+    QPushButton *btnParameterRemove;
+    void readParameters();
+
+    QTreeWidget *trvFunctionalWidget;
+    QPushButton *btnFunctionalAdd;
+    QPushButton *btnFunctionalEdit;
+    QPushButton *btnFunctionalRemove;
+    void readFunctionals();
+
     virtual void load() = 0;
     virtual void save() = 0;
 
 private slots:
     void doAccept();
+
+    void doParameterItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void doParameterItemDoubleClicked(QTreeWidgetItem *item, int role);
+    void doParameterRemove(bool checked);
+
+    void doFunctionalItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void doFunctionalItemDoubleClicked(QTreeWidgetItem *item, int role);
+    void doFunctionalRemove(bool checked);
 };
 
 #endif // STUDY_H

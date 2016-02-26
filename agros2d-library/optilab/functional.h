@@ -33,10 +33,10 @@ public:
     void load(QJsonObject &object);
     void save(QJsonObject &object);
 
-    inline QString name() { return m_name; }
-    inline FunctionalType type() { return m_type; }
+    inline QString name() const { return m_name; }
+    inline FunctionalType type() const { return m_type; }
     inline void setType(const FunctionalType &type) { m_type = type; }
-    inline QString expression() { return m_expression; }
+    inline QString expression() const { return m_expression; }
     inline void setExpression(const QString &expression) { m_expression = expression; }
 
     bool checkExpression(QSharedPointer<Computation> computation);

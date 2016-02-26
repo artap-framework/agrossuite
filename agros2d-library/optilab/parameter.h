@@ -32,7 +32,7 @@ public:
     void save(QJsonObject &object);
     void clear();
 
-    inline QString name() { return m_name; }
+    inline QString name() const { return m_name; }
     inline double lowerBound() const { return m_lowerBound; }
     void setLowerBound(double lowerBound);
     inline double upperBound() const { return m_upperBound; }
