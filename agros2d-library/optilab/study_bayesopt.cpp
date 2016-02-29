@@ -55,6 +55,7 @@ BayesOptProblem::BayesOptProblem(StudyBayesOptAnalysis *study, bayesopt::Paramet
 
 double BayesOptProblem::evaluateSample(const vectord& x)
 {   
+
     // computation
     QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
     m_study->addComputation(computation);
@@ -66,29 +67,18 @@ double BayesOptProblem::evaluateSample(const vectord& x)
         computation->config()->setParameter(parameter.name(), x[i]);
     }
 
-    // solve
-    computation->solve();
-
-    // TODO: better error handling
-    if (!computation->isSolved())
+    // evaluate step
+    try
     {
+        double value = m_study->evaluateStep(computation);
+        return value;
+    }
+    catch (AgrosException &e)
+    {
+        qDebug() << e.toString();
+
         return numeric_limits<double>::max();
     }
-
-    // evaluate functionals
-    m_study->evaluateFunctionals(computation);
-
-    // TODO: more functionals !!!
-    assert(m_study->functionals().size() == 1);
-    QString parameterName = m_study->functionals()[0].name();
-
-    double value = computation->results()->resultValue(parameterName);
-    computation->saveResults();
-
-    m_study->updateParameters(m_study->parameters(), computation.data());
-    m_study->updateChart();
-
-    return value;
 }
 
 StudyBayesOptAnalysis::StudyBayesOptAnalysis() : Study()

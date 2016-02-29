@@ -459,6 +459,8 @@ void PreprocessorWidget::refresh()
             QTreeWidgetItem *parametersNode = new QTreeWidgetItem(studyNode);
             parametersNode->setText(0, tr("Parameters"));
             parametersNode->setFont(0, fnt);
+            parametersNode->setData(0, Qt::UserRole, study->variant());
+            parametersNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
             parametersNode->setExpanded(true);
 
             foreach (Parameter parameter, study->parameters())
@@ -475,6 +477,8 @@ void PreprocessorWidget::refresh()
             QTreeWidgetItem *functionalsNode = new QTreeWidgetItem(studyNode);
             functionalsNode->setText(0, tr("Functionals"));
             functionalsNode->setFont(0, fnt);
+            functionalsNode->setData(0, Qt::UserRole, study->variant());
+            functionalsNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
             functionalsNode->setExpanded(true);
 
             foreach (Functional functional, study->functionals())

@@ -38,19 +38,22 @@ public:
     inline double upperBound() const { return m_upperBound; }
     void setUpperBound(double upperBound);
 
+    /*
     inline QList<double> values() { return m_values; }
     void addValue(double value);
 
     inline double randomValue() { return m_lowerBound + (double) qrand() / RAND_MAX * (m_upperBound - m_lowerBound); }
     double randomValue(double mean, double deviation);
-
+    */
     // static factories
+    /*
     static Parameter fromValue(const QString &name, double value);
     static Parameter fromList(const QString &name, QList<double> values);
 
     static Parameter fromLinspace(const QString &name, int count, double lowerBound, double upperBound);
     static Parameter fromRandom(const QString &name, int count, double lowerBound, double upperBound);
     static Parameter fromRandom(const QString &name, int count, double lowerBound, double upperBound, double mean, double deviation);
+    */
 
 protected:
     QString m_name;

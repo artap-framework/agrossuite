@@ -28,16 +28,19 @@ class Computation;
 class Functional
 {
 public:
-    Functional(const QString &name = "", FunctionalType type = FunctionalType_Minimize, const QString &expression = "");
+    Functional(const QString &name = "", FunctionalType type = FunctionalType_Minimize, const QString &expression = "", int weight = 100);
 
     void load(QJsonObject &object);
     void save(QJsonObject &object);
 
     inline QString name() const { return m_name; }
+    inline void setName(const QString &name) { m_name = name; }
     inline FunctionalType type() const { return m_type; }
     inline void setType(const FunctionalType &type) { m_type = type; }
     inline QString expression() const { return m_expression; }
     inline void setExpression(const QString &expression) { m_expression = expression; }
+    inline int weight() const { return m_weight; }
+    inline void setWeight(int weight) { m_weight = weight; }
 
     bool checkExpression(QSharedPointer<Computation> computation);
     bool evaluateExpression(QSharedPointer<Computation> computation);
@@ -46,6 +49,7 @@ protected:
     QString m_name;
     FunctionalType m_type;
     QString m_expression;
+    int m_weight;
 };
 
 #endif // FUNCTIONAL_H

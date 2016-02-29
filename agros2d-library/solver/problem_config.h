@@ -100,7 +100,7 @@ public:
     void setParameter(const QString &key, double val);
     inline double parameter(const QString &key) const { assert(m_setting[ProblemConfig::Parameters].value<StringToDoubleMap>().contains(key)); return m_setting[ProblemConfig::Parameters].value<StringToDoubleMap>()[key]; }
     inline StringToDoubleMap parameters() const { return m_setting[ProblemConfig::Parameters].value<StringToDoubleMap>(); }
-    void checkParameterName(const QString &key);
+    void checkVariableName(const QString &key);
 
     inline double constantTimeStepLength() { return value(ProblemConfig::TimeTotal).toDouble() / value(ProblemConfig::TimeConstantTimeSteps).toInt(); }
     double initialTimeStepLength();

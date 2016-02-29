@@ -47,7 +47,10 @@ public:
     double objectiveFunction(const std::vector<double> &x, std::vector<double> &grad, void *data)
     {
         if (m_study->isAborted())
+        {
             opt.set_force_stop(1);
+            return numeric_limits<double>::max();
+        }
 
         // computation
         QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
@@ -60,29 +63,19 @@ public:
             computation->config()->setParameter(parameter.name(), x[i]);
         }
 
-        // solve
-        computation->solve();
-
-        // TODO: better error handling
-        if (!computation->isSolved())
+        // evaluate step
+        try
         {
-            opt.set_force_stop(2);
+            double value = m_study->evaluateStep(computation);
+            return value;
         }
+        catch (AgrosException &e)
+        {
+            qDebug() << e.toString();
 
-        // evaluate functionals
-        m_study->evaluateFunctionals(computation);
-
-        // TODO: more functionals !!!
-        assert(m_study->functionals().size() == 1);
-        QString parameterName = m_study->functionals()[0].name();
-
-        double value = computation->results()->resultValue(parameterName);
-        computation->saveResults();
-
-        m_study->updateParameters(m_study->parameters(), computation.data());
-        m_study->updateChart();
-
-        return value;
+            opt.set_force_stop(2);
+            return numeric_limits<double>::max();
+        }
     }
 
     nlopt::opt opt;

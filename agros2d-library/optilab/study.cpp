@@ -19,6 +19,7 @@
 
 #include "study.h"
 #include "util/global.h"
+#include "gui/lineeditdouble.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
 
@@ -187,11 +188,8 @@ void LogOptimizationDialog::updateChart()
         {
             steps.append(steps.count() + 1);
 
-            // TODO: more functionals !!!
-            assert(m_study->functionals().size() == 1);
-            QString parameterName = m_study->functionals()[0].name();
-
-            double value = computations[j]->results()->resultValue(parameterName);
+            // evaluate goal functional
+            double value = m_study->evaluateGoal(computations[j]);
             objective.append(value);
         }
     }
@@ -425,6 +423,48 @@ bool Study::evaluateFunctionals(QSharedPointer<Computation> computation)
     return successfulRun;
 }
 
+double Study::evaluateStep(QSharedPointer<Computation> computation)
+{
+    // solve
+    computation->solve();
+
+    // TODO: better error handling
+    if (!computation->isSolved())
+    {
+        throw AgrosException(tr("Problem was not solved."));
+    }
+
+    // evaluate functionals
+    evaluateFunctionals(computation);
+    double value = evaluateGoal(computation);
+
+    computation->saveResults();
+
+    updateParameters(m_parameters, computation.data());
+    updateChart();
+
+    return value;
+}
+
+double Study::evaluateGoal(QSharedPointer<Computation> computation)
+{
+    // weight functionals
+    int totalWeight = 0;
+    foreach (Functional functional, m_functionals)
+        totalWeight += functional.weight();
+
+    double totalValue = 0.0;
+    foreach (Functional functional, m_functionals)
+    {
+        QString name = functional.name();
+        double value = computation->results()->resultValue(name);
+
+        totalValue += ((double) functional.weight() / totalWeight) * value;
+    }
+
+    return totalValue;
+}
+
 void Study::addComputation(QSharedPointer<Computation> computation, bool newComputationSet)
 {
     if (m_computationSets.isEmpty() || newComputationSet)
@@ -479,6 +519,17 @@ void Study::removeFunctional(const QString &name)
             break;
         }
     }
+}
+
+Functional &Study::functional(const QString &name)
+{
+    for (int i = 0; i < m_functionals.count(); i++)
+    {
+        if (m_functionals[i].name() == name)
+            return m_functionals[i];
+    }
+
+    assert(0);
 }
 
 QList<QSharedPointer<Computation> > &Study::computations(int index)
@@ -555,7 +606,7 @@ StudyDialog *StudyDialog::factory(Study *study, QWidget *parent)
 StudyDialog::StudyDialog(Study *study, QWidget *parent) : QDialog(parent),
     m_study(study)
 {
-    setWindowTitle(tr("Study - %1").arg(studyTypeString(study->type())));
+    setWindowTitle(tr("%1").arg(studyTypeString(study->type())));
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
@@ -574,7 +625,7 @@ void StudyDialog::createControls()
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(doAccept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(close()));
 
-    QTabWidget *tabStudy = new QTabWidget();
+    tabStudy = new QTabWidget();
     tabStudy->addTab(createStudyControls(), tr("Study"));
     tabStudy->addTab(createParameters(), tr("Parameters"));
     tabStudy->addTab(createFunctionals(), tr("Functionals"));
@@ -597,7 +648,9 @@ QWidget *StudyDialog::createParameters()
     trvParameterWidget->setHeaderHidden(false);
     trvParameterWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Lower bound") << tr("Upper bound"));
     trvParameterWidget->setColumnCount(3);
-    trvParameterWidget->setIndentation(trvParameterWidget->indentation() - 4);
+    trvParameterWidget->setIndentation(2);
+    trvParameterWidget->headerItem()->setTextAlignment(1, Qt::AlignRight);
+    trvParameterWidget->headerItem()->setTextAlignment(2, Qt::AlignRight);
 
     // connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
     connect(trvParameterWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doParameterItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
@@ -674,16 +727,18 @@ QWidget *StudyDialog::createFunctionals()
     trvFunctionalWidget = new QTreeWidget(this);
     trvFunctionalWidget->setExpandsOnDoubleClick(false);
     trvFunctionalWidget->setHeaderHidden(false);
-    trvFunctionalWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Expression"));
-    trvFunctionalWidget->setColumnCount(2);
-    trvFunctionalWidget->setIndentation(trvFunctionalWidget->indentation() - 4);
+    trvFunctionalWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Weight") << tr("Expression"));
+    trvFunctionalWidget->setColumnCount(3);
+    trvFunctionalWidget->setIndentation(2);
 
     // connect(trvWidget, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
     connect(trvFunctionalWidget, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doFunctionalItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
     connect(trvFunctionalWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doFunctionalItemDoubleClicked(QTreeWidgetItem *, int)));
 
     btnFunctionalAdd = new QPushButton(tr("Add"), this);
+    connect(btnFunctionalAdd, SIGNAL(clicked(bool)), this, SLOT(doFunctionalAdd(bool)));
     btnFunctionalEdit = new QPushButton(tr("Edit"), this);
+    connect(btnFunctionalEdit, SIGNAL(clicked(bool)), this, SLOT(doFunctionalEdit(bool)));
     btnFunctionalRemove = new QPushButton(tr("Remove"), this);
     connect(btnFunctionalRemove, SIGNAL(clicked(bool)), this, SLOT(doFunctionalRemove(bool)));
 
@@ -714,11 +769,9 @@ void StudyDialog::readFunctionals()
 
         item->setText(0, QString("%1").arg(functional.name()));
         item->setData(0, Qt::UserRole, functional.name());
-        item->setText(1, QString("%1").arg(functional.expression()));
+        item->setText(1, QString("%1 \%").arg(functional.weight()));
+        item->setText(2, QString("%1").arg(functional.expression()));
     }
-
-    // if (trvFunctionalWidget->selectedItems().count() == 0)
-
 
     doFunctionalItemChanged(nullptr, nullptr);
 }
@@ -736,7 +789,34 @@ void StudyDialog::doFunctionalItemChanged(QTreeWidgetItem *current, QTreeWidgetI
 
 void StudyDialog::doFunctionalItemDoubleClicked(QTreeWidgetItem *item, int role)
 {
+    if (trvFunctionalWidget->currentItem())
+    {
+        doFunctionalEdit(true);
+    }
+}
 
+void StudyDialog::doFunctionalAdd(bool checked)
+{
+    Functional functional;
+
+    FunctionalDialog dialog(m_study, &functional);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        m_study->addFunctional(functional);
+        readFunctionals();
+    }
+}
+
+void StudyDialog::doFunctionalEdit(bool checked)
+{
+    if (trvFunctionalWidget->currentItem())
+    {
+        FunctionalDialog dialog(m_study, &m_study->functional(trvFunctionalWidget->currentItem()->data(0, Qt::UserRole).toString()));
+        if (dialog.exec() == QDialog::Accepted)
+        {
+            readFunctionals();
+        }
+    }
 }
 
 void StudyDialog::doFunctionalRemove(bool checked)
@@ -753,4 +833,108 @@ void StudyDialog::doAccept()
 {
     save();
     accept();
+}
+
+// **************************************************************************************************************
+
+FunctionalDialog::FunctionalDialog(Study *study, Functional *functional, QWidget *parent)
+    : m_study(study), m_functional(functional)
+{
+    createControls();
+}
+
+void FunctionalDialog::createControls()
+{
+    setWindowTitle(tr("Functional: %1").arg(m_functional->name()));
+
+    lblError = new QLabel();
+
+    txtName = new QLineEdit(m_functional->name());
+    connect(txtName, SIGNAL(textChanged(QString)), this, SLOT(functionalNameTextChanged(QString)));
+    txtExpression = new QLineEdit(m_functional->expression());
+    txtWeight = new QSpinBox();
+    txtWeight->setRange(0, 100);
+    txtWeight->setValue(m_functional->weight());
+
+    QGridLayout *layoutEdit = new QGridLayout();
+    layoutEdit->addWidget(new QLabel(tr("Name")), 0, 0);
+    layoutEdit->addWidget(txtName, 0, 1);
+    layoutEdit->addWidget(new QLabel(tr("Expression")), 1, 0);
+    layoutEdit->addWidget(txtExpression, 1, 1);
+    layoutEdit->addWidget(new QLabel(tr("Weight")), 2, 0);
+    layoutEdit->addWidget(txtWeight, 2, 1);
+
+    QPalette palette = lblError->palette();
+    palette.setColor(QPalette::WindowText, QColor(Qt::red));
+    lblError->setPalette(palette);
+    lblError->setVisible(false);
+
+    // dialog buttons
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(doAccept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(close()));
+
+    QVBoxLayout *layoutWidget = new QVBoxLayout();
+    layoutWidget->addLayout(layoutEdit);
+    layoutWidget->addWidget(lblError);
+    layoutWidget->addStretch();
+    layoutWidget->addWidget(buttonBox);
+
+    setLayout(layoutWidget);
+
+    if (!m_functional->name().isEmpty())
+        txtName->setFocus();
+}
+
+void FunctionalDialog::functionalNameTextChanged(const QString &str)
+{
+    buttonBox->button(QDialogButtonBox::Ok)->setEnabled(checkFunctional(str));
+}
+
+bool FunctionalDialog::checkFunctional(const QString &str)
+{
+    try
+    {
+        Agros2D::problem()->config()->checkVariableName(str);
+    }
+    catch (AgrosException &e)
+    {
+        lblError->setText(e.toString());
+        lblError->setVisible(true);
+
+        buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+        return false;
+    }
+
+    foreach (Functional functional, m_study->functionals())
+    {
+        if (str == m_functional->name())
+            continue;
+
+        if (str == functional.name())
+        {
+            lblError->setText(tr("Functional already exists."));
+            lblError->setVisible(true);
+
+            buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+            return false;
+        }
+    }
+
+    lblError->setVisible(false);
+
+
+    return true;
+}
+
+void FunctionalDialog::doAccept()
+{
+    if (checkFunctional(txtName->text()))
+    {
+        m_functional->setName(txtName->text());
+        m_functional->setExpression(txtExpression->text());
+        m_functional->setWeight(txtWeight->value());
+
+        accept();
+    }
 }

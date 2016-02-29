@@ -282,7 +282,7 @@ void ProblemConfig::setParameter(const QString &key, double val)
 
     try
     {
-        checkParameterName(key);
+        checkVariableName(key);
         parameters[key] = val;
         setValue(ProblemConfig::Parameters, parameters);
     }
@@ -293,7 +293,7 @@ void ProblemConfig::setParameter(const QString &key, double val)
     }
 }
 
-void ProblemConfig::checkParameterName(const QString &key)
+void ProblemConfig::checkVariableName(const QString &key)
 {
     // time, x, y, r, z
     if (key == "time" || key == "x" || key == "y" || key == "r" || key == "z")

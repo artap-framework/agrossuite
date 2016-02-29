@@ -144,8 +144,11 @@ public:
 
     void addFunctional(Functional functional) { m_functionals.append(functional); }
     void removeFunctional(const QString &name);
+    Functional &functional(const QString &name);
     QList<Functional> &functionals() { return m_functionals; }
     bool evaluateFunctionals(QSharedPointer<Computation> computation);
+    double evaluateStep(QSharedPointer<Computation> computation);
+    double evaluateGoal(QSharedPointer<Computation> computation);
 
     QList<QSharedPointer<Computation> > &computations(int index = -1);
     QList<ComputationSet> &computationSets() { return m_computationSets; }
@@ -234,12 +237,14 @@ class StudyDialog : public QDialog
 public:
     StudyDialog(Study *study, QWidget *parent = 0);
 
-    int showDialog();
-
     static StudyDialog *factory(Study *study, QWidget *parent = 0);
+
+    int showDialog();
 
 protected:
     Study *m_study;
+
+    QTabWidget *tabStudy;
 
     void createControls();
     virtual QWidget *createStudyControls() { return new QWidget(this); }
@@ -270,7 +275,35 @@ private slots:
 
     void doFunctionalItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void doFunctionalItemDoubleClicked(QTreeWidgetItem *item, int role);
+    void doFunctionalAdd(bool checked);
+    void doFunctionalEdit(bool checked);
     void doFunctionalRemove(bool checked);
+};
+
+class FunctionalDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    FunctionalDialog(Study *study, Functional *functional, QWidget *parent = 0);
+
+private:
+    Study *m_study;
+    Functional *m_functional;
+
+    QDialogButtonBox *buttonBox;
+    QLabel *lblError;
+    QLineEdit *txtName;
+    QLineEdit *txtExpression;
+    QSpinBox *txtWeight;
+
+    void createControls();
+
+    bool checkFunctional(const QString &str);
+
+private slots:
+    void doAccept();
+    void functionalNameTextChanged(const QString &str);
 };
 
 #endif // STUDY_H

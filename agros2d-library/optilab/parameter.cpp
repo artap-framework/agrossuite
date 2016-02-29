@@ -85,6 +85,7 @@ void Parameter::save(QJsonObject &object)
     object[VALUES] = valuesJson;
 }
 
+/*
 void Parameter::addValue(double value)
 {
     assert(m_lowerBound <= value);
@@ -171,7 +172,7 @@ Parameter Parameter::fromRandom(const QString &name, int count, double lowerBoun
 
     return parameter;
 }
-
+*/
 // *****************************************************************************************************************
 
 ParameterSpace::ParameterSpace(QList<Parameter> parameters) :
@@ -196,7 +197,7 @@ void ParameterSpace::random(int count)
         foreach (Parameter parameter, m_parameters)
         {
             // TODO: is it really random?
-            set.insert(parameter.name(), parameter.values()[qrand() % parameter.values().length()]);
+            // set.insert(parameter.name(), parameter.values()[qrand() % parameter.values().length()]);
         }
 
         m_sets.append(set);

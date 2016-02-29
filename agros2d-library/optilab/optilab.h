@@ -60,14 +60,6 @@ private slots:
     void refresh();
 
     void test();
-    void testSweep();
-
-    void testNLoptTEAM22();
-    void testNLoptTEAM25();
-    void testBayesOptTEAM22();
-    void testBayesOptTEAM25();
-    void testTEAM22(StudyType type);
-    void testTEAM25(StudyType type);
 };
 
 class OptiLab : public QWidget

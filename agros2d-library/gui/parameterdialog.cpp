@@ -97,7 +97,7 @@ bool ParameterDialog::save()
     // check parameter name
     try
     {
-        Agros2D::problem()->config()->checkParameterName(txtParameterName->text());
+        Agros2D::problem()->config()->checkVariableName(txtParameterName->text());
     }
     catch (AgrosException &e)
     {
@@ -162,7 +162,7 @@ void ParameterDialog::parameterNameTextChanged(const QString &str)
 
     try
     {
-        Agros2D::problem()->config()->checkParameterName(str);
+        Agros2D::problem()->config()->checkVariableName(str);
     }
     catch (AgrosException &e)
     {
