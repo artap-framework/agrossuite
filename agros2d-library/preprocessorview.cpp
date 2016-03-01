@@ -28,6 +28,7 @@
 
 #include "solver/problem_config.h"
 #include "optilab/study.h"
+#include "optilab/study_dialog.h"
 
 #include "scene.h"
 #include "logview.h"
@@ -84,35 +85,33 @@ PreprocessorWidget::~PreprocessorWidget()
 
 void PreprocessorWidget::createActions()
 {
-    actProperties = new QAction(icon("scene-properties"), tr("&Properties"), this);
+    actProperties = new QAction(icon(""), tr("&Properties"), this);
     connect(actProperties, SIGNAL(triggered()), this, SLOT(doProperties()));
 
-    actDelete = new QAction(icon("scene-delete"), tr("&Delete"), this);
+    actDelete = new QAction(icon(""), tr("&Delete"), this);
     connect(actDelete, SIGNAL(triggered()), this, SLOT(doDelete()));
 
     actNewParameter = new QAction(icon(""), tr("New parameter"), this);
     connect(actNewParameter, SIGNAL(triggered()), this, SLOT(doNewParameter()));
 
-    actAddField = new QAction(icon(""), tr("Add field"), this);
-    connect(actAddField, SIGNAL(triggered()), this, SLOT(doAddField()));
+    actNewField = new QAction(icon(""), tr("New field"), this);
+    connect(actNewField, SIGNAL(triggered()), this, SLOT(doAddField()));
+
+    actNewStudy = new QAction(icon(""), tr("New study"), this);
+    connect(actNewStudy, SIGNAL(triggered()), this, SLOT(doAddStudy()));
 }
 
 void PreprocessorWidget::createMenu()
 {
     mnuPreprocessor->clear();
 
-    mnuPreprocessor->addAction(Agros2D::problem()->scene()->actNewNode);
-    mnuPreprocessor->addAction(Agros2D::problem()->scene()->actNewEdge);
-    mnuPreprocessor->addAction(Agros2D::problem()->scene()->actNewLabel);
+    mnuPreprocessor->addAction(actNewField);
+    mnuPreprocessor->addAction(actNewParameter);
+    mnuPreprocessor->addAction(actNewStudy);
     mnuPreprocessor->addSeparator();
     Agros2D::problem()->scene()->addBoundaryAndMaterialMenuItems(mnuPreprocessor, this);
     mnuPreprocessor->addSeparator();
-    mnuPreprocessor->addAction(actNewParameter);
-    mnuPreprocessor->addSeparator();
-    mnuPreprocessor->addAction(actAddField);
-    mnuPreprocessor->addSeparator();
     mnuPreprocessor->addAction(actDelete);
-    mnuPreprocessor->addSeparator();
     mnuPreprocessor->addAction(actProperties);
 }
 
@@ -437,7 +436,7 @@ void PreprocessorWidget::refresh()
 
             item->setText(0, QString("%1").arg(recipe->name()));
             item->setData(0, Qt::UserRole, recipe->name());
-            item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);
+            item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabRecipe);
             item->setText(1, QString("%1").arg(resultRecipeTypeString(recipe->type())));
         }
     }
@@ -459,8 +458,8 @@ void PreprocessorWidget::refresh()
             QTreeWidgetItem *parametersNode = new QTreeWidgetItem(studyNode);
             parametersNode->setText(0, tr("Parameters"));
             parametersNode->setFont(0, fnt);
-            parametersNode->setData(0, Qt::UserRole, study->variant());
-            parametersNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
+            // parametersNode->setData(0, Qt::UserRole, study->variant());
+            // parametersNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
             parametersNode->setExpanded(true);
 
             foreach (Parameter parameter, study->parameters())
@@ -477,8 +476,8 @@ void PreprocessorWidget::refresh()
             QTreeWidgetItem *functionalsNode = new QTreeWidgetItem(studyNode);
             functionalsNode->setText(0, tr("Functionals"));
             functionalsNode->setFont(0, fnt);
-            functionalsNode->setData(0, Qt::UserRole, study->variant());
-            functionalsNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
+            // functionalsNode->setData(0, Qt::UserRole, study->variant());
+            // functionalsNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
             functionalsNode->setExpanded(true);
 
             foreach (Functional functional, study->functionals())
@@ -670,20 +669,26 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
         }
         else if (type == PreprocessorWidget::GeometryParameter)
         {
-            // parameter
+            // geometry
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
         else if (type == PreprocessorWidget::FieldProperties)
         {
-            // field properties
+            // field
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
         else if (type == PreprocessorWidget::ProblemProperties)
         {
-            // problem properties
+            // problem
             actProperties->setEnabled(true);
+        }
+        else if (type == PreprocessorWidget::OptilabStudy)
+        {
+            // optilab - study
+            actProperties->setEnabled(true);
+            actDelete->setEnabled(true);
         }
     }
 }
@@ -836,6 +841,17 @@ void PreprocessorWidget::doDelete()
                 Agros2D::problem()->removeField(fieldInfo);
             }
         }
+        else if (type == PreprocessorWidget::OptilabStudy)
+        {
+            // study
+            Study *study = trvWidget->currentItem()->data(0, Qt::UserRole).value<Study *>();
+
+            if (QMessageBox::question(this, tr("Delete"), tr("Study '%1' will be pernamently deleted. Are you sure?").
+                                      arg(studyTypeString(study->type())), tr("&Yes"), tr("&No")) == 0)
+            {
+                Agros2D::problem()->studies()->removeStudy(study);
+            }
+        }
 
         refresh();
         m_sceneViewPreprocessor->refresh();
@@ -856,7 +872,7 @@ void PreprocessorWidget::doAddField()
 {
     // select field dialog
     FieldSelectDialog dialog(Agros2D::problem()->fieldInfos().keys(), this);
-    if (dialog.showDialog() == QDialog::Accepted)
+    if (dialog.exec() == QDialog::Accepted)
     {
         // add field
         FieldInfo *fieldInfo = new FieldInfo(dialog.selectedFieldId());
@@ -872,6 +888,32 @@ void PreprocessorWidget::doAddField()
         else
         {
             delete fieldInfo;
+        }
+    }
+}
+
+void PreprocessorWidget::doAddStudy()
+{
+    // select study dialog
+    StudySelectDialog dialog(this);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        // add study
+        if (dialog.selectedStudyType() != StudyType_Undefined)
+        {
+            Study *study = Study::factory(dialog.selectedStudyType());
+
+            StudyDialog *studyDialog = StudyDialog::factory(study, this);
+            if (studyDialog->showDialog() == QDialog::Accepted)
+            {
+                Agros2D::problem()->studies()->addStudy(study);
+
+                refresh();
+            }
+            else
+            {
+                delete study;
+            }
         }
     }
 }

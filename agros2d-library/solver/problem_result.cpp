@@ -108,7 +108,7 @@ LocalValueRecipe::LocalValueRecipe(const QString &name, const QString &fieldID, 
 void LocalValueRecipe::load(QJsonObject &object)
 {
     QJsonObject pointJson = object[POINT].toObject();
-    m_point = Point(pointJson[POINTX].toDouble(), pointJson[POINTX].toDouble());
+    m_point = Point(pointJson[POINTX].toDouble(), pointJson[POINTY].toDouble());
     m_component = physicFieldVariableCompFromStringKey(object[COMPONENT].toString());
 
     ResultRecipe::load(object);

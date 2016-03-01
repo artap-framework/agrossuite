@@ -2004,6 +2004,7 @@ void Problem::readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettin
         m_studies->addStudy(study);
         m_studies->blockSignals(false);        
     }
+    m_studies->invalidated();
 
     // recipes
     m_recipes->clear();

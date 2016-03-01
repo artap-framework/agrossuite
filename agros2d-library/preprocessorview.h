@@ -40,6 +40,7 @@ public slots:
     void doDelete();
     void doNewParameter();
     void doAddField();
+    void doAddStudy();
 
 public:
     PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget *parent = 0);
@@ -83,7 +84,8 @@ private:
     QAction *actProperties;
     QAction *actDelete;
     QAction *actNewParameter;
-    QAction *actAddField;
+    QAction *actNewField;
+    QAction *actNewStudy;
     
     QMenu *mnuPreprocessor;
 

@@ -314,6 +314,7 @@ enum SymFlag
 
 enum StudyType
 {
+    StudyType_Undefined = -1,
     StudyType_SweepAnalysis,
     StudyType_Genetic,
     StudyType_BayesOptAnalysis,

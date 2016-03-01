@@ -68,7 +68,7 @@ void StudySweepAnalysis::solve()
 
 void StudySweepAnalysis::setDefaultValues()
 {
-    m_settingDefault.clear();
+    Study::setDefaultValues();
 
     // m_settingDefault[Analysis] = QVariant::fromValue(AnalysisType_Undefined);
 }
@@ -76,4 +76,6 @@ void StudySweepAnalysis::setDefaultValues()
 void StudySweepAnalysis::setStringKeys()
 {
     // m_settingKey[Analysis] = "Analysis";
+
+    Study::setStringKeys();
 }

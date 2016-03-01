@@ -45,7 +45,6 @@
         <file alias="scene-mesh.png">images/scene-mesh.png</file>
         <file alias="scene-post2d.png">images/scene-post2d.png</file>
         <file alias="scene-post3d.png">images/scene-post3d.png</file>
-        <file alias="scene-delete.png">images/scene-delete.png</file>
         <file alias="scene-select-region.png">images/scene-select-region.png</file>
         <file alias="scene-transform.png">images/scene-transform.png</file>
         <file alias="scene-meshgen.png">images/scene-meshgen.png</file>

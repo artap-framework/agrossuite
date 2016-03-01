@@ -118,8 +118,8 @@ void StudyBayesOptAnalysis::solve()
     }
 
     // sort computations
-    QString parameterName = m_functionals[0].name();
-    m_computationSets.last().sort(parameterName);
+    // QString parameterName = m_functionals[0].name();
+    // m_computationSets.last().sort(parameterName);
 
     // vectord result = bayesOptProblem.getFinalResult();
 
@@ -130,20 +130,22 @@ void StudyBayesOptAnalysis::solve()
 
 void StudyBayesOptAnalysis::setDefaultValues()
 {
-    m_settingDefault.clear();
+    Study::setDefaultValues();
 
     m_settingDefault[BayesOpt_n_init_samples] = 5;
     m_settingDefault[BayesOpt_n_iterations] = 10;
     m_settingDefault[BayesOpt_n_iter_relearn] = 5;
-    m_settingDefault[BayesOpt_init_method] = 1; // 1-LHS, 2-Sobol
+    m_settingDefault[BayesOpt_init_method] = 1; // 1-LHS, 2-Sobol    
 }
 
 void StudyBayesOptAnalysis::setStringKeys()
 {
+    Study::setStringKeys();
+
     m_settingKey[BayesOpt_n_init_samples] = "BayesOpt_n_init_samples";
     m_settingKey[BayesOpt_n_iterations] = "BayesOpt_n_iterations";
     m_settingKey[BayesOpt_n_iter_relearn] = "BayesOpt_n_iter_relearn";
-    m_settingKey[BayesOpt_init_method] = "BayesOpt_init_method";
+    m_settingKey[BayesOpt_init_method] = "BayesOpt_init_method";    
 }
 
 // *****************************************************************************************************

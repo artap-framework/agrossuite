@@ -25,6 +25,7 @@
 #include "util.h"
 #include "util/enums.h"
 #include "study.h"
+#include "study_dialog.h"
 
 #include "bayesopt/bayesopt.hpp"
 

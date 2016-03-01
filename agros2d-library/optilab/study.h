@@ -31,43 +31,6 @@
 
 class Computation;
 class Study;
-class QCustomPlot;
-class QCPGraph;
-
-class AGROS_LIBRARY_API LogOptimizationDialog : public QDialog
-{
-    Q_OBJECT
-public:
-    LogOptimizationDialog(Study *study);
-    ~LogOptimizationDialog();
-
-protected:
-    virtual void closeEvent(QCloseEvent *e);
-    virtual void reject();
-
-private:
-    Study *m_study;
-
-    LogWidget *m_logWidget;
-
-    QPushButton *btnClose;
-    QPushButton *btnAbort;
-
-    QCustomPlot *m_chart;
-    QProgressBar *m_progress;
-    QCPGraph *m_objectiveGraph;
-
-    void createControls();
-
-private slots:
-    void updateChart();
-    void updateParameters(QList<Parameter> parameters, const Computation *computation);
-
-    void solved();
-    void aborted();
-
-    void tryClose();
-};
 
 class ComputationParameterCompare
 {
@@ -121,7 +84,13 @@ public:
         BayesOpt_n_init_samples,
         BayesOpt_n_iterations,
         BayesOpt_n_iter_relearn,
-        BayesOpt_init_method
+        BayesOpt_init_method,
+
+        View_ChartX,
+        View_ChartY,
+        View_ChartLogX,
+        View_ChartLogY,
+        View_ApplyToAllSets
     };
 
     Study(QList<ComputationSet> computations = QList<ComputationSet>());
@@ -200,8 +169,8 @@ protected:
     inline Type stringKeyToType(const QString &key) { return m_settingKey.key(key); }
     inline QStringList stringKeys() { return m_settingKey.values(); }
 
-    virtual void setDefaultValues() {}
-    virtual void setStringKeys() {}
+    virtual void setDefaultValues();
+    virtual void setStringKeys();
 };
 
 class Studies : public QObject
@@ -228,82 +197,6 @@ signals:
 
 private:
     QList<Study *> m_studies;
-};
-
-class StudyDialog : public QDialog
-{
-    Q_OBJECT
-
-public:
-    StudyDialog(Study *study, QWidget *parent = 0);
-
-    static StudyDialog *factory(Study *study, QWidget *parent = 0);
-
-    int showDialog();
-
-protected:
-    Study *m_study;
-
-    QTabWidget *tabStudy;
-
-    void createControls();
-    virtual QWidget *createStudyControls() { return new QWidget(this); }
-    QWidget *createParameters();
-    QWidget *createFunctionals();
-
-    QTreeWidget *trvParameterWidget;
-    QPushButton *btnParameterAdd;
-    QPushButton *btnParameterEdit;
-    QPushButton *btnParameterRemove;
-    void readParameters();
-
-    QTreeWidget *trvFunctionalWidget;
-    QPushButton *btnFunctionalAdd;
-    QPushButton *btnFunctionalEdit;
-    QPushButton *btnFunctionalRemove;
-    void readFunctionals();
-
-    virtual void load() = 0;
-    virtual void save() = 0;
-
-private slots:
-    void doAccept();
-
-    void doParameterItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void doParameterItemDoubleClicked(QTreeWidgetItem *item, int role);
-    void doParameterRemove(bool checked);
-
-    void doFunctionalItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void doFunctionalItemDoubleClicked(QTreeWidgetItem *item, int role);
-    void doFunctionalAdd(bool checked);
-    void doFunctionalEdit(bool checked);
-    void doFunctionalRemove(bool checked);
-};
-
-class FunctionalDialog : public QDialog
-{
-    Q_OBJECT
-
-public:
-    FunctionalDialog(Study *study, Functional *functional, QWidget *parent = 0);
-
-private:
-    Study *m_study;
-    Functional *m_functional;
-
-    QDialogButtonBox *buttonBox;
-    QLabel *lblError;
-    QLineEdit *txtName;
-    QLineEdit *txtExpression;
-    QSpinBox *txtWeight;
-
-    void createControls();
-
-    bool checkFunctional(const QString &str);
-
-private slots:
-    void doAccept();
-    void functionalNameTextChanged(const QString &str);
 };
 
 #endif // STUDY_H

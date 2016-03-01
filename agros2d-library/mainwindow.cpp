@@ -685,7 +685,7 @@ void MainWindow::dropEvent(QDropEvent *event)
 void MainWindow::doDocumentNew()
 {
     FieldSelectDialog dialog(QList<QString>(), this);
-    if (dialog.showDialog() == QDialog::Accepted)
+    if (dialog.exec() == QDialog::Accepted)
     {
         // clear preprocessor
         Agros2D::problem()->clearFieldsAndConfig();

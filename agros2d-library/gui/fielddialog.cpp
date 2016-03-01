@@ -66,12 +66,9 @@ FieldSelectDialog::FieldSelectDialog(QList<QString> fields, QWidget *parent) : Q
         }
     }
 
-    connect(lstFields, SIGNAL(itemDoubleClicked(QListWidgetItem *)),
-            this, SLOT(doItemDoubleClicked(QListWidgetItem *)));
-    connect(lstFields, SIGNAL(itemActivated(QListWidgetItem *)),
-            this, SLOT(doItemSelected(QListWidgetItem *)));
-    connect(lstFields, SIGNAL(itemPressed(QListWidgetItem *)),
-            this, SLOT(doItemSelected(QListWidgetItem *)));
+    connect(lstFields, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(doItemDoubleClicked(QListWidgetItem *)));
+    connect(lstFields, SIGNAL(itemActivated(QListWidgetItem *)), this, SLOT(doItemSelected(QListWidgetItem *)));
+    connect(lstFields, SIGNAL(itemPressed(QListWidgetItem *)), this, SLOT(doItemSelected(QListWidgetItem *)));
 
     QGridLayout *layoutSurface = new QGridLayout();
     layoutSurface->addWidget(lstFields);
@@ -80,8 +77,8 @@ FieldSelectDialog::FieldSelectDialog(QList<QString> fields, QWidget *parent) : Q
     widget->setLayout(layoutSurface);
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(doAccept()));
-    connect(buttonBox, SIGNAL(rejected()), this, SLOT(doReject()));
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(widget, 1);
@@ -105,21 +102,6 @@ FieldSelectDialog::FieldSelectDialog(QList<QString> fields, QWidget *parent) : Q
 
     move(QApplication::activeWindow()->pos().x() + (QApplication::activeWindow()->width() - width()) / 2.0,
          QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
-}
-
-void FieldSelectDialog::doAccept()
-{
-    accept();
-}
-
-void FieldSelectDialog::doReject()
-{
-    reject();
-}
-
-int FieldSelectDialog::showDialog()
-{
-    return exec();
 }
 
 void FieldSelectDialog::doItemSelected(QListWidgetItem *item)
@@ -1058,7 +1040,7 @@ void FieldsToobar::addField()
 {
     // select field dialog
     FieldSelectDialog dialog(Agros2D::problem()->fieldInfos().keys(), this);
-    if (dialog.showDialog() == QDialog::Accepted)
+    if (dialog.exec() == QDialog::Accepted)
     {
         // add field
         FieldInfo *fieldInfo = new FieldInfo(dialog.selectedFieldId());

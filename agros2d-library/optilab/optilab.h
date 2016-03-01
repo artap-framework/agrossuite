@@ -44,13 +44,19 @@ private:
     QTreeWidget *trvComputations;
     QComboBox *cmbStudies;
 
+    QCheckBox *chkShowAllSets;
+    QCheckBox *chkChartLogY;
     QComboBox *cmbChartX;
     QComboBox *cmbChartY;
+
+    QPushButton *btnSolveStudy;
+    QPushButton *btnPlotChart;
 
     void createControls();
 
 signals:
     void computationSelected(const QString &key);
+    void chartRefreshed(Study *study);
 
 private slots:
     void computationChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);
@@ -59,7 +65,8 @@ private slots:
     void studyChanged(int index);
     void refresh();
 
-    void test();
+    void solveStudy();
+    void plotChart();
 };
 
 class OptiLab : public QWidget
@@ -76,6 +83,7 @@ signals:
 
 public slots:
     void computationSelected(const QString &key);
+    void chartRefreshed(Study *study);
 
 private:
     OptiLabWidget *m_optiLabWidget;

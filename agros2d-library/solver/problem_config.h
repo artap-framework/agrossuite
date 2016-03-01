@@ -47,6 +47,7 @@ class ProblemConfig : public QObject
 public:
     enum Type
     {
+        // config
         Unknown,
         Frequency,
         TimeMethod,

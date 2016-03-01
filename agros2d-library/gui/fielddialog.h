@@ -33,13 +33,9 @@ class FieldSelectDialog : public QDialog
 public:
     FieldSelectDialog(QList<QString> fields, QWidget *parent);
 
-    int showDialog();
     inline QString selectedFieldId() { return m_selectedFieldId; }
 
 private slots:
-    void doAccept();
-    void doReject();
-
     void doItemSelected(QListWidgetItem *item);
     void doItemDoubleClicked(QListWidgetItem *item);
 

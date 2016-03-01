@@ -26,7 +26,7 @@
 #include "study_nlopt.h"
 #include "util/global.h"
 
-#include "study.h"
+#include "sceneview_data.h"
 #include "logview.h"
 
 #include "solver/problem.h"
@@ -54,11 +54,9 @@ void OptiLabWidget::createControls()
     cmbStudies = new QComboBox(this);
     connect(cmbStudies, SIGNAL(currentIndexChanged(int)), this, SLOT(studyChanged(int)));
 
-    QVBoxLayout *layoutStudies = new QVBoxLayout();
+    QHBoxLayout *layoutStudies = new QHBoxLayout();
+    layoutStudies->addWidget(new QLabel(tr("Studies")));
     layoutStudies->addWidget(cmbStudies);
-
-    QGroupBox *grpStudies = new QGroupBox(tr("Studies"));
-    grpStudies->setLayout(layoutStudies);
 
     // parameters
     trvComputations = new QTreeWidget(this);
@@ -75,23 +73,30 @@ void OptiLabWidget::createControls()
 
     cmbChartX = new QComboBox(this);
     cmbChartY = new QComboBox(this);
+    chkShowAllSets = new QCheckBox(tr("Apply to all sets"), this);
+    chkChartLogY = new QCheckBox(tr("Logarithmic scale"), this);
 
     QGridLayout *layoutChartXYControls = new QGridLayout();
-    layoutChartXYControls->addWidget(new QLabel(tr("Variable X:")), 0, 0);
-    layoutChartXYControls->addWidget(cmbChartX, 0, 1);
-    layoutChartXYControls->addWidget(new QLabel(tr("Variable Y:")), 1, 0);
-    layoutChartXYControls->addWidget(cmbChartY, 1, 1);
-    layoutChartXYControls->addWidget(new QLabel(""), 19, 0);
+    layoutChartXYControls->addWidget(chkShowAllSets, 0, 0);
+    layoutChartXYControls->addWidget(chkChartLogY, 1, 0);
+    layoutChartXYControls->addWidget(new QLabel(tr("Variable X:")), 2, 0);
+    layoutChartXYControls->addWidget(cmbChartX, 2, 1);
+    layoutChartXYControls->addWidget(new QLabel(tr("Variable Y:")), 3, 0);
+    layoutChartXYControls->addWidget(cmbChartY, 3, 1);
 
-    QPushButton *btnTEST = new QPushButton(tr("TEST"));
-    connect(btnTEST, SIGNAL(clicked()), this, SLOT(test()));
+    btnSolveStudy = new QPushButton(tr("Solve"));
+    connect(btnSolveStudy, SIGNAL(clicked()), this, SLOT(solveStudy()));
+    btnPlotChart = new QPushButton(tr("Plot chart"));
+    connect(btnPlotChart, SIGNAL(clicked()), this, SLOT(plotChart()));
 
     QHBoxLayout *layoutParametersButton = new QHBoxLayout();
-    layoutParametersButton->addWidget(btnTEST);
+    layoutParametersButton->addWidget(btnSolveStudy);
+    layoutParametersButton->addStretch();
+    layoutParametersButton->addWidget(btnPlotChart);
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(2, 2, 2, 3);
-    layout->addWidget(grpStudies);
+    layout->addLayout(layoutStudies);
     layout->addWidget(trvComputations);
     layout->addLayout(layoutChartXYControls);
     layout->addLayout(layoutParametersButton);
@@ -101,6 +106,9 @@ void OptiLabWidget::createControls()
 
 void OptiLabWidget::refresh()
 {
+    btnSolveStudy->setEnabled(false);
+    btnPlotChart->setEnabled(false);
+
     // fill studies
     cmbStudies->blockSignals(true);
 
@@ -135,19 +143,34 @@ void OptiLabWidget::refresh()
     cmbChartX->clear();
     cmbChartY->clear();
 
-    // parameters
+    // TODO: chart - first iteration
     if (cmbStudies->currentIndex() != -1)
     {
         Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
+
+        // step
+        cmbChartX->addItem(tr("step"), QString("step:"));
+        cmbChartY->addItem(tr("step"), QString("step:"));
+
+        // parameters
         foreach (Parameter parameter, study->parameters())
         {
-            cmbChartX->addItem(QString("%1 (par.)").arg(parameter.name()), QString("parameter:%1").arg(parameter.name()));
-            cmbChartY->addItem(QString("%1 (par.)").arg(parameter.name()), QString("parameter:%1").arg(parameter.name()));
+            cmbChartX->addItem(tr("%1 (parameter)").arg(parameter.name()), QString("parameter:%1").arg(parameter.name()));
+            cmbChartY->addItem(tr("%1 (parameter)").arg(parameter.name()), QString("parameter:%1").arg(parameter.name()));
         }
+
+        // functionals
         foreach (Functional functional, study->functionals())
         {
-            cmbChartX->addItem(QString("%1 (fun.)").arg(functional.name()), QString("functional:%1").arg(functional.name()));
-            cmbChartY->addItem(QString("%1 (fun.)").arg(functional.name()), QString("functional:%1").arg(functional.name()));
+            cmbChartX->addItem(tr("%1 (functional)").arg(functional.name()), QString("functional:%1").arg(functional.name()));
+            cmbChartY->addItem(tr("%1 (functional)").arg(functional.name()), QString("functional:%1").arg(functional.name()));
+        }
+
+        // recipes
+        foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
+        {
+            cmbChartX->addItem(tr("%1 (recipe)").arg(recipe->name()), QString("recipe:%1").arg(recipe->name()));
+            cmbChartY->addItem(tr("%1 (recipe)").arg(recipe->name()), QString("recipe:%1").arg(recipe->name()));
         }
     }
 }
@@ -178,21 +201,48 @@ void OptiLabWidget::studyChanged(int index)
     // if not selected -> select first
     if (trvComputations->topLevelItemCount() > 0 && !trvComputations->currentItem())
         trvComputations->setCurrentItem(trvComputations->topLevelItem(0));
+
+    // set controls
+    chkShowAllSets->setChecked(study->value(Study::View_ApplyToAllSets).toBool());
+    cmbChartX->setCurrentIndex(cmbChartX->findData(study->value(Study::View_ChartX).toString()));
+    cmbChartY->setCurrentIndex(cmbChartY->findData(study->value(Study::View_ChartY).toString()));
+
+    // enable buttons
+    btnSolveStudy->setEnabled(true);
+    btnPlotChart->setEnabled(true);
 }
 
-void OptiLabWidget::test()
+void OptiLabWidget::solveStudy()
 {
-    // TODO: more studies
-    Study *analysis = Agros2D::problem()->studies()->items()[0];
-    assert(analysis);
+    if (cmbStudies->count() == 0)
+        return;
 
-    LogOptimizationDialog *log = new LogOptimizationDialog(analysis);
+    // study
+    Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
+
+    LogOptimizationDialog *log = new LogOptimizationDialog(study);
     log->show();
 
     // solve
-    analysis->solve();
+    study->solve();
 
     refresh();
+}
+
+void OptiLabWidget::plotChart()
+{
+    if (cmbStudies->count() == 0)
+        return;
+
+    // study
+    Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
+
+    study->setValue(Study::View_ApplyToAllSets, chkShowAllSets->checkState() == Qt::Checked);
+    study->setValue(Study::View_ChartX, cmbChartX->currentData().toString());
+    study->setValue(Study::View_ChartY, cmbChartY->currentData().toString());
+    study->setValue(Study::View_ChartLogY, chkChartLogY->checkState() == Qt::Checked);
+
+    emit chartRefreshed(study);
 }
 
 /*
@@ -259,6 +309,7 @@ OptiLab::OptiLab(QWidget *parent) : QWidget(parent)
     createControls();
 
     connect(m_optiLabWidget, SIGNAL(computationSelected(QString)), this, SLOT(computationSelected(QString)));
+    connect(m_optiLabWidget, SIGNAL(chartRefreshed(Study *)), this, SLOT(chartRefreshed(Study *)));
 }
 
 OptiLab::~OptiLab()
@@ -271,12 +322,6 @@ void OptiLab::createControls()
 
     m_chart = new QCustomPlot(this);
     m_chart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-    // m_chart->xAxis->setLabel("");
-    // m_chart->yAxis->setLabel("");
-    m_chart->addGraph();
-
-    m_chart->graph(0)->setLineStyle(QCPGraph::lsLine);
-    m_chart->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 4));
 
     QHBoxLayout *layoutLab = new QHBoxLayout();
     layoutLab->addWidget(m_infoWidget, 1);
@@ -298,4 +343,130 @@ void OptiLab::computationSelected(const QString &key)
 
         m_infoWidget->showProblemInfo(computation.data());
     }
+}
+
+void OptiLab::chartRefreshed(Study *study)
+{
+    QString chartX = study->value(Study::View_ChartX).toString();
+    QString chartY = study->value(Study::View_ChartY).toString();
+
+    QString labelX = "-";
+    QString labelY = "-";
+
+    if (chartX.contains("step:"))
+        labelX = "step";
+    else if (chartX.contains("parameter:"))
+        labelX = tr("%1 (parameter)").arg(chartX.right(chartX.count() - 10));
+    else if (chartX.contains("functional:"))
+        labelX = tr("%1 (functional)").arg(chartX.right(chartX.count() - 11));
+    else if (chartX.contains("recipe:"))
+        labelX = tr("%1 (recipe)").arg(chartX.right(chartX.count() - 7));
+    else
+        assert(0);
+
+    if (chartY.contains("step:"))
+        labelY = "step";
+    else if (chartY.contains("parameter:"))
+        labelY = tr("%1 (parameter)").arg(chartY.right(chartY.count() - 10));
+    else if (chartY.contains("functional:"))
+        labelY = tr("%1 (functional)").arg(chartY.right(chartY.count() - 11));
+    else if (chartY.contains("recipe:"))
+        labelY = tr("%1 (recipe)").arg(chartY.right(chartY.count() - 7));
+    else
+        assert(0);
+
+    m_chart->clearGraphs();
+
+    int paletteStep = study->computationSets().count() > 1 ? (PALETTEENTRIES - 1) / (study->computationSets().count() - 1) : 0;
+    int step = 0;
+    for (int i = 0; i < study->computationSets().count(); i++)
+    {
+        QVector<double> dataX;
+        QVector<double> dataY;
+
+        QList<QSharedPointer<Computation> > computations = study->computationSets()[i].computations();
+
+        for (int j = 0; j < computations.count(); j++)
+        {
+            QSharedPointer<Computation> computation = computations[j];
+
+            step++;
+
+            // steps
+            if (chartX.contains("step:"))
+            {
+                dataX.append(step);
+            }
+            if (chartY.contains("step:"))
+            {
+                dataY.append(step);
+            }
+
+            // parameters
+            if (chartX.contains("parameter:"))
+            {
+                QString name = chartX.right(chartX.count() - 10);
+                double value = computation->config()->parameter(name);
+                dataX.append(value);
+            }
+            if (chartY.contains("parameter:"))
+            {
+                QString name = chartY.right(chartY.count() - 10);
+                double value = computation->config()->parameter(name);
+                dataY.append(value);
+            }
+
+            // functionals
+            if (chartX.contains("functional:"))
+            {
+                QString name = chartX.right(chartX.count() - 11);
+                double value = computation->results()->resultValue(name);
+                dataX.append(value);
+            }
+            if (chartY.contains("functional:"))
+            {
+                QString name = chartY.right(chartY.count() - 11);
+                double value = computation->results()->resultValue(name);
+                dataY.append(value);
+            }
+
+            // recipes
+            if (chartX.contains("recipe:"))
+            {
+                QString name = chartX.right(chartX.count() - 7);
+                double value = computation->results()->resultValue(name);
+                dataX.append(value);
+            }
+            if (chartY.contains("recipe:"))
+            {
+                QString name = chartY.right(chartY.count() - 7);
+                double value = computation->results()->resultValue(name);
+                dataY.append(value);
+            }
+        }
+
+        const QColor color(paletteDataAgros[i * paletteStep][0] * 255, paletteDataAgros[i * paletteStep][1] * 255, paletteDataAgros[i * paletteStep][2] * 255);
+
+        QCPGraph *graph = m_chart->addGraph();
+        graph->setData(dataX, dataY);
+        graph->setName(study->computationSets()[i].name());
+        graph->addToLegend();
+
+        graph->setLineStyle(QCPGraph::lsNone);
+        QCPScatterStyle scatterStyle;
+        scatterStyle.setSize(8);
+        scatterStyle.setShape(QCPScatterStyle::ssDisc);
+        scatterStyle.setPen(QPen(color));
+        graph->setScatterStyle(scatterStyle);
+    }
+
+    m_chart->xAxis->setLabel(labelX);
+    m_chart->yAxis->setLabel(labelY);
+    m_chart->legend->setVisible(true);
+    if (study->value(Study::View_ChartLogY).toBool())
+        m_chart->yAxis->setScaleType(QCPAxis::stLogarithmic);
+    else
+        m_chart->yAxis->setScaleType(QCPAxis::stLinear);
+    m_chart->rescaleAxes();
+    m_chart->replot(QCustomPlot::rpQueued);
 }

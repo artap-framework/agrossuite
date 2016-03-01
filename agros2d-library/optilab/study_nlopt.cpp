@@ -52,6 +52,8 @@ public:
             return numeric_limits<double>::max();
         }
 
+        qDebug() << "opt.get_population()" << opt.get_population();
+
         // computation
         QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
         m_study->addComputation(computation);
@@ -142,8 +144,8 @@ void StudyNLoptAnalysis::solve()
                 Agros2D::log()->printMessage(tr("NLopt"), tr("Maximum iterations reached"));
 
             // sort computations
-            QString parameterName = m_functionals[0].name();
-            m_computationSets.last().sort(parameterName);
+            // QString parameterName = m_functionals[0].name();
+            // m_computationSets.last().sort(parameterName);
 
             emit solved();
         }
@@ -160,8 +162,8 @@ void StudyNLoptAnalysis::solve()
 }
 
 void StudyNLoptAnalysis::setDefaultValues()
-{
-    m_settingDefault.clear();
+{    
+    Study::setDefaultValues();
 
     m_settingDefault[NLopt_tol_rel] = 1e-3;
     m_settingDefault[NLopt_tol_abs] = 1e-3;
@@ -171,10 +173,12 @@ void StudyNLoptAnalysis::setDefaultValues()
 
 void StudyNLoptAnalysis::setStringKeys()
 {
+    Study::setStringKeys();
+
     m_settingKey[NLopt_tol_rel] = "NLopt_tol_rel";
     m_settingKey[NLopt_tol_abs] = "NLopt_tol_abs";
     m_settingKey[NLopt_n_iterations] = "NLopt_n_iterations";
-    m_settingKey[NLopt_algorithm] = "NLopt_algorithm";
+    m_settingKey[NLopt_algorithm] = "NLopt_algorithm";    
 }
 
 // *****************************************************************************************************
