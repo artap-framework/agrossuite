@@ -190,7 +190,7 @@ public:
         if (infoParameterMultigrid && infoParameterPreconditioner.empty())
             infoParameterPreconditioner = "SA";
 
-        // TODO: if use default for set of param, get param. from solver object
+        // if use default for set of param, get param. from solver object
         if (infoParameterMultigrid && infoParameterMultigridAggregator.empty())
             infoParameterMultigridAggregator = "";
         if (infoParameterMultigrid && infoParameterMultigridCoarser.empty())
@@ -436,7 +436,7 @@ int solveAztecOO(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProb
     return status;
 }
 
-int solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType, std::string smootherType, std::string coarseType, int solver)
+int solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearProblem &problem, int maxIter, double relTol, std::string preconditioner, std::string aggregationType, std::string smootherType, std::string coarseType, int solver, int numOfSweeps, int verboseMode)
 {
     // create a parameter list for ML options
     Teuchos::ParameterList mlList;
@@ -446,8 +446,11 @@ int solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPr
 
     // overwrite some parameters. Please refer to the Trilinos user's guide for more information
 
-    // TODO: set as cmd line parameter - output level, 0 being silent and 10 verbose
-    mlList.set("ML output", 10);
+    // output level, 0 being silent and 10 verbose
+    if (verboseMode > 0)
+        mlList.set("ML output", 10);
+    else
+        mlList.set("ML output", 0);
 
     // TODO: set as cmd line parameter - maximum number of levels
     // mlList.set("max levels", 10);
@@ -467,8 +470,10 @@ int solveAztecOOML(LinearSystemTrilinosArgs *linearSystem, const Epetra_LinearPr
         mlList.set("smoother: type", smootherType);
     }
 
-    // TODO: set as cmd line parameter
-    //mlList.set("smoother: sweeps", 3);
+    if (numOfSweeps >= 0)
+    {
+      mlList.set("smoother: sweeps", numOfSweeps);
+    }
 
     // TODO: set as cmd line parameter - use both pre and post smoothing
     // mlList.set("smoother: pre or post", "both");
@@ -648,7 +653,9 @@ int main(int argc, char *argv[])
                                          linearSystem->getMLaggregationType(linearSystem->infoParameterMultigridAggregator),
                                          linearSystem->getMLsmootherType(linearSystem->infoParameterMultigridSmoother),
                                          linearSystem->getMLcoarseType(linearSystem->infoParameterMultigridCoarser),
-                                         linearSystem->getAztecOOsolver(linearSystem->infoParameterSolver));
+                                         linearSystem->getAztecOOsolver(linearSystem->infoParameterSolver),
+                                         linearSystem->infoParameterNumSweeps,
+                                         linearSystem->verbose());
             }
             else
                 assert(0 && "No solver selected !!!");

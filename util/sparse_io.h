@@ -446,6 +446,7 @@ public:
         std::cout << " - multigrid aggregator: " << infoParameterMultigridAggregator << std::endl;
         std::cout << " - multigrid smoother: " << infoParameterMultigridSmoother << std::endl;
         std::cout << " - multigrid coarser: " << infoParameterMultigridCoarser << std::endl;
+        std::cout << " - multigrid sweeps: " << infoParameterNumSweeps << std::endl;
 
         std::cout << "Filename: " << infoFileName << std::endl;
         std::cout << "Arguments: " << infoArgs << std::endl;
@@ -489,6 +490,7 @@ public:
             file << "parameter_multigrid_aggregator = " << infoParameterMultigridAggregator << "\n";
             file << "parameter_multigrid_smoother = " << infoParameterMultigridSmoother << "\n";
             file << "parameter_multigrid_coarser = " << infoParameterMultigridCoarser << "\n";
+            file << "parameter_multigrid_sweeps = " << infoParameterNumSweeps << "\n";
 
             file << "filename = " << infoFileName << "\n";
             file << "arguments = " << infoArgs << "\n";
@@ -584,6 +586,7 @@ public:
     std::string infoParameterMultigridAggregator;
     std::string infoParameterMultigridSmoother;
     std::string infoParameterMultigridCoarser;
+    int infoParameterNumSweeps;
 
     std::string infoName;
 
@@ -674,6 +677,7 @@ public:
         absTolArg(TCLAP::ValueArg<double>("a", "abs_tol", "Absolute tolerance", false, 1e-13, "double")),
         relTolArg(TCLAP::ValueArg<double>("t", "rel_tol", "Relative tolerance", false, 1e-9, "double")),
         maxIterArg(TCLAP::ValueArg<int>("x", "max_iter", "Maximum number of iterations", false, 2000, "int")),
+        numSweepsArg(TCLAP::ValueArg<int>("w", "num_sweeps", "Number of sweeps", false, -1, "int")),
 
         verboseArg(TCLAP::ValueArg<int>("v", "verbose", "Verbose mode", false, 0, "int")),
 
@@ -698,6 +702,7 @@ public:
         cmd.add(absTolArg);
         cmd.add(relTolArg);
         cmd.add(maxIterArg);
+        cmd.add(numSweepsArg);
 
         cmd.add(verboseArg);
 
@@ -715,6 +720,7 @@ public:
         infoParameterAbsTol = absTolArg.getValue();
         infoParameterRelTol = relTolArg.getValue();
         infoParameterMaxIter = maxIterArg.getValue();
+        infoParameterNumSweeps = numSweepsArg.getValue();
     }
 
     inline bool hasSolution() { return !solutionArg.getValue().empty(); }
@@ -775,6 +781,7 @@ protected:
     TCLAP::ValueArg<std::string> multigridAggregatorTypeArg;
     TCLAP::ValueArg<std::string> multigridSmootherTypeArg;
     TCLAP::ValueArg<std::string> multigridCoarserTypeArg;
+    TCLAP::ValueArg<int> numSweepsArg;
 
 private:
     int argc;
