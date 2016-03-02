@@ -154,7 +154,7 @@ void LogOptimizationDialog::createControls()
     m_objectiveGraph->setName(tr("objective function"));
 
     m_progress = new QProgressBar(this);
-    m_progress->setMaximum(10000);
+    m_progress->setMaximum(m_study->estimatedNumberOfSteps());
 
     QVBoxLayout *layoutObjective = new QVBoxLayout();
     layoutObjective->addWidget(m_chart, 2);
@@ -187,6 +187,8 @@ void LogOptimizationDialog::updateChart()
             objective.append(value);
         }
     }
+
+    m_progress->setValue(steps.count());
 
     m_objectiveGraph->setData(steps, objective);
     m_chart->rescaleAxes();
@@ -371,7 +373,9 @@ QWidget *StudyDialog::createParameters()
     connect(trvParameterWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(doParameterItemDoubleClicked(QTreeWidgetItem *, int)));
 
     btnParameterAdd = new QPushButton(tr("Add"), this);
+    connect(btnParameterAdd, SIGNAL(clicked(bool)), this, SLOT(doParameterAdd(bool)));
     btnParameterEdit = new QPushButton(tr("Edit"), this);
+    connect(btnParameterEdit, SIGNAL(clicked(bool)), this, SLOT(doParameterEdit(bool)));
     btnParameterRemove = new QPushButton(tr("Remove"), this);
     connect(btnParameterRemove, SIGNAL(clicked(bool)), this, SLOT(doParameterRemove(bool)));
 
@@ -407,6 +411,8 @@ void StudyDialog::readParameters()
         item->setTextAlignment(2, Qt::AlignRight);
     }
 
+    btnParameterAdd->setEnabled(m_study->parameters().count() < Agros2D::problem()->config()->parameters().count());
+
     doParameterItemChanged(nullptr, nullptr);
 }
 
@@ -423,7 +429,43 @@ void StudyDialog::doParameterItemChanged(QTreeWidgetItem *current, QTreeWidgetIt
 
 void StudyDialog::doParameterItemDoubleClicked(QTreeWidgetItem *item, int role)
 {
+    if (trvParameterWidget->currentItem())
+    {
+        doParameterEdit(true);
+    }
+}
 
+void StudyDialog::doParameterAdd(bool checked)
+{
+    // select parameter dialog
+    ParameterSelectDialog dialog(m_study, this);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        // add parameter
+        QString name = dialog.selectedParameterName();
+        if (!name.isEmpty())
+        {
+            Parameter parameter(name);
+            StudyParameterDialog dialog(m_study, &parameter);
+            if (dialog.exec() == QDialog::Accepted)
+            {
+                m_study->addParameter(parameter);
+                readParameters();
+            }
+        }
+    }
+}
+
+void StudyDialog::doParameterEdit(bool checked)
+{
+    if (trvParameterWidget->currentItem())
+    {
+        StudyParameterDialog dialog(m_study, &m_study->parameter(trvParameterWidget->currentItem()->data(0, Qt::UserRole).toString()));
+        if (dialog.exec() == QDialog::Accepted)
+        {
+            readParameters();
+        }
+    }
 }
 
 void StudyDialog::doParameterRemove(bool checked)
@@ -513,7 +555,7 @@ void StudyDialog::doFunctionalAdd(bool checked)
 {
     Functional functional;
 
-    FunctionalDialog dialog(m_study, &functional);
+    StudyFunctionalDialog dialog(m_study, &functional);
     if (dialog.exec() == QDialog::Accepted)
     {
         m_study->addFunctional(functional);
@@ -525,7 +567,7 @@ void StudyDialog::doFunctionalEdit(bool checked)
 {
     if (trvFunctionalWidget->currentItem())
     {
-        FunctionalDialog dialog(m_study, &m_study->functional(trvFunctionalWidget->currentItem()->data(0, Qt::UserRole).toString()));
+        StudyFunctionalDialog dialog(m_study, &m_study->functional(trvFunctionalWidget->currentItem()->data(0, Qt::UserRole).toString()));
         if (dialog.exec() == QDialog::Accepted)
         {
             readFunctionals();
@@ -551,13 +593,13 @@ void StudyDialog::doAccept()
 
 // **************************************************************************************************************
 
-FunctionalDialog::FunctionalDialog(Study *study, Functional *functional, QWidget *parent)
+StudyFunctionalDialog::StudyFunctionalDialog(Study *study, Functional *functional, QWidget *parent)
     : m_study(study), m_functional(functional)
 {
     createControls();
 }
 
-void FunctionalDialog::createControls()
+void StudyFunctionalDialog::createControls()
 {
     setWindowTitle(tr("Functional: %1").arg(m_functional->name()));
 
@@ -600,12 +642,12 @@ void FunctionalDialog::createControls()
         txtName->setFocus();
 }
 
-void FunctionalDialog::functionalNameTextChanged(const QString &str)
+void StudyFunctionalDialog::functionalNameTextChanged(const QString &str)
 {
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(checkFunctional(str));
 }
 
-bool FunctionalDialog::checkFunctional(const QString &str)
+bool StudyFunctionalDialog::checkFunctional(const QString &str)
 {
     try
     {
@@ -637,11 +679,10 @@ bool FunctionalDialog::checkFunctional(const QString &str)
 
     lblError->setVisible(false);
 
-
     return true;
 }
 
-void FunctionalDialog::doAccept()
+void StudyFunctionalDialog::doAccept()
 {
     if (checkFunctional(txtName->text()))
     {
@@ -649,6 +690,167 @@ void FunctionalDialog::doAccept()
         m_functional->setExpression(txtExpression->text());
         m_functional->setWeight(txtWeight->value());
 
+        accept();
+    }
+}
+
+// **************************************************************************************************************
+
+StudyParameterDialog::StudyParameterDialog(Study *study, Parameter *parameter, QWidget *parent)
+    : m_study(study), m_parameter(parameter)
+{
+    createControls();
+}
+
+void StudyParameterDialog::createControls()
+{
+    setWindowTitle(tr("Parameter: %1").arg(m_parameter->name()));
+
+    lblError = new QLabel();
+
+    lblName = new QLabel(m_parameter->name(), this);
+    txtLowerBound = new LineEditDouble(m_parameter->lowerBound(), this);
+    connect(txtLowerBound, SIGNAL(editingFinished()), this, SLOT(checkRange()));
+    txtUpperBound = new LineEditDouble(m_parameter->upperBound(), this);
+    connect(txtUpperBound, SIGNAL(editingFinished()), this, SLOT(checkRange()));
+
+    QGridLayout *layoutEdit = new QGridLayout();
+    layoutEdit->addWidget(new QLabel(tr("Name")), 0, 0);
+    layoutEdit->addWidget(lblName, 0, 1);
+    layoutEdit->addWidget(new QLabel(tr("Lower bound")), 1, 0);
+    layoutEdit->addWidget(txtLowerBound, 1, 1);
+    layoutEdit->addWidget(new QLabel(tr("Upper bound")), 2, 0);
+    layoutEdit->addWidget(txtUpperBound, 2, 1);
+
+    QPalette palette = lblError->palette();
+    palette.setColor(QPalette::WindowText, QColor(Qt::red));
+    lblError->setPalette(palette);
+    lblError->setVisible(false);
+
+    // dialog buttons
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(doAccept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(close()));
+
+    QVBoxLayout *layoutWidget = new QVBoxLayout();
+    layoutWidget->addLayout(layoutEdit);
+    layoutWidget->addWidget(lblError);
+    layoutWidget->addStretch();
+    layoutWidget->addWidget(buttonBox);
+
+    setLayout(layoutWidget);
+}
+
+bool StudyParameterDialog::checkRange()
+{
+    if (txtLowerBound->value() > txtUpperBound->value())
+    {
+        lblError->setText(tr("Lower bound is higher then upper bound."));
+        lblError->setVisible(true);
+
+        buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+        return false;
+    }
+
+    buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
+    lblError->setVisible(false);
+
+    return true;
+}
+
+void StudyParameterDialog::doAccept()
+{
+    if (checkRange())
+    {
+        m_parameter->setLowerBound(txtLowerBound->value());
+        m_parameter->setUpperBound(txtUpperBound->value());
+
+        accept();
+    }
+}
+
+ParameterSelectDialog::ParameterSelectDialog(Study *study, QWidget *parent) : QDialog(parent), m_study(study), m_selectedParameterName(QString())
+{
+    setWindowTitle(tr("Add parameter"));
+    setModal(true);
+
+    lstParameters = new QListWidget(this);
+    lstParameters->setIconSize(QSize(24, 24));
+    lstParameters->setMinimumHeight(26*3);
+
+    // remaining parameters
+    foreach (QString name, Agros2D::problem()->config()->parameters().keys())
+    {
+        bool skip = false;
+        foreach (Parameter parameter, m_study->parameters())
+        {
+            if (parameter.name() == name)
+            {
+                skip = true;
+                break;
+            }
+        }
+
+        if (!skip)
+        {
+            QListWidgetItem *item = new QListWidgetItem(lstParameters);
+            item->setIcon(iconAlphabet(name.at(0), AlphabetColor_Lightgray));
+            item->setText(name);
+            item->setData(Qt::UserRole, name);
+
+            lstParameters->addItem(item);
+        }
+    }
+
+    connect(lstParameters, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(doItemDoubleClicked(QListWidgetItem *)));
+    connect(lstParameters, SIGNAL(itemActivated(QListWidgetItem *)), this, SLOT(doItemSelected(QListWidgetItem *)));
+    connect(lstParameters, SIGNAL(itemPressed(QListWidgetItem *)), this, SLOT(doItemSelected(QListWidgetItem *)));
+
+    QGridLayout *layoutSurface = new QGridLayout();
+    layoutSurface->addWidget(lstParameters);
+
+    QWidget *widget = new QWidget();
+    widget->setLayout(layoutSurface);
+
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(widget, 1);
+    layout->addStretch();
+    layout->addWidget(buttonBox);
+
+    setLayout(layout);
+
+    buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+    if (lstParameters->count() > 0)
+    {
+        lstParameters->setCurrentRow(0);
+        doItemSelected(lstParameters->currentItem());
+    }
+
+    int w = sizeHint().width();
+    int h = 1.0/3.0 * QApplication::desktop()->screenGeometry().height();
+
+    setMinimumSize(w, h);
+    setMaximumSize(w, h);
+
+    move(QApplication::activeWindow()->pos().x() + (QApplication::activeWindow()->width() - width()) / 2.0,
+         QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
+}
+
+void ParameterSelectDialog::doItemSelected(QListWidgetItem *item)
+{
+    m_selectedParameterName = item->data(Qt::UserRole).toString();
+    buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
+}
+
+void ParameterSelectDialog::doItemDoubleClicked(QListWidgetItem *item)
+{
+    if (lstParameters->currentItem())
+    {
+        m_selectedParameterName = item->data(Qt::UserRole).toString();
         accept();
     }
 }

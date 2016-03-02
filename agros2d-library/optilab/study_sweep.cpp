@@ -34,6 +34,11 @@ StudySweepAnalysis::StudySweepAnalysis() : Study()
 {
 }
 
+int StudySweepAnalysis::estimatedNumberOfSteps() const
+{
+    return 0;
+}
+
 void StudySweepAnalysis::solve()
 {
     m_computationSets.clear();

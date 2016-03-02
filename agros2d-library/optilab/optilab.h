@@ -28,6 +28,7 @@
 
 class OptiLab;
 class Study;
+class Computation;
 class InfoWidgetGeneral;
 class QCustomPlot;
 
@@ -45,6 +46,7 @@ private:
     QComboBox *cmbStudies;
 
     QCheckBox *chkShowAllSets;
+    QCheckBox *chkChartLogX;
     QCheckBox *chkChartLogY;
     QComboBox *cmbChartX;
     QComboBox *cmbChartY;
@@ -56,7 +58,7 @@ private:
 
 signals:
     void computationSelected(const QString &key);
-    void chartRefreshed(Study *study);
+    void chartRefreshed(Study *study, QSharedPointer<Computation> computation);
 
 private slots:
     void computationChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);
@@ -83,7 +85,7 @@ signals:
 
 public slots:
     void computationSelected(const QString &key);
-    void chartRefreshed(Study *study);
+    void chartRefreshed(Study *study, QSharedPointer<Computation> selectedComputation);
 
 private:
     OptiLabWidget *m_optiLabWidget;

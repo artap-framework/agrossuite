@@ -85,6 +85,11 @@ StudyBayesOptAnalysis::StudyBayesOptAnalysis() : Study()
 {    
 }
 
+int StudyBayesOptAnalysis::estimatedNumberOfSteps() const
+{
+    return value(Study::BayesOpt_n_init_samples).toInt() + value(Study::BayesOpt_n_iterations).toInt();
+}
+
 void StudyBayesOptAnalysis::solve()
 {
     m_computationSets.clear();

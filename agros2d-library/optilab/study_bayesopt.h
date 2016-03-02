@@ -51,6 +51,8 @@ public:
     virtual inline StudyType type() { return StudyType_BayesOptAnalysis; }
     virtual void solve();
 
+    virtual int estimatedNumberOfSteps() const;
+
 protected:
     virtual void setDefaultValues();
     virtual void setStringKeys();

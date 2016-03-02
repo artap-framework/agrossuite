@@ -131,6 +131,8 @@ private slots:
 
     void doParameterItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void doParameterItemDoubleClicked(QTreeWidgetItem *item, int role);
+    void doParameterAdd(bool checked);
+    void doParameterEdit(bool checked);
     void doParameterRemove(bool checked);
 
     void doFunctionalItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
@@ -140,12 +142,12 @@ private slots:
     void doFunctionalRemove(bool checked);
 };
 
-class FunctionalDialog : public QDialog
+class StudyFunctionalDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    FunctionalDialog(Study *study, Functional *functional, QWidget *parent = 0);
+    StudyFunctionalDialog(Study *study, Functional *functional, QWidget *parent = 0);
 
 private:
     Study *m_study;
@@ -164,6 +166,53 @@ private:
 private slots:
     void doAccept();
     void functionalNameTextChanged(const QString &str);
+};
+
+class StudyParameterDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    StudyParameterDialog(Study *study, Parameter *parameter, QWidget *parent = 0);
+
+private:
+    Study *m_study;
+    Parameter *m_parameter;
+
+    QDialogButtonBox *buttonBox;
+    QLabel *lblError;
+    QLabel *lblName;
+    LineEditDouble *txtUpperBound;
+    LineEditDouble *txtLowerBound;
+
+    void createControls();
+
+private slots:
+    bool checkRange();
+
+    void doAccept();
+};
+
+class ParameterSelectDialog : public QDialog
+{
+    Q_OBJECT
+public:
+    ParameterSelectDialog(Study *study, QWidget *parent);
+
+    inline QString selectedParameterName() { return m_selectedParameterName; }
+
+private slots:
+    void doItemSelected(QListWidgetItem *item);
+    void doItemDoubleClicked(QListWidgetItem *item);
+
+private:
+    Study *m_study;
+
+    QListWidget *lstParameters;
+
+    QString m_selectedParameterName;
+
+    QDialogButtonBox *buttonBox;
 };
 
 #endif // STUDY_DIALOG_H

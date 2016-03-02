@@ -276,30 +276,6 @@ void Study::addComputation(QSharedPointer<Computation> computation, bool newComp
     m_computationSets.last().addComputation(computation);
 }
 
-void Study::fillTreeView(QTreeWidget *trvComputations)
-{
-    for (int i = 0; i < m_computationSets.size(); i++)
-    {
-        QTreeWidgetItem *itemComputationSet = new QTreeWidgetItem(trvComputations);
-
-        QString computationSetName= tr("Set %1").arg(i + 1);
-        if (!m_computationSets[i].name().isEmpty())
-            computationSetName = m_computationSets[i].name();
-
-        itemComputationSet->setText(0, tr("%1 (%2 computations)").arg(computationSetName).arg(m_computationSets[i].computations().size()));
-        if (i == m_computationSets.size() - 1)
-            itemComputationSet->setExpanded(true);
-
-        foreach (QSharedPointer<Computation> computation, m_computationSets[i].computations())
-        {
-            QTreeWidgetItem *item = new QTreeWidgetItem(itemComputationSet);
-            item->setText(0, computation->problemDir());
-            item->setText(1, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->results()->hasResults() ? tr("results") : tr("no results")));
-            item->setData(0, Qt::UserRole, computation->problemDir());
-        }
-    }
-}
-
 void Study::removeParameter(const QString &name)
 {
     for (int i = 0; i < m_parameters.count(); i++)
@@ -310,6 +286,17 @@ void Study::removeParameter(const QString &name)
             break;
         }
     }
+}
+
+Parameter &Study::parameter(const QString &name)
+{
+    for (int i = 0; i < m_parameters.count(); i++)
+    {
+        if (m_parameters[i].name() == name)
+            return m_parameters[i];
+    }
+
+    assert(0);
 }
 
 void Study::removeFunctional(const QString &name)
@@ -410,5 +397,5 @@ void Studies::removeComputation(QSharedPointer<Computation> computation)
 {
     for (int i = 0; i < m_studies.size(); i++)
         for (int j = 0; j < m_studies[i]->computationSets().size(); j++)
-            m_studies[i]->computationSets()[i].removeComputation(computation);
+            m_studies[i]->computationSets()[j].removeComputation(computation);
 }

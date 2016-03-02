@@ -35,6 +35,8 @@ public:
 
     virtual void solve();
 
+    virtual int estimatedNumberOfSteps() const;
+
     virtual void setDefaultValues();
     virtual void setStringKeys();
 };

@@ -52,7 +52,7 @@ public:
             return numeric_limits<double>::max();
         }
 
-        qDebug() << "opt.get_population()" << opt.get_population();
+        // qDebug() << "opt.get_population()" << opt.get_population();
 
         // computation
         QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
@@ -94,6 +94,11 @@ double objFunctionWrapper(const std::vector<double> &x, std::vector<double> &gra
 
 StudyNLoptAnalysis::StudyNLoptAnalysis() : Study()
 {
+}
+
+int StudyNLoptAnalysis::estimatedNumberOfSteps() const
+{
+    return value(Study::NLopt_n_iterations).toInt();
 }
 
 void StudyNLoptAnalysis::solve()

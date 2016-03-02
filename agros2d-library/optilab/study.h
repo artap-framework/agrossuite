@@ -109,6 +109,7 @@ public:
 
     void addParameter(Parameter parameter) { m_parameters.append(parameter); }
     void removeParameter(const QString &name);
+    Parameter &parameter(const QString &name);
     QList<Parameter> &parameters() { return m_parameters; }
 
     void addFunctional(Functional functional) { m_functionals.append(functional); }
@@ -121,10 +122,11 @@ public:
 
     QList<QSharedPointer<Computation> > &computations(int index = -1);
     QList<ComputationSet> &computationSets() { return m_computationSets; }
-    void addComputationSet(const QString &name = "") { m_computationSets.append(ComputationSet(QList<QSharedPointer<Computation> >(), name)); }
+    void addComputationSet(const QString &name = "") { m_computationSets.append(ComputationSet(QList<QSharedPointer<Computation> >(), name.isEmpty() ? tr("Set %1").arg(m_computationSets.count() + 1) : name)); }
     void addComputation(QSharedPointer<Computation> computation, bool newComputationSet = false);
 
-    virtual void fillTreeView(QTreeWidget *trvComputations);
+    virtual int estimatedNumberOfSteps() const { return 0; }
+
     QVariant variant();
 
     bool isSolving() const { return m_isSolving; }
