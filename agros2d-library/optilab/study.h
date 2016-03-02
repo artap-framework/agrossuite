@@ -76,8 +76,10 @@ class Study : public QObject
 public:
     enum Type
     {
-        NLopt_tol_rel,
-        NLopt_tol_abs,
+        NLopt_xtol_rel,
+        NLopt_xtol_abs,
+        NLopt_ftol_rel,
+        NLopt_ftol_abs,
         NLopt_n_iterations,
         NLopt_algorithm,
 

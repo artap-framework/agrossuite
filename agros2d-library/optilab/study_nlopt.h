@@ -64,8 +64,10 @@ protected:
 
 private:
     QSpinBox *txtNIterations;
-    LineEditDouble *txtRelTol;
-    LineEditDouble *txtAbsTol;
+    LineEditDouble *txtXRelTol;
+    LineEditDouble *txtXAbsTol;
+    LineEditDouble *txtFRelTol;
+    LineEditDouble *txtFAbsTol;
     QComboBox *cmbAlgorithm;
 };
 

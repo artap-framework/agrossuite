@@ -106,6 +106,8 @@ void StudyNLoptAnalysis::solve()
     m_computationSets.clear();
     m_isSolving = true;
 
+    addComputationSet(tr("Steps"));
+
     std::vector<double> initialGuess(m_parameters.count());
     std::vector<double> lowerBound(m_parameters.count());
     std::vector<double> upperBound(m_parameters.count());
@@ -124,10 +126,10 @@ void StudyNLoptAnalysis::solve()
     nLoptProblem.opt.set_min_objective(objFunctionWrapper, &nLoptProblem);
     nLoptProblem.opt.set_lower_bounds(lowerBound);
     nLoptProblem.opt.set_upper_bounds(upperBound);
-    nLoptProblem.opt.set_xtol_rel(value(NLopt_tol_rel).toDouble());
-    nLoptProblem.opt.set_ftol_rel(value(NLopt_tol_rel).toDouble());
-    nLoptProblem.opt.set_xtol_abs(value(NLopt_tol_abs).toDouble());
-    nLoptProblem.opt.set_ftol_abs(value(NLopt_tol_abs).toDouble());
+    nLoptProblem.opt.set_xtol_rel(value(NLopt_xtol_rel).toDouble());
+    nLoptProblem.opt.set_ftol_rel(value(NLopt_ftol_rel).toDouble());
+    nLoptProblem.opt.set_xtol_abs(value(NLopt_xtol_abs).toDouble());
+    nLoptProblem.opt.set_ftol_abs(value(NLopt_ftol_abs).toDouble());
     nLoptProblem.opt.set_maxeval(value(NLopt_n_iterations).toInt());
 
     try
@@ -170,8 +172,10 @@ void StudyNLoptAnalysis::setDefaultValues()
 {    
     Study::setDefaultValues();
 
-    m_settingDefault[NLopt_tol_rel] = 1e-3;
-    m_settingDefault[NLopt_tol_abs] = 1e-3;
+    m_settingDefault[NLopt_xtol_rel] = 1e-3;
+    m_settingDefault[NLopt_xtol_abs] = 1e-6;
+    m_settingDefault[NLopt_ftol_rel] = 1e-3;
+    m_settingDefault[NLopt_ftol_abs] = 1e-6;
     m_settingDefault[NLopt_n_iterations] = 100;
     m_settingDefault[NLopt_algorithm] = nlopt::LN_BOBYQA;
 }
@@ -180,8 +184,10 @@ void StudyNLoptAnalysis::setStringKeys()
 {
     Study::setStringKeys();
 
-    m_settingKey[NLopt_tol_rel] = "NLopt_tol_rel";
-    m_settingKey[NLopt_tol_abs] = "NLopt_tol_abs";
+    m_settingKey[NLopt_xtol_rel] = "NLopt_xtol_rel";
+    m_settingKey[NLopt_xtol_abs] = "NLopt_xtol_abs";
+    m_settingKey[NLopt_ftol_rel] = "NLopt_ftol_rel";
+    m_settingKey[NLopt_ftol_abs] = "NLopt_ftol_abs";
     m_settingKey[NLopt_n_iterations] = "NLopt_n_iterations";
     m_settingKey[NLopt_algorithm] = "NLopt_algorithm";    
 }
@@ -196,8 +202,10 @@ StudyNLoptAnalysisDialog::StudyNLoptAnalysisDialog(Study *study, QWidget *parent
 
 QWidget *StudyNLoptAnalysisDialog::createStudyControls()
 {
-    txtRelTol = new LineEditDouble(0.0);
-    txtAbsTol = new LineEditDouble(0.0);
+    txtXRelTol = new LineEditDouble(0.0);
+    txtXAbsTol = new LineEditDouble(0.0);
+    txtFRelTol = new LineEditDouble(0.0);
+    txtFAbsTol = new LineEditDouble(0.0);
 
     txtNIterations = new QSpinBox(this);
     txtNIterations->setMinimum(0);
@@ -205,6 +213,7 @@ QWidget *StudyNLoptAnalysisDialog::createStudyControls()
 
     cmbAlgorithm = new QComboBox(this);
     cmbAlgorithm->addItem(tr("Global - DIviding RECTangles (locally biased)"), nlopt::GN_DIRECT_L);
+    cmbAlgorithm->addItem(tr("Global - DIviding RECTangles (locally biased, randomized)"), nlopt::GN_DIRECT_L_RAND);
     cmbAlgorithm->addItem(tr("Global - Multi-Level Single-Linkage"), nlopt::GN_MLSL);
     cmbAlgorithm->addItem(tr("Global - Controlled Random Search (local mutation)"), nlopt::GN_CRS2_LM);
     cmbAlgorithm->addItem(tr("Global - Improved Stochastic Ranking Evolution Strategy"), nlopt::GN_ISRES);
@@ -213,6 +222,8 @@ QWidget *StudyNLoptAnalysisDialog::createStudyControls()
     cmbAlgorithm->addItem(tr("Local - COBYLA"), nlopt::LN_COBYLA);
     cmbAlgorithm->addItem(tr("Local - Nelder-Mead Simplex"), nlopt::LN_NELDERMEAD);
     cmbAlgorithm->addItem(tr("Local - Sbplx"), nlopt::LN_SBPLX);
+    cmbAlgorithm->addItem(tr("Local - PRincipal AXIS"), nlopt::LN_PRAXIS);
+    cmbAlgorithm->addItem(tr("Local - Augmented Lagrangian method "), nlopt::LN_AUGLAG);
 
     QGridLayout *layoutInitialization = new QGridLayout(this);
     layoutInitialization->addWidget(new QLabel(tr("Algorithm:")), 0, 0);
@@ -224,10 +235,16 @@ QWidget *StudyNLoptAnalysisDialog::createStudyControls()
     grpInitialization->setLayout(layoutInitialization);
 
     QGridLayout *layoutConfig = new QGridLayout(this);
-    layoutConfig->addWidget(new QLabel(tr("Relative tolerance:")), 0, 0);
-    layoutConfig->addWidget(txtRelTol, 0, 1);
-    layoutConfig->addWidget(new QLabel(tr("Absolute tolerance:")), 1, 0);
-    layoutConfig->addWidget(txtAbsTol, 1, 1);
+    layoutConfig->addWidget(new QLabel(tr("Relative tolerance")), 0, 0);
+    layoutConfig->addWidget(new QLabel(QString("|&Delta;<i>x</i><sub>i</sub>|/|<i>x</i><sub>i</sub>|:")), 0, 1);
+    layoutConfig->addWidget(txtXRelTol, 0, 2);
+    layoutConfig->addWidget(new QLabel(QString("|&Delta;<i>f</i>|/|<i>f</i>|:")), 0, 3);
+    layoutConfig->addWidget(txtFRelTol, 0, 4);
+    layoutConfig->addWidget(new QLabel(tr("Absolute tolerance")), 1, 0);
+    layoutConfig->addWidget(new QLabel(QString("|&Delta;<i>f</i><sub>i</sub>|:")), 1, 1);
+    layoutConfig->addWidget(txtXAbsTol, 1, 2);
+    layoutConfig->addWidget(new QLabel(QString("|&Delta;<i>f</i>|:")), 1, 3);
+    layoutConfig->addWidget(txtFAbsTol, 1, 4);
 
     QGroupBox *grpConfig = new QGroupBox(tr("Config"), this);
     grpConfig->setLayout(layoutConfig);
@@ -245,16 +262,20 @@ QWidget *StudyNLoptAnalysisDialog::createStudyControls()
 
 void StudyNLoptAnalysisDialog::load()
 {
-    txtRelTol->setValue(study()->value(Study::NLopt_tol_rel).toDouble());
-    txtAbsTol->setValue(study()->value(Study::NLopt_tol_abs).toDouble());
+    txtXRelTol->setValue(study()->value(Study::NLopt_xtol_rel).toDouble());
+    txtXAbsTol->setValue(study()->value(Study::NLopt_xtol_abs).toDouble());
+    txtFRelTol->setValue(study()->value(Study::NLopt_ftol_rel).toDouble());
+    txtFAbsTol->setValue(study()->value(Study::NLopt_ftol_abs).toDouble());
     txtNIterations->setValue(study()->value(Study::NLopt_n_iterations).toDouble());
     cmbAlgorithm->setCurrentIndex(cmbAlgorithm->findData(study()->value(Study::NLopt_algorithm).toInt()));
 }
 
 void StudyNLoptAnalysisDialog::save()
 {
-    study()->setValue(Study::NLopt_tol_rel, txtRelTol->value());
-    study()->setValue(Study::NLopt_tol_abs, txtAbsTol->value());
+    study()->setValue(Study::NLopt_xtol_rel, txtXRelTol->value());
+    study()->setValue(Study::NLopt_xtol_abs, txtXAbsTol->value());
+    study()->setValue(Study::NLopt_ftol_rel, txtFRelTol->value());
+    study()->setValue(Study::NLopt_ftol_abs, txtFAbsTol->value());
     study()->setValue(Study::NLopt_n_iterations, txtNIterations->value());
     study()->setValue(Study::NLopt_algorithm, (nlopt::algorithm) cmbAlgorithm->itemData(cmbAlgorithm->currentIndex()).toInt());
 }

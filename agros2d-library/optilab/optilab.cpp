@@ -493,9 +493,9 @@ void OptiLab::chartRefreshed(Study *study, QSharedPointer<Computation> selectedC
 
                 graph->setLineStyle(QCPGraph::lsNone);
                 QCPScatterStyle scatterStyle;
-                scatterStyle.setSize(11);
+                scatterStyle.setSize(12);
                 scatterStyle.setShape(QCPScatterStyle::ssCircle);
-                scatterStyle.setPen(QPen(Qt::black));
+                scatterStyle.setPen(QPen(Qt::darkRed));
                 // scatterStyle.setBrush(QBrush(colorBrush));
                 graph->setScatterStyle(scatterStyle);
             }
@@ -513,7 +513,7 @@ void OptiLab::chartRefreshed(Study *study, QSharedPointer<Computation> selectedC
 
         graph->setLineStyle(QCPGraph::lsNone);
         QCPScatterStyle scatterStyle;
-        scatterStyle.setSize(6);
+        scatterStyle.setSize(7);
         scatterStyle.setShape(QCPScatterStyle::ssDisc);
         scatterStyle.setPen(QPen(colorPen));
         // scatterStyle.setBrush(QBrush(colorBrush));
