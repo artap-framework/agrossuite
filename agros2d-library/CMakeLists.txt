@@ -99,6 +99,7 @@ SET(SOURCES
     gui/valuelineedit.cpp
     gui/valuetimedialog.cpp
     gui/parameterdialog.cpp
+    gui/recipedialog.cpp
     gui/infowidget.cpp
     gui/problemdialog.cpp
     gui/fielddialog.cpp
@@ -324,6 +325,7 @@ SET(HEADERS
   gui/valuelineedit.h
   gui/valuetimedialog.h
   gui/parameterdialog.h
+  gui/recipedialog.h
   gui/infowidget.h
   gui/problemdialog.h
   gui/fielddialog.h

@@ -25,6 +25,7 @@
 #include "gui/parameterdialog.h"
 #include "gui/problemdialog.h"
 #include "gui/fielddialog.h"
+#include "gui/recipedialog.h"
 
 #include "solver/problem_config.h"
 #include "optilab/study.h"
@@ -91,14 +92,21 @@ void PreprocessorWidget::createActions()
     actDelete = new QAction(icon(""), tr("&Delete"), this);
     connect(actDelete, SIGNAL(triggered()), this, SLOT(doDelete()));
 
-    actNewParameter = new QAction(icon(""), tr("New parameter"), this);
+    actNewParameter = new QAction(icon(""), tr("New parameter..."), this);
     connect(actNewParameter, SIGNAL(triggered()), this, SLOT(doNewParameter()));
 
-    actNewField = new QAction(icon(""), tr("New field"), this);
-    connect(actNewField, SIGNAL(triggered()), this, SLOT(doAddField()));
+    actNewField = new QAction(icon(""), tr("New field..."), this);
+    connect(actNewField, SIGNAL(triggered()), this, SLOT(doNewField()));
 
-    actNewStudy = new QAction(icon(""), tr("New study"), this);
-    connect(actNewStudy, SIGNAL(triggered()), this, SLOT(doAddStudy()));
+    actNewStudy = new QAction(icon(""), tr("New study..."), this);
+    connect(actNewStudy, SIGNAL(triggered()), this, SLOT(doNewStudy()));
+
+    actNewRecipeLocalValue = new QAction(icon(""), tr("Local value recipe..."), this);
+    connect(actNewRecipeLocalValue, SIGNAL(triggered()), this, SLOT(doNewRecipeLocalValue()));
+    actNewRecipeSurfaceIntegral = new QAction(icon(""), tr("Surface integral recipe..."), this);
+    connect(actNewRecipeSurfaceIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeSurfaceIntegral()));
+    actNewRecipeVolumeIntegral = new QAction(icon(""), tr("Volume integral recipe..."), this);
+    connect(actNewRecipeVolumeIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeVolumeIntegral()));
 }
 
 void PreprocessorWidget::createMenu()
@@ -108,6 +116,11 @@ void PreprocessorWidget::createMenu()
     mnuPreprocessor->addAction(actNewField);
     mnuPreprocessor->addAction(actNewParameter);
     mnuPreprocessor->addAction(actNewStudy);
+    QMenu *mnuRecipe = new QMenu(tr("New recipe"));
+    mnuRecipe->addAction(actNewRecipeLocalValue);
+    mnuRecipe->addAction(actNewRecipeSurfaceIntegral);
+    mnuRecipe->addAction(actNewRecipeVolumeIntegral);
+    mnuPreprocessor->addMenu(mnuRecipe);
     mnuPreprocessor->addSeparator();
     Agros2D::problem()->scene()->addBoundaryAndMaterialMenuItems(mnuPreprocessor, this);
     mnuPreprocessor->addSeparator();
@@ -428,14 +441,14 @@ void PreprocessorWidget::refresh()
         QTreeWidgetItem *recipesNode = new QTreeWidgetItem(optilabNode);
         recipesNode->setText(0, tr("Recipes"));
         recipesNode->setFont(0, fnt);
-        // recipesNode->setExpanded(true);
+        recipesNode->setExpanded(true);
 
         foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(recipesNode);
 
             item->setText(0, QString("%1").arg(recipe->name()));
-            item->setData(0, Qt::UserRole, recipe->name());
+            item->setData(0, Qt::UserRole, recipe->variant());
             item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabRecipe);
             item->setText(1, QString("%1").arg(resultRecipeTypeString(recipe->type())));
         }
@@ -487,7 +500,7 @@ void PreprocessorWidget::refresh()
                 item->setText(0, QString("%1").arg(functional.name()));
                 item->setData(0, Qt::UserRole, functional.name());
                 item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);
-                item->setText(1, QString("%1").arg(functional.expression()));
+                item->setText(1, QString("%1").arg((functional.expression().count() < 20) ? functional.expression() : functional.expression().left(20) + "..."));
             }
         }
     }
@@ -602,6 +615,10 @@ void PreprocessorWidget::doContextMenu(const QPoint &pos)
     if (current)
         trvWidget->setCurrentItem(current);
 
+    actNewRecipeLocalValue->setEnabled(Agros2D::problem()->fieldInfos().count() > 0);
+    actNewRecipeSurfaceIntegral->setEnabled(Agros2D::problem()->fieldInfos().count() > 0);
+    actNewRecipeVolumeIntegral->setEnabled(Agros2D::problem()->fieldInfos().count() > 0);
+
     mnuPreprocessor->exec(QCursor::pos());
 }
 
@@ -687,6 +704,12 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
         else if (type == PreprocessorWidget::OptilabStudy)
         {
             // optilab - study
+            actProperties->setEnabled(true);
+            actDelete->setEnabled(true);
+        }
+        else if (type == PreprocessorWidget::OptilabRecipe)
+        {
+            // problem - recipe
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
@@ -780,6 +803,31 @@ void PreprocessorWidget::doProperties()
                 refresh();
             }
         }
+        else if (type == PreprocessorWidget::OptilabRecipe)
+        {
+            ResultRecipe *recipe = trvWidget->currentItem()->data(0, Qt::UserRole).value<ResultRecipe *>();
+
+            RecipeDialog *dialog = nullptr;
+            if (LocalValueRecipe *localRecipe = dynamic_cast<LocalValueRecipe *>(recipe))
+            {
+                dialog = new LocalValueRecipeDialog(localRecipe, this);
+            }
+            else if (SurfaceIntegralRecipe *surfaceRecipe = dynamic_cast<SurfaceIntegralRecipe *>(recipe))
+            {
+                dialog = new SurfaceIntegralRecipeDialog(surfaceRecipe, this);
+            }
+            else if (VolumeIntegralRecipe *volumeRecipe = dynamic_cast<VolumeIntegralRecipe *>(recipe))
+            {
+                dialog = new VolumeIntegralRecipeDialog(volumeRecipe, this);
+            }
+            else
+                assert(0);
+
+            if (dialog->showDialog() == QDialog::Accepted)
+            {
+                refresh();
+            }
+        }
     }
 }
 
@@ -852,6 +900,17 @@ void PreprocessorWidget::doDelete()
                 Agros2D::problem()->studies()->removeStudy(study);
             }
         }
+        else if (type == PreprocessorWidget::OptilabRecipe)
+        {
+            // recipe
+            ResultRecipe *recipe = trvWidget->currentItem()->data(0, Qt::UserRole).value<ResultRecipe *>();
+
+            if (QMessageBox::question(this, tr("Delete"), tr("Recipe '%1' will be pernamently deleted. Are you sure?").
+                                      arg(recipe->name()), tr("&Yes"), tr("&No")) == 0)
+            {
+                Agros2D::problem()->recipes()->removeRecipe(recipe);
+            }
+        }
 
         refresh();
         m_sceneViewPreprocessor->refresh();
@@ -868,7 +927,7 @@ void PreprocessorWidget::doNewParameter()
     }
 }
 
-void PreprocessorWidget::doAddField()
+void PreprocessorWidget::doNewField()
 {
     // select field dialog
     FieldSelectDialog dialog(Agros2D::problem()->fieldInfos().keys(), this);
@@ -892,7 +951,7 @@ void PreprocessorWidget::doAddField()
     }
 }
 
-void PreprocessorWidget::doAddStudy()
+void PreprocessorWidget::doNewStudy()
 {
     // select study dialog
     StudySelectDialog dialog(this);
@@ -914,6 +973,56 @@ void PreprocessorWidget::doAddStudy()
             {
                 delete study;
             }
+        }
+    }
+}
+
+void PreprocessorWidget::doNewRecipeLocalValue()
+{
+    doNewRecipe(ResultRecipeType_LocalValue);
+}
+
+void PreprocessorWidget::doNewRecipeSurfaceIntegral()
+{
+    doNewRecipe(ResultRecipeType_SurfaceIntegral);
+}
+
+void PreprocessorWidget::doNewRecipeVolumeIntegral()
+{
+    doNewRecipe(ResultRecipeType_VolumeIntegral);
+}
+
+void PreprocessorWidget::doNewRecipe(ResultRecipeType type)
+{
+    if (Agros2D::problem()->fieldInfos().count() > 0)
+    {
+        ResultRecipe *recipe = ResultRecipe::factory(type);
+        recipe->setFieldId(Agros2D::problem()->fieldInfos().first()->fieldId());
+
+        RecipeDialog *dialog = nullptr;
+        if (type == ResultRecipeType_LocalValue)
+        {
+            dialog = new LocalValueRecipeDialog((LocalValueRecipe *) recipe, this);
+        }
+        else if (type == ResultRecipeType_SurfaceIntegral)
+        {
+            dialog = new SurfaceIntegralRecipeDialog((SurfaceIntegralRecipe *) recipe, this);
+        }
+        else if (type == ResultRecipeType_VolumeIntegral)
+        {
+            dialog = new VolumeIntegralRecipeDialog((VolumeIntegralRecipe *) recipe, this);
+        }
+        else
+            assert(0);
+
+        if (dialog->showDialog() == QDialog::Accepted)
+        {
+            Agros2D::problem()->recipes()->addRecipe(recipe);
+            refresh();
+        }
+        else
+        {
+            delete recipe;
         }
     }
 }

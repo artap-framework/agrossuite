@@ -39,8 +39,12 @@ public slots:
     void doProperties();
     void doDelete();
     void doNewParameter();
-    void doAddField();
-    void doAddStudy();
+    void doNewField();
+    void doNewStudy();
+    void doNewRecipeLocalValue();
+    void doNewRecipeSurfaceIntegral();
+    void doNewRecipeVolumeIntegral();
+    void doNewRecipe(ResultRecipeType type);
 
 public:
     PreprocessorWidget(SceneViewPreprocessor *sceneView, QWidget *parent = 0);
@@ -86,6 +90,9 @@ private:
     QAction *actNewParameter;
     QAction *actNewField;
     QAction *actNewStudy;
+    QAction *actNewRecipeLocalValue;
+    QAction *actNewRecipeSurfaceIntegral;
+    QAction *actNewRecipeVolumeIntegral;
     
     QMenu *mnuPreprocessor;
 

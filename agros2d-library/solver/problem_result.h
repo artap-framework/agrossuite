@@ -24,49 +24,54 @@
 #include "problem_config.h"
 #include "util/enums.h"
 
-class ResultRecipe
+class ResultRecipe : public QObject
 {
+    Q_OBJECT
 public:
-    ResultRecipe(const QString &name, const QString &fieldID, const QString &variable,
+    ResultRecipe(const QString &name, const QString &fieldId, const QString &variable,
                  int timeStep, int adaptivityStep);
-    ~ResultRecipe() {}
+    virtual ~ResultRecipe() {}
 
     virtual ResultRecipeType type() const = 0;
 
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
-    inline QString name() { return m_name; }
+    inline QString name() const { return m_name; }
     inline void setName(const QString &name) { m_name = name; }
-    inline QString fieldID() { return m_fieldID; }
-    inline void setFieldID(const QString &fieldID) { m_fieldID = fieldID; }
-    inline QString variable() { return m_variable; }
+    inline QString fieldId() const { return m_fieldId; }
+    inline void setFieldId(const QString &fieldId) { m_fieldId = fieldId; }
+    inline QString variable() const { return m_variable; }
     inline void setVariable(const QString &variable) { m_variable = variable; }
 
-    int timeStep(Computation *computation, FieldInfo *fieldInfo);
+    int timeStep() const { return m_timeStep; }
     inline void setTimeStep(int step) { m_timeStep = step; }
-    int adaptivityStep(Computation *computation, FieldInfo *fieldInfo);
+    int adaptivityStep() const { return m_adaptivityStep; }
     inline void setAdaptivityStep(int step) { m_adaptivityStep = step; }
 
     virtual double evaluate(Computation *computation) = 0;
+    QVariant variant();
 
     static ResultRecipe *factory(ResultRecipeType type);
 
 protected:
     QString m_name;
-    QString m_fieldID;
+    QString m_fieldId;
     QString m_variable;
 
     int m_timeStep;
     int m_adaptivityStep;
+
+    int timeStep(Computation *computation, FieldInfo *fieldInfo);
+    int adaptivityStep(Computation *computation, FieldInfo *fieldInfo);
 };
 
 class LocalValueRecipe : public ResultRecipe
 {
 public:
-    LocalValueRecipe(const QString &name = "", const QString &fieldID = "", const QString &variable = "",
+    LocalValueRecipe(const QString &name = "", const QString &fieldId = "", const QString &variable = "",
                      int timeStep = -1, int adaptivityStep = -1);
-    ~LocalValueRecipe() {}
+    virtual ~LocalValueRecipe() {}
 
     virtual ResultRecipeType type() const { return ResultRecipeType_LocalValue; }
 
@@ -76,29 +81,29 @@ public:
     inline Point point() const { return m_point; }
     inline void setPoint(Point point) { m_point = point; }
     inline void setPoint(double x, double y) { m_point = Point(x, y); }
-    inline PhysicFieldVariableComp component() const  { return m_component; }
-    inline void setComponent(PhysicFieldVariableComp component) { m_component = component; }
+    inline PhysicFieldVariableComp variableComponent() const  { return m_variableComponent; }
+    inline void setVariableComponent(PhysicFieldVariableComp component) { m_variableComponent = component; }
 
     virtual double evaluate(Computation *computation);
 
 protected:
     Point m_point;
-    PhysicFieldVariableComp m_component;
+    PhysicFieldVariableComp m_variableComponent;
 };
 
 class SurfaceIntegralRecipe : public ResultRecipe
 {
 public:
-    SurfaceIntegralRecipe(const QString &name = "", const QString &fieldID = "", const QString &variable = "",
+    SurfaceIntegralRecipe(const QString &name = "", const QString &fieldId = "", const QString &variable = "",
                      int timeStep = -1, int adaptivityStep = -1);
-    ~SurfaceIntegralRecipe() {}
+    virtual ~SurfaceIntegralRecipe() {}
 
     virtual ResultRecipeType type() const { return ResultRecipeType_SurfaceIntegral; }
 
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
-    inline QList<int> edges() { return m_edges; }
+    inline QList<int> edges() const { return m_edges; }
     inline void addEdge(int edge) { m_edges.append(edge); }
 
     virtual double evaluate(Computation *computation);
@@ -110,16 +115,16 @@ protected:
 class VolumeIntegralRecipe : public ResultRecipe
 {
 public:
-    VolumeIntegralRecipe(const QString &name = "", const QString &fieldID = "", const QString &variable = "",
+    VolumeIntegralRecipe(const QString &name = "", const QString &fieldId = "", const QString &variable = "",
                      int timeStep = -1, int adaptivityStep = -1);
-    ~VolumeIntegralRecipe() {}
+    virtual ~VolumeIntegralRecipe() {}
 
     virtual ResultRecipeType type() const { return ResultRecipeType_VolumeIntegral; }
 
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
-    inline QList<int> labels() { return m_labels; }
+    inline QList<int> labels() const { return m_labels; }
     inline void addLabel(int label) { m_labels.append(label); }
 
     virtual double evaluate(Computation *computation);
@@ -137,6 +142,9 @@ public:
     void clear();
 
     inline void addRecipe(ResultRecipe *recipe) { m_recipes.append(recipe); }
+    void removeAll(FieldInfo *field);
+    void removeRecipe(ResultRecipe *recipe);
+    ResultRecipe *recipe(const QString &name);
     void evaluate(Computation *computation);
 
     QList<ResultRecipe *> items() const { return m_recipes; }

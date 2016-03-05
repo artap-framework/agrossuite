@@ -57,12 +57,12 @@ ResultRecipe *ResultRecipe::factory(ResultRecipeType type)
 }
 
 ResultRecipe::ResultRecipe(const QString &name, const QString &fieldID, const QString &variable, int timeStep, int adaptivityStep)
-    : m_name(name), m_fieldID(fieldID), m_variable(variable), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep) { }
+    : m_name(name), m_fieldId(fieldID), m_variable(variable), m_timeStep(timeStep), m_adaptivityStep(adaptivityStep) { }
 
 void ResultRecipe::load(QJsonObject &object)
 {
     m_name = object[NAME].toString();
-    m_fieldID = object[FIELD].toString();
+    m_fieldId = object[FIELD].toString();
     m_variable = object[VARIABLE].toString();
     m_timeStep = object[TIMESTEP].toInt();
     m_adaptivityStep = object[ADAPTIVITYSTEP].toInt();
@@ -72,7 +72,7 @@ void ResultRecipe::save(QJsonObject &object)
 {
     object[NAME] = m_name;
     object[TYPE] = resultRecipeTypeToStringKey(type());
-    object[FIELD] = m_fieldID;
+    object[FIELD] = m_fieldId;
     object[VARIABLE] = m_variable;
     object[TIMESTEP] = m_timeStep;
     object[ADAPTIVITYSTEP] = m_adaptivityStep;
@@ -98,18 +98,27 @@ int ResultRecipe::adaptivityStep(Computation *computation, FieldInfo *fieldInfo)
         return m_adaptivityStep;
 }
 
+QVariant ResultRecipe::variant()
+{
+    QVariant v;
+    v.setValue(this);
+    return v;
+}
+
+// *********************************************************************************************************
+
 LocalValueRecipe::LocalValueRecipe(const QString &name, const QString &fieldID, const QString &variable, int timeStep, int adaptivityStep)
     : ResultRecipe(name, fieldID, variable, timeStep, adaptivityStep)
 {
     m_point = Point(0, 0);
-    m_component = PhysicFieldVariableComp_Magnitude;
+    m_variableComponent = PhysicFieldVariableComp_Magnitude;
 }
 
 void LocalValueRecipe::load(QJsonObject &object)
 {
     QJsonObject pointJson = object[POINT].toObject();
     m_point = Point(pointJson[POINTX].toDouble(), pointJson[POINTY].toDouble());
-    m_component = physicFieldVariableCompFromStringKey(object[COMPONENT].toString());
+    m_variableComponent = physicFieldVariableCompFromStringKey(object[COMPONENT].toString());
 
     ResultRecipe::load(object);
 }
@@ -120,7 +129,7 @@ void LocalValueRecipe::save(QJsonObject &object)
     pointJson[POINTX] = m_point.x;
     pointJson[POINTY] = m_point.y;
     object[POINT] = pointJson;
-    object[COMPONENT] = physicFieldVariableCompToStringKey(m_component);
+    object[COMPONENT] = physicFieldVariableCompToStringKey(m_variableComponent);
 
     ResultRecipe::save(object);
 }
@@ -129,7 +138,7 @@ double LocalValueRecipe::evaluate(Computation *computation)
 {
     if (computation->isSolved() || computation->isSolving())
     {
-        FieldInfo *fieldInfo = computation->fieldInfo(fieldID());
+        FieldInfo *fieldInfo = computation->fieldInfo(m_fieldId);
         std::shared_ptr<LocalValue> localValue = fieldInfo->plugin()->localValue(computation, fieldInfo,
                                                                                  timeStep(computation, fieldInfo),
                                                                                  adaptivityStep(computation, fieldInfo),
@@ -140,20 +149,20 @@ double LocalValueRecipe::evaluate(Computation *computation)
         Module::LocalVariable localVariable = fieldInfo->localVariable(computation->config()->coordinateType(), variable());
         if (localVariable.isScalar())
         {
-            return values[variable()].scalar;
+            return values[m_variable].scalar;
         }
         else
         {
-            switch (m_component)
+            switch (m_variableComponent)
             {
             case PhysicFieldVariableComp_Magnitude:
-                return values[variable()].vector.magnitude();
+                return values[m_variable].vector.magnitude();
                 break;
             case PhysicFieldVariableComp_X:
-                return values[variable()].vector.x;
+                return values[m_variable].vector.x;
                 break;
             case PhysicFieldVariableComp_Y:
-                return values[variable()].vector.y;
+                return values[m_variable].vector.y;
                 break;
             default:
                 assert(0);
@@ -163,6 +172,8 @@ double LocalValueRecipe::evaluate(Computation *computation)
 
     return 0;
 }
+
+// *********************************************************************************************************
 
 SurfaceIntegralRecipe::SurfaceIntegralRecipe(const QString &name, const QString &fieldID, const QString &variable, int timeStep, int adaptivityStep)
     : ResultRecipe(name, fieldID, variable, timeStep, adaptivityStep)
@@ -193,7 +204,7 @@ double SurfaceIntegralRecipe::evaluate(Computation *computation)
 {
     if (computation->isSolved() or computation->isSolving())
     {
-        FieldInfo *fieldInfo = computation->fieldInfo(fieldID());
+        FieldInfo *fieldInfo = computation->fieldInfo(m_fieldId);
         computation->scene()->selectNone();
 
         if (!m_edges.isEmpty())
@@ -219,6 +230,8 @@ double SurfaceIntegralRecipe::evaluate(Computation *computation)
 
     return 0.0;
 }
+
+// *********************************************************************************************************
 
 VolumeIntegralRecipe::VolumeIntegralRecipe(const QString &name, const QString &fieldID, const QString &variable, int timeStep, int adaptivityStep)
     : ResultRecipe(name, fieldID, variable, timeStep, adaptivityStep)
@@ -249,7 +262,7 @@ double VolumeIntegralRecipe::evaluate(Computation *computation)
 {
     if (computation->isSolved() or computation->isSolving())
     {
-        FieldInfo *fieldInfo = computation->fieldInfo(fieldID());
+        FieldInfo *fieldInfo = computation->fieldInfo(m_fieldId);
         computation->scene()->selectNone();
 
         if (!m_labels.isEmpty())
@@ -292,6 +305,27 @@ void ResultRecipes::clear()
     for (int i = 0; i < m_recipes.count(); i++)
         delete m_recipes[i];
     m_recipes.clear();
+}
+
+void ResultRecipes::removeAll(FieldInfo *field)
+{
+    foreach (ResultRecipe *recipe, m_recipes)
+        if (recipe->fieldId() == field->fieldId())
+            removeRecipe(recipe);
+}
+
+void ResultRecipes::removeRecipe(ResultRecipe *recipe)
+{
+    m_recipes.removeAll(recipe);
+}
+
+ResultRecipe *ResultRecipes::recipe(const QString &name)
+{
+    for (int i = 0; i < m_recipes.count(); i++)
+        if (m_recipes[i]->name() == name)
+            return m_recipes[i];
+
+    assert(0);
 }
 
 void ResultRecipes::evaluate(Computation *computation)

@@ -1980,6 +1980,14 @@ Problem::~Problem()
     delete m_recipes;
 }
 
+void Problem::removeField(FieldInfo *field)
+{
+    // remove recipes
+    m_recipes->removeAll(field);
+
+    ProblemBase::removeField(field);
+}
+
 QString Problem::problemFileName() const
 {
     return QString("%1/problem.json").arg(cacheProblemDir());

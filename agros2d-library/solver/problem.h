@@ -105,14 +105,14 @@ public:
     // check and apply parameters
     bool checkAndApplyParameters(StringToDoubleMap parameters, bool apply = true);
 
+    // field
     inline QMap<QString, FieldInfo *> fieldInfos() const { return m_fieldInfos; }
-    inline FieldInfo *fieldInfo(const QString &fieldId) { assert(m_fieldInfos.contains(fieldId));
-                                                          return m_fieldInfos[fieldId]; }
+    inline FieldInfo *fieldInfo(const QString &fieldId) { assert(m_fieldInfos.contains(fieldId));                                                          return m_fieldInfos[fieldId]; }
     inline FieldInfo *fieldInfo(const std::string &name) { return fieldInfo(QString::fromStdString(name)); }
     inline FieldInfo *fieldInfo(const char* name) { return fieldInfo(QString::fromLatin1(name)); }
     inline bool hasField(const QString &fieldId) const { return m_fieldInfos.contains(fieldId); }
     void addField(FieldInfo *field);
-    void removeField(FieldInfo *field);
+    virtual void removeField(FieldInfo *field);
 
     void synchronizeCouplings();
     inline QMap<QPair<FieldInfo *, FieldInfo *>, CouplingInfo* > couplingInfos() const { return m_couplingInfos; }
@@ -176,6 +176,9 @@ public:
     void readProblemFromArchive(const QString &archiveFileName);
     void writeProblemToArchive(const QString &archiveFileName, bool onlyProblemFile = true);
     void readProblemFromFile(const QString &archiveFileName);
+
+    // field
+    virtual void removeField(FieldInfo *field);
 
     // filenames
     virtual QString problemFileName() const;

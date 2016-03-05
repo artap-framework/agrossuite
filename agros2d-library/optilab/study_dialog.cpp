@@ -365,6 +365,7 @@ QWidget *StudyDialog::createParameters()
     trvParameterWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Lower bound") << tr("Upper bound"));
     trvParameterWidget->setColumnCount(3);
     trvParameterWidget->setIndentation(2);
+    trvParameterWidget->setColumnWidth(0, 300);
     trvParameterWidget->headerItem()->setTextAlignment(1, Qt::AlignRight);
     trvParameterWidget->headerItem()->setTextAlignment(2, Qt::AlignRight);
 
@@ -526,7 +527,7 @@ void StudyDialog::readFunctionals()
         item->setText(0, QString("%1").arg(functional.name()));
         item->setData(0, Qt::UserRole, functional.name());
         item->setText(1, QString("%1 \%").arg(functional.weight()));
-        item->setText(2, QString("%1").arg(functional.expression()));
+        item->setText(2, QString("%1").arg((functional.expression().count() < 45) ? functional.expression() : functional.expression().left(45) + "..."));
     }
 
     doFunctionalItemChanged(nullptr, nullptr);
