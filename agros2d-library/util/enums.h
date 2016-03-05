@@ -316,7 +316,7 @@ enum StudyType
 {
     StudyType_Undefined = -1,
     StudyType_SweepAnalysis,
-    StudyType_Genetic,
+    StudyType_NSGA2,
     StudyType_BayesOptAnalysis,
     StudyType_NLoptAnalysis
 };

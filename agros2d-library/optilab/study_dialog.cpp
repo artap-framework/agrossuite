@@ -25,7 +25,7 @@
 #include "solver/problem_result.h"
 
 #include "study_sweep.h"
-#include "study_genetic.h"
+#include "study_nsga2.h"
 #include "study_nlopt.h"
 #include "study_bayesopt.h"
 
@@ -183,7 +183,7 @@ void LogOptimizationDialog::updateChart()
             steps.append(steps.count() + 1);
 
             // evaluate goal functional
-            double value = m_study->evaluateGoal(computations[j]);
+            double value = m_study->evaluateSingleGoal(computations[j]);
             objective.append(value);
         }
     }
@@ -309,13 +309,16 @@ void StudySelectDialog::doItemDoubleClicked(QListWidgetItem *item)
 // *******************************************************************************************************************
 
 StudyDialog *StudyDialog::factory(Study *study, QWidget *parent)
-{
-    if (study->type() == StudyType_BayesOptAnalysis)
+{    
+    if (study->type() == StudyType_NSGA2)
+        return new StudyNSGA2AnalysisDialog(study, parent);
+    else if (study->type() == StudyType_BayesOptAnalysis)
         return new StudyBayesOptAnalysisDialog(study, parent);
     else if (study->type() == StudyType_NLoptAnalysis)
         return new StudyNLoptAnalysisDialog(study, parent);
+    else
+        assert(0);
 
-    assert(0);
     return nullptr;
 }
 
@@ -365,7 +368,7 @@ QWidget *StudyDialog::createParameters()
     trvParameterWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Lower bound") << tr("Upper bound"));
     trvParameterWidget->setColumnCount(3);
     trvParameterWidget->setIndentation(2);
-    trvParameterWidget->setColumnWidth(0, 300);
+    trvParameterWidget->setColumnWidth(0, 200);
     trvParameterWidget->headerItem()->setTextAlignment(1, Qt::AlignRight);
     trvParameterWidget->headerItem()->setTextAlignment(2, Qt::AlignRight);
 

@@ -68,7 +68,8 @@ public:
         // evaluate step
         try
         {
-            double value = m_study->evaluateStep(computation);
+            m_study->evaluateStep(computation);
+            double value = m_study->evaluateSingleGoal(computation);
             return value;
         }
         catch (AgrosException &e)

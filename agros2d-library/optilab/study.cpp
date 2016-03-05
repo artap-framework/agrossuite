@@ -24,7 +24,7 @@
 #include "solver/problem_result.h"
 
 #include "study_sweep.h"
-#include "study_genetic.h"
+#include "study_nsga2.h"
 #include "study_nlopt.h"
 #include "study_bayesopt.h"
 
@@ -79,8 +79,8 @@ Study *Study::factory(StudyType type)
     Study *study = nullptr;
     if (type == StudyType_SweepAnalysis)
         study = new StudySweepAnalysis();
-    // else if (type == StudyType_Genetic)
-    //    study = new StudyGenetic();
+    else if (type == StudyType_NSGA2)
+        study = new StudyNSGA2Analysis();
     else if (type == StudyType_BayesOptAnalysis)
         study = new StudyBayesOptAnalysis();
     else if (type == StudyType_NLoptAnalysis)
@@ -226,7 +226,7 @@ bool Study::evaluateFunctionals(QSharedPointer<Computation> computation)
     return successfulRun;
 }
 
-double Study::evaluateStep(QSharedPointer<Computation> computation)
+void Study::evaluateStep(QSharedPointer<Computation> computation)
 {
     // solve
     computation->solve();
@@ -239,33 +239,40 @@ double Study::evaluateStep(QSharedPointer<Computation> computation)
 
     // evaluate functionals
     evaluateFunctionals(computation);
-    double value = evaluateGoal(computation);
 
     computation->saveResults();
 
     updateParameters(m_parameters, computation.data());
     updateChart();
-
-    return value;
 }
 
-double Study::evaluateGoal(QSharedPointer<Computation> computation)
+double Study::evaluateSingleGoal(QSharedPointer<Computation> computation)
 {
+    double totalValue = 0.0;
+    foreach (double value, evaluateMultiGoal(computation))
+        totalValue += value;
+
+    return totalValue;
+}
+
+QList<double> Study::evaluateMultiGoal(QSharedPointer<Computation> computation)
+{
+    QList<double> values;
+
     // weight functionals
     int totalWeight = 0;
     foreach (Functional functional, m_functionals)
         totalWeight += functional.weight();
 
-    double totalValue = 0.0;
     foreach (Functional functional, m_functionals)
     {
         QString name = functional.name();
         double value = computation->results()->resultValue(name);
 
-        totalValue += ((double) functional.weight() / totalWeight) * value;
+        values.append(((double) functional.weight() / totalWeight) * value);
     }
 
-    return totalValue;
+    return values;
 }
 
 void Study::addComputation(QSharedPointer<Computation> computation, bool newComputationSet)

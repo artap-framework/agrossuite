@@ -21,7 +21,7 @@
 #include "parameter.h"
 #include "study.h"
 #include "study_sweep.h"
-#include "study_genetic.h"
+#include "study_nsga2.h"
 #include "study_bayesopt.h"
 #include "study_nlopt.h"
 #include "util/global.h"
@@ -212,7 +212,7 @@ void OptiLabWidget::studyChanged(int index)
             item->setData(0, Qt::UserRole, computation->problemDir());
 
             // select minimum
-            double localMin = study->evaluateGoal(computation);
+            double localMin = study->evaluateSingleGoal(computation);
             if (localMin < min)
             {
                 min = localMin;

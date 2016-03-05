@@ -88,6 +88,14 @@ public:
         BayesOpt_n_iter_relearn,
         BayesOpt_init_method,
 
+        NSGA2_popsize,
+        NSGA2_ngen,
+        NSGA2_pcross,
+        NSGA2_pmut,
+        NSGA2_eta_c,
+        NSGA2_eta_m,
+        NSGA2_crowdobj,
+
         View_ChartX,
         View_ChartY,
         View_ChartLogX,
@@ -119,8 +127,9 @@ public:
     Functional &functional(const QString &name);
     QList<Functional> &functionals() { return m_functionals; }
     bool evaluateFunctionals(QSharedPointer<Computation> computation);
-    double evaluateStep(QSharedPointer<Computation> computation);
-    double evaluateGoal(QSharedPointer<Computation> computation);
+    void evaluateStep(QSharedPointer<Computation> computation);
+    double evaluateSingleGoal(QSharedPointer<Computation> computation);
+    QList<double> evaluateMultiGoal(QSharedPointer<Computation> computation);
 
     QList<QSharedPointer<Computation> > &computations(int index = -1);
     QList<ComputationSet> &computationSets() { return m_computationSets; }

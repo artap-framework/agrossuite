@@ -441,7 +441,7 @@ void PreprocessorWidget::refresh()
         QTreeWidgetItem *recipesNode = new QTreeWidgetItem(optilabNode);
         recipesNode->setText(0, tr("Recipes"));
         recipesNode->setFont(0, fnt);
-        recipesNode->setExpanded(true);
+        // recipesNode->setExpanded(true);
 
         foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
         {

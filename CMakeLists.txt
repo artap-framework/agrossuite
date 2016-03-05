@@ -104,6 +104,7 @@ SET(MATIO_LIBRARY agros2d_3dparty_matio)
 SET(TRIANGLE_LIBRARY agros2d_3dparty_triangle)
 SET(NLOPTLIB_LIBRARY agros2d_3dparty_nlopt2)
 SET(BAYESOPTLIB_LIBRARY agros2d_3dparty_bayesopt)
+SET(NSGA2_LIBRARY agros2d_3dparty_nsga2)
 
 # xerces
 find_package(XSD 4.0 REQUIRED)
