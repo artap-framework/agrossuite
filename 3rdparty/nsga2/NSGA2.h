@@ -160,11 +160,11 @@ private:
     int nrealcross;
     int bitlength;
     // random generator?
-    std::ofstream fpt1;
-    std::ofstream fpt2;
-    std::ofstream fpt3;
-    std::ofstream fpt4;
-    std::ofstream fpt5;
+    // std::ofstream fpt1;
+    // std::ofstream fpt2;
+    // std::ofstream fpt3;
+    // std::ofstream fpt4;
+    // std::ofstream fpt5;
     // FILE *gp;
     population* parent_pop;
     population* child_pop;

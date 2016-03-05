@@ -108,7 +108,7 @@ void NSGA2::initialize() throw (nsga2exception) {
         throw nsga2exception("Evaluation function not defined");
 
     init_streams();
-    report_parameters(fpt5);
+    // report_parameters(fpt5);
 
     nbinmut    = 0;
     nrealmut   = 0;
@@ -185,35 +185,36 @@ void NSGA2::initialize() throw (nsga2exception) {
 
     custom_report(*parent_pop);
 
-    report_pop(*parent_pop,fpt1);
-    fpt4 << "# gen = " << t << '\n';
-    report_pop(*parent_pop,fpt4);
+    // report_pop(*parent_pop,fpt1);
+    // fpt4 << "# gen = " << t << '\n';
+    // report_pop(*parent_pop,fpt4);
 
-    fpt1.flush();
-    fpt4.flush();
-    fpt5.flush();
+    // fpt1.flush();
+    // fpt4.flush();
+    // fpt5.flush();
 
 }
 
 void NSGA2::init_streams() {
-    fpt1.open("nsga2_initial_pop.out" , ios::out | ios::trunc);
-    fpt2.open("nsga2_final_pop.out"   , ios::out | ios::trunc);
-    fpt3.open("nsga2_best_pop.out"    , ios::out | ios::trunc);
-    fpt4.open("nsga2_all_pop.out"     , ios::out | ios::trunc);
-    fpt5.open("nsga2_params.out"      , ios::out | ios::trunc);
+    // fpt1.open("nsga2_initial_pop.out" , ios::out | ios::trunc);
+    // fpt2.open("nsga2_final_pop.out"   , ios::out | ios::trunc);
+    // fpt3.open("nsga2_best_pop.out"    , ios::out | ios::trunc);
+    // fpt4.open("nsga2_all_pop.out"     , ios::out | ios::trunc);
+    // fpt5.open("nsga2_params.out"      , ios::out | ios::trunc);
 
-    fpt1.setf(ios::scientific);
-    fpt2.setf(ios::scientific);
-    fpt3.setf(ios::scientific);
-    fpt4.setf(ios::scientific); fpt4.precision(16);
-    fpt5.setf(ios::scientific);
+    // fpt1.setf(ios::scientific);
+    // fpt2.setf(ios::scientific);
+    // fpt3.setf(ios::scientific);
+    // fpt4.setf(ios::scientific); fpt4.precision(16);
+    // fpt5.setf(ios::scientific);
 
-    fpt1 << "# This file contains the data of initial population\n";
-    fpt2 << "# This file contains the data of final population\n";
-    fpt3 << "# This file contains the data of final feasible population (if found)\n";
-    fpt4 << "# This file contains the data of all generations\n";
-    fpt5 << "# This file contains information about inputs as read by the program\n";
+    // fpt1 << "# This file contains the data of initial population\n";
+    // fpt2 << "# This file contains the data of final population\n";
+    // fpt3 << "# This file contains the data of final feasible population (if found)\n";
+    // fpt4 << "# This file contains the data of all generations\n";
+    // fpt5 << "# This file contains information about inputs as read by the program\n";
 
+    /*
     fpt1 << "# of objectives = "    << nobj
          << ", # of constraints = " << ncon
          << ", # of real_var = "    << nreal
@@ -234,6 +235,7 @@ void NSGA2::init_streams() {
          << ", # of real_var = "    << nreal
          << ", # of bits of bin_var = " << bitlength
          << ", constr_violation, rank, crowding_distance\n";
+    */
 }
 
 void NSGA2::report_parameters(std::ostream& os) const {
@@ -608,9 +610,9 @@ void NSGA2::advance() {
     custom_report(*parent_pop);
 
     if (t%nreport == 0) {
-	fpt4 << "# gen = " << t << '\n';
-	report_pop(*parent_pop,fpt4);
-	fpt4.flush();
+    // fpt4 << "# gen = " << t << '\n';
+    // report_pop(*parent_pop,fpt4);
+    // fpt4.flush();
     }
 
     // save a backup
@@ -620,6 +622,6 @@ void NSGA2::advance() {
 void NSGA2::evolve() {
   while (t < ngen)
     advance();
-  report_pop(*parent_pop,fpt2);
+  // report_pop(*parent_pop,fpt2);
 }
 
