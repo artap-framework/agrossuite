@@ -162,8 +162,8 @@ public:
 
     void clear();
 
-    bool load(const QString &fileName);
-    bool save(const QString &fileName);
+    void load(QJsonObject &rootJson);
+    void save(QJsonObject &rootJson);
 
     // results
     inline StringToDoubleMap &items() { return m_results; }

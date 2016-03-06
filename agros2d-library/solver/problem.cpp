@@ -1497,7 +1497,6 @@ Computation::Computation(const QString &problemDir) : ProblemBase()
 Computation::~Computation()
 {   
     clearSolution();
-    clearResults();
 
     delete m_calculationThread;
     delete m_problemSolver;
@@ -1637,21 +1636,6 @@ void Computation::readFromProblem()
 QString Computation::problemFileName() const
 {
     return QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(m_problemDir);
-}
-
-void Computation::clearResults()
-{
-    m_results->clear();
-}
-
-void Computation::loadResults()
-{
-    m_results->load(QString("%1/%2/results.json").arg(cacheProblemDir()).arg(m_problemDir));
-}
-
-void Computation::saveResults()
-{
-    m_results->save(QString("%1/%2/results.json").arg(cacheProblemDir()).arg(m_problemDir));
 }
 
 QList<double> Computation::timeStepTimes() const
@@ -2092,6 +2076,22 @@ void Computation::clearFieldsAndConfig()
     ProblemBase::clearFieldsAndConfig();
 }
 
+void Computation::readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettings)
+{
+    ProblemBase::readProblemFromJsonInternal(rootJson, readSettings);
+
+    m_results->load(rootJson);
+}
+
+void Computation::writeProblemToJsonInternal(QJsonObject &rootJson)
+{
+    ProblemBase::writeProblemToJsonInternal(rootJson);
+
+    m_results->save(rootJson);
+}
+
+// *****************************************************************************************************************************
+
 Problem::Problem() : ProblemBase()
 {
     m_studies = new Studies();
@@ -2201,16 +2201,6 @@ QSharedPointer<Computation> Problem::createComputation(bool newComputation)
     computation->readFromProblem();
     computation->writeProblemToJson();
 
-    // computation->readProblemFromJson("", false);
-
-    // copy file
-    /*
-    QString fn = QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(computation->problemDir());
-    QFile::remove(fn);
-    QFile::copy(problemFileName(), fn);
-    // read problem
-    computation->readProblemFromJson(fn, false);
-    */
     return computation;
 }
 
@@ -2243,24 +2233,6 @@ void Problem::readProblemFromArchive(const QString &fileName)
         settings.setValue("General/LastProblemDir", fileInfo.absolutePath());
 
     JlCompress::extractDir(fileName, cacheProblemDir());
-
-    // convert a2d
-    QString problemA2D = QString("%1/problem.a2d").arg(cacheProblemDir());
-    if (QFile::exists(problemA2D))
-    {
-        importProblemFromA2D(problemA2D);
-        writeProblemToJson();
-    }
-
-    // read problem
-    readProblemFromJson();
-
-    // remove a2d
-    if (QFile::exists(problemA2D))
-        QFile::remove(problemA2D);
-
-    m_fileName = QFileInfo(fileName).absoluteFilePath();
-    emit fileNameChanged(m_fileName);
 
     // read solutions
     QDirIterator it(cacheProblemDir(), QDir::Dirs, QDirIterator::NoIteratorFlags);
@@ -2298,11 +2270,26 @@ void Problem::readProblemFromArchive(const QString &fileName)
                     Agros2D::log()->printError(tr("Mesh"), tr("Initial mesh is corrupted (%1)").arg(e.what()));
                 }
             }
-
-            // results
-            computation->loadResults();
         }
     }
+
+    // convert a2d
+    QString problemA2D = QString("%1/problem.a2d").arg(cacheProblemDir());
+    if (QFile::exists(problemA2D))
+    {
+        importProblemFromA2D(problemA2D);
+        writeProblemToJson();
+    }
+
+    // read problem
+    readProblemFromJson();
+
+    // remove a2d
+    if (QFile::exists(problemA2D))
+        QFile::remove(problemA2D);
+
+    m_fileName = QFileInfo(fileName).absoluteFilePath();
+    emit fileNameChanged(m_fileName);
 
     // set last computation
     if (Agros2D::computations().count() > 0)

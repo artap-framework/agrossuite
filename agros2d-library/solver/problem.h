@@ -272,9 +272,6 @@ public:
 
     // results
     inline ComputationResults *results() const { return m_results; }
-    void clearResults();
-    void loadResults();
-    void saveResults();
 
 signals:
     void meshed();
@@ -317,6 +314,9 @@ protected:
     void solveInit(); // called by solve, can throw SolverException
     void solveAction(); // called by solve, can throw SolverException
     bool meshAction(bool emitMeshed);
+
+    virtual void readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettings = true);
+    virtual void writeProblemToJsonInternal(QJsonObject &rootJson);
 
     // results
     ComputationResults *m_results;

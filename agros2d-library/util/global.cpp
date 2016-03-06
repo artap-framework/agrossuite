@@ -183,13 +183,13 @@ void Agros2D::clearComputations()
     {
         // clear solutions
         computation->clearFieldsAndConfig();
-        // clear results
-        computation->clearResults();
         // remove computation from studies
         Agros2D::singleton()->problem()->studies()->removeComputation(computation);
         // remove from list
         Agros2D::singleton()->m_computations.remove(computation->problemDir());
     }
+
+    Agros2D::singleton()->problem()->studies()->clear();
 }
 
 void Agros2D::createSingleton()

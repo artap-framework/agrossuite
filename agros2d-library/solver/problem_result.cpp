@@ -351,62 +351,32 @@ void ComputationResults::clear()
     m_info.clear();
 }
 
-bool ComputationResults::load(const QString &fileName)
+void ComputationResults::load(QJsonObject &rootJson)
 {
-    QFile file(fileName);
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qWarning("Couldn't open result file.");
-        return false;
-    }
-
-    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-    QJsonObject storeJson = doc.object();
-
     // results
-    QJsonObject resultsJson = storeJson[RESULTS].toObject();
+    QJsonObject resultsJson = rootJson[RESULTS].toObject();
     foreach (QString key, resultsJson.keys())
     {
         m_results[key] = resultsJson[key].toDouble();
     }
 
     // info
-    QJsonObject infoJson = storeJson[INFO].toObject();
+    QJsonObject infoJson = rootJson[INFO].toObject();
     foreach (QString key, infoJson.keys())
     {
         m_info[key] = QVariant::fromValue(infoJson[key].toObject());
     }
-
-    return true;
 }
 
-bool ComputationResults::save(const QString &fileName)
+void ComputationResults::save(QJsonObject &rootJson)
 {
-    if (m_results.isEmpty() && m_info.isEmpty())
-    {
-        if (QFile::exists(fileName))
-            QFile::remove(fileName);
-
-        return true;
-    }
-
-    QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly))
-    {
-        qWarning("Couldn't open result file.");
-        return false;
-    }
-
-    // root object
-    QJsonObject storeJson;
-
     // results
     QJsonObject resultsJson;
     for (StringToDoubleMap::const_iterator i = m_results.constBegin(); i != m_results.constEnd(); ++i)
     {
         resultsJson[i.key()] = i.value();
     }
-    storeJson[RESULTS] = resultsJson;
+    rootJson[RESULTS] = resultsJson;
 
     // info
     QJsonObject infoJson;
@@ -414,11 +384,5 @@ bool ComputationResults::save(const QString &fileName)
     {
         infoJson[i.key()] = i.value().toJsonValue();
     }
-    storeJson[INFO] = infoJson;
-
-    // save to file
-    QJsonDocument doc(storeJson);
-    file.write(doc.toJson());
-
-    return true;
+    rootJson[INFO] = infoJson;
 }

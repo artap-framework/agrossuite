@@ -31,6 +31,7 @@
 #include "qcustomplot/qcustomplot.h"
 
 // consts
+const QString NAME = "name";
 const QString PARAMETERS = "parameters";
 const QString FUNCTIONALS = "functionals";
 const QString COMPUTATIONS = "computations";
@@ -49,20 +50,32 @@ ComputationSet::~ComputationSet()
 
 void ComputationSet::load(QJsonObject &object)
 {
-    QJsonArray computationSetJson = object[COMPUTATIONSET].toArray();
-    for (int i = 0; i < computationSetJson.size(); i++)
+    // computation set
+    QJsonObject computationSetJson = object[COMPUTATIONSET].toObject();
+    m_name = computationSetJson[NAME].toString();
+
+    // computations
+    QJsonArray computationSetArrayJson = computationSetJson[COMPUTATIONS].toArray();
+    for (int i = 0; i < computationSetArrayJson.size(); i++)
     {
         QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
-        QSharedPointer<Computation> computation = computations[computationSetJson[i].toString()];
+        QSharedPointer<Computation> computation = computations[computationSetArrayJson[i].toString()];
         m_computations.append(computation);
     }
 }
 
 void ComputationSet::save(QJsonObject &object)
 {
-    QJsonArray computationSetJson;
+    // computations
+    QJsonArray computationSetArrayJson;
     foreach (QSharedPointer<Computation> computation, m_computations)
-        computationSetJson.append(computation->problemDir());
+        computationSetArrayJson.append(computation->problemDir());
+
+    // computation set
+    QJsonObject computationSetJson;
+    computationSetJson[NAME] = m_name;
+    computationSetJson[COMPUTATIONS] = computationSetArrayJson;
+
     object[COMPUTATIONSET] = computationSetJson;
 }
 
@@ -240,7 +253,7 @@ void Study::evaluateStep(QSharedPointer<Computation> computation)
     // evaluate functionals
     evaluateFunctionals(computation);
 
-    computation->saveResults();
+    computation->writeProblemToJson();
 
     updateParameters(m_parameters, computation.data());
     updateChart();
@@ -403,6 +416,10 @@ void Studies::clear()
 void Studies::removeComputation(QSharedPointer<Computation> computation)
 {
     for (int i = 0; i < m_studies.size(); i++)
+    {
         for (int j = 0; j < m_studies[i]->computationSets().size(); j++)
+        {
             m_studies[i]->computationSets()[j].removeComputation(computation);
+        }
+    }
 }
