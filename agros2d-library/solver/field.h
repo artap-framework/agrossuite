@@ -55,6 +55,8 @@ public:
     FieldInfo(QString fieldId);
     ~FieldInfo();
 
+    void copy(const FieldInfo *origin);
+
     void clear();
 
     inline PluginInterface *plugin() const { assert(m_plugin); return m_plugin; }

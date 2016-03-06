@@ -485,7 +485,6 @@ void ProblemBase::readProblemFromJson(const QString &fileName, bool readSettings
     // qDebug() << "readProblemFromJson" << time.elapsed();
 
     // default values
-    emit m_scene->defaultValues();
     emit m_scene->invalidated();
 }
 
@@ -764,7 +763,6 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
 
         // default values
         // emit m_scene->invalidated();
-        // emit m_scene->defaultValues();
     }
     catch (const xml_schema::expected_element& e)
     {
@@ -1510,6 +1508,132 @@ Computation::~Computation()
     removeDirectory(QString("%1/%2").arg(cacheProblemDir(), m_problemDir));
 }
 
+void Computation::readFromProblem()
+{    
+    clearFields();
+
+    // copy config from problem
+    m_config->copy(Agros2D::problem()->config());
+
+    // copy setting from problem
+    m_setting->copy(Agros2D::problem()->setting());
+
+    // copy scene from problem
+    m_scene->clear();
+    m_scene->copy(Agros2D::problem()->scene());
+
+    foreach (QString fieldId, Agros2D::problem()->fieldInfos().keys())
+    {
+        FieldInfo *originFieldInfo = Agros2D::problem()->fieldInfo(fieldId);
+        FieldInfo *fieldInfo = new FieldInfo(fieldId);
+        fieldInfo->copy(originFieldInfo);
+
+        // label refinement
+        foreach (SceneLabel *originLabel, originFieldInfo->labelsRefinement().keys())
+        {
+            SceneLabel *label = m_scene->labels->items().at(Agros2D::problem()->scene()->labels->items().indexOf(originLabel));
+
+            fieldInfo->setLabelRefinement(label, originFieldInfo->labelsRefinement()[originLabel]);
+        }
+
+        // polynomial order
+        foreach (SceneLabel *originLabel, originFieldInfo->labelsPolynomialOrder().keys())
+        {
+            SceneLabel *label = m_scene->labels->items().at(Agros2D::problem()->scene()->labels->items().indexOf(originLabel));
+
+            fieldInfo->setLabelPolynomialOrder(label, originFieldInfo->labelsPolynomialOrder()[originLabel]);
+        }
+
+        // boundaries
+        foreach (SceneBoundary *originBoundary, Agros2D::problem()->scene()->boundaries->items())
+        {
+            if (originBoundary->fieldInfo() != originFieldInfo)
+                continue;
+
+            SceneBoundary *bound = new SceneBoundary(m_scene,
+                                                     fieldInfo,
+                                                     originBoundary->name(),
+                                                     originBoundary->type());
+
+            // default values
+            Module::BoundaryType boundaryType = fieldInfo->boundaryType(bound->type());
+            foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
+                bound->setValue(variable.id(), Value(this));
+
+            // boundaries
+            foreach (uint originValueIndex, originBoundary->values().keys())
+            {
+                QSharedPointer<Value> originValue = originBoundary->value(originValueIndex);
+
+                bound->setValue(originBoundary->valueName(originValueIndex),
+                                Value(this, originValue->text(), originValue->table()));
+            }
+
+            // add boundary to the edge marker
+            foreach (SceneFace *originFace, Agros2D::problem()->scene()->faces->items())
+            {
+                SceneFace *face = m_scene->faces->items().at(Agros2D::problem()->scene()->faces->items().indexOf(originFace));
+
+                if (originFace->hasMarker(originBoundary))
+                    face->addMarker(bound);
+            }
+
+            m_scene->addBoundary(bound);
+        }
+
+        // materials
+        foreach (SceneMaterial *originMaterial, Agros2D::problem()->scene()->materials->items())
+        {
+            if (originMaterial->fieldInfo() != originFieldInfo)
+                continue;
+
+            SceneMaterial *mat = new SceneMaterial(m_scene,
+                                                   fieldInfo,
+                                                   originMaterial->name());
+
+            // default values
+            foreach (Module::MaterialTypeVariable variable, fieldInfo->materialTypeVariables())
+                mat->setValue(variable.id(), Value(this));
+
+            // materials
+            foreach (uint originValueIndex, originMaterial->values().keys())
+            {
+                QSharedPointer<Value> originValue = originMaterial->value(originValueIndex);
+
+                mat->setValue(originMaterial->valueName(originValueIndex),
+                              Value(this, originValue->text(), originValue->table()));
+            }
+
+            // add label to the label marker
+            foreach (SceneLabel *originLabel, Agros2D::problem()->scene()->labels->items())
+            {
+                SceneLabel *label = m_scene->labels->items().at(Agros2D::problem()->scene()->labels->items().indexOf(originLabel));
+
+                if (originLabel->hasMarker(originMaterial))
+                    label->addMarker(mat);
+            }
+
+            m_scene->addMaterial(mat);
+        }
+
+        // add missing none markers
+        m_scene->faces->addMissingFieldMarkers(fieldInfo);
+        m_scene->labels->addMissingFieldMarkers(fieldInfo);
+
+        addField(fieldInfo);
+    }
+
+    // couplings
+    foreach (CouplingInfo *couplingInfo, Agros2D::problem()->couplingInfos())
+    {
+        m_couplingInfos[QPair<FieldInfo *, FieldInfo *>(fieldInfo(couplingInfo->sourceField()->fieldId()),
+                                                        fieldInfo(couplingInfo->targetField()->fieldId()))]->setCouplingType(couplingInfo->couplingType());
+    }
+
+    // default values
+    emit m_scene->invalidated();
+}
+
 QString Computation::problemFileName() const
 {
     return QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(m_problemDir);
@@ -2010,7 +2134,7 @@ void Problem::readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettin
 
         m_studies->blockSignals(true);
         m_studies->addStudy(study);
-        m_studies->blockSignals(false);        
+        m_studies->blockSignals(false);
     }
     m_studies->invalidated();
 
@@ -2072,13 +2196,21 @@ QSharedPointer<Computation> Problem::createComputation(bool newComputation)
 
     // write problem
     writeProblemToJson();
+
+    // read data from problem
+    computation->readFromProblem();
+    computation->writeProblemToJson();
+
+    // computation->readProblemFromJson("", false);
+
     // copy file
+    /*
     QString fn = QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(computation->problemDir());
     QFile::remove(fn);
     QFile::copy(problemFileName(), fn);
     // read problem
     computation->readProblemFromJson(fn, false);
-
+    */
     return computation;
 }
 
@@ -2103,7 +2235,7 @@ void Problem::clearFieldsAndConfig()
 
 void Problem::readProblemFromArchive(const QString &fileName)
 {
-    clearFieldsAndConfig();    
+    clearFieldsAndConfig();
 
     QSettings settings;
     QFileInfo fileInfo(fileName);

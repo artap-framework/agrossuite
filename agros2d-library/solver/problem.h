@@ -267,6 +267,7 @@ public:
     void solveWithGUI();
 
     virtual QString problemFileName() const;
+    void readFromProblem();
     inline QString problemDir() { return m_problemDir; }
 
     // results

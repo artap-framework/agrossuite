@@ -48,6 +48,18 @@ ProblemConfig::ProblemConfig(ProblemBase *parentProblem) : QObject(), m_problem(
     clear();
 }
 
+void ProblemConfig::copy(const ProblemConfig *origin)
+{
+    clear();
+
+    m_setting = origin->m_setting;
+
+    // value Problem
+    foreach (Type key, m_setting.keys())
+        if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
+            setValue(key, Value(m_problem, origin->m_setting[key].value<Value>().text()));
+}
+
 void ProblemConfig::clear()
 {
     // set default values and types
@@ -315,8 +327,11 @@ PostprocessorSetting::PostprocessorSetting(ProblemBase *parentProblem) : QObject
     clear();
 }
 
-PostprocessorSetting::~PostprocessorSetting()
+void PostprocessorSetting::copy(const PostprocessorSetting *origin)
 {
+    clear();
+
+    m_setting = origin->m_setting;
 }
 
 void PostprocessorSetting::clear()

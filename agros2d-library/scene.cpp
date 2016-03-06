@@ -184,6 +184,47 @@ Scene::~Scene()
     actNewMaterials.clear();
 }
 
+void Scene::copy(const Scene *origin)
+{
+    clear();
+
+    stopInvalidating(true);
+    blockSignals(true);
+
+    // geometry
+    // nodes
+    foreach (const SceneNode *originNode, origin->nodes->items())
+    {
+        addNode(new SceneNode(this, PointValue(Value(m_problem, originNode->pointValue().x().text()),
+                                               Value(m_problem, originNode->pointValue().y().text()))));
+    }
+
+    // faces
+    foreach (const SceneFace *originFace, origin->faces->items())
+    {
+        SceneNode *nodeStart = nodes->at(origin->nodes->items().indexOf(originFace->nodeStart()));
+        SceneNode *nodeEnd = nodes->at(origin->nodes->items().indexOf(originFace->nodeEnd()));
+
+        addFace(new SceneFace(this, nodeStart, nodeEnd,
+                              Value(m_problem, originFace->angleValue().text()),
+                              originFace->segments(),
+                              originFace->isCurvilinear()));
+    }
+
+    // labels
+    foreach (const SceneLabel *originLabel, origin->labels->items())
+    {
+        addLabel(new SceneLabel(this, PointValue(Value(m_problem, originLabel->pointValue().x().text()),
+                                                 Value(m_problem, originLabel->pointValue().y().text())),
+                                originLabel->area()));
+    }
+
+    stopInvalidating(false);
+    blockSignals(false);
+
+    emit invalidated();
+}
+
 void Scene::createActions()
 {
     // scene - add items
@@ -441,7 +482,7 @@ void Scene::clear()
     stopInvalidating(false);
     blockSignals(false);
 
-    emit cleared();    
+    emit cleared();
     emit invalidated();
 }
 

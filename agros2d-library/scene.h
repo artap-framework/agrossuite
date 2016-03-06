@@ -94,11 +94,11 @@ signals:
     void invalidated();
     void cleared();
 
-    void defaultValues();
-
 public:
     Scene(ProblemBase *parentProblem);
     ~Scene();
+
+    void copy(const Scene *origin);
 
     // parent problem
     ProblemBase *parentProblem() { return m_problem; }

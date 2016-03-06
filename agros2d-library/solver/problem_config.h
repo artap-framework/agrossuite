@@ -63,6 +63,8 @@ public:
 
     ProblemConfig(ProblemBase *parentProblem);
 
+    void copy(const ProblemConfig *origin);
+
     inline QString labelX() { return ((coordinateType() == CoordinateType_Planar) ? "X" : "R");  }
     inline QString labelY() { return ((coordinateType() == CoordinateType_Planar) ? "Y" : "Z");  }
     inline QString labelZ() { return ((coordinateType() == CoordinateType_Planar) ? "Z" : "a");  }
@@ -218,7 +220,8 @@ public:
     };
 
     PostprocessorSetting(ProblemBase *parentProblem);
-    ~PostprocessorSetting();
+
+    void copy(const PostprocessorSetting *origin);
 
     // load and save
     void load(XMLProblem::config *configxsd);

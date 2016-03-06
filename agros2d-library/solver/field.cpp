@@ -64,6 +64,19 @@ FieldInfo::~FieldInfo()
     // delete m_plugin;
 }
 
+void FieldInfo::copy(const FieldInfo *origin)
+{
+    clear();
+
+    m_setting = origin->m_setting;
+
+    // analysis
+    setAnalysisType(origin->analysisType());
+    setAdaptivityType(origin->adaptivityType());
+    setLinearityType(origin->linearityType());
+    setMatrixSolver(origin->matrixSolver());
+}
+
 double FieldInfo::labelArea(int agrosLabel) const
 {
     assert(m_labelAreas);
