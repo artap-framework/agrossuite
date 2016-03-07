@@ -372,6 +372,8 @@ OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_study(nullptr)
 
     createControls();
 
+    connect(Agros2D::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
+
     connect(m_optiLabWidget, SIGNAL(computationSelected(QString)), this, SLOT(doComputationSelected(QString)));
     connect(m_optiLabWidget, SIGNAL(chartRefreshed(Study *, QSharedPointer<Computation>)), this, SLOT(doChartRefreshed(Study *, QSharedPointer<Computation>)));
     connect(this, SIGNAL(computationSelected(QString)), m_optiLabWidget, SLOT(doComputationSelected(QString)));
@@ -402,6 +404,11 @@ void OptiLab::createControls()
     layoutLab->addWidget(chart, 1);
 
     setLayout(layoutLab);
+}
+
+void OptiLab::refresh()
+{
+    actSceneModeOptiLab->setEnabled(!Agros2D::problem()->studies()->items().isEmpty());
 }
 
 void OptiLab::chartContextMenu(const QPoint &pos)

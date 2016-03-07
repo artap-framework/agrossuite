@@ -380,6 +380,7 @@ void MainWindow::createMenus()
     mnuFile->addAction(actDocumentSaveAs);
     mnuFile->addSeparator();
     mnuFile->addAction(actDeleteSolutions);
+    mnuFile->addAction(actDeleteSolutionsAndResults);
     mnuFile->addSeparator();
     mnuFile->addMenu(mnuFileImportExport);
     // mnuFile->addMenu(mnuServer);
@@ -814,14 +815,23 @@ void MainWindow::doDeleteSolutions()
 {
     sceneViewProblem->actSceneModeProblem->trigger();
 
-    // clear all computations
-    Agros2D::clearComputations();    
+    // clear solutions
+    foreach (QSharedPointer<Computation> computation, Agros2D::singleton()->computations())
+        computation->clearSolution();    
+
     sceneViewProblem->refresh();
+    setControls();
 }
 
 void MainWindow::doDeleteSolutionsAndResults()
 {
+    sceneViewProblem->actSceneModeProblem->trigger();
 
+    // clear all computations
+    Agros2D::clearComputations();
+
+    sceneViewProblem->refresh();
+    setControls();
 }
 
 void MainWindow::doDocumentSaveAs()
@@ -1116,6 +1126,7 @@ void MainWindow::setControls()
     setEnabled(true);
 
     actDeleteSolutions->setEnabled(!Agros2D::computations().isEmpty());
+    actDeleteSolutionsAndResults->setEnabled(!Agros2D::computations().isEmpty());
 
     // set controls
     Agros2D::problem()->scene()->actTransform->setEnabled(false);

@@ -105,6 +105,8 @@ private:
     QCPData findClosestData(QCPGraph *graph, const Point &pos);
 
 private slots:
+    void refresh();
+
     void chartContextMenu(const QPoint &pos);
     void chartRescale(bool checked);
 
