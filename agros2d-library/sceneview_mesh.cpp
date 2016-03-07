@@ -193,18 +193,16 @@ void SceneViewMesh::paintGL()
     // grid
     if (Agros2D::configComputer()->value(Config::Config_ShowGrid).toBool()) paintGrid();
 
-    QTime time;
-
     // view
     if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
     {
-        if (m_computation->setting()->value(PostprocessorSetting::View_ShowOrderView).toBool()) paintOrder();
-        if (m_computation->setting()->value(PostprocessorSetting::View_ShowSolutionMeshView).toBool()) paintSolutionMesh();
+        if (m_computation->setting()->value(PostprocessorSetting::ShowOrderView).toBool()) paintOrder();
+        if (m_computation->setting()->value(PostprocessorSetting::ShowSolutionMeshView).toBool()) paintSolutionMesh();
     }
 
     // initial mesh
     if (m_computation->isMeshed() && m_computation->postDeal()->isProcessed())
-        if (m_computation->setting()->value(PostprocessorSetting::View_ShowInitialMeshView).toBool()) paintInitialMesh();
+        if (m_computation->setting()->value(PostprocessorSetting::ShowInitialMeshView).toBool()) paintInitialMesh();
 
     // geometry
     paintGeometry();
@@ -212,8 +210,8 @@ void SceneViewMesh::paintGL()
     if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
     {
         // bars
-        if (m_computation->setting()->value(PostprocessorSetting::View_ShowOrderView).toBool()
-                && m_computation->setting()->value(PostprocessorSetting::View_ShowOrderColorBar).toBool())
+        if (m_computation->setting()->value(PostprocessorSetting::ShowOrderView).toBool()
+                && m_computation->setting()->value(PostprocessorSetting::ShowOrderColorBar).toBool())
             paintOrderColorBar();
     }
 
@@ -306,12 +304,6 @@ void SceneViewMesh::paintSolutionMesh()
     if (m_arraySolutionMesh.isEmpty())
     {
         MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
-
-        // TODO: components and level
-        // activeMultiSolutionArray().spaces().at(comp)
-        // int comp = Agros2D::problem()->setting()->value(ProblemSetting::View_OrderComponent).toInt() - 1;
-
-        // for (int level = 0; level <= m_computation->postDeal()->activeAdaptivityStep(); level++)
         for (int level = 0; level <= ma.doFHandler().get_tria().n_levels() - 1; level++)
         {
             dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
@@ -414,7 +406,7 @@ void SceneViewMesh::paintOrder()
     }
 
     // paint labels
-    if (m_computation->setting()->value(PostprocessorSetting::View_ShowOrderLabel).toBool())
+    if (m_computation->setting()->value(PostprocessorSetting::ShowOrderLabel).toBool())
     {
         loadProjectionViewPort();
 
@@ -459,7 +451,7 @@ void SceneViewMesh::paintOrder()
 
 void SceneViewMesh::paintOrderColorBar()
 {
-    if (!m_computation->isSolved() || !m_computation->setting()->value(PostprocessorSetting::View_ShowOrderColorBar).toBool()) return;
+    if (!m_computation->isSolved() || !m_computation->setting()->value(PostprocessorSetting::ShowOrderColorBar).toBool()) return;
 
     int minDegree = 100;
     int maxDegree = 1;

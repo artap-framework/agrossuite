@@ -88,17 +88,17 @@ void SceneViewChart::refresh()
     if (!(m_computation && m_computation->postDeal()->activeViewField()))
         return;
 
-    if (m_computation->setting()->value(PostprocessorSetting::View_ChartVariable).toString().isEmpty())
+    if (m_computation->setting()->value(PostprocessorSetting::ChartVariable).toString().isEmpty())
         return;
 
     Module::LocalVariable physicFieldVariable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),
-                                                                                                            m_computation->setting()->value(PostprocessorSetting::View_ChartVariable).toString());
+                                                                                                            m_computation->setting()->value(PostprocessorSetting::ChartVariable).toString());
 
     emit labelCenter(physicFieldVariable.name());
 
-    if ((ChartMode) m_computation->setting()->value(PostprocessorSetting::View_ChartMode).toInt() == ChartMode_Geometry)
+    if ((ChartMode) m_computation->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Geometry)
         plotGeometry();
-    else if ((ChartMode) m_computation->setting()->value(PostprocessorSetting::View_ChartMode).toInt() == ChartMode_Time)
+    else if ((ChartMode) m_computation->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
         plotTime();
 
     // rescale axis
@@ -148,7 +148,7 @@ QVector<double> SceneViewChart::horizontalAxisValues(ChartLine *chartLine)
     QList<Point> points = chartLine->getPoints();
     QVector<double> xval;
 
-    switch ((ChartAxisType) m_computation->setting()->value(PostprocessorSetting::View_ChartHorizontalAxis).toInt())
+    switch ((ChartAxisType) m_computation->setting()->value(PostprocessorSetting::ChartHorizontalAxis).toInt())
     {
     case ChartAxis_Length:
     {
@@ -182,20 +182,20 @@ QVector<double> SceneViewChart::horizontalAxisValues(ChartLine *chartLine)
 
 void SceneViewChart::plotGeometry()
 {
-    if (m_computation->setting()->value(PostprocessorSetting::View_ChartVariable).toString().isEmpty())
+    if (m_computation->setting()->value(PostprocessorSetting::ChartVariable).toString().isEmpty())
         return;
 
     // variable
     Module::LocalVariable physicFieldVariable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),
-                                                                                                            m_computation->setting()->value(PostprocessorSetting::View_ChartVariable).toString());
+                                                                                                            m_computation->setting()->value(PostprocessorSetting::ChartVariable).toString());
 
     // variable component
-    PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::View_ChartVariableComp).toInt();
+    PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ChartVariableComp).toInt();
     if (physicFieldVariableComp == PhysicFieldVariableComp_Undefined) return;
 
     // chart
     QString text;
-    switch ((ChartAxisType) m_computation->setting()->value(PostprocessorSetting::View_ChartHorizontalAxis).toInt())
+    switch ((ChartAxisType) m_computation->setting()->value(PostprocessorSetting::ChartHorizontalAxis).toInt())
     {
     case ChartAxis_Length:
         text = tr("Length (m)");
@@ -216,11 +216,11 @@ void SceneViewChart::plotGeometry()
                              arg(physicFieldVariable.unit()));
 
     // values
-    ChartLine chartLine(Point(m_computation->setting()->value(PostprocessorSetting::View_ChartStartX).toDouble(),
-                              m_computation->setting()->value(PostprocessorSetting::View_ChartStartY).toDouble()),
-                        Point(m_computation->setting()->value(PostprocessorSetting::View_ChartEndX).toDouble(),
-                              m_computation->setting()->value(PostprocessorSetting::View_ChartEndY).toDouble()),
-                        m_computation->setting()->value(PostprocessorSetting::View_ChartHorizontalAxisPoints).toInt());
+    ChartLine chartLine(Point(m_computation->setting()->value(PostprocessorSetting::ChartStartX).toDouble(),
+                              m_computation->setting()->value(PostprocessorSetting::ChartStartY).toDouble()),
+                        Point(m_computation->setting()->value(PostprocessorSetting::ChartEndX).toDouble(),
+                              m_computation->setting()->value(PostprocessorSetting::ChartEndY).toDouble()),
+                        m_computation->setting()->value(PostprocessorSetting::ChartHorizontalAxisPoints).toInt());
 
     QList<Point> points = chartLine.getPoints();
     QVector<double> xval = horizontalAxisValues(&chartLine);
@@ -258,7 +258,7 @@ void SceneViewChart::plotGeometry()
     assert(xval.count() == yval.count());
 
     // reverse x axis
-    if (m_computation->setting()->value(PostprocessorSetting::View_ChartHorizontalAxisReverse).toBool())
+    if (m_computation->setting()->value(PostprocessorSetting::ChartHorizontalAxisReverse).toBool())
     {
         for (int i = 0; i < points.length() / 2; i++)
         {
@@ -274,15 +274,15 @@ void SceneViewChart::plotGeometry()
 
 void SceneViewChart::plotTime()
 {
-    if (m_computation->setting()->value(PostprocessorSetting::View_ChartVariable).toString().isEmpty())
+    if (m_computation->setting()->value(PostprocessorSetting::ChartVariable).toString().isEmpty())
         return;
 
     // variable
     Module::LocalVariable physicFieldVariable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),
-                                                                                                            m_computation->setting()->value(PostprocessorSetting::View_ChartVariable).toString());
+                                                                                                            m_computation->setting()->value(PostprocessorSetting::ChartVariable).toString());
 
     // variable comp
-    PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::View_ChartVariableComp).toInt();
+    PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ChartVariableComp).toInt();
     if (physicFieldVariableComp == PhysicFieldVariableComp_Undefined) return;
 
     // time levels
@@ -313,8 +313,8 @@ void SceneViewChart::plotTime()
                 // change time level
                 xval.append(times.at(step));
 
-                Point point(m_computation->setting()->value(PostprocessorSetting::View_ChartTimeX).toDouble(),
-                            m_computation->setting()->value(PostprocessorSetting::View_ChartTimeY).toDouble());
+                Point point(m_computation->setting()->value(PostprocessorSetting::ChartTimeX).toDouble(),
+                            m_computation->setting()->value(PostprocessorSetting::ChartTimeY).toDouble());
                 std::shared_ptr<LocalValue> localValue = m_computation->postDeal()->activeViewField()->plugin()->localValue(m_computation.data(),
                                                                                                                             m_computation->postDeal()->activeViewField(),
                                                                                                                             step,
@@ -397,13 +397,13 @@ void SceneViewChart::doExportData()
     QTextStream out(&file);
 
     QMap<QString, QList<double> > table;
-    if ((ChartMode) m_computation->setting()->value(PostprocessorSetting::View_ChartMode).toInt() == ChartMode_Geometry)
+    if ((ChartMode) m_computation->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Geometry)
     {
-        ChartLine chartLine(Point(m_computation->setting()->value(PostprocessorSetting::View_ChartStartX).toDouble(),
-                                  m_computation->setting()->value(PostprocessorSetting::View_ChartStartY).toDouble()),
-                            Point(m_computation->setting()->value(PostprocessorSetting::View_ChartEndX).toDouble(),
-                                  m_computation->setting()->value(PostprocessorSetting::View_ChartEndY).toDouble()),
-                            m_computation->setting()->value(PostprocessorSetting::View_ChartHorizontalAxisPoints).toInt());
+        ChartLine chartLine(Point(m_computation->setting()->value(PostprocessorSetting::ChartStartX).toDouble(),
+                                  m_computation->setting()->value(PostprocessorSetting::ChartStartY).toDouble()),
+                            Point(m_computation->setting()->value(PostprocessorSetting::ChartEndX).toDouble(),
+                                  m_computation->setting()->value(PostprocessorSetting::ChartEndY).toDouble()),
+                            m_computation->setting()->value(PostprocessorSetting::ChartHorizontalAxisPoints).toInt());
 
         foreach (Point point, chartLine.getPoints())
         {
@@ -417,10 +417,10 @@ void SceneViewChart::doExportData()
             }
         }
     }
-    else if ((ChartMode) m_computation->setting()->value(PostprocessorSetting::View_ChartMode).toInt() == ChartMode_Time)
+    else if ((ChartMode) m_computation->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
     {
-        Point point(m_computation->setting()->value(PostprocessorSetting::View_ChartTimeX).toDouble(),
-                    m_computation->setting()->value(PostprocessorSetting::View_ChartTimeY).toDouble());
+        Point point(m_computation->setting()->value(PostprocessorSetting::ChartTimeX).toDouble(),
+                    m_computation->setting()->value(PostprocessorSetting::ChartTimeY).toDouble());
         QList<double> times = m_computation->timeStepTimes();
         foreach (int timeStep, m_computation->timeStepLengths())
         {

@@ -415,11 +415,17 @@ void Studies::clear()
 
 void Studies::removeComputation(QSharedPointer<Computation> computation)
 {
-    for (int i = 0; i < m_studies.size(); i++)
+    foreach (Study *study, m_studies)
     {
-        for (int j = 0; j < m_studies[i]->computationSets().size(); j++)
+        // remove empty computation sets
+        QMutableListIterator<ComputationSet> i(study->computationSets());
+        while (i.hasNext())
         {
-            m_studies[i]->computationSets()[j].removeComputation(computation);
+            ComputationSet *computationSet = &i.next();
+            computationSet->removeComputation(computation);
+
+            if (computationSet->computations().count() == 0)
+                i.remove();
         }
     }
 }

@@ -92,7 +92,6 @@ public:
     virtual ~ProblemBase();
 
     inline ProblemConfig *config() const { return m_config; }
-    inline PostprocessorSetting *setting() const { return m_setting; }
     inline Scene *scene() { return m_scene; }
 
     bool isTransient() const;
@@ -134,7 +133,6 @@ protected:
     Scene *m_scene;
 
     ProblemConfig *m_config;
-    PostprocessorSetting *m_setting;
 
     QMap<QString, FieldInfo *> m_fieldInfos;
     QMap<QPair<FieldInfo *, FieldInfo *>, CouplingInfo *> m_couplingInfos;
@@ -148,7 +146,7 @@ protected:
     // private local dict
     PyObject *m_dictLocal;
 
-    virtual void readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettings = true);
+    virtual void readProblemFromJsonInternal(QJsonObject &rootJson);
     virtual void writeProblemToJsonInternal(QJsonObject &rootJson);
 
     friend class CalculationThread;
@@ -209,7 +207,7 @@ protected:
     // studies
     Studies *m_studies;
 
-    virtual void readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettings = true);
+    virtual void readProblemFromJsonInternal(QJsonObject &rootJson);
     virtual void writeProblemToJsonInternal(QJsonObject &rootJson);
 };
 
@@ -220,6 +218,8 @@ class AGROS_LIBRARY_API Computation : public ProblemBase
 public:
     Computation(const QString &problemDir = "");
     virtual ~Computation();
+
+    inline PostprocessorSetting *setting() const { return m_setting; }
 
     // mesh
     void meshThread();
@@ -280,6 +280,7 @@ signals:
 public slots:    
     virtual void clearFields();
     void clearSolution();
+    void clearResults();
     virtual void clearFieldsAndConfig();
 
     void doAbortSolve();
@@ -290,6 +291,8 @@ protected:
     bool m_abort;
 
     bool m_isPostprocessingRunning;
+
+    PostprocessorSetting *m_setting;
 
     // initial mesh
     dealii::Triangulation<2> m_initialMesh;
@@ -315,7 +318,7 @@ protected:
     void solveAction(); // called by solve, can throw SolverException
     bool meshAction(bool emitMeshed);
 
-    virtual void readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettings = true);
+    virtual void readProblemFromJsonInternal(QJsonObject &rootJson);
     virtual void writeProblemToJsonInternal(QJsonObject &rootJson);
 
     // results

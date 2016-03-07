@@ -69,6 +69,7 @@ private slots:
     void doDocumentSave();
     void doDocumentSaveAs();    
     void doDeleteSolutions();
+    void doDeleteSolutionsAndResults();
     void doDocumentClose();
     void doDocumentImportDXF();
     void doDocumentExportDXF();
@@ -161,7 +162,8 @@ private:
     QAction *actMesh;
     QAction *actSolve;
     QAction *actSolveNewComputation;
-    QAction *actDeleteSolution;
+    QAction *actDeleteSolutions;
+    QAction *actDeleteSolutionsAndResults;
 
     QAction *actHelp;
     QAction *actHelpShortCut;

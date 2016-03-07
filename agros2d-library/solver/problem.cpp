@@ -128,8 +128,7 @@ void CalculationThread::run()
 
 ProblemBase::ProblemBase()
 {
-    m_config = new ProblemConfig(this);
-    m_setting = new PostprocessorSetting(this);
+    m_config = new ProblemConfig(this);    
     m_scene = new Scene(this);
     m_isNonlinear = false;
     m_timeStepLengths.append(0.0);
@@ -139,8 +138,7 @@ ProblemBase::~ProblemBase()
 {
     clearFieldsAndConfig();
 
-    delete m_config;
-    delete m_setting;
+    delete m_config;    
     delete m_scene;
 }
 
@@ -367,8 +365,7 @@ void ProblemBase::clearFields()
 void ProblemBase::clearFieldsAndConfig()
 {
     // clear config
-    m_config->clear();
-    m_setting->clear();
+    m_config->clear();    
 }
 
 void ProblemBase::addField(FieldInfo *field)
@@ -506,8 +503,6 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
 
         // problem config
         m_config->load(&doc->problem().problem_config());
-        // general config
-        m_setting->load(&doc->config());
 
         // coordinate type
         m_config->setCoordinateType(coordinateTypeFromStringKey(QString::fromStdString(doc->problem().coordinate_type())));
@@ -901,7 +896,6 @@ void ProblemBase::exportProblemToA2D(const QString &fileName)
         }
 
         XMLProblem::config config;
-        m_setting->save(&config);
 
         XMLProblem::problem_config problem_config;
         m_config->save(&problem_config);
@@ -1014,15 +1008,8 @@ void ProblemBase::writeProblemToJson(const QString &fileName)
     // qDebug() << "writeProblemToJson" << time.elapsed();
 }
 
-void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettings)
+void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
 {
-    // settings
-    if (readSettings)
-    {
-        QJsonObject settingsJson = rootJson[SETTINGS].toObject();
-        m_setting->load(settingsJson);
-    }
-
     // config
     QJsonObject configJson = rootJson[CONFIG].toObject();
     m_config->load(configJson);
@@ -1248,12 +1235,7 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson, bool readSe
 }
 
 void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
-{
-    // settings
-    QJsonObject settingsJson;
-    m_setting->save(settingsJson);
-    rootJson[SETTINGS] = settingsJson;
-
+{    
     // config
     QJsonObject configJson;
     m_config->save(configJson);
@@ -1472,6 +1454,7 @@ Computation::Computation(const QString &problemDir) : ProblemBase()
 
     connect(this, SIGNAL(fieldsChanged()), m_scene, SLOT(doFieldsChanged()));
 
+    m_setting = new PostprocessorSetting(this);
     m_calculationThread = new CalculationThread(this);
     m_problemSolver = new ProblemSolver(this);
     m_postDeal = new PostDeal(this);
@@ -1498,6 +1481,7 @@ Computation::~Computation()
 {   
     clearSolution();
 
+    delete m_setting;
     delete m_calculationThread;
     delete m_problemSolver;
     delete m_postDeal;
@@ -1513,9 +1497,6 @@ void Computation::readFromProblem()
 
     // copy config from problem
     m_config->copy(Agros2D::problem()->config());
-
-    // copy setting from problem
-    m_setting->copy(Agros2D::problem()->setting());
 
     // copy scene from problem
     m_scene->clear();
@@ -2041,6 +2022,7 @@ bool Computation::isSolved() const
 void Computation::clearFields()
 {
     clearSolution();
+    clearResults();
 
     ProblemBase::clearFields();
 }
@@ -2062,24 +2044,36 @@ void Computation::clearSolution()
         QFile::remove(fnMesh);
 
     m_calculationMesh.clear();
-    m_solutionStore->clear();
+    m_solutionStore->clear();    
+}
+
+void Computation::clearResults()
+{
+    m_results->clear();
 }
 
 void Computation::clearFieldsAndConfig()
 {
-    clearFields();
+    m_setting->clear();
 
-    QString fn = QString("%1/%2/problem.a2d").arg(cacheProblemDir()).arg(m_problemDir);
-    if (QFile::exists(fn))
-        QFile::remove(fn);
+    clearFields();    
 
     ProblemBase::clearFieldsAndConfig();
+
+    QString fn = QString("%1/%2/problem.json").arg(cacheProblemDir()).arg(m_problemDir);
+    if (QFile::exists(fn))
+        QFile::remove(fn);
 }
 
-void Computation::readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettings)
+void Computation::readProblemFromJsonInternal(QJsonObject &rootJson)
 {
-    ProblemBase::readProblemFromJsonInternal(rootJson, readSettings);
+    ProblemBase::readProblemFromJsonInternal(rootJson);
 
+    // settings
+    QJsonObject settingsJson = rootJson[SETTINGS].toObject();
+    m_setting->load(settingsJson);
+
+    // results
     m_results->load(rootJson);
 }
 
@@ -2087,6 +2081,11 @@ void Computation::writeProblemToJsonInternal(QJsonObject &rootJson)
 {
     ProblemBase::writeProblemToJsonInternal(rootJson);
 
+    QJsonObject settingsJson;
+    m_setting->save(settingsJson);
+    rootJson[SETTINGS] = settingsJson;
+
+    // results
     m_results->save(rootJson);
 }
 
@@ -2117,9 +2116,9 @@ QString Problem::problemFileName() const
     return QString("%1/problem.json").arg(cacheProblemDir());
 }
 
-void Problem::readProblemFromJsonInternal(QJsonObject &rootJson, bool readSettings)
+void Problem::readProblemFromJsonInternal(QJsonObject &rootJson)
 {
-    ProblemBase::readProblemFromJsonInternal(rootJson, readSettings);
+    ProblemBase::readProblemFromJsonInternal(rootJson);
 
     // studies
     m_studies->clear();
@@ -2292,7 +2291,7 @@ void Problem::readProblemFromArchive(const QString &fileName)
     emit fileNameChanged(m_fileName);
 
     // set last computation
-    if (Agros2D::computations().count() > 0)
+    if (!Agros2D::computations().isEmpty())
     {
         QSharedPointer<Computation> post = m_currentComputation;
         if (post.isNull())

@@ -125,21 +125,21 @@ void SceneViewPost3D::paintGL()
 
     if (m_computation->isMeshed())
     {
-        if (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_Model) paintScalarField3DSolid();
+        if (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt()) == SceneViewPost3DMode_Model) paintScalarField3DSolid();
     }
 
     if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
     {
-        if (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D) paintScalarField3D();
-        if (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3DSolid) paintScalarField3DSolid();
+        if (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D) paintScalarField3D();
+        if (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3DSolid) paintScalarField3DSolid();
 
         // bars
-        if (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D ||
-                ((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3DSolid)
-            paintScalarFieldColorBar(m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble(), m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble());
+        if (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D ||
+                ((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3DSolid)
+            paintScalarFieldColorBar(m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble(), m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble());
     }
 
-    switch ((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt())
+    switch ((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt())
     {
     case SceneViewPost3DMode_ScalarView3D:
     case SceneViewPost3DMode_ScalarView3DSolid:
@@ -148,10 +148,10 @@ void SceneViewPost3D::paintGL()
         {
             Module::LocalVariable localVariable = m_computation->postDeal()->activeViewField()->localVariable(
                         m_computation->config()->coordinateType(),
-                        m_computation->setting()->value(PostprocessorSetting::View_ScalarVariable).toString());
-            QString text = m_computation->setting()->value(PostprocessorSetting::View_ScalarVariable).toString().isEmpty() ? "" : localVariable.name();
-            if ((PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::View_ScalarVariableComp).toInt() != PhysicFieldVariableComp_Scalar)
-                text += " - " + physicFieldVariableCompString((PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::View_ScalarVariableComp).toInt());
+                        m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString());
+            QString text = m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString().isEmpty() ? "" : localVariable.name();
+            if ((PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt() != PhysicFieldVariableComp_Scalar)
+                text += " - " + physicFieldVariableCompString((PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt());
 
             emit labelCenter(text);
         }
@@ -165,6 +165,47 @@ void SceneViewPost3D::paintGL()
     }
 
     if (Agros2D::configComputer()->value(Config::Config_ShowAxes).toBool()) paintAxes();
+}
+
+void SceneViewPost3D::initLighting()
+{
+    if (m_computation->setting()->value(PostprocessorSetting::ScalarView3DLighting).toBool())
+    {
+        // environment
+        float light_specular[] = {  1.0f, 1.0f, 1.0f, 1.0f };
+        float light_ambient[]  = {  0.7f, 0.7f, 0.7f, 1.0f };
+        float light_diffuse[]  = {  1.0f, 1.0f, 1.0f, 1.0f };
+        float light_position[] = {  1.0f, 0.0f, 1.0f, 0.0f };
+
+        glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+        glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+        glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+        glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+        // material
+        float material_ambient[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
+        float material_diffuse[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
+        float material_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, material_ambient);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, material_diffuse);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, material_specular);
+        glMaterialf(GL_FRONT, GL_SHININESS, 128.0);
+
+        // glEnable(GL_COLOR_MATERIAL);
+#if defined(GL_LIGHT_MODEL_COLOR_CONTROL) && defined(GL_SEPARATE_SPECULAR_COLOR)
+        glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
+#endif
+        glShadeModel(GL_SMOOTH);
+        glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHT0);
+    }
+    else
+    {
+        glDisable(GL_LIGHTING);
+        glDisable(GL_LIGHT0);
+    }
 }
 
 void SceneViewPost3D::resizeGL(int w, int h)
@@ -181,7 +222,7 @@ void SceneViewPost3D::paintScalarField3D()
 {
     if (!m_computation->isSolved()) return;
 
-    loadProjection3d(true, ((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D);
+    loadProjection3d(true, ((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D);
 
     if (m_listScalarField3D == -1)
     {
@@ -205,9 +246,9 @@ void SceneViewPost3D::paintScalarField3D()
         glEnable(GL_DEPTH_TEST);
 
         // range
-        double irange = 1.0 / (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble());
+        double irange = 1.0 / (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble());
         // special case: constant solution
-        if (fabs(m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble()) < EPS_ZERO)
+        if (fabs(m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble()) < EPS_ZERO)
         {
             irange = 1.0;
         }
@@ -217,7 +258,7 @@ void SceneViewPost3D::paintScalarField3D()
         double max = qMax(rect.width(), rect.height());
 
         glPushMatrix();
-        glScaled(1.0, 1.0, max / m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DHeight).toDouble() * fabs(irange));
+        glScaled(1.0, 1.0, max / m_computation->setting()->value(PostprocessorSetting::ScalarView3DHeight).toDouble() * fabs(irange));
 
         // scalar view
         initLighting();
@@ -225,7 +266,7 @@ void SceneViewPost3D::paintScalarField3D()
         double *normal = new double[3];
 
         // set texture for coloring
-        if (m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DLighting).toBool())
+        if (m_computation->setting()->value(PostprocessorSetting::ScalarView3DLighting).toBool())
             glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         else
             glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
@@ -241,28 +282,28 @@ void SceneViewPost3D::paintScalarField3D()
         glBegin(GL_TRIANGLES);
         foreach (PostTriangle triangle, m_computation->postDeal()->scalarValues())
         {
-            if (!m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeAuto).toBool())
+            if (!m_computation->setting()->value(PostprocessorSetting::ScalarRangeAuto).toBool())
             {
                 double avgValue = (triangle.values[0] + triangle.values[1] + triangle.values[2]) / 3.0;
-                if (avgValue < m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble() || avgValue > m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble())
+                if (avgValue < m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble() || avgValue > m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble())
                     continue;
             }
 
             double delta = 0.0;
 
-            if (m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DLighting).toBool())
+            if (m_computation->setting()->value(PostprocessorSetting::ScalarView3DLighting).toBool())
             {
-                computeNormal(triangle.vertices[0][0], triangle.vertices[0][1], - delta - (triangle.values[0] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()),
-                        triangle.vertices[1][0], triangle.vertices[1][1], - delta - (triangle.values[1] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()),
-                        triangle.vertices[2][0], triangle.vertices[2][1], - delta - (triangle.values[2] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()),
+                computeNormal(triangle.vertices[0][0], triangle.vertices[0][1], - delta - (triangle.values[0] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()),
+                        triangle.vertices[1][0], triangle.vertices[1][1], - delta - (triangle.values[1] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()),
+                        triangle.vertices[2][0], triangle.vertices[2][1], - delta - (triangle.values[2] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()),
                         normal);
 
                 glNormal3d(normal[0], normal[1], normal[2]);
             }
             for (int j = 0; j < 3; j++)
             {
-                glTexCoord1d((triangle.values[j] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange);
-                glVertex3d(triangle.vertices[j][0], triangle.vertices[j][1], - delta - (triangle.values[j] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()));
+                glTexCoord1d((triangle.values[j] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
+                glVertex3d(triangle.vertices[j][0], triangle.vertices[j][1], - delta - (triangle.values[j] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()));
             }
         }
         glEnd();
@@ -305,10 +346,10 @@ void SceneViewPost3D::paintScalarField3D()
         glDisable(GL_POLYGON_OFFSET_FILL);
 
         // bounding box
-        if (m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DBoundingBox).toBool())
+        if (m_computation->setting()->value(PostprocessorSetting::ScalarView3DBoundingBox).toBool())
         {
             double borderXY = max * 0.05;
-            double borderZ = (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * 0.05;
+            double borderZ = (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * 0.05;
 
             glBegin(GL_LINES);
             glVertex3d(rect.start.x - borderXY, rect.start.y - borderXY, borderZ);
@@ -320,23 +361,23 @@ void SceneViewPost3D::paintScalarField3D()
             glVertex3d(rect.start.x - borderXY, rect.end.y + borderXY, borderZ);
             glVertex3d(rect.start.x - borderXY, rect.start.y - borderXY, borderZ);
 
-            glVertex3d(rect.start.x - borderXY, rect.start.y - borderXY, - (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) - borderZ);
-            glVertex3d(rect.end.x + borderXY, rect.start.y - borderXY, - (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) - borderZ);
-            glVertex3d(rect.end.x + borderXY, rect.start.y - borderXY, - (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) - borderZ);
-            glVertex3d(rect.end.x + borderXY, rect.end.y + borderXY, - (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) - borderZ);
-            glVertex3d(rect.end.x + borderXY, rect.end.y + borderXY, - (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) - borderZ);
-            glVertex3d(rect.start.x - borderXY, rect.end.y + borderXY, - (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) - borderZ);
-            glVertex3d(rect.start.x - borderXY, rect.end.y + borderXY, - (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) - borderZ);
-            glVertex3d(rect.start.x - borderXY, rect.start.y - borderXY, - (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) - borderZ);
+            glVertex3d(rect.start.x - borderXY, rect.start.y - borderXY, - (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) - borderZ);
+            glVertex3d(rect.end.x + borderXY, rect.start.y - borderXY, - (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) - borderZ);
+            glVertex3d(rect.end.x + borderXY, rect.start.y - borderXY, - (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) - borderZ);
+            glVertex3d(rect.end.x + borderXY, rect.end.y + borderXY, - (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) - borderZ);
+            glVertex3d(rect.end.x + borderXY, rect.end.y + borderXY, - (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) - borderZ);
+            glVertex3d(rect.start.x - borderXY, rect.end.y + borderXY, - (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) - borderZ);
+            glVertex3d(rect.start.x - borderXY, rect.end.y + borderXY, - (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) - borderZ);
+            glVertex3d(rect.start.x - borderXY, rect.start.y - borderXY, - (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) - borderZ);
 
             glVertex3d(rect.start.x - borderXY, rect.start.y - borderXY, borderZ);
-            glVertex3d(rect.start.x - borderXY, rect.start.y - borderXY, - (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) - borderZ);
+            glVertex3d(rect.start.x - borderXY, rect.start.y - borderXY, - (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) - borderZ);
             glVertex3d(rect.end.x + borderXY, rect.start.y - borderXY, borderZ);
-            glVertex3d(rect.end.x + borderXY, rect.start.y - borderXY, - (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) - borderZ);
+            glVertex3d(rect.end.x + borderXY, rect.start.y - borderXY, - (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) - borderZ);
             glVertex3d(rect.end.x + borderXY, rect.end.y + borderXY, borderZ);
-            glVertex3d(rect.end.x + borderXY, rect.end.y + borderXY, - (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) - borderZ);
+            glVertex3d(rect.end.x + borderXY, rect.end.y + borderXY, - (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) - borderZ);
             glVertex3d(rect.start.x - borderXY, rect.end.y + borderXY, borderZ);
-            glVertex3d(rect.start.x - borderXY, rect.end.y + borderXY, - (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) - borderZ);
+            glVertex3d(rect.start.x - borderXY, rect.end.y + borderXY, - (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) - borderZ);
             glEnd();
         }
 
@@ -389,7 +430,7 @@ void SceneViewPost3D::paintScalarField3DSolid()
 {
     if (!m_computation->isSolved()) return;
 
-    loadProjection3d(true, ((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D);
+    loadProjection3d(true, ((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D);
 
     if (m_listScalarField3DSolid == -1)
     {
@@ -400,7 +441,7 @@ void SceneViewPost3D::paintScalarField3DSolid()
         m_listScalarField3DSolid = glGenLists(1);
         glNewList(m_listScalarField3DSolid, GL_COMPILE);
 
-        bool isModel = (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DMode).toInt()) == SceneViewPost3DMode_Model);
+        bool isModel = (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt()) == SceneViewPost3DMode_Model);
 
         glPushMatrix();
 
@@ -416,17 +457,17 @@ void SceneViewPost3D::paintScalarField3DSolid()
 
         RectPoint rect = m_computation->scene()->boundingBox();
         double max = qMax(rect.width(), rect.height());
-        double depth = max / m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DHeight).toDouble();
+        double depth = max / m_computation->setting()->value(PostprocessorSetting::ScalarView3DHeight).toDouble();
 
         // range
-        double irange = 1.0 / (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble());
+        double irange = 1.0 / (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble());
         // special case: constant solution
-        if (fabs(m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble()) < EPS_ZERO)
+        if (fabs(m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble()) < EPS_ZERO)
         {
             irange = 1.0;
         }
 
-        double phi = m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DAngle).toDouble();
+        double phi = m_computation->setting()->value(PostprocessorSetting::ScalarView3DAngle).toDouble();
 
         glPushMatrix();
 
@@ -466,18 +507,18 @@ void SceneViewPost3D::paintScalarField3DSolid()
                 SceneMaterial *material = label->marker(m_computation->postDeal()->activeViewField());
 
                 // hide material
-                if (m_computation->setting()->value(PostprocessorSetting::View_SolidViewHide).toStringList().contains(material->name()))
+                if (m_computation->setting()->value(PostprocessorSetting::SolidViewHide).toStringList().contains(material->name()))
                     continue;
 
-                if (!m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeAuto).toBool())
+                if (!m_computation->setting()->value(PostprocessorSetting::ScalarRangeAuto).toBool())
                 {
                     double avgValue = (triangle.values[0] + triangle.values[1] + triangle.values[2]) / 3.0;
-                    if (avgValue < m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble() || avgValue > m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble())
+                    if (avgValue < m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble() || avgValue > m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble())
                         continue;
                 }
 
                 // z = - depth / 2.0
-                if (m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DLighting).toBool() || isModel)
+                if (m_computation->setting()->value(PostprocessorSetting::ScalarView3DLighting).toBool() || isModel)
                 {
                     computeNormal(triangle.vertices[0][0], triangle.vertices[0][1], -depth/2.0,
                             triangle.vertices[1][0], triangle.vertices[1][1], -depth/2.0,
@@ -488,12 +529,12 @@ void SceneViewPost3D::paintScalarField3DSolid()
 
                 for (int j = 0; j < 3; j++)
                 {
-                    if (!isModel) glTexCoord1d((triangle.values[j] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange);
+                    if (!isModel) glTexCoord1d((triangle.values[j] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
                     glVertex3d(triangle.vertices[j][0], triangle.vertices[j][1], -depth/2.0);
                 }
 
                 // z = + depth / 2.0
-                if (m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DLighting).toBool() || isModel)
+                if (m_computation->setting()->value(PostprocessorSetting::ScalarView3DLighting).toBool() || isModel)
                 {
                     computeNormal(triangle.vertices[0][0], triangle.vertices[0][1], depth/2.0,
                             triangle.vertices[1][0], triangle.vertices[1][1], depth/2.0,
@@ -504,7 +545,7 @@ void SceneViewPost3D::paintScalarField3DSolid()
 
                 for (int j = 0; j < 3; j++)
                 {
-                    if (!isModel) glTexCoord1d((triangle.values[j] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange);
+                    if (!isModel) glTexCoord1d((triangle.values[j] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
                     glVertex3d(triangle.vertices[j][0], triangle.vertices[j][1], depth/2.0);
                 }
             }
@@ -521,13 +562,13 @@ void SceneViewPost3D::paintScalarField3DSolid()
                     SceneMaterial *material = label->marker(m_computation->postDeal()->activeViewField());
 
                     // hide material
-                    if (m_computation->setting()->value(PostprocessorSetting::View_SolidViewHide).toStringList().contains(material->name()))
+                    if (m_computation->setting()->value(PostprocessorSetting::SolidViewHide).toStringList().contains(material->name()))
                         continue;
 
                     // length
                     for (int k = 0; k < 3; k++)
                     {
-                        if (m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DLighting).toBool() || isModel)
+                        if (m_computation->setting()->value(PostprocessorSetting::ScalarView3DLighting).toBool() || isModel)
                         {
                             computeNormal(triangle.vertices[k][0], triangle.vertices[k][1], -depth/2.0,
                                     triangle.vertices[(k + 1) % 3][0], triangle.vertices[(k + 1) % 3][1], -depth/2.0,
@@ -536,14 +577,14 @@ void SceneViewPost3D::paintScalarField3DSolid()
                             glNormal3d(normal[0], normal[1], normal[2]);
                         }
 
-                        if (!isModel) glTexCoord1d((triangle.values[k] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange);
+                        if (!isModel) glTexCoord1d((triangle.values[k] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
                         glVertex3d(triangle.vertices[k][0], triangle.vertices[k][1], -depth/2.0);
-                        if (!isModel) glTexCoord1d((triangle.values[(k + 1) % 3] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange);
+                        if (!isModel) glTexCoord1d((triangle.values[(k + 1) % 3] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
                         glVertex3d(triangle.vertices[(k + 1) % 3][0], triangle.vertices[(k + 1) % 3][1], -depth/2.0);
 
-                        if (!isModel) glTexCoord1d((triangle.values[(k + 1) % 3] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange);
+                        if (!isModel) glTexCoord1d((triangle.values[(k + 1) % 3] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
                         glVertex3d(triangle.vertices[(k + 1) % 3][0], triangle.vertices[(k + 1) % 3][1], depth/2.0);
-                        if (!isModel) glTexCoord1d((triangle.values[k] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange);
+                        if (!isModel) glTexCoord1d((triangle.values[k] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
                         glVertex3d(triangle.vertices[k][0], triangle.vertices[k][1], depth/2.0);
                     }
                 }
@@ -563,19 +604,19 @@ void SceneViewPost3D::paintScalarField3DSolid()
                 SceneMaterial *material = label->marker(m_computation->postDeal()->activeViewField());
 
                 // hide material
-                if (m_computation->setting()->value(PostprocessorSetting::View_SolidViewHide).toStringList().contains(material->name()))
+                if (m_computation->setting()->value(PostprocessorSetting::SolidViewHide).toStringList().contains(material->name()))
                     continue;
 
-                if (!m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeAuto).toBool())
+                if (!m_computation->setting()->value(PostprocessorSetting::ScalarRangeAuto).toBool())
                 {
                     double avgValue = (triangle.values[0] + triangle.values[1] + triangle.values[2]) / 3.0;
-                    if (avgValue < m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble() || avgValue > m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble())
+                    if (avgValue < m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble() || avgValue > m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble())
                         continue;
                 }
 
                 for (int j = 0; j < 2; j++)
                 {
-                    if (m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DLighting).toBool() || isModel)
+                    if (m_computation->setting()->value(PostprocessorSetting::ScalarView3DLighting).toBool() || isModel)
                     {
                         computeNormal(triangle.vertices[0][0] * cos(j*phi/180.0*M_PI), triangle.vertices[0][1], triangle.vertices[0][0] * sin(j*phi/180.0*M_PI),
                                 triangle.vertices[1][0] * cos(j*phi/180.0*M_PI), triangle.vertices[1][1], triangle.vertices[1][0] * sin(j*phi/180.0*M_PI),
@@ -584,11 +625,11 @@ void SceneViewPost3D::paintScalarField3DSolid()
                         glNormal3d(normal[0], normal[1], normal[2]);
                     }
 
-                    glTexCoord1d((triangle.values[0] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange);
+                    glTexCoord1d((triangle.values[0] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
                     glVertex3d(triangle.vertices[0][0] * cos(j*phi/180.0*M_PI), triangle.vertices[0][1], triangle.vertices[0][0] * sin(j*phi/180.0*M_PI));
-                    glTexCoord1d((triangle.values[1] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange);
+                    glTexCoord1d((triangle.values[1] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
                     glVertex3d(triangle.vertices[1][0] * cos(j*phi/180.0*M_PI), triangle.vertices[1][1], triangle.vertices[1][0] * sin(j*phi/180.0*M_PI));
-                    glTexCoord1d((triangle.values[2] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange);
+                    glTexCoord1d((triangle.values[2] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
                     glVertex3d(triangle.vertices[2][0] * cos(j*phi/180.0*M_PI), triangle.vertices[2][1], triangle.vertices[2][0] * sin(j*phi/180.0*M_PI));
                 }
             }
@@ -607,13 +648,13 @@ void SceneViewPost3D::paintScalarField3DSolid()
                     SceneMaterial *material = label->marker(m_computation->postDeal()->activeViewField());
 
                     // hide material
-                    if (m_computation->setting()->value(PostprocessorSetting::View_SolidViewHide).toStringList().contains(material->name()))
+                    if (m_computation->setting()->value(PostprocessorSetting::SolidViewHide).toStringList().contains(material->name()))
                         continue;
 
-                    if (!m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeAuto).toBool())
+                    if (!m_computation->setting()->value(PostprocessorSetting::ScalarRangeAuto).toBool())
                     {
                         double avgValue = (triangle.values[0] + triangle.values[1] + triangle.values[2]) / 3.0;
-                        if (avgValue < m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble() || avgValue > m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble())
+                        if (avgValue < m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble() || avgValue > m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble())
                             continue;
                     }
 
@@ -626,7 +667,7 @@ void SceneViewPost3D::paintScalarField3DSolid()
                         for (int j = 0; j < count + 1; j++)
                         {
 
-                            if (m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DLighting).toBool() || isModel)
+                            if (m_computation->setting()->value(PostprocessorSetting::ScalarView3DLighting).toBool() || isModel)
                             {
                                 computeNormal(triangle.vertices[k][0] * cos((j+0)*step/180.0*M_PI), triangle.vertices[k][1], triangle.vertices[k][0] * sin((j+0)*step/180.0*M_PI),
                                         triangle.vertices[(k + 1) % 3][0] * cos((j+0)*step/180.0*M_PI), triangle.vertices[(k + 1) % 3][1], triangle.vertices[(k + 1) % 3][0] * sin((j+0)*step/180.0*M_PI),
@@ -635,11 +676,11 @@ void SceneViewPost3D::paintScalarField3DSolid()
                                 glNormal3d(normal[0], normal[1], normal[2]);
                             }
 
-                            if (!isModel) glTexCoord1d((triangle.values[k] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange);
+                            if (!isModel) glTexCoord1d((triangle.values[k] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
                             glVertex3d(triangle.vertices[k][0] * cos((j+0)*step/180.0*M_PI),
                                     triangle.vertices[k][1],
                                     triangle.vertices[k][0] * sin((j+0)*step/180.0*M_PI));
-                            if (!isModel) glTexCoord1d((triangle.values[(k + 1) % 3] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange);
+                            if (!isModel) glTexCoord1d((triangle.values[(k + 1) % 3] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
                             glVertex3d(triangle.vertices[(k + 1) % 3][0] * cos((j+0)*step/180.0*M_PI),
                                     triangle.vertices[(k + 1) % 3][1],
                                     triangle.vertices[(k + 1) % 3][0] * sin((j+0)*step/180.0*M_PI));
@@ -667,7 +708,7 @@ void SceneViewPost3D::paintScalarField3DSolid()
         }
 
         // geometry
-        if (m_computation->setting()->value(PostprocessorSetting::View_ScalarView3DSolidGeometry).toBool())
+        if (m_computation->setting()->value(PostprocessorSetting::ScalarView3DSolidGeometry).toBool())
         {
             glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
             glEnable(GL_LINE_SMOOTH);

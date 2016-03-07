@@ -43,49 +43,49 @@ public:
     // number of particles
     inline int getNumberOfParticles() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleNumberOfParticles).toInt();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleNumberOfParticles).toInt();
     }
     void setNumberOfParticles(int particles);
 
     // starting radius
     inline double getStartingRadius() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleStartingRadius).toDouble();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleStartingRadius).toDouble();
     }
     void setStartingRadius(double radius);
 
     // particle mass
     inline double getParticleMass() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleMass).toDouble();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleMass).toDouble();
     }
     void setParticleMass(double mass);
 
     // particle charge
     inline double getParticleCharge() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleConstant).toDouble();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleConstant).toDouble();
     }
     void setParticleCharge(double charge);
 
     // drag force density
     inline double getDragForceDensity() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleDragDensity).toDouble();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleDragDensity).toDouble();
     }
     void setDragForceDensity(double density);
 
     // drag force reference area
     inline double getDragForceReferenceArea() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleDragReferenceArea).toDouble();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleDragReferenceArea).toDouble();
     }
     void setDragForceReferenceArea(double area);
 
     // drag force coefficient
     inline double getDragForceCoefficient() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleDragCoefficient).toDouble();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleDragCoefficient).toDouble();
     }
     void setDragForceCoefficient(double coeff);
 
@@ -95,120 +95,120 @@ public:
 
     inline bool getElectrostaticInteraction() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleP2PElectricForce).toBool();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleP2PElectricForce).toBool();
     }
     void setElectrostaticInteraction(bool interaction)
     {
-        m_computation->setting()->setValue(PostprocessorSetting::View_ParticleP2PElectricForce, interaction);
+        m_computation->setting()->setValue(PostprocessorSetting::ParticleP2PElectricForce, interaction);
     }
     inline bool getMagneticInteraction() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleP2PMagneticForce).toBool();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleP2PMagneticForce).toBool();
     }
     void setMagneticInteraction(bool interaction)
     {
-        m_computation->setting()->setValue(PostprocessorSetting::View_ParticleP2PMagneticForce, interaction);
+        m_computation->setting()->setValue(PostprocessorSetting::ParticleP2PMagneticForce, interaction);
     }
 
     // butcher table
     std::string getButcherTableType() const
     {
-        return butcherTableTypeToStringKey((ButcherTableType) m_computation->setting()->value(PostprocessorSetting::View_ParticleButcherTableType).toInt()).toStdString();
+        return butcherTableTypeToStringKey((ButcherTableType) m_computation->setting()->value(PostprocessorSetting::ParticleButcherTableType).toInt()).toStdString();
     }
     void setButcherTableType(const std::string &tableType);
 
     // relativistic correction
     inline bool getIncludeRelativisticCorrection() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleIncludeRelativisticCorrection).toBool();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleIncludeRelativisticCorrection).toBool();
     }
     void setIncludeRelativisticCorrection(bool include)
     {
-        m_computation->setting()->setValue(PostprocessorSetting::View_ParticleIncludeRelativisticCorrection, include);
+        m_computation->setting()->setValue(PostprocessorSetting::ParticleIncludeRelativisticCorrection, include);
     }
 
     // get maximum relative error
     inline double getMaximumRelativeError() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleMaximumRelativeError).toDouble();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleMaximumRelativeError).toDouble();
     }
     void setMaximumRelativeError(double error);
 
     // maximum number of steps
     inline int getMaximumNumberOfSteps() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleMaximumNumberOfSteps).toInt();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleMaximumNumberOfSteps).toInt();
     }
     void setMaximumNumberOfSteps(int steps);
 
     // minimum step
     inline int getMaximumStep() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleMaximumStep).toInt();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleMaximumStep).toInt();
     }
     void setMaximumStep(int step);
 
     // reflection on different material
     inline bool getReflectOnDifferentMaterial() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleReflectOnDifferentMaterial).toBool();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleReflectOnDifferentMaterial).toBool();
     }
     void setReflectOnDifferentMaterial(bool reflect)
     {
-        m_computation->setting()->setValue(PostprocessorSetting::View_ParticleReflectOnDifferentMaterial, reflect);
+        m_computation->setting()->setValue(PostprocessorSetting::ParticleReflectOnDifferentMaterial, reflect);
     }
 
     // reflection on boundary
     inline bool getReflectOnBoundary() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleReflectOnBoundary).toBool();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleReflectOnBoundary).toBool();
     }
     void setReflectOnBoundary(bool reflect)
     {
-        m_computation->setting()->setValue(PostprocessorSetting::View_ParticleReflectOnBoundary, reflect);
+        m_computation->setting()->setValue(PostprocessorSetting::ParticleReflectOnBoundary, reflect);
     }
 
     // coefficient of restitution
     inline double getCoefficientOfRestitution() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleCoefficientOfRestitution).toDouble();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleCoefficientOfRestitution).toDouble();
     }
     void setCoefficientOfRestitution(double coeff);
 
     // collor by velocity
     inline bool getColorByVelocity() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleColorByVelocity).toBool();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleColorByVelocity).toBool();
     }
     void setColorByVelocity(bool show)
     {
-        m_computation->setting()->setValue(PostprocessorSetting::View_ParticleColorByVelocity, show);
+        m_computation->setting()->setValue(PostprocessorSetting::ParticleColorByVelocity, show);
     }
 
     // show points
     inline bool getShowPoints() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleShowPoints).toBool();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleShowPoints).toBool();
     }
     void setShowPoints(bool show)
     {
-        m_computation->setting()->setValue(PostprocessorSetting::View_ParticleShowPoints, show);
+        m_computation->setting()->setValue(PostprocessorSetting::ParticleShowPoints, show);
     }
 
     // blended faces
     inline bool getShowBlendedFaces() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleShowBlendedFaces).toBool();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleShowBlendedFaces).toBool();
     }
     void setShowBlendedFaces(bool show)
     {
-        m_computation->setting()->setValue(PostprocessorSetting::View_ParticleShowBlendedFaces, show);
+        m_computation->setting()->setValue(PostprocessorSetting::ParticleShowBlendedFaces, show);
     }
 
     // multiple show particles
     inline int getNumShowParticlesAxi() const
     {
-        return m_computation->setting()->value(PostprocessorSetting::View_ParticleNumShowParticlesAxi).toInt();
+        return m_computation->setting()->value(PostprocessorSetting::ParticleNumShowParticlesAxi).toInt();
     }
     void setNumShowParticlesAxi(int particles);
 

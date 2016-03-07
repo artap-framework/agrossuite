@@ -88,7 +88,7 @@ bool ParticleTracing::newtonEquations(int particleIndex,
 {
     // relativistic correction
     double mass = m_particleMassesList[particleIndex];
-    if (m_computation->setting()->value(PostprocessorSetting::View_ParticleIncludeRelativisticCorrection).toBool())
+    if (m_computation->setting()->value(PostprocessorSetting::ParticleIncludeRelativisticCorrection).toBool())
     {
         Point3 velocityReal = (m_computation->config()->coordinateType() == CoordinateType_Planar) ?
                     velocity : Point3(velocity.x, velocity.y, position.x * velocity.z);
@@ -139,24 +139,24 @@ int ParticleTracing::timeToLevel(int particleIndex, double time)
 void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPositions, const QList<Point3> initialVelocities)
 {
     assert(initialPositions.size() == initialVelocities.size());    
-    assert(initialPositions.size() == m_computation->setting()->value(PostprocessorSetting::View_ParticleNumberOfParticles).toInt());
+    assert(initialPositions.size() == m_computation->setting()->value(PostprocessorSetting::ParticleNumberOfParticles).toInt());
 
-    ButcherTable butcher((ButcherTableType) m_computation->setting()->value(PostprocessorSetting::View_ParticleButcherTableType).toInt());
+    ButcherTable butcher((ButcherTableType) m_computation->setting()->value(PostprocessorSetting::ParticleButcherTableType).toInt());
 
     clear();
 
-    int numberOfParticles = m_computation->setting()->value(PostprocessorSetting::View_ParticleNumberOfParticles).toInt();
+    int numberOfParticles = m_computation->setting()->value(PostprocessorSetting::ParticleNumberOfParticles).toInt();
 
     QTime timePart;
     timePart.start();
 
     RectPoint bound = m_computation->scene()->boundingBox();
 
-    double maxStep = (m_computation->setting()->value(PostprocessorSetting::View_ParticleMaximumStep).toDouble() > 0.0)
-            ? m_computation->setting()->value(PostprocessorSetting::View_ParticleMaximumStep).toDouble() :
+    double maxStep = (m_computation->setting()->value(PostprocessorSetting::ParticleMaximumStep).toDouble() > 0.0)
+            ? m_computation->setting()->value(PostprocessorSetting::ParticleMaximumStep).toDouble() :
               min(bound.width(), bound.height()) / 80.0;
-    double relErrorMax = (m_computation->setting()->value(PostprocessorSetting::View_ParticleMaximumRelativeError).toDouble() > 0.0)
-            ? m_computation->setting()->value(PostprocessorSetting::View_ParticleMaximumRelativeError).toDouble() : 1e-6;
+    double relErrorMax = (m_computation->setting()->value(PostprocessorSetting::ParticleMaximumRelativeError).toDouble() > 0.0)
+            ? m_computation->setting()->value(PostprocessorSetting::ParticleMaximumRelativeError).toDouble() : 1e-6;
     double relErrorMin = 1e-3;
 
     // given velocity
@@ -208,7 +208,7 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
         for (int particleIndex = 0; particleIndex < numberOfParticles; particleIndex++)
         {
             // stop on number of steps
-            if (numberOfSteps[particleIndex] > m_computation->setting()->value(PostprocessorSetting::View_ParticleMaximumNumberOfSteps).toInt() - 1)
+            if (numberOfSteps[particleIndex] > m_computation->setting()->value(PostprocessorSetting::ParticleMaximumNumberOfSteps).toInt() - 1)
                 stopComputation[particleIndex] = true;
 
             // stop on time steps
@@ -268,7 +268,7 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
                         }
                     }
 
-                    if ((m_computation->setting()->value(PostprocessorSetting::View_ParticleIncludeRelativisticCorrection).toBool())
+                    if ((m_computation->setting()->value(PostprocessorSetting::ParticleIncludeRelativisticCorrection).toBool())
                             && ((m_computation->config()->coordinateType() == CoordinateType_Planar
                                  ? vel.magnitude() : Point3(vel.x, vel.y, pos.x * vel.z).magnitude()) > SPEEDOFLIGHT))
                     {
@@ -410,11 +410,11 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
                 bool impact = false;
                 foreach (FieldInfo* fieldInfo, m_computation->fieldInfos())
                 {
-                    if ((m_computation->setting()->value(PostprocessorSetting::View_ParticleCoefficientOfRestitution).toDouble() < EPS_ZERO) || // no reflection
+                    if ((m_computation->setting()->value(PostprocessorSetting::ParticleCoefficientOfRestitution).toDouble() < EPS_ZERO) || // no reflection
                             (crossingEdge->marker(fieldInfo) == m_computation->scene()->boundaries->getNone(fieldInfo)
-                             && !m_computation->setting()->value(PostprocessorSetting::View_ParticleReflectOnDifferentMaterial).toBool()) || // inner edge
+                             && !m_computation->setting()->value(PostprocessorSetting::ParticleReflectOnDifferentMaterial).toBool()) || // inner edge
                             (crossingEdge->marker(fieldInfo) != m_computation->scene()->boundaries->getNone(fieldInfo)
-                             && !m_computation->setting()->value(PostprocessorSetting::View_ParticleReflectOnBoundary).toBool())) // boundary
+                             && !m_computation->setting()->value(PostprocessorSetting::ParticleReflectOnBoundary).toBool())) // boundary
                         impact = true;
                 }
 
@@ -458,8 +458,8 @@ void ParticleTracing::computeTrajectoryParticles(const QList<Point3> initialPosi
 
                     // velocity in the direction of output vector
                     Point3 oldv = newVelocityH;
-                    newVelocityH.x = vectout.x * Point(oldv.x, oldv.y).magnitude() * m_computation->setting()->value(PostprocessorSetting::View_ParticleCoefficientOfRestitution).toDouble();
-                    newVelocityH.y = vectout.y * Point(oldv.x, oldv.y).magnitude() * m_computation->setting()->value(PostprocessorSetting::View_ParticleCoefficientOfRestitution).toDouble();
+                    newVelocityH.x = vectout.x * Point(oldv.x, oldv.y).magnitude() * m_computation->setting()->value(PostprocessorSetting::ParticleCoefficientOfRestitution).toDouble();
+                    newVelocityH.y = vectout.y * Point(oldv.x, oldv.y).magnitude() * m_computation->setting()->value(PostprocessorSetting::ParticleCoefficientOfRestitution).toDouble();
 
                     // set new timestep
                     currentTimeStep = currentTimeStep * ratio;

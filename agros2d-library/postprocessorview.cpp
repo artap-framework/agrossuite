@@ -146,8 +146,20 @@ void PostprocessorWidget::refresh()
     if (currentPythonEngine()->isScriptRunning())
         return;
 
-    actSceneModeResults->setEnabled(Agros2D::computations().count() > 0);
-    if (Agros2D::computations().count() == 0)
+    // enable widget
+    bool enabled = false;
+    foreach (QSharedPointer<Computation> computation, Agros2D::computations().values())
+    {
+        if (computation->isSolved())
+        {
+            enabled = true;
+            break;
+        }
+    }
+    actSceneModeResults->setEnabled(enabled);
+
+    // reset computations
+    if (Agros2D::computations().isEmpty())
     {
         if (!m_computation.isNull())
         {

@@ -200,8 +200,10 @@ void MainWindow::createActions()
     actDocumentSave->setShortcuts(QKeySequence::Save);
     connect(actDocumentSave, SIGNAL(triggered()), this, SLOT(doDocumentSave()));
 
-    actDeleteSolution = new QAction(icon(""), tr("Delete solutions"), this);
-    connect(actDeleteSolution, SIGNAL(triggered()), this, SLOT(doDeleteSolutions()));
+    actDeleteSolutions = new QAction(icon(""), tr("Delete solutions"), this);
+    connect(actDeleteSolutions, SIGNAL(triggered()), this, SLOT(doDeleteSolutions()));
+    actDeleteSolutionsAndResults = new QAction(icon(""), tr("Delete solutions and results"), this);
+    connect(actDeleteSolutionsAndResults, SIGNAL(triggered()), this, SLOT(doDeleteSolutionsAndResults()));
 
     actDocumentSaveAs = new QAction(icon("document-save-as"), tr("Save &As..."), this);
     actDocumentSaveAs->setShortcuts(QKeySequence::SaveAs);
@@ -377,7 +379,7 @@ void MainWindow::createMenus()
     mnuFile->addAction(actDocumentSave);
     mnuFile->addAction(actDocumentSaveAs);
     mnuFile->addSeparator();
-    mnuFile->addAction(actDeleteSolution);
+    mnuFile->addAction(actDeleteSolutions);
     mnuFile->addSeparator();
     mnuFile->addMenu(mnuFileImportExport);
     // mnuFile->addMenu(mnuServer);
@@ -817,6 +819,11 @@ void MainWindow::doDeleteSolutions()
     sceneViewProblem->refresh();
 }
 
+void MainWindow::doDeleteSolutionsAndResults()
+{
+
+}
+
 void MainWindow::doDocumentSaveAs()
 {
     QSettings settings;
@@ -1108,7 +1115,7 @@ void MainWindow::setControls()
     setUpdatesEnabled(false);
     setEnabled(true);
 
-    actDeleteSolution->setEnabled(Agros2D::computations().count() > 0);
+    actDeleteSolutions->setEnabled(!Agros2D::computations().isEmpty());
 
     // set controls
     Agros2D::problem()->scene()->actTransform->setEnabled(false);
@@ -1116,7 +1123,6 @@ void MainWindow::setControls()
     postprocessorWidget->refresh();
 
     sceneViewProblem->actSceneZoomRegion = NULL;
-    // sceneViewMesh->actSceneZoomRegion = NULL;
 
     bool showZoom = sceneViewProblem->actSceneModeProblem->isChecked() || postprocessorWidget->actSceneModeResults->isChecked();
 

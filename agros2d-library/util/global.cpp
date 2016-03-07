@@ -187,9 +187,7 @@ void Agros2D::clearComputations()
         Agros2D::singleton()->problem()->studies()->removeComputation(computation);
         // remove from list
         Agros2D::singleton()->m_computations.remove(computation->problemDir());
-    }
-
-    Agros2D::singleton()->problem()->studies()->clear();
+    }    
 }
 
 void Agros2D::createSingleton()

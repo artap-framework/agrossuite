@@ -35,10 +35,13 @@ void fillComboBoxComputation(QComboBox *cmbComputation, const QString &computati
     // clear combo
     cmbComputation->blockSignals(true);
     cmbComputation->clear();
-    foreach (QSharedPointer<Computation> problem, Agros2D::computations())
+    foreach (QSharedPointer<Computation> computation, Agros2D::computations())
     {
-        QDateTime time = QDateTime::fromString(problem->problemDir(), "yyyy-MM-dd-hh-mm-ss-zzz");
-        cmbComputation->addItem(time.toString("dd.MM.yyyy hh:mm:ss.zzz"), problem->problemDir());
+        if (computation->isSolved())
+        {
+            QDateTime time = QDateTime::fromString(computation->problemDir(), "yyyy-MM-dd-hh-mm-ss-zzz");
+            cmbComputation->addItem(time.toString("dd.MM.yyyy hh:mm:ss.zzz"), computation->problemDir());
+        }
     }
 
     // refresh only, no new computation
@@ -87,8 +90,8 @@ void fillComboBoxTimeStep(QComboBox *cmbTimeStep, QSharedPointer<Computation> pr
     for (int step = 0; step < times.length(); step++)
     {
         bool stepIsAvailable = problem->solutionStore()->contains(FieldSolutionID(fieldInfo->fieldId(),
-                                                                                      step,
-                                                                                      problem->solutionStore()->lastAdaptiveStep(fieldInfo, step)));
+                                                                                  step,
+                                                                                  problem->solutionStore()->lastAdaptiveStep(fieldInfo, step)));
         if (!stepIsAvailable)
             continue;
 
@@ -320,7 +323,7 @@ void PhysicalFieldWidget::doFieldInfo(int index)
     {
         cmbTimeStep->clear();
         doTimeStep();
-    }    
+    }
 }
 
 void PhysicalFieldWidget::doTimeStep(int index)
@@ -329,7 +332,7 @@ void PhysicalFieldWidget::doTimeStep(int index)
     {
         fillComboBoxAdaptivityStep(cmbAdaptivityStep, selectedComputation(), selectedField(), selectedTimeStep(), m_lastAdaptiveStep);
         if ((cmbAdaptivityStep->currentIndex() >= cmbAdaptivityStep->count()) || (cmbAdaptivityStep->currentIndex() < 0))
-            cmbAdaptivityStep->setCurrentIndex(cmbAdaptivityStep->count() - 1);        
+            cmbAdaptivityStep->setCurrentIndex(cmbAdaptivityStep->count() - 1);
 
         m_lastTimeStep = selectedTimeStep();
 

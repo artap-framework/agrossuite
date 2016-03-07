@@ -585,12 +585,15 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
     {
         // trend arrow
         auto mm = std::minmax_element(linRegDataX.begin(), linRegDataX.end());
+        QPointF start(*mm.first, linRegDataY.at(std::distance(linRegDataX.begin(), mm.second)));
+        QPointF end(*mm.second, linRegDataY.at(std::distance(linRegDataX.begin(), mm.first)));
+
         QCPItemLine *arrow = new QCPItemLine(chart);
         chart->addItem(arrow);
-        arrow->start->setCoords(*mm.first, linRegDataY.at(std::distance(linRegDataX.begin(), mm.second)));
-        arrow->end->setCoords(*mm.second, linRegDataY.at(std::distance(linRegDataX.begin(), mm.first)));
+        arrow->start->setCoords(start);
+        arrow->end->setCoords(end);
         arrow->setHead(QCPLineEnding::esSpikeArrow);
-        arrow->setPen(QPen(QBrush(Qt::black), 3));
+        arrow->setPen(QPen(QBrush(QColor(140, 140, 140)), 5));
     }
 
     // plot chart

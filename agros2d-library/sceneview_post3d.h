@@ -56,6 +56,8 @@ protected:
     void paintScalarField3D(); // paint scalar field 3d surface
     void paintScalarField3DSolid(); // paint scalar field 3d solid
 
+    void initLighting();
+
 private:
     // gl lists
     int m_listScalarField3D;

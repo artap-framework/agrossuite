@@ -60,6 +60,7 @@ public:
 
     inline void addComputation(QSharedPointer<Computation> computation) { m_computations.append(computation); }
     inline void removeComputation(QSharedPointer<Computation> computation) { m_computations.removeAll(computation); }
+    QList<QSharedPointer<Computation> > computations() const { return m_computations; }
     QList<QSharedPointer<Computation> > &computations() { return m_computations; }
 
     void sort(const QString &parameterName);
@@ -132,6 +133,7 @@ public:
     QList<double> evaluateMultiGoal(QSharedPointer<Computation> computation);
 
     QList<QSharedPointer<Computation> > &computations(int index = -1);
+    QList<ComputationSet> computationSets() const { return m_computationSets; }
     QList<ComputationSet> &computationSets() { return m_computationSets; }
     void addComputationSet(const QString &name = "") { m_computationSets.append(ComputationSet(QList<QSharedPointer<Computation> >(), name.isEmpty() ? tr("Set %1").arg(m_computationSets.count() + 1) : name)); }
     void addComputation(QSharedPointer<Computation> computation, bool newComputationSet = false);

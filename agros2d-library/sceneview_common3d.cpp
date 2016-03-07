@@ -92,41 +92,6 @@ void SceneViewCommon3D::doZoomRegion(const Point &start, const Point &end)
     setZoom(0);
 }
 
-void SceneViewCommon3D::paintBackground()
-{
-    // background
-    glPushMatrix();
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    glOrtho(-1.0, 1.0, -1.0, 1.0, -10.0, 10.0);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    glBegin(GL_QUADS);
-    if (problem()->setting()->value(PostprocessorSetting::View_ScalarView3DBackground).toBool())
-        glColor3d(0.99, 0.99, 0.99);
-    else
-        glColor3d(COLORBACKGROUND[0], COLORBACKGROUND[1], COLORBACKGROUND[2]);
-
-    glVertex3d(-1.0, -1.0, 0.0);
-    glVertex3d(1.0, -1.0, 0.0);
-    if (problem()->setting()->value(PostprocessorSetting::View_ScalarView3DBackground).toBool())
-        glColor3d(0.44, 0.56, 0.89);
-    glVertex3d(1.0, 1.0, 0.0);
-    glVertex3d(-1.0, 1.0, 0.0);
-    glEnd();
-
-    glDisable(GL_POLYGON_OFFSET_FILL);
-
-    glPopMatrix();
-}
-
 void SceneViewCommon3D::paintAxes()
 {
     loadProjectionViewPort();
@@ -269,47 +234,6 @@ void SceneViewCommon3D::setZoom(double power)
     m_scale3d = m_scale3d * pow(1.2, power);
 
     updateGL();
-}
-
-void SceneViewCommon3D::initLighting()
-{
-    if (problem()->setting()->value(PostprocessorSetting::View_ScalarView3DLighting).toBool()) // || Agros2D::problem()->configView()->showPost3D == SceneViewPost3DMode_Model)
-    {
-        // environment
-        float light_specular[] = {  1.0f, 1.0f, 1.0f, 1.0f };
-        float light_ambient[]  = {  0.7f, 0.7f, 0.7f, 1.0f };
-        float light_diffuse[]  = {  1.0f, 1.0f, 1.0f, 1.0f };
-        float light_position[] = {  1.0f, 0.0f, 1.0f, 0.0f };
-
-        glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-        glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-        glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-        glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-        // material
-        float material_ambient[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
-        float material_diffuse[]  = { 0.5f, 0.5f, 0.5f, 1.0f };
-        float material_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, material_ambient);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, material_diffuse);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, material_specular);
-        glMaterialf(GL_FRONT, GL_SHININESS, 128.0);
-
-        // glEnable(GL_COLOR_MATERIAL);
-#if defined(GL_LIGHT_MODEL_COLOR_CONTROL) && defined(GL_SEPARATE_SPECULAR_COLOR)
-        glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
-#endif
-        glShadeModel(GL_SMOOTH);
-        glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
-    }
-    else
-    {
-        glDisable(GL_LIGHTING);
-        glDisable(GL_LIGHT0);
-    }
 }
 
 // events

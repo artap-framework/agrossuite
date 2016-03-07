@@ -176,6 +176,7 @@ protected:
 
     virtual void initializeGL();
 
+    void paintBackground(); // gradient background
     void paintScalarFieldColorBar(double min, double max);
 
     // palette

@@ -228,9 +228,9 @@ void SceneViewPost2D::paintGL()
     // view
     if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
     {
-        if (m_computation->setting()->value(PostprocessorSetting::View_ShowScalarView).toBool()) paintScalarField();
-        if (m_computation->setting()->value(PostprocessorSetting::View_ShowContourView).toBool()) paintContours();
-        if (m_computation->setting()->value(PostprocessorSetting::View_ShowVectorView).toBool()) paintVectors();
+        if (m_computation->setting()->value(PostprocessorSetting::ShowScalarView).toBool()) paintScalarField();
+        if (m_computation->setting()->value(PostprocessorSetting::ShowContourView).toBool()) paintContours();
+        if (m_computation->setting()->value(PostprocessorSetting::ShowVectorView).toBool()) paintVectors();
     }
 
     // geometry
@@ -243,10 +243,10 @@ void SceneViewPost2D::paintGL()
         if (actPostprocessorModeSurfaceIntegral->isChecked()) paintPostprocessorSelectedSurface();
 
         // bars
-        if (m_computation->setting()->value(PostprocessorSetting::View_ShowScalarView).toBool()
-                && m_computation->setting()->value(PostprocessorSetting::View_ShowScalarColorBar).toBool())
-            paintScalarFieldColorBar(m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble(),
-                                     m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble());
+        if (m_computation->setting()->value(PostprocessorSetting::ShowScalarView).toBool()
+                && m_computation->setting()->value(PostprocessorSetting::ShowScalarColorBar).toBool())
+            paintScalarFieldColorBar(m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble(),
+                                     m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble());
     }
 
     // rulers
@@ -263,13 +263,13 @@ void SceneViewPost2D::paintGL()
 
     if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
     {
-        if (m_computation->setting()->value(PostprocessorSetting::View_ShowScalarView).toBool())
+        if (m_computation->setting()->value(PostprocessorSetting::ShowScalarView).toBool())
         {
             Module::LocalVariable localVariable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),
-                                                                                                              m_computation->setting()->value(PostprocessorSetting::View_ScalarVariable).toString());
-            QString text = m_computation->setting()->value(PostprocessorSetting::View_ScalarVariable).toString() != "" ? localVariable.name() : "";
-            if ((PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::View_ScalarVariableComp).toInt() != PhysicFieldVariableComp_Scalar)
-                text += " - " + physicFieldVariableCompString((PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::View_ScalarVariableComp).toInt());
+                                                                                                              m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString());
+            QString text = m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString() != "" ? localVariable.name() : "";
+            if ((PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt() != PhysicFieldVariableComp_Scalar)
+                text += " - " + physicFieldVariableCompString((PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt());
 
             emit labelCenter(text);
         }
@@ -336,9 +336,9 @@ void SceneViewPost2D::paintScalarField()
         glNewList(m_listScalarField, GL_COMPILE);
 
         // range
-        double irange = 1.0 / (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble());
+        double irange = 1.0 / (m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble());
         // special case: constant solution
-        if (fabs(m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) < EPS_ZERO)
+        if (fabs(m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble() - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) < EPS_ZERO)
             irange = 1.0;
 
         // set texture for coloring
@@ -355,20 +355,20 @@ void SceneViewPost2D::paintScalarField()
         glBegin(GL_TRIANGLES);
         foreach (PostTriangle triangle, m_computation->postDeal()->scalarValues())
         {
-            if (!m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeAuto).toBool())
+            if (!m_computation->setting()->value(PostprocessorSetting::ScalarRangeAuto).toBool())
             {
                 double avgValue = (triangle.values[0] + triangle.values[1] + triangle.values[2]) / 3.0;
-                if (avgValue < m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble() || avgValue > m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMax).toDouble())
+                if (avgValue < m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble() || avgValue > m_computation->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble())
                     continue;
             }
 
             for (int j = 0; j < 3; j++)
             {
-                if (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeLog).toBool())
-                    glTexCoord1d(log10((double) (1 + (m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeBase).toInt() - 1))
-                                       * (triangle.values[j] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange) / log10((double) m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeBase).toInt()));
+                if (m_computation->setting()->value(PostprocessorSetting::ScalarRangeLog).toBool())
+                    glTexCoord1d(log10((double) (1 + (m_computation->setting()->value(PostprocessorSetting::ScalarRangeBase).toInt() - 1))
+                                       * (triangle.values[j] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange) / log10((double) m_computation->setting()->value(PostprocessorSetting::ScalarRangeBase).toInt()));
                 else
-                    glTexCoord1d((triangle.values[j] - m_computation->setting()->value(PostprocessorSetting::View_ScalarRangeMin).toDouble()) * irange);
+                    glTexCoord1d((triangle.values[j] - m_computation->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble()) * irange);
 
                 glVertex2d(triangle.vertices[j][0], triangle.vertices[j][1]);
             }
@@ -449,9 +449,9 @@ void SceneViewPost2D::paintContours()
         if ((rangeMax-rangeMin) > EPS_ZERO)
         {
             // value range
-            double step = (rangeMax-rangeMin) / m_computation->setting()->value(PostprocessorSetting::View_ContoursCount).toInt();
+            double step = (rangeMax-rangeMin) / m_computation->setting()->value(PostprocessorSetting::ContoursCount).toInt();
 
-            glLineWidth(m_computation->setting()->value(PostprocessorSetting::View_ContoursWidth).toInt());
+            glLineWidth(m_computation->setting()->value(PostprocessorSetting::ContoursWidth).toInt());
             glColor3d(COLORCONTOURS[0], COLORCONTOURS[1], COLORCONTOURS[2]);
 
             glBegin(GL_LINES);
@@ -548,7 +548,7 @@ void SceneViewPost2D::paintVectors()
         glNewList(m_listVectors, GL_COMPILE);
 
         RectPoint rect = m_computation->scene()->boundingBox();
-        double gs = (rect.width() + rect.height()) / m_computation->setting()->value(PostprocessorSetting::View_VectorCount).toInt();
+        double gs = (rect.width() + rect.height()) / m_computation->setting()->value(PostprocessorSetting::VectorCount).toInt();
 
         MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
         dealii::Functions::FEFieldFunction<2, dealii::hp::DoFHandler<2> > localvalues(ma.doFHandler(), ma.solution());
@@ -608,7 +608,7 @@ void SceneViewPost2D::paintVectors()
             double value = sqrt(dx*dx + dy*dy);
             double angle = atan2(dy, dx);
 
-            if ((m_computation->setting()->value(PostprocessorSetting::View_VectorProportional).toBool()) && (fabs(rangeMin - rangeMax) > EPS_ZERO))
+            if ((m_computation->setting()->value(PostprocessorSetting::VectorProportional).toBool()) && (fabs(rangeMin - rangeMax) > EPS_ZERO))
             {
                 if ((value / rangeMax) < 1e-6)
                 {
@@ -617,21 +617,21 @@ void SceneViewPost2D::paintVectors()
                 }
                 else
                 {
-                    dx = ((value - rangeMin) * irange) * m_computation->setting()->value(PostprocessorSetting::View_VectorScale).toDouble() * gs * cos(angle);
-                    dy = ((value - rangeMin) * irange) * m_computation->setting()->value(PostprocessorSetting::View_VectorScale).toDouble() * gs * sin(angle);
+                    dx = ((value - rangeMin) * irange) * m_computation->setting()->value(PostprocessorSetting::VectorScale).toDouble() * gs * cos(angle);
+                    dy = ((value - rangeMin) * irange) * m_computation->setting()->value(PostprocessorSetting::VectorScale).toDouble() * gs * sin(angle);
                 }
             }
             else
             {
-                dx = m_computation->setting()->value(PostprocessorSetting::View_VectorScale).toDouble() * gs * cos(angle);
-                dy = m_computation->setting()->value(PostprocessorSetting::View_VectorScale).toDouble() * gs * sin(angle);
+                dx = m_computation->setting()->value(PostprocessorSetting::VectorScale).toDouble() * gs * cos(angle);
+                dy = m_computation->setting()->value(PostprocessorSetting::VectorScale).toDouble() * gs * sin(angle);
             }
 
             double dm = sqrt(dx*dx + dy*dy);
             // qDebug() << dx << dy << dm;
 
             // color
-            if ((m_computation->setting()->value(PostprocessorSetting::View_VectorColor).toBool())
+            if ((m_computation->setting()->value(PostprocessorSetting::VectorColor).toBool())
                     && (fabs(rangeMin - rangeMax) > EPS_ZERO))
             {
                 double color = 0.7 - 0.7 * (value - rangeMin) * irange;
@@ -644,12 +644,12 @@ void SceneViewPost2D::paintVectors()
 
             // tail
             Point shiftCenter(0.0, 0.0);
-            if ((VectorCenter) m_computation->setting()->value(PostprocessorSetting::View_VectorCenter).toInt() == VectorCenter_Head)
+            if ((VectorCenter) m_computation->setting()->value(PostprocessorSetting::VectorCenter).toInt() == VectorCenter_Head)
                 shiftCenter = Point(- 2.0*dm * cos(angle), - 2.0*dm * sin(angle)); // head
-            if ((VectorCenter) m_computation->setting()->value(PostprocessorSetting::View_VectorCenter).toInt() == VectorCenter_Center)
+            if ((VectorCenter) m_computation->setting()->value(PostprocessorSetting::VectorCenter).toInt() == VectorCenter_Center)
                 shiftCenter = Point(- dm * cos(angle), - dm * sin(angle)); // center
 
-            if ((VectorType) m_computation->setting()->value(PostprocessorSetting::View_VectorType).toInt() == VectorType_Arrow)
+            if ((VectorType) m_computation->setting()->value(PostprocessorSetting::VectorType).toInt() == VectorType_Arrow)
             {
                 // arrow and shaft
                 // head for an arrow
@@ -681,7 +681,7 @@ void SceneViewPost2D::paintVectors()
                 glVertex2d(vs3x, vs3y);
                 glVertex2d(vs2x, vs2y);
             }
-            else if ((VectorType) m_computation->setting()->value(PostprocessorSetting::View_VectorType).toInt() == VectorType_Cone)
+            else if ((VectorType) m_computation->setting()->value(PostprocessorSetting::VectorType).toInt() == VectorType_Cone)
             {
                 // cone
                 double vh1x = point.x + dm/3.5 * cos(angle - M_PI/2.0) + shiftCenter.x;
@@ -850,18 +850,18 @@ void SceneViewPost2D::clear()
 void SceneViewPost2D::exportVTKScalarView(const QString &fileName)
 {
     exportVTK(fileName,
-              m_computation->setting()->value(PostprocessorSetting::View_ScalarVariable).toString(),
-              (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::View_ScalarVariableComp).toInt());
+              m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString(),
+              (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt());
 }
 
 void SceneViewPost2D::exportVTKContourView(const QString &fileName)
 {
     Module::LocalVariable variable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),
-                                                                                                 m_computation->setting()->value(PostprocessorSetting::View_ContourVariable).toString());
+                                                                                                 m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString());
     PhysicFieldVariableComp comp = variable.isScalar() ? PhysicFieldVariableComp_Scalar : PhysicFieldVariableComp_Magnitude;
 
     exportVTK(fileName,
-              m_computation->setting()->value(PostprocessorSetting::View_ContourVariable).toString(),
+              m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString(),
               comp);
 }
 

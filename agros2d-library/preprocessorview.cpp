@@ -242,8 +242,8 @@ void PreprocessorWidget::keyPressEvent(QKeyEvent *event)
 
 void PreprocessorWidget::refresh()
 {
-    txtGridStep->setText(QString::number(Agros2D::problem()->setting()->value(PostprocessorSetting::View_GridStep).toDouble()));
-    chkSnapToGrid->setChecked(Agros2D::problem()->setting()->value(PostprocessorSetting::View_SnapToGrid).toBool());
+    txtGridStep->setText(QString::number(Agros2D::problem()->config()->value(ProblemConfig::GridStep).toDouble()));
+    chkSnapToGrid->setChecked(Agros2D::problem()->config()->value(ProblemConfig::SnapToGrid).toBool());
 
     // script speed improvement
     if (currentPythonEngine()->isScriptRunning()) return;
@@ -1029,6 +1029,6 @@ void PreprocessorWidget::doNewRecipe(ResultRecipeType type)
 
 void PreprocessorWidget::doApply()
 {
-    Agros2D::problem()->setting()->setValue(PostprocessorSetting::View_GridStep, txtGridStep->text().toDouble());
-    Agros2D::problem()->setting()->setValue(PostprocessorSetting::View_SnapToGrid, chkSnapToGrid->isChecked());
+    Agros2D::problem()->config()->setValue(ProblemConfig::GridStep, txtGridStep->text().toDouble());
+    Agros2D::problem()->config()->setValue(ProblemConfig::SnapToGrid, chkSnapToGrid->isChecked());
 }

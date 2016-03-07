@@ -174,6 +174,9 @@ void ProblemConfig::load(QJsonObject &object)
 
     foreach (Type key, m_settingDefault.keys())
     {
+        if (!object.contains(typeToStringKey(key)))
+            continue;
+
         if (m_settingDefault[key].type() == QVariant::StringList)
             m_setting[key] = object[typeToStringKey(key)].toString().split("|");
         else if (m_settingDefault[key].type() == QVariant::Bool)
@@ -269,6 +272,9 @@ void ProblemConfig::setStringKeys()
     m_settingKey[Parameters] = "Parameters";
     m_settingKey[Coordinate] = "Coordinate";
     m_settingKey[Mesh] = "Mesh";
+
+    m_settingKey[GridStep] = 0.05;
+    m_settingKey[SnapToGrid] = true;
 }
 
 void ProblemConfig::setDefaultValues()
@@ -285,6 +291,9 @@ void ProblemConfig::setDefaultValues()
     m_settingDefault[Parameters] = QVariant::fromValue(StringToDoubleMap());
     m_settingDefault[Coordinate] = QVariant::fromValue(CoordinateType_Planar);
     m_settingDefault[Mesh] = QVariant::fromValue(MeshType_Triangle);
+
+    m_settingDefault[GridStep] = 10.0;
+    m_settingDefault[SnapToGrid] = 10.0;
 }
 
 // parameters
@@ -321,7 +330,7 @@ void ProblemConfig::checkVariableName(const QString &key)
 
 // ********************************************************************************************
 
-PostprocessorSetting::PostprocessorSetting(ProblemBase *parentProblem) : QObject(), m_problem(parentProblem)
+PostprocessorSetting::PostprocessorSetting(Computation *computation) : QObject(), m_computation(computation)
 {
     setStringKeys();
     clear();
@@ -343,182 +352,178 @@ void PostprocessorSetting::clear()
 
 void PostprocessorSetting::setStringKeys()
 {
-    m_settingKey[View_GridStep] = "View_GridStep";
-    m_settingKey[View_SnapToGrid] = "View_SnapToGrid";
-    m_settingKey[View_ScalarView3DMode] = "View_ScalarView3DMode";
-    m_settingKey[View_ScalarView3DLighting] = "View_ScalarView3DLighting";
-    m_settingKey[View_ScalarView3DAngle] = "View_ScalarView3DAngle";
-    m_settingKey[View_ScalarView3DBackground] = "View_ScalarView3DBackground";
-    m_settingKey[View_ScalarView3DHeight] = "View_ScalarView3DHeight";
-    m_settingKey[View_ScalarView3DBoundingBox] = "View_ScalarView3DBoundingBox";
-    m_settingKey[View_ScalarView3DSolidGeometry] = "View_ScalarView3DSolidGeometry";
-    m_settingKey[View_DeformScalar] = "View_DeformScalar";
-    m_settingKey[View_DeformContour] = "View_DeformContour";
-    m_settingKey[View_DeformVector] = "View_DeformVector";
-    m_settingKey[View_ShowInitialMeshView] = "View_ShowInitialMeshView";
-    m_settingKey[View_ShowSolutionMeshView] = "View_ShowSolutionMeshView";
-    m_settingKey[View_ContourVariable] = "View_ContourVariable";
-    m_settingKey[View_ShowContourView] = "View_ShowContourView";
-    m_settingKey[View_ContoursCount] = "View_ContoursCount";
-    m_settingKey[View_ContoursWidth] = "View_ContoursWidth";
-    m_settingKey[View_ShowScalarView] = "View_ShowScalarView";
-    m_settingKey[View_ShowScalarColorBar] = "View_ShowScalarColorBar";
-    m_settingKey[View_ScalarVariable] = "View_ScalarVariable";
-    m_settingKey[View_ScalarVariableComp] = "View_ScalarVariableComp";
-    m_settingKey[View_PaletteType] = "View_PaletteType";
-    m_settingKey[View_PaletteFilter] = "View_PaletteFilter";
-    m_settingKey[View_PaletteSteps] = "View_PaletteSteps";
-    m_settingKey[View_ScalarRangeLog] = "View_ScalarRangeLog";
-    m_settingKey[View_ScalarRangeBase] = "View_ScalarRangeBase";
-    m_settingKey[View_ScalarDecimalPlace] = "View_ScalarDecimalPlace";
-    m_settingKey[View_ScalarRangeAuto] = "View_ScalarRangeAuto";
-    m_settingKey[View_ScalarRangeMin] = "View_ScalarRangeMin";
-    m_settingKey[View_ScalarRangeMax] = "View_ScalarRangeMax";
-    m_settingKey[View_ShowVectorView] = "View_ShowVectorView";
-    m_settingKey[View_VectorVariable] = "View_VectorVariable";
-    m_settingKey[View_VectorProportional] = "View_VectorProportional";
-    m_settingKey[View_VectorColor] = "View_VectorColor";
-    m_settingKey[View_VectorCount] = "View_VectorCount";
-    m_settingKey[View_VectorScale] = "View_VectorScale";
-    m_settingKey[View_VectorType] = "View_VectorType";
-    m_settingKey[View_VectorCenter] = "View_VectorCenter";
-    m_settingKey[View_ShowOrderView] = "View_ShowOrderView";
-    m_settingKey[View_OrderComponent] = "View_OrderComponent";
-    m_settingKey[View_ShowOrderLabel] = "View_ShowOrderLabel";
-    m_settingKey[View_ShowOrderColorBar] = "View_ShowOrderColorBar";
-    m_settingKey[View_OrderPaletteOrderType] = "View_OrderPaletteOrderType";
-    m_settingKey[View_ParticleButcherTableType] = "View_ParticleButcherTableType";
-    m_settingKey[View_ParticleIncludeRelativisticCorrection] = "View_ParticleIncludeRelativisticCorrection";
-    m_settingKey[View_ParticleMass] = "View_ParticleMass";
-    m_settingKey[View_ParticleConstant] = "View_ParticleConstant";
-    m_settingKey[View_ParticleStartX] = "View_ParticleStartX";
-    m_settingKey[View_ParticleStartY] = "View_ParticleStartY";
-    m_settingKey[View_ParticleStartVelocityX] = "View_ParticleStartVelocityX";
-    m_settingKey[View_ParticleStartVelocityY] = "View_ParticleStartVelocityY";
-    m_settingKey[View_ParticleNumberOfParticles] = "View_ParticleNumberOfParticles";
-    m_settingKey[View_ParticleStartingRadius] = "View_ParticleStartingRadius";
-    m_settingKey[View_ParticleReflectOnDifferentMaterial] = "View_ParticleReflectOnDifferentMaterial";
-    m_settingKey[View_ParticleReflectOnBoundary] = "View_ParticleReflectOnBoundary";
-    m_settingKey[View_ParticleCoefficientOfRestitution] = "View_ParticleCoefficientOfRestitution";
-    m_settingKey[View_ParticleMaximumRelativeError] = "View_ParticleMaximumRelativeError";
-    m_settingKey[View_ParticleShowPoints] = "View_ParticleShowPoints";
-    m_settingKey[View_ParticleShowBlendedFaces] = "View_ParticleShowBlendedFaces";
-    m_settingKey[View_ParticleNumShowParticlesAxi] = "View_ParticleNumShowParticlesAxi";
-    m_settingKey[View_ParticleColorByVelocity] = "View_ParticleColorByVelocity";
-    m_settingKey[View_ParticleMaximumNumberOfSteps] = "View_ParticleMaximumNumberOfSteps";
-    m_settingKey[View_ParticleMaximumStep] = "View_ParticleMinimumStep";
-    m_settingKey[View_ParticleDragDensity] = "View_ParticleDragDensity";
-    m_settingKey[View_ParticleDragCoefficient] = "View_ParticleDragCoefficient";
-    m_settingKey[View_ParticleDragReferenceArea] = "View_ParticleDragReferenceArea";
-    m_settingKey[View_ParticleCustomForceX] = "View_ParticleCustomForceX";
-    m_settingKey[View_ParticleCustomForceY] = "View_ParticleCustomForceY";
-    m_settingKey[View_ParticleCustomForceZ] = "View_ParticleCustomForceZ";
-    m_settingKey[View_ParticleP2PElectricForce] = "View_ParticleP2PElectricForce";
-    m_settingKey[View_ParticleP2PMagneticForce] = "View_ParticleP2PMagneticForce";
-    m_settingKey[View_ChartStartX] = "View_ChartStartX";
-    m_settingKey[View_ChartStartY] = "View_ChartStartY";
-    m_settingKey[View_ChartEndX] = "View_ChartEndX";
-    m_settingKey[View_ChartEndY] = "View_ChartEndY";
-    m_settingKey[View_ChartTimeX] = "View_ChartTimeX";
-    m_settingKey[View_ChartTimeY] = "View_ChartTimeY";
-    m_settingKey[View_ChartHorizontalAxis] = "View_ChartHorizontalAxis";
-    m_settingKey[View_ChartHorizontalAxisReverse] = "View_ChartHorizontalAxisReverse";
-    m_settingKey[View_ChartHorizontalAxisPoints] = "View_ChartHorizontalAxisPoints";
-    m_settingKey[View_ChartVariable] = "View_ChartVariable";
-    m_settingKey[View_ChartVariableComp] = "View_ChartVariableComp";
-    m_settingKey[View_ChartMode] = "View_ChartMode";
-    m_settingKey[View_SolidViewHide] = "View_SolidViewHide";
+    m_settingKey[ScalarView3DMode] = "ScalarView3DMode";
+    m_settingKey[ScalarView3DLighting] = "ScalarView3DLighting";
+    m_settingKey[ScalarView3DAngle] = "ScalarView3DAngle";
+    m_settingKey[ScalarView3DBackground] = "ScalarView3DBackground";
+    m_settingKey[ScalarView3DHeight] = "ScalarView3DHeight";
+    m_settingKey[ScalarView3DBoundingBox] = "ScalarView3DBoundingBox";
+    m_settingKey[ScalarView3DSolidGeometry] = "ScalarView3DSolidGeometry";
+    m_settingKey[DeformScalar] = "DeformScalar";
+    m_settingKey[DeformContour] = "DeformContour";
+    m_settingKey[DeformVector] = "DeformVector";
+    m_settingKey[ShowInitialMeshView] = "ShowInitialMeshView";
+    m_settingKey[ShowSolutionMeshView] = "ShowSolutionMeshView";
+    m_settingKey[ContourVariable] = "ContourVariable";
+    m_settingKey[ShowContourView] = "ShowContourView";
+    m_settingKey[ContoursCount] = "ContoursCount";
+    m_settingKey[ContoursWidth] = "ContoursWidth";
+    m_settingKey[ShowScalarView] = "ShowScalarView";
+    m_settingKey[ShowScalarColorBar] = "ShowScalarColorBar";
+    m_settingKey[ScalarVariable] = "ScalarVariable";
+    m_settingKey[ScalarVariableComp] = "ScalarVariableComp";
+    m_settingKey[PaletteType] = "PaletteType";
+    m_settingKey[PaletteFilter] = "PaletteFilter";
+    m_settingKey[PaletteSteps] = "PaletteSteps";
+    m_settingKey[ScalarRangeLog] = "ScalarRangeLog";
+    m_settingKey[ScalarRangeBase] = "ScalarRangeBase";
+    m_settingKey[ScalarDecimalPlace] = "ScalarDecimalPlace";
+    m_settingKey[ScalarRangeAuto] = "ScalarRangeAuto";
+    m_settingKey[ScalarRangeMin] = "ScalarRangeMin";
+    m_settingKey[ScalarRangeMax] = "ScalarRangeMax";
+    m_settingKey[ShowVectorView] = "ShowVectorView";
+    m_settingKey[VectorVariable] = "VectorVariable";
+    m_settingKey[VectorProportional] = "VectorProportional";
+    m_settingKey[VectorColor] = "VectorColor";
+    m_settingKey[VectorCount] = "VectorCount";
+    m_settingKey[VectorScale] = "VectorScale";
+    m_settingKey[VectorType] = "VectorType";
+    m_settingKey[VectorCenter] = "VectorCenter";
+    m_settingKey[ShowOrderView] = "ShowOrderView";
+    m_settingKey[OrderComponent] = "OrderComponent";
+    m_settingKey[ShowOrderLabel] = "ShowOrderLabel";
+    m_settingKey[ShowOrderColorBar] = "ShowOrderColorBar";
+    m_settingKey[OrderPaletteOrderType] = "OrderPaletteOrderType";
+    m_settingKey[ParticleButcherTableType] = "ParticleButcherTableType";
+    m_settingKey[ParticleIncludeRelativisticCorrection] = "ParticleIncludeRelativisticCorrection";
+    m_settingKey[ParticleMass] = "ParticleMass";
+    m_settingKey[ParticleConstant] = "ParticleConstant";
+    m_settingKey[ParticleStartX] = "ParticleStartX";
+    m_settingKey[ParticleStartY] = "ParticleStartY";
+    m_settingKey[ParticleStartVelocityX] = "ParticleStartVelocityX";
+    m_settingKey[ParticleStartVelocityY] = "ParticleStartVelocityY";
+    m_settingKey[ParticleNumberOfParticles] = "ParticleNumberOfParticles";
+    m_settingKey[ParticleStartingRadius] = "ParticleStartingRadius";
+    m_settingKey[ParticleReflectOnDifferentMaterial] = "ParticleReflectOnDifferentMaterial";
+    m_settingKey[ParticleReflectOnBoundary] = "ParticleReflectOnBoundary";
+    m_settingKey[ParticleCoefficientOfRestitution] = "ParticleCoefficientOfRestitution";
+    m_settingKey[ParticleMaximumRelativeError] = "ParticleMaximumRelativeError";
+    m_settingKey[ParticleShowPoints] = "ParticleShowPoints";
+    m_settingKey[ParticleShowBlendedFaces] = "ParticleShowBlendedFaces";
+    m_settingKey[ParticleNumShowParticlesAxi] = "ParticleNumShowParticlesAxi";
+    m_settingKey[ParticleColorByVelocity] = "ParticleColorByVelocity";
+    m_settingKey[ParticleMaximumNumberOfSteps] = "ParticleMaximumNumberOfSteps";
+    m_settingKey[ParticleMaximumStep] = "ParticleMinimumStep";
+    m_settingKey[ParticleDragDensity] = "ParticleDragDensity";
+    m_settingKey[ParticleDragCoefficient] = "ParticleDragCoefficient";
+    m_settingKey[ParticleDragReferenceArea] = "ParticleDragReferenceArea";
+    m_settingKey[ParticleCustomForceX] = "ParticleCustomForceX";
+    m_settingKey[ParticleCustomForceY] = "ParticleCustomForceY";
+    m_settingKey[ParticleCustomForceZ] = "ParticleCustomForceZ";
+    m_settingKey[ParticleP2PElectricForce] = "ParticleP2PElectricForce";
+    m_settingKey[ParticleP2PMagneticForce] = "ParticleP2PMagneticForce";
+    m_settingKey[ChartStartX] = "ChartStartX";
+    m_settingKey[ChartStartY] = "ChartStartY";
+    m_settingKey[ChartEndX] = "ChartEndX";
+    m_settingKey[ChartEndY] = "ChartEndY";
+    m_settingKey[ChartTimeX] = "ChartTimeX";
+    m_settingKey[ChartTimeY] = "ChartTimeY";
+    m_settingKey[ChartHorizontalAxis] = "ChartHorizontalAxis";
+    m_settingKey[ChartHorizontalAxisReverse] = "ChartHorizontalAxisReverse";
+    m_settingKey[ChartHorizontalAxisPoints] = "ChartHorizontalAxisPoints";
+    m_settingKey[ChartVariable] = "ChartVariable";
+    m_settingKey[ChartVariableComp] = "ChartVariableComp";
+    m_settingKey[ChartMode] = "ChartMode";
+    m_settingKey[SolidViewHide] = "SolidViewHide";
 }
 
 void PostprocessorSetting::setDefaultValues()
 {
     m_settingDefault.clear();
 
-    m_settingDefault[View_SnapToGrid] = true;
-    m_settingDefault[View_GridStep] = 0.05;
-    m_settingDefault[View_ScalarView3DMode] = SceneViewPost3DMode_None;
-    m_settingDefault[View_ScalarView3DLighting] = true;
-    m_settingDefault[View_ScalarView3DAngle] = 240.0;
-    m_settingDefault[View_ScalarView3DBackground] = true;
-    m_settingDefault[View_ScalarView3DHeight] = 4.0;
-    m_settingDefault[View_ScalarView3DBoundingBox] = true;
-    m_settingDefault[View_ScalarView3DSolidGeometry] = true;
-    m_settingDefault[View_DeformScalar] = true;
-    m_settingDefault[View_DeformContour] = true;
-    m_settingDefault[View_DeformVector] = true;
-    m_settingDefault[View_ShowInitialMeshView] = true;
-    m_settingDefault[View_ShowSolutionMeshView] = false;
-    m_settingDefault[View_ContourVariable] = QString();
-    m_settingDefault[View_ShowContourView] = false;
-    m_settingDefault[View_ContoursCount] = 15;
-    m_settingDefault[View_ContoursWidth] = 1.0;
-    m_settingDefault[View_ShowScalarView] = true;
-    m_settingDefault[View_ShowScalarColorBar] = true;
-    m_settingDefault[View_ScalarVariable] = QString();
-    m_settingDefault[View_ScalarVariableComp] = PhysicFieldVariableComp_Undefined;
-    m_settingDefault[View_PaletteType] = Palette_Paruly;
-    m_settingDefault[View_PaletteFilter] = false;
-    m_settingDefault[View_PaletteSteps] = 30;
-    m_settingDefault[View_ScalarRangeLog] = false;
-    m_settingDefault[View_ScalarRangeBase] = 10;
-    m_settingDefault[View_ScalarDecimalPlace] = 4;
-    m_settingDefault[View_ScalarRangeAuto] = true;
-    m_settingDefault[View_ScalarRangeMin] = 0.0;
-    m_settingDefault[View_ScalarRangeMax] = 1.0;
-    m_settingDefault[View_ShowVectorView] = false;
-    m_settingDefault[View_VectorVariable] = QString();
-    m_settingDefault[View_VectorProportional] = true;
-    m_settingDefault[View_VectorColor] = true;
-    m_settingDefault[View_VectorCount] = 50;
-    m_settingDefault[View_VectorScale] = 0.6;
-    m_settingDefault[View_VectorType] = VectorType_Arrow;
-    m_settingDefault[View_VectorCenter] = VectorCenter_Tail;
-    m_settingDefault[View_OrderComponent] = 1;
-    m_settingDefault[View_ShowOrderView] = true;
-    m_settingDefault[View_ShowOrderLabel] = false;
-    m_settingDefault[View_ShowOrderColorBar] = true;
-    m_settingDefault[View_OrderPaletteOrderType] = Palette_Viridis;
-    m_settingDefault[View_ParticleButcherTableType] = Explicit_FEHLBERG_6_45_embedded;
-    m_settingDefault[View_ParticleIncludeRelativisticCorrection] = true;
-    m_settingDefault[View_ParticleMass] = 9.109e-31;
-    m_settingDefault[View_ParticleConstant] = 1.602e-19;
-    m_settingDefault[View_ParticleStartX] = 0.0;
-    m_settingDefault[View_ParticleStartY] = 0.0;
-    m_settingDefault[View_ParticleStartVelocityX] = 0.0;
-    m_settingDefault[View_ParticleStartVelocityY] = 0.0;
-    m_settingDefault[View_ParticleNumberOfParticles] = 1;
-    m_settingDefault[View_ParticleStartingRadius] = 0.0;
-    m_settingDefault[View_ParticleReflectOnDifferentMaterial] = false;
-    m_settingDefault[View_ParticleReflectOnBoundary] = false;
-    m_settingDefault[View_ParticleCoefficientOfRestitution] = 0.0;
-    m_settingDefault[View_ParticleMaximumRelativeError] = 0.01;
-    m_settingDefault[View_ParticleShowPoints] = false;
-    m_settingDefault[View_ParticleShowBlendedFaces] = true;
-    m_settingDefault[View_ParticleNumShowParticlesAxi] = 1;
-    m_settingDefault[View_ParticleColorByVelocity] = true;
-    m_settingDefault[View_ParticleMaximumNumberOfSteps] = 500;
-    m_settingDefault[View_ParticleMaximumStep] = 0.0;
-    m_settingDefault[View_ParticleDragDensity] = 1.2041;
-    m_settingDefault[View_ParticleDragCoefficient] = 0.0;
-    m_settingDefault[View_ParticleDragReferenceArea] = 0.0;
-    m_settingDefault[View_ParticleCustomForceX] = 0.0;
-    m_settingDefault[View_ParticleCustomForceY] = 0.0;
-    m_settingDefault[View_ParticleCustomForceZ] = 0.0;
-    m_settingDefault[View_ParticleP2PElectricForce] = false;
-    m_settingDefault[View_ParticleP2PMagneticForce] = false;
-    m_settingDefault[View_ChartStartX] = 0.0;
-    m_settingDefault[View_ChartStartY] = 0.0;
-    m_settingDefault[View_ChartEndX] = 0.0;
-    m_settingDefault[View_ChartEndY] = 0.0;
-    m_settingDefault[View_ChartTimeX] = 0.0;
-    m_settingDefault[View_ChartTimeY] = 0.0;
-    m_settingDefault[View_ChartHorizontalAxis] = ChartAxis_Length;
-    m_settingDefault[View_ChartHorizontalAxisReverse] = false;
-    m_settingDefault[View_ChartHorizontalAxisPoints] = 200;
-    m_settingDefault[View_ChartVariable] = QString();
-    m_settingDefault[View_ChartVariableComp] = PhysicFieldVariableComp_Undefined;
-    m_settingDefault[View_ChartMode] = ChartMode_Geometry;
-    m_settingDefault[View_SolidViewHide] = QStringList();
+    m_settingDefault[ScalarView3DMode] = SceneViewPost3DMode_None;
+    m_settingDefault[ScalarView3DLighting] = true;
+    m_settingDefault[ScalarView3DAngle] = 240.0;
+    m_settingDefault[ScalarView3DBackground] = true;
+    m_settingDefault[ScalarView3DHeight] = 4.0;
+    m_settingDefault[ScalarView3DBoundingBox] = true;
+    m_settingDefault[ScalarView3DSolidGeometry] = true;
+    m_settingDefault[DeformScalar] = true;
+    m_settingDefault[DeformContour] = true;
+    m_settingDefault[DeformVector] = true;
+    m_settingDefault[ShowInitialMeshView] = true;
+    m_settingDefault[ShowSolutionMeshView] = false;
+    m_settingDefault[ContourVariable] = QString();
+    m_settingDefault[ShowContourView] = false;
+    m_settingDefault[ContoursCount] = 15;
+    m_settingDefault[ContoursWidth] = 1.0;
+    m_settingDefault[ShowScalarView] = true;
+    m_settingDefault[ShowScalarColorBar] = true;
+    m_settingDefault[ScalarVariable] = QString();
+    m_settingDefault[ScalarVariableComp] = PhysicFieldVariableComp_Undefined;
+    m_settingDefault[PaletteType] = Palette_Paruly;
+    m_settingDefault[PaletteFilter] = false;
+    m_settingDefault[PaletteSteps] = 30;
+    m_settingDefault[ScalarRangeLog] = false;
+    m_settingDefault[ScalarRangeBase] = 10;
+    m_settingDefault[ScalarDecimalPlace] = 4;
+    m_settingDefault[ScalarRangeAuto] = true;
+    m_settingDefault[ScalarRangeMin] = 0.0;
+    m_settingDefault[ScalarRangeMax] = 1.0;
+    m_settingDefault[ShowVectorView] = false;
+    m_settingDefault[VectorVariable] = QString();
+    m_settingDefault[VectorProportional] = true;
+    m_settingDefault[VectorColor] = true;
+    m_settingDefault[VectorCount] = 50;
+    m_settingDefault[VectorScale] = 0.6;
+    m_settingDefault[VectorType] = VectorType_Arrow;
+    m_settingDefault[VectorCenter] = VectorCenter_Tail;
+    m_settingDefault[OrderComponent] = 1;
+    m_settingDefault[ShowOrderView] = true;
+    m_settingDefault[ShowOrderLabel] = false;
+    m_settingDefault[ShowOrderColorBar] = true;
+    m_settingDefault[OrderPaletteOrderType] = Palette_Viridis;
+    m_settingDefault[ParticleButcherTableType] = Explicit_FEHLBERG_6_45_embedded;
+    m_settingDefault[ParticleIncludeRelativisticCorrection] = true;
+    m_settingDefault[ParticleMass] = 9.109e-31;
+    m_settingDefault[ParticleConstant] = 1.602e-19;
+    m_settingDefault[ParticleStartX] = 0.0;
+    m_settingDefault[ParticleStartY] = 0.0;
+    m_settingDefault[ParticleStartVelocityX] = 0.0;
+    m_settingDefault[ParticleStartVelocityY] = 0.0;
+    m_settingDefault[ParticleNumberOfParticles] = 1;
+    m_settingDefault[ParticleStartingRadius] = 0.0;
+    m_settingDefault[ParticleReflectOnDifferentMaterial] = false;
+    m_settingDefault[ParticleReflectOnBoundary] = false;
+    m_settingDefault[ParticleCoefficientOfRestitution] = 0.0;
+    m_settingDefault[ParticleMaximumRelativeError] = 0.01;
+    m_settingDefault[ParticleShowPoints] = false;
+    m_settingDefault[ParticleShowBlendedFaces] = true;
+    m_settingDefault[ParticleNumShowParticlesAxi] = 1;
+    m_settingDefault[ParticleColorByVelocity] = true;
+    m_settingDefault[ParticleMaximumNumberOfSteps] = 500;
+    m_settingDefault[ParticleMaximumStep] = 0.0;
+    m_settingDefault[ParticleDragDensity] = 1.2041;
+    m_settingDefault[ParticleDragCoefficient] = 0.0;
+    m_settingDefault[ParticleDragReferenceArea] = 0.0;
+    m_settingDefault[ParticleCustomForceX] = 0.0;
+    m_settingDefault[ParticleCustomForceY] = 0.0;
+    m_settingDefault[ParticleCustomForceZ] = 0.0;
+    m_settingDefault[ParticleP2PElectricForce] = false;
+    m_settingDefault[ParticleP2PMagneticForce] = false;
+    m_settingDefault[ChartStartX] = 0.0;
+    m_settingDefault[ChartStartY] = 0.0;
+    m_settingDefault[ChartEndX] = 0.0;
+    m_settingDefault[ChartEndY] = 0.0;
+    m_settingDefault[ChartTimeX] = 0.0;
+    m_settingDefault[ChartTimeY] = 0.0;
+    m_settingDefault[ChartHorizontalAxis] = ChartAxis_Length;
+    m_settingDefault[ChartHorizontalAxisReverse] = false;
+    m_settingDefault[ChartHorizontalAxisPoints] = 200;
+    m_settingDefault[ChartVariable] = QString();
+    m_settingDefault[ChartVariableComp] = PhysicFieldVariableComp_Undefined;
+    m_settingDefault[ChartMode] = ChartMode_Geometry;
+    m_settingDefault[SolidViewHide] = QStringList();
 }
 
 void PostprocessorSetting::load(XMLProblem::config *configxsd)
@@ -568,6 +573,9 @@ void PostprocessorSetting::load(QJsonObject &object)
 
     foreach (Type key, m_settingDefault.keys())
     {
+        if (!object.contains(typeToStringKey(key)))
+            continue;
+
         if (m_settingDefault[key].type() == QVariant::StringList)
             m_setting[key] = object[typeToStringKey(key)].toString().split("|");
         else if (m_settingDefault[key].type() == QVariant::Bool)

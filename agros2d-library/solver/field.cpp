@@ -739,6 +739,9 @@ void FieldInfo::load(QJsonObject &object)
 
     foreach (Type key, m_settingDefault.keys())
     {
+        if (!object.contains(typeToStringKey(key)))
+            continue;
+
         if (m_settingDefault[key].type() == QVariant::StringList)
             m_setting[key] = object[typeToStringKey(key)].toString().split("|");
         else if (m_settingDefault[key].type() == QVariant::Bool)

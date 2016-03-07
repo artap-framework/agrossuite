@@ -60,12 +60,10 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent *event);
 
     void setZoom(double power);
-    void initLighting();
 
     virtual void paintGL() = 0;
     void doZoomRegion(const Point &start, const Point &end);
 
-    void paintBackground(); // gradient background
     void paintAxes(); // axes
 
 private:
