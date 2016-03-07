@@ -551,7 +551,7 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
                 graph->removeFromLegend();
 
                 graph->setLineStyle(QCPGraph::lsNone);
-                graph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::darkGray, 15));
+                graph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::darkGray, 17));
             }
 
             // computation map
@@ -611,13 +611,28 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
 
 QCPData OptiLab::findClosestData(QCPGraph *graph, const Point &pos)
 {    
+    // find min and max
+    RectPoint bound;
+    bound.start.x = numeric_limits<double>::max();
+    bound.end.x = -numeric_limits<double>::max();
+    bound.start.y = numeric_limits<double>::max();
+    bound.end.y = -numeric_limits<double>::max();
+
+    foreach (const QCPData data, graph->data()->values())
+    {
+        if (data.key < bound.start.x) bound.start.x = data.key;
+        if (data.key > bound.end.x) bound.end.x = data.key;
+        if (data.value < bound.start.y) bound.start.y = data.value;
+        if (data.value > bound.end.y) bound.end.y = data.value;
+    }
+
     // find closest point
     QCPData selectedData(0, 0);
     double dist = numeric_limits<double>::max();
-    for (int i = 0; i < graph->data()->values().count(); i++)
-    {
-        const QCPData data = graph->data()->values()[i];
-        double mag = Point(data.key - pos.x, data.value - pos.y).magnitudeSquared();
+    foreach (const QCPData data, graph->data()->values())
+    {        
+        double mag = Point((data.key - pos.x) / bound.width(),
+                           (data.value - pos.y) / bound.height()).magnitudeSquared();
 
         if (mag <= dist)
         {
