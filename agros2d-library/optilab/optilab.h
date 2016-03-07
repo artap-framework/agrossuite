@@ -26,11 +26,12 @@
 #include "util/enums.h"
 #include "gui/textedit.h"
 
+#include "qcustomplot.h"
+
 class OptiLab;
 class Study;
 class Computation;
 class InfoWidgetGeneral;
-class QCustomPlot;
 
 class AGROS_LIBRARY_API OptiLabWidget : public QWidget
 {
@@ -61,8 +62,8 @@ signals:
     void chartRefreshed(Study *study, QSharedPointer<Computation> computation);
 
 private slots:
-    void computationChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);
-    void computationSelect(const QString &key);
+    void doComputationChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);
+    void doComputationSelected(const QString &key);
 
     void studyChanged(int index);
     void refresh();
@@ -82,17 +83,32 @@ public:
     inline OptiLabWidget *optiLabWidget() { return m_optiLabWidget; }
 
 signals:
+    void computationSelected(const QString &key);
 
 public slots:
-    void computationSelected(const QString &key);
-    void chartRefreshed(Study *study, QSharedPointer<Computation> selectedComputation);
+    void doComputationSelected(const QString &key);
+    void doChartRefreshed(Study *study, QSharedPointer<Computation> selectedComputation);
 
 private:
+    Study *m_study;
+
     OptiLabWidget *m_optiLabWidget;
     InfoWidgetGeneral *m_infoWidget;
-    QCustomPlot *m_chart;
+
+    QCustomPlot *chart;
+    QMenu *mnuChart;
+    QMap<int, QMap<QPair<double, double>, QSharedPointer<Computation> > > m_computationMap;
+
+    QAction *actRescale;
 
     void createControls();
+    QCPData findClosestData(QCPGraph *graph, const Point &pos);
+
+private slots:
+    void chartContextMenu(const QPoint &pos);
+    void chartRescale(bool checked);
+
+    void graphClicked(QCPAbstractPlottable *plottable, QMouseEvent *event);
 };
 
 #endif // OPTILAB_H

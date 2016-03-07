@@ -35,13 +35,55 @@
 #include "solver/solutionstore.h"
 
 #include "gui/infowidget.h"
-#include "qcustomplot.h"
+
+int linreg(QVector<double> x, QVector<double> y, double *m, double *b, double *r)
+{
+    assert(x.size() == y.size());
+    int n = x.size();
+
+    double sumx = 0.0;
+    double sumx2 = 0.0;
+    double sumxy = 0.0;
+    double sumy = 0.0;
+    double sumy2 = 0.0;
+
+    for (int i = 0; i < n; i++)
+    {
+        sumx  += x[i];
+        sumx2 += x[i] * x[i];
+        sumxy += x[i] * y[i];
+        sumy  += y[i];
+        sumy2 += y[i] * y[i];
+    }
+
+    double denom = (n * sumx2 - sumx*sumx);
+    if (denom == 0)
+    {
+        // singular matrix. can't solve the problem.
+        *m = 0;
+        *b = 0;
+        if (r) *r = 0;
+        return 1;
+    }
+
+    // slope
+    *m = (n * sumxy  -  sumx * sumy) / denom;
+    // shift
+    *b = (sumy * sumx2  -  sumx * sumxy) / denom;
+
+    // correlation coef
+    if (r)
+        *r = (sumxy - sumx * sumy / n) / sqrt((sumx2 - sumx*sumx/n) * (sumy2 - sumy*sumy/n));
+
+    return 0;
+}
 
 OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(parent)
 {
     createControls();
 
     connect(Agros2D::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
+    connect(Agros2D::problem()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
 }
 
 OptiLabWidget::~OptiLabWidget()
@@ -54,9 +96,12 @@ void OptiLabWidget::createControls()
     cmbStudies = new QComboBox(this);
     connect(cmbStudies, SIGNAL(currentIndexChanged(int)), this, SLOT(studyChanged(int)));
 
-    QHBoxLayout *layoutStudies = new QHBoxLayout();
-    layoutStudies->addWidget(new QLabel(tr("Studies")));
-    layoutStudies->addWidget(cmbStudies);
+    QGridLayout *layoutStudies = new QGridLayout();
+    layoutStudies->addWidget(new QLabel(tr("Studies:")), 0, 0);
+    layoutStudies->addWidget(cmbStudies, 0, 1);
+
+    QWidget *widgetStudies = new QWidget(this);
+    widgetStudies->setLayout(layoutStudies);
 
     // parameters
     trvComputations = new QTreeWidget(this);
@@ -69,7 +114,7 @@ void OptiLabWidget::createControls()
     headers << tr("Computation") << tr("State");
     trvComputations->setHeaderLabels(headers);
 
-    connect(trvComputations, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(computationChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+    connect(trvComputations, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doComputationChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
     cmbChartX = new QComboBox(this);
     cmbChartY = new QComboBox(this);
@@ -98,7 +143,7 @@ void OptiLabWidget::createControls()
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(2, 2, 2, 3);
-    layout->addLayout(layoutStudies);
+    layout->addWidget(widgetStudies);
     layout->addWidget(trvComputations);
     layout->addLayout(layoutChartXYControls);
     layout->addLayout(layoutParametersButton);
@@ -108,6 +153,8 @@ void OptiLabWidget::createControls()
 
 void OptiLabWidget::refresh()
 {
+    emit chartRefreshed(nullptr, QSharedPointer<Computation>());
+
     btnSolveStudy->setEnabled(false);
     btnPlotChart->setEnabled(false);
 
@@ -225,7 +272,7 @@ void OptiLabWidget::studyChanged(int index)
 
     // select current computation
     if (!selectedItem.isEmpty())
-        computationSelect(selectedItem);
+        doComputationSelected(selectedItem);
 
     // if not selected -> select first
     if (trvComputations->topLevelItemCount() > 0 && !trvComputations->currentItem())
@@ -283,7 +330,7 @@ void OptiLabWidget::plotChart()
     emit chartRefreshed(study, computation);
 }
 
-void OptiLabWidget::computationSelect(const QString &key)
+void OptiLabWidget::doComputationSelected(const QString &key)
 {
     for (int i = 0; i < trvComputations->topLevelItemCount(); i++)
     {
@@ -300,7 +347,7 @@ void OptiLabWidget::computationSelect(const QString &key)
     }
 }
 
-void OptiLabWidget::computationChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
+void OptiLabWidget::doComputationChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
 {
     if (trvComputations->currentItem())
     {
@@ -313,7 +360,9 @@ void OptiLabWidget::computationChanged(QTreeWidgetItem *source, QTreeWidgetItem 
     }
 }
 
-OptiLab::OptiLab(QWidget *parent) : QWidget(parent)
+// ***************************************************************************************************************************************
+
+OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_study(nullptr)
 {
     actSceneModeOptiLab = new QAction(icon("optilab"), tr("OptiLab"), this);
     actSceneModeOptiLab->setShortcut(Qt::Key_F8);
@@ -323,8 +372,9 @@ OptiLab::OptiLab(QWidget *parent) : QWidget(parent)
 
     createControls();
 
-    connect(m_optiLabWidget, SIGNAL(computationSelected(QString)), this, SLOT(computationSelected(QString)));
-    connect(m_optiLabWidget, SIGNAL(chartRefreshed(Study *, QSharedPointer<Computation>)), this, SLOT(chartRefreshed(Study *, QSharedPointer<Computation>)));
+    connect(m_optiLabWidget, SIGNAL(computationSelected(QString)), this, SLOT(doComputationSelected(QString)));
+    connect(m_optiLabWidget, SIGNAL(chartRefreshed(Study *, QSharedPointer<Computation>)), this, SLOT(doChartRefreshed(Study *, QSharedPointer<Computation>)));
+    connect(this, SIGNAL(computationSelected(QString)), m_optiLabWidget, SLOT(doComputationSelected(QString)));
 }
 
 OptiLab::~OptiLab()
@@ -335,17 +385,37 @@ void OptiLab::createControls()
 {
     m_infoWidget = new InfoWidgetGeneral(this);
 
-    m_chart = new QCustomPlot(this);
-    m_chart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    actRescale = new QAction(icon(""), tr("Rescale chart"), this);
+    connect(actRescale, SIGNAL(triggered(bool)), this, SLOT(chartRescale(bool)));
+
+    mnuChart = new QMenu(this);
+    mnuChart->addAction(actRescale);
+
+    chart = new QCustomPlot(this);
+    chart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    chart->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(chart, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(chartContextMenu(const QPoint &)));
+    connect(chart, SIGNAL(plottableClick(QCPAbstractPlottable*, QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*, QMouseEvent*)));
 
     QHBoxLayout *layoutLab = new QHBoxLayout();
     layoutLab->addWidget(m_infoWidget, 1);
-    layoutLab->addWidget(m_chart, 1);
+    layoutLab->addWidget(chart, 1);
 
     setLayout(layoutLab);
 }
 
-void OptiLab::computationSelected(const QString &key)
+void OptiLab::chartContextMenu(const QPoint &pos)
+{
+    mnuChart->exec(QCursor::pos());
+}
+
+void OptiLab::chartRescale(bool checked)
+{
+    chart->rescaleAxes();
+    chart->replot(QCustomPlot::rpQueued);
+}
+
+void OptiLab::doComputationSelected(const QString &key)
 {
     if (key.isEmpty())
     {
@@ -360,10 +430,20 @@ void OptiLab::computationSelected(const QString &key)
     }
 }
 
-void OptiLab::chartRefreshed(Study *study, QSharedPointer<Computation> selectedComputation)
+void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selectedComputation)
 {
-    QString chartX = study->value(Study::View_ChartX).toString();
-    QString chartY = study->value(Study::View_ChartY).toString();
+    m_study = study;
+
+    chart->clearGraphs();
+    chart->clearItems();
+
+    m_computationMap.clear();
+
+    if (!m_study)
+        return;
+
+    QString chartX = m_study->value(Study::View_ChartX).toString();
+    QString chartY = m_study->value(Study::View_ChartY).toString();
 
     QString labelX = "-";
     QString labelY = "-";
@@ -390,36 +470,18 @@ void OptiLab::chartRefreshed(Study *study, QSharedPointer<Computation> selectedC
     else
         assert(0);
 
-    // find min and max value
-    /*
-    double minGoal =  numeric_limits<double>::max();
-    double maxGoal = -numeric_limits<double>::max();
+    // linear regression
+    QVector<double> linRegDataX;
+    QVector<double> linRegDataY;
 
-    for (int i = 0; i < study->computationSets().count(); i++)
-    {
-        QList<QSharedPointer<Computation> > computations = study->computationSets()[i].computations();
-
-        for (int j = 0; j < computations.count(); j++)
-        {
-            QSharedPointer<Computation> computation = computations[j];
-
-            double goal = study->evaluateGoal(computation);
-            if (goal < minGoal) minGoal = goal;
-            if (goal > maxGoal) maxGoal = goal;
-        }
-    }
-    */
-
-    m_chart->clearGraphs();
-
-    int paletteStep = study->computationSets().count() > 1 ? (PALETTEENTRIES - 1) / (study->computationSets().count() - 1) : 0;
+    int paletteStep = m_study->computationSets().count() > 1 ? (PALETTEENTRIES - 1) / (m_study->computationSets().count() - 1) : 0;
     int step = 0;
-    for (int i = 0; i < study->computationSets().count(); i++)
+    for (int i = 0; i < m_study->computationSets().count(); i++)
     {
-        QVector<double> dataX;
-        QVector<double> dataY;
+        QVector<double> dataSetX;
+        QVector<double> dataSetY;
 
-        QList<QSharedPointer<Computation> > computations = study->computationSets()[i].computations();
+        QList<QSharedPointer<Computation> > computations = m_study->computationSets()[i].computations();
 
         for (int j = 0; j < computations.count(); j++)
         {
@@ -430,11 +492,11 @@ void OptiLab::chartRefreshed(Study *study, QSharedPointer<Computation> selectedC
             // steps
             if (chartX.contains("step:"))
             {
-                dataX.append(step);
+                dataSetX.append(step);
             }
             if (chartY.contains("step:"))
             {
-                dataY.append(step);
+                dataSetY.append(step);
             }
 
             // parameters
@@ -442,13 +504,13 @@ void OptiLab::chartRefreshed(Study *study, QSharedPointer<Computation> selectedC
             {
                 QString name = chartX.right(chartX.count() - 10);
                 double value = computation->config()->parameter(name);
-                dataX.append(value);
+                dataSetX.append(value);
             }
             if (chartY.contains("parameter:"))
             {
                 QString name = chartY.right(chartY.count() - 10);
                 double value = computation->config()->parameter(name);
-                dataY.append(value);
+                dataSetY.append(value);
             }
 
             // functionals
@@ -456,13 +518,13 @@ void OptiLab::chartRefreshed(Study *study, QSharedPointer<Computation> selectedC
             {
                 QString name = chartX.right(chartX.count() - 11);
                 double value = computation->results()->resultValue(name);
-                dataX.append(value);
+                dataSetX.append(value);
             }
             if (chartY.contains("functional:"))
             {
                 QString name = chartY.right(chartY.count() - 11);
                 double value = computation->results()->resultValue(name);
-                dataY.append(value);
+                dataSetY.append(value);
             }
 
             // recipes
@@ -470,35 +532,30 @@ void OptiLab::chartRefreshed(Study *study, QSharedPointer<Computation> selectedC
             {
                 QString name = chartX.right(chartX.count() - 7);
                 double value = computation->results()->resultValue(name);
-                dataX.append(value);
+                dataSetX.append(value);
             }
             if (chartY.contains("recipe:"))
             {
                 QString name = chartY.right(chartY.count() - 7);
                 double value = computation->results()->resultValue(name);
-                dataY.append(value);
+                dataSetY.append(value);
             }
 
             // selected point
             if (computation == selectedComputation)
             {
-                QVector<double> selectedX;
-                selectedX.append(dataX.last());
-                QVector<double> selectedY;
-                selectedY.append(dataY.last());
-
-                QCPGraph *graph = m_chart->addGraph();
+                QVector<double> selectedX; selectedX << dataSetX.last();
+                QVector<double> selectedY; selectedY << dataSetY.last();
+                QCPGraph *graph = chart->addGraph();
                 graph->setData(selectedX, selectedY);
                 graph->removeFromLegend();
 
                 graph->setLineStyle(QCPGraph::lsNone);
-                QCPScatterStyle scatterStyle;
-                scatterStyle.setSize(12);
-                scatterStyle.setShape(QCPScatterStyle::ssCircle);
-                scatterStyle.setPen(QPen(Qt::darkRed));
-                // scatterStyle.setBrush(QBrush(colorBrush));
-                graph->setScatterStyle(scatterStyle);
+                graph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::darkGray, 15));
             }
+
+            // computation map
+            m_computationMap[i].insert(QPair<double, double>(dataSetX.last(), dataSetY.last()), computation);
         }
 
         int colorPenIndex = i * paletteStep;
@@ -506,31 +563,93 @@ void OptiLab::chartRefreshed(Study *study, QSharedPointer<Computation> selectedC
         // int colorBrushIndex = abs(goal - minGoal) / (maxGoal - minGoal) * 255;
         // const QColor colorBrush(paletteDataParuly[colorBrushIndexp][0] * 255, paletteDataParuly[colorBrushIndex][1] * 255, paletteDataParuly[colorBrushIndex][2] * 255);
 
-        QCPGraph *graph = m_chart->addGraph();
-        graph->setData(dataX, dataY);
-        graph->setName(study->computationSets()[i].name());
+        // add data to global array (for min and max computation)
+        linRegDataX << dataSetX;
+        linRegDataY << dataSetY;
+
+        QCPGraph *graph = chart->addGraph();
+        graph->setData(dataSetX, dataSetY);
+        graph->setProperty("computationset_index", i);
+        graph->setName(m_study->computationSets()[i].name());
         graph->addToLegend();
 
         graph->setLineStyle(QCPGraph::lsNone);
-        QCPScatterStyle scatterStyle;
-        scatterStyle.setSize(7);
-        scatterStyle.setShape(QCPScatterStyle::ssDisc);
-        scatterStyle.setPen(QPen(colorPen));
-        // scatterStyle.setBrush(QBrush(colorBrush));
-        graph->setScatterStyle(scatterStyle);
+        graph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, colorPen, 9));
     }
 
-    m_chart->xAxis->setLabel(labelX);
-    m_chart->yAxis->setLabel(labelY);
-    m_chart->legend->setVisible(true);
-    if (study->value(Study::View_ChartLogX).toBool())
-        m_chart->xAxis->setScaleType(QCPAxis::stLogarithmic);
+    // linear regression
+    double m = 0.0;
+    double b = 0.0;
+    double r = 0.0;
+    if (linreg(linRegDataX, linRegDataY, &m, &b, &r) == 0)
+    {
+        // trend arrow
+        auto mm = std::minmax_element(linRegDataX.begin(), linRegDataX.end());
+        QCPItemLine *arrow = new QCPItemLine(chart);
+        chart->addItem(arrow);
+        arrow->start->setCoords(*mm.first, linRegDataY.at(std::distance(linRegDataX.begin(), mm.second)));
+        arrow->end->setCoords(*mm.second, linRegDataY.at(std::distance(linRegDataX.begin(), mm.first)));
+        arrow->setHead(QCPLineEnding::esSpikeArrow);
+        arrow->setPen(QPen(QBrush(Qt::black), 3));
+    }
+
+    // plot chart
+    chart->xAxis->setLabel(labelX);
+    chart->yAxis->setLabel(labelY);
+    chart->legend->setVisible(true);
+    if (m_study->value(Study::View_ChartLogX).toBool())
+        chart->xAxis->setScaleType(QCPAxis::stLogarithmic);
     else
-        m_chart->xAxis->setScaleType(QCPAxis::stLinear);
+        chart->xAxis->setScaleType(QCPAxis::stLinear);
     if (study->value(Study::View_ChartLogY).toBool())
-        m_chart->yAxis->setScaleType(QCPAxis::stLogarithmic);
+        chart->yAxis->setScaleType(QCPAxis::stLogarithmic);
     else
-        m_chart->yAxis->setScaleType(QCPAxis::stLinear);
-    // m_chart->rescaleAxes();
-    m_chart->replot(QCustomPlot::rpQueued);
+        chart->yAxis->setScaleType(QCPAxis::stLinear);
+
+    chart->replot(QCustomPlot::rpQueued);
+}
+
+QCPData OptiLab::findClosestData(QCPGraph *graph, const Point &pos)
+{    
+    // find closest point
+    QCPData selectedData(0, 0);
+    double dist = numeric_limits<double>::max();
+    for (int i = 0; i < graph->data()->values().count(); i++)
+    {
+        const QCPData data = graph->data()->values()[i];
+        double mag = Point(data.key - pos.x, data.value - pos.y).magnitudeSquared();
+
+        if (mag <= dist)
+        {
+            dist = mag;
+            selectedData = data;
+        }
+    }
+
+    return selectedData;
+}
+
+void OptiLab::graphClicked(QCPAbstractPlottable *plottable, QMouseEvent *event)
+{
+    if (QCPGraph *graph = dynamic_cast<QCPGraph *>(plottable))
+    {
+        // find closest point
+        QCPData selectedData = findClosestData(graph, Point(chart->xAxis->pixelToCoord(event->pos().x()),
+                                                            chart->yAxis->pixelToCoord(event->pos().y())));
+
+        QSharedPointer<Computation> selectedComputation = m_computationMap[graph->property("computationset_index").toInt()][QPair<double, double>(selectedData.key, selectedData.value)];
+        if (!selectedComputation.isNull())
+        {
+            QToolTip::hideText();
+            QToolTip::showText(event->globalPos(),
+                               tr("<table>"
+                                  "<tr><th colspan=\"2\">%L1</th></tr>"
+                                  "<tr><td>X:</td>" "<td>%L2</td></tr>"
+                                  "<tr><td>Y:</td>" "<td>%L3</td></tr>"
+                                  "</table>").
+                               arg(graph->name().isEmpty() ? "..." : graph->name()).arg(selectedData.key).arg(selectedData.value), chart, chart->rect());
+
+            emit computationSelected(selectedComputation->problemDir());
+        }
+    }
 }

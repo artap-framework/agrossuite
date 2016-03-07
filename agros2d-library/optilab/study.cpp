@@ -370,8 +370,8 @@ void Study::setDefaultValues()
     m_settingDefault[View_ChartX] = QString();
     m_settingDefault[View_ChartY] = QString();
     m_settingDefault[View_ApplyToAllSets] = true;
-    m_settingDefault[View_ChartLogX] = false;
-    m_settingDefault[View_ChartLogY] = false;
+    m_settingDefault[View_ChartLogX] = true;
+    m_settingDefault[View_ChartLogY] = true;
 }
 
 void Study::setStringKeys()
