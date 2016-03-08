@@ -39,7 +39,7 @@ const QString N_ITERATIONS = "n_iterations";
 class NLoptProblem
 {
 public:
-    NLoptProblem(StudyNLoptAnalysis *study) :  m_study(study),
+    NLoptProblem(StudyNLopt *study) :  m_study(study),
         opt((nlopt::algorithm) study->value(Study::NLopt_algorithm).toInt(), study->parameters().count())
     {
     }
@@ -88,7 +88,7 @@ public:
     nlopt::opt opt;
 
 private:
-    StudyNLoptAnalysis *m_study;
+    StudyNLopt *m_study;
 };
 
 double objFunctionWrapper(const std::vector<double> &x, std::vector<double> &grad, void *data)
@@ -97,16 +97,16 @@ double objFunctionWrapper(const std::vector<double> &x, std::vector<double> &gra
     return obj->objectiveFunction(x, grad, data);
 }
 
-StudyNLoptAnalysis::StudyNLoptAnalysis() : Study()
+StudyNLopt::StudyNLopt() : Study()
 {
 }
 
-int StudyNLoptAnalysis::estimatedNumberOfSteps() const
+int StudyNLopt::estimatedNumberOfSteps() const
 {
     return value(Study::NLopt_n_iterations).toInt();
 }
 
-void StudyNLoptAnalysis::solve()
+void StudyNLopt::solve()
 {
     m_computationSets.clear();
     m_isSolving = true;
@@ -173,7 +173,7 @@ void StudyNLoptAnalysis::solve()
     }
 }
 
-void StudyNLoptAnalysis::setDefaultValues()
+void StudyNLopt::setDefaultValues()
 {    
     Study::setDefaultValues();
 
@@ -185,7 +185,7 @@ void StudyNLoptAnalysis::setDefaultValues()
     m_settingDefault[NLopt_algorithm] = nlopt::LN_BOBYQA;
 }
 
-void StudyNLoptAnalysis::setStringKeys()
+void StudyNLopt::setStringKeys()
 {
     Study::setStringKeys();
 
@@ -199,13 +199,13 @@ void StudyNLoptAnalysis::setStringKeys()
 
 // *****************************************************************************************************
 
-StudyNLoptAnalysisDialog::StudyNLoptAnalysisDialog(Study *study, QWidget *parent)
+StudyNLoptDialog::StudyNLoptDialog(Study *study, QWidget *parent)
     : StudyDialog(study, parent)
 {
 
 }
 
-QLayout *StudyNLoptAnalysisDialog::createStudyControls()
+QLayout *StudyNLoptDialog::createStudyControls()
 {
     txtXRelTol = new LineEditDouble(0.0);
     txtXAbsTol = new LineEditDouble(0.0);
@@ -261,7 +261,7 @@ QLayout *StudyNLoptAnalysisDialog::createStudyControls()
     return layoutMain;
 }
 
-void StudyNLoptAnalysisDialog::load()
+void StudyNLoptDialog::load()
 {
     StudyDialog::load();
 
@@ -273,7 +273,7 @@ void StudyNLoptAnalysisDialog::load()
     cmbAlgorithm->setCurrentIndex(cmbAlgorithm->findData(study()->value(Study::NLopt_algorithm).toInt()));
 }
 
-void StudyNLoptAnalysisDialog::save()
+void StudyNLoptDialog::save()
 {
     StudyDialog::save();
 

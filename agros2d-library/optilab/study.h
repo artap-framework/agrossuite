@@ -86,6 +86,9 @@ public:
         NLopt_n_iterations,
         NLopt_algorithm,
 
+        Sweep_num_samples,
+        Sweep_init_method,
+
         BayesOpt_n_init_samples,
         BayesOpt_n_iterations,
         BayesOpt_n_iter_relearn,

@@ -29,26 +29,26 @@
 
 #include "bayesopt/bayesopt.hpp"
 
-class StudyBayesOptAnalysis;
+class StudyBayesOpt;
 
 class BayesOptProblem : public bayesopt::ContinuousModel
 {
 public:
-    BayesOptProblem(StudyBayesOptAnalysis *study, bayesopt::Parameters par);
+    BayesOptProblem(StudyBayesOpt *study, bayesopt::Parameters par);
 
     double evaluateSample(const vectord& x);
     bool checkReachability(const vectord &query) { return true; }
 
 private:
-    StudyBayesOptAnalysis *m_study;
+    StudyBayesOpt *m_study;
 };
 
-class StudyBayesOptAnalysis : public Study
+class StudyBayesOpt : public Study
 {
 public:
-    StudyBayesOptAnalysis();
+    StudyBayesOpt();
 
-    virtual inline StudyType type() { return StudyType_BayesOptAnalysis; }
+    virtual inline StudyType type() { return StudyType_BayesOpt; }
     virtual void solve();
 
     virtual int estimatedNumberOfSteps() const;
@@ -57,16 +57,16 @@ protected:
     virtual void setDefaultValues();
     virtual void setStringKeys();
 
-    friend class StudyBayesOptAnalysisDialog;
+    friend class StudyBayesOptDialog;
 };
 
-class StudyBayesOptAnalysisDialog : public StudyDialog
+class StudyBayesOptDialog : public StudyDialog
 {
 public:
-    StudyBayesOptAnalysisDialog(Study *study, QWidget *parent = 0);
+    StudyBayesOptDialog(Study *study, QWidget *parent = 0);
 
 protected:
-    virtual inline StudyBayesOptAnalysis *study() { return dynamic_cast<StudyBayesOptAnalysis *>(m_study); }
+    virtual inline StudyBayesOpt *study() { return dynamic_cast<StudyBayesOpt *>(m_study); }
 
     virtual QLayout *createStudyControls();
 

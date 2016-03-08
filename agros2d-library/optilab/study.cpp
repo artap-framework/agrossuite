@@ -90,14 +90,14 @@ void ComputationSet::sort(const QString &parameterName)
 Study *Study::factory(StudyType type)
 {
     Study *study = nullptr;
-    if (type == StudyType_SweepAnalysis)
-        study = new StudySweepAnalysis();
+    if (type == StudyType_Sweep)
+        study = new StudySweep();
     else if (type == StudyType_NSGA2)
-        study = new StudyNSGA2Analysis();
-    else if (type == StudyType_BayesOptAnalysis)
-        study = new StudyBayesOptAnalysis();
-    else if (type == StudyType_NLoptAnalysis)
-        study = new StudyNLoptAnalysis();
+        study = new StudyNSGA2();
+    else if (type == StudyType_BayesOpt)
+        study = new StudyBayesOpt();
+    else if (type == StudyType_NLopt)
+        study = new StudyNLopt();
     else
         assert(0);
 

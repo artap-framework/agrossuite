@@ -25,20 +25,57 @@
 #include "util.h"
 #include "util/enums.h"
 #include "study.h"
+#include "study_dialog.h"
 
-class StudySweepAnalysis : public Study
+#include "bayesopt/bayesopt.hpp"
+
+class StudySweep;
+
+class SweepProblem : public bayesopt::ContinuousModel
 {
 public:
-    StudySweepAnalysis();
+    SweepProblem(StudySweep *study, bayesopt::Parameters par);
 
-    virtual inline StudyType type() { return StudyType_SweepAnalysis; }
+    double evaluateSample(const vectord& x);
+    bool checkReachability(const vectord &query) { return true; }
 
+private:
+    StudySweep *m_study;
+};
+
+class StudySweep : public Study
+{
+public:
+    StudySweep();
+
+    virtual inline StudyType type() { return StudyType_Sweep; }
     virtual void solve();
 
     virtual int estimatedNumberOfSteps() const;
 
+protected:
     virtual void setDefaultValues();
     virtual void setStringKeys();
+
+    friend class StudySweepDialog;
+};
+
+class StudySweepDialog : public StudyDialog
+{
+public:
+    StudySweepDialog(Study *study, QWidget *parent = 0);
+
+protected:
+    virtual inline StudySweep *study() { return dynamic_cast<StudySweep *>(m_study); }
+
+    virtual QLayout *createStudyControls();
+
+    virtual void load();
+    virtual void save();
+
+private:
+    QSpinBox *txtNumSamples;
+    QComboBox *cmbInitMethod;
 };
 
 #endif // STUDY_SWEEP_H

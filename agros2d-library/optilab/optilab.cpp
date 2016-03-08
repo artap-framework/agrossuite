@@ -610,7 +610,7 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
         arrow->start->setCoords(start);
         arrow->end->setCoords(end);
         arrow->setHead(QCPLineEnding::esSpikeArrow);
-        arrow->setPen(QPen(QBrush(QColor(180, 180, 180)), 5));
+        arrow->setPen(QPen(QBrush(QColor(200, 200, 200)), 5));
     }
 
     // mean value and standard deviation

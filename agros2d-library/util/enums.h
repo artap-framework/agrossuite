@@ -315,10 +315,10 @@ enum SymFlag
 enum StudyType
 {
     StudyType_Undefined = -1,
-    StudyType_SweepAnalysis,
+    StudyType_Sweep,
     StudyType_NSGA2,
-    StudyType_BayesOptAnalysis,
-    StudyType_NLoptAnalysis
+    StudyType_BayesOpt,
+    StudyType_NLopt
 };
 
 enum FunctionalType

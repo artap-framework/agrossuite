@@ -35,7 +35,7 @@ const QString N_ITERATIONS = "n_iterations";
 const QString N_ITER_RELEARN = "n_iter_relearn";
 const QString INIT_METHOD = "init_method";
 
-BayesOptProblem::BayesOptProblem(StudyBayesOptAnalysis *study, bayesopt::Parameters par)
+BayesOptProblem::BayesOptProblem(StudyBayesOpt *study, bayesopt::Parameters par)
     : ContinuousModel(study->parameters().count(), par), m_study(study)
 {
     vectord lowerBound(m_study->parameters().count());
@@ -85,16 +85,16 @@ double BayesOptProblem::evaluateSample(const vectord& x)
     }
 }
 
-StudyBayesOptAnalysis::StudyBayesOptAnalysis() : Study()
+StudyBayesOpt::StudyBayesOpt() : Study()
 {    
 }
 
-int StudyBayesOptAnalysis::estimatedNumberOfSteps() const
+int StudyBayesOpt::estimatedNumberOfSteps() const
 {
     return value(Study::BayesOpt_n_init_samples).toInt() + value(Study::BayesOpt_n_iterations).toInt();
 }
 
-void StudyBayesOptAnalysis::solve()
+void StudyBayesOpt::solve()
 {
     m_computationSets.clear();
     m_isSolving = true;
@@ -137,7 +137,7 @@ void StudyBayesOptAnalysis::solve()
     emit solved();
 }
 
-void StudyBayesOptAnalysis::setDefaultValues()
+void StudyBayesOpt::setDefaultValues()
 {
     Study::setDefaultValues();
 
@@ -147,7 +147,7 @@ void StudyBayesOptAnalysis::setDefaultValues()
     m_settingDefault[BayesOpt_init_method] = 1; // 1-LHS, 2-Sobol    
 }
 
-void StudyBayesOptAnalysis::setStringKeys()
+void StudyBayesOpt::setStringKeys()
 {
     Study::setStringKeys();
 
@@ -159,13 +159,13 @@ void StudyBayesOptAnalysis::setStringKeys()
 
 // *****************************************************************************************************
 
-StudyBayesOptAnalysisDialog::StudyBayesOptAnalysisDialog(Study *study, QWidget *parent)
+StudyBayesOptDialog::StudyBayesOptDialog(Study *study, QWidget *parent)
     : StudyDialog(study, parent)
 {
 
 }
 
-QLayout *StudyBayesOptAnalysisDialog::createStudyControls()
+QLayout *StudyBayesOptDialog::createStudyControls()
 {
     txtNInitSamples = new QSpinBox(this);
     txtNInitSamples->setMinimum(1);
@@ -182,7 +182,7 @@ QLayout *StudyBayesOptAnalysisDialog::createStudyControls()
     cmbInitMethod = new QComboBox(this);
     cmbInitMethod->addItem(tr("Latin Hypercube Sampling (LHS)"), 1);
     cmbInitMethod->addItem(tr("Sobol Sequences"), 2);
-    cmbInitMethod->addItem(tr("Uniform Sampling"), 3);
+    // cmbInitMethod->addItem(tr("Uniform Sampling"), 3);
 
     QGridLayout *layoutInitialization = new QGridLayout(this);
     layoutInitialization->addWidget(new QLabel(tr("Number of initial samples:")), 0, 0);
@@ -203,7 +203,7 @@ QLayout *StudyBayesOptAnalysisDialog::createStudyControls()
     return layoutMain;
 }
 
-void StudyBayesOptAnalysisDialog::load()
+void StudyBayesOptDialog::load()
 {
     StudyDialog::load();
 
@@ -213,7 +213,7 @@ void StudyBayesOptAnalysisDialog::load()
     cmbInitMethod->setCurrentIndex(cmbInitMethod->findData(study()->value(Study::BayesOpt_init_method).toInt()));
 }
 
-void StudyBayesOptAnalysisDialog::save()
+void StudyBayesOptDialog::save()
 {
     StudyDialog::save();
 

@@ -31,10 +31,10 @@
 
 class LineEditDouble;
 
-class StudyNSGA2Analysis : public Study
+class StudyNSGA2 : public Study
 {
 public:
-    StudyNSGA2Analysis();
+    StudyNSGA2();
 
     virtual inline StudyType type() { return StudyType_NSGA2; }
     virtual void solve();
@@ -46,16 +46,16 @@ protected:
     virtual void setStringKeys();
 
 private:
-    friend class StudyNSGA2AnalysisDialog;
+    friend class StudyNSGA2Dialog;
 };
 
-class StudyNSGA2AnalysisDialog : public StudyDialog
+class StudyNSGA2Dialog : public StudyDialog
 {
 public:
-    StudyNSGA2AnalysisDialog(Study *study, QWidget *parent = 0);
+    StudyNSGA2Dialog(Study *study, QWidget *parent = 0);
 
 protected:
-    virtual inline StudyNSGA2Analysis *study() { return dynamic_cast<StudyNSGA2Analysis *>(m_study); }
+    virtual inline StudyNSGA2 *study() { return dynamic_cast<StudyNSGA2 *>(m_study); }
 
     virtual QLayout *createStudyControls();
 

@@ -318,11 +318,13 @@ void StudySelectDialog::doItemDoubleClicked(QListWidgetItem *item)
 StudyDialog *StudyDialog::factory(Study *study, QWidget *parent)
 {    
     if (study->type() == StudyType_NSGA2)
-        return new StudyNSGA2AnalysisDialog(study, parent);
-    else if (study->type() == StudyType_BayesOptAnalysis)
-        return new StudyBayesOptAnalysisDialog(study, parent);
-    else if (study->type() == StudyType_NLoptAnalysis)
-        return new StudyNLoptAnalysisDialog(study, parent);
+        return new StudyNSGA2Dialog(study, parent);
+    else if (study->type() == StudyType_BayesOpt)
+        return new StudyBayesOptDialog(study, parent);
+    else if (study->type() == StudyType_NLopt)
+        return new StudyNLoptDialog(study, parent);
+    else if (study->type() == StudyType_Sweep)
+        return new StudySweepDialog(study, parent);
     else
         assert(0);
 

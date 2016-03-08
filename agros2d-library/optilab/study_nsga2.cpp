@@ -39,7 +39,7 @@ const QString TOL_ABS = "tol_abs";
 const QString N_ITERATIONS = "n_iterations";
 
 // TODO: encapsulate
-static StudyNSGA2Analysis *localStudy = nullptr;
+static StudyNSGA2 *localStudy = nullptr;
 nsga2::NSGA2 *localNSGA2 = nullptr;
 
 void objectiveFunction(double *xreal, double *xbin, int **gene, double *obj, double *constr)
@@ -91,18 +91,18 @@ void popPopulation(nsga2::population& pop)
     pop.evaluate();
 }
 
-StudyNSGA2Analysis::StudyNSGA2Analysis() : Study()
+StudyNSGA2::StudyNSGA2() : Study()
 {
     // study
     localStudy = this;    
 }
 
-int StudyNSGA2Analysis::estimatedNumberOfSteps() const
+int StudyNSGA2::estimatedNumberOfSteps() const
 {
     return value(NSGA2_popsize).toInt() * value(NSGA2_ngen).toInt();
 }
 
-void StudyNSGA2Analysis::solve()
+void StudyNSGA2::solve()
 {
     m_computationSets.clear();
     m_isSolving = true;
@@ -171,7 +171,7 @@ void StudyNSGA2Analysis::solve()
     localNSGA2 = nullptr;
 }
 
-void StudyNSGA2Analysis::setDefaultValues()
+void StudyNSGA2::setDefaultValues()
 {
     Study::setDefaultValues();
 
@@ -184,7 +184,7 @@ void StudyNSGA2Analysis::setDefaultValues()
     m_settingDefault[NSGA2_crowdobj] = false;
 }
 
-void StudyNSGA2Analysis::setStringKeys()
+void StudyNSGA2::setStringKeys()
 {
     Study::setStringKeys();
 
@@ -199,13 +199,13 @@ void StudyNSGA2Analysis::setStringKeys()
 
 // *****************************************************************************************************
 
-StudyNSGA2AnalysisDialog::StudyNSGA2AnalysisDialog(Study *study, QWidget *parent)
+StudyNSGA2Dialog::StudyNSGA2Dialog(Study *study, QWidget *parent)
     : StudyDialog(study, parent)
 {
 
 }
 
-QLayout *StudyNSGA2AnalysisDialog::createStudyControls()
+QLayout *StudyNSGA2Dialog::createStudyControls()
 {    
     txtPopSize = new QSpinBox(this);
     txtPopSize->setMinimum(4);
@@ -267,7 +267,7 @@ QLayout *StudyNSGA2AnalysisDialog::createStudyControls()
     return layoutMain;
 }
 
-void StudyNSGA2AnalysisDialog::load()
+void StudyNSGA2Dialog::load()
 {    
     StudyDialog::load();
 
@@ -283,7 +283,7 @@ void StudyNSGA2AnalysisDialog::load()
         radCrowdParameters->setChecked(true);
 }
 
-void StudyNSGA2AnalysisDialog::save()
+void StudyNSGA2Dialog::save()
 {
     StudyDialog::save();
 

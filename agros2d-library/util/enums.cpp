@@ -325,10 +325,10 @@ void initLists()
     // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_Chebyshev, "chebyshev");
 
     // study type
-    studyTypeList.insert(StudyType_SweepAnalysis, "sweepanalysis");
+    studyTypeList.insert(StudyType_Sweep, "sweeps");
     studyTypeList.insert(StudyType_NSGA2, "nsga2");
-    studyTypeList.insert(StudyType_BayesOptAnalysis, "bayesopt");
-    studyTypeList.insert(StudyType_NLoptAnalysis, "nlopt");
+    studyTypeList.insert(StudyType_BayesOpt, "bayesopt");
+    studyTypeList.insert(StudyType_NLopt, "nlopt");
 
     // functionals
     functionalTypeList.insert(FunctionalType_Maximize, "maximize");
@@ -825,13 +825,13 @@ QString studyTypeString(StudyType type)
 {
     switch (type)
     {
-    case StudyType_SweepAnalysis:
-        return QObject::tr("Sweep analysis");
+    case StudyType_Sweep:
+        return QObject::tr("Sweep");
     case StudyType_NSGA2:
         return QObject::tr("NSGA2");
-    case StudyType_BayesOptAnalysis:
+    case StudyType_BayesOpt:
         return QObject::tr("BayesOpt");
-    case StudyType_NLoptAnalysis:
+    case StudyType_NLopt:
         return QObject::tr("NLopt");
     default:
         std::cerr << "Study type '" + QString::number(type).toStdString() + "' is not implemented. studyTypeString(StudyType type)" << endl;

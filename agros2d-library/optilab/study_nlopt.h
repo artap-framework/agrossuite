@@ -31,12 +31,12 @@
 
 class LineEditDouble;
 
-class StudyNLoptAnalysis : public Study
+class StudyNLopt : public Study
 {
 public:
-    StudyNLoptAnalysis();
+    StudyNLopt();
 
-    virtual inline StudyType type() { return StudyType_NLoptAnalysis; }
+    virtual inline StudyType type() { return StudyType_NLopt; }
     virtual void solve();
 
     virtual int estimatedNumberOfSteps() const;
@@ -46,16 +46,16 @@ protected:
     virtual void setStringKeys();
 
 private:
-    friend class StudyNLoptAnalysisDialog;
+    friend class StudyNLoptDialog;
 };
 
-class StudyNLoptAnalysisDialog : public StudyDialog
+class StudyNLoptDialog : public StudyDialog
 {
 public:
-    StudyNLoptAnalysisDialog(Study *study, QWidget *parent = 0);
+    StudyNLoptDialog(Study *study, QWidget *parent = 0);
 
 protected:
-    virtual inline StudyNLoptAnalysis *study() { return dynamic_cast<StudyNLoptAnalysis *>(m_study); }
+    virtual inline StudyNLopt *study() { return dynamic_cast<StudyNLopt *>(m_study); }
 
     virtual QLayout *createStudyControls();
 
