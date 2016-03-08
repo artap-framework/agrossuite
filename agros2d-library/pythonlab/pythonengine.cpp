@@ -508,8 +508,7 @@ bool PythonEngine::runExpression(const QString &expression, double *value, const
                     {
                         Py_INCREF(result);
                         PyArg_Parse(result, "d", value);
-                        if (fabs(*value) < EPS_ZERO)
-                            *value = 0.0;
+                        // if (fabs(*value) < EPS_ZERO) *value = 0.0;
                         Py_XDECREF(result);
 
                         successfulRun = true;

@@ -57,7 +57,7 @@ public:
 protected:
     virtual inline StudyNLoptAnalysis *study() { return dynamic_cast<StudyNLoptAnalysis *>(m_study); }
 
-    virtual QWidget *createStudyControls();
+    virtual QLayout *createStudyControls();
 
     virtual void load();
     virtual void save();

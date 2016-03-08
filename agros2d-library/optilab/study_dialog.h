@@ -107,7 +107,7 @@ protected:
     QTabWidget *tabStudy;
 
     void createControls();
-    virtual QWidget *createStudyControls() { return new QWidget(this); }
+    virtual QLayout *createStudyControls() { return new QHBoxLayout(this); }
     QWidget *createParameters();
     QWidget *createFunctionals();
 
@@ -123,8 +123,10 @@ protected:
     QPushButton *btnFunctionalRemove;
     void readFunctionals();
 
-    virtual void load() = 0;
-    virtual void save() = 0;
+    QCheckBox *chkClearSolution;
+
+    virtual void load();
+    virtual void save();
 
 private slots:
     void doAccept();

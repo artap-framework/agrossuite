@@ -81,6 +81,7 @@ public:
     inline Point point() const { return m_point; }
     inline void setPoint(Point point) { m_point = point; }
     inline void setPoint(double x, double y) { m_point = Point(x, y); }
+
     inline PhysicFieldVariableComp variableComponent() const  { return m_variableComponent; }
     inline void setVariableComponent(PhysicFieldVariableComp component) { m_variableComponent = component; }
 
@@ -97,6 +98,7 @@ public:
     SurfaceIntegralRecipe(const QString &name = "", const QString &fieldId = "", const QString &variable = "",
                      int timeStep = -1, int adaptivityStep = -1);
     virtual ~SurfaceIntegralRecipe() {}
+    inline void clear() { m_edges.clear(); }
 
     virtual ResultRecipeType type() const { return ResultRecipeType_SurfaceIntegral; }
 
@@ -104,6 +106,7 @@ public:
     virtual void save(QJsonObject &object);
 
     inline QList<int> edges() const { return m_edges; }
+    inline QList<int> &edges() { return m_edges; }
     inline void addEdge(int edge) { m_edges.append(edge); }
 
     virtual double evaluate(Computation *computation);
@@ -118,6 +121,7 @@ public:
     VolumeIntegralRecipe(const QString &name = "", const QString &fieldId = "", const QString &variable = "",
                      int timeStep = -1, int adaptivityStep = -1);
     virtual ~VolumeIntegralRecipe() {}
+    inline void clear() { m_labels.clear(); }
 
     virtual ResultRecipeType type() const { return ResultRecipeType_VolumeIntegral; }
 
@@ -125,6 +129,7 @@ public:
     virtual void save(QJsonObject &object);
 
     inline QList<int> labels() const { return m_labels; }
+    inline QList<int> &labels() { return m_labels; }
     inline void addLabel(int label) { m_labels.append(label); }
 
     virtual double evaluate(Computation *computation);

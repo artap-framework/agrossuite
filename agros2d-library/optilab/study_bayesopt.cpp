@@ -55,7 +55,6 @@ BayesOptProblem::BayesOptProblem(StudyBayesOptAnalysis *study, bayesopt::Paramet
 
 double BayesOptProblem::evaluateSample(const vectord& x)
 {   
-
     // computation
     QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
     m_study->addComputation(computation);
@@ -72,6 +71,10 @@ double BayesOptProblem::evaluateSample(const vectord& x)
     {
         m_study->evaluateStep(computation);
         double value = m_study->evaluateSingleGoal(computation);
+
+        if (m_study->value(Study::General_ClearSolution).toBool())
+            computation->clearSolution();
+
         return value;
     }
     catch (AgrosException &e)
@@ -162,7 +165,7 @@ StudyBayesOptAnalysisDialog::StudyBayesOptAnalysisDialog(Study *study, QWidget *
 
 }
 
-QWidget *StudyBayesOptAnalysisDialog::createStudyControls()
+QLayout *StudyBayesOptAnalysisDialog::createStudyControls()
 {
     txtNInitSamples = new QSpinBox(this);
     txtNInitSamples->setMinimum(1);
@@ -196,16 +199,14 @@ QWidget *StudyBayesOptAnalysisDialog::createStudyControls()
 
     QVBoxLayout *layoutMain = new QVBoxLayout(this);
     layoutMain->addWidget(grpInitialization);
-    layoutMain->addStretch();
 
-    QWidget *widget = new QWidget(this);
-    widget->setLayout(layoutMain);
-
-    return widget;
+    return layoutMain;
 }
 
 void StudyBayesOptAnalysisDialog::load()
 {
+    StudyDialog::load();
+
     txtNInitSamples->setValue(study()->value(Study::BayesOpt_n_init_samples).toInt());
     txtNIterations->setValue(study()->value(Study::BayesOpt_n_iterations).toInt());
     txtNIterRelearn->setValue(study()->value(Study::BayesOpt_n_iter_relearn).toInt());
@@ -214,6 +215,8 @@ void StudyBayesOptAnalysisDialog::load()
 
 void StudyBayesOptAnalysisDialog::save()
 {
+    StudyDialog::save();
+
     study()->setValue(Study::BayesOpt_n_init_samples, txtNInitSamples->value());
     study()->setValue(Study::BayesOpt_n_iterations, txtNIterations->value());
     study()->setValue(Study::BayesOpt_n_iter_relearn, txtNIterRelearn->value());

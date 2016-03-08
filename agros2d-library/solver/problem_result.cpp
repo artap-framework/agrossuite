@@ -202,7 +202,7 @@ void SurfaceIntegralRecipe::save(QJsonObject &object)
 
 double SurfaceIntegralRecipe::evaluate(Computation *computation)
 {
-    if (computation->isSolved() or computation->isSolving())
+    if (computation->isSolved() || computation->isSolving())
     {
         FieldInfo *fieldInfo = computation->fieldInfo(m_fieldId);
         computation->scene()->selectNone();
@@ -260,7 +260,7 @@ void VolumeIntegralRecipe::save(QJsonObject &object)
 
 double VolumeIntegralRecipe::evaluate(Computation *computation)
 {
-    if (computation->isSolved() or computation->isSolving())
+    if (computation->isSolved() || computation->isSolving())
     {
         FieldInfo *fieldInfo = computation->fieldInfo(m_fieldId);
         computation->scene()->selectNone();

@@ -317,7 +317,7 @@ bool SurfaceIntegralRecipeDialog::save()
 {
     if (RecipeDialog::save())
     {
-        recipe()->edges().clear();
+        recipe()->clear();
         for (int i = 0; i < lstEdges->count(); i++)
         {
             if (lstEdges->item(i)->checkState() == Qt::Checked)
@@ -382,7 +382,7 @@ bool VolumeIntegralRecipeDialog::save()
 {
     if (RecipeDialog::save())
     {
-        recipe()->labels().clear();
+        recipe()->clear();
         for (int i = 0; i < lstVolumes->count(); i++)
         {
             if (lstVolumes->item(i)->checkState() == Qt::Checked)

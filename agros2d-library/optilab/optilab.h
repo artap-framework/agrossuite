@@ -46,7 +46,6 @@ private:
     QTreeWidget *trvComputations;
     QComboBox *cmbStudies;
 
-    QCheckBox *chkShowAllSets;
     QCheckBox *chkChartLogX;
     QCheckBox *chkChartLogY;
     QComboBox *cmbChartX;

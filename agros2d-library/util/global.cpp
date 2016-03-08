@@ -181,13 +181,15 @@ void Agros2D::clearComputations()
 {
     foreach (QSharedPointer<Computation> computation, Agros2D::singleton()->m_computations)
     {
+        // remove from list
+        Agros2D::singleton()->m_computations.remove(computation->problemDir());
         // clear solutions
         computation->clearFieldsAndConfig();
         // remove computation from studies
         Agros2D::singleton()->problem()->studies()->removeComputation(computation);
-        // remove from list
-        Agros2D::singleton()->m_computations.remove(computation->problemDir());
     }    
+
+    Agros2D::singleton()->m_computations.clear();
 }
 
 void Agros2D::createSingleton()

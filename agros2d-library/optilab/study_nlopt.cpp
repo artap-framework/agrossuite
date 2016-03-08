@@ -70,6 +70,10 @@ public:
         {
             m_study->evaluateStep(computation);
             double value = m_study->evaluateSingleGoal(computation);
+
+            if (m_study->value(Study::General_ClearSolution).toBool())
+                computation->clearSolution();
+
             return value;
         }
         catch (AgrosException &e)
@@ -201,7 +205,7 @@ StudyNLoptAnalysisDialog::StudyNLoptAnalysisDialog(Study *study, QWidget *parent
 
 }
 
-QWidget *StudyNLoptAnalysisDialog::createStudyControls()
+QLayout *StudyNLoptAnalysisDialog::createStudyControls()
 {
     txtXRelTol = new LineEditDouble(0.0);
     txtXAbsTol = new LineEditDouble(0.0);
@@ -253,16 +257,14 @@ QWidget *StudyNLoptAnalysisDialog::createStudyControls()
     QVBoxLayout *layoutMain = new QVBoxLayout(this);
     layoutMain->addWidget(grpInitialization);
     layoutMain->addWidget(grpConfig);
-    layoutMain->addStretch();
 
-    QWidget *widget = new QWidget(this);
-    widget->setLayout(layoutMain);
-
-    return widget;
+    return layoutMain;
 }
 
 void StudyNLoptAnalysisDialog::load()
 {
+    StudyDialog::load();
+
     txtXRelTol->setValue(study()->value(Study::NLopt_xtol_rel).toDouble());
     txtXAbsTol->setValue(study()->value(Study::NLopt_xtol_abs).toDouble());
     txtFRelTol->setValue(study()->value(Study::NLopt_ftol_rel).toDouble());
@@ -273,6 +275,8 @@ void StudyNLoptAnalysisDialog::load()
 
 void StudyNLoptAnalysisDialog::save()
 {
+    StudyDialog::save();
+
     study()->setValue(Study::NLopt_xtol_rel, txtXRelTol->value());
     study()->setValue(Study::NLopt_xtol_abs, txtXAbsTol->value());
     study()->setValue(Study::NLopt_ftol_rel, txtFRelTol->value());

@@ -157,12 +157,12 @@ void LogOptimizationDialog::createControls()
     m_progress->setMaximum(m_study->estimatedNumberOfSteps());
 
     QVBoxLayout *layoutObjective = new QVBoxLayout();
-    layoutObjective->addWidget(m_chart, 2);
+    layoutObjective->addWidget(m_chart, 3);
     layoutObjective->addWidget(m_progress, 1);
 
     QVBoxLayout *layout = new QVBoxLayout();
-    layout->addLayout(layoutObjective);
-    layout->addWidget(m_logWidget);
+    layout->addLayout(layoutObjective, 2);
+    layout->addWidget(m_logWidget, 1);
     // layout->addStretch();
     layout->addLayout(layoutStatus);
 
@@ -174,8 +174,15 @@ void LogOptimizationDialog::updateChart()
     QVector<double> steps;
     QVector<double> objective;
 
+    m_chart->clearItems();
     for (int i = 0; i < m_study->computationSets().count(); i++)
     {
+        QCPItemStraightLine *line = new QCPItemStraightLine(m_chart);
+        m_chart->addItem(line);
+        line->point1->setCoords(QPointF(steps.count(), 0));
+        line->point2->setCoords(QPointF(steps.count(), 1));
+        line->setPen(QPen(QBrush(QColor(140, 40, 40)), 2, Qt::DashLine));
+
         QList<QSharedPointer<Computation> > computations = m_study->computationSets()[i].computations();
 
         for (int j = 0; j < computations.count(); j++)
@@ -344,14 +351,29 @@ void StudyDialog::createControls()
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(doAccept()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(close()));
 
-    tabStudy = new QTabWidget();
-    tabStudy->addTab(createStudyControls(), tr("Study"));
+    chkClearSolution = new QCheckBox(tr("Clear solution after solving the problem"));
+
+    QGridLayout *layoutGeneral = new QGridLayout(this);
+    layoutGeneral->addWidget(chkClearSolution, 0, 0);
+
+    QGroupBox *grpGeneral = new QGroupBox(tr("General"));
+    grpGeneral->setLayout(layoutGeneral);
+
+    QVBoxLayout *layoutStudy = new QVBoxLayout(this);
+    layoutStudy->addWidget(grpGeneral);
+    layoutStudy->addLayout(createStudyControls());
+    layoutStudy->addStretch();
+
+    QWidget *widgetStudy = new QWidget(this);
+    widgetStudy->setLayout(layoutStudy);
+
+    tabStudy = new QTabWidget(this);
+    tabStudy->addTab(widgetStudy, tr("Study"));
     tabStudy->addTab(createParameters(), tr("Parameters"));
     tabStudy->addTab(createFunctionals(), tr("Functionals"));
 
-    QVBoxLayout *layout = new QVBoxLayout();
+    QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(tabStudy);
-    layout->addStretch();
     layout->addWidget(buttonBox);
 
     setLayout(layout);
@@ -594,6 +616,17 @@ void StudyDialog::doAccept()
     save();
     accept();
 }
+
+void StudyDialog::load()
+{
+    chkClearSolution->setChecked(m_study->value(Study::General_ClearSolution).toBool());
+}
+
+void StudyDialog::save()
+{
+    m_study->setValue(Study::General_ClearSolution, chkClearSolution->isChecked());
+}
+
 
 // **************************************************************************************************************
 

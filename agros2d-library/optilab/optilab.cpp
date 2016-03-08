@@ -118,12 +118,10 @@ void OptiLabWidget::createControls()
 
     cmbChartX = new QComboBox(this);
     cmbChartY = new QComboBox(this);
-    chkShowAllSets = new QCheckBox(tr("Apply to all sets"), this);
     chkChartLogX = new QCheckBox(tr("Logarithmic scale (x-axis)"), this);
     chkChartLogY = new QCheckBox(tr("Logarithmic scale (y-axis)"), this);
 
     QGridLayout *layoutChartXYControls = new QGridLayout();
-    layoutChartXYControls->addWidget(chkShowAllSets, 0, 0);
     layoutChartXYControls->addWidget(chkChartLogX, 1, 0);
     layoutChartXYControls->addWidget(chkChartLogY, 2, 0);
     layoutChartXYControls->addWidget(new QLabel(tr("Variable X:")), 5, 0);
@@ -279,7 +277,6 @@ void OptiLabWidget::studyChanged(int index)
         trvComputations->setCurrentItem(trvComputations->topLevelItem(0));
 
     // set controls
-    chkShowAllSets->setChecked(study->value(Study::View_ApplyToAllSets).toBool());
     chkChartLogX->setChecked(study->value(Study::View_ChartLogX).toBool());
     chkChartLogY->setChecked(study->value(Study::View_ChartLogY).toBool());
     cmbChartX->setCurrentIndex(cmbChartX->findData(study->value(Study::View_ChartX).toString()));
@@ -315,7 +312,6 @@ void OptiLabWidget::plotChart()
     // study
     Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
 
-    study->setValue(Study::View_ApplyToAllSets, chkShowAllSets->checkState() == Qt::Checked);
     study->setValue(Study::View_ChartX, cmbChartX->currentData().toString());
     study->setValue(Study::View_ChartY, cmbChartY->currentData().toString());
     study->setValue(Study::View_ChartLogX, chkChartLogX->checkState() == Qt::Checked);
@@ -452,6 +448,9 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
     QString chartX = m_study->value(Study::View_ChartX).toString();
     QString chartY = m_study->value(Study::View_ChartY).toString();
 
+    if (chartX.isEmpty() || chartY.isEmpty())
+        return;
+
     QString labelX = "-";
     QString labelY = "-";
 
@@ -565,8 +564,8 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
             m_computationMap[i].insert(QPair<double, double>(dataSetX.last(), dataSetY.last()), computation);
         }
 
-        int colorPenIndex = i * paletteStep;
-        const QColor colorPen(paletteDataAgros[colorPenIndex][0] * 255, paletteDataAgros[colorPenIndex][1] * 255, paletteDataAgros[colorPenIndex][2] * 255);
+        int colorFillIndex = i * paletteStep;
+        const QColor colorFill(paletteDataAgros[colorFillIndex][0] * 255, paletteDataAgros[colorFillIndex][1] * 255, paletteDataAgros[colorFillIndex][2] * 255);
         // int colorBrushIndex = abs(goal - minGoal) / (maxGoal - minGoal) * 255;
         // const QColor colorBrush(paletteDataParuly[colorBrushIndexp][0] * 255, paletteDataParuly[colorBrushIndex][1] * 255, paletteDataParuly[colorBrushIndex][2] * 255);
 
@@ -581,8 +580,20 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
         graph->addToLegend();
 
         graph->setLineStyle(QCPGraph::lsNone);
-        graph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, colorPen, 9));
+        graph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QColor(140, 140, 140), colorFill, 9));
     }
+
+    // bounding box
+    auto mmx = std::minmax_element(linRegDataX.begin(), linRegDataX.end());
+    auto mmy = std::minmax_element(linRegDataY.begin(), linRegDataY.end());
+    double delta = qMin((*mmx.second - *mmx.first) * 0.1, (*mmy.second - *mmy.first) * 0.1);
+    QPointF boundStart(*mmx.first - delta, *mmy.first - delta);
+    QPointF boundEnd(*mmx.second + delta, *mmy.second + delta);
+
+    // QCPItemRect *boundRect = new QCPItemRect(chart);
+    // chart->addItem(boundRect);
+    // boundRect->topLeft->setCoords(boundStart);
+    // boundRect->bottomRight->setCoords(boundEnd);
 
     // linear regression
     double m = 0.0;
@@ -591,19 +602,51 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
     if (linreg(linRegDataX, linRegDataY, &m, &b, &r) == 0)
     {
         // trend arrow
-        auto mm = std::minmax_element(linRegDataX.begin(), linRegDataX.end());
-        QPointF start(*mm.first, linRegDataY.at(std::distance(linRegDataX.begin(), mm.second)));
-        QPointF end(*mm.second, linRegDataY.at(std::distance(linRegDataX.begin(), mm.first)));
+        QPointF start((*mmx.first - delta), (*mmx.first - delta) * m + b);
+        QPointF end((*mmx.second + delta), (*mmx.second + delta) * m + b);
 
         QCPItemLine *arrow = new QCPItemLine(chart);
         chart->addItem(arrow);
         arrow->start->setCoords(start);
         arrow->end->setCoords(end);
         arrow->setHead(QCPLineEnding::esSpikeArrow);
-        arrow->setPen(QPen(QBrush(QColor(140, 140, 140)), 5));
+        arrow->setPen(QPen(QBrush(QColor(180, 180, 180)), 5));
     }
 
-    // plot chart
+    // mean value and standard deviation
+    double sum = std::accumulate(linRegDataY.begin(), linRegDataY.end(), 0.0);
+    double mean = sum / linRegDataY.size();
+
+    std::vector<double> diff(linRegDataY.size());
+    std::transform(linRegDataY.begin(), linRegDataY.end(), diff.begin(), [mean](double x) { return x - mean; });
+    double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
+    double stdev = std::sqrt(sqSum / linRegDataY.size());
+
+    QVector<double> meanX; meanX << *mmx.first - delta << *mmx.second + delta;
+    QVector<double> meanY; meanY << mean << mean;
+    QVector<double> devUpper; devUpper << mean + stdev << mean + stdev;
+    QVector<double> devLower; devLower << mean - stdev << mean - stdev;
+    QCPGraph *graph = chart->addGraph();
+    graph->setData(meanX, meanY);
+    graph->removeFromLegend();
+
+    graph->setPen(QPen(QBrush(QColor(140, 140, 140)), 3, Qt::DashLine));
+    // graph->setBrush(QBrush(Qt::red));
+    graph->setLineStyle(QCPGraph::lsLine);
+
+    QCPGraph *graphChannelLower = chart->addGraph();
+    graphChannelLower->removeFromLegend();
+    graphChannelLower->setData(meanX, devLower);
+    graphChannelLower->setPen(QPen(QBrush(QColor(180, 180, 180)), 1, Qt::DotLine));
+
+    QCPGraph *graphChannelUpper = chart->addGraph();
+    graphChannelUpper->removeFromLegend();
+    graphChannelUpper->setData(meanX, devUpper);
+    graphChannelUpper->setPen(QPen(QBrush(QColor(180, 180, 180)), 1, Qt::DotLine));
+    graphChannelUpper->setBrush(QBrush(QColor(255, 50, 30, 10)));
+    graphChannelUpper->setChannelFillGraph(graphChannelLower);
+
+    // plot main chart
     chart->xAxis->setLabel(labelX);
     chart->yAxis->setLabel(labelY);
     chart->legend->setVisible(true);
@@ -616,6 +659,7 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
     else
         chart->yAxis->setScaleType(QCPAxis::stLinear);
 
+    // replot chart
     chart->replot(QCustomPlot::rpQueued);
 }
 
@@ -640,7 +684,7 @@ QCPData OptiLab::findClosestData(QCPGraph *graph, const Point &pos)
     QCPData selectedData(0, 0);
     double dist = numeric_limits<double>::max();
     foreach (const QCPData data, graph->data()->values())
-    {        
+    {
         double mag = Point((data.key - pos.x) / bound.width(),
                            (data.value - pos.y) / bound.height()).magnitudeSquared();
 

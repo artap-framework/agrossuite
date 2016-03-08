@@ -879,6 +879,16 @@ void Scene::doInvalidated()
     foreach (SceneLabel *label, labels->items())
         label->setPointValue(label->pointValue());
 
+    // evaluate materials and boundaries
+    foreach (SceneMaterial* material, materials->items())
+        foreach (uint key, material->values().keys())
+            material->evaluate(key, 0.0);
+
+    // evaluate boundaries
+    foreach (SceneBoundary* boundary, boundaries->items())
+        foreach (uint key, boundary->values().keys())
+            boundary->evaluate(key, 0.0);
+
     findLyingEdgeNodes();
     findNumberOfConnectedNodeEdges();
     findCrossings();

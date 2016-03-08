@@ -367,18 +367,20 @@ void Study::setDefaultValues()
 {
     m_settingDefault.clear();
 
+    m_settingDefault[General_ClearSolution] = false;
+
     m_settingDefault[View_ChartX] = QString();
     m_settingDefault[View_ChartY] = QString();
-    m_settingDefault[View_ApplyToAllSets] = true;
     m_settingDefault[View_ChartLogX] = true;
     m_settingDefault[View_ChartLogY] = true;
 }
 
 void Study::setStringKeys()
 {
+    m_settingKey[General_ClearSolution] = "General_ClearSolution";
+
     m_settingKey[View_ChartX] = "View_ChartX";
     m_settingKey[View_ChartY] = "View_ChartY";
-    m_settingKey[View_ApplyToAllSets] = "View_ApplyToAllSets";
     m_settingKey[View_ChartLogX] = "View_ChartLogX";
     m_settingKey[View_ChartLogY] = "View_ChartLogY";
 }

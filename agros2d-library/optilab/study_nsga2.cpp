@@ -69,6 +69,9 @@ void objectiveFunction(double *xreal, double *xbin, int **gene, double *obj, dou
         localStudy->evaluateStep(computation);
         QList<double> values = localStudy->evaluateMultiGoal(computation);
 
+        if (localStudy->value(Study::General_ClearSolution).toBool())
+            computation->clearSolution();
+
         for (int i = 0; i < values.count(); i++)
             obj[i] = values[i];
     }
@@ -91,10 +94,7 @@ void popPopulation(nsga2::population& pop)
 StudyNSGA2Analysis::StudyNSGA2Analysis() : Study()
 {
     // study
-    localStudy = this;
-
-    // nsga2
-    localNSGA2 = new nsga2::NSGA2();
+    localStudy = this;    
 }
 
 int StudyNSGA2Analysis::estimatedNumberOfSteps() const
@@ -119,6 +119,8 @@ void StudyNSGA2Analysis::solve()
 
     int seed = time(0);
 
+    // nsga2
+    localNSGA2 = new nsga2::NSGA2();
     localNSGA2->set_seed(seed);
     localNSGA2->set_nreal(m_parameters.count());
     localNSGA2->set_nbin(0);
@@ -203,7 +205,7 @@ StudyNSGA2AnalysisDialog::StudyNSGA2AnalysisDialog(Study *study, QWidget *parent
 
 }
 
-QWidget *StudyNSGA2AnalysisDialog::createStudyControls()
+QLayout *StudyNSGA2AnalysisDialog::createStudyControls()
 {    
     txtPopSize = new QSpinBox(this);
     txtPopSize->setMinimum(4);
@@ -261,16 +263,14 @@ QWidget *StudyNSGA2AnalysisDialog::createStudyControls()
     QVBoxLayout *layoutMain = new QVBoxLayout(this);
     layoutMain->addWidget(grpInitialization);
     layoutMain->addWidget(grpConfig);
-    layoutMain->addStretch();
 
-    QWidget *widget = new QWidget(this);
-    widget->setLayout(layoutMain);
-
-    return widget;
+    return layoutMain;
 }
 
 void StudyNSGA2AnalysisDialog::load()
 {    
+    StudyDialog::load();
+
     txtPopSize->setValue(study()->value(Study::NSGA2_popsize).toInt());
     txtNGen->setValue(study()->value(Study::NSGA2_ngen).toInt());
     txtPCross->setValue(study()->value(Study::NSGA2_pcross).toDouble());
@@ -285,6 +285,8 @@ void StudyNSGA2AnalysisDialog::load()
 
 void StudyNSGA2AnalysisDialog::save()
 {
+    StudyDialog::save();
+
     study()->setValue(Study::NSGA2_popsize, txtPopSize->value());
     study()->setValue(Study::NSGA2_ngen, txtNGen->value());
     study()->setValue(Study::NSGA2_pcross, txtPCross->value());

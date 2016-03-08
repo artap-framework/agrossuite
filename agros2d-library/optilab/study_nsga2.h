@@ -57,7 +57,7 @@ public:
 protected:
     virtual inline StudyNSGA2Analysis *study() { return dynamic_cast<StudyNSGA2Analysis *>(m_study); }
 
-    virtual QWidget *createStudyControls();
+    virtual QLayout *createStudyControls();
 
     virtual void load();
     virtual void save();

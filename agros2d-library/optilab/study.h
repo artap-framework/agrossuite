@@ -77,6 +77,8 @@ class Study : public QObject
 public:
     enum Type
     {
+        General_ClearSolution,
+
         NLopt_xtol_rel,
         NLopt_xtol_abs,
         NLopt_ftol_rel,
@@ -100,8 +102,7 @@ public:
         View_ChartX,
         View_ChartY,
         View_ChartLogX,
-        View_ChartLogY,
-        View_ApplyToAllSets
+        View_ChartLogY
     };
 
     Study(QList<ComputationSet> computations = QList<ComputationSet>());

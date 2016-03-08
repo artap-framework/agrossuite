@@ -68,7 +68,7 @@ public:
 protected:
     virtual inline StudyBayesOptAnalysis *study() { return dynamic_cast<StudyBayesOptAnalysis *>(m_study); }
 
-    virtual QWidget *createStudyControls();
+    virtual QLayout *createStudyControls();
 
     virtual void load();
     virtual void save();
