@@ -82,6 +82,9 @@ OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(paren
 {
     createControls();
 
+    actRunStudy = new QAction(icon("run"), tr("Run study"), this);
+    connect(actRunStudy, SIGNAL(triggered()), this, SLOT(solveStudy()));
+
     connect(Agros2D::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
     connect(Agros2D::problem()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
 }
@@ -129,13 +132,10 @@ void OptiLabWidget::createControls()
     layoutChartXYControls->addWidget(new QLabel(tr("Variable Y:")), 6, 0);
     layoutChartXYControls->addWidget(cmbChartY, 6, 1);
 
-    btnSolveStudy = new QPushButton(tr("Solve"));
-    connect(btnSolveStudy, SIGNAL(clicked()), this, SLOT(solveStudy()));
     btnPlotChart = new QPushButton(tr("Plot chart"));
     connect(btnPlotChart, SIGNAL(clicked()), this, SLOT(plotChart()));
 
     QHBoxLayout *layoutParametersButton = new QHBoxLayout();
-    layoutParametersButton->addWidget(btnSolveStudy);
     layoutParametersButton->addStretch();
     layoutParametersButton->addWidget(btnPlotChart);
 
@@ -153,7 +153,7 @@ void OptiLabWidget::refresh()
 {
     emit chartRefreshed(nullptr, QSharedPointer<Computation>());
 
-    btnSolveStudy->setEnabled(false);
+    actRunStudy->setEnabled(false);
     btnPlotChart->setEnabled(false);
 
     // fill studies
@@ -283,7 +283,7 @@ void OptiLabWidget::studyChanged(int index)
     cmbChartY->setCurrentIndex(cmbChartY->findData(study->value(Study::View_ChartY).toString()));
 
     // enable buttons
-    btnSolveStudy->setEnabled(true);
+    actRunStudy->setEnabled(true);
     btnPlotChart->setEnabled(true);
 }
 

@@ -40,6 +40,8 @@ public:
     OptiLabWidget(OptiLab *parent);
     ~OptiLabWidget();
 
+    QAction *actRunStudy;
+
 private:
     OptiLab *m_optilab;
 
@@ -51,7 +53,6 @@ private:
     QComboBox *cmbChartX;
     QComboBox *cmbChartY;
 
-    QPushButton *btnSolveStudy;
     QPushButton *btnPlotChart;
 
     void createControls();

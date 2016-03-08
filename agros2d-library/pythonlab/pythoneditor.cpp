@@ -546,7 +546,7 @@ void PythonEditorDialog::createActions()
 
     actGotoToFileDirectory = new QAction(icon("options-plugin"), tr("Goto file directory"), this);
 
-    actRunPython = new QAction(icon("run"), tr("&Run Python script"), this);
+    actRunPython = new QAction(icon("run"), tr("&Run script"), this);
     actRunPython->setShortcut(QKeySequence(tr("Ctrl+R")));
 
     actStopPython = new QAction(icon("stop"), tr("Stop Python script"), this);
@@ -554,7 +554,6 @@ void PythonEditorDialog::createActions()
 
     actReplaceTabsWithSpaces = new QAction(icon(""), tr("Replace tabs with spaces"), this);
 
-    QSettings settings;
     actCheckPyLint = new QAction(icon("checkbox"), tr("&Check Python script (PyLint)"), this);
     actCheckPyLint->setShortcut(QKeySequence(tr("Alt+C")));
 

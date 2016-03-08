@@ -125,6 +125,8 @@ public:
     QMenu *mnuEdit;
     QMenu *mnuTools;
 
+    QAction *actRunPython;
+
 public slots:
     void doFileNew();
     void doFileOpen(const QString &file = QString());
@@ -197,7 +199,6 @@ protected:
     QAction *actGotoLine;
     QAction *actGotoToFileDirectory;
 
-    QAction *actRunPython;
     QAction *actStopPython;
     QAction *actReplaceTabsWithSpaces;
     QAction *actCheckPyLint;    

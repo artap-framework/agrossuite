@@ -289,7 +289,7 @@ StudySelectDialog::StudySelectDialog(QWidget *parent) : QDialog(parent), m_selec
     }
 
     int w = sizeHint().width();
-    int h = 1.0/3.0 * QApplication::desktop()->screenGeometry().height();
+    int h = 1.0/5.0 * QApplication::desktop()->screenGeometry().height();
 
     setMinimumSize(w, h);
     setMaximumSize(w, h);

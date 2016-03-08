@@ -545,6 +545,8 @@ void MainWindow::createMain()
     tlbLeftBar->addAction(actMesh);
     tlbLeftBar->addAction(actSolve);
     tlbLeftBar->addAction(actSolveNewComputation);
+    tlbLeftBar->addAction(scriptEditor->actRunPython);
+    tlbLeftBar->addAction(optiLab->optiLabWidget()->actRunStudy);
 
     splitterView = new QSplitter(Qt::Vertical, this);
     splitterView->addWidget(viewWidget);
@@ -1130,6 +1132,17 @@ void MainWindow::setControls()
 
     // set controls
     Agros2D::problem()->scene()->actTransform->setEnabled(false);
+
+    scriptEditor->actRunPython->setEnabled(scriptEditor->actSceneModePythonEditor->isChecked());
+    scriptEditor->actRunPython->setVisible(scriptEditor->actSceneModePythonEditor->isChecked());
+    actMesh->setEnabled(sceneViewProblem->actSceneModeProblem->isChecked());
+    actMesh->setVisible(sceneViewProblem->actSceneModeProblem->isChecked());
+    actSolve->setEnabled(sceneViewProblem->actSceneModeProblem->isChecked());
+    actSolve->setVisible(sceneViewProblem->actSceneModeProblem->isChecked());
+    actSolveNewComputation->setEnabled(sceneViewProblem->actSceneModeProblem->isChecked());
+    actSolveNewComputation->setVisible(sceneViewProblem->actSceneModeProblem->isChecked());
+    optiLab->optiLabWidget()->actRunStudy->setEnabled(optiLab->actSceneModeOptiLab->isChecked());
+    optiLab->optiLabWidget()->actRunStudy->setVisible(optiLab->actSceneModeOptiLab->isChecked());
 
     postprocessorWidget->refresh();
 
