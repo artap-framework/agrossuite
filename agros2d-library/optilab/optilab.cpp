@@ -83,6 +83,7 @@ OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(paren
     createControls();
 
     actRunStudy = new QAction(icon("run"), tr("Run study"), this);
+    actRunStudy->setShortcut(QKeySequence(tr("Alt+S")));
     connect(actRunStudy, SIGNAL(triggered()), this, SLOT(solveStudy()));
 
     connect(Agros2D::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
@@ -132,7 +133,7 @@ void OptiLabWidget::createControls()
     layoutChartXYControls->addWidget(new QLabel(tr("Variable Y:")), 6, 0);
     layoutChartXYControls->addWidget(cmbChartY, 6, 1);
 
-    btnPlotChart = new QPushButton(tr("Plot chart"));
+    btnPlotChart = new QPushButton(tr("Apply"));
     connect(btnPlotChart, SIGNAL(clicked()), this, SLOT(plotChart()));
 
     QHBoxLayout *layoutParametersButton = new QHBoxLayout();

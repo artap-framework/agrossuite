@@ -43,6 +43,8 @@
 #include "solver/problem_result.h"
 #include "solver/solutionstore.h"
 
+#include "optilab/study.h"
+
 #include "ctemplate/template.h"
 
 InfoWidgetGeneral::InfoWidgetGeneral(QWidget *parent)
@@ -224,6 +226,22 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
     // details
     if (Problem *preprocessor = dynamic_cast<Problem *>(problem))
     {
+        // studies
+        if (preprocessor->studies()->items().count() > 0)
+        {
+            problemInfo.SetValue("STUDIES_MAIN_LABEL", tr("Studies").toStdString());
+
+            foreach (Study *study, preprocessor->studies()->items())
+            {
+                ctemplate::TemplateDictionary *studySection = problemInfo.AddSectionDictionary("STUDY_SECTION");
+
+                studySection->SetValue("STUDY_TYPE_LABEL", tr("Type:").toStdString());
+                studySection->SetValue("STUDY_TYPE", studyTypeString(study->type()).toStdString());
+            }
+
+            problemInfo.ShowSection("STUDY");
+        }
+
         if (!preprocessor->archiveFileName().isEmpty())
         {
             QFileInfo fileInfo(preprocessor->archiveFileName());

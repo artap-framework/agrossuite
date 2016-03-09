@@ -177,10 +177,10 @@ void StudyNLopt::setDefaultValues()
 {    
     Study::setDefaultValues();
 
-    m_settingDefault[NLopt_xtol_rel] = 1e-3;
-    m_settingDefault[NLopt_xtol_abs] = 1e-6;
-    m_settingDefault[NLopt_ftol_rel] = 1e-3;
-    m_settingDefault[NLopt_ftol_abs] = 1e-6;
+    m_settingDefault[NLopt_xtol_rel] = 1e-6;
+    m_settingDefault[NLopt_xtol_abs] = 1e-12;
+    m_settingDefault[NLopt_ftol_rel] = 1e-6;
+    m_settingDefault[NLopt_ftol_abs] = 1e-12;
     m_settingDefault[NLopt_n_iterations] = 100;
     m_settingDefault[NLopt_algorithm] = nlopt::LN_BOBYQA;
 }
@@ -246,7 +246,7 @@ QLayout *StudyNLoptDialog::createStudyControls()
     layoutConfig->addWidget(new QLabel(QString("|&Delta;<i>f</i>|/|<i>f</i>|:")), 0, 3);
     layoutConfig->addWidget(txtFRelTol, 0, 4);
     layoutConfig->addWidget(new QLabel(tr("Absolute tolerance")), 1, 0);
-    layoutConfig->addWidget(new QLabel(QString("|&Delta;<i>f</i><sub>i</sub>|:")), 1, 1);
+    layoutConfig->addWidget(new QLabel(QString("|&Delta;<i>x</i><sub>i</sub>|:")), 1, 1);
     layoutConfig->addWidget(txtXAbsTol, 1, 2);
     layoutConfig->addWidget(new QLabel(QString("|&Delta;<i>f</i>|:")), 1, 3);
     layoutConfig->addWidget(txtFAbsTol, 1, 4);

@@ -105,6 +105,8 @@ void StudyBayesOpt::solve()
     par.n_iterations = value(BayesOpt_n_iterations).toInt();
     par.n_iter_relearn = value(BayesOpt_n_iter_relearn).toInt();
     par.init_method = value(BayesOpt_init_method).toInt();
+    par.surr_name = value(BayesOpt_surr_name).toString().toStdString();
+    par.l_type = L_MCMC;
     par.noise = 1e-10;
     par.random_seed = 0;
     par.verbose_level = 1;
@@ -145,6 +147,7 @@ void StudyBayesOpt::setDefaultValues()
     m_settingDefault[BayesOpt_n_iterations] = 10;
     m_settingDefault[BayesOpt_n_iter_relearn] = 5;
     m_settingDefault[BayesOpt_init_method] = 1; // 1-LHS, 2-Sobol    
+    m_settingDefault[BayesOpt_surr_name] = "sGaussianProcessML";
 }
 
 void StudyBayesOpt::setStringKeys()
@@ -155,6 +158,7 @@ void StudyBayesOpt::setStringKeys()
     m_settingKey[BayesOpt_n_iterations] = "BayesOpt_n_iterations";
     m_settingKey[BayesOpt_n_iter_relearn] = "BayesOpt_n_iter_relearn";
     m_settingKey[BayesOpt_init_method] = "BayesOpt_init_method";    
+    m_settingKey[BayesOpt_surr_name] = "BayesOpt_surr_name";
 }
 
 // *****************************************************************************************************
@@ -184,6 +188,13 @@ QLayout *StudyBayesOptDialog::createStudyControls()
     cmbInitMethod->addItem(tr("Sobol Sequences"), 2);
     // cmbInitMethod->addItem(tr("Uniform Sampling"), 3);
 
+    cmbSurrNameMethod = new QComboBox(this);
+    cmbSurrNameMethod->addItem(tr("Gaussian process (hyperparameters are known)"), "sGaussianProcess");
+    cmbSurrNameMethod->addItem(tr("Gaussian process (hyperparameters are estimated using maximum likelihood estimates)"), "sGaussianProcessML");
+    cmbSurrNameMethod->addItem(tr("Gaussian process with a Normal prior on the mean function parameters"), "sGaussianProcessNormal");
+    cmbSurrNameMethod->addItem(tr("Student's t process with a Jeffreys prior"), "sStudentTProcessJef");
+    cmbSurrNameMethod->addItem(tr("Student's t process with a Normal prior on the mean function parameters)"), "sStudentTProcessNIG");
+
     QGridLayout *layoutInitialization = new QGridLayout(this);
     layoutInitialization->addWidget(new QLabel(tr("Number of initial samples:")), 0, 0);
     layoutInitialization->addWidget(txtNInitSamples, 0, 1);
@@ -193,6 +204,8 @@ QLayout *StudyBayesOptDialog::createStudyControls()
     layoutInitialization->addWidget(txtNIterations, 2, 1);
     layoutInitialization->addWidget(new QLabel(tr("Number of iterations between re-learning:")), 3, 0);
     layoutInitialization->addWidget(txtNIterRelearn, 3, 1);
+    layoutInitialization->addWidget(new QLabel(tr("Surrogate model:")), 4, 0);
+    layoutInitialization->addWidget(cmbSurrNameMethod, 4, 1);
 
     QGroupBox *grpInitialization = new QGroupBox(tr("Initialization"), this);
     grpInitialization->setLayout(layoutInitialization);
@@ -211,6 +224,7 @@ void StudyBayesOptDialog::load()
     txtNIterations->setValue(study()->value(Study::BayesOpt_n_iterations).toInt());
     txtNIterRelearn->setValue(study()->value(Study::BayesOpt_n_iter_relearn).toInt());
     cmbInitMethod->setCurrentIndex(cmbInitMethod->findData(study()->value(Study::BayesOpt_init_method).toInt()));
+    cmbSurrNameMethod->setCurrentIndex(cmbSurrNameMethod->findData(study()->value(Study::BayesOpt_surr_name).toString()));
 }
 
 void StudyBayesOptDialog::save()
@@ -221,4 +235,5 @@ void StudyBayesOptDialog::save()
     study()->setValue(Study::BayesOpt_n_iterations, txtNIterations->value());
     study()->setValue(Study::BayesOpt_n_iter_relearn, txtNIterRelearn->value());
     study()->setValue(Study::BayesOpt_init_method, cmbInitMethod->itemData(cmbInitMethod->currentIndex()).toInt());
+    study()->setValue(Study::BayesOpt_surr_name, cmbSurrNameMethod->itemData(cmbSurrNameMethod->currentIndex()).toString());
 }

@@ -93,6 +93,7 @@ public:
         BayesOpt_n_iterations,
         BayesOpt_n_iter_relearn,
         BayesOpt_init_method,
+        BayesOpt_surr_name,
 
         NSGA2_popsize,
         NSGA2_ngen,

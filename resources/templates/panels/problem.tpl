@@ -125,6 +125,19 @@
 </div>
 {{/FIELD}}
 
+<!-- studies -->
+{{#STUDY}}
+<h2>{{STUDIES_MAIN_LABEL}}</h2>
+<hr/>
+<div class="section">
+<table>
+{{#STUDY_SECTION}}
+    <tr><td><b>{{STUDY_TYPE_LABEL}}</b></td><td>{{STUDY_TYPE}}</td></tr>
+{{/STUDY_SECTION}}
+</table>
+</div>
+{{/STUDY}}
+
 </td>
 </tr>
 </table>

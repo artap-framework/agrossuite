@@ -366,17 +366,17 @@ void ExamplesWidget::problemInfo(const QString &fileName)
         }
         else if (fileInfo.suffix() == "json")
         {
-            QSharedPointer<Computation> computation = QSharedPointer<Computation>(new Computation());
-            computation->readProblemFromJson(fileName);
-            m_infoWidget->showProblemInfo(computation.data());
+            QSharedPointer<Problem> problem = QSharedPointer<Problem>(new Problem());
+            problem->readProblemFromJson(fileName);
+            m_infoWidget->showProblemInfo(problem.data());
 
             return;
         }
         else if (fileInfo.suffix() == "a2d")
         {
-            QSharedPointer<Computation> computation = QSharedPointer<Computation>(new Computation());
-            computation->importProblemFromA2D(fileName);
-            m_infoWidget->showProblemInfo(computation.data());
+            QSharedPointer<Problem> problem = QSharedPointer<Problem>(new Problem());
+            problem->readProblemFromJson(fileName);
+            m_infoWidget->showProblemInfo(problem.data());
 
             return;
         }
