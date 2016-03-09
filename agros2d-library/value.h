@@ -132,7 +132,9 @@ public:
 
     inline Point point() const { return Point(m_x.number(), m_y.number()); }
     inline Value x() const { return m_x; }
+    inline Value &x() { return m_x; }
     inline Value y() const { return m_y; }
+    inline Value &y() { return m_y; }
 
     inline double numberX() const { return m_x.number(); }
     inline double numberY() const { return m_y.number(); }

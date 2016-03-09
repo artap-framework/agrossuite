@@ -35,6 +35,7 @@ public:
 
     inline Point point() const { return m_point.point(); }
     inline PointValue pointValue() const { return m_point; }
+    inline PointValue &pointValue() { return m_point; }
     void setPointValue(const PointValue &point);
 
     // geometry editor

@@ -873,11 +873,22 @@ void Scene::doInvalidated()
 
     // evaluate point values
     foreach (SceneNode *node, nodes->items())
-        node->setPointValue(node->pointValue());
+    {
+        // setPointValue(node->pointValue());
+        node->pointValue().x().evaluateAtTime(0.0);
+        node->pointValue().y().evaluateAtTime(0.0);
+    }
     foreach (SceneFace *edge, faces->items())
-        edge->setAngleValue(edge->angleValue());
+    {
+        // edge->setAngleValue(edge->angleValue());
+        edge->angleValue().evaluateAtTime(0.0);
+    }
     foreach (SceneLabel *label, labels->items())
-        label->setPointValue(label->pointValue());
+    {
+        // label->setPointValue(label->pointValue());
+        label->pointValue().x().evaluateAtTime(0.0);
+        label->pointValue().y().evaluateAtTime(0.0);
+    }
 
     // evaluate materials and boundaries
     foreach (SceneMaterial* material, materials->items())

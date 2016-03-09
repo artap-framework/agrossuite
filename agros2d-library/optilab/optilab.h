@@ -92,6 +92,8 @@ public slots:
 private:
     Study *m_study;
 
+    QSplitter *splitter;
+
     OptiLabWidget *m_optiLabWidget;
     InfoWidgetGeneral *m_infoWidget;
 

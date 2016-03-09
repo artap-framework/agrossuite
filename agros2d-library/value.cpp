@@ -116,7 +116,8 @@ Value::Value(const Value &origin)
 {
     *this = origin;
 
-    evaluateAndSave();
+    if (!origin.isEvaluated())
+        evaluateAndSave();
 }
 
 Value& Value::operator =(const Value &origin)
@@ -131,7 +132,8 @@ Value& Value::operator =(const Value &origin)
     m_table = origin.m_table;
     m_problem = origin.m_problem;
 
-    evaluateAndSave();
+    if (!origin.isEvaluated())
+        evaluateAndSave();
 
     return *this;
 }

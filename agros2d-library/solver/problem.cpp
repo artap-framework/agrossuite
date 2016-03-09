@@ -408,6 +408,10 @@ void ProblemBase::removeField(FieldInfo *field)
 
 void ProblemBase::synchronizeCouplings()
 {
+    // zero or one field
+    if (m_fieldInfos.count() <= 1)
+        return;
+
     bool changed = false;
 
     // add missing
@@ -2231,8 +2235,12 @@ void Problem::readProblemFromArchive(const QString &fileName)
     if (fileInfo.absoluteDir() != tempProblemDir() && !fileName.contains("resources/examples"))
         settings.setValue("General/LastProblemDir", fileInfo.absolutePath());
 
+    QTime time;
+    time.start();
     JlCompress::extractDir(fileName, cacheProblemDir());
+    qDebug() << "extractDir" << time.elapsed();
 
+    time.start();
     // read solutions
     QDirIterator it(cacheProblemDir(), QDir::Dirs, QDirIterator::NoIteratorFlags);
     while (it.hasNext())
@@ -2271,6 +2279,7 @@ void Problem::readProblemFromArchive(const QString &fileName)
             }
         }
     }
+    qDebug() << "read solutions" << time.elapsed();
 
     // convert a2d
     QString problemA2D = QString("%1/problem.a2d").arg(cacheProblemDir());

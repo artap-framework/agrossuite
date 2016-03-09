@@ -377,7 +377,10 @@ OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_study(nullptr)
 }
 
 OptiLab::~OptiLab()
-{    
+{
+    QSettings settings;
+    settings.setValue("OptiLab/SplitterState", splitter->saveState());
+    settings.setValue("OptiLab/SplitterGeometry", splitter->saveGeometry());
 }
 
 void OptiLab::createControls()
@@ -396,9 +399,18 @@ void OptiLab::createControls()
     connect(chart, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(chartContextMenu(const QPoint &)));
     connect(chart, SIGNAL(plottableClick(QCPAbstractPlottable*, QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*, QMouseEvent*)));
 
+    QSettings settings;
+    splitter = new QSplitter(this);
+    splitter->setOrientation(Qt::Horizontal);
+    splitter->addWidget(m_infoWidget);
+    splitter->addWidget(chart);
+    splitter->setStretchFactor(0, 1);
+    splitter->setStretchFactor(1, 1);
+    splitter->restoreState(settings.value("OptiLab/SplitterState").toByteArray());
+    splitter->restoreGeometry(settings.value("OptiLab/SplitterGeometry").toByteArray());
+
     QHBoxLayout *layoutLab = new QHBoxLayout();
-    layoutLab->addWidget(m_infoWidget, 1);
-    layoutLab->addWidget(chart, 1);
+    layoutLab->addWidget(splitter);
 
     setLayout(layoutLab);
 }
