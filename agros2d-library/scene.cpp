@@ -880,8 +880,8 @@ void Scene::doInvalidated()
     }
     foreach (SceneFace *edge, faces->items())
     {
-        // edge->setAngleValue(edge->angleValue());
-        edge->angleValue().evaluateAtTime(0.0);
+        edge->setAngleValue(edge->angleValue());
+        // edge->angleValue().evaluateAtTime(0.0);
     }
     foreach (SceneLabel *label, labels->items())
     {
@@ -1232,7 +1232,8 @@ void Scene::findLyingEdgeNodes()
         {
             if (edge->isLyingOnNode(node))
             {
-                m_lyingEdgeNodes.insert(edge, node);
+                if (edge->isLyingOnNode(node))
+                    m_lyingEdgeNodes.insert(edge, node);
             }
         }
     }

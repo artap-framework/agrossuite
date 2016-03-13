@@ -329,6 +329,7 @@ void initLists()
     studyTypeList.insert(StudyType_NSGA2, "nsga2");
     studyTypeList.insert(StudyType_BayesOpt, "bayesopt");
     studyTypeList.insert(StudyType_NLopt, "nlopt");
+    studyTypeList.insert(StudyType_JMetal, "jmetal");
 
     // functionals
     functionalTypeList.insert(FunctionalType_Maximize, "maximize");
@@ -833,6 +834,8 @@ QString studyTypeString(StudyType type)
         return QObject::tr("BayesOpt");
     case StudyType_NLopt:
         return QObject::tr("NLopt");
+    case StudyType_JMetal:
+        return QObject::tr("JMetal");
     default:
         std::cerr << "Study type '" + QString::number(type).toStdString() + "' is not implemented. studyTypeString(StudyType type)" << endl;
         throw;

@@ -17,8 +17,8 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#ifndef STUDY_GENETIC_H
-#define STUDY_GENETIC_H
+#ifndef STUDY_NSGA2_H
+#define STUDY_NSGA2_H
 
 #include <QWidget>
 
@@ -73,4 +73,4 @@ private:
     QRadioButton *radCrowdObjective;
 };
 
-#endif // STUDY_GENETIC_H
+#endif // STUDY_NSGA2_H

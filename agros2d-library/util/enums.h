@@ -318,7 +318,8 @@ enum StudyType
     StudyType_Sweep,
     StudyType_NSGA2,
     StudyType_BayesOpt,
-    StudyType_NLopt
+    StudyType_NLopt,
+    StudyType_JMetal
 };
 
 enum FunctionalType

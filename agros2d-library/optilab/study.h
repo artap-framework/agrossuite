@@ -103,6 +103,17 @@ public:
         NSGA2_eta_m,
         NSGA2_crowdobj,
 
+        JMetal_algorithm,
+        JMetal_populationSize,
+        JMetal_archiveSize,
+        JMetal_maxEvaluations,
+        JMetal_crossoverProbability,
+        JMetal_crossoverDistributionIndex,
+        JMetal_crossoverWeightParameter,
+        JMetal_mutationProbability,
+        JMetal_mutationPerturbation,
+        JMetal_mutationDistributionIndex,
+
         View_ChartX,
         View_ChartY,
         View_ChartLogX,

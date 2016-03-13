@@ -33,11 +33,6 @@
 
 #include "nsga2/exception.h"
 
-const QString ALGORITHM = "algorithm";
-const QString TOL_REL = "tol_rel";
-const QString TOL_ABS = "tol_abs";
-const QString N_ITERATIONS = "n_iterations";
-
 // TODO: encapsulate
 static StudyNSGA2 *localStudy = nullptr;
 nsga2::NSGA2 *localNSGA2 = nullptr;

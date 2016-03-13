@@ -27,6 +27,7 @@
 #include "study_nsga2.h"
 #include "study_nlopt.h"
 #include "study_bayesopt.h"
+#include "study_jmetal.h"
 
 #include "qcustomplot/qcustomplot.h"
 
@@ -98,6 +99,8 @@ Study *Study::factory(StudyType type)
         study = new StudyBayesOpt();
     else if (type == StudyType_NLopt)
         study = new StudyNLopt();
+    else if (type == StudyType_JMetal)
+        study = new StudyJMetal();
     else
         assert(0);
 

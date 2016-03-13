@@ -1,0 +1,194 @@
+PROJECT(${JMETALCPP_LIBRARY})
+
+# Set global compiler parameters.
+IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wno-deprecated")
+ENDIF()
+
+INCLUDE_DIRECTORIES(core)
+INCLUDE_DIRECTORIES(util)
+INCLUDE_DIRECTORIES(util/archive)
+INCLUDE_DIRECTORIES(util/comparators)
+INCLUDE_DIRECTORIES(util/wrapper)
+INCLUDE_DIRECTORIES(operators/crossover)
+INCLUDE_DIRECTORIES(operators/mutation)
+INCLUDE_DIRECTORIES(operators/selection)
+INCLUDE_DIRECTORIES(encodings/solutionType)
+INCLUDE_DIRECTORIES(encodings/variable)
+INCLUDE_DIRECTORIES(qualityIndicator)
+INCLUDE_DIRECTORIES(qualityIndicator/util)
+INCLUDE_DIRECTORIES(qualityIndicator/fastHypervolume)
+INCLUDE_DIRECTORIES(metaheuristics/nsgaII)
+INCLUDE_DIRECTORIES(metaheuristics/omopso)
+INCLUDE_DIRECTORIES(metaheuristics/smpso)
+INCLUDE_DIRECTORIES(metaheuristics/paes)
+INCLUDE_DIRECTORIES(metaheuristics/gde3)
+INCLUDE_DIRECTORIES(metaheuristics/moead)
+INCLUDE_DIRECTORIES(metaheuristics/mochc)
+INCLUDE_DIRECTORIES(metaheuristics/smsemoa)
+
+SET(SOURCES agros_jmetal.cpp
+    core/Algorithm.cpp
+    core/Operator.cpp
+    core/Problem.cpp
+    core/Solution.cpp
+    core/SolutionSet.cpp
+    core/SolutionType.cpp
+    core/Variable.cpp
+    util/AdaptiveGrid.cpp
+    util/AdaptiveRandomNeighborhood.cpp
+    util/Distance.cpp
+    util/NonDominatedSolutionList.cpp
+    util/PermutationUtility.cpp
+    util/PseudoRandom.cpp
+    util/RandomGenerator.cpp
+    util/Ranking.cpp
+    util/archive/AdaptiveGridArchive.cpp
+    util/archive/Archive.cpp
+    util/archive/CrowdingArchive.cpp
+    util/comparators/Comparator.cpp
+    util/comparators/CrowdingDistanceComparator.cpp
+    util/comparators/EpsilonDominanceComparator.cpp
+    util/comparators/EqualSolutions.cpp
+    util/comparators/OverallConstraintViolationComparator.cpp
+    util/comparators/SolutionComparator.cpp
+    util/comparators/CrowdingComparator.cpp
+    util/comparators/DominanceComparator.cpp
+    util/comparators/EpsilonObjectiveComparator.cpp
+    util/comparators/ObjectiveComparator.cpp
+    util/comparators/RankComparator.cpp
+    util/wrapper/XReal.cpp
+    operators/crossover/Crossover.cpp
+    operators/crossover/DifferentialEvolutionCrossover.cpp
+    operators/crossover/HUXCrossover.cpp
+    operators/crossover/SBXCrossover.cpp
+    operators/crossover/SinglePointCrossover.cpp
+    operators/mutation/BitFlipMutation.cpp
+    operators/mutation/Mutation.cpp
+    operators/mutation/NonUniformMutation.cpp
+    operators/mutation/PolynomialMutation.cpp
+    operators/mutation/UniformMutation.cpp
+    operators/selection/BestSolutionSelection.cpp
+    operators/selection/BinaryTournament2.cpp
+    operators/selection/BinaryTournament.cpp
+    operators/selection/DifferentialEvolutionSelection.cpp
+    operators/selection/RandomSelection.cpp
+    operators/selection/Selection.cpp
+    operators/selection/WorstSolutionSelection.cpp
+    encodings/solutionType/ArrayRealSolutionType.cpp
+    encodings/solutionType/BinaryRealSolutionType.cpp
+    encodings/solutionType/BinarySolutionType.cpp
+    encodings/solutionType/RealSolutionType.cpp
+    encodings/variable/ArrayReal.cpp
+    encodings/variable/Binary.cpp
+    encodings/variable/BinaryReal.cpp
+    encodings/variable/Real.cpp
+    qualityIndicator/Epsilon.cpp
+    qualityIndicator/Fitness.cpp
+    qualityIndicator/GenerationalDistance.cpp
+    qualityIndicator/Hypervolume.cpp
+    qualityIndicator/InvertedGenerationalDistance.cpp
+    qualityIndicator/QualityIndicator.cpp
+    qualityIndicator/Spread.cpp
+    qualityIndicator/util/LexicoGraphicalComparator.cpp
+    qualityIndicator/util/MetricsUtil.cpp
+    qualityIndicator/fastHypervolume/FastHypervolume.cpp
+    qualityIndicator/fastHypervolume/FastHypervolumeArchive.cpp
+    metaheuristics/nsgaII/NSGAII.cpp
+    metaheuristics/nsgaII/ssNSGAII.cpp
+    metaheuristics/omopso/OMOPSO.cpp
+    metaheuristics/smpso/SMPSO.cpp
+    metaheuristics/smpso/SMPSOhv.cpp
+    metaheuristics/paes/paes.cpp
+    metaheuristics/gde3/GDE3.cpp
+    metaheuristics/moead/MOEAD.cpp
+    metaheuristics/moead/UtilsMOEAD.cpp
+    metaheuristics/mochc/MOCHC.cpp
+    metaheuristics/smsemoa/FastSMSEMOA.cpp
+    metaheuristics/smsemoa/SMSEMOA.cpp
+  )
+
+SET(HEADERS agros_jmetal.h
+    core/Algorithm.h
+    core/Operator.h
+    core/Problem.h
+    core/Solution.h
+    core/SolutionSet.h
+    core/SolutionType.h
+    core/Variable.h
+    util/AdaptiveGrid.h
+    util/AdaptiveRandomNeighborhood.h
+    util/Distance.h
+    util/NonDominatedSolutionList.h
+    util/PermutationUtility.h
+    util/PseudoRandom.h
+    util/RandomGenerator.h
+    util/Ranking.h
+    util/archive/AdaptiveGridArchive.h
+    util/archive/Archive.h
+    util/archive/CrowdingArchive.h
+    util/comparators/Comparator.h
+    util/comparators/CrowdingDistanceComparator.h
+    util/comparators/EpsilonDominanceComparator.h
+    util/comparators/EqualSolutions.h
+    util/comparators/OverallConstraintViolationComparator.h
+    util/comparators/SolutionComparator.h
+    util/comparators/CrowdingComparator.h
+    util/comparators/DominanceComparator.h
+    util/comparators/EpsilonObjectiveComparator.h
+    util/comparators/ObjectiveComparator.h
+    util/comparators/RankComparator.h
+    util/wrapper/XReal.cpp
+    operators/crossover/Crossover.h
+    operators/crossover/DifferentialEvolutionCrossover.h
+    operators/crossover/HUXCrossover.h
+    operators/crossover/SBXCrossover.h
+    operators/crossover/SinglePointCrossover.h
+    operators/mutation/BitFlipMutation.h
+    operators/mutation/Mutation.h
+    operators/mutation/NonUniformMutation.h
+    operators/mutation/PolynomialMutation.h
+    operators/mutation/UniformMutation.h
+    operators/selection/BestSolutionSelection.h
+    operators/selection/BinaryTournament2.h
+    operators/selection/BinaryTournament.h
+    operators/selection/DifferentialEvolutionSelection.h
+    operators/selection/RandomSelection.h
+    operators/selection/Selection.h
+    operators/selection/WorstSolutionSelection.h
+    encodings/solutionType/ArrayRealSolutionType.cpp
+    encodings/solutionType/BinaryRealSolutionType.cpp
+    encodings/solutionType/BinarySolutionType.cpp
+    encodings/solutionType/RealSolutionType.cpp
+    encodings/variable/ArrayReal.h
+    encodings/variable/Binary.h
+    encodings/variable/BinaryReal.h
+    encodings/variable/Real.h
+    qualityIndicator/Epsilon.h
+    qualityIndicator/Fitness.h
+    qualityIndicator/GenerationalDistance.h
+    qualityIndicator/Hypervolume.h
+    qualityIndicator/InvertedGenerationalDistance.h
+    qualityIndicator/QualityIndicator.h
+    qualityIndicator/Spread.h
+    qualityIndicator/util/LexicoGraphicalComparator.h
+    qualityIndicator/util/MetricsUtil.h
+    qualityIndicator/fastHypervolume/FastHypervolume.h
+    qualityIndicator/fastHypervolume/FastHypervolumeArchive.h
+    metaheuristics/nsgaII/NSGAII.h
+    metaheuristics/nsgaII/ssNSGAII.h
+    metaheuristics/omopso/OMOPSO.h
+    metaheuristics/smpso/SMPSO.h
+    metaheuristics/smpso/SMPSOhv.h
+    metaheuristics/paes/paes.h
+    metaheuristics/gde3/GDE3.h
+    metaheuristics/moead/MOEAD.h
+    metaheuristics/moead/UtilsMOEAD.h
+    metaheuristics/mochc/MOCHC.h
+    metaheuristics/smsemoa/FastSMSEMOA.h
+    metaheuristics/smsemoa/SMSEMOA.h
+  )
+  
+ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
+# ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES} ${HEADERS} main.cpp)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME})
