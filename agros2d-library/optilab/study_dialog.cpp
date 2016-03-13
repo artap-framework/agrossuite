@@ -33,7 +33,7 @@
 #include "qcustomplot/qcustomplot.h"
 
 LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplication::activeWindow()),
-    m_study(study), m_chart(nullptr), m_objectiveGraph(nullptr), m_progress(nullptr)
+    m_study(study), m_progress(nullptr), m_computationSetsCount(1)
 {
     setModal(true);
 
@@ -45,9 +45,9 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
 
     connect(btnAbort, SIGNAL(clicked()), m_study, SLOT(doAbortSolve()));
     connect(btnAbort, SIGNAL(clicked()), this, SLOT(aborted()));
-    connect(m_study, SIGNAL(updateChart()), this, SLOT(updateChart()));
+    connect(m_study, SIGNAL(updateChart(int, QList<double>)), this, SLOT(updateChart(int, QList<double>)));
     connect(m_study, SIGNAL(solved()), this, SLOT(solved()));
-    connect(m_study, SIGNAL(updateParameters(QList<Parameter>, const Computation *)), this, SLOT(updateParameters(QList<Parameter>, const Computation *)));
+    // connect(m_study, SIGNAL(updateParameters(QList<Parameter>, const Computation *)), this, SLOT(updateParameters(QList<Parameter>, const Computation *)));
 
     int w = 2.0/3.0 * QApplication::desktop()->screenGeometry().width();
     int h = 2.0/3.0 * QApplication::desktop()->screenGeometry().height();
@@ -91,7 +91,7 @@ void LogOptimizationDialog::tryClose()
 
 void LogOptimizationDialog::createControls()
 {
-    m_logWidget = new LogWidget(this);
+    // m_logWidget = new LogWidget(this);
 
 #ifdef Q_WS_WIN
     int fontSize = 7;
@@ -128,80 +128,81 @@ void LogOptimizationDialog::createControls()
     QFont fontChart(font());
     fontChart.setPointSize(fontSize);
 
-    // transient
-    m_chart = new QCustomPlot(this);
-    QCPPlotTitle *timeTitle = new QCPPlotTitle(m_chart, tr("Optimization"));
-    timeTitle->setFont(fontTitle);
-    m_chart->plotLayout()->insertRow(0);
-    m_chart->plotLayout()->addElement(0, 0, timeTitle);
-    m_chart->legend->setVisible(true);
-    m_chart->legend->setFont(fontChart);
+    // objective functions
+    QVBoxLayout *layoutCharts = new QVBoxLayout();
+    foreach (Functional functional, m_study->functionals())
+    {
+        QCustomPlot *chart = new QCustomPlot(this);
+        m_charts.append(chart);
 
-    m_chart->xAxis->setTickLabelFont(fontChart);
-    m_chart->xAxis->setLabelFont(fontChart);
-    // m_chart->xAxis->setTickStep(1.0);
-    m_chart->xAxis->setAutoTickStep(true);
-    m_chart->xAxis->setLabel(tr("number of steps"));
+        QCPPlotTitle *title = new QCPPlotTitle(chart, functional.name());
+        title->setFont(fontTitle);
+        chart->plotLayout()->insertRow(0);
+        chart->plotLayout()->addElement(0, 0, title);
 
-    m_chart->yAxis->setScaleType(QCPAxis::stLogarithmic);
-    m_chart->yAxis->setTickLabelFont(fontChart);
-    m_chart->yAxis->setLabelFont(fontChart);
-    m_chart->yAxis->setLabel(tr("objective function"));
+        chart->xAxis->setTickLabelFont(fontChart);
+        chart->xAxis->setLabelFont(fontChart);
+        // chart->xAxis->setTickStep(1.0);
+        chart->xAxis->setAutoTickStep(true);
+        chart->xAxis->setLabel(tr("number of steps"));
 
-    m_objectiveGraph = m_chart->addGraph(m_chart->xAxis, m_chart->yAxis);
-    m_objectiveGraph->setLineStyle(QCPGraph::lsLine);
-    m_objectiveGraph->setPen(pen);
-    m_objectiveGraph->setBrush(QBrush(QColor(0, 0, 255, 20)));
-    m_objectiveGraph->setName(tr("objective function"));
+        chart->yAxis->setScaleType(QCPAxis::stLogarithmic);
+        chart->yAxis->setTickLabelFont(fontChart);
+        chart->yAxis->setLabelFont(fontChart);
+        chart->yAxis->setLabel(functional.name());
+
+        QCPGraph *objectiveGraph = chart->addGraph(chart->xAxis, chart->yAxis);
+        objectiveGraph->setLineStyle(QCPGraph::lsLine);
+        objectiveGraph->setPen(pen);
+        objectiveGraph->setBrush(QBrush(QColor(0, 0, 255, 20)));
+        objectiveGraph->setName(functional.name());
+
+        layoutCharts->addWidget(chart);
+    }
 
     m_progress = new QProgressBar(this);
     m_progress->setMaximum(m_study->estimatedNumberOfSteps());
 
     QVBoxLayout *layoutObjective = new QVBoxLayout();
-    layoutObjective->addWidget(m_chart, 3);
+    layoutObjective->addLayout(layoutCharts, 5);
     layoutObjective->addWidget(m_progress, 1);
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addLayout(layoutObjective, 2);
-    layout->addWidget(m_logWidget, 1);
+    // layout->addWidget(m_logWidget, 1);
     // layout->addStretch();
     layout->addLayout(layoutStatus);
 
     setLayout(layout);
 }
 
-void LogOptimizationDialog::updateChart()
+void LogOptimizationDialog::updateChart(int step, QList<double> values)
 {
-    QVector<double> steps;
-    QVector<double> objective;
+    int computationSetsCount = m_study->computationSets().count();
 
-    m_chart->clearItems();
-    for (int i = 0; i < m_study->computationSets().count(); i++)
+    for (int i = 0; i < values.count(); i++)
     {
-        QCPItemStraightLine *line = new QCPItemStraightLine(m_chart);
-        m_chart->addItem(line);
-        line->point1->setCoords(QPointF(steps.count(), 0));
-        line->point2->setCoords(QPointF(steps.count(), 1));
-        line->setPen(QPen(QBrush(QColor(140, 40, 40)), 2, Qt::DashLine));
+        QCustomPlot *chart = m_charts[i];
 
-        QList<QSharedPointer<Computation> > computations = m_study->computationSets()[i].computations();
-
-        for (int j = 0; j < computations.count(); j++)
+        // dashed line (populations)
+        if (m_computationSetsCount < computationSetsCount)
         {
-            steps.append(steps.count() + 1);
+            QCPItemStraightLine *line = new QCPItemStraightLine(chart);
+            chart->addItem(line);
 
-            // evaluate goal functional
-            double value = m_study->evaluateSingleGoal(computations[j]);
-            objective.append(value);
+            line->point1->setCoords(QPointF(step, 0));
+            line->point2->setCoords(QPointF(step, 1));
+            line->setPen(QPen(QBrush(QColor(140, 40, 40)), 2, Qt::DashLine));
         }
+
+        chart->graph(0)->addData(step, values[i]);
+        chart->rescaleAxes();
+        chart->replot(QCustomPlot::rpImmediate);
     }
 
-    m_progress->setValue(steps.count());
+    m_computationSetsCount = m_study->computationSets().count();
 
-    m_objectiveGraph->setData(steps, objective);
-    m_chart->rescaleAxes();
-    m_chart->replot(QCustomPlot::rpImmediate);
-
+    m_progress->setValue(step);
     QApplication::processEvents();
 }
 
@@ -249,7 +250,7 @@ StudySelectDialog::StudySelectDialog(QWidget *parent) : QDialog(parent), m_selec
 
     lstStudies = new QListWidget(this);
     lstStudies->setIconSize(QSize(24, 24));
-    lstStudies->setMinimumHeight(26*3);
+    lstStudies->setMinimumHeight(26*4);
 
     foreach (QString name, studyTypeStringKeys())
     {
@@ -289,7 +290,7 @@ StudySelectDialog::StudySelectDialog(QWidget *parent) : QDialog(parent), m_selec
         doItemSelected(lstStudies->currentItem());
     }
 
-    int w = sizeHint().width();
+    int w = sizeHint().width() + 20;
     int h = 1.0/5.0 * QApplication::desktop()->screenGeometry().height();
 
     setMinimumSize(w, h);
@@ -374,8 +375,7 @@ void StudyDialog::createControls()
 
     tabStudy = new QTabWidget(this);
     tabStudy->addTab(widgetStudy, tr("Study"));
-    tabStudy->addTab(createParameters(), tr("Parameters"));
-    tabStudy->addTab(createFunctionals(), tr("Functionals"));
+    tabStudy->addTab(createParametersAndFunctionals(), tr("Parameters and functionals"));
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(tabStudy);
@@ -385,6 +385,30 @@ void StudyDialog::createControls()
 
     readParameters();
     readFunctionals();
+}
+
+QWidget *StudyDialog::createParametersAndFunctionals()
+{
+    QVBoxLayout *layoutParameters = new QVBoxLayout(this);
+    layoutParameters->addWidget(createParameters());
+
+    QGroupBox *grpParameters = new QGroupBox(tr("Parameters"));
+    grpParameters->setLayout(layoutParameters);
+
+    QVBoxLayout *layoutFunctionals = new QVBoxLayout(this);
+    layoutFunctionals->addWidget(createFunctionals());
+
+    QGroupBox *grpFunctionals = new QGroupBox(tr("Functionals"));
+    grpFunctionals->setLayout(layoutFunctionals);
+
+    QVBoxLayout *layoutPF = new QVBoxLayout(this);
+    layoutPF->addWidget(grpParameters);
+    layoutPF->addWidget(grpFunctionals);
+
+    QWidget *widget = new QWidget(this);
+    widget->setLayout(layoutPF);
+
+    return widget;
 }
 
 QWidget *StudyDialog::createParameters()

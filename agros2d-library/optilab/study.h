@@ -117,7 +117,9 @@ public:
         View_ChartX,
         View_ChartY,
         View_ChartLogX,
-        View_ChartLogY
+        View_ChartLogY,
+        View_ChartShowTrend,
+        View_ChartShowAverageValue,
     };
 
     Study(QList<ComputationSet> computations = QList<ComputationSet>());
@@ -150,6 +152,7 @@ public:
 
     QList<QSharedPointer<Computation> > &computations(int index = -1);
     QList<ComputationSet> computationSets() const { return m_computationSets; }
+    int computationsCount() const;
     QList<ComputationSet> &computationSets() { return m_computationSets; }
     void addComputationSet(const QString &name = "") { m_computationSets.append(ComputationSet(QList<QSharedPointer<Computation> >(), name.isEmpty() ? tr("Set %1").arg(m_computationSets.count() + 1) : name)); }
     void addComputation(QSharedPointer<Computation> computation, bool newComputationSet = false);
@@ -175,7 +178,7 @@ public slots:
     void doAbortSolve();
 
 signals:
-    void updateChart();
+    void updateChart(int step, QList<double> values);
     void updateParameters(QList<Parameter> parameters, const Computation *computation);
 
     void solved();

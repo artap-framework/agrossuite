@@ -133,6 +133,8 @@ void StudyJMetal::solve()
     m_computationSets.clear();
     m_isSolving = true;
 
+    addComputationSet(tr("Steps"));
+
     JMetalProblemSolver problem(this);
     problem.run();
 
@@ -143,8 +145,6 @@ void StudyJMetal::solve()
     // m_computationSets.last().sort(parameterName);
 
     emit solved();
-
-
 }
 
 void StudyJMetal::setDefaultValues()

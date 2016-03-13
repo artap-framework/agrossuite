@@ -54,14 +54,14 @@ private:
     QPushButton *btnClose;
     QPushButton *btnAbort;
 
-    QCustomPlot *m_chart;
+    QList<QCustomPlot *> m_charts;
     QProgressBar *m_progress;
-    QCPGraph *m_objectiveGraph;
+    int m_computationSetsCount;
 
     void createControls();
 
 private slots:
-    void updateChart();
+    void updateChart(int step, QList<double> values);
     void updateParameters(QList<Parameter> parameters, const Computation *computation);
 
     void solved();
@@ -108,6 +108,7 @@ protected:
 
     void createControls();
     virtual QLayout *createStudyControls() { return new QHBoxLayout(this); }
+    QWidget *createParametersAndFunctionals();
     QWidget *createParameters();
     QWidget *createFunctionals();
 

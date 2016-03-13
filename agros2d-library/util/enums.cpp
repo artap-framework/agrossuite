@@ -829,13 +829,13 @@ QString studyTypeString(StudyType type)
     case StudyType_Sweep:
         return QObject::tr("Sweep");
     case StudyType_NSGA2:
-        return QObject::tr("NSGA2");
+        return QObject::tr("NSGA2 (naturally multiobjective)");
     case StudyType_BayesOpt:
-        return QObject::tr("BayesOpt");
+        return QObject::tr("BayesOpt (Bayesian optimization)");
     case StudyType_NLopt:
-        return QObject::tr("NLopt");
+        return QObject::tr("NLopt (nonlinear optimization)");
     case StudyType_JMetal:
-        return QObject::tr("JMetal");
+        return QObject::tr("JMetal (naturally multiobjective)");
     default:
         std::cerr << "Study type '" + QString::number(type).toStdString() + "' is not implemented. studyTypeString(StudyType type)" << endl;
         throw;

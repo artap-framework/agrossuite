@@ -259,7 +259,15 @@ void Study::evaluateStep(QSharedPointer<Computation> computation)
     computation->writeProblemToJson();
 
     updateParameters(m_parameters, computation.data());
-    updateChart();
+
+    // functionals values
+    QList<double> values;
+    for (int i = 0; i < m_functionals.count(); i++)
+    {
+        double value = computation->results()->resultValue(m_functionals[i].name());
+        values.append(value);
+    }
+    updateChart(computationsCount(), values);
 }
 
 double Study::evaluateSingleGoal(QSharedPointer<Computation> computation)
@@ -345,6 +353,15 @@ Functional &Study::functional(const QString &name)
     assert(0);
 }
 
+int Study::computationsCount() const
+{
+    int res = 0;
+    foreach (ComputationSet computationSet, m_computationSets)
+        res += computationSet.computations().count();
+
+    return res;
+}
+
 QList<QSharedPointer<Computation> > &Study::computations(int index)
 {
     if (index == -1)
@@ -374,8 +391,10 @@ void Study::setDefaultValues()
 
     m_settingDefault[View_ChartX] = QString();
     m_settingDefault[View_ChartY] = QString();
-    m_settingDefault[View_ChartLogX] = true;
-    m_settingDefault[View_ChartLogY] = true;
+    m_settingDefault[View_ChartLogX] = false;
+    m_settingDefault[View_ChartLogY] = false;
+    m_settingDefault[View_ChartShowAverageValue] = true;
+    m_settingDefault[View_ChartShowTrend] = false;
 }
 
 void Study::setStringKeys()
@@ -386,6 +405,8 @@ void Study::setStringKeys()
     m_settingKey[View_ChartY] = "View_ChartY";
     m_settingKey[View_ChartLogX] = "View_ChartLogX";
     m_settingKey[View_ChartLogY] = "View_ChartLogY";
+    m_settingKey[View_ChartShowAverageValue] = "View_ChartShowAverageValue";
+    m_settingKey[View_ChartShowTrend] = "View_ChartShowTrend";
 }
 
 // *****************************************************************************************************************

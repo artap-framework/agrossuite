@@ -48,8 +48,6 @@ private:
     QTreeWidget *trvComputations;
     QComboBox *cmbStudies;
 
-    QCheckBox *chkChartLogX;
-    QCheckBox *chkChartLogY;
     QComboBox *cmbChartX;
     QComboBox *cmbChartY;
 
@@ -98,10 +96,20 @@ private:
     InfoWidgetGeneral *m_infoWidget;
 
     QCustomPlot *chart;
+    QCPItemLine *chartTrendLine;
+    QList<QCPGraph *> chartGraphCharts;
+    QCPGraph *chartGraphAverageValue;
+    QCPGraph *chartGraphAverageValueChannelLower;
+    QCPGraph *chartGraphAverageValueChannelUpper;
+    QCPGraph *chartGraphSelectedComputation;
     QMenu *mnuChart;
     QMap<int, QMap<QPair<double, double>, QSharedPointer<Computation> > > m_computationMap;
 
     QAction *actRescale;
+    QAction *actLogX;
+    QAction *actLogY;
+    QAction *actShowTrend;
+    QAction *actShowAverageValue;
 
     void createControls();
     QCPData findClosestData(QCPGraph *graph, const Point &pos);
@@ -111,6 +119,11 @@ private slots:
 
     void chartContextMenu(const QPoint &pos);
     void chartRescale(bool checked);
+
+    void chartLogX(bool checked);
+    void chartLogY(bool checked);
+    void chartShowTrend(bool checked);
+    void chartShowAverageValue(bool checked);
 
     void graphClicked(QCPAbstractPlottable *plottable, QMouseEvent *event);
 };

@@ -122,12 +122,8 @@ void OptiLabWidget::createControls()
 
     cmbChartX = new QComboBox(this);
     cmbChartY = new QComboBox(this);
-    chkChartLogX = new QCheckBox(tr("Logarithmic scale (x-axis)"), this);
-    chkChartLogY = new QCheckBox(tr("Logarithmic scale (y-axis)"), this);
 
     QGridLayout *layoutChartXYControls = new QGridLayout();
-    layoutChartXYControls->addWidget(chkChartLogX, 1, 0);
-    layoutChartXYControls->addWidget(chkChartLogY, 2, 0);
     layoutChartXYControls->addWidget(new QLabel(tr("Variable X:")), 5, 0);
     layoutChartXYControls->addWidget(cmbChartX, 5, 1);
     layoutChartXYControls->addWidget(new QLabel(tr("Variable Y:")), 6, 0);
@@ -278,8 +274,6 @@ void OptiLabWidget::studyChanged(int index)
         trvComputations->setCurrentItem(trvComputations->topLevelItem(0));
 
     // set controls
-    chkChartLogX->setChecked(study->value(Study::View_ChartLogX).toBool());
-    chkChartLogY->setChecked(study->value(Study::View_ChartLogY).toBool());
     cmbChartX->setCurrentIndex(cmbChartX->findData(study->value(Study::View_ChartX).toString()));
     cmbChartY->setCurrentIndex(cmbChartY->findData(study->value(Study::View_ChartY).toString()));
 
@@ -315,8 +309,6 @@ void OptiLabWidget::plotChart()
 
     study->setValue(Study::View_ChartX, cmbChartX->currentData().toString());
     study->setValue(Study::View_ChartY, cmbChartY->currentData().toString());
-    study->setValue(Study::View_ChartLogX, chkChartLogX->checkState() == Qt::Checked);
-    study->setValue(Study::View_ChartLogY, chkChartLogY->checkState() == Qt::Checked);
 
     QSharedPointer<Computation> computation;
     if (trvComputations->currentItem())
@@ -390,14 +382,65 @@ void OptiLab::createControls()
     actRescale = new QAction(icon(""), tr("Rescale chart"), this);
     connect(actRescale, SIGNAL(triggered(bool)), this, SLOT(chartRescale(bool)));
 
+    actLogX = new QAction(icon(""), tr("Logarithmic scale (x-axis)"), this);
+    actLogX->setCheckable(true);
+    connect(actLogX, SIGNAL(triggered(bool)), this, SLOT(chartLogX(bool)));
+
+    actLogY = new QAction(icon(""), tr("Logarithmic scale (y-axis)"), this);
+    actLogY->setCheckable(true);
+    connect(actLogY, SIGNAL(triggered(bool)), this, SLOT(chartLogY(bool)));
+
+    actShowTrend = new QAction(icon(""), tr("Show trend line"), this);
+    actShowTrend->setCheckable(true);
+    connect(actShowTrend, SIGNAL(triggered(bool)), this, SLOT(chartShowTrend(bool)));
+
+    actShowAverageValue = new QAction(icon(""), tr("Show average value"), this);
+    actShowAverageValue->setCheckable(true);
+    connect(actShowAverageValue, SIGNAL(triggered(bool)), this, SLOT(chartShowAverageValue(bool)));
+
     mnuChart = new QMenu(this);
     mnuChart->addAction(actRescale);
+    mnuChart->addSeparator();
+    mnuChart->addAction(actLogX);
+    mnuChart->addAction(actLogY);
+    mnuChart->addSeparator();
+    mnuChart->addAction(actShowTrend);
+    mnuChart->addAction(actShowAverageValue);
 
     chart = new QCustomPlot(this);
     chart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     chart->setContextMenuPolicy(Qt::CustomContextMenu);
+    chart->legend->setVisible(true);
     connect(chart, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(chartContextMenu(const QPoint &)));
     connect(chart, SIGNAL(plottableClick(QCPAbstractPlottable*, QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*, QMouseEvent*)));
+
+    // chart trend line
+    chartTrendLine = new QCPItemLine(chart);
+    chart->addItem(chartTrendLine);
+    chartTrendLine->setVisible(false);
+
+    // mean value
+    chartGraphAverageValue = chart->addGraph();
+    chartGraphAverageValue->removeFromLegend();
+    chartGraphAverageValue->setPen(QPen(QBrush(QColor(140, 140, 140)), 3, Qt::DashLine));
+    // graph->setBrush(QBrush(Qt::red));
+    chartGraphAverageValue->setLineStyle(QCPGraph::lsLine);
+
+    chartGraphAverageValueChannelLower = chart->addGraph();
+    chartGraphAverageValueChannelLower->removeFromLegend();
+    chartGraphAverageValueChannelLower->setPen(QPen(QBrush(QColor(180, 180, 180)), 1, Qt::DotLine));
+
+    chartGraphAverageValueChannelUpper = chart->addGraph();
+    chartGraphAverageValueChannelUpper->removeFromLegend();
+    chartGraphAverageValueChannelUpper->setPen(QPen(QBrush(QColor(180, 180, 180)), 1, Qt::DotLine));
+    chartGraphAverageValueChannelUpper->setBrush(QBrush(QColor(255, 50, 30, 10)));
+    chartGraphAverageValueChannelUpper->setChannelFillGraph(chartGraphAverageValueChannelLower);
+
+    // selected computation
+    chartGraphSelectedComputation = chart->addGraph();
+    chartGraphSelectedComputation->removeFromLegend();
+    chartGraphSelectedComputation->setLineStyle(QCPGraph::lsNone);
+    chartGraphSelectedComputation->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::darkGray, 17));
 
     QSettings settings;
     splitter = new QSplitter(this);
@@ -431,6 +474,53 @@ void OptiLab::chartRescale(bool checked)
     chart->replot(QCustomPlot::rpQueued);
 }
 
+void OptiLab::chartLogX(bool checked)
+{
+    m_study->setValue(Study::View_ChartLogX, checked);
+    actLogX->setChecked(checked);
+
+    if (checked)
+        chart->xAxis->setScaleType(QCPAxis::stLogarithmic);
+    else
+        chart->xAxis->setScaleType(QCPAxis::stLinear);
+
+    chartRescale(true);
+}
+
+void OptiLab::chartLogY(bool checked)
+{
+    m_study->setValue(Study::View_ChartLogY, checked);
+    actLogY->setChecked(checked);
+
+    if (checked)
+        chart->yAxis->setScaleType(QCPAxis::stLogarithmic);
+    else
+        chart->yAxis->setScaleType(QCPAxis::stLinear);
+
+    chartRescale(true);
+}
+
+void OptiLab::chartShowTrend(bool checked)
+{
+    m_study->setValue(Study::View_ChartShowTrend, checked);
+    actShowTrend->setChecked(checked);
+
+    chartTrendLine->setVisible(checked);
+    chart->replot(QCustomPlot::rpQueued);
+}
+
+void OptiLab::chartShowAverageValue(bool checked)
+{
+    m_study->setValue(Study::View_ChartShowAverageValue, checked);
+    actShowAverageValue->setChecked(checked);
+
+    chartGraphAverageValue->setVisible(checked);
+    chartGraphAverageValueChannelLower->setVisible(checked);
+    chartGraphAverageValueChannelUpper->setVisible(checked);
+
+    chart->replot(QCustomPlot::rpQueued);
+}
+
 void OptiLab::doComputationSelected(const QString &key)
 {
     if (key.isEmpty())
@@ -449,9 +539,6 @@ void OptiLab::doComputationSelected(const QString &key)
 void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selectedComputation)
 {
     m_study = study;
-
-    chart->clearGraphs();
-    chart->clearItems();
 
     m_computationMap.clear();
 
@@ -488,6 +575,10 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
         labelY = tr("%1 (recipe)").arg(chartY.right(chartY.count() - 7));
     else
         assert(0);
+
+    foreach (QCPGraph *graph, chartGraphCharts)
+        chart->removeGraph(graph);
+    chartGraphCharts.clear();
 
     // linear regression
     QVector<double> linRegDataX;
@@ -565,12 +656,8 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
             {
                 QVector<double> selectedX; selectedX << dataSetX.last();
                 QVector<double> selectedY; selectedY << dataSetY.last();
-                QCPGraph *graph = chart->addGraph();
-                graph->setData(selectedX, selectedY);
-                graph->removeFromLegend();
 
-                graph->setLineStyle(QCPGraph::lsNone);
-                graph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::darkGray, 17));
+                chartGraphSelectedComputation->setData(selectedX, selectedY);
             }
 
             // computation map
@@ -586,14 +673,15 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
         linRegDataX << dataSetX;
         linRegDataY << dataSetY;
 
-        QCPGraph *graph = chart->addGraph();
-        graph->setData(dataSetX, dataSetY);
-        graph->setProperty("computationset_index", i);
-        graph->setName(m_study->computationSets()[i].name());
-        graph->addToLegend();
+        QCPGraph *chartGraphChart = chart->addGraph();
+        chartGraphCharts.append(chartGraphChart);
+        chartGraphChart->setData(dataSetX, dataSetY);
+        chartGraphChart->setProperty("computationset_index", i);
+        chartGraphChart->setName(m_study->computationSets()[i].name());
+        chartGraphChart->addToLegend();
 
-        graph->setLineStyle(QCPGraph::lsNone);
-        graph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QColor(140, 140, 140), colorFill, 9));
+        chartGraphChart->setLineStyle(QCPGraph::lsNone);
+        chartGraphChart->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QColor(140, 140, 140), colorFill, 9));
     }
 
     // bounding box
@@ -618,12 +706,10 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
         QPointF start((*mmx.first - delta), (*mmx.first - delta) * m + b);
         QPointF end((*mmx.second + delta), (*mmx.second + delta) * m + b);
 
-        QCPItemLine *arrow = new QCPItemLine(chart);
-        chart->addItem(arrow);
-        arrow->start->setCoords(start);
-        arrow->end->setCoords(end);
-        arrow->setHead(QCPLineEnding::esSpikeArrow);
-        arrow->setPen(QPen(QBrush(QColor(200, 200, 200)), 5));
+        chartTrendLine->start->setCoords(start);
+        chartTrendLine->end->setCoords(end);
+        chartTrendLine->setHead(QCPLineEnding::esSpikeArrow);
+        chartTrendLine->setPen(QPen(QBrush(QColor(200, 200, 200)), 5));
     }
 
     // mean value and standard deviation
@@ -639,41 +725,22 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
     QVector<double> meanY; meanY << mean << mean;
     QVector<double> devUpper; devUpper << mean + stdev << mean + stdev;
     QVector<double> devLower; devLower << mean - stdev << mean - stdev;
-    QCPGraph *graph = chart->addGraph();
-    graph->setData(meanX, meanY);
-    graph->removeFromLegend();
-
-    graph->setPen(QPen(QBrush(QColor(140, 140, 140)), 3, Qt::DashLine));
-    // graph->setBrush(QBrush(Qt::red));
-    graph->setLineStyle(QCPGraph::lsLine);
-
-    QCPGraph *graphChannelLower = chart->addGraph();
-    graphChannelLower->removeFromLegend();
-    graphChannelLower->setData(meanX, devLower);
-    graphChannelLower->setPen(QPen(QBrush(QColor(180, 180, 180)), 1, Qt::DotLine));
-
-    QCPGraph *graphChannelUpper = chart->addGraph();
-    graphChannelUpper->removeFromLegend();
-    graphChannelUpper->setData(meanX, devUpper);
-    graphChannelUpper->setPen(QPen(QBrush(QColor(180, 180, 180)), 1, Qt::DotLine));
-    graphChannelUpper->setBrush(QBrush(QColor(255, 50, 30, 10)));
-    graphChannelUpper->setChannelFillGraph(graphChannelLower);
+    chartGraphAverageValue->setData(meanX, meanY);
+    chartGraphAverageValueChannelLower->setData(meanX, devLower);
+    chartGraphAverageValueChannelUpper->setData(meanX, devUpper);
 
     // plot main chart
     chart->xAxis->setLabel(labelX);
     chart->yAxis->setLabel(labelY);
-    chart->legend->setVisible(true);
-    if (m_study->value(Study::View_ChartLogX).toBool())
-        chart->xAxis->setScaleType(QCPAxis::stLogarithmic);
-    else
-        chart->xAxis->setScaleType(QCPAxis::stLinear);
-    if (study->value(Study::View_ChartLogY).toBool())
-        chart->yAxis->setScaleType(QCPAxis::stLogarithmic);
-    else
-        chart->yAxis->setScaleType(QCPAxis::stLinear);
 
     // replot chart
     chart->replot(QCustomPlot::rpQueued);
+
+    // set actions
+    chartLogX(m_study->value(Study::View_ChartLogX).toBool());
+    chartLogX(m_study->value(Study::View_ChartLogY).toBool());
+    chartShowTrend(m_study->value(Study::View_ChartShowTrend).toBool());
+    chartShowAverageValue(m_study->value(Study::View_ChartShowAverageValue).toBool());
 }
 
 QCPData OptiLab::findClosestData(QCPGraph *graph, const Point &pos)
