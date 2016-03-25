@@ -65,6 +65,7 @@ public:
     };
 
     ProblemConfig(ProblemBase *parentProblem);
+    virtual ~ProblemConfig();
 
     void copy(const ProblemConfig *origin);
 
@@ -75,12 +76,12 @@ public:
     void clear();
 
     // coordinates
-    inline CoordinateType coordinateType() const { return m_setting[ProblemConfig::Coordinate].value<CoordinateType>(); }
-    void setCoordinateType(const CoordinateType coordinateType) { m_setting[ProblemConfig::Coordinate] = QVariant::fromValue(coordinateType); emit changed(); }
+    inline CoordinateType coordinateType() const { return m_config[ProblemConfig::Coordinate].value<CoordinateType>(); }
+    void setCoordinateType(const CoordinateType coordinateType) { m_config[ProblemConfig::Coordinate] = QVariant::fromValue(coordinateType); emit changed(); }
 
     // mesh
-    inline MeshType meshType() const { return m_setting[ProblemConfig::Mesh].value<MeshType>(); }
-    void setMeshType(const MeshType meshType) { m_setting[ProblemConfig::Mesh] = QVariant::fromValue(meshType); emit changed(); }
+    inline MeshType meshType() const { return m_config[ProblemConfig::Mesh].value<MeshType>(); }
+    void setMeshType(const MeshType meshType) { m_config[ProblemConfig::Mesh] = QVariant::fromValue(meshType); emit changed(); }
 
     // load and save
     void load(XMLProblem::problem_config *configxsd);
@@ -88,24 +89,24 @@ public:
     void load(QJsonObject &object);
     void save(QJsonObject &object);
 
-    inline QString typeToStringKey(Type type) const { return m_settingKey[type]; }
-    inline Type stringKeyToType(const QString &key) const { return m_settingKey.key(key); }
+    inline QString typeToStringKey(Type type) const { return m_configKey[type]; }
+    inline Type stringKeyToType(const QString &key) const { return m_configKey.key(key); }
 
-    inline QVariant value(Type type) const { return m_setting[type]; }
-    inline void setValue(Type type, int value, bool emitChanged = true) {  m_setting[type] = value; if (emitChanged) emit changed(); }
-    inline void setValue(Type type, double value, bool emitChanged = true) {  m_setting[type] = value; emit changed(); if (emitChanged) emit changed(); }
-    inline void setValue(Type type, bool value, bool emitChanged = true) {  m_setting[type] = value; emit changed(); if (emitChanged) emit changed(); }
-    inline void setValue(Type type, const QString &value, bool emitChanged = true) { m_setting[type] = value; emit changed(); if (emitChanged) emit changed(); }
-    inline void setValue(Type type, Value value, bool emitChanged = true) { m_setting[type] = QVariant::fromValue(value); emit changed(); if (emitChanged) emit changed(); }
-    inline void setValue(Type type, StringToDoubleMap parameters, bool emitChanged = true) { m_setting[type] = QVariant::fromValue(parameters); emit changed(); if (emitChanged) emit changed(); }
-    inline void setValue(Type type, StringToVariantMap parameters, bool emitChanged = true) { m_setting[type] = parameters; emit changed(); if (emitChanged) emit changed(); }
+    inline QVariant value(Type type) const { return m_config[type]; }
+    inline void setValue(Type type, int value, bool emitChanged = true) {  m_config[type] = value; if (emitChanged) emit changed(); }
+    inline void setValue(Type type, double value, bool emitChanged = true) {  m_config[type] = value; emit changed(); if (emitChanged) emit changed(); }
+    inline void setValue(Type type, bool value, bool emitChanged = true) {  m_config[type] = value; emit changed(); if (emitChanged) emit changed(); }
+    inline void setValue(Type type, const QString &value, bool emitChanged = true) { m_config[type] = value; emit changed(); if (emitChanged) emit changed(); }
+    inline void setValue(Type type, Value value, bool emitChanged = true) { m_config[type] = QVariant::fromValue(value); emit changed(); if (emitChanged) emit changed(); }
 
-    inline QVariant defaultValue(Type type) {  return m_settingDefault[type]; }
+    inline QVariant defaultValue(Type type) {  return m_configDefault[type]; }
 
     // parameters
     void setParameter(const QString &key, double val);
-    inline double parameter(const QString &key) const { assert(m_setting[ProblemConfig::Parameters].value<StringToDoubleMap>().contains(key)); return m_setting[ProblemConfig::Parameters].value<StringToDoubleMap>()[key]; }
-    inline StringToDoubleMap parameters() const { return m_setting[ProblemConfig::Parameters].value<StringToDoubleMap>(); }
+    void setParameters(const StringToDoubleMap &params);
+    double parameter(const QString &key) const;
+    StringToDoubleMap parameters() const;
+    exprtk::symbol_table<double> &parametersSymbolTable() { return m_parametersSymbolTable; }
     void checkVariableName(const QString &key);
 
     inline double constantTimeStepLength() { return value(ProblemConfig::TimeTotal).toDouble() / value(ProblemConfig::TimeConstantTimeSteps).toInt(); }
@@ -117,14 +118,16 @@ signals:
     void changed();
 
 private:
-    QMap<Type, QVariant> m_setting;
-    QMap<Type, QVariant> m_settingDefault;
-    QMap<Type, QString> m_settingKey;
+    QMap<Type, QVariant> m_config;
+    QMap<Type, QVariant> m_configDefault;
+    QMap<Type, QString> m_configKey;
 
     void setDefaultValues();
     void setStringKeys();
 
     ProblemBase *m_problem;
+
+    exprtk::symbol_table<double> m_parametersSymbolTable;
 };
 
 class PostprocessorSetting : public QObject
@@ -134,7 +137,7 @@ class PostprocessorSetting : public QObject
 public:
     enum Type
     {
-        Unknown,        
+        Unknown,
         ScalarView3DMode,
         ScalarView3DLighting,
         ScalarView3DAngle,

@@ -44,8 +44,8 @@
 
 #include "util/constants.h"
 
-PostprocessorSceneMeshWidget::PostprocessorSceneMeshWidget(PostprocessorWidget *postprocessorWidget, SceneViewMesh *sceneMesh)
-    : PostprocessorSceneWidget(postprocessorWidget), m_sceneMesh(sceneMesh)
+PostprocessorSceneMeshWidget::PostprocessorSceneMeshWidget(PhysicalFieldWidget *fieldWidget, SceneViewMesh *sceneMesh)
+    : PostprocessorSceneWidget(fieldWidget), m_sceneMesh(sceneMesh)
 {
     setWindowIcon(icon("scene-properties"));
     setObjectName("PostprocessorMeshWidget");
@@ -120,50 +120,50 @@ void PostprocessorSceneMeshWidget::createControls()
 
 void PostprocessorSceneMeshWidget::refresh()
 {
-    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+    if (!(m_fieldWidget->selectedComputation() && m_fieldWidget->selectedField()))
         return;
 
     // mesh and order
-    chkShowInitialMeshView->setEnabled(m_postprocessorWidget->computation()->isMeshed());
-    chkShowSolutionMeshView->setEnabled(m_postprocessorWidget->computation()->isSolved());
-    chkShowOrderView->setEnabled(m_postprocessorWidget->computation()->isSolved());
-    txtOrderComponent->setEnabled(m_postprocessorWidget->computation()->isSolved() && (chkShowOrderView->isChecked() || chkShowSolutionMeshView->isChecked()));
-    txtOrderComponent->setMaximum(m_postprocessorWidget->fieldWidget()->selectedField()->numberOfSolutions());
+    chkShowInitialMeshView->setEnabled(m_fieldWidget->selectedComputation()->isSolved());
+    chkShowSolutionMeshView->setEnabled(m_fieldWidget->selectedComputation()->isSolved());
+    chkShowOrderView->setEnabled(m_fieldWidget->selectedComputation()->isSolved());
+    txtOrderComponent->setEnabled(m_fieldWidget->selectedComputation()->isSolved() && (chkShowOrderView->isChecked() || chkShowSolutionMeshView->isChecked()));
+    txtOrderComponent->setMaximum(m_fieldWidget->selectedField()->numberOfSolutions());
 }
 
 void PostprocessorSceneMeshWidget::load()
 {
-    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+    if (!(m_fieldWidget->selectedComputation() && m_fieldWidget->selectedField()))
         return;
 
     // show
-    chkShowInitialMeshView->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ShowInitialMeshView).toBool());
-    chkShowSolutionMeshView->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ShowSolutionMeshView).toBool());
-    chkShowOrderView->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ShowOrderView).toBool());
-    txtOrderComponent->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::OrderComponent).toInt());
+    chkShowInitialMeshView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowInitialMeshView).toBool());
+    chkShowSolutionMeshView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowSolutionMeshView).toBool());
+    chkShowOrderView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowOrderView).toBool());
+    txtOrderComponent->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::OrderComponent).toInt());
 
     // order view
-    chkShowOrderColorbar->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ShowOrderColorBar).toBool());
-    cmbOrderPaletteOrder->setCurrentIndex(cmbOrderPaletteOrder->findData((PaletteType) m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::OrderPaletteOrderType).toInt()));
-    chkOrderLabel->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ShowOrderLabel).toBool());
+    chkShowOrderColorbar->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowOrderColorBar).toBool());
+    cmbOrderPaletteOrder->setCurrentIndex(cmbOrderPaletteOrder->findData((PaletteType) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::OrderPaletteOrderType).toInt()));
+    chkOrderLabel->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowOrderLabel).toBool());
 
     // mesh and polynomial info
     int dofs = 0;
-    if (m_postprocessorWidget->computation()->isMeshed())
+    if (m_fieldWidget->selectedComputation()->isMeshed())
     {
         lblMeshInitial->setText(QString(tr("%1 nodes, %2 elements").
-                                        arg(m_postprocessorWidget->computation()->initialMesh().n_used_vertices()).
-                                        arg(m_postprocessorWidget->computation()->initialMesh().n_active_cells())));
+                                        arg(m_fieldWidget->selectedComputation()->initialMesh().n_used_vertices()).
+                                        arg(m_fieldWidget->selectedComputation()->initialMesh().n_active_cells())));
         lblMeshSolution->setText(QString(tr("%1 nodes, %2 elements").
-                                         arg(m_postprocessorWidget->computation()->calculationMesh().n_used_vertices()).
-                                         arg(m_postprocessorWidget->computation()->calculationMesh().n_active_cells())));
+                                         arg(m_fieldWidget->selectedComputation()->calculationMesh().n_used_vertices()).
+                                         arg(m_fieldWidget->selectedComputation()->calculationMesh().n_active_cells())));
     }
 
-    if (m_postprocessorWidget->computation()->isSolved() && m_postprocessorWidget->fieldWidget()->selectedField())
+    if (m_fieldWidget->selectedComputation()->isSolved() && m_fieldWidget->selectedField())
     {
-        MultiArray ma = m_postprocessorWidget->computation()->solutionStore()->multiArray(FieldSolutionID(m_postprocessorWidget->fieldWidget()->selectedField()->fieldId(),
-                                                                                                          m_postprocessorWidget->fieldWidget()->selectedTimeStep(),
-                                                                                                          m_postprocessorWidget->fieldWidget()->selectedAdaptivityStep()));
+        MultiArray ma = m_fieldWidget->selectedComputation()->solutionStore()->multiArray(FieldSolutionID(m_fieldWidget->selectedField()->fieldId(),
+                                                                                                          m_fieldWidget->selectedTimeStep(),
+                                                                                                          m_fieldWidget->selectedAdaptivityStep()));
 
         dofs = ma.doFHandler().n_dofs();
     }
@@ -172,13 +172,13 @@ void PostprocessorSceneMeshWidget::load()
 
 void PostprocessorSceneMeshWidget::save()
 {
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ShowInitialMeshView, chkShowInitialMeshView->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ShowSolutionMeshView, chkShowSolutionMeshView->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ShowOrderView, chkShowOrderView->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::OrderComponent, txtOrderComponent->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowInitialMeshView, chkShowInitialMeshView->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowSolutionMeshView, chkShowSolutionMeshView->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowOrderView, chkShowOrderView->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::OrderComponent, txtOrderComponent->value());
 
     // order view
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ShowOrderColorBar, chkShowOrderColorbar->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::OrderPaletteOrderType, (PaletteType) cmbOrderPaletteOrder->itemData(cmbOrderPaletteOrder->currentIndex()).toInt());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ShowOrderLabel, chkOrderLabel->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowOrderColorBar, chkShowOrderColorbar->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::OrderPaletteOrderType, (PaletteType) cmbOrderPaletteOrder->itemData(cmbOrderPaletteOrder->currentIndex()).toInt());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowOrderLabel, chkOrderLabel->isChecked());
 }

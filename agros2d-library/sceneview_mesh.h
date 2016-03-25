@@ -25,7 +25,7 @@
 
 class PostprocessorWidget;
 
-class SceneViewMesh : public SceneViewCommon2D
+class SceneViewMesh : public SceneViewCommon2D, public SceneViewPostInterface
 {
     Q_OBJECT
 
@@ -43,6 +43,7 @@ public:
 
 public slots:    
     virtual void clear();
+    virtual void refresh();
     void exportVTK(const QString &fileName = QString(), bool exportMeshOnly = false);
     void exportVTKMesh(const QString &fileName = QString());
     void exportVTKOrderView(const QString &fileName = QString());
@@ -50,7 +51,7 @@ public slots:
 protected:
     virtual void paintGL();
 
-    virtual ProblemBase *problem();
+    virtual ProblemBase *problem() const;
 
     void paintGeometry();
 
@@ -60,6 +61,8 @@ protected:
     void paintOrderColorBar();
 
 private:
+    PostprocessorWidget *m_postprocessorWidget;
+
     QVector<QVector2D> m_arrayInitialMesh;
     QVector<QVector2D> m_arraySolutionMesh;
     QVector<QVector2D> m_arrayOrderMesh;
@@ -68,10 +71,7 @@ private:
     void createActionsMesh();
 
 private slots:
-    virtual void refresh();   
     virtual void clearGLLists();
-
-    void connectComputation(QSharedPointer<Computation> computation);
 };
 
 #endif // SCENEVIEWMESH_H

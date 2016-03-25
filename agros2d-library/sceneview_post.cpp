@@ -23,6 +23,7 @@
 #include <deal.II/hp/dof_handler.h>
 
 #include "sceneview_post.h"
+#include "postprocessorview.h"
 
 #include "util/global.h"
 
@@ -52,7 +53,7 @@
 #include "pythonlab/pythonengine.h"
 
 PostDataOut::PostDataOut(FieldInfo *fieldInfo, Computation *parentProblem) : dealii::DataOut<2, dealii::hp::DoFHandler<2> >(),
-    m_problem(parentProblem), m_fieldInfo(fieldInfo)
+    m_computation(parentProblem), m_fieldInfo(fieldInfo)
 {
 }
 
@@ -88,7 +89,7 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
     double dmult = 0.0;
     if (deform)
     {
-        RectPoint rect = m_problem->scene()->boundingBox();
+        RectPoint rect = m_computation->scene()->boundingBox();
         dmult = qMax(rect.width(), rect.height()) / maxDeform / 15.0;
     }
 
@@ -168,7 +169,7 @@ dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
     DataOut<2>::cell_iterator cell = this->dofs->begin_active();
     while (cell != this->dofs->end())
     {
-        if (!m_problem->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
+        if (!m_computation->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
             break;
         else
             cell++;
@@ -184,7 +185,7 @@ dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_
     DataOut<2>::cell_iterator cell = dealii::DataOut<2, dealii::hp::DoFHandler<2> >::next_cell(old_cell);
     while (cell != this->dofs->end())
     {
-        if (!m_problem->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
+        if (!m_computation->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
             break;
         else
             cell++;
@@ -328,10 +329,6 @@ void PostDeal::refresh()
 
 void PostDeal::processSolved()
 {
-    // update time functions
-    if (m_computation->isTransient())
-        Module::updateTimeFunctions(m_computation, m_computation->timeStepToTotalTime(activeTimeStep()));
-
     FieldSolutionID fsid(activeViewField()->fieldId(), activeTimeStep(), activeAdaptivityStep());
     if (m_computation->solutionStore()->contains(fsid))
     {
@@ -349,10 +346,6 @@ std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable ph
 {    
     // QTime time;
     // time.start();
-
-    // update time functions
-    if (m_computation->isTransient())
-        Module::updateTimeFunctions(m_computation, m_computation->timeStepToTotalTime(activeTimeStep()));
 
     std::shared_ptr<dealii::DataPostprocessorScalar<2> > post = activeViewField()->plugin()->filter(m_computation,
                                                                                                     activeViewField(),
@@ -459,22 +452,14 @@ MultiArray PostDeal::activeMultiSolutionArray()
 
 // ************************************************************************************************
 
-SceneViewPostInterface::SceneViewPostInterface(QWidget *parent)
-    : SceneViewCommon(parent),
-      m_textureScalar(0)
+SceneViewPostInterface::SceneViewPostInterface(PostprocessorWidget *postprocessorWidget)
+    : m_postprocessorWidget(postprocessorWidget), m_textureScalar(0), m_texScale(0.0), m_texShift(0.0)
 {
-}
-
-void SceneViewPostInterface::initializeGL()
-{
-    clearGLLists();
-
-    SceneViewCommon::initializeGL();
 }
 
 const double* SceneViewPostInterface::paletteColor(double x) const
 {
-    switch ((PaletteType) m_computation->setting()->value(PostprocessorSetting::PaletteType).toInt())
+    switch ((PaletteType) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::PaletteType).toInt())
     {
     case Palette_Inferno:
     {
@@ -550,7 +535,7 @@ const double* SceneViewPostInterface::paletteColor(double x) const
 
 const double* SceneViewPostInterface::paletteColorOrder(int n) const
 {
-    switch ((PaletteType) m_computation->setting()->value(PostprocessorSetting::OrderPaletteOrderType).toInt())
+    switch ((PaletteType) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::OrderPaletteOrderType).toInt())
     {
     case Palette_Jet:
         return paletteOrderJet[n];
@@ -574,8 +559,8 @@ const double* SceneViewPostInterface::paletteColorOrder(int n) const
 
 void SceneViewPostInterface::paletteCreate()
 {
-    int paletteSteps = m_computation->setting()->value(PostprocessorSetting::PaletteFilter).toBool()
-            ? 100 : m_computation->setting()->value(PostprocessorSetting::PaletteSteps).toInt();
+    int paletteSteps = m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::PaletteFilter).toBool()
+            ? 100 : m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::PaletteSteps).toInt();
 
     unsigned char palette[256][3];
     for (int i = 0; i < paletteSteps; i++)
@@ -588,14 +573,14 @@ void SceneViewPostInterface::paletteCreate()
     for (int i = paletteSteps; i < 256; i++)
         memcpy(palette[i], palette[paletteSteps-1], 3);
 
-    makeCurrent();
+    // TODO: check it! (should we call makeCurrent()?) makeCurrent();
     if (glIsTexture(m_textureScalar))
         glDeleteTextures(1, &m_textureScalar);
     glGenTextures(1, &m_textureScalar);
 
     glBindTexture(GL_TEXTURE_1D, m_textureScalar);
     glTexParameteri(GL_TEXTURE_1D, GL_GENERATE_MIPMAP, GL_TRUE);
-    if (m_computation->setting()->value(PostprocessorSetting::PaletteFilter).toBool())
+    if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::PaletteFilter).toBool())
     {
 #ifdef Q_WS_WIN
         glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -617,7 +602,7 @@ void SceneViewPostInterface::paletteCreate()
     glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 
     // adjust palette
-    if (m_computation->setting()->value(PostprocessorSetting::PaletteFilter).toBool())
+    if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::PaletteFilter).toBool())
     {
         m_texScale = (double) (paletteSteps-1) / 256.0;
         m_texShift = 0.5 / 256.0;
@@ -629,27 +614,27 @@ void SceneViewPostInterface::paletteCreate()
     }
 }
 
-void SceneViewPostInterface::paintScalarFieldColorBar(double min, double max)
+void SceneViewPostInterface::paintScalarFieldColorBar(SceneViewCommon *sceneView, double min, double max)
 {
-    if (!m_computation->isSolved() || !m_computation->setting()->value(PostprocessorSetting::ShowScalarColorBar).toBool()) return;
+    if (!m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowScalarColorBar).toBool()) return;
 
-    loadProjectionViewPort();
+    sceneView->loadProjectionViewPort();
 
-    glScaled(2.0 / width(), 2.0 / height(), 1.0);
-    glTranslated(-width() / 2.0, -height() / 2.0, 0.0);
+    glScaled(2.0 / sceneView->width(), 2.0 / sceneView->height(), 1.0);
+    glTranslated(-sceneView->width() / 2.0, -sceneView->height() / 2.0, 0.0);
 
     // dimensions
-    int textWidth = (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0)
-            * (QString::number(-1.0, 'e', m_computation->setting()->value(PostprocessorSetting::ScalarDecimalPlace).toInt()).length() + 1);
-    int textHeight = 2 * (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0);
+    int textWidth = (sceneView->m_charDataPost[GLYPH_M].x1 - sceneView->m_charDataPost[GLYPH_M].x0)
+            * (QString::number(-1.0, 'e', m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarDecimalPlace).toInt()).length() + 1);
+    int textHeight = 2 * (sceneView->m_charDataPost[GLYPH_M].y1 - sceneView->m_charDataPost[GLYPH_M].y0);
     Point scaleSize = Point(45.0 + textWidth, 20*textHeight); // height() - 20.0
     Point scaleBorder = Point(10.0, (Agros2D::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
-    double scaleLeft = (width() - (45.0 + textWidth));
+    double scaleLeft = (sceneView->width() - (45.0 + textWidth));
     int numTicks = 11;
 
     // blended rectangle
-    drawBlend(Point(scaleLeft, scaleBorder.y), Point(scaleLeft + scaleSize.x - scaleBorder.x, scaleBorder.y + scaleSize.y),
-              0.91, 0.91, 0.91);
+    sceneView->drawBlend(Point(scaleLeft, scaleBorder.y), Point(scaleLeft + scaleSize.x - scaleBorder.x, scaleBorder.y + scaleSize.y),
+                         0.91, 0.91, 0.91);
 
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_POLYGON_OFFSET_FILL);
@@ -711,30 +696,31 @@ void SceneViewPostInterface::paintScalarFieldColorBar(double min, double max)
     for (int i = 1; i < numTicks+1; i++)
     {
         double value = 0.0;
-        if (!m_computation->setting()->value(PostprocessorSetting::ScalarRangeLog).toBool())
+        if (!m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeLog).toBool())
             value = min + (double) (i-1) / (numTicks-1) * (max - min);
         else
-            value = min + (double) pow((double) m_computation->setting()->value(PostprocessorSetting::ScalarRangeBase).toInt(),
-                                       ((i-1) / (numTicks-1)))/m_computation->setting()->value(PostprocessorSetting::ScalarRangeBase).toInt() * (max - min);
+            value = min + (double) pow((double) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeBase).toInt(),
+                                       ((i-1) / (numTicks-1)))/m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeBase).toInt() * (max - min);
 
         if (fabs(value) < EPS_ZERO) value = 0.0;
         double tickY = (scaleSize.y - 60.0) / (numTicks - 1.0);
 
-        printPostAt(scaleLeft + 33.0 + ((value >= 0.0) ? (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) : 0.0),
-                    scaleBorder.y + 10.0 + (i-1)*tickY - textHeight / 4.0,
-                    QString::number(value, 'e', m_computation->setting()->value(PostprocessorSetting::ScalarDecimalPlace).toInt()));
+        sceneView->printPostAt(scaleLeft + 33.0 + ((value >= 0.0) ? (sceneView->m_charDataPost[GLYPH_M].x1 - sceneView->m_charDataPost[GLYPH_M].x0) : 0.0),
+                               scaleBorder.y + 10.0 + (i-1)*tickY - textHeight / 4.0,
+                               QString::number(value, 'e', m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarDecimalPlace).toInt()));
     }
 
     // variable
-    Module::LocalVariable localVariable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),
-                                                                                                      m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString());
+    // TODO: add variable
+    Module::LocalVariable localVariable = m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localVariable(m_postprocessorWidget->currentComputation()->config()->coordinateType(),
+                                                                                                                                    m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString());
     QString str = QString("%1 (%2)").
-            arg(m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString().isEmpty() ? "" : localVariable.shortname()).
-            arg(m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString().isEmpty() ? "" : localVariable.unit());
+            arg(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString().isEmpty() ? "" : localVariable.shortname()).
+            arg(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarVariable).toString().isEmpty() ? "" : localVariable.unit());
 
-    printPostAt(scaleLeft + scaleSize.x / 2.0 - (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) * str.count() / 2.0,
-                scaleBorder.y + scaleSize.y - 20.0,
-                str);
+    sceneView->printPostAt(scaleLeft + scaleSize.x / 2.0 - (sceneView->m_charDataPost[GLYPH_M].x1 - sceneView->m_charDataPost[GLYPH_M].x0) * str.count() / 2.0,
+                           scaleBorder.y + scaleSize.y - 20.0,
+                           str);
 }
 
 
@@ -755,14 +741,14 @@ void SceneViewPostInterface::paintBackground()
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     glBegin(GL_QUADS);
-    if (m_computation->setting()->value(PostprocessorSetting::ScalarView3DBackground).toBool())
+    if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarView3DBackground).toBool())
         glColor3d(0.99, 0.99, 0.99);
     else
         glColor3d(COLORBACKGROUND[0], COLORBACKGROUND[1], COLORBACKGROUND[2]);
 
     glVertex3d(-1.0, -1.0, 0.0);
     glVertex3d(1.0, -1.0, 0.0);
-    if (m_computation->setting()->value(PostprocessorSetting::ScalarView3DBackground).toBool())
+    if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarView3DBackground).toBool())
         glColor3d(0.44, 0.56, 0.89);
     glVertex3d(1.0, 1.0, 0.0);
     glVertex3d(-1.0, 1.0, 0.0);

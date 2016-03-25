@@ -46,8 +46,8 @@
 
 #include "util/constants.h"
 
-PostprocessorSceneParticleTracingWidget::PostprocessorSceneParticleTracingWidget(PostprocessorWidget *postprocessorWidget, SceneViewParticleTracing *sceneParticleTracing)
-    : PostprocessorSceneWidget(postprocessorWidget), m_sceneViewParticleTracing(sceneParticleTracing)
+PostprocessorSceneParticleTracingWidget::PostprocessorSceneParticleTracingWidget(PhysicalFieldWidget *fieldWidget, SceneViewParticleTracing *sceneParticleTracing)
+    : PostprocessorSceneWidget(fieldWidget), m_sceneViewParticleTracing(sceneParticleTracing)
 {
     setMinimumWidth(160);
     setObjectName("ParticleTracingView");
@@ -309,7 +309,7 @@ void PostprocessorSceneParticleTracingWidget::createControls()
 
 void PostprocessorSceneParticleTracingWidget::refresh()
 {
-    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+    if (!(m_fieldWidget->selectedComputation() && m_fieldWidget->selectedField()))
         return;
 }
 
@@ -317,45 +317,45 @@ void PostprocessorSceneParticleTracingWidget::refresh()
 void PostprocessorSceneParticleTracingWidget::load()
 {
     // particle tracing
-    cmbParticleButcherTableType->setCurrentIndex(cmbParticleButcherTableType->findData(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleButcherTableType).toInt()));
-    chkParticleIncludeRelativisticCorrection->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleIncludeRelativisticCorrection).toBool());
-    txtParticleNumberOfParticles->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleNumberOfParticles).toInt());
-    txtParticleStartingRadius->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleStartingRadius).toDouble());
-    txtParticleMass->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleMass).toDouble());
-    txtParticleConstant->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleConstant).toDouble());
-    txtParticlePointX->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleStartX).toDouble());
-    txtParticlePointY->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleStartY).toDouble());
-    txtParticleVelocityX->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleStartVelocityX).toDouble());
-    txtParticleVelocityY->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleStartVelocityY).toDouble());
-    chkParticleReflectOnDifferentMaterial->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleReflectOnDifferentMaterial).toBool());
-    chkParticleReflectOnBoundary->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleReflectOnBoundary).toBool());
-    txtParticleCoefficientOfRestitution->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleCoefficientOfRestitution).toDouble());
-    txtParticleCustomForceX->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleCustomForceX).toDouble());
-    txtParticleCustomForceY->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleCustomForceY).toDouble());
-    txtParticleCustomForceZ->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleCustomForceZ).toDouble());
-    txtParticleMaximumRelativeError->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleMaximumRelativeError).toDouble());
-    txtParticleMaximumSteps->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleMaximumStep).toDouble());
-    txtParticleMaximumNumberOfSteps->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleMaximumNumberOfSteps).toInt());
-    chkParticleColorByVelocity->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleColorByVelocity).toBool());
-    chkParticleShowPoints->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleShowPoints).toBool());
-    chkParticleShowBlendedFaces->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleShowBlendedFaces).toBool());
-    txtParticleNumShowParticleAxi->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleNumShowParticlesAxi).toInt());
-    txtParticleNumShowParticleAxi->setEnabled(m_postprocessorWidget->computation()->config()->coordinateType() == CoordinateType_Axisymmetric);
-    txtParticleDragDensity->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleDragDensity).toDouble());
-    txtParticleDragReferenceArea->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleDragReferenceArea).toDouble());
-    txtParticleDragCoefficient->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleDragCoefficient).toDouble());
-    chkParticleP2PElectricForce->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleP2PElectricForce).toBool());
-    chkParticleP2PMagneticForce->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ParticleP2PMagneticForce).toBool());
+    cmbParticleButcherTableType->setCurrentIndex(cmbParticleButcherTableType->findData(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleButcherTableType).toInt()));
+    chkParticleIncludeRelativisticCorrection->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleIncludeRelativisticCorrection).toBool());
+    txtParticleNumberOfParticles->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleNumberOfParticles).toInt());
+    txtParticleStartingRadius->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleStartingRadius).toDouble());
+    txtParticleMass->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleMass).toDouble());
+    txtParticleConstant->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleConstant).toDouble());
+    txtParticlePointX->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleStartX).toDouble());
+    txtParticlePointY->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleStartY).toDouble());
+    txtParticleVelocityX->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleStartVelocityX).toDouble());
+    txtParticleVelocityY->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleStartVelocityY).toDouble());
+    chkParticleReflectOnDifferentMaterial->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleReflectOnDifferentMaterial).toBool());
+    chkParticleReflectOnBoundary->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleReflectOnBoundary).toBool());
+    txtParticleCoefficientOfRestitution->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleCoefficientOfRestitution).toDouble());
+    txtParticleCustomForceX->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleCustomForceX).toDouble());
+    txtParticleCustomForceY->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleCustomForceY).toDouble());
+    txtParticleCustomForceZ->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleCustomForceZ).toDouble());
+    txtParticleMaximumRelativeError->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleMaximumRelativeError).toDouble());
+    txtParticleMaximumSteps->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleMaximumStep).toDouble());
+    txtParticleMaximumNumberOfSteps->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleMaximumNumberOfSteps).toInt());
+    chkParticleColorByVelocity->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleColorByVelocity).toBool());
+    chkParticleShowPoints->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleShowPoints).toBool());
+    chkParticleShowBlendedFaces->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleShowBlendedFaces).toBool());
+    txtParticleNumShowParticleAxi->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleNumShowParticlesAxi).toInt());
+    txtParticleNumShowParticleAxi->setEnabled(m_fieldWidget->selectedComputation()->config()->coordinateType() == CoordinateType_Axisymmetric);
+    txtParticleDragDensity->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleDragDensity).toDouble());
+    txtParticleDragReferenceArea->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleDragReferenceArea).toDouble());
+    txtParticleDragCoefficient->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleDragCoefficient).toDouble());
+    chkParticleP2PElectricForce->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleP2PElectricForce).toBool());
+    chkParticleP2PMagneticForce->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ParticleP2PMagneticForce).toBool());
 
-    lblParticlePointX->setText(QString("%1 (m):").arg(m_postprocessorWidget->computation()->config()->labelX()));
-    lblParticlePointY->setText(QString("%1 (m):").arg(m_postprocessorWidget->computation()->config()->labelY()));
-    lblParticleVelocityX->setText(QString("%1 (m/s):").arg(m_postprocessorWidget->computation()->config()->labelX()));
-    lblParticleVelocityY->setText(QString("%1 (m/s):").arg(m_postprocessorWidget->computation()->config()->labelY()));
-    lblParticleCustomForceX->setText(QString("%1 (N):").arg(m_postprocessorWidget->computation()->config()->labelX()));
-    lblParticleCustomForceY->setText(QString("%1 (N):").arg(m_postprocessorWidget->computation()->config()->labelY()));
-    lblParticleCustomForceZ->setText(QString("%1 (N):").arg(m_postprocessorWidget->computation()->config()->labelZ()));
+    lblParticlePointX->setText(QString("%1 (m):").arg(m_fieldWidget->selectedComputation()->config()->labelX()));
+    lblParticlePointY->setText(QString("%1 (m):").arg(m_fieldWidget->selectedComputation()->config()->labelY()));
+    lblParticleVelocityX->setText(QString("%1 (m/s):").arg(m_fieldWidget->selectedComputation()->config()->labelX()));
+    lblParticleVelocityY->setText(QString("%1 (m/s):").arg(m_fieldWidget->selectedComputation()->config()->labelY()));
+    lblParticleCustomForceX->setText(QString("%1 (N):").arg(m_fieldWidget->selectedComputation()->config()->labelX()));
+    lblParticleCustomForceY->setText(QString("%1 (N):").arg(m_fieldWidget->selectedComputation()->config()->labelY()));
+    lblParticleCustomForceZ->setText(QString("%1 (N):").arg(m_fieldWidget->selectedComputation()->config()->labelZ()));
 
-    if (m_postprocessorWidget->computation()->config()->coordinateType() == CoordinateType_Planar)
+    if (m_fieldWidget->selectedComputation()->config()->coordinateType() == CoordinateType_Planar)
         lblParticleMotionEquations->setText(QString("<i>x</i>\" = <i>F</i><sub>x</sub> / <i>m</i>, &nbsp; <i>y</i>\" = <i>F</i><sub>y</sub> / <i>m</i>, &nbsp; <i>z</i>\" = <i>F</i><sub>z</sub> / <i>m</i>"));
     else
         lblParticleMotionEquations->setText(QString("<i>r</i>\" = <i>F</i><sub>r</sub> / <i>m</i> + <i>r</i> (<i>&phi;</i>')<sup>2</sup>, &nbsp; <i>z</i>\" = <i>F</i><sub>z</sub> / <i>m</i><br /><i>&phi;</i>\" = <i>F</i><sub>&phi;</sub> / <i>m</i> - 2<i>r</i> <i>r</i>' <i>&phi;</i>' / <i>r</i>"));
@@ -364,34 +364,34 @@ void PostprocessorSceneParticleTracingWidget::load()
 void PostprocessorSceneParticleTracingWidget::save()
 {
     // particle tracing
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleButcherTableType, (ButcherTableType) cmbParticleButcherTableType->itemData(cmbParticleButcherTableType->currentIndex()).toInt());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleIncludeRelativisticCorrection, chkParticleIncludeRelativisticCorrection->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleNumberOfParticles, txtParticleNumberOfParticles->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleStartingRadius, txtParticleStartingRadius->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleMass, txtParticleMass->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleConstant, txtParticleConstant->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleStartX, txtParticlePointX->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleStartY, txtParticlePointY->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleStartVelocityX, txtParticleVelocityX->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleStartVelocityY, txtParticleVelocityY->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleReflectOnDifferentMaterial, chkParticleReflectOnDifferentMaterial->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleReflectOnBoundary, chkParticleReflectOnBoundary->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleCoefficientOfRestitution, txtParticleCoefficientOfRestitution->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleCustomForceX, txtParticleCustomForceX->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleCustomForceY, txtParticleCustomForceY->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleCustomForceZ, txtParticleCustomForceZ->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleMaximumRelativeError, txtParticleMaximumRelativeError->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleMaximumStep, txtParticleMaximumSteps->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleMaximumNumberOfSteps, txtParticleMaximumNumberOfSteps->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleColorByVelocity, chkParticleColorByVelocity->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleShowPoints, chkParticleShowPoints->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleShowBlendedFaces, chkParticleShowBlendedFaces->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleNumShowParticlesAxi, txtParticleNumShowParticleAxi->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleDragDensity, txtParticleDragDensity->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleDragCoefficient, txtParticleDragCoefficient->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleDragReferenceArea, txtParticleDragReferenceArea->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleP2PElectricForce, chkParticleP2PElectricForce->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ParticleP2PMagneticForce, chkParticleP2PMagneticForce->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleButcherTableType, (ButcherTableType) cmbParticleButcherTableType->itemData(cmbParticleButcherTableType->currentIndex()).toInt());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleIncludeRelativisticCorrection, chkParticleIncludeRelativisticCorrection->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleNumberOfParticles, txtParticleNumberOfParticles->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleStartingRadius, txtParticleStartingRadius->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleMass, txtParticleMass->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleConstant, txtParticleConstant->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleStartX, txtParticlePointX->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleStartY, txtParticlePointY->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleStartVelocityX, txtParticleVelocityX->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleStartVelocityY, txtParticleVelocityY->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleReflectOnDifferentMaterial, chkParticleReflectOnDifferentMaterial->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleReflectOnBoundary, chkParticleReflectOnBoundary->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleCoefficientOfRestitution, txtParticleCoefficientOfRestitution->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleCustomForceX, txtParticleCustomForceX->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleCustomForceY, txtParticleCustomForceY->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleCustomForceZ, txtParticleCustomForceZ->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleMaximumRelativeError, txtParticleMaximumRelativeError->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleMaximumStep, txtParticleMaximumSteps->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleMaximumNumberOfSteps, txtParticleMaximumNumberOfSteps->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleColorByVelocity, chkParticleColorByVelocity->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleShowPoints, chkParticleShowPoints->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleShowBlendedFaces, chkParticleShowBlendedFaces->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleNumShowParticlesAxi, txtParticleNumShowParticleAxi->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleDragDensity, txtParticleDragDensity->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleDragCoefficient, txtParticleDragCoefficient->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleDragReferenceArea, txtParticleDragReferenceArea->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleP2PElectricForce, chkParticleP2PElectricForce->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ParticleP2PMagneticForce, chkParticleP2PMagneticForce->isChecked());
 
     m_sceneViewParticleTracing->processParticleTracing();
 }

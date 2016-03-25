@@ -49,12 +49,15 @@ public slots:
     void showSurfaceIntegral();
 
 public:
-    ResultsView(QWidget *parent, PostprocessorWidget *postprocessorWidget);
+    ResultsView(SceneViewPost2D *post2D);
     ~ResultsView();
 
     QPushButton *btnSelectMarker;
 
 private:
+    SceneViewPost2D *m_post2D;
+    Computation *currentComputation();
+
     Point m_point;
 
     SceneModePostprocessor m_sceneModePostprocessor;
@@ -62,10 +65,7 @@ private:
     QAction *actPoint;
     QTreeWidget *trvWidget;
 
-    QSharedPointer<Computation> m_computation;
-
 private slots:
-    void connectComputation(QSharedPointer<Computation> computation);
     void doContextMenu(const QPoint &pos);
     void doCopy(bool state);
 };

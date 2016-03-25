@@ -80,10 +80,10 @@
 #include "solver/problem_config.h"
 #include "mesh/agros_manifold.h"
 
-MeshGenerator::MeshGenerator(Computation *computation)
+MeshGenerator::MeshGenerator(ProblemBase *problem)
     : QObject(),
       m_triangulation(dealii::Triangulation<2>(dealii::Triangulation<2>::maximum_smoothing, false)),
-      m_computation(computation)
+      m_problem(problem)
 {
 }
 
@@ -213,7 +213,7 @@ void MeshGenerator::moveNodesOnCurvedEdges()
         if (edge.marker == -1)
             continue;
 
-        if (!(m_computation->scene()->faces->at(edge.marker)->angle() > 0.0 && m_computation->scene()->faces->at(edge.marker)->isCurvilinear()))
+        if (!(m_problem->scene()->faces->at(edge.marker)->angle() > 0.0 && m_problem->scene()->faces->at(edge.marker)->isCurvilinear()))
             continue;
 
         // Only boundary now.
@@ -223,15 +223,15 @@ void MeshGenerator::moveNodesOnCurvedEdges()
             if (edge.marker != -1)
             {
                 // curve
-                if (m_computation->scene()->faces->at(edge.marker)->angle() > 0.0 &&
-                        m_computation->scene()->faces->at(edge.marker)->isCurvilinear())
+                if (m_problem->scene()->faces->at(edge.marker)->angle() > 0.0 &&
+                        m_problem->scene()->faces->at(edge.marker)->isCurvilinear())
                 {
                     // Nodes.
                     Point* node[2] = { &nodeList[edge.node[0]], &nodeList[edge.node[1]] };
                     // Center
-                    Point center = m_computation->scene()->faces->at(edge.marker)->center();
+                    Point center = m_problem->scene()->faces->at(edge.marker)->center();
                     // Radius
-                    double radius = m_computation->scene()->faces->at(edge.marker)->radius();
+                    double radius = m_problem->scene()->faces->at(edge.marker)->radius();
 
                     // First node handling
                     double pointAngle1 = atan2(center.y - node[0]->y, center.x - node[0]->x) - M_PI;
@@ -255,7 +255,7 @@ void MeshGenerator::moveNodesOnCurvedEdges()
         if (edge.marker == -1)
             continue;
 
-        if (!(m_computation->scene()->faces->at(edge.marker)->angle() > 0.0 && m_computation->scene()->faces->at(edge.marker)->isCurvilinear()))
+        if (!(m_problem->scene()->faces->at(edge.marker)->angle() > 0.0 && m_problem->scene()->faces->at(edge.marker)->isCurvilinear()))
             continue;
 
         // Boundary has been taken care of.
@@ -266,15 +266,15 @@ void MeshGenerator::moveNodesOnCurvedEdges()
         if (edge.marker != -1)
         {
             // curve
-            if (m_computation->scene()->faces->at(edge.marker)->angle() > 0.0 &&
-                    m_computation->scene()->faces->at(edge.marker)->isCurvilinear())
+            if (m_problem->scene()->faces->at(edge.marker)->angle() > 0.0 &&
+                    m_problem->scene()->faces->at(edge.marker)->isCurvilinear())
             {
                 // Nodes.
                 Point* node[2] = { &nodeList[edge.node[0]], &nodeList[edge.node[1]] };
                 // Center
-                Point center = m_computation->scene()->faces->at(edge.marker)->center();
+                Point center = m_problem->scene()->faces->at(edge.marker)->center();
                 // Radius
-                double radius = m_computation->scene()->faces->at(edge.marker)->radius();
+                double radius = m_problem->scene()->faces->at(edge.marker)->radius();
 
                 // Handle the nodes recursively using moveNode()
                 for (int inode = 0; inode < 2; inode++)
@@ -357,7 +357,7 @@ void MeshGenerator::writeTodealii()
         MeshEdge edge = edgeList[edge_i];
         if (edge.marker != -1)
         {
-            SceneFace* sceneFace = m_computation->scene()->faces->at(edge.marker);
+            SceneFace* sceneFace = m_problem->scene()->faces->at(edge.marker);
             if (sceneFace->angle() > 0.0 && sceneFace->isCurvilinear())
             {
                 double lengthPoints = (sceneFace->nodeEnd()->point()
@@ -398,7 +398,7 @@ void MeshGenerator::writeTodealii()
     for (int element_i = 0; element_i < elementList.count(); element_i++)
     {
         MeshElement element = elementList[element_i];
-        if (element.isUsed && (!m_computation->scene()->labels->at(element.marker)->isHole()))
+        if (element.isUsed && (!m_problem->scene()->labels->at(element.marker)->isHole()))
         {
             dealii::types::manifold_id elementManifoldId = maxEdgeMarker + element_i;
             if (element.isTriangle())
@@ -535,19 +535,14 @@ void MeshGenerator::writeTodealii()
             cell_idx++;
         }
     }
-
-    // save to disk
-    QString fnMesh = QString("%1/%2/mesh_initial.msh").arg(cacheProblemDir()).arg(m_computation->problemDir());
-    std::ofstream ofsMesh(fnMesh.toStdString());
-    boost::archive::binary_oarchive sbMesh(ofsMesh);
-    m_triangulation.save(sbMesh, 0);
 }
 
 bool MeshGenerator::prepare()
 {
     try
     {
-        m_computation->scene()->loopsInfo()->processLoops();
+        m_problem->scene()->cacheGeometryConstraints();
+        m_problem->scene()->loopsInfo()->processPolygonTriangles(true);
     }
     catch (AgrosMeshException& ame)
     {

@@ -35,6 +35,57 @@
 
 #include <QStandardPaths>
 
+#include <tbb/tbb.h>
+tbb::mutex compileExpressionMutex;
+
+static exprtk::parser<double> *m_exprtkParser = nullptr;
+
+bool compileExpression(const QString &exprString, exprtk::expression<double> &expr, QString *error)
+{
+    {
+        tbb::mutex::scoped_lock lock(compileExpressionMutex);
+
+        if (!m_exprtkParser)
+            m_exprtkParser = new exprtk::parser<double>();
+
+        if (error)
+            error->clear();
+
+        // replace "**" with "^"
+        QString str = exprString;
+        str = str.replace("**", "^");
+        // compile expression
+        if (m_exprtkParser->compile(str.toStdString(), expr))
+        {
+            return true;
+        }
+        else
+        {
+            QString str = QObject::tr("exprtk error: %1, expression: %2: ").
+                    arg(QString::fromStdString(m_exprtkParser->error())).
+                    arg(exprString);
+
+            for (int i = 0; i < m_exprtkParser->error_count(); ++i)
+            {
+                exprtk::parser_error::type error = m_exprtkParser->get_error(i);
+
+                str += QObject::tr("error: %1, position: %2, type: [%3], message: %4, expression: %5; ").
+                        arg(i).
+                        arg(error.token.position).
+                        arg(QString::fromStdString(exprtk::parser_error::to_str(error.mode))).
+                        arg(QString::fromStdString(error.diagnostic)).
+                        arg(exprString);
+            }
+
+            // qDebug() << str;
+            if (error)
+                *error = str;
+
+            return false;
+        }
+    }
+}
+
 const QString LANGUAGEROOT = QString("%1/resources%1lang").arg(QDir::separator());
 
 bool almostEqualRelAndAbs(double A, double B, double maxDiff, double maxRelDiff)

@@ -32,13 +32,14 @@
 #include "solver/solutionstore.h"
 #include "solver/problem.h"
 #include "solver/problem_config.h"
-#include "sceneview_post.h"
+
+#include "sceneview_post2d.h"
 #include "postprocessorview.h"
 
 #include <ctemplate/template.h>
 
-ResultsView::ResultsView(QWidget *parent, PostprocessorWidget *postprocessorWidget) : QWidget(parent),
-    m_sceneModePostprocessor(SceneModePostprocessor_Empty)
+ResultsView::ResultsView(SceneViewPost2D *post2D) : QWidget(post2D),
+    m_sceneModePostprocessor(SceneModePostprocessor_Empty), m_post2D(post2D)
 {
     setObjectName("ResultsView");
 
@@ -64,9 +65,6 @@ ResultsView::ResultsView(QWidget *parent, PostprocessorWidget *postprocessorWidg
     layout->setContentsMargins(0, 0, 0, 0);
 
     setLayout(layout);
-
-    // reconnect computation slots
-    connect(postprocessorWidget, SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 ResultsView::~ResultsView()
@@ -75,6 +73,11 @@ ResultsView::~ResultsView()
     settings.setValue("ResultsView/TreeColumnWidth0", trvWidget->columnWidth(0));
     settings.setValue("ResultsView/TreeColumnWidth1", trvWidget->columnWidth(1));
     settings.setValue("ResultsView/TreeColumnWidth2", trvWidget->columnWidth(2));
+}
+
+Computation *ResultsView::currentComputation()
+{
+    return static_cast<Computation *>(m_post2D->problem());
 }
 
 void ResultsView::doContextMenu(const QPoint &pos)
@@ -98,21 +101,6 @@ void ResultsView::doCopy(bool state)
     if (trvWidget->currentItem() && !trvWidget->currentItem()->data(0, Qt::UserRole).isNull())
     {
         QApplication::clipboard()->setText(QString::number(trvWidget->currentItem()->data(0, Qt::UserRole).toDouble()));
-    }
-}
-
-void ResultsView::connectComputation(QSharedPointer<Computation> computation)
-{
-    if (!m_computation.isNull())
-    {
-        connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(doShowResults()));
-    }
-
-    m_computation = computation;
-
-    if (!m_computation.isNull())
-    {
-        connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(doShowResults()));
     }
 }
 
@@ -144,7 +132,7 @@ void ResultsView::showPoint(const Point &point)
 
 void ResultsView::showPoint()
 {
-    if (!(m_computation->isSolved() && m_computation->postDeal()->isProcessed()))
+    if (!(currentComputation()->isSolved() && currentComputation()->postDeal()->isProcessed()))
         return;
 
     trvWidget->setUpdatesEnabled(false);
@@ -159,20 +147,20 @@ void ResultsView::showPoint()
     itemPoint->setFont(0, fnt);
     itemPoint->setIcon(0, iconAlphabet('P', AlphabetColor_Bluegray));
     trvWidget->setItemWidget(itemPoint, 1, new QLabel(QString("<i>t</i> (s)")));
-    itemPoint->setText(2, QString("%1").arg(m_computation->timeStepToTotalTime(m_computation->postDeal()->activeTimeStep()), 0, 'e', 3));
+    itemPoint->setText(2, QString("%1").arg(currentComputation()->timeStepToTotalTime(currentComputation()->postDeal()->activeTimeStep()), 0, 'e', 3));
     itemPoint->setExpanded(true);
 
     QTreeWidgetItem *itemPointX = new QTreeWidgetItem(itemPoint);
     itemPointX->setText(0, "");
-    trvWidget->setItemWidget(itemPointX, 1, new QLabel(QString("<i>%1</i> (m)").arg(m_computation->config()->labelX().toLower())));
+    trvWidget->setItemWidget(itemPointX, 1, new QLabel(QString("<i>%1</i> (m)").arg(currentComputation()->config()->labelX().toLower())));
     itemPointX->setText(2, QString("%1").arg(m_point.x, 0, 'e', 3));
 
     QTreeWidgetItem *itemPointY = new QTreeWidgetItem(itemPoint);
     itemPointY->setText(0, "");
-    trvWidget->setItemWidget(itemPointY, 1, new QLabel(QString("<i>%1</i> (m)").arg(m_computation->config()->labelY().toLower())));
+    trvWidget->setItemWidget(itemPointY, 1, new QLabel(QString("<i>%1</i> (m)").arg(currentComputation()->config()->labelY().toLower())));
     itemPointY->setText(2, QString("%1").arg(m_point.y, 0, 'e', 3));
 
-    foreach (FieldInfo *fieldInfo, m_computation->fieldInfos())
+    foreach (FieldInfo *fieldInfo, currentComputation()->fieldInfos())
     {
         // field
         QTreeWidgetItem *fieldNode = new QTreeWidgetItem(trvWidget);
@@ -181,15 +169,15 @@ void ResultsView::showPoint()
         fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
         fieldNode->setExpanded(true);
 
-        std::shared_ptr<LocalValue> value = fieldInfo->plugin()->localValue(m_computation.data(),
+        std::shared_ptr<LocalValue> value = fieldInfo->plugin()->localValue(currentComputation(),
                                                                             fieldInfo,
-                                                                            m_computation->postDeal()->activeTimeStep(),
-                                                                            m_computation->postDeal()->activeAdaptivityStep(),
+                                                                            currentComputation()->postDeal()->activeTimeStep(),
+                                                                            currentComputation()->postDeal()->activeAdaptivityStep(),
                                                                             m_point);
         QMap<QString, LocalPointValue> values = value->values();
         if (values.size() > 0)
         {
-            foreach (Module::LocalVariable variable, fieldInfo->localPointVariables(m_computation->config()->coordinateType()))
+            foreach (Module::LocalVariable variable, fieldInfo->localPointVariables(currentComputation()->config()->coordinateType()))
             {
                 if (variable.isScalar())
                 {
@@ -215,7 +203,7 @@ void ResultsView::showPoint()
                     itemNodeX->setData(0, Qt::UserRole, values[variable.id()].vector.x);
                     trvWidget->setItemWidget(itemNodeX, 1, new QLabel(QString("%1<sub><i>%2</i></sub> (%3)").
                                                                       arg(variable.shortnameHtml()).
-                                                                      arg(m_computation->config()->labelX().toLower()).
+                                                                      arg(currentComputation()->config()->labelX().toLower()).
                                                                       arg(variable.unitHtml())));
                     itemNodeX->setText(2, QString("%1").arg(values[variable.id()].vector.x, 0, 'e', 3));
 
@@ -224,7 +212,7 @@ void ResultsView::showPoint()
                     itemNodeY->setData(0, Qt::UserRole, values[variable.id()].vector.y);
                     trvWidget->setItemWidget(itemNodeY, 1, new QLabel(QString("%1<sub><i>%2</i></sub> (%3)").
                                                                       arg(variable.shortnameHtml()).
-                                                                      arg(m_computation->config()->labelY().toLower()).
+                                                                      arg(currentComputation()->config()->labelY().toLower()).
                                                                       arg(variable.unitHtml())));
                     itemNodeY->setText(2, QString("%1").arg(values[variable.id()].vector.y, 0, 'e', 3));
                 }
@@ -237,7 +225,7 @@ void ResultsView::showPoint()
 
 void ResultsView::showVolumeIntegral()
 {
-    if (!m_computation->isSolved())
+    if (!currentComputation()->isSolved())
         return;
 
     trvWidget->setUpdatesEnabled(false);
@@ -246,7 +234,7 @@ void ResultsView::showVolumeIntegral()
     QFont fnt = trvWidget->font();
     fnt.setBold(true);
 
-    foreach (FieldInfo *fieldInfo, m_computation->fieldInfos())
+    foreach (FieldInfo *fieldInfo, currentComputation()->fieldInfos())
     {
         // field
         QTreeWidgetItem *fieldNode = new QTreeWidgetItem(trvWidget);
@@ -255,15 +243,15 @@ void ResultsView::showVolumeIntegral()
         fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
         fieldNode->setExpanded(true);
 
-        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->volumeIntegral(m_computation.data(),
+        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->volumeIntegral(currentComputation(),
                                                                                       fieldInfo,
-                                                                                      m_computation->postDeal()->activeTimeStep(),
-                                                                                      m_computation->postDeal()->activeAdaptivityStep());
+                                                                                      currentComputation()->postDeal()->activeTimeStep(),
+                                                                                      currentComputation()->postDeal()->activeAdaptivityStep());
 
         QMap<QString, double> values = integral->values();
         if (values.size() > 0)
         {
-            foreach (Module::Integral integral, fieldInfo->volumeIntegrals(m_computation->config()->coordinateType()))
+            foreach (Module::Integral integral, fieldInfo->volumeIntegrals(currentComputation()->config()->coordinateType()))
             {
                 // integral
                 QTreeWidgetItem *itemNode = new QTreeWidgetItem(fieldNode);
@@ -280,7 +268,7 @@ void ResultsView::showVolumeIntegral()
 
 void ResultsView::showSurfaceIntegral()
 {
-    if (!m_computation->isSolved())
+    if (!currentComputation()->isSolved())
         return;
 
     trvWidget->setUpdatesEnabled(false);
@@ -289,7 +277,7 @@ void ResultsView::showSurfaceIntegral()
     QFont fnt = trvWidget->font();
     fnt.setBold(true);
 
-    foreach (FieldInfo *fieldInfo, m_computation->fieldInfos())
+    foreach (FieldInfo *fieldInfo, currentComputation()->fieldInfos())
     {
         // field
         QTreeWidgetItem *fieldNode = new QTreeWidgetItem(trvWidget);
@@ -299,14 +287,14 @@ void ResultsView::showSurfaceIntegral()
         fieldNode->setExpanded(true);
 
 
-        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->surfaceIntegral(m_computation.data(),
+        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->surfaceIntegral(currentComputation(),
                                                                                        fieldInfo,
-                                                                                       m_computation->postDeal()->activeTimeStep(),
-                                                                                       m_computation->postDeal()->activeAdaptivityStep());
+                                                                                       currentComputation()->postDeal()->activeTimeStep(),
+                                                                                       currentComputation()->postDeal()->activeAdaptivityStep());
         QMap<QString, double> values = integral->values();
         if (values.size() > 0)
         {
-            foreach (Module::Integral integral, fieldInfo->surfaceIntegrals(m_computation->config()->coordinateType()))
+            foreach (Module::Integral integral, fieldInfo->surfaceIntegrals(currentComputation()->config()->coordinateType()))
             {
                 // integral
                 QTreeWidgetItem *itemNode = new QTreeWidgetItem(fieldNode);

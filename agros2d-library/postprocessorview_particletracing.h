@@ -33,7 +33,7 @@ class PostprocessorSceneParticleTracingWidget : public PostprocessorSceneWidget
     Q_OBJECT
 
 public:
-    PostprocessorSceneParticleTracingWidget(PostprocessorWidget *postprocessorWidget, SceneViewParticleTracing *sceneParticleTracing);
+    PostprocessorSceneParticleTracingWidget(PhysicalFieldWidget *fieldWidget, SceneViewParticleTracing *sceneParticleTracing);
 
 private:    
     SceneViewPost2D *m_scenePost2D;

@@ -126,18 +126,6 @@ void MarkerContainer<MarkerType>::doFieldsChanged(ProblemBase *problem)
 }
 
 template <typename MarkerType>
-bool MarkerContainer<MarkerType>::evaluateAllVariables()
-{
-    foreach (MarkerType* marker, data)
-    {
-        if (!marker->evaluateAllVariables())
-            return false;
-    }
-
-    return true;
-}
-
-template <typename MarkerType>
 MarkerType* MarkerContainer<MarkerType>::getNone(const FieldInfo* field)
 {
     if (!noneMarkers.contains(field))

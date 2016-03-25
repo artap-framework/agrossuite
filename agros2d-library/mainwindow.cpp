@@ -56,6 +56,11 @@
 
 #include "util/form_script.h"
 
+#include <boost/config.hpp>
+#include <boost/archive/tmpdir.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(parent)
 {
     setWindowIcon(icon("agros2d"));
@@ -81,6 +86,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     // preprocessor
     problemWidget = new PreprocessorWidget(sceneViewProblem, this);
     connect(Agros2D::problem(), SIGNAL(fieldsChanged()), problemWidget, SLOT(refresh()));
+    connect(Agros2D::problem(), SIGNAL(meshed()), this, SLOT(setControls()));
     // postprocessor
     postprocessorWidget = new PostprocessorWidget();
 
@@ -125,15 +131,12 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 
     // preprocessor
     connect(sceneViewProblem, SIGNAL(sceneGeometryModeChanged(SceneGeometryMode)), problemWidget, SLOT(loadTooltip(SceneGeometryMode)));
-    connect(currentPythonEngine(), SIGNAL(executedScript()), Agros2D::problem()->scene(), SLOT(doInvalidated()));
+    connect(currentPythonEngine(), SIGNAL(executedScript()), Agros2D::problem()->scene(), SLOT(cacheGeometryConstraints()));
     connect(currentPythonEngine(), SIGNAL(executedScript()), Agros2D::problem()->scene()->loopsInfo(), SLOT(processPolygonTriangles()));
     currentPythonEngineAgros()->setSceneViewPreprocessor(sceneViewProblem);
 
     // info
     connect(Agros2D::problem(), SIGNAL(fieldsChanged()), this, SLOT(doFieldsChanged()));
-
-    // reconnect computation slots
-    connect(postprocessorWidget, SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 
     sceneViewProblem->clear();
 
@@ -329,27 +332,6 @@ void MainWindow::doFieldsChanged()
     // add boundaries and materials menu
     mnuProblemAddBoundaryAndMaterial->clear();
     Agros2D::problem()->scene()->addBoundaryAndMaterialMenuItems(mnuProblemAddBoundaryAndMaterial, this);
-}
-
-void MainWindow::connectComputation(QSharedPointer<Computation> computation)
-{
-    if (!m_computation.isNull())
-    {
-        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
-        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-        disconnect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doSolveFinished()));
-        disconnect(m_computation.data(), SIGNAL(solved()), this, SLOT(doSolveFinished()));
-    }
-
-    m_computation = computation;
-
-    if (!m_computation.isNull())
-    {
-        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(setControls()));
-        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
-        connect(m_computation.data(), SIGNAL(meshed()), this, SLOT(doSolveFinished()));
-        connect(m_computation.data(), SIGNAL(solved()), this, SLOT(doSolveFinished()));
-    }
 }
 
 void MainWindow::createMenus()
@@ -738,7 +720,10 @@ void MainWindow::doDocumentOpen(const QString &fileName)
         if (fileInfo.suffix() == "ags" || fileInfo.suffix() == "a2d")
         {
             Agros2D::problem()->readProblemFromFile(fileNameDocument);
-            connectComputation(Agros2D::problem()->currentComputation());
+
+            // connect signals
+            // connect(Agros2D::problem()->currentComputation().data(), SIGNAL(solved()), this, SLOT(setControls()));
+            // connect(Agros2D::problem()->currentComputation().data(), SIGNAL(solvedWithGUI()), postprocessorWidget, SLOT(solvedWithGUI()));
 
             setRecentFiles();
 
@@ -819,7 +804,7 @@ void MainWindow::doDeleteSolutions()
 
     // clear solutions
     foreach (QSharedPointer<Computation> computation, Agros2D::singleton()->computations())
-        computation->clearSolution();    
+        computation->clearSolution();
 
     sceneViewProblem->refresh();
     setControls();
@@ -958,13 +943,13 @@ void MainWindow::doCreateVideo()
     switch (postprocessorWidget->mode())
     {
     case PostprocessorWidgetMode_Mesh:
-        videoDialog = new VideoDialog(postprocessorWidget->sceneViewMesh(), postprocessorWidget->computation().data(), this);
+        videoDialog = new VideoDialog(postprocessorWidget->sceneViewMesh(), postprocessorWidget->currentComputation().data(), this);
         break;
     case PostprocessorWidgetMode_Post2D:
-        videoDialog = new VideoDialog(postprocessorWidget->sceneViewMesh(), postprocessorWidget->computation().data(), this);
+        videoDialog = new VideoDialog(postprocessorWidget->sceneViewMesh(), postprocessorWidget->currentComputation().data(), this);
         break;
     case PostprocessorWidgetMode_Chart:
-        videoDialog = new VideoDialog(postprocessorWidget->sceneViewMesh(), postprocessorWidget->computation().data(), this);
+        videoDialog = new VideoDialog(postprocessorWidget->sceneViewMesh(), postprocessorWidget->currentComputation().data(), this);
         break;
     default:
         break;
@@ -985,42 +970,46 @@ void MainWindow::doCreateVideo()
 }
 
 void MainWindow::doMesh()
-{
-    // create computation from preprocessor
-    QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(false);
-    connectComputation(computation);
-    computation->meshWithGUI();
+{    
+    Agros2D::problem()->meshWithGUI();
 }
 
 void MainWindow::doSolve()
 {
+    // disconnect signals
+    foreach (QSharedPointer<Computation> computation, Agros2D::computations().values())
+    {
+        disconnect(computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
+        disconnect(computation.data(), SIGNAL(solvedWithGUI()), postprocessorWidget, SLOT(solvedWithGUI()));
+    }
+
     // create computation from preprocessor
     QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(false);
-    connectComputation(computation);
+
+    // connect signals
+    connect(computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
+    connect(computation.data(), SIGNAL(solvedWithGUI()), postprocessorWidget, SLOT(solvedWithGUI()));
+
     computation->solveWithGUI();
 }
 
 void MainWindow::doSolveNewComputation()
 {
+    // disconnect signals
+    foreach (QSharedPointer<Computation> computation, Agros2D::computations().values())
+    {
+        disconnect(computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
+        disconnect(computation.data(), SIGNAL(solvedWithGUI()), postprocessorWidget, SLOT(solvedWithGUI()));
+    }
+
     // create computation from preprocessor
     QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
-    connectComputation(computation);
+
+    // connect signals
+    connect(computation.data(), SIGNAL(solved()), this, SLOT(setControls()));
+    connect(computation.data(), SIGNAL(solvedWithGUI()), postprocessorWidget, SLOT(solvedWithGUI()));
+
     computation->solveWithGUI();
-}
-
-void MainWindow::doSolveFinished()
-{
-    if (m_computation->isMeshed() && !currentPythonEngine()->isScriptRunning())
-    {
-        postprocessorWidget->actSceneModeResults->trigger();
-
-        postprocessorWidget->sceneViewMesh()->doZoomBestFit();
-        postprocessorWidget->sceneViewPost2D()->doZoomBestFit();
-        postprocessorWidget->sceneViewPost3D()->doZoomBestFit();
-        postprocessorWidget->sceneViewParticleTracing()->doZoomBestFit();
-
-        postprocessorWidget->updateSettings();
-    }
 }
 
 void MainWindow::doFullScreen()
@@ -1136,6 +1125,7 @@ void MainWindow::setControls()
     scriptEditor->actRunPython->setEnabled(scriptEditor->actSceneModePythonEditor->isChecked());
     scriptEditor->actRunPython->setVisible(scriptEditor->actSceneModePythonEditor->isChecked());
     actMesh->setEnabled(sceneViewProblem->actSceneModeProblem->isChecked());
+    actMesh->setEnabled(false); // TODO: remove
     actMesh->setVisible(sceneViewProblem->actSceneModeProblem->isChecked());
     actSolve->setEnabled(sceneViewProblem->actSceneModeProblem->isChecked());
     actSolve->setVisible(sceneViewProblem->actSceneModeProblem->isChecked());
@@ -1277,9 +1267,6 @@ void MainWindow::setControls()
     menuBar()->addMenu(mnuSettings);
     menuBar()->addMenu(mnuHelp);
 
-    if (!m_computation.isNull())
-        actDocumentExportMeshFile->setEnabled(m_computation->isMeshed());
-
     // postprocessorWidget->updateControls();
 
     setUpdatesEnabled(true);
@@ -1313,31 +1300,40 @@ void MainWindow::doHideControlPanel()
 
 void MainWindow::doDocumentExportMeshFile()
 {
-    if (m_computation->isMeshed())
+    QSettings settings;
+    QString dir = settings.value("General/LastMeshDir").toString();
+
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export mesh file"), dir, tr("Mesh files (*.msh)"));
+    QFileInfo fileInfo(fileName);
+
+    if (!fileName.isEmpty())
     {
-        QSettings settings;
-        QString dir = settings.value("General/LastMeshDir").toString();
+        if (fileInfo.suffix() != "msh") fileName += ".msh";
 
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Export mesh file"), dir, tr("Mesh files (*.msh)"));
-        QFileInfo fileInfo(fileName);
+        // remove existing file
+        if (QFile::exists(fileName + ".msh"))
+            QFile::remove(fileName + ".msh");
 
-        if (!fileName.isEmpty())
+        // create mesh
+        bool isMeshed = Agros2D::problem()->isMeshed();
+        if (Agros2D::problem()->mesh())
         {
-            if (fileInfo.suffix() != "msh") fileName += ".msh";
+            std::ofstream ofsMesh(fileName.toStdString());
+            boost::archive::binary_oarchive sbMesh(ofsMesh);
+            Agros2D::problem()->initialMesh().save(sbMesh, 0);
 
-            // remove existing file
-            if (QFile::exists(fileName + ".msh"))
-                QFile::remove(fileName + ".msh");
+            // if (!isMeshed)
+            // Agros2D::problem()->initialMesh().clear();
 
             // copy file
             QFile::copy(cacheProblemDir() + "/initial.msh", fileName);
             if (fileInfo.absoluteDir() != cacheProblemDir())
                 settings.setValue("General/LastMeshDir", fileInfo.absolutePath());
         }
-    }
-    else
-    {
-        Agros2D::log()->printMessage(tr("Problem"), tr("The problem is not meshed"));
+        else
+        {
+            Agros2D::log()->printMessage(tr("Problem"), tr("The problem is not meshed"));
+        }
     }
 }
 
@@ -1354,7 +1350,7 @@ void MainWindow::doExportVTKGeometry()
     if (!fn.endsWith(".vtk"))
         fn.append(".vtk");
 
-    m_computation->scene()->exportVTKGeometry(fn);
+    Agros2D::problem()->scene()->exportVTKGeometry(fn);
 
     if (!fn.isEmpty())
     {

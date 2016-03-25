@@ -99,10 +99,8 @@ public:
 
     inline bool isProcessPolygonError() { return m_isProcessPolygonError; }
 
-public slots:
-    void processLoops();
+public slots:   
     void processPolygonTriangles(bool force = false);
-
     void clear();
 
 private:
@@ -121,6 +119,8 @@ private:
     QList<int> m_outsideLoops;
 
     QMap<SceneLabel*, QList<Triangle> > m_polygonTriangles;
+
+    void processLoops();
 
     Intersection intersects(Point point, double tangent, SceneFace* edge);
     Intersection intersects(Point point, double tangent, SceneFace* edge, Point& intersection);

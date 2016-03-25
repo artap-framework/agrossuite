@@ -175,23 +175,17 @@ public:
     inline void useProfiler(bool use = true) { m_useProfiler = use; }
     inline bool isProfiler() const { return m_useProfiler; }
 
-    void useTemporaryDict();
-    void useGlobalDict();
-    inline bool isTemporaryDictUsed() { return !m_useGlobalDict; }
-
-    inline PyObject *globalDict() { return m_useGlobalDict ? m_dictGlobal : m_dictTemporary; }
+    inline PyObject *globalDict() { return m_dictGlobal; }
     inline PyObject *localDict() { return globalDict(); } // same as global dict
 
 public slots:
     virtual void abortScript();
 
 protected:
-    PyObject *m_dictTemporary;
     PyObject *m_dictGlobal;
 
     bool m_isScriptRunning;
     bool m_useProfiler;
-    bool m_useGlobalDict;
 
     inline void addFunctions(const QString& code) { m_functions += "\n\n" + code; }
     virtual void addCustomExtensions();

@@ -32,6 +32,10 @@
 
 #include "scene.h"
 
+#include "tbb/tbb.h"
+
+tbb::mutex processMutex;
+
 const static int LOOPS_NON_EXISTING = -100000;
 const static double TOL = 0.001;
 
@@ -528,7 +532,7 @@ void LoopsInfo::processLoops()
         graph.addEdge(startNodeIdx, endNodeIdx, edgeIdx, angle);
     }
 
-    //graph.print();
+    // graph.print();
 
     m_loops.clear();
     for (int i = 0; i < graph.nodes.size(); i++)
@@ -583,7 +587,8 @@ void LoopsInfo::processLoops()
             windingNumbers[QPair<SceneLabel*, int>(label, loopIdx)] = wn;
             int ip = intersectionsParity(label->point(), m_loops[loopIdx]);
             // assert(abs(wn) == ip);
-            if(ip == 1){
+            if (ip == 1)
+            {
                 labelsInsideLoop[loopIdx].push_back(label);
                 if(!loopsContainingLabel.contains(label))
                     loopsContainingLabel[label] = QList<int>();
@@ -841,66 +846,73 @@ void LoopsInfo::processPolygonTriangles(bool force)
     if (!force && currentPythonEngineAgros() && currentPythonEngineAgros()->isScriptRunning())
         return;
 
-    m_polygonTriangles.clear();
-
-    // find loops
-    try
     {
-        processLoops();
+        tbb::mutex::scoped_lock lock(processMutex);
 
-        QList<QList<Point> > polylines;
-        for (int i = 0; i < m_loops.size(); i++)
+        clear();
+
+        // find loops
+        try
         {
-            QList<Point> polyline;
+            processLoops();
 
-            // QList<Point> contour;
-            for (int j = 0; j < m_loops[i].size(); j++)
+            QList<QList<Point> > polylines;
+            for (int i = 0; i < m_loops.size(); i++)
             {
-                SceneFace *edge = m_scene->faces->items().at(m_loops[i][j].edge);
-                if ((edge->nodeStart()->numberOfConnectedEdges() > 0) && (edge->nodeEnd()->numberOfConnectedEdges() > 0))
+                QList<Point> polyline;
+
+                // QList<Point> contour;
+                for (int j = 0; j < m_loops[i].size(); j++)
                 {
-                    if (m_loops[i][j].reverse)
-                        addEdgePoints(&polyline, SceneFace(edge->scene(), edge->nodeStart(), edge->nodeEnd(), Value(m_scene->parentProblem(), edge->angle())), true);
-                    else
-                        addEdgePoints(&polyline, SceneFace(edge->scene(), edge->nodeStart(), edge->nodeEnd(), Value(m_scene->parentProblem(), edge->angle())));
+                    SceneFace *edge = m_scene->faces->items().at(m_loops[i][j].edge);
+                    if ((edge->nodeStart()->numberOfConnectedEdges() > 0) && (edge->nodeEnd()->numberOfConnectedEdges() > 0))
+                    {
+                        if (m_loops[i][j].reverse)
+                            addEdgePoints(&polyline, SceneFace(edge->scene(), edge->nodeStart(), edge->nodeEnd(), Value(nullptr, edge->angle())), true);
+                        else
+                            addEdgePoints(&polyline, SceneFace(edge->scene(), edge->nodeStart(), edge->nodeEnd(), Value(nullptr, edge->angle())));
+                    }
+                }
+
+                polylines.append(polyline);
+            }
+
+            foreach (SceneLabel* label, m_scene->labels->items())
+            {
+                // if (!label->isHole() && loopsInfo.labelToLoops[label].count() > 0)
+                if (m_labelLoops[label].count() > 0)
+                {
+                    // main polyline
+                    QList<Point> polyline = polylines[m_labelLoops[label][0]];
+
+                    // holes
+                    QList<QList<Point> > holes;
+                    for (int j = 1; j < m_labelLoops[label].count(); j++)
+                    {
+                        QList<Point> hole = polylines[m_labelLoops[label][j]];
+                        holes.append(hole);
+                    }
+
+                    if (!polyline.isEmpty())
+                    {
+                        QList<Triangle> triangles = triangulateLabel(polyline, holes);
+                        m_polygonTriangles.insert(label, triangles);
+                    }
                 }
             }
 
-            polylines.append(polyline);
-        }
+            // clear polylines
+            foreach (QList<Point> polyline, polylines)
+                polyline.clear();
+            polylines.clear();
 
-        foreach (SceneLabel* label, m_scene->labels->items())
+            m_isProcessPolygonError = false;
+        }
+        catch (AgrosGeometryException &e)
         {
-            // if (!label->isHole() && loopsInfo.labelToLoops[label].count() > 0)
-            if (m_labelLoops[label].count() > 0)
-            {
-                // main polyline
-                QList<Point> polyline = polylines[m_labelLoops[label][0]];
-
-                // holes
-                QList<QList<Point> > holes;
-                for (int j = 1; j < m_labelLoops[label].count(); j++)
-                {
-                    QList<Point> hole = polylines[m_labelLoops[label][j]];
-                    holes.append(hole);
-                }
-
-                QList<Triangle> triangles = triangulateLabel(polyline, holes);
-                m_polygonTriangles.insert(label, triangles);
-            }
+            // do nothing
+            m_isProcessPolygonError = true;
         }
-
-        // clear polylines
-        foreach (QList<Point> polyline, polylines)
-            polyline.clear();
-        polylines.clear();
-
-        m_isProcessPolygonError = false;
-    }
-    catch (AgrosGeometryException &e)
-    {
-        // do nothing
-        m_isProcessPolygonError = true;
     }
 }
 

@@ -43,40 +43,18 @@
 #include <deal.II/hp/dof_handler.h>
 
 SceneViewMesh::SceneViewMesh(PostprocessorWidget *postprocessorWidget)
-    : SceneViewCommon2D(postprocessorWidget)
+    : SceneViewCommon2D(postprocessorWidget), SceneViewPostInterface(postprocessorWidget), m_postprocessorWidget(postprocessorWidget)
 {
     createActionsMesh();
-
-    // reconnect computation slots
-    connect(postprocessorWidget, SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 SceneViewMesh::~SceneViewMesh()
 {
 }
 
-ProblemBase *SceneViewMesh::problem()
+ProblemBase *SceneViewMesh::problem() const
 {
-    return static_cast<ProblemBase *>(m_computation.data());
-}
-
-void SceneViewMesh::connectComputation(QSharedPointer<Computation> computation)
-{
-    if (!m_computation.isNull())
-    {
-        disconnect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
-    }
-
-    m_computation = computation;
-
-    if (!m_computation.isNull())
-    {
-        connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
-
-        clearGLLists();
-    }
-
-    refresh();
+    return static_cast<ProblemBase *>(m_postprocessorWidget->currentComputation().data());
 }
 
 void SceneViewMesh::createActionsMesh()
@@ -107,10 +85,10 @@ void SceneViewMesh::clearGLLists()
 
 void SceneViewMesh::setControls()
 {
-    if (!m_computation.isNull())
+    if (!m_postprocessorWidget->currentComputation().isNull())
     {
-        actExportVTKMesh->setEnabled(m_computation->isSolved());
-        actExportVTKOrder->setEnabled(m_computation->isSolved());
+        actExportVTKMesh->setEnabled(m_postprocessorWidget->currentComputation()->isSolved());
+        actExportVTKOrder->setEnabled(m_postprocessorWidget->currentComputation()->isSolved());
     }
 }
 
@@ -135,7 +113,7 @@ void SceneViewMesh::exportVTKOrderView(const QString &fileName)
 
 void SceneViewMesh::exportVTK(const QString &fileName, bool exportMeshOnly)
 {
-    if (m_computation->isSolved())
+    if (m_postprocessorWidget->currentComputation()->isSolved())
     {
         QString fn = fileName;
 
@@ -182,7 +160,7 @@ void SceneViewMesh::exportVTK(const QString &fileName, bool exportMeshOnly)
 
 void SceneViewMesh::paintGL()
 {
-    if (!isVisible()) return;
+    if (!isVisible() || m_postprocessorWidget->currentComputation().isNull()) return;
     makeCurrent();
 
     glClearColor(COLORBACKGROUND[0], COLORBACKGROUND[1], COLORBACKGROUND[2], 0);
@@ -194,24 +172,24 @@ void SceneViewMesh::paintGL()
     if (Agros2D::configComputer()->value(Config::Config_ShowGrid).toBool()) paintGrid();
 
     // view
-    if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
+    if (m_postprocessorWidget->currentComputation()->isSolved() && m_postprocessorWidget->currentComputation()->postDeal()->isProcessed())
     {
-        if (m_computation->setting()->value(PostprocessorSetting::ShowOrderView).toBool()) paintOrder();
-        if (m_computation->setting()->value(PostprocessorSetting::ShowSolutionMeshView).toBool()) paintSolutionMesh();
+        // order
+        if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderView).toBool()) paintOrder();
+        // solution mesh
+        if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowSolutionMeshView).toBool()) paintSolutionMesh();
+        // initial mesh
+        if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowInitialMeshView).toBool()) paintInitialMesh();
     }
-
-    // initial mesh
-    if (m_computation->isMeshed() && m_computation->postDeal()->isProcessed())
-        if (m_computation->setting()->value(PostprocessorSetting::ShowInitialMeshView).toBool()) paintInitialMesh();
 
     // geometry
     paintGeometry();
 
-    if (m_computation->isSolved() && m_computation->postDeal()->isProcessed())
+    if (m_postprocessorWidget->currentComputation()->isSolved() && m_postprocessorWidget->currentComputation()->postDeal()->isProcessed())
     {
         // bars
-        if (m_computation->setting()->value(PostprocessorSetting::ShowOrderView).toBool()
-                && m_computation->setting()->value(PostprocessorSetting::ShowOrderColorBar).toBool())
+        if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderView).toBool()
+                && m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderColorBar).toBool())
             paintOrderColorBar();
     }
 
@@ -233,7 +211,7 @@ void SceneViewMesh::paintGeometry()
     loadProjection2d(true);
 
     // edges
-    foreach (SceneFace *edge, m_computation->scene()->faces->items())
+    foreach (SceneFace *edge, m_postprocessorWidget->currentComputation()->scene()->faces->items())
     {
         glColor3d(COLOREDGE[0], COLOREDGE[1], COLOREDGE[2]);
         glLineWidth(EDGEWIDTH);
@@ -260,19 +238,19 @@ void SceneViewMesh::paintGeometry()
 
 void SceneViewMesh::paintInitialMesh()
 {
-    if (!m_computation->isMeshed()) return;
+    if (!m_postprocessorWidget->currentComputation()->isMeshed()) return;
 
     if (m_arrayInitialMesh.isEmpty())
     {
-        if (m_computation->initialMesh().n_active_cells() == 0)
+        if (m_postprocessorWidget->currentComputation()->initialMesh().n_active_cells() == 0)
             return;
 
         // vertices
-        const std::vector<dealii::Point<2> > &vertices = m_computation->initialMesh().get_vertices();
+        const std::vector<dealii::Point<2> > &vertices = m_postprocessorWidget->currentComputation()->initialMesh().get_vertices();
 
         // faces
-        dealii::Triangulation<2>::active_face_iterator ti = m_computation->initialMesh().begin_face();
-        while (ti != m_computation->initialMesh().end_face())
+        dealii::Triangulation<2>::active_face_iterator ti = m_postprocessorWidget->currentComputation()->initialMesh().begin_face();
+        while (ti != m_postprocessorWidget->currentComputation()->initialMesh().end_face())
         {
             m_arrayInitialMesh.append(QVector2D(vertices[ti->vertex_index(0)][0], vertices[ti->vertex_index(0)][1]));
             m_arrayInitialMesh.append(QVector2D(vertices[ti->vertex_index(1)][0], vertices[ti->vertex_index(1)][1]));
@@ -299,11 +277,11 @@ void SceneViewMesh::paintInitialMesh()
 
 void SceneViewMesh::paintSolutionMesh()
 {
-    if (!m_computation->isSolved()) return;
+    if (!m_postprocessorWidget->currentComputation()->isSolved()) return;
 
     if (m_arraySolutionMesh.isEmpty())
     {
-        MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
+        MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
         for (int level = 0; level <= ma.doFHandler().get_tria().n_levels() - 1; level++)
         {
             dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
@@ -344,11 +322,11 @@ void SceneViewMesh::paintSolutionMesh()
 
 void SceneViewMesh::paintOrder()
 {
-    if (!m_computation->isSolved()) return;
+    if (!m_postprocessorWidget->currentComputation()->isSolved()) return;
 
     if (m_arrayOrderMesh.isEmpty())
     {
-        MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
+        MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
 
         for (int level = 0; level <= ma.doFHandler().get_tria().n_levels() - 1; level++)
         {
@@ -406,7 +384,7 @@ void SceneViewMesh::paintOrder()
     }
 
     // paint labels
-    if (m_computation->setting()->value(PostprocessorSetting::ShowOrderLabel).toBool())
+    if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderLabel).toBool())
     {
         loadProjectionViewPort();
 
@@ -414,7 +392,7 @@ void SceneViewMesh::paintOrder()
         glScaled(2.0 / width(), 2.0 / height(), 1.0);
         glTranslated(-width() / 2.0, -height() / 2.0, 0.0);
 
-        MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
+        MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
 
         for (int level = 0; level <= ma.doFHandler().get_tria().n_levels() - 1; level++)
         {
@@ -451,11 +429,11 @@ void SceneViewMesh::paintOrder()
 
 void SceneViewMesh::paintOrderColorBar()
 {
-    if (!m_computation->isSolved() || !m_computation->setting()->value(PostprocessorSetting::ShowOrderColorBar).toBool()) return;
+    if (!m_postprocessorWidget->currentComputation()->isSolved() || !m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderColorBar).toBool()) return;
 
     int minDegree = 100;
     int maxDegree = 1;
-    MultiArray ma = m_computation->postDeal()->activeMultiSolutionArray();
+    MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
 
     int level = 0;
     dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end();

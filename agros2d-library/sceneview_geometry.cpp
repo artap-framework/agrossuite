@@ -58,7 +58,7 @@ SceneViewPreprocessor::~SceneViewPreprocessor()
 {
 }
 
-ProblemBase *SceneViewPreprocessor::problem()
+ProblemBase *SceneViewPreprocessor::problem() const
 {
     return static_cast<ProblemBase *>(Agros2D::problem());
 }

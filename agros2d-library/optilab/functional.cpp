@@ -50,36 +50,26 @@ void Functional::save(QJsonObject &object)
 
 bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
 {
-    // parameters
-    QString commandPre = "";
-    StringToDoubleMap parameters = computation->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
-    foreach (QString key, parameters.keys())
-    {
-        if (commandPre.isEmpty())
-            commandPre += QString("%1 = %2").arg(key).arg(parameters[key]);
-        else
-            commandPre += QString("; %1 = %2").arg(key).arg(parameters[key]);
-    }
+    // symbol table
+    exprtk::symbol_table<double> parametersSymbolTable = computation->config()->parametersSymbolTable();
 
     // results
     StringToDoubleMap results = computation->results()->items();
     foreach (QString key, results.keys())
+        parametersSymbolTable.add_constant(key.toStdString(), results[key]);
+
+    exprtk::expression<double> expr;
+    expr.register_symbol_table(parametersSymbolTable);
+
+    QString error;
+    if (compileExpression(m_expression, expr, &error))
     {
-        if (commandPre.isEmpty())
-            commandPre += QString("%1 = %2").arg(key).arg(results[key]);
-        else
-            commandPre += QString("; %1 = %2").arg(key).arg(results[key]);
+        computation->results()->setResult(m_name, expr.value());
+        return true;
     }
-
-    double result = 0.0;
-    currentPythonEngine()->useTemporaryDict();
-    bool successfulRun = currentPythonEngine()->runExpression(m_expression, &result, commandPre);
-    currentPythonEngine()->useGlobalDict();
-
-    //qDebug() << result;
-
-    if (successfulRun)
-        computation->results()->setResult(m_name, result);
-
-    return successfulRun;
+    else
+    {
+        qDebug() << "Functional::evaluateExpression" << error;
+        return false;
+    }
 }

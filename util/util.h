@@ -45,6 +45,8 @@
 #include <locale.h>
 #include <stdlib.h>
 
+#include "../util/exprtk.hpp"
+
 // qt5
 #ifdef Q_OS_WIN
 #define Q_WS_WIN
@@ -106,6 +108,8 @@
 #define rad2deg(radians) (radians*180.0/M_PI)
 
 using namespace std;
+
+AGROS_UTIL_API bool compileExpression(const QString &exprString, exprtk::expression<double> &expr, QString *error = nullptr);
 
 AGROS_UTIL_API bool almostEqualRelAndAbs(double A, double B, double maxDiff, double maxRelDiff);
 

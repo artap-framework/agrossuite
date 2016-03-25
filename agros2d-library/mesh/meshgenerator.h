@@ -43,7 +43,7 @@ class AGROS_LIBRARY_API MeshGenerator : public QObject
     Q_OBJECT
 
 public:
-    MeshGenerator(Computation *computation);
+    MeshGenerator(ProblemBase *problem);
 
     virtual ~MeshGenerator();
 
@@ -224,8 +224,8 @@ protected:
 
     dealii::Triangulation<2> m_triangulation;
 
-    // computation
-    Computation *m_computation;
+    // problem
+    ProblemBase *m_problem;
 };
 
 #endif //MESHGENERATOR_H

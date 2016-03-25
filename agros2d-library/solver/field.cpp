@@ -175,13 +175,6 @@ void FieldInfo::clear()
     m_labelsPolynomialOrder.clear();
 }
 
-void FieldInfo::refineMesh(dealii::Triangulation<2> *mesh)
-{
-    // distort random
-    // dealii::GridTools::distort_random<2>(0.2, *mesh);
-    mesh->refine_global(value(FieldInfo::SpaceNumberOfRefinements).toInt());
-}
-
 // xml module
 // name
 QString FieldInfo::name() const
@@ -720,7 +713,7 @@ void FieldInfo::load(XMLProblem::field_config *configxsd)
 
 void FieldInfo::save(XMLProblem::field_config *configxsd)
 {
-    foreach (Type key, m_setting.keys())
+    foreach (Type key, m_settingDefault.keys())
     {
         if (m_settingDefault[key].type() == QVariant::StringList)
             configxsd->field_item().push_back(XMLProblem::field_item(typeToStringKey(key).toStdString(), m_setting[key].toStringList().join("|").toStdString()));

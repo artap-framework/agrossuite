@@ -26,6 +26,7 @@
 class Scene;
 class SceneViewPost2D;
 class FieldInfo;
+class Computation;
 
 class SceneMarkerSelectDialog : public QDialog
 {
@@ -50,6 +51,8 @@ private:
 
     QListWidget *lstSurface;
     QListWidget *lstVolume;
+
+    Computation *computation() const;
 };
 
 #endif // SCENEMARKERSELECTDIALOG_H

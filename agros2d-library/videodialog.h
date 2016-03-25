@@ -24,7 +24,7 @@
 
 class PostDeal;
 class LineEditDouble;
-class SceneViewPostInterface;
+class SceneViewCommon;
 class FieldInfo;
 class Computation;
 
@@ -33,13 +33,13 @@ class VideoDialog : public QDialog
     Q_OBJECT
 
 public:
-    VideoDialog(SceneViewPostInterface *sceneViewInterface, Computation *computation, QWidget *parent = 0);
+    VideoDialog(SceneViewCommon *sceneView, Computation *computation, QWidget *parent = 0);
     ~VideoDialog();
 
     void showDialog();
 
 private:
-    SceneViewPostInterface *m_sceneViewInterface;
+    SceneViewCommon *m_sceneView;
     Computation *m_computation;
 
     int m_timeSteps;

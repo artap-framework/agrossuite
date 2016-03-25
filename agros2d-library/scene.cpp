@@ -135,29 +135,23 @@ void NewMarkerAction::doTriggered()
 
 // ************************************************************************************************************************
 
-Scene::Scene(ProblemBase *problem) : m_problem(problem), m_loopsInfo(NULL)
+Scene::Scene(ProblemBase *problem) : m_problem(problem), m_stopInvalidating(false),
+    m_loopsInfo(new LoopsInfo(this)), m_undoStack(new QUndoStack(this)),
+    boundaries(new SceneBoundaryContainer()), materials(new SceneMaterialContainer()),
+    nodes(new SceneNodeContainer()), faces(new SceneFaceContainer()), labels(new SceneLabelContainer())
+
 {
     createActions();
 
-    m_undoStack = new QUndoStack(this);
-
-    connect(this, SIGNAL(invalidated()), this, SLOT(doInvalidated()));
-
-    boundaries = new SceneBoundaryContainer();
-    materials = new SceneMaterialContainer();
-
-    nodes = new SceneNodeContainer();
-    faces = new SceneFaceContainer();
-    labels = new SceneLabelContainer();
-
-    m_loopsInfo = new LoopsInfo(this);
-
-    m_stopInvalidating = false;
-    // clear();
+    connect(this, SIGNAL(invalidated()), this, SLOT(cacheGeometryConstraints()));
 }
 
 Scene::~Scene()
 {
+    // delete loop info
+    m_loopsInfo->clear();
+    delete m_loopsInfo;
+
     clear();
 
     // markers (delete None markers)
@@ -171,8 +165,6 @@ Scene::~Scene()
     delete nodes;
     delete faces;
     delete labels;
-
-    delete m_loopsInfo;
 
     // clear actions
     foreach (QAction *action, actNewBoundaries.values())
@@ -221,6 +213,9 @@ void Scene::copy(const Scene *origin)
 
     stopInvalidating(false);
     blockSignals(false);
+
+    // force recache constraint
+    cacheGeometryConstraints();
 
     emit invalidated();
 }
@@ -456,6 +451,10 @@ void Scene::clear()
 
     m_undoStack->clear();
 
+    // loops
+    if (m_loopsInfo)
+        m_loopsInfo->clear();
+
     // geometry
     nodes->clear();
     faces->clear();
@@ -464,10 +463,6 @@ void Scene::clear()
     // markers
     boundaries->clear();
     materials->clear();
-
-    // loops
-    if (m_loopsInfo)
-        m_loopsInfo->clear();
 
     // none edge
     boundaries->add(new SceneBoundaryNone(this));
@@ -866,39 +861,10 @@ void Scene::transformScale(const Point &point, double scaleFactor, bool copy, bo
     transform(tr("Scale"), SceneTransformMode_Scale, point, 0.0, scaleFactor, copy, withMarkers);
 }
 
-void Scene::doInvalidated()
+void Scene::cacheGeometryConstraints()
 {
     actNewEdge->setEnabled((nodes->length() >= 2) && (boundaries->length() >= 1));
     actNewLabel->setEnabled(materials->length() >= 1);
-
-    // evaluate point values
-    foreach (SceneNode *node, nodes->items())
-    {
-        // setPointValue(node->pointValue());
-        node->pointValue().x().evaluateAtTime(0.0);
-        node->pointValue().y().evaluateAtTime(0.0);
-    }
-    foreach (SceneFace *edge, faces->items())
-    {
-        edge->setAngleValue(edge->angleValue());
-        // edge->angleValue().evaluateAtTime(0.0);
-    }
-    foreach (SceneLabel *label, labels->items())
-    {
-        // label->setPointValue(label->pointValue());
-        label->pointValue().x().evaluateAtTime(0.0);
-        label->pointValue().y().evaluateAtTime(0.0);
-    }
-
-    // evaluate materials and boundaries
-    foreach (SceneMaterial* material, materials->items())
-        foreach (uint key, material->values().keys())
-            material->evaluate(key, 0.0);
-
-    // evaluate boundaries
-    foreach (SceneBoundary* boundary, boundaries->items())
-        foreach (uint key, boundary->values().keys())
-            boundary->evaluate(key, 0.0);
 
     findLyingEdgeNodes();
     findNumberOfConnectedNodeEdges();

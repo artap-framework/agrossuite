@@ -24,7 +24,7 @@
 
 #include "sceneview_post.h"
 
-class SceneViewCommon2D : public SceneViewPostInterface
+class SceneViewCommon2D : public SceneViewCommon
 {
     Q_OBJECT
 

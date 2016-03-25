@@ -78,7 +78,7 @@ protected:
 
     virtual void contextMenuEvent(QContextMenuEvent *event);
 
-    virtual ProblemBase *problem();
+    virtual ProblemBase *problem() const;
 
     void selectRegion(const Point &start, const Point &end);
 

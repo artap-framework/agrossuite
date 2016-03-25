@@ -27,7 +27,7 @@
 
 class PostprocessorWidget;
 
-class SceneViewPreprocessorChart : public SceneViewCommon2D
+class SceneViewSimpleGeometry : public SceneViewCommon2D
 {
     Q_OBJECT
 
@@ -36,8 +36,8 @@ public slots:
     virtual void refresh();
 
 public:
-    SceneViewPreprocessorChart(QWidget *parent, PostprocessorWidget *postprocessorWidget);
-    ~SceneViewPreprocessorChart();
+    SceneViewSimpleGeometry(QWidget *parent, PhysicalFieldWidget *fieldWidget);
+    ~SceneViewSimpleGeometry();
 
     void setChartLine(ChartLine chartLine);
 
@@ -45,17 +45,14 @@ protected:
     void paintGL();
     virtual void doZoomRegion(const Point &start, const Point &end);
 
-    virtual ProblemBase *problem();
+    virtual ProblemBase *problem() const;
 
     void paintChartLine();
     void paintGeometry(); // paint nodes, edges and labels
 
 private:
+    PhysicalFieldWidget *m_fieldWidget;
     ChartLine m_chartLine;
-    QSharedPointer<Computation> m_computation;
-
-private slots:
-    void connectComputation(QSharedPointer<Computation> computation);
 };
 
 #endif // SCENEVIEWGEOMETRYCHART_H

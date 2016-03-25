@@ -17,6 +17,8 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
+#include <Python.h>
+
 #include "value.h"
 
 #include "util/global.h"
@@ -25,20 +27,24 @@
 #include "solver/problem_config.h"
 #include "parser/lex.h"
 
-#include <tbb/tbb.h>
-tbb::mutex runValueExpressionMutex;
+static const int LOCAL_SYMBOL_TABLE = 0;
+static const int PARAMETERS_SYMBOL_TABLE = 1;
 
+tbb::mutex numberEvaluateMutex;
+tbb::mutex numberSetMutex;
+tbb::mutex numberAtPointMutex;
+tbb::mutex numberAtTimeMutex;
+tbb::mutex numberAtTimeAndPointMutex;
 
 Value::Value()
     : m_problem(nullptr),
       m_number(0),
       m_text("0"),
-      m_isEvaluated(true),
+      m_isEvaluated(false),
       m_isTimeDependent(false),
       m_isCoordinateDependent(false),
-      m_time(0.0),
-      m_point(Point()),
-      m_table(DataTable())
+      m_table(DataTable()),
+      m_exprtkExpr(nullptr)
 {
 }
 
@@ -50,12 +56,9 @@ Value::Value(ProblemBase *problem,
       m_isEvaluated(true),
       m_isTimeDependent(false),
       m_isCoordinateDependent(false),
-      m_time(0.0),
-      m_point(Point()),
-      m_table(DataTable())
+      m_table(DataTable()),
+      m_exprtkExpr(nullptr)
 {
-    // if (!problem)
-    //     qDebug() << "Value 1 problem == null";
 }
 
 Value::Value(ProblemBase *problem,
@@ -67,17 +70,12 @@ Value::Value(ProblemBase *problem,
       m_isEvaluated(false),
       m_isTimeDependent(false),
       m_isCoordinateDependent(false),
-      m_time(0.0),
-      m_point(Point()),
-      m_table(table)
+      m_table(table),
+      m_exprtkExpr(nullptr)
 {
-    // if (!problem)
-    //     qDebug() << "Value 2 problem == null";
-
     if (!value.isEmpty())
     {
         parseFromString(value);
-        evaluateAndSave();
     }
 }
 
@@ -94,13 +92,9 @@ Value::Value(ProblemBase *problem,
       m_isEvaluated(false),
       m_isTimeDependent(false),
       m_isCoordinateDependent(false),
-      m_time(0.0),
-      m_point(Point()),
-      m_table(DataTable())
+      m_table(DataTable()),
+      m_exprtkExpr(nullptr)
 {
-    // if (!problem)
-    //     qDebug() << "Value 3 problem == null";
-
     assert(x.size() == y.size());
 
     parseFromString(value.isEmpty() ? "0" : value);
@@ -108,55 +102,36 @@ Value::Value(ProblemBase *problem,
     m_table.setType(type);
     m_table.setSplineFirstDerivatives(splineFirstDerivatives);
     m_table.setExtrapolateConstant(extrapolateConstant);
-
-    evaluateAndSave();
 }
 
 Value::Value(const Value &origin)
 {
     *this = origin;
-
-    if (!origin.isEvaluated())
-        evaluateAndSave();
 }
 
 Value& Value::operator =(const Value &origin)
 {
     m_number = origin.m_number;
     m_text = origin.m_text;
-    m_time = origin.m_time;
-    m_point = origin.m_point;
+    m_isEvaluated = origin.m_isEvaluated;
     m_isTimeDependent = origin.m_isTimeDependent;
     m_isCoordinateDependent = origin.m_isCoordinateDependent;
-    m_isEvaluated = origin.m_isEvaluated;
     m_table = origin.m_table;
     m_problem = origin.m_problem;
-
-    if (!origin.isEvaluated())
-        evaluateAndSave();
+    m_exprtkExpr = origin.m_exprtkExpr ? new exprtk::expression<double>(*origin.m_exprtkExpr) : nullptr;
 
     return *this;
 }
 
 Value::~Value()
 {
+    delete m_exprtkExpr;
     m_table.clear();
 }
 
-bool Value::isNumber()
+bool Value::isNumber() const
 {
-    bool isInt = false;
-    text().toInt(&isInt);
-    if (isInt)
-        return true;
-
-    bool isDouble = false;
-    text().toDouble(&isDouble);
-
-    if (isDouble)
-        return true;
-
-    return false;
+    return (m_exprtkExpr);
 }
 
 bool Value::hasTable() const
@@ -164,80 +139,110 @@ bool Value::hasTable() const
     return (!m_table.isEmpty());
 }
 
-bool Value::evaluateAtPoint(const Point &point)
-{
-    m_point = point;
-    return evaluateAndSave();
-}
-
-bool Value::evaluateAtTime(double time)
-{   
-    m_time = time;
-    return evaluateAndSave();
-}
-
-bool Value::evaluateAtTimeAndPoint(double time, const Point &point)
-{
-    m_time = time;
-    m_point = point;
-    return evaluateAndSave();
-}
-
 void Value::setNumber(double value)
 {
     setText(QString::number(value));
 }
 
+bool Value::isEvaluated() const
+{
+    // try evaluation
+    double value = number();
+
+    return m_isEvaluated;
+}
+
 double Value::number() const
 {
-    // assert(m_isEvaluated);
-    return m_number;
+    if (!m_exprtkExpr)
+    {
+        // qDebug() << "Value::number()" << m_number;
+        return m_number;
+    }
+
+    if (m_problem)
+    {
+        {
+            tbb::mutex::scoped_lock lock(numberEvaluateMutex);
+
+            if (!(m_exprtkExpr->get_symbol_table(PARAMETERS_SYMBOL_TABLE) == m_problem->config()->parametersSymbolTable()))
+            {
+                // replace parameters symbol table
+                exprtk::symbol_table<double> parametersSymbolTable = m_problem->config()->parametersSymbolTable();
+                m_exprtkExpr->get_symbol_table(PARAMETERS_SYMBOL_TABLE) = parametersSymbolTable;
+
+                // compile expression
+                if (compileExpression(m_text, *m_exprtkExpr, &m_error))
+                {
+                    m_isEvaluated = true;
+                }
+                else
+                {
+                    m_isEvaluated = false;
+                    qDebug() << "Value::number()" << m_error;
+                }
+            }
+        }
+    }
+
+    // qDebug() << "m_exprtkExpr->value() - problem" << m_exprtkExpr->value();
+    return m_exprtkExpr->value();
 }
 
 double Value::numberAtPoint(const Point &point) const
 {
-    // speed up
-    if (point == m_point)
+    if (!isCoordinateDependent())
         return number();
 
-    double result;
+    {
+        tbb::mutex::scoped_lock lock(numberAtPointMutex);
 
-    // force evaluate
-    evaluate(0, point, result);
+        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") = point.x;
+        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") = point.y;
+        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("r") = point.x;
+        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("z") = point.y;
 
-    return result;
+        compileExpression(m_text, *m_exprtkExpr);
+        return number();
+    }
 }
 
 double Value::numberAtTime(double time) const
 {
-    // speed up
-    if (time == m_time)
+    if (!isTimeDependent())
         return number();
 
-    double result;
+    {
+        tbb::mutex::scoped_lock lock(numberAtTimeMutex);
 
-    // force evaluate
-    evaluate(time, Point(), result);
+        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") = time;
 
-    return result;
+        compileExpression(m_text, *m_exprtkExpr);
+        return number();
+    }
 }
 
-double Value::numberAtTimeAndPoint(double time, const Point &point) const
+double Value::numberAtTimeAndPoint(const double time, const Point &point) const
 {
-    // speed up
-    if ((time == m_time) && (point == m_point))
+    if (!isTimeDependent() && !isCoordinateDependent())
         return number();
 
-    double result;
+    {
+        tbb::mutex::scoped_lock lock(numberAtTimeAndPointMutex);
 
-    // force evaluate
-    evaluate(time, point, result);
+        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") = time;
+        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") = point.x;
+        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") = point.y;
+        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("r") = point.x;
+        m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("z") = point.y;
 
-    return result;
+        compileExpression(m_text, *m_exprtkExpr);
+        return number();
+    }
 }
 
 double Value::numberFromTable(double key) const
-{    
+{
     if (hasTable())
         return m_table.value(key);
     else
@@ -254,11 +259,77 @@ double Value::derivativeFromTable(double key) const
 
 void Value::setText(const QString &str)
 {
-    m_isEvaluated = false;
-    m_text = str;
+    // speed up - int number
+    bool isInt = false;
+    double numInt = str.toInt(&isInt);
+    if (isInt)
+    {
+        m_number = numInt;
+        m_text = str;
+        delete m_exprtkExpr;
+        m_isEvaluated = true;
 
-    lexicalAnalysis();
-    evaluateAndSave();
+        return;
+    }
+
+    // speed up - double number
+    bool isDouble = false;
+    double numDouble = str.toDouble(&isDouble);
+    if (isDouble)
+    {
+        m_number = numDouble;
+        m_text = str;
+        delete m_exprtkExpr;
+        m_isEvaluated = true;
+
+        return;
+    }
+
+    if (m_text != str)
+    {
+        m_text = str;
+        lexicalAnalysis();
+
+        {
+            tbb::mutex::scoped_lock lock(numberSetMutex);
+
+            // expression
+            if (!m_exprtkExpr)
+            {
+                m_exprtkExpr = new exprtk::expression<double>();
+
+                // symbol table
+                exprtk::symbol_table<double> localSymbolTable;
+                localSymbolTable.create_variable("x");
+                localSymbolTable.create_variable("y");
+                localSymbolTable.create_variable("r");
+                localSymbolTable.create_variable("z");
+                localSymbolTable.create_variable("time");
+                m_exprtkExpr->register_symbol_table(localSymbolTable);
+
+                // problem
+                if (m_problem)
+                {
+                    exprtk::symbol_table<double> parametersSymbolTable = m_problem->config()->parametersSymbolTable();
+                    m_exprtkExpr->register_symbol_table(parametersSymbolTable);
+                }
+            }
+
+            // compile expression
+            if (compileExpression(m_text, *m_exprtkExpr, &m_error))
+            {
+                m_isEvaluated = true;
+            }
+            else
+            {
+                m_isEvaluated = false;
+                qDebug() << "Value::setText" << m_error;
+                return;
+            }
+        }
+    }
+
+    m_isEvaluated = true;
 }
 
 QString Value::toString() const
@@ -275,7 +346,7 @@ void Value::parseFromString(const QString &str)
     {
         // string and table
         QStringList lst = str.split(";");
-        this->setText(lst.at(0));
+        setText(lst.at(0));
 
         if (lst.size() > 2)
         {
@@ -292,101 +363,8 @@ void Value::parseFromString(const QString &str)
     else
     {
         // just string
-        this->setText(str);
+        setText(str);
     }
-}
-
-bool Value::evaluate(double time, const Point &point, double& result) const
-{
-    return evaluateExpression(m_text, time, point, result);
-}
-
-bool Value::evaluateAndSave()
-{
-    m_isEvaluated = false;
-    m_isEvaluated = evaluateExpression(m_text, m_time, m_point, m_number);
-    return m_isEvaluated;
-}
-
-bool Value::evaluateExpression(const QString &expression, double time, const Point &point, double &evaluationResult) const
-{
-    // speed up - int number
-    bool isInt = false;
-    double numInt = expression.toInt(&isInt);
-    if (isInt)
-    {
-        evaluationResult = numInt;
-        return true;
-    }
-
-    // speed up - double number
-    bool isDouble = false;
-    double numDouble = expression.toDouble(&isDouble);
-    if (isDouble)
-    {
-        evaluationResult = numDouble;
-        return true;
-    }
-
-    bool signalBlocked = currentPythonEngineAgros()->signalsBlocked();
-    currentPythonEngineAgros()->blockSignals(true);
-
-    QString commandPre;
-    if (m_isCoordinateDependent && !m_isTimeDependent)
-    {
-        commandPre = QString("x = %1; y = %2; r = %1; z = %2").arg(point.x).arg(point.y);
-    }
-    else if (m_isTimeDependent && !m_isCoordinateDependent)
-    {
-        commandPre = QString("time = %1").arg(time);
-    }
-    else if (m_isCoordinateDependent && m_isTimeDependent)
-    {
-        commandPre = QString("time = %1; x = %2; y = %3; r = %2; z = %3").arg(time).arg(point.x).arg(point.y);
-    }
-
-    // problem
-    if (m_problem)
-    {
-        StringToDoubleMap parameters = m_problem->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
-
-        foreach (QString key, parameters.keys())
-        {
-            if (commandPre.isEmpty())
-                commandPre += QString("%1 = %2").arg(key).arg(parameters[key]);
-            else
-                commandPre += QString("; %1 = %2").arg(key).arg(parameters[key]);
-        }
-    }
-
-    bool successfulRun = false;
-
-    {
-        tbb::mutex::scoped_lock lock(runValueExpressionMutex);
-
-        // temporary dict
-        currentPythonEngineAgros()->useTemporaryDict();
-
-        // eval expression
-        successfulRun = currentPythonEngineAgros()->runExpression(expression,
-                                                                  &evaluationResult,
-                                                                  commandPre);
-
-        if (!successfulRun)
-        {
-            qDebug() << successfulRun;
-            ErrorResult result = currentPythonEngine()->parseError();
-            Agros2D::log()->printError(QObject::tr("Value expression"), result.error());
-        }
-
-        // global dict
-        currentPythonEngineAgros()->useGlobalDict();
-    }
-
-    if (!signalBlocked)
-        currentPythonEngineAgros()->blockSignals(false);
-
-    return successfulRun;
 }
 
 void Value::lexicalAnalysis()

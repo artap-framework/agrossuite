@@ -31,7 +31,7 @@ class PostprocessorSceneMeshWidget : public PostprocessorSceneWidget
     Q_OBJECT
 
 public:
-    PostprocessorSceneMeshWidget(PostprocessorWidget *postprocessorWidget, SceneViewMesh *sceneMesh);
+    PostprocessorSceneMeshWidget(PhysicalFieldWidget *fieldWidget, SceneViewMesh *sceneMesh);
 
 private:    
     SceneViewMesh *m_sceneMesh;

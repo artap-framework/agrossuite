@@ -31,8 +31,8 @@
 
 #include "gui/lineeditdouble.h"
 
-VideoDialog::VideoDialog(SceneViewPostInterface *sceneViewInterface, Computation *computation, QWidget *parent)
-    : QDialog(parent), m_sceneViewInterface(sceneViewInterface), m_computation(computation)
+VideoDialog::VideoDialog(SceneViewCommon *sceneView, Computation *computation, QWidget *parent)
+    : QDialog(parent), m_sceneView(sceneView), m_computation(computation)
 {
     setModal(true);
     setWindowTitle(tr("Video"));
@@ -277,7 +277,7 @@ void VideoDialog::setTransientStep(int transientStep)
     m_computation->postDeal()->refresh();
 
     if (chkSaveImages->isChecked())
-        m_sceneViewInterface->saveImageToFile(tempProblemDir() + QString("/video/video_%1.png").arg(QString("0000000" + QString::number(transientStep)).right(8)));
+        m_sceneView->saveImageToFile(tempProblemDir() + QString("/video/video_%1.png").arg(QString("0000000" + QString::number(transientStep)).right(8)));
 
     sliderTransientAnimate->setValue(transientStep);
 
@@ -329,7 +329,7 @@ void VideoDialog::setAdaptiveStep(int adaptiveStep)
     lblAdaptiveStep->setText(QString("%1 / %2").arg(adaptiveStep).arg(m_adaptiveSteps));
 
     if (chkSaveImages->isChecked())
-        m_sceneViewInterface->saveImageToFile(tempProblemDir() + QString("/video/video_%1.png").arg(QString("0000000" + QString::number(adaptiveStep)).right(8)));
+        m_sceneView->saveImageToFile(tempProblemDir() + QString("/video/video_%1.png").arg(QString("0000000" + QString::number(adaptiveStep)).right(8)));
 
     QApplication::processEvents();
 }

@@ -416,8 +416,6 @@ private:
     QMap<QString, QList<Module::DialogRow> > m_groups;
 };
 
-AGROS_LIBRARY_API void updateTimeFunctions(Computation *computation, double time);
-
 // available modules
 AGROS_LIBRARY_API QMap<QString, QString> availableModules();
 

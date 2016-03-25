@@ -62,19 +62,19 @@ PostprocessorWidget::PostprocessorWidget()
     connect(m_fieldWidget, SIGNAL(fieldChanged()), this, SLOT(refresh()));
 
     m_sceneViewMesh = new SceneViewMesh(this);
-    m_meshWidget = new PostprocessorSceneMeshWidget(this, m_sceneViewMesh);
+    m_meshWidget = new PostprocessorSceneMeshWidget(m_fieldWidget, m_sceneViewMesh);
 
     m_sceneViewPost2D = new SceneViewPost2D(this);
-    m_post2DWidget = new PostprocessorScenePost2DWidget(this, m_sceneViewPost2D);
+    m_post2DWidget = new PostprocessorScenePost2DWidget(m_fieldWidget, m_sceneViewPost2D);
 
     m_sceneViewPost3D = new SceneViewPost3D(this);
-    m_post3DWidget = new PostprocessorScenePost3DWidget(this, m_sceneViewPost3D);
+    m_post3DWidget = new PostprocessorScenePost3DWidget(m_fieldWidget, m_sceneViewPost3D);
 
     m_sceneViewChart = new SceneViewChart(this);
-    m_chartWidget = new PostprocessorSceneChartWidget(this, m_sceneViewChart);
+    m_chartWidget = new PostprocessorSceneChartWidget(m_fieldWidget, m_sceneViewChart);
 
     m_sceneViewParticleTracing = new SceneViewParticleTracing(this);
-    m_particleTracingWidget = new PostprocessorSceneParticleTracingWidget(this, m_sceneViewParticleTracing);
+    m_particleTracingWidget = new PostprocessorSceneParticleTracingWidget(m_fieldWidget, m_sceneViewParticleTracing);
 
     createControls();
 }
@@ -83,7 +83,7 @@ void PostprocessorWidget::createControls()
 {    
     // dialog buttons
     btnApply = new QPushButton(tr("Apply"));
-    connect(btnApply, SIGNAL(clicked()), SLOT(updateSettings()));
+    connect(btnApply, SIGNAL(clicked()), SLOT(apply()));
 
     tabWidget = new QTabWidget();
     tabWidget->addTab(m_meshWidget, tr("Mesh"));
@@ -102,49 +102,57 @@ void PostprocessorWidget::createControls()
     setLayout(layoutMain);
 }
 
-void PostprocessorWidget::updateSettings()
+void PostprocessorWidget::solvedWithGUI()
 {
-    // update field widget
-    m_fieldWidget->updateControls();
+    // clear commputation
+    m_currentComputation.clear();
 
-    // PostprocessorSceneWidget *widget = qobject_cast<PostprocessorSceneWidget>(tabWidget->currentWidget());
-    // widget->save();
-
-    // save settings
-    if (tabWidget->currentWidget() == m_meshWidget)
-    {
-        m_meshWidget->save();
-    }
-    else if (tabWidget->currentWidget() == m_post2DWidget)
-    {
-        m_post2DWidget->save();
-    }
-    else if (tabWidget->currentWidget() == m_post3DWidget)
-    {
-        m_post3DWidget->save();
-    }
-    else if (tabWidget->currentWidget() == m_chartWidget)
-    {
-        m_chartWidget->save();
-    }
-    else if (tabWidget->currentWidget() == m_particleTracingWidget)
-    {
-        m_particleTracingWidget->save();
-    }
-
-    // refresh view
     refresh();
 
-    // refresh view
-    m_computation->postDeal()->refresh();
+    actSceneModeResults->trigger();
 
-    emit changed();
+    m_sceneViewMesh->doZoomBestFit();
+    m_sceneViewPost2D->doZoomBestFit();
+    m_sceneViewPost3D->doZoomBestFit();
+    m_sceneViewParticleTracing->doZoomBestFit();
+}
+
+void PostprocessorWidget::apply()
+{
+    if (m_currentComputation->isSolved())
+    {
+        // save settings
+        if (tabWidget->currentWidget() == m_meshWidget)
+            m_meshWidget->save();
+        else if (tabWidget->currentWidget() == m_post2DWidget)
+            m_post2DWidget->save();
+        else if (tabWidget->currentWidget() == m_post3DWidget)
+            m_post3DWidget->save();
+        else if (tabWidget->currentWidget() == m_chartWidget)
+            m_chartWidget->save();
+        else if (tabWidget->currentWidget() == m_particleTracingWidget)
+            m_particleTracingWidget->save();
+
+        // refresh view
+        m_currentComputation->postDeal()->setActiveViewField(m_fieldWidget->selectedField());
+        m_currentComputation->postDeal()->setActiveTimeStep(m_fieldWidget->selectedTimeStep());
+        m_currentComputation->postDeal()->setActiveAdaptivityStep(m_fieldWidget->selectedAdaptivityStep());
+        m_currentComputation->postDeal()->refresh();
+
+        // refresh view
+        m_sceneViewMesh->refresh();
+        m_sceneViewPost2D->refresh();
+        m_sceneViewPost3D->refresh();
+        m_sceneViewChart->refresh();
+        m_sceneViewParticleTracing->refresh();
+
+        emit changed();
+    }
 }
 
 void PostprocessorWidget::refresh()
 {
-    if (currentPythonEngine()->isScriptRunning())
-        return;
+    if (currentPythonEngine()->isScriptRunning()) return;
 
     // enable widget
     bool enabled = false;
@@ -160,28 +168,18 @@ void PostprocessorWidget::refresh()
 
     // reset computations
     if (Agros2D::computations().isEmpty())
-    {
-        if (!m_computation.isNull())
-        {
-            m_computation = QSharedPointer<Computation>(nullptr);
-            // connect computation
-            emit connectComputation(m_computation);
-        }
-
-        return;
-    }
+        m_currentComputation.clear();
 
     // update field widget
     m_fieldWidget->updateControls();
 
     // set current computation
-    if (m_computation != m_fieldWidget->selectedComputation())
+    bool computationChanged = m_currentComputation != m_fieldWidget->selectedComputation();
+    if (computationChanged)
     {
-        m_computation = m_fieldWidget->selectedComputation();
-        // connect computation
-        emit connectComputation(m_computation);
+        m_currentComputation = m_fieldWidget->selectedComputation();
 
-        if (!m_computation.isNull())
+        if (!m_currentComputation.isNull())
         {
             // refresh widgets
             m_meshWidget->refresh();
@@ -191,10 +189,10 @@ void PostprocessorWidget::refresh()
             m_particleTracingWidget->refresh();
 
             // default widget
-            if (m_computation->isMeshed() && !m_computation->isSolved())
-                tabWidget->setCurrentWidget(m_meshWidget);
-            else if (m_computation->isSolved())
-                tabWidget->setCurrentWidget(m_post2DWidget);
+            tabWidget->setCurrentWidget(m_post2DWidget);
+
+            // clear post view
+            m_currentComputation->postDeal()->clear();
 
             // refresh views
             m_sceneViewMesh->setControls();
@@ -202,17 +200,17 @@ void PostprocessorWidget::refresh()
             m_sceneViewPost3D->setControls();
             m_sceneViewParticleTracing->setControls();
             m_sceneViewChart->refresh();
+
+            tabWidget->setTabEnabled(0, m_currentComputation->isSolved());
+            tabWidget->setTabEnabled(1, m_currentComputation->isSolved());
+            tabWidget->setTabEnabled(2, m_currentComputation->isSolved());
+            tabWidget->setTabEnabled(3, m_currentComputation->isSolved());
+            tabWidget->setTabEnabled(4, m_currentComputation->isSolved());
         }
     }
 
-    if (m_computation.isNull())
+    if (m_currentComputation.isNull())
         return;
-
-    tabWidget->setTabEnabled(0, m_computation->isMeshed());
-    tabWidget->setTabEnabled(1, m_computation->isSolved());
-    tabWidget->setTabEnabled(2, m_computation->isSolved());
-    tabWidget->setTabEnabled(3, m_computation->isSolved());
-    tabWidget->setTabEnabled(4, m_computation->isSolved());
 
     m_meshWidget->load();
     m_post2DWidget->load();
@@ -220,12 +218,30 @@ void PostprocessorWidget::refresh()
     m_chartWidget->load();
     m_particleTracingWidget->load();
 
-    if (m_computation->isSolved())
-    {
-        m_computation->postDeal()->setActiveViewField(m_fieldWidget->selectedField());
-        m_computation->postDeal()->setActiveTimeStep(m_fieldWidget->selectedTimeStep());
-        m_computation->postDeal()->setActiveAdaptivityStep(m_fieldWidget->selectedAdaptivityStep());
-    }
+    if (computationChanged)
+        apply();
+}
+
+void PostprocessorWidget::clearedComputation()
+{
+    m_currentComputation.clear();
+    refresh();
+}
+
+void PostprocessorWidget::processed()
+{
+    // refresh widgets
+    m_meshWidget->refresh();
+    m_post2DWidget->refresh();
+    m_post3DWidget->refresh();
+    m_chartWidget->refresh();
+    m_particleTracingWidget->refresh();
+
+    m_sceneViewMesh->refresh();
+    m_sceneViewPost2D->refresh();
+    m_sceneViewPost3D->refresh();
+    m_sceneViewChart->refresh();
+    m_sceneViewParticleTracing->refresh();
 }
 
 PostprocessorWidgetMode PostprocessorWidget::mode()
@@ -244,8 +260,8 @@ PostprocessorWidgetMode PostprocessorWidget::mode()
         assert(0);
 }
 
-PostprocessorSceneWidget::PostprocessorSceneWidget(PostprocessorWidget *postprocessorWidget)
-    : QWidget(postprocessorWidget), m_postprocessorWidget(postprocessorWidget)
+PostprocessorSceneWidget::PostprocessorSceneWidget(PhysicalFieldWidget *fieldWidget)
+    : QWidget(fieldWidget), m_fieldWidget(fieldWidget)
 {
-    connect(postprocessorWidget->fieldWidget(), SIGNAL(fieldChanged()), this, SLOT(refresh()));
+    connect(fieldWidget, SIGNAL(fieldChanged()), this, SLOT(refresh()));
 }

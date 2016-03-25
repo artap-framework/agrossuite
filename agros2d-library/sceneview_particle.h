@@ -25,12 +25,13 @@
 
 class PostprocessorWidget;
 
-class SceneViewParticleTracing : public SceneViewCommon3D
+class SceneViewParticleTracing : public SceneViewCommon3D, public SceneViewPostInterface
 {
     Q_OBJECT
 
 public slots:
     virtual void clear();
+    virtual void refresh();
     void processParticleTracing();
 
 public:
@@ -50,7 +51,7 @@ protected:
     virtual void paintGL();
     virtual void resizeGL(int w, int h);
 
-    virtual ProblemBase *problem();
+    virtual ProblemBase *problem() const;
 
     void paintGeometryOutline();
     void paintGeometrySurface(bool blend = false);
@@ -58,6 +59,8 @@ protected:
     void paintParticleTracingColorBar(double min, double max);
 
 private:
+    PostprocessorWidget *m_postprocessorWidget;
+
     int m_listParticleTracing;
 
     void createActionsParticleTracing();
@@ -75,11 +78,8 @@ private:
     inline bool particleTracingIsPrepared() { return !m_positionsList.isEmpty(); }
 
 private slots:
-    virtual void refresh();
     virtual void clearGLLists();
     void clearParticleLists();
-
-    void connectComputation(QSharedPointer<Computation> computation);
 };
 
 #endif // SCENEVIEWPARTICLETRACING_H

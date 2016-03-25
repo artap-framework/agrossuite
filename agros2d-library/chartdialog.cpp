@@ -41,7 +41,7 @@
 #include <QSvgRenderer>
 #include "qcustomplot/qcustomplot.h"
 
-SceneViewChart::SceneViewChart(PostprocessorWidget *postprocessorWidget) : QWidget(postprocessorWidget)
+SceneViewChart::SceneViewChart(PostprocessorWidget *postprocessorWidget) : QWidget(postprocessorWidget), m_postprocessorWidget(postprocessorWidget)
 {
     QPen chartPen;
     chartPen.setColor(QColor(129, 17, 19));
@@ -69,9 +69,6 @@ SceneViewChart::SceneViewChart(PostprocessorWidget *postprocessorWidget) : QWidg
     setLayout(layoutMain);
 
     refresh();
-
-    // reconnect computation slots
-    connect(postprocessorWidget, SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
 void SceneViewChart::chartMouseMoved(QMouseEvent *event)
@@ -85,20 +82,20 @@ void SceneViewChart::chartMouseMoved(QMouseEvent *event)
 
 void SceneViewChart::refresh()
 {
-    if (!(m_computation && m_computation->postDeal()->activeViewField()))
+    if (!(m_postprocessorWidget->currentComputation() && m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()))
         return;
 
-    if (m_computation->setting()->value(PostprocessorSetting::ChartVariable).toString().isEmpty())
+    if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartVariable).toString().isEmpty())
         return;
 
-    Module::LocalVariable physicFieldVariable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),
-                                                                                                            m_computation->setting()->value(PostprocessorSetting::ChartVariable).toString());
+    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localVariable(m_postprocessorWidget->currentComputation()->config()->coordinateType(),
+                                                                                                                                   m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartVariable).toString());
 
     emit labelCenter(physicFieldVariable.name());
 
-    if ((ChartMode) m_computation->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Geometry)
+    if ((ChartMode) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Geometry)
         plotGeometry();
-    else if ((ChartMode) m_computation->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
+    else if ((ChartMode) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
         plotTime();
 
     // rescale axis
@@ -128,27 +125,12 @@ void SceneViewChart::refresh()
     }
 }
 
-void SceneViewChart::connectComputation(QSharedPointer<Computation> computation)
-{
-    if (!m_computation.isNull())
-    {
-        disconnect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
-    }
-
-    m_computation = computation;
-
-    if (!m_computation.isNull())
-    {
-        connect(m_computation.data()->postDeal(), SIGNAL(processed()), this, SLOT(refresh()));
-    }
-}
-
 QVector<double> SceneViewChart::horizontalAxisValues(ChartLine *chartLine)
 {
     QList<Point> points = chartLine->getPoints();
     QVector<double> xval;
 
-    switch ((ChartAxisType) m_computation->setting()->value(PostprocessorSetting::ChartHorizontalAxis).toInt())
+    switch ((ChartAxisType) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartHorizontalAxis).toInt())
     {
     case ChartAxis_Length:
     {
@@ -182,29 +164,29 @@ QVector<double> SceneViewChart::horizontalAxisValues(ChartLine *chartLine)
 
 void SceneViewChart::plotGeometry()
 {
-    if (m_computation->setting()->value(PostprocessorSetting::ChartVariable).toString().isEmpty())
+    if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartVariable).toString().isEmpty())
         return;
 
     // variable
-    Module::LocalVariable physicFieldVariable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),
-                                                                                                            m_computation->setting()->value(PostprocessorSetting::ChartVariable).toString());
+    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localVariable(m_postprocessorWidget->currentComputation()->config()->coordinateType(),
+                                                                                                                                   m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartVariable).toString());
 
     // variable component
-    PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ChartVariableComp).toInt();
+    PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartVariableComp).toInt();
     if (physicFieldVariableComp == PhysicFieldVariableComp_Undefined) return;
 
     // chart
     QString text;
-    switch ((ChartAxisType) m_computation->setting()->value(PostprocessorSetting::ChartHorizontalAxis).toInt())
+    switch ((ChartAxisType) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartHorizontalAxis).toInt())
     {
     case ChartAxis_Length:
         text = tr("Length (m)");
         break;
     case ChartAxis_X:
-        text = m_computation->config()->labelX() + " (m)";
+        text = m_postprocessorWidget->currentComputation()->config()->labelX() + " (m)";
         break;
     case ChartAxis_Y:
-        text = m_computation->config()->labelY() + " (m)";
+        text = m_postprocessorWidget->currentComputation()->config()->labelY() + " (m)";
         break;
     default:
         assert(0);
@@ -216,27 +198,27 @@ void SceneViewChart::plotGeometry()
                              arg(physicFieldVariable.unit()));
 
     // values
-    ChartLine chartLine(Point(m_computation->setting()->value(PostprocessorSetting::ChartStartX).toDouble(),
-                              m_computation->setting()->value(PostprocessorSetting::ChartStartY).toDouble()),
-                        Point(m_computation->setting()->value(PostprocessorSetting::ChartEndX).toDouble(),
-                              m_computation->setting()->value(PostprocessorSetting::ChartEndY).toDouble()),
-                        m_computation->setting()->value(PostprocessorSetting::ChartHorizontalAxisPoints).toInt());
+    ChartLine chartLine(Point(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartStartX).toDouble(),
+                              m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartStartY).toDouble()),
+                        Point(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartEndX).toDouble(),
+                              m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartEndY).toDouble()),
+                        m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartHorizontalAxisPoints).toInt());
 
     QList<Point> points = chartLine.getPoints();
     QVector<double> xval = horizontalAxisValues(&chartLine);
     QVector<double> yval;
 
-    foreach (Module::LocalVariable variable, m_computation->postDeal()->activeViewField()->localPointVariables(m_computation->config()->coordinateType()))
+    foreach (Module::LocalVariable variable, m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localPointVariables(m_postprocessorWidget->currentComputation()->config()->coordinateType()))
     {
         if (physicFieldVariable.id() != variable.id()) continue;
 
         foreach (Point point, points)
         {
-            std::shared_ptr<LocalValue> localValue = m_computation->postDeal()->activeViewField()->plugin()->localValue(m_computation.data(),
-                                                                                                                        m_computation->postDeal()->activeViewField(),
-                                                                                                                        m_computation->postDeal()->activeTimeStep(),
-                                                                                                                        m_computation->postDeal()->activeAdaptivityStep(),
-                                                                                                                        point);
+            std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->plugin()->localValue(m_postprocessorWidget->currentComputation().data(),
+                                                                                                                                               m_postprocessorWidget->currentComputation()->postDeal()->activeViewField(),
+                                                                                                                                               m_postprocessorWidget->currentComputation()->postDeal()->activeTimeStep(),
+                                                                                                                                               m_postprocessorWidget->currentComputation()->postDeal()->activeAdaptivityStep(),
+                                                                                                                                               point);
             QMap<QString, LocalPointValue> values = localValue->values();
 
             if (variable.isScalar())
@@ -258,7 +240,7 @@ void SceneViewChart::plotGeometry()
     assert(xval.count() == yval.count());
 
     // reverse x axis
-    if (m_computation->setting()->value(PostprocessorSetting::ChartHorizontalAxisReverse).toBool())
+    if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartHorizontalAxisReverse).toBool())
     {
         for (int i = 0; i < points.length() / 2; i++)
         {
@@ -274,19 +256,19 @@ void SceneViewChart::plotGeometry()
 
 void SceneViewChart::plotTime()
 {
-    if (m_computation->setting()->value(PostprocessorSetting::ChartVariable).toString().isEmpty())
+    if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartVariable).toString().isEmpty())
         return;
 
     // variable
-    Module::LocalVariable physicFieldVariable = m_computation->postDeal()->activeViewField()->localVariable(m_computation->config()->coordinateType(),
-                                                                                                            m_computation->setting()->value(PostprocessorSetting::ChartVariable).toString());
+    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localVariable(m_postprocessorWidget->currentComputation()->config()->coordinateType(),
+                                                                                                                                   m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartVariable).toString());
 
     // variable comp
-    PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ChartVariableComp).toInt();
+    PhysicFieldVariableComp physicFieldVariableComp = (PhysicFieldVariableComp) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartVariableComp).toInt();
     if (physicFieldVariableComp == PhysicFieldVariableComp_Undefined) return;
 
     // time levels
-    QList<double> times = m_computation->timeStepTimes();
+    QList<double> times = m_postprocessorWidget->currentComputation()->timeStepTimes();
 
     // chart
     m_chart->xAxis->setLabel(tr("time (s)"));
@@ -300,26 +282,26 @@ void SceneViewChart::plotTime()
 
     for (int step = 0; step < times.count(); step++)
     {
-        foreach (Module::LocalVariable variable, m_computation->postDeal()->activeViewField()->localPointVariables(m_computation->config()->coordinateType()))
+        foreach (Module::LocalVariable variable, m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localPointVariables(m_postprocessorWidget->currentComputation()->config()->coordinateType()))
         {
             if (physicFieldVariable.id() != variable.id()) continue;
 
-            int adaptiveStep = m_computation->solutionStore()->lastAdaptiveStep(m_computation->postDeal()->activeViewField(), step);
-            FieldSolutionID fsid(m_computation->postDeal()->activeViewField()->fieldId(), step, adaptiveStep);
-            bool stepIsAvailable = m_computation->solutionStore()->contains(fsid);
+            int adaptiveStep = m_postprocessorWidget->currentComputation()->solutionStore()->lastAdaptiveStep(m_postprocessorWidget->currentComputation()->postDeal()->activeViewField(), step);
+            FieldSolutionID fsid(m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->fieldId(), step, adaptiveStep);
+            bool stepIsAvailable = m_postprocessorWidget->currentComputation()->solutionStore()->contains(fsid);
 
             if (stepIsAvailable)
             {
                 // change time level
                 xval.append(times.at(step));
 
-                Point point(m_computation->setting()->value(PostprocessorSetting::ChartTimeX).toDouble(),
-                            m_computation->setting()->value(PostprocessorSetting::ChartTimeY).toDouble());
-                std::shared_ptr<LocalValue> localValue = m_computation->postDeal()->activeViewField()->plugin()->localValue(m_computation.data(),
-                                                                                                                            m_computation->postDeal()->activeViewField(),
-                                                                                                                            step,
-                                                                                                                            adaptiveStep,
-                                                                                                                            point);
+                Point point(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartTimeX).toDouble(),
+                            m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartTimeY).toDouble());
+                std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->plugin()->localValue(m_postprocessorWidget->currentComputation().data(),
+                                                                                                                                                   m_postprocessorWidget->currentComputation()->postDeal()->activeViewField(),
+                                                                                                                                                   step,
+                                                                                                                                                   adaptiveStep,
+                                                                                                                                                   point);
                 QMap<QString, LocalPointValue> values = localValue->values();
 
                 if (variable.isScalar())
@@ -397,19 +379,19 @@ void SceneViewChart::doExportData()
     QTextStream out(&file);
 
     QMap<QString, QList<double> > table;
-    if ((ChartMode) m_computation->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Geometry)
+    if ((ChartMode) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Geometry)
     {
-        ChartLine chartLine(Point(m_computation->setting()->value(PostprocessorSetting::ChartStartX).toDouble(),
-                                  m_computation->setting()->value(PostprocessorSetting::ChartStartY).toDouble()),
-                            Point(m_computation->setting()->value(PostprocessorSetting::ChartEndX).toDouble(),
-                                  m_computation->setting()->value(PostprocessorSetting::ChartEndY).toDouble()),
-                            m_computation->setting()->value(PostprocessorSetting::ChartHorizontalAxisPoints).toInt());
+        ChartLine chartLine(Point(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartStartX).toDouble(),
+                                  m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartStartY).toDouble()),
+                            Point(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartEndX).toDouble(),
+                                  m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartEndY).toDouble()),
+                            m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartHorizontalAxisPoints).toInt());
 
         foreach (Point point, chartLine.getPoints())
         {
             QMap<QString, double> data = getData(point,
-                                                 m_computation->postDeal()->activeTimeStep(),
-                                                 m_computation->postDeal()->activeAdaptivityStep());
+                                                 m_postprocessorWidget->currentComputation()->postDeal()->activeTimeStep(),
+                                                 m_postprocessorWidget->currentComputation()->postDeal()->activeAdaptivityStep());
             foreach (QString key, data.keys())
             {
                 QList<double> *values = &table.operator [](key);
@@ -417,16 +399,16 @@ void SceneViewChart::doExportData()
             }
         }
     }
-    else if ((ChartMode) m_computation->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
+    else if ((ChartMode) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
     {
-        Point point(m_computation->setting()->value(PostprocessorSetting::ChartTimeX).toDouble(),
-                    m_computation->setting()->value(PostprocessorSetting::ChartTimeY).toDouble());
-        QList<double> times = m_computation->timeStepTimes();
-        foreach (int timeStep, m_computation->timeStepLengths())
+        Point point(m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartTimeX).toDouble(),
+                    m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ChartTimeY).toDouble());
+        QList<double> times = m_postprocessorWidget->currentComputation()->timeStepTimes();
+        foreach (int timeStep, m_postprocessorWidget->currentComputation()->timeStepLengths())
         {
             QMap<QString, double> data = getData(point,
                                                  timeStep,
-                                                 m_computation->solutionStore()->lastAdaptiveStep(m_computation->postDeal()->activeViewField(), timeStep));
+                                                 m_postprocessorWidget->currentComputation()->solutionStore()->lastAdaptiveStep(m_postprocessorWidget->currentComputation()->postDeal()->activeViewField(), timeStep));
             foreach (QString key, data.keys())
             {
                 QList<double> *values = &table.operator [](key);
@@ -463,7 +445,7 @@ QStringList SceneViewChart::headers()
     QStringList head;
     head << "x" << "y" << "t";
 
-    foreach (Module::LocalVariable variable, m_computation->postDeal()->activeViewField()->localPointVariables(m_computation->config()->coordinateType()))
+    foreach (Module::LocalVariable variable, m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localPointVariables(m_postprocessorWidget->currentComputation()->config()->coordinateType()))
     {
         if (variable.isScalar())
         {
@@ -473,8 +455,8 @@ QStringList SceneViewChart::headers()
         else
         {
             // vector variable
-            head.append(variable.shortname() + m_computation->config()->labelX().toLower());
-            head.append(variable.shortname() + m_computation->config()->labelY().toLower());
+            head.append(variable.shortname() + m_postprocessorWidget->currentComputation()->config()->labelX().toLower());
+            head.append(variable.shortname() + m_postprocessorWidget->currentComputation()->config()->labelY().toLower());
             head.append(variable.shortname());
         }
     }
@@ -485,17 +467,17 @@ QStringList SceneViewChart::headers()
 QMap<QString, double> SceneViewChart::getData(Point point, int timeStep, int adaptivityStep)
 {
     QMap<QString, double> table;
-    table.insert(m_computation->config()->labelX(), point.x);
-    table.insert(m_computation->config()->labelY(), point.y);
-    table.insert("t", m_computation->timeStepToTotalTime(m_computation->postDeal()->activeTimeStep()));
+    table.insert(m_postprocessorWidget->currentComputation()->config()->labelX(), point.x);
+    table.insert(m_postprocessorWidget->currentComputation()->config()->labelY(), point.y);
+    table.insert("t", m_postprocessorWidget->currentComputation()->timeStepToTotalTime(m_postprocessorWidget->currentComputation()->postDeal()->activeTimeStep()));
 
-    foreach (Module::LocalVariable variable, m_computation->postDeal()->activeViewField()->localPointVariables(m_computation->config()->coordinateType()))
+    foreach (Module::LocalVariable variable, m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->localPointVariables(m_postprocessorWidget->currentComputation()->config()->coordinateType()))
     {
-        std::shared_ptr<LocalValue> localValue = m_computation->postDeal()->activeViewField()->plugin()->localValue(m_computation.data(),
-                                                                                                                    m_computation->postDeal()->activeViewField(),
-                                                                                                                    timeStep,
-                                                                                                                    adaptivityStep,
-                                                                                                                    point);
+        std::shared_ptr<LocalValue> localValue = m_postprocessorWidget->currentComputation()->postDeal()->activeViewField()->plugin()->localValue(m_postprocessorWidget->currentComputation().data(),
+                                                                                                                                           m_postprocessorWidget->currentComputation()->postDeal()->activeViewField(),
+                                                                                                                                           timeStep,
+                                                                                                                                           adaptivityStep,
+                                                                                                                                           point);
         QMap<QString, LocalPointValue> values = localValue->values();
 
         if (variable.isScalar())

@@ -32,7 +32,7 @@ class PostprocessorScenePost3DWidget : public PostprocessorSceneWidget
     Q_OBJECT
 
 public:
-    PostprocessorScenePost3DWidget(PostprocessorWidget *postprocessorWidget, SceneViewPost3D *scenePost3D);
+    PostprocessorScenePost3DWidget(PhysicalFieldWidget *fieldWidget, SceneViewPost3D *scenePost3D);
 
 private:    
     SceneViewPost3D *m_scenePost3D;

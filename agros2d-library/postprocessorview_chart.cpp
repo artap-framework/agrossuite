@@ -67,8 +67,8 @@ QList<Point> ChartLine::getPoints()
 
 // **************************************************************************************************
 
-PostprocessorSceneChartWidget::PostprocessorSceneChartWidget(PostprocessorWidget *postprocessorWidget, SceneViewChart *sceneChart)
-    : PostprocessorSceneWidget(postprocessorWidget), m_sceneChart(sceneChart)
+PostprocessorSceneChartWidget::PostprocessorSceneChartWidget(PhysicalFieldWidget *fieldWidget, SceneViewChart *sceneChart)
+    : PostprocessorSceneWidget(fieldWidget), m_sceneChart(sceneChart)
 {
     setWindowIcon(icon("chart"));
     setObjectName("PostprocessorChartWidget");
@@ -92,7 +92,7 @@ void PostprocessorSceneChartWidget::createControls()
     layoutVariable->addWidget(cmbFieldVariableComp, 1, 1);
 
     // viewer
-    geometryViewer = new SceneViewPreprocessorChart(this, m_postprocessorWidget);
+    geometryViewer = new SceneViewSimpleGeometry(this, m_fieldWidget);
     geometryViewer->setMinimumHeight(100);
     
     btnSaveImage = new QPushButton();
@@ -248,10 +248,10 @@ void PostprocessorSceneChartWidget::createControls()
 
 void PostprocessorSceneChartWidget::doFieldVariable(int index)
 {
-    if (!(index >= 0 && m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+    if (!(index >= 0 && m_fieldWidget->selectedComputation() && m_fieldWidget->selectedField()))
         return;
 
-    Module::LocalVariable physicFieldVariable = m_postprocessorWidget->fieldWidget()->selectedField()->localVariable(m_postprocessorWidget->computation()->config()->coordinateType(), cmbFieldVariable->itemData(index).toString());
+    Module::LocalVariable physicFieldVariable = m_fieldWidget->selectedField()->localVariable(m_fieldWidget->selectedComputation()->config()->coordinateType(), cmbFieldVariable->itemData(index).toString());
 
     cmbFieldVariableComp->clear();
     if (physicFieldVariable.isScalar())
@@ -261,8 +261,8 @@ void PostprocessorSceneChartWidget::doFieldVariable(int index)
     else
     {
         cmbFieldVariableComp->addItem(tr("Magnitude"), PhysicFieldVariableComp_Magnitude);
-        cmbFieldVariableComp->addItem(m_postprocessorWidget->computation()->config()->labelX(), PhysicFieldVariableComp_X);
-        cmbFieldVariableComp->addItem(m_postprocessorWidget->computation()->config()->labelY(), PhysicFieldVariableComp_Y);
+        cmbFieldVariableComp->addItem(m_fieldWidget->selectedComputation()->config()->labelX(), PhysicFieldVariableComp_X);
+        cmbFieldVariableComp->addItem(m_fieldWidget->selectedComputation()->config()->labelY(), PhysicFieldVariableComp_Y);
     }
 
     if (cmbFieldVariableComp->currentIndex() == -1)
@@ -294,23 +294,23 @@ void PostprocessorSceneChartWidget::createChartLine()
 
 void PostprocessorSceneChartWidget::refresh()
 {
-    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+    if (!(m_fieldWidget->selectedComputation() && m_fieldWidget && m_fieldWidget->selectedField()))
         return;
 
-    fillComboBoxScalarVariable(m_postprocessorWidget->computation()->config()->coordinateType(), m_postprocessorWidget->fieldWidget()->selectedField(), cmbFieldVariable);
+    fillComboBoxScalarVariable(m_fieldWidget->selectedComputation()->config()->coordinateType(), m_fieldWidget->selectedField(), cmbFieldVariable);
     doFieldVariable(cmbFieldVariable->currentIndex());
 
     // correct labels
-    lblStartX->setText(m_postprocessorWidget->computation()->config()->labelX() + ":");
-    lblStartY->setText(m_postprocessorWidget->computation()->config()->labelY() + ":");
-    lblEndX->setText(m_postprocessorWidget->computation()->config()->labelX() + ":");
-    lblEndY->setText(m_postprocessorWidget->computation()->config()->labelY() + ":");
-    lblPointX->setText(m_postprocessorWidget->computation()->config()->labelX() + ":");
-    lblPointY->setText(m_postprocessorWidget->computation()->config()->labelY() + ":");
-    radHorizontalAxisX->setText(m_postprocessorWidget->computation()->config()->labelX());
-    radHorizontalAxisY->setText(m_postprocessorWidget->computation()->config()->labelY());
+    lblStartX->setText(m_fieldWidget->selectedComputation()->config()->labelX() + ":");
+    lblStartY->setText(m_fieldWidget->selectedComputation()->config()->labelY() + ":");
+    lblEndX->setText(m_fieldWidget->selectedComputation()->config()->labelX() + ":");
+    lblEndY->setText(m_fieldWidget->selectedComputation()->config()->labelY() + ":");
+    lblPointX->setText(m_fieldWidget->selectedComputation()->config()->labelX() + ":");
+    lblPointY->setText(m_fieldWidget->selectedComputation()->config()->labelY() + ":");
+    radHorizontalAxisX->setText(m_fieldWidget->selectedComputation()->config()->labelX());
+    radHorizontalAxisY->setText(m_fieldWidget->selectedComputation()->config()->labelY());
 
-    if (m_postprocessorWidget->computation()->isTransient())
+    if (m_fieldWidget->selectedComputation()->isTransient())
     {
         widTime->setEnabled(true);
     }
@@ -324,29 +324,29 @@ void PostprocessorSceneChartWidget::refresh()
 
 void PostprocessorSceneChartWidget::load()
 {
-    if (!(m_postprocessorWidget->computation() && m_postprocessorWidget->fieldWidget() && m_postprocessorWidget->fieldWidget()->selectedField()))
+    if (!(m_fieldWidget->selectedComputation() && m_fieldWidget && m_fieldWidget->selectedField()))
         return;
 
-    txtStartX->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartStartX).toDouble());
-    txtStartY->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartStartY).toDouble());
-    txtEndX->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartEndX).toDouble());
-    txtEndY->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartEndY).toDouble());
-    txtTimeX->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartTimeX).toDouble());
-    txtTimeY->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartTimeY).toDouble());
-    radHorizontalAxisX->setChecked((ChartAxisType) m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartHorizontalAxis).toInt() == ChartAxis_X);
-    radHorizontalAxisY->setChecked((ChartAxisType) m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartHorizontalAxis).toInt() == ChartAxis_Y);
-    radHorizontalAxisLength->setChecked((ChartAxisType) m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartHorizontalAxis).toInt() == ChartAxis_Length);
-    txtHorizontalAxisPoints->setValue(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartHorizontalAxisPoints).toInt());
-    chkHorizontalAxisReverse->setChecked(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartHorizontalAxisReverse).toBool());
+    txtStartX->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartStartX).toDouble());
+    txtStartY->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartStartY).toDouble());
+    txtEndX->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartEndX).toDouble());
+    txtEndY->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartEndY).toDouble());
+    txtTimeX->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartTimeX).toDouble());
+    txtTimeY->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartTimeY).toDouble());
+    radHorizontalAxisX->setChecked((ChartAxisType) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartHorizontalAxis).toInt() == ChartAxis_X);
+    radHorizontalAxisY->setChecked((ChartAxisType) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartHorizontalAxis).toInt() == ChartAxis_Y);
+    radHorizontalAxisLength->setChecked((ChartAxisType) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartHorizontalAxis).toInt() == ChartAxis_Length);
+    txtHorizontalAxisPoints->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartHorizontalAxisPoints).toInt());
+    chkHorizontalAxisReverse->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartHorizontalAxisReverse).toBool());
 
-    cmbFieldVariable->setCurrentIndex(cmbFieldVariable->findData(m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartVariable).toString()));
+    cmbFieldVariable->setCurrentIndex(cmbFieldVariable->findData(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartVariable).toString()));
     if (cmbFieldVariable->count() > 0 && cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()) != QVariant::Invalid)
     {
-        m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartVariable, cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
+        m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartVariable, cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
         doFieldVariable(cmbFieldVariable->currentIndex());
 
-        cmbFieldVariableComp->setCurrentIndex(cmbFieldVariableComp->findData((PhysicFieldVariableComp) m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartVariableComp).toInt()));
-        m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartVariableComp, (PhysicFieldVariableComp) cmbFieldVariableComp->itemData(cmbFieldVariableComp->currentIndex()).toInt());
+        cmbFieldVariableComp->setCurrentIndex(cmbFieldVariableComp->findData((PhysicFieldVariableComp) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartVariableComp).toInt()));
+        m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartVariableComp, (PhysicFieldVariableComp) cmbFieldVariableComp->itemData(cmbFieldVariableComp->currentIndex()).toInt());
     }
     if (cmbFieldVariable->currentIndex() == -1 && cmbFieldVariable->count() > 0)
     {
@@ -354,9 +354,9 @@ void PostprocessorSceneChartWidget::load()
         cmbFieldVariable->setCurrentIndex(0);
     }
 
-    if ((ChartMode) m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Geometry)
+    if ((ChartMode) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Geometry)
         tbxAnalysisType->setCurrentWidget(widGeometry);
-    else if ((ChartMode) m_postprocessorWidget->computation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
+    else if ((ChartMode) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
         tbxAnalysisType->setCurrentWidget(widTime);
 
     btnSaveImage->setEnabled(m_sceneChart->chart()->graph()->data()->size() > 0);
@@ -365,26 +365,26 @@ void PostprocessorSceneChartWidget::load()
 
 void PostprocessorSceneChartWidget::save()
 {
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartStartX, txtStartX->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartStartY, txtStartY->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartEndX, txtEndX->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartEndY, txtEndY->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartTimeX, txtTimeX->value());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartTimeY, txtTimeY->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartStartX, txtStartX->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartStartY, txtStartY->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartEndX, txtEndX->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartEndY, txtEndY->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartTimeX, txtTimeX->value());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartTimeY, txtTimeY->value());
     if (radHorizontalAxisX->isChecked())
-        m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartHorizontalAxis, ChartAxis_X);
+        m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartHorizontalAxis, ChartAxis_X);
     else if (radHorizontalAxisY->isChecked())
-        m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartHorizontalAxis, ChartAxis_Y);
+        m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartHorizontalAxis, ChartAxis_Y);
     else if (radHorizontalAxisLength->isChecked())
-        m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartHorizontalAxis, ChartAxis_Length);
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartHorizontalAxisReverse, chkHorizontalAxisReverse->isChecked());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartHorizontalAxisPoints, txtHorizontalAxisPoints->value());
+        m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartHorizontalAxis, ChartAxis_Length);
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartHorizontalAxisReverse, chkHorizontalAxisReverse->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartHorizontalAxisPoints, txtHorizontalAxisPoints->value());
     if (tbxAnalysisType->currentWidget() == widGeometry)
-        m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartMode, ChartMode_Geometry);
+        m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartMode, ChartMode_Geometry);
     else if (tbxAnalysisType->currentWidget() == widTime)
-        m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartMode, ChartMode_Time);
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartVariable, cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
-    m_postprocessorWidget->computation()->setting()->setValue(PostprocessorSetting::ChartVariableComp, (PhysicFieldVariableComp) cmbFieldVariableComp->itemData(cmbFieldVariableComp->currentIndex()).toInt());
+        m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartMode, ChartMode_Time);
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartVariable, cmbFieldVariable->itemData(cmbFieldVariable->currentIndex()).toString());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ChartVariableComp, (PhysicFieldVariableComp) cmbFieldVariableComp->itemData(cmbFieldVariableComp->currentIndex()).toInt());
 
     createChartLine();
 }

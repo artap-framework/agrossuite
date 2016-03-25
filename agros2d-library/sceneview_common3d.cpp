@@ -40,7 +40,7 @@
 #include "solver/problem_config.h"
 
 SceneViewCommon3D::SceneViewCommon3D(QWidget *parent)
-    : SceneViewPostInterface(parent)
+    : SceneViewCommon(parent)
 {
     createActions();
 }

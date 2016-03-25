@@ -64,12 +64,6 @@ void {{CLASS}}LocalValue::calculate()
 
         MultiArray ma = m_computation->solutionStore()->multiArray(fsid);
 
-        // update time functions
-        if (!m_computation->isSolving() && m_fieldInfo->analysisType() == AnalysisType_Transient)
-        {
-            Module::updateTimeFunctions(m_computation, m_computation->timeStepToTotalTime(m_timeStep));
-        }
-
         // find marker
         SceneLabel *label = SceneLabel::findLabelAtPoint(m_computation->scene(), m_point);
         if (label && label->hasMarker(m_fieldInfo))

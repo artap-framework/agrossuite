@@ -264,7 +264,7 @@ LogDialog::LogDialog(Computation *computation, const QString &title) : QDialog(Q
     createControls();
 
     connect(btnAbort, SIGNAL(clicked()), m_computation, SLOT(doAbortSolve()));
-    connect(m_computation, SIGNAL(meshed()), this, SLOT(tryClose()));
+    connect(Agros2D::problem(), SIGNAL(meshed()), this, SLOT(tryClose()));
     connect(m_computation, SIGNAL(solved()), this, SLOT(tryClose()));
     
     int w = 2.0/3.0 * QApplication::desktop()->screenGeometry().width();

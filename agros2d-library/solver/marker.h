@@ -64,13 +64,6 @@ public:
     /// returns QString identification of field
     QString fieldId();
 
-    /// ????
-    bool evaluate(const QString &name, double time);
-    bool evaluate(const uint id, double time);
-
-    /// returns true if all OK
-    bool evaluateAllVariables();
-
     int isNone() const { return m_isNone;}
     void setNone() { m_isNone = true; }
 

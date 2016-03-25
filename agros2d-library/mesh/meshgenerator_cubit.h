@@ -34,7 +34,7 @@ private slots:
     bool readLSDynaMeshFormat();
 
 public:
-    MeshGeneratorCubitExternal(Computation *computation);
+    MeshGeneratorCubitExternal(ProblemBase *problem);
 
     virtual bool mesh();
 };

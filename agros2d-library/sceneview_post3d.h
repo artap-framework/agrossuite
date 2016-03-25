@@ -27,12 +27,13 @@ template <typename Scalar> class SceneSolution;
 template <typename Scalar> class ViewScalarFilter;
 class PostprocessorWidget;
 
-class SceneViewPost3D : public SceneViewCommon3D
+class SceneViewPost3D : public SceneViewCommon3D, public SceneViewPostInterface
 {
     Q_OBJECT
 
 public slots:
     virtual void clear();
+    virtual void refresh();
 
 public:
     SceneViewPost3D(PostprocessorWidget *postprocessorWidget);
@@ -51,7 +52,7 @@ protected:
     virtual void paintGL();
     virtual void resizeGL(int w, int h);
 
-    virtual ProblemBase *problem();
+    virtual ProblemBase *problem() const;
 
     void paintScalarField3D(); // paint scalar field 3d surface
     void paintScalarField3DSolid(); // paint scalar field 3d solid
@@ -59,6 +60,8 @@ protected:
     void initLighting();
 
 private:
+    PostprocessorWidget *m_postprocessorWidget;
+
     // gl lists
     int m_listScalarField3D;
     int m_listScalarField3DSolid;
@@ -67,10 +70,7 @@ private:
     void createActionsPost3D();
 
 private slots:
-    virtual void refresh();
-    virtual void clearGLLists();
-
-    void connectComputation(QSharedPointer<Computation> computation);
+    virtual void clearGLLists();    
 };
 
 #endif // SCENEVIEWPOST3D_H

@@ -552,24 +552,6 @@ void Module::DialogUI::clear()
 
 // ***********************************************************************************************
 
-AGROS_LIBRARY_API void Module::updateTimeFunctions(Computation *computation, double time)
-{
-    // update materials
-    foreach (SceneMaterial *material, computation->scene()->materials->items())
-        if (material->fieldInfo())
-            foreach (Module::MaterialTypeVariable variable, material->fieldInfo()->materialTypeVariables())
-                if (variable.isTimeDep() && material->fieldInfo()->analysisType() == AnalysisType_Transient)
-                    material->evaluate(variable.id(), time);
-
-    // update boundaries
-    foreach (SceneBoundary *boundary, computation->scene()->boundaries->items())
-        if (boundary->fieldInfo())
-            foreach (Module::BoundaryType boundaryType, boundary->fieldInfo()->boundaryTypes())
-                foreach (Module::BoundaryTypeVariable variable, boundaryType.variables())
-                    if (variable.isTimeDep() && boundary->fieldInfo()->analysisType() == AnalysisType_Transient)
-                        boundary->evaluate(variable.id(), time);
-}
-
 void findVolumeLinearityOption(XMLModule::linearity_option& option, XMLModule::field *module, AnalysisType analysisType, LinearityType linearityType)
 
 {

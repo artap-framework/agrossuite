@@ -101,25 +101,6 @@ void Marker::modifyValue(const QString& name, Value value)
     }
 }
 
-bool Marker::evaluate(const QString &name, double time)
-{
-    return evaluate(m_valuesHash[name], time);
-}
-
-bool Marker::evaluate(const uint id, double time)
-{
-    return m_values[id]->evaluateAtTime(time);
-}
-
-bool Marker::evaluateAllVariables()
-{
-    foreach (uint id, m_values.keys())
-        if (!evaluate(id, 0.0))
-            return false;
-
-    return true;
-}
-
 QString Marker::fieldId()
 {
     return m_fieldInfo->fieldId();

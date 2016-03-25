@@ -164,9 +164,9 @@ void ValueLineEdit::setValue(const Value &value)
     }
     else
     {
-        txtLineEdit->setText(value.text());
-        m_table = value.table();
         m_problem = value.m_problem;
+        m_table = value.table();
+        txtLineEdit->setText(value.text());
     }
     setLayoutValue();
     evaluate();
@@ -221,7 +221,7 @@ bool ValueLineEdit::evaluate(bool quiet)
             btnEditTimeDep->setVisible(m_hasTimeDep && Agros2D::problem()->isTransient());
             btnMaterialDialog->setVisible(!m_isSource && !m_hasNonlin);
 
-            if (val.evaluateAndSave())
+            if (val.isEvaluated())
             {
                 if (val.number() <= m_minimumSharp)
                 {
@@ -287,19 +287,21 @@ bool ValueLineEdit::checkCondition(double value)
 {
     if (m_condition.isEmpty()) return true;
 
-    bool isOK = false;
-
-    // FIXME: (Franta) replace -> LEX?
+    // condition
     QString condition = m_condition;
     condition.replace(QString("value"), QString::number(value));
 
-    double out;
-    bool successfulRun = currentPythonEngineAgros()->runExpression(condition, &out);
+    // symbol table
+    exprtk::symbol_table<double> parametersSymbolTable = m_problem->config()->parametersSymbolTable();
+    parametersSymbolTable.add_constant("time", 0.0);
 
-    if (successfulRun)
+    exprtk::expression<double> expr;
+    expr.register_symbol_table(parametersSymbolTable);
+
+    QString error;
+    if (compileExpression(condition, expr, &error))
     {
-        if (!(fabs(out) < EPS_ZERO))
-            isOK = true;
+        return true;
     }
     else
     {
@@ -307,12 +309,9 @@ bool ValueLineEdit::checkCondition(double value)
         palette.setColor(QPalette::Text, QColor(Qt::red));
         txtLineEdit->setPalette(palette);
 
-        ErrorResult result = currentPythonEngineAgros()->parseError();
-        txtLineEdit->setToolTip(tr("Condition couldn't be evaluated:\n%1").arg(result.error()));
-        isOK = true;
+        txtLineEdit->setToolTip(tr("Condition couldn't be evaluated:\n%1").arg(error.trimmed()));
+        return false;
     }
-
-    return isOK;
 }
 
 void ValueLineEdit::setLayoutValue()

@@ -58,8 +58,6 @@ SceneViewCommon::SceneViewCommon(QWidget *parent)
       m_zoomRegion(false),
       m_zoomRegionPos(QPointF())
 {
-    m_mainWindow = (QMainWindow *) parent;
-
     createFontTexture();
     createActions();
 

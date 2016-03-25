@@ -52,7 +52,7 @@ private slots:
     void meshGmshCreated(int exitCode);
 
 public:
-    MeshGeneratorGMSH(Computation *computation);
+    MeshGeneratorGMSH(ProblemBase *problem);
 
     virtual bool mesh();
 };

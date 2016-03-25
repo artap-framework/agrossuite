@@ -48,23 +48,40 @@ ProblemConfig::ProblemConfig(ProblemBase *parentProblem) : QObject(), m_problem(
     clear();
 }
 
+ProblemConfig::~ProblemConfig()
+{
+    // parameters
+    m_parametersSymbolTable.clear();
+}
+
 void ProblemConfig::copy(const ProblemConfig *origin)
 {
-    clear();
+    // parameters
+    m_parametersSymbolTable.clear();
 
-    m_setting = origin->m_setting;
+    // copy settings
+    m_config = origin->m_config;
+
+    // set parameters
+    setParameters(origin->m_config[ProblemConfig::Parameters].value<StringToDoubleMap>());
 
     // value Problem
-    foreach (Type key, m_setting.keys())
-        if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
-            setValue(key, Value(m_problem, origin->m_setting[key].value<Value>().text()));
+    foreach (Type key, m_configDefault.keys())
+        if (m_configDefault[key].userType() == qMetaTypeId<Value>())
+            setValue(key, Value(m_problem, origin->m_config[key].value<Value>().text()));
 }
 
 void ProblemConfig::clear()
 {
+    // parameters
+    m_parametersSymbolTable.clear();
+
     // set default values and types
     setDefaultValues();
-    m_setting = m_settingDefault;
+    m_config = m_configDefault;
+
+    // set parameters
+    setParameters(m_config[ProblemConfig::Parameters].value<StringToDoubleMap>());
 }
 
 double ProblemConfig::initialTimeStepLength()
@@ -75,33 +92,33 @@ double ProblemConfig::initialTimeStepLength()
 void ProblemConfig::load(XMLProblem::problem_config *configxsd)
 {
     // default
-    m_setting = m_settingDefault;
+    m_config = m_configDefault;
 
     for (int i = 0; i < configxsd->problem_item().size(); i ++)
     {
         Type key = stringKeyToType(QString::fromStdString(configxsd->problem_item().at(i).problem_key()));
 
-        if (m_settingDefault.keys().contains(key))
+        if (m_configDefault.keys().contains(key))
         {
-            if (m_settingDefault[key].type() == QVariant::Double)
-                m_setting[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value()).toDouble();
-            else if (m_settingDefault[key].type() == QVariant::Int)
-                m_setting[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value()).toInt();
-            else if (m_settingDefault[key].type() == QVariant::Bool)
-                m_setting[key] = (QString::fromStdString(configxsd->problem_item().at(i).problem_value()) == "1");
-            else if (m_settingDefault[key].type() == QVariant::String)
-                m_setting[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value());
-            else if (m_settingDefault[key].type() == QVariant::StringList)
-                m_setting[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value()).split("|");
+            if (m_configDefault[key].type() == QVariant::Double)
+                m_config[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value()).toDouble();
+            else if (m_configDefault[key].type() == QVariant::Int)
+                m_config[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value()).toInt();
+            else if (m_configDefault[key].type() == QVariant::Bool)
+                m_config[key] = (QString::fromStdString(configxsd->problem_item().at(i).problem_value()) == "1");
+            else if (m_configDefault[key].type() == QVariant::String)
+                m_config[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value());
+            else if (m_configDefault[key].type() == QVariant::StringList)
+                m_config[key] = QString::fromStdString(configxsd->problem_item().at(i).problem_value()).split("|");
             else
             {
-                if (m_settingDefault[key].userType() == qMetaTypeId<CoordinateType>())
-                    m_setting[key] = QVariant::fromValue(coordinateTypeFromStringKey(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
-                else if (m_settingDefault[key].userType() == qMetaTypeId<MeshType>())
-                    m_setting[key] = QVariant::fromValue(meshTypeFromStringKey(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
-                else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
-                    m_setting[key] = QVariant::fromValue(Value(m_problem, QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
-                else if (m_settingDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
+                if (m_configDefault[key].userType() == qMetaTypeId<CoordinateType>())
+                    m_config[key] = QVariant::fromValue(coordinateTypeFromStringKey(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
+                else if (m_configDefault[key].userType() == qMetaTypeId<MeshType>())
+                    m_config[key] = QVariant::fromValue(meshTypeFromStringKey(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
+                else if (m_configDefault[key].userType() == qMetaTypeId<Value>())
+                    m_config[key] = QVariant::fromValue(Value(m_problem, QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
+                else if (m_configDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
                 {
                     QString str = QString::fromStdString(configxsd->problem_item().at(i).problem_value());
                     QStringList strKeysAndValues = str.split(":");
@@ -113,7 +130,7 @@ void ProblemConfig::load(XMLProblem::problem_config *configxsd)
                     for (int i = 0; i < strKeys.count(); i++)
                         parameters[strKeys[i]] = strValues[i].toDouble();
 
-                    m_setting[key] = QVariant::fromValue(parameters);
+                    m_config[key] = QVariant::fromValue(parameters);
                 }
                 else
                     qDebug() << "Key not found (XML)" << QString::fromStdString(configxsd->problem_item().at(i).problem_key()) << QString::fromStdString(configxsd->problem_item().at(i).problem_value());
@@ -124,35 +141,35 @@ void ProblemConfig::load(XMLProblem::problem_config *configxsd)
 
 void ProblemConfig::save(XMLProblem::problem_config *configxsd)
 {
-    foreach (Type key, m_setting.keys())
+    foreach (Type key, m_config.keys())
     {
-        if (m_settingDefault[key].type() == QVariant::StringList)
-            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_setting[key].toStringList().join("|").toStdString()));
-        else if (m_settingDefault[key].type() == QVariant::Bool)
-            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toInt()).toStdString()));
-        else if (m_settingDefault[key].type() == QVariant::String)
-            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_setting[key].toString().toStdString()));
-        else if (m_settingDefault[key].type() == QVariant::Int)
-            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toInt()).toStdString()));
-        else if (m_settingDefault[key].type() == QVariant::Double)
-            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_setting[key].toDouble()).toStdString()));
+        if (m_configDefault[key].type() == QVariant::StringList)
+            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_config[key].toStringList().join("|").toStdString()));
+        else if (m_configDefault[key].type() == QVariant::Bool)
+            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_config[key].toInt()).toStdString()));
+        else if (m_configDefault[key].type() == QVariant::String)
+            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_config[key].toString().toStdString()));
+        else if (m_configDefault[key].type() == QVariant::Int)
+            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_config[key].toInt()).toStdString()));
+        else if (m_configDefault[key].type() == QVariant::Double)
+            configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString::number(m_config[key].toDouble()).toStdString()));
         else
         {
-            if (m_settingDefault[key].userType() == qMetaTypeId<CoordinateType>())
-                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), coordinateTypeToStringKey(m_setting[key].value<CoordinateType>()).toStdString()));
-            else if (m_settingDefault[key].userType() == qMetaTypeId<MeshType>())
-                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), meshTypeToStringKey(m_setting[key].value<MeshType>()).toStdString()));
-            else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
-                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_setting[key].value<Value>().toString().toStdString()));
-            else if (m_settingDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
+            if (m_configDefault[key].userType() == qMetaTypeId<CoordinateType>())
+                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), coordinateTypeToStringKey(m_config[key].value<CoordinateType>()).toStdString()));
+            else if (m_configDefault[key].userType() == qMetaTypeId<MeshType>())
+                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), meshTypeToStringKey(m_config[key].value<MeshType>()).toStdString()));
+            else if (m_configDefault[key].userType() == qMetaTypeId<Value>())
+                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_config[key].value<Value>().toString().toStdString()));
+            else if (m_configDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
             {
-                assert(m_setting[key].value<StringToDoubleMap>().keys().count() == m_setting[key].value<StringToDoubleMap>().values().count());
+                assert(m_config[key].value<StringToDoubleMap>().keys().count() == m_config[key].value<StringToDoubleMap>().values().count());
 
                 QString outKeys;
                 QString outValues;
-                int cnt = m_setting[key].value<StringToDoubleMap>().keys().count();
-                QList<QString> keys = m_setting[key].value<StringToDoubleMap>().keys();
-                QList<double> values = m_setting[key].value<StringToDoubleMap>().values();
+                int cnt = m_config[key].value<StringToDoubleMap>().keys().count();
+                QList<QString> keys = m_config[key].value<StringToDoubleMap>().keys();
+                QList<double> values = m_config[key].value<StringToDoubleMap>().values();
                 for (int i = 0; i < cnt; i++)
                 {
                     outKeys += keys[i] + ((i < cnt - 1) ? "|" : "");
@@ -170,32 +187,32 @@ void ProblemConfig::save(XMLProblem::problem_config *configxsd)
 void ProblemConfig::load(QJsonObject &object)
 {
     // default
-    m_setting = m_settingDefault;
+    m_config = m_configDefault;
 
-    foreach (Type key, m_settingDefault.keys())
+    foreach (Type key, m_configDefault.keys())
     {
         if (!object.contains(typeToStringKey(key)))
             continue;
 
-        if (m_settingDefault[key].type() == QVariant::StringList)
-            m_setting[key] = object[typeToStringKey(key)].toString().split("|");
-        else if (m_settingDefault[key].type() == QVariant::Bool)
-            m_setting[key] = object[typeToStringKey(key)].toBool();
-        else if (m_settingDefault[key].type() == QVariant::String)
-            m_setting[key] = object[typeToStringKey(key)].toString();
-        else if (m_settingDefault[key].type() == QVariant::Double)
-            m_setting[key] = object[typeToStringKey(key)].toDouble();
-        else if (m_settingDefault[key].type() == QVariant::Int)
-            m_setting[key] = object[typeToStringKey(key)].toInt();
+        if (m_configDefault[key].type() == QVariant::StringList)
+            m_config[key] = object[typeToStringKey(key)].toString().split("|");
+        else if (m_configDefault[key].type() == QVariant::Bool)
+            m_config[key] = object[typeToStringKey(key)].toBool();
+        else if (m_configDefault[key].type() == QVariant::String)
+            m_config[key] = object[typeToStringKey(key)].toString();
+        else if (m_configDefault[key].type() == QVariant::Double)
+            m_config[key] = object[typeToStringKey(key)].toDouble();
+        else if (m_configDefault[key].type() == QVariant::Int)
+            m_config[key] = object[typeToStringKey(key)].toInt();
         else
         {
-            if (m_settingDefault[key].userType() == qMetaTypeId<CoordinateType>())
-                m_setting[key] = QVariant::fromValue(coordinateTypeFromStringKey(object[typeToStringKey(key)].toString()));
-            else if (m_settingDefault[key].userType() == qMetaTypeId<MeshType>())
-                m_setting[key] = QVariant::fromValue(meshTypeFromStringKey(object[typeToStringKey(key)].toString()));
-            else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
-                m_setting[key] = QVariant::fromValue(Value(m_problem, object[typeToStringKey(key)].toString()));
-            else if (m_settingDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
+            if (m_configDefault[key].userType() == qMetaTypeId<CoordinateType>())
+                m_config[key] = QVariant::fromValue(coordinateTypeFromStringKey(object[typeToStringKey(key)].toString()));
+            else if (m_configDefault[key].userType() == qMetaTypeId<MeshType>())
+                m_config[key] = QVariant::fromValue(meshTypeFromStringKey(object[typeToStringKey(key)].toString()));
+            else if (m_configDefault[key].userType() == qMetaTypeId<Value>())
+                m_config[key] = QVariant::fromValue(Value(m_problem, object[typeToStringKey(key)].toString()));
+            else if (m_configDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
             {
                 QString str = object[typeToStringKey(key)].toString();
                 QStringList strKeysAndValues = str.split(":");
@@ -206,8 +223,7 @@ void ProblemConfig::load(QJsonObject &object)
                 StringToDoubleMap parameters;
                 for (int i = 0; i < strKeys.count(); i++)
                     parameters[strKeys[i]] = strValues[i].toDouble();
-
-                m_setting[key] = QVariant::fromValue(parameters);
+                setParameters(parameters);
             }
             else
                 assert(0);
@@ -217,35 +233,35 @@ void ProblemConfig::load(QJsonObject &object)
 
 void ProblemConfig::save(QJsonObject &object)
 {
-    foreach (Type key, m_setting.keys())
+    foreach (Type key, m_configDefault.keys())
     {
-        if (m_settingDefault[key].type() == QVariant::StringList)
-            object[typeToStringKey(key)] = m_setting[key].toStringList().join("|");
-        else if (m_settingDefault[key].type() == QVariant::Bool)
-            object[typeToStringKey(key)] = m_setting[key].toBool();
-        else if (m_settingDefault[key].type() == QVariant::String)
-            object[typeToStringKey(key)] = m_setting[key].toString();
-        else if (m_settingDefault[key].type() == QVariant::Double)
-            object[typeToStringKey(key)] = m_setting[key].toDouble();
-        else if (m_settingDefault[key].type() == QVariant::Int)
-            object[typeToStringKey(key)] = m_setting[key].toInt();
+        if (m_configDefault[key].type() == QVariant::StringList)
+            object[typeToStringKey(key)] = m_config[key].toStringList().join("|");
+        else if (m_configDefault[key].type() == QVariant::Bool)
+            object[typeToStringKey(key)] = m_config[key].toBool();
+        else if (m_configDefault[key].type() == QVariant::String)
+            object[typeToStringKey(key)] = m_config[key].toString();
+        else if (m_configDefault[key].type() == QVariant::Double)
+            object[typeToStringKey(key)] = m_config[key].toDouble();
+        else if (m_configDefault[key].type() == QVariant::Int)
+            object[typeToStringKey(key)] = m_config[key].toInt();
         else
         {
-            if (m_settingDefault[key].userType() == qMetaTypeId<CoordinateType>())
-                object[typeToStringKey(key)] = coordinateTypeToStringKey(m_setting[key].value<CoordinateType>());
-            else if (m_settingDefault[key].userType() == qMetaTypeId<MeshType>())
-                object[typeToStringKey(key)] = meshTypeToStringKey(m_setting[key].value<MeshType>());
-            else if (m_settingDefault[key].userType() == qMetaTypeId<Value>())
-                object[typeToStringKey(key)] = m_setting[key].value<Value>().toString();
-            else if (m_settingDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
+            if (m_configDefault[key].userType() == qMetaTypeId<MeshType>())
+                object[typeToStringKey(key)] = meshTypeToStringKey(m_config[key].value<MeshType>());
+            else if (m_configDefault[key].userType() == qMetaTypeId<CoordinateType>())
+                object[typeToStringKey(key)] = coordinateTypeToStringKey(m_config[key].value<CoordinateType>());
+            else if (m_configDefault[key].userType() == qMetaTypeId<Value>())
+                object[typeToStringKey(key)] = m_config[key].value<Value>().toString();
+            else if (m_configDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
             {
-                assert(m_setting[key].value<StringToDoubleMap>().keys().count() == m_setting[key].value<StringToDoubleMap>().values().count());
+                assert(m_config[key].value<StringToDoubleMap>().keys().count() == m_config[key].value<StringToDoubleMap>().values().count());
 
                 QString outKeys;
                 QString outValues;
-                int cnt = m_setting[key].value<StringToDoubleMap>().keys().count();
-                QList<QString> keys = m_setting[key].value<StringToDoubleMap>().keys();
-                QList<double> values = m_setting[key].value<StringToDoubleMap>().values();
+                int cnt = m_config[key].value<StringToDoubleMap>().keys().count();
+                QList<QString> keys = m_config[key].value<StringToDoubleMap>().keys();
+                QList<double> values = m_config[key].value<StringToDoubleMap>().values();
                 for (int i = 0; i < cnt; i++)
                 {
                     outKeys += keys[i] + ((i < cnt - 1) ? "|" : "");
@@ -262,56 +278,94 @@ void ProblemConfig::save(QJsonObject &object)
 
 void ProblemConfig::setStringKeys()
 {
-    m_settingKey[Frequency] = "Frequency";
-    m_settingKey[TimeMethod] = "TimeMethod";
-    m_settingKey[TimeMethodTolerance] = "TimeMethodTolerance";
-    m_settingKey[TimeInitialStepSize] = "TimeInitialStepSize";
-    m_settingKey[TimeOrder] = "TimeOrder";
-    m_settingKey[TimeConstantTimeSteps] = "TimeSteps";
-    m_settingKey[TimeTotal] = "TimeTotal";
-    m_settingKey[Parameters] = "Parameters";
-    m_settingKey[Coordinate] = "Coordinate";
-    m_settingKey[Mesh] = "Mesh";
+    m_configKey[Frequency] = "Frequency";
+    m_configKey[TimeMethod] = "TimeMethod";
+    m_configKey[TimeMethodTolerance] = "TimeMethodTolerance";
+    m_configKey[TimeInitialStepSize] = "TimeInitialStepSize";
+    m_configKey[TimeOrder] = "TimeOrder";
+    m_configKey[TimeConstantTimeSteps] = "TimeSteps";
+    m_configKey[TimeTotal] = "TimeTotal";
+    m_configKey[Parameters] = "Parameters";
+    m_configKey[Coordinate] = "Coordinate";
+    m_configKey[Mesh] = "Mesh";
 
-    m_settingKey[GridStep] = 0.05;
-    m_settingKey[SnapToGrid] = true;
+    m_configKey[GridStep] = "GridStep";
+    m_configKey[SnapToGrid] = "SnapToGrid";
 }
 
 void ProblemConfig::setDefaultValues()
 {
-    m_settingDefault.clear();
+    m_configDefault.clear();
 
-    m_settingDefault[Frequency] = QVariant::fromValue(Value(m_problem, 50));
-    m_settingDefault[TimeMethod] = TimeStepMethod_Fixed;
-    m_settingDefault[TimeMethodTolerance] = 0.05;
-    m_settingDefault[TimeInitialStepSize] = 0.0;
-    m_settingDefault[TimeOrder] = 2;
-    m_settingDefault[TimeConstantTimeSteps] = 10;
-    m_settingDefault[TimeTotal] = 10.0;
-    m_settingDefault[Parameters] = QVariant::fromValue(StringToDoubleMap());
-    m_settingDefault[Coordinate] = QVariant::fromValue(CoordinateType_Planar);
-    m_settingDefault[Mesh] = QVariant::fromValue(MeshType_Triangle);
+    m_configDefault[Frequency] = QVariant::fromValue(Value(m_problem, 50));
+    m_configDefault[TimeMethod] = TimeStepMethod_Fixed;
+    m_configDefault[TimeMethodTolerance] = 0.05;
+    m_configDefault[TimeInitialStepSize] = 0.0;
+    m_configDefault[TimeOrder] = 2;
+    m_configDefault[TimeConstantTimeSteps] = 10;
+    m_configDefault[TimeTotal] = 10.0;
+    m_configDefault[Parameters] = QVariant::fromValue(StringToDoubleMap());
+    m_configDefault[Coordinate] = QVariant::fromValue(CoordinateType_Planar);
+    m_configDefault[Mesh] = QVariant::fromValue(MeshType_Triangle);
 
-    m_settingDefault[GridStep] = 10.0;
-    m_settingDefault[SnapToGrid] = 10.0;
+    m_configDefault[GridStep] = 0.05;
+    m_configDefault[SnapToGrid] = true;
 }
 
 // parameters
 void ProblemConfig::setParameter(const QString &key, double val)
 {
-    StringToDoubleMap parameters = value(ProblemConfig::Parameters).value<StringToDoubleMap>();
-
     try
     {
+        StringToDoubleMap *params = static_cast<StringToDoubleMap *>(m_config[ProblemConfig::Parameters].data());
+
+        // existing key with same value
+        if (params->keys().contains(key) && fabs(params->value(key) - val) < EPS_ZERO)
+            return;
+
         checkVariableName(key);
-        parameters[key] = val;
-        setValue(ProblemConfig::Parameters, parameters);
+        params->insert(key, val);
+
+        // create new table - invalidate
+        m_parametersSymbolTable = exprtk::symbol_table<double>();
+        m_parametersSymbolTable.add_constants();
+
+        foreach (QString k, params->keys())
+        {
+            if (k == key)
+                m_parametersSymbolTable.add_constant(key.toStdString(), val);
+            else
+                m_parametersSymbolTable.add_constant(k.toStdString(), (*params)[k]);
+        }
     }
     catch (AgrosException &e)
     {
         // raise exception
         throw e.toString();
     }
+}
+
+void ProblemConfig::setParameters(const StringToDoubleMap &params)
+{    
+    m_config[ProblemConfig::Parameters] = QVariant::fromValue(params);
+
+    // create new table
+    m_parametersSymbolTable = exprtk::symbol_table<double>();
+    m_parametersSymbolTable.add_constants();
+
+    foreach (QString key, params.keys())
+        m_parametersSymbolTable.add_constant(key.toStdString(), params[key]);
+}
+
+StringToDoubleMap ProblemConfig::parameters() const
+{
+    return m_config[ProblemConfig::Parameters].value<StringToDoubleMap>();
+}
+
+double ProblemConfig::parameter(const QString &key) const
+{
+    assert(m_config[ProblemConfig::Parameters].value<StringToDoubleMap>().contains(key));
+    return m_config[ProblemConfig::Parameters].value<StringToDoubleMap>()[key];
 }
 
 void ProblemConfig::checkVariableName(const QString &key)
@@ -554,7 +608,7 @@ void PostprocessorSetting::load(XMLProblem::config *configxsd)
 }
 
 void PostprocessorSetting::save(XMLProblem::config *configxsd)
-{    
+{
     foreach (Type key, m_setting.keys())
     {
         if (m_settingDefault[key].type() == QVariant::StringList)

@@ -29,15 +29,17 @@ template <typename Scalar> class ViewScalarFilter;
 class FieldInfo;
 class SceneMarkerSelectDialog;
 
-class SceneViewPost2D : public SceneViewCommon2D
+class SceneViewPost2D : public SceneViewCommon2D, public SceneViewPostInterface
 {
     Q_OBJECT
 
 public slots:
+    virtual void clear();
+    virtual void refresh();
+
     void selectByMarker();
     void selectPoint();
     void doPostprocessorModeGroup(QAction *action);
-    virtual void clear();
     void exportVTKScalarView(const QString &fileName = QString());
     void exportVTKContourView(const QString &fileName = QString());
 
@@ -69,7 +71,7 @@ protected:
     virtual void paintGL();
     virtual void resizeGL(int w, int h);
 
-    virtual ProblemBase *problem();
+    virtual ProblemBase *problem() const;
 
     void paintGeometry(); // paint edges
 
@@ -83,6 +85,8 @@ protected:
     void paintPostprocessorSelectedPoint(); // paint point for local values
 
 private:
+    PostprocessorWidget *m_postprocessorWidget;
+
     // selected point
     Point m_selectedPoint;
 
@@ -96,14 +100,11 @@ private:
     void exportVTK(const QString &fileName, const QString &variable, PhysicFieldVariableComp physicFieldVariableComp);
 
     friend class SceneMarkerSelectDialog;
+    friend class ResultsView;
 
 private slots:
     void selectedPoint(const Point &p);
-
-    virtual void refresh();
     virtual void clearGLLists();    
-
-    void connectComputation(QSharedPointer<Computation> computation);
 };
 
 #endif // SCENEVIEWPOST2D_H

@@ -35,36 +35,29 @@
 #include "scenemarkerdialog.h"
 #include "scenebasicselectdialog.h"
 
-#include "solver/module.h"
+#include "gui/physicalfield.h"
 
+#include "solver/module.h"
 #include "solver/field.h"
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-SceneViewPreprocessorChart::SceneViewPreprocessorChart(QWidget *parent, PostprocessorWidget *postprocessorWidget)
-    : SceneViewCommon2D(parent)
+SceneViewSimpleGeometry::SceneViewSimpleGeometry(QWidget *parent, PhysicalFieldWidget *fieldWidget)
+    : SceneViewCommon2D(parent), m_fieldWidget(fieldWidget)
 {
     setMinimumSize(100, 50);
-
-    // reconnect computation slots
-    connect(postprocessorWidget, SIGNAL(connectComputation(QSharedPointer<Computation>)), this, SLOT(connectComputation(QSharedPointer<Computation>)));
 }
 
-SceneViewPreprocessorChart::~SceneViewPreprocessorChart()
+SceneViewSimpleGeometry::~SceneViewSimpleGeometry()
 {
 }
 
-ProblemBase *SceneViewPreprocessorChart::problem()
+ProblemBase *SceneViewSimpleGeometry::problem() const
 {
-    return static_cast<ProblemBase *>(m_computation.data());
+    return static_cast<ProblemBase *>(m_fieldWidget->selectedComputation().data());
 }
 
-void SceneViewPreprocessorChart::connectComputation(QSharedPointer<Computation> computation)
-{
-    m_computation = computation;
-}
-
-void SceneViewPreprocessorChart::doZoomRegion(const Point &start, const Point &end)
+void SceneViewSimpleGeometry::doZoomRegion(const Point &start, const Point &end)
 {
     if (fabs(end.x-start.x) < EPS_ZERO || fabs(end.y-start.y) < EPS_ZERO)
         return;
@@ -83,25 +76,25 @@ void SceneViewPreprocessorChart::doZoomRegion(const Point &start, const Point &e
     setZoom(0);
 }
 
-void SceneViewPreprocessorChart::refresh()
+void SceneViewSimpleGeometry::refresh()
 {
-    if (!m_computation.isNull() && m_computation->isSolved())
+    if (!m_fieldWidget->selectedComputation().isNull() && m_fieldWidget->selectedComputation()->isSolved())
         SceneViewCommon::refresh();
 }
 
-void SceneViewPreprocessorChart::clear()
+void SceneViewSimpleGeometry::clear()
 {
     doZoomBestFit();
 }
 
-void SceneViewPreprocessorChart::setChartLine(ChartLine chartLine)
+void SceneViewSimpleGeometry::setChartLine(ChartLine chartLine)
 {
     m_chartLine = chartLine;
 
     updateGL();
 }
 
-void SceneViewPreprocessorChart::paintGL()
+void SceneViewSimpleGeometry::paintGL()
 {
     if (!isVisible()) return;
     makeCurrent();
@@ -114,15 +107,15 @@ void SceneViewPreprocessorChart::paintGL()
     paintChartLine();
 }
 
-void SceneViewPreprocessorChart::paintGeometry()
+void SceneViewSimpleGeometry::paintGeometry()
 {
-    if (m_computation.isNull())
+    if (m_fieldWidget->selectedComputation().isNull())
         return;
 
     loadProjection2d(true);
 
     // edges
-    foreach (SceneFace *edge, m_computation->scene()->faces->items())
+    foreach (SceneFace *edge, m_fieldWidget->selectedComputation()->scene()->faces->items())
     {
         glColor3d(COLOREDGE[0], COLOREDGE[1], COLOREDGE[2]);
         glLineWidth(1.0);
@@ -145,14 +138,14 @@ void SceneViewPreprocessorChart::paintGeometry()
     }
 }
 
-void SceneViewPreprocessorChart::paintChartLine()
+void SceneViewSimpleGeometry::paintChartLine()
 {
-    if (m_computation.isNull())
+    if (m_fieldWidget->selectedComputation().isNull())
         return;
 
     loadProjection2d(true);
 
-    RectPoint rect = m_computation->scene()->boundingBox();
+    RectPoint rect = m_fieldWidget->selectedComputation()->scene()->boundingBox();
     double dm = qMax(rect.width(), rect.height()) / 25.0;
 
     glColor3d(1.0, 0.1, 0.1);

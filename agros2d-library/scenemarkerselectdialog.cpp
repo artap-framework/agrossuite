@@ -30,10 +30,9 @@
 #include "scenemarkerdialog.h"
 #include "sceneview_post2d.h"
 
-SceneMarkerSelectDialog::SceneMarkerSelectDialog(SceneViewPost2D *sceneView, SceneModePostprocessor mode, QWidget *parent) : QDialog(parent)
+SceneMarkerSelectDialog::SceneMarkerSelectDialog(SceneViewPost2D *sceneView, SceneModePostprocessor mode, QWidget *parent)
+    : QDialog(parent), m_sceneViewPost2D(sceneView)
 {
-    m_sceneViewPost2D = sceneView;
-
     setWindowIcon(icon(""));
     setWindowTitle(tr("Select by marker"));
 
@@ -48,11 +47,16 @@ SceneMarkerSelectDialog::SceneMarkerSelectDialog(SceneViewPost2D *sceneView, Sce
     setMaximumSize(sizeHint());
 }
 
+Computation *SceneMarkerSelectDialog::computation() const
+{
+    return static_cast<Computation *>(computation());
+}
+
 void SceneMarkerSelectDialog::createControls()
 {
     // surface
     lstSurface = new QListWidget(this);
-    foreach (SceneBoundary *boundary, m_sceneViewPost2D->m_computation->scene()->boundaries->filter(m_sceneViewPost2D->m_computation->postDeal()->activeViewField()).items())
+    foreach (SceneBoundary *boundary, computation()->scene()->boundaries->filter(computation()->postDeal()->activeViewField()).items())
     {
         QListWidgetItem *item = new QListWidgetItem(lstSurface);
         item->setText(boundary->name());
@@ -69,7 +73,7 @@ void SceneMarkerSelectDialog::createControls()
 
     // volume
     lstVolume = new QListWidget(this);
-    foreach (SceneMaterial *material, m_sceneViewPost2D->m_computation->scene()->materials->filter(m_sceneViewPost2D->m_computation->postDeal()->activeViewField()).items())
+    foreach (SceneMaterial *material, computation()->scene()->materials->filter(computation()->postDeal()->activeViewField()).items())
     {
         QListWidgetItem *item = new QListWidgetItem(lstVolume);
         item->setText(material->name());
@@ -106,40 +110,40 @@ void SceneMarkerSelectDialog::doAccept()
 {
     if (tabWidget->currentWidget() == widSurface)
     {
-        m_sceneViewPost2D->m_computation->scene()->selectNone();
+        computation()->scene()->selectNone();
         m_sceneViewPost2D->actPostprocessorModeSurfaceIntegral->trigger();
         for (int i = 0; i < lstSurface->count(); i++)
         {
             if (lstSurface->item(i)->checkState() == Qt::Checked)
             {
-                foreach (SceneFace *edge, m_sceneViewPost2D->m_computation->scene()->faces->items())
+                foreach (SceneFace *edge, computation()->scene()->faces->items())
                 {
-                    if (edge->marker(m_sceneViewPost2D->m_computation->postDeal()->activeViewField()) ==
+                    if (edge->marker(computation()->postDeal()->activeViewField()) ==
                             lstSurface->item(i)->data(Qt::UserRole).value<SceneBoundary *>())
                         edge->setSelected(true);
                 }
             }
         }
-        m_sceneViewPost2D->m_computation->postDeal()->refresh();
+        computation()->postDeal()->refresh();
     }
 
     if (tabWidget->currentWidget() == widVolume)
     {
-        m_sceneViewPost2D->m_computation->scene()->selectNone();
+        computation()->scene()->selectNone();
         m_sceneViewPost2D->actPostprocessorModeVolumeIntegral->trigger();
         for (int i = 0; i < lstVolume->count(); i++)
         {
             if (lstVolume->item(i)->checkState() == Qt::Checked)
             {
-                foreach (SceneLabel *label, m_sceneViewPost2D->m_computation->scene()->labels->items())
+                foreach (SceneLabel *label, computation()->scene()->labels->items())
                 {
-                    if (label->marker(m_sceneViewPost2D->m_computation->postDeal()->activeViewField()) ==
+                    if (label->marker(computation()->postDeal()->activeViewField()) ==
                             lstVolume->item(i)->data(Qt::UserRole).value<SceneMaterial *>())
                         label->setSelected(true);
                 }
             }
         }
-        m_sceneViewPost2D->m_computation->postDeal()->refresh();
+        computation()->postDeal()->refresh();
     }
 
     accept();

@@ -934,9 +934,6 @@ void SolverDeal::solveTransient()
             m_time = m_computation->config()->value(ProblemConfig::TimeTotal).toDouble();
         }
 
-        // update time dep variables
-        Module::updateTimeFunctions(m_computation, m_time);
-
         // remove first solution and step length
         if (solutions.size() > m_computation->config()->value(ProblemConfig::TimeOrder).toInt() - 1)
         {

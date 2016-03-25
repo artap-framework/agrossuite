@@ -80,8 +80,6 @@ public:
     /// create or delete markers for new or removed field
     void doFieldsChanged(ProblemBase *problem);
 
-    bool evaluateAllVariables();
-
 protected:
     QList<MarkerType* > data;
     QMap<const FieldInfo*, MarkerType*> noneMarkers;

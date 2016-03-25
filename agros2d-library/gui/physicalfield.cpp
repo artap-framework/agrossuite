@@ -275,7 +275,7 @@ void PhysicalFieldWidget::doComputation(int index)
         }
 
         // set current computation
-        if (selectedComputation() && selectedComputation()->isMeshed())
+        if (selectedComputation() && selectedComputation()->isSolved())
         {
             fillComboBoxFieldInfo(cmbFieldInfo, selectedComputation(), m_lastFieldId);
         }

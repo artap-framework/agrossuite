@@ -75,12 +75,6 @@
         for (unsigned int degree = m_fieldInfo->value(FieldInfo::SpacePolynomialOrder).toInt(); degree <= DEALII_MAX_ORDER; degree++)
             faceQuadratureFormulas.push_back(dealii::QGauss<2-1>(degree + 1));
 
-        // update time functions
-        if (!m_computation->isSolving() && m_analysisType == AnalysisType_Transient)
-        {
-            Module::updateTimeFunctions(m_computation, m_computation->timeStepToTotalTime(m_timeStep));
-        }
-
         // find faces around the selected labels
         if ({{INTEGRAL_COUNT_EGGSHELL}} > 0)
         {

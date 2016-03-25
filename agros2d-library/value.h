@@ -48,7 +48,7 @@ public:
           std::vector<double> y,
           DataTableType type = DataTableType_PiecewiseLinear,
           bool splineFirstDerivatives = true,
-          bool extrapolateConstant = true);   
+          bool extrapolateConstant = true);
 
     Value(const Value& origin);
     Value& operator=(const Value& origin);
@@ -59,17 +59,14 @@ public:
     void setNumber(double value);
     double number() const;
     double numberAtPoint(const Point &point) const;
-    double numberAtTime(double time) const;
-    double numberAtTimeAndPoint(double time, const Point &point) const;
+    double numberAtTime(const double time) const;
+    double numberAtTimeAndPoint(const double time, const Point &point) const;
 
-    bool isNumber();
+    bool isNumber() const;
+    bool isEvaluated() const;
+    inline QString error() const { return m_error; }
     inline bool isTimeDependent() const { return m_isTimeDependent; }
     inline bool isCoordinateDependent() const { return m_isCoordinateDependent; }
-
-    bool evaluateAtPoint(const Point &point);
-    bool evaluateAtTime(double time);
-    bool evaluateAtTimeAndPoint(double time, const Point &point);
-    inline bool isEvaluated() const { return m_isEvaluated; }
 
     // table
     double numberFromTable(double key) const;
@@ -88,26 +85,21 @@ public:
     inline ProblemBase *problem() const { return m_problem; }
 
 private:
-    bool m_isEvaluated;   
-
     // problem
     ProblemBase *m_problem;
 
     // expression
     double m_number;
     QString m_text;
-    double m_time;
-    Point m_point;
     bool m_isTimeDependent;
     bool m_isCoordinateDependent;
 
+    mutable exprtk::expression<double> *m_exprtkExpr;
+    mutable bool m_isEvaluated;
+    mutable QString m_error;
+
     // table
     DataTable m_table;
-
-    // evaluate
-    bool evaluate(double time, const Point &point, double& result) const;
-    bool evaluateAndSave();
-    bool evaluateExpression(const QString &expression, double time, const Point &point, double& evaluationResult) const ;
 
     void lexicalAnalysis();
 
@@ -136,8 +128,8 @@ public:
     inline Value y() const { return m_y; }
     inline Value &y() { return m_y; }
 
-    inline double numberX() const { return m_x.number(); }
-    inline double numberY() const { return m_y.number(); }
+    inline double numberX() { return m_x.number(); }
+    inline double numberY() { return m_y.number(); }
 
     QString toString() const;
 

@@ -90,6 +90,8 @@ public slots:
 
     void doFieldsChanged();
 
+    void cacheGeometryConstraints();
+
 signals:
     void invalidated();
     void cleared();
@@ -209,9 +211,6 @@ private:
     void findCrossings();
 
     bool m_stopInvalidating;
-
-private slots:
-    void doInvalidated();
 };
 
 #endif /* SCENE_H */

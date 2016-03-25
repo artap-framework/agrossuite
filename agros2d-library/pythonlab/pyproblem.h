@@ -109,7 +109,6 @@ public:
     ~PyComputation();
 
     void clear();
-    void mesh();
     void solve();
 
     inline QSharedPointer<Computation> computation() const

@@ -128,7 +128,7 @@ void ValueTimeDialog::presetsChanged(int index)
 {
     if (cmbPresets->currentIndex() > 0)
     {
-        if (txtTimeTotal->value().evaluateAtTime(0.0))
+        if (txtTimeTotal->value().isEvaluated())
         {
             QString preset = cmbPresets->itemData(cmbPresets->currentIndex()).toString().arg(txtTimeTotal->value().number() / 2.0);
 
@@ -142,27 +142,24 @@ void ValueTimeDialog::presetsChanged(int index)
 
 void ValueTimeDialog::checkExpression()
 {
-    // temporary dict
-    currentPythonEngineAgros()->useTemporaryDict();
+    // symbol table
+    exprtk::symbol_table<double> parametersSymbolTable = m_problem->config()->parametersSymbolTable();
+    parametersSymbolTable.add_constant("time", 0.0);
 
-    // eval expression
-    double out;
-    bool successfulRun = currentPythonEngineAgros()->runExpression(txtLineEdit->text(), &out, QString("time = %1").arg(0.0));
-    if (successfulRun)
+    exprtk::expression<double> expr;
+    expr.register_symbol_table(parametersSymbolTable);
+
+    QString error;
+    if (compileExpression(txtLineEdit->text(), expr, &error))
     {
         plotFunction();
-
         lblInfoError->clear();
     }
     else
     {
-        ErrorResult result = currentPythonEngineAgros()->parseError();
-        lblInfoError->setText(result.error().trimmed());
+        lblInfoError->setText(error.trimmed());
         txtLineEdit->setFocus();
     }
-
-    // global dict
-    currentPythonEngineAgros()->useGlobalDict();
 }
 
 void ValueTimeDialog::plotFunction()
@@ -179,13 +176,15 @@ void ValueTimeDialog::plotFunction()
     QVector<double> valuesVector;
 
     Value val(m_problem, txtLineEdit->text());
-    for (int i = 0; i < count; i++)
+    if (val.isTimeDependent())
     {
-        if (!val.evaluateAtTime(i*dt))
-            break;
+        for (int i = 0; i < count; i++)
+        {
+            double num = val.numberAtTime(i*dt);
 
-        pointsVector.append(i*dt);
-        valuesVector.append(val.number());
+            pointsVector.append(i*dt);
+            valuesVector.append(num);
+        }
     }
 
     chart->graph(0)->setData(pointsVector, valuesVector);

@@ -48,7 +48,7 @@ class MeshGeneratorTriangle : public MeshGenerator
     Q_OBJECT
 
 public:
-    MeshGeneratorTriangle(Computation *computation);
+    MeshGeneratorTriangle(ProblemBase *problem);
 
     virtual bool mesh();
 

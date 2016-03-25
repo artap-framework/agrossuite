@@ -84,7 +84,6 @@ private slots:
     void doMesh();
     void doSolve();
     void doSolveNewComputation();
-    void doSolveFinished();
 
     void doOptions();
     void doTransform();
@@ -111,8 +110,6 @@ private slots:
 
     /// fields added or removed, menus need to be modified
     void doFieldsChanged();
-
-    void connectComputation(QSharedPointer<Computation> computation);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -222,9 +219,6 @@ private:
     QString m_startupProblemFilename;
     QString m_startupScriptFilename;
     bool m_startupExecute;
-
-    // TODO: remove
-    QSharedPointer<Computation> m_computation;
 
     void setRecentFiles();
 

@@ -234,10 +234,8 @@ void Study::save(QJsonObject &object)
 bool Study::evaluateFunctionals(QSharedPointer<Computation> computation)
 {
     bool successfulRun = false;
-    currentPythonEngine()->useTemporaryDict();
     foreach (Functional functional, m_functionals)
         successfulRun = functional.evaluateExpression(computation);
-    currentPythonEngine()->useGlobalDict();
 
     return successfulRun;
 }

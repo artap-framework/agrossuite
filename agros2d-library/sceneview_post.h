@@ -25,17 +25,18 @@
 #include <deal.II/numerics/data_out.h>
 #define signals public
 
-
 #include "util.h"
 #include "sceneview_common.h"
 
 template <typename Scalar> class SceneSolution;
 
 class MultiArray;
+class PostprocessorWidget;
 
 class ParticleTracing;
 class FieldInfo;
 class Computation;
+class PostprocessorSetting;
 
 struct PostTriangle
 {
@@ -77,7 +78,7 @@ private:
     double m_min;
     double m_max;
 
-    Computation *m_problem;
+    Computation *m_computation;
     const FieldInfo *m_fieldInfo;
 
     void compute_node(dealii::Point<2> &node, const dealii::DataOutBase::Patch<2> *patch,
@@ -159,33 +160,27 @@ private slots:
     virtual void clearGLLists() {}
 };
 
-class SceneViewPostInterface : public SceneViewCommon
+class SceneViewPostInterface
 {
-    Q_OBJECT
-
 public:
-    SceneViewPostInterface(QWidget *parent = 0);
+    SceneViewPostInterface(PostprocessorWidget *postprocessorWidget);
 
 protected:
-    QSharedPointer<Computation> m_computation;
-
     double m_texScale;
     double m_texShift;
 
     GLuint m_textureScalar;
 
-    virtual void initializeGL();
-
     void paintBackground(); // gradient background
-    void paintScalarFieldColorBar(double min, double max);
+    void paintScalarFieldColorBar(SceneViewCommon *sceneView, double min, double max);
 
     // palette
     const double *paletteColor(double x) const;
     const double *paletteColorOrder(int n) const;
     void paletteCreate();
 
-protected slots:
-    virtual void clearGLLists() {}
+private:
+    PostprocessorWidget *m_postprocessorWidget;
 };
 
 #endif // SCENEVIEW_POST_H

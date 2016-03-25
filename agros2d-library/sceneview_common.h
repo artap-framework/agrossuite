@@ -81,8 +81,6 @@ signals:
     void labelRight(const QString &right);
 
 protected:
-    QMainWindow *m_mainWindow;
-
     QPoint m_lastPos; // last position of cursor
     SceneNode *m_nodeLast;
 
@@ -91,7 +89,7 @@ protected:
     QPointF m_zoomRegionPos;
 
     // problem (preprocessor vs. computation)
-    virtual ProblemBase *problem() = 0;
+    virtual ProblemBase *problem() const = 0;
 
     void createActions();
 
@@ -125,6 +123,8 @@ protected:
     void closeEvent(QCloseEvent *event);
 
     inline double aspect() const { return (double) width() / (double) height(); }
+
+    friend class SceneViewPostInterface;
 
 private slots:
 #if QT_VERSION > 0x050100

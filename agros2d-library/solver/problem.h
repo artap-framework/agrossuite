@@ -45,47 +45,53 @@ class ResultRecipes;
 class ComputationResults;
 class Studies;
 
-class CalculationThread : public QThread
+class MeshThread : public QThread
 {
-   Q_OBJECT
+    Q_OBJECT
 
 public:
-    enum CalculationType
+    MeshThread(ProblemBase *problem) : QThread(), m_problem(problem)
     {
-        CalculationType_Mesh,
-        CalculationType_Solve,
-        CalculationType_SolveTimeStep
-    };
+        connect(this, SIGNAL(finished()), this, SLOT(finished()));
+    }
 
-    CalculationThread(Computation *parentProblem);
-
-    void startCalculation(CalculationType type);
+    inline void startCalculation() { start(QThread::TimeCriticalPriority); }
 
 protected:
-   virtual void run();
+    virtual void run();
 
-signals:
-   void signalValueUpdated(QString);
+private slots:
+    void finished();
 
 private:
-    CalculationType m_calculationType;
+    ProblemBase *m_problem;
+};
+
+class SolveThread : public QThread
+{
+    Q_OBJECT
+
+public:
+    SolveThread(Computation *computation) : QThread(), m_computation(computation)
+    {
+        connect(this, SIGNAL(finished()), this, SLOT(finished()));
+    }
+
+    inline void startCalculation() { start(QThread::TimeCriticalPriority); }
+
+protected:
+    virtual void run();
+
+private slots:
+    void finished();
+
+private:
     Computation *m_computation;
 };
 
 class AGROS_LIBRARY_API ProblemBase : public QObject
 {
     Q_OBJECT
-signals:
-
-    /// emited when an field is added or removed. Menus need to adjusted
-    void fieldsChanged();
-
-    /// emited when an field is added or removed. Menus need to adjusted
-    void couplingsChanged();
-
-public slots:
-    virtual void clearFields();
-    virtual void clearFieldsAndConfig();
 
 public:
     ProblemBase();
@@ -121,13 +127,34 @@ public:
     inline bool hasCoupling(FieldInfo *sourceField, FieldInfo *targetField) { return (m_couplingInfos.contains(QPair<FieldInfo*, FieldInfo* >(sourceField, targetField))); }
     inline bool hasCoupling(const QString &sourceFieldId, const QString &targetFieldId) { return hasCoupling(fieldInfo(sourceFieldId), fieldInfo(targetFieldId)); }
 
+    inline const dealii::Triangulation<2> &initialMesh() const { return m_initialMesh; }
+
+    bool isMeshed() const;
+    bool isMeshing() const { return m_isMeshing; }
+
+    bool mesh();
+    void meshWithGUI();
+
     virtual QString problemFileName() const = 0;
 
     void importProblemFromA2D(const QString &fileName);
     void exportProblemToA2D(const QString &fileName);
 
-    void readProblemFromJson(const QString &fileName = "", bool readSettings = true);
+    void readProblemFromJson(const QString &fileName = "");
     void writeProblemToJson(const QString &fileName = "");
+
+signals:
+    /// emited when an field is added or removed. Menus need to adjusted
+    void fieldsChanged();
+
+    /// emited when an field is added or removed. Menus need to adjusted
+    void couplingsChanged();
+
+    void meshed();
+    void meshedWithGUI();
+public slots:
+    virtual void clearFields();
+    virtual void clearFieldsAndConfig();
 
 protected:
     Scene *m_scene;
@@ -143,13 +170,17 @@ protected:
     // transient analysis
     QList<double> m_timeStepLengths;
 
-    // private local dict
-    PyObject *m_dictLocal;
+    // initial mesh
+    dealii::Triangulation<2> m_initialMesh;
+    dealii::Triangulation<2> m_initialUnrefinedMesh;
+    bool m_isMeshing;
+
+    // read initial meshes
+    void readInitialMeshFromFile(const QString &problemDir, bool emitMeshed);
 
     virtual void readProblemFromJsonInternal(QJsonObject &rootJson);
     virtual void writeProblemToJsonInternal(QJsonObject &rootJson);
 
-    friend class CalculationThread;
     friend class PyProblem;
     friend class AgrosSolver;
     friend class Problem;
@@ -221,19 +252,12 @@ public:
 
     inline PostprocessorSetting *setting() const { return m_setting; }
 
-    // mesh
-    void meshThread();
-    // solve
-    void solveThread();
-
     inline PostDeal *postDeal() { return m_postDeal; }
     inline ProblemSolver *problemSolver() { return m_problemSolver; }
     inline SolutionStore *solutionStore() { return m_solutionStore; }
 
     bool isSolved() const;
     bool isSolving() const { return m_isSolving; }
-    bool isMeshed() const;
-    bool isMeshing() const { return m_isMeshing; }
     bool isAborted() const { return m_abort; }
     bool isPreparedForAction() const { return !isMeshing() && !isSolving() && !m_isPostprocessingRunning; }
 
@@ -249,21 +273,14 @@ public:
     double timeStepToTotalTime(int timeStepIndex) const;
     int timeLastStep() const { return m_timeStepLengths.length() - 1; }
 
-    // read initial meshes and solution
-    void readInitialMeshFromFile(bool emitMeshed, QSharedPointer<MeshGenerator> meshGenerator = QSharedPointer<MeshGenerator>(nullptr));
-
-    inline const dealii::Triangulation<2> &initialMesh() const { return m_initialMesh; }
     inline dealii::Triangulation<2> &calculationMesh() { return m_calculationMesh; }
-    inline void setCalculationMesh(dealii::Triangulation<2> newMesh) { m_calculationMesh.copy_triangulation(newMesh); }
+    inline void setCalculationMesh(const dealii::Triangulation<2> &newMesh) { m_calculationMesh.copy_triangulation(newMesh); }
 
     void propagateBoundaryMarkers();
 
     void setIsPostprocessingRunning(bool isPostprocessingRunning = true) { m_isPostprocessingRunning = isPostprocessingRunning; }
 
-    bool mesh(bool emitMeshed);
     void solve();
-
-    void meshWithGUI();
     void solveWithGUI();
 
     virtual QString problemFileName() const;
@@ -274,8 +291,9 @@ public:
     inline ComputationResults *results() const { return m_results; }
 
 signals:
-    void meshed();
     void solved();
+    void cleared();
+    void solvedWithGUI();
 
 public slots:    
     virtual void clearFields();
@@ -287,17 +305,13 @@ public slots:
 
 protected:
     bool m_isSolving;
-    bool m_isMeshing;
     bool m_abort;
 
     bool m_isPostprocessingRunning;
 
     PostprocessorSetting *m_setting;
 
-    // initial mesh
-    dealii::Triangulation<2> m_initialMesh;
-    dealii::Triangulation<2> m_initialUnrefinedMesh;
-    // calculation mesh - at the present moment we do not use multimesh
+    // calculation mesh
     dealii::Triangulation<2> m_calculationMesh;
 
     // solution store
@@ -308,15 +322,11 @@ protected:
     // problem dir in cache
     QString m_problemDir;
 
-    CalculationThread *m_calculationThread;
-
     // post deal
     ProblemSolver *m_problemSolver;
-    PostDeal *m_postDeal;
+    PostDeal *m_postDeal;   
 
     void solveInit(); // called by solve, can throw SolverException
-    void solveAction(); // called by solve, can throw SolverException
-    bool meshAction(bool emitMeshed);
 
     virtual void readProblemFromJsonInternal(QJsonObject &rootJson);
     virtual void writeProblemToJsonInternal(QJsonObject &rootJson);

@@ -156,9 +156,6 @@ public:
 
     inline QVariant defaultValue(Type type) {  return m_settingDefault[type]; }
 
-    // refine mesh
-    void refineMesh(dealii::Triangulation<2> *mesh);
-
     // name
     QString name() const;
 

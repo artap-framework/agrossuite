@@ -42,8 +42,8 @@
 
 #include <QThread>
 
-MeshGeneratorCubitExternal::MeshGeneratorCubitExternal(Computation *computation)
-    : MeshGenerator(computation)
+MeshGeneratorCubitExternal::MeshGeneratorCubitExternal(ProblemBase *problem)
+    : MeshGenerator(problem)
 {
 }
 
@@ -132,14 +132,14 @@ void MeshGeneratorCubitExternal::meshCubitCreated(int exitCode)
 bool MeshGeneratorCubitExternal::writeToCubit()
 {
     // basic check
-    if (m_computation->scene()->nodes->length() < 3)
+    if (m_problem->scene()->nodes->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_computation->scene()->nodes->length()));
+        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of nodes (%1 < 3)").arg(m_problem->scene()->nodes->length()));
         return false;
     }
-    if (m_computation->scene()->faces->length() < 3)
+    if (m_problem->scene()->faces->length() < 3)
     {
-        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_computation->scene()->faces->length()));
+        Agros2D::log()->printError(tr("Mesh generator"), tr("Invalid number of edges (%1 < 3)").arg(m_problem->scene()->faces->length()));
         return false;
     }
 
@@ -154,21 +154,21 @@ bool MeshGeneratorCubitExternal::writeToCubit()
     QString outCommands;
 
     // mesh size
-    RectPoint rect = m_computation->scene()->boundingBox();
+    RectPoint rect = m_problem->scene()->boundingBox();
     double charEdge = 0; // qMax(rect.width(), rect.height()) / 2.0;
 
-    foreach (SceneFace *edge, m_computation->scene()->faces->items())
+    foreach (SceneFace *edge, m_problem->scene()->faces->items())
         if (edge->length() > charEdge)
             charEdge = edge->length();
 
     // nodes
     QString outNodes;
     int nodesCount = 0;
-    for (int i = 0; i < m_computation->scene()->nodes->length(); i++)
+    for (int i = 0; i < m_problem->scene()->nodes->length(); i++)
     {
         outNodes += QString("Create Vertex %1\t%2\t0.0\n").
-                arg(m_computation->scene()->nodes->at(i)->point().x, 0, 'f', 10).
-                arg(m_computation->scene()->nodes->at(i)->point().y, 0, 'f', 10);
+                arg(m_problem->scene()->nodes->at(i)->point().x, 0, 'f', 10).
+                arg(m_problem->scene()->nodes->at(i)->point().y, 0, 'f', 10);
         nodesCount++;
     }
 
@@ -176,20 +176,20 @@ bool MeshGeneratorCubitExternal::writeToCubit()
     QString outEdges;
     int edgesCount = 0;
     double minEdge = numeric_limits<double>::max();
-    for (int i = 0; i<m_computation->scene()->faces->length(); i++)
+    for (int i = 0; i<m_problem->scene()->faces->length(); i++)
     {
-        if (m_computation->scene()->faces->at(i)->isStraight())
+        if (m_problem->scene()->faces->at(i)->isStraight())
         {
             // line .. increase edge index to count from 1
             outEdges += QString("Create Curve %1 %2 # straight\n").
-                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeStart()) + 1).
-                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeEnd()) + 1);
+                    arg(m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeStart()) + 1).
+                    arg(m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeEnd()) + 1);
         }
         else
         {
             // arc
             // add pseudo nodes
-            Point center = m_computation->scene()->faces->at(i)->center();
+            Point center = m_problem->scene()->faces->at(i)->center();
             outNodes += QString("Create Vertex %1\t%2\t0.0\n").
                     arg(center.x, 0, 'f', 10).
                     arg(center.y, 0, 'f', 10);
@@ -197,14 +197,14 @@ bool MeshGeneratorCubitExternal::writeToCubit()
 
             outEdges += QString("Create Curve Arc Center Vertex %1 %2 %3 # curved\n").
                     arg(nodesCount).
-                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeStart()) + 1).
-                    arg(m_computation->scene()->nodes->items().indexOf(m_computation->scene()->faces->at(i)->nodeEnd()) + 1);
+                    arg(m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeStart()) + 1).
+                    arg(m_problem->scene()->nodes->items().indexOf(m_problem->scene()->faces->at(i)->nodeEnd()) + 1);
 
             // arg(nodesCount - 1).
         }
 
-        if (m_computation->scene()->faces->at(i)->length() < minEdge)
-            minEdge = m_computation->scene()->faces->at(i)->length();
+        if (m_problem->scene()->faces->at(i)->length() < minEdge)
+            minEdge = m_problem->scene()->faces->at(i)->length();
 
         outEdges += QString("Nodeset %1 Curve %1\n").arg(edgesCount + 1);
 
@@ -213,7 +213,7 @@ bool MeshGeneratorCubitExternal::writeToCubit()
 
     try
     {
-        m_computation->scene()->loopsInfo()->processLoops();
+        m_problem->scene()->loopsInfo()->processPolygonTriangles();
     }
     catch (AgrosMeshException& ame)
     {
@@ -225,15 +225,15 @@ bool MeshGeneratorCubitExternal::writeToCubit()
     // loops
     QMap<int, QString> outLoopsLines;
 
-    for(int i = 0; i < m_computation->scene()->loopsInfo()->loops().size(); i++)
+    for(int i = 0; i < m_problem->scene()->loopsInfo()->loops().size(); i++)
     {
-        if (!m_computation->scene()->loopsInfo()->outsideLoops().contains(i))
+        if (!m_problem->scene()->loopsInfo()->outsideLoops().contains(i))
         {
-            for (int j = 0; j < m_computation->scene()->loopsInfo()->loops().at(i).size(); j++)
+            for (int j = 0; j < m_problem->scene()->loopsInfo()->loops().at(i).size(); j++)
             {
                 // if (Agros2D::problem()->scene()->loopsInfo()->loops().at(i)[j].reverse)
                 //     outLoops.append("-");
-                outLoopsLines[i+1] += QString("%1 ").arg(m_computation->scene()->loopsInfo()->loops().at(i)[j].edge + 1);
+                outLoopsLines[i+1] += QString("%1 ").arg(m_problem->scene()->loopsInfo()->loops().at(i)[j].edge + 1);
             }
         }
     }
@@ -241,16 +241,16 @@ bool MeshGeneratorCubitExternal::writeToCubit()
     // faces
     QString outLoops;
     int surfaceCount = 0;
-    for (int i = 0; i < m_computation->scene()->labels->count(); i++)
+    for (int i = 0; i < m_problem->scene()->labels->count(); i++)
     {
-        SceneLabel* label = m_computation->scene()->labels->at(i);
+        SceneLabel* label = m_problem->scene()->labels->at(i);
         if (!label->isHole())
         {
             outLoops.append(QString("Create Surface Curve "));
-            for (int j = 0; j < m_computation->scene()->loopsInfo()->labelLoops()[label].count(); j++)
+            for (int j = 0; j < m_problem->scene()->loopsInfo()->labelLoops()[label].count(); j++)
             {
                 // outLoops.append(QString("%1 ").arg(Agros2D::problem()->scene()->loopsInfo()->labelLoops()[label][j] + 1));
-                outLoops.append(QString("%1 ").arg(outLoopsLines[m_computation->scene()->loopsInfo()->labelLoops()[label][j] + 1]));
+                outLoops.append(QString("%1 ").arg(outLoopsLines[m_problem->scene()->loopsInfo()->labelLoops()[label][j] + 1]));
             }
             outLoops.append(QString("\n"));
 
@@ -350,10 +350,10 @@ bool MeshGeneratorCubitExternal::readLSDynaMeshFormat()
                     {
                         // find real marker
                         Point center = nodeList[i1] + nodeList[i2] + nodeList[i3] + nodeList[i4];
-                        SceneLabel *label = SceneLabel::findClosestLabel(m_computation->scene(), Point(center.x / 4, center.y / 4));
+                        SceneLabel *label = SceneLabel::findClosestLabel(m_problem->scene(), Point(center.x / 4, center.y / 4));
                         assert(label);
 
-                        marker = m_computation->scene()->labels->items().indexOf(label);
+                        marker = m_problem->scene()->labels->items().indexOf(label);
                     }
 
                     // fix orientation

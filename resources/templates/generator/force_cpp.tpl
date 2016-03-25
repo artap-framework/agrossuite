@@ -108,13 +108,6 @@ Point3 {{CLASS}}ForceValue::force(const Point3 &point, const Point3 &velocity)
         {{#VARIABLE_MATERIAL}}const Value *material_{{MATERIAL_VARIABLE}} = material->valueNakedPtr(QLatin1String("{{MATERIAL_VARIABLE}}"));
         {{/VARIABLE_MATERIAL}}
 
-        // update time functions
-        if (m_fieldInfo->analysisType() == AnalysisType_Transient)
-        {
-            QList<double> times = m_computation->timeStepTimes();
-            Module::updateTimeFunctions(m_computation, times[m_timeStep]);
-        }
-
         int k = 0; // only one point
         std::vector<dealii::Vector<double> > solution_values(1, dealii::Vector<double>(m_fieldInfo->numberOfSolutions()));
         std::vector<std::vector<dealii::Tensor<1,2> > >  solution_grads(1, std::vector<dealii::Tensor<1,2> >(m_fieldInfo->numberOfSolutions()));

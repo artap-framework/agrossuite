@@ -69,22 +69,24 @@ public:
     inline SceneViewParticleTracing *sceneViewParticleTracing() { return m_sceneViewParticleTracing; }
     inline SceneViewChart *sceneViewChart() { return m_sceneViewChart; }
 
-    inline QSharedPointer<Computation> computation() { return m_computation; }
+    inline QSharedPointer<Computation> currentComputation() { return m_currentComputation; }
 
     QAction *actSceneModeResults;
 
 signals:
     void modeChanged();
     void changed();
-    void connectComputation(QSharedPointer<Computation>);
 
 public slots:
     void refresh();
-    void updateSettings();
+    void solvedWithGUI();
+    void apply();
+    void processed();
+    void clearedComputation();
 
 private:
     PhysicalFieldWidget *m_fieldWidget;
-    QSharedPointer<Computation> m_computation;
+    QSharedPointer<Computation> m_currentComputation;
 
     QTabWidget *tabWidget;
     QPushButton *btnApply;
@@ -111,10 +113,10 @@ class PostprocessorSceneWidget : public QWidget
     Q_OBJECT
 
 public:
-    PostprocessorSceneWidget(PostprocessorWidget *postprocessorWidget);
+    PostprocessorSceneWidget(PhysicalFieldWidget *fieldWidget);
 
 protected:
-    PostprocessorWidget *m_postprocessorWidget;
+    PhysicalFieldWidget *m_fieldWidget;
 
 public slots:
     virtual void load() = 0;

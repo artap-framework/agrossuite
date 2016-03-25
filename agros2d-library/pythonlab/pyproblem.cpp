@@ -99,10 +99,7 @@ void PyProblem::clear()
 
 void PyProblem::setParameter(const string &key, double value)
 {
-    StringToDoubleMap parameters = m_problem->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
-    parameters[QString::fromStdString(key)] = value;
-
-    m_problem->config()->setValue(ProblemConfig::Parameters, parameters);
+    m_problem->config()->setParameter(QString::fromStdString(key), value);
 }
 
 void PyProblem::setCoordinateType(const std::string &coordinateType)
@@ -223,16 +220,6 @@ void PyComputation::clear()
         throw logic_error(QObject::tr("Problem is not solved.").toStdString());
 
     computation()->clearSolution();
-}
-
-
-void PyComputation::mesh()
-{
-    computation()->scene()->loopsInfo()->processPolygonTriangles(true);
-    computation()->mesh(true);
-
-    if (!computation()->isMeshed())
-        throw logic_error(QObject::tr("Problem is not meshed.").toStdString());
 }
 
 void PyComputation::solve()
