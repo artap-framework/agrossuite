@@ -205,6 +205,12 @@ bool ProblemBase::checkAndApplyParameters(StringToDoubleMap parameters, bool app
         // apply original parameters
         applyParametersInternal();
     }
+    else
+    {
+        m_scene->cacheGeometryConstraints();
+        // control geometry
+        m_scene->invalidate();
+    }
 
     return successfulRun;
 }

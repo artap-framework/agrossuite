@@ -117,6 +117,7 @@ private:
     void computeCenterAndRadius();
 
     friend class SceneNode;
+    friend class Scene;
 
     int m_leftLabelIdx;
     int m_rightLabelIdx;

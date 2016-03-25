@@ -866,6 +866,9 @@ void Scene::cacheGeometryConstraints()
     actNewEdge->setEnabled((nodes->length() >= 2) && (boundaries->length() >= 1));
     actNewLabel->setEnabled(materials->length() >= 1);
 
+    foreach (SceneFace *edge, faces->items())
+        edge->computeCenterAndRadius();
+
     findLyingEdgeNodes();
     findNumberOfConnectedNodeEdges();
     findCrossings();
