@@ -103,6 +103,13 @@ public:
         NSGA2_eta_m,
         NSGA2_crowdobj,
 
+        NSGA3_popsize,
+        NSGA3_ngen,
+        NSGA3_pcross,
+        NSGA3_pmut,
+        NSGA3_eta_c,
+        NSGA3_eta_m,
+
         JMetal_algorithm,
         JMetal_populationSize,
         JMetal_archiveSize,

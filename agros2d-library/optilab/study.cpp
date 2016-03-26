@@ -25,6 +25,7 @@
 
 #include "study_sweep.h"
 #include "study_nsga2.h"
+#include "study_nsga3.h"
 #include "study_nlopt.h"
 #include "study_bayesopt.h"
 #include "study_jmetal.h"
@@ -95,6 +96,8 @@ Study *Study::factory(StudyType type)
         study = new StudySweep();
     else if (type == StudyType_NSGA2)
         study = new StudyNSGA2();
+    else if (type == StudyType_NSGA3)
+        study = new StudyNSGA3();
     else if (type == StudyType_BayesOpt)
         study = new StudyBayesOpt();
     else if (type == StudyType_NLopt)

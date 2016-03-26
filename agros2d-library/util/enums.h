@@ -317,6 +317,7 @@ enum StudyType
     StudyType_Undefined = -1,
     StudyType_Sweep,
     StudyType_NSGA2,
+    StudyType_NSGA3,
     StudyType_BayesOpt,
     StudyType_NLopt,
     StudyType_JMetal

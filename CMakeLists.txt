@@ -105,6 +105,7 @@ SET(TRIANGLE_LIBRARY agros2d_3rdparty_triangle)
 SET(NLOPTLIB_LIBRARY agros2d_3rdparty_nlopt2)
 SET(BAYESOPTLIB_LIBRARY agros2d_3rdparty_bayesopt)
 SET(NSGA2_LIBRARY agros2d_3rdparty_nsga2)
+SET(NSGA3_LIBRARY agros2d_3rdparty_nsga3)
 SET(JMETALCPP_LIBRARY agros2d_3rdparty_jmetalcpp)
 
 # xerces

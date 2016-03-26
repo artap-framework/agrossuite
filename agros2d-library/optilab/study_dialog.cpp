@@ -26,6 +26,7 @@
 
 #include "study_sweep.h"
 #include "study_nsga2.h"
+#include "study_nsga3.h"
 #include "study_nlopt.h"
 #include "study_bayesopt.h"
 #include "study_jmetal.h"
@@ -250,7 +251,7 @@ StudySelectDialog::StudySelectDialog(QWidget *parent) : QDialog(parent), m_selec
 
     lstStudies = new QListWidget(this);
     lstStudies->setIconSize(QSize(24, 24));
-    lstStudies->setMinimumHeight(26*4);
+    lstStudies->setMinimumHeight(26*9);
 
     foreach (QString name, studyTypeStringKeys())
     {
@@ -321,6 +322,8 @@ StudyDialog *StudyDialog::factory(Study *study, QWidget *parent)
 {    
     if (study->type() == StudyType_NSGA2)
         return new StudyNSGA2Dialog(study, parent);
+    else if (study->type() == StudyType_NSGA3)
+        return new StudyNSGA3Dialog(study, parent);
     else if (study->type() == StudyType_BayesOpt)
         return new StudyBayesOptDialog(study, parent);
     else if (study->type() == StudyType_NLopt)
