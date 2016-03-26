@@ -70,7 +70,8 @@ solver_TRILINOS\n\
 <b>-e</b> or <b>--aggregationType</b> (<i>string</i>) : Multigrid aggregation type: Uncoupled, Coupled, MIS, Uncoupled-MIS, METIS, ParMETIS<br/>\
 <b>-o</b> or <b>--smootherType</b> (<i>string</i>) : Multigrid smoother type: Aztec, IFPACK, Jacobi, ML_symmetric_Gauss-Seidel, symmetric_Gauss-Seidel, ML_Gauss-Seidel, Gauss-Seidel, block_Gauss-Seidel, symmetric_block_Gauss-Seidel, Chebyshev, MLS, Hiptmair, Amesos-KLU, Amesos-Superlu, Amesos-UMFPACK, Amesos-Superludist, Amesos-MUMPS, user-defined, SuperLU, IFPACK-Chebyshev, self, do-nothing, IC, ICT, ILU, ILUT, Block_Chebyshev, IFPACK-Block_Chebyshev, line_Jacobi, line_Gauss-Seidel, SILU<br/>\
 <b>-z</b> or <b>--coarseType</b> (<i>string</i>) : Multigrid coarser type: Aztec, IFPACK, Jacobi, ML_symmetric_Gauss-Seidel, symmetric_Gauss-Seidel, ML_Gauss-Seidel, Gauss-Seidel, block_Gauss-Seidel, symmetric_block_Gauss-Seidel, Chebyshev, MLS, Hiptmair, Amesos-KLU, Amesos-Superlu, Amesos-UMFPACK, Amesos-Superludist, Amesos-MUMPS, user-defined, SuperLU, IFPACK-Chebyshev, self, do-nothing, IC, ICT, ILU, ILUT, Block_Chebyshev, IFPACK-Block_Chebyshev, line_Jacobi, line_Gauss-Seidel, SILU<br/>\
-<b>-x</b> or <b>--max_iter</b> (<i>int</i>)")
+<b>-x</b> or <b>--max_iter</b> (<i>int</i>)<br/>\
+<b>-w</b> or <b>--num_sweeps</b> (<i>int</i>) : Number of sweeps")
 
 #<b>-a</b> or <b>--abs_tol</b> (<i>double</i>)
 
