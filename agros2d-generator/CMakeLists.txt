@@ -49,7 +49,6 @@ IF(WIN32)
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/material_xml.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/form_xml.cpp
-    ${CMAKE_HOME_DIRECTORY}/resources_source/classes/test_xml.cpp
 )
 ENDIF(WIN32)
     

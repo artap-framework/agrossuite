@@ -89,7 +89,6 @@ SET(SOURCES
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/material_xml.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/module_xml.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp
-    ${CMAKE_HOME_DIRECTORY}/resources_source/classes/test_xml.cpp
     chartdialog.cpp
     confdialog.cpp
     datatable.cpp
@@ -149,7 +148,6 @@ SET(SOURCES
     pythonlab/pygeometry.cpp
     pythonlab/pyparticletracing.cpp
     pythonlab/pyproblem.cpp
-    pythonlab/python_unittests.cpp
     pythonlab/pythonengine_agros.cpp
     scene.cpp
     scenebasic.cpp
@@ -212,8 +210,7 @@ SOURCE_GROUP(
   ${CMAKE_HOME_DIRECTORY}/resources_source/classes/form_xml.cpp
   ${CMAKE_HOME_DIRECTORY}/resources_source/classes/material_xml.cpp
   ${CMAKE_HOME_DIRECTORY}/resources_source/classes/module_xml.cpp
-  ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp
-  ${CMAKE_HOME_DIRECTORY}/resources_source/classes/test_xml.cpp
+  ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp  
 )
 
 SOURCE_GROUP(
@@ -250,7 +247,6 @@ SOURCE_GROUP(
   pythonlab/pygeometry.cpp
   pythonlab/pyparticletracing.cpp
   pythonlab/pyproblem.cpp
-  pythonlab/python_unittests.cpp
   pythonlab/pythonengine_agros.cpp
 )
 
@@ -375,8 +371,7 @@ SET(HEADERS
   pythonlab/pyfield.h
   pythonlab/pygeometry.h
   pythonlab/pyparticletracing.h
-  pythonlab/pyproblem.h
-  pythonlab/python_unittests.h
+  pythonlab/pyproblem.h  
   pythonlab/pythonengine_agros.h
   scene.h
   scenebasic.h
@@ -472,7 +467,6 @@ SOURCE_GROUP(
   pythonlab/pygeometry.h
   pythonlab/pyparticletracing.h
   pythonlab/pyproblem.h
-  pythonlab/python_unittests.h
   pythonlab/pythonengine_agros.h
 )
 

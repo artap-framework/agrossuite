@@ -42,7 +42,6 @@
 #include "chartdialog.h"
 #include "confdialog.h"
 #include "pythonlab/pythonengine_agros.h"
-#include "pythonlab/python_unittests.h"
 #include "optilab/optilab.h"
 #include "videodialog.h"
 #include "materialbrowserdialog.h"
@@ -273,9 +272,6 @@ void MainWindow::createActions()
     actOptions->setMenuRole(QAction::PreferencesRole);
     connect(actOptions, SIGNAL(triggered()), this, SLOT(doOptions()));
 
-    actUnitTests = new QAction(tr("Unit tests..."), this);
-    connect(actUnitTests, SIGNAL(triggered()), this, SLOT(doUnitTests()));
-
     actFullScreen = new QAction(icon("view-fullscreen"), tr("Fullscreen mode"), this);
     actFullScreen->setShortcut(QKeySequence(tr("F11")));
     connect(actFullScreen, SIGNAL(triggered()), this, SLOT(doFullScreen()));
@@ -409,8 +405,6 @@ void MainWindow::createMenus()
     readCustomScripts(mnuCustomForms, consoleView->console(), this);
 
     mnuSettings = menuBar()->addMenu(tr("S&ettings"));
-    mnuSettings->addAction(actUnitTests);
-    mnuSettings->addSeparator();
     mnuSettings->addAction(actHideControlPanel);
     mnuSettings->addAction(actFullScreen);
     mnuSettings->addSeparator();
@@ -1028,14 +1022,6 @@ void MainWindow::doOptions()
         sceneViewProblem->refresh();
         setControls();
     }
-}
-
-void MainWindow::doUnitTests()
-{
-    UnitTestsWidget unit(this);
-    connect(&unit, SIGNAL(openInPythonLab(QString, QString)), scriptEditor, SLOT(doFileOpenAndFind(QString, QString)));
-    connect(&unit, SIGNAL(openInPythonLab(QString, QString)), scriptEditor, SLOT(show()));
-    unit.exec();
 }
 
 void MainWindow::doTransform()
