@@ -194,6 +194,10 @@ double Value::numberAtPoint(const Point &point) const
     if (!isCoordinateDependent())
         return number();
 
+    if ((fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") - point.x) < EPS_ZERO)
+            && (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") - point.y) < EPS_ZERO))
+        return number();
+
     {
         tbb::mutex::scoped_lock lock(numberAtPointMutex);
 
@@ -212,6 +216,9 @@ double Value::numberAtTime(double time) const
     if (!isTimeDependent())
         return number();
 
+    if (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") - time) < EPS_ZERO)
+        return number();
+
     {
         tbb::mutex::scoped_lock lock(numberAtTimeMutex);
 
@@ -225,6 +232,11 @@ double Value::numberAtTime(double time) const
 double Value::numberAtTimeAndPoint(const double time, const Point &point) const
 {
     if (!isTimeDependent() && !isCoordinateDependent())
+        return number();
+
+    if ((fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("time") - time) < EPS_ZERO)
+            && (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("x") - point.x) < EPS_ZERO)
+            && (fabs(m_exprtkExpr->get_symbol_table(LOCAL_SYMBOL_TABLE).variable_ref("y") - point.y) < EPS_ZERO))
         return number();
 
     {
