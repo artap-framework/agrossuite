@@ -83,6 +83,7 @@ public slots:
     void apply();
     void processed();
     void clearedComputation();
+    void createVideo();
 
 private:
     PhysicalFieldWidget *m_fieldWidget;
@@ -90,6 +91,7 @@ private:
 
     QTabWidget *tabWidget;
     QPushButton *btnApply;
+    QPushButton *btnCreateVideo;
 
     PostprocessorSceneMeshWidget *m_meshWidget;
     PostprocessorScenePost2DWidget *m_post2DWidget;

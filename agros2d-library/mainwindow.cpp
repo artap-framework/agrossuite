@@ -43,7 +43,6 @@
 #include "confdialog.h"
 #include "pythonlab/pythonengine_agros.h"
 #include "optilab/optilab.h"
-#include "videodialog.h"
 #include "materialbrowserdialog.h"
 #include "solver/module.h"
 #include "solver/problem.h"
@@ -236,9 +235,6 @@ void MainWindow::createActions()
     actDocumentSaveGeometry = new QAction(tr("Export geometry..."), this);
     connect(actDocumentSaveGeometry, SIGNAL(triggered()), this, SLOT(doDocumentSaveGeometry()));
 
-    actCreateVideo = new QAction(tr("Create &video..."), this);
-    connect(actCreateVideo, SIGNAL(triggered()), this, SLOT(doCreateVideo()));
-
     actExit = new QAction(tr("E&xit"), this);
     actExit->setShortcut(tr("Ctrl+Q"));
     actExit->setMenuRole(QAction::QuitRole);
@@ -397,7 +393,6 @@ void MainWindow::createMenus()
 
     mnuTools = menuBar()->addMenu(tr("&Tools"));
     mnuTools->addAction(actMaterialBrowser);
-    mnuTools->addAction(actCreateVideo);
     // read custom forms
     mnuTools->addSeparator();
     mnuCustomForms = new QMenu(tr("Custom forms"), this);
@@ -927,39 +922,6 @@ void MainWindow::doDocumentSaveGeometry()
 
         if (fileInfo.absoluteDir() != tempProblemDir())
             settings.setValue("General/LastImageDir", fileInfo.absolutePath());
-    }
-}
-
-void MainWindow::doCreateVideo()
-{
-    VideoDialog *videoDialog = nullptr;
-
-    switch (postprocessorWidget->mode())
-    {
-    case PostprocessorWidgetMode_Mesh:
-        videoDialog = new VideoDialog(postprocessorWidget->sceneViewMesh(), postprocessorWidget->currentComputation().data(), this);
-        break;
-    case PostprocessorWidgetMode_Post2D:
-        videoDialog = new VideoDialog(postprocessorWidget->sceneViewMesh(), postprocessorWidget->currentComputation().data(), this);
-        break;
-    case PostprocessorWidgetMode_Chart:
-        videoDialog = new VideoDialog(postprocessorWidget->sceneViewMesh(), postprocessorWidget->currentComputation().data(), this);
-        break;
-    default:
-        break;
-    }
-
-    // if (sceneViewMesh->actSceneModeMesh->isChecked())
-    //
-    // else if (sceneViewPost2D->actSceneModePost2D->isChecked())
-    //     videoDialog = new VideoDialog(sceneViewPost2D, postDeal, this);
-    // else if (sceneViewPost3D->actSceneModePost3D->isChecked())
-    //    videoDialog = new VideoDialog(sceneViewPost3D, postDeal, this);
-
-    if (videoDialog)
-    {
-        videoDialog->showDialog();
-        delete videoDialog;
     }
 }
 

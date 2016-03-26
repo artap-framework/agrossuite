@@ -88,7 +88,6 @@ private slots:
     void doOptions();
     void doTransform();
     void doMaterialBrowser();
-    void doCreateVideo();    
 
     void doHideControlPanel();
     void doFullScreen();
@@ -152,7 +151,6 @@ private:
     QAction *actFullScreen;
 
     QAction *actMaterialBrowser;
-    QAction *actCreateVideo;
 
     QAction *actMesh;
     QAction *actSolve;

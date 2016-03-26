@@ -38,6 +38,7 @@
 #include "sceneview_post2d.h"
 #include "sceneview_post3d.h"
 #include "chartdialog.h"
+#include "videodialog.h"
 
 #include "pythonlab/pythonengine_agros.h"
 
@@ -85,6 +86,14 @@ void PostprocessorWidget::createControls()
     btnApply = new QPushButton(tr("Apply"));
     connect(btnApply, SIGNAL(clicked()), SLOT(apply()));
 
+    btnCreateVideo = new QPushButton(tr("Create video"));
+    connect(btnCreateVideo, SIGNAL(clicked()), SLOT(createVideo()));
+
+    QHBoxLayout *layoutButtons = new QHBoxLayout();
+    layoutButtons->addWidget(btnCreateVideo);
+    layoutButtons->addStretch();
+    layoutButtons->addWidget(btnApply);
+
     tabWidget = new QTabWidget();
     tabWidget->addTab(m_meshWidget, tr("Mesh"));
     tabWidget->addTab(m_post2DWidget, tr("2D view"));
@@ -97,7 +106,7 @@ void PostprocessorWidget::createControls()
     layoutMain->setContentsMargins(2, 2, 2, 3);
     layoutMain->addWidget(m_fieldWidget);
     layoutMain->addWidget(tabWidget);
-    layoutMain->addWidget(btnApply, 0, Qt::AlignRight);
+    layoutMain->addLayout(layoutButtons);
 
     setLayout(layoutMain);
 }
@@ -242,6 +251,32 @@ void PostprocessorWidget::processed()
     m_sceneViewPost3D->refresh();
     m_sceneViewChart->refresh();
     m_sceneViewParticleTracing->refresh();
+}
+
+void PostprocessorWidget::createVideo()
+{
+    VideoDialog *videoDialog = nullptr;
+
+    switch (mode())
+    {
+    case PostprocessorWidgetMode_Mesh:
+        videoDialog = new VideoDialog(m_sceneViewMesh, currentComputation().data(), this);
+        break;
+    case PostprocessorWidgetMode_Post2D:
+        videoDialog = new VideoDialog(m_sceneViewPost2D, currentComputation().data(), this);
+        break;
+    case PostprocessorWidgetMode_Chart:
+        videoDialog = new VideoDialog(m_sceneViewPost3D, currentComputation().data(), this);
+        break;
+    default:
+        break;
+    }
+
+    if (videoDialog)
+    {
+        videoDialog->showDialog();
+        delete videoDialog;
+    }
 }
 
 PostprocessorWidgetMode PostprocessorWidget::mode()

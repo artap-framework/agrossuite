@@ -275,6 +275,7 @@ void VideoDialog::setTransientStep(int transientStep)
     m_computation->postDeal()->setActiveTimeStep(transientStep);
     m_computation->postDeal()->setActiveAdaptivityStep(m_computation->solutionStore()->lastAdaptiveStep(m_computation->postDeal()->activeViewField(), transientStep));
     m_computation->postDeal()->refresh();
+    m_sceneView->refresh();
 
     if (chkSaveImages->isChecked())
         m_sceneView->saveImageToFile(tempProblemDir() + QString("/video/video_%1.png").arg(QString("0000000" + QString::number(transientStep)).right(8)));
@@ -324,6 +325,7 @@ void VideoDialog::setAdaptiveStep(int adaptiveStep)
 
     m_computation->postDeal()->setActiveAdaptivityStep(adaptiveStep - 1);
     m_computation->postDeal()->refresh();
+    m_sceneView->refresh();
 
     sliderAdaptiveAnimate->setValue(adaptiveStep);
     lblAdaptiveStep->setText(QString("%1 / %2").arg(adaptiveStep).arg(m_adaptiveSteps));
