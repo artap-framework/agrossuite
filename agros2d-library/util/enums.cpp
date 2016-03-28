@@ -330,7 +330,6 @@ void initLists()
     studyTypeList.insert(StudyType_NSGA3, "nsga3");
     studyTypeList.insert(StudyType_BayesOpt, "bayesopt");
     studyTypeList.insert(StudyType_NLopt, "nlopt");
-    studyTypeList.insert(StudyType_JMetal, "jmetal");
 
     // computation result type
     computationResultTypeList.insert(ComputationResultType_Functional, "functional");
@@ -837,8 +836,6 @@ QString studyTypeString(StudyType type)
         return QObject::tr("BayesOpt (Bayesian optimization)");
     case StudyType_NLopt:
         return QObject::tr("NLopt (nonlinear optimization)");
-    case StudyType_JMetal:
-        return QObject::tr("JMetal (naturally multiobjective)");
     default:
         std::cerr << "Study type '" + QString::number(type).toStdString() + "' is not implemented. studyTypeString(StudyType type)" << endl;
         throw;

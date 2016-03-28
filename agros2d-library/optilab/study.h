@@ -95,6 +95,9 @@ public:
         BayesOpt_n_iter_relearn,
         BayesOpt_init_method,
         BayesOpt_surr_name,
+        BayesOpt_surr_noise,
+        BayesOpt_l_type,
+        BayesOpt_sc_type,
 
         NSGA2_popsize,
         NSGA2_ngen,
@@ -110,17 +113,6 @@ public:
         NSGA3_pmut,
         NSGA3_eta_c,
         NSGA3_eta_m,
-
-        JMetal_algorithm,
-        JMetal_populationSize,
-        JMetal_archiveSize,
-        JMetal_maxEvaluations,
-        JMetal_crossoverProbability,
-        JMetal_crossoverDistributionIndex,
-        JMetal_crossoverWeightParameter,
-        JMetal_mutationProbability,
-        JMetal_mutationPerturbation,
-        JMetal_mutationDistributionIndex,
 
         View_ChartHorizontal,
         View_ChartVertical,

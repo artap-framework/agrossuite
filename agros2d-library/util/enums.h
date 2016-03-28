@@ -319,8 +319,7 @@ enum StudyType
     StudyType_NSGA2,
     StudyType_NSGA3,
     StudyType_BayesOpt,
-    StudyType_NLopt,
-    StudyType_JMetal
+    StudyType_NLopt
 };
 
 enum ResultRecipeType

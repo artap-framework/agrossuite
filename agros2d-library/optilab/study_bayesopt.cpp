@@ -23,6 +23,7 @@
 #include "parameter.h"
 
 #include "util/global.h"
+#include "gui/lineeditdouble.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
 #include "solver/solutionstore.h"
@@ -106,8 +107,9 @@ void StudyBayesOpt::solve()
     par.n_iter_relearn = value(BayesOpt_n_iter_relearn).toInt();
     par.init_method = value(BayesOpt_init_method).toInt();
     par.surr_name = value(BayesOpt_surr_name).toString().toStdString();
-    par.l_type = L_MCMC;
-    par.noise = 1e-10;
+    par.l_type = (learning_type) value(BayesOpt_l_type).toInt();
+    par.sc_type = (score_type) value(BayesOpt_sc_type).toInt();
+    par.noise = value(Study::BayesOpt_surr_noise).toDouble();
     par.random_seed = 0;
     par.verbose_level = 1;
 
@@ -148,6 +150,9 @@ void StudyBayesOpt::setDefaultValues()
     m_settingDefault[BayesOpt_n_iter_relearn] = 5;
     m_settingDefault[BayesOpt_init_method] = 1; // 1-LHS, 2-Sobol    
     m_settingDefault[BayesOpt_surr_name] = "sGaussianProcessML";
+    m_settingDefault[BayesOpt_surr_noise] = 1e-10;
+    m_settingDefault[BayesOpt_l_type] = L_EMPIRICAL;
+    m_settingDefault[BayesOpt_sc_type] = SC_MAP;
 }
 
 void StudyBayesOpt::setStringKeys()
@@ -159,6 +164,9 @@ void StudyBayesOpt::setStringKeys()
     m_settingKey[BayesOpt_n_iter_relearn] = "BayesOpt_n_iter_relearn";
     m_settingKey[BayesOpt_init_method] = "BayesOpt_init_method";    
     m_settingKey[BayesOpt_surr_name] = "BayesOpt_surr_name";
+    m_settingKey[BayesOpt_surr_noise] = "BayesOpt_surr_noise";
+    m_settingKey[BayesOpt_l_type] = "BayesOpt_l_type";
+    m_settingKey[BayesOpt_sc_type] = "BayesOpt_sc_type";
 }
 
 // *****************************************************************************************************
@@ -188,13 +196,6 @@ QLayout *StudyBayesOptDialog::createStudyControls()
     cmbInitMethod->addItem(tr("Sobol Sequences"), 2);
     // cmbInitMethod->addItem(tr("Uniform Sampling"), 3);
 
-    cmbSurrNameMethod = new QComboBox(this);
-    cmbSurrNameMethod->addItem(tr("Gaussian process (hyperparameters are known)"), "sGaussianProcess");
-    cmbSurrNameMethod->addItem(tr("Gaussian process (hyperparameters are estimated using maximum likelihood estimates)"), "sGaussianProcessML");
-    cmbSurrNameMethod->addItem(tr("Gaussian process with a Normal prior on the mean function parameters"), "sGaussianProcessNormal");
-    cmbSurrNameMethod->addItem(tr("Student's t process with a Jeffreys prior"), "sStudentTProcessJef");
-    cmbSurrNameMethod->addItem(tr("Student's t process with a Normal prior on the mean function parameters)"), "sStudentTProcessNIG");
-
     QGridLayout *layoutInitialization = new QGridLayout(this);
     layoutInitialization->addWidget(new QLabel(tr("Number of initial samples:")), 0, 0);
     layoutInitialization->addWidget(txtNInitSamples, 0, 1);
@@ -204,14 +205,53 @@ QLayout *StudyBayesOptDialog::createStudyControls()
     layoutInitialization->addWidget(txtNIterations, 2, 1);
     layoutInitialization->addWidget(new QLabel(tr("Number of iterations between re-learning:")), 3, 0);
     layoutInitialization->addWidget(txtNIterRelearn, 3, 1);
-    layoutInitialization->addWidget(new QLabel(tr("Surrogate model:")), 4, 0);
-    layoutInitialization->addWidget(cmbSurrNameMethod, 4, 1);
 
     QGroupBox *grpInitialization = new QGroupBox(tr("Initialization"), this);
     grpInitialization->setLayout(layoutInitialization);
 
+    cmbSurrogateNameMethod = new QComboBox(this);
+    cmbSurrogateNameMethod->addItem(tr("Gaussian process (hyperparameters are known)"), "sGaussianProcess");
+    cmbSurrogateNameMethod->addItem(tr("Gaussian process (hyperparameters are estimated using maximum likelihood estimates)"), "sGaussianProcessML");
+    cmbSurrogateNameMethod->addItem(tr("Gaussian process with a Normal prior on the mean function parameters"), "sGaussianProcessNormal");
+    cmbSurrogateNameMethod->addItem(tr("Student's t process with a Jeffreys prior"), "sStudentTProcessJef");
+    cmbSurrogateNameMethod->addItem(tr("Student's t process with a Normal prior on the mean function parameters)"), "sStudentTProcessNIG");
+
+    txtSurrogateNoise = new LineEditDouble(0.0);
+    txtSurrogateNoise->setBottom(0.0);
+
+    QGridLayout *layoutSurrogate = new QGridLayout(this);
+    layoutSurrogate->addWidget(new QLabel(tr("Function:")), 0, 0);
+    layoutSurrogate->addWidget(cmbSurrogateNameMethod, 0, 1);
+    layoutSurrogate->addWidget(new QLabel(tr("Noise:")), 1, 0);
+    layoutSurrogate->addWidget(txtSurrogateNoise, 1, 1);
+
+    QGroupBox *grpSurrogate = new QGroupBox(tr("Surrogate model parameters"), this);
+    grpSurrogate->setLayout(layoutSurrogate);
+
+    cmbHPLearningMethod = new QComboBox(this);
+    cmbHPLearningMethod->addItem(tr("Fixed"), L_FIXED);
+    cmbHPLearningMethod->addItem(tr("Emperical"), L_EMPIRICAL);
+    cmbHPLearningMethod->addItem(tr("MCMC"), L_MCMC);
+
+    cmbHPScoreFunction = new QComboBox(this);
+    cmbHPScoreFunction->addItem(tr("Leave one out cross-validation"), SC_LOOCV);
+    cmbHPScoreFunction->addItem(tr("Maximum total likelihood"), SC_MTL);
+    cmbHPScoreFunction->addItem(tr("Posterior maximum likelihood "), SC_ML);
+    cmbHPScoreFunction->addItem(tr("Maximum a posteriori"), SC_MAP);
+
+    QGridLayout *layoutKernelParameters = new QGridLayout(this);
+    layoutKernelParameters->addWidget(new QLabel(tr("Learning method:")), 0, 0);
+    layoutKernelParameters->addWidget(cmbHPLearningMethod, 0, 1);
+    layoutKernelParameters->addWidget(new QLabel(tr("Score function:")), 1, 0);
+    layoutKernelParameters->addWidget(cmbHPScoreFunction, 1, 1);
+
+    QGroupBox *grpKernelParameters = new QGroupBox(tr("Kernel parameters"), this);
+    grpKernelParameters->setLayout(layoutKernelParameters);
+
     QVBoxLayout *layoutMain = new QVBoxLayout(this);
     layoutMain->addWidget(grpInitialization);
+    layoutMain->addWidget(grpSurrogate);
+    layoutMain->addWidget(grpKernelParameters);
 
     return layoutMain;
 }
@@ -224,7 +264,10 @@ void StudyBayesOptDialog::load()
     txtNIterations->setValue(study()->value(Study::BayesOpt_n_iterations).toInt());
     txtNIterRelearn->setValue(study()->value(Study::BayesOpt_n_iter_relearn).toInt());
     cmbInitMethod->setCurrentIndex(cmbInitMethod->findData(study()->value(Study::BayesOpt_init_method).toInt()));
-    cmbSurrNameMethod->setCurrentIndex(cmbSurrNameMethod->findData(study()->value(Study::BayesOpt_surr_name).toString()));
+    cmbSurrogateNameMethod->setCurrentIndex(cmbSurrogateNameMethod->findData(study()->value(Study::BayesOpt_surr_name).toString()));
+    txtSurrogateNoise->setValue(study()->value(Study::BayesOpt_surr_noise).toDouble());
+    cmbHPLearningMethod->setCurrentIndex(cmbHPLearningMethod->findData(study()->value(Study::BayesOpt_l_type).toInt()));
+    cmbHPScoreFunction->setCurrentIndex(cmbHPScoreFunction->findData(study()->value(Study::BayesOpt_sc_type).toInt()));
 }
 
 void StudyBayesOptDialog::save()
@@ -235,5 +278,8 @@ void StudyBayesOptDialog::save()
     study()->setValue(Study::BayesOpt_n_iterations, txtNIterations->value());
     study()->setValue(Study::BayesOpt_n_iter_relearn, txtNIterRelearn->value());
     study()->setValue(Study::BayesOpt_init_method, cmbInitMethod->itemData(cmbInitMethod->currentIndex()).toInt());
-    study()->setValue(Study::BayesOpt_surr_name, cmbSurrNameMethod->itemData(cmbSurrNameMethod->currentIndex()).toString());
+    study()->setValue(Study::BayesOpt_surr_name, cmbSurrogateNameMethod->itemData(cmbSurrogateNameMethod->currentIndex()).toString());
+    study()->setValue(Study::BayesOpt_surr_noise, txtSurrogateNoise->value());
+    study()->setValue(Study::BayesOpt_l_type, (learning_type) cmbHPLearningMethod->itemData(cmbHPLearningMethod->currentIndex()).toInt());
+    study()->setValue(Study::BayesOpt_sc_type, (score_type) cmbHPScoreFunction->itemData(cmbHPScoreFunction->currentIndex()).toInt());
 }

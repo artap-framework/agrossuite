@@ -29,7 +29,6 @@
 #include "study_nsga3.h"
 #include "study_nlopt.h"
 #include "study_bayesopt.h"
-#include "study_jmetal.h"
 
 #include "qcustomplot/qcustomplot.h"
 
@@ -330,8 +329,6 @@ StudyDialog *StudyDialog::factory(Study *study, QWidget *parent)
         return new StudyNLoptDialog(study, parent);
     else if (study->type() == StudyType_Sweep)
         return new StudySweepDialog(study, parent);
-    else if (study->type() == StudyType_JMetal)
-        return new StudyJMetalDialog(study, parent);
     else
         assert(0);
 

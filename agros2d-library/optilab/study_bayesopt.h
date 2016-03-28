@@ -78,7 +78,10 @@ private:
     QSpinBox *txtNIterations;
     QSpinBox *txtNIterRelearn;
     QComboBox *cmbInitMethod;
-    QComboBox *cmbSurrNameMethod;
+    QComboBox *cmbSurrogateNameMethod;
+    LineEditDouble *txtSurrogateNoise;
+    QComboBox *cmbHPLearningMethod;
+    QComboBox *cmbHPScoreFunction;
 };
 
 #endif // STUDY_BAYESOPT_H
