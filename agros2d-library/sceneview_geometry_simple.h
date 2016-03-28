@@ -36,22 +36,36 @@ public slots:
     virtual void refresh();
 
 public:
-    SceneViewSimpleGeometry(QWidget *parent, PhysicalFieldWidget *fieldWidget);
-    ~SceneViewSimpleGeometry();
+    SceneViewSimpleGeometry(QWidget *parent);
+    virtual ~SceneViewSimpleGeometry();
 
-    void setChartLine(ChartLine chartLine);
+    void setProblem(QSharedPointer<ProblemBase> problem) { m_problem = problem; updateGL(); }
+
+protected:
+    QSharedPointer<ProblemBase> m_problem;
+
+    virtual void doZoomRegion(const Point &start, const Point &end);
+
+    virtual ProblemBase *problem() const { return m_problem.data(); }
+
+    void paintGL();
+    void paintGeometry(); // paint nodes, edges and labels
+};
+
+class SceneViewSimpleGeometryChart : public SceneViewSimpleGeometry
+{
+    Q_OBJECT
+
+public:
+    SceneViewSimpleGeometryChart(QWidget *parent);
+    virtual ~SceneViewSimpleGeometryChart();
+
+    void setChartLine(const ChartLine &chartLine);
 
 protected:
     void paintGL();
-    virtual void doZoomRegion(const Point &start, const Point &end);
-
-    virtual ProblemBase *problem() const;
-
     void paintChartLine();
-    void paintGeometry(); // paint nodes, edges and labels
 
-private:
-    PhysicalFieldWidget *m_fieldWidget;
     ChartLine m_chartLine;
 };
 

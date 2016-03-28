@@ -27,15 +27,14 @@ const QString TYPE = "type";
 const QString EXPRESSION = "expression";
 const QString WEIGHT = "weight";
 
-Functional::Functional(const QString &name, FunctionalType type, const QString &expression, int weight) :
-    m_name(name), m_type(type), m_expression(expression), m_weight(weight)
+Functional::Functional(const QString &name, const QString &expression, int weight) :
+    m_name(name), m_expression(expression), m_weight(weight)
 {
 }
 
 void Functional::load(QJsonObject &object)
 {
     m_name = object[NAME].toString();
-    m_type = functionalTypeFromStringKey(object[TYPE].toString());
     m_expression = object[EXPRESSION].toString();
     m_weight = object[WEIGHT].toInt();
 }
@@ -43,7 +42,6 @@ void Functional::load(QJsonObject &object)
 void Functional::save(QJsonObject &object)
 {
     object[NAME] = m_name;
-    object[TYPE] = functionalTypeToStringKey(m_type);
     object[EXPRESSION] = m_expression;
     object[WEIGHT] = m_weight;
 }
@@ -64,7 +62,7 @@ bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
     QString error;
     if (compileExpression(m_expression, expr, &error))
     {
-        computation->results()->setResult(m_name, expr.value());
+        computation->results()->setResult(m_name, expr.value(), ComputationResultType_Functional);
         return true;
     }
     else

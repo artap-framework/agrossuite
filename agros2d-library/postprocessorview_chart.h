@@ -26,7 +26,7 @@
 
 class PostDeal;
 class SceneViewChart;
-class SceneViewSimpleGeometry;
+class SceneViewSimpleGeometryChart;
 class LocalValue;
 
 // definition of chart line
@@ -58,10 +58,10 @@ public:
     PostprocessorSceneChartWidget(PhysicalFieldWidget *fieldWidget, SceneViewChart *sceneChart);
 
 private:    
-    SceneViewChart *m_sceneChart;
+    SceneViewChart *sceneChart;
 
     // variable widget
-    SceneViewSimpleGeometry *geometryViewer;
+    SceneViewSimpleGeometryChart *geometryViewer;
 
     QTabWidget* tbxAnalysisType;
 

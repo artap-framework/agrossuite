@@ -38,9 +38,6 @@ namespace XMLProblem
 typedef QMap<QString, double> StringToDoubleMap;
 Q_DECLARE_METATYPE(StringToDoubleMap)
 
-typedef QMap<QString, QVariant> StringToVariantMap;
-Q_DECLARE_METATYPE(StringToVariantMap)
-
 class ProblemConfig : public QObject
 {
     Q_OBJECT

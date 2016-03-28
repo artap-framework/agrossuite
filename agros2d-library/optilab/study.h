@@ -78,6 +78,7 @@ public:
     enum Type
     {
         General_ClearSolution,
+        General_SolveProblem,
 
         NLopt_xtol_rel,
         NLopt_xtol_abs,
@@ -121,12 +122,12 @@ public:
         JMetal_mutationPerturbation,
         JMetal_mutationDistributionIndex,
 
-        View_ChartX,
-        View_ChartY,
-        View_ChartLogX,
-        View_ChartLogY,
+        View_ChartHorizontal,
+        View_ChartVertical,
+        View_ChartLogHorizontal,
+        View_ChartLogVertical,
         View_ChartShowTrend,
-        View_ChartShowAverageValue,
+        View_ChartShowAverageValue
     };
 
     Study(QList<ComputationSet> computations = QList<ComputationSet>());
@@ -139,9 +140,6 @@ public:
 
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
-
-    inline QString name() { return m_name; }
-    inline void setName(const QString &name) { m_name = name; }
 
     void addParameter(Parameter parameter) { m_parameters.append(parameter); }
     void removeParameter(const QString &name);
@@ -191,8 +189,6 @@ signals:
     void solved();
 
 protected:
-    QString m_name;
-
     QList<Parameter> m_parameters;
     QList<Functional> m_functionals;
     QList<ComputationSet> m_computationSets;

@@ -162,7 +162,7 @@ class ComputationResults
 {
 public:
     ComputationResults(StringToDoubleMap items = StringToDoubleMap(),
-                       StringToVariantMap info = StringToVariantMap());
+                       QMap<QString, ComputationResultType> types = QMap<QString, ComputationResultType>());
     ~ComputationResults();
 
     void clear();
@@ -172,21 +172,16 @@ public:
 
     // results
     inline StringToDoubleMap &items() { return m_results; }
+    inline QMap<QString, ComputationResultType> &types() { return m_types; }
     inline double resultValue(const QString &key) const { return m_results[key]; }
+    inline ComputationResultType resultType(const QString &key) const { return m_types[key]; }
     inline bool hasResults() const { return !m_results.isEmpty(); }
-    inline void setResult(const QString &key, double value) { m_results[key] = value; }
-    inline void removeResult(const QString &key) { m_results.remove(key); }
-
-    // info
-    inline StringToVariantMap &info() { return m_info; }
-    inline QVariant infoValue(const QString &key) const { return m_info[key]; }
-    inline bool hasInfo() const { return !m_info.isEmpty(); }
-    inline void setInfo(const QString &key, QVariant value) { m_info[key] = value; }
-    inline void removeInfo(const QString &key) { m_info.remove(key); }
+    inline void setResult(const QString &key, double value, ComputationResultType type) { m_results[key] = value; m_types[key] = type; }
+    inline void removeResult(const QString &key) { m_results.remove(key); m_types.remove(key); }
 
 private:
     StringToDoubleMap m_results;
-    StringToVariantMap m_info;
+    QMap<QString, ComputationResultType> m_types;
 };
 
 #endif // PROBLEM_CONFIG_H

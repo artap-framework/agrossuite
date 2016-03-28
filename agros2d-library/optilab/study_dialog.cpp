@@ -39,7 +39,7 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
     setModal(true);
 
     setWindowIcon(icon("run"));
-    setWindowTitle(study->name());
+    setWindowTitle(studyTypeString(study->type()));
     setAttribute(Qt::WA_DeleteOnClose);
 
     createControls();
@@ -251,7 +251,7 @@ StudySelectDialog::StudySelectDialog(QWidget *parent) : QDialog(parent), m_selec
 
     lstStudies = new QListWidget(this);
     lstStudies->setIconSize(QSize(24, 24));
-    lstStudies->setMinimumHeight(26*9);
+    lstStudies->setMinimumHeight(28*10);
 
     foreach (QString name, studyTypeStringKeys())
     {
@@ -292,7 +292,7 @@ StudySelectDialog::StudySelectDialog(QWidget *parent) : QDialog(parent), m_selec
     }
 
     int w = sizeHint().width() + 20;
-    int h = 1.0/5.0 * QApplication::desktop()->screenGeometry().height();
+    int h = 1.5/5.0 * QApplication::desktop()->screenGeometry().height();
 
     setMinimumSize(w, h);
     setMaximumSize(w, h);
@@ -356,14 +356,28 @@ int StudyDialog::showDialog()
 void StudyDialog::createControls()
 {
     // dialog buttons
-    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(doAccept()));
-    connect(buttonBox, SIGNAL(rejected()), this, SLOT(close()));
+    QPushButton *btnApply = new QPushButton(tr("OK"));
+    connect(btnApply, SIGNAL(clicked()), this, SLOT(doAccept()));
+    btnApply->setDefault(true);
+
+    QPushButton *btnClose = new QPushButton(tr("Close"));
+    connect(btnClose, SIGNAL(clicked()), this, SLOT(close()));
+
+    QPushButton *btnDuplicate = new QPushButton(tr("Duplicate"));
+    connect(btnDuplicate, SIGNAL(clicked()), this, SLOT(doDuplicate()));
+
+    QHBoxLayout *layoutButtonBox = new QHBoxLayout();
+    layoutButtonBox->addStretch();
+    layoutButtonBox->addWidget(btnDuplicate);
+    layoutButtonBox->addWidget(btnApply);
+    layoutButtonBox->addWidget(btnClose);
 
     chkClearSolution = new QCheckBox(tr("Clear solution after solving the problem"));
+    chkSolveProblem = new QCheckBox(tr("Solve problem"));
 
     QGridLayout *layoutGeneral = new QGridLayout(this);
     layoutGeneral->addWidget(chkClearSolution, 0, 0);
+    layoutGeneral->addWidget(chkSolveProblem, 0, 1);
 
     QGroupBox *grpGeneral = new QGroupBox(tr("General"));
     grpGeneral->setLayout(layoutGeneral);
@@ -382,7 +396,7 @@ void StudyDialog::createControls()
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(tabStudy);
-    layout->addWidget(buttonBox);
+    layout->addLayout(layoutButtonBox);
 
     setLayout(layout);
 
@@ -652,13 +666,48 @@ void StudyDialog::doAccept()
 void StudyDialog::load()
 {
     chkClearSolution->setChecked(m_study->value(Study::General_ClearSolution).toBool());
+    chkSolveProblem->setChecked(m_study->value(Study::General_SolveProblem).toBool());
 }
 
 void StudyDialog::save()
 {
     m_study->setValue(Study::General_ClearSolution, chkClearSolution->isChecked());
+    m_study->setValue(Study::General_SolveProblem, chkSolveProblem->isChecked());
 }
 
+void StudyDialog::doDuplicate()
+{
+    // select study dialog
+    StudySelectDialog dialog(this);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        // add study
+        if (dialog.selectedStudyType() != StudyType_Undefined)
+        {
+            Study *study = Study::factory(dialog.selectedStudyType());
+
+            // copy parameters
+            foreach (Parameter parameter, m_study->parameters())
+                study->addParameter(Parameter(parameter.name(), parameter.lowerBound(), parameter.upperBound()));
+
+            // copy functionals
+            foreach (Functional functional, m_study->functionals())
+                study->addFunctional(Functional(functional.name(), functional.expression(), functional.weight()));
+
+            StudyDialog *studyDialog = StudyDialog::factory(study, this);
+            if (studyDialog->showDialog() == QDialog::Accepted)
+            {
+                Agros2D::problem()->studies()->addStudy(study);
+
+                close();
+            }
+            else
+            {
+                delete study;
+            }
+        }
+    }
+}
 
 // **************************************************************************************************************
 

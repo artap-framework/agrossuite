@@ -52,7 +52,7 @@ static QMap<ButcherTableType, QString> butcherTableTypeList;
 static QMap<IterSolverDealII, QString> iterLinearSolverDealIIMethodList;
 static QMap<PreconditionerDealII, QString> iterLinearSolverDealIIPreconditionerList;
 static QMap<StudyType, QString> studyTypeList;
-static QMap<FunctionalType, QString> functionalTypeList;
+static QMap<ComputationResultType, QString> computationResultTypeList;
 static QMap<ResultRecipeType, QString> resultRecipeTypeList;
 
 QStringList coordinateTypeStringKeys() { return coordinateTypeList.values(); }
@@ -159,9 +159,9 @@ QStringList studyTypeStringKeys() { return studyTypeList.values(); }
 QString studyTypeToStringKey(StudyType type) { return studyTypeList[type]; }
 StudyType studyTypeFromStringKey(const QString &type) { return studyTypeList.key(type); }
 
-QStringList functionalTypeStringKeys() { return functionalTypeList.values(); }
-QString functionalTypeToStringKey(FunctionalType type) { return functionalTypeList[type]; }
-FunctionalType functionalTypeFromStringKey(const QString &type) { return functionalTypeList.key(type); }
+QStringList computationResultTypeStringKeys() { return computationResultTypeList.values(); }
+QString computationResultTypeToStringKey(ComputationResultType type) { return computationResultTypeList[type]; }
+ComputationResultType computationResultTypeFromStringKey(const QString &type) { return computationResultTypeList.key(type); }
 
 QStringList resultRecipeTypeStringKeys() { return resultRecipeTypeList.values(); }
 QString resultRecipeTypeToStringKey(ResultRecipeType type) { return resultRecipeTypeList[type]; }
@@ -332,10 +332,10 @@ void initLists()
     studyTypeList.insert(StudyType_NLopt, "nlopt");
     studyTypeList.insert(StudyType_JMetal, "jmetal");
 
-    // functionals
-    functionalTypeList.insert(FunctionalType_Maximize, "maximize");
-    functionalTypeList.insert(FunctionalType_Minimize, "minimize");
-    functionalTypeList.insert(FunctionalType_Result, "result");
+    // computation result type
+    computationResultTypeList.insert(ComputationResultType_Functional, "functional");
+    computationResultTypeList.insert(ComputationResultType_Recipe, "recipe");
+    computationResultTypeList.insert(ComputationResultType_Other, "other");
 
     // recipes
     resultRecipeTypeList.insert(ResultRecipeType_LocalValue, "local_value");
@@ -845,18 +845,18 @@ QString studyTypeString(StudyType type)
     }
 }
 
-QString functionalTypeString(FunctionalType type)
+QString computationResultTypeString(ComputationResultType type)
 {
     switch (type)
     {
-    case FunctionalType_Maximize:
-        return QObject::tr("Maximize");
-    case FunctionalType_Minimize:
-        return QObject::tr("Minimize");
-    case FunctionalType_Result:
-        return QObject::tr("Result");
+    case ComputationResultType_Functional:
+        return QObject::tr("Functional");
+    case ComputationResultType_Recipe:
+        return QObject::tr("Recipe");
+    case ComputationResultType_Other:
+        return QObject::tr("Other");
     default:
-        std::cerr << "Functional type'" + QString::number(type).toStdString() + "' is not implemented. functionalTypeString(FunctionalType type)" << endl;
+        std::cerr << "Computational result type'" + QString::number(type).toStdString() + "' is not implemented. computationResultTypeString(ComputationResultType type)" << endl;
         throw;
     }
 }

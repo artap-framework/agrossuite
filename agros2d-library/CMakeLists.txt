@@ -163,7 +163,7 @@ SET(SOURCES
     sceneview_common2d.cpp
     sceneview_common3d.cpp
     sceneview_geometry.cpp
-    sceneview_geometry_chart.cpp
+    sceneview_geometry_simple.cpp
     sceneview_mesh.cpp
     sceneview_particle.cpp
     sceneview_post.cpp
@@ -266,7 +266,7 @@ SOURCE_GROUP(
   sceneview_common2d.cpp
   sceneview_common3d.cpp
   sceneview_geometry.cpp
-  sceneview_geometry_chart.cpp
+  sceneview_geometry_simple.cpp
   sceneview_mesh.cpp
   sceneview_particle.cpp
   particle_forces.cpp
@@ -388,7 +388,7 @@ SET(HEADERS
   sceneview_common3d.h
   sceneview_data.h
   sceneview_geometry.h
-  sceneview_geometry_chart.h
+  sceneview_geometry_simple.h
   sceneview_mesh.h
   sceneview_particle.h
   sceneview_post.h
@@ -487,7 +487,7 @@ SOURCE_GROUP(
   sceneview_common3d.h
   sceneview_data.h
   sceneview_geometry.h
-  sceneview_geometry_chart.h
+  sceneview_geometry_simple.h
   sceneview_mesh.h
   sceneview_particle.h
   sceneview_post.h

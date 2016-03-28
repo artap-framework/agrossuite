@@ -20,6 +20,7 @@
 #include "optilab.h"
 #include "parameter.h"
 #include "study.h"
+#include "parameter.h"
 #include "study_sweep.h"
 #include "study_nsga2.h"
 #include "study_bayesopt.h"
@@ -36,47 +37,174 @@
 
 #include "gui/infowidget.h"
 
-int linreg(QVector<double> x, QVector<double> y, double *m, double *b, double *r)
+#include "sceneview_geometry_simple.h"
+
+#include <boost/random/normal_distribution.hpp>
+#include <boost/math/distributions/normal.hpp>
+
+class StatisticsLinReg
 {
-    assert(x.size() == y.size());
-    int n = x.size();
-
-    double sumx = 0.0;
-    double sumx2 = 0.0;
-    double sumxy = 0.0;
-    double sumy = 0.0;
-    double sumy2 = 0.0;
-
-    for (int i = 0; i < n; i++)
+public:
+    StatisticsLinReg(QVector<double> x, QVector<double> y) : x(x), y(y), m_slope(0.0), m_shift(0.0), m_correlation_coef(0.0)
     {
-        sumx  += x[i];
-        sumx2 += x[i] * x[i];
-        sumxy += x[i] * y[i];
-        sumy  += y[i];
-        sumy2 += y[i] * y[i];
     }
 
-    double denom = (n * sumx2 - sumx*sumx);
-    if (denom == 0)
+    bool computeLinReg()
     {
-        // singular matrix. can't solve the problem.
-        *m = 0;
-        *b = 0;
-        if (r) *r = 0;
-        return 1;
+        assert(x.size() == y.size());
+        int n = x.size();
+
+        double sumx = 0.0;
+        double sumx2 = 0.0;
+        double sumxy = 0.0;
+        double sumy = 0.0;
+        double sumy2 = 0.0;
+
+        for (int i = 0; i < n; i++)
+        {
+            sumx  += x[i];
+            sumx2 += x[i] * x[i];
+            sumxy += x[i] * y[i];
+            sumy  += y[i];
+            sumy2 += y[i] * y[i];
+        }
+
+        double denom = (n * sumx2 - sumx*sumx);
+        if (denom == 0)
+        {
+            // singular matrix. can't solve the problem.
+            return false;
+        }
+
+        // slope
+        m_slope = (n * sumxy  -  sumx * sumy) / denom;
+        // shift
+        m_shift = (sumy * sumx2  -  sumx * sumxy) / denom;
+
+        // correlation coef
+        m_correlation_coef = (sumxy - sumx * sumy / n) / sqrt((sumx2 - sumx*sumx/n) * (sumy2 - sumy*sumy/n));
+
+        return true;
     }
 
-    // slope
-    *m = (n * sumxy  -  sumx * sumy) / denom;
-    // shift
-    *b = (sumy * sumx2  -  sumx * sumxy) / denom;
+    inline double slope() const { return m_slope; }
+    inline double shift() const { return m_shift; }
+    inline double correlation_coef() const { return m_correlation_coef; }
 
-    // correlation coef
-    if (r)
-        *r = (sumxy - sumx * sumy / n) / sqrt((sumx2 - sumx*sumx/n) * (sumy2 - sumy*sumy/n));
+private:
+    QVector<double> x;
+    QVector<double> y;
 
-    return 0;
-}
+    double m_slope;
+    double m_shift;
+    double m_correlation_coef;
+};
+
+class Statistics
+{
+public:
+    Statistics(const QVector<double> x) : m_values(x), m_min(0.0), m_max(0.0), m_sum(0.0), m_mean(0.0), m_meanError(0.0), m_median(0.0), m_variance(0.0), m_stdDev(0.0)
+    {
+        if (x.isEmpty())
+            return;
+
+        // min and max
+        auto mm = std::minmax_element(x.begin(), x.end());
+        m_min = *mm.first;
+        m_max = *mm.second;
+
+        // sum
+        m_sum = std::accumulate(x.begin(), x.end(), 0.0);
+
+        // mean value
+        m_mean = m_sum / x.size();
+
+        // mean error
+        m_meanError = m_mean / sqrt(x.size());
+
+        // variance
+        m_variance = 0.0;
+        foreach (double val, x)
+            m_variance += (m_mean - val)*(m_mean - val);
+        m_variance = m_variance / x.size();
+
+        // standard deviation
+        m_stdDev = sqrt(m_variance);
+
+        // median
+        m_sortedValues = x;
+        std::sort(m_sortedValues.begin(), m_sortedValues.end());
+        if (m_sortedValues.size() % 2 == 0)
+            m_median = (m_sortedValues[(m_sortedValues.size() / 2) - 1] + m_sortedValues[m_sortedValues.size() / 2]) / 2.0;
+        else
+            m_median = m_sortedValues[m_sortedValues.size() / 2];
+    }
+
+    inline double min() const { return m_min; }
+    inline double max() const { return m_max; }
+    inline double sum() const { return m_sum; }
+    inline double mean() const { return m_mean; }
+    inline double meanError() const { return m_meanError; }
+    inline double median() const { return m_median; }
+    inline double variance() const { return m_variance; }
+    inline double stdDev() const { return m_stdDev; }
+
+    inline int const size() { return m_values.size(); }
+    inline QVector<double> const values() { return m_values; }
+    inline QVector<double> const sortedValues() { return m_sortedValues; }
+
+private:
+    QVector<double> m_values;
+    QVector<double> m_sortedValues;
+
+    double m_min;
+    double m_max;
+    double m_sum;
+    double m_mean;
+    double m_meanError;
+    double m_median;
+    double m_variance;
+    double m_stdDev;
+};
+
+class StatisticsCorrelation
+{
+public:
+    StatisticsCorrelation(const Statistics &x, const Statistics &y) : m_statsX(x), m_statsY(y), m_correlation(0.0), m_covariance(0.0)
+    {
+        compute();
+    }
+
+    StatisticsCorrelation(const QVector<double> x, const QVector<double> y) : m_statsX(Statistics(x)), m_statsY(Statistics(y)), m_correlation(0.0), m_covariance(0.0)
+    {
+        compute();
+    }
+
+    inline double covariance() const { return m_covariance; }
+    inline double correlation() const { return m_correlation; }
+
+private:
+    Statistics m_statsX;
+    Statistics m_statsY;
+
+    void compute()
+    {
+        assert(m_statsX.size() == m_statsY.size());
+
+        // Covariance
+        m_covariance = 0.0;
+        for (int i = 0; i < m_statsX.size(); i++)
+            m_covariance += (m_statsX.values()[i] - m_statsX.mean()) * (m_statsY.values()[i] - m_statsY.mean());
+
+        m_covariance /= m_statsX.size();
+
+        // Pearson product-moment correlation coefficient
+        m_correlation = m_covariance / (m_statsX.stdDev() * m_statsY.stdDev());
+    }
+
+    double m_covariance;
+    double m_correlation;
+};
 
 OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(parent)
 {
@@ -100,9 +228,16 @@ void OptiLabWidget::createControls()
     cmbStudies = new QComboBox(this);
     connect(cmbStudies, SIGNAL(currentIndexChanged(int)), this, SLOT(studyChanged(int)));
 
+    lblNumberOfSets = new QLabel("");
+    lblNumberOfComputations = new QLabel("");
+
     QGridLayout *layoutStudies = new QGridLayout();
-    layoutStudies->addWidget(new QLabel(tr("Studies:")), 0, 0);
+    layoutStudies->addWidget(new QLabel(tr("Study:")), 0, 0);
     layoutStudies->addWidget(cmbStudies, 0, 1);
+    layoutStudies->addWidget(new QLabel(tr("Number of sets:")), 1, 0);
+    layoutStudies->addWidget(lblNumberOfSets, 1, 1);
+    layoutStudies->addWidget(new QLabel(tr("Number of computations:")), 2, 0);
+    layoutStudies->addWidget(lblNumberOfComputations, 2, 1);
 
     QWidget *widgetStudies = new QWidget(this);
     widgetStudies->setLayout(layoutStudies);
@@ -113,45 +248,31 @@ void OptiLabWidget::createControls()
     trvComputations->setColumnCount(2);
     trvComputations->setMinimumWidth(220);
     trvComputations->setColumnWidth(0, 220);
+    trvComputations->setContextMenuPolicy(Qt::CustomContextMenu);
 
     QStringList headers;
     headers << tr("Computation") << tr("State");
     trvComputations->setHeaderLabels(headers);
-
+    connect(trvComputations, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doComputationContextMenu(const QPoint &)));
     connect(trvComputations, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doComputationChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
-    cmbChartX = new QComboBox(this);
-    cmbChartY = new QComboBox(this);
+    actComputationDelete = new QAction(icon(""), tr("Delete solution"), this);
+    connect(actComputationDelete, SIGNAL(triggered(bool)), this, SLOT(doComputationDelete(bool)));
 
-    QGridLayout *layoutChartXYControls = new QGridLayout();
-    layoutChartXYControls->addWidget(new QLabel(tr("Variable X:")), 5, 0);
-    layoutChartXYControls->addWidget(cmbChartX, 5, 1);
-    layoutChartXYControls->addWidget(new QLabel(tr("Variable Y:")), 6, 0);
-    layoutChartXYControls->addWidget(cmbChartY, 6, 1);
-
-    btnPlotChart = new QPushButton(tr("Apply"));
-    connect(btnPlotChart, SIGNAL(clicked()), this, SLOT(plotChart()));
-
-    QHBoxLayout *layoutParametersButton = new QHBoxLayout();
-    layoutParametersButton->addStretch();
-    layoutParametersButton->addWidget(btnPlotChart);
+    mnuComputations = new QMenu(this);
+    mnuComputations->addAction(actComputationDelete);
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(2, 2, 2, 3);
     layout->addWidget(widgetStudies);
     layout->addWidget(trvComputations);
-    layout->addLayout(layoutChartXYControls);
-    layout->addLayout(layoutParametersButton);
 
     setLayout(layout);
 }
 
 void OptiLabWidget::refresh()
 {
-    emit chartRefreshed(nullptr, QSharedPointer<Computation>());
-
     actRunStudy->setEnabled(false);
-    btnPlotChart->setEnabled(false);
 
     // fill studies
     cmbStudies->blockSignals(true);
@@ -163,13 +284,7 @@ void OptiLabWidget::refresh()
     cmbStudies->clear();
     trvComputations->clear();
     foreach (Study *study, Agros2D::problem()->studies()->items())
-    {
-        if (study->name().isEmpty())
-            cmbStudies->addItem(studyTypeString(study->type()));
-        else
-            cmbStudies->addItem(study->name());
-
-    }
+        cmbStudies->addItem(studyTypeString(study->type()));
 
     cmbStudies->blockSignals(false);
 
@@ -181,41 +296,6 @@ void OptiLabWidget::refresh()
             cmbStudies->setCurrentIndex(0);
 
         studyChanged(cmbStudies->currentIndex());
-    }
-
-    // fill combo boxes
-    cmbChartX->clear();
-    cmbChartY->clear();
-
-    // TODO: chart - first iteration
-    if (cmbStudies->currentIndex() != -1)
-    {
-        Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
-
-        // step
-        cmbChartX->addItem(tr("step"), QString("step:"));
-        cmbChartY->addItem(tr("step"), QString("step:"));
-
-        // parameters
-        foreach (Parameter parameter, study->parameters())
-        {
-            cmbChartX->addItem(tr("%1 (parameter)").arg(parameter.name()), QString("parameter:%1").arg(parameter.name()));
-            cmbChartY->addItem(tr("%1 (parameter)").arg(parameter.name()), QString("parameter:%1").arg(parameter.name()));
-        }
-
-        // functionals
-        foreach (Functional functional, study->functionals())
-        {
-            cmbChartX->addItem(tr("%1 (functional)").arg(functional.name()), QString("functional:%1").arg(functional.name()));
-            cmbChartY->addItem(tr("%1 (functional)").arg(functional.name()), QString("functional:%1").arg(functional.name()));
-        }
-
-        // recipes
-        foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
-        {
-            cmbChartX->addItem(tr("%1 (recipe)").arg(recipe->name()), QString("recipe:%1").arg(recipe->name()));
-            cmbChartY->addItem(tr("%1 (recipe)").arg(recipe->name()), QString("recipe:%1").arg(recipe->name()));
-        }
     }
 }
 
@@ -238,10 +318,11 @@ void OptiLabWidget::studyChanged(int index)
     // fill tree view
     for (int i = 0; i < study->computationSets().size(); i++)
     {
-        QTreeWidgetItem *itemComputationSet = new QTreeWidgetItem(trvComputations);
-
         QList<ComputationSet> computationSets = study->computationSets();
 
+        QTreeWidgetItem *itemComputationSet = new QTreeWidgetItem(trvComputations);
+        itemComputationSet->setIcon(0, (computationSets[i].name().size() > 0) ? iconAlphabet(computationSets[i].name().at(0), AlphabetColor_Brown) : QIcon());
+        // itemComputationSet->setCheckState(0, Qt::Checked);
         itemComputationSet->setText(0, tr("%1 (%2 computations)").arg(computationSets[i].name()).arg(computationSets[i].computations().size()));
         if (i == computationSets.size() - 1)
             itemComputationSet->setExpanded(true);
@@ -265,6 +346,13 @@ void OptiLabWidget::studyChanged(int index)
 
     trvComputations->blockSignals(false);
 
+    // set stats
+    lblNumberOfSets->setText(QString::number(study->computationSets().count()));
+    lblNumberOfComputations->setText(QString::number(study->computationsCount()));
+
+    // set study to optilab view
+    m_optilab->setStudy(study);
+
     // select current computation
     if (!selectedItem.isEmpty())
         doComputationSelected(selectedItem);
@@ -273,13 +361,8 @@ void OptiLabWidget::studyChanged(int index)
     if (trvComputations->topLevelItemCount() > 0 && !trvComputations->currentItem())
         trvComputations->setCurrentItem(trvComputations->topLevelItem(0));
 
-    // set controls
-    cmbChartX->setCurrentIndex(cmbChartX->findData(study->value(Study::View_ChartX).toString()));
-    cmbChartY->setCurrentIndex(cmbChartY->findData(study->value(Study::View_ChartY).toString()));
-
     // enable buttons
     actRunStudy->setEnabled(true);
-    btnPlotChart->setEnabled(true);
 }
 
 void OptiLabWidget::solveStudy()
@@ -299,26 +382,6 @@ void OptiLabWidget::solveStudy()
     refresh();
 }
 
-void OptiLabWidget::plotChart()
-{
-    if (cmbStudies->count() == 0)
-        return;
-
-    // study
-    Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
-
-    study->setValue(Study::View_ChartX, cmbChartX->currentData().toString());
-    study->setValue(Study::View_ChartY, cmbChartY->currentData().toString());
-
-    QSharedPointer<Computation> computation;
-    if (trvComputations->currentItem())
-    {
-        computation = Agros2D::computations()[trvComputations->currentItem()->data(0, Qt::UserRole).toString()];
-    }
-
-    emit chartRefreshed(study, computation);
-}
-
 void OptiLabWidget::doComputationSelected(const QString &key)
 {
     for (int i = 0; i < trvComputations->topLevelItemCount(); i++)
@@ -330,6 +393,10 @@ void OptiLabWidget::doComputationSelected(const QString &key)
             {
                 trvComputations->setCurrentItem(item);
                 trvComputations->scrollToItem(item);
+
+                // refresh chart
+                emit chartRefreshed(Agros2D::computations()[key]->problemDir());
+
                 return;
             }
         }
@@ -341,12 +408,40 @@ void OptiLabWidget::doComputationChanged(QTreeWidgetItem *source, QTreeWidgetIte
     if (trvComputations->currentItem())
     {
         QString key = trvComputations->currentItem()->data(0, Qt::UserRole).toString();
-        emit computationSelected(key);
+        actComputationDelete->setEnabled(!key.isEmpty());
 
-        // study
-        Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
-        emit chartRefreshed(study, Agros2D::computations()[key]);
+        emit computationSelected(key);
     }
+}
+
+void OptiLabWidget::doComputationDelete(bool)
+{
+    if (trvComputations->currentItem())
+    {
+        QString key = trvComputations->currentItem()->data(0, Qt::UserRole).toString();
+        if (!key.isEmpty() && Agros2D::computations().contains(key))
+        {
+            Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
+
+            // remove empty computation sets
+            QMutableListIterator<ComputationSet> i(study->computationSets());
+            while (i.hasNext())
+            {
+                ComputationSet *computationSet = &i.next();
+                computationSet->removeComputation(Agros2D::computations()[key]);
+
+                if (computationSet->computations().count() == 0)
+                    i.remove();
+            }
+
+            refresh();
+        }
+    }
+}
+
+void OptiLabWidget::doComputationContextMenu(const QPoint &pos)
+{
+    mnuComputations->exec(QCursor::pos());
 }
 
 // ***************************************************************************************************************************************
@@ -364,48 +459,153 @@ OptiLab::OptiLab(QWidget *parent) : QWidget(parent), m_study(nullptr)
     connect(Agros2D::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
 
     connect(m_optiLabWidget, SIGNAL(computationSelected(QString)), this, SLOT(doComputationSelected(QString)));
-    connect(m_optiLabWidget, SIGNAL(chartRefreshed(Study *, QSharedPointer<Computation>)), this, SLOT(doChartRefreshed(Study *, QSharedPointer<Computation>)));
+    connect(m_optiLabWidget, SIGNAL(chartRefreshed(QString)), this, SLOT(doChartRefreshed(QString)));
     connect(this, SIGNAL(computationSelected(QString)), m_optiLabWidget, SLOT(doComputationSelected(QString)));
 }
 
 OptiLab::~OptiLab()
 {
     QSettings settings;
+    settings.setValue("OptiLab/TreeColumnWidth0", trvResults->columnWidth(0));
+    settings.setValue("OptiLab/TreeColumnWidth1", trvResults->columnWidth(1));
     settings.setValue("OptiLab/SplitterState", splitter->saveState());
     settings.setValue("OptiLab/SplitterGeometry", splitter->saveGeometry());
 }
 
-void OptiLab::createControls()
+void OptiLab::setStudy(Study *study)
 {
-    m_infoWidget = new InfoWidgetGeneral(this);
+    m_study = study;
 
-    actRescale = new QAction(icon(""), tr("Rescale chart"), this);
-    connect(actRescale, SIGNAL(triggered(bool)), this, SLOT(chartRescale(bool)));
+    doChartRefreshed("");
+    geometryViewer->doZoomBestFit();
+}
 
-    actLogX = new QAction(icon(""), tr("Logarithmic scale (x-axis)"), this);
-    actLogX->setCheckable(true);
-    connect(actLogX, SIGNAL(triggered(bool)), this, SLOT(chartLogX(bool)));
+QWidget *OptiLab::createControlsDistChart()
+{
+    pdfChart = new QCustomPlot(this);
+    // pdfChart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 
-    actLogY = new QAction(icon(""), tr("Logarithmic scale (y-axis)"), this);
-    actLogY->setCheckable(true);
-    connect(actLogY, SIGNAL(triggered(bool)), this, SLOT(chartLogY(bool)));
+    QCPBars *pdfDataBars = new QCPBars(pdfChart->xAxis, pdfChart->yAxis);
+    pdfDataBars->setPen(QPen(QColor(255, 131, 0)));
+    pdfDataBars->setBrush(QColor(255, 131, 0, 50));
+    pdfDataBars->setName(tr("Data"));
+    pdfDataBars->addToLegend();
+    pdfChart->addPlottable(pdfDataBars);
 
-    actShowTrend = new QAction(icon(""), tr("Show trend line"), this);
-    actShowTrend->setCheckable(true);
-    connect(actShowTrend, SIGNAL(triggered(bool)), this, SLOT(chartShowTrend(bool)));
+    QCPItemStraightLine *pdfDataMeanLine = new QCPItemStraightLine(pdfChart);
+    pdfDataMeanLine->setPen(QPen(QBrush(QColor(40, 40, 140, 100)), 1, Qt::DashLine));
+    pdfChart->addItem(pdfDataMeanLine);
 
-    actShowAverageValue = new QAction(icon(""), tr("Show average value"), this);
-    actShowAverageValue->setCheckable(true);
-    connect(actShowAverageValue, SIGNAL(triggered(bool)), this, SLOT(chartShowAverageValue(bool)));
+    QCPGraph *pdfNormalGraph = pdfChart->addGraph(pdfChart->xAxis, pdfChart->yAxis2);
+    pdfNormalGraph->setName(tr("Normal"));
+    pdfNormalGraph->addToLegend();
+
+    pdfChart->xAxis->setTickLabelRotation(60);
+    pdfChart->xAxis->setLabel(tr("Samples"));
+    pdfChart->yAxis->setLabel(tr("Number of occurrences"));
+    pdfChart->yAxis2->setVisible(false);
+    // pdfChart->legend->setVisible(true);
+    // histogramChart->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    cdfChart = new QCustomPlot(this);
+    // cdfChart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+
+    QCPGraph *cdfDataGraph = cdfChart->addGraph(cdfChart->xAxis, cdfChart->yAxis);
+    cdfDataGraph->setName(tr("Data"));
+    cdfDataGraph->addToLegend();
+    // cdfGraph->setLineStyle(QCPGraph::lsNone);
+    QPen cdfPen;
+    cdfPen.setColor(QColor(255, 131, 0));
+    cdfPen.setStyle(Qt::DotLine);
+    cdfPen.setWidthF(2);
+    cdfDataGraph->setPen(cdfPen);
+    cdfDataGraph->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QColor(255, 131, 0), QColor(255, 131, 0, 50), 7));
+
+    QCPGraph *cdfNormalGraph = cdfChart->addGraph(cdfChart->xAxis, cdfChart->yAxis2);
+    cdfNormalGraph->setName(tr("Normal"));
+    cdfNormalGraph->addToLegend();
+
+    cdfChart->xAxis->setTickLabelRotation(60);
+    cdfChart->xAxis->setLabel(tr("Samples"));
+    cdfChart->yAxis->setLabel(tr("Count"));
+    cdfChart->yAxis2->setVisible(false);
+    // cdfChart->legend->setVisible(true);
+    cdfChart->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignBottom|Qt::AlignRight);
+
+    lblResultMin = new QLabel();
+    lblResultMin->setMinimumWidth(90);
+    lblResultMax = new QLabel();
+    lblResultSum = new QLabel();
+    lblResultMean = new QLabel();
+    lblResultMedian = new QLabel();
+    lblResultVariance = new QLabel();
+    lblResultStdDev = new QLabel();
+    lblResultNormalCovariance = new QLabel(); // normal distribution
+    lblResultNormalCorrelation = new QLabel(); // normal distribution
+
+
+    QGridLayout *layoutStatistics = new QGridLayout();
+    layoutStatistics->addWidget(new QLabel(tr("Minimum:")), 0, 0);
+    layoutStatistics->addWidget(lblResultMin, 0, 1);
+    layoutStatistics->addWidget(new QLabel(tr("Maximum:")), 1, 0);
+    layoutStatistics->addWidget(lblResultMax, 1, 1);
+    layoutStatistics->addWidget(new QLabel(tr("Sum:")), 2, 0);
+    layoutStatistics->addWidget(lblResultSum, 2, 1);
+    layoutStatistics->addWidget(new QLabel(tr("Mean value:")), 3, 0);
+    layoutStatistics->addWidget(lblResultMean, 3, 1);
+    layoutStatistics->addWidget(new QLabel(tr("Median:")), 4, 0);
+    layoutStatistics->addWidget(lblResultMedian, 4, 1);
+    layoutStatistics->addWidget(new QLabel(tr("Variance:")), 5, 0);
+    layoutStatistics->addWidget(lblResultVariance, 5, 1);
+    layoutStatistics->addWidget(new QLabel(tr("Std. deviation:")), 6, 0);
+    layoutStatistics->addWidget(lblResultStdDev, 6, 1);
+    layoutStatistics->setRowStretch(10, 1);
+    layoutStatistics->addWidget(new QLabel(tr("Covariance:")), 21, 0);
+    layoutStatistics->addWidget(lblResultNormalCovariance, 21, 1);
+    layoutStatistics->addWidget(new QLabel(tr("Correlation:")), 22, 0);
+    layoutStatistics->addWidget(lblResultNormalCorrelation, 22, 1);
+
+    QHBoxLayout *layoutDetails = new QHBoxLayout();
+    layoutDetails->setContentsMargins(0, 0, 0, 0);
+    layoutDetails->addWidget(pdfChart, 1);
+    layoutDetails->addWidget(cdfChart, 1);
+    layoutDetails->addLayout(layoutStatistics, 0);
+
+    QWidget *widDist = new QWidget();
+    widDist->setContentsMargins(0, 0, 0, 0);
+    widDist->setLayout(layoutDetails);
+
+    return widDist;
+}
+
+QWidget *OptiLab::createControlsChart()
+{
+    actChartRescale = new QAction(icon(""), tr("Rescale chart"), this);
+    connect(actChartRescale, SIGNAL(triggered(bool)), this, SLOT(chartRescale(bool)));
+
+    actChartLogHorizontal = new QAction(icon(""), tr("Logarithmic scale (x-axis)"), this);
+    actChartLogHorizontal->setCheckable(true);
+    connect(actChartLogHorizontal, SIGNAL(triggered(bool)), this, SLOT(chartLogHorizontal(bool)));
+
+    actChartLogVertical = new QAction(icon(""), tr("Logarithmic scale (y-axis)"), this);
+    actChartLogVertical->setCheckable(true);
+    connect(actChartLogVertical, SIGNAL(triggered(bool)), this, SLOT(chartLogVertical(bool)));
+
+    actChartShowTrend = new QAction(icon(""), tr("Show trend line"), this);
+    actChartShowTrend->setCheckable(true);
+    connect(actChartShowTrend, SIGNAL(triggered(bool)), this, SLOT(chartShowTrend(bool)));
+
+    actChartShowAverageValue = new QAction(icon(""), tr("Show average value"), this);
+    actChartShowAverageValue->setCheckable(true);
+    connect(actChartShowAverageValue, SIGNAL(triggered(bool)), this, SLOT(chartShowAverageValue(bool)));
 
     mnuChart = new QMenu(this);
-    mnuChart->addAction(actRescale);
-    mnuChart->addSeparator();
-    mnuChart->addAction(actLogX);
-    mnuChart->addAction(actLogY);
-    mnuChart->addSeparator();
-    mnuChart->addAction(actShowTrend);
-    mnuChart->addAction(actShowAverageValue);
+    mnuChart->addAction(actChartRescale);
+    mnuChart->addSection(tr("Chart properties"));
+    mnuChart->addAction(actChartLogHorizontal);
+    mnuChart->addAction(actChartLogVertical);
+    mnuChart->addAction(actChartShowTrend);
+    mnuChart->addAction(actChartShowAverageValue);
 
     chart = new QCustomPlot(this);
     chart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
@@ -413,6 +613,7 @@ void OptiLab::createControls()
     chart->legend->setVisible(true);
     connect(chart, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(chartContextMenu(const QPoint &)));
     connect(chart, SIGNAL(plottableClick(QCPAbstractPlottable*, QMouseEvent*)), this, SLOT(graphClicked(QCPAbstractPlottable*, QMouseEvent*)));
+    connect(chart, SIGNAL(mouseDoubleClick(QMouseEvent*)), this, SLOT(graphMouseDoubleClick(QMouseEvent*)));
 
     // chart trend line
     chartTrendLine = new QCPItemLine(chart);
@@ -442,11 +643,80 @@ void OptiLab::createControls()
     chartGraphSelectedComputation->setLineStyle(QCPGraph::lsNone);
     chartGraphSelectedComputation->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::darkGray, 17));
 
+    return chart;
+}
+
+QWidget *OptiLab::createControlsResults()
+{
     QSettings settings;
+
+    // treeview
+    trvResults = new QTreeWidget(this);
+    trvResults->setExpandsOnDoubleClick(false);
+    trvResults->setHeaderHidden(false);
+    trvResults->setHeaderLabels(QStringList() << tr("Name") << tr("Value"));
+    // trvResults->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    trvResults->setContextMenuPolicy(Qt::CustomContextMenu);
+    trvResults->setMouseTracking(true);
+    trvResults->setUniformRowHeights(true);
+    trvResults->setColumnCount(2);
+    trvResults->setColumnWidth(0, settings.value("OptiLab/TreeColumnWidth0", 80).toInt());
+    trvResults->setColumnWidth(1, settings.value("OptiLab/TreeColumnWidth1", 120).toInt());
+    trvResults->setIndentation(trvResults->indentation() - 2);
+    connect(trvResults, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(resultsContextMenu(const QPoint &)));
+    connect(trvResults, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doResultChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
+
+    actResultsDependenceOnSteps = new QAction(icon(""), tr("Dependence on the number of steps"), this);
+    connect(actResultsDependenceOnSteps, SIGNAL(triggered(bool)), this, SLOT(resultsDependenceOnSteps(bool)));
+
+    actResultsSetHorizontal = new QAction(icon(""), tr("Set on horizontal axis"), this);
+    connect(actResultsSetHorizontal, SIGNAL(triggered(bool)), this, SLOT(resultsSetHorizontal(bool)));
+
+    actResultsSetVertical = new QAction(icon(""), tr("Set on vertical axis"), this);
+    connect(actResultsSetVertical, SIGNAL(triggered(bool)), this, SLOT(resultsSetVertical(bool)));
+
+    // actResultsFindMinimum = new QAction(icon(""), tr("Find minimum"), this);
+    // connect(actResultsFindMinimum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMinimum(bool)));
+    // actResultsFindMaximum = new QAction(icon(""), tr("Find maximum"), this);
+    // connect(actResultsFindMaximum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMaximum(bool)));
+
+    mnuResults = new QMenu(trvResults);
+    mnuResults->addAction(actResultsDependenceOnSteps);
+    mnuResults->addAction(actResultsSetHorizontal);
+    mnuResults->addAction(actResultsSetVertical);
+    // mnuResults->addSection(tr("Statistics"));
+    // mnuResults->addAction(actResultsFindMinimum);
+    // mnuResults->addAction(actResultsFindMaximum);
+
+    QVBoxLayout *layoutResults = new QVBoxLayout();
+    layoutResults->addWidget(trvResults, 2);
+    layoutResults->addWidget(geometryViewer, 1);
+
+    QWidget *widResults = new QWidget();
+    widResults->setContentsMargins(0, 0, 0, 0);
+    widResults->setLayout(layoutResults);
+
+    return widResults;
+}
+
+void OptiLab::createControls()
+{
+    geometryViewer = new SceneViewSimpleGeometry(this);
+
+    QVBoxLayout *layoutCharts = new QVBoxLayout();
+    layoutCharts->addWidget(createControlsChart(), 2);
+    layoutCharts->addWidget(createControlsDistChart(), 1);
+
+    QWidget *widCharts = new QWidget();
+    widCharts->setContentsMargins(0, 0, 0, 0);
+    widCharts->setLayout(layoutCharts);
+
+    QSettings settings;
+
     splitter = new QSplitter(this);
     splitter->setOrientation(Qt::Horizontal);
-    splitter->addWidget(m_infoWidget);
-    splitter->addWidget(chart);
+    splitter->addWidget(createControlsResults());
+    splitter->addWidget(widCharts);
     splitter->setStretchFactor(0, 1);
     splitter->setStretchFactor(1, 1);
     splitter->restoreState(settings.value("OptiLab/SplitterState").toByteArray());
@@ -474,36 +744,42 @@ void OptiLab::chartRescale(bool checked)
     chart->replot(QCustomPlot::rpQueued);
 }
 
-void OptiLab::chartLogX(bool checked)
+void OptiLab::chartLogHorizontal(bool checked)
 {
-    m_study->setValue(Study::View_ChartLogX, checked);
-    actLogX->setChecked(checked);
+    // force rescale
+    bool rescale = (m_study->value(Study::View_ChartLogHorizontal).toBool() != checked);
+
+    m_study->setValue(Study::View_ChartLogHorizontal, checked);
+    actChartLogHorizontal->setChecked(checked);
 
     if (checked)
         chart->xAxis->setScaleType(QCPAxis::stLogarithmic);
     else
         chart->xAxis->setScaleType(QCPAxis::stLinear);
 
-    chartRescale(true);
+    if (rescale) chartRescale(true);
 }
 
-void OptiLab::chartLogY(bool checked)
+void OptiLab::chartLogVertical(bool checked)
 {
-    m_study->setValue(Study::View_ChartLogY, checked);
-    actLogY->setChecked(checked);
+    // force rescale
+    bool rescale = (m_study->value(Study::View_ChartLogVertical).toBool() != checked);
+
+    m_study->setValue(Study::View_ChartLogVertical, checked);
+    actChartLogVertical->setChecked(checked);
 
     if (checked)
         chart->yAxis->setScaleType(QCPAxis::stLogarithmic);
     else
         chart->yAxis->setScaleType(QCPAxis::stLinear);
 
-    chartRescale(true);
+    if (rescale) chartRescale(true);
 }
 
 void OptiLab::chartShowTrend(bool checked)
 {
     m_study->setValue(Study::View_ChartShowTrend, checked);
-    actShowTrend->setChecked(checked);
+    actChartShowTrend->setChecked(checked);
 
     chartTrendLine->setVisible(checked);
     chart->replot(QCustomPlot::rpQueued);
@@ -512,7 +788,7 @@ void OptiLab::chartShowTrend(bool checked)
 void OptiLab::chartShowAverageValue(bool checked)
 {
     m_study->setValue(Study::View_ChartShowAverageValue, checked);
-    actShowAverageValue->setChecked(checked);
+    actChartShowAverageValue->setChecked(checked);
 
     chartGraphAverageValue->setVisible(checked);
     chartGraphAverageValueChannelLower->setVisible(checked);
@@ -521,32 +797,140 @@ void OptiLab::chartShowAverageValue(bool checked)
     chart->replot(QCustomPlot::rpQueued);
 }
 
+void OptiLab::resultsDependenceOnSteps(bool checked)
+{
+    if (trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
+    {
+        m_study->setValue(Study::View_ChartHorizontal, QString("step:"));
+        m_study->setValue(Study::View_ChartVertical, QString("%1:%2").
+                          arg(resultTypeToStringKey((ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt())).
+                          arg(trvResults->currentItem()->data(0, Qt::UserRole).toString()));
+
+        doChartRefreshed();
+    }
+}
+
+void OptiLab::resultsSetHorizontal(bool checked)
+{
+    if (trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
+    {
+        m_study->setValue(Study::View_ChartHorizontal, QString("%1:%2").
+                          arg(resultTypeToStringKey((ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt())).
+                          arg(trvResults->currentItem()->data(0, Qt::UserRole).toString()));
+
+        doChartRefreshed();
+    }
+}
+
+void OptiLab::resultsSetVertical(bool checked)
+{
+    if (trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
+    {
+        m_study->setValue(Study::View_ChartVertical, QString("%1:%2").
+                          arg(resultTypeToStringKey((ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt())).
+                          arg(trvResults->currentItem()->data(0, Qt::UserRole).toString()));
+
+        doChartRefreshed();
+    }
+}
+
+void OptiLab::resultsContextMenu(const QPoint &pos)
+{
+    if (trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
+    {
+        mnuResults->exec(QCursor::pos());
+    }
+}
+
 void OptiLab::doComputationSelected(const QString &key)
 {
+    trvResults->clear();
+
     if (key.isEmpty())
     {
-        m_infoWidget->clear();
+        geometryViewer->setProblem(QSharedPointer<ProblemBase>(nullptr));
     }
     else
     {
         QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
         QSharedPointer<Computation> computation = computations[key];
 
-        m_infoWidget->showProblemInfo(computation.data());
+        geometryViewer->setProblem(static_cast<QSharedPointer<ProblemBase> >(computation));
+
+        // fill treeview
+        QFont fnt = trvResults->font();
+        fnt.setBold(true);
+
+        // parameters
+        QTreeWidgetItem *parametersNode = new QTreeWidgetItem(trvResults);
+        parametersNode->setText(0, tr("Parameters"));
+        parametersNode->setFont(0, fnt);
+        parametersNode->setIcon(0, iconAlphabet('P', AlphabetColor_Brown));
+        parametersNode->setExpanded(true);
+
+        StringToDoubleMap parameters = computation->config()->parameters();
+        foreach (Parameter parameter, m_study->parameters())
+        {
+            QTreeWidgetItem *parameterNode = new QTreeWidgetItem(parametersNode);
+            parameterNode->setText(0, parameter.name());
+            parameterNode->setText(1, QString::number(parameters[parameter.name()]));
+            parameterNode->setData(0, Qt::UserRole, parameter.name());
+            parameterNode->setData(1, Qt::UserRole, ResultType::ResultType_Parameter);
+        }
+
+        // functionals
+        QTreeWidgetItem *functionalsNode = new QTreeWidgetItem(trvResults);
+        functionalsNode->setText(0, tr("Functionals"));
+        functionalsNode->setFont(0, fnt);
+        functionalsNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
+        functionalsNode->setExpanded(true);
+
+        // recipes
+        QTreeWidgetItem *recipesNode = new QTreeWidgetItem(trvResults);
+        recipesNode->setText(0, tr("Recipes"));
+        recipesNode->setFont(0, fnt);
+        recipesNode->setIcon(0, iconAlphabet('R', AlphabetColor_Green));
+        recipesNode->setExpanded(true);
+
+        StringToDoubleMap results = computation->results()->items();
+        foreach (QString key, results.keys())
+        {
+            QTreeWidgetItem *item = nullptr;
+            if (computation->results()->resultType(key) == ComputationResultType_Functional)
+            {
+                item = new QTreeWidgetItem(functionalsNode);
+                item->setData(1, Qt::UserRole, ResultType::ResultType_Functional);
+            }
+            else if (computation->results()->resultType(key) == ComputationResultType_Recipe)
+            {
+                item = new QTreeWidgetItem(recipesNode);
+                item->setData(1, Qt::UserRole, ResultType::ResultType_Recipe);
+            }
+            else
+                assert(0);
+
+            item->setText(0, key);
+            item->setText(1, QString::number(results[key]));
+            item->setData(0, Qt::UserRole, key);
+        }
+
+        // paint chart
+        doChartRefreshed(key);
     }
 }
 
-void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selectedComputation)
+void OptiLab::doChartRefreshed(const QString &key)
 {
-    m_study = study;
-
     m_computationMap.clear();
 
-    if (!m_study)
-        return;
+    foreach (QCPGraph *graph, chartGraphCharts)
+        chart->removeGraph(graph);
+    chartGraphCharts.clear();
 
-    QString chartX = m_study->value(Study::View_ChartX).toString();
-    QString chartY = m_study->value(Study::View_ChartY).toString();
+    if (!m_study) return;
+
+    QString chartX = m_study->value(Study::View_ChartHorizontal).toString();
+    QString chartY = m_study->value(Study::View_ChartVertical).toString();
 
     if (chartX.isEmpty() || chartY.isEmpty())
         return;
@@ -575,10 +959,6 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
         labelY = tr("%1 (recipe)").arg(chartY.right(chartY.count() - 7));
     else
         assert(0);
-
-    foreach (QCPGraph *graph, chartGraphCharts)
-        chart->removeGraph(graph);
-    chartGraphCharts.clear();
 
     // linear regression
     QVector<double> linRegDataX;
@@ -652,7 +1032,7 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
             }
 
             // selected point
-            if (computation == selectedComputation)
+            if (computation->problemDir() == key)
             {
                 QVector<double> selectedX; selectedX << dataSetX.last();
                 QVector<double> selectedY; selectedY << dataSetY.last();
@@ -684,50 +1064,34 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
         chartGraphChart->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QColor(140, 140, 140), colorFill, 9));
     }
 
-    // bounding box
-    auto mmx = std::minmax_element(linRegDataX.begin(), linRegDataX.end());
-    auto mmy = std::minmax_element(linRegDataY.begin(), linRegDataY.end());
-    double delta = qMin((*mmx.second - *mmx.first) * 0.1, (*mmy.second - *mmy.first) * 0.1);
-    QPointF boundStart(*mmx.first - delta, *mmy.first - delta);
-    QPointF boundEnd(*mmx.second + delta, *mmy.second + delta);
+    // mean value and standard deviation
+    Statistics statsX(linRegDataX);
+    Statistics statsY(linRegDataY);
 
-    // QCPItemRect *boundRect = new QCPItemRect(chart);
-    // chart->addItem(boundRect);
-    // boundRect->topLeft->setCoords(boundStart);
-    // boundRect->bottomRight->setCoords(boundEnd);
+    // bounding box
+    double delta = qMin((statsX.max() - statsX.min()) * 0.1, (statsY.max() - statsY.min()) * 0.1);
+
+    QVector<double> meanX; meanX << statsX.min() - delta << statsX.max() + delta;
+    QVector<double> meanY; meanY << statsY.mean() << statsY.mean();
+    QVector<double> devUpper; devUpper << statsY.mean() + statsY.stdDev() << statsY.mean() + statsY.stdDev();
+    QVector<double> devLower; devLower << statsY.mean() - statsY.stdDev() << statsY.mean() - statsY.stdDev();
+    chartGraphAverageValue->setData(meanX, meanY);
+    chartGraphAverageValueChannelLower->setData(meanX, devLower);
+    chartGraphAverageValueChannelUpper->setData(meanX, devUpper);
 
     // linear regression
-    double m = 0.0;
-    double b = 0.0;
-    double r = 0.0;
-    if (linreg(linRegDataX, linRegDataY, &m, &b, &r) == 0)
+    StatisticsLinReg linReg(linRegDataX, linRegDataY);
+    if (linReg.computeLinReg())
     {
         // trend arrow
-        QPointF start((*mmx.first - delta), (*mmx.first - delta) * m + b);
-        QPointF end((*mmx.second + delta), (*mmx.second + delta) * m + b);
+        QPointF start((statsX.min() - delta), (statsX.min() - delta) * linReg.slope() + linReg.shift());
+        QPointF end((statsX.max() + delta), (statsX.max() + delta) * linReg.slope() + linReg.shift());
 
         chartTrendLine->start->setCoords(start);
         chartTrendLine->end->setCoords(end);
         chartTrendLine->setHead(QCPLineEnding::esSpikeArrow);
         chartTrendLine->setPen(QPen(QBrush(QColor(200, 200, 200)), 5));
     }
-
-    // mean value and standard deviation
-    double sum = std::accumulate(linRegDataY.begin(), linRegDataY.end(), 0.0);
-    double mean = sum / linRegDataY.size();
-
-    std::vector<double> diff(linRegDataY.size());
-    std::transform(linRegDataY.begin(), linRegDataY.end(), diff.begin(), [mean](double x) { return x - mean; });
-    double sqSum = std::inner_product(diff.begin(), diff.end(), diff.begin(), 0.0);
-    double stdev = std::sqrt(sqSum / linRegDataY.size());
-
-    QVector<double> meanX; meanX << *mmx.first - delta << *mmx.second + delta;
-    QVector<double> meanY; meanY << mean << mean;
-    QVector<double> devUpper; devUpper << mean + stdev << mean + stdev;
-    QVector<double> devLower; devLower << mean - stdev << mean - stdev;
-    chartGraphAverageValue->setData(meanX, meanY);
-    chartGraphAverageValueChannelLower->setData(meanX, devLower);
-    chartGraphAverageValueChannelUpper->setData(meanX, devUpper);
 
     // plot main chart
     chart->xAxis->setLabel(labelX);
@@ -737,8 +1101,8 @@ void OptiLab::doChartRefreshed(Study *study, QSharedPointer<Computation> selecte
     chart->replot(QCustomPlot::rpQueued);
 
     // set actions
-    chartLogX(m_study->value(Study::View_ChartLogX).toBool());
-    chartLogX(m_study->value(Study::View_ChartLogY).toBool());
+    chartLogHorizontal(m_study->value(Study::View_ChartLogHorizontal).toBool());
+    chartLogHorizontal(m_study->value(Study::View_ChartLogVertical).toBool());
     chartShowTrend(m_study->value(Study::View_ChartShowTrend).toBool());
     chartShowAverageValue(m_study->value(Study::View_ChartShowAverageValue).toBool());
 }
@@ -801,4 +1165,145 @@ void OptiLab::graphClicked(QCPAbstractPlottable *plottable, QMouseEvent *event)
             emit computationSelected(selectedComputation->problemDir());
         }
     }
+}
+
+void OptiLab::graphMouseDoubleClick(QMouseEvent *event)
+{
+    // rescale chart
+    if (event->buttons() & Qt::MidButton)
+    {
+        chartRescale(true);
+        return;
+    }
+}
+
+void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
+{
+    bool showStats = trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid();
+
+    lblResultMin->setText("-");
+    lblResultMax->setText("-");
+    lblResultSum->setText("-");
+    lblResultMean->setText("-");
+    lblResultMedian->setText("-");
+    lblResultVariance->setText("-");
+    lblResultStdDev->setText("-");
+    lblResultNormalCovariance->setText("-");
+    lblResultNormalCorrelation->setText("-");
+
+    pdfChart->graph(0)->setVisible(showStats);
+    pdfChart->plottable(0)->setVisible(showStats);
+    pdfChart->item(0)->setVisible(showStats);
+
+    cdfChart->graph(0)->setVisible(showStats);
+    cdfChart->graph(1)->setVisible(showStats);
+
+    if (showStats)
+    {
+        ResultType type = (ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt();
+        QString key = trvResults->currentItem()->data(0, Qt::UserRole).toString();
+
+        QVector<double> step;
+        QVector<double> data;
+
+        for (int i = 0; i < m_study->computationSets().count(); i++)
+        {
+            QList<QSharedPointer<Computation> > computations = m_study->computationSets()[i].computations();
+
+            for (int j = 0; j < computations.count(); j++)
+            {
+                QSharedPointer<Computation> computation = computations[j];
+
+                if (type == ResultType_Parameter)
+                    data.append(computation->config()->parameter(key));
+                else if (type == ResultType_Recipe || type == ResultType_Functional)
+                    data.append(computation->results()->resultValue(key));
+
+                step.append(step.count());
+            }
+        }
+
+        if (data.size() > 0)
+        {
+            Statistics stats(data);
+
+            boost::math::normal_distribution<double> normalDistribution(stats.mean(), stats.stdDev());
+
+            // data distribution
+            int dataCount = 15;
+            double dataStep = (stats.max() - stats.min()) / (dataCount - 1);
+            QVector<double> dataPDF(dataCount);
+            QVector<double> dataCDF(dataCount);
+            QVector<double> normalCDFCorrelation(dataCount);
+            QVector<double> dataSteps(dataCount);
+
+            if ((stats.max() - stats.min()) > EPS_ZERO)
+            {
+                for (int i = 0; i < dataCount; i++)
+                    dataSteps[i] = stats.min() + dataStep * i;
+
+                // construct probability density function (PDF)
+                foreach (double val, data)
+                {
+                    int bin = round(((dataCount - 1) * ((val - stats.min()) / (stats.max() - stats.min()))));
+                    dataPDF[bin] += 1;
+                }
+
+                // construct cumulative distribution function (CDF)
+                for (int i = 0; i < dataCount; i++)
+                    for (int j = 0; j <= i; j++)
+                        dataCDF[i] += dataPDF[j];
+
+                // correlation with normal distribution
+                for (int i = 0; i < dataCount; i++)
+                    normalCDFCorrelation[i] = boost::math::cdf(normalDistribution, dataSteps[i]);
+            }
+
+            QCPBars *pdfDataBars = dynamic_cast<QCPBars *>(pdfChart->plottable(0));
+            pdfDataBars->setWidth(dataStep * 0.9);
+            pdfDataBars->setData(dataSteps, dataPDF);
+            QCPItemStraightLine *pdfDataMeanLine = dynamic_cast<QCPItemStraightLine *>(pdfChart->item(0));
+            pdfDataMeanLine->point1->setCoords(QPointF(stats.mean(), 0));
+            pdfDataMeanLine->point2->setCoords(QPointF(stats.mean(), 1));
+
+            // normal distribution
+            int normalCount = 100;
+            QVector<double> normalPDF(normalCount);
+            QVector<double> normalCDF(normalCount);
+            QVector<double> normalSteps(normalCount);
+            for (int i = 0; i < normalCount; i++)
+            {
+                normalSteps[i] = stats.min() + (stats.max() - stats.min()) / (100 - 1) * i;
+                normalPDF[i] = boost::math::pdf(normalDistribution, normalSteps[i]);
+                normalCDF[i] = boost::math::cdf(normalDistribution, normalSteps[i]);
+            }
+            pdfChart->graph(0)->setData(normalSteps, normalPDF);
+
+            pdfChart->xAxis->setLabel(key);
+            pdfChart->rescaleAxes();
+
+            // cdf
+            cdfChart->xAxis->setLabel(key);
+            cdfChart->graph(0)->setData(dataSteps, dataCDF);
+            cdfChart->graph(1)->setData(normalSteps, normalCDF);
+            cdfChart->rescaleAxes();
+
+            // labels
+            lblResultMin->setText(QString::number(stats.min()));
+            lblResultMax->setText(QString::number(stats.max()));
+            lblResultSum->setText(QString::number(stats.sum()));
+            lblResultMean->setText(QString::number(stats.mean()));
+            lblResultMedian->setText(QString::number(stats.median()));
+            lblResultVariance->setText(QString::number(stats.variance()));
+            lblResultStdDev->setText(QString::number(stats.stdDev()));
+
+            // correlation and covariance
+            StatisticsCorrelation statsCorrelation(dataCDF, normalCDFCorrelation);
+            lblResultNormalCovariance->setText(QString::number(statsCorrelation.covariance()));
+            lblResultNormalCorrelation->setText(QString::number(statsCorrelation.correlation()));
+        }
+    }
+
+    pdfChart->replot(QCustomPlot::rpQueued);
+    cdfChart->replot(QCustomPlot::rpQueued);
 }

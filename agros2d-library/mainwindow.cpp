@@ -523,7 +523,7 @@ void MainWindow::createMain()
     splitterView->addWidget(viewWidget);
     splitterView->addWidget(consoleView);
     splitterView->setCollapsible(0, false);
-    splitterView->setCollapsible(1, false);
+    splitterView->setCollapsible(1, true);
 
     splitterMain = new QSplitter(Qt::Horizontal, this);
     splitterMain->addWidget(viewControls);

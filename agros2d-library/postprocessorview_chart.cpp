@@ -31,7 +31,7 @@
 
 #include "scene.h"
 #include "scenemarker.h"
-#include "sceneview_geometry_chart.h"
+#include "sceneview_geometry_simple.h"
 #include "pythonlab/pythonengine_agros.h"
 
 #include "solver/module.h"
@@ -68,7 +68,7 @@ QList<Point> ChartLine::getPoints()
 // **************************************************************************************************
 
 PostprocessorSceneChartWidget::PostprocessorSceneChartWidget(PhysicalFieldWidget *fieldWidget, SceneViewChart *sceneChart)
-    : PostprocessorSceneWidget(fieldWidget), m_sceneChart(sceneChart)
+    : PostprocessorSceneWidget(fieldWidget), sceneChart(sceneChart)
 {
     setWindowIcon(icon("chart"));
     setObjectName("PostprocessorChartWidget");
@@ -92,20 +92,20 @@ void PostprocessorSceneChartWidget::createControls()
     layoutVariable->addWidget(cmbFieldVariableComp, 1, 1);
 
     // viewer
-    geometryViewer = new SceneViewSimpleGeometry(this, m_fieldWidget);
+    geometryViewer = new SceneViewSimpleGeometryChart(this);
     geometryViewer->setMinimumHeight(100);
     
     btnSaveImage = new QPushButton();
     btnSaveImage->setDefault(false);
     btnSaveImage->setEnabled(false);
     btnSaveImage->setText(tr("Save image"));
-    connect(btnSaveImage, SIGNAL(clicked()), m_sceneChart, SLOT(doSaveImage()));
+    connect(btnSaveImage, SIGNAL(clicked()), sceneChart, SLOT(doSaveImage()));
 
     btnExportData = new QPushButton();
     btnExportData->setDefault(false);
     btnExportData->setEnabled(false);
     btnExportData->setText(tr("Export"));
-    connect(btnExportData, SIGNAL(clicked()), m_sceneChart, SLOT(doExportData()));
+    connect(btnExportData, SIGNAL(clicked()), sceneChart, SLOT(doExportData()));
 
     // geometry
     lblStartX = new QLabel("X:");
@@ -204,13 +204,13 @@ void PostprocessorSceneChartWidget::createControls()
     grpTime->setLayout(layoutTime);
 
     // button bar
-    QVBoxLayout *layoutButton = new QVBoxLayout();
+    QHBoxLayout *layoutButton = new QHBoxLayout();
     layoutButton->setContentsMargins(0, 0, 0, 0);
     layoutButton->addStretch();
     layoutButton->addWidget(btnSaveImage);
     layoutButton->addWidget(btnExportData);
 
-    QHBoxLayout *layoutChart = new QHBoxLayout();
+    QVBoxLayout *layoutChart = new QVBoxLayout();
     layoutChart->setContentsMargins(0, 0, 0, 0);
     layoutChart->addWidget(geometryViewer, 1);
     layoutChart->addLayout(layoutButton);
@@ -297,6 +297,10 @@ void PostprocessorSceneChartWidget::refresh()
     if (!(m_fieldWidget->selectedComputation() && m_fieldWidget && m_fieldWidget->selectedField()))
         return;
 
+    // set computation
+    if (!m_fieldWidget->selectedComputation().isNull())
+        geometryViewer->setProblem(static_cast<QSharedPointer<ProblemBase> >(m_fieldWidget->selectedComputation()));
+
     fillComboBoxScalarVariable(m_fieldWidget->selectedComputation()->config()->coordinateType(), m_fieldWidget->selectedField(), cmbFieldVariable);
     doFieldVariable(cmbFieldVariable->currentIndex());
 
@@ -359,8 +363,8 @@ void PostprocessorSceneChartWidget::load()
     else if ((ChartMode) m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ChartMode).toInt() == ChartMode_Time)
         tbxAnalysisType->setCurrentWidget(widTime);
 
-    btnSaveImage->setEnabled(m_sceneChart->chart()->graph()->data()->size() > 0);
-    btnExportData->setEnabled(m_sceneChart->chart()->graph()->data()->size() > 0);
+    btnSaveImage->setEnabled(sceneChart->chart()->graph()->data()->size() > 0);
+    btnExportData->setEnabled(sceneChart->chart()->graph()->data()->size() > 0);
 }
 
 void PostprocessorSceneChartWidget::save()

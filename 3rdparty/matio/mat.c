@@ -836,7 +836,7 @@ Mat_VarDelete(mat_t *mat, const char *name)
     if ( NULL == mat || NULL == name )
         return err;
 
-    if ( (tmp_name = mktemp(temp)) != NULL ) {
+    if (mkstemp(tmp_name)) {
         enum mat_ft mat_file_ver = MAT_FT_DEFAULT;
         mat_t *tmp;
 

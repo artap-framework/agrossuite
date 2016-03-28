@@ -114,7 +114,7 @@ Study *Study::factory(StudyType type)
 }
 
 Study::Study(QList<ComputationSet> computations)
-    : m_computationSets(computations), m_name(""), m_abort(false), m_isSolving(false)
+    : m_computationSets(computations), m_abort(false), m_isSolving(false)
 {    
 }
 
@@ -245,13 +245,16 @@ bool Study::evaluateFunctionals(QSharedPointer<Computation> computation)
 
 void Study::evaluateStep(QSharedPointer<Computation> computation)
 {
-    // solve
-    computation->solve();
-
-    // TODO: better error handling
-    if (!computation->isSolved())
+    if (m_setting.value(Study::General_SolveProblem).toBool())
     {
-        throw AgrosException(tr("Problem was not solved."));
+        // solve problem
+        computation->solve();
+
+        // TODO: better error handling
+        if (!computation->isSolved())
+        {
+            throw AgrosException(tr("Problem was not solved."));
+        }
     }
 
     // evaluate functionals
@@ -388,12 +391,13 @@ void Study::setDefaultValues()
 {
     m_settingDefault.clear();
 
-    m_settingDefault[General_ClearSolution] = false;
+    m_settingDefault[General_ClearSolution] = true;
+    m_settingDefault[General_SolveProblem] = true;
 
-    m_settingDefault[View_ChartX] = QString();
-    m_settingDefault[View_ChartY] = QString();
-    m_settingDefault[View_ChartLogX] = false;
-    m_settingDefault[View_ChartLogY] = false;
+    m_settingDefault[View_ChartHorizontal] = QString();
+    m_settingDefault[View_ChartVertical] = QString();
+    m_settingDefault[View_ChartLogHorizontal] = false;
+    m_settingDefault[View_ChartLogVertical] = false;
     m_settingDefault[View_ChartShowAverageValue] = true;
     m_settingDefault[View_ChartShowTrend] = false;
 }
@@ -401,11 +405,12 @@ void Study::setDefaultValues()
 void Study::setStringKeys()
 {
     m_settingKey[General_ClearSolution] = "General_ClearSolution";
+    m_settingKey[General_SolveProblem] = "General_SolveProblem";
 
-    m_settingKey[View_ChartX] = "View_ChartX";
-    m_settingKey[View_ChartY] = "View_ChartY";
-    m_settingKey[View_ChartLogX] = "View_ChartLogX";
-    m_settingKey[View_ChartLogY] = "View_ChartLogY";
+    m_settingKey[View_ChartHorizontal] = "View_ChartHorizontal";
+    m_settingKey[View_ChartVertical] = "View_ChartVertical";
+    m_settingKey[View_ChartLogHorizontal] = "View_ChartLogHorizontal";
+    m_settingKey[View_ChartLogVertical] = "View_ChartLogVertical";
     m_settingKey[View_ChartShowAverageValue] = "View_ChartShowAverageValue";
     m_settingKey[View_ChartShowTrend] = "View_ChartShowTrend";
 }

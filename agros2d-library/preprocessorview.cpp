@@ -465,14 +465,14 @@ void PreprocessorWidget::refresh()
             studyNode->setFont(0, fnt);
             studyNode->setData(0, Qt::UserRole, study->variant());
             studyNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
-            studyNode->setExpanded(true);
+            // studyNode->setExpanded(true);
 
             // parameters
             QTreeWidgetItem *parametersNode = new QTreeWidgetItem(studyNode);
             parametersNode->setText(0, tr("Parameters"));
             parametersNode->setFont(0, fnt);
-            // parametersNode->setData(0, Qt::UserRole, study->variant());
-            // parametersNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
+            parametersNode->setData(0, Qt::UserRole, study->variant());
+            parametersNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
             parametersNode->setExpanded(true);
 
             foreach (Parameter parameter, study->parameters())
@@ -483,24 +483,26 @@ void PreprocessorWidget::refresh()
                 item->setData(0, Qt::UserRole, parameter.name());
                 item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabParameter);
                 item->setText(1, QString("%1 - %2").arg(parameter.lowerBound()).arg(parameter.upperBound()));
+                item->setData(2, Qt::UserRole, study->variant());
             }
 
             // functionals
             QTreeWidgetItem *functionalsNode = new QTreeWidgetItem(studyNode);
             functionalsNode->setText(0, tr("Functionals"));
             functionalsNode->setFont(0, fnt);
-            // functionalsNode->setData(0, Qt::UserRole, study->variant());
-            // functionalsNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
+            functionalsNode->setData(0, Qt::UserRole, study->variant());
+            functionalsNode->setData(1, Qt::UserRole, PreprocessorWidget::OptilabStudy);
             functionalsNode->setExpanded(true);
 
             foreach (Functional functional, study->functionals())
             {
                 QTreeWidgetItem *item = new QTreeWidgetItem(functionalsNode);
 
-                item->setText(0, QString("%1").arg(functional.name()));
+                item->setText(0, QString("%1 (%2 %)").arg(functional.name()).arg(functional.weight()));
                 item->setData(0, Qt::UserRole, functional.name());
                 item->setData(1, Qt::UserRole, PreprocessorWidget::OptilabFunctional);
                 item->setText(1, QString("%1").arg((functional.expression().count() < 20) ? functional.expression() : functional.expression().left(20) + "..."));
+                item->setData(2, Qt::UserRole, study->variant());
             }
         }
     }
@@ -707,6 +709,16 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
+        else if (type == PreprocessorWidget::OptilabParameter)
+        {
+            // optilab - parameter
+            actProperties->setEnabled(true);
+        }
+        else if (type == PreprocessorWidget::OptilabFunctional)
+        {
+            // optilab - parameter
+            actProperties->setEnabled(true);
+        }
         else if (type == PreprocessorWidget::OptilabRecipe)
         {
             // problem - recipe
@@ -799,6 +811,30 @@ void PreprocessorWidget::doProperties()
 
             StudyDialog *studyDialog = StudyDialog::factory(study, this);
             if (studyDialog->showDialog() == QDialog::Accepted)
+            {
+                refresh();
+            }
+        }
+        else if (type == PreprocessorWidget::OptilabParameter)
+        {
+            // study
+            Study *study = trvWidget->currentItem()->data(2, Qt::UserRole).value<Study *>();
+            QString parameter = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
+
+            StudyParameterDialog dialog(study, &study->parameter(parameter));
+            if (dialog.exec() == QDialog::Accepted)
+            {
+                refresh();
+            }
+        }
+        else if (type == PreprocessorWidget::OptilabFunctional)
+        {
+            // study
+            Study *study = trvWidget->currentItem()->data(2, Qt::UserRole).value<Study *>();
+            QString functional = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
+
+            StudyFunctionalDialog dialog(study, &study->functional(functional));
+            if (dialog.exec() == QDialog::Accepted)
             {
                 refresh();
             }

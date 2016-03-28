@@ -60,7 +60,7 @@ public slots:
 
 public:
     SceneViewCommon(QWidget *parent = 0);
-    ~SceneViewCommon();
+    virtual ~SceneViewCommon();
 
     QAction *actSceneZoomRegion;
 

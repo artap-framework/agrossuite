@@ -17,7 +17,7 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include "sceneview_geometry_chart.h"
+#include "sceneview_geometry_simple.h"
 
 #include "util.h"
 #include "util/global.h"
@@ -42,19 +42,14 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
-SceneViewSimpleGeometry::SceneViewSimpleGeometry(QWidget *parent, PhysicalFieldWidget *fieldWidget)
-    : SceneViewCommon2D(parent), m_fieldWidget(fieldWidget)
+SceneViewSimpleGeometry::SceneViewSimpleGeometry(QWidget *parent)
+    : SceneViewCommon2D(parent)
 {
     setMinimumSize(100, 50);
 }
 
 SceneViewSimpleGeometry::~SceneViewSimpleGeometry()
 {
-}
-
-ProblemBase *SceneViewSimpleGeometry::problem() const
-{
-    return static_cast<ProblemBase *>(m_fieldWidget->selectedComputation().data());
 }
 
 void SceneViewSimpleGeometry::doZoomRegion(const Point &start, const Point &end)
@@ -78,20 +73,13 @@ void SceneViewSimpleGeometry::doZoomRegion(const Point &start, const Point &end)
 
 void SceneViewSimpleGeometry::refresh()
 {
-    if (!m_fieldWidget->selectedComputation().isNull() && m_fieldWidget->selectedComputation()->isSolved())
+    if (!m_problem.isNull())
         SceneViewCommon::refresh();
 }
 
 void SceneViewSimpleGeometry::clear()
 {
     doZoomBestFit();
-}
-
-void SceneViewSimpleGeometry::setChartLine(ChartLine chartLine)
-{
-    m_chartLine = chartLine;
-
-    updateGL();
 }
 
 void SceneViewSimpleGeometry::paintGL()
@@ -104,21 +92,20 @@ void SceneViewSimpleGeometry::paintGL()
 
     // geometry
     paintGeometry();
-    paintChartLine();
 }
 
 void SceneViewSimpleGeometry::paintGeometry()
 {
-    if (m_fieldWidget->selectedComputation().isNull())
+    if (m_problem.isNull())
         return;
 
     loadProjection2d(true);
 
     // edges
-    foreach (SceneFace *edge, m_fieldWidget->selectedComputation()->scene()->faces->items())
+    foreach (SceneFace *edge, m_problem->scene()->faces->items())
     {
         glColor3d(COLOREDGE[0], COLOREDGE[1], COLOREDGE[2]);
-        glLineWidth(1.0);
+        glLineWidth(EDGEWIDTH);
 
         if (edge->isStraight())
         {
@@ -136,20 +123,84 @@ void SceneViewSimpleGeometry::paintGeometry()
             drawArc(center, radius, startAngle, edge->angle());
         }
     }
+
+    try
+    {
+        if (m_problem->scene()->crossings().isEmpty())
+        {
+            glEnable(GL_POLYGON_OFFSET_FILL);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+            // blended rectangle
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            glBegin(GL_TRIANGLES);
+            QMapIterator<SceneLabel*, QList<LoopsInfo::Triangle> > i(m_problem->scene()->loopsInfo()->polygonTriangles());
+            while (i.hasNext())
+            {
+                i.next();
+
+                if (i.key()->isHole())
+                    glColor4f(0.3, 0.1, 0.7, 0.00);
+                else
+                    glColor4f(0.3, 0.1, 0.7, 0.10);
+
+                foreach (LoopsInfo::Triangle triangle, i.value())
+                {
+                    glVertex2d(triangle.a.x, triangle.a.y);
+                    glVertex2d(triangle.b.x, triangle.b.y);
+                    glVertex2d(triangle.c.x, triangle.c.y);
+                }
+            }
+            glEnd();
+
+            glDisable(GL_BLEND);
+            glDisable(GL_POLYGON_OFFSET_FILL);
+        }
+    }
+    catch (AgrosException& ame)
+    {
+        // therefore catch exceptions and do nothing
+    }
 }
 
-void SceneViewSimpleGeometry::paintChartLine()
+// *********************************************************************************************************
+
+SceneViewSimpleGeometryChart::SceneViewSimpleGeometryChart(QWidget *parent) : SceneViewSimpleGeometry(parent)
 {
-    if (m_fieldWidget->selectedComputation().isNull())
+}
+
+SceneViewSimpleGeometryChart::~SceneViewSimpleGeometryChart()
+{
+}
+
+void SceneViewSimpleGeometryChart::paintGL()
+{
+    SceneViewSimpleGeometry::paintGL();
+
+    paintChartLine();
+}
+
+void SceneViewSimpleGeometryChart::setChartLine(const ChartLine &chartLine)
+{
+    m_chartLine = chartLine;
+
+    updateGL();
+}
+
+void SceneViewSimpleGeometryChart::paintChartLine()
+{
+    if (m_problem.isNull())
         return;
 
     loadProjection2d(true);
 
-    RectPoint rect = m_fieldWidget->selectedComputation()->scene()->boundingBox();
+    RectPoint rect = m_problem->scene()->boundingBox();
     double dm = qMax(rect.width(), rect.height()) / 25.0;
 
-    glColor3d(1.0, 0.1, 0.1);
-    glLineWidth(2.0);
+    glColor3d(0.9, 0.1, 0.1);
+    glLineWidth(1.0);
 
     // line
     if (m_chartLine.start == m_chartLine.end)
@@ -175,9 +226,7 @@ void SceneViewSimpleGeometry::paintChartLine()
         double vs2x = m_chartLine.end.x + dm / 2.5 * cos(angle - M_PI/2.0) - dm * cos(angle);
         double vs2y = m_chartLine.end.y + dm / 2.5 * sin(angle - M_PI/2.0) - dm * sin(angle);
         double vs3x = m_chartLine.end.x;
-        double vs3y = m_chartLine.end.y;
-
-        glLineWidth(1.0);
+        double vs3y = m_chartLine.end.y;        
 
         glEnable(GL_POLYGON_OFFSET_FILL);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

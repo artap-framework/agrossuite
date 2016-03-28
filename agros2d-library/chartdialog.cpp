@@ -24,7 +24,7 @@
 #include "scene.h"
 #include "scenenode.h"
 #include "sceneedge.h"
-#include "sceneview_geometry_chart.h"
+#include "sceneview_geometry_simple.h"
 
 #include "solver/module.h"
 

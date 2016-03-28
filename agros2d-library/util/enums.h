@@ -323,18 +323,18 @@ enum StudyType
     StudyType_JMetal
 };
 
-enum FunctionalType
-{
-    FunctionalType_Minimize,
-    FunctionalType_Maximize,
-    FunctionalType_Result
-};
-
 enum ResultRecipeType
 {
     ResultRecipeType_LocalValue,
     ResultRecipeType_SurfaceIntegral,
     ResultRecipeType_VolumeIntegral
+};
+
+enum ComputationResultType
+{
+    ComputationResultType_Functional,
+    ComputationResultType_Recipe,
+    ComputationResultType_Other
 };
 
 // keys
@@ -496,11 +496,11 @@ AGROS_LIBRARY_API QStringList studyTypeStringKeys();
 AGROS_LIBRARY_API QString studyTypeToStringKey(StudyType type);
 AGROS_LIBRARY_API StudyType studyTypeFromStringKey(const QString &type);
 
-// functional type
-AGROS_LIBRARY_API QString functionalTypeString(FunctionalType type);
-AGROS_LIBRARY_API QStringList functionalTypeStringKeys();
-AGROS_LIBRARY_API QString functionalTypeToStringKey(FunctionalType type);
-AGROS_LIBRARY_API FunctionalType functionalTypeFromStringKey(const QString &type);
+// computation result type
+AGROS_LIBRARY_API QString computationResultTypeString(ComputationResultType type);
+AGROS_LIBRARY_API QStringList computationResultTypeStringKeys();
+AGROS_LIBRARY_API QString computationResultTypeToStringKey(ComputationResultType type);
+AGROS_LIBRARY_API ComputationResultType computationResultTypeFromStringKey(const QString &type);
 
 // recipe type
 AGROS_LIBRARY_API QString resultRecipeTypeString(ResultRecipeType type);

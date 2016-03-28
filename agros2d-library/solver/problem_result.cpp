@@ -23,8 +23,9 @@
 #include "solver/plugin_interface.h"
 
 // consts
+const QString COMPUTATIONAL_RESULTS = "computational_results";
 const QString RESULTS = "results";
-const QString INFO = "info";
+const QString TYPES = "types";
 
 const QString TYPE = "type";
 const QString NAME = "name";
@@ -331,58 +332,64 @@ ResultRecipe *ResultRecipes::recipe(const QString &name)
 void ResultRecipes::evaluate(Computation *computation)
 {
     foreach (ResultRecipe *recipe, m_recipes)
-        computation->results()->setResult(recipe->name(), recipe->evaluate(computation));
+        computation->results()->setResult(recipe->name(), recipe->evaluate(computation), ComputationResultType_Recipe);
 }
 
 // *****************************************************************************************************************
 
-ComputationResults::ComputationResults(StringToDoubleMap results, StringToVariantMap info)
-    : m_results(results), m_info(info) { }
+ComputationResults::ComputationResults(StringToDoubleMap results, QMap<QString, ComputationResultType> types)
+    : m_results(results), m_types(types) { }
 
 ComputationResults::~ComputationResults()
 {
-    //delete m_results;
-    //delete m_info;
 }
 
 void ComputationResults::clear()
 {
     m_results.clear();
-    m_info.clear();
 }
 
 void ComputationResults::load(QJsonObject &rootJson)
 {
     // results
-    QJsonObject resultsJson = rootJson[RESULTS].toObject();
+    QJsonObject computationResultsJson = rootJson[COMPUTATIONAL_RESULTS].toObject();
+
+    // values
+    QJsonObject resultsJson = computationResultsJson[RESULTS].toObject();
     foreach (QString key, resultsJson.keys())
     {
         m_results[key] = resultsJson[key].toDouble();
     }
 
-    // info
-    QJsonObject infoJson = rootJson[INFO].toObject();
-    foreach (QString key, infoJson.keys())
+    // types
+    QJsonObject typesJson = computationResultsJson[TYPES].toObject();
+    foreach (QString key, typesJson.keys())
     {
-        m_info[key] = QVariant::fromValue(infoJson[key].toObject());
+        m_types[key] = computationResultTypeFromStringKey(typesJson[key].toString());
     }
 }
 
 void ComputationResults::save(QJsonObject &rootJson)
 {
     // results
+    QJsonObject computationResultsJson;
+
+    // values
     QJsonObject resultsJson;
     for (StringToDoubleMap::const_iterator i = m_results.constBegin(); i != m_results.constEnd(); ++i)
     {
         resultsJson[i.key()] = i.value();
     }
-    rootJson[RESULTS] = resultsJson;
+    computationResultsJson[RESULTS] = resultsJson;
 
-    // info
-    QJsonObject infoJson;
-    for (StringToVariantMap::const_iterator i = m_info.constBegin(); i != m_info.constEnd(); ++i)
+    // values
+    QJsonObject typesJson;
+    for (QMap<QString, ComputationResultType>::const_iterator i = m_types.constBegin(); i != m_types.constEnd(); ++i)
     {
-        infoJson[i.key()] = i.value().toJsonValue();
+        typesJson[i.key()] = computationResultTypeToStringKey(i.value());
     }
-    rootJson[INFO] = infoJson;
+    computationResultsJson[TYPES] = typesJson;
+
+
+    rootJson[COMPUTATIONAL_RESULTS] = computationResultsJson;
 }

@@ -287,10 +287,9 @@ void NSGA2::save_backup() const {
 
 
     char tempfilename[L_tmpnam];
-    char* res = tmpnam(tempfilename);
-    if (!res) {
-	perror("Could not create temporary file!");
-	return;
+    if (!mkstemp(tempfilename)) {
+        perror("Could not create temporary file!");
+        return;
     }
     cout << tempfilename << endl;
 

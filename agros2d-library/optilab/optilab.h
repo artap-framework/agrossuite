@@ -31,7 +31,7 @@
 class OptiLab;
 class Study;
 class Computation;
-class InfoWidgetGeneral;
+class SceneViewSimpleGeometry;
 
 class AGROS_LIBRARY_API OptiLabWidget : public QWidget
 {
@@ -46,28 +46,30 @@ private:
     OptiLab *m_optilab;
 
     QTreeWidget *trvComputations;
+    QLabel *lblNumberOfSets;
+    QLabel *lblNumberOfComputations;
     QComboBox *cmbStudies;
 
-    QComboBox *cmbChartX;
-    QComboBox *cmbChartY;
-
-    QPushButton *btnPlotChart;
+    QMenu *mnuComputations;
+    QAction *actComputationDelete;
 
     void createControls();
 
 signals:
+    void studySelected(Study *study);
     void computationSelected(const QString &key);
-    void chartRefreshed(Study *study, QSharedPointer<Computation> computation);
+    void chartRefreshed(const QString &key);
 
 private slots:
     void doComputationChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);
     void doComputationSelected(const QString &key);
+    void doComputationContextMenu(const QPoint &pos);
+    void doComputationDelete(bool);
 
     void studyChanged(int index);
     void refresh();
 
     void solveStudy();
-    void plotChart();
 };
 
 class OptiLab : public QWidget
@@ -80,20 +82,64 @@ public:
     QAction *actSceneModeOptiLab;
     inline OptiLabWidget *optiLabWidget() { return m_optiLabWidget; }
 
+    void setStudy(Study *study);
+
 signals:
     void computationSelected(const QString &key);
 
 public slots:
     void doComputationSelected(const QString &key);
-    void doChartRefreshed(Study *study, QSharedPointer<Computation> selectedComputation);
+    void doChartRefreshed(const QString &key = "");
 
 private:
+    enum ResultType
+    {
+        ResultType_Parameter,
+        ResultType_Functional,
+        ResultType_Recipe
+    };
+
+    inline QString resultTypeToStringKey(ResultType type)
+    {
+        if (type == ResultType::ResultType_Parameter) return "parameter";
+        else if (type == ResultType::ResultType_Functional) return "functional";
+        else if (type == ResultType::ResultType_Recipe) return "recipe";
+        else assert(0);
+    }
+
+    inline ResultType resultTypeFromStringKey(const QString &type)
+    {
+        if (type == "parameter") return ResultType::ResultType_Parameter;
+        else if (type == "functional") return ResultType::ResultType_Functional;
+        else if (type == "recipe") return ResultType::ResultType_Recipe;
+        else assert(0);
+    }
+
     Study *m_study;
 
     QSplitter *splitter;
 
     OptiLabWidget *m_optiLabWidget;
-    InfoWidgetGeneral *m_infoWidget;
+    SceneViewSimpleGeometry *geometryViewer;
+
+    QLabel *lblResultMin;
+    QLabel *lblResultMax;
+    QLabel *lblResultSum;
+    QLabel *lblResultMean;
+    QLabel *lblResultMedian;
+    QLabel *lblResultVariance;
+    QLabel *lblResultStdDev;
+    QLabel *lblResultNormalCovariance; // normal distribution
+    QLabel *lblResultNormalCorrelation; // normal distribution
+
+    QTreeWidget *trvResults;
+    QMenu *mnuResults;
+
+    QAction *actResultsDependenceOnSteps;
+    QAction *actResultsSetHorizontal;
+    QAction *actResultsSetVertical;
+    QAction *actResultsFindMinimum;
+    QAction *actResultsFindMaximum;
 
     QCustomPlot *chart;
     QCPItemLine *chartTrendLine;
@@ -105,13 +151,19 @@ private:
     QMenu *mnuChart;
     QMap<int, QMap<QPair<double, double>, QSharedPointer<Computation> > > m_computationMap;
 
-    QAction *actRescale;
-    QAction *actLogX;
-    QAction *actLogY;
-    QAction *actShowTrend;
-    QAction *actShowAverageValue;
+    QCustomPlot *pdfChart;
+    QCustomPlot *cdfChart;
+
+    QAction *actChartRescale;
+    QAction *actChartLogHorizontal;
+    QAction *actChartLogVertical;
+    QAction *actChartShowTrend;
+    QAction *actChartShowAverageValue;
 
     void createControls();
+    QWidget *createControlsDistChart();
+    QWidget *createControlsChart();
+    QWidget *createControlsResults();
     QCPData findClosestData(QCPGraph *graph, const Point &pos);
 
 private slots:
@@ -119,13 +171,20 @@ private slots:
 
     void chartContextMenu(const QPoint &pos);
     void chartRescale(bool checked);
-
-    void chartLogX(bool checked);
-    void chartLogY(bool checked);
+    void chartLogHorizontal(bool checked);
+    void chartLogVertical(bool checked);
     void chartShowTrend(bool checked);
     void chartShowAverageValue(bool checked);
 
+    void resultsContextMenu(const QPoint &pos);
+    void resultsDependenceOnSteps(bool checked);
+    void resultsSetHorizontal(bool checked);
+    void resultsSetVertical(bool checked);
+
     void graphClicked(QCPAbstractPlottable *plottable, QMouseEvent *event);
+    void graphMouseDoubleClick(QMouseEvent *event);
+
+    void doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);
 };
 
 #endif // OPTILAB_H

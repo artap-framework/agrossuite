@@ -125,6 +125,7 @@ protected:
     void readFunctionals();
 
     QCheckBox *chkClearSolution;
+    QCheckBox *chkSolveProblem;
 
     virtual void load();
     virtual void save();
@@ -143,6 +144,8 @@ private slots:
     void doFunctionalAdd(bool checked);
     void doFunctionalEdit(bool checked);
     void doFunctionalRemove(bool checked);
+
+    void doDuplicate();
 };
 
 class StudyFunctionalDialog : public QDialog

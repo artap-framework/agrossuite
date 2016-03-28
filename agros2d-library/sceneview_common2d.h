@@ -33,7 +33,7 @@ public slots:
 
 public:
     SceneViewCommon2D(QWidget *parent = 0);
-    ~SceneViewCommon2D();
+    virtual ~SceneViewCommon2D();
 
     void doZoomRegion(const Point &start, const Point &end);
 
