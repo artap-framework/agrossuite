@@ -675,18 +675,18 @@ QWidget *OptiLab::createControlsResults()
     actResultsSetVertical = new QAction(icon(""), tr("Set on vertical axis"), this);
     connect(actResultsSetVertical, SIGNAL(triggered(bool)), this, SLOT(resultsSetVertical(bool)));
 
-    // actResultsFindMinimum = new QAction(icon(""), tr("Find minimum"), this);
-    // connect(actResultsFindMinimum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMinimum(bool)));
-    // actResultsFindMaximum = new QAction(icon(""), tr("Find maximum"), this);
-    // connect(actResultsFindMaximum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMaximum(bool)));
+    actResultsFindMinimum = new QAction(icon(""), tr("Find minimum"), this);
+    connect(actResultsFindMinimum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMinimum(bool)));
+    actResultsFindMaximum = new QAction(icon(""), tr("Find maximum"), this);
+    connect(actResultsFindMaximum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMaximum(bool)));
 
     mnuResults = new QMenu(trvResults);
     mnuResults->addAction(actResultsDependenceOnSteps);
     mnuResults->addAction(actResultsSetHorizontal);
     mnuResults->addAction(actResultsSetVertical);
-    // mnuResults->addSection(tr("Statistics"));
-    // mnuResults->addAction(actResultsFindMinimum);
-    // mnuResults->addAction(actResultsFindMaximum);
+    mnuResults->addSection(tr("Statistics"));
+    mnuResults->addAction(actResultsFindMinimum);
+    mnuResults->addAction(actResultsFindMaximum);
 
     QVBoxLayout *layoutResults = new QVBoxLayout();
     layoutResults->addWidget(trvResults, 2);
@@ -844,6 +844,16 @@ void OptiLab::resultsContextMenu(const QPoint &pos)
 
 void OptiLab::doComputationSelected(const QString &key)
 {
+    // cache value
+    ResultType selectedType = ResultType_Parameter;
+    QString selectedKey = "";
+    QTreeWidgetItem *selectedItem = nullptr;
+    if (!key.isEmpty() && trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
+    {
+        selectedType = (ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt();
+        selectedKey = trvResults->currentItem()->data(0, Qt::UserRole).toString();
+    }
+
     trvResults->clear();
 
     if (key.isEmpty())
@@ -876,6 +886,9 @@ void OptiLab::doComputationSelected(const QString &key)
             parameterNode->setText(1, QString::number(parameters[parameter.name()]));
             parameterNode->setData(0, Qt::UserRole, parameter.name());
             parameterNode->setData(1, Qt::UserRole, ResultType::ResultType_Parameter);
+
+            if (selectedType == ResultType::ResultType_Parameter && selectedKey == parameter.name())
+                selectedItem = parameterNode;
         }
 
         // functionals
@@ -900,11 +913,17 @@ void OptiLab::doComputationSelected(const QString &key)
             {
                 item = new QTreeWidgetItem(functionalsNode);
                 item->setData(1, Qt::UserRole, ResultType::ResultType_Functional);
+
+                if (selectedType == ResultType::ResultType_Functional && selectedKey == key)
+                    selectedItem = item;
             }
             else if (computation->results()->resultType(key) == ComputationResultType_Recipe)
             {
                 item = new QTreeWidgetItem(recipesNode);
                 item->setData(1, Qt::UserRole, ResultType::ResultType_Recipe);
+
+                if (selectedType == ResultType::ResultType_Recipe && selectedKey == key)
+                    selectedItem = item;
             }
             else
                 assert(0);
@@ -916,12 +935,17 @@ void OptiLab::doComputationSelected(const QString &key)
 
         // paint chart
         doChartRefreshed(key);
+
+        // select item
+        if (selectedItem)
+            trvResults->setCurrentItem(selectedItem);
     }
 }
 
 void OptiLab::doChartRefreshed(const QString &key)
 {
     m_computationMap.clear();
+    chartGraphSelectedComputation->clearData();
 
     foreach (QCPGraph *graph, chartGraphCharts)
         chart->removeGraph(graph);
@@ -1306,4 +1330,67 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
 
     pdfChart->replot(QCustomPlot::rpQueued);
     cdfChart->replot(QCustomPlot::rpQueued);
+}
+
+void OptiLab::resultsFindMinimum(bool checked)
+{
+    resultsFindExtrem(true);
+}
+
+void OptiLab::resultsFindMaximum(bool checked)
+{
+    resultsFindExtrem(false);
+}
+
+// TODO: move to Study
+void OptiLab::resultsFindExtrem(bool minimum)
+{
+    if (trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
+    {
+        ResultType type = (ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt();
+        QString key = trvResults->currentItem()->data(0, Qt::UserRole).toString();
+
+        QString selectedComputation = "";
+
+        // extrem
+        double extrem = (minimum) ? numeric_limits<double>::max() : -numeric_limits<double>::max();
+
+        for (int i = 0; i < m_study->computationSets().count(); i++)
+        {
+            QList<QSharedPointer<Computation> > computations = m_study->computationSets()[i].computations();
+
+            for (int j = 0; j < computations.count(); j++)
+            {
+                QSharedPointer<Computation> computation = computations[j];
+
+                double val = NAN;
+                if (type == ResultType_Parameter)
+                    val = computation->config()->parameter(key);
+                else if (type == ResultType_Recipe || type == ResultType_Functional)
+                    val = computation->results()->resultValue(key);
+                else
+                    assert(0);
+
+                if (minimum)
+                {
+                    if (val < extrem)
+                    {
+                        extrem = val;
+                        selectedComputation = computation->problemDir();
+                    }
+                }
+                else
+                {
+                    if (val > extrem)
+                    {
+                        extrem = val;
+                        selectedComputation = computation->problemDir();
+                    }
+                }
+            }
+        }
+
+        if (!selectedComputation.isEmpty())
+            emit computationSelected(selectedComputation);
+    }
 }

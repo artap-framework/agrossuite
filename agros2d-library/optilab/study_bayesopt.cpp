@@ -18,6 +18,7 @@
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
 #include "study_bayesopt.h"
+#include "bayesopt/include/prob_distribution.hpp"
 
 #include "study.h"
 #include "parameter.h"
@@ -61,10 +62,13 @@ double BayesOptProblem::evaluateSample(const vectord& x)
     m_study->addComputation(computation);
 
     // set parameters
+    // vectord prediction(x.size());
     for (int i = 0; i < m_study->parameters().count(); i++)
     {
         Parameter parameter = m_study->parameters()[i];
         computation->config()->setParameter(parameter.name(), x[i]);
+
+        // prediction[i] = (x[i] - parameter.lowerBound()) / (parameter.upperBound() - parameter.lowerBound());
     }
 
     // evaluate step
@@ -75,6 +79,14 @@ double BayesOptProblem::evaluateSample(const vectord& x)
 
         if (m_study->value(Study::General_ClearSolution).toBool())
             computation->clearSolution();
+
+        /*
+        if (m_study->computationSets().count() > 1)
+        {
+            bayesopt::ProbabilityDistribution *pd = getPrediction(prediction);
+            qDebug() << value << pd->getMean() - 2*pd->getStd() << pd->getMean() + 2*pd->getStd() << -evaluateCriteria(prediction);
+        }
+        */
 
         return value;
     }
@@ -111,7 +123,7 @@ void StudyBayesOpt::solve()
     par.sc_type = (score_type) value(BayesOpt_sc_type).toInt();
     par.noise = value(Study::BayesOpt_surr_noise).toDouble();
     par.random_seed = 0;
-    par.verbose_level = 1;
+    par.verbose_level = -1;
 
     BayesOptProblem bayesOptProblem(this, par);
 
@@ -148,7 +160,7 @@ void StudyBayesOpt::setDefaultValues()
     m_settingDefault[BayesOpt_n_init_samples] = 5;
     m_settingDefault[BayesOpt_n_iterations] = 10;
     m_settingDefault[BayesOpt_n_iter_relearn] = 5;
-    m_settingDefault[BayesOpt_init_method] = 1; // 1-LHS, 2-Sobol    
+    m_settingDefault[BayesOpt_init_method] = 1; // 1-LHS, 2-Sobol
     m_settingDefault[BayesOpt_surr_name] = "sGaussianProcessML";
     m_settingDefault[BayesOpt_surr_noise] = 1e-10;
     m_settingDefault[BayesOpt_l_type] = L_EMPIRICAL;
@@ -162,7 +174,7 @@ void StudyBayesOpt::setStringKeys()
     m_settingKey[BayesOpt_n_init_samples] = "BayesOpt_n_init_samples";
     m_settingKey[BayesOpt_n_iterations] = "BayesOpt_n_iterations";
     m_settingKey[BayesOpt_n_iter_relearn] = "BayesOpt_n_iter_relearn";
-    m_settingKey[BayesOpt_init_method] = "BayesOpt_init_method";    
+    m_settingKey[BayesOpt_init_method] = "BayesOpt_init_method";
     m_settingKey[BayesOpt_surr_name] = "BayesOpt_surr_name";
     m_settingKey[BayesOpt_surr_noise] = "BayesOpt_surr_noise";
     m_settingKey[BayesOpt_l_type] = "BayesOpt_l_type";

@@ -166,6 +166,8 @@ private:
     QWidget *createControlsResults();
     QCPData findClosestData(QCPGraph *graph, const Point &pos);
 
+    void resultsFindExtrem(bool minimum);
+
 private slots:
     void refresh();
 
@@ -185,6 +187,9 @@ private slots:
     void graphMouseDoubleClick(QMouseEvent *event);
 
     void doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest);
+
+    void resultsFindMinimum(bool checked);
+    void resultsFindMaximum(bool checked);
 };
 
 #endif // OPTILAB_H
