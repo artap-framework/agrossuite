@@ -240,7 +240,7 @@ bool Study::evaluateFunctionals(QSharedPointer<Computation> computation)
     return successfulRun;
 }
 
-void Study::evaluateStep(QSharedPointer<Computation> computation)
+void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty)
 {
     if (m_setting.value(Study::General_SolveProblem).toBool())
     {
@@ -268,7 +268,8 @@ void Study::evaluateStep(QSharedPointer<Computation> computation)
         double value = computation->results()->resultValue(m_functionals[i].name());
         values.append(value);
     }
-    updateChart(computationsCount(), values);
+    double totalValue = evaluateSingleGoal(computation);
+    updateChart(computationsCount(), values, totalValue, solutionUncertainty);
 }
 
 double Study::evaluateSingleGoal(QSharedPointer<Computation> computation)

@@ -543,7 +543,6 @@ QWidget *OptiLab::createControlsDistChart()
     lblResultNormalCovariance = new QLabel(); // normal distribution
     lblResultNormalCorrelation = new QLabel(); // normal distribution
 
-
     QGridLayout *layoutStatistics = new QGridLayout();
     layoutStatistics->addWidget(new QLabel(tr("Minimum:")), 0, 0);
     layoutStatistics->addWidget(lblResultMin, 0, 1);

@@ -54,6 +54,7 @@ private:
     QPushButton *btnClose;
     QPushButton *btnAbort;
 
+    QCustomPlot *m_totalChart;
     QList<QCustomPlot *> m_charts;
     QProgressBar *m_progress;
     int m_computationSetsCount;
@@ -61,7 +62,7 @@ private:
     void createControls();
 
 private slots:
-    void updateChart(int step, QList<double> values);
+    void updateChart(int step, QList<double> values, double totalValue, SolutionUncertainty solutionUncertainty);
     void updateParameters(QList<Parameter> parameters, const Computation *computation);
 
     void solved();

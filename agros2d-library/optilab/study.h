@@ -32,6 +32,16 @@
 class Computation;
 class Study;
 
+class SolutionUncertainty
+{
+public:
+    SolutionUncertainty() : lowerBound(0.0), upperBound(0.0), uncertainty(0.0) {}
+
+    double lowerBound;
+    double upperBound;
+    double uncertainty;
+};
+
 class ComputationParameterCompare
 {
 public:
@@ -143,7 +153,7 @@ public:
     Functional &functional(const QString &name);
     QList<Functional> &functionals() { return m_functionals; }
     bool evaluateFunctionals(QSharedPointer<Computation> computation);
-    void evaluateStep(QSharedPointer<Computation> computation);
+    void evaluateStep(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty = SolutionUncertainty());
     double evaluateSingleGoal(QSharedPointer<Computation> computation);
     QList<double> evaluateMultiGoal(QSharedPointer<Computation> computation);
 
@@ -175,7 +185,7 @@ public slots:
     void doAbortSolve();
 
 signals:
-    void updateChart(int step, QList<double> values);
+    void updateChart(int step, QList<double> values, double totalValue, SolutionUncertainty solutionUncertainty);
     void updateParameters(QList<Parameter> parameters, const Computation *computation);
 
     void solved();

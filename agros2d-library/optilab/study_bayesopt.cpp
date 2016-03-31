@@ -62,31 +62,34 @@ double BayesOptProblem::evaluateSample(const vectord& x)
     m_study->addComputation(computation);
 
     // set parameters
-    // vectord prediction(x.size());
+    vectord query(m_study->parameters().count());
     for (int i = 0; i < m_study->parameters().count(); i++)
     {
         Parameter parameter = m_study->parameters()[i];
-        computation->config()->setParameter(parameter.name(), x[i]);
+        computation->config()->setParameter(parameter.name(), x[i]);        
 
-        // prediction[i] = (x[i] - parameter.lowerBound()) / (parameter.upperBound() - parameter.lowerBound());
+        query[i] = (x[i] - parameter.lowerBound()) / (parameter.upperBound() - parameter.lowerBound());
     }
 
     // evaluate step
     try
     {
-        m_study->evaluateStep(computation);
+        SolutionUncertainty solutionUncertainty;
+        bayesopt::ProbabilityDistribution *pd = nullptr;
+        if (m_study->computationSets().count() > 1)
+        {
+            pd = getPrediction(query);
+
+            solutionUncertainty.uncertainty = -evaluateCriteria(query);
+            solutionUncertainty.lowerBound = pd->getMean() - 2.0*pd->getStd();
+            solutionUncertainty.upperBound = pd->getMean() + 2.0*pd->getStd();
+        }
+
+        m_study->evaluateStep(computation, solutionUncertainty);
         double value = m_study->evaluateSingleGoal(computation);
 
         if (m_study->value(Study::General_ClearSolution).toBool())
             computation->clearSolution();
-
-        /*
-        if (m_study->computationSets().count() > 1)
-        {
-            bayesopt::ProbabilityDistribution *pd = getPrediction(prediction);
-            qDebug() << value << pd->getMean() - 2*pd->getStd() << pd->getMean() + 2*pd->getStd() << -evaluateCriteria(prediction);
-        }
-        */
 
         return value;
     }
