@@ -447,16 +447,13 @@ void SceneViewMesh::paintError()
     {
 
         MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
-        dealii::hp::QCollection<2-1> quadratureFormulasFace;
-        dealii::hp::QCollection<2> quadratureFormulas;
+        dealii::hp::QCollection<2-1> quadratureFormulasFace;        
 
-        quadratureFormulas.push_back(dealii::QGauss<2>(1));
         quadratureFormulasFace.push_back(dealii::QGauss<2 - 1>(1));
 
         // Gauss quadrature
         for (unsigned int degree = 1; degree <= DEALII_MAX_ORDER + 1; degree++)
-        {
-            quadratureFormulas.push_back(dealii::QGauss<2>(degree + QUADRATURE_ORDER_INCREASE));
+        {            
             quadratureFormulasFace.push_back(dealii::QGauss<2-1>(degree + QUADRATURE_ORDER_INCREASE));
         }
         // estimated error per cell
