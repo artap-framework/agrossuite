@@ -60,6 +60,7 @@ protected:
     void paintOrder();
     void paintError();
     void paintOrderColorBar();    
+    void paintErrorColorBar();
 
 private:
     PostprocessorWidget *m_postprocessorWidget;

@@ -448,6 +448,7 @@ void PostprocessorSetting::setStringKeys()
     m_settingKey[OrderComponent] = "OrderComponent";
     m_settingKey[ShowOrderLabel] = "ShowOrderLabel";
     m_settingKey[ShowOrderColorBar] = "ShowOrderColorBar";
+    m_settingKey[ShowErrorColorBar] = "ShowErrorColorBar";
     m_settingKey[OrderPaletteOrderType] = "OrderPaletteOrderType";
     m_settingKey[ParticleButcherTableType] = "ParticleButcherTableType";
     m_settingKey[ParticleIncludeRelativisticCorrection] = "ParticleIncludeRelativisticCorrection";

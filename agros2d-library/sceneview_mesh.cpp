@@ -197,6 +197,11 @@ void SceneViewMesh::paintGL()
         if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderView).toBool()
                 && m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderColorBar).toBool())
             paintOrderColorBar();
+
+        if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowErrorView).toBool()
+                && m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderColorBar).toBool())
+            paintErrorColorBar();
+
     }
 
     // rulers
@@ -482,8 +487,8 @@ void SceneViewMesh::paintError()
                 dealii::Point<2> point2 = cell_int->vertex(2);
                 dealii::Point<2> point3 = cell_int->vertex(3);
 
-                // polynomial degree
-                int error = (int) (log10(m_estimated_error_per_cell[i]) + 15);
+                // error
+                int error = (int) (log10(m_estimated_error_per_cell[i]) + 15) / 2;
 
                 QVector3D colorVector = QVector3D(paletteColorOrder(error)[0], paletteColorOrder(error)[1], paletteColorOrder(error)[2]);
 
@@ -564,6 +569,76 @@ void SceneViewMesh::paintError()
                             QString::number(error));
             }
         }
+    }
+}
+
+void SceneViewMesh::paintErrorColorBar()
+{
+    if (!m_postprocessorWidget->currentComputation()->isSolved() || !m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderColorBar).toBool()) return;
+
+    int minError = 100;
+    int maxError = 0;
+    MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
+
+    int level = 0;
+    dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end();
+    for (int i = 0; cell_int != endc_int; ++cell_int, ++i)
+    {
+        // polynomial degree
+        int error = (int) (log10(m_estimated_error_per_cell[i]) + 15) / 2;
+
+        if (error < minError) minError = error;
+        if (error > maxError) maxError = error;
+    }
+
+    // order color map
+    loadProjectionViewPort();
+
+    glScaled(2.0 / width(), 2.0 / height(), 1.0);
+    glTranslated(- width() / 2.0, -height() / 2.0, 0.0);
+
+    // dimensions
+    int textWidth = 11 * (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0);
+    int textHeight = 2 * (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0);
+    Point scaleSize = Point(20 + textWidth, (20 + maxError * (2 * textHeight) - textHeight / 2.0 + 2));
+    Point scaleBorder = Point(10.0, (Agros2D::configComputer()->value(Config::Config_ShowRulers).toBool()) ? 1.8 * textHeight : 10.0);
+    double scaleLeft = (width() - (20 + textWidth));
+
+    // blended rectangle
+    drawBlend(Point(scaleLeft, scaleBorder.y), Point(scaleLeft + scaleSize.x - scaleBorder.x, scaleBorder.y + scaleSize.y),
+              0.91, 0.91, 0.91);
+
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    // bars
+    glBegin(GL_QUADS);
+    for (int i = 1; i < maxError + 1; i++)
+    {
+        glColor3d(0.0, 0.0, 0.0);
+        glVertex2d(scaleLeft + 10,                             scaleBorder.y + 10 + (i-1)*(2 * textHeight));
+        glVertex2d(scaleLeft + 10 + textWidth - scaleBorder.x, scaleBorder.y + 10 + (i-1)*(2 * textHeight));
+        glVertex2d(scaleLeft + 10 + textWidth - scaleBorder.x, scaleBorder.y + 12 + (i )*(2 * textHeight) - textHeight / 2.0);
+        glVertex2d(scaleLeft + 10,                             scaleBorder.y + 12 + (i )*(2 * textHeight) - textHeight / 2.0);
+
+        glColor3d(paletteColorOrder(i)[0], paletteColorOrder(i)[1], paletteColorOrder(i)[2]);
+        glVertex2d(scaleLeft + 12,                                 scaleBorder.y + 12 + (i-1)*(2 * textHeight));
+        glVertex2d(scaleLeft + 10 + textWidth - 2 - scaleBorder.x, scaleBorder.y + 12 + (i-1)*(2 * textHeight));
+        glVertex2d(scaleLeft + 10 + textWidth - 2 - scaleBorder.x, scaleBorder.y + 10 + (i  )*(2 * textHeight) - textHeight / 2.0);
+        glVertex2d(scaleLeft + 12,                                 scaleBorder.y + 10 + (i  )*(2 * textHeight) - textHeight / 2.0);
+    }
+    glEnd();
+
+    glDisable(GL_POLYGON_OFFSET_FILL);
+
+    // labels
+    glColor3d(0.0, 0.0, 0.0);
+    for (int i = 1; i < maxError + 1; i++)
+    {
+        printPostAt(scaleLeft + 10 + textWidth / 2.0 - (QString::number(i).size() - 1) * (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) / 2.0 - scaleBorder.x,
+                    scaleBorder.y + 10.0 + (i-1)*(2.0 * textHeight) + textHeight / 2.0,
+                    QString::number(pow10((i*2-15))));
     }
 }
 

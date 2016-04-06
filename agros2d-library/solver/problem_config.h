@@ -176,6 +176,7 @@ public:
         ShowOrderView,
         ShowErrorView,
         ShowOrderColorBar,
+        ShowErrorColorBar,
         ShowOrderLabel,
         OrderPaletteOrderType,
         ParticleButcherTableType,
