@@ -41,7 +41,9 @@ private:
     // show
     QCheckBox *chkShowInitialMeshView;
     QCheckBox *chkShowSolutionMeshView;
-    QCheckBox *chkShowOrderView;
+    QGroupBox *groupBox;
+    QRadioButton *rbShowOrderView;
+    QRadioButton *rbShowErrorView;
 
     // polynomial order
     QCheckBox *chkShowOrderColorbar;

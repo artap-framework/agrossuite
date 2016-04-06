@@ -41,6 +41,10 @@
 #include <deal.II/grid/tria.h>
 #include <deal.II/dofs/dof_handler.h>
 #include <deal.II/hp/dof_handler.h>
+#include <deal.II/base/quadrature_lib.h>
+#include <deal.II/numerics/error_estimator.h>
+
+const int QUADRATURE_ORDER_INCREASE = 2;
 
 SceneViewMesh::SceneViewMesh(PostprocessorWidget *postprocessorWidget)
     : SceneViewCommon2D(postprocessorWidget), SceneViewPostInterface(postprocessorWidget), m_postprocessorWidget(postprocessorWidget)
@@ -176,6 +180,8 @@ void SceneViewMesh::paintGL()
     {
         // order
         if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderView).toBool()) paintOrder();
+        // error
+        if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowErrorView).toBool()) paintError();
         // solution mesh
         if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowSolutionMeshView).toBool()) paintSolutionMesh();
         // initial mesh
@@ -422,6 +428,140 @@ void SceneViewMesh::paintOrder()
                 printPostAt(scr.x - (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) / 2.0,
                             scr.y - (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0) / 2.0,
                             QString::number(degree));
+            }
+        }
+    }
+}
+
+void SceneViewMesh::paintError()
+{    
+
+    if (!m_postprocessorWidget->currentComputation()->isSolved()) return;
+
+    if (m_arrayOrderMesh.isEmpty())
+    {
+
+        MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
+        dealii::hp::QCollection<2-1> quadratureFormulasFace;
+        dealii::hp::QCollection<2> quadratureFormulas;
+
+        quadratureFormulas.push_back(dealii::QGauss<2>(1));
+        quadratureFormulasFace.push_back(dealii::QGauss<2 - 1>(1));
+
+        // Gauss quadrature
+        for (unsigned int degree = 1; degree <= DEALII_MAX_ORDER + 1; degree++)
+        {
+            quadratureFormulas.push_back(dealii::QGauss<2>(degree + QUADRATURE_ORDER_INCREASE));
+            quadratureFormulasFace.push_back(dealii::QGauss<2-1>(degree + QUADRATURE_ORDER_INCREASE));
+        }
+        // estimated error per cell
+
+        m_estimated_error_per_cell = m_postprocessorWidget->currentComputation()->calculationMesh().n_active_cells();
+
+        // estimator
+        // AdaptivityEstimator estimator = (AdaptivityEstimator)  m_fieldInfo->value(FieldInfo::AdaptivityEstimator).toInt();
+
+        dealii::KellyErrorEstimator<2>::estimate(ma.doFHandler(),
+                                                 quadratureFormulasFace,
+                                                 TYPENAME dealii::FunctionMap<2>::type(),
+                                                 ma.solution(),
+                                                 m_estimated_error_per_cell);
+
+
+        for (int level = 0; level <= ma.doFHandler().get_tria().n_levels() - 1; level++)
+        {
+            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
+            for (int i = 0; cell_int != endc_int; ++cell_int, ++i)
+            {
+                if (cell_int->active_fe_index() == 0)
+                    continue;
+
+                // coordinates
+                dealii::Point<2> point0 = cell_int->vertex(0);
+                dealii::Point<2> point1 = cell_int->vertex(1);
+                dealii::Point<2> point2 = cell_int->vertex(2);
+                dealii::Point<2> point3 = cell_int->vertex(3);
+
+                // polynomial degree
+                int error = (int) (log10(m_estimated_error_per_cell[i]) + 15);
+
+                QVector3D colorVector = QVector3D(paletteColorOrder(error)[0], paletteColorOrder(error)[1], paletteColorOrder(error)[2]);
+
+                m_arrayOrderMesh.append(QVector2D(point0[0], point0[1]));
+                m_arrayOrderMeshColor.append(colorVector);
+                m_arrayOrderMesh.append(QVector2D(point1[0], point1[1]));
+                m_arrayOrderMeshColor.append(colorVector);
+                m_arrayOrderMesh.append(QVector2D(point2[0], point2[1]));
+                m_arrayOrderMeshColor.append(colorVector);
+
+                m_arrayOrderMesh.append(QVector2D(point1[0], point1[1]));
+                m_arrayOrderMeshColor.append(colorVector);
+                m_arrayOrderMesh.append(QVector2D(point3[0], point3[1]));
+                m_arrayOrderMeshColor.append(colorVector);
+                m_arrayOrderMesh.append(QVector2D(point2[0], point2[1]));
+                m_arrayOrderMeshColor.append(colorVector);
+            }
+        }
+    }
+    else
+    {
+        loadProjection2d(true);
+
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        glVertexPointer(2, GL_FLOAT, 0, m_arrayOrderMesh.constData());
+        glColorPointer(3, GL_FLOAT, 0, m_arrayOrderMeshColor.constData());
+        glDrawArrays(GL_TRIANGLES, 0, m_arrayOrderMesh.size());
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_COLOR_ARRAY);
+
+        glDisable(GL_POLYGON_OFFSET_FILL);
+    }
+
+    // paint labels
+    if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowOrderLabel).toBool())
+    {
+        loadProjectionViewPort();
+
+        glColor3d(1.0, 1.0, 1.0);
+        glScaled(2.0 / width(), 2.0 / height(), 1.0);
+        glTranslated(-width() / 2.0, -height() / 2.0, 0.0);
+
+        MultiArray ma = m_postprocessorWidget->currentComputation()->postDeal()->activeMultiSolutionArray();
+
+        for (int level = 0; level <= ma.doFHandler().get_tria().n_levels() - 1; level++)
+        {
+            dealii::hp::DoFHandler<2>::active_cell_iterator cell_int = ma.doFHandler().begin_active(level), endc_int = ma.doFHandler().end_active(level);
+            for (int i = 0; cell_int != endc_int; ++cell_int, ++i)
+            {
+                if (cell_int->active_fe_index() == 0)
+                    continue;
+
+                // coordinates
+                dealii::Point<2> point0 = cell_int->vertex(0);
+                dealii::Point<2> point1 = cell_int->vertex(1);
+                dealii::Point<2> point2 = cell_int->vertex(2);
+                dealii::Point<2> point3 = cell_int->vertex(3);
+
+                // polynomial degree
+                double error = m_estimated_error_per_cell[i];
+
+                // average value
+                dealii::Point<2> point = point0 + point1 + point2 + point3;
+
+                point[0] /= 4;
+                point[1] /= 4;
+
+                Point scr = untransform(point[0], point[1]);
+
+                printPostAt(scr.x - (m_charDataPost[GLYPH_M].x1 - m_charDataPost[GLYPH_M].x0) / 2.0,
+                            scr.y - (m_charDataPost[GLYPH_M].y1 - m_charDataPost[GLYPH_M].y0) / 2.0,
+                            QString::number(error));
             }
         }
     }

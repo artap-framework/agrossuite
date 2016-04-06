@@ -399,6 +399,7 @@ SolverDeal::SolverDeal(Computation *computation, const FieldInfo *fieldInfo)
     }
 }
 
+
 SolverDeal::~SolverDeal()
 {
     m_assembleCache.clear();

@@ -444,6 +444,7 @@ void PostprocessorSetting::setStringKeys()
     m_settingKey[VectorType] = "VectorType";
     m_settingKey[VectorCenter] = "VectorCenter";
     m_settingKey[ShowOrderView] = "ShowOrderView";
+    m_settingKey[ShowErrorView] = "ShowErrorView";
     m_settingKey[OrderComponent] = "OrderComponent";
     m_settingKey[ShowOrderLabel] = "ShowOrderLabel";
     m_settingKey[ShowOrderColorBar] = "ShowOrderColorBar";
@@ -534,6 +535,7 @@ void PostprocessorSetting::setDefaultValues()
     m_settingDefault[VectorCenter] = VectorCenter_Tail;
     m_settingDefault[OrderComponent] = 1;
     m_settingDefault[ShowOrderView] = true;
+    m_settingDefault[ShowErrorView] = false;
     m_settingDefault[ShowOrderLabel] = false;
     m_settingDefault[ShowOrderColorBar] = true;
     m_settingDefault[OrderPaletteOrderType] = Palette_Viridis;

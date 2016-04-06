@@ -58,7 +58,8 @@ protected:
     void paintInitialMesh();
     void paintSolutionMesh();
     void paintOrder();
-    void paintOrderColorBar();
+    void paintError();
+    void paintOrderColorBar();    
 
 private:
     PostprocessorWidget *m_postprocessorWidget;
@@ -67,6 +68,8 @@ private:
     QVector<QVector2D> m_arraySolutionMesh;
     QVector<QVector2D> m_arrayOrderMesh;
     QVector<QVector3D> m_arrayOrderMeshColor;
+
+    dealii::Vector<float>  m_estimated_error_per_cell;
 
     void createActionsMesh();
 

@@ -174,6 +174,7 @@ public:
         VectorCenter,
         OrderComponent,
         ShowOrderView,
+        ShowErrorView,
         ShowOrderColorBar,
         ShowOrderLabel,
         OrderPaletteOrderType,

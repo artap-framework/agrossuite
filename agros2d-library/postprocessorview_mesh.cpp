@@ -58,8 +58,18 @@ void PostprocessorSceneMeshWidget::createControls()
     // layout mesh
     chkShowInitialMeshView = new QCheckBox(tr("Initial mesh"));
     chkShowSolutionMeshView = new QCheckBox(tr("Solution mesh"));
-    chkShowOrderView = new QCheckBox(tr("Polynomial order"));
-    connect(chkShowOrderView, SIGNAL(clicked()), this, SLOT(refresh()));
+    QGroupBox *groupBox = new QGroupBox(tr("View"));
+    rbShowOrderView = new QRadioButton(tr("Polynomial order"));
+    rbShowErrorView = new QRadioButton(tr("Error estimate"));
+
+    QVBoxLayout *vbox = new QVBoxLayout;
+         vbox->addWidget(rbShowOrderView);
+         vbox->addWidget(rbShowErrorView);
+         vbox->addStretch(1);
+         groupBox->setLayout(vbox);
+
+    connect(rbShowOrderView, SIGNAL(clicked(bool)), this, SLOT(refresh()));
+    connect(rbShowErrorView, SIGNAL(clicked(bool)), this, SLOT(refresh()));
 
     txtOrderComponent = new QSpinBox(this);
     txtOrderComponent->setMinimum(1);
@@ -68,7 +78,7 @@ void PostprocessorSceneMeshWidget::createControls()
     QGridLayout *gridLayoutMesh = new QGridLayout();
     gridLayoutMesh->addWidget(chkShowInitialMeshView, 0, 0, 1, 2);
     gridLayoutMesh->addWidget(chkShowSolutionMeshView, 1, 0, 1, 2);
-    gridLayoutMesh->addWidget(chkShowOrderView, 2, 0, 1, 2);
+    gridLayoutMesh->addWidget(groupBox, 2, 0, 1, 2);
     // gridLayoutMesh->addWidget(new QLabel(tr("Component:")), 3, 0);
     // gridLayoutMesh->addWidget(txtOrderComponent, 3, 1);
 
@@ -126,8 +136,11 @@ void PostprocessorSceneMeshWidget::refresh()
     // mesh and order
     chkShowInitialMeshView->setEnabled(m_fieldWidget->selectedComputation()->isSolved());
     chkShowSolutionMeshView->setEnabled(m_fieldWidget->selectedComputation()->isSolved());
-    chkShowOrderView->setEnabled(m_fieldWidget->selectedComputation()->isSolved());
-    txtOrderComponent->setEnabled(m_fieldWidget->selectedComputation()->isSolved() && (chkShowOrderView->isChecked() || chkShowSolutionMeshView->isChecked()));
+    if (rbShowOrderView->isChecked())
+        rbShowOrderView->setChecked(m_fieldWidget->selectedComputation()->isSolved());
+    else
+        rbShowErrorView->setChecked(m_fieldWidget->selectedComputation()->isSolved());
+    txtOrderComponent->setEnabled(m_fieldWidget->selectedComputation()->isSolved() && (rbShowOrderView->isChecked() || chkShowSolutionMeshView->isChecked()));
     txtOrderComponent->setMaximum(m_fieldWidget->selectedField()->numberOfSolutions());
 }
 
@@ -139,7 +152,8 @@ void PostprocessorSceneMeshWidget::load()
     // show
     chkShowInitialMeshView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowInitialMeshView).toBool());
     chkShowSolutionMeshView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowSolutionMeshView).toBool());
-    chkShowOrderView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowOrderView).toBool());
+    rbShowOrderView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowOrderView).toBool());
+    rbShowErrorView->setChecked(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::ShowErrorView).toBool());
     txtOrderComponent->setValue(m_fieldWidget->selectedComputation()->setting()->value(PostprocessorSetting::OrderComponent).toInt());
 
     // order view
@@ -174,7 +188,8 @@ void PostprocessorSceneMeshWidget::save()
 {
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowInitialMeshView, chkShowInitialMeshView->isChecked());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowSolutionMeshView, chkShowSolutionMeshView->isChecked());
-    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowOrderView, chkShowOrderView->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowOrderView, rbShowOrderView->isChecked());
+    m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowErrorView, rbShowErrorView->isChecked());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::OrderComponent, txtOrderComponent->value());
 
     // order view
@@ -182,3 +197,4 @@ void PostprocessorSceneMeshWidget::save()
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::OrderPaletteOrderType, (PaletteType) cmbOrderPaletteOrder->itemData(cmbOrderPaletteOrder->currentIndex()).toInt());
     m_fieldWidget->selectedComputation()->setting()->setValue(PostprocessorSetting::ShowOrderLabel, chkOrderLabel->isChecked());
 }
+
