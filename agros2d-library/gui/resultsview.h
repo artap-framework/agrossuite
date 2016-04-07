@@ -42,7 +42,7 @@ public slots:
     void doPostprocessorModeGroupChanged(SceneModePostprocessor sceneModePostprocessor);
     void doShowResults();
 
-    void showEmpty();
+    void showRecipe();
     void showPoint(const Point &point);
     void showPoint();
     void showVolumeIntegral();

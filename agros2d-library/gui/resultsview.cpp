@@ -32,6 +32,7 @@
 #include "solver/solutionstore.h"
 #include "solver/problem.h"
 #include "solver/problem_config.h"
+#include "solver/problem_result.h"
 
 #include "sceneview_post2d.h"
 #include "postprocessorview.h"
@@ -114,7 +115,7 @@ void ResultsView::doPostprocessorModeGroupChanged(SceneModePostprocessor sceneMo
 void ResultsView::doShowResults()
 {
     if (m_sceneModePostprocessor == SceneModePostprocessor_Empty)
-        showEmpty();
+        showRecipe();
     if (m_sceneModePostprocessor == SceneModePostprocessor_LocalValue)
         showPoint();
     if (m_sceneModePostprocessor == SceneModePostprocessor_SurfaceIntegral)
@@ -128,6 +129,46 @@ void ResultsView::showPoint(const Point &point)
     m_point = point;
 
     showPoint();
+}
+
+void ResultsView::showRecipe()
+{
+    if (!currentComputation())
+        return;
+
+    if (!currentComputation()->isSolved())
+        return;
+
+    trvWidget->setUpdatesEnabled(false);
+    trvWidget->clear();
+
+    if (currentComputation()->results()->items().count() > 0)
+    {
+        QFont fnt = trvWidget->font();
+        fnt.setBold(true);
+
+        // field
+        QTreeWidgetItem *recipeNode = new QTreeWidgetItem(trvWidget);
+        recipeNode->setText(0, tr("Recipes"));
+        recipeNode->setFont(0, fnt);
+        recipeNode->setIcon(0, iconAlphabet('R', AlphabetColor_Purple));
+        recipeNode->setExpanded(true);
+
+        StringToDoubleMap results = currentComputation()->results()->items();
+        foreach (QString key, results.keys())
+        {
+            QTreeWidgetItem *item = nullptr;
+            if (currentComputation()->results()->resultType(key) == ComputationResultType_Recipe)
+            {
+                item = new QTreeWidgetItem(recipeNode);
+                item->setText(1, key);
+                item->setText(2, QString::number(results[key]));
+                item->setData(0, Qt::UserRole, key);
+            }
+        }
+
+        trvWidget->setUpdatesEnabled(true);
+    }
 }
 
 void ResultsView::showPoint()
@@ -307,11 +348,6 @@ void ResultsView::showSurfaceIntegral()
     }
 
     trvWidget->setUpdatesEnabled(true);
-}
-
-void ResultsView::showEmpty()
-{
-    trvWidget->clear();
 }
 
 LocalPointValueDialog::LocalPointValueDialog(Point point, Computation *computation, QWidget *parent) : QDialog(parent)

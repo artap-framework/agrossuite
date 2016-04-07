@@ -388,7 +388,7 @@ void PostprocessorScenePost2DWidget::doPaletteFilter(int state)
 void PostprocessorScenePost2DWidget::refresh()
 {
     // show empty results
-    resultsView->showEmpty();
+    resultsView->showRecipe();
 
     if (!(m_fieldWidget->selectedComputation() && m_fieldWidget->selectedField()))
         return;
