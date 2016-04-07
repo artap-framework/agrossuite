@@ -84,9 +84,6 @@ void InfoWidgetGeneral::clear()
 
 void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
 {
-    if (currentPythonEngine()->isScriptRunning())
-        return;
-
     // template
     std::string info;
     ctemplate::TemplateDictionary problemInfo("info");
@@ -154,25 +151,6 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
             parametersSection->SetValue("PARAMETERS_VARIABLE_VALUE", QString::number(parameters[key]).toStdString());
         }
         problemInfo.ShowSection("PARAMETERS");
-    }
-
-    // results (only for computation)
-    if (Computation *computation = dynamic_cast<Computation *>(problem))
-    {
-        StringToDoubleMap results = computation->results()->items();
-        if (results.count() > 0)
-        {
-            problemInfo.SetValue("RESULTS_MAIN_LABEL", tr("Results").toStdString());
-            foreach (QString key, results.keys())
-            {
-                ctemplate::TemplateDictionary *resultsSection = problemInfo.AddSectionDictionary("RESULTS_SECTION");
-
-                resultsSection->SetValue("RESULTS_VARIABLE_NAME", key.toStdString());
-                resultsSection->SetValue("RESULTS_VARIABLE_VALUE", QString::number(results[key]).toStdString());
-            }
-
-            problemInfo.ShowSection("RESULTS");
-        }
     }
 
     // fields
@@ -270,9 +248,6 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
 
 void InfoWidgetGeneral::showPythonInfo(const QString &fileName)
 {
-    if (currentPythonEngine()->isScriptRunning())
-        return;
-
     // template
     std::string info;
     ctemplate::TemplateDictionary problemInfo("info");
@@ -309,9 +284,6 @@ InfoWidget::~InfoWidget()
 
 void InfoWidget::welcome()
 {
-    if (currentPythonEngine()->isScriptRunning())
-        return;
-
     // template
     std::string info;
     ctemplate::TemplateDictionary problemInfo("welcome");

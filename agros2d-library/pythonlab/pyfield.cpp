@@ -22,6 +22,7 @@
 #include "solver/plugin_interface.h"
 #include "solver/problem_config.h"
 #include "solver/solutionstore.h"
+#include "solver/problem_result.h"
 #include "sceneview_post2d.h"
 
 PyField::PyField(std::string fieldId)
@@ -498,3 +499,49 @@ void PyField::removeMaterial(const std::string &name)
 
     Agros2D::problem()->scene()->removeMaterial(sceneMaterial);
 }
+
+void PyField::addRecipeVolumeIntegral(const std::string &name, const std::string &variable, const vector<int> labels, int timeStep, int adaptivityStep)
+{
+    // TODO: checks
+    VolumeIntegralRecipe *recipe = new VolumeIntegralRecipe(QString::fromStdString(name),
+                                                            m_fieldInfo->fieldId(),
+                                                            QString::fromStdString(variable),
+                                                            timeStep,
+                                                            adaptivityStep);
+
+    for (int i = 0; i < labels.size(); i++)
+        recipe->addLabel(labels[i]);
+
+    Agros2D::problem()->recipes()->addRecipe(recipe);
+}
+
+void PyField::addRecipeSurfaceIntegral(const std::string &name, const std::string &variable, const vector<int> edges, int timeStep, int adaptivityStep)
+{
+    // TODO: checks
+    SurfaceIntegralRecipe *recipe = new SurfaceIntegralRecipe(QString::fromStdString(name),
+                                                              m_fieldInfo->fieldId(),
+                                                              QString::fromStdString(variable),
+                                                              timeStep,
+                                                              adaptivityStep);
+
+    for (int i = 0; i < edges.size(); i++)
+        recipe->addEdge(edges[i]);
+
+    Agros2D::problem()->recipes()->addRecipe(recipe);
+}
+
+void PyField::addRecipeLocalValue(const std::string &name, const std::string &variable, const std::string &component, double px, double py, int timeStep, int adaptivityStep)
+{
+    // TODO: checks
+    LocalValueRecipe *recipe = new LocalValueRecipe(QString::fromStdString(name),
+                                                    m_fieldInfo->fieldId(),
+                                                    QString::fromStdString(variable),
+                                                    timeStep,
+                                                    adaptivityStep);
+
+    recipe->setVariableComponent(physicFieldVariableCompFromStringKey(QString::fromStdString(component)));
+    recipe->setPoint(px, py);
+
+    Agros2D::problem()->recipes()->addRecipe(recipe);
+}
+

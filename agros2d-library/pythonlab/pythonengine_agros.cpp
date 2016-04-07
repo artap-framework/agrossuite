@@ -26,6 +26,7 @@
 #include "logview.h"
 #include "solver/plugin_interface.h"
 #include "solver/module.h"
+#include "solver/problem_result.h"
 
 #ifdef TBB_FOUND
 #include <tbb/tbb.h>
@@ -220,21 +221,21 @@ QString createPythonFromModel()
 
         if (fieldInfo->matrixSolver() == SOLVER_DEALII)
         {
-                str += QString("%1.matrix_solver_parameters[\"dealii_method\"] = \"%2\"\n").
-                        arg(fieldInfo->fieldId()).
-                        arg(iterLinearSolverDealIIMethodToStringKey((IterSolverDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()));
-                str += QString("%1.matrix_solver_parameters[\"dealii_preconditioner\"] = \"%2\"\n").
-                        arg(fieldInfo->fieldId()).
-                        arg(iterLinearSolverDealIIPreconditionerToStringKey((PreconditionerDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
-                str += QString("%1.matrix_solver_parameters[\"dealii_tolerance\"] = %2\n").
-                        arg(fieldInfo->fieldId()).
-                        arg(fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble());
-                str += QString("%1.matrix_solver_parameters[\"dealii_iterations\"] = %2\n").
-                        arg(fieldInfo->fieldId()).
-                        arg(fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt());
+            str += QString("%1.matrix_solver_parameters[\"dealii_method\"] = \"%2\"\n").
+                    arg(fieldInfo->fieldId()).
+                    arg(iterLinearSolverDealIIMethodToStringKey((IterSolverDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIMethod).toInt()));
+            str += QString("%1.matrix_solver_parameters[\"dealii_preconditioner\"] = \"%2\"\n").
+                    arg(fieldInfo->fieldId()).
+                    arg(iterLinearSolverDealIIPreconditionerToStringKey((PreconditionerDealII) fieldInfo->value(FieldInfo::LinearSolverIterDealIIPreconditioner).toInt()));
+            str += QString("%1.matrix_solver_parameters[\"dealii_tolerance\"] = %2\n").
+                    arg(fieldInfo->fieldId()).
+                    arg(fieldInfo->value(FieldInfo::LinearSolverIterToleranceAbsolute).toDouble());
+            str += QString("%1.matrix_solver_parameters[\"dealii_iterations\"] = %2\n").
+                    arg(fieldInfo->fieldId()).
+                    arg(fieldInfo->value(FieldInfo::LinearSolverIterIters).toInt());
         }
         if (fieldInfo->matrixSolver() == SOLVER_EXTERNAL)
-        {           
+        {
             str += QString("%1.matrix_solver_parameters[\"external_solver\"] = \"%2\"\n").
                     arg(fieldInfo->fieldId()).
                     arg(fieldInfo->value(FieldInfo::LinearSolverExternalName).toString());
@@ -301,7 +302,7 @@ QString createPythonFromModel()
             }
 
             if (((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt() == AdaptivityStrategy_FixedFractionOfCells) ||
-                        ((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt() == AdaptivityStrategy_FixedFractionOfTotalError))
+                    ((AdaptivityStrategy) fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt() == AdaptivityStrategy_FixedFractionOfTotalError))
             {
                 str += QString("%1.adaptivity_parameters['fine_percentage'] = %2\n").
                         arg(fieldInfo->fieldId()).
@@ -495,6 +496,40 @@ QString createPythonFromModel()
                     arg(fieldInfo->fieldId()).
                     arg(material->name()).
                     arg(variables);
+        }
+        str += "\n";
+
+        if (Agros2D::problem()->recipes()->items().count() > 0)
+        {
+            str += "# recipes \n";
+            foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
+            {
+                if (LocalValueRecipe *localRecipe = dynamic_cast<LocalValueRecipe *>(recipe))
+                {
+
+                }
+                else if (SurfaceIntegralRecipe *surfaceRecipe = dynamic_cast<SurfaceIntegralRecipe *>(recipe))
+                {
+
+                }
+                else if (VolumeIntegralRecipe *volumeRecipe = dynamic_cast<VolumeIntegralRecipe *>(recipe))
+                {
+                    QString labels;
+                    for (int i = 0; i < volumeRecipe->labels().count(); i++)
+                        if (i < volumeRecipe->labels().count() - 1)
+                            labels += QString("%1, ").arg(volumeRecipe->labels()[i]);
+                        else
+                            labels += QString("%1").arg(volumeRecipe->labels()[i]);
+
+                    str += QString("%1.add_recipe_volume_integral(\"%2\", \"%3\", [%4], %5, %6)\n").
+                            arg(fieldInfo->fieldId()).
+                            arg(volumeRecipe->name()).
+                            arg(volumeRecipe->variable()).
+                            arg(labels).
+                            arg(volumeRecipe->timeStep()).
+                            arg(volumeRecipe->adaptivityStep());
+                }
+            }
         }
         str += "\n";
     }

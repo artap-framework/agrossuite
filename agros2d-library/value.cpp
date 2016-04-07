@@ -131,7 +131,7 @@ Value::~Value()
 
 bool Value::isNumber() const
 {
-    return (m_exprtkExpr);
+    return (!m_exprtkExpr);
 }
 
 bool Value::hasTable() const

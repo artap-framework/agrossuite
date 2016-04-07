@@ -71,7 +71,10 @@ public:
 
     void getParameters(std::vector<std::string> &keys) const;
     double getParameter(const std::string &key) const;
+    void setParameter(const std::string &key, double value);
+
     std::string getCouplingType(const std::string &sourceField, const std::string &targetField) const;
+    void setCouplingType(const std::string &sourceField, const std::string &targetField, const std::string &type);
 
 protected:
     QSharedPointer<ProblemBase> m_problem;
@@ -96,9 +99,6 @@ public:
     void setInitialTimeStep(double initialTimeStep);
     void setTimeTotal(double timeTotal);
     void setNumConstantTimeSteps(int timeSteps);
-
-    void setParameter(const std::string &key, double value);
-    void setCouplingType(const std::string &sourceField, const std::string &targetField, const std::string &type);
 };
 
 class PyComputation : public PyProblemBase

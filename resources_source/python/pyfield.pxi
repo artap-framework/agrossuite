@@ -80,7 +80,10 @@ cdef extern from "../../agros2d-library/pythonlab/pyfield.h":
                             map[string, vector[double]] &nonlin_y,
                             map[string, map[string, string]] &settings) except +
         void removeMaterial(string &name) except +
-    
+
+        void addRecipeVolumeIntegral(string &name, string &variable, vector[int] labels, int timeStep, int adaptivityStep) except +
+        void addRecipeSurfaceIntegral(string &name, string &variable, vector[int] edges, int timeStep, int adaptivityStep) except +
+        void addRecipeLocalValue(string &name, string &variable, string &component, double px, double py, int timeStep, int adaptivityStep) except +
 
 cdef map[string, string] get_parameters_map(parameters):
     cdef map[string, string] parameters_map
@@ -493,3 +496,21 @@ cdef class __Field__:
         name -- material name
         """
         self.thisptr.removeMaterial(name.encode())
+
+    # recipes
+    def add_recipe_volume_integral(self, name, variable, labels = [], time_step = -1, adaptivity_step = -1):
+        cdef vector[int] labels_vector
+        for index in labels:
+            labels_vector.push_back(index)
+
+        self.thisptr.addRecipeVolumeIntegral(name.encode(), variable.encode(), labels_vector, time_step, adaptivity_step)
+
+    def add_recipe_surface_integral(self, name, variable, edges = [], time_step = -1, adaptivity_step = -1):
+        cdef vector[int] edges_vector
+        for index in edges:
+            edges_vector.push_back(index)
+
+        self.thisptr.addRecipeSurfaceIntegral(name.encode(), variable.encode(), edges_vector, time_step, adaptivity_step)
+
+    def add_recipe_local_value(self, name, variable, component, x, y, time_step = -1, adaptivity_step = -1):
+        self.thisptr.addRecipeLocalValue(name.encode(), variable.encode(), component.encode(), x, y, time_step, adaptivity_step)

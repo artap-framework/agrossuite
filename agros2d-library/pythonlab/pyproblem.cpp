@@ -24,30 +24,31 @@
 
 void PyProblemBase::getParameters(std::vector<std::string> &keys) const
 {
-    StringToDoubleMap parameters = m_problem->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
-
-    foreach (QString key, parameters.keys())
+    foreach (QString key, m_problem->config()->parameters().keys())
         keys.push_back(key.toStdString());
 }
 
 double PyProblemBase::getParameter(const string &key) const
 {
-    StringToDoubleMap parameters = m_problem->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
-
-    if (parameters.contains(QString::fromStdString(key)))
+    if (m_problem->config()->parameters().contains(QString::fromStdString(key)))
     {
-        return parameters[QString::fromStdString(key)];
+        return m_problem->config()->parameter(QString::fromStdString(key));
     }
     else
     {
         QString str;
-        foreach (QString key, parameters.keys())
+        foreach (QString key, m_problem->config()->parameters().keys())
             str += key + ", ";
         if (str.length() > 0)
             str = str.left(str.length() - 2);
 
         throw logic_error(QObject::tr("Invalid argument. Valid keys: %1").arg(str).toStdString());
     }
+}
+
+void PyProblemBase::setParameter(const string &key, double value)
+{
+    m_problem->config()->setParameter(QString::fromStdString(key), value);
 }
 
 std::string PyProblemBase::getCouplingType(const std::string &sourceField, const std::string &targetField) const
@@ -66,6 +67,25 @@ std::string PyProblemBase::getCouplingType(const std::string &sourceField, const
         throw logic_error(QObject::tr("Coupling '%1' + '%2' doesn't exists.").arg(source).arg(target).toStdString());
 }
 
+void PyProblemBase::setCouplingType(const std::string &sourceField, const std::string &targetField, const std::string &type)
+{
+    QString source = QString::fromStdString(sourceField);
+    QString target = QString::fromStdString(targetField);
+
+    checkExistingFields(source, target);
+
+    if (m_problem->hasCoupling(source, target))
+    {
+        CouplingInfo *couplingInfo = m_problem->couplingInfo(source, target);
+        if (couplingTypeStringKeys().contains(QString::fromStdString(type)))
+            couplingInfo->setCouplingType(couplingTypeFromStringKey(QString::fromStdString(type)));
+        else
+            throw invalid_argument(QObject::tr("Invalid coupling type key. Valid keys: %1").arg(stringListToString(couplingTypeStringKeys())).toStdString());
+    }
+    else
+        throw logic_error(QObject::tr("Coupling '%1' + '%2' doesn't exists.").arg(source).arg(target).toStdString());
+}
+
 void PyProblemBase::checkExistingFields(const QString &sourceField, const QString &targetField) const
 {
     if (m_problem->fieldInfos().isEmpty())
@@ -77,6 +97,8 @@ void PyProblemBase::checkExistingFields(const QString &sourceField, const QStrin
     if (!m_problem->fieldInfos().contains(targetField))
         throw logic_error(QObject::tr("Target field '%1' is not defined.").arg(targetField).toStdString());
 }
+
+// *****************************************************************************************************
 
 PyProblem::PyProblem(bool clearProblem) : PyProblemBase()
 {
@@ -95,11 +117,6 @@ PyProblem::~PyProblem()
 void PyProblem::clear()
 {
     m_problem->clearFieldsAndConfig();
-}
-
-void PyProblem::setParameter(const string &key, double value)
-{
-    m_problem->config()->setParameter(QString::fromStdString(key), value);
 }
 
 void PyProblem::setCoordinateType(const std::string &coordinateType)
@@ -174,24 +191,7 @@ void PyProblem::setTimeTotal(double timeTotal)
         throw out_of_range(QObject::tr("The total time must be positive.").toStdString());
 }
 
-void PyProblem::setCouplingType(const std::string &sourceField, const std::string &targetField, const std::string &type)
-{
-    QString source = QString::fromStdString(sourceField);
-    QString target = QString::fromStdString(targetField);
-
-    checkExistingFields(source, target);
-
-    if (m_problem->hasCoupling(source, target))
-    {
-        CouplingInfo *couplingInfo = m_problem->couplingInfo(source, target);
-        if (couplingTypeStringKeys().contains(QString::fromStdString(type)))
-            couplingInfo->setCouplingType(couplingTypeFromStringKey(QString::fromStdString(type)));
-        else
-            throw invalid_argument(QObject::tr("Invalid coupling type key. Valid keys: %1").arg(stringListToString(couplingTypeStringKeys())).toStdString());
-    }
-    else
-        throw logic_error(QObject::tr("Coupling '%1' + '%2' doesn't exists.").arg(source).arg(target).toStdString());
-}
+// ********************************************************************************************
 
 PyComputation::PyComputation(bool newComputation) : PyProblemBase()
 {    

@@ -1109,6 +1109,11 @@ void ProblemBase::writeProblemToJson(const QString &fileName)
 
 void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
 {
+    // block signal
+    bool blocked = m_scene->signalsBlocked();
+    if (!blocked)
+        m_scene->blockSignals(true);
+
     // config
     QJsonObject configJson = rootJson[CONFIG].toObject();
     m_config->load(configJson);
@@ -1304,6 +1309,11 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
             cpl->setCouplingType(couplingTypeFromStringKey(couplingJson[TYPE].toString()));
         }
     }
+
+    // restore signal
+    m_scene->blockSignals(blocked);
+    // invalidate scene (parameter update)
+    m_scene->invalidate();
 }
 
 void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
@@ -2178,6 +2188,9 @@ void Problem::readProblemFromArchive(const QString &fileName)
         if (m_currentComputation.isNull() && Agros2D::computations().last()->isSolved())
             m_currentComputation = Agros2D::computations().last();
     }
+
+    // invalidate scene (parameter update)
+    m_scene->invalidate();
 }
 
 void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFile)

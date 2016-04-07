@@ -246,7 +246,7 @@ void LocalValueRecipeDialog::variableChanged(int index)
         cmbVariableComp->addItem(Agros2D::problem()->config()->labelY(), PhysicFieldVariableComp_Y);
     }
 
-    int selected = cmbVariable->findData(recipe()->variableComponent());
+    int selected = cmbVariableComp->findData(recipe()->variableComponent());
     if (selected == -1)
         cmbVariableComp->setCurrentIndex(0);
     else

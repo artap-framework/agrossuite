@@ -143,6 +143,10 @@ class PyField
                             const map<std::string, map<std::string, std::string> > &settings_map);
         void removeMaterial(const std::string &name);
 
+        void addRecipeVolumeIntegral(const std::string &name, const std::string &variable, const vector<int> labels, int timeStep = -1, int adaptivityStep = -1);
+        void addRecipeSurfaceIntegral(const std::string &name, const std::string &variable, const vector<int> edges, int timeStep = -1, int adaptivityStep = -1);
+        void addRecipeLocalValue(const std::string &name, const std::string &variable, const std::string &component, double px, double py, int timeStep = -1, int adaptivityStep = -1);
+
 private:
     FieldInfo *m_fieldInfo;
 };

@@ -539,7 +539,7 @@ void PostprocessorSetting::setDefaultValues()
     m_settingDefault[ShowErrorView] = false;
     m_settingDefault[ShowOrderLabel] = false;
     m_settingDefault[ShowOrderColorBar] = true;
-    m_settingDefault[OrderPaletteOrderType] = Palette_Viridis;
+    m_settingDefault[OrderPaletteOrderType] = Palette_Paruly;
     m_settingDefault[ParticleButcherTableType] = Explicit_FEHLBERG_6_45_embedded;
     m_settingDefault[ParticleIncludeRelativisticCorrection] = true;
     m_settingDefault[ParticleMass] = 9.109e-31;

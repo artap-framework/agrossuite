@@ -161,8 +161,6 @@ void PostprocessorWidget::apply()
 
 void PostprocessorWidget::refresh()
 {
-    if (currentPythonEngine()->isScriptRunning()) return;
-
     // enable widget
     bool enabled = false;
     foreach (QSharedPointer<Computation> computation, Agros2D::computations().values())
