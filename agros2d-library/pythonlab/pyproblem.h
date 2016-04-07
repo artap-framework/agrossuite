@@ -25,6 +25,8 @@
 #include "solver/problem_config.h"
 #include "solver/plugin_interface.h"
 
+class Study;
+
 class PyProblemBase
 {
 public:
@@ -163,6 +165,20 @@ private:
 
     int getTimeStep(int timeStep) const;
     int getAdaptivityStep(int adaptivityStep, int timeStep) const;
+};
+
+class PyStudy
+{
+public:
+    PyStudy(std::string type);
+    ~PyStudy() {}
+
+    void addParameter(std::string name, double lowerBound, double upperBound);
+    void addFunctional(std::string name, std::string expression, int weight = 100);
+    void solve();
+
+private:
+    Study *m_study;
 };
 
 #endif // PYTHONLABPROBLEM_H

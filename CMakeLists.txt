@@ -353,6 +353,7 @@ set(info resources/modules/acoustic.xml
          resources_source/python/pyproblem.pxi
          resources_source/python/pycomputation.pxi
          resources_source/python/pysolution.pxi
+         resources_source/python/pystudy.pxi
          resources_source/python/pyparticletracing.pxi
          resources_source/python/pythonlab.pyx
 )

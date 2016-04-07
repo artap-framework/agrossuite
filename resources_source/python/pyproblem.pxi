@@ -208,6 +208,18 @@ cdef class __Problem__:
         """
         self._problem.setCouplingType(source_field.encode(), target_field.encode(), type.encode())
 
+    def add_study(self, type):
+        """Add new Study to Problem.
+
+        study(type)
+
+        Keyword arguments:
+        type -- type keyword
+        """
+
+        study = __Study__(type.encode())
+        return study
+
 __problem__ = __Problem__()
 def problem(clear = False):
     if (clear):

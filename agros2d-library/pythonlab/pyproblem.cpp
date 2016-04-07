@@ -21,6 +21,7 @@
 #include "solver/problem_result.h"
 #include "solver/coupling.h"
 #include "solver/solutionstore.h"
+#include "optilab/study.h"
 
 void PyProblemBase::getParameters(std::vector<std::string> &keys) const
 {
@@ -574,4 +575,31 @@ void PySolution::solution(int timeStep, int adaptivityStep, vector<double> &sln)
 
     sln = std::vector<double>();
     throw logic_error(QObject::tr("Solution does not exist.").toStdString());
+}
+
+PyStudy::PyStudy(std::string type)
+{
+    // TODO: check
+    m_study = Study::factory(studyTypeFromStringKey(QString::fromStdString(type)));
+
+    // add study
+    Agros2D::problem()->studies()->addStudy(m_study);
+}
+
+
+void PyStudy::addParameter(string name, double lowerBound, double upperBound)
+{
+    // TODO: check
+    m_study->addParameter(Parameter(QString::fromStdString(name), lowerBound, upperBound));
+}
+
+void PyStudy::addFunctional(string name, string expression, int weight)
+{
+    // TODO: check
+    m_study->addFunctional(Functional(QString::fromStdString(name), QString::fromStdString(expression), weight));
+}
+
+void PyStudy::solve()
+{
+    m_study->solve();
 }

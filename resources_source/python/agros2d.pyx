@@ -113,6 +113,7 @@ include "pyproblem.pxi"
 include "pycomputation.pxi"
 include "pysolution.pxi"
 include "pyparticletracing.pxi"
+include "pystudy.pxi"
 
 cdef extern from "../../agros2d-library/pythonlab/pythonengine_agros.h":
     # open and save
