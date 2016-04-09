@@ -413,6 +413,50 @@ void Study::setStringKeys()
     m_settingKey[View_ChartShowTrend] = "View_ChartShowTrend";
 }
 
+QSharedPointer<Computation> Study::findExtreme(ResultType type, const QString &key, bool minimum)
+{
+    QSharedPointer<Computation> selectedComputation;
+
+    double extreme = (minimum) ? numeric_limits<double>::max() : -numeric_limits<double>::max();
+
+    for (int i = 0; i < m_computationSets.count(); i++)
+    {
+        QList<QSharedPointer<Computation> > computations = m_computationSets[i].computations();
+
+        for (int j = 0; j < computations.count(); j++)
+        {
+            QSharedPointer<Computation> computation = computations[j];
+
+            double val = NAN;
+            if (type == ResultType_Parameter)
+                val = computation->config()->parameter(key);
+            else if (type == ResultType_Recipe || type == ResultType_Functional)
+                val = computation->results()->resultValue(key);
+            else
+                assert(0);
+
+            if (minimum)
+            {
+                if (val < extreme)
+                {
+                    extreme = val;
+                    selectedComputation = computation;
+                }
+            }
+            else
+            {
+                if (val > extreme)
+                {
+                    extreme = val;
+                    selectedComputation = computation;
+                }
+            }
+        }
+    }
+
+    return selectedComputation;
+}
+
 // *****************************************************************************************************************
 
 Studies::Studies(QObject *parent) : QObject(parent)

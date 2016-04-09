@@ -64,6 +64,8 @@ __tests__["complete"] = __tests__["fields"] + __tests__["coupled"] + __tests__["
 
 # deal.II 
 __tests__["deal.II"] = [
+# optilab
+test_suite.optilab.studies.TestBayesOpt,
 # electrostatic field
 test_suite.fields.electrostatic.TestElectrostaticPlanar, 
 test_suite.fields.electrostatic.TestElectrostaticAxisymmetric,
@@ -133,6 +135,8 @@ test_suite.coupled_problems.unrealistic_coupled_problems.TestCoupledProblemsMany
 # core
 test_suite.core.matrix_solvers.TestMatrixSolversInternal
 ] + __tests__["script"]
+
+__tests__["optilab"] = __get_tests__(test_suite.optilab)
 
 def all_tests():
     global __tests__

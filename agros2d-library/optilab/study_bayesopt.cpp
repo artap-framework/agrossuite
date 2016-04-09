@@ -32,11 +32,6 @@
 
 #include "scene.h"
 
-const QString N_INIT_SAMPLES = "n_init_samples";
-const QString N_ITERATIONS = "n_iterations";
-const QString N_ITER_RELEARN = "n_iter_relearn";
-const QString INIT_METHOD = "init_method";
-
 BayesOptProblem::BayesOptProblem(StudyBayesOpt *study, bayesopt::Parameters par)
     : ContinuousModel(study->parameters().count(), par), m_study(study)
 {
@@ -103,6 +98,93 @@ double BayesOptProblem::evaluateSample(const vectord& x)
 
 StudyBayesOpt::StudyBayesOpt() : Study()
 {    
+    // learningTypeList
+    learningTypeList.insert(L_FIXED, "fixed");
+    learningTypeList.insert(L_EMPIRICAL, "emperical");
+    learningTypeList.insert(L_MCMC, "mcmc");
+
+    // scoreTypeList
+    scoreTypeList.insert(SC_LOOCV, "loocv");
+    scoreTypeList.insert(SC_MTL, "mtl");
+    scoreTypeList.insert(SC_ML, "ml");
+    scoreTypeList.insert(SC_MAP, "map");
+
+    // surrogateList
+    surrogateList.append("sGaussianProcess");
+    surrogateList.append("sGaussianProcessML");
+    surrogateList.append("sGaussianProcessNormal");
+    surrogateList.append("sStudentTProcessJef");
+    surrogateList.append("sStudentTProcessNIG");
+
+    // init method
+    initMethodList.insert(1, "lhs");
+    initMethodList.insert(2, "sobol");
+}
+
+QString StudyBayesOpt::learningTypeString(learning_type learningType) const
+{
+    switch (learningType)
+    {
+    case L_FIXED:
+        return QObject::tr("Fixed");
+    case L_EMPIRICAL:
+        return QObject::tr("Emperical");
+    case L_MCMC:
+        return QObject::tr("MCMC");
+    default:
+        std::cerr << "learning_type type '" + QString::number(learningType).toStdString() + "' is not implemented. learningTypeString(learning_type learningType)" << endl;
+        throw;
+    }
+}
+
+QString StudyBayesOpt::scoreTypeString(score_type scoreType) const
+{
+    switch (scoreType)
+    {
+    case SC_LOOCV:
+        return QObject::tr("Leave one out cross-validation");
+    case SC_MTL:
+        return QObject::tr("Maximum total likelihood");
+    case SC_ML:
+        return QObject::tr("Posterior maximum likelihood");
+    case SC_MAP:
+        return QObject::tr("Maximum a posteriori");
+    default:
+        std::cerr << "score_type type '" + QString::number(scoreType).toStdString() + "' is not implemented. scoreTypeString(score_type scoreType)" << endl;
+        throw;
+    }
+}
+
+QString StudyBayesOpt::surrogateString(const QString &surrogateType) const
+{
+    if (surrogateType == "sGaussianProcess")
+        return QObject::tr("Gaussian process (hyperparameters are known)");
+    else if (surrogateType == "sGaussianProcessML")
+        return QObject::tr("Gaussian process (hyperparameters are estimated using maximum likelihood estimates)");
+    else if (surrogateType == "sGaussianProcessNormal")
+        return QObject::tr("Gaussian process with a Normal prior on the mean function parameters");
+    else if (surrogateType == "sStudentTProcessJef")
+        return QObject::tr("Student's t process with a Jeffreys prior");
+    else if (surrogateType == "sStudentTProcessNIG")
+        return QObject::tr("Student's t process with a Normal prior on the mean function parameters)");
+    else
+    {
+        std::cerr << "surrogate '" + surrogateType.toStdString() + "' is not implemented. surrogateString(const QString &surrogateType)" << endl;
+        throw;
+    }
+}
+
+QString StudyBayesOpt::initMethodString(int method) const
+{
+    if (method == 1)
+        return QObject::tr("Latin Hypercube Sampling (LHS)");
+    else if (method == 2)
+        return QObject::tr("Sobol Sequences");
+    else
+    {
+        std::cerr << "init method '" + QString::number(method).toStdString() + "' is not implemented. initMethodString(int method)" << endl;
+        throw;
+    }
 }
 
 int StudyBayesOpt::estimatedNumberOfSteps() const
@@ -189,7 +271,6 @@ void StudyBayesOpt::setStringKeys()
 StudyBayesOptDialog::StudyBayesOptDialog(Study *study, QWidget *parent)
     : StudyDialog(study, parent)
 {
-
 }
 
 QLayout *StudyBayesOptDialog::createStudyControls()
@@ -207,9 +288,8 @@ QLayout *StudyBayesOptDialog::createStudyControls()
     txtNIterRelearn->setMaximum(10000);
 
     cmbInitMethod = new QComboBox(this);
-    cmbInitMethod->addItem(tr("Latin Hypercube Sampling (LHS)"), 1);
-    cmbInitMethod->addItem(tr("Sobol Sequences"), 2);
-    // cmbInitMethod->addItem(tr("Uniform Sampling"), 3);
+    foreach (QString key, study()->initMethodStringKeys())
+        cmbInitMethod->addItem(study()->initMethodString(study()->initMethodFromStringKey(key)), study()->initMethodFromStringKey(key));
 
     QGridLayout *layoutInitialization = new QGridLayout(this);
     layoutInitialization->addWidget(new QLabel(tr("Number of initial samples:")), 0, 0);
@@ -225,11 +305,8 @@ QLayout *StudyBayesOptDialog::createStudyControls()
     grpInitialization->setLayout(layoutInitialization);
 
     cmbSurrogateNameMethod = new QComboBox(this);
-    cmbSurrogateNameMethod->addItem(tr("Gaussian process (hyperparameters are known)"), "sGaussianProcess");
-    cmbSurrogateNameMethod->addItem(tr("Gaussian process (hyperparameters are estimated using maximum likelihood estimates)"), "sGaussianProcessML");
-    cmbSurrogateNameMethod->addItem(tr("Gaussian process with a Normal prior on the mean function parameters"), "sGaussianProcessNormal");
-    cmbSurrogateNameMethod->addItem(tr("Student's t process with a Jeffreys prior"), "sStudentTProcessJef");
-    cmbSurrogateNameMethod->addItem(tr("Student's t process with a Normal prior on the mean function parameters)"), "sStudentTProcessNIG");
+    foreach (QString key, study()->surrogateStringKeys())
+        cmbSurrogateNameMethod->addItem(study()->surrogateString(study()->surrogateFromStringKey(key)), study()->surrogateFromStringKey(key));
 
     txtSurrogateNoise = new LineEditDouble(0.0);
     txtSurrogateNoise->setBottom(0.0);
@@ -244,15 +321,12 @@ QLayout *StudyBayesOptDialog::createStudyControls()
     grpSurrogate->setLayout(layoutSurrogate);
 
     cmbHPLearningMethod = new QComboBox(this);
-    cmbHPLearningMethod->addItem(tr("Fixed"), L_FIXED);
-    cmbHPLearningMethod->addItem(tr("Emperical"), L_EMPIRICAL);
-    cmbHPLearningMethod->addItem(tr("MCMC"), L_MCMC);
+    foreach (QString key, study()->learningTypeStringKeys())
+        cmbHPLearningMethod->addItem(study()->learningTypeString(study()->learningTypeFromStringKey(key)), study()->learningTypeFromStringKey(key));
 
     cmbHPScoreFunction = new QComboBox(this);
-    cmbHPScoreFunction->addItem(tr("Leave one out cross-validation"), SC_LOOCV);
-    cmbHPScoreFunction->addItem(tr("Maximum total likelihood"), SC_MTL);
-    cmbHPScoreFunction->addItem(tr("Posterior maximum likelihood "), SC_ML);
-    cmbHPScoreFunction->addItem(tr("Maximum a posteriori"), SC_MAP);
+    foreach (QString key, study()->scoreTypeStringKeys())
+        cmbHPScoreFunction->addItem(study()->scoreTypeString(study()->scoreTypeFromStringKey(key)), study()->scoreTypeFromStringKey(key));
 
     QGridLayout *layoutKernelParameters = new QGridLayout(this);
     layoutKernelParameters->addWidget(new QLabel(tr("Learning method:")), 0, 0);

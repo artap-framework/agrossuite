@@ -498,61 +498,6 @@ QString createPythonFromModel()
                     arg(variables);
         }
         str += "\n";
-
-        if (Agros2D::problem()->recipes()->items().count() > 0)
-        {
-            str += "# recipes \n";
-            foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
-            {
-                if (LocalValueRecipe *localRecipe = dynamic_cast<LocalValueRecipe *>(recipe))
-                {
-                    str += QString("%1.add_recipe_local_value(\"%2\", \"%3\", \"%4\", %5, %6, %7, %8)\n").
-                            arg(fieldInfo->fieldId()).
-                            arg(localRecipe->name()).
-                            arg(localRecipe->variable()).
-                            arg(physicFieldVariableCompToStringKey(localRecipe->variableComponent())).
-                            arg(localRecipe->point().x).
-                            arg(localRecipe->point().y).
-                            arg(localRecipe->timeStep()).
-                            arg(localRecipe->adaptivityStep());
-                }
-                else if (SurfaceIntegralRecipe *surfaceRecipe = dynamic_cast<SurfaceIntegralRecipe *>(recipe))
-                {
-                    QString edges;
-                    for (int i = 0; i < surfaceRecipe->edges().count(); i++)
-                        if (i < surfaceRecipe->edges().count() - 1)
-                            edges += QString("%1, ").arg(surfaceRecipe->edges()[i]);
-                        else
-                            edges += QString("%1").arg(surfaceRecipe->edges()[i]);
-
-                    str += QString("%1.add_recipe_surface_integral(\"%2\", \"%3\", [%4], %5, %6)\n").
-                            arg(fieldInfo->fieldId()).
-                            arg(surfaceRecipe->name()).
-                            arg(surfaceRecipe->variable()).
-                            arg(edges).
-                            arg(surfaceRecipe->timeStep()).
-                            arg(surfaceRecipe->adaptivityStep());
-                }
-                else if (VolumeIntegralRecipe *volumeRecipe = dynamic_cast<VolumeIntegralRecipe *>(recipe))
-                {
-                    QString labels;
-                    for (int i = 0; i < volumeRecipe->labels().count(); i++)
-                        if (i < volumeRecipe->labels().count() - 1)
-                            labels += QString("%1, ").arg(volumeRecipe->labels()[i]);
-                        else
-                            labels += QString("%1").arg(volumeRecipe->labels()[i]);
-
-                    str += QString("%1.add_recipe_volume_integral(\"%2\", \"%3\", [%4], %5, %6)\n").
-                            arg(fieldInfo->fieldId()).
-                            arg(volumeRecipe->name()).
-                            arg(volumeRecipe->variable()).
-                            arg(labels).
-                            arg(volumeRecipe->timeStep()).
-                            arg(volumeRecipe->adaptivityStep());
-                }
-            }
-        }
-        str += "\n";
     }
 
     // geometry
@@ -689,6 +634,122 @@ QString createPythonFromModel()
             }
 
             str += ")\n";
+        }
+    }
+
+    foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+    {
+        if (Agros2D::problem()->recipes()->items().count() > 0)
+        {
+            str += "# recipes \n";
+            foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
+            {
+                if (LocalValueRecipe *localRecipe = dynamic_cast<LocalValueRecipe *>(recipe))
+                {
+                    str += QString("%1.add_recipe_local_value(\"%2\", \"%3\", \"%4\", %5, %6, %7, %8)\n").
+                            arg(fieldInfo->fieldId()).
+                            arg(localRecipe->name()).
+                            arg(localRecipe->variable()).
+                            arg(physicFieldVariableCompToStringKey(localRecipe->variableComponent())).
+                            arg(localRecipe->point().x).
+                            arg(localRecipe->point().y).
+                            arg(localRecipe->timeStep()).
+                            arg(localRecipe->adaptivityStep());
+                }
+                else if (SurfaceIntegralRecipe *surfaceRecipe = dynamic_cast<SurfaceIntegralRecipe *>(recipe))
+                {
+                    QString edges;
+                    for (int i = 0; i < surfaceRecipe->edges().count(); i++)
+                        if (i < surfaceRecipe->edges().count() - 1)
+                            edges += QString("%1, ").arg(surfaceRecipe->edges()[i]);
+                        else
+                            edges += QString("%1").arg(surfaceRecipe->edges()[i]);
+
+                    str += QString("%1.add_recipe_surface_integral(\"%2\", \"%3\", [%4], %5, %6)\n").
+                            arg(fieldInfo->fieldId()).
+                            arg(surfaceRecipe->name()).
+                            arg(surfaceRecipe->variable()).
+                            arg(edges).
+                            arg(surfaceRecipe->timeStep()).
+                            arg(surfaceRecipe->adaptivityStep());
+                }
+                else if (VolumeIntegralRecipe *volumeRecipe = dynamic_cast<VolumeIntegralRecipe *>(recipe))
+                {
+                    QString labels;
+                    for (int i = 0; i < volumeRecipe->labels().count(); i++)
+                        if (i < volumeRecipe->labels().count() - 1)
+                            labels += QString("%1, ").arg(volumeRecipe->labels()[i]);
+                        else
+                            labels += QString("%1").arg(volumeRecipe->labels()[i]);
+
+                    str += QString("%1.add_recipe_volume_integral(\"%2\", \"%3\", [%4], %5, %6)\n").
+                            arg(fieldInfo->fieldId()).
+                            arg(volumeRecipe->name()).
+                            arg(volumeRecipe->variable()).
+                            arg(labels).
+                            arg(volumeRecipe->timeStep()).
+                            arg(volumeRecipe->adaptivityStep());
+                }
+            }
+
+            str += "\n";
+        }
+    }
+
+    if (Agros2D::problem()->studies()->items().count() > 0)
+    {
+        str += "# studies\n";
+        foreach (Study *study, Agros2D::problem()->studies()->items())
+        {
+            str += QString("study_%1 = problem.add_study(\"%1\")\n").arg(studyTypeToStringKey(study->type()));
+
+            // parameters
+            foreach (Parameter parameter, study->parameters())
+                str += QString("study_%1.add_parameter(\"%2\", %3, %4)\n").
+                        arg(studyTypeToStringKey(study->type())).
+                        arg(parameter.name()).
+                        arg(parameter.lowerBound()).
+                        arg(parameter.upperBound());
+
+            // functionals
+            foreach (Functional functional, study->functionals())
+                str += QString("study_%1.add_functional(\"%2\", \"%3\", %4)\n").
+                        arg(studyTypeToStringKey(study->type())).
+                        arg(functional.name()).
+                        arg(functional.expression()).
+                        arg(functional.weight());
+
+            // settings
+            str += QString("study_%1.clear_solution = %2\n").
+                    arg(studyTypeToStringKey(study->type())).
+                    arg(study->value(Study::General_ClearSolution).toBool() ? "True" : "False");
+            str += QString("study_%1.solve_problem = %2\n").
+                    arg(studyTypeToStringKey(study->type())).
+                    arg(study->value(Study::General_SolveProblem).toBool() ? "True" : "False");
+
+            foreach (Study::Type type, study->keys().keys())
+            {
+                if (study->keys()[type].toLower().startsWith(studyTypeToStringKey(study->type()).toLower()))
+                {
+                    // only keys for selected study
+                    QString key = study->keys()[type].mid(studyTypeToStringKey(study->type()).count() + 1, -1);
+
+                    QString value;
+                    if (study->value(type).type() == QVariant::String)
+                        value = QString("\"%1\"").arg(study->value(type).toString());
+                    else if (study->value(type).type() == QVariant::Bool)
+                        value = (study->value(type).toBool()) ? "True" : "False";
+                    else
+                        value = study->value(type).toString();
+
+                    str += QString("study_%1.settings[\"%2\"] = %3\n").
+                            arg(studyTypeToStringKey(study->type())).
+                            arg(key).
+                            arg(value);
+                }
+            }
+
+            str += "\n";
         }
     }
 

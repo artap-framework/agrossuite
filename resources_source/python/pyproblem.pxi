@@ -217,8 +217,10 @@ cdef class __Problem__:
         type -- type keyword
         """
 
-        study = __Study__(type.encode())
-        return study
+        if (type == "bayesopt"):
+            return __StudyBayesOpt__()
+
+        raise TypeError("Study type is not supported.")
 
 __problem__ = __Problem__()
 def problem(clear = False):

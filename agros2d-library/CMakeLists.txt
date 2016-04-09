@@ -145,6 +145,7 @@ SET(SOURCES
     pythonlab/pygeometry.cpp
     pythonlab/pyparticletracing.cpp
     pythonlab/pyproblem.cpp
+    pythonlab/pystudy.cpp
     pythonlab/pythonengine_agros.cpp
     scene.cpp
     scenebasic.cpp
@@ -244,6 +245,7 @@ SOURCE_GROUP(
   pythonlab/pygeometry.cpp
   pythonlab/pyparticletracing.cpp
   pythonlab/pyproblem.cpp
+  pythonlab/pystudy.cpp
   pythonlab/pythonengine_agros.cpp
 )
 
@@ -368,6 +370,7 @@ SET(HEADERS
   pythonlab/pygeometry.h
   pythonlab/pyparticletracing.h
   pythonlab/pyproblem.h  
+  pythonlab/pystudy.h
   pythonlab/pythonengine_agros.h
   scene.h
   scenebasic.h
@@ -463,6 +466,7 @@ SOURCE_GROUP(
   pythonlab/pygeometry.h
   pythonlab/pyparticletracing.h
   pythonlab/pyproblem.h
+  pythonlab/pystudy.h
   pythonlab/pythonengine_agros.h
 )
 

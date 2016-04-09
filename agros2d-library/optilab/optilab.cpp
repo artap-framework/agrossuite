@@ -26,6 +26,7 @@
 #include "study_bayesopt.h"
 #include "study_nlopt.h"
 #include "util/global.h"
+#include "pythonlab/pythonengine.h"
 
 #include "sceneview_data.h"
 #include "logview.h"
@@ -216,6 +217,8 @@ OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(paren
 
     connect(Agros2D::problem()->studies(), SIGNAL(invalidated()), this, SLOT(refresh()));
     connect(Agros2D::problem()->scene(), SIGNAL(invalidated()), this, SLOT(refresh()));
+
+    connect(currentPythonEngine(), SIGNAL(executedScript()), this, SLOT(refresh()));
 }
 
 OptiLabWidget::~OptiLabWidget()
@@ -802,7 +805,7 @@ void OptiLab::resultsDependenceOnSteps(bool checked)
     {
         m_study->setValue(Study::View_ChartHorizontal, QString("step:"));
         m_study->setValue(Study::View_ChartVertical, QString("%1:%2").
-                          arg(resultTypeToStringKey((ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt())).
+                          arg(m_study->resultTypeToStringKey((Study::ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt())).
                           arg(trvResults->currentItem()->data(0, Qt::UserRole).toString()));
 
         doChartRefreshed();
@@ -814,7 +817,7 @@ void OptiLab::resultsSetHorizontal(bool checked)
     if (trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
     {
         m_study->setValue(Study::View_ChartHorizontal, QString("%1:%2").
-                          arg(resultTypeToStringKey((ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt())).
+                          arg(m_study->resultTypeToStringKey((Study::ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt())).
                           arg(trvResults->currentItem()->data(0, Qt::UserRole).toString()));
 
         doChartRefreshed();
@@ -826,7 +829,7 @@ void OptiLab::resultsSetVertical(bool checked)
     if (trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
     {
         m_study->setValue(Study::View_ChartVertical, QString("%1:%2").
-                          arg(resultTypeToStringKey((ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt())).
+                          arg(m_study->resultTypeToStringKey((Study::ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt())).
                           arg(trvResults->currentItem()->data(0, Qt::UserRole).toString()));
 
         doChartRefreshed();
@@ -844,12 +847,12 @@ void OptiLab::resultsContextMenu(const QPoint &pos)
 void OptiLab::doComputationSelected(const QString &key)
 {
     // cache value
-    ResultType selectedType = ResultType_Parameter;
+    Study::ResultType selectedType = Study::ResultType_Parameter;
     QString selectedKey = "";
     QTreeWidgetItem *selectedItem = nullptr;
     if (!key.isEmpty() && trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
     {
-        selectedType = (ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt();
+        selectedType = (Study::ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt();
         selectedKey = trvResults->currentItem()->data(0, Qt::UserRole).toString();
     }
 
@@ -884,9 +887,9 @@ void OptiLab::doComputationSelected(const QString &key)
             parameterNode->setText(0, parameter.name());
             parameterNode->setText(1, QString::number(parameters[parameter.name()]));
             parameterNode->setData(0, Qt::UserRole, parameter.name());
-            parameterNode->setData(1, Qt::UserRole, ResultType::ResultType_Parameter);
+            parameterNode->setData(1, Qt::UserRole, Study::ResultType::ResultType_Parameter);
 
-            if (selectedType == ResultType::ResultType_Parameter && selectedKey == parameter.name())
+            if (selectedType == Study::ResultType::ResultType_Parameter && selectedKey == parameter.name())
                 selectedItem = parameterNode;
         }
 
@@ -911,17 +914,17 @@ void OptiLab::doComputationSelected(const QString &key)
             if (computation->results()->resultType(key) == ComputationResultType_Functional)
             {
                 item = new QTreeWidgetItem(functionalsNode);
-                item->setData(1, Qt::UserRole, ResultType::ResultType_Functional);
+                item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Functional);
 
-                if (selectedType == ResultType::ResultType_Functional && selectedKey == key)
+                if (selectedType == Study::ResultType::ResultType_Functional && selectedKey == key)
                     selectedItem = item;
             }
             else if (computation->results()->resultType(key) == ComputationResultType_Recipe)
             {
                 item = new QTreeWidgetItem(recipesNode);
-                item->setData(1, Qt::UserRole, ResultType::ResultType_Recipe);
+                item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Recipe);
 
-                if (selectedType == ResultType::ResultType_Recipe && selectedKey == key)
+                if (selectedType == Study::ResultType::ResultType_Recipe && selectedKey == key)
                     selectedItem = item;
             }
             else
@@ -1223,7 +1226,7 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
 
     if (showStats)
     {
-        ResultType type = (ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt();
+        Study::ResultType type = (Study::ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt();
         QString key = trvResults->currentItem()->data(0, Qt::UserRole).toString();
 
         QVector<double> step;
@@ -1237,9 +1240,9 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
             {
                 QSharedPointer<Computation> computation = computations[j];
 
-                if (type == ResultType_Parameter)
+                if (type == Study::ResultType_Parameter)
                     data.append(computation->config()->parameter(key));
-                else if (type == ResultType_Recipe || type == ResultType_Functional)
+                else if (type == Study::ResultType_Recipe || type == Study::ResultType_Functional)
                     data.append(computation->results()->resultValue(key));
 
                 step.append(step.count());
@@ -1341,55 +1344,17 @@ void OptiLab::resultsFindMaximum(bool checked)
     resultsFindExtrem(false);
 }
 
-// TODO: move to Study
 void OptiLab::resultsFindExtrem(bool minimum)
 {
     if (trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid())
     {
-        ResultType type = (ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt();
+        Study::ResultType type = (Study::ResultType) trvResults->currentItem()->data(1, Qt::UserRole).toInt();
         QString key = trvResults->currentItem()->data(0, Qt::UserRole).toString();
 
-        QString selectedComputation = "";
+        // extreme
+        QSharedPointer<Computation> selectedComputation = m_study->findExtreme(type, key, minimum);
 
-        // extrem
-        double extrem = (minimum) ? numeric_limits<double>::max() : -numeric_limits<double>::max();
-
-        for (int i = 0; i < m_study->computationSets().count(); i++)
-        {
-            QList<QSharedPointer<Computation> > computations = m_study->computationSets()[i].computations();
-
-            for (int j = 0; j < computations.count(); j++)
-            {
-                QSharedPointer<Computation> computation = computations[j];
-
-                double val = NAN;
-                if (type == ResultType_Parameter)
-                    val = computation->config()->parameter(key);
-                else if (type == ResultType_Recipe || type == ResultType_Functional)
-                    val = computation->results()->resultValue(key);
-                else
-                    assert(0);
-
-                if (minimum)
-                {
-                    if (val < extrem)
-                    {
-                        extrem = val;
-                        selectedComputation = computation->problemDir();
-                    }
-                }
-                else
-                {
-                    if (val > extrem)
-                    {
-                        extrem = val;
-                        selectedComputation = computation->problemDir();
-                    }
-                }
-            }
-        }
-
-        if (!selectedComputation.isEmpty())
-            emit computationSelected(selectedComputation);
+        if (!selectedComputation.isNull())
+            emit computationSelected(selectedComputation->problemDir());
     }
 }

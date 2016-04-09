@@ -85,6 +85,29 @@ class Study : public QObject
     Q_OBJECT
 
 public:
+    enum ResultType
+    {
+        ResultType_Parameter,
+        ResultType_Functional,
+        ResultType_Recipe
+    };
+
+    inline QString resultTypeToStringKey(ResultType type)
+    {
+        if (type == ResultType::ResultType_Parameter) return "parameter";
+        else if (type == ResultType::ResultType_Functional) return "functional";
+        else if (type == ResultType::ResultType_Recipe) return "recipe";
+        else assert(0);
+    }
+
+    inline ResultType resultTypeFromStringKey(const QString &type)
+    {
+        if (type == "parameter") return ResultType::ResultType_Parameter;
+        else if (type == "functional") return ResultType::ResultType_Functional;
+        else if (type == "recipe") return ResultType::ResultType_Recipe;
+        else assert(0);
+    }
+
     enum Type
     {
         General_ClearSolution,
@@ -171,7 +194,11 @@ public:
     bool isSolving() const { return m_isSolving; }
     bool isAborted() const { return m_abort; }
 
+    // postprocessor
+    QSharedPointer<Computation> findExtreme(ResultType type, const QString &key, bool minimum);
+
     // config
+    QMap<Type, QString> keys() const { return m_settingKey; }
     inline QVariant value(Type type) const { return m_setting[type]; }
     inline void setValue(Type type, int value) {  m_setting[type] = value; }
     inline void setValue(Type type, double value) {  m_setting[type] = value;}
@@ -210,6 +237,9 @@ protected:
 
     virtual void setDefaultValues();
     virtual void setStringKeys();
+
+    friend class PyStudy;
+    friend class PyStudyBayesOpt;
 };
 
 class Studies : public QObject

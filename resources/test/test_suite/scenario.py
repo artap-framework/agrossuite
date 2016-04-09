@@ -18,10 +18,16 @@ class Agros2DTestCase(ut.TestCase):
         str = "{0}: Agros2D = {1}, correct = {2}, error = {3:.4f} %".format(text, value, normal, abs(value - normal)/value*100)
         self.assertTrue(test, str)
         
-    def interval_test(self, text, value, min, max):
-        test = abs((value - normal)/value) < error
-        str = "{0}: Agros2D = {1}, correct = {2}, error = {3:.4f} %".format(text, value, normal, abs(value - normal)/value*100)
+    # def interval_test(self, text, value, min, max):
+    #     test = abs((value - normal)/value) < error
+    #     str = "{0}: Agros2D = {1}, correct = {2}, error = {3:.4f} %".format(text, value, normal, abs(value - normal)/value*100)
+    #     self.assertTrue(test, str)
+        
+    def lower_then_test(self, text, value, bound):
+        test = (value < bound)
+        str = "{0}: Agros2D = {1}, correct = {2}".format(text, value, bound)
         self.assertTrue(test, str)
+        
 
 class Agros2DTestResult(ut.TestResult):
     def __init__(self):

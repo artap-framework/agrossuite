@@ -92,29 +92,6 @@ public slots:
     void doChartRefreshed(const QString &key = "");
 
 private:
-    enum ResultType
-    {
-        ResultType_Parameter,
-        ResultType_Functional,
-        ResultType_Recipe
-    };
-
-    inline QString resultTypeToStringKey(ResultType type)
-    {
-        if (type == ResultType::ResultType_Parameter) return "parameter";
-        else if (type == ResultType::ResultType_Functional) return "functional";
-        else if (type == ResultType::ResultType_Recipe) return "recipe";
-        else assert(0);
-    }
-
-    inline ResultType resultTypeFromStringKey(const QString &type)
-    {
-        if (type == "parameter") return ResultType::ResultType_Parameter;
-        else if (type == "functional") return ResultType::ResultType_Functional;
-        else if (type == "recipe") return ResultType::ResultType_Recipe;
-        else assert(0);
-    }
-
     Study *m_study;
 
     QSplitter *splitter;

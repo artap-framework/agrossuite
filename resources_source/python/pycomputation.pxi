@@ -119,7 +119,7 @@ cdef class __Computation__:
 
         results = dict()
         for i in range(results_vector.size()):
-            results[(<string>results_vector[i]).decode()] = self._problem.getResult(results_vector[i])
+            results[(<string>results_vector[i]).decode()] = self._computation.getResult(results_vector[i])
         return results
     def __set_results__(self, results):
         for key in results:
