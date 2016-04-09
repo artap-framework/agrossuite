@@ -41,7 +41,7 @@ class NLoptProblem
 public:
     NLoptProblem(StudyNLopt *study) :  m_study(study),
         opt((nlopt::algorithm) study->value(Study::NLopt_algorithm).toInt(), study->parameters().count())
-    {
+    {        
     }
 
     double objectiveFunction(const std::vector<double> &x, std::vector<double> &grad, void *data)
@@ -99,11 +99,57 @@ double objFunctionWrapper(const std::vector<double> &x, std::vector<double> &gra
 
 StudyNLopt::StudyNLopt() : Study()
 {
+    algorithmList.insert(nlopt::GN_DIRECT_L, "gn_direct_l");
+    algorithmList.insert(nlopt::GN_DIRECT_L_RAND, "gn_direct_l_rand");
+    algorithmList.insert(nlopt::GN_MLSL, "gn_mlsl");
+    algorithmList.insert(nlopt::GN_CRS2_LM, "gn_crs2_lm");
+    algorithmList.insert(nlopt::GN_ISRES, "gn_isres");
+    algorithmList.insert(nlopt::GN_ESCH, "gn_esch");
+    algorithmList.insert(nlopt::LN_BOBYQA, "ln_bobyqa");
+    algorithmList.insert(nlopt::LN_COBYLA, "ln_cobyla");
+    algorithmList.insert(nlopt::LN_NELDERMEAD, "ln_neldermead");
+    algorithmList.insert(nlopt::LN_SBPLX, "ln_sbplx");
+    algorithmList.insert(nlopt::LN_PRAXIS, "ln_praxis");
+    algorithmList.insert(nlopt::LN_AUGLAG, "ln_auglag");
 }
 
 int StudyNLopt::estimatedNumberOfSteps() const
 {
     return value(Study::NLopt_n_iterations).toInt();
+}
+
+QString StudyNLopt::algorithmString(int algorithm) const
+{
+    switch (algorithm)
+    {
+    case nlopt::GN_DIRECT_L:
+        return QObject::tr("Global - DIviding RECTangles (locally biased)");
+    case nlopt::GN_DIRECT_L_RAND:
+        return QObject::tr("Global - DIviding RECTangles (locally biased, randomized)");
+    case nlopt::GN_MLSL:
+        return QObject::tr("Global - Multi-Level Single-Linkage");
+    case nlopt::GN_CRS2_LM:
+        return QObject::tr("Global - Controlled Random Search (local mutation)");
+    case nlopt::GN_ISRES:
+        return QObject::tr("Global - Improved Stochastic Ranking Evolution Strategy");
+    case nlopt::GN_ESCH:
+        return QObject::tr("Global - ESCH (evolutionary algorithm)");
+    case nlopt::LN_BOBYQA:
+        return QObject::tr("Local - BOBYQA");
+    case nlopt::LN_COBYLA:
+        return QObject::tr("Local - COBYLA");
+    case nlopt::LN_NELDERMEAD:
+        return QObject::tr("Local - Nelder-Mead Simplex");
+    case nlopt::LN_SBPLX:
+        return QObject::tr("Local - Sbplx");
+    case nlopt::LN_PRAXIS:
+        return QObject::tr("Local - PRincipal AXIS");
+    case nlopt::LN_AUGLAG:
+        return QObject::tr("Local - Augmented Lagrangian method");
+    default:
+        std::cerr << "algorithm '" + QString::number(algorithm).toStdString() + "' is not implemented. algorithmString(int algorithm)" << endl;
+        throw;
+    }
 }
 
 void StudyNLopt::solve()
@@ -217,18 +263,8 @@ QLayout *StudyNLoptDialog::createStudyControls()
     txtNIterations->setMaximum(10000);
 
     cmbAlgorithm = new QComboBox(this);
-    cmbAlgorithm->addItem(tr("Global - DIviding RECTangles (locally biased)"), nlopt::GN_DIRECT_L);
-    cmbAlgorithm->addItem(tr("Global - DIviding RECTangles (locally biased, randomized)"), nlopt::GN_DIRECT_L_RAND);
-    cmbAlgorithm->addItem(tr("Global - Multi-Level Single-Linkage"), nlopt::GN_MLSL);
-    cmbAlgorithm->addItem(tr("Global - Controlled Random Search (local mutation)"), nlopt::GN_CRS2_LM);
-    cmbAlgorithm->addItem(tr("Global - Improved Stochastic Ranking Evolution Strategy"), nlopt::GN_ISRES);
-    cmbAlgorithm->addItem(tr("Global - ESCH (evolutionary algorithm)"), nlopt::GN_ESCH);
-    cmbAlgorithm->addItem(tr("Local - BOBYQA"), nlopt::LN_BOBYQA);
-    cmbAlgorithm->addItem(tr("Local - COBYLA"), nlopt::LN_COBYLA);
-    cmbAlgorithm->addItem(tr("Local - Nelder-Mead Simplex"), nlopt::LN_NELDERMEAD);
-    cmbAlgorithm->addItem(tr("Local - Sbplx"), nlopt::LN_SBPLX);
-    cmbAlgorithm->addItem(tr("Local - PRincipal AXIS"), nlopt::LN_PRAXIS);
-    cmbAlgorithm->addItem(tr("Local - Augmented Lagrangian method "), nlopt::LN_AUGLAG);
+    foreach (QString key, study()->algorithmStringKeys())
+        cmbAlgorithm->addItem(study()->algorithmString(study()->algorithmFromStringKey(key)), study()->algorithmFromStringKey(key));
 
     QGridLayout *layoutInitialization = new QGridLayout(this);
     layoutInitialization->addWidget(new QLabel(tr("Algorithm:")), 0, 0);

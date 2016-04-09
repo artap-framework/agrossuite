@@ -219,6 +219,12 @@ cdef class __Problem__:
 
         if (type == "bayesopt"):
             return __StudyBayesOpt__()
+        elif (type == "nlopt"):
+            return __StudyNLopt__()
+        elif (type == "nsga2"):
+            return __StudyNSGA2__()
+        elif (type == "nsga3"):
+            return __StudyNSGA3__()
 
         raise TypeError("Study type is not supported.")
 

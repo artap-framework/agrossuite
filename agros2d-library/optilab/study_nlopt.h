@@ -41,7 +41,14 @@ public:
 
     virtual int estimatedNumberOfSteps() const;
 
+    QString algorithmString(int algorithm) const;
+    inline QStringList algorithmStringKeys() const { return algorithmList.values(); }
+    inline QString algorithmToStringKey(int algorithm) const { return algorithmList[algorithm]; }
+    inline int algorithmFromStringKey(const QString &algorithm) const { return algorithmList.key(algorithm); }
+
 protected:
+    QMap<int, QString> algorithmList;
+
     virtual void setDefaultValues();
     virtual void setStringKeys();
 

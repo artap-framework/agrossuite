@@ -65,7 +65,10 @@ __tests__["complete"] = __tests__["fields"] + __tests__["coupled"] + __tests__["
 # deal.II 
 __tests__["deal.II"] = [
 # optilab
-test_suite.optilab.studies.TestBayesOpt,
+test_suite.optilab.studies.TestBayesOptBooth,
+test_suite.optilab.studies.TestNLoptBooth,
+test_suite.optilab.studies.TestNSGA2Sphere,
+test_suite.optilab.studies.TestNSGA3Sphere,
 # electrostatic field
 test_suite.fields.electrostatic.TestElectrostaticPlanar, 
 test_suite.fields.electrostatic.TestElectrostaticAxisymmetric,

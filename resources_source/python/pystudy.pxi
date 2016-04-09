@@ -36,6 +36,18 @@ cdef extern from "../../agros2d-library/pythonlab/pystudy.h":
         string getLearningType()
         void setLearningType(string &learningType) except +
 
+    cdef cppclass PyStudyNLopt(PyStudy):
+        PyStudyNLopt()
+
+        string getAlgorithm()
+        void setAlgorithm(string &algorithm) except +
+
+    cdef cppclass PyStudyNSGA2(PyStudy):
+        PyStudyNSGA2()
+
+    cdef cppclass PyStudyNSGA3(PyStudy):
+        PyStudyNSGA3()
+
 cdef class __Study__:
     cdef PyStudy *thisptr
     cdef object settings
@@ -113,3 +125,108 @@ cdef class __StudyBayesOpt__(__Study__):
         (<PyStudyBayesOpt*> self.thisptr).setSurrName(<string> settings['surr_name'].encode())
         (<PyStudyBayesOpt*> self.thisptr).setScoreType(<string> settings['sc_type'].encode())
         (<PyStudyBayesOpt*> self.thisptr).setLearningType(<string> settings['l_type'].encode())
+
+cdef class __StudyNLopt__(__Study__):
+    def __cinit__(self):
+        self.thisptr = new PyStudyNLopt()
+
+        self.settings = __Parameters__(self.__get_settings__,
+                                       self.__set_settings__)
+
+    def __get_settings__(self):
+        return {'n_iterations' : self.thisptr.getIntParameter(b'NLopt_n_iterations'),
+                'xtol_rel' : self.thisptr.getIntParameter(b'NLopt_xtol_rel'),
+                'xtol_abs' : self.thisptr.getDoubleParameter(b'NLopt_xtol_abs'),
+                'ftol_rel' : self.thisptr.getDoubleParameter(b'NLopt_ftol_rel'),
+                'ftol_abs' : self.thisptr.getDoubleParameter(b'NLopt_ftol_abs'),
+                'algorithm' : (<PyStudyNLopt*> self.thisptr).getAlgorithm().decode()}
+
+    def __set_settings__(self, settings):
+        positive_value(settings['n_iterations'], 'n_iterations')
+        self.thisptr.setParameter(string(b'NLopt_n_iterations'), <int> settings['n_iterations'])
+
+        positive_value(settings['xtol_rel'], 'xtol_rel')
+        self.thisptr.setParameter(string(b'NLopt_xtol_rel'), <int> settings['xtol_rel'])
+
+        positive_value(settings['xtol_abs'], 'xtol_abs')
+        self.thisptr.setParameter(string(b'NLopt_xtol_abs'), <int> settings['xtol_abs'])
+
+        positive_value(settings['ftol_rel'], 'ftol_rel')
+        self.thisptr.setParameter(string(b'NLopt_ftol_rel'), <int> settings['ftol_rel'])
+
+        positive_value(settings['ftol_abs'], 'ftol_abs')
+        self.thisptr.setParameter(string(b'NLopt_ftol_abs'), <int> settings['ftol_abs'])
+
+        (<PyStudyNLopt*> self.thisptr).setAlgorithm(<string> settings['algorithm'].encode())
+
+cdef class __StudyNSGA2__(__Study__):
+    def __cinit__(self):
+        self.thisptr = new PyStudyNSGA2()
+
+        self.settings = __Parameters__(self.__get_settings__,
+                                       self.__set_settings__)
+
+    def __get_settings__(self):
+        return {'popsize' : self.thisptr.getIntParameter(b'NSGA2_popsize'),
+                'ngen' : self.thisptr.getIntParameter(b'NSGA2_ngen'),
+                'pcross' : self.thisptr.getDoubleParameter(b'NSGA2_pcross'),
+                'pmut' : self.thisptr.getDoubleParameter(b'NSGA2_pmut'),
+                'eta_c' : self.thisptr.getDoubleParameter(b'NSGA2_eta_c'),
+                'eta_m' : self.thisptr.getDoubleParameter(b'NSGA2_eta_m'),
+                'crowdobj' : self.thisptr.getBoolParameter(b'NSGA2_crowdobj')}
+
+    def __set_settings__(self, settings):
+        positive_value(settings['popsize'], 'popsize')
+        self.thisptr.setParameter(string(b'NSGA2_popsize'), <int> settings['popsize'])
+
+        positive_value(settings['ngen'], 'ngen')
+        self.thisptr.setParameter(string(b'NSGA2_ngen'), <int> settings['ngen'])
+
+        positive_value(settings['pcross'], 'pcross')
+        self.thisptr.setParameter(string(b'NSGA2_pcross'), <double> settings['pcross'])
+
+        positive_value(settings['pmut'], 'pmut')
+        self.thisptr.setParameter(string(b'NSGA2_pmut'), <double> settings['pmut'])
+
+        positive_value(settings['eta_c'], 'eta_c')
+        self.thisptr.setParameter(string(b'NSGA2_eta_c'), <double> settings['eta_c'])
+
+        positive_value(settings['eta_m'], 'eta_m')
+        self.thisptr.setParameter(string(b'NSGA2_eta_m'), <double> settings['eta_m'])
+
+        positive_value(settings['crowdobj'], 'crowdobj')
+        self.thisptr.setParameter(string(b'NSGA2_crowdobj'), <bool> settings['crowdobj'])
+
+cdef class __StudyNSGA3__(__Study__):
+    def __cinit__(self):
+        self.thisptr = new PyStudyNSGA3()
+
+        self.settings = __Parameters__(self.__get_settings__,
+                                       self.__set_settings__)
+
+    def __get_settings__(self):
+        return {'popsize' : self.thisptr.getIntParameter(b'NSGA3_popsize'),
+                'ngen' : self.thisptr.getIntParameter(b'NSGA3_ngen'),
+                'pcross' : self.thisptr.getDoubleParameter(b'NSGA3_pcross'),
+                # 'pmut' : self.thisptr.getDoubleParameter(b'NSGA3_pmut'),
+                'eta_c' : self.thisptr.getDoubleParameter(b'NSGA3_eta_c'),
+                'eta_m' : self.thisptr.getDoubleParameter(b'NSGA3_eta_m')}
+
+    def __set_settings__(self, settings):
+        positive_value(settings['popsize'], 'popsize')
+        self.thisptr.setParameter(string(b'NSGA3_popsize'), <int> settings['popsize'])
+
+        positive_value(settings['ngen'], 'ngen')
+        self.thisptr.setParameter(string(b'NSGA3_ngen'), <int> settings['ngen'])
+
+        positive_value(settings['pcross'], 'pcross')
+        self.thisptr.setParameter(string(b'NSGA3_pcross'), <double> settings['pcross'])
+
+        # positive_value(settings['pmut'], 'pmut')
+        # self.thisptr.setParameter(string(b'NSGA3_pmut'), <double> settings['pmut'])
+
+        positive_value(settings['eta_c'], 'eta_c')
+        self.thisptr.setParameter(string(b'NSGA3_eta_c'), <double> settings['eta_c'])
+
+        positive_value(settings['eta_m'], 'eta_m')
+        self.thisptr.setParameter(string(b'NSGA3_eta_m'), <double> settings['eta_m'])

@@ -54,7 +54,7 @@ std::string PyStudy::findExtreme(std::string type, std::string key, bool minimum
         return "";
 }
 
-// BayesOpt
+// BayesOpt **************************************************************
 
 PyStudyBayesOpt::PyStudyBayesOpt() : PyStudy()
 {
@@ -118,4 +118,48 @@ void PyStudyBayesOpt::setLearningType(const std::string &learningType)
 
         throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
     }
+}
+
+// NLopt **************************************************************
+
+PyStudyNLopt::PyStudyNLopt() : PyStudy()
+{
+    m_study = Study::factory(StudyType_NLopt);
+
+    // add study
+    Agros2D::problem()->studies()->addStudy(m_study);
+}
+
+void PyStudyNLopt::setAlgorithm(const std::string &algorithm)
+{
+    if (study()->algorithmStringKeys().contains(QString::fromStdString(algorithm)))
+        m_study->setValue(Study::NLopt_algorithm, study()->algorithmFromStringKey(QString::fromStdString(algorithm)));
+    else
+    {
+        QStringList list;
+        foreach (QString key, study()->algorithmStringKeys())
+            list.append(key);
+
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
+    }
+}
+
+// NSGA2 **************************************************************
+
+PyStudyNSGA2::PyStudyNSGA2() : PyStudy()
+{
+    m_study = Study::factory(StudyType_NSGA2);
+
+    // add study
+    Agros2D::problem()->studies()->addStudy(m_study);
+}
+
+// NSGA3 **************************************************************
+
+PyStudyNSGA3::PyStudyNSGA3() : PyStudy()
+{
+    m_study = Study::factory(StudyType_NSGA3);
+
+    // add study
+    Agros2D::problem()->studies()->addStudy(m_study);
 }

@@ -27,6 +27,11 @@
 
 #include "optilab/study.h"
 #include "optilab/study_bayesopt.h"
+#include "optilab/study_nsga2.h"
+#include "optilab/study_nsga3.h"
+#include "optilab/study_nlopt.h"
+
+#include "nlopt.hpp"
 
 class PyStudy
 {
@@ -96,6 +101,39 @@ public:
 
     inline std::string getLearningType() const { return study()->learningTypeToStringKey((learning_type) m_study->value(Study::BayesOpt_l_type).toInt()).toStdString(); }
     void setLearningType(const std::string &learningType);
+};
+
+class PyStudyNLopt : public PyStudy
+{
+public:
+    PyStudyNLopt();
+    virtual ~PyStudyNLopt() {}
+
+    virtual StudyNLopt *study() { return static_cast<StudyNLopt *>(m_study); }
+    virtual StudyNLopt *study() const { return static_cast<StudyNLopt *>(m_study); }
+
+    inline std::string getAlgorithm() const { return study()->algorithmToStringKey((nlopt::algorithm) m_study->value(Study::NLopt_algorithm).toInt()).toStdString(); }
+    void setAlgorithm(const std::string &algorithm);
+};
+
+class PyStudyNSGA2 : public PyStudy
+{
+public:
+    PyStudyNSGA2();
+    virtual ~PyStudyNSGA2() {}
+
+    virtual StudyNSGA2 *study() { return static_cast<StudyNSGA2 *>(m_study); }
+    virtual StudyNSGA2 *study() const { return static_cast<StudyNSGA2 *>(m_study); }
+};
+
+class PyStudyNSGA3 : public PyStudy
+{
+public:
+    PyStudyNSGA3();
+    virtual ~PyStudyNSGA3() {}
+
+    virtual StudyNSGA3 *study() { return static_cast<StudyNSGA3 *>(m_study); }
+    virtual StudyNSGA3 *study() const { return static_cast<StudyNSGA3 *>(m_study); }
 };
 
 #endif // PYTHONLABSTUDY_H
