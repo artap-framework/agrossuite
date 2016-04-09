@@ -244,13 +244,20 @@ void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncert
 {
     if (m_setting.value(Study::General_SolveProblem).toBool())
     {
-        // solve problem
-        computation->solve();
 
-        // TODO: better error handling
-        if (!computation->isSolved())
+        try
         {
-            throw AgrosException(tr("Problem was not solved."));
+            // solve problem
+            computation->solve();
+
+            // TODO: better error handling
+            if (!computation->isSolved())
+                throw AgrosException(tr("Problem was not solved."));
+        }
+        catch (AgrosException &e)
+        {
+            Agros2D::log()->printError(tr("Problem"), e.toString());
+            return;
         }
     }
 

@@ -52,6 +52,7 @@ private:
 
     QMenu *mnuComputations;
     QAction *actComputationDelete;
+    QAction *actComputationSolve;
 
     void createControls();
 
@@ -65,6 +66,7 @@ private slots:
     void doComputationSelected(const QString &key);
     void doComputationContextMenu(const QPoint &pos);
     void doComputationDelete(bool);
+    void doComputationSolve(bool);
 
     void studyChanged(int index);
     void refresh();

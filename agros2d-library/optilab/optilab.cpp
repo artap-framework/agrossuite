@@ -259,10 +259,15 @@ void OptiLabWidget::createControls()
     connect(trvComputations, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doComputationContextMenu(const QPoint &)));
     connect(trvComputations, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doComputationChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
+    actComputationSolve = new QAction(icon(""), tr("Solve problem"), this);
+    connect(actComputationSolve, SIGNAL(triggered(bool)), this, SLOT(doComputationSolve(bool)));
+
     actComputationDelete = new QAction(icon(""), tr("Delete solution"), this);
     connect(actComputationDelete, SIGNAL(triggered(bool)), this, SLOT(doComputationDelete(bool)));
 
     mnuComputations = new QMenu(this);
+    mnuComputations->addAction(actComputationSolve);
+    mnuComputations->addSeparator();
     mnuComputations->addAction(actComputationDelete);
 
     QVBoxLayout *layout = new QVBoxLayout();
@@ -441,6 +446,19 @@ void OptiLabWidget::doComputationDelete(bool)
         }
     }
 }
+
+void OptiLabWidget::doComputationSolve(bool)
+{
+    if (trvComputations->currentItem())
+    {
+        QString key = trvComputations->currentItem()->data(0, Qt::UserRole).toString();
+        if (!key.isEmpty() && Agros2D::computations().contains(key))
+        {
+            Agros2D::computations()[key]->solveWithGUI();
+        }
+    }
+}
+
 
 void OptiLabWidget::doComputationContextMenu(const QPoint &pos)
 {

@@ -59,10 +59,12 @@ public:
         m_study->addComputation(computation);
 
         // set parameters
+        qDebug() << "xxx";
         for (int i = 0; i < m_study->parameters().count(); i++)
         {
             Parameter parameter = m_study->parameters()[i];
             computation->config()->setParameter(parameter.name(), x[i]);
+            qDebug() << parameter.name() << x[i];
         }
 
         // evaluate step

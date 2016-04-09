@@ -1154,7 +1154,7 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
         if (angle.number() < 0.0) angle.setNumber(0.0);
         if (angle.number() > 90.0) angle.setNumber(90.0);
 
-        bool isCurvilinear = (angle.number() > 0);
+        bool isCurvilinear = faceJson[ISCURVILINEAR].toBool(); // (angle.number() > 0);
 
         m_scene->addFace(new SceneFace(m_scene, nodeFrom, nodeTo, angle, segments, isCurvilinear));
     }
@@ -1353,7 +1353,7 @@ void ProblemBase::writeProblemToJsonInternal(QJsonObject &rootJson)
         edgeJson[ID] = iedge;
         edgeJson[ANGLE] = edge->angleValue().toString();
         edgeJson[SEGMENTS] = edge->segments();
-        // edgeJson[ISCURVILINEAR] = edge->isCurvilinear();
+        edgeJson[ISCURVILINEAR] = edge->isCurvilinear();
 
         QJsonArray listJson;
         listJson.append(m_scene->nodes->items().indexOf(edge->nodeStart()));
@@ -1747,6 +1747,7 @@ void Computation::solveInit()
     }
 
     // invalidate scene (parameter update)
+    m_scene->cacheGeometryConstraints();
     m_scene->invalidate();
 
     // control geometry

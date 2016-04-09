@@ -285,6 +285,7 @@ double VolumeIntegralRecipe::evaluate(Computation *computation)
                                                                                            adaptivityStep(computation, fieldInfo));
 
         QMap<QString, double> values(integralValue->values());
+        // qDebug() << QString::number(2.0*values[variable()]/100, 'g', 20);
         return values[variable()];
     }
 

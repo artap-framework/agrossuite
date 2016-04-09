@@ -161,7 +161,7 @@ LoopsInfo::Intersection LoopsInfo::intersects(Point point, double tangent, Scene
     double x2 = edge->nodeEnd()->point().x;
     double y2 = edge->nodeEnd()->point().y;
 
-    if(edge->angle() != 0)
+    if (edge->angle() != 0)
     {
         double xC = edge->center().x;
         double yC = edge->center().y;

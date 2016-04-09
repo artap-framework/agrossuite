@@ -38,8 +38,7 @@ public:
     inline SceneNode *nodeEnd() const { return m_nodeEnd; }
     inline void setNodeEnd(SceneNode *nodeEnd) { m_nodeEnd = nodeEnd; computeCenterAndRadius(); }
     inline double angle() const { return m_angle.number(); }
-    inline Value angleValue() const { return m_angle; }
-    inline Value &angleValue() { return m_angle; }
+    inline Value angleValue() const { return m_angle; }    
     inline void setAngleValue(const Value &angle) { m_angle = angle; computeCenterAndRadius(); }
     void swapDirection();
 
