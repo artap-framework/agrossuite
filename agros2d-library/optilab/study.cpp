@@ -379,6 +379,71 @@ QList<QSharedPointer<Computation> > &Study::computations(int index)
         return m_computationSets[index].computations();
 }
 
+bool dominateComputations(const Computation *l, const Computation *r)
+{
+    bool better = false;
+    foreach (QString key, l->results()->items().keys())
+    {
+        if (l->results()->resultType(key) == ComputationResultType_Functional)
+        {
+            if (l->results()->resultValue(key) > r->results()->resultValue(key))
+                return false;
+            else if (l->results()->resultValue(key) < r->results()->resultValue(key))
+                better = true;
+        }
+    }
+
+    return better;
+}
+
+QList<QSharedPointer<Computation> > Study::nondominatedSort()
+{
+    if (m_computationSets.count() > 0)
+    {
+        QList<QSharedPointer<Computation> > allComputations;
+        foreach (ComputationSet computationSet, m_computationSets)
+            foreach (QSharedPointer<Computation> computation, computationSet.computations())
+                allComputations.append(computation);
+
+        int numAssignedIndividuals = 0;
+        QList<QSharedPointer<Computation> > curFront;
+
+        while (numAssignedIndividuals < computationsCount())
+        {
+            for (int i = 0; i < computationsCount(); i++)
+            {
+                bool beDominated = false;
+
+                for (int j = 0; j < curFront.size(); j++)
+                {
+                    if (dominateComputations(curFront[j].data(), allComputations[i].data())) // i is dominated
+                    {
+                        beDominated = true;
+                        break;
+                    }
+                    else if (dominateComputations(allComputations[i].data(), curFront[j].data())) // i dominates a member in the current front
+                    {
+                        curFront.erase(curFront.begin()+j);
+                        j -= 1;
+                    }
+                }
+                if (!beDominated)
+                {
+                    curFront.push_back(allComputations[i]);
+                }
+            }
+
+            numAssignedIndividuals += curFront.size();
+        }
+
+        return curFront;
+    }
+    else
+    {
+        return QList<QSharedPointer<Computation> >();
+    }
+}
+
 QVariant Study::variant()
 {
     QVariant v;
@@ -405,6 +470,7 @@ void Study::setDefaultValues()
     m_settingDefault[View_ChartLogVertical] = false;
     m_settingDefault[View_ChartShowAverageValue] = true;
     m_settingDefault[View_ChartShowTrend] = false;
+    m_settingDefault[View_ChartShowParetoFront] = false;
 }
 
 void Study::setStringKeys()
@@ -418,6 +484,7 @@ void Study::setStringKeys()
     m_settingKey[View_ChartLogVertical] = "View_ChartLogVertical";
     m_settingKey[View_ChartShowAverageValue] = "View_ChartShowAverageValue";
     m_settingKey[View_ChartShowTrend] = "View_ChartShowTrend";
+    m_settingKey[View_ChartShowParetoFront] = "View_ChartShowParetoFront";
 }
 
 QSharedPointer<Computation> Study::findExtreme(ResultType type, const QString &key, bool minimum)

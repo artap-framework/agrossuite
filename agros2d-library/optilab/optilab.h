@@ -127,6 +127,7 @@ private:
     QCPGraph *chartGraphAverageValueChannelLower;
     QCPGraph *chartGraphAverageValueChannelUpper;
     QCPGraph *chartGraphSelectedComputation;
+    QCPGraph *chartGraphParetoFront;
     QMenu *mnuChart;
     QMap<int, QMap<QPair<double, double>, QSharedPointer<Computation> > > m_computationMap;
 
@@ -138,6 +139,7 @@ private:
     QAction *actChartLogVertical;
     QAction *actChartShowTrend;
     QAction *actChartShowAverageValue;
+    QAction *actChartParetoFront;
 
     void createControls();
     QWidget *createControlsDistChart();
@@ -156,6 +158,7 @@ private slots:
     void chartLogVertical(bool checked);
     void chartShowTrend(bool checked);
     void chartShowAverageValue(bool checked);
+    void chartShowParetoFront(bool checked);
 
     void resultsContextMenu(const QPoint &pos);
     void resultsDependenceOnSteps(bool checked);
