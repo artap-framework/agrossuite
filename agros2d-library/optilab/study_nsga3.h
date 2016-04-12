@@ -68,6 +68,7 @@ private:
     // LineEditDouble *txtPMut;
     LineEditDouble *txtEtaC;
     LineEditDouble *txtEtaM;
+    QCheckBox *chkUseSurrogateFunction;
 };
 
 #endif // STUDY_NSGA2_H

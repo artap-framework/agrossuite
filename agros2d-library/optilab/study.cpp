@@ -276,7 +276,7 @@ void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncert
         values.append(value);
     }
     double totalValue = evaluateSingleGoal(computation);
-    updateChart(computationsCount(), values, totalValue, solutionUncertainty);
+    updateChart(values, totalValue, solutionUncertainty);
 }
 
 double Study::evaluateSingleGoal(QSharedPointer<Computation> computation)

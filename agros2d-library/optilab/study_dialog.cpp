@@ -38,7 +38,7 @@ double logVal(double val)
 }
 
 LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplication::activeWindow()),
-    m_study(study), m_progress(nullptr), m_computationSetsCount(1)
+    m_study(study), m_progress(nullptr), m_computationSetsCount(1), m_step(1)
 {
     setModal(true);
     
@@ -50,7 +50,7 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
     
     connect(btnAbort, SIGNAL(clicked()), m_study, SLOT(doAbortSolve()));
     connect(btnAbort, SIGNAL(clicked()), this, SLOT(aborted()));
-    connect(m_study, SIGNAL(updateChart(int, QList<double>, double, SolutionUncertainty)), this, SLOT(updateChart(int, QList<double>, double, SolutionUncertainty)));
+    connect(m_study, SIGNAL(updateChart(QList<double>, double, SolutionUncertainty)), this, SLOT(updateChart(QList<double>, double, SolutionUncertainty)));
     connect(m_study, SIGNAL(solved()), this, SLOT(solved()));
     
     int w = 2.0/3.0 * QApplication::desktop()->screenGeometry().width();
@@ -230,7 +230,7 @@ void LogOptimizationDialog::createControls()
     setLayout(layout);
 }
 
-void LogOptimizationDialog::updateChart(int step, QList<double> values, double totalValue, SolutionUncertainty solutionUncertainty)
+void LogOptimizationDialog::updateChart(QList<double> values, double totalValue, SolutionUncertainty solutionUncertainty)
 {
     int computationSetsCount = m_study->computationSets().count();
 
@@ -247,19 +247,19 @@ void LogOptimizationDialog::updateChart(int step, QList<double> values, double t
                 QCPItemStraightLine *line = new QCPItemStraightLine(chart);
                 chart->addItem(line);
 
-                line->point1->setCoords(QPointF(step - 0.5, 0));
-                line->point2->setCoords(QPointF(step - 0.5, 1));
+                line->point1->setCoords(QPointF(m_step - 0.5, 0));
+                line->point2->setCoords(QPointF(m_step - 0.5, 1));
                 line->setPen(QPen(QBrush(QColor(140, 40, 40)), 2, Qt::DashLine));
             }
 
-            chart->graph(0)->addData(step, values[i]);
+            chart->graph(0)->addData(m_step, values[i]);
             chart->rescaleAxes();
             chart->replot(QCustomPlot::rpImmediate);
         }
     }
 
     // total objective function
-    m_totalChart->graph(0)->addData(step, (totalValue));
+    m_totalChart->graph(0)->addData(m_step, (totalValue));
     if (fabs(solutionUncertainty.lowerBound) > 0.0 && fabs(solutionUncertainty.upperBound) > 0.0)
     {
         m_totalChart->legend->setVisible(true);
@@ -267,9 +267,9 @@ void LogOptimizationDialog::updateChart(int step, QList<double> values, double t
         m_totalChart->graph(2)->setVisible(true);
         m_totalChart->graph(3)->setVisible(true);
 
-        m_totalChart->graph(1)->addData(step, (solutionUncertainty.lowerBound));
-        m_totalChart->graph(2)->addData(step, (solutionUncertainty.upperBound));
-        m_totalChart->graph(3)->addData(step, (solutionUncertainty.uncertainty));
+        m_totalChart->graph(1)->addData(m_step, (solutionUncertainty.lowerBound));
+        m_totalChart->graph(2)->addData(m_step, (solutionUncertainty.upperBound));
+        m_totalChart->graph(3)->addData(m_step, (solutionUncertainty.uncertainty));
     }
     else
     {
@@ -285,8 +285,8 @@ void LogOptimizationDialog::updateChart(int step, QList<double> values, double t
         QCPItemStraightLine *line = new QCPItemStraightLine(m_totalChart);
         m_totalChart->addItem(line);
 
-        line->point1->setCoords(QPointF(step - 0.5, 0));
-        line->point2->setCoords(QPointF(step - 0.5, 1));
+        line->point1->setCoords(QPointF(m_step - 0.5, 0));
+        line->point2->setCoords(QPointF(m_step - 0.5, 1));
         line->setPen(QPen(QBrush(QColor(140, 40, 40)), 2, Qt::DashLine));
     }
 
@@ -295,8 +295,10 @@ void LogOptimizationDialog::updateChart(int step, QList<double> values, double t
     
     m_computationSetsCount = m_study->computationSets().count();
     
-    m_progress->setValue(step);
+    m_progress->setValue(m_step);
     QApplication::processEvents();
+
+    m_step++;
 }
 
 void LogOptimizationDialog::solved()

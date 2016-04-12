@@ -36,10 +36,28 @@
 #include "alg_population.h"
 #include "problem_base.h"
 
+#include "../../3rdparty/Eigen/Core"
+#include "../../3rdparty/limbo/model/gp.hpp"
+#include "../../3rdparty/limbo/model/gp/kernel_mean_lf_opt.hpp"
+#include "../../3rdparty/limbo/model/gp/kernel_lf_opt.hpp"
+#include "../../3rdparty/limbo/model/gp/mean_lf_opt.hpp"
+#include "../../3rdparty/limbo/model/gp/no_lf_opt.hpp"
+#include "../../3rdparty/limbo/kernel/squared_exp_ard.hpp"
+#include "../../3rdparty/limbo/mean/data.hpp"
+#include "../../3rdparty/limbo/mean/constant.hpp"
+#include "../../3rdparty/limbo/mean/function_ard.hpp"
+
+struct Params {
+    // struct opt_rprop : public limbo::defaults::opt_rprop {};
+    struct opt_rprop { BO_PARAM(int, iterations, 100); }; // default 300
+    // struct opt_parallelrepeater : public limbo::defaults::opt_parallelrepeater {};
+    struct opt_parallelrepeater { BO_PARAM(int, repeats, 10); }; // default 10
+};
+
 class NSGA3Problem : public NSGA3ProblemBase
 {
 public:
-    NSGA3Problem(StudyNSGA3 *study) : NSGA3ProblemBase("NSGA3"), m_study(study)
+    NSGA3Problem(StudyNSGA3 *study) : NSGA3ProblemBase("NSGA3"), m_study(study), relearn(30), countComputation(0), countSurrogate(0)
     {
         lbs_.resize(m_study->parameters().count());
         ubs_.resize(m_study->parameters().count());
@@ -74,26 +92,116 @@ public:
 
         // computation
         QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
-        m_study->addComputation(computation);
+        // m_study->addComputation(computation);
+
+        // training patterns
+        Eigen::VectorXd samples(m_study->parameters().count());
+        // Gaussian process parameters
+        Eigen::VectorXd mu;
+        double sigma;
 
         // set parameters
         for (int i = 0; i < m_study->parameters().count(); i++)
         {
             Parameter parameter = m_study->parameters()[i];
             computation->config()->setParameter(parameter.name(), x[i]);
+            computation->scene()->cacheGeometryConstraints();
+
+            // training patterns
+            samples[i] = x[i];
         }
 
         // evaluate step
         try
         {
-            m_study->evaluateStep(computation);
-            QList<double> values = m_study->evaluateMultiGoal(computation);
+            bool useSurrogate = m_study->value(Study::NSGA3_use_surrogate).toBool() && (gp.nb_samples() > relearn - 1);
 
-            if (m_study->value(Study::General_ClearSolution).toBool())
-                computation->clearSolution();
+            if (useSurrogate)
+            {
+                // estimate values
+                std::tie(mu, sigma) = gp.query(samples);
+                double lik = gp.get_lik();
+                qDebug() << "sigma = " << sigma << ", lik = " << lik;
 
-            for (int i = 0; i < values.count(); i++)
-                f[i] = values[i];
+                // qDebug() << "surrogate function";
+                // for (int i = 0; i < m_study->functionals().count(); i++)
+                //     qDebug() << i << " : surr : mu = " << mu[i] << ", sigma = " << sigma << ", lik = " << gp.get_lik() << ", use = " << (sigma < 1e-4);
+                // surrogate function
+                if (sigma < 1e-8)
+                {
+
+
+                    // weight functionals
+                    int totalWeight = 0;
+                    foreach (Functional functional, m_study->functionals())
+                        totalWeight += functional.weight();
+
+                    QList<double> values;
+                    double totalValue = 0.0;
+
+                    // set objective functions
+                    for (int i = 0; i < m_study->functionals().count(); i++)
+                    {
+                        f[i] = mu[i];
+                        values.append(mu[i]);
+
+                        totalValue += ((double) m_study->functionals()[i].weight() / totalWeight) * mu[i];
+                    }
+
+                    Agros2D::computations().remove(computation->problemDir());
+
+                    countSurrogate++;
+
+                    // update chart
+                    emit m_study->updateChart(values, totalValue, SolutionUncertainty());
+                }
+                else
+                {
+                    // force computation
+                    useSurrogate = false;
+                }
+            }
+
+            // real computation and model improvement
+            if (!useSurrogate)
+            {
+                // qDebug() << "real computation";
+                m_study->evaluateStep(computation);
+                QList<double> values = m_study->evaluateMultiGoal(computation);
+
+                if (m_study->value(Study::General_ClearSolution).toBool())
+                    computation->clearSolution();
+
+                m_study->addComputation(computation);
+
+                // set objective functions
+                countComputation++;
+                for (int i = 0; i < values.count(); i++)
+                    f[i] = values[i];
+
+                if (m_study->value(Study::NSGA3_use_surrogate).toBool())
+                {
+                    // estimate values
+                    if (gp.nb_samples() > 1)
+                    {
+                        std::tie(mu, sigma) = gp.query(samples);
+                        // for (int i = 0; i < values.count(); i++)
+                        //     qDebug() << i << " : value = " << values[i] << ", mu = " << mu[i] << ", sigma = " << sigma;
+                    }
+
+                    // add samples and observations
+                    Eigen::VectorXd observations(m_study->functionals().count());
+                    for (int i = 0; i < values.count(); i++)
+                        observations[i] = values[i];
+
+                    m_samples.push_back(samples);
+                    m_observations.push_back(observations);
+
+                    // refresh model
+                    if (m_observations.size() % relearn == 0)
+                        gp.compute(m_samples, m_observations, 1e-10);
+                }
+            }
 
             // add set
             int popCount = m_study->computationsCount();
@@ -115,12 +223,25 @@ public:
         return false;
     }
 
+    mutable int countComputation;
+    mutable int countSurrogate;
 private:
     StudyNSGA3 *m_study;
+
+    mutable limbo::model::GP<Params, limbo::kernel::SquaredExpARD<Params>, limbo::mean::Data<Params>, limbo::model::gp::KernelLFOpt<Params> > gp;
+    // mutable limbo::model::GP<Params, limbo::kernel::SquaredExpARD<Params>, limbo::mean::Data<Params>, limbo::model::gp::NoLFOpt<Params> > gp;
+    // mutable limbo::model::GP<Params, limbo::kernel::SquaredExpARD<Params>, limbo::mean::FunctionARD<Params, limbo::mean::Data<Params> >, limbo::model::gp::MeanLFOpt<Params> > gp;
+
+    // parameters
+    int relearn;
+    mutable std::vector<Eigen::VectorXd> m_samples;
+    mutable std::vector<Eigen::VectorXd> m_observations;
+
+
 };
 
 StudyNSGA3::StudyNSGA3() : Study()
-{  
+{
 }
 
 int StudyNSGA3::estimatedNumberOfSteps() const
@@ -157,6 +278,9 @@ void StudyNSGA3::solve()
                 value(NSGA3_ngen).toInt());
     nsga3.Solve(&solutions, nsga3Problem);
 
+    qDebug() << "countComputation = " << nsga3Problem.countComputation << ", countSurrogate = " << nsga3Problem.countSurrogate << " (" <<
+                100.0 * (double) nsga3Problem.countSurrogate / (nsga3Problem.countComputation + nsga3Problem.countSurrogate) << " %)";
+
     m_isSolving = false;
 
     // sort computations
@@ -176,6 +300,7 @@ void StudyNSGA3::setDefaultValues()
     // m_settingDefault[NSGA3_pmut] = 0.2;
     m_settingDefault[NSGA3_eta_c] = 30.0;
     m_settingDefault[NSGA3_eta_m] = 20.0;
+    m_settingDefault[NSGA3_use_surrogate] = false;
 }
 
 void StudyNSGA3::setStringKeys()
@@ -188,6 +313,7 @@ void StudyNSGA3::setStringKeys()
     // m_settingKey[NSGA3_pmut] = "NSGA3_pmut";
     m_settingKey[NSGA3_eta_c] = "NSGA3_eta_c";
     m_settingKey[NSGA3_eta_m] = "NSGA3_eta_m";
+    m_settingKey[NSGA3_use_surrogate] = "NSGA3_use_surrogate";
 }
 
 // *****************************************************************************************************
@@ -199,7 +325,7 @@ StudyNSGA3Dialog::StudyNSGA3Dialog(Study *study, QWidget *parent)
 }
 
 QLayout *StudyNSGA3Dialog::createStudyControls()
-{    
+{
     txtPopSize = new QSpinBox(this);
     txtPopSize->setMinimum(1);
     txtPopSize->setMaximum(10000);
@@ -221,6 +347,8 @@ QLayout *StudyNSGA3Dialog::createStudyControls()
     txtEtaM->setBottom(5);
     txtEtaM->setTop(30);
 
+    chkUseSurrogateFunction = new QCheckBox(tr("Use surrogate function (Gaussian process)"));
+
     QGridLayout *layoutInitialization = new QGridLayout(this);
     layoutInitialization->addWidget(new QLabel(tr("Estimated population size:")), 0, 0);
     layoutInitialization->addWidget(txtPopSize, 0, 1);
@@ -239,6 +367,7 @@ QLayout *StudyNSGA3Dialog::createStudyControls()
     layoutConfig->addWidget(txtEtaC, 2, 1);
     layoutConfig->addWidget(new QLabel(tr("Distribution index for mutation (5 - 30):")), 3, 0);
     layoutConfig->addWidget(txtEtaM, 3, 1);
+    layoutConfig->addWidget(chkUseSurrogateFunction, 4, 0, 1, 2);
 
     QGroupBox *grpConfig = new QGroupBox(tr("Config"), this);
     grpConfig->setLayout(layoutConfig);
@@ -251,7 +380,7 @@ QLayout *StudyNSGA3Dialog::createStudyControls()
 }
 
 void StudyNSGA3Dialog::load()
-{    
+{
     StudyDialog::load();
 
     txtPopSize->setValue(study()->value(Study::NSGA3_popsize).toInt());
@@ -260,6 +389,7 @@ void StudyNSGA3Dialog::load()
     // txtPMut->setValue(study()->value(Study::NSGA3_pmut).toDouble());
     txtEtaC->setValue(study()->value(Study::NSGA3_eta_c).toDouble());
     txtEtaM->setValue(study()->value(Study::NSGA3_eta_m).toDouble());
+    chkUseSurrogateFunction->setChecked(study()->value(Study::NSGA3_use_surrogate).toBool());
 }
 
 void StudyNSGA3Dialog::save()
@@ -272,5 +402,6 @@ void StudyNSGA3Dialog::save()
     // study()->setValue(Study::NSGA3_pmut, txtPMut->value());
     study()->setValue(Study::NSGA3_eta_c, txtEtaC->value());
     study()->setValue(Study::NSGA3_eta_m, txtEtaM->value());
+    study()->setValue(Study::NSGA3_use_surrogate, chkUseSurrogateFunction->isChecked());
 }
 

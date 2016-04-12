@@ -146,6 +146,7 @@ public:
         NSGA3_pmut,
         NSGA3_eta_c,
         NSGA3_eta_m,
+        NSGA3_use_surrogate,
 
         View_ChartHorizontal,
         View_ChartVertical,
@@ -212,7 +213,7 @@ public slots:
     void doAbortSolve();
 
 signals:
-    void updateChart(int step, QList<double> values, double totalValue, SolutionUncertainty solutionUncertainty);
+    void updateChart(QList<double> values, double totalValue, SolutionUncertainty solutionUncertainty);
     void updateParameters(QList<Parameter> parameters, const Computation *computation);
 
     void solved();

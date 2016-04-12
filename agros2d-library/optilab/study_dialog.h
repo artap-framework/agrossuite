@@ -59,10 +59,13 @@ private:
     QProgressBar *m_progress;
     int m_computationSetsCount;
 
+    // steps
+    int m_step;
+
     void createControls();
 
 private slots:
-    void updateChart(int step, QList<double> values, double totalValue, SolutionUncertainty solutionUncertainty);
+    void updateChart(QList<double> values, double totalValue, SolutionUncertainty solutionUncertainty);
     void updateParameters(QList<Parameter> parameters, const Computation *computation);
 
     void solved();
