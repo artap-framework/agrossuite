@@ -619,6 +619,10 @@ QWidget *OptiLab::createControlsChart()
     actChartShowAverageValue->setCheckable(true);
     connect(actChartShowAverageValue, SIGNAL(triggered(bool)), this, SLOT(chartShowAverageValue(bool)));
 
+    actChartParetoFront = new QAction(icon(""), tr("Show Pareto front"), this);
+    actChartParetoFront->setCheckable(true);
+    connect(actChartParetoFront, SIGNAL(triggered(bool)), this, SLOT(chartShowParetoFront(bool)));
+
     mnuChart = new QMenu(this);
     mnuChart->addAction(actChartRescale);
     mnuChart->addSection(tr("Chart properties"));
@@ -626,6 +630,7 @@ QWidget *OptiLab::createControlsChart()
     mnuChart->addAction(actChartLogVertical);
     mnuChart->addAction(actChartShowTrend);
     mnuChart->addAction(actChartShowAverageValue);
+    mnuChart->addAction(actChartParetoFront);
 
     chart = new QCustomPlot(this);
     chart->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
@@ -662,6 +667,14 @@ QWidget *OptiLab::createControlsChart()
     chartGraphSelectedComputation->removeFromLegend();
     chartGraphSelectedComputation->setLineStyle(QCPGraph::lsNone);
     chartGraphSelectedComputation->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, Qt::darkGray, 17));
+
+    // Pareto front
+    chartGraphParetoFront = chart->addGraph();
+    // chartGraphParetoFront->setName(tr("Pareto front"));
+    // chartGraphParetoFront->addToLegend();
+    chartGraphParetoFront->removeFromLegend();
+    chartGraphParetoFront->setPen(QPen(QBrush(QColor(150, 110, 110, 120)), 8, Qt::SolidLine));
+    chartGraphParetoFront->setLineStyle(QCPGraph::lsLine);
 
     return chart;
 }
@@ -814,6 +827,15 @@ void OptiLab::chartShowAverageValue(bool checked)
     chartGraphAverageValueChannelLower->setVisible(checked);
     chartGraphAverageValueChannelUpper->setVisible(checked);
 
+    chart->replot(QCustomPlot::rpQueued);
+}
+
+void OptiLab::chartShowParetoFront(bool checked)
+{
+    m_study->setValue(Study::View_ChartShowParetoFront, checked);
+    actChartParetoFront->setChecked(checked);
+
+    chartGraphParetoFront->setVisible(checked);
     chart->replot(QCustomPlot::rpQueued);
 }
 
@@ -1008,6 +1030,11 @@ void OptiLab::doChartRefreshed(const QString &key)
     QVector<double> linRegDataX;
     QVector<double> linRegDataY;
 
+    // Pareto front
+    QList<QSharedPointer<Computation> > paretoFront = m_study->nondominatedSort();
+    QVector<double> paretoDataX;
+    QVector<double> paretoDataY;
+
     int paletteStep = m_study->computationSets().count() > 1 ? (PALETTEENTRIES - 1) / (m_study->computationSets().count() - 1) : 0;
     int step = 0;
     for (int i = 0; i < m_study->computationSets().count(); i++)
@@ -1086,6 +1113,13 @@ void OptiLab::doChartRefreshed(const QString &key)
 
             // computation map
             m_computationMap[i].insert(QPair<double, double>(dataSetX.last(), dataSetY.last()), computation);
+
+            // Pareto front
+            if (paretoFront.contains(computation))
+            {
+                paretoDataX.append(dataSetX.last());
+                paretoDataY.append(dataSetY.last());
+            }
         }
 
         int colorFillIndex = i * paletteStep;
@@ -1103,10 +1137,12 @@ void OptiLab::doChartRefreshed(const QString &key)
         chartGraphChart->setProperty("computationset_index", i);
         chartGraphChart->setName(m_study->computationSets()[i].name());
         chartGraphChart->addToLegend();
-
         chartGraphChart->setLineStyle(QCPGraph::lsNone);
         chartGraphChart->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QColor(140, 140, 140), colorFill, 9));
     }
+
+    // Pareto front
+    chartGraphParetoFront->setData(paretoDataX, paretoDataY);
 
     // mean value and standard deviation
     Statistics statsX(linRegDataX);
@@ -1135,7 +1171,7 @@ void OptiLab::doChartRefreshed(const QString &key)
         chartTrendLine->end->setCoords(end);
         chartTrendLine->setHead(QCPLineEnding::esSpikeArrow);
         chartTrendLine->setPen(QPen(QBrush(QColor(200, 200, 200)), 5));
-    }
+    }       
 
     // plot main chart
     chart->xAxis->setLabel(labelX);
@@ -1149,6 +1185,7 @@ void OptiLab::doChartRefreshed(const QString &key)
     chartLogHorizontal(m_study->value(Study::View_ChartLogVertical).toBool());
     chartShowTrend(m_study->value(Study::View_ChartShowTrend).toBool());
     chartShowAverageValue(m_study->value(Study::View_ChartShowAverageValue).toBool());
+    chartShowParetoFront(m_study->value(Study::View_ChartShowParetoFront).toBool());
 }
 
 QCPData OptiLab::findClosestData(QCPGraph *graph, const Point &pos)

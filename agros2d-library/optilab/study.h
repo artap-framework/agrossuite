@@ -153,7 +153,8 @@ public:
         View_ChartLogHorizontal,
         View_ChartLogVertical,
         View_ChartShowTrend,
-        View_ChartShowAverageValue
+        View_ChartShowAverageValue,
+        View_ChartShowParetoFront
     };
 
     Study(QList<ComputationSet> computations = QList<ComputationSet>());
@@ -189,6 +190,8 @@ public:
     void addComputation(QSharedPointer<Computation> computation, bool newComputationSet = false);
 
     virtual int estimatedNumberOfSteps() const { return 0; }
+
+    QList<QSharedPointer<Computation> > nondominatedSort();
 
     QVariant variant();
 
