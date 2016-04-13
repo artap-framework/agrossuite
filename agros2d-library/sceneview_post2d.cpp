@@ -226,8 +226,8 @@ void SceneViewPost2D::paintGL()
         if (m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowScalarView).toBool()
                 && m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ShowScalarColorBar).toBool())
             paintScalarFieldColorBar(this,
-                                     m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble(),
-                                     m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble());
+                                     m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble(),
+                                     m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble());
     }
 
     // rulers

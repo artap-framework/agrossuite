@@ -657,7 +657,7 @@ void SceneViewPostInterface::paintScalarFieldColorBar(SceneViewCommon *sceneView
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
     glBegin(GL_QUADS);
-    if (fabs(min - max) > EPS_ZERO)
+    if (fabs(max - min) > EPS_ZERO)
         glTexCoord1d(m_texScale + m_texShift);
     else
         glTexCoord1d(m_texShift);

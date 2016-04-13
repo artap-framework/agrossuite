@@ -117,8 +117,8 @@ void SceneViewPost3D::paintGL()
         if (((SceneViewPost3DMode) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D ||
                 ((SceneViewPost3DMode) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3DSolid)
             paintScalarFieldColorBar(this,
-                                     m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble(),
-                                     m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble());
+                                     m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMin).toDouble(),
+                                     m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarRangeMax).toDouble());
     }
 
     switch ((SceneViewPost3DMode) m_postprocessorWidget->currentComputation()->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt())
