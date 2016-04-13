@@ -65,6 +65,10 @@ private:
     QAction *actPoint;
     QTreeWidget *trvWidget;
 
+    // time and adaptive step
+    int timeStep(FieldInfo *fieldInfo, int requestedTimeStep);
+    int adaptivityStep(FieldInfo *fieldInfo, int requestedTimeStep, int requestedAdaptivityStep);
+
 private slots:
     void doContextMenu(const QPoint &pos);
     void doCopy(bool state);

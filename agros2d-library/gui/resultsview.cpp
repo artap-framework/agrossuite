@@ -81,6 +81,28 @@ Computation *ResultsView::currentComputation()
     return static_cast<Computation *>(m_post2D->problem());
 }
 
+// time and adaptive step
+
+int ResultsView::timeStep(FieldInfo *fieldInfo, int requestedTimeStep)
+{
+    int lastTimeStep = currentComputation()->solutionStore()->lastTimeStep(fieldInfo);
+
+    if (requestedTimeStep == -1 || requestedTimeStep > lastTimeStep)
+        return lastTimeStep;
+    else
+        return requestedTimeStep;
+}
+
+int ResultsView::adaptivityStep(FieldInfo *fieldInfo, int requestedTimeStep, int requestedAdaptivityStep)
+{
+    int lastAdaptiveStep = requestedAdaptivityStep > currentComputation()->solutionStore()->lastAdaptiveStep(fieldInfo, timeStep(fieldInfo, requestedTimeStep));
+
+    if (requestedAdaptivityStep == -1 || lastAdaptiveStep)
+        return lastAdaptiveStep;
+    else
+        return requestedAdaptivityStep;
+}
+
 void ResultsView::doContextMenu(const QPoint &pos)
 {
     QTreeWidgetItem *current = trvWidget->itemAt(pos);
@@ -163,7 +185,7 @@ void ResultsView::showRecipe()
                 item = new QTreeWidgetItem(recipeNode);
                 item->setText(1, key);
                 item->setText(2, QString::number(results[key]));
-                item->setData(0, Qt::UserRole, key);
+                item->setData(0, Qt::UserRole, results[key]);
             }
         }
 
@@ -210,11 +232,12 @@ void ResultsView::showPoint()
         fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
         fieldNode->setExpanded(true);
 
-        std::shared_ptr<LocalValue> value = fieldInfo->plugin()->localValue(currentComputation(),
-                                                                            fieldInfo,
-                                                                            currentComputation()->postDeal()->activeTimeStep(),
-                                                                            currentComputation()->postDeal()->activeAdaptivityStep(),
-                                                                            m_point);
+        // time and adaptive step
+        int ts = timeStep(fieldInfo, currentComputation()->postDeal()->activeTimeStep());
+        int as = adaptivityStep(fieldInfo, ts, currentComputation()->postDeal()->activeAdaptivityStep());
+
+        std::shared_ptr<LocalValue> value = fieldInfo->plugin()->localValue(currentComputation(), fieldInfo, ts, as, m_point);
+
         QMap<QString, LocalPointValue> values = value->values();
         if (values.size() > 0)
         {
@@ -284,10 +307,11 @@ void ResultsView::showVolumeIntegral()
         fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
         fieldNode->setExpanded(true);
 
-        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->volumeIntegral(currentComputation(),
-                                                                                      fieldInfo,
-                                                                                      currentComputation()->postDeal()->activeTimeStep(),
-                                                                                      currentComputation()->postDeal()->activeAdaptivityStep());
+        // time and adaptive step
+        int ts = timeStep(fieldInfo, currentComputation()->postDeal()->activeTimeStep());
+        int as = adaptivityStep(fieldInfo, ts, currentComputation()->postDeal()->activeAdaptivityStep());
+
+        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->volumeIntegral(currentComputation(), fieldInfo, ts, as);
 
         QMap<QString, double> values = integral->values();
         if (values.size() > 0)
@@ -327,11 +351,11 @@ void ResultsView::showSurfaceIntegral()
         fieldNode->setIcon(0, iconAlphabet(fieldInfo->fieldId().at(0), AlphabetColor_Green));
         fieldNode->setExpanded(true);
 
+        // time and adaptive step
+        int ts = timeStep(fieldInfo, currentComputation()->postDeal()->activeTimeStep());
+        int as = adaptivityStep(fieldInfo, ts, currentComputation()->postDeal()->activeAdaptivityStep());
 
-        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->surfaceIntegral(currentComputation(),
-                                                                                       fieldInfo,
-                                                                                       currentComputation()->postDeal()->activeTimeStep(),
-                                                                                       currentComputation()->postDeal()->activeAdaptivityStep());
+        std::shared_ptr<IntegralValue> integral = fieldInfo->plugin()->surfaceIntegral(currentComputation(), fieldInfo, ts, as);
         QMap<QString, double> values = integral->values();
         if (values.size() > 0)
         {
