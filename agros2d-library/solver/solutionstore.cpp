@@ -340,13 +340,17 @@ void SolutionStore::insertMultiSolutionToCache(FieldSolutionID solutionID, deali
     if (m_multiSolutionDealCache.count() > Agros2D::configComputer()->value(Config::Config_CacheSize).toInt())
     {
         assert(!m_multiSolutionCacheIDOrder.empty());
-        FieldSolutionID idRemove = m_multiSolutionCacheIDOrder[0];
-        m_multiSolutionCacheIDOrder.removeFirst();
-
-        // free ma
-        m_multiSolutionDealCache[idRemove].clear();
-        m_multiSolutionDealCache.remove(idRemove);
-        m_multiSolutionCacheIDOrder.removeOne(idRemove);
+        // find first item of current field (coupled fields cannot be removed)
+        foreach (FieldSolutionID solutionIDRemove, m_multiSolutionCacheIDOrder)
+        {
+            if (solutionID.fieldId == solutionIDRemove.fieldId)
+            {
+                // free ma
+                m_multiSolutionDealCache[solutionIDRemove].clear();
+                m_multiSolutionDealCache.remove(solutionIDRemove);
+                m_multiSolutionCacheIDOrder.removeOne(solutionIDRemove);
+            }
+        }
     }
 
     // add solution
