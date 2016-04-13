@@ -379,7 +379,7 @@ QList<QSharedPointer<Computation> > &Study::computations(int index)
         return m_computationSets[index].computations();
 }
 
-bool dominateComputations(const Computation *l, const Computation *r)
+bool Study::dominateComputations(const Computation *l, const Computation *r)
 {
     bool better = false;
     foreach (QString key, l->results()->items().keys())

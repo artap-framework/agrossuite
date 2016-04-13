@@ -127,7 +127,7 @@ public:
                 // for (int i = 0; i < m_study->functionals().count(); i++)
                 //     qDebug() << i << " : surr : mu = " << mu[i] << ", sigma = " << sigma << ", lik = " << gp.get_lik() << ", use = " << (sigma < 1e-4);
                 // surrogate function
-                if (sigma < 1e-8)
+                if (sigma < 1e-4)
                 {
 
 
@@ -185,8 +185,8 @@ public:
                     if (gp.nb_samples() > 1)
                     {
                         std::tie(mu, sigma) = gp.query(samples);
-                        // for (int i = 0; i < values.count(); i++)
-                        //     qDebug() << i << " : value = " << values[i] << ", mu = " << mu[i] << ", sigma = " << sigma;
+                         for (int i = 0; i < values.count(); i++)
+                             qDebug() << i << " : value = " << values[i] << ", mu = " << mu[i] << ", sigma = " << sigma;
                     }
 
                     // add samples and observations

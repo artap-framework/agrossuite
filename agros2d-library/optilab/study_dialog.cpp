@@ -510,16 +510,16 @@ QWidget *StudyDialog::createParametersAndFunctionals()
 {
     QVBoxLayout *layoutParameters = new QVBoxLayout(this);
     layoutParameters->addWidget(createParameters());
-    
+
     QGroupBox *grpParameters = new QGroupBox(tr("Parameters"));
     grpParameters->setLayout(layoutParameters);
-    
+
     QVBoxLayout *layoutFunctionals = new QVBoxLayout(this);
     layoutFunctionals->addWidget(createFunctionals());
-    
+
     QGroupBox *grpFunctionals = new QGroupBox(tr("Functionals"));
     grpFunctionals->setLayout(layoutFunctionals);
-    
+
     QVBoxLayout *layoutPF = new QVBoxLayout(this);
     layoutPF->addWidget(grpParameters);
     layoutPF->addWidget(grpFunctionals);
@@ -685,7 +685,7 @@ QWidget *StudyDialog::createFunctionals()
     QWidget *widget = new QWidget(this);
     widget->setLayout(layout);
     
-    
+
     return widget;
 }
 

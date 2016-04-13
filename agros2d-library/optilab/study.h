@@ -242,6 +242,8 @@ protected:
     virtual void setDefaultValues();
     virtual void setStringKeys();
 
+    bool dominateComputations(const Computation *l, const Computation *r);
+
     friend class PyStudy;
     friend class PyStudyBayesOpt;
 };
