@@ -202,10 +202,10 @@ void StudyBayesOpt::solve()
     par.n_init_samples = value(BayesOpt_n_init_samples).toInt();
     par.n_iterations = value(BayesOpt_n_iterations).toInt();
     par.n_iter_relearn = value(BayesOpt_n_iter_relearn).toInt();
-    par.init_method = value(BayesOpt_init_method).toInt();
-    par.surr_name = value(BayesOpt_surr_name).toString().toStdString();
-    par.l_type = (learning_type) value(BayesOpt_l_type).toInt();
-    par.sc_type = (score_type) value(BayesOpt_sc_type).toInt();
+    par.init_method = initMethodFromStringKey(value(BayesOpt_init_method).toString());
+    par.surr_name = surrogateFromStringKey(value(BayesOpt_surr_name).toString()).toStdString();
+    par.l_type = learningTypeFromStringKey(value(BayesOpt_l_type).toString());
+    par.sc_type = scoreTypeFromStringKey(value(BayesOpt_sc_type).toString());
     par.noise = value(Study::BayesOpt_surr_noise).toDouble();
     par.random_seed = 0;
     par.verbose_level = -1;
@@ -245,11 +245,11 @@ void StudyBayesOpt::setDefaultValues()
     m_settingDefault[BayesOpt_n_init_samples] = 5;
     m_settingDefault[BayesOpt_n_iterations] = 10;
     m_settingDefault[BayesOpt_n_iter_relearn] = 5;
-    m_settingDefault[BayesOpt_init_method] = 1; // 1-LHS, 2-Sobol
-    m_settingDefault[BayesOpt_surr_name] = "sGaussianProcessML";
+    m_settingDefault[BayesOpt_init_method] = initMethodToStringKey(1); // 1-LHS, 2-Sobol
+    m_settingDefault[BayesOpt_surr_name] = surrogateToStringKey("sGaussianProcessML");
     m_settingDefault[BayesOpt_surr_noise] = 1e-10;
-    m_settingDefault[BayesOpt_l_type] = L_EMPIRICAL;
-    m_settingDefault[BayesOpt_sc_type] = SC_MAP;
+    m_settingDefault[BayesOpt_l_type] = learningTypeToStringKey(L_EMPIRICAL);
+    m_settingDefault[BayesOpt_sc_type] = scoreTypeToStringKey(SC_MAP);
 }
 
 void StudyBayesOpt::setStringKeys()
@@ -289,7 +289,7 @@ QLayout *StudyBayesOptDialog::createStudyControls()
 
     cmbInitMethod = new QComboBox(this);
     foreach (QString key, study()->initMethodStringKeys())
-        cmbInitMethod->addItem(study()->initMethodString(study()->initMethodFromStringKey(key)), study()->initMethodFromStringKey(key));
+        cmbInitMethod->addItem(study()->initMethodString(study()->initMethodFromStringKey(key)), key);
 
     QGridLayout *layoutInitialization = new QGridLayout(this);
     layoutInitialization->addWidget(new QLabel(tr("Number of initial samples:")), 0, 0);
@@ -306,7 +306,7 @@ QLayout *StudyBayesOptDialog::createStudyControls()
 
     cmbSurrogateNameMethod = new QComboBox(this);
     foreach (QString key, study()->surrogateStringKeys())
-        cmbSurrogateNameMethod->addItem(study()->surrogateString(study()->surrogateFromStringKey(key)), study()->surrogateFromStringKey(key));
+        cmbSurrogateNameMethod->addItem(study()->surrogateString(study()->surrogateFromStringKey(key)), key);
 
     txtSurrogateNoise = new LineEditDouble(0.0);
     txtSurrogateNoise->setBottom(0.0);
@@ -322,11 +322,11 @@ QLayout *StudyBayesOptDialog::createStudyControls()
 
     cmbHPLearningMethod = new QComboBox(this);
     foreach (QString key, study()->learningTypeStringKeys())
-        cmbHPLearningMethod->addItem(study()->learningTypeString(study()->learningTypeFromStringKey(key)), study()->learningTypeFromStringKey(key));
+        cmbHPLearningMethod->addItem(study()->learningTypeString(study()->learningTypeFromStringKey(key)), key);
 
     cmbHPScoreFunction = new QComboBox(this);
     foreach (QString key, study()->scoreTypeStringKeys())
-        cmbHPScoreFunction->addItem(study()->scoreTypeString(study()->scoreTypeFromStringKey(key)), study()->scoreTypeFromStringKey(key));
+        cmbHPScoreFunction->addItem(study()->scoreTypeString(study()->scoreTypeFromStringKey(key)), key);
 
     QGridLayout *layoutKernelParameters = new QGridLayout(this);
     layoutKernelParameters->addWidget(new QLabel(tr("Learning method:")), 0, 0);
@@ -352,11 +352,11 @@ void StudyBayesOptDialog::load()
     txtNInitSamples->setValue(study()->value(Study::BayesOpt_n_init_samples).toInt());
     txtNIterations->setValue(study()->value(Study::BayesOpt_n_iterations).toInt());
     txtNIterRelearn->setValue(study()->value(Study::BayesOpt_n_iter_relearn).toInt());
-    cmbInitMethod->setCurrentIndex(cmbInitMethod->findData(study()->value(Study::BayesOpt_init_method).toInt()));
+    cmbInitMethod->setCurrentIndex(cmbInitMethod->findData(study()->value(Study::BayesOpt_init_method).toString()));
     cmbSurrogateNameMethod->setCurrentIndex(cmbSurrogateNameMethod->findData(study()->value(Study::BayesOpt_surr_name).toString()));
     txtSurrogateNoise->setValue(study()->value(Study::BayesOpt_surr_noise).toDouble());
-    cmbHPLearningMethod->setCurrentIndex(cmbHPLearningMethod->findData(study()->value(Study::BayesOpt_l_type).toInt()));
-    cmbHPScoreFunction->setCurrentIndex(cmbHPScoreFunction->findData(study()->value(Study::BayesOpt_sc_type).toInt()));
+    cmbHPLearningMethod->setCurrentIndex(cmbHPLearningMethod->findData(study()->value(Study::BayesOpt_l_type).toString()));
+    cmbHPScoreFunction->setCurrentIndex(cmbHPScoreFunction->findData(study()->value(Study::BayesOpt_sc_type).toString()));
 }
 
 void StudyBayesOptDialog::save()
@@ -366,9 +366,9 @@ void StudyBayesOptDialog::save()
     study()->setValue(Study::BayesOpt_n_init_samples, txtNInitSamples->value());
     study()->setValue(Study::BayesOpt_n_iterations, txtNIterations->value());
     study()->setValue(Study::BayesOpt_n_iter_relearn, txtNIterRelearn->value());
-    study()->setValue(Study::BayesOpt_init_method, cmbInitMethod->itemData(cmbInitMethod->currentIndex()).toInt());
+    study()->setValue(Study::BayesOpt_init_method, cmbInitMethod->itemData(cmbInitMethod->currentIndex()).toString());
     study()->setValue(Study::BayesOpt_surr_name, cmbSurrogateNameMethod->itemData(cmbSurrogateNameMethod->currentIndex()).toString());
     study()->setValue(Study::BayesOpt_surr_noise, txtSurrogateNoise->value());
-    study()->setValue(Study::BayesOpt_l_type, (learning_type) cmbHPLearningMethod->itemData(cmbHPLearningMethod->currentIndex()).toInt());
-    study()->setValue(Study::BayesOpt_sc_type, (score_type) cmbHPScoreFunction->itemData(cmbHPScoreFunction->currentIndex()).toInt());
+    study()->setValue(Study::BayesOpt_l_type, cmbHPLearningMethod->itemData(cmbHPLearningMethod->currentIndex()).toString());
+    study()->setValue(Study::BayesOpt_sc_type, cmbHPScoreFunction->itemData(cmbHPScoreFunction->currentIndex()).toString());
 }

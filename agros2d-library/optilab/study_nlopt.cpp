@@ -40,7 +40,7 @@ class NLoptProblem
 {
 public:
     NLoptProblem(StudyNLopt *study) :  m_study(study),
-        opt((nlopt::algorithm) study->value(Study::NLopt_algorithm).toInt(), study->parameters().count())
+        opt((nlopt::algorithm) study->algorithmFromStringKey(study->value(Study::NLopt_algorithm).toString()), study->parameters().count())
     {        
     }
 
@@ -228,7 +228,7 @@ void StudyNLopt::setDefaultValues()
     m_settingDefault[NLopt_ftol_rel] = 1e-6;
     m_settingDefault[NLopt_ftol_abs] = 1e-12;
     m_settingDefault[NLopt_n_iterations] = 100;
-    m_settingDefault[NLopt_algorithm] = nlopt::LN_BOBYQA;
+    m_settingDefault[NLopt_algorithm] = algorithmToStringKey(nlopt::LN_BOBYQA);
 }
 
 void StudyNLopt::setStringKeys()
@@ -264,7 +264,7 @@ QLayout *StudyNLoptDialog::createStudyControls()
 
     cmbAlgorithm = new QComboBox(this);
     foreach (QString key, study()->algorithmStringKeys())
-        cmbAlgorithm->addItem(study()->algorithmString(study()->algorithmFromStringKey(key)), study()->algorithmFromStringKey(key));
+        cmbAlgorithm->addItem(study()->algorithmString(study()->algorithmFromStringKey(key)), key);
 
     QGridLayout *layoutInitialization = new QGridLayout(this);
     layoutInitialization->addWidget(new QLabel(tr("Algorithm:")), 0, 0);
@@ -306,7 +306,7 @@ void StudyNLoptDialog::load()
     txtFRelTol->setValue(study()->value(Study::NLopt_ftol_rel).toDouble());
     txtFAbsTol->setValue(study()->value(Study::NLopt_ftol_abs).toDouble());
     txtNIterations->setValue(study()->value(Study::NLopt_n_iterations).toDouble());
-    cmbAlgorithm->setCurrentIndex(cmbAlgorithm->findData(study()->value(Study::NLopt_algorithm).toInt()));
+    cmbAlgorithm->setCurrentIndex(cmbAlgorithm->findData(study()->value(Study::NLopt_algorithm).toString()));
 }
 
 void StudyNLoptDialog::save()
@@ -318,5 +318,5 @@ void StudyNLoptDialog::save()
     study()->setValue(Study::NLopt_ftol_rel, txtFRelTol->value());
     study()->setValue(Study::NLopt_ftol_abs, txtFAbsTol->value());
     study()->setValue(Study::NLopt_n_iterations, txtNIterations->value());
-    study()->setValue(Study::NLopt_algorithm, (nlopt::algorithm) cmbAlgorithm->itemData(cmbAlgorithm->currentIndex()).toInt());
+    study()->setValue(Study::NLopt_algorithm, cmbAlgorithm->itemData(cmbAlgorithm->currentIndex()).toString());
 }

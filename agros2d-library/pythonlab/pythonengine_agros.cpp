@@ -635,65 +635,64 @@ QString createPythonFromModel()
 
             str += ")\n";
         }
+
+        str += "\n";
     }
 
-    foreach (FieldInfo *fieldInfo, Agros2D::problem()->fieldInfos())
+    if (Agros2D::problem()->recipes()->items().count() > 0)
     {
-        if (Agros2D::problem()->recipes()->items().count() > 0)
+        str += "# recipes \n";
+        foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
         {
-            str += "# recipes \n";
-            foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
+            if (LocalValueRecipe *localRecipe = dynamic_cast<LocalValueRecipe *>(recipe))
             {
-                if (LocalValueRecipe *localRecipe = dynamic_cast<LocalValueRecipe *>(recipe))
-                {
-                    str += QString("%1.add_recipe_local_value(\"%2\", \"%3\", \"%4\", %5, %6, %7, %8)\n").
-                            arg(fieldInfo->fieldId()).
-                            arg(localRecipe->name()).
-                            arg(localRecipe->variable()).
-                            arg(physicFieldVariableCompToStringKey(localRecipe->variableComponent())).
-                            arg(localRecipe->point().x).
-                            arg(localRecipe->point().y).
-                            arg(localRecipe->timeStep()).
-                            arg(localRecipe->adaptivityStep());
-                }
-                else if (SurfaceIntegralRecipe *surfaceRecipe = dynamic_cast<SurfaceIntegralRecipe *>(recipe))
-                {
-                    QString edges;
-                    for (int i = 0; i < surfaceRecipe->edges().count(); i++)
-                        if (i < surfaceRecipe->edges().count() - 1)
-                            edges += QString("%1, ").arg(surfaceRecipe->edges()[i]);
-                        else
-                            edges += QString("%1").arg(surfaceRecipe->edges()[i]);
-
-                    str += QString("%1.add_recipe_surface_integral(\"%2\", \"%3\", [%4], %5, %6)\n").
-                            arg(fieldInfo->fieldId()).
-                            arg(surfaceRecipe->name()).
-                            arg(surfaceRecipe->variable()).
-                            arg(edges).
-                            arg(surfaceRecipe->timeStep()).
-                            arg(surfaceRecipe->adaptivityStep());
-                }
-                else if (VolumeIntegralRecipe *volumeRecipe = dynamic_cast<VolumeIntegralRecipe *>(recipe))
-                {
-                    QString labels;
-                    for (int i = 0; i < volumeRecipe->labels().count(); i++)
-                        if (i < volumeRecipe->labels().count() - 1)
-                            labels += QString("%1, ").arg(volumeRecipe->labels()[i]);
-                        else
-                            labels += QString("%1").arg(volumeRecipe->labels()[i]);
-
-                    str += QString("%1.add_recipe_volume_integral(\"%2\", \"%3\", [%4], %5, %6)\n").
-                            arg(fieldInfo->fieldId()).
-                            arg(volumeRecipe->name()).
-                            arg(volumeRecipe->variable()).
-                            arg(labels).
-                            arg(volumeRecipe->timeStep()).
-                            arg(volumeRecipe->adaptivityStep());
-                }
+                str += QString("%1.add_recipe_local_value(\"%2\", \"%3\", \"%4\", %5, %6, %7, %8)\n").
+                        arg(localRecipe->fieldId()).
+                        arg(localRecipe->name()).
+                        arg(localRecipe->variable()).
+                        arg(physicFieldVariableCompToStringKey(localRecipe->variableComponent())).
+                        arg(localRecipe->point().x).
+                        arg(localRecipe->point().y).
+                        arg(localRecipe->timeStep()).
+                        arg(localRecipe->adaptivityStep());
             }
+            else if (SurfaceIntegralRecipe *surfaceRecipe = dynamic_cast<SurfaceIntegralRecipe *>(recipe))
+            {
+                QString edges;
+                for (int i = 0; i < surfaceRecipe->edges().count(); i++)
+                    if (i < surfaceRecipe->edges().count() - 1)
+                        edges += QString("%1, ").arg(surfaceRecipe->edges()[i]);
+                    else
+                        edges += QString("%1").arg(surfaceRecipe->edges()[i]);
 
-            str += "\n";
+                str += QString("%1.add_recipe_surface_integral(\"%2\", \"%3\", [%4], %5, %6)\n").
+                        arg(surfaceRecipe->fieldId()).
+                        arg(surfaceRecipe->name()).
+                        arg(surfaceRecipe->variable()).
+                        arg(edges).
+                        arg(surfaceRecipe->timeStep()).
+                        arg(surfaceRecipe->adaptivityStep());
+            }
+            else if (VolumeIntegralRecipe *volumeRecipe = dynamic_cast<VolumeIntegralRecipe *>(recipe))
+            {
+                QString labels;
+                for (int i = 0; i < volumeRecipe->labels().count(); i++)
+                    if (i < volumeRecipe->labels().count() - 1)
+                        labels += QString("%1, ").arg(volumeRecipe->labels()[i]);
+                    else
+                        labels += QString("%1").arg(volumeRecipe->labels()[i]);
+
+                str += QString("%1.add_recipe_volume_integral(\"%2\", \"%3\", [%4], %5, %6)\n").
+                        arg(volumeRecipe->fieldId()).
+                        arg(volumeRecipe->name()).
+                        arg(volumeRecipe->variable()).
+                        arg(labels).
+                        arg(volumeRecipe->timeStep()).
+                        arg(volumeRecipe->adaptivityStep());
+            }
         }
+
+        str += "\n";
     }
 
     if (Agros2D::problem()->studies()->items().count() > 0)

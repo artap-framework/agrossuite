@@ -90,16 +90,16 @@ public:
     virtual StudyBayesOpt *study() const { return static_cast<StudyBayesOpt *>(m_study); }
 
     // BayesOpt
-    inline std::string getInitMethod() const { return study()->initMethodToStringKey(m_study->value(Study::BayesOpt_init_method).toInt()).toStdString(); }
+    inline std::string getInitMethod() const { return m_study->value(Study::BayesOpt_init_method).toString().toStdString(); }
     void setInitMethod(const std::string &initMethod);
 
     inline std::string getSurrName() const { return m_study->value(Study::BayesOpt_surr_name).toString().toStdString(); }
     void setSurrName(const std::string &surrName);
 
-    inline std::string getScoreType() const { return study()->scoreTypeToStringKey((score_type) m_study->value(Study::BayesOpt_sc_type).toInt()).toStdString(); }
+    inline std::string getScoreType() const { return m_study->value(Study::BayesOpt_sc_type).toString().toStdString(); }
     void setScoreType(const std::string &scoreType);
 
-    inline std::string getLearningType() const { return study()->learningTypeToStringKey((learning_type) m_study->value(Study::BayesOpt_l_type).toInt()).toStdString(); }
+    inline std::string getLearningType() const { return m_study->value(Study::BayesOpt_l_type).toString().toStdString(); }
     void setLearningType(const std::string &learningType);
 };
 
@@ -112,7 +112,7 @@ public:
     virtual StudyNLopt *study() { return static_cast<StudyNLopt *>(m_study); }
     virtual StudyNLopt *study() const { return static_cast<StudyNLopt *>(m_study); }
 
-    inline std::string getAlgorithm() const { return study()->algorithmToStringKey((nlopt::algorithm) m_study->value(Study::NLopt_algorithm).toInt()).toStdString(); }
+    inline std::string getAlgorithm() const { return m_study->value(Study::NLopt_algorithm).toString().toStdString(); }
     void setAlgorithm(const std::string &algorithm);
 };
 

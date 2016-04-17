@@ -67,7 +67,7 @@ PyStudyBayesOpt::PyStudyBayesOpt() : PyStudy()
 void PyStudyBayesOpt::setInitMethod(const std::string &initMethod)
 {
     if (study()->initMethodStringKeys().contains(QString::fromStdString(initMethod)))
-        m_study->setValue(Study::BayesOpt_init_method, study()->initMethodFromStringKey(QString::fromStdString(initMethod)));
+        m_study->setValue(Study::BayesOpt_init_method, QString::fromStdString(initMethod));
     else
     {
         QStringList list;
@@ -81,7 +81,7 @@ void PyStudyBayesOpt::setInitMethod(const std::string &initMethod)
 void PyStudyBayesOpt::setSurrName(const std::string &surrName)
 {
     if (study()->surrogateStringKeys().contains(QString::fromStdString(surrName)))
-        m_study->setValue(Study::BayesOpt_surr_name, study()->surrogateFromStringKey(QString::fromStdString(surrName)));
+        m_study->setValue(Study::BayesOpt_surr_name, QString::fromStdString(surrName));
     else
     {
         QStringList list;
@@ -95,7 +95,7 @@ void PyStudyBayesOpt::setSurrName(const std::string &surrName)
 void PyStudyBayesOpt::setScoreType(const std::string &scoreType)
 {
     if (study()->scoreTypeStringKeys().contains(QString::fromStdString(scoreType)))
-        m_study->setValue(Study::BayesOpt_sc_type, study()->scoreTypeFromStringKey(QString::fromStdString(scoreType)));
+        m_study->setValue(Study::BayesOpt_sc_type, QString::fromStdString(scoreType));
     else
     {
         QStringList list;
@@ -109,7 +109,7 @@ void PyStudyBayesOpt::setScoreType(const std::string &scoreType)
 void PyStudyBayesOpt::setLearningType(const std::string &learningType)
 {
     if (study()->learningTypeStringKeys().contains(QString::fromStdString(learningType)))
-        m_study->setValue(Study::BayesOpt_l_type, study()->learningTypeFromStringKey(QString::fromStdString(learningType)));
+        m_study->setValue(Study::BayesOpt_l_type, QString::fromStdString(learningType));
     else
     {
         QStringList list;
@@ -133,7 +133,7 @@ PyStudyNLopt::PyStudyNLopt() : PyStudy()
 void PyStudyNLopt::setAlgorithm(const std::string &algorithm)
 {
     if (study()->algorithmStringKeys().contains(QString::fromStdString(algorithm)))
-        m_study->setValue(Study::NLopt_algorithm, study()->algorithmFromStringKey(QString::fromStdString(algorithm)));
+        m_study->setValue(Study::NLopt_algorithm, QString::fromStdString(algorithm));
     else
     {
         QStringList list;
