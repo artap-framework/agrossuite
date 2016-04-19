@@ -110,7 +110,7 @@ StudyNLopt::StudyNLopt() : Study()
     algorithmList.insert(nlopt::LN_NELDERMEAD, "ln_neldermead");
     algorithmList.insert(nlopt::LN_SBPLX, "ln_sbplx");
     algorithmList.insert(nlopt::LN_PRAXIS, "ln_praxis");
-    algorithmList.insert(nlopt::LN_AUGLAG, "ln_auglag");
+    algorithmList.insert(nlopt::LN_AUGLAG_EQ, "ln_auglag_eq");
 }
 
 int StudyNLopt::estimatedNumberOfSteps() const
@@ -144,7 +144,7 @@ QString StudyNLopt::algorithmString(int algorithm) const
         return QObject::tr("Local - Sbplx");
     case nlopt::LN_PRAXIS:
         return QObject::tr("Local - PRincipal AXIS");
-    case nlopt::LN_AUGLAG:
+    case nlopt::LN_AUGLAG_EQ:
         return QObject::tr("Local - Augmented Lagrangian method");
     default:
         std::cerr << "algorithm '" + QString::number(algorithm).toStdString() + "' is not implemented. algorithmString(int algorithm)" << endl;

@@ -850,13 +850,10 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
             }
         }
 
-        m_scene->stopInvalidating(false);
+        // restore signal
         m_scene->blockSignals(false);
-
-        // qDebug() << "readProblemFromA2D" << time.elapsed();
-
-        // default values
-        // emit m_scene->invalidated();
+        // invalidate scene (parameter update)
+        m_scene->invalidate();
     }
     catch (const xml_schema::expected_element& e)
     {
@@ -883,9 +880,6 @@ void ProblemBase::importProblemFromA2D(const QString &fileName)
 void ProblemBase::exportProblemToA2D(const QString &fileName)
 {
     double version = 3.1;
-
-    // QTime time;
-    // time.start();
 
     try
     {
@@ -1071,8 +1065,6 @@ void ProblemBase::exportProblemToA2D(const QString &fileName)
 
         std::ofstream out(compatibleFilename(fileName).toStdString().c_str());
         XMLProblem::document_(out, doc, namespace_info_map);
-
-        // qDebug() << "writeProblemToA2D" << time.elapsed();
     }
     catch (const xml_schema::exception& e)
     {
@@ -2122,8 +2114,8 @@ void Problem::readProblemFromArchive(const QString &fileName)
 
     JlCompress::extractDir(fileName, cacheProblemDir());
 
-    QTime time;
-    time.start();
+    // QTime time;
+    // time.start();
      // read solutions
     QDirIterator it(cacheProblemDir(), QDir::Dirs, QDirIterator::NoIteratorFlags);
     while (it.hasNext())
@@ -2163,7 +2155,7 @@ void Problem::readProblemFromArchive(const QString &fileName)
             }
         }
     }
-    qDebug() << "read solutions" << time.elapsed();
+    // qDebug() << "read solutions" << time.elapsed();
 
     // convert a2d
     QString problemA2D = QString("%1/problem.a2d").arg(cacheProblemDir());
@@ -2203,11 +2195,6 @@ void Problem::writeProblemToArchive(const QString &fileName, bool onlyProblemFil
         settings.setValue("General/LastProblemDir", fileInfo.absoluteFilePath());
         m_fileName = fileName;
     }
-
-    // temporary - speed check
-    // QFileInfo fileInfoProblem(QString("%1/problem").arg(cacheProblemDir()));
-    // exportProblemToA2D(fileInfoProblem.absoluteFilePath());
-    // QFile::remove(fileInfoProblem.absoluteFilePath() + ".a2d");
 
     writeProblemToJson();
 
