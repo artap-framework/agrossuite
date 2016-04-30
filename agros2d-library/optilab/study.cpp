@@ -61,7 +61,9 @@ void ComputationSet::load(QJsonObject &object)
     {
         QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
         QSharedPointer<Computation> computation = computations[computationSetArrayJson[i].toString()];
-        m_computations.append(computation);
+        // TODO: temporary fix (remove bad solution)
+        if (!computation.isNull())
+            m_computations.append(computation);
     }
 }
 
@@ -252,7 +254,7 @@ void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncert
 
             // TODO: better error handling
             if (!computation->isSolved())
-                throw AgrosException(tr("Problem was not solved."));
+                throw AgrosSolverException(tr("Problem was not solved."));
         }
         catch (AgrosException &e)
         {
@@ -272,7 +274,7 @@ void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncert
     QList<double> values;
     for (int i = 0; i < m_functionals.count(); i++)
     {
-        double value = computation->results()->resultValue(m_functionals[i].name());
+        double value = computation->results()->value(m_functionals[i].name());
         values.append(value);
     }
     double totalValue = evaluateSingleGoal(computation);
@@ -300,7 +302,7 @@ QList<double> Study::evaluateMultiGoal(QSharedPointer<Computation> computation)
     foreach (Functional functional, m_functionals)
     {
         QString name = functional.name();
-        double value = computation->results()->resultValue(name);
+        double value = computation->results()->value(name);
 
         values.append(((double) functional.weight() / totalWeight) * value);
     }
@@ -384,11 +386,11 @@ bool Study::dominateComputations(const Computation *l, const Computation *r)
     bool better = false;
     foreach (QString key, l->results()->items().keys())
     {
-        if (l->results()->resultType(key) == ComputationResultType_Functional)
+        if (l->results()->type(key) == ComputationResultType_Functional)
         {
-            if (l->results()->resultValue(key) > r->results()->resultValue(key))
+            if (l->results()->value(key) > r->results()->value(key))
                 return false;
-            else if (l->results()->resultValue(key) < r->results()->resultValue(key))
+            else if (l->results()->value(key) < r->results()->value(key))
                 better = true;
         }
     }
@@ -503,9 +505,9 @@ QSharedPointer<Computation> Study::findExtreme(ResultType type, const QString &k
 
             double val = NAN;
             if (type == ResultType_Parameter)
-                val = computation->config()->parameter(key);
+                val = computation->config()->parameters().value(key);
             else if (type == ResultType_Recipe || type == ResultType_Functional)
-                val = computation->results()->resultValue(key);
+                val = computation->results()->value(key);
             else
                 assert(0);
 

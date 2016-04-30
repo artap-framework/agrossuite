@@ -169,7 +169,7 @@ QString createPythonFromModel()
     str += QString("problem.mesh_type = \"%1\"\n").arg(meshTypeToStringKey(Agros2D::problem()->config()->meshType()));
 
     // parameters
-    StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
+    StringToDoubleMap parameters = Agros2D::problem()->config()->parameters().items();
     foreach (QString key, parameters.keys())
         str += QString("problem.parameters[\"%1\"] = %2\n").arg(key).arg(parameters[key]);
     if (parameters.count() > 0)

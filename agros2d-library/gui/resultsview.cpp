@@ -180,17 +180,17 @@ void ResultsView::showRecipe()
         foreach (QString key, results.keys())
         {
             QTreeWidgetItem *item = nullptr;
-            if (currentComputation()->results()->resultType(key) == ComputationResultType_Recipe)
+            if (currentComputation()->results()->type(key) == ComputationResultType_Recipe)
             {
                 item = new QTreeWidgetItem(recipeNode);
                 item->setText(1, key);
                 item->setText(2, QString::number(results[key]));
                 item->setData(0, Qt::UserRole, results[key]);
             }
-        }
-
-        trvWidget->setUpdatesEnabled(true);
+        }        
     }
+
+    trvWidget->setUpdatesEnabled(true);
 }
 
 void ResultsView::showPoint()

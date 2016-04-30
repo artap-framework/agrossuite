@@ -35,7 +35,7 @@ ParameterDialog::ParameterDialog(QWidget *parent)
 ParameterDialog::ParameterDialog(const QString &key, QWidget *parent)
     : QDialog(parent), m_key(key)
 {
-    StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
+    StringToDoubleMap parameters = Agros2D::problem()->config()->parameters().items();
     m_value = parameters[key];
 
     createControls();
@@ -97,7 +97,7 @@ bool ParameterDialog::save()
     // check parameter name
     try
     {
-        Agros2D::problem()->config()->checkVariableName(txtParameterName->text());
+        checkVariableName(txtParameterName->text());
     }
     catch (AgrosException &e)
     {
@@ -108,7 +108,7 @@ bool ParameterDialog::save()
         return false;
     }
 
-    StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
+    StringToDoubleMap parameters = Agros2D::problem()->config()->parameters().items();
     parameters[txtParameterName->text()] = txtParameterValue->value();
 
     // remove old parameter
@@ -126,7 +126,7 @@ bool ParameterDialog::save()
 
 bool ParameterDialog::remove()
 {
-    StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
+    StringToDoubleMap parameters = Agros2D::problem()->config()->parameters().items();
     parameters.remove(m_key);
 
     if (Agros2D::problem()->checkAndApplyParameters(parameters))
@@ -143,7 +143,7 @@ void ParameterDialog::parameterNameTextChanged(const QString &str)
     lblParametersError->setVisible(false);
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
 
-    StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
+    StringToDoubleMap parameters = Agros2D::problem()->config()->parameters().items();
 
     if (str.isEmpty())
     {
@@ -162,7 +162,7 @@ void ParameterDialog::parameterNameTextChanged(const QString &str)
 
     try
     {
-        Agros2D::problem()->config()->checkVariableName(str);
+        checkVariableName(str);
     }
     catch (AgrosException &e)
     {

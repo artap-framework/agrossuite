@@ -104,7 +104,7 @@ public:
         for (int i = 0; i < m_study->parameters().count(); i++)
         {
             Parameter parameter = m_study->parameters()[i];
-            computation->config()->setParameter(parameter.name(), x[i]);
+            computation->config()->parameters().set(parameter.name(), x[i]);
             computation->scene()->cacheGeometryConstraints();
 
             // training patterns
@@ -129,8 +129,6 @@ public:
                 // surrogate function
                 if (sigma < 1e-4)
                 {
-
-
                     // weight functionals
                     int totalWeight = 0;
                     foreach (Functional functional, m_study->functionals())
@@ -172,12 +170,22 @@ public:
                 if (m_study->value(Study::General_ClearSolution).toBool())
                     computation->clearSolution();
 
-                m_study->addComputation(computation);
+                // penalty
+                double totalPenalty = 0.0;
+                for (int i = 0; i < m_study->parameters().count(); i++)
+                {
+                    Parameter parameter = m_study->parameters()[i];
+                    if (parameter.penaltyEnabled())
+                        totalPenalty += parameter.penalty(x[i]);
+                }
 
                 // set objective functions
                 countComputation++;
                 for (int i = 0; i < values.count(); i++)
-                    f[i] = values[i];
+                    f[i] = values[i] + totalPenalty;
+
+                // add computation
+                m_study->addComputation(computation);
 
                 if (m_study->value(Study::NSGA3_use_surrogate).toBool())
                 {
@@ -199,7 +207,7 @@ public:
 
                     // refresh model
                     if (m_observations.size() % relearn == 0)
-                        gp.compute(m_samples, m_observations, 1e-10);
+                        gp.compute(m_samples, m_observations, 1e-10);                                         
                 }
             }
 
@@ -213,7 +221,7 @@ public:
 
             return true;
         }
-        catch (AgrosException &e)
+        catch (AgrosSolverException &e)
         {
             qDebug() << e.toString();
 

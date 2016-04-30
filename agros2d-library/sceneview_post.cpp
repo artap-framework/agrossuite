@@ -256,7 +256,7 @@ void PostDeal::processRangeScalar()
         std::shared_ptr<PostDataOut> data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
                                                                                                   m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString()),
                                                                  (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt());
-        data_out->compute_nodes(m_scalarValues, (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformContour).toBool()));
+        data_out->compute_nodes(m_scalarValues, (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformScalar).toBool()));
 
         if (m_computation->setting()->value(PostprocessorSetting::ScalarRangeAuto).toBool())
         {
@@ -363,7 +363,7 @@ std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable ph
     data_out->attach_dof_handler(ma.doFHandler());
     data_out->add_data_vector(ma.solution(), *post);
     // deform shape
-    if (m_activeViewField->hasDeformableShape())
+    if (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformScalar).toBool())
     {
         std::vector<std::string> solution_names;
         solution_names.push_back ("x_displacement");

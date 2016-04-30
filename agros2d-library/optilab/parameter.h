@@ -25,7 +25,8 @@
 class Parameter
 {
 public:
-    Parameter(const QString &name = "", double lowerBound = 0.0, double upperBound = 1.0);
+    Parameter(const QString &name = "", double lowerBound = 0.0, double upperBound = 1.0,
+              bool penaltyEnabled = false, double scale = 0.0, double mu = NAN, double sigma = NAN);
     ~Parameter();
 
     void load(QJsonObject &object);
@@ -34,33 +35,32 @@ public:
 
     inline QString name() const { return m_name; }
     inline double lowerBound() const { return m_lowerBound; }
-    void setLowerBound(double lowerBound);
+    inline void setLowerBound(double lowerBound) { m_lowerBound = lowerBound; }
     inline double upperBound() const { return m_upperBound; }
-    void setUpperBound(double upperBound);
+    inline void setUpperBound(double upperBound) { m_upperBound = upperBound; }
 
-    /*
-    inline QList<double> values() { return m_values; }
-    void addValue(double value);
+    // penalty
+    inline double penaltyEnabled() const { return m_penaltyEnabled; }
+    inline void setPenaltyEnabled(bool enable) { m_penaltyEnabled = enable; }
+    inline double scale() const { return m_scale; }
+    inline void setScale(double scale) { m_scale = scale; }
+    inline double mu() const { return m_mu; }
+    inline void setMu(double mu) { m_mu = mu; }
+    inline double sigma() const { return m_sigma; }
+    inline void setSigma(double sigma) { m_sigma = sigma; }
 
-    inline double randomValue() { return m_lowerBound + (double) qrand() / RAND_MAX * (m_upperBound - m_lowerBound); }
-    double randomValue(double mean, double deviation);
-    */
-    // static factories
-    /*
-    static Parameter fromValue(const QString &name, double value);
-    static Parameter fromList(const QString &name, QList<double> values);
-
-    static Parameter fromLinspace(const QString &name, int count, double lowerBound, double upperBound);
-    static Parameter fromRandom(const QString &name, int count, double lowerBound, double upperBound);
-    static Parameter fromRandom(const QString &name, int count, double lowerBound, double upperBound, double mean, double deviation);
-    */
+    double penalty(double value);
 
 protected:
     QString m_name;
     double m_lowerBound;
     double m_upperBound;
 
-    QList<double> m_values;
+    // penalty
+    bool m_penaltyEnabled;
+    double m_scale;
+    double m_mu;
+    double m_sigma;
 };
 
 class ParameterSpace

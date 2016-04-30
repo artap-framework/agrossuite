@@ -31,12 +31,77 @@ class ProblemBase;
 
 namespace XMLProblem
 {
-    class config;
-    class problem_config;
+class config;
+class problem_config;
 }
 
 typedef QMap<QString, double> StringToDoubleMap;
 Q_DECLARE_METATYPE(StringToDoubleMap)
+
+// check variable name
+void checkVariableName(const QString &key);
+
+enum FunctionType
+{
+    FunctionType_Analytic,
+    FunctionType_Interpolation
+};
+
+class ProblemFunction
+{
+public:
+    ProblemFunction(const QString &name) : m_name(name) {}
+    virtual ~ProblemFunction() {}
+
+    virtual FunctionType type() const = 0;
+
+    inline QString name() const { return m_name; }
+    inline void setName(const QString &name) { m_name = name; }
+
+protected:
+    QString m_name;
+};
+
+class ProblemFunctions
+{
+public:
+    ProblemFunctions(QList<ProblemFunction *> items = QList<ProblemFunction *>());
+    virtual ~ProblemFunctions();
+
+    void clear();
+
+    void add(ProblemFunction *function);
+    void remove(ProblemFunction *function);
+    ProblemFunction *function(const QString &name);
+
+    QList<ProblemFunction *> items() const { return m_functions; }
+
+protected:
+    QList<ProblemFunction *> m_functions;
+};
+
+class ProblemParameters
+{
+public:
+    ProblemParameters(StringToDoubleMap parameters = StringToDoubleMap());
+    virtual ~ProblemParameters();
+
+    void clear();
+
+    // parameters
+    void set(const QString &key, double val);
+    void set(const StringToDoubleMap &params);
+    double value(const QString &key) const;
+
+    // symbol table
+    exprtk::symbol_table<double> &symbolTable() { return m_parametersSymbolTable; }
+
+    StringToDoubleMap items() const { return m_parameters; }
+
+protected:
+    StringToDoubleMap m_parameters;
+    exprtk::symbol_table<double> m_parametersSymbolTable;
+};
 
 class ProblemConfig : public QObject
 {
@@ -53,7 +118,6 @@ public:
         TimeOrder,
         TimeConstantTimeSteps,
         TimeTotal,
-        Parameters,
         Coordinate,
         Mesh,
         // general
@@ -99,12 +163,12 @@ public:
     inline QVariant defaultValue(Type type) {  return m_configDefault[type]; }
 
     // parameters
-    void setParameter(const QString &key, double val);
-    void setParameters(const StringToDoubleMap &params);
-    double parameter(const QString &key) const;
-    StringToDoubleMap parameters() const;
-    exprtk::symbol_table<double> &parametersSymbolTable() { return m_parametersSymbolTable; }
-    void checkVariableName(const QString &key);
+    inline ProblemParameters parameters() const { return m_parameters; }
+    inline ProblemParameters &parameters() { return m_parameters; }
+
+    // functions
+    inline ProblemFunctions functions() const { return m_functions; }
+    inline ProblemFunctions &functions() { return m_functions; }
 
     inline double constantTimeStepLength() { return value(ProblemConfig::TimeTotal).toDouble() / value(ProblemConfig::TimeConstantTimeSteps).toInt(); }
     double initialTimeStepLength();
@@ -124,7 +188,11 @@ private:
 
     ProblemBase *m_problem;
 
-    exprtk::symbol_table<double> m_parametersSymbolTable;
+    // parameters
+    ProblemParameters m_parameters;
+
+    // functions
+    ProblemFunctions m_functions;
 };
 
 class PostprocessorSetting : public QObject

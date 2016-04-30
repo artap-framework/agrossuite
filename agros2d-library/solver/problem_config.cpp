@@ -39,6 +39,128 @@
 
 #include "../resources_source/classes/problem_a2d_31_xml.h"
 
+const QString PARAMETERS = "Parameters";
+const QString FUNCTIONS = "Functions";
+
+void checkVariableName(const QString &key)
+{
+    // time, x, y, r, z, value
+    if (key == "time" || key == "value" || key == "x" || key == "y" || key == "r" || key == "z")
+        throw AgrosException(QObject::tr("Variable is reserved keyword: %1.").arg(key));
+
+    // variable name
+    QRegExp expr("(^[a-zA-Z][a-zA-Z0-9_]*)|(^[_][a-zA-Z0-9_]+)");
+    if (!expr.exactMatch(key))
+    {
+        throw AgrosException(QObject::tr("Invalid variable name: %1.").arg(key));
+    }
+}
+
+ProblemParameters::ProblemParameters(StringToDoubleMap parameters)
+{
+    set(parameters);
+}
+
+ProblemParameters::~ProblemParameters()
+{
+    clear();
+}
+
+void ProblemParameters::clear()
+{
+    m_parametersSymbolTable.clear();
+    m_parameters.clear();
+}
+
+void ProblemParameters::set(const QString &key, double val)
+{
+    try
+    {
+        // existing key with same value
+        if (m_parameters.keys().contains(key) && fabs(m_parameters.value(key) - val) < EPS_ZERO)
+            return;
+
+        checkVariableName(key);
+        m_parameters.insert(key, val);
+
+        // create new table - invalidate
+        m_parametersSymbolTable = exprtk::symbol_table<double>();
+        m_parametersSymbolTable.add_constants();
+
+        foreach (QString k, m_parameters.keys())
+        {
+            if (k == key)
+                m_parametersSymbolTable.add_constant(key.toStdString(), val);
+            else
+                m_parametersSymbolTable.add_constant(k.toStdString(), m_parameters[k]);
+        }
+    }
+    catch (AgrosException &e)
+    {
+        // raise exception
+        throw e.toString();
+    }
+}
+
+void ProblemParameters::set(const StringToDoubleMap &params)
+{
+    m_parameters = params;
+
+    // create new table
+    m_parametersSymbolTable = exprtk::symbol_table<double>();
+    m_parametersSymbolTable.add_constants();
+
+    foreach (QString key, params.keys())
+        m_parametersSymbolTable.add_constant(key.toStdString(), params[key]);
+}
+
+double ProblemParameters::value(const QString &key) const
+{
+    assert(m_parameters.contains(key));
+    return m_parameters[key];
+}
+
+// *************************************************************************************************
+
+ProblemFunctions::ProblemFunctions(QList<ProblemFunction *> items) : m_functions(items)
+{
+
+}
+
+ProblemFunctions::~ProblemFunctions()
+{
+    clear();
+}
+
+void ProblemFunctions::clear()
+{
+    foreach (ProblemFunction *function, m_functions)
+        delete function;
+    m_functions.clear();
+}
+
+void ProblemFunctions::add(ProblemFunction *function)
+{
+    m_functions.append(function);
+}
+
+void ProblemFunctions::remove(ProblemFunction *function)
+{
+    m_functions.removeAll(function);
+}
+
+ProblemFunction *ProblemFunctions::function(const QString &name)
+{
+    foreach (ProblemFunction *function, m_functions)
+        if (function->name() == name)
+            return function;
+
+    return nullptr;
+}
+
+
+// *************************************************************************************************
+
 ProblemConfig::ProblemConfig(ProblemBase *parentProblem) : QObject(), m_problem(parentProblem)
 {
     qRegisterMetaType<StringToDoubleMap>("ParametersType");
@@ -50,20 +172,21 @@ ProblemConfig::ProblemConfig(ProblemBase *parentProblem) : QObject(), m_problem(
 
 ProblemConfig::~ProblemConfig()
 {
-    // parameters
-    m_parametersSymbolTable.clear();
+    m_parameters.clear();
+    m_functions.clear();
 }
 
 void ProblemConfig::copy(const ProblemConfig *origin)
 {
-    // parameters
-    m_parametersSymbolTable.clear();
-
     // copy settings
     m_config = origin->m_config;
 
-    // set parameters
-    setParameters(origin->m_config[ProblemConfig::Parameters].value<StringToDoubleMap>());
+    // parameters
+    m_parameters.clear();
+    m_parameters.set(origin->parameters().items());
+
+    // functions
+    m_functions.clear();
 
     // value Problem
     foreach (Type key, m_configDefault.keys())
@@ -74,14 +197,17 @@ void ProblemConfig::copy(const ProblemConfig *origin)
 void ProblemConfig::clear()
 {
     // parameters
-    m_parametersSymbolTable.clear();
+    m_parameters.clear();
+
+    // functions
+    m_functions.clear();
 
     // set default values and types
     setDefaultValues();
     m_config = m_configDefault;
 
     // set parameters
-    setParameters(m_config[ProblemConfig::Parameters].value<StringToDoubleMap>());
+    m_parameters.set(m_parameters.items());
 }
 
 double ProblemConfig::initialTimeStepLength()
@@ -118,20 +244,6 @@ void ProblemConfig::load(XMLProblem::problem_config *configxsd)
                     m_config[key] = QVariant::fromValue(meshTypeFromStringKey(QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
                 else if (m_configDefault[key].userType() == qMetaTypeId<Value>())
                     m_config[key] = QVariant::fromValue(Value(m_problem, QString::fromStdString(configxsd->problem_item().at(i).problem_value())));
-                else if (m_configDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
-                {
-                    QString str = QString::fromStdString(configxsd->problem_item().at(i).problem_value());
-                    QStringList strKeysAndValues = str.split(":");
-                    QStringList strKeys = (strKeysAndValues[0].size() > 0) ? strKeysAndValues[0].split("|") : QStringList();
-                    QStringList strValues = (strKeysAndValues[1].size() > 0) ? strKeysAndValues[1].split("|") : QStringList();
-                    assert(strKeys.count() == strValues.count());
-
-                    StringToDoubleMap parameters;
-                    for (int i = 0; i < strKeys.count(); i++)
-                        parameters[strKeys[i]] = strValues[i].toDouble();
-
-                    m_config[key] = QVariant::fromValue(parameters);
-                }
                 else
                     qDebug() << "Key not found (XML)" << QString::fromStdString(configxsd->problem_item().at(i).problem_key()) << QString::fromStdString(configxsd->problem_item().at(i).problem_value());
             }
@@ -161,23 +273,6 @@ void ProblemConfig::save(XMLProblem::problem_config *configxsd)
                 configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), meshTypeToStringKey(m_config[key].value<MeshType>()).toStdString()));
             else if (m_configDefault[key].userType() == qMetaTypeId<Value>())
                 configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), m_config[key].value<Value>().toString().toStdString()));
-            else if (m_configDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
-            {
-                assert(m_config[key].value<StringToDoubleMap>().keys().count() == m_config[key].value<StringToDoubleMap>().values().count());
-
-                QString outKeys;
-                QString outValues;
-                int cnt = m_config[key].value<StringToDoubleMap>().keys().count();
-                QList<QString> keys = m_config[key].value<StringToDoubleMap>().keys();
-                QList<double> values = m_config[key].value<StringToDoubleMap>().values();
-                for (int i = 0; i < cnt; i++)
-                {
-                    outKeys += keys[i] + ((i < cnt - 1) ? "|" : "");
-                    outValues += QString::number(values[i]) + ((i < cnt - 1) ? "|" : "");
-                }
-
-                configxsd->problem_item().push_back(XMLProblem::problem_item(typeToStringKey(key).toStdString(), QString("%1:%2").arg(outKeys).arg(outValues).toStdString()));
-            }
             else
                 assert(0);
         }
@@ -212,22 +307,24 @@ void ProblemConfig::load(QJsonObject &object)
                 m_config[key] = QVariant::fromValue(meshTypeFromStringKey(object[typeToStringKey(key)].toString()));
             else if (m_configDefault[key].userType() == qMetaTypeId<Value>())
                 m_config[key] = QVariant::fromValue(Value(m_problem, object[typeToStringKey(key)].toString()));
-            else if (m_configDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
-            {
-                QString str = object[typeToStringKey(key)].toString();
-                QStringList strKeysAndValues = str.split(":");
-                QStringList strKeys = (strKeysAndValues[0].size() > 0) ? strKeysAndValues[0].split("|") : QStringList();
-                QStringList strValues = (strKeysAndValues[1].size() > 0) ? strKeysAndValues[1].split("|") : QStringList();
-                assert(strKeys.count() == strValues.count());
-
-                StringToDoubleMap parameters;
-                for (int i = 0; i < strKeys.count(); i++)
-                    parameters[strKeys[i]] = strValues[i].toDouble();
-                setParameters(parameters);
-            }
             else
                 assert(0);
         }
+    }
+
+    // parameters
+    if (object.contains(PARAMETERS))
+    {
+        QString str = object[PARAMETERS].toString();
+        QStringList strKeysAndValues = str.split(":");
+        QStringList strKeys = (strKeysAndValues[0].size() > 0) ? strKeysAndValues[0].split("|") : QStringList();
+        QStringList strValues = (strKeysAndValues[1].size() > 0) ? strKeysAndValues[1].split("|") : QStringList();
+        assert(strKeys.count() == strValues.count());
+
+        StringToDoubleMap parameters;
+        for (int i = 0; i < strKeys.count(); i++)
+            parameters[strKeys[i]] = strValues[i].toDouble();
+        m_parameters.set(parameters);
     }
 }
 
@@ -253,27 +350,27 @@ void ProblemConfig::save(QJsonObject &object)
                 object[typeToStringKey(key)] = coordinateTypeToStringKey(m_config[key].value<CoordinateType>());
             else if (m_configDefault[key].userType() == qMetaTypeId<Value>())
                 object[typeToStringKey(key)] = m_config[key].value<Value>().toString();
-            else if (m_configDefault[key].userType() == qMetaTypeId<StringToDoubleMap>())
-            {
-                assert(m_config[key].value<StringToDoubleMap>().keys().count() == m_config[key].value<StringToDoubleMap>().values().count());
-
-                QString outKeys;
-                QString outValues;
-                int cnt = m_config[key].value<StringToDoubleMap>().keys().count();
-                QList<QString> keys = m_config[key].value<StringToDoubleMap>().keys();
-                QList<double> values = m_config[key].value<StringToDoubleMap>().values();
-                for (int i = 0; i < cnt; i++)
-                {
-                    outKeys += keys[i] + ((i < cnt - 1) ? "|" : "");
-                    outValues += QString::number(values[i]) + ((i < cnt - 1) ? "|" : "");
-                }
-
-                object[typeToStringKey(key)] = QString("%1:%2").arg(outKeys).arg(outValues);
-            }
             else
                 assert(0);
         }
     }
+
+    // parameters
+    QString outKeys;
+    QString outValues;
+    int cnt = m_parameters.items().count();
+    QList<QString> keys = m_parameters.items().keys();
+    QList<double> values = m_parameters.items().values();
+    for (int i = 0; i < cnt; i++)
+    {
+        outKeys += keys[i] + ((i < cnt - 1) ? "|" : "");
+        outValues += QString::number(values[i]) + ((i < cnt - 1) ? "|" : "");
+    }
+
+    object[PARAMETERS] = QString("%1:%2").arg(outKeys).arg(outValues);
+
+    // functions
+    // object[FUNCTIONS] = "";
 }
 
 void ProblemConfig::setStringKeys()
@@ -285,7 +382,6 @@ void ProblemConfig::setStringKeys()
     m_configKey[TimeOrder] = "TimeOrder";
     m_configKey[TimeConstantTimeSteps] = "TimeSteps";
     m_configKey[TimeTotal] = "TimeTotal";
-    m_configKey[Parameters] = "Parameters";
     m_configKey[Coordinate] = "Coordinate";
     m_configKey[Mesh] = "Mesh";
 
@@ -304,82 +400,11 @@ void ProblemConfig::setDefaultValues()
     m_configDefault[TimeOrder] = 2;
     m_configDefault[TimeConstantTimeSteps] = 10;
     m_configDefault[TimeTotal] = 10.0;
-    m_configDefault[Parameters] = QVariant::fromValue(StringToDoubleMap());
     m_configDefault[Coordinate] = QVariant::fromValue(CoordinateType_Planar);
     m_configDefault[Mesh] = QVariant::fromValue(MeshType_Triangle);
 
     m_configDefault[GridStep] = 0.05;
     m_configDefault[SnapToGrid] = true;
-}
-
-// parameters
-void ProblemConfig::setParameter(const QString &key, double val)
-{
-    try
-    {
-        StringToDoubleMap *params = static_cast<StringToDoubleMap *>(m_config[ProblemConfig::Parameters].data());
-
-        // existing key with same value
-        if (params->keys().contains(key) && fabs(params->value(key) - val) < EPS_ZERO)
-            return;
-
-        checkVariableName(key);
-        params->insert(key, val);
-
-        // create new table - invalidate
-        m_parametersSymbolTable = exprtk::symbol_table<double>();
-        m_parametersSymbolTable.add_constants();
-
-        foreach (QString k, params->keys())
-        {
-            if (k == key)
-                m_parametersSymbolTable.add_constant(key.toStdString(), val);
-            else
-                m_parametersSymbolTable.add_constant(k.toStdString(), (*params)[k]);
-        }
-    }
-    catch (AgrosException &e)
-    {
-        // raise exception
-        throw e.toString();
-    }
-}
-
-void ProblemConfig::setParameters(const StringToDoubleMap &params)
-{    
-    m_config[ProblemConfig::Parameters] = QVariant::fromValue(params);
-
-    // create new table
-    m_parametersSymbolTable = exprtk::symbol_table<double>();
-    m_parametersSymbolTable.add_constants();
-
-    foreach (QString key, params.keys())
-        m_parametersSymbolTable.add_constant(key.toStdString(), params[key]);
-}
-
-StringToDoubleMap ProblemConfig::parameters() const
-{
-    return m_config[ProblemConfig::Parameters].value<StringToDoubleMap>();
-}
-
-double ProblemConfig::parameter(const QString &key) const
-{
-    assert(m_config[ProblemConfig::Parameters].value<StringToDoubleMap>().contains(key));
-    return m_config[ProblemConfig::Parameters].value<StringToDoubleMap>()[key];
-}
-
-void ProblemConfig::checkVariableName(const QString &key)
-{
-    // time, x, y, r, z
-    if (key == "time" || key == "x" || key == "y" || key == "r" || key == "z")
-        throw AgrosException(tr("Variable is keyword: %1.").arg(key));
-
-    // variable name
-    QRegExp expr("(^[a-zA-Z][a-zA-Z0-9_]*)|(^[_][a-zA-Z0-9_]+)");
-    if (!expr.exactMatch(key))
-    {
-        throw AgrosException(tr("Invalid variable name: %1.").arg(key));
-    }
 }
 
 // ********************************************************************************************

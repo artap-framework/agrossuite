@@ -62,7 +62,8 @@ private:
     enum Type
     {
         Undefined = 0,
-        GeometryParameter,
+        ModelParameter,
+        ModelFunction,
         GeometryNode,
         GeometryEdge,
         GeometryLabel,

@@ -192,8 +192,17 @@ private:
     QDialogButtonBox *buttonBox;
     QLabel *lblError;
     QLabel *lblName;
+
     LineEditDouble *txtUpperBound;
     LineEditDouble *txtLowerBound;
+
+    // penalty
+    QCheckBox *chkPenaltyEnabled;
+    LineEditDouble *txtScale;
+    LineEditDouble *txtMu;
+    LineEditDouble *txtSigma;
+    QCustomPlot *m_chart;
+    QCPGraph *m_penaltyChart;
 
     void createControls();
 

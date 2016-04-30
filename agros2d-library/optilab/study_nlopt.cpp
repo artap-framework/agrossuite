@@ -41,7 +41,9 @@ class NLoptProblem
 public:
     NLoptProblem(StudyNLopt *study) :  m_study(study),
         opt((nlopt::algorithm) study->algorithmFromStringKey(study->value(Study::NLopt_algorithm).toString()), study->parameters().count())
-    {        
+        // m_penaltyLambda(1.0)
+    {
+
     }
 
     double objectiveFunction(const std::vector<double> &x, std::vector<double> &grad, void *data)
@@ -52,17 +54,14 @@ public:
             return numeric_limits<double>::max();
         }
 
-        // qDebug() << "opt.get_population()" << opt.get_population();
-
         // computation
         QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
-        m_study->addComputation(computation);
 
         // set parameters
         for (int i = 0; i < m_study->parameters().count(); i++)
         {
             Parameter parameter = m_study->parameters()[i];
-            computation->config()->setParameter(parameter.name(), x[i]);
+            computation->config()->parameters().set(parameter.name(), x[i]);
         }
 
         // evaluate step
@@ -71,12 +70,26 @@ public:
             m_study->evaluateStep(computation);
             double value = m_study->evaluateSingleGoal(computation);
 
+            // penalty
+            double totalPenalty = 0.0;
+            for (int i = 0; i < m_study->parameters().count(); i++)
+            {
+                Parameter parameter = m_study->parameters()[i];
+                if (parameter.penaltyEnabled())
+                    totalPenalty += parameter.penalty(x[i]);
+            }
+
             if (m_study->value(Study::General_ClearSolution).toBool())
                 computation->clearSolution();
 
-            return value;
+            // m_penaltyLambda *= 0.5;
+
+            // add computation
+            m_study->addComputation(computation);
+
+            return value + totalPenalty;
         }
-        catch (AgrosException &e)
+        catch (AgrosSolverException &e)
         {
             qDebug() << e.toString();
 
@@ -89,6 +102,7 @@ public:
 
 private:
     StudyNLopt *m_study;
+    // double m_penaltyLambda;
 };
 
 double objFunctionWrapper(const std::vector<double> &x, std::vector<double> &grad, void *data)

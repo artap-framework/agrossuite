@@ -292,7 +292,7 @@ bool ValueLineEdit::checkCondition(double value)
     condition.replace(QString("value"), QString::number(value));
 
     // symbol table
-    exprtk::symbol_table<double> parametersSymbolTable = m_problem->config()->parametersSymbolTable();
+    exprtk::symbol_table<double> parametersSymbolTable = m_problem->config()->parameters().symbolTable();
     parametersSymbolTable.add_constant("time", 0.0);
 
     exprtk::expression<double> expr;

@@ -333,7 +333,7 @@ ResultRecipe *ResultRecipes::recipe(const QString &name)
 void ResultRecipes::evaluate(Computation *computation)
 {
     foreach (ResultRecipe *recipe, m_recipes)
-        computation->results()->setResult(recipe->name(), recipe->evaluate(computation), ComputationResultType_Recipe);
+        computation->results()->set(recipe->name(), recipe->evaluate(computation), ComputationResultType_Recipe);
 }
 
 // *****************************************************************************************************************

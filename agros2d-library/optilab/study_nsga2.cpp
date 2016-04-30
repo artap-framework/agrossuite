@@ -48,13 +48,12 @@ void objectiveFunction(double *xreal, double *xbin, int **gene, double *obj, dou
 
     // computation
     QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
-    localStudy->addComputation(computation);
 
     // set parameters
     for (int i = 0; i < localStudy->parameters().count(); i++)
     {
         Parameter parameter = localStudy->parameters()[i];
-        computation->config()->setParameter(parameter.name(), xreal[i]);
+        computation->config()->parameters().set(parameter.name(), xreal[i]);
     }
 
     // evaluate step
@@ -69,8 +68,11 @@ void objectiveFunction(double *xreal, double *xbin, int **gene, double *obj, dou
 
         for (int i = 0; i < values.count(); i++)
             obj[i] = values[i];
+
+        // add computation
+        localStudy->addComputation(computation);
     }
-    catch (AgrosException &e)
+    catch (AgrosSolverException &e)
     {
         qDebug() << e.toString();
 

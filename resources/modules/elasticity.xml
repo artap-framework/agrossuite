@@ -267,6 +267,12 @@
       <module:surfaceintegral id="elasticity_surface" name="Surface" shortname="S" shortname_html="&lt;i>S&lt;/i>" shortname_latex="S" unit="m2" unit_html="m&lt;sup>2&lt;/sup>" unit_latex="m^{2}">
         <module:expression analysistype="steadystate" axi="2.0 * PI * r" planar="1.0"/>
       </module:surfaceintegral>
+      <module:surfaceintegral id="elasticity_displacement_x" name="Displacement - x" shortname="dx" shortname_html="&lt;i>d&lt;/i>&lt;sub>x&lt;/sub>" shortname_latex="dx" unit="m.m2" unit_html="m.m&lt;sup>2&lt;/sup>" unit_latex="m \cdot m^{2}">
+        <module:expression analysistype="steadystate" axi="2.0 * PI * r * value1" planar="value1"/>
+      </module:surfaceintegral>
+      <module:surfaceintegral id="elasticity_displacement_y" name="Displacement - y" shortname="dy" shortname_html="&lt;i>d&lt;/i>&lt;sub>y&lt;/sub>" shortname_latex="dx" unit="m.m2" unit_html="m.m&lt;sup>2&lt;/sup>" unit_latex="m \cdot m^{2}">
+        <module:expression analysistype="steadystate" axi="2.0 * PI * r * value2" planar="value2"/>
+      </module:surfaceintegral>
     </module:surfaceintegrals>
     <module:force/>
   </module:postprocessor>

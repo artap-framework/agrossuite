@@ -153,7 +153,7 @@ bool RecipeDialog::checkRecipe(const QString &str)
 {
     try
     {
-        Agros2D::problem()->config()->checkVariableName(str);
+        checkVariableName(str);
     }
     catch (AgrosException &e)
     {

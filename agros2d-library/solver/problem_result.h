@@ -142,7 +142,7 @@ class ResultRecipes
 {
 public:
     ResultRecipes(QList<ResultRecipe *> items = QList<ResultRecipe *>());
-    ~ResultRecipes();
+    virtual ~ResultRecipes();
 
     void clear();
 
@@ -163,7 +163,7 @@ class ComputationResults
 public:
     ComputationResults(StringToDoubleMap items = StringToDoubleMap(),
                        QMap<QString, ComputationResultType> types = QMap<QString, ComputationResultType>());
-    ~ComputationResults();
+    virtual ~ComputationResults();
 
     void clear();
 
@@ -173,11 +173,11 @@ public:
     // results
     inline StringToDoubleMap &items() { return m_results; }
     inline QMap<QString, ComputationResultType> &types() { return m_types; }
-    inline double resultValue(const QString &key) const { return m_results[key]; }
-    inline ComputationResultType resultType(const QString &key) const { return m_types[key]; }
+    inline double value(const QString &key) const { return m_results[key]; }
+    inline ComputationResultType type(const QString &key) const { return m_types[key]; }
     inline bool hasResults() const { return !m_results.isEmpty(); }
-    inline void setResult(const QString &key, double value, ComputationResultType type) { m_results[key] = value; m_types[key] = type; }
-    inline void removeResult(const QString &key) { m_results.remove(key); m_types.remove(key); }
+    inline void set(const QString &key, double value, ComputationResultType type) { m_results[key] = value; m_types[key] = type; }
+    inline void remove(const QString &key) { m_results.remove(key); m_types.remove(key); }
 
 private:
     StringToDoubleMap m_results;

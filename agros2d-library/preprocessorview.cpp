@@ -272,7 +272,8 @@ void PreprocessorWidget::refresh()
     problemPropertiesNode->setData(1, Qt::UserRole, PreprocessorWidget::ProblemProperties);
     problemProperties(problemPropertiesNode);
 
-    StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
+    // parameters
+    StringToDoubleMap parameters = Agros2D::problem()->config()->parameters().items();
     if (parameters.count() > 0)
     {
         QTreeWidgetItem *parametersNode = new QTreeWidgetItem(problemNode);
@@ -287,7 +288,27 @@ void PreprocessorWidget::refresh()
             item->setText(0, key);
             item->setText(1, QString::number(parameters[key]));
             item->setData(0, Qt::UserRole, key);
-            item->setData(1, Qt::UserRole, PreprocessorWidget::GeometryParameter);
+            item->setData(1, Qt::UserRole, PreprocessorWidget::ModelParameter);
+        }
+    }
+
+    // functions
+    ProblemFunctions functions = Agros2D::problem()->config()->functions();
+    if (functions.items().count() > 0)
+    {
+        QTreeWidgetItem *functionNode = new QTreeWidgetItem(problemNode);
+        functionNode->setText(0, tr("Functions"));
+        functionNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
+        functionNode->setFont(0, fnt);
+        functionNode->setExpanded(true);
+
+        foreach (ProblemFunction *function, functions.items())
+        {
+            QTreeWidgetItem *item = new QTreeWidgetItem(functionNode);
+            item->setText(0, function->name());
+            // item->setText(1, QString::number(parameters[key]));
+            item->setData(0, Qt::UserRole, function->name());
+            item->setData(1, Qt::UserRole, PreprocessorWidget::ModelFunction);
         }
     }
 
@@ -686,7 +707,7 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
 
             m_sceneViewPreprocessor->refresh();
         }
-        else if (type == PreprocessorWidget::GeometryParameter)
+        else if (type == PreprocessorWidget::ModelParameter)
         {
             // geometry
             actProperties->setEnabled(true);
@@ -770,7 +791,7 @@ void PreprocessorWidget::doProperties()
                 refresh();
             }
         }
-        else if (type == PreprocessorWidget::GeometryParameter)
+        else if (type == PreprocessorWidget::ModelParameter)
         {
             // parameter
             QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
@@ -905,14 +926,19 @@ void PreprocessorWidget::doDelete()
             SceneBoundary *objectBoundary = trvWidget->currentItem()->data(0, Qt::UserRole).value<SceneBoundary *>();
             Agros2D::problem()->scene()->removeBoundary(objectBoundary);
         }
-        else if (type == PreprocessorWidget::GeometryParameter)
+        else if (type == PreprocessorWidget::ModelParameter)
         {
             // parameter
             QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
-            StringToDoubleMap parameters = Agros2D::problem()->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
+            StringToDoubleMap parameters = Agros2D::problem()->config()->parameters().items();
             parameters.remove(key);
 
             Agros2D::problem()->checkAndApplyParameters(parameters);
+        }
+        else if (type == PreprocessorWidget::ModelFunction)
+        {
+            // function
+            QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
         }
         else if (type == PreprocessorWidget::FieldProperties)
         {

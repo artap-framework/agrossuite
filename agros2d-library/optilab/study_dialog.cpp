@@ -32,6 +32,9 @@
 
 #include "qcustomplot/qcustomplot.h"
 
+#include <boost/random/normal_distribution.hpp>
+#include <boost/math/distributions/normal.hpp>
+
 double logVal(double val)
 {
     return (val > 0) ? log10(fabs(val)) : -log10(fabs(val));
@@ -330,7 +333,7 @@ void LogOptimizationDialog::updateParameters(QList<Parameter> parameters, const 
     QString params = "";
     foreach (Parameter parameter, parameters)
     {
-        params += QString("%1 = %2, ").arg(parameter.name()).arg(computation->config()->parameter(parameter.name()));
+        params += QString("%1 = %2, ").arg(parameter.name()).arg(computation->config()->parameters().value(parameter.name()));
     }
     if (params.size() > 0)
         params = params.left(params.size() - 2);
@@ -338,7 +341,7 @@ void LogOptimizationDialog::updateParameters(QList<Parameter> parameters, const 
     QString res = "";
     foreach (QString name, computation->results()->items().keys())
     {
-        res += QString("%1 = %2, ").arg(name).arg(computation->results()->resultValue(name));
+        res += QString("%1 = %2, ").arg(name).arg(computation->results()->value(name));
     }
     if (res.size() > 0)
         res = res.left(res.size() - 2);
@@ -535,8 +538,8 @@ QWidget *StudyDialog::createParameters()
     trvParameterWidget = new QTreeWidget(this);
     trvParameterWidget->setExpandsOnDoubleClick(false);
     trvParameterWidget->setHeaderHidden(false);
-    trvParameterWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Lower bound") << tr("Upper bound"));
-    trvParameterWidget->setColumnCount(3);
+    trvParameterWidget->setHeaderLabels(QStringList() << tr("Name") << tr("Lower bound") << tr("Upper bound") << tr("Penalty"));
+    trvParameterWidget->setColumnCount(4);
     trvParameterWidget->setIndentation(2);
     trvParameterWidget->setColumnWidth(0, 200);
     trvParameterWidget->headerItem()->setTextAlignment(1, Qt::AlignRight);
@@ -581,11 +584,12 @@ void StudyDialog::readParameters()
         item->setData(0, Qt::UserRole, parameter.name());
         item->setText(1, QString("%1").arg(parameter.lowerBound()));
         item->setText(2, QString("%1").arg(parameter.upperBound()));
+        item->setText(3, QString("%1").arg(parameter.penaltyEnabled() ? tr("enabled") : tr("disabled")));
         item->setTextAlignment(1, Qt::AlignRight);
         item->setTextAlignment(2, Qt::AlignRight);
     }
     
-    btnParameterAdd->setEnabled(m_study->parameters().count() < Agros2D::problem()->config()->parameters().count());
+    btnParameterAdd->setEnabled(m_study->parameters().count() < Agros2D::problem()->config()->parameters().items().count());
     
     doParameterItemChanged(nullptr, nullptr);
 }
@@ -790,7 +794,8 @@ void StudyDialog::doDuplicate()
             
             // copy parameters
             foreach (Parameter parameter, m_study->parameters())
-                study->addParameter(Parameter(parameter.name(), parameter.lowerBound(), parameter.upperBound()));
+                study->addParameter(Parameter(parameter.name(), parameter.lowerBound(), parameter.upperBound(),
+                                              parameter.penaltyEnabled(), parameter.scale(), parameter.mu(), parameter.sigma()));
             
             // copy functionals
             foreach (Functional functional, m_study->functionals())
@@ -871,7 +876,7 @@ bool StudyFunctionalDialog::checkFunctional(const QString &str)
 {
     try
     {
-        Agros2D::problem()->config()->checkVariableName(str);
+        checkVariableName(str);
     }
     catch (AgrosException &e)
     {
@@ -920,6 +925,7 @@ StudyParameterDialog::StudyParameterDialog(Study *study, Parameter *parameter, Q
     : m_study(study), m_parameter(parameter)
 {
     createControls();
+    checkRange();
 }
 
 void StudyParameterDialog::createControls()
@@ -933,7 +939,44 @@ void StudyParameterDialog::createControls()
     connect(txtLowerBound, SIGNAL(editingFinished()), this, SLOT(checkRange()));
     txtUpperBound = new LineEditDouble(m_parameter->upperBound(), this);
     connect(txtUpperBound, SIGNAL(editingFinished()), this, SLOT(checkRange()));
-    
+
+    chkPenaltyEnabled = new QCheckBox(tr("Enable penalty function"));
+    chkPenaltyEnabled->setChecked(m_parameter->penaltyEnabled());
+    connect(chkPenaltyEnabled, SIGNAL(clicked(bool)), this, SLOT(checkRange()));
+    txtScale = new LineEditDouble(m_parameter->scale(), this);
+    txtScale->setBottom(0.0);
+    connect(txtScale, SIGNAL(editingFinished()), this, SLOT(checkRange()));
+    txtMu = new LineEditDouble(m_parameter->mu(), this);
+    connect(txtMu, SIGNAL(editingFinished()), this, SLOT(checkRange()));
+    txtSigma = new LineEditDouble(m_parameter->sigma(), this);
+    txtSigma->setBottom(0.0);
+    connect(txtSigma, SIGNAL(editingFinished()), this, SLOT(checkRange()));
+
+    m_chart = new QCustomPlot(this);
+    m_chart->setMinimumWidth(300);
+    m_chart->setMinimumHeight(200);
+    m_chart->xAxis->setAutoTickStep(true);
+    m_chart->xAxis->setTickLabelRotation(60);
+    m_chart->xAxis->setLabel(tr("x"));
+    m_chart->yAxis->setLabel(tr("penalty"));
+
+    m_penaltyChart = m_chart->addGraph(m_chart->xAxis, m_chart->yAxis);
+    m_penaltyChart->setLineStyle(QCPGraph::lsLine);
+    // m_penaltyChart->setPen(pen);
+    m_penaltyChart->setBrush(QBrush(QColor(0, 0, 255, 20)));
+
+    QGridLayout *layoutPenalty = new QGridLayout();
+    layoutPenalty->addWidget(new QLabel(tr("Scale")), 0, 0);
+    layoutPenalty->addWidget(txtScale, 0, 1);
+    layoutPenalty->addWidget(new QLabel(tr("<i>&mu;</i>")), 1, 0);
+    layoutPenalty->addWidget(txtMu, 1, 1);
+    layoutPenalty->addWidget(new QLabel(tr("<i>&sigma;</i>")), 2, 0);
+    layoutPenalty->addWidget(txtSigma, 2, 1);
+    layoutPenalty->addWidget(m_chart, 3, 0, 1, 2);
+
+    QGroupBox *grpPenalty = new QGroupBox(tr("Penalty function"));
+    grpPenalty->setLayout(layoutPenalty);
+
     QGridLayout *layoutEdit = new QGridLayout();
     layoutEdit->addWidget(new QLabel(tr("Name")), 0, 0);
     layoutEdit->addWidget(lblName, 0, 1);
@@ -941,6 +984,7 @@ void StudyParameterDialog::createControls()
     layoutEdit->addWidget(txtLowerBound, 1, 1);
     layoutEdit->addWidget(new QLabel(tr("Upper bound")), 2, 0);
     layoutEdit->addWidget(txtUpperBound, 2, 1);
+    layoutEdit->addWidget(chkPenaltyEnabled, 3, 1);
     
     QPalette palette = lblError->palette();
     palette.setColor(QPalette::WindowText, QColor(Qt::red));
@@ -955,7 +999,7 @@ void StudyParameterDialog::createControls()
     QVBoxLayout *layoutWidget = new QVBoxLayout();
     layoutWidget->addLayout(layoutEdit);
     layoutWidget->addWidget(lblError);
-    layoutWidget->addStretch();
+    layoutWidget->addWidget(grpPenalty, 1);
     layoutWidget->addWidget(buttonBox);
     
     setLayout(layoutWidget);
@@ -971,6 +1015,44 @@ bool StudyParameterDialog::checkRange()
         buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
         return false;
     }
+
+    txtScale->setEnabled(chkPenaltyEnabled->isChecked());
+    txtMu->setEnabled(chkPenaltyEnabled->isChecked());
+    txtSigma->setEnabled(chkPenaltyEnabled->isChecked());
+    m_chart->setEnabled(chkPenaltyEnabled->isChecked());
+
+    // penalty
+    QVector<double> normalPDF(2);
+    QVector<double> normalSteps(2);
+    if (txtScale->value() > 0.0 && txtSigma->value() > 0.0)
+    {
+        int normalCount = 100;
+        double normalStep = (txtUpperBound->value() - txtLowerBound->value()) / (normalCount - 1);
+        normalPDF.resize(normalCount);
+        normalSteps.resize(normalCount);
+
+        boost::math::normal_distribution<double> normalDistribution(txtMu->value(), txtSigma->value());
+        double normalScale = boost::math::pdf(normalDistribution, txtMu->value());
+
+        for (int i = 0; i < normalCount; i++)
+        {
+            normalSteps[i] = txtLowerBound->value() + i * normalStep;
+            normalPDF[i] = txtScale->value() * (1.0 - 1.0 / normalScale * boost::math::pdf(normalDistribution, normalSteps[i]));
+        }
+
+        m_penaltyChart->setData(normalSteps, normalPDF);
+    }
+    else
+    {
+        normalSteps[0] = txtLowerBound->value();
+        normalSteps[1] = txtUpperBound->value();
+        normalPDF[0] = 0.0;
+        normalPDF[1] = 0.0;
+    }
+    m_penaltyChart->setData(normalSteps, normalPDF);
+    m_chart->rescaleAxes();
+    m_chart->yAxis->setRangeLower(0.0);
+    m_chart->replot(QCustomPlot::rpImmediate);
     
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
     lblError->setVisible(false);
@@ -984,6 +1066,10 @@ void StudyParameterDialog::doAccept()
     {
         m_parameter->setLowerBound(txtLowerBound->value());
         m_parameter->setUpperBound(txtUpperBound->value());
+        m_parameter->setPenaltyEnabled(chkPenaltyEnabled->isChecked());
+        m_parameter->setScale(txtScale->value());
+        m_parameter->setMu(txtMu->value());
+        m_parameter->setSigma(txtSigma->value());
         
         accept();
     }
@@ -999,7 +1085,7 @@ ParameterSelectDialog::ParameterSelectDialog(Study *study, QWidget *parent) : QD
     lstParameters->setMinimumHeight(26*3);
     
     // remaining parameters
-    foreach (QString name, Agros2D::problem()->config()->parameters().keys())
+    foreach (QString name, Agros2D::problem()->config()->parameters().items().keys())
     {
         bool skip = false;
         foreach (Parameter parameter, m_study->parameters())

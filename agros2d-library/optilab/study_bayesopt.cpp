@@ -54,14 +54,13 @@ double BayesOptProblem::evaluateSample(const vectord& x)
 {   
     // computation
     QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
-    m_study->addComputation(computation);
 
     // set parameters
     vectord query(m_study->parameters().count());
     for (int i = 0; i < m_study->parameters().count(); i++)
     {
         Parameter parameter = m_study->parameters()[i];
-        computation->config()->setParameter(parameter.name(), x[i]);        
+        computation->config()->parameters().set(parameter.name(), x[i]);
 
         query[i] = (x[i] - parameter.lowerBound()) / (parameter.upperBound() - parameter.lowerBound());
     }
@@ -86,9 +85,21 @@ double BayesOptProblem::evaluateSample(const vectord& x)
         if (m_study->value(Study::General_ClearSolution).toBool())
             computation->clearSolution();
 
-        return value;
+        // penalty
+        double totalPenalty = 0.0;
+        for (int i = 0; i < m_study->parameters().count(); i++)
+        {
+            Parameter parameter = m_study->parameters()[i];
+            if (parameter.penaltyEnabled())
+                totalPenalty += parameter.penalty(x[i]);
+        }
+
+        // add computation
+        m_study->addComputation(computation);
+
+        return value + totalPenalty;
     }
-    catch (AgrosException &e)
+    catch (AgrosSolverException &e)
     {
         qDebug() << e.toString();
 

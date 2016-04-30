@@ -336,7 +336,7 @@ void OptiLabWidget::studyChanged(int index)
             itemComputationSet->setExpanded(true);
 
         foreach (QSharedPointer<Computation> computation, computationSets[i].computations())
-        {
+        {            
             QTreeWidgetItem *item = new QTreeWidgetItem(itemComputationSet);
             item->setText(0, computation->problemDir());
             item->setText(1, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->results()->hasResults() ? tr("results") : tr("no results")));
@@ -920,7 +920,7 @@ void OptiLab::doComputationSelected(const QString &key)
         parametersNode->setIcon(0, iconAlphabet('P', AlphabetColor_Brown));
         parametersNode->setExpanded(true);
 
-        StringToDoubleMap parameters = computation->config()->parameters();
+        StringToDoubleMap parameters = computation->config()->parameters().items();
         foreach (Parameter parameter, m_study->parameters())
         {
             QTreeWidgetItem *parameterNode = new QTreeWidgetItem(parametersNode);
@@ -951,7 +951,7 @@ void OptiLab::doComputationSelected(const QString &key)
         foreach (QString key, results.keys())
         {
             QTreeWidgetItem *item = nullptr;
-            if (computation->results()->resultType(key) == ComputationResultType_Functional)
+            if (computation->results()->type(key) == ComputationResultType_Functional)
             {
                 item = new QTreeWidgetItem(functionalsNode);
                 item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Functional);
@@ -959,7 +959,7 @@ void OptiLab::doComputationSelected(const QString &key)
                 if (selectedType == Study::ResultType::ResultType_Functional && selectedKey == key)
                     selectedItem = item;
             }
-            else if (computation->results()->resultType(key) == ComputationResultType_Recipe)
+            else if (computation->results()->type(key) == ComputationResultType_Recipe)
             {
                 item = new QTreeWidgetItem(recipesNode);
                 item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Recipe);
@@ -1064,13 +1064,13 @@ void OptiLab::doChartRefreshed(const QString &key)
             if (chartX.contains("parameter:"))
             {
                 QString name = chartX.right(chartX.count() - 10);
-                double value = computation->config()->parameter(name);
+                double value = computation->config()->parameters().value(name);
                 dataSetX.append(value);
             }
             if (chartY.contains("parameter:"))
             {
                 QString name = chartY.right(chartY.count() - 10);
-                double value = computation->config()->parameter(name);
+                double value = computation->config()->parameters().value(name);
                 dataSetY.append(value);
             }
 
@@ -1078,13 +1078,13 @@ void OptiLab::doChartRefreshed(const QString &key)
             if (chartX.contains("functional:"))
             {
                 QString name = chartX.right(chartX.count() - 11);
-                double value = computation->results()->resultValue(name);
+                double value = computation->results()->value(name);
                 dataSetX.append(value);
             }
             if (chartY.contains("functional:"))
             {
                 QString name = chartY.right(chartY.count() - 11);
-                double value = computation->results()->resultValue(name);
+                double value = computation->results()->value(name);
                 dataSetY.append(value);
             }
 
@@ -1092,13 +1092,13 @@ void OptiLab::doChartRefreshed(const QString &key)
             if (chartX.contains("recipe:"))
             {
                 QString name = chartX.right(chartX.count() - 7);
-                double value = computation->results()->resultValue(name);
+                double value = computation->results()->value(name);
                 dataSetX.append(value);
             }
             if (chartY.contains("recipe:"))
             {
                 QString name = chartY.right(chartY.count() - 7);
-                double value = computation->results()->resultValue(name);
+                double value = computation->results()->value(name);
                 dataSetY.append(value);
             }
 
@@ -1296,9 +1296,9 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
                 QSharedPointer<Computation> computation = computations[j];
 
                 if (type == Study::ResultType_Parameter)
-                    data.append(computation->config()->parameter(key));
+                    data.append(computation->config()->parameters().value(key));
                 else if (type == Study::ResultType_Recipe || type == Study::ResultType_Functional)
-                    data.append(computation->results()->resultValue(key));
+                    data.append(computation->results()->value(key));
 
                 step.append(step.count());
             }

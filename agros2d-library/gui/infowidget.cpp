@@ -139,7 +139,7 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
     problemInfo.SetValue("GEOMETRY_SVG", generateSvgGeometry(problem->scene()->faces->items()).toStdString());
 
     // parameters
-    StringToDoubleMap parameters = problem->config()->value(ProblemConfig::Parameters).value<StringToDoubleMap>();
+    StringToDoubleMap parameters = problem->config()->parameters().items();
     if (parameters.count() > 0)
     {
         problemInfo.SetValue("PARAMETERS_MAIN_LABEL", tr("Parameters").toStdString());
