@@ -37,8 +37,8 @@ Parameter::Parameter(const QString &name, double lowerBound, double upperBound,
                      bool penaltyEnabled, double scale, double mu, double sigma) :
     m_name(name), m_lowerBound(lowerBound), m_upperBound(upperBound),
     m_penaltyEnabled(penaltyEnabled), m_scale(scale),
-    m_mu(isnan(mu) ? (lowerBound + upperBound) / 2.0 : mu),
-    m_sigma(isnan(sigma) ? fmax(fabs(lowerBound), fabs(upperBound)) / 2.0 : sigma)
+    m_mu(std::isnan(mu) ? (lowerBound + upperBound) / 2.0 : mu),
+    m_sigma(std::isnan(sigma) ? fmax(fabs(lowerBound), fabs(upperBound)) / 2.0 : sigma)
 {
     assert(m_lowerBound <= m_upperBound);
     if (fabs(m_sigma) < EPS_ZERO) m_sigma = 1.0;
