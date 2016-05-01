@@ -71,7 +71,7 @@ void ProblemParameters::set(const QString &key, double val)
             if (k == key)
                 m_parametersSymbolTable.add_constant(key.toStdString(), val);
             else
-                m_parametersSymbolTable.add_constant(k.toStdString(), number(key));
+                m_parametersSymbolTable.add_constant(k.toStdString(), number(k));
         }
     }
     catch (AgrosException &e)
