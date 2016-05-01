@@ -920,12 +920,12 @@ void OptiLab::doComputationSelected(const QString &key)
         parametersNode->setIcon(0, iconAlphabet('P', AlphabetColor_Brown));
         parametersNode->setExpanded(true);
 
-        StringToDoubleMap parameters = computation->config()->parameters().items();
+        QMap<QString, ProblemParameter> parameters = computation->config()->parameters()->items();
         foreach (Parameter parameter, m_study->parameters())
         {
             QTreeWidgetItem *parameterNode = new QTreeWidgetItem(parametersNode);
             parameterNode->setText(0, parameter.name());
-            parameterNode->setText(1, QString::number(parameters[parameter.name()]));
+            parameterNode->setText(1, QString::number(parameters[parameter.name()].value()));
             parameterNode->setData(0, Qt::UserRole, parameter.name());
             parameterNode->setData(1, Qt::UserRole, Study::ResultType::ResultType_Parameter);
 
@@ -1064,13 +1064,13 @@ void OptiLab::doChartRefreshed(const QString &key)
             if (chartX.contains("parameter:"))
             {
                 QString name = chartX.right(chartX.count() - 10);
-                double value = computation->config()->parameters().value(name);
+                double value = computation->config()->parameters()->number(name);
                 dataSetX.append(value);
             }
             if (chartY.contains("parameter:"))
             {
                 QString name = chartY.right(chartY.count() - 10);
-                double value = computation->config()->parameters().value(name);
+                double value = computation->config()->parameters()->number(name);
                 dataSetY.append(value);
             }
 
@@ -1296,7 +1296,7 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
                 QSharedPointer<Computation> computation = computations[j];
 
                 if (type == Study::ResultType_Parameter)
-                    data.append(computation->config()->parameters().value(key));
+                    data.append(computation->config()->parameters()->number(key));
                 else if (type == Study::ResultType_Recipe || type == Study::ResultType_Functional)
                     data.append(computation->results()->value(key));
 

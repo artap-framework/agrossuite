@@ -60,7 +60,7 @@ double BayesOptProblem::evaluateSample(const vectord& x)
     for (int i = 0; i < m_study->parameters().count(); i++)
     {
         Parameter parameter = m_study->parameters()[i];
-        computation->config()->parameters().set(parameter.name(), x[i]);
+        computation->config()->parameters()->set(parameter.name(), x[i]);
 
         query[i] = (x[i] - parameter.lowerBound()) / (parameter.upperBound() - parameter.lowerBound());
     }

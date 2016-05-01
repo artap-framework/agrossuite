@@ -22,6 +22,8 @@
 #include "gui/lineeditdouble.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
+#include "solver/problem_parameter.h"
+#include "solver/problem_function.h"
 
 #include "study_sweep.h"
 #include "study_nsga2.h"
@@ -505,7 +507,7 @@ QSharedPointer<Computation> Study::findExtreme(ResultType type, const QString &k
 
             double val = NAN;
             if (type == ResultType_Parameter)
-                val = computation->config()->parameters().value(key);
+                val = computation->config()->parameters()->number(key);
             else if (type == ResultType_Recipe || type == ResultType_Functional)
                 val = computation->results()->value(key);
             else

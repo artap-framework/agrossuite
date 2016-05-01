@@ -333,7 +333,7 @@ void LogOptimizationDialog::updateParameters(QList<Parameter> parameters, const 
     QString params = "";
     foreach (Parameter parameter, parameters)
     {
-        params += QString("%1 = %2, ").arg(parameter.name()).arg(computation->config()->parameters().value(parameter.name()));
+        params += QString("%1 = %2, ").arg(parameter.name()).arg(computation->config()->parameters()->number(parameter.name()));
     }
     if (params.size() > 0)
         params = params.left(params.size() - 2);
@@ -589,7 +589,7 @@ void StudyDialog::readParameters()
         item->setTextAlignment(2, Qt::AlignRight);
     }
     
-    btnParameterAdd->setEnabled(m_study->parameters().count() < Agros2D::problem()->config()->parameters().items().count());
+    btnParameterAdd->setEnabled(m_study->parameters().count() < Agros2D::problem()->config()->parameters()->items().count());
     
     doParameterItemChanged(nullptr, nullptr);
 }
@@ -876,7 +876,7 @@ bool StudyFunctionalDialog::checkFunctional(const QString &str)
 {
     try
     {
-        checkVariableName(str);
+        Agros2D::problem()->config()->checkVariableName(str);
     }
     catch (AgrosException &e)
     {
@@ -1085,7 +1085,7 @@ ParameterSelectDialog::ParameterSelectDialog(Study *study, QWidget *parent) : QD
     lstParameters->setMinimumHeight(26*3);
     
     // remaining parameters
-    foreach (QString name, Agros2D::problem()->config()->parameters().items().keys())
+    foreach (QString name, Agros2D::problem()->config()->parameters()->items().keys())
     {
         bool skip = false;
         foreach (Parameter parameter, m_study->parameters())

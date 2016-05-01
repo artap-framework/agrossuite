@@ -24,6 +24,7 @@
 
 #include "problem.h"
 #include "problem_config.h"
+#include "problem_function.h"
 #include "problem_result.h"
 
 #include "util/global.h"
@@ -186,13 +187,13 @@ bool ProblemBase::determineIsNonlinear() const
     return false;
 }
 
-bool ProblemBase::checkAndApplyParameters(StringToDoubleMap parameters, bool apply)
+bool ProblemBase::checkAndApplyParameters(QMap<QString, ProblemParameter> parameters, bool apply)
 {
     // store original parameters
-    StringToDoubleMap parametersOriginal = m_config->parameters().items();
+    QMap<QString, ProblemParameter> parametersOriginal = m_config->parameters()->items();
 
     // set new parameters
-    m_config->parameters().set(parameters);
+    m_config->parameters()->set(parameters.values());
 
     // apply new parameters
     bool successfulRun = applyParametersInternal();
@@ -200,7 +201,7 @@ bool ProblemBase::checkAndApplyParameters(StringToDoubleMap parameters, bool app
     // restore original parameters
     if (!successfulRun || !apply)
     {
-        m_config->parameters().set(parametersOriginal);
+        m_config->parameters()->set(parametersOriginal.values());
 
         // apply original parameters
         applyParametersInternal();

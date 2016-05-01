@@ -39,6 +39,8 @@ public slots:
     void doProperties();
     void doDelete();
     void doNewParameter();
+    void doNewFunctionAnalytic();
+    void doNewFunctionInterpolation();
     void doNewField();
     void doNewStudy();
     void doNewRecipeLocalValue();
@@ -89,6 +91,8 @@ private:
     QAction *actProperties;
     QAction *actDelete;
     QAction *actNewParameter;
+    QAction *actNewFunctionAnalytic;
+    QAction *actNewFunctionInterpolation;
     QAction *actNewField;
     QAction *actNewStudy;
     QAction *actNewRecipeLocalValue;

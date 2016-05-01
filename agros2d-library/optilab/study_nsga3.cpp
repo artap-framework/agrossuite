@@ -104,7 +104,7 @@ public:
         for (int i = 0; i < m_study->parameters().count(); i++)
         {
             Parameter parameter = m_study->parameters()[i];
-            computation->config()->parameters().set(parameter.name(), x[i]);
+            computation->config()->parameters()->set(parameter.name(), x[i]);
             computation->scene()->cacheGeometryConstraints();
 
             // training patterns

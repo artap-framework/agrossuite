@@ -24,6 +24,7 @@
 
 #include "solver/problem.h"
 #include "solver/problem_config.h"
+#include "solver/problem_parameter.h"
 
 #include "pythonlab/pythonengine.h"
 #include "pythonlab/pythonengine_agros.h"
@@ -143,7 +144,7 @@ void ValueTimeDialog::presetsChanged(int index)
 void ValueTimeDialog::checkExpression()
 {
     // symbol table
-    exprtk::symbol_table<double> parametersSymbolTable = m_problem->config()->parameters().symbolTable();
+    exprtk::symbol_table<double> parametersSymbolTable = m_problem->config()->parameters()->symbolTable();
     parametersSymbolTable.add_constant("time", 0.0);
 
     exprtk::expression<double> expr;

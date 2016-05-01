@@ -49,7 +49,7 @@ void Functional::save(QJsonObject &object)
 bool Functional::evaluateExpression(QSharedPointer<Computation> computation)
 {
     // symbol table
-    exprtk::symbol_table<double> parametersSymbolTable = computation->config()->parameters().symbolTable();
+    exprtk::symbol_table<double> parametersSymbolTable = computation->config()->parameters()->symbolTable();
 
     // results
     StringToDoubleMap results = computation->results()->items();

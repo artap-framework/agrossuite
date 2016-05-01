@@ -41,6 +41,8 @@
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 #include "solver/problem_result.h"
+#include "solver/problem_parameter.h"
+#include "solver/problem_function.h"
 #include "solver/solutionstore.h"
 
 #include "optilab/study.h"
@@ -139,7 +141,7 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
     problemInfo.SetValue("GEOMETRY_SVG", generateSvgGeometry(problem->scene()->faces->items()).toStdString());
 
     // parameters
-    StringToDoubleMap parameters = problem->config()->parameters().items();
+    QMap<QString, ProblemParameter> parameters = problem->config()->parameters()->items();
     if (parameters.count() > 0)
     {
         problemInfo.SetValue("PARAMETERS_MAIN_LABEL", tr("Parameters").toStdString());
@@ -148,9 +150,24 @@ void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
             ctemplate::TemplateDictionary *parametersSection = problemInfo.AddSectionDictionary("PARAMETERS_SECTION");
 
             parametersSection->SetValue("PARAMETERS_VARIABLE_NAME", key.toStdString());
-            parametersSection->SetValue("PARAMETERS_VARIABLE_VALUE", QString::number(parameters[key]).toStdString());
+            parametersSection->SetValue("PARAMETERS_VARIABLE_VALUE", QString::number(parameters[key].value()).toStdString());
         }
         problemInfo.ShowSection("PARAMETERS");
+    }
+
+    // functions
+    QMap<QString, ProblemFunction *> functions = problem->config()->functions()->items();
+    if (functions.count() > 0)
+    {
+        problemInfo.SetValue("FUNCTIONS_MAIN_LABEL", tr("Functions").toStdString());
+        foreach (QString key, functions.keys())
+        {
+            ctemplate::TemplateDictionary *functionsSection = problemInfo.AddSectionDictionary("FUNCTIONS_SECTION");
+
+            functionsSection->SetValue("FUNCTIONS_VARIABLE_NAME", key.toStdString());
+            // functionsSection->SetValue("FUNCTIONS_VARIABLE_VALUE", QString::number(functions[key]->value()).toStdString());
+        }
+        problemInfo.ShowSection("FUNCTIONS");
     }
 
     // fields

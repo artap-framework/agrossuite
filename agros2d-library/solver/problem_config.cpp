@@ -32,6 +32,9 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 #include "module.h"
+#include "problem_result.h"
+#include "problem_function.h"
+#include "problem_parameter.h"
 #include "coupling.h"
 #include "solver.h"
 #include "mesh/meshgenerator.h"
@@ -42,126 +45,8 @@
 const QString PARAMETERS = "Parameters";
 const QString FUNCTIONS = "Functions";
 
-void checkVariableName(const QString &key)
-{
-    // time, x, y, r, z, value
-    if (key == "time" || key == "value" || key == "x" || key == "y" || key == "r" || key == "z")
-        throw AgrosException(QObject::tr("Variable is reserved keyword: %1.").arg(key));
-
-    // variable name
-    QRegExp expr("(^[a-zA-Z][a-zA-Z0-9_]*)|(^[_][a-zA-Z0-9_]+)");
-    if (!expr.exactMatch(key))
-    {
-        throw AgrosException(QObject::tr("Invalid variable name: %1.").arg(key));
-    }
-}
-
-ProblemParameters::ProblemParameters(StringToDoubleMap parameters)
-{
-    set(parameters);
-}
-
-ProblemParameters::~ProblemParameters()
-{
-    clear();
-}
-
-void ProblemParameters::clear()
-{
-    m_parametersSymbolTable.clear();
-    m_parameters.clear();
-}
-
-void ProblemParameters::set(const QString &key, double val)
-{
-    try
-    {
-        // existing key with same value
-        if (m_parameters.keys().contains(key) && fabs(m_parameters.value(key) - val) < EPS_ZERO)
-            return;
-
-        checkVariableName(key);
-        m_parameters.insert(key, val);
-
-        // create new table - invalidate
-        m_parametersSymbolTable = exprtk::symbol_table<double>();
-        m_parametersSymbolTable.add_constants();
-
-        foreach (QString k, m_parameters.keys())
-        {
-            if (k == key)
-                m_parametersSymbolTable.add_constant(key.toStdString(), val);
-            else
-                m_parametersSymbolTable.add_constant(k.toStdString(), m_parameters[k]);
-        }
-    }
-    catch (AgrosException &e)
-    {
-        // raise exception
-        throw e.toString();
-    }
-}
-
-void ProblemParameters::set(const StringToDoubleMap &params)
-{
-    m_parameters = params;
-
-    // create new table
-    m_parametersSymbolTable = exprtk::symbol_table<double>();
-    m_parametersSymbolTable.add_constants();
-
-    foreach (QString key, params.keys())
-        m_parametersSymbolTable.add_constant(key.toStdString(), params[key]);
-}
-
-double ProblemParameters::value(const QString &key) const
-{
-    assert(m_parameters.contains(key));
-    return m_parameters[key];
-}
-
-// *************************************************************************************************
-
-ProblemFunctions::ProblemFunctions(QList<ProblemFunction *> items) : m_functions(items)
-{
-
-}
-
-ProblemFunctions::~ProblemFunctions()
-{
-    clear();
-}
-
-void ProblemFunctions::clear()
-{
-    foreach (ProblemFunction *function, m_functions)
-        delete function;
-    m_functions.clear();
-}
-
-void ProblemFunctions::add(ProblemFunction *function)
-{
-    m_functions.append(function);
-}
-
-void ProblemFunctions::remove(ProblemFunction *function)
-{
-    m_functions.removeAll(function);
-}
-
-ProblemFunction *ProblemFunctions::function(const QString &name)
-{
-    foreach (ProblemFunction *function, m_functions)
-        if (function->name() == name)
-            return function;
-
-    return nullptr;
-}
-
-
-// *************************************************************************************************
-
-ProblemConfig::ProblemConfig(ProblemBase *parentProblem) : QObject(), m_problem(parentProblem)
+ProblemConfig::ProblemConfig(ProblemBase *parentProblem) : QObject(), m_problem(parentProblem),
+    m_parameters(new ProblemParameters()), m_functions(new ProblemFunctions())
 {
     qRegisterMetaType<StringToDoubleMap>("ParametersType");
     qRegisterMetaType<Value>("Value");
@@ -172,8 +57,10 @@ ProblemConfig::ProblemConfig(ProblemBase *parentProblem) : QObject(), m_problem(
 
 ProblemConfig::~ProblemConfig()
 {
-    m_parameters.clear();
-    m_functions.clear();
+    m_parameters->clear();
+    delete m_parameters;
+    m_functions->clear();
+    delete m_functions;
 }
 
 void ProblemConfig::copy(const ProblemConfig *origin)
@@ -182,11 +69,12 @@ void ProblemConfig::copy(const ProblemConfig *origin)
     m_config = origin->m_config;
 
     // parameters
-    m_parameters.clear();
-    m_parameters.set(origin->parameters().items());
+    m_parameters->clear();
+    QList<ProblemParameter> parameters = origin->parameters()->items().values();
+    m_parameters->set(parameters);
 
     // functions
-    m_functions.clear();
+    m_functions->clear();
 
     // value Problem
     foreach (Type key, m_configDefault.keys())
@@ -197,17 +85,17 @@ void ProblemConfig::copy(const ProblemConfig *origin)
 void ProblemConfig::clear()
 {
     // parameters
-    m_parameters.clear();
+    m_parameters->clear();
 
     // functions
-    m_functions.clear();
+    m_functions->clear();
 
     // set default values and types
     setDefaultValues();
     m_config = m_configDefault;
 
     // set parameters
-    m_parameters.set(m_parameters.items());
+    m_parameters->set(m_parameters->items().values());
 }
 
 double ProblemConfig::initialTimeStepLength()
@@ -321,10 +209,10 @@ void ProblemConfig::load(QJsonObject &object)
         QStringList strValues = (strKeysAndValues[1].size() > 0) ? strKeysAndValues[1].split("|") : QStringList();
         assert(strKeys.count() == strValues.count());
 
-        StringToDoubleMap parameters;
+        QList<ProblemParameter> parameters;
         for (int i = 0; i < strKeys.count(); i++)
-            parameters[strKeys[i]] = strValues[i].toDouble();
-        m_parameters.set(parameters);
+            parameters.append(ProblemParameter(strKeys[i], strValues[i].toDouble()));
+        m_parameters->set(parameters);
     }
 }
 
@@ -358,13 +246,12 @@ void ProblemConfig::save(QJsonObject &object)
     // parameters
     QString outKeys;
     QString outValues;
-    int cnt = m_parameters.items().count();
-    QList<QString> keys = m_parameters.items().keys();
-    QList<double> values = m_parameters.items().values();
+    int cnt = m_parameters->items().count();
+    QList<QString> keys = m_parameters->items().keys();
     for (int i = 0; i < cnt; i++)
     {
         outKeys += keys[i] + ((i < cnt - 1) ? "|" : "");
-        outValues += QString::number(values[i]) + ((i < cnt - 1) ? "|" : "");
+        outValues += QString::number(m_parameters->number(keys[i])) + ((i < cnt - 1) ? "|" : "");
     }
 
     object[PARAMETERS] = QString("%1:%2").arg(outKeys).arg(outValues);
@@ -405,6 +292,48 @@ void ProblemConfig::setDefaultValues()
 
     m_configDefault[GridStep] = 0.05;
     m_configDefault[SnapToGrid] = true;
+}
+
+void ProblemConfig::checkVariableName(const QString &keyToCheck, const QString &keyToSkip)
+{
+    // variable name
+    QRegExp expr("(^[a-zA-Z][a-zA-Z0-9_]*)|(^[_][a-zA-Z0-9_]+)");
+    if (!expr.exactMatch(keyToCheck))
+        throw AgrosException(QObject::tr("Invalid variable name: %1.").arg(keyToCheck));
+
+    // keywords - time, x, y, r, z, value
+    if (keyToCheck == "time" || keyToCheck == "value" || keyToCheck == "x" || keyToCheck == "y" || keyToCheck == "r" || keyToCheck == "z")
+        throw AgrosException(QObject::tr("Variable is reserved keyword: %1.").arg(keyToCheck));
+
+    // parameters
+    foreach (QString k, m_parameters->items().keys())
+    {
+        if (!keyToSkip.isEmpty() && k == keyToSkip)
+            continue;
+
+        if (k == keyToCheck)
+            throw AgrosException(QObject::tr("Parameter is already used: %1.").arg(keyToCheck));
+    }
+
+    // functions
+    foreach (ProblemFunction *function, m_functions->items())
+    {
+        if (!keyToSkip.isEmpty() && function->name() == keyToSkip)
+            continue;
+
+        if (function->name() == keyToCheck)
+            throw AgrosException(QObject::tr("Function is already used: %1.").arg(keyToCheck));
+    }
+
+    // recipes
+    foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
+    {
+        if (!keyToSkip.isEmpty() && recipe->name() == keyToSkip)
+            continue;
+
+        if (recipe->name() == keyToCheck)
+            throw AgrosException(QObject::tr("Recipe is already used: %1.").arg(keyToCheck));
+    }
 }
 
 // ********************************************************************************************

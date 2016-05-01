@@ -24,20 +24,20 @@
 
 void PyProblemBase::getParameters(std::vector<std::string> &keys) const
 {
-    foreach (QString key, m_problem->config()->parameters().items().keys())
+    foreach (QString key, m_problem->config()->parameters()->items().keys())
         keys.push_back(key.toStdString());
 }
 
 double PyProblemBase::getParameter(const string &key) const
 {
-    if (m_problem->config()->parameters().items().contains(QString::fromStdString(key)))
+    if (m_problem->config()->parameters()->items().contains(QString::fromStdString(key)))
     {
-        return m_problem->config()->parameters().value(QString::fromStdString(key));
+        return m_problem->config()->parameters()->number(QString::fromStdString(key));
     }
     else
     {
         QString str;
-        foreach (QString key, m_problem->config()->parameters().items().keys())
+        foreach (QString key, m_problem->config()->parameters()->items().keys())
             str += key + ", ";
         if (str.length() > 0)
             str = str.left(str.length() - 2);
@@ -48,7 +48,7 @@ double PyProblemBase::getParameter(const string &key) const
 
 void PyProblemBase::setParameter(const string &key, double value)
 {
-    m_problem->config()->parameters().set(QString::fromStdString(key), value);
+    m_problem->config()->parameters()->set(QString::fromStdString(key), value);
 }
 
 std::string PyProblemBase::getCouplingType(const std::string &sourceField, const std::string &targetField) const

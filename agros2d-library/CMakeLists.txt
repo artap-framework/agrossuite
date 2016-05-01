@@ -102,6 +102,7 @@ SET(SOURCES
     gui/valuelineedit.cpp
     gui/valuetimedialog.cpp
     gui/parameterdialog.cpp
+    gui/functiondialog.cpp
     gui/recipedialog.cpp
     gui/infowidget.cpp
     gui/problemdialog.cpp
@@ -177,6 +178,8 @@ SET(SOURCES
     solver/problem.cpp
     solver/problem_config.cpp
     solver/problem_result.cpp
+    solver/problem_function.cpp
+    solver/problem_parameter.cpp
     solver/solutionstore.cpp
     solver/solutiontypes.cpp
     solver/solver.cpp
@@ -286,6 +289,8 @@ SOURCE_GROUP(
   solver/problem.cpp
   solver/problem_config.cpp
   solver/problem_result.cpp
+  solver/problem_function.cpp
+  solver/problem_parameter.cpp
   solver/solutionstore.cpp
   solver/solutiontypes.cpp
   solver/solver.cpp
@@ -328,6 +333,7 @@ SET(HEADERS
   gui/valuelineedit.h
   gui/valuetimedialog.h
   gui/parameterdialog.h
+  gui/functiondialog.h
   gui/recipedialog.h
   gui/infowidget.h
   gui/problemdialog.h
@@ -403,6 +409,8 @@ SET(HEADERS
   solver/problem.h
   solver/problem_config.h
   solver/problem_result.h
+  solver/problem_function.h
+  solver/problem_parameter.h
   solver/solutionstore.h
   solver/solutiontypes.h
   solver/solver.h
@@ -507,6 +515,8 @@ SOURCE_GROUP(
   solver/problem.h
   solver/problem_config.h
   solver/problem_result.h
+  solver/problem_function.h
+  solver/problem_parameter.h
   solver/solutionstore.h  
   solver/solutiontypes.h
   solver/solver.h

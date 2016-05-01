@@ -165,10 +165,10 @@ double Value::number() const
         {
             tbb::mutex::scoped_lock lock(numberEvaluateMutex);
 
-            if (!(m_exprtkExpr->get_symbol_table(PARAMETERS_SYMBOL_TABLE) == m_problem->config()->parameters().symbolTable()))
+            if (!(m_exprtkExpr->get_symbol_table(PARAMETERS_SYMBOL_TABLE) == m_problem->config()->parameters()->symbolTable()))
             {
                 // replace parameters symbol table
-                exprtk::symbol_table<double> parametersSymbolTable = m_problem->config()->parameters().symbolTable();
+                exprtk::symbol_table<double> parametersSymbolTable = m_problem->config()->parameters()->symbolTable();
                 m_exprtkExpr->get_symbol_table(PARAMETERS_SYMBOL_TABLE) = parametersSymbolTable;
 
                 // compile expression
@@ -322,7 +322,7 @@ void Value::setText(const QString &str)
                 // problem
                 if (m_problem)
                 {
-                    exprtk::symbol_table<double> parametersSymbolTable = m_problem->config()->parameters().symbolTable();
+                    exprtk::symbol_table<double> parametersSymbolTable = m_problem->config()->parameters()->symbolTable();
                     m_exprtkExpr->register_symbol_table(parametersSymbolTable);
                 }
             }

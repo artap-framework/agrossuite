@@ -24,6 +24,7 @@
 #include "value.h"
 #include "solutiontypes.h"
 #include "problem_config.h"
+#include "problem_parameter.h"
 
 #include "mesh/meshgenerator.h"
 #include "pythonlab/pythonengine.h"
@@ -108,7 +109,7 @@ public:
     int numAdaptiveFields() const;
 
     // check and apply parameters
-    bool checkAndApplyParameters(StringToDoubleMap parameters, bool apply = true);
+    bool checkAndApplyParameters(QMap<QString, ProblemParameter> parameters, bool apply = true);
 
     // field
     inline QMap<QString, FieldInfo *> fieldInfos() const { return m_fieldInfos; }

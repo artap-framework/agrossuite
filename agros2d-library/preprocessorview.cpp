@@ -23,11 +23,14 @@
 #include "util/global.h"
 
 #include "gui/parameterdialog.h"
+#include "gui/functiondialog.h"
 #include "gui/problemdialog.h"
 #include "gui/fielddialog.h"
 #include "gui/recipedialog.h"
 
 #include "solver/problem_config.h"
+#include "solver/problem_parameter.h"
+#include "solver/problem_function.h"
 #include "optilab/study.h"
 #include "optilab/study_dialog.h"
 
@@ -95,6 +98,11 @@ void PreprocessorWidget::createActions()
     actNewParameter = new QAction(icon(""), tr("New parameter..."), this);
     connect(actNewParameter, SIGNAL(triggered()), this, SLOT(doNewParameter()));
 
+    actNewFunctionAnalytic = new QAction(icon(""), tr("Analytic function..."), this);
+    connect(actNewFunctionAnalytic, SIGNAL(triggered()), this, SLOT(doNewFunctionAnalytic()));
+    actNewFunctionInterpolation = new QAction(icon(""), tr("Interpolation function..."), this);
+    connect(actNewFunctionInterpolation, SIGNAL(triggered()), this, SLOT(doNewFunctionInterpolation()));
+
     actNewField = new QAction(icon(""), tr("New field..."), this);
     connect(actNewField, SIGNAL(triggered()), this, SLOT(doNewField()));
 
@@ -115,6 +123,10 @@ void PreprocessorWidget::createMenu()
 
     mnuPreprocessor->addAction(actNewField);
     mnuPreprocessor->addAction(actNewParameter);
+    QMenu *mnuFunction = new QMenu(tr("New function"));
+    mnuFunction->addAction(actNewFunctionAnalytic);
+    mnuFunction->addAction(actNewFunctionInterpolation);
+    mnuPreprocessor->addMenu(mnuFunction);
     mnuPreprocessor->addAction(actNewStudy);
     QMenu *mnuRecipe = new QMenu(tr("New recipe"));
     mnuRecipe->addAction(actNewRecipeLocalValue);
@@ -273,7 +285,7 @@ void PreprocessorWidget::refresh()
     problemProperties(problemPropertiesNode);
 
     // parameters
-    StringToDoubleMap parameters = Agros2D::problem()->config()->parameters().items();
+    QMap<QString, ProblemParameter> parameters = Agros2D::problem()->config()->parameters()->items();
     if (parameters.count() > 0)
     {
         QTreeWidgetItem *parametersNode = new QTreeWidgetItem(problemNode);
@@ -286,15 +298,15 @@ void PreprocessorWidget::refresh()
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(parametersNode);
             item->setText(0, key);
-            item->setText(1, QString::number(parameters[key]));
+            item->setText(1, QString::number(parameters[key].value()));
             item->setData(0, Qt::UserRole, key);
             item->setData(1, Qt::UserRole, PreprocessorWidget::ModelParameter);
         }
     }
 
     // functions
-    ProblemFunctions functions = Agros2D::problem()->config()->functions();
-    if (functions.items().count() > 0)
+    ProblemFunctions *functions = Agros2D::problem()->config()->functions();
+    if (functions->items().count() > 0)
     {
         QTreeWidgetItem *functionNode = new QTreeWidgetItem(problemNode);
         functionNode->setText(0, tr("Functions"));
@@ -302,7 +314,7 @@ void PreprocessorWidget::refresh()
         functionNode->setFont(0, fnt);
         functionNode->setExpanded(true);
 
-        foreach (ProblemFunction *function, functions.items())
+        foreach (ProblemFunction *function, functions->items())
         {
             QTreeWidgetItem *item = new QTreeWidgetItem(functionNode);
             item->setText(0, function->name());
@@ -930,7 +942,7 @@ void PreprocessorWidget::doDelete()
         {
             // parameter
             QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
-            StringToDoubleMap parameters = Agros2D::problem()->config()->parameters().items();
+            QMap<QString, ProblemParameter> parameters = Agros2D::problem()->config()->parameters()->items();
             parameters.remove(key);
 
             Agros2D::problem()->checkAndApplyParameters(parameters);
@@ -987,6 +999,36 @@ void PreprocessorWidget::doNewParameter()
         m_sceneViewPreprocessor->refresh();
         refresh();
     }
+}
+
+void PreprocessorWidget::doNewFunctionAnalytic()
+{
+    ProblemFunctionAnalytic *function = new ProblemFunctionAnalytic("", "");
+
+    FunctionAnalyticDialog dialog(function, this);
+    if (dialog.showDialog() == QDialog::Accepted)
+    {
+        Agros2D::problem()->config()->functions()->add(function);
+
+        m_sceneViewPreprocessor->refresh();
+        refresh();
+    }
+    else
+    {
+        delete function;
+    }
+}
+
+void PreprocessorWidget::doNewFunctionInterpolation()
+{
+    /*
+    FunctionAnalyticDialog dialog(this);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        m_sceneViewPreprocessor->refresh();
+        refresh();
+    }
+    */
 }
 
 void PreprocessorWidget::doNewField()

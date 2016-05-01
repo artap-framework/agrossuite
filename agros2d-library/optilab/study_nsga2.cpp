@@ -53,7 +53,7 @@ void objectiveFunction(double *xreal, double *xbin, int **gene, double *obj, dou
     for (int i = 0; i < localStudy->parameters().count(); i++)
     {
         Parameter parameter = localStudy->parameters()[i];
-        computation->config()->parameters().set(parameter.name(), xreal[i]);
+        computation->config()->parameters()->set(parameter.name(), xreal[i]);
     }
 
     // evaluate step

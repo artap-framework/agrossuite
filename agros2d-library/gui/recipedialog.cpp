@@ -153,7 +153,7 @@ bool RecipeDialog::checkRecipe(const QString &str)
 {
     try
     {
-        checkVariableName(str);
+        Agros2D::problem()->config()->checkVariableName(str, m_recipe->name());
     }
     catch (AgrosException &e)
     {
@@ -164,6 +164,7 @@ bool RecipeDialog::checkRecipe(const QString &str)
         return false;
     }
 
+    /*
     foreach (ResultRecipe *recipe, Agros2D::problem()->recipes()->items())
     {
         if (str == m_recipe->name())
@@ -178,6 +179,7 @@ bool RecipeDialog::checkRecipe(const QString &str)
             return false;
         }
     }
+    */
 
     lblError->setVisible(false);
 
