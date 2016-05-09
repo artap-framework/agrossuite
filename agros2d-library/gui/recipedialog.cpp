@@ -54,8 +54,8 @@ void RecipeDialog::createControls()
     cmbField = new QComboBox(this);
     foreach (QString fieldId, Agros2D::problem()->fieldInfos().keys())
         cmbField->addItem(Agros2D::problem()->fieldInfo(fieldId)->name(), fieldId);
-    connect(cmbField, SIGNAL(currentIndexChanged(int)), this, SLOT(fieldChanged(int)));
     cmbField->setCurrentIndex(cmbField->findData(m_recipe->fieldId()));
+    connect(cmbField, SIGNAL(currentIndexChanged(int)), this, SLOT(fieldChanged(int)));
 
     cmbVariable = new QComboBox(this);
     lblVariableComp = new QLabel(tr("Component:"));

@@ -25,6 +25,10 @@
 #include "problem.h"
 #include "problem_config.h"
 
+const QString PARAMETERS = "Parameters";
+const QString NAME = "name";
+const QString VALUE = "value";
+
 ProblemParameters::ProblemParameters(const QList<ProblemParameter> parameters) : m_parameters(QMap<QString, ProblemParameter>())
 {
     set(parameters);
@@ -33,6 +37,55 @@ ProblemParameters::ProblemParameters(const QList<ProblemParameter> parameters) :
 ProblemParameters::~ProblemParameters()
 {
     clear();
+}
+
+void ProblemParameters::load(QJsonObject &object)
+{
+    // parameters
+    if (object.contains(PARAMETERS))
+    {
+        QList<ProblemParameter> parameters;
+
+        if (object[PARAMETERS].isString())
+        {
+            // TODO: remove - old interface
+            QString str = object[PARAMETERS].toString();
+            QStringList strKeysAndValues = str.split(":");
+            QStringList strKeys = (strKeysAndValues[0].size() > 0) ? strKeysAndValues[0].split("|") : QStringList();
+            QStringList strValues = (strKeysAndValues[1].size() > 0) ? strKeysAndValues[1].split("|") : QStringList();
+            assert(strKeys.count() == strValues.count());
+
+            for (int i = 0; i < strKeys.count(); i++)
+                parameters.append(ProblemParameter(strKeys[i], strValues[i].toDouble()));
+        }
+        else
+        {
+            // new interface
+            QJsonArray parametersJson = object[PARAMETERS].toArray();
+            for (int i = 0; i < parametersJson.size(); i++)
+            {
+                QJsonObject parameterJson = parametersJson[i].toObject();
+
+                parameters.append(ProblemParameter(parameterJson[NAME].toString(), parameterJson[VALUE].toDouble()));
+            }
+        }
+
+        set(parameters);
+    }
+}
+
+void ProblemParameters::save(QJsonObject &object)
+{
+    QJsonArray parametersJson;
+    foreach(ProblemParameter parameter, m_parameters.values())
+    {
+        QJsonObject parameterJson;
+        parameterJson[NAME] = parameter.name();
+        parameterJson[VALUE] = parameter.value();
+
+        parametersJson.append(parameterJson);
+    }
+    object[PARAMETERS] = parametersJson;
 }
 
 void ProblemParameters::clear()

@@ -42,9 +42,6 @@
 
 #include "../resources_source/classes/problem_a2d_31_xml.h"
 
-const QString PARAMETERS = "Parameters";
-const QString FUNCTIONS = "Functions";
-
 ProblemConfig::ProblemConfig(ProblemBase *parentProblem) : QObject(), m_problem(parentProblem),
     m_parameters(new ProblemParameters()), m_functions(new ProblemFunctions())
 {
@@ -201,19 +198,10 @@ void ProblemConfig::load(QJsonObject &object)
     }
 
     // parameters
-    if (object.contains(PARAMETERS))
-    {
-        QString str = object[PARAMETERS].toString();
-        QStringList strKeysAndValues = str.split(":");
-        QStringList strKeys = (strKeysAndValues[0].size() > 0) ? strKeysAndValues[0].split("|") : QStringList();
-        QStringList strValues = (strKeysAndValues[1].size() > 0) ? strKeysAndValues[1].split("|") : QStringList();
-        assert(strKeys.count() == strValues.count());
+    m_parameters->load(object);
 
-        QList<ProblemParameter> parameters;
-        for (int i = 0; i < strKeys.count(); i++)
-            parameters.append(ProblemParameter(strKeys[i], strValues[i].toDouble()));
-        m_parameters->set(parameters);
-    }
+    // functions
+    m_functions->load(object);
 }
 
 void ProblemConfig::save(QJsonObject &object)
@@ -244,20 +232,10 @@ void ProblemConfig::save(QJsonObject &object)
     }
 
     // parameters
-    QString outKeys;
-    QString outValues;
-    int cnt = m_parameters->items().count();
-    QList<QString> keys = m_parameters->items().keys();
-    for (int i = 0; i < cnt; i++)
-    {
-        outKeys += keys[i] + ((i < cnt - 1) ? "|" : "");
-        outValues += QString::number(m_parameters->number(keys[i])) + ((i < cnt - 1) ? "|" : "");
-    }
-
-    object[PARAMETERS] = QString("%1:%2").arg(outKeys).arg(outValues);
+    m_parameters->save(object);
 
     // functions
-    // object[FUNCTIONS] = "";
+    m_functions->save(object);
 }
 
 void ProblemConfig::setStringKeys()

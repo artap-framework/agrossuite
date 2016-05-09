@@ -27,11 +27,11 @@ class LineEditDouble;
 class QCustomPlot;
 class QCPGraph;
 
-class FunctionDialog : public QDialog
+class ProblemFunctionDialog : public QDialog
 {
     Q_OBJECT
 public:
-    FunctionDialog(ProblemFunction *function, QWidget *parent = 0);
+    ProblemFunctionDialog(ProblemFunction *function, QWidget *parent = 0);
 
     int showDialog();
 
@@ -68,11 +68,11 @@ protected slots:
     void functionNameTextChanged(const QString &str);
 };
 
-class FunctionAnalyticDialog : public FunctionDialog
+class ProblemFunctionAnalyticDialog : public ProblemFunctionDialog
 {
     Q_OBJECT
 public:
-    FunctionAnalyticDialog(ProblemFunctionAnalytic *function, QWidget *parent = 0);
+    ProblemFunctionAnalyticDialog(ProblemFunctionAnalytic *function, QWidget *parent = 0);
 
 protected:
     QLineEdit *txtExpression;

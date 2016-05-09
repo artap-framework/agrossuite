@@ -54,6 +54,7 @@ static QMap<PreconditionerDealII, QString> iterLinearSolverDealIIPreconditionerL
 static QMap<StudyType, QString> studyTypeList;
 static QMap<ComputationResultType, QString> computationResultTypeList;
 static QMap<ResultRecipeType, QString> resultRecipeTypeList;
+static QMap<ProblemFunctionType, QString> problemFunctionTypeList;
 
 QStringList coordinateTypeStringKeys() { return coordinateTypeList.values(); }
 QString coordinateTypeToStringKey(CoordinateType coordinateType) { return coordinateTypeList[coordinateType]; }
@@ -166,6 +167,10 @@ ComputationResultType computationResultTypeFromStringKey(const QString &type) { 
 QStringList resultRecipeTypeStringKeys() { return resultRecipeTypeList.values(); }
 QString resultRecipeTypeToStringKey(ResultRecipeType type) { return resultRecipeTypeList[type]; }
 ResultRecipeType resultRecipeTypeFromStringKey(const QString &type) { return resultRecipeTypeList.key(type); }
+
+QStringList problemFunctionTypeStringKeys() { return problemFunctionTypeList.values(); }
+QString problemFunctionTypeToStringKey(ProblemFunctionType type) { return problemFunctionTypeList[type]; }
+ProblemFunctionType problemFunctionTypeFromStringKey(const QString &type) { return problemFunctionTypeList.key(type); }
 
 void initLists()
 {
@@ -340,6 +345,10 @@ void initLists()
     resultRecipeTypeList.insert(ResultRecipeType_LocalValue, "local_value");
     resultRecipeTypeList.insert(ResultRecipeType_SurfaceIntegral, "surface_integral");
     resultRecipeTypeList.insert(ResultRecipeType_VolumeIntegral, "volume_integral");
+
+    // function type
+    problemFunctionTypeList.insert(ProblemFunctionType_Analytic, "analytic");
+    problemFunctionTypeList.insert(ProblemFunctionType_Interpolation, "interpolation");
 }
 
 QString errorNormString(NormType projNormType)
@@ -870,6 +879,20 @@ QString resultRecipeTypeString(ResultRecipeType type)
         return QObject::tr("Volume integral");
     default:
         std::cerr << "Result recipe type'" + QString::number(type).toStdString() + "' is not implemented. resultRecipeTypeString(resultRecipeType type)" << endl;
+        throw;
+    }
+}
+
+QString problemFunctionTypeString(ProblemFunctionType type)
+{
+    switch (type)
+    {
+    case ProblemFunctionType_Analytic:
+        return QObject::tr("Analytic");
+    case ProblemFunctionType_Interpolation:
+        return QObject::tr("Interpolation");
+    default:
+        std::cerr << "Result recipe type'" + QString::number(type).toStdString() + "' is not implemented. problemFunctionTypeString(ProblemFunctionType type)" << endl;
         throw;
     }
 }

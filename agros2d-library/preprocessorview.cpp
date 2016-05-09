@@ -725,6 +725,12 @@ void PreprocessorWidget::doItemChanged(QTreeWidgetItem *current, QTreeWidgetItem
             actProperties->setEnabled(true);
             actDelete->setEnabled(true);
         }
+        else if (type == PreprocessorWidget::ModelFunction)
+        {
+            // function
+            actProperties->setEnabled(true);
+            actDelete->setEnabled(true);
+        }
         else if (type == PreprocessorWidget::FieldProperties)
         {
             // field
@@ -812,6 +818,25 @@ void PreprocessorWidget::doProperties()
             if (dialog.exec() == QDialog::Accepted)
             {
                 m_sceneViewPreprocessor->refresh();
+                refresh();
+            }
+        }
+        else if (type == PreprocessorWidget::ModelFunction)
+        {
+            // function
+            QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
+            ProblemFunction *function = Agros2D::problem()->config()->functions()->function(key);
+
+            ProblemFunctionDialog *dialog = nullptr;
+            if (function->type() == ProblemFunctionType_Analytic)
+                dialog = new ProblemFunctionAnalyticDialog(dynamic_cast<ProblemFunctionAnalytic *>(function), this);
+            else if (function->type() == ProblemFunctionType_Interpolation)
+                assert(0); // dialog = new ProblemFunctionAnalytic(function, this);
+            else
+                assert(0);
+
+            if (dialog->showDialog() == QDialog::Accepted)
+            {
                 refresh();
             }
         }
@@ -951,6 +976,7 @@ void PreprocessorWidget::doDelete()
         {
             // function
             QString key = trvWidget->currentItem()->data(0, Qt::UserRole).toString();
+            Agros2D::problem()->config()->functions()->remove(key);
         }
         else if (type == PreprocessorWidget::FieldProperties)
         {
@@ -1003,9 +1029,9 @@ void PreprocessorWidget::doNewParameter()
 
 void PreprocessorWidget::doNewFunctionAnalytic()
 {
-    ProblemFunctionAnalytic *function = new ProblemFunctionAnalytic("", "");
+    ProblemFunctionAnalytic *function = new ProblemFunctionAnalytic("", "value");
 
-    FunctionAnalyticDialog dialog(function, this);
+    ProblemFunctionAnalyticDialog dialog(function, this);
     if (dialog.showDialog() == QDialog::Accepted)
     {
         Agros2D::problem()->config()->functions()->add(function);

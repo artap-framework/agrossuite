@@ -21,10 +21,55 @@
 
 #include "util/global.h"
 #include "util/constants.h"
+#include "util/enums.h"
 
-ProblemFunctionAnalytic::ProblemFunctionAnalytic(const QString &name, const QString &expr) : ProblemFunction(name)
+const QString NAME = "name";
+const QString TYPE = "type";
+const QString LOWER_BOUND = "lower_bound";
+const QString UPPER_BOUND = "upper_bound";
+const QString EXPRESSION = "expression";
+
+const QString FUNCTIONS = "Functions";
+
+ProblemFunction::ProblemFunction(const QString &name)
+    : m_name(name), m_lowerBound(0.0), m_upperBound(1.0)
+{
+
+}
+
+void ProblemFunction::load(QJsonObject &object)
+{
+    m_name = object[NAME].toString();
+    m_lowerBound = object[LOWER_BOUND].toDouble();
+    m_upperBound = object[UPPER_BOUND].toDouble();
+}
+
+void ProblemFunction::save(QJsonObject &object)
+{
+    object[NAME] = m_name;
+    object[TYPE] = problemFunctionTypeToStringKey(type());
+    object[LOWER_BOUND] = m_lowerBound;
+    object[UPPER_BOUND] = m_upperBound;
+}
+
+ProblemFunctionAnalytic::ProblemFunctionAnalytic(const QString &name, const QString &expr)
+    : ProblemFunction(name)
 {
     setExpression(expr);
+}
+
+void ProblemFunctionAnalytic::load(QJsonObject &object)
+{
+    ProblemFunction::load(object);
+
+    setExpression(object[EXPRESSION].toString());
+}
+
+void ProblemFunctionAnalytic::save(QJsonObject &object)
+{
+    ProblemFunction::save(object);
+
+    object[EXPRESSION] = m_expression;
 }
 
 double ProblemFunctionAnalytic::value(double val)
@@ -35,14 +80,19 @@ double ProblemFunctionAnalytic::value(double val)
 
 double ProblemFunctionAnalytic::derivative(double val)
 {
-
+    // numerical derivative
+    double delta = (m_upperBound - m_lowerBound) / 1e9;
+    return exprtk::derivative(m_exprtkExpr, "value", delta);
 }
 
 void ProblemFunctionAnalytic::setExpression(const QString &expr)
 {
     // symbol table
     exprtk::symbol_table<double> localSymbolTable;
-    localSymbolTable.create_variable("value", m_value);
+    localSymbolTable.add_variable("value", m_value);
+
+    // new expression
+    m_exprtkExpr = exprtk::expression<double>();
     m_exprtkExpr.register_symbol_table(localSymbolTable);
 
     // compile expression
@@ -59,10 +109,52 @@ void ProblemFunctionAnalytic::setExpression(const QString &expr)
     }
 }
 
+// ******************************************************************************
+
+ProblemFunction *ProblemFunctions::factory(ProblemFunctionType type)
+{
+    ProblemFunction *function = nullptr;
+    if (type == ProblemFunctionType_Analytic)
+        function = new ProblemFunctionAnalytic();
+    else if (type == ProblemFunctionType_Interpolation)
+        assert(0); // function = new ProblemFunctionAnalytic();
+    else
+        assert(0);
+
+    return function;
+}
+
 ProblemFunctions::ProblemFunctions(QList<ProblemFunction *> items) : m_functions(QMap<QString, ProblemFunction *>())
 {
     foreach (ProblemFunction *function, items)
         m_functions[function->name()] = function;
+}
+
+void ProblemFunctions::load(QJsonObject &object)
+{
+    QJsonArray functionsJson = object[FUNCTIONS].toArray();
+    for (int i = 0; i < functionsJson.size(); i++)
+    {
+        QJsonObject functionJson = functionsJson[i].toObject();
+
+        ProblemFunction *function = ProblemFunctions::factory(problemFunctionTypeFromStringKey(functionJson[TYPE].toString()));
+        function->load(functionJson);
+
+        add(function);
+    }
+}
+
+void ProblemFunctions::save(QJsonObject &object)
+{
+    QJsonArray functionsJson;
+    foreach(ProblemFunction *function, m_functions.values())
+    {
+        QJsonObject functionJson;
+        function->save(functionJson);
+
+        functionsJson.append(functionJson);
+    }
+    object[FUNCTIONS] = functionsJson;
 }
 
 ProblemFunctions::~ProblemFunctions()

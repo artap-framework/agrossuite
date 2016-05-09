@@ -42,6 +42,9 @@ public:
 
     QAction *actRunStudy;
 
+public slots:
+    void refresh();
+
 private:
     OptiLab *m_optilab;
 
@@ -68,8 +71,7 @@ private slots:
     void doComputationDelete(bool);
     void doComputationSolve(bool);
 
-    void studyChanged(int index);
-    void refresh();
+    void studyChanged(int index);    
 
     void solveStudy();
 };

@@ -24,19 +24,16 @@
 #include "value.h"
 #include "solutiontypes.h"
 
-enum FunctionType
-{
-    FunctionType_Analytic,
-    FunctionType_Interpolation
-};
-
 class ProblemFunction
 {
 public:
-    ProblemFunction(const QString &name) : m_name(name) {}
+    ProblemFunction(const QString &name);
     virtual ~ProblemFunction() {}
 
-    virtual FunctionType type() const = 0;
+    virtual ProblemFunctionType type() const = 0;
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
 
     inline QString name() const { return m_name; }
     inline void setName(const QString &name) { m_name = name; }
@@ -57,10 +54,13 @@ protected:
 class ProblemFunctionAnalytic : public ProblemFunction
 {
 public:
-    ProblemFunctionAnalytic(const QString &name, const QString &expr);
+    ProblemFunctionAnalytic(const QString &name = "", const QString &expr = "");
     virtual ~ProblemFunctionAnalytic() {}
 
-    virtual FunctionType type() const { return FunctionType_Analytic; }
+    virtual ProblemFunctionType type() const { return ProblemFunctionType_Analytic; }
+
+    virtual void load(QJsonObject &object);
+    virtual void save(QJsonObject &object);
 
     inline QString expression() const { return m_expression; }
     void setExpression(const QString &expr);
@@ -71,6 +71,7 @@ public:
 protected:
     QString m_expression;
 
+    // value
     mutable exprtk::expression<double> m_exprtkExpr;
     mutable QString m_error;
     mutable double m_value;
@@ -82,6 +83,9 @@ public:
     ProblemFunctions(QList<ProblemFunction *> items = QList<ProblemFunction *>());
     virtual ~ProblemFunctions();
 
+    void load(QJsonObject &object);
+    void save(QJsonObject &object);
+
     void clear();
 
     void add(ProblemFunction *function);
@@ -89,6 +93,8 @@ public:
     ProblemFunction *function(const QString &name);
 
     QMap<QString, ProblemFunction *> items() const { return m_functions; }
+
+    static ProblemFunction *factory(ProblemFunctionType type);
 
 protected:
     QMap<QString, ProblemFunction *> m_functions;

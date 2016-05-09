@@ -28,12 +28,12 @@
 
 #include "qcustomplot/qcustomplot.h"
 
-FunctionDialog::FunctionDialog(ProblemFunction *function, QWidget *parent)
+ProblemFunctionDialog::ProblemFunctionDialog(ProblemFunction *function, QWidget *parent)
     : QDialog(parent), m_function(function)
 {    
 }
 
-int FunctionDialog::showDialog()
+int ProblemFunctionDialog::showDialog()
 {
     createControls();
     load();
@@ -41,32 +41,34 @@ int FunctionDialog::showDialog()
     return exec();
 }
 
-void FunctionDialog::createControls()
+void ProblemFunctionDialog::createControls()
 {
     setWindowTitle(tr("Function: %1").arg(m_function->name()));
+    setMinimumWidth(600);
+    setMinimumHeight(400);
 
     lblError = new QLabel();
 
     txtFunctionName = new QLineEdit();
     connect(txtFunctionName, SIGNAL(textChanged(QString)), this, SLOT(functionNameTextChanged(QString)));
 
+    txtLowerBound = new LineEditDouble(0.0, this);
+    connect(txtLowerBound, SIGNAL(editingFinished()), this, SLOT(checkRange()));
+    txtUpperBound = new LineEditDouble(1.0, this);
+    connect(txtUpperBound, SIGNAL(editingFinished()), this, SLOT(checkRange()));
+
     QGridLayout *layoutEdit = new QGridLayout();
     layoutEdit->addWidget(new QLabel(tr("Name")), 0, 0);
     layoutEdit->addWidget(txtFunctionName, 0, 1);
-
-    QHBoxLayout *layoutCustom = new QHBoxLayout();
-    layoutCustom->setMargin(0);
-    layoutCustom->addWidget(createCustomControls());
+    layoutEdit->addWidget(new QLabel(tr("Lower bound")), 1, 0);
+    layoutEdit->addWidget(txtLowerBound, 1, 1);
+    layoutEdit->addWidget(new QLabel(tr("Upper bound")), 2, 0);
+    layoutEdit->addWidget(txtUpperBound, 2, 1);
 
     QPalette palette = lblError->palette();
     palette.setColor(QPalette::WindowText, QColor(Qt::red));
     lblError->setPalette(palette);
     lblError->setVisible(false);
-
-    txtLowerBound = new LineEditDouble(0.0, this);
-    connect(txtLowerBound, SIGNAL(editingFinished()), this, SLOT(checkRange()));
-    txtUpperBound = new LineEditDouble(1.0, this);
-    connect(txtUpperBound, SIGNAL(editingFinished()), this, SLOT(checkRange()));
 
     // chart
     chart = new QCustomPlot(this);
@@ -75,17 +77,25 @@ void FunctionDialog::createControls()
     chart->yAxis->setLabel(tr("function"));
     chart->yAxis2->setLabel(tr("derivative"));
     chart->yAxis2->setVisible(true);
+    chart->legend->setVisible(true);
 
     graphValueLine = chart->addGraph(chart->xAxis, chart->yAxis);
     graphValueLine->setLineStyle(QCPGraph::lsLine);
+    graphValueLine->setPen(QPen(Qt::blue));
+    graphValueLine->setName(tr("Value"));
+    graphValueLine->addToLegend();
 
     graphValueScatter = chart->addGraph(chart->xAxis, chart->yAxis);
     graphValueScatter->setLineStyle(QCPGraph::lsNone);
     graphValueScatter->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 7));
     graphValueScatter->setPen(QPen(Qt::gray));
+    graphValueScatter->removeFromLegend();
 
     graphDerivativeLine = chart->addGraph(chart->xAxis, chart->yAxis2);
     graphDerivativeLine->setLineStyle(QCPGraph::lsLine);
+    graphDerivativeLine->setPen(QPen(Qt::red));
+    graphDerivativeLine->setName(tr("Derivative"));
+    graphDerivativeLine->addToLegend();
 
     // dialog buttons
     // dialog buttons
@@ -105,7 +115,7 @@ void FunctionDialog::createControls()
 
     QVBoxLayout *layoutParametersWidget = new QVBoxLayout();
     layoutParametersWidget->addLayout(layoutEdit);
-    layoutParametersWidget->addLayout(layoutCustom);
+    layoutParametersWidget->addWidget(createCustomControls());
     layoutParametersWidget->addWidget(lblError);
     layoutParametersWidget->addWidget(chart, 1);
     layoutParametersWidget->addLayout(layoutButtons);
@@ -113,25 +123,25 @@ void FunctionDialog::createControls()
     setLayout(layoutParametersWidget);
 }
 
-void FunctionDialog::doAccept()
+void ProblemFunctionDialog::doAccept()
 {
     if (save())
         accept();
 }
 
-void FunctionDialog::doReject()
+void ProblemFunctionDialog::doReject()
 {
     reject();
 }
 
-void FunctionDialog::load()
+void ProblemFunctionDialog::load()
 {
     txtLowerBound->setValue(m_function->lowerBound());
     txtUpperBound->setValue(m_function->upperBound());
     txtFunctionName->setText(m_function->name());
 }
 
-bool FunctionDialog::save()
+bool ProblemFunctionDialog::save()
 {
     lblError->clear();
     lblError->setVisible(false);
@@ -157,7 +167,7 @@ bool FunctionDialog::save()
     return true;
 }
 
-bool FunctionDialog::checkRange()
+bool ProblemFunctionDialog::checkRange()
 {
     if (txtLowerBound->value() > txtUpperBound->value())
     {
@@ -171,13 +181,13 @@ bool FunctionDialog::checkRange()
     return true;
 }
 
-void FunctionDialog::doPlot()
+void ProblemFunctionDialog::doPlot()
 {
     chart->rescaleAxes();
     chart->replot(QCustomPlot::rpQueued);
 }
 
-void FunctionDialog::functionNameTextChanged(const QString &str)
+void ProblemFunctionDialog::functionNameTextChanged(const QString &str)
 {
     lblError->setVisible(false);
     btnOk->setEnabled(true);
@@ -204,13 +214,13 @@ void FunctionDialog::functionNameTextChanged(const QString &str)
 
 // ******************************************************************************************************
 
-FunctionAnalyticDialog::FunctionAnalyticDialog(ProblemFunctionAnalytic *function, QWidget *parent)
-    : FunctionDialog(function, parent)
+ProblemFunctionAnalyticDialog::ProblemFunctionAnalyticDialog(ProblemFunctionAnalytic *function, QWidget *parent)
+    : ProblemFunctionDialog(function, parent)
 {
 
 }
 
-QWidget *FunctionAnalyticDialog::createCustomControls()
+QWidget *ProblemFunctionAnalyticDialog::createCustomControls()
 {
     txtExpression = new QLineEdit(this);
 
@@ -218,22 +228,22 @@ QWidget *FunctionAnalyticDialog::createCustomControls()
     layoutCustom->addWidget(new QLabel(tr("Expression")), 0, 0);
     layoutCustom->addWidget(txtExpression, 0, 1);
 
-    QWidget *widget = new QWidget();
+    QGroupBox *widget = new QGroupBox(tr("Analytic expression"));
     widget->setLayout(layoutCustom);
 
     return widget;
 }
 
-void FunctionAnalyticDialog::load()
+void ProblemFunctionAnalyticDialog::load()
 {
-    FunctionDialog::load();
+    ProblemFunctionDialog::load();
 
     txtExpression->setText(function()->expression());
 }
 
-bool FunctionAnalyticDialog::save()
+bool ProblemFunctionAnalyticDialog::save()
 {
-    if (FunctionDialog::save())
+    if (ProblemFunctionDialog::save())
     {
         function()->setExpression(txtExpression->text());
 
@@ -243,8 +253,11 @@ bool FunctionAnalyticDialog::save()
     return false;
 }
 
-void FunctionAnalyticDialog::doPlot()
+void ProblemFunctionAnalyticDialog::doPlot()
 {
+    // set expression
+    function()->setExpression(txtExpression->text());
+
     QVector<double> values;
     QVector<double> valuesFunction;
     QVector<double> valuesDerivative;
@@ -264,7 +277,7 @@ void FunctionAnalyticDialog::doPlot()
     graphValueLine->setData(values, valuesFunction);
     graphDerivativeLine->setData(values, valuesDerivative);
 
-    FunctionDialog::doPlot();
+    ProblemFunctionDialog::doPlot();
 }
 
 #include "util/global.h"

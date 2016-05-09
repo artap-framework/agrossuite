@@ -52,6 +52,9 @@ public:
 
     void clear();
 
+    void load(QJsonObject &object);
+    void save(QJsonObject &object);
+
     // parameters
     void set(const QString &key, double val);
     void set(const QList<ProblemParameter> parameters);

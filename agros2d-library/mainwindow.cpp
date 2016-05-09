@@ -795,6 +795,7 @@ void MainWindow::doDeleteSolutions()
     foreach (QSharedPointer<Computation> computation, Agros2D::singleton()->computations())
         computation->clearSolution();
 
+    optiLab->optiLabWidget()->refresh();
     sceneViewProblem->refresh();
     setControls();
 }
@@ -806,6 +807,7 @@ void MainWindow::doDeleteSolutionsAndResults()
     // clear all computations
     Agros2D::clearComputations();
 
+    optiLab->optiLabWidget()->refresh();
     sceneViewProblem->refresh();
     setControls();
 }

@@ -336,6 +336,12 @@ enum ComputationResultType
     ComputationResultType_Other
 };
 
+enum ProblemFunctionType
+{
+    ProblemFunctionType_Analytic,
+    ProblemFunctionType_Interpolation
+};
+
 // keys
 AGROS_LIBRARY_API void initLists();
 
@@ -506,5 +512,11 @@ AGROS_LIBRARY_API QString resultRecipeTypeString(ResultRecipeType type);
 AGROS_LIBRARY_API QStringList resultRecipeTypeStringKeys();
 AGROS_LIBRARY_API QString resultRecipeTypeToStringKey(ResultRecipeType type);
 AGROS_LIBRARY_API ResultRecipeType resultRecipeTypeFromStringKey(const QString &type);
+
+// function type
+AGROS_LIBRARY_API QString problemFunctionTypeString(ProblemFunctionType type);
+AGROS_LIBRARY_API QStringList problemFunctionTypeStringKeys();
+AGROS_LIBRARY_API QString problemFunctionTypeToStringKey(ProblemFunctionType type);
+AGROS_LIBRARY_API ProblemFunctionType problemFunctionTypeFromStringKey(const QString &type);
 
 #endif // UTIL_ENUMS_H

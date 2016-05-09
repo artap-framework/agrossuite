@@ -309,9 +309,6 @@ void OptiLabWidget::refresh()
 
 void OptiLabWidget::studyChanged(int index)
 {
-    // study
-    Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
-
     trvComputations->blockSignals(true);
 
     // computations
@@ -321,45 +318,50 @@ void OptiLabWidget::studyChanged(int index)
 
     trvComputations->clear();
 
-    double min = selectedItem.isEmpty() ? numeric_limits<double>::max() : 0.0;
+    // study
+    Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
 
-    // fill tree view
-    for (int i = 0; i < study->computationSets().size(); i++)
+    if (study)
     {
-        QList<ComputationSet> computationSets = study->computationSets();
+        double min = selectedItem.isEmpty() ? numeric_limits<double>::max() : 0.0;
 
-        QTreeWidgetItem *itemComputationSet = new QTreeWidgetItem(trvComputations);
-        itemComputationSet->setIcon(0, (computationSets[i].name().size() > 0) ? iconAlphabet(computationSets[i].name().at(0), AlphabetColor_Brown) : QIcon());
-        // itemComputationSet->setCheckState(0, Qt::Checked);
-        itemComputationSet->setText(0, tr("%1 (%2 computations)").arg(computationSets[i].name()).arg(computationSets[i].computations().size()));
-        if (i == computationSets.size() - 1)
-            itemComputationSet->setExpanded(true);
+        // fill tree view
+        for (int i = 0; i < study->computationSets().size(); i++)
+        {
+            QList<ComputationSet> computationSets = study->computationSets();
 
-        foreach (QSharedPointer<Computation> computation, computationSets[i].computations())
-        {            
-            QTreeWidgetItem *item = new QTreeWidgetItem(itemComputationSet);
-            item->setText(0, computation->problemDir());
-            item->setText(1, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->results()->hasResults() ? tr("results") : tr("no results")));
-            item->setData(0, Qt::UserRole, computation->problemDir());
+            QTreeWidgetItem *itemComputationSet = new QTreeWidgetItem(trvComputations);
+            itemComputationSet->setIcon(0, (computationSets[i].name().size() > 0) ? iconAlphabet(computationSets[i].name().at(0), AlphabetColor_Brown) : QIcon());
+            // itemComputationSet->setCheckState(0, Qt::Checked);
+            itemComputationSet->setText(0, tr("%1 (%2 computations)").arg(computationSets[i].name()).arg(computationSets[i].computations().size()));
+            if (i == computationSets.size() - 1)
+                itemComputationSet->setExpanded(true);
 
-            // select minimum
-            double localMin = study->evaluateSingleGoal(computation);
-            if (localMin < min)
+            foreach (QSharedPointer<Computation> computation, computationSets[i].computations())
             {
-                min = localMin;
-                selectedItem = computation->problemDir();
+                QTreeWidgetItem *item = new QTreeWidgetItem(itemComputationSet);
+                item->setText(0, computation->problemDir());
+                item->setText(1, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->results()->hasResults() ? tr("results") : tr("no results")));
+                item->setData(0, Qt::UserRole, computation->problemDir());
+
+                // select minimum
+                double localMin = study->evaluateSingleGoal(computation);
+                if (localMin < min)
+                {
+                    min = localMin;
+                    selectedItem = computation->problemDir();
+                }
             }
         }
+
+        // set stats
+        lblNumberOfSets->setText(QString::number(study->computationSets().count()));
+        lblNumberOfComputations->setText(QString::number(study->computationsCount()));
     }
-
-    trvComputations->blockSignals(false);
-
-    // set stats
-    lblNumberOfSets->setText(QString::number(study->computationSets().count()));
-    lblNumberOfComputations->setText(QString::number(study->computationsCount()));
-
     // set study to optilab view
     m_optilab->setStudy(study);
+
+    trvComputations->blockSignals(false);
 
     // select current computation
     if (!selectedItem.isEmpty())
@@ -496,6 +498,10 @@ OptiLab::~OptiLab()
 void OptiLab::setStudy(Study *study)
 {
     m_study = study;
+
+    // clear selection
+    if (m_study->computationsCount() == 0)
+        doComputationSelected("");
 
     doChartRefreshed("");
     geometryViewer->doZoomBestFit();
@@ -1171,7 +1177,7 @@ void OptiLab::doChartRefreshed(const QString &key)
         chartTrendLine->end->setCoords(end);
         chartTrendLine->setHead(QCPLineEnding::esSpikeArrow);
         chartTrendLine->setPen(QPen(QBrush(QColor(200, 200, 200)), 5));
-    }       
+    }
 
     // plot main chart
     chart->xAxis->setLabel(labelX);
