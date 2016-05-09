@@ -101,6 +101,9 @@ public:
     void setInitialTimeStep(double initialTimeStep);
     void setTimeTotal(double timeTotal);
     void setNumConstantTimeSteps(int timeSteps);
+
+    void load(const std::string &fn);
+    void save(const std::string &fn);
 };
 
 class PyComputation : public PyProblemBase

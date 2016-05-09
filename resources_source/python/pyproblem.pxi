@@ -38,6 +38,9 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         string getCouplingType(string &sourceField, string &targetField) except +
         void setCouplingType(string &sourceField, string &targetField, string &type) except +
 
+        void load(string fn) except +
+        void save(string fn) except +
+
 cdef class __Problem__:
     cdef PyProblem *_problem
     #cdef object _time_callback
@@ -227,6 +230,28 @@ cdef class __Problem__:
             return __StudyNSGA3__()
 
         raise TypeError("Study type is not supported.")
+
+    def load(self, fn):
+        """Load Problem.
+
+        load(fn)
+
+        Keyword arguments:
+        fn -- filename
+        """
+
+        self._problem.load(fn.encode())
+
+    def save(self, fn):
+        """Save Problem.
+
+        save(fn)
+
+        Keyword arguments:
+        fn -- filename
+        """
+
+        self._problem.save(fn.encode())
 
 __problem__ = __Problem__()
 def problem(clear = False):

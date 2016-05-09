@@ -191,6 +191,22 @@ void PyProblem::setTimeTotal(double timeTotal)
         throw out_of_range(QObject::tr("The total time must be positive.").toStdString());
 }
 
+void PyProblem::load(const std::string &fn)
+{
+    QString fileName = QString::fromStdString(fn);
+    if (QFile::exists(fileName))
+        Agros2D::problem()->readProblemFromArchive(fileName);
+    else
+        throw logic_error(QObject::tr("File '%1' does not exists.").arg(fileName).toStdString());
+}
+
+void PyProblem::save(const std::string &fn)
+{
+    QString fileName = QString::fromStdString(fn);
+    Agros2D::problem()->writeProblemToArchive(fileName, false);
+}
+
+
 // ********************************************************************************************
 
 PyComputation::PyComputation(bool newComputation) : PyProblemBase()
