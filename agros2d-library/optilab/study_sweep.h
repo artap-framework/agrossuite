@@ -53,7 +53,14 @@ public:
 
     virtual int estimatedNumberOfSteps() const;
 
+    QString initMethodString(int method) const;
+    inline QStringList initMethodStringKeys() const { QStringList list = initMethodList.values(); std::sort(list.begin(), list.end()); return list; }
+    inline QString initMethodToStringKey(int method) const { return initMethodList[method]; }
+    inline int initMethodFromStringKey(const QString &method) const { return initMethodList.key(method); }
+
 protected:
+    QMap<int, QString> initMethodList;
+
     virtual void setDefaultValues();
     virtual void setStringKeys();
 

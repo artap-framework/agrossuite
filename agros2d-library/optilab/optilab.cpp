@@ -234,13 +234,18 @@ void OptiLabWidget::createControls()
     lblNumberOfSets = new QLabel("");
     lblNumberOfComputations = new QLabel("");
 
+    // filter
+    txtFilter = new QLineEdit();
+
     QGridLayout *layoutStudies = new QGridLayout();
     layoutStudies->addWidget(new QLabel(tr("Study:")), 0, 0);
     layoutStudies->addWidget(cmbStudies, 0, 1);
-    layoutStudies->addWidget(new QLabel(tr("Number of sets:")), 1, 0);
-    layoutStudies->addWidget(lblNumberOfSets, 1, 1);
-    layoutStudies->addWidget(new QLabel(tr("Number of computations:")), 2, 0);
-    layoutStudies->addWidget(lblNumberOfComputations, 2, 1);
+    layoutStudies->addWidget(new QLabel(tr("Filter:")), 1, 0);
+    layoutStudies->addWidget(txtFilter, 1, 1);
+    layoutStudies->addWidget(new QLabel(tr("Number of sets:")), 2, 0);
+    layoutStudies->addWidget(lblNumberOfSets, 2, 1);
+    layoutStudies->addWidget(new QLabel(tr("Number of computations:")), 3, 0);
+    layoutStudies->addWidget(lblNumberOfComputations, 3, 1);
 
     QWidget *widgetStudies = new QWidget(this);
     widgetStudies->setLayout(layoutStudies);
@@ -270,16 +275,24 @@ void OptiLabWidget::createControls()
     mnuComputations->addSeparator();
     mnuComputations->addAction(actComputationDelete);
 
+    QPushButton *btnApply = new QPushButton(tr("Apply"));
+    connect(btnApply, SIGNAL(clicked(bool)), this, SLOT(refresh()));
+
+    QHBoxLayout *layoutButton = new QHBoxLayout();
+    layoutButton->addStretch();
+    layoutButton->addWidget(btnApply);
+
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(2, 2, 2, 3);
     layout->addWidget(widgetStudies);
     layout->addWidget(trvComputations);
+    layout->addLayout(layoutButton);
 
     setLayout(layout);
 }
 
 void OptiLabWidget::refresh()
-{
+{    
     actRunStudy->setEnabled(false);
 
     // fill studies
@@ -287,7 +300,19 @@ void OptiLabWidget::refresh()
 
     QString selectedItem = "";
     if (cmbStudies->currentIndex() != -1)
+    {
         selectedItem = cmbStudies->currentText();
+
+        // study - set filter
+        if (Agros2D::problem()->studies()->items().count() > 0)
+        {
+            Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
+            study->setValue(Study::View_Filter, txtFilter->text());
+        }
+    }
+
+    // clear filter
+    txtFilter->clear();
 
     cmbStudies->clear();
     trvComputations->clear();
@@ -323,26 +348,28 @@ void OptiLabWidget::studyChanged(int index)
 
     if (study)
     {
+        txtFilter->setText(study->value(Study::View_Filter).toString());
         double min = selectedItem.isEmpty() ? numeric_limits<double>::max() : 0.0;
 
         // fill tree view
-        for (int i = 0; i < study->computationSets().size(); i++)
+        QList<ComputationSet> computationSets = study->computationSets(study->value(Study::View_Filter).toString());
+        for (int i = 0; i < computationSets.size(); i++)
         {
-            QList<ComputationSet> computationSets = study->computationSets();
-
             QTreeWidgetItem *itemComputationSet = new QTreeWidgetItem(trvComputations);
             itemComputationSet->setIcon(0, (computationSets[i].name().size() > 0) ? iconAlphabet(computationSets[i].name().at(0), AlphabetColor_Brown) : QIcon());
             // itemComputationSet->setCheckState(0, Qt::Checked);
-            itemComputationSet->setText(0, tr("%1 (%2 computations)").arg(computationSets[i].name()).arg(computationSets[i].computations().size()));
             if (i == computationSets.size() - 1)
                 itemComputationSet->setExpanded(true);
 
+            int currentComputationSetCount = 0;
             foreach (QSharedPointer<Computation> computation, computationSets[i].computations())
             {
                 QTreeWidgetItem *item = new QTreeWidgetItem(itemComputationSet);
                 item->setText(0, computation->problemDir());
                 item->setText(1, QString("%1 / %2").arg(computation->isSolved() ? tr("solved") : tr("not solved")).arg(computation->results()->hasResults() ? tr("results") : tr("no results")));
                 item->setData(0, Qt::UserRole, computation->problemDir());
+
+                currentComputationSetCount++;
 
                 // select minimum
                 double localMin = study->evaluateSingleGoal(computation);
@@ -352,11 +379,17 @@ void OptiLabWidget::studyChanged(int index)
                     selectedItem = computation->problemDir();
                 }
             }
+
+            itemComputationSet->setText(0, tr("%1 (%2 computations)").arg(computationSets[i].name()).arg(currentComputationSetCount));
         }
 
         // set stats
-        lblNumberOfSets->setText(QString::number(study->computationSets().count()));
-        lblNumberOfComputations->setText(QString::number(study->computationsCount()));
+        int computationCount = 0;
+        foreach (ComputationSet computationSet, computationSets)
+            computationCount += computationSet.computations().count();
+
+        lblNumberOfSets->setText(QString::number(computationSets.count()));
+        lblNumberOfComputations->setText(QString::number(computationCount));
     }
     // set study to optilab view
     m_optilab->setStudy(study);
@@ -405,7 +438,8 @@ void OptiLabWidget::doComputationSelected(const QString &key)
                 trvComputations->scrollToItem(item);
 
                 // refresh chart
-                emit chartRefreshed(Agros2D::computations()[key]->problemDir());
+                if (!key.isEmpty() && Agros2D::computations().contains(key))
+                    emit chartRefreshed(Agros2D::computations()[key]->problemDir());
 
                 return;
             }
@@ -432,17 +466,7 @@ void OptiLabWidget::doComputationDelete(bool)
         if (!key.isEmpty() && Agros2D::computations().contains(key))
         {
             Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
-
-            // remove empty computation sets
-            QMutableListIterator<ComputationSet> i(study->computationSets());
-            while (i.hasNext())
-            {
-                ComputationSet *computationSet = &i.next();
-                computationSet->removeComputation(Agros2D::computations()[key]);
-
-                if (computationSet->computations().count() == 0)
-                    i.remove();
-            }
+            study->removeEmptyComputationSets();
 
             refresh();
         }
@@ -500,7 +524,7 @@ void OptiLab::setStudy(Study *study)
     m_study = study;
 
     // clear selection
-    if (m_study->computationsCount() == 0)
+    if (m_study->computationSets().count() == 0)
         doComputationSelected("");
 
     doChartRefreshed("");
@@ -911,87 +935,92 @@ void OptiLab::doComputationSelected(const QString &key)
     else
     {
         QMap<QString, QSharedPointer<Computation> > computations = Agros2D::computations();
-        QSharedPointer<Computation> computation = computations[key];
-
-        geometryViewer->setProblem(static_cast<QSharedPointer<ProblemBase> >(computation));
-
-        // fill treeview
-        QFont fnt = trvResults->font();
-        fnt.setBold(true);
-
-        // parameters
-        QTreeWidgetItem *parametersNode = new QTreeWidgetItem(trvResults);
-        parametersNode->setText(0, tr("Parameters"));
-        parametersNode->setFont(0, fnt);
-        parametersNode->setIcon(0, iconAlphabet('P', AlphabetColor_Brown));
-        parametersNode->setExpanded(true);
-
-        QMap<QString, ProblemParameter> parameters = computation->config()->parameters()->items();
-        foreach (Parameter parameter, m_study->parameters())
+        if (computations.count() > 0)
         {
-            QTreeWidgetItem *parameterNode = new QTreeWidgetItem(parametersNode);
-            parameterNode->setText(0, parameter.name());
-            parameterNode->setText(1, QString::number(parameters[parameter.name()].value()));
-            parameterNode->setData(0, Qt::UserRole, parameter.name());
-            parameterNode->setData(1, Qt::UserRole, Study::ResultType::ResultType_Parameter);
+            QSharedPointer<Computation> computation = computations[key];
 
-            if (selectedType == Study::ResultType::ResultType_Parameter && selectedKey == parameter.name())
-                selectedItem = parameterNode;
-        }
+            geometryViewer->setProblem(static_cast<QSharedPointer<ProblemBase> >(computation));
 
-        // functionals
-        QTreeWidgetItem *functionalsNode = new QTreeWidgetItem(trvResults);
-        functionalsNode->setText(0, tr("Functionals"));
-        functionalsNode->setFont(0, fnt);
-        functionalsNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
-        functionalsNode->setExpanded(true);
+            // fill treeview
+            QFont fnt = trvResults->font();
+            fnt.setBold(true);
 
-        // recipes
-        QTreeWidgetItem *recipesNode = new QTreeWidgetItem(trvResults);
-        recipesNode->setText(0, tr("Recipes"));
-        recipesNode->setFont(0, fnt);
-        recipesNode->setIcon(0, iconAlphabet('R', AlphabetColor_Green));
-        recipesNode->setExpanded(true);
+            // parameters
+            QTreeWidgetItem *parametersNode = new QTreeWidgetItem(trvResults);
+            parametersNode->setText(0, tr("Parameters"));
+            parametersNode->setFont(0, fnt);
+            parametersNode->setIcon(0, iconAlphabet('P', AlphabetColor_Brown));
+            parametersNode->setExpanded(true);
 
-        StringToDoubleMap results = computation->results()->items();
-        foreach (QString key, results.keys())
-        {
-            QTreeWidgetItem *item = nullptr;
-            if (computation->results()->type(key) == ComputationResultType_Functional)
+            QMap<QString, ProblemParameter> parameters = computation->config()->parameters()->items();
+            foreach (Parameter parameter, m_study->parameters())
             {
-                item = new QTreeWidgetItem(functionalsNode);
-                item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Functional);
+                QTreeWidgetItem *parameterNode = new QTreeWidgetItem(parametersNode);
+                parameterNode->setText(0, parameter.name());
+                parameterNode->setText(1, QString::number(parameters[parameter.name()].value()));
+                parameterNode->setData(0, Qt::UserRole, parameter.name());
+                parameterNode->setData(1, Qt::UserRole, Study::ResultType::ResultType_Parameter);
 
-                if (selectedType == Study::ResultType::ResultType_Functional && selectedKey == key)
-                    selectedItem = item;
+                if (selectedType == Study::ResultType::ResultType_Parameter && selectedKey == parameter.name())
+                    selectedItem = parameterNode;
             }
-            else if (computation->results()->type(key) == ComputationResultType_Recipe)
+
+            // functionals
+            QTreeWidgetItem *functionalsNode = new QTreeWidgetItem(trvResults);
+            functionalsNode->setText(0, tr("Functionals"));
+            functionalsNode->setFont(0, fnt);
+            functionalsNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
+            functionalsNode->setExpanded(true);
+
+            // recipes
+            QTreeWidgetItem *recipesNode = new QTreeWidgetItem(trvResults);
+            recipesNode->setText(0, tr("Recipes"));
+            recipesNode->setFont(0, fnt);
+            recipesNode->setIcon(0, iconAlphabet('R', AlphabetColor_Green));
+            recipesNode->setExpanded(true);
+
+            StringToDoubleMap results = computation->results()->items();
+            foreach (QString key, results.keys())
             {
-                item = new QTreeWidgetItem(recipesNode);
-                item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Recipe);
+                QTreeWidgetItem *item = nullptr;
+                if (computation->results()->type(key) == ComputationResultType_Functional)
+                {
+                    item = new QTreeWidgetItem(functionalsNode);
+                    item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Functional);
 
-                if (selectedType == Study::ResultType::ResultType_Recipe && selectedKey == key)
-                    selectedItem = item;
+                    if (selectedType == Study::ResultType::ResultType_Functional && selectedKey == key)
+                        selectedItem = item;
+                }
+                else if (computation->results()->type(key) == ComputationResultType_Recipe)
+                {
+                    item = new QTreeWidgetItem(recipesNode);
+                    item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Recipe);
+
+                    if (selectedType == Study::ResultType::ResultType_Recipe && selectedKey == key)
+                        selectedItem = item;
+                }
+                else
+                    assert(0);
+
+                item->setText(0, key);
+                item->setText(1, QString::number(results[key]));
+                item->setData(0, Qt::UserRole, key);
             }
-            else
-                assert(0);
 
-            item->setText(0, key);
-            item->setText(1, QString::number(results[key]));
-            item->setData(0, Qt::UserRole, key);
+            // paint chart
+            doChartRefreshed(key);
+
+            // select item
+            if (selectedItem)
+                trvResults->setCurrentItem(selectedItem);
         }
-
-        // paint chart
-        doChartRefreshed(key);
-
-        // select item
-        if (selectedItem)
-            trvResults->setCurrentItem(selectedItem);
     }
 }
 
 void OptiLab::doChartRefreshed(const QString &key)
 {
+    QList<ComputationSet> computationSets = m_study->computationSets(m_study->value(Study::View_Filter).toString());
+
     m_computationMap.clear();
     chartGraphSelectedComputation->clearData();
 
@@ -1037,18 +1066,18 @@ void OptiLab::doChartRefreshed(const QString &key)
     QVector<double> linRegDataY;
 
     // Pareto front
-    QList<QSharedPointer<Computation> > paretoFront = m_study->nondominatedSort();
+    QList<QSharedPointer<Computation> > paretoFront = m_study->nondominatedSort(computationSets);
     QVector<double> paretoDataX;
     QVector<double> paretoDataY;
 
-    int paletteStep = m_study->computationSets().count() > 1 ? (PALETTEENTRIES - 1) / (m_study->computationSets().count() - 1) : 0;
+    int paletteStep = computationSets.count() > 1 ? (PALETTEENTRIES - 1) / (computationSets.count() - 1) : 0;
     int step = 0;
-    for (int i = 0; i < m_study->computationSets().count(); i++)
+    for (int i = 0; i < computationSets.count(); i++)
     {
         QVector<double> dataSetX;
         QVector<double> dataSetY;
 
-        QList<QSharedPointer<Computation> > computations = m_study->computationSets()[i].computations();
+        QList<QSharedPointer<Computation> > computations = computationSets[i].computations();
 
         for (int j = 0; j < computations.count(); j++)
         {
@@ -1141,7 +1170,7 @@ void OptiLab::doChartRefreshed(const QString &key)
         chartGraphCharts.append(chartGraphChart);
         chartGraphChart->setData(dataSetX, dataSetY);
         chartGraphChart->setProperty("computationset_index", i);
-        chartGraphChart->setName(m_study->computationSets()[i].name());
+        chartGraphChart->setName(computationSets[i].name());
         chartGraphChart->addToLegend();
         chartGraphChart->setLineStyle(QCPGraph::lsNone);
         chartGraphChart->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, QColor(140, 140, 140), colorFill, 9));
@@ -1266,6 +1295,8 @@ void OptiLab::graphMouseDoubleClick(QMouseEvent *event)
 
 void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
 {
+    QList<ComputationSet> computationSets = m_study->computationSets(m_study->value(Study::View_Filter).toString());
+
     bool showStats = trvResults->currentItem() && trvResults->currentItem()->data(1, Qt::UserRole).isValid();
 
     lblResultMin->setText("-");
@@ -1293,9 +1324,9 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
         QVector<double> step;
         QVector<double> data;
 
-        for (int i = 0; i < m_study->computationSets().count(); i++)
+        for (int i = 0; i < computationSets.count(); i++)
         {
-            QList<QSharedPointer<Computation> > computations = m_study->computationSets()[i].computations();
+            QList<QSharedPointer<Computation> > computations = computationSets[i].computations();
 
             for (int j = 0; j < computations.count(); j++)
             {

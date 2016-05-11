@@ -366,21 +366,72 @@ Functional &Study::functional(const QString &name)
     assert(0);
 }
 
-int Study::computationsCount() const
-{
-    int res = 0;
-    foreach (ComputationSet computationSet, m_computationSets)
-        res += computationSet.computations().count();
-
-    return res;
-}
-
 QList<QSharedPointer<Computation> > &Study::computations(int index)
 {
     if (index == -1)
         return m_computationSets.last().computations();
     else
         return m_computationSets[index].computations();
+}
+
+QList<ComputationSet> Study::computationSets(const QString &filter) const
+{
+    if (filter.isEmpty())
+    {
+        return m_computationSets;
+    }
+    else
+    {
+        QList<ComputationSet> output;
+
+        for (int i = 0; i < m_computationSets.size(); i++)
+        {
+            output.append(ComputationSet(QList<QSharedPointer<Computation> >(), m_computationSets[i].name()));
+            foreach (QSharedPointer<Computation> computation, m_computationSets[i].computations())
+            {
+                // symbol table
+                exprtk::symbol_table<double> parametersSymbolTable = computation->config()->parameters()->symbolTable();
+
+                // results
+                StringToDoubleMap results = computation->results()->items();
+                foreach (QString key, results.keys())
+                    parametersSymbolTable.add_constant(key.toStdString(), results[key]);
+
+                exprtk::expression<double> expr;
+                expr.register_symbol_table(parametersSymbolTable);
+
+                QString error;
+                if (compileExpression(filter, expr, &error))
+                {
+                    if (fabs(expr.value()) < EPS_ZERO)
+                        continue;
+                }
+                else
+                {
+                    qDebug() << QString("Condition '%1' is not valid. ").arg(filter) << error;
+                }
+
+                // add computation
+                output.last().addComputation(computation);
+            }
+        }
+
+        return output;
+    }
+}
+
+void Study::removeEmptyComputationSets()
+{
+    // remove empty computation sets
+    QMutableListIterator<ComputationSet> i(m_computationSets);
+    while (i.hasNext())
+    {
+        ComputationSet *computationSet = &i.next();
+        // computationSet->removeComputation(computation);
+
+        if (computationSet->computations().count() == 0)
+            i.remove();
+    }
 }
 
 bool Study::dominateComputations(const Computation *l, const Computation *r)
@@ -400,21 +451,28 @@ bool Study::dominateComputations(const Computation *l, const Computation *r)
     return better;
 }
 
-QList<QSharedPointer<Computation> > Study::nondominatedSort()
+QList<QSharedPointer<Computation> > Study::nondominatedSort(QList<ComputationSet> list)
 {
-    if (m_computationSets.count() > 0)
+    if (list.count() > 0)
     {
+        int computationsCount = 0;
+
         QList<QSharedPointer<Computation> > allComputations;
-        foreach (ComputationSet computationSet, m_computationSets)
+        foreach (ComputationSet computationSet, list)
+        {
             foreach (QSharedPointer<Computation> computation, computationSet.computations())
+            {
                 allComputations.append(computation);
+                computationsCount++;
+            }
+        }
 
         int numAssignedIndividuals = 0;
         QList<QSharedPointer<Computation> > curFront;
 
-        while (numAssignedIndividuals < computationsCount())
+        while (numAssignedIndividuals < computationsCount)
         {
-            for (int i = 0; i < computationsCount(); i++)
+            for (int i = 0; i < computationsCount; i++)
             {
                 bool beDominated = false;
 
@@ -468,6 +526,7 @@ void Study::setDefaultValues()
     m_settingDefault[General_ClearSolution] = true;
     m_settingDefault[General_SolveProblem] = true;
 
+    m_settingDefault[View_Filter] = QString();
     m_settingDefault[View_ChartHorizontal] = QString();
     m_settingDefault[View_ChartVertical] = QString();
     m_settingDefault[View_ChartLogHorizontal] = false;
@@ -482,6 +541,7 @@ void Study::setStringKeys()
     m_settingKey[General_ClearSolution] = "General_ClearSolution";
     m_settingKey[General_SolveProblem] = "General_SolveProblem";
 
+    m_settingKey[View_Filter] = "View_Filter";
     m_settingKey[View_ChartHorizontal] = "View_ChartHorizontal";
     m_settingKey[View_ChartVertical] = "View_ChartVertical";
     m_settingKey[View_ChartLogHorizontal] = "View_ChartLogHorizontal";
@@ -569,15 +629,6 @@ void Studies::removeComputation(QSharedPointer<Computation> computation)
 {
     foreach (Study *study, m_studies)
     {
-        // remove empty computation sets
-        QMutableListIterator<ComputationSet> i(study->computationSets());
-        while (i.hasNext())
-        {
-            ComputationSet *computationSet = &i.next();
-            computationSet->removeComputation(computation);
-
-            if (computationSet->computations().count() == 0)
-                i.remove();
-        }
+        study->removeEmptyComputationSets();
     }
 }

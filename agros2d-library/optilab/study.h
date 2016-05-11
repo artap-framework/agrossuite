@@ -65,7 +65,7 @@ public:
     virtual void load(QJsonObject &object);
     virtual void save(QJsonObject &object);
 
-    inline QString name() { return m_name; }
+    inline QString name() const { return m_name; }
     inline void setName(const QString &name) { m_name = name; }
 
     inline void addComputation(QSharedPointer<Computation> computation) { m_computations.append(computation); }
@@ -148,6 +148,7 @@ public:
         NSGA3_eta_m,
         NSGA3_use_surrogate,
 
+        View_Filter,
         View_ChartHorizontal,
         View_ChartVertical,
         View_ChartLogHorizontal,
@@ -183,15 +184,14 @@ public:
     QList<double> evaluateMultiGoal(QSharedPointer<Computation> computation);
 
     QList<QSharedPointer<Computation> > &computations(int index = -1);
-    QList<ComputationSet> computationSets() const { return m_computationSets; }
-    int computationsCount() const;
-    QList<ComputationSet> &computationSets() { return m_computationSets; }
+    QList<ComputationSet> computationSets(const QString &filter = "") const;
     void addComputationSet(const QString &name = "") { m_computationSets.append(ComputationSet(QList<QSharedPointer<Computation> >(), name.isEmpty() ? tr("Set %1").arg(m_computationSets.count() + 1) : name)); }
     void addComputation(QSharedPointer<Computation> computation, bool newComputationSet = false);
+    void removeEmptyComputationSets();
 
     virtual int estimatedNumberOfSteps() const { return 0; }
 
-    QList<QSharedPointer<Computation> > nondominatedSort();
+    QList<QSharedPointer<Computation> > nondominatedSort(QList<ComputationSet> list);
 
     QVariant variant();
 

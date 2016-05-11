@@ -228,6 +228,8 @@ cdef class __Problem__:
             return __StudyNSGA2__()
         elif (type == "nsga3"):
             return __StudyNSGA3__()
+        elif (type == "sweep"):
+            return __StudySweep__()
 
         raise TypeError("Study type is not supported.")
 

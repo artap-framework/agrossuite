@@ -52,6 +52,7 @@ private:
     QLabel *lblNumberOfSets;
     QLabel *lblNumberOfComputations;
     QComboBox *cmbStudies;
+    QLineEdit *txtFilter;
 
     QMenu *mnuComputations;
     QAction *actComputationDelete;

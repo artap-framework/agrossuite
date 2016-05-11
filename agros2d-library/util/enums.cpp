@@ -330,7 +330,7 @@ void initLists()
     // iterLinearSolverPreconditionerTypeList.insert(PreconditionerType_Chebyshev, "chebyshev");
 
     // study type
-    studyTypeList.insert(StudyType_Sweep, "sweeps");
+    studyTypeList.insert(StudyType_Sweep, "sweep");
     studyTypeList.insert(StudyType_NSGA2, "nsga2");
     studyTypeList.insert(StudyType_NSGA3, "nsga3");
     studyTypeList.insert(StudyType_BayesOpt, "bayesopt");

@@ -235,7 +235,7 @@ void LogOptimizationDialog::createControls()
 
 void LogOptimizationDialog::updateChart(QList<double> values, double totalValue, SolutionUncertainty solutionUncertainty)
 {
-    int computationSetsCount = m_study->computationSets().count();
+    int computationSetsCount = m_study->computationSets(m_study->value(Study::View_Filter).toString()).count();
 
     // local objective functions
     if (values.count() > 1)
@@ -296,7 +296,7 @@ void LogOptimizationDialog::updateChart(QList<double> values, double totalValue,
     m_totalChart->rescaleAxes();
     m_totalChart->replot(QCustomPlot::rpImmediate);
     
-    m_computationSetsCount = m_study->computationSets().count();
+    m_computationSetsCount = m_study->computationSets(m_study->value(Study::View_Filter).toString()).count();
     
     m_progress->setValue(m_step);
     QApplication::processEvents();

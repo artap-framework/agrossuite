@@ -98,11 +98,27 @@ double SweepProblem::evaluateSample(const vectord& x)
 
 StudySweep::StudySweep() : Study()
 {
+    // init method
+    initMethodList.insert(1, "lhs");
+    initMethodList.insert(2, "sobol");
 }
 
 int StudySweep::estimatedNumberOfSteps() const
 {
     return value(Study::Sweep_num_samples).toInt();
+}
+
+QString StudySweep::initMethodString(int method) const
+{
+    if (method == 1)
+        return QObject::tr("Latin Hypercube Sampling (LHS)");
+    else if (method == 2)
+        return QObject::tr("Sobol Sequences");
+    else
+    {
+        std::cerr << "init method '" + QString::number(method).toStdString() + "' is not implemented. initMethodString(int method)" << endl;
+        throw;
+    }
 }
 
 void StudySweep::solve()
@@ -115,7 +131,7 @@ void StudySweep::solve()
     par.n_init_samples = value(Sweep_num_samples).toInt();
     par.n_iterations = 1;
     par.n_iter_relearn = 10000;
-    par.init_method = value(Sweep_init_method).toInt();
+    par.init_method = initMethodFromStringKey(value(Sweep_init_method).toString());
     par.noise = 1e-10;
     par.random_seed = 0;
     par.verbose_level = 1;
@@ -136,7 +152,7 @@ void StudySweep::setDefaultValues()
     Study::setDefaultValues();
 
     m_settingDefault[Sweep_num_samples] = 20;
-    m_settingDefault[Sweep_init_method] = 1; // 1-LHS, 2-Sobol
+    m_settingDefault[Sweep_init_method] = initMethodToStringKey(1); // 1-LHS, 2-Sobol
 }
 
 void StudySweep::setStringKeys()
@@ -162,9 +178,8 @@ QLayout *StudySweepDialog::createStudyControls()
     txtNumSamples->setMaximum(10000);
 
     cmbInitMethod = new QComboBox(this);
-    cmbInitMethod->addItem(tr("Latin Hypercube Sampling (LHS)"), 1);
-    cmbInitMethod->addItem(tr("Sobol Sequences"), 2);
-    // cmbInitMethod->addItem(tr("Uniform Sampling"), 3);
+    foreach (QString key, study()->initMethodStringKeys())
+        cmbInitMethod->addItem(study()->initMethodString(study()->initMethodFromStringKey(key)), key);
 
     QGridLayout *layoutInitialization = new QGridLayout(this);
     layoutInitialization->addWidget(new QLabel(tr("Number of samples:")), 0, 0);
@@ -186,7 +201,7 @@ void StudySweepDialog::load()
     StudyDialog::load();
 
     txtNumSamples->setValue(study()->value(Study::Sweep_num_samples).toInt());
-    cmbInitMethod->setCurrentIndex(cmbInitMethod->findData(study()->value(Study::Sweep_init_method).toInt()));
+    cmbInitMethod->setCurrentIndex(cmbInitMethod->findData(study()->value(Study::Sweep_init_method).toString()));
 }
 
 void StudySweepDialog::save()
@@ -194,5 +209,5 @@ void StudySweepDialog::save()
     StudyDialog::save();
 
     study()->setValue(Study::Sweep_num_samples, txtNumSamples->value());
-    study()->setValue(Study::Sweep_init_method, cmbInitMethod->itemData(cmbInitMethod->currentIndex()).toInt());
+    study()->setValue(Study::Sweep_init_method, cmbInitMethod->itemData(cmbInitMethod->currentIndex()).toString());
 }

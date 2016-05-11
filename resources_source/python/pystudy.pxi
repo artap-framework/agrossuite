@@ -48,6 +48,12 @@ cdef extern from "../../agros2d-library/pythonlab/pystudy.h":
     cdef cppclass PyStudyNSGA3(PyStudy):
         PyStudyNSGA3()
 
+    cdef cppclass PyStudySweep(PyStudy):
+        PyStudySweep()
+
+        string getInitMethod()
+        void setInitMethod(string &initMethod) except +
+
 cdef class __Study__:
     cdef PyStudy *thisptr
     cdef object settings
@@ -230,3 +236,20 @@ cdef class __StudyNSGA3__(__Study__):
 
         positive_value(settings['eta_m'], 'eta_m')
         self.thisptr.setParameter(string(b'NSGA3_eta_m'), <double> settings['eta_m'])
+
+cdef class __StudySweep__(__Study__):
+    def __cinit__(self):
+        self.thisptr = new PyStudySweep()
+
+        self.settings = __Parameters__(self.__get_settings__,
+                                       self.__set_settings__)
+
+    def __get_settings__(self):
+        return {'num_samples' : self.thisptr.getIntParameter(b'Sweep_num_samples'),
+                'init_method' : (<PyStudySweep*> self.thisptr).getInitMethod().decode()}
+
+    def __set_settings__(self, settings):
+        positive_value(settings['num_samples'], 'num_samples')
+        self.thisptr.setParameter(string(b'Sweep_num_samples'), <int> settings['num_samples'])
+
+        (<PyStudySweep*> self.thisptr).setInitMethod(<string> settings['init_method'].encode())

@@ -163,3 +163,27 @@ PyStudyNSGA3::PyStudyNSGA3() : PyStudy()
     // add study
     Agros2D::problem()->studies()->addStudy(m_study);
 }
+
+// Sweep **************************************************************
+
+PyStudySweep::PyStudySweep() : PyStudy()
+{
+    m_study = Study::factory(StudyType_Sweep);
+
+    // add study
+    Agros2D::problem()->studies()->addStudy(m_study);
+}
+
+void PyStudySweep::setInitMethod(const std::string &initMethod)
+{
+    if (study()->initMethodStringKeys().contains(QString::fromStdString(initMethod)))
+        m_study->setValue(Study::Sweep_init_method, QString::fromStdString(initMethod));
+    else
+    {
+        QStringList list;
+        foreach (QString key, study()->initMethodStringKeys())
+            list.append(key);
+
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
+    }
+}

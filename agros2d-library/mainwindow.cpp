@@ -340,10 +340,10 @@ void MainWindow::createMenus()
     mnuFileImportExport->addAction(actDocumentSaveGeometry);
     mnuFileImportExport->addSeparator();
     mnuFileImportExport->addAction(actExportVTKGeometry);
-    mnuFileImportExport->addAction(postprocessorWidget->sceneViewMesh()->actExportVTKMesh);
-    mnuFileImportExport->addAction(postprocessorWidget->sceneViewMesh()->actExportVTKOrder);
-    // mnuFileImportExport->addAction(sceneViewPost2D->actExportVTKScalar);
-    // mnuFileImportExport->addAction(sceneViewPost2D->actExportVTKContours);
+    // mnuFileImportExport->addAction(postprocessorWidget->sceneViewMesh()->actExportVTKMesh);
+    // mnuFileImportExport->addAction(postprocessorWidget->sceneViewMesh()->actExportVTKOrder);
+    mnuFileImportExport->addAction(postprocessorWidget->sceneViewPost2D()->actExportVTKScalar);
+    mnuFileImportExport->addAction(postprocessorWidget->sceneViewPost2D()->actExportVTKContours);
 
     mnuFile = menuBar()->addMenu(tr("&File"));
     mnuFile->addAction(actDocumentNew);

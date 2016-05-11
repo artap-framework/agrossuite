@@ -30,6 +30,7 @@
 #include "optilab/study_nsga2.h"
 #include "optilab/study_nsga3.h"
 #include "optilab/study_nlopt.h"
+#include "optilab/study_sweep.h"
 
 #include "nlopt.hpp"
 
@@ -136,4 +137,20 @@ public:
     virtual StudyNSGA3 *study() const { return static_cast<StudyNSGA3 *>(m_study); }
 };
 
+class PyStudySweep : public PyStudy
+{
+public:
+    PyStudySweep();
+    virtual ~PyStudySweep() {}
+
+    virtual StudySweep *study() { return static_cast<StudySweep *>(m_study); }
+    virtual StudySweep *study() const { return static_cast<StudySweep *>(m_study); }
+
+    // Sweep
+    inline std::string getInitMethod() const { return m_study->value(Study::Sweep_init_method).toString().toStdString(); }
+    void setInitMethod(const std::string &initMethod);
+};
+
+
 #endif // PYTHONLABSTUDY_H
+

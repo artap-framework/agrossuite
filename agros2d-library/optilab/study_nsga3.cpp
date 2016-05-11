@@ -212,11 +212,14 @@ public:
             }
 
             // add set
-            int popCount = m_study->computationsCount();
-            if (popCount > 1 && popCount < m_study->estimatedNumberOfSteps())
+            int computationCount = 0;
+            foreach (ComputationSet computationSet, m_study->computationSets())
+                computationCount += computationSet.computations().count();
+
+            if (computationCount > 1 && computationCount < m_study->estimatedNumberOfSteps())
             {
-                if (popCount % m_study->currentPopulationSize() == 0)
-                    m_study->addComputationSet(QObject::tr("Step %1").arg(popCount / m_study->currentPopulationSize()));
+                if (computationCount % m_study->currentPopulationSize() == 0)
+                    m_study->addComputationSet(QObject::tr("Step %1").arg(computationCount / m_study->currentPopulationSize()));
             }
 
             return true;
