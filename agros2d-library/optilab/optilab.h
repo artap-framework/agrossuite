@@ -49,7 +49,6 @@ private:
     OptiLab *m_optilab;
 
     QTreeWidget *trvComputations;
-    QLabel *lblNumberOfSets;
     QLabel *lblNumberOfComputations;
     QComboBox *cmbStudies;
     QLineEdit *txtFilter;

@@ -75,7 +75,9 @@ public:
         return study()->value(study()->stringKeyToType(QString::fromStdString(parameter))).toDouble();
     }
 
-    std::string findExtreme(std::string type, std::string key, bool minimum);
+    std::string findExtreme(std::string type, std::string key, bool minimum);    
+
+    void values(std::string variable, vector<double> &values) const;
 
 protected:
     Study *m_study;
@@ -84,7 +86,7 @@ protected:
 class PyStudyBayesOpt : public PyStudy
 {
 public:
-    PyStudyBayesOpt();
+    PyStudyBayesOpt(int index = -1);
     virtual ~PyStudyBayesOpt() {}
 
     virtual StudyBayesOpt *study() { return static_cast<StudyBayesOpt *>(m_study); }
@@ -107,7 +109,7 @@ public:
 class PyStudyNLopt : public PyStudy
 {
 public:
-    PyStudyNLopt();
+    PyStudyNLopt(int index = -1);
     virtual ~PyStudyNLopt() {}
 
     virtual StudyNLopt *study() { return static_cast<StudyNLopt *>(m_study); }
@@ -120,7 +122,7 @@ public:
 class PyStudyNSGA2 : public PyStudy
 {
 public:
-    PyStudyNSGA2();
+    PyStudyNSGA2(int index = -1);
     virtual ~PyStudyNSGA2() {}
 
     virtual StudyNSGA2 *study() { return static_cast<StudyNSGA2 *>(m_study); }
@@ -130,7 +132,7 @@ public:
 class PyStudyNSGA3 : public PyStudy
 {
 public:
-    PyStudyNSGA3();
+    PyStudyNSGA3(int index = -1);
     virtual ~PyStudyNSGA3() {}
 
     virtual StudyNSGA3 *study() { return static_cast<StudyNSGA3 *>(m_study); }
@@ -140,7 +142,7 @@ public:
 class PyStudySweep : public PyStudy
 {
 public:
-    PyStudySweep();
+    PyStudySweep(int index = -1);
     virtual ~PyStudySweep() {}
 
     virtual StudySweep *study() { return static_cast<StudySweep *>(m_study); }

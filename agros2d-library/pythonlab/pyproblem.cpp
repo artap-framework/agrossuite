@@ -206,6 +206,16 @@ void PyProblem::save(const std::string &fn)
     Agros2D::problem()->writeProblemToArchive(fileName, false);
 }
 
+std::string PyProblem::typeOfStudyAtIndex(int index)
+{
+    if (qSharedPointerDynamicCast<Problem>(m_problem)->studies()->items().count() == 0)
+        throw out_of_range(QObject::tr("No valid studies.").toStdString());
+
+    if (index < 0 || index >= qSharedPointerDynamicCast<Problem>(m_problem)->studies()->items().count())
+        throw out_of_range(QObject::tr("Out of range. Valid indices (0-%1).").arg(qSharedPointerDynamicCast<Problem>(m_problem)->studies()->items().count() - 1).toStdString());
+
+    return studyTypeToStringKey(qSharedPointerDynamicCast<Problem>(m_problem)->studies()->items().at(index)->type()).toStdString();
+}
 
 // ********************************************************************************************
 

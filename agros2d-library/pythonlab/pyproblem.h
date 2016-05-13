@@ -104,6 +104,10 @@ public:
 
     void load(const std::string &fn);
     void save(const std::string &fn);
+
+    // type of Study at index
+    // TODO: do it better!
+    std::string typeOfStudyAtIndex(int index);
 };
 
 class PyComputation : public PyProblemBase

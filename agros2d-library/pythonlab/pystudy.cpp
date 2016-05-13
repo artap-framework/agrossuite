@@ -54,14 +54,47 @@ std::string PyStudy::findExtreme(std::string type, std::string key, bool minimum
         return "";
 }
 
+void PyStudy::values(std::string variable, vector<double> &values) const
+{
+    QString key = QString::fromStdString(variable);
+    QList<ComputationSet> computationSets = m_study->computationSets(m_study->value(Study::View_Filter).toString());
+
+    for (int i = 0; i < computationSets.count(); i++)
+    {
+        QList<QSharedPointer<Computation> > computations = computationSets[i].computations();
+
+        for (int j = 0; j < computations.count(); j++)
+        {
+            QSharedPointer<Computation> computation = computations[j];
+
+            double val = NAN;
+            if (computation->config()->parameters()->items().contains(key))
+                val = computation->config()->parameters()->number(key);
+            else if (computation->results()->items().keys().contains(key))
+                val = computation->results()->value(key);
+
+            // add to the list
+            if (!isnan(val))
+                values.push_back(val);
+        }
+    }
+}
+
 // BayesOpt **************************************************************
 
-PyStudyBayesOpt::PyStudyBayesOpt() : PyStudy()
+PyStudyBayesOpt::PyStudyBayesOpt(int index) : PyStudy()
 {
-    m_study = Study::factory(StudyType_BayesOpt);
-
     // add study
-    Agros2D::problem()->studies()->addStudy(m_study);
+    if (index == -1)
+    {
+        m_study = Study::factory(StudyType_BayesOpt);
+        Agros2D::problem()->studies()->addStudy(m_study);
+    }
+    else
+    {
+        if (index < Agros2D::problem()->studies()->items().count())
+            m_study = Agros2D::problem()->studies()->items().at(index);
+    }
 }
 
 void PyStudyBayesOpt::setInitMethod(const std::string &initMethod)
@@ -122,12 +155,19 @@ void PyStudyBayesOpt::setLearningType(const std::string &learningType)
 
 // NLopt **************************************************************
 
-PyStudyNLopt::PyStudyNLopt() : PyStudy()
+PyStudyNLopt::PyStudyNLopt(int index) : PyStudy()
 {
-    m_study = Study::factory(StudyType_NLopt);
-
     // add study
-    Agros2D::problem()->studies()->addStudy(m_study);
+    if (index == -1)
+    {
+        m_study = Study::factory(StudyType_NLopt);
+        Agros2D::problem()->studies()->addStudy(m_study);
+    }
+    else
+    {
+        if (index < Agros2D::problem()->studies()->items().count())
+            m_study = Agros2D::problem()->studies()->items().at(index);
+    }
 }
 
 void PyStudyNLopt::setAlgorithm(const std::string &algorithm)
@@ -146,32 +186,54 @@ void PyStudyNLopt::setAlgorithm(const std::string &algorithm)
 
 // NSGA2 **************************************************************
 
-PyStudyNSGA2::PyStudyNSGA2() : PyStudy()
+PyStudyNSGA2::PyStudyNSGA2(int index) : PyStudy()
 {
-    m_study = Study::factory(StudyType_NSGA2);
-
     // add study
-    Agros2D::problem()->studies()->addStudy(m_study);
+    if (index == -1)
+    {
+        m_study = Study::factory(StudyType_NSGA2);
+        Agros2D::problem()->studies()->addStudy(m_study);
+    }
+    else
+    {
+        if (index < Agros2D::problem()->studies()->items().count())
+            m_study = Agros2D::problem()->studies()->items().at(index);
+    }
 }
 
 // NSGA3 **************************************************************
 
-PyStudyNSGA3::PyStudyNSGA3() : PyStudy()
+PyStudyNSGA3::PyStudyNSGA3(int index) : PyStudy()
 {
-    m_study = Study::factory(StudyType_NSGA3);
-
     // add study
-    Agros2D::problem()->studies()->addStudy(m_study);
+    if (index == -1)
+    {
+        m_study = Study::factory(StudyType_NSGA3);
+        Agros2D::problem()->studies()->addStudy(m_study);
+    }
+    else
+    {
+        if (index < Agros2D::problem()->studies()->items().count())
+            m_study = Agros2D::problem()->studies()->items().at(index);
+    }
 }
 
 // Sweep **************************************************************
 
-PyStudySweep::PyStudySweep() : PyStudy()
+PyStudySweep::PyStudySweep(int index) : PyStudy()
 {
-    m_study = Study::factory(StudyType_Sweep);
-
     // add study
-    Agros2D::problem()->studies()->addStudy(m_study);
+    if (index == -1)
+    {
+        m_study = Study::factory(StudyType_Sweep);
+        Agros2D::problem()->studies()->addStudy(m_study);
+    }
+    else
+    {
+        if (index < Agros2D::problem()->studies()->items().count())
+            m_study = Agros2D::problem()->studies()->items().at(index);
+    }
+
 }
 
 void PyStudySweep::setInitMethod(const std::string &initMethod)

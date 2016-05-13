@@ -231,7 +231,6 @@ void OptiLabWidget::createControls()
     cmbStudies = new QComboBox(this);
     connect(cmbStudies, SIGNAL(currentIndexChanged(int)), this, SLOT(studyChanged(int)));
 
-    lblNumberOfSets = new QLabel("");
     lblNumberOfComputations = new QLabel("");
 
     // filter
@@ -242,10 +241,8 @@ void OptiLabWidget::createControls()
     layoutStudies->addWidget(cmbStudies, 0, 1);
     layoutStudies->addWidget(new QLabel(tr("Filter:")), 1, 0);
     layoutStudies->addWidget(txtFilter, 1, 1);
-    layoutStudies->addWidget(new QLabel(tr("Number of sets:")), 2, 0);
-    layoutStudies->addWidget(lblNumberOfSets, 2, 1);
-    layoutStudies->addWidget(new QLabel(tr("Number of computations:")), 3, 0);
-    layoutStudies->addWidget(lblNumberOfComputations, 3, 1);
+    layoutStudies->addWidget(new QLabel(tr("Number of computations:")), 2, 0);
+    layoutStudies->addWidget(lblNumberOfComputations, 2, 1);
 
     QWidget *widgetStudies = new QWidget(this);
     widgetStudies->setLayout(layoutStudies);
@@ -388,7 +385,6 @@ void OptiLabWidget::studyChanged(int index)
         foreach (ComputationSet computationSet, computationSets)
             computationCount += computationSet.computations().count();
 
-        lblNumberOfSets->setText(QString::number(computationSets.count()));
         lblNumberOfComputations->setText(QString::number(computationCount));
     }
     // set study to optilab view

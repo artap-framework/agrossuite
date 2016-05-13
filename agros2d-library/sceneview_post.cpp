@@ -115,20 +115,35 @@ void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
                 compute_node(node3, &*patch, i1+1, i2+1, 0, n_subdivisions);
 
                 // compute values
-                double value0 = patch->data(0, i1*d1 + i2*d2);
-                double value1 = patch->data(0, i1*d1 + (i2+1)*d2);
-                double value2 = patch->data(0, (i1+1)*d1 + i2*d2);
-                double value3 = patch->data(0, (i1+1)*d1 + (i2+1)*d2);
+                int index0 = i1*d1 + i2*d2;
+                int index1 = i1*d1 + (i2+1)*d2;
+                int index2 = (i1+1)*d1 + i2*d2;
+                int index3 = (i1+1)*d1 + (i2+1)*d2;
+
+                double value0 = patch->data(0, index0);
+                double value1 = patch->data(0, index1);
+                double value2 = patch->data(0, index2);
+                double value3 = patch->data(0, index3);
 
                 if (deform)
                 {
                     // node(0) ... value
                     // node(1) ... disp x
                     // node(2) ... disp y
-                    node0 += dmult * dealii::Point<2>(patch->data(1, i1*d1 + i2*d2), patch->data(2, i1*d1 + i2*d2));
-                    node1 += dmult * dealii::Point<2>(patch->data(1, i1*d1 + (i2+1)*d2), patch->data(2, i1*d1 + (i2+1)*d2));
-                    node2 += dmult * dealii::Point<2>(patch->data(1, (i1+1)*d1 + i2*d2), patch->data(2, (i1+1)*d1 + i2*d2));
-                    node3 += dmult * dealii::Point<2>(patch->data(1, (i1+1)*d1 + (i2+1)*d2), patch->data(2, (i1+1)*d1 + (i2+1)*d2));
+
+                    double dispx0 = patch->data(1, index0);
+                    double dispy0 = patch->data(2, index0);
+                    double dispx1 = patch->data(1, index1);
+                    double dispy1 = patch->data(2, index1);
+                    double dispx2 = patch->data(1, index2);
+                    double dispy2 = patch->data(2, index2);
+                    double dispx3 = patch->data(1, index3);
+                    double dispy3 = patch->data(2, index3);
+
+                    node0 += dmult * dealii::Point<2>(dispx0, dispy0);
+                    node1 += dmult * dealii::Point<2>(dispx1, dispy1);
+                    node2 += dmult * dealii::Point<2>(dispx2, dispy2);
+                    node3 += dmult * dealii::Point<2>(dispx3, dispy3);
                 }
 
                 // create triangles

@@ -427,7 +427,19 @@ void Study::removeEmptyComputationSets()
     while (i.hasNext())
     {
         ComputationSet *computationSet = &i.next();
-        // computationSet->removeComputation(computation);
+
+        if (computationSet->computations().count() == 0)
+            i.remove();
+    }
+}
+
+void Study::removeComputation(QSharedPointer<Computation> computation)
+{
+    QMutableListIterator<ComputationSet> i(m_computationSets);
+    while (i.hasNext())
+    {
+        ComputationSet *computationSet = &i.next();
+        computationSet->removeComputation(computation);
 
         if (computationSet->computations().count() == 0)
             i.remove();
@@ -629,6 +641,6 @@ void Studies::removeComputation(QSharedPointer<Computation> computation)
 {
     foreach (Study *study, m_studies)
     {
-        study->removeEmptyComputationSets();
+        study->removeComputation(computation);
     }
 }

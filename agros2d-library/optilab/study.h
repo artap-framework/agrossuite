@@ -187,6 +187,7 @@ public:
     QList<ComputationSet> computationSets(const QString &filter = "") const;
     void addComputationSet(const QString &name = "") { m_computationSets.append(ComputationSet(QList<QSharedPointer<Computation> >(), name.isEmpty() ? tr("Set %1").arg(m_computationSets.count() + 1) : name)); }
     void addComputation(QSharedPointer<Computation> computation, bool newComputationSet = false);
+    void removeComputation(QSharedPointer<Computation> computation);
     void removeEmptyComputationSets();
 
     virtual int estimatedNumberOfSteps() const { return 0; }

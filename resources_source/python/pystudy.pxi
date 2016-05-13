@@ -20,9 +20,10 @@ cdef extern from "../../agros2d-library/pythonlab/pystudy.h":
 
         # postprocessor
         string findExtreme(string type, string key, bool minimum) except +
+        void values(string variable, vector[double] &values)
 
     cdef cppclass PyStudyBayesOpt(PyStudy):
-        PyStudyBayesOpt()
+        PyStudyBayesOpt(int index)
 
         string getInitMethod()
         void setInitMethod(string &initMethod) except +
@@ -37,19 +38,19 @@ cdef extern from "../../agros2d-library/pythonlab/pystudy.h":
         void setLearningType(string &learningType) except +
 
     cdef cppclass PyStudyNLopt(PyStudy):
-        PyStudyNLopt()
+        PyStudyNLopt(int index)
 
         string getAlgorithm()
         void setAlgorithm(string &algorithm) except +
 
     cdef cppclass PyStudyNSGA2(PyStudy):
-        PyStudyNSGA2()
+        PyStudyNSGA2(int index)
 
     cdef cppclass PyStudyNSGA3(PyStudy):
-        PyStudyNSGA3()
+        PyStudyNSGA3(int index)
 
     cdef cppclass PyStudySweep(PyStudy):
-        PyStudySweep()
+        PyStudySweep(int index)
 
         string getInitMethod()
         void setInitMethod(string &initMethod) except +
@@ -97,9 +98,19 @@ cdef class __Study__:
         if (problemDir.decode() != ""):
             return __Computation__(computation = problemDir.decode())
 
+    def values(self, variable):
+        cdef vector[double] values
+        self.thisptr.values(variable.encode(), values)
+
+        out = []
+        for i in range(values.size()):
+            out.append(values[i])
+
+        return out
+
 cdef class __StudyBayesOpt__(__Study__):
-    def __cinit__(self):
-        self.thisptr = new PyStudyBayesOpt()
+    def __cinit__(self, index = -1):
+        self.thisptr = new PyStudyBayesOpt(index)
 
         self.settings = __Parameters__(self.__get_settings__,
                                        self.__set_settings__)
@@ -133,8 +144,8 @@ cdef class __StudyBayesOpt__(__Study__):
         (<PyStudyBayesOpt*> self.thisptr).setLearningType(<string> settings['l_type'].encode())
 
 cdef class __StudyNLopt__(__Study__):
-    def __cinit__(self):
-        self.thisptr = new PyStudyNLopt()
+    def __cinit__(self, index = -1):
+        self.thisptr = new PyStudyNLopt(index)
 
         self.settings = __Parameters__(self.__get_settings__,
                                        self.__set_settings__)
@@ -166,8 +177,8 @@ cdef class __StudyNLopt__(__Study__):
         (<PyStudyNLopt*> self.thisptr).setAlgorithm(<string> settings['algorithm'].encode())
 
 cdef class __StudyNSGA2__(__Study__):
-    def __cinit__(self):
-        self.thisptr = new PyStudyNSGA2()
+    def __cinit__(self, index = -1):
+        self.thisptr = new PyStudyNSGA2(index)
 
         self.settings = __Parameters__(self.__get_settings__,
                                        self.__set_settings__)
@@ -204,8 +215,8 @@ cdef class __StudyNSGA2__(__Study__):
         self.thisptr.setParameter(string(b'NSGA2_crowdobj'), <bool> settings['crowdobj'])
 
 cdef class __StudyNSGA3__(__Study__):
-    def __cinit__(self):
-        self.thisptr = new PyStudyNSGA3()
+    def __cinit__(self, index = -1):
+        self.thisptr = new PyStudyNSGA3(index)
 
         self.settings = __Parameters__(self.__get_settings__,
                                        self.__set_settings__)
@@ -238,8 +249,8 @@ cdef class __StudyNSGA3__(__Study__):
         self.thisptr.setParameter(string(b'NSGA3_eta_m'), <double> settings['eta_m'])
 
 cdef class __StudySweep__(__Study__):
-    def __cinit__(self):
-        self.thisptr = new PyStudySweep()
+    def __cinit__(self, index = -1):
+        self.thisptr = new PyStudySweep(index)
 
         self.settings = __Parameters__(self.__get_settings__,
                                        self.__set_settings__)

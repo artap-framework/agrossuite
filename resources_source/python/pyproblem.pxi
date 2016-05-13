@@ -41,6 +41,8 @@ cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
         void load(string fn) except +
         void save(string fn) except +
 
+        string typeOfStudyAtIndex(int index) except +
+
 cdef class __Problem__:
     cdef PyProblem *_problem
     #cdef object _time_callback
@@ -214,7 +216,7 @@ cdef class __Problem__:
     def add_study(self, type):
         """Add new Study to Problem.
 
-        study(type)
+        add_study(type)
 
         Keyword arguments:
         type -- type keyword
@@ -230,6 +232,30 @@ cdef class __Problem__:
             return __StudyNSGA3__()
         elif (type == "sweep"):
             return __StudySweep__()
+
+        raise TypeError("Study type is not supported.")
+
+    def study(self, index):
+        """get Study by index.
+
+        study(index)
+
+        Keyword arguments:
+        index -- index
+        """
+
+        type = self._problem.typeOfStudyAtIndex(index).decode()
+
+        if (type == "bayesopt"):
+            return __StudyBayesOpt__(index)
+        elif (type == "nlopt"):
+            return __StudyNLopt__(index)
+        elif (type == "nsga2"):
+            return __StudyNSGA2__(index)
+        elif (type == "nsga3"):
+            return __StudyNSGA3__(index)
+        elif (type == "sweep"):
+            return __StudySweep__(index)
 
         raise TypeError("Study type is not supported.")
 
