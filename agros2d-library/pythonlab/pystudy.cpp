@@ -74,7 +74,7 @@ void PyStudy::values(std::string variable, vector<double> &values) const
                 val = computation->results()->value(key);
 
             // add to the list
-            if (!isnan(val))
+            if (!std::isnan(val))
                 values.push_back(val);
         }
     }
