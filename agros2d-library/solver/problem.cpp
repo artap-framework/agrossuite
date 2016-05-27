@@ -404,7 +404,8 @@ void ProblemBase::removeField(FieldInfo *field)
 
     synchronizeCouplings();
 
-    currentPythonEngine()->runExpression(QString("agros2d.__problem__.__remove_field__(\"%1\")").arg(field->fieldId()));
+    if (currentPythonEngine())
+        currentPythonEngine()->runExpression(QString("agros2d.__problem__.__remove_field__(\"%1\")").arg(field->fieldId()));
 
     emit fieldsChanged();
 }

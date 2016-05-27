@@ -54,6 +54,33 @@ std::string PyStudy::findExtreme(std::string type, std::string key, bool minimum
         return "";
 }
 
+void PyStudy::steps(vector<int> &steps) const
+{   
+    // all computations
+    QList<ComputationSet> computationSetsAll  = m_study->computationSets();
+    QList<Computation *> computationsAll;
+    for (int i = 0; i < computationSetsAll.count(); i++)
+    {
+        QList<QSharedPointer<Computation> > computations = computationSetsAll[i].computations();
+        for (int j = 0; j < computations.count(); j++)
+            computationsAll.append(computations[j].data());
+    }
+
+    // selected computations
+    QList<ComputationSet> computationSetsFilter = m_study->computationSets(m_study->value(Study::View_Filter).toString());
+    QList<Computation *> computationsFilter;
+    for (int i = 0; i < computationSetsFilter.count(); i++)
+    {
+        QList<QSharedPointer<Computation> > computations = computationSetsFilter[i].computations();
+        for (int j = 0; j < computations.count(); j++)
+            computationsFilter.append(computations[j].data());
+    }
+
+    // selected steps
+    for (int i = 0; i < computationsFilter.count(); i++)
+        steps.push_back(computationsAll.indexOf(computationsFilter[i]));
+}
+
 void PyStudy::values(std::string variable, vector<double> &values) const
 {
     QString key = QString::fromStdString(variable);

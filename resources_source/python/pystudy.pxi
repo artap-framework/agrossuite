@@ -21,6 +21,7 @@ cdef extern from "../../agros2d-library/pythonlab/pystudy.h":
         # postprocessor
         string findExtreme(string type, string key, bool minimum) except +
         void values(string variable, vector[double] &values)
+        void steps(vector[int] &steps)
 
     cdef cppclass PyStudyBayesOpt(PyStudy):
         PyStudyBayesOpt(int index)
@@ -98,6 +99,16 @@ cdef class __Study__:
         if (problemDir.decode() != ""):
             return __Computation__(computation = problemDir.decode())
 
+    def steps(self):
+        cdef vector[int] steps
+        self.thisptr.steps(steps)
+
+        out = []
+        for i in range(steps.size()):
+            out.append(steps[i])
+
+        return out
+
     def values(self, variable):
         cdef vector[double] values
         self.thisptr.values(variable.encode(), values)
@@ -106,7 +117,7 @@ cdef class __Study__:
         for i in range(values.size()):
             out.append(values[i])
 
-        return out
+        return out       
 
 cdef class __StudyBayesOpt__(__Study__):
     def __cinit__(self, index = -1):

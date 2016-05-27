@@ -289,7 +289,7 @@ SceneNode *Scene::addNode(SceneNode *node)
     }
 
     nodes->add(node);
-    if (!currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
         emit invalidated();
 
     checkNodeConnect(node);
@@ -311,7 +311,7 @@ SceneFace *Scene::addFace(SceneFace *edge)
     }
 
     faces->add(edge);
-    if (!currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
         emit invalidated();
 
     return edge;
@@ -339,7 +339,7 @@ SceneLabel *Scene::addLabel(SceneLabel *label)
     }
 
     labels->add(label);
-    if (!currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
         emit invalidated();
 
     return label;
@@ -353,7 +353,7 @@ SceneLabel *Scene::getLabel(const Point &point)
 void Scene::addBoundary(SceneBoundary *boundary)
 {
     boundaries->add(boundary);
-    if (!currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
         emit invalidated();
 }
 
@@ -364,7 +364,7 @@ void Scene::removeBoundary(SceneBoundary *boundary)
     boundaries->remove(boundary);
     // delete boundary;
 
-    if (!currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
         emit invalidated();
 }
 
@@ -382,7 +382,7 @@ SceneBoundary *Scene::getBoundary(FieldInfo *field, const QString &name)
 void Scene::addMaterial(SceneMaterial *material)
 {
     this->materials->add(material);
-    if (!currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
         emit invalidated();
 }
 
@@ -399,7 +399,7 @@ void Scene::removeMaterial(SceneMaterial *material)
 
     // delete material;
 
-    if (!currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
         emit invalidated();
 }
 

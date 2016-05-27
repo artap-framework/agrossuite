@@ -77,6 +77,7 @@ public:
 
     std::string findExtreme(std::string type, std::string key, bool minimum);    
 
+    void steps(vector<int> &steps) const;
     void values(std::string variable, vector<double> &values) const;
 
 protected:

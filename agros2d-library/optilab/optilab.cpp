@@ -462,7 +462,7 @@ void OptiLabWidget::doComputationDelete(bool)
         if (!key.isEmpty() && Agros2D::computations().contains(key))
         {
             Study *study = Agros2D::problem()->studies()->items().at(cmbStudies->currentIndex());
-            study->removeEmptyComputationSets();
+            study->removeComputation(Agros2D::computations()[key]);
 
             refresh();
         }
