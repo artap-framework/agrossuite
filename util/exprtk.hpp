@@ -2892,10 +2892,12 @@ namespace exprtk
             {
                token t;
 
-               while (join(g.token_list_[i],g.token_list_[i + 1],t))
+               while (join(g[i],g[i + 1],t))
                {
                   g.token_list_[i] = t;
+
                   g.token_list_.erase(g.token_list_.begin() + (i + 1));
+
                   ++changes;
                }
             }
@@ -2914,9 +2916,10 @@ namespace exprtk
             {
                token t;
 
-               while (join(g.token_list_[i],g.token_list_[i + 1],g.token_list_[i + 2],t))
+               while (join(g[i],g[i + 1],g[i + 2],t))
                {
                   g.token_list_[i] = t;
+
                   g.token_list_.erase(g.token_list_.begin() + (i + 1),
                                       g.token_list_.begin() + (i + 3));
                   ++changes;
@@ -4799,7 +4802,7 @@ namespace exprtk
             if (branch_ && branch_deletable_)
             {
                delete branch_;
-               branch_ = nullptr;
+               branch_ = 0;
             }
          }
 
@@ -4992,7 +4995,7 @@ namespace exprtk
             if (branch_ && branch_deletable_)
             {
                delete branch_;
-               branch_ = nullptr;
+               branch_ = 0;
             }
          }
 
@@ -15883,7 +15886,6 @@ namespace exprtk
             if (expr && details::branch_deletable(expr))
             {
                delete expr;
-               expr = nullptr;
             }
 
             if (!local_data_list.empty())
@@ -15915,7 +15917,6 @@ namespace exprtk
             if (results)
             {
                delete results;
-               results = nullptr;
             }
          }
 
@@ -15955,7 +15956,7 @@ namespace exprtk
                   delete expression_holder_;
                }
 
-               expression_holder_ = nullptr;
+               expression_holder_ = 0;
             }
 
             expression_holder_ = e.expression_holder_;
@@ -15988,7 +15989,7 @@ namespace exprtk
                delete expression_holder_;
             }
 
-            expression_holder_ = nullptr;
+            expression_holder_ = 0;
          }
 
          return *this;
@@ -16000,9 +16001,8 @@ namespace exprtk
          {
             if (0 == --expression_holder_->ref_count)
             {
-               delete expression_holder_;               
-               expression_holder_ = nullptr;
-            }            
+               delete expression_holder_;
+            }
          }
       }
 
@@ -16075,7 +16075,6 @@ namespace exprtk
                if (0 == --expression_holder_->ref_count)
                {
                   delete expression_holder_;
-                  expression_holder_ = nullptr;
                }
             }
 
@@ -18178,7 +18177,6 @@ namespace exprtk
             if ((0 != e) && branch_deletable(e))
             {
                delete e;
-               e = nullptr;
             }
 
             return false;
@@ -31995,7 +31993,7 @@ namespace exprtk
          if (results_context_)
          {
             delete results_context_;
-            results_context_ = nullptr;
+            results_context_ = 0;
          }
 
          state_.return_stmt_present = false;
@@ -33726,9 +33724,9 @@ namespace exprtk
    namespace information
    {
       static const char* library = "Mathematical Expression Toolkit";
-      static const char* version = "2.71828182845904523536028747135266"
-                                   "2497757247093699959574966967627724";
-      static const char* date    = "20160113";
+      static const char* version = "2.718281828459045235360287471352662"
+                                   "49775724709369995957496696762772407";
+      static const char* date    = "20160606";
 
       static inline std::string data()
       {
