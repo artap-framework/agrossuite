@@ -178,40 +178,6 @@ QStringList availableLanguages()
     return list;
 }
 
-QString defaultGUIStyle()
-{
-    QString styleName = "";
-    QStringList styles = QStyleFactory::keys();
-
-#ifdef Q_WS_X11
-    // kde 4
-    if (getenv("KDE_SESSION_VERSION") != NULL)
-    {
-        if (styles.contains("Oxygen"))
-            styleName = "Oxygen";
-        else
-            styleName = "Plastique";
-    }
-    // gtk+
-    if (styleName.isEmpty())
-        styleName = "GTK+";
-#endif
-
-#ifdef Q_WS_WIN
-    if (styles.contains("WindowsVista"))
-        styleName = "WindowsVista";
-    else if (styles.contains("WindowsXP"))
-        styleName = "WindowsXP";
-    else
-        styleName = "Windows";
-#endif
-
-#ifdef Q_WS_MAC
-    styleName = "Aqua";
-#endif
-
-    return styleName;
-}
 
 QString defaultLocale()
 {
@@ -221,28 +187,12 @@ QString defaultLocale()
         return QLocale::system().name();
 }
 
-void setGUIStyle(const QString &styleName)
-{
-    // standard style
-    QStyle *style = QStyleFactory::create(styleName);
-
-    QApplication::setStyle(style);
-    if (QApplication::desktopSettingsAware())
-    {
-        QApplication::setPalette(QApplication::palette());
-    }
-}
-
 void setLocale(const QString &locale)
 {
     // non latin-1 chars
-#if QT_VERSION < 0x050000
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("utf8"));
-#endif
-
-    QTranslator *qtTranslator = new QTranslator(QApplication::instance());
-    QTranslator *appTranslator = new QTranslator(QApplication::instance());
-    QTranslator *pluginTranslator = new QTranslator(QApplication::instance());
+    QTranslator *qtTranslator = new QTranslator(QCoreApplication::instance());
+    QTranslator *appTranslator = new QTranslator(QCoreApplication::instance());
+    QTranslator *pluginTranslator = new QTranslator(QCoreApplication::instance());
 
     QString country = locale.section('_',0,0);
     if (QFile::exists(QLibraryInfo::location(QLibraryInfo::TranslationsPath) + "/qt_" + country + ".qm"))
@@ -266,81 +216,9 @@ void setLocale(const QString &locale)
     else
         qDebug() << "Plugin locale file not found.";
 
-    QApplication::installTranslator(qtTranslator);
-    QApplication::installTranslator(appTranslator);
-    QApplication::installTranslator(pluginTranslator);
-}
-
-QIcon icon(const QString &name)
-{
-    // memory leak but works with Qt5.2 and Ubuntu 14.04
-    static QMap<QString, QIcon> *iconCache = new QMap<QString, QIcon>();
-
-    if (iconCache->contains(name))
-        return iconCache->value(name);
-
-#ifdef Q_WS_WIN
-    if (QFile::exists(":/" + name + "-windows.png"))
-        iconCache->insert(name, QIcon(":/" + name + "-windows.png"));
-#endif
-
-#ifdef Q_WS_X11
-    iconCache->insert(name, QIcon::fromTheme(name, QIcon(":/" + name + ".png")));
-#endif
-
-    if (!iconCache->contains(name))
-    {
-        if (QFile::exists(":/" + name + ".svg"))
-            iconCache->insert(name, QIcon(":/" + name + ".svg"));
-        else if (QFile::exists(":/" + name + ".png"))
-            iconCache->insert(name, QIcon(":/" + name + ".png"));
-        else
-            iconCache->insert(name, QIcon());
-    }
-
-    return iconCache->value(name);
-}
-
-QIcon iconAlphabet(const QChar &letter, AlphabetColor color)
-{
-    QString directory = "";
-
-    switch (color)
-    {
-    case AlphabetColor_Blue:
-        directory = "blue";
-        break;
-    case AlphabetColor_Bluegray:
-        directory = "bluegray";
-        break;
-    case AlphabetColor_Brown:
-        directory = "brown";
-        break;
-    case AlphabetColor_Green:
-        directory = "green";
-        break;
-    case AlphabetColor_Lightgray:
-        directory = "lightgray";
-        break;
-    case AlphabetColor_Purple:
-        directory = "purple";
-        break;
-    case AlphabetColor_Red:
-        directory = "red";
-        break;
-    case AlphabetColor_Yellow:
-        directory = "yellow";
-        break;
-    default:
-        assert(0);
-    }
-
-    static QString alphabet = "abcdefghijklmnopqrstuvwxyz";
-
-    if (alphabet.contains(letter.toLower()))
-        return icon(QString("alphabet/%1/%2").arg(directory).arg(letter.toLower()));
-    else
-        return icon(QString("alphabet/%1/imageback").arg(directory));
+    QCoreApplication::installTranslator(qtTranslator);
+    QCoreApplication::installTranslator(appTranslator);
+    QCoreApplication::installTranslator(pluginTranslator);
 }
 
 QString compatibleFilename(const QString &fileName)
@@ -378,13 +256,31 @@ QString compatibleFilename(const QString &fileName)
 
 QString datadir()
 {
-    // windows and local installation
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/resources/python/functions_pythonlab.py"))
+    // return QString("%1/../../../").arg(getenv("PWD"));
+
+    // windows
+#ifdef Q_WS_WIN
+    // local installation
+    // solver
+    if (QFile::exists(QCoreApplication::applicationDirPath() + "/libs/agros2d_library.dll"))
         return QCoreApplication::applicationDirPath();
+#endif
 
     // linux
-    if (QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros2d/resources/python/functions_pythonlab.py"))
+#ifdef Q_WS_X11
+    // local installation
+    // solver
+    if (QFile::exists(QCoreApplication::applicationDirPath() + "/libs/libagros2d_library.so"))
+        return QCoreApplication::applicationDirPath();
+
+    // python
+    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../../libs/libagros2d_library.so"))
+        return QString::fromLatin1(getenv("PWD")) + "/../..";
+
+    // system installation
+    if (QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros2d/libs/libagros2d_library.so"))
         return QCoreApplication::applicationDirPath() + "/../share/agros2d";
+#endif
 
     qCritical() << "Datadir not found.";
     exit(1);
@@ -577,15 +473,6 @@ QString stringListToString(const QStringList &list)
 
     return out;
 }
-
-void showPage(const QString &str)
-{
-    if (str.isEmpty())
-        QDesktopServices::openUrl(QUrl::fromLocalFile(datadir() + "/resources/help/index.html"));
-    else
-        QDesktopServices::openUrl(QUrl::fromLocalFile(datadir() + "/resources/help/" + str));
-}
-
 
 QString readFileContent(const QString &fileName)
 {

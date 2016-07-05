@@ -1,4 +1,4 @@
-cdef extern from "../../agros2d-library/pythonlab/pystudy.h":
+cdef extern from "../../agros2d-python/pythonlab/pystudy.h":
     cdef cppclass PyStudy:
         PyStudy()
 

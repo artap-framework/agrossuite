@@ -22,7 +22,6 @@
 #include "study.h"
 #include "parameter.h"
 
-#include "gui/lineeditdouble.h"
 #include "util/global.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
@@ -196,6 +195,8 @@ void StudyNSGA2::setStringKeys()
 
 // *****************************************************************************************************
 
+/*
+
 StudyNSGA2Dialog::StudyNSGA2Dialog(Study *study, QWidget *parent)
     : StudyDialog(study, parent)
 {
@@ -292,4 +293,4 @@ void StudyNSGA2Dialog::save()
     study()->setValue(Study::NSGA2_eta_m, txtEtaM->value());
     study()->setValue(Study::NSGA2_crowdobj, radCrowdObjective->isChecked());
 }
-
+*/

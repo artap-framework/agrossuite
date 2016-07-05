@@ -25,7 +25,6 @@
 #include "util.h"
 #include "util/enums.h"
 #include "study.h"
-#include "study_dialog.h"
 
 #include "bayesopt/bayesopt.hpp"
 
@@ -85,6 +84,7 @@ protected:
     friend class StudyBayesOptDialog;
 };
 
+/*
 class StudyBayesOptDialog : public StudyDialog
 {
 public:
@@ -108,5 +108,6 @@ private:
     QComboBox *cmbHPLearningMethod;
     QComboBox *cmbHPScoreFunction;
 };
+*/
 
 #endif // STUDY_BAYESOPT_H

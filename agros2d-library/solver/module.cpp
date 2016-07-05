@@ -27,7 +27,6 @@
 #include "util/global.h"
 #include "scene.h"
 #include "scenebasic.h"
-#include "scenemarkerdialog.h"
 #include "scenelabel.h"
 #include "sceneedge.h"
 #include "solver/solver.h"

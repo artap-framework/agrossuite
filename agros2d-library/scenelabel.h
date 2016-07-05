@@ -21,8 +21,9 @@
 #define SCENELABEL_H
 
 #include "util.h"
+#include "value.h"
 #include "scenebasic.h"
-#include "scenemarkerdialog.h"
+#include "scenemarker.h"
 
 class SceneLabelCommandAdd;
 class SceneLabelCommandRemove;
@@ -46,8 +47,8 @@ public:
 
     double distance(const Point &m_point) const;
 
-    SceneLabelCommandAdd* getAddCommand();
-    SceneLabelCommandRemove* getRemoveCommand();
+    // SceneLabelCommandAdd* getAddCommand();
+    // SceneLabelCommandRemove* getRemoveCommand();
 
     // returns true if markers for all fields are noneMarkers
     bool isHole();
@@ -83,6 +84,7 @@ public:
 
 // *************************************************************************************************************************************
 
+/*
 class SceneLabelMarker : public QGroupBox
 {
     Q_OBJECT
@@ -252,5 +254,6 @@ private:
     QList<PointValue> m_points;
     QList<PointValue> m_pointsNew;
 };
+*/
 
 #endif // SCENELABEL_H

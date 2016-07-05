@@ -31,6 +31,7 @@
 
 class FieldInfo;
 class SceneMaterial;
+class ParticleTracing;
 
 class ParticleTracingForce
 {

@@ -28,9 +28,7 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 
-#include "sceneview_common.h"
 #include "scenemarker.h"
-#include "scenemarkerdialog.h"
 #include "logview.h"
 
 #include "solver/module.h"
@@ -62,10 +60,10 @@ bool MeshGeneratorTriangleExternal::mesh()
         connect(m_process.data(), SIGNAL(finished(int)), this, SLOT(meshTriangleCreated(int)));
 
         QString triangleBinary = "triangle";
-        if (QFile::exists(QApplication::applicationDirPath() + QDir::separator() + "triangle.exe"))
-            triangleBinary = "\"" + QApplication::applicationDirPath() + QDir::separator() + "triangle.exe\"";
-        if (QFile::exists(QApplication::applicationDirPath() + QDir::separator() + "triangle"))
-            triangleBinary = QApplication::applicationDirPath() + QDir::separator() + "triangle";
+        if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "triangle.exe"))
+            triangleBinary = "\"" + QCoreApplication::applicationDirPath() + QDir::separator() + "triangle.exe\"";
+        if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "triangle"))
+            triangleBinary = QCoreApplication::applicationDirPath() + QDir::separator() + "triangle";
 
         QString triangleCommand = "%1 -p -P -q31.0 -e -A -a -z -Q -I -n -o2 \"%2\"";
         m_process.data()->start(triangleCommand.

@@ -35,14 +35,6 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 
-
-SceneBoundary::SceneBoundary(Scene *scene, const FieldInfo *fieldInfo, QString name, QString type,
-                             QMap<QString, Value> values)
-    : Boundary(scene, fieldInfo, name, type, values)
-{
-
-}
-
 int SceneBoundary::showDialog(QWidget *parent)
 {
     SceneBoundaryDialog *dialog = new SceneBoundaryDialog(this, parent);
@@ -54,27 +46,9 @@ int SceneBoundary::showDialog(QWidget *parent)
     return -1;
 }
 
-QVariant SceneBoundary::variant()
-{
-    QVariant v;
-    v.setValue(this);
-    return v;
-}
-
-SceneBoundaryNone::SceneBoundaryNone(Scene *scene) : SceneBoundary(scene, NULL, "none")
-{
-
-}
-
 // *************************************************************************************************************************************
 
-SceneMaterial::SceneMaterial(Scene *scene, const FieldInfo *fieldInfo, QString name,
-                             QMap<QString, Value> values) : Material(scene, fieldInfo, name, values)
-{
-
-}
-
-int SceneMaterial::showDialog(QWidget *parent)
+int SceneMaterialForm::showDialog(QWidget *parent)
 {
     SceneMaterialDialog *dialog = new SceneMaterialDialog(this, parent);
     if (dialog)
@@ -83,18 +57,6 @@ int SceneMaterial::showDialog(QWidget *parent)
         QMessageBox::information(QApplication::activeWindow(), QObject::tr(""), QObject::tr("Material dialog doesn't exists."));
 
     return -1;
-}
-
-QVariant SceneMaterial::variant()
-{
-    QVariant v;
-    v.setValue(this);
-    return v;
-}
-
-SceneMaterialNone::SceneMaterialNone(Scene *scene) : SceneMaterial(scene, NULL, "none")
-{
-
 }
 
 // *************************************************************************************************************************************

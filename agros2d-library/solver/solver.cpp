@@ -74,7 +74,6 @@
 #include "util.h"
 #include "util/global.h"
 #include "util/constants.h"
-#include "gui/chart.h"
 
 #include "field.h"
 #include "problem.h"
@@ -85,15 +84,12 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 #include "scenemarker.h"
-#include "scenemarkerdialog.h"
 #include "solutionstore.h"
 #include "plugin_interface.h"
 #include "logview.h"
 #include "plugin_interface.h"
 #include "weak_form.h"
 #include "bdf2.h"
-
-#include "pythonlab/pythonengine.h"
 
 #include <functional>
 #include <typeinfo>
@@ -839,12 +835,14 @@ void SolverDeal::solveSteadyState()
         }
 
         // save chart
+        /*
         ChartAdaptivityImage chart;
         chart.setError(adaptiveSteps, adaptiveError);
         chart.setDOFs(adaptiveSteps, adaptiveDOFs);
         QString fn = chart.save();
 
         Agros2D::log()->appendImage(fn);
+        */
     }
 }
 
@@ -1195,10 +1193,12 @@ void SolverDeal::solveTransient()
     for (int i = 1; i < m_computation->timeStepLengths().size() + 1; i++)
         transientSteps.append(i);
 
+    /*
     ChartTransientImage chart;
     chart.setStepLength(transientSteps, m_computation->timeStepLengths().toVector());
     chart.setTotalTime(transientSteps, m_computation->timeStepTimes().toVector());
     QString fn = chart.save();
 
     Agros2D::log()->appendImage(fn);
+    */
 }

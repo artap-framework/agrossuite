@@ -30,6 +30,7 @@ class FieldInfo;
 class SolverAgros;
 class LogWidget;
 
+/*
 class LogConfigWidget : public QWidget
 {
     Q_OBJECT
@@ -40,6 +41,7 @@ public:
 private:
     LogWidget *m_logWidget;
 };
+*/
 
 class AGROS_LIBRARY_API Log: public QObject
 {
@@ -79,6 +81,7 @@ signals:
     void addIconImg(const QIcon &icn, const QString &label);
 };
 
+/*
 class AGROS_LIBRARY_API LogWidget : public QWidget
 {
     Q_OBJECT
@@ -190,6 +193,7 @@ private slots:
 
     void tryClose();
 };
+*/
 
 class AGROS_LIBRARY_API LogStdOut : public QObject
 {

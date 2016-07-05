@@ -30,6 +30,7 @@ class SolutionStore;
 class Log;
 class PluginInterface;
 
+/*
 class AGROS_LIBRARY_API AgrosApplication : public QApplication
 {
 public:
@@ -38,6 +39,7 @@ public:
 
     virtual bool notify(QObject *receiver, QEvent *event);
 };
+*/
 
 class AGROS_LIBRARY_API Agros2D : public QObject
 {

@@ -22,9 +22,6 @@
 
 #include "util.h"
 
-class LineEditDouble;
-class ValueLineEdit;
-
 struct Point;
 
 class Scene;
@@ -171,6 +168,7 @@ public:
 
 // *************************************************************************************************************************************
 
+/*
 class SceneBasicDialog : public QDialog
 {
     Q_OBJECT
@@ -200,7 +198,6 @@ private slots:
     void doAccept();
     void doReject();
 };
-
 
 // *************************************************************************************************************************************
 
@@ -236,5 +233,6 @@ public:
     void undo();
     void redo();
 };
+*/
 
 #endif // SCENEBASIC_H

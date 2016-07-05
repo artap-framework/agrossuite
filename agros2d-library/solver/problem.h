@@ -20,6 +20,11 @@
 #ifndef PROBLEM_H
 #define PROBLEM_H
 
+#undef signals
+#include <deal.II/base/point.h>
+#include <deal.II/numerics/data_out.h>
+#define signals public
+
 #include "util.h"
 #include "value.h"
 #include "solutiontypes.h"
@@ -27,7 +32,6 @@
 #include "problem_parameter.h"
 
 #include "mesh/meshgenerator.h"
-#include "pythonlab/pythonengine.h"
 
 class ProblemSolver;
 
@@ -45,6 +49,54 @@ class SolutionStore;
 class ResultRecipes;
 class ComputationResults;
 class Studies;
+
+struct PostTriangle
+{
+    PostTriangle(dealii::Point<2> a, dealii::Point<2> b, dealii::Point<2> c,
+                 double va, double vb, double vc)
+    {
+        this->vertices[0] = a;
+        this->vertices[1] = b;
+        this->vertices[2] = c;
+
+        this->values[0] = va;
+        this->values[1] = vb;
+        this->values[2] = vc;
+    }
+
+    dealii::Point<2> vertices[3];
+    double values[3];
+};
+
+class PostDataOut : public dealii::DataOut<2, dealii::hp::DoFHandler<2> >
+{
+public:
+    PostDataOut(FieldInfo *fieldInfo, Computation *parentProblem);
+
+    void compute_nodes(QList<PostTriangle> &values, bool deform = false);
+
+#ifdef _MSC_VER
+    virtual dealii::DataOut<2>::cell_iterator first_cell();
+    virtual dealii::DataOut<2>::cell_iterator next_cell(const dealii::DataOut<2>::cell_iterator &old_cell);
+#else
+    virtual typename dealii::DataOut<2>::cell_iterator first_cell();
+    virtual typename dealii::DataOut<2>::cell_iterator next_cell(const typename dealii::DataOut<2>::cell_iterator &old_cell);
+#endif
+
+    inline double min() const { return m_min; }
+    inline double max() const { return m_max; }
+
+private:
+    double m_min;
+    double m_max;
+
+    Computation *m_computation;
+    const FieldInfo *m_fieldInfo;
+
+    void compute_node(dealii::Point<2> &node, const dealii::DataOutBase::Patch<2> *patch,
+                      const unsigned int xstep, const unsigned int ystep, const unsigned int zstep,
+                      const unsigned int n_subdivisions);
+};
 
 class MeshThread : public QThread
 {
@@ -253,7 +305,7 @@ public:
 
     inline PostprocessorSetting *setting() const { return m_setting; }
 
-    inline PostDeal *postDeal() { return m_postDeal; }
+    // inline PostDeal *postDeal() { return m_postDeal; }
     inline ProblemSolver *problemSolver() { return m_problemSolver; }
     inline SolutionStore *solutionStore() { return m_solutionStore; }
 
@@ -282,7 +334,7 @@ public:
     void setIsPostprocessingRunning(bool isPostprocessingRunning = true) { m_isPostprocessingRunning = isPostprocessingRunning; }
 
     void solve();
-    void solveWithGUI();
+    // void solveWithGUI();
 
     virtual QString problemFileName() const;
     void readFromProblem();
@@ -325,7 +377,7 @@ protected:
 
     // post deal
     ProblemSolver *m_problemSolver;
-    PostDeal *m_postDeal;   
+    // PostDeal *m_postDeal;
 
     void solveInit(); // called by solve, can throw SolverException
 

@@ -24,7 +24,6 @@
 #include "parameter.h"
 
 #include "util/global.h"
-#include "gui/lineeditdouble.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
 #include "solver/solutionstore.h"
@@ -278,7 +277,7 @@ void StudyBayesOpt::setStringKeys()
 }
 
 // *****************************************************************************************************
-
+/*
 StudyBayesOptDialog::StudyBayesOptDialog(Study *study, QWidget *parent)
     : StudyDialog(study, parent)
 {
@@ -383,3 +382,4 @@ void StudyBayesOptDialog::save()
     study()->setValue(Study::BayesOpt_l_type, cmbHPLearningMethod->itemData(cmbHPLearningMethod->currentIndex()).toString());
     study()->setValue(Study::BayesOpt_sc_type, cmbHPScoreFunction->itemData(cmbHPScoreFunction->currentIndex()).toString());
 }
+*/

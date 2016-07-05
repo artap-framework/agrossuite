@@ -22,14 +22,11 @@
 #include "util.h"
 #include "util/global.h"
 #include "util/loops.h"
-#include "gui/valuelineedit.h"
 
 #include "scene.h"
 #include "scenebasic.h"
 #include "scenemarker.h"
-#include "scenemarkerdialog.h"
 #include "mesh/meshgenerator.h"
-
 
 #include "solver/field.h"
 #include "solver/problem.h"
@@ -76,10 +73,12 @@ bool SceneLabel::isHole()
 
 int SceneLabel::showDialog(QWidget *parent, bool isNew)
 {
-    SceneLabelDialog *dialog = new SceneLabelDialog(this, parent, isNew);
-    return dialog->exec();
+    assert(0);
+    // SceneLabelDialog *dialog = new SceneLabelDialog(this, parent, isNew);
+    // return dialog->exec();
 }
 
+/*
 SceneLabelCommandAdd* SceneLabel::getAddCommand()
 {
     return new SceneLabelCommandAdd(m_point, markersKeys(), m_area);
@@ -89,7 +88,7 @@ SceneLabelCommandRemove* SceneLabel::getRemoveCommand()
 {
     return new SceneLabelCommandRemove(m_point, markersKeys(), m_area);
 }
-
+*/
 
 SceneLabel *SceneLabel::findLabelAtPoint(Scene *scene, const Point &point)
 {
@@ -206,6 +205,8 @@ RectPoint SceneLabelContainer::boundingBox() const
 }
 
 // *************************************************************************************************************************************
+
+/*
 
 SceneLabelMarker::SceneLabelMarker(SceneLabel *label, FieldInfo *fieldInfo, QWidget *parent)
     : QGroupBox(parent), m_fieldInfo(fieldInfo), m_label(label)
@@ -730,3 +731,5 @@ void SceneLabelCommandAddOrRemoveMulti::add()
     Agros2D::problem()->scene()->stopInvalidating(false);
     Agros2D::problem()->scene()->invalidate();
 }
+
+*/

@@ -17,7 +17,8 @@ build:
     - cd plugins
     - cmake .
     - make -j12
-    - cd ..
+    - cd ../resources/python
+    - cmake .
     - ctest -D Experimental
     
 build_mumps:

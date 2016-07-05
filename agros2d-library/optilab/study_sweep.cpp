@@ -164,7 +164,7 @@ void StudySweep::setStringKeys()
 }
 
 // *****************************************************************************************************
-
+/*
 StudySweepDialog::StudySweepDialog(Study *study, QWidget *parent)
     : StudyDialog(study, parent)
 {
@@ -211,3 +211,4 @@ void StudySweepDialog::save()
     study()->setValue(Study::Sweep_num_samples, txtNumSamples->value());
     study()->setValue(Study::Sweep_init_method, cmbInitMethod->itemData(cmbInitMethod->currentIndex()).toString());
 }
+*/

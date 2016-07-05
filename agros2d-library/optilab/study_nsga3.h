@@ -25,7 +25,6 @@
 #include "util.h"
 #include "util/enums.h"
 #include "study.h"
-#include "study_dialog.h"
 
 class LineEditDouble;
 
@@ -48,6 +47,7 @@ private:
     friend class StudyNSGA3Dialog;
 };
 
+/*
 class StudyNSGA3Dialog : public StudyDialog
 {
 public:
@@ -70,5 +70,5 @@ private:
     LineEditDouble *txtEtaM;
     QCheckBox *chkUseSurrogateFunction;
 };
-
+*/
 #endif // STUDY_NSGA2_H

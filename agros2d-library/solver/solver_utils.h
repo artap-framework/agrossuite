@@ -24,6 +24,7 @@
 #include "util/global.h"
 #include "solutiontypes.h"
 #include "scene.h"
+#include "scenemarker.h"
 #include "problem.h"
 #include "solver.h"
 #include "linear_solver.h"

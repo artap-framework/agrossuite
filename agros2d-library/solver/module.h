@@ -56,14 +56,8 @@ class linearity_option;
 }
 
 class Marker;
-
 class Boundary;
-class SceneBoundary;
-class SceneBoundaryDialog;
-
 class Material;
-class SceneMaterial;
-class SceneMaterialDialog;
 
 struct SceneViewSettings;
 template <typename Scalar> struct SolutionArray;

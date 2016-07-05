@@ -22,7 +22,6 @@
 #include "study.h"
 #include "parameter.h"
 
-#include "gui/lineeditdouble.h"
 #include "util/global.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
@@ -259,6 +258,7 @@ void StudyNLopt::setStringKeys()
 
 // *****************************************************************************************************
 
+/*
 StudyNLoptDialog::StudyNLoptDialog(Study *study, QWidget *parent)
     : StudyDialog(study, parent)
 {
@@ -334,3 +334,4 @@ void StudyNLoptDialog::save()
     study()->setValue(Study::NLopt_n_iterations, txtNIterations->value());
     study()->setValue(Study::NLopt_algorithm, cmbAlgorithm->itemData(cmbAlgorithm->currentIndex()).toString());
 }
+*/

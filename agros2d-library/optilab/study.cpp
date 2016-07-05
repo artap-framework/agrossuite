@@ -19,7 +19,6 @@
 
 #include "study.h"
 #include "util/global.h"
-#include "gui/lineeditdouble.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
 #include "solver/problem_parameter.h"
@@ -30,8 +29,6 @@
 #include "study_nsga3.h"
 #include "study_nlopt.h"
 #include "study_bayesopt.h"
-
-#include "qcustomplot/qcustomplot.h"
 
 // consts
 const QString NAME = "name";

@@ -24,7 +24,6 @@
 #include "solver/marker.h"
 
 #include "scene.h"
-#include "scenemarkerdialog.h"
 #include "solver/field.h"
 #include "solver/problem.h"
 
@@ -138,6 +137,20 @@ MarkerType* MarkerContainer<MarkerType>::getNone(const FieldInfo* field)
     }
 
     return noneMarkers[field];
+}
+
+QVariant SceneMaterial::variant()
+{
+    QVariant v;
+    v.setValue(this);
+    return v;
+}
+
+QVariant SceneBoundary::variant()
+{
+    QVariant v;
+    v.setValue(this);
+    return v;
 }
 
 template class MarkerContainer<SceneBoundary>;

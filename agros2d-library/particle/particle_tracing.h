@@ -27,8 +27,6 @@
 #include "util/conf.h"
 
 #include "solver/solutiontypes.h"
-
-#include "particle_tracing.h"
 #include "particle_forces.h"
 
 class FieldInfo;

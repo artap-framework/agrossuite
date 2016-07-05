@@ -21,12 +21,10 @@
 
 #include "util.h"
 #include "util/global.h"
-#include "gui/valuelineedit.h"
 
 #include "scene.h"
 #include "sceneedge.h"
 #include "scenemarker.h"
-#include "scenemarkerdialog.h"
 #include "solver/problem.h"
 #include "solver/problem_config.h"
 
@@ -56,16 +54,17 @@ double SceneNode::distance(const Point &point) const
 
 int SceneNode::showDialog(QWidget *parent, bool isNew)
 {
-    SceneNodeDialog *dialog = new SceneNodeDialog(this, parent, isNew);
-    return dialog->exec();
+    assert(0);
+    // SceneNodeDialog *dialog = new SceneNodeDialog(this, parent, isNew);
+    // return dialog->exec();
 }
 
+/*
 SceneNodeCommandRemove* SceneNode::getRemoveCommand()
 {
     return new SceneNodeCommandRemove(this->pointValue());
 }
-
-
+*/
 SceneNode *SceneNode::findClosestNode(Scene *scene, const Point &point)
 {
     SceneNode *nodeClosest = NULL;
@@ -217,6 +216,8 @@ SceneNodeContainer SceneNodeContainer::highlighted()
 
 // *************************************************************************************************************************************
 
+/*
+
 SceneNodeDialog::SceneNodeDialog(SceneNode *node, QWidget *parent, bool isNew) : SceneBasicDialog(parent, isNew)
 {
     m_object = node;
@@ -310,7 +311,6 @@ void SceneNodeDialog::doEditingFinished()
                           (sqrt(txtPointX->number()*txtPointX->number() + txtPointY->number()*txtPointY->number()) > EPS_ZERO)
                           ? atan2(txtPointY->number(), txtPointX->number()) / M_PI * 180.0 : 0.0));
 }
-
 
 // undo framework *******************************************************************************************************************
 
@@ -528,3 +528,5 @@ void SceneNodeCommandRemoveMulti::redo()
     Agros2D::problem()->scene()->stopInvalidating(false);
     Agros2D::problem()->scene()->invalidate();
 }
+
+*/

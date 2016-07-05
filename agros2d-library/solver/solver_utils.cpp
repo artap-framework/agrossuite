@@ -35,15 +35,12 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 #include "scenemarker.h"
-#include "scenemarkerdialog.h"
 #include "solutionstore.h"
 #include "plugin_interface.h"
 #include "logview.h"
 #include "plugin_interface.h"
 #include "weak_form.h"
 #include "bdf2.h"
-
-#include "pythonlab/pythonengine.h"
 
 #include "matio/matio.h"
 

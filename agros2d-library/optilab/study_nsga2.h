@@ -25,7 +25,6 @@
 #include "util.h"
 #include "util/enums.h"
 #include "study.h"
-#include "study_dialog.h"
 
 #include "NSGA2.h"
 
@@ -49,6 +48,7 @@ private:
     friend class StudyNSGA2Dialog;
 };
 
+/*
 class StudyNSGA2Dialog : public StudyDialog
 {
 public:
@@ -72,5 +72,6 @@ private:
     QRadioButton *radCrowdParameters;
     QRadioButton *radCrowdObjective;
 };
+*/
 
 #endif // STUDY_NSGA2_H

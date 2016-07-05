@@ -23,7 +23,6 @@
 
 #include "util/global.h"
 #include "logview.h"
-#include "pythonlab/pythonengine_agros.h"
 #include "solver/problem_config.h"
 #include "parser/lex.h"
 

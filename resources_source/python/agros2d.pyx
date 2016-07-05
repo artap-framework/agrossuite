@@ -115,7 +115,7 @@ include "pysolution.pxi"
 include "pyparticletracing.pxi"
 include "pystudy.pxi"
 
-cdef extern from "../../agros2d-library/pythonlab/pythonengine_agros.h":
+cdef extern from "../../agros2d-python/pythonlab/pyagros.h":
     # open and save
     void openFile(string &file, bool saveWithSolution) except +
     void saveFile(string &file, bool saveWithSolution) except +
@@ -124,6 +124,10 @@ cdef extern from "../../agros2d-library/pythonlab/pythonengine_agros.h":
     # temp and cache
     string tempDir()
     string cacheDir()
+    string pyDatadir(string &str)    
+
+    # version()
+    char *pyVersion()
 
     # PyOptions
     cdef cppclass PyOptions:
@@ -153,6 +157,13 @@ def tempdir(dir = ""):
 
 def cachedir(dir = ""):
     return "{0}/{1}".format(cacheDir().decode(), dir)
+
+# datadir()
+def datadir(str = ""):
+    return pyDatadir(str.encode()).decode()
+
+def version():
+    return pyVersion()
 
 cdef class __Options__:
     cdef PyOptions *thisptr

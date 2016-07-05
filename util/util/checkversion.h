@@ -22,7 +22,6 @@
 
 #include "../util.h"
 
-#include <QtGui>
 #include <QtNetwork>
 
 // check for new version

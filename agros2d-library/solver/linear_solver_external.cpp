@@ -33,15 +33,12 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 #include "scenemarker.h"
-#include "scenemarkerdialog.h"
 #include "solutionstore.h"
 #include "plugin_interface.h"
 #include "logview.h"
 #include "bdf2.h"
 #include "plugin_interface.h"
 #include "weak_form.h"
-
-#include "pythonlab/pythonengine.h"
 
 AgrosExternalSolver::AgrosExternalSolver(const dealii::SparseMatrix<double> *system_matrix,
                                          const dealii::Vector<double> *system_rhs,

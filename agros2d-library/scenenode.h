@@ -51,7 +51,7 @@ public:
 
     int showDialog(QWidget *parent, bool isNew = false);
 
-    SceneNodeCommandRemove* getRemoveCommand();
+    // SceneNodeCommandRemove* getRemoveCommand();
 
     static SceneNode *findClosestNode(Scene *scene, const Point &point);
 
@@ -85,6 +85,7 @@ public:
 
 // *************************************************************************************************************************************
 
+/*
 class SceneNodeDialog : public SceneBasicDialog
 {
     Q_OBJECT
@@ -108,7 +109,6 @@ private:
 private slots:
     void doEditingFinished();
 };
-
 
 // undo framework *******************************************************************************************************************
 
@@ -188,5 +188,6 @@ private:
     QList<Value> m_edgeAngle;
 };
 
+*/
 
 #endif // SCENENODE_H

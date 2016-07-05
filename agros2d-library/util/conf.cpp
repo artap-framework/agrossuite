@@ -120,8 +120,8 @@ void Config::setDefaultValues()
     m_settingDefault.clear();
 
     m_settingDefault[Config_LogStdOut] = false;
-    m_settingDefault[Config_GUIStyle] = defaultGUIStyle();
-    m_settingDefault[Config_Locale] = defaultLocale();
+    m_settingDefault[Config_GUIStyle] = ""; // defaultGUIStyle();
+    m_settingDefault[Config_Locale] = ""; // defaultLocale();
     m_settingDefault[Config_ShowResults] = false;
     m_settingDefault[Config_LinearSystemFormat] = EXPORT_FORMAT_MATLAB_MATIO;
     m_settingDefault[Config_LinearSystemSave] = false;

@@ -93,6 +93,7 @@ SET(AGROS_LIBRARY agros2d_library)
 SET(AGROS_SOLVER agros2d_solver)
 SET(AGROS_GENERATOR agros2d_generator)
 SET(AGROS_BINARY agros2d_binary)
+SET(AGROS_PYTHON agros2d_python)
 SET(CTEMPLATE_LIBRARY agros2d_3rdparty_ctemplate)
 SET(DXFLIB_LIBRARY agros2d_3rdparty_dxflib)
 SET(POLY2TRI_LIBRARY agros2d_3rdparty_poly2tri)
@@ -261,10 +262,9 @@ message("CMake: Start Agros2D")
 message("=====================")
 ADD_SUBDIRECTORY(util)
 ADD_SUBDIRECTORY(agros2d-library)
-ADD_SUBDIRECTORY(agros2d-binary)
 ADD_SUBDIRECTORY(agros2d-solver)
 ADD_SUBDIRECTORY(agros2d-generator)
-#ADD_SUBDIRECTORY(agros2d-forms)
+ADD_SUBDIRECTORY(agros2d-python)
 
 message("\nAgros2D Configuration results")
 message("---------------------")
@@ -318,8 +318,6 @@ set(info resources/modules/acoustic.xml
          resources/couplings/magnetic-heat.xml
          #resources/couplings/magnetic-flow.xml
          #resources/couplings/flow-heat.xml
-         resources/python/functions_agros2d.py
-         resources/python/functions_pythonlab.py
          resources/templates/generator/coupling_CMakeLists_txt.tpl
          resources/templates/generator/coupling_interface_cpp.tpl
          resources/templates/generator/coupling_interface_h.tpl
@@ -355,18 +353,7 @@ set(info resources/modules/acoustic.xml
          resources_source/python/pysolution.pxi
          resources_source/python/pystudy.pxi
          resources_source/python/pyparticletracing.pxi
-         resources_source/python/pythonlab.pyx
 )
 add_info_files(${info})
 add_custom_target(other SOURCES ${info})
 
-# tests
-MACRO(agros_test NAME)
-  add_test(NAME ${NAME} WORKING_DIRECTORY ${CMAKE_AGROS_DIRECTORY} COMMAND xvfb-run -a ./${AGROS_SOLVER} -t ${NAME})
-ENDMACRO(agros_test)
-ENABLE_TESTING()
-INCLUDE(CTest)
-SET(TEST_deal.II ON)
-SET(TEST_script OFF)
-INCLUDE(CMakeTests.cmake)
-#agros_test("test_suite.fields.electrostatic.TestElectrostaticAxisymmetric")

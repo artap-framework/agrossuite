@@ -252,7 +252,7 @@ void Agros2DGeneratorModule::generatePluginDocumentationFiles()
 
     // documentation - save to file
     writeStringContent(QString("%1/%2/%3/%3.gen").
-                       arg(QApplication::applicationDirPath()).
+                       arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_DOCROOT).
                        arg(id),
                        text);

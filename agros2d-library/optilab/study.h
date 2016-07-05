@@ -20,8 +20,6 @@
 #ifndef STUDY_H
 #define STUDY_H
 
-#include <QWidget>
-
 #include "util/enums.h"
 #include "logview.h"
 #include "parameter.h"

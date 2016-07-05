@@ -55,6 +55,7 @@ class PluginInterface;
 
 QString generateSvgGeometry(QList<SceneFace *> edges);
 
+/*
 class AGROS_LIBRARY_API NewMarkerAction : public QAction
 {
     Q_OBJECT
@@ -71,12 +72,14 @@ signals:
 private:
     QString field;
 };
+*/
 
 class AGROS_LIBRARY_API Scene : public QObject
 {
     Q_OBJECT
 
 public slots:
+    /*
     void doNewNode(const Point &point = Point());
     void doNewEdge();
     void doNewLabel(const Point &point = Point());
@@ -87,7 +90,7 @@ public slots:
 
     void doNewMaterial();
     void doNewMaterial(QString field);
-
+    */
     void doFieldsChanged();
 
     void cacheGeometryConstraints();
@@ -114,18 +117,18 @@ public:
     SceneBoundaryContainer *boundaries;
     SceneMaterialContainer *materials;
 
-    QAction *actNewNode;
-    QAction *actNewEdge;
-    QAction *actNewLabel;
-    QAction *actDeleteSelected;
+    // QAction *actNewNode;
+    // QAction *actNewEdge;
+    // QAction *actNewLabel;
+    // QAction *actDeleteSelected;
 
-    QAction *actNewBoundary;
-    QMap<QString, QAction*> actNewBoundaries;
+    // QAction *actNewBoundary;
+    // QMap<QString, QAction*> actNewBoundaries;
 
-    QAction *actNewMaterial;
-    QMap<QString, QAction*> actNewMaterials;
+    // QAction *actNewMaterial;
+    // QMap<QString, QAction*> actNewMaterials;
 
-    QAction *actTransform;
+    // QAction *actTransform;
 
     SceneNode *addNode(SceneNode *node);
     SceneNode *getNode(const Point &point);
@@ -154,7 +157,7 @@ public:
     void selectNone();
     void selectAll(SceneGeometryMode sceneMode);
     int selectedCount();
-    void deleteSelected();
+    // void deleteSelected();
 
     void highlightNone();
     int highlightedCount();
@@ -177,9 +180,9 @@ public:
     void checkGeometryResult();
     void checkGeometryAssignement();
 
-    void addBoundaryAndMaterialMenuItems(QMenu* menu, QWidget* parent);
+    // void addBoundaryAndMaterialMenuItems(QMenu* menu, QWidget* parent);
 
-    inline QUndoStack *undoStack() const { return m_undoStack; }
+    // inline QUndoStack *undoStack() const { return m_undoStack; }
 
     void stopInvalidating(bool sI) { m_stopInvalidating = sI;}
     inline void invalidate() { emit invalidated(); }
@@ -187,7 +190,7 @@ public:
 private:
     ProblemBase *m_problem;
 
-    QUndoStack *m_undoStack;
+    // QUndoStack *m_undoStack;
 
     LoopsInfo *m_loopsInfo;
     QMultiMap<SceneFace *, SceneNode *> m_lyingEdgeNodes;

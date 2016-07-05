@@ -11,12 +11,7 @@ SET(SOURCES util.cpp
     util/point.cpp 
     util/system_utils.cpp 
     util/spline.cpp
-    util/table.cpp
-    gui/about.cpp 
-    gui/filebrowser.cpp 
-    gui/lineeditdouble.cpp 
-    gui/systemoutput.cpp 
-    gui/textedit.cpp)
+    util/table.cpp)
 
 SET(HEADERS util.h
     sparse_io.h
@@ -24,16 +19,11 @@ SET(HEADERS util.h
     util/point.h 
     util/system_utils.h 
     util/spline.h
-    util/table.h
-    gui/about.h 
-    gui/filebrowser.h 
-    gui/lineeditdouble.h 
-    gui/systemoutput.h 
-    gui/textedit.h)
+    util/table.h)
     
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_LIBRARIES})
-QT5_USE_MODULES(${PROJECT_NAME} Core Widgets Network OpenGL Xml XmlPatterns WebKit WebKitWidgets OpenGL)
+QT5_USE_MODULES(${PROJECT_NAME} Core Network Xml XmlPatterns)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 # solver_export_matlab

@@ -22,7 +22,7 @@
 
 #include "util.h"
 #include "scenebasic.h"
-#include "scenemarkerdialog.h"
+#include "scenemarker.h"
 
 class Scene;
 class SceneFaceCommandAdd;
@@ -64,8 +64,8 @@ public:
     inline bool isCurvilinear() const { return m_isCurvilinear; }
     void setCurvilinear(bool isCurvilinear);
 
-    SceneFaceCommandAdd* getAddCommand();
-    SceneFaceCommandRemove* getRemoveCommand();
+    // SceneFaceCommandAdd* getAddCommand();
+    // SceneFaceCommandRemove* getRemoveCommand();
 
     int showDialog(QWidget *parent, bool isNew = false);
 
@@ -147,6 +147,7 @@ public:
 
 // *************************************************************************************************************************************
 
+/*
 class SceneFaceMarker : public QGroupBox
 {
     Q_OBJECT
@@ -321,5 +322,5 @@ private:
     bool m_isCurvilinearNew;
 };
 
-
+*/
 #endif // SCENEEDGE_H

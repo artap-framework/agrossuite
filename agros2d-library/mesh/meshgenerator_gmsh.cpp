@@ -29,9 +29,7 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 
-#include "sceneview_common.h"
 #include "scenemarker.h"
-#include "scenemarkerdialog.h"
 #include "logview.h"
 
 #include "solver/module.h"
@@ -73,10 +71,10 @@ bool MeshGeneratorGMSH::mesh()
         connect(m_process.data(), SIGNAL(finished(int)), this, SLOT(meshGmshCreated(int)));
 
         QString gmshBinary = "gmsh";
-        if (QFile::exists(QApplication::applicationDirPath() + QDir::separator() + "gmsh.exe"))
-            gmshBinary = "\"" + QApplication::applicationDirPath() + QDir::separator() + "gmsh.exe\"";
-        if (QFile::exists(QApplication::applicationDirPath() + QDir::separator() + "gmsh"))
-            gmshBinary = QApplication::applicationDirPath() + QDir::separator() + "gmsh";
+        if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "gmsh.exe"))
+            gmshBinary = "\"" + QCoreApplication::applicationDirPath() + QDir::separator() + "gmsh.exe\"";
+        if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "gmsh"))
+            gmshBinary = QCoreApplication::applicationDirPath() + QDir::separator() + "gmsh";
 
         QString triangleGMSH = "%1 -2 \"%2.geo\"";
         m_process.data()->start(triangleGMSH.

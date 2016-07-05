@@ -22,7 +22,6 @@
 #include "study.h"
 #include "parameter.h"
 
-#include "gui/lineeditdouble.h"
 #include "util/global.h"
 #include "solver/problem.h"
 #include "solver/problem_result.h"
@@ -328,7 +327,7 @@ void StudyNSGA3::setStringKeys()
 }
 
 // *****************************************************************************************************
-
+/*
 StudyNSGA3Dialog::StudyNSGA3Dialog(Study *study, QWidget *parent)
     : StudyDialog(study, parent)
 {
@@ -415,4 +414,4 @@ void StudyNSGA3Dialog::save()
     study()->setValue(Study::NSGA3_eta_m, txtEtaM->value());
     study()->setValue(Study::NSGA3_use_surrogate, chkUseSurrogateFunction->isChecked());
 }
-
+*/

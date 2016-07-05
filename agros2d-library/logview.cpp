@@ -21,7 +21,6 @@
 
 #include "util/global.h"
 #include "util/constants.h"
-#include "gui/common.h"
 
 #include "scene.h"
 #include "solver/problem_config.h"
@@ -30,12 +29,14 @@
 #include "solver/solver.h"
 #include "solver/solutionstore.h"
 
-#include "qcustomplot/qcustomplot.h"
+// #include "qcustomplot/qcustomplot.h"
 
+/*
 LogConfigWidget::LogConfigWidget(LogWidget *logWidget)
     : QWidget(logWidget), m_logWidget(logWidget)
 {
 }
+*/
 
 // *******************************************************************************************************
 
@@ -47,6 +48,7 @@ Log::Log()
 
 // *******************************************************************************************************
 
+/*
 LogWidget::LogWidget(QWidget *parent) : QWidget(parent),
     m_printCounter(0)
 {
@@ -617,7 +619,7 @@ void LogDialog::tryClose()
         close();
     }
 }
-
+*/
 
 // *******************************************************************************************
 

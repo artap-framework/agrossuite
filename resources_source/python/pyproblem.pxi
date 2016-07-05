@@ -1,4 +1,4 @@
-cdef extern from "../../agros2d-library/pythonlab/pyproblem.h":
+cdef extern from "../../agros2d-python/pythonlab/pyproblem.h":
     cdef cppclass PyProblem:
         PyProblem(bool clear)
 

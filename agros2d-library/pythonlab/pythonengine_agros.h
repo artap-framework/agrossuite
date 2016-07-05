@@ -84,46 +84,4 @@ private:
     PythonScriptingConsole *m_console;
 };
 
-// current python engine agros
-AGROS_LIBRARY_API PythonEngineAgros *currentPythonEngineAgros();
-
-// create script from model
-QString createPythonFromModel();
-
-// ************************************************************************************
-
-void openFile(const std::string &file, bool openWithSolution);
-void saveFile(const std::string &file, bool saveWithSolution);
-inline std::string getScriptFromModel() { return createPythonFromModel().toStdString(); }
-
-inline std::string tempDir() { return tempProblemDir().toStdString(); }
-inline std::string cacheDir() { return cacheProblemDir().toStdString(); }
-
-// functions
-char *pyVersion();
-void pyQuit();
-
-char *pyInput(std::string str);
-void pyMessage(std::string str);
-
-std::string pyDatadir(std::string str = "");
-
-struct PyOptions
-{
-    // number of threads
-    inline int getNumberOfThreads() const { return Agros2D::configComputer()->value(Config::Config_NumberOfThreads).toInt(); }
-    void setNumberOfThreads(int threads);
-
-    // cache size
-    inline int getCacheSize() const { return Agros2D::configComputer()->value(Config::Config_CacheSize).toInt(); }
-    void setCacheSize(int size);
-
-    // save matrix and rhs
-    inline bool getSaveMatrixRHS() const { return Agros2D::configComputer()->value(Config::Config_LinearSystemSave).toBool(); }
-    inline void setSaveMatrixRHS(bool save) { Agros2D::configComputer()->setValue(Config::Config_LinearSystemSave, save); }
-
-    inline std::string getDumpFormat() const { return dumpFormatToStringKey((MatrixExportFormat) Agros2D::configComputer()->value(Config::Config_LinearSystemFormat).toInt()).toStdString(); }
-    void setDumpFormat(std::string format);
-};
-
 #endif // PYTHONENGINEAGROS_H

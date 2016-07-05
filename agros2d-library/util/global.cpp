@@ -25,8 +25,6 @@
 #include "logview.h"
 #include "scene.h"
 
-#include "pythonlab/pythonengine_agros.h"
-
 #include "solver/module.h"
 
 #include "solver/problem.h"
@@ -40,9 +38,10 @@
 
 #include "boost/archive/archive_exception.hpp"
 
+/*
 AgrosApplication::AgrosApplication(int& argc, char ** argv) : QApplication(argc, argv)
 {
-    setlocale (LC_NUMERIC, "C");
+    setlocale(LC_NUMERIC, "C");
 
     setWindowIcon(icon("agros2d"));
     setApplicationVersion(versionString());
@@ -116,6 +115,7 @@ bool AgrosApplication::notify(QObject *receiver, QEvent *event)
 
     return false;
 }
+*/
 
 // *******************************************************************************************
 

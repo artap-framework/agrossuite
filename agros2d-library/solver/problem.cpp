@@ -44,9 +44,6 @@
 #include "solver.h"
 #include "logview.h"
 
-#include "pythonlab/pythonengine.h"
-#include "pythonlab/pythonengine_agros.h"
-
 #include "mesh/meshgenerator_triangle.h"
 #include "mesh/meshgenerator_cubit.h"
 #include "mesh/meshgenerator_gmsh.h"
@@ -94,6 +91,165 @@ const QString TARGET_FIELDID = "target_field";
 
 const QString STUDIES = "studies";
 const QString RECIPES = "recipes";
+
+PostDataOut::PostDataOut(FieldInfo *fieldInfo, Computation *parentProblem) : dealii::DataOut<2, dealii::hp::DoFHandler<2> >(),
+    m_computation(parentProblem), m_fieldInfo(fieldInfo)
+{
+}
+
+void PostDataOut::compute_nodes(QList<PostTriangle> &values, bool deform)
+{
+    values.clear();
+
+    // min and max value
+    m_min =  numeric_limits<double>::max();
+    m_max = -numeric_limits<double>::max();
+    double minDeform =  numeric_limits<double>::max();
+    double maxDeform = -numeric_limits<double>::max();
+
+    for (std::vector<dealii::DataOutBase::Patch<2> >::const_iterator patch = patches.begin(); patch != patches.end(); ++patch)
+    {
+        for (unsigned int i = 0; i < (patch->n_subdivisions + 1) * (patch->n_subdivisions + 1); i++)
+        {
+            double value = patch->data(0, i);
+
+            m_min = std::min(m_min, value);
+            m_max = std::max(m_max, value);
+
+            if (deform)
+            {
+                double value = sqrt(patch->data(1, i)*patch->data(1, i) + patch->data(2, i)*patch->data(2, i));
+
+                minDeform = std::min(m_min, value);
+                maxDeform = std::max(m_max, value);
+            }
+        }
+    }
+
+    double dmult = 0.0;
+    if (deform)
+    {
+        RectPoint rect = m_computation->scene()->boundingBox();
+        dmult = qMax(rect.width(), rect.height()) / maxDeform / 15.0;
+    }
+
+    // compute values in patches
+    dealii::Point<2> node0, node1, node2, node3;
+
+    // loop over all patches
+    for (std::vector<dealii::DataOutBase::Patch<2> >::const_iterator patch = patches.begin(); patch != patches.end(); ++patch)
+    {
+        const unsigned int n_subdivisions = patch->n_subdivisions;
+        const unsigned int n = n_subdivisions + 1;
+        unsigned int d1 = 1;
+        unsigned int d2 = n;
+
+        for (unsigned int i2=0; i2<n-1; ++i2)
+        {
+            for (unsigned int i1=0; i1<n-1; ++i1)
+            {
+                // compute coordinates for this patch point
+                compute_node(node0, &*patch, i1, i2, 0, n_subdivisions);
+                compute_node(node1, &*patch, i1, i2+1, 0, n_subdivisions);
+                compute_node(node2, &*patch, i1+1, i2, 0, n_subdivisions);
+                compute_node(node3, &*patch, i1+1, i2+1, 0, n_subdivisions);
+
+                // compute values
+                int index0 = i1*d1 + i2*d2;
+                int index1 = i1*d1 + (i2+1)*d2;
+                int index2 = (i1+1)*d1 + i2*d2;
+                int index3 = (i1+1)*d1 + (i2+1)*d2;
+
+                double value0 = patch->data(0, index0);
+                double value1 = patch->data(0, index1);
+                double value2 = patch->data(0, index2);
+                double value3 = patch->data(0, index3);
+
+                if (deform)
+                {
+                    // node(0) ... value
+                    // node(1) ... disp x
+                    // node(2) ... disp y
+
+                    double dispx0 = patch->data(1, index0);
+                    double dispy0 = patch->data(2, index0);
+                    double dispx1 = patch->data(1, index1);
+                    double dispy1 = patch->data(2, index1);
+                    double dispx2 = patch->data(1, index2);
+                    double dispy2 = patch->data(2, index2);
+                    double dispx3 = patch->data(1, index3);
+                    double dispy3 = patch->data(2, index3);
+
+                    node0 += dmult * dealii::Point<2>(dispx0, dispy0);
+                    node1 += dmult * dealii::Point<2>(dispx1, dispy1);
+                    node2 += dmult * dealii::Point<2>(dispx2, dispy2);
+                    node3 += dmult * dealii::Point<2>(dispx3, dispy3);
+                }
+
+                // create triangles
+                values.append(PostTriangle(node0, node1, node2, value0, value1, value2));
+                values.append(PostTriangle(node1, node3, node2, value1, value3, value2));
+            }
+        }
+    }
+}
+
+void PostDataOut::compute_node(dealii::Point<2> &node, const dealii::DataOutBase::Patch<2> *patch,
+                               const unsigned int xstep, const unsigned int ystep, const unsigned int zstep,
+                               const unsigned int n_subdivisions)
+{
+    if (patch->points_are_available)
+    {
+        unsigned int point_no = 0;
+        point_no += (n_subdivisions+1)*ystep;
+        for (unsigned int d=0; d<2; ++d)
+            node[d]=patch->data(patch->data.size(0)-2+d, point_no);
+    }
+    else
+    {
+        // perform a dim-linear interpolation
+        const double stepsize=1./n_subdivisions, xfrac=xstep*stepsize;
+
+        node = (patch->vertices[1] * xfrac) + (patch->vertices[0] * (1-xfrac));
+        const double yfrac=ystep*stepsize;
+
+        node*= 1-yfrac;
+        node += ((patch->vertices[3] * xfrac) + (patch->vertices[2] * (1-xfrac))) * yfrac;
+    }
+}
+
+
+dealii::DataOut<2>::cell_iterator PostDataOut::first_cell()
+{
+    DataOut<2>::cell_iterator cell = this->dofs->begin_active();
+    while (cell != this->dofs->end())
+    {
+        if (!m_computation->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
+            break;
+        else
+            cell++;
+    }
+
+    return cell;
+}
+
+dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_iterator &old_cell)
+{
+    // return dealii::DataOut<2, dealii::hp::DoFHandler<2> >::next_cell(old_cell);
+
+    DataOut<2>::cell_iterator cell = dealii::DataOut<2, dealii::hp::DoFHandler<2> >::next_cell(old_cell);
+    while (cell != this->dofs->end())
+    {
+        if (!m_computation->scene()->labels->at(cell->material_id() - 1)->marker(m_fieldInfo)->isNone())
+            break;
+        else
+            cell++;
+    }
+
+    return cell;
+}
+
+// ************************************************************************************************************************
 
 void MeshThread::run()
 {
@@ -404,9 +560,6 @@ void ProblemBase::removeField(FieldInfo *field)
 
     synchronizeCouplings();
 
-    if (currentPythonEngine())
-        currentPythonEngine()->runExpression(QString("agros2d.__problem__.__remove_field__(\"%1\")").arg(field->fieldId()));
-
     emit fieldsChanged();
 }
 
@@ -509,13 +662,13 @@ bool ProblemBase::mesh()
             meshGenerator = QSharedPointer<MeshGenerator>(new MeshGeneratorCubitExternal(this));
             break;
         default:
-            QMessageBox::critical(QApplication::activeWindow(), "Mesh generator error", QString("Mesh generator '%1' is not supported.").arg(meshTypeString(config()->meshType())));
+            Agros2D::log()->errorMsg(tr("Mesh generator error"), tr("Mesh generator '%1' is not supported.").arg(meshTypeString(config()->meshType())));
+            assert(0);
             break;
         }
 
         // add icon to progress
-        Agros2D::log()->addIcon(icon("scene-meshgen"),
-                                tr("Mesh generator\n%1").arg(meshTypeString(config()->meshType())));
+        // Agros2D::log()->addIcon(icon("scene-meshgen"), tr("Mesh generator\n%1").arg(meshTypeString(config()->meshType())));
 
         if (meshGenerator->mesh())
         {
@@ -1526,7 +1679,7 @@ Computation::Computation(const QString &problemDir) : ProblemBase(),
     m_isPostprocessingRunning(false),
     m_setting(new PostprocessorSetting(this)),
     m_problemSolver(new ProblemSolver(this)),
-    m_postDeal(new PostDeal(this)),
+    // m_postDeal(new PostDeal(this)),
     m_solutionStore(new SolutionStore(this)),
     m_results(new ComputationResults())
 {
@@ -1555,7 +1708,7 @@ Computation::~Computation()
 
     delete m_setting;
     delete m_problemSolver;
-    delete m_postDeal;
+    // delete m_postDeal;
     delete m_solutionStore;
     delete m_results;
 }
@@ -1784,6 +1937,7 @@ void Computation::doAbortSolve()
     Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Aborting calculation..."));
 }
 
+/*
 void Computation::solveWithGUI()
 {
     if (!isPreparedForAction())
@@ -1795,6 +1949,7 @@ void Computation::solveWithGUI()
     SolveThread *solveThread = new SolveThread(this);
     solveThread->startCalculation();
 }
+*/
 
 void Computation::solve()
 {

@@ -30,32 +30,26 @@ class LaTeXViewer;
 class SceneBoundary;
 class SceneMaterial;
 
-Q_DECLARE_METATYPE(SceneBoundary *)
-Q_DECLARE_METATYPE(SceneMaterial *)
-
 namespace Module
 {
     struct DialogUI;
     struct DialogRow;
 }
 
-class SceneBoundary : public Boundary
+class SceneBoundaryForm : public SceneBoundary
 {
 public:
-    SceneBoundary(Scene *scene, const FieldInfo *fieldInfo, QString m_name = "", QString m_type = "",
+    SceneBoundaryForm(Scene *scene, const FieldInfo *fieldInfo, QString m_name = "", QString m_type = "",
                   QMap<QString, Value> m_values = (QMap<QString, Value>()));
 
     int showDialog(QWidget *parent);
-
-    QVariant variant();
 };
 
-class SceneBoundaryNone : public SceneBoundary
+class SceneBoundaryNoneForm : public SceneBoundaryNone
 {
 public:
-    SceneBoundaryNone(Scene *scene);
+    SceneBoundaryNoneForm(Scene *scene);
 
-    QString script() { return ""; }
     int showDialog(QWidget *parent) { return 0; }
 };
 
@@ -137,25 +131,22 @@ private slots:
 
 // *************************************************************************************************************************************
 
-class SceneMaterial : public Material
+class SceneMaterialForm : public SceneMaterial
 {
 public:
-    SceneMaterial(Scene *scene, const FieldInfo *fieldInfo, QString m_name,
+    SceneMaterialForm(Scene *scene, const FieldInfo *fieldInfo, QString m_name,
                   QMap<QString, Value> m_values = (QMap<QString, Value>()));
 
     int showDialog(QWidget *parent);
-
-    QVariant variant();
 };
 
-class SceneMaterialNone : public SceneMaterial
+class SceneMaterialNoneForm : public SceneMaterialNone
 {
 public:
-    SceneMaterialNone(Scene *scene);
+    SceneMaterialNoneForm(Scene *scene);
 
     QString script() { return ""; }
     QMap<QString, QString> data() { return QMap<QString, QString>(); }
-    int showDialog(QWidget *parent) { return 0; }
 };
 
 // *************************************************************************************************************************************

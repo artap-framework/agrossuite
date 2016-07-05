@@ -21,18 +21,13 @@
 #define UTIL_H
 
 #include <QtCore>
-#include <QtGui>
 #include <QtNetwork>
 #include <QDomDocument>
-#include <QtWebKit>
 #include <QtXmlPatterns>
 #include <QtPlugin>
 #include <QtGlobal>
-#include <QtWidgets>
-#include <QtWebKitWidgets>
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrintDialog>
-#include <QtOpenGL>
 
 #include <typeinfo>
 #include <iostream>
@@ -121,35 +116,12 @@ AGROS_UTIL_API double fastcos(double angle);
 
 AGROS_UTIL_API QString stringListToString(const QStringList &list);
 
-// show page
-AGROS_UTIL_API void showPage(const QString &str = "");
-
 // get available languages
 AGROS_UTIL_API QStringList availableLanguages();
-
-// set gui style
-AGROS_UTIL_API QString defaultGUIStyle();
-AGROS_UTIL_API void setGUIStyle(const QString &styleName);
 
 // set language
 AGROS_UTIL_API void setLocale(const QString &locale);
 AGROS_UTIL_API QString defaultLocale();
-
-// get icon with respect to actual theme
-AGROS_UTIL_API QIcon icon(const QString &name);
-enum AlphabetColor
-{
-    AlphabetColor_Blue,
-    AlphabetColor_Bluegray,
-    AlphabetColor_Brown,
-    AlphabetColor_Green,
-    AlphabetColor_Lightgray,
-    AlphabetColor_Purple,
-    AlphabetColor_Red,
-    AlphabetColor_Yellow
-};
-// get color icon with letter
-AGROS_UTIL_API QIcon iconAlphabet(const QChar &letter, AlphabetColor color);
 
 // windows short name
 AGROS_UTIL_API QString compatibleFilename(const QString &fileName);

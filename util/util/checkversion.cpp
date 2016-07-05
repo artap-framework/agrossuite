@@ -64,10 +64,11 @@ void CheckVersion::run(bool quiet)
     postData.append(QString("PROCESSOR=%1&").arg(esc(SystemUtils::cpuType())));
     postData.append(QString("THREADS=%1&").arg(QString::number(SystemUtils::numberOfThreads())));
     postData.append(QString("MEMORY=%1&").arg(QString::number(SystemUtils::totalMemorySize())));
-    postData.append(QString("RESOLUTION=%1 x %2&").
-                    arg(QApplication::desktop()->screenGeometry().width()).
-                    arg(QApplication::desktop()->screenGeometry().height()));
-    postData.append(QString("AGROS2D_VERSION=%1&").arg(esc(QApplication::applicationVersion())));
+    postData.append(QString("RESOLUTION=0 x 0&"));
+    // postData.append(QString("RESOLUTION=%1 x %2&").
+    //                arg(QApplication::desktop()->screenGeometry().width()).
+    //                arg(QApplication::desktop()->screenGeometry().height()));
+    postData.append(QString("AGROS2D_VERSION=%1&").arg(esc(QCoreApplication::applicationVersion())));
     postData.append(QString("AGROS2D_ARCH=%1&").arg(esc(version64bit() ? "64 bit" : "32 bit")));
     postData.append(QString("AGROS2D_SOLVER=%1&").arg(m_solver ? "1" : "0"));
 
@@ -102,7 +103,7 @@ void CheckVersion::downloadFinished(QNetworkReply *networkReply)
                     arg(versionString()).
                     arg(text);
 
-            QMessageBox::information(QApplication::activeWindow(), tr("New version"), str);
+            // QMessageBox::information(QApplication::activeWindow(), tr("New version"), str);
         }
         else if (!m_quiet)
         {
@@ -113,7 +114,7 @@ void CheckVersion::downloadFinished(QNetworkReply *networkReply)
                     arg(versionString()).
                     arg(text);
 
-            QMessageBox::information(QApplication::activeWindow(), tr("Actual version"), str);
+            // QMessageBox::information(QApplication::activeWindow(), tr("Actual version"), str);
         }
     }
 }

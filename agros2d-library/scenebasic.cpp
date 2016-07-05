@@ -20,7 +20,6 @@
 #include "scenebasic.h"
 
 #include "util/global.h"
-#include "gui/valuelineedit.h"
 
 #include "scenenode.h"
 #include "sceneedge.h"
@@ -28,7 +27,6 @@
 
 #include "scene.h"
 #include "scenemarker.h"
-#include "scenemarkerdialog.h"
 
 #include "solver/problem.h"
 
@@ -330,7 +328,7 @@ template class MarkedSceneBasicContainer<SceneBoundary, SceneFace>;
 template class MarkedSceneBasicContainer<SceneMaterial, SceneLabel>;
 
 // *************************************************************************************************************************************
-
+/*
 SceneBasicDialog::SceneBasicDialog(QWidget *parent, bool isNew) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -368,7 +366,7 @@ void SceneBasicDialog::evaluated(bool isError)
 {
     buttonBox->button(QDialogButtonBox::Ok)->setEnabled(!isError);
 }
-
+*/
 
 //**************************************************************************************************
 

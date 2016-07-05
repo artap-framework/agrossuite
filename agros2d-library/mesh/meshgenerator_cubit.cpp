@@ -28,9 +28,7 @@
 #include "sceneedge.h"
 #include "scenelabel.h"
 
-#include "sceneview_common.h"
 #include "scenemarker.h"
-#include "scenemarkerdialog.h"
 #include "logview.h"
 
 #include "solver/module.h"
@@ -62,10 +60,10 @@ bool MeshGeneratorCubitExternal::mesh()
         connect(m_process.data(), SIGNAL(finished(int)), this, SLOT(meshCubitCreated(int)));
 
         QString cubitBinary = "cubit";
-        if (QFile::exists(QApplication::applicationDirPath() + QDir::separator() + "triangle.exe"))
-            cubitBinary = "\"" + QApplication::applicationDirPath() + QDir::separator() + "triangle.exe\"";
-        if (QFile::exists(QApplication::applicationDirPath() + QDir::separator() + "triangle"))
-            cubitBinary = QApplication::applicationDirPath() + QDir::separator() + "triangle";
+        if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "triangle.exe"))
+            cubitBinary = "\"" + QCoreApplication::applicationDirPath() + QDir::separator() + "triangle.exe\"";
+        if (QFile::exists(QCoreApplication::applicationDirPath() + QDir::separator() + "triangle"))
+            cubitBinary = QCoreApplication::applicationDirPath() + QDir::separator() + "triangle";
 
         QString cubitCommand = QString("%1 -nographics -nojournal -batch -input \"%2.jou\"").
                 arg(cubitBinary).

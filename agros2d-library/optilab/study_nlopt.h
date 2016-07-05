@@ -25,7 +25,6 @@
 #include "util.h"
 #include "util/enums.h"
 #include "study.h"
-#include "study_dialog.h"
 
 #include "nlopt.hpp"
 
@@ -56,6 +55,7 @@ private:
     friend class StudyNLoptDialog;
 };
 
+/*
 class StudyNLoptDialog : public StudyDialog
 {
 public:
@@ -77,5 +77,6 @@ private:
     LineEditDouble *txtFAbsTol;
     QComboBox *cmbAlgorithm;
 };
+*/
 
 #endif // STUDY_NLOPT_H

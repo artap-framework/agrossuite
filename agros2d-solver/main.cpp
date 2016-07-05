@@ -17,16 +17,15 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include <QApplication>
+#include <QCoreApplication>
 
 #include <QTranslator>
 #include <QTextCodec>
 #include <QDir>
 #include <QString>
 
-#include "agros_solver.h"
 #include "util/system_utils.h"
-#include "pythonlab/pythonengine_agros.h"
+#include "logview.h"
 
 #include "../3rdparty/tclap/CmdLine.h"
 
@@ -39,26 +38,15 @@ int main(int argc, char *argv[])
 
         TCLAP::SwitchArg logArg("l", "enable-log", "Enable log", true);
         TCLAP::ValueArg<std::string> problemArg("p", "problem", "Solve problem", false, "", "string");
-        TCLAP::ValueArg<std::string> scriptArg("s", "script", "Solve script", false, "", "string");
-        TCLAP::ValueArg<std::string> commandArg("c", "command", "Run command", false, "", "string");
-        TCLAP::ValueArg<std::string> testArg("t", "test", "Run test", false, "", "string");
 
         cmd.add(logArg);
         cmd.add(problemArg);
-        cmd.add(commandArg);
-        cmd.add(scriptArg);
-        cmd.add(testArg);
 
         // parse the argv array.
         cmd.parse(argc, argv);
 
         CleanExit cleanExit;
-        AgrosSolver a(argc, argv);
-
-        createPythonEngine(argc, argv, new PythonEngineAgros());
-
-        // enable log
-        a.setEnableLog(logArg.getValue());
+        // AgrosSolver a(argc, argv);
 
         if (!problemArg.getValue().empty())
         {
@@ -67,11 +55,57 @@ int main(int argc, char *argv[])
                 QFileInfo info(QString::fromStdString(problemArg.getValue()));
                 if (info.suffix() == "ags")
                 {
-                    a.setFileName(QString::fromStdString(problemArg.getValue()));
-                    QTimer::singleShot(0, &a, SLOT(solveProblem()));
+                    setlocale(LC_NUMERIC, "C");
 
-                    a.exec();
-                    return a.status();
+                    QCoreApplication a(argc, argv);
+                    QCoreApplication::setApplicationVersion(versionString());
+                    QCoreApplication::setOrganizationName("agros");
+                    QCoreApplication::setOrganizationDomain("agros");
+                    QCoreApplication::setApplicationName("Agros2D");
+
+                    // std::string codec
+                    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+
+                    // force number format
+                    QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
+
+                    // init singleton
+                    Agros2D::createSingleton();
+
+                    // enable log
+                    if (logArg.getValue())
+                        LogStdOut *log = new LogStdOut();
+
+                    QTime time;
+                    time.start();
+
+                    try
+                    {
+                        Agros2D::problem()->readProblemFromArchive(QString::fromStdString(problemArg.getValue()));
+
+                        Agros2D::log()->printMessage(QObject::tr("Problem"), QObject::tr("Problem '%1' successfuly loaded").arg(QString::fromStdString(problemArg.getValue())));
+
+                        // solve
+                        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+                        computation->solve();
+
+                        // save solution
+                        // Agros2D::problem()->writeProblemToArchive(QString::fromStdString(problemArg.getValue()), false);
+
+                        Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
+
+                        // clear all
+                        Agros2D::problem()->clearFields();
+
+                        return -1;
+                    }
+                    catch (AgrosException &e)
+                    {
+                        Agros2D::log()->printError(QObject::tr("Problem"), e.toString());
+                        return -1;
+                    }
+
+                    return 0;
                 }
                 else
                 {
@@ -79,40 +113,6 @@ int main(int argc, char *argv[])
                     return 1;
                 }
             }
-        }
-        else if (!scriptArg.getValue().empty())
-        {
-            if (QFile::exists(QString::fromStdString(scriptArg.getValue())))
-            {
-                QFileInfo info(QString::fromStdString(scriptArg.getValue()));
-                if (info.suffix() == "py")
-                {
-                    a.setFileName(QString::fromStdString(scriptArg.getValue()));
-                    QTimer::singleShot(0, &a, SLOT(runScript()));
-
-                    a.exec();
-                    return a.status();
-                }
-                else
-                {
-                    std::cout << QObject::tr("Unknown suffix.").toStdString() << std::endl;
-                    return 1;
-                }
-            }
-        }
-        else if (!commandArg.getValue().empty())
-        {
-            a.setCommand(QString::fromStdString(commandArg.getValue()));
-            QTimer::singleShot(0, &a, SLOT(runCommand()));
-            return a.exec();
-        }
-        else if (!testArg.getValue().empty())
-        {
-            a.setTestName(QString::fromStdString(testArg.getValue()));
-            QTimer::singleShot(0, &a, SLOT(runTest()));
-
-            a.exec();
-            return a.status();
         }
         else
         {

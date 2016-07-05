@@ -21,6 +21,7 @@
 #define SCENEMAR_H
 
 #include "util.h"
+#include "solver/marker.h"
 
 class SceneBoundary;
 class SceneMaterial;
@@ -28,6 +29,9 @@ class Marker;
 class FieldInfo;
 class ProblemBase;
 class Scene;
+
+Q_DECLARE_METATYPE(SceneMaterial *)
+Q_DECLARE_METATYPE(SceneBoundary *)
 
 template <typename MarkerType>
 class AGROS_LIBRARY_API MarkerContainer
@@ -85,6 +89,42 @@ protected:
     QMap<const FieldInfo*, MarkerType*> noneMarkers;
 };
 
+class SceneMaterial : public Material
+{
+public:
+    SceneMaterial(Scene *scene, const FieldInfo *fieldInfo, QString name,
+                  QMap<QString, Value> values = (QMap<QString, Value>())) : Material(scene, fieldInfo, name, values) {}
+
+    QVariant variant();
+};
+
+class SceneMaterialNone : public SceneMaterial
+{
+public:
+    SceneMaterialNone(Scene *scene) : SceneMaterial(scene, NULL, "none") {}
+
+    QString script() { return ""; }
+    QMap<QString, QString> data() { return QMap<QString, QString>(); }
+};
+
+
+class SceneBoundary : public Boundary
+{
+public:
+    SceneBoundary(Scene *scene, const FieldInfo *fieldInfo, QString name = "", QString type = "",
+                  QMap<QString, Value> values = (QMap<QString, Value>())) : Boundary(scene, fieldInfo, name, type, values) {}
+
+    QVariant variant();
+};
+
+class SceneBoundaryNone : public SceneBoundary
+{
+public:
+    SceneBoundaryNone(Scene *scene) : SceneBoundary(scene, NULL, "none") {}
+
+    QString script() { return ""; }
+};
+
 class SceneBoundaryContainer : public MarkerContainer<SceneBoundary>
 {
 
@@ -94,5 +134,6 @@ class SceneMaterialContainer : public MarkerContainer<SceneMaterial>
 {
 
 };
+
 
 #endif // SCENEMARKER_H

@@ -25,7 +25,6 @@
 #include "util.h"
 #include "util/enums.h"
 #include "study.h"
-#include "study_dialog.h"
 
 #include "bayesopt/bayesopt.hpp"
 
@@ -67,6 +66,7 @@ protected:
     friend class StudySweepDialog;
 };
 
+/*
 class StudySweepDialog : public StudyDialog
 {
 public:
@@ -84,5 +84,5 @@ private:
     QSpinBox *txtNumSamples;
     QComboBox *cmbInitMethod;
 };
-
+*/
 #endif // STUDY_SWEEP_H

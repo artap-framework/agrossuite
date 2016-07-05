@@ -31,17 +31,11 @@
 #include "scenenode.h"
 #include "sceneedge.h"
 #include "scenelabel.h"
-#include "scenemarkerdialog.h"
 #include "scenemarker.h"
 #include "solver/problem.h"
 #include "solver/plugin_interface.h"
 
-#include "scenetransformdialog.h"
 #include "scenemarker.h"
-#include "scenemarkerselectdialog.h"
-#include "scenebasicselectdialog.h"
-
-#include "pythonlab/pythonengine_agros.h"
 
 #include "solver/module.h"
 #include "solver/problem.h"
@@ -121,6 +115,7 @@ ostream& operator<<(ostream& output, FieldInfo& id)
 
 // ************************************************************************************************************************
 
+/*
 NewMarkerAction::NewMarkerAction(QIcon icon, QObject* parent, QString field) :
     QAction(icon, Module::availableModules()[field], parent),
     field(field)
@@ -132,11 +127,13 @@ void NewMarkerAction::doTriggered()
 {
     emit triggered(field);
 }
+*/
 
 // ************************************************************************************************************************
 
 Scene::Scene(ProblemBase *problem) : m_problem(problem), m_stopInvalidating(false),
-    m_loopsInfo(new LoopsInfo(this)), m_undoStack(new QUndoStack(this)),
+    m_loopsInfo(new LoopsInfo(this)),
+    // m_undoStack(new QUndoStack(this)),
     boundaries(new SceneBoundaryContainer()), materials(new SceneMaterialContainer()),
     nodes(new SceneNodeContainer()), faces(new SceneFaceContainer()), labels(new SceneLabelContainer())
 
@@ -158,7 +155,7 @@ Scene::~Scene()
     boundaries->clear();
     materials->clear();
 
-    delete m_undoStack;
+    // delete m_undoStack;
 
     delete boundaries;
     delete materials;
@@ -167,13 +164,13 @@ Scene::~Scene()
     delete labels;
 
     // clear actions
-    foreach (QAction *action, actNewBoundaries.values())
-        delete action;
-    actNewBoundaries.clear();
+    // foreach (QAction *action, actNewBoundaries.values())
+    //     delete action;
+    // actNewBoundaries.clear();
 
-    foreach (QAction *action, actNewMaterials.values())
-        delete action;
-    actNewMaterials.clear();
+    // foreach (QAction *action, actNewMaterials.values())
+    //     delete action;
+    // actNewMaterials.clear();
 }
 
 void Scene::copy(const Scene *origin)
@@ -222,6 +219,7 @@ void Scene::copy(const Scene *origin)
 
 void Scene::createActions()
 {
+    /*
     // scene - add items
     actNewNode = new QAction(icon("scene-node"), tr("New &node..."), this);
     actNewNode->setShortcut(tr("Alt+N"));
@@ -277,6 +275,7 @@ void Scene::createActions()
     }
 
     actTransform = new QAction(icon("scene-transform"), tr("&Transform"), this);
+    */
 }
 
 SceneNode *Scene::addNode(SceneNode *node)
@@ -289,7 +288,7 @@ SceneNode *Scene::addNode(SceneNode *node)
     }
 
     nodes->add(node);
-    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (!m_stopInvalidating)
         emit invalidated();
 
     checkNodeConnect(node);
@@ -311,7 +310,7 @@ SceneFace *Scene::addFace(SceneFace *edge)
     }
 
     faces->add(edge);
-    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (!m_stopInvalidating)
         emit invalidated();
 
     return edge;
@@ -339,7 +338,7 @@ SceneLabel *Scene::addLabel(SceneLabel *label)
     }
 
     labels->add(label);
-    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (!m_stopInvalidating)
         emit invalidated();
 
     return label;
@@ -353,7 +352,7 @@ SceneLabel *Scene::getLabel(const Point &point)
 void Scene::addBoundary(SceneBoundary *boundary)
 {
     boundaries->add(boundary);
-    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (!m_stopInvalidating)
         emit invalidated();
 }
 
@@ -364,7 +363,7 @@ void Scene::removeBoundary(SceneBoundary *boundary)
     boundaries->remove(boundary);
     // delete boundary;
 
-    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (!m_stopInvalidating)
         emit invalidated();
 }
 
@@ -382,7 +381,7 @@ SceneBoundary *Scene::getBoundary(FieldInfo *field, const QString &name)
 void Scene::addMaterial(SceneMaterial *material)
 {
     this->materials->add(material);
-    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (!m_stopInvalidating)
         emit invalidated();
 }
 
@@ -399,7 +398,7 @@ void Scene::removeMaterial(SceneMaterial *material)
 
     // delete material;
 
-    if (currentPythonEngine() && !currentPythonEngine()->isScriptRunning() && !m_stopInvalidating)
+    if (!m_stopInvalidating)
         emit invalidated();
 }
 
@@ -449,7 +448,7 @@ void Scene::clear()
     blockSignals(true);
     stopInvalidating(true);
 
-    m_undoStack->clear();
+    // m_undoStack->clear();
 
     // loops
     if (m_loopsInfo)
@@ -528,6 +527,7 @@ void Scene::selectAll(SceneGeometryMode sceneMode)
     }
 }
 
+/*
 void Scene::deleteSelected()
 {
     m_undoStack->beginMacro(tr("Delete selected"));
@@ -574,9 +574,9 @@ void Scene::deleteSelected()
 
     m_undoStack->endMacro();
 
-    if (!currentPythonEngine()->isScriptRunning())
-        emit invalidated();
+    emit invalidated();
 }
+*/
 
 int Scene::selectedCount()
 {
@@ -668,7 +668,7 @@ bool Scene::moveSelectedNodes(SceneTransformMode mode, Point point, double angle
 
     if (copy)
     {
-        m_undoStack->push(new SceneNodeCommandAddMulti(newPoints));
+        // m_undoStack->push(new SceneNodeCommandAddMulti(newPoints));
 
         nodes->setSelected(false);
 
@@ -681,7 +681,7 @@ bool Scene::moveSelectedNodes(SceneTransformMode mode, Point point, double angle
     }
     else
     {
-        m_undoStack->push(new SceneNodeCommandMoveMulti(points, newPoints));
+        // m_undoStack->push(new SceneNodeCommandMoveMulti(points, newPoints));
     }
 
     return true;
@@ -747,8 +747,8 @@ bool Scene::moveSelectedEdges(SceneTransformMode mode, Point point, double angle
 
     faces->setSelected(false);
 
-    m_undoStack->push(new SceneEdgeCommandAddMulti(edgeStartPointsToAdd, edgeEndPointsToAdd,
-                                                   edgeMarkersToAdd, edgeAnglesToAdd, edgeSegmentsToAdd, edgeIsCurvilinearToAdd));
+    // m_undoStack->push(new SceneEdgeCommandAddMulti(edgeStartPointsToAdd, edgeEndPointsToAdd,
+    //                                                edgeMarkersToAdd, edgeAnglesToAdd, edgeSegmentsToAdd, edgeIsCurvilinearToAdd));
 
     for(int i = 0; i < newEdgeEndPoints.size(); i++)
     {
@@ -808,7 +808,7 @@ bool Scene::moveSelectedLabels(SceneTransformMode mode, Point point, double angl
 
     if (copy)
     {
-        m_undoStack->push(new SceneLabelCommandAddMulti(newPoints, newMarkers, newAreas));
+        // m_undoStack->push(new SceneLabelCommandAddMulti(newPoints, newMarkers, newAreas));
 
         labels->setSelected(false);
 
@@ -821,7 +821,7 @@ bool Scene::moveSelectedLabels(SceneTransformMode mode, Point point, double angl
     }
     else
     {
-        m_undoStack->push(new SceneLabelCommandMoveMulti(points, newPoints));
+        // m_undoStack->push(new SceneLabelCommandMoveMulti(points, newPoints));
     }
 
     return true;
@@ -829,7 +829,7 @@ bool Scene::moveSelectedLabels(SceneTransformMode mode, Point point, double angl
 
 void Scene::transform(QString name, SceneTransformMode mode, const Point &point, double angle, double scaleFactor, bool copy, bool withMarkers)
 {
-    m_undoStack->beginMacro(name);
+    // m_undoStack->beginMacro(name);
 
     bool okNodes, okEdges = true;
     okNodes = moveSelectedNodes(mode, point, angle, scaleFactor, copy);
@@ -837,13 +837,12 @@ void Scene::transform(QString name, SceneTransformMode mode, const Point &point,
         okEdges = moveSelectedEdges(mode, point, angle, scaleFactor, copy, withMarkers);
     moveSelectedLabels(mode, point, angle, scaleFactor, copy, withMarkers);
 
-    m_undoStack->endMacro();
+    // m_undoStack->endMacro();
 
     if(!okNodes || !okEdges)
         nodes->setSelected(false);
 
-    if (!currentPythonEngine()->isScriptRunning())
-        emit invalidated();
+    emit invalidated();
 }
 
 void Scene::transformTranslate(const Point &point, bool copy, bool withMarkers)
@@ -863,8 +862,8 @@ void Scene::transformScale(const Point &point, double scaleFactor, bool copy, bo
 
 void Scene::cacheGeometryConstraints()
 {
-    actNewEdge->setEnabled((nodes->length() >= 2) && (boundaries->length() >= 1));
-    actNewLabel->setEnabled(materials->length() >= 1);
+    // actNewEdge->setEnabled((nodes->length() >= 2) && (boundaries->length() >= 1));
+    // actNewLabel->setEnabled(materials->length() >= 1);
 
     foreach (SceneFace *edge, faces->items())
         edge->computeCenterAndRadius();
@@ -874,6 +873,7 @@ void Scene::cacheGeometryConstraints()
     findCrossings();
 }
 
+/*
 void Scene::doNewNode(const Point &point)
 {
     SceneNode *node = new SceneNode(this, PointValue(m_problem, point));
@@ -975,6 +975,7 @@ void Scene::addBoundaryAndMaterialMenuItems(QMenu* menu, QWidget* parent)
             mnuSubMaterials->addAction(actNewMaterials[fieldInfo->fieldId()]);
     }
 }
+*/
 
 void Scene::doFieldsChanged()
 {

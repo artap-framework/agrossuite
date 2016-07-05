@@ -21,13 +21,11 @@
 
 #include "util.h"
 #include "util/global.h"
-#include "gui/valuelineedit.h"
 
 #include "scene.h"
 #include "scenebasic.h"
 #include "scenenode.h"
 #include "scenemarker.h"
-#include "scenemarkerdialog.h"
 
 #include "solver/problem.h"
 #include "solver/problem_config.h"
@@ -224,10 +222,12 @@ bool SceneFace::isError() const
 
 int SceneFace::showDialog(QWidget *parent, bool isNew)
 {
-    SceneFaceDialog *dialog = new SceneFaceDialog(this, parent, isNew);
-    return dialog->exec();
+    assert(0);
+    // SceneFaceDialog *dialog = new SceneFaceDialog(this, parent, isNew);
+    // return dialog->exec();
 }
 
+/*
 SceneFaceCommandAdd* SceneFace::getAddCommand()
 {
     return new SceneFaceCommandAdd(m_nodeStart->pointValue(), m_nodeEnd->pointValue(), markersKeys(), m_angle, m_segments, m_isCurvilinear);
@@ -237,6 +237,7 @@ SceneFaceCommandRemove* SceneFace::getRemoveCommand()
 {
     return new SceneFaceCommandRemove(m_nodeStart->pointValue(), m_nodeEnd->pointValue(), markersKeys(), m_angle, m_segments, m_isCurvilinear);
 }
+*/
 
 void SceneFace::computeCenterAndRadius()
 {
@@ -393,12 +394,15 @@ void SceneFaceContainer::removeConnectedToNode(SceneNode *node)
     {
         if ((edge->nodeStart() == node) || (edge->nodeEnd() == node))
         {
+            assert(0);
+            /*
             edge->scene()->undoStack()->push(new SceneFaceCommandRemove(edge->nodeStart()->pointValue(),
                                                                         edge->nodeEnd()->pointValue(),
                                                                         edge->markersKeys(),
                                                                         edge->angleValue(),
                                                                         edge->segments(),
                                                                         edge->isCurvilinear()));
+            */
         }
     }
 
@@ -490,6 +494,8 @@ RectPoint SceneFaceContainer::boundingBox(QList<SceneFace *> edges)
 }
 
 // *************************************************************************************************************************************
+
+/*
 
 SceneFaceMarker::SceneFaceMarker(SceneFace *edge, FieldInfo *fieldInfo, QWidget *parent)
     : QGroupBox(parent), m_fieldInfo(fieldInfo), m_face(edge)
@@ -999,3 +1005,4 @@ void SceneEdgeCommandEdit::redo()
     }
 }
 
+*/

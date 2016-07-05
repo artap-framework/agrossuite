@@ -52,122 +52,36 @@ foreach(XSD_FILE ${xsd_files})
         OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.cpp ${CMAKE_HOME_DIRECTORY}/resources_source/classes/${basefile}.h)
 endforeach()
 
-# cython
-# message("Cython files - Agros2D")
-# message("\tcython agros2d.pyx")
-# message("Cython files - PythonLab")
-# message("\tcython -3 pythonlab.pyx")
-add_custom_target(CYTHON_AGROS2D ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.cpp)
-add_custom_target(CYTHON_PYTHONLAB ALL DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.cpp)
-
-IF(WIN32)
-  ADD_CUSTOM_COMMAND(
-    COMMAND C:/Python34/Scripts/cython ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.pyx
-    DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.pyx
-    OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.cpp)
-  ADD_CUSTOM_COMMAND(
-    COMMAND C:/Python34/Scripts/cython ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.pyx
-    DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.pyx
-    OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.cpp)
-ELSE()
-  ADD_CUSTOM_COMMAND(
-    COMMAND cython3 ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.pyx
-    DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.pyx
-    OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/agros2d.cpp)
-  ADD_CUSTOM_COMMAND(
-    COMMAND cython3 ARGS -3 --cplus ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.pyx
-    DEPENDS ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.pyx
-    OUTPUT  ${CMAKE_HOME_DIRECTORY}/resources_source/python/pythonlab.cpp)
-ENDIF()
-
 SET(SOURCES
     # sceneview_vtk2d.cpp
-    #moduledialog.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/form_xml.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/material_xml.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/module_xml.cpp
     ${CMAKE_HOME_DIRECTORY}/resources_source/classes/problem_a2d_31_xml.cpp
-    chartdialog.cpp
-    confdialog.cpp
     datatable.cpp
-    examplesdialog.cpp
-    gui/common.cpp
-    gui/chart.cpp
-    gui/groupbox.cpp
-    gui/htmledit.cpp
-    gui/imageloader.cpp
-    gui/physicalfield.cpp
-    gui/scenewidget.cpp
-    gui/valuedatatabledialog.cpp
-    gui/valuelineedit.cpp
-    gui/valuetimedialog.cpp
-    gui/parameterdialog.cpp
-    gui/functiondialog.cpp
-    gui/recipedialog.cpp
-    gui/infowidget.cpp
-    gui/problemdialog.cpp
-    gui/fielddialog.cpp
-    gui/resultsview.cpp
     logview.cpp
-    mainwindow.cpp
-    materialbrowserdialog.cpp
     mesh/agros_manifold.cpp
     mesh/meshgenerator.cpp
     mesh/meshgenerator_cubit.cpp
     mesh/meshgenerator_triangle.cpp
     mesh/meshgenerator_gmsh.cpp
     parser/lex.cpp
-    particle/particle_tracing.cpp
-    particle/particle_forces.cpp
-    postprocessorview.cpp
-    postprocessorview_mesh.cpp
-    postprocessorview_post2d.cpp
-    postprocessorview_post3d.cpp
-    postprocessorview_chart.cpp
-    postprocessorview_particletracing.cpp
-    preprocessorview.cpp
-    optilab/optilab.cpp
     optilab/study.cpp
     optilab/study_sweep.cpp
     optilab/study_nsga2.cpp
     optilab/study_nsga3.cpp
     optilab/study_bayesopt.cpp
     optilab/study_nlopt.cpp
-    optilab/study_dialog.cpp
     optilab/parameter.cpp
     optilab/functional.cpp
-    pythonlab/pythonconsole.cpp
-    pythonlab/pythoncompleter.cpp
-    pythonlab/pythonhighlighter.cpp
-    pythonlab/pythonengine.cpp
-    pythonlab/pythonbrowser.cpp
-    pythonlab/pythoneditor.cpp
-    pythonlab/pyfield.cpp
-    pythonlab/pygeometry.cpp
-    pythonlab/pyparticletracing.cpp
-    pythonlab/pyproblem.cpp
-    pythonlab/pystudy.cpp
-    pythonlab/pythonengine_agros.cpp
+    particle/particle_tracing.cpp
+    particle/particle_forces.cpp
     scene.cpp
     scenebasic.cpp
-    scenebasicselectdialog.cpp
     sceneedge.cpp
     scenelabel.cpp
     scenemarker.cpp
-    scenemarkerdialog.cpp
-    scenemarkerselectdialog.cpp
     scenenode.cpp
-    scenetransformdialog.cpp
-    sceneview_common.cpp
-    sceneview_common2d.cpp
-    sceneview_common3d.cpp
-    sceneview_geometry.cpp
-    sceneview_geometry_simple.cpp
-    sceneview_mesh.cpp
-    sceneview_particle.cpp
-    sceneview_post.cpp
-    sceneview_post2d.cpp
-    sceneview_post3d.cpp
     solver/bdf2.cpp
     solver/coupling.cpp
     solver/estimators.cpp
@@ -191,19 +105,15 @@ SET(SOURCES
     util/conf.cpp
     util/dxf_filter.cpp
     util/enums.cpp
-    util/form_interface.cpp
-    util/form_script.cpp
     util/global.cpp
     util/loops.cpp
     value.cpp
-    videodialog.cpp
   )
     
 SOURCE_GROUP(
   "Source Files\\_Commented Out" FILES 
   mesh/meshgenerator_gmsh.cpp
   # sceneview_vtk2d.cpp
-  #moduledialog.cpp
 )
 
 SOURCE_GROUP(
@@ -215,20 +125,6 @@ SOURCE_GROUP(
 )
 
 SOURCE_GROUP(
-  "Source Files\\GUI" FILES 
-  gui/common.cpp
-  gui/chart.cpp
-  gui/groupbox.cpp
-  gui/htmledit.cpp
-  gui/imageloader.cpp
-  gui/physicalfield.cpp
-  gui/scenewidget.cpp
-  gui/valuedatatabledialog.cpp
-  gui/valuelineedit.cpp
-  gui/valuetimedialog.cpp
-)
-
-SOURCE_GROUP(
   "Source Files\\Mesh" FILES 
   mesh/agros_manifold.cpp
   mesh/meshgenerator.cpp
@@ -237,44 +133,13 @@ SOURCE_GROUP(
 )
 
 SOURCE_GROUP(
-  "Source Files\\PythonLab" FILES 
-  pythonlab/pythonconsole.cpp
-  pythonlab/pythoncompleter.cpp
-  pythonlab/pythonhighlighter.cpp
-  pythonlab/pythonengine.cpp
-  pythonlab/pythonbrowser.cpp
-  pythonlab/pythoneditor.cpp
-  pythonlab/pyfield.cpp
-  pythonlab/pygeometry.cpp
-  pythonlab/pyparticletracing.cpp
-  pythonlab/pyproblem.cpp
-  pythonlab/pystudy.cpp
-  pythonlab/pythonengine_agros.cpp
-)
-
-SOURCE_GROUP(
   "Source Files\\Scene" FILES 
   scene.cpp
   scenebasic.cpp
-  scenebasicselectdialog.cpp
   sceneedge.cpp
   scenelabel.cpp
-  scenemarker.cpp
-  scenemarkerdialog.cpp
-  scenemarkerselectdialog.cpp
+  scenemarker.cpp  
   scenenode.cpp
-  scenetransformdialog.cpp
-  sceneview_common.cpp
-  sceneview_common2d.cpp
-  sceneview_common3d.cpp
-  sceneview_geometry.cpp
-  sceneview_geometry_simple.cpp
-  sceneview_mesh.cpp
-  sceneview_particle.cpp
-  particle_forces.cpp
-  sceneview_post.cpp
-  sceneview_post2d.cpp
-  sceneview_post3d.cpp
 )
 
 SOURCE_GROUP(
@@ -306,8 +171,6 @@ SOURCE_GROUP(
   util/conf.cpp
   util/dxf_filter.cpp
   util/enums.cpp
-  util/form_interface.cpp
-  util/form_script.cpp
   util/global.cpp
   util/loops.cpp
   util/xml.cpp
@@ -316,89 +179,30 @@ SOURCE_GROUP(
 SET(HEADERS
   mesh/meshgenerator_gmsh.h
   # sceneview.h
-  # sceneview_vtk2d.h
-  #moduledialog.h
-  chartdialog.h
-  confdialog.h
+  # sceneview_vtk2d.h  
   datatable.h
-  examplesdialog.h
-  gui/common.h
-  gui/chart.h
-  gui/groupbox.h
-  gui/htmledit.h
-  gui/imageloader.h
-  gui/physicalfield.h
-  gui/scenewidget.h
-  gui/valuedatatabledialog.h
-  gui/valuelineedit.h
-  gui/valuetimedialog.h
-  gui/parameterdialog.h
-  gui/functiondialog.h
-  gui/recipedialog.h
-  gui/infowidget.h
-  gui/problemdialog.h
-  gui/fielddialog.h
-  gui/resultsview.h
   logview.h
-  mainwindow.h
-  materialbrowserdialog.h
   mesh/agros_manifold.h
   mesh/meshgenerator.h
   mesh/meshgenerator_cubit.h
   mesh/meshgenerator_triangle.h
   parser/lex.h
-  particle/particle_tracing.h
-  particle/particle_forces.h
-  postprocessorview.h
-  postprocessorview_mesh.h
-  postprocessorview_post2d.h
-  postprocessorview_post3d.h
-  postprocessorview_chart.h
-  postprocessorview_particletracing.h
-  preprocessorview.h
-  optilab/optilab.h
   optilab/study.h
   optilab/study_sweep.h
   optilab/study_nsga2.h
   optilab/study_nsga3.h
   optilab/study_bayesopt.h
   optilab/study_nlopt.h
-  optilab/study_dialog.h
   optilab/parameter.h
   optilab/functional.h
-  pythonlab/pythonconsole.h
-  pythonlab/pythoncompleter.h
-  pythonlab/pythonhighlighter.h
-  pythonlab/pythonengine.h
-  pythonlab/pythonbrowser.h
-  pythonlab/pythoneditor.h
-  pythonlab/pyfield.h
-  pythonlab/pygeometry.h
-  pythonlab/pyparticletracing.h
-  pythonlab/pyproblem.h  
-  pythonlab/pystudy.h
-  pythonlab/pythonengine_agros.h
+  particle/particle_tracing.h
+  particle/particle_forces.h
   scene.h
   scenebasic.h
-  scenebasicselectdialog.h
   sceneedge.h
   scenelabel.h
   scenemarker.h
-  scenemarkerdialog.h
-  scenemarkerselectdialog.h
   scenenode.h
-  scenetransformdialog.h
-  sceneview_common.h
-  sceneview_common2d.h
-  sceneview_common3d.h
-  sceneview_data.h
-  sceneview_geometry.h
-  sceneview_geometry_simple.h
-  sceneview_mesh.h
-  sceneview_particle.h
-  sceneview_post.h
-  sceneview_post2d.h
-  sceneview_post3d.h
   solver/bdf2.h
   solver/coupling.h
   solver/estimators.h
@@ -423,12 +227,9 @@ SET(HEADERS
   util/constants.h
   util/dxf_filter.h
   util/enums.h
-  util/form_interface.h
-  util/form_script.h
   util/global.h
   util/loops.h
   value.h
-  videodialog.h
 )
   
 SOURCE_GROUP(
@@ -436,22 +237,6 @@ SOURCE_GROUP(
   mesh/meshgenerator_gmsh.h
   # sceneview.h
   # sceneview_vtk2d.h
-  #moduledialog.h
-)
-
-
-SOURCE_GROUP(
-  "Header Files\\GUI" FILES 
-  gui/common.h
-  gui/chart.h
-  gui/groupbox.h
-  gui/htmledit.h
-  gui/imageloader.h
-  gui/physicalfield.h
-  gui/scenewidget.h
-  gui/valuedatatabledialog.h
-  gui/valuelineedit.h
-  gui/valuetimedialog.h
 )
 
 SOURCE_GROUP(
@@ -463,44 +248,13 @@ SOURCE_GROUP(
 )
 
 SOURCE_GROUP(
-  "Header Files\\PythonLab" FILES 
-  pythonlab/pythonconsole.h
-  pythonlab/pythoncompleter.h
-  pythonlab/pythonhighlighter.h
-  pythonlab/pythonengine.h
-  pythonlab/pythonbrowser.h
-  pythonlab/pythoneditor.h
-  pythonlab/pyfield.h
-  pythonlab/pygeometry.h
-  pythonlab/pyparticletracing.h
-  pythonlab/pyproblem.h
-  pythonlab/pystudy.h
-  pythonlab/pythonengine_agros.h
-)
-
-SOURCE_GROUP(
   "Header Files\\Scene" FILES 
   scene.h
   scenebasic.h
-  scenebasicselectdialog.h
   sceneedge.h
   scenelabel.h
   scenemarker.h
-  scenemarkerdialog.h
-  scenemarkerselectdialog.h
   scenenode.h
-  scenetransformdialog.h
-  sceneview_common.h
-  sceneview_common2d.h
-  sceneview_common3d.h
-  sceneview_data.h
-  sceneview_geometry.h
-  sceneview_geometry_simple.h
-  sceneview_mesh.h
-  sceneview_particle.h
-  sceneview_post.h
-  sceneview_post2d.h
-  sceneview_post3d.h
 )
 
 SOURCE_GROUP(
@@ -532,8 +286,6 @@ SOURCE_GROUP(
   util/constants.h
   util/dxf_filter.h
   util/enums.h
-  util/form_interface.h
-  util/form_script.h
   util/global.h
   util/loops.h
 )
@@ -542,7 +294,6 @@ SET(RESOURCES ../resources_source/resources.qrc)
 QT5_ADD_RESOURCES(RESOURCES_RCC ${RESOURCES})
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} ${RESOURCES_RCC})
-ADD_DEPENDENCIES(${PROJECT_NAME} CYTHON_AGROS2D CYTHON_PYTHONLAB)
 
 foreach(LANGFILE ${lang_files})
   GET_FILENAME_COMPONENT(basefile ${LANGFILE} NAME_WE)
@@ -554,7 +305,7 @@ foreach(XSD_FILE ${xsd_files})
   ADD_DEPENDENCIES(${PROJECT_NAME} ${basefile})
 endforeach()
 
-QT5_USE_MODULES(${PROJECT_NAME} Core Widgets Network Xml XmlPatterns WebKit WebKitWidgets Svg UiTools OpenGL)
+QT5_USE_MODULES(${PROJECT_NAME} Core Network Xml XmlPatterns WebKit Svg)
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_LIBRARIES} ${AGROS_UTIL} ${TRIANGLE_LIBRARY} ${CTEMPLATE_LIBRARY} ${DXFLIB_LIBRARY} ${POLY2TRI_LIBRARY} ${QCUSTOMPLOT_LIBRARY} ${QUAZIP_LIBRARY} ${STB_TRUETYPE_LIBRARY} ${OPENGL_LIBRARIES} ${ZLIB_LIBRARIES} ${ZLIB_LIBRARY} ${XSD_LIBRARY} ${XERCES_LIBRARY} ${DEAL_II_LIBRARIES} ${PYTHON_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${UMFPACK_LIBRARY} ${AMD_LIBRARY} ${MATIO_LIBRARY} ${BAYESOPTLIB_LIBRARY} ${NLOPTLIB_LIBRARY} ${NSGA2_LIBRARY} ${NSGA3_LIBRARY} ${SuiteSparse_config_LIBRARY})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_LIBRARIES} ${AGROS_UTIL} ${TRIANGLE_LIBRARY} ${CTEMPLATE_LIBRARY} ${DXFLIB_LIBRARY} ${POLY2TRI_LIBRARY} ${QUAZIP_LIBRARY} ${STB_TRUETYPE_LIBRARY} ${OPENGL_LIBRARIES} ${ZLIB_LIBRARIES} ${ZLIB_LIBRARY} ${XSD_LIBRARY} ${XERCES_LIBRARY} ${DEAL_II_LIBRARIES} ${PYTHON_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${UMFPACK_LIBRARY} ${AMD_LIBRARY} ${MATIO_LIBRARY} ${BAYESOPTLIB_LIBRARY} ${NLOPTLIB_LIBRARY} ${NSGA2_LIBRARY} ${NSGA3_LIBRARY} ${SuiteSparse_config_LIBRARY})
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
