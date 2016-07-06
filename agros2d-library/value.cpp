@@ -17,8 +17,6 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include <Python.h>
-
 #include "value.h"
 
 #include "util/global.h"

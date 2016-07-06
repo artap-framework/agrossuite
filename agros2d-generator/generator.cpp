@@ -255,11 +255,11 @@ void Agros2DGenerator::run()
 void Agros2DGenerator::createStructure()
 {
     // create directory
-    QDir root(QApplication::applicationDirPath());
+    QDir root(QCoreApplication::applicationDirPath());
     root.mkpath(GENERATOR_PLUGINROOT);
 
     // documentation
-    QDir doc_root(QApplication::applicationDirPath());
+    QDir doc_root(QCoreApplication::applicationDirPath());
     doc_root.mkpath(GENERATOR_DOCROOT);
 
     ctemplate::TemplateDictionary output("project_output");
@@ -281,11 +281,11 @@ void Agros2DGenerator::createStructure()
     // generate plugins project file
     // expand template
     std::string text;
-    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/plugins_CMakeLists_txt.tpl").arg(QApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
+    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/plugins_CMakeLists_txt.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
                               ctemplate::DO_NOT_STRIP, &output, &text);
     // save to file
     writeStringContent(QString("%1/%2/CMakeLists.txt").
-                       arg(QApplication::applicationDirPath()).
+                       arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_PLUGINROOT),
                        QString::fromStdString(text));
 

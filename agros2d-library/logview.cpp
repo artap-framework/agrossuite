@@ -197,7 +197,7 @@ void LogWidget::ensureCursorVisible()
 
 void LogWidget::welcomeMessage()
 {
-    print("Agros2D", tr("version: %1").arg(QApplication::applicationVersion()), "green");
+    print("Agros2D", tr("version: %1").arg(QCoreApplication::applicationVersion()), "green");
 }
 
 void LogWidget::appendImage(const QString &fileName)
@@ -250,7 +250,7 @@ LogView::~LogView()
 
 // *******************************************************************************************************
 
-LogDialog::LogDialog(Computation *computation, const QString &title) : QDialog(QApplication::activeWindow()),
+LogDialog::LogDialog(Computation *computation, const QString &title) : QDialog(QCoreApplication::activeWindow()),
     m_computation(computation),
     m_nonlinearChart(nullptr), m_nonlinearErrorGraph(nullptr), m_nonlinearProgress(nullptr),
     m_adaptivityChart(nullptr), m_adaptivityErrorGraph(nullptr), m_adaptivityDOFsGraph(nullptr), m_adaptivityProgress(nullptr),
@@ -269,14 +269,14 @@ LogDialog::LogDialog(Computation *computation, const QString &title) : QDialog(Q
     connect(Agros2D::problem(), SIGNAL(meshed()), this, SLOT(tryClose()));
     connect(m_computation, SIGNAL(solved()), this, SLOT(tryClose()));
     
-    int w = 2.0/3.0 * QApplication::desktop()->screenGeometry().width();
-    int h = 2.0/3.0 * QApplication::desktop()->screenGeometry().height();
+    int w = 2.0/3.0 * QCoreApplication::desktop()->screenGeometry().width();
+    int h = 2.0/3.0 * QCoreApplication::desktop()->screenGeometry().height();
     
     setMinimumSize(w, h);
     setMaximumSize(w, h);
     
-    move(QApplication::activeWindow()->pos().x() + (QApplication::activeWindow()->width() - width()) / 2.0,
-         QApplication::activeWindow()->pos().y() + (QApplication::activeWindow()->height() - height()) / 2.0);
+    move(QCoreApplication::activeWindow()->pos().x() + (QCoreApplication::activeWindow()->width() - width()) / 2.0,
+         QCoreApplication::activeWindow()->pos().y() + (QCoreApplication::activeWindow()->height() - height()) / 2.0);
 }
 
 void LogDialog::closeEvent(QCloseEvent *e)
@@ -623,7 +623,7 @@ void LogDialog::tryClose()
 
 // *******************************************************************************************
 
-LogStdOut::LogStdOut(QWidget *parent) : QObject(parent)
+LogStdOut::LogStdOut() : QObject()
 {
     connect(Agros2D::log(), SIGNAL(headingMsg(QString)), this, SLOT(printHeading(QString)));
     connect(Agros2D::log(), SIGNAL(messageMsg(QString, QString)), this, SLOT(printMessage(QString, QString)));

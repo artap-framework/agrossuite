@@ -20,12 +20,12 @@ void Agros2DGeneratorModule::generatePluginWeakFormSourceFiles()
     QString id = QString::fromStdString(m_module->general_field().id());
     std::string textWeakform;
 
-    ExpandTemplate(compatibleFilename(QString("%1/%2/weakform_cpp.tpl").arg(QApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
+    ExpandTemplate(compatibleFilename(QString("%1/%2/weakform_cpp.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
                    ctemplate::DO_NOT_STRIP, m_output, &textWeakform);
 
     // source - save to file
     writeStringContent(QString("%1/%2/%3/%3_weakform.cpp").
-                       arg(QApplication::applicationDirPath()).
+                       arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_PLUGINROOT).
                        arg(id),
                        QString::fromStdString(textWeakform));  
@@ -40,12 +40,12 @@ void Agros2DGeneratorModule::generatePluginWeakFormHeaderFiles()
 
     // header - expand template
     std::string text;
-    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/weakform_h.tpl").arg(QApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
+    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/weakform_h.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
                               ctemplate::DO_NOT_STRIP, m_output, &textWeakform);
 
     // header - save to file
     writeStringContent(QString("%1/%2/%3/%3_weakform.h").
-                       arg(QApplication::applicationDirPath()).
+                       arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_PLUGINROOT).
                        arg(id),
                        QString::fromStdString(textWeakform));   

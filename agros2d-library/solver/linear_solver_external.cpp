@@ -84,7 +84,7 @@ void AgrosExternalSolver::solve(const dealii::Vector<double> *initial_guess)
     // fill command template   
     QString command = QString("%1 \"%2/libs/%3\" -m \"%4\" -p \"%5\" -r \"%6\" -s \"%7\" %8").
             arg(m_commandEnvironment).
-            arg(QApplication::applicationDirPath()).
+            arg(QCoreApplication::applicationDirPath()).
             arg(m_command).
             arg(fileMatrix).
             arg(fileMatrixPattern).

@@ -49,7 +49,7 @@ public:
     void setHighlighted(bool value = true) { m_isHighlighted = value; }
     inline bool isHighlighted() const { return m_isHighlighted; }
 
-    virtual int showDialog(QWidget *parent, bool isNew = false) = 0;
+    // virtual int showDialog(QWidget *parent, bool isNew = false) = 0;
 
     QVariant variant();
 

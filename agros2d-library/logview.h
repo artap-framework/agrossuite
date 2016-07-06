@@ -199,7 +199,7 @@ class AGROS_LIBRARY_API LogStdOut : public QObject
 {
     Q_OBJECT
 public:
-    LogStdOut(QWidget *parent = 0);
+    LogStdOut();
 
 private slots:
     void printHeading(const QString &message);

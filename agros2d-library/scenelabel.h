@@ -53,7 +53,7 @@ public:
     // returns true if markers for all fields are noneMarkers
     bool isHole();
 
-    int showDialog(QWidget *parent, bool isNew = false);
+    // int showDialog(QWidget *parent, bool isNew = false);
 
     static SceneLabel *findClosestLabel(Scene *scene, const Point &point);
     static SceneLabel *findLabelAtPoint(Scene *scene, const Point &point);

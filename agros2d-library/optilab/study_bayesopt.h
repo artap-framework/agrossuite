@@ -20,8 +20,6 @@
 #ifndef STUDY_BAYESOPT_H
 #define STUDY_BAYESOPT_H
 
-#include <QWidget>
-
 #include "util.h"
 #include "util/enums.h"
 #include "study.h"

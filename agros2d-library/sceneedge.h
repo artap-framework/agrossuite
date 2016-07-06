@@ -67,7 +67,7 @@ public:
     // SceneFaceCommandAdd* getAddCommand();
     // SceneFaceCommandRemove* getRemoveCommand();
 
-    int showDialog(QWidget *parent, bool isNew = false);
+    // int showDialog(QWidget *parent, bool isNew = false);
 
     static SceneFace *findClosestFace(Scene *scene, const Point &point);
 

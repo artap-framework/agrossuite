@@ -20,8 +20,6 @@
 #ifndef STUDY_NSGA3_H
 #define STUDY_NSGA3_H
 
-#include <QWidget>
-
 #include "util.h"
 #include "util/enums.h"
 #include "study.h"

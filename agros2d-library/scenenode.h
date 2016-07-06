@@ -49,7 +49,7 @@ public:
     bool isError();
     double distance(const Point &point) const;
 
-    int showDialog(QWidget *parent, bool isNew = false);
+    // int showDialog(QWidget *parent, bool isNew = false);
 
     // SceneNodeCommandRemove* getRemoveCommand();
 

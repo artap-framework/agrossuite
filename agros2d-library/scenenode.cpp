@@ -52,14 +52,13 @@ double SceneNode::distance(const Point &point) const
     return (this->point() - point).magnitude();
 }
 
+/*
 int SceneNode::showDialog(QWidget *parent, bool isNew)
 {
-    assert(0);
-    // SceneNodeDialog *dialog = new SceneNodeDialog(this, parent, isNew);
-    // return dialog->exec();
+    SceneNodeDialog *dialog = new SceneNodeDialog(this, parent, isNew);
+    return dialog->exec();
 }
 
-/*
 SceneNodeCommandRemove* SceneNode::getRemoveCommand()
 {
     return new SceneNodeCommandRemove(this->pointValue());

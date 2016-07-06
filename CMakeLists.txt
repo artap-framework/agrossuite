@@ -50,10 +50,23 @@ IF (DEAL_II_WITH_THREADS AND NOT (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
 ENDIF()
 
 # OpenGL
-FIND_PACKAGE(OpenGLCustom REQUIRED)
+# FIND_PACKAGE(OpenGLCustom REQUIRED)
 
 # Handle Qt.
-include(QtHandling.cmake)
+SET(CMAKE_AUTOMOC TRUE)
+
+# Link OpenGL and Zlib when needed.
+IF(WIN32)
+    # FIND_PACKAGE(OpenGL REQUIRED)
+    FIND_PACKAGE(ZLIB REQUIRED)
+        INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
+ENDIF()
+
+FIND_PACKAGE(Qt5Core REQUIRED)
+FIND_PACKAGE(Qt5Svg REQUIRED)
+FIND_PACKAGE(Qt5Network REQUIRED)
+FIND_PACKAGE(Qt5Xml REQUIRED)
+FIND_PACKAGE(Qt5XmlPatterns REQUIRED)
 
 # versions
 SET(VERSION_MAJOR 4)
@@ -149,14 +162,6 @@ ENDIF()
 IF(MSVC)
   SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /NODEFAULTLIB:libcmtd /NODEFAULTLIB:libcmt")
 ENDIF(MSVC)
-
-# Python
-set(Python_ADDITIONAL_VERSIONS 3.4)
-FIND_PACKAGE(PythonLibs 3.4 REQUIRED)
-IF(MSVC)
-	get_filename_component(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} PATH)
-ENDIF()
-INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
 
 # VTK
 #FIND_PACKAGE(VTK REQUIRED)
@@ -345,14 +350,6 @@ set(info resources/modules/acoustic.xml
          resources/templates/panels/problem.tpl
          resources/templates/panels/welcome.tpl
          resources/templates/panels/style_common.css
-         resources_source/python/agros2d.pyx
-         resources_source/python/pygeometry.pxi
-         resources_source/python/pyfield.pxi
-         resources_source/python/pyproblem.pxi
-         resources_source/python/pycomputation.pxi
-         resources_source/python/pysolution.pxi
-         resources_source/python/pystudy.pxi
-         resources_source/python/pyparticletracing.pxi
 )
 add_info_files(${info})
 add_custom_target(other SOURCES ${info})

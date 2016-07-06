@@ -105,14 +105,7 @@ void Config::setStringKeys()
     m_settingKey[Config_RulersFontFamily] = "Config_RulersFontFamily";
     m_settingKey[Config_RulersFontPointSize] = "Config_RulersFontPointSize";
     m_settingKey[Config_PostFontFamily] = "Config_PostFontFamily";
-    m_settingKey[Config_PostFontPointSize] = "Config_PostFontPointSize";
-    m_settingKey[Python_UseProfiler] = "Python_UseProfiler";
-    m_settingKey[Python_ConsoleOutput] = "Python_ConsoleOutput";
-    m_settingKey[ShowConsoleAndLog_Welcome] = "ShowConsoleAndLog_Welcome";
-    m_settingKey[ShowConsoleAndLog_Problem] = "ShowConsoleAndLog_Problem";
-    m_settingKey[ShowConsoleAndLog_Results] = "ShowConsoleAndLog_Results";
-    m_settingKey[ShowConsoleAndLog_OptiLab] = "ShowConsoleAndLog_OptiLab";
-    m_settingKey[ShowConsoleAndLog_PythonLab] = "ShowConsoleAndLog_PythonLab";
+    m_settingKey[Config_PostFontPointSize] = "Config_PostFontPointSize";    
 }
 
 void Config::setDefaultValues()
@@ -134,11 +127,4 @@ void Config::setDefaultValues()
     m_settingDefault[Config_RulersFontPointSize] = 12;
     m_settingDefault[Config_PostFontFamily] = QString("Droid");
     m_settingDefault[Config_PostFontPointSize] = 16;
-    m_settingDefault[Python_UseProfiler] = false;
-    m_settingDefault[Python_ConsoleOutput] = false;
-    m_settingDefault[ShowConsoleAndLog_Welcome] = false;
-    m_settingDefault[ShowConsoleAndLog_Problem] = false;
-    m_settingDefault[ShowConsoleAndLog_Results] = false;
-    m_settingDefault[ShowConsoleAndLog_OptiLab] = true;
-    m_settingDefault[ShowConsoleAndLog_PythonLab] = true;
 }

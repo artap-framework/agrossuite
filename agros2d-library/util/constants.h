@@ -21,8 +21,7 @@
 #define UTIL_CONSTANTS_H
 
 #include <QtCore>
-#include <QApplication>
-#include <QFont>
+#include <QCoreApplication>
 
 const double SPEEDOFLIGHT = 299792458;
 

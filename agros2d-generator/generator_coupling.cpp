@@ -36,7 +36,7 @@
 Agros2DGeneratorCoupling::Agros2DGeneratorCoupling(const QString &couplingId) : m_output(nullptr)
 {
     QString iD = couplingId;
-    QDir root(QApplication::applicationDirPath());
+    QDir root(QCoreApplication::applicationDirPath());
     root.mkpath(QString("%1/%2").arg(GENERATOR_PLUGINROOT).arg(iD));
 
     coupling_xsd = XMLModule::module_(compatibleFilename(datadir() + COUPLINGROOT + "/" + couplingId + ".xml").toStdString(), xml_schema::flags::dont_validate);
@@ -89,12 +89,12 @@ void Agros2DGeneratorCoupling::generatePluginProjectFile()
 
     // expand template
     std::string text;
-    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/coupling_CMakeLists_txt.tpl").arg(QApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
+    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/coupling_CMakeLists_txt.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
                               ctemplate::DO_NOT_STRIP, &output, &text);
 
     // save to file
     writeStringContent(QString("%1/%2/%3/CMakeLists.txt").
-                       arg(QApplication::applicationDirPath()).
+                       arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_PLUGINROOT).
                        arg(id),
                        QString::fromStdString(text));
@@ -109,12 +109,12 @@ void Agros2DGeneratorCoupling::generatePluginInterfaceFiles()
     std::string text;
 
     // header - expand template
-    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/coupling_interface_h.tpl").arg(QApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
+    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/coupling_interface_h.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
                               ctemplate::DO_NOT_STRIP, m_output, &text);
 
     // header - save to file
     writeStringContent(QString("%1/%2/%3/%3_interface.h").
-                       arg(QApplication::applicationDirPath()).
+                       arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_PLUGINROOT).
                        arg(id),
                        QString::fromStdString(text));
@@ -123,11 +123,11 @@ void Agros2DGeneratorCoupling::generatePluginInterfaceFiles()
     text.clear();
 
 
-    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/coupling_interface_cpp.tpl").arg(QApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
+    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/coupling_interface_cpp.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
                               ctemplate::DO_NOT_STRIP, m_output, &text);
     // source - save to file
     writeStringContent(QString("%1/%2/%3/%3_interface.cpp").
-                       arg(QApplication::applicationDirPath()).
+                       arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_PLUGINROOT).
                        arg(id),
                        QString::fromStdString(text));
@@ -149,12 +149,12 @@ void Agros2DGeneratorCoupling::generatePluginWeakFormHeaderFiles()
 
     // header - expand template
     std::string text;
-    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/weakform_h.tpl").arg(QApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
+    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/weakform_h.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
                               ctemplate::DO_NOT_STRIP, m_output, &text);
 
     // header - save to file
     writeStringContent(QString("%1/%2/%3/%3_weakform.h").
-                       arg(QApplication::applicationDirPath()).
+                       arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_PLUGINROOT).
                        arg(id),
                        QString::fromStdString(text));
@@ -169,12 +169,12 @@ void Agros2DGeneratorCoupling::generatePluginWeakFormSourceFiles()
     qDebug() << (QString("generating weakform source file").toLatin1());
 
     std::string text;
-    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/weakform_cpp.tpl").arg(QApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
+    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/weakform_cpp.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
                               ctemplate::DO_NOT_STRIP, m_output, &text);
 
     // source - save to file
     writeStringContent(QString("%1/%2/%3/%3_weakform.cpp").
-                       arg(QApplication::applicationDirPath()).
+                       arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_PLUGINROOT).
                        arg(id),
                        QString::fromStdString(text));

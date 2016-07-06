@@ -27,7 +27,7 @@
 
 Agros2DGeneratorModule::Agros2DGeneratorModule(const QString &moduleId) : m_output(nullptr), m_id(moduleId)
 {
-    QDir root(QApplication::applicationDirPath());
+    QDir root(QCoreApplication::applicationDirPath());
     root.mkpath(QString("%1/%2").arg(GENERATOR_PLUGINROOT).arg(moduleId));
 
     // read module
@@ -39,7 +39,7 @@ Agros2DGeneratorModule::Agros2DGeneratorModule(const QString &moduleId) : m_outp
     QDir().mkdir(GENERATOR_PLUGINROOT + "/" + moduleId);
 
     // documentation
-    QDir doc_root(QApplication::applicationDirPath());
+    QDir doc_root(QCoreApplication::applicationDirPath());
     doc_root.mkpath(QString("%1/%2").arg(GENERATOR_DOCROOT).arg(moduleId));
     QDir().mkdir(GENERATOR_DOCROOT + "/" + moduleId);
 
@@ -88,12 +88,12 @@ void Agros2DGeneratorModule::generatePluginProjectFile()
 
     // expand template
     std::string text;
-    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/module_CMakeLists_txt.tpl").arg(QApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
+    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/module_CMakeLists_txt.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
                               ctemplate::DO_NOT_STRIP, &output, &text);
 
     // save to file
     writeStringContent(QString("%1/%2/%3/CMakeLists.txt").
-                       arg(QApplication::applicationDirPath()).
+                       arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_PLUGINROOT).
                        arg(id),
                        QString::fromStdString(text));
@@ -164,12 +164,12 @@ void Agros2DGeneratorModule::generatePluginInterfaceFiles()
     std::string text;
 
     // header - expand template
-    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/interface_h.tpl").arg(QApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
+    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/interface_h.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
                               ctemplate::DO_NOT_STRIP, m_output, &text);
 
     // header - save to file
     writeStringContent(QString("%1/%2/%3/%3_interface.h").
-                       arg(QApplication::applicationDirPath()).
+                       arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_PLUGINROOT).
                        arg(id),
                        QString::fromStdString(text));
@@ -177,12 +177,12 @@ void Agros2DGeneratorModule::generatePluginInterfaceFiles()
     // source - expand template
     text.clear();
 
-    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/interface_cpp.tpl").arg(QApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
+    ctemplate::ExpandTemplate(compatibleFilename(QString("%1/%2/interface_cpp.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
                               ctemplate::DO_NOT_STRIP, m_output, &text);
 
     // source - save to file
     writeStringContent(QString("%1/%2/%3/%3_interface.cpp").
-                       arg(QApplication::applicationDirPath()).
+                       arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_PLUGINROOT).
                        arg(id),
                        QString::fromStdString(text));
@@ -195,7 +195,7 @@ void Agros2DGeneratorModule::generatePluginEquations()
     qDebug() << (QString("generating equations").toLatin1());
 
     QString id = QString::fromStdString(m_module->general_field().id());
-    QString outputDir = QDir().absoluteFilePath(QString("%1/%2").arg(QApplication::applicationDirPath()).arg("resources/images/equations/"));
+    QString outputDir = QDir().absoluteFilePath(QString("%1/%2").arg(QCoreApplication::applicationDirPath()).arg("resources/images/equations/"));
 
     ctemplate::TemplateDictionary output("output");
 
@@ -204,7 +204,7 @@ void Agros2DGeneratorModule::generatePluginEquations()
 
     std::string text;
 
-    output.SetValue("LATEX_TEMPLATE", compatibleFilename(QString("%1/%2/equations.tex").arg(QApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString());
+    output.SetValue("LATEX_TEMPLATE", compatibleFilename(QString("%1/%2/equations.tex").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString());
 
     foreach(XMLModule::weakform_volume weakform, m_module->volume().weakforms_volume().weakform_volume())
     {
@@ -229,12 +229,12 @@ void Agros2DGeneratorModule::generatePluginEquations()
         }
     }
 
-    ExpandTemplate(compatibleFilename(QString("%1/%2/equations.tpl").arg(QApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
+    ExpandTemplate(compatibleFilename(QString("%1/%2/equations.tpl").arg(QCoreApplication::applicationDirPath()).arg(GENERATOR_TEMPLATEROOT)).toStdString(),
                    ctemplate::DO_NOT_STRIP, &output, &text);
 
     // source - save to file
     writeStringContent(QString("%1/%2/%3/%3_equations.py").
-                       arg(QApplication::applicationDirPath()).
+                       arg(QCoreApplication::applicationDirPath()).
                        arg(GENERATOR_PLUGINROOT).
                        arg(id),
                        QString::fromStdString(text));

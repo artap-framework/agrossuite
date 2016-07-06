@@ -27,7 +27,6 @@
 #include <QtPlugin>
 #include <QtGlobal>
 #include <QtPrintSupport/QPrinter>
-#include <QtPrintSupport/QPrintDialog>
 
 #include <typeinfo>
 #include <iostream>

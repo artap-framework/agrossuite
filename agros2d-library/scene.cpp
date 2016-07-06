@@ -877,7 +877,7 @@ void Scene::cacheGeometryConstraints()
 void Scene::doNewNode(const Point &point)
 {
     SceneNode *node = new SceneNode(this, PointValue(m_problem, point));
-    if (node->showDialog(QApplication::activeWindow(), true) == QDialog::Accepted)
+    if (node->showDialog(QCoreApplication::activeWindow(), true) == QDialog::Accepted)
     {
         SceneNode *nodeAdded = addNode(node);
         if (nodeAdded == node) m_undoStack->push(new SceneNodeCommandAdd(node->pointValue()));
@@ -889,7 +889,7 @@ void Scene::doNewNode(const Point &point)
 void Scene::doNewEdge()
 {
     SceneFace *edge = new SceneFace(this, nodes->at(0), nodes->at(1), Value(m_problem, 0.0));
-    if (edge->showDialog(QApplication::activeWindow(), true) == QDialog::Accepted)
+    if (edge->showDialog(QCoreApplication::activeWindow(), true) == QDialog::Accepted)
     {
         SceneFace *edgeAdded = addFace(edge);
         if (edgeAdded == edge)
@@ -902,7 +902,7 @@ void Scene::doNewEdge()
 void Scene::doNewLabel(const Point &point)
 {
     SceneLabel *label = new SceneLabel(this, PointValue(m_problem, point), 0.0);
-    if (label->showDialog(QApplication::activeWindow(), true) == QDialog::Accepted)
+    if (label->showDialog(QCoreApplication::activeWindow(), true) == QDialog::Accepted)
     {
         SceneLabel *labelAdded = addLabel(label);
 
@@ -930,7 +930,7 @@ void Scene::doNewBoundary(QString field)
                                                 tr("new boundary"),
                                                 parentProblem()->fieldInfo(field)->boundaryTypeDefault().id());
 
-    if (boundary->showDialog(QApplication::activeWindow()) == QDialog::Accepted)
+    if (boundary->showDialog(QCoreApplication::activeWindow()) == QDialog::Accepted)
         addBoundary(boundary);
     else
         delete boundary;
@@ -947,7 +947,7 @@ void Scene::doNewMaterial(QString field)
                                                 parentProblem()->fieldInfo(field),
                                                 tr("new material"));
 
-    if (material->showDialog(QApplication::activeWindow()) == QDialog::Accepted)
+    if (material->showDialog(QCoreApplication::activeWindow()) == QDialog::Accepted)
         addMaterial(material);
     else
         delete material;

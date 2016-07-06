@@ -220,14 +220,13 @@ bool SceneFace::isError() const
     return (hasLyingNode() || isOutsideArea() || isCrossed());
 }
 
+/*
 int SceneFace::showDialog(QWidget *parent, bool isNew)
 {
-    assert(0);
-    // SceneFaceDialog *dialog = new SceneFaceDialog(this, parent, isNew);
-    // return dialog->exec();
+    SceneFaceDialog *dialog = new SceneFaceDialog(this, parent, isNew);
+    return dialog->exec();
 }
 
-/*
 SceneFaceCommandAdd* SceneFace::getAddCommand()
 {
     return new SceneFaceCommandAdd(m_nodeStart->pointValue(), m_nodeEnd->pointValue(), markersKeys(), m_angle, m_segments, m_isCurvilinear);

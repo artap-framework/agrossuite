@@ -48,14 +48,7 @@ public:
         Config_PostFontPointSize,
         Config_ShowGrid,
         Config_ShowRulers,
-        Config_ShowAxes,
-        Python_UseProfiler,
-        Python_ConsoleOutput,
-        ShowConsoleAndLog_Welcome,
-        ShowConsoleAndLog_Problem,
-        ShowConsoleAndLog_Results,
-        ShowConsoleAndLog_OptiLab,
-        ShowConsoleAndLog_PythonLab
+        Config_ShowAxes
     };
 
     inline QVariant value(Type type) {  return m_setting[type]; }

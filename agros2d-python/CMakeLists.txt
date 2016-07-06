@@ -3,6 +3,14 @@ PROJECT(${AGROS_PYTHON})
 set(PYTHON "python3")
 set(PACKAGE_VERSION 1.0)
 
+# Python
+set(Python_ADDITIONAL_VERSIONS 3.4)
+FIND_PACKAGE(PythonLibs 3.4 REQUIRED)
+IF(MSVC)
+  get_filename_component(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} PATH)
+ENDIF()
+INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
+
 # cython
 # message("Cython files - Agros2D")
 # message("\tcython agros2d.pyx")
@@ -48,10 +56,35 @@ SET(HEADERS pythonlab/pyfield.h
     pythonlab/pystudy.h
     pythonlab/pyagros.h)
 
+# other files
+MACRO(ADD_INFO_FILES)
+   FOREACH(_it ${ARGN})
+     IF(NOT IS_DIRECTORY ${_it})
+       GET_FILENAME_COMPONENT(name ${_it} NAME)
+       IF(NOT ${_it} MATCHES "^/\\\\..*$;~$")
+         SET_SOURCE_FILES_PROPERTIES(${_it} PROPERTIES HEADER_FILE_ONLY TRUE)
+       ENDIF()
+     ENDIF()
+   ENDFOREACH()
+ENDMACRO()
+
+set(info_python ../resources_source/python/agros2d.pyx
+         ../resources_source/python/pygeometry.pxi
+         ../resources_source/python/pyfield.pxi
+         ../resources_source/python/pyproblem.pxi
+         ../resources_source/python/pycomputation.pxi
+         ../resources_source/python/pysolution.pxi
+         ../resources_source/python/pystudy.pxi
+         ../resources_source/python/pyparticletracing.pxi
+)
+add_info_files(${info_python})
+add_custom_target(other_python SOURCES ${info_python})
+
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS} )
 ADD_DEPENDENCIES(${PROJECT_NAME} CYTHON_AGROS2D)
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_QTMAIN_LIBRARY} ${AGROS_LIBRARY})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${AGROS_LIBRARY})
 
-QT5_USE_MODULES(${PROJECT_NAME} Core Network Xml XmlPatterns)
+QT5_USE_MODULES(${PROJECT_NAME} Core Network)
+
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES OUTPUT_NAME agros2d_python)
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

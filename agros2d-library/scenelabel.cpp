@@ -71,14 +71,13 @@ bool SceneLabel::isHole()
     return true;
 }
 
+/*
 int SceneLabel::showDialog(QWidget *parent, bool isNew)
 {
-    assert(0);
-    // SceneLabelDialog *dialog = new SceneLabelDialog(this, parent, isNew);
-    // return dialog->exec();
+    SceneLabelDialog *dialog = new SceneLabelDialog(this, parent, isNew);
+    return dialog->exec();
 }
 
-/*
 SceneLabelCommandAdd* SceneLabel::getAddCommand()
 {
     return new SceneLabelCommandAdd(m_point, markersKeys(), m_area);

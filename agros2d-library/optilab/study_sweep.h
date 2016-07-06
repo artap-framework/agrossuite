@@ -20,8 +20,6 @@
 #ifndef STUDY_SWEEP_H
 #define STUDY_SWEEP_H
 
-#include <QWidget>
-
 #include "util.h"
 #include "util/enums.h"
 #include "study.h"
