@@ -20,7 +20,7 @@
 #ifndef SOLVER_EXTERNAL_H
 #define SOLVER_EXTERNAL_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/global.h"
 #include "solutiontypes.h"
 

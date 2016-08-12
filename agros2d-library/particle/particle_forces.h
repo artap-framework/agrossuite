@@ -20,7 +20,7 @@
 #ifndef PARTICLETRACING_FORCES_H
 #define PARTICLETRACING_FORCES_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/enums.h"
 #include "util/point.h"
 #include "util/global.h"

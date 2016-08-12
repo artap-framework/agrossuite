@@ -21,8 +21,8 @@
 #include <unity.h>
 #endif
 
-#include "util.h"
-#include "config.h"
+#include "util/util.h"
+#include "checkversion_version.h"
 
 #ifdef Q_WS_WIN
 #include "Windows.h"

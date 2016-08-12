@@ -20,7 +20,7 @@
 #ifndef COUPLING_H
 #define COUPLING_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/enums.h"
 
 #include "solver/module.h"

@@ -19,7 +19,7 @@
 
 #include "sceneedge.h"
 
-#include "util.h"
+#include "util/util.h"
 #include "util/global.h"
 
 #include "scene.h"

@@ -20,7 +20,7 @@
 #ifndef SCENELABEL_H
 #define SCENELABEL_H
 
-#include "util.h"
+#include "util/util.h"
 #include "value.h"
 #include "scenebasic.h"
 #include "scenemarker.h"

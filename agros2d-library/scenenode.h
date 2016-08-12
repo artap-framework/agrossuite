@@ -20,7 +20,7 @@
 #ifndef SCENENODE_H
 #define SCENENODE_H
 
-#include "util.h"
+#include "util/util.h"
 #include "value.h"
 #include "scenebasic.h"
 

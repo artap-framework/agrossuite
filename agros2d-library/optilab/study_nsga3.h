@@ -20,7 +20,7 @@
 #ifndef STUDY_NSGA3_H
 #define STUDY_NSGA3_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/enums.h"
 #include "study.h"
 

@@ -20,7 +20,7 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/enums.h"
 
 class Problem;

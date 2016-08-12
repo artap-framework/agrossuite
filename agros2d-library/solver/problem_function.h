@@ -20,7 +20,7 @@
 #ifndef PROBLEM_FUNCTION_H
 #define PROBLEM_FUNCTION_H
 
-#include "util.h"
+#include "util/util.h"
 #include "value.h"
 #include "solutiontypes.h"
 

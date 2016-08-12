@@ -20,7 +20,7 @@
 #ifndef {{CLASS}}_WEAKFORM_H
 #define {{CLASS}}_WEAKFORM_H
 
-#include "util.h"
+#include "util/util.h"
 #include "solver/plugin_interface.h"
 #include "solver/marker.h"
 #include "solver/solver_utils.h"

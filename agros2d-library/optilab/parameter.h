@@ -20,7 +20,7 @@
 #ifndef PARAMETER_H
 #define PARAMETER_H
 
-#include "util.h"
+#include "util/util.h"
 
 class Parameter
 {

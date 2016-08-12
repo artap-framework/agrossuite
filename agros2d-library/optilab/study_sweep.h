@@ -20,7 +20,7 @@
 #ifndef STUDY_SWEEP_H
 #define STUDY_SWEEP_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/enums.h"
 #include "study.h"
 

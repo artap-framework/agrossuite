@@ -20,7 +20,6 @@
 #include "{{ID}}_weakform.h"
 // #include "{{ID}}_extfunction.h"
 
-#include "util.h"
 #include "util/global.h"
 
 #include "scene.h"

@@ -22,7 +22,7 @@
 
 #include "QtCore"
 
-#include "util.h"
+#include "util/util.h"
 #include "util/table.h"
 
 #undef signals

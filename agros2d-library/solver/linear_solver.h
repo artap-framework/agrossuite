@@ -20,7 +20,7 @@
 #ifndef LINEAR_SOLVER_H
 #define LINEAR_SOLVER_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/global.h"
 #include "solutiontypes.h"
 #include "scene.h"

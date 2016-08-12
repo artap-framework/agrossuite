@@ -17,7 +17,7 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include "util.h"
+#include "util/util.h"
 #include "generator.h"
 
 #include "../3rdparty/tclap/CmdLine.h"

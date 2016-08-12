@@ -20,7 +20,7 @@
 #ifndef PYAGROS_H
 #define PYAGROS_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/global.h"
 #include "scene.h"
 #include "solver/field.h"

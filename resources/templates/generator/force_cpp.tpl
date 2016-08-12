@@ -20,9 +20,7 @@
 // #include "{{ID}}_extfunction.h"
 #include "{{ID}}_force.h"
 
-#include "util.h"
 #include "util/global.h"
-
 
 #include "solver/problem.h"
 #include "solver/problem_config.h"

@@ -24,7 +24,7 @@
 
 #include "logview.h"
 #include "scene.h"
-#include "util.h"
+#include "util/util.h"
 #include "module.h"
 #include "weak_form.h"
 

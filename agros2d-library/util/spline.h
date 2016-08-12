@@ -20,7 +20,7 @@
 #ifndef __AGROS_SPLINE_H
 #define __AGROS_SPLINE_H
 
-#include "util.h"
+#include "util/util.h"
 
 class AGROS_LIBRARY_API CubicSpline
 {

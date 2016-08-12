@@ -101,11 +101,10 @@ SET(VERSION_MONTH ${MONTH})
 SET(VERSION_DAY ${DAY})
 
 # Naming of projects built.
-SET(AGROS_UTIL agros2d_util)
 SET(AGROS_LIBRARY agros2d_library)
 SET(AGROS_SOLVER agros2d_solver)
 SET(AGROS_GENERATOR agros2d_generator)
-SET(AGROS_BINARY agros2d_binary)
+SET(AGROS_GUI agros2d_gui)
 SET(AGROS_PYTHON agros2d_python)
 SET(CTEMPLATE_LIBRARY agros2d_3rdparty_ctemplate)
 SET(DXFLIB_LIBRARY agros2d_3rdparty_dxflib)
@@ -186,7 +185,7 @@ IF(AGROS_DEBUG)
     # Disable all warnings and turn on only important ones:
     # SET(CMAKE_CXX_FLAGS "-w ${CMAKE_CXX_FLAGS} -fPIC")
     # SET(CMAKE_CXX_FLAGS "-Wuninitialized -Wvla -Wsign-compare ${CMAKE_CXX_FLAGS}")
-    # SET(DEBUG_FLAGS "-g")
+    # SET(DEBUG_FLAGS "-g -O0")
     SET(CMAKE_BUILD_TYPE Debug)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DEBUG_FLAGS}")
   ENDIF()
@@ -213,8 +212,8 @@ ENDIF(MSVC)
 
 # Create file with preprocessor definitions exposing the build settings to the source code.
 configure_file(
-  util/config.h.cmake
-  util/config.h)
+  agros2d-library/util/checkversion_version.h.cmake
+  agros2d-library/util/checkversion_version.h)
 configure_file(
   resources_source/resources.rc.cmake
   resources_source/resources.rc)
@@ -265,11 +264,12 @@ endif(WITH_MPI)
 
 message("CMake: Start Agros2D")
 message("=====================")
-ADD_SUBDIRECTORY(util)
 ADD_SUBDIRECTORY(agros2d-library)
 ADD_SUBDIRECTORY(agros2d-solver)
 ADD_SUBDIRECTORY(agros2d-generator)
 ADD_SUBDIRECTORY(agros2d-python)
+# GUI
+# ADD_SUBDIRECTORY(agros2d-gui)
 
 message("\nAgros2D Configuration results")
 message("---------------------")
@@ -294,7 +294,7 @@ SET(RESOURCES_FILES "resources")
 INSTALL(FILES ${PIXMAP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/pixmaps)
 INSTALL(FILES ${DESKTOP_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
 INSTALL(DIRECTORY ${RESOURCES_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/agros2d)
-INSTALL(FILES dealii/build/lib/libdeal_II.so.8.4.pre DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros2d_deal_II.so)
+INSTALL(FILES dealii/build/lib/libdeal_II.so.8.3.0 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib RENAME libagros2d_deal_II.so)
 
 # other files
 MACRO(ADD_INFO_FILES)
@@ -323,9 +323,6 @@ set(info resources/modules/acoustic.xml
          resources/couplings/magnetic-heat.xml
          #resources/couplings/magnetic-flow.xml
          #resources/couplings/flow-heat.xml
-         resources/templates/generator/coupling_CMakeLists_txt.tpl
-         resources/templates/generator/coupling_interface_cpp.tpl
-         resources/templates/generator/coupling_interface_h.tpl
          resources/templates/generator/filter_cpp.tpl
          resources/templates/generator/filter_h.tpl
          resources/templates/generator/force_cpp.tpl

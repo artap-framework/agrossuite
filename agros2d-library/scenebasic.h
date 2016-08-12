@@ -20,7 +20,7 @@
 #ifndef SCENEBASIC_H
 #define SCENEBASIC_H
 
-#include "util.h"
+#include "util/util.h"
 
 struct Point;
 

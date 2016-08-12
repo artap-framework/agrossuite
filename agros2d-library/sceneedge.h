@@ -20,7 +20,7 @@
 #ifndef SCENEEDGE_H
 #define SCENEEDGE_H
 
-#include "util.h"
+#include "util/util.h"
 #include "scenebasic.h"
 #include "scenemarker.h"
 

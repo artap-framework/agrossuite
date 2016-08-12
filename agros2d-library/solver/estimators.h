@@ -20,7 +20,7 @@
 #ifndef ESTIMATORS_H
 #define ESTIMATORS_H
 
-#include "util.h"
+#include "util/util.h"
 #include "field.h"
 #include "solver.h"
 

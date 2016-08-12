@@ -20,7 +20,7 @@
 #ifndef SCENEMAR_H
 #define SCENEMAR_H
 
-#include "util.h"
+#include "util/util.h"
 #include "solver/marker.h"
 
 class SceneBoundary;

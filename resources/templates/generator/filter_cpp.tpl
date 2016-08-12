@@ -21,7 +21,6 @@
 #include "{{ID}}_filter.h"
 #include "{{ID}}_interface.h"
 
-#include "util.h"
 #include "util/global.h"
 
 #include "solver/problem.h"

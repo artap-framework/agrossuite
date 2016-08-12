@@ -20,7 +20,7 @@
 #ifndef MESHGENERATOR_GMSH_H
 #define MESHGENERATOR_GMSH_H
 
-#include "util.h"
+#include "util/util.h"
 #include "meshgenerator.h"
 
 class GModel;

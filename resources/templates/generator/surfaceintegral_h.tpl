@@ -22,7 +22,7 @@
 
 #include <QObject>
 
-#include "util.h"
+#include "util/util.h"
 
 #include "solver/plugin_interface.h"
 

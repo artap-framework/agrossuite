@@ -17,38 +17,35 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#ifndef SYSTEM_UTILS_H
-#define SYSTEM_UTILS_H
+#ifndef UTIL_CHECKVERSION_H
+#define UTIL_CHECKVERSION_H
 
-#include "../util.h"
+#include "util.h"
 
-struct AGROS_LIBRARY_API CleanExit
+#include <QtNetwork>
+
+// check for new version
+AGROS_LIBRARY_API void checkForNewVersion(bool quiet = false, bool isSolver = false);
+
+class AGROS_LIBRARY_API CheckVersion : public QObject
 {
-    CleanExit();
+    Q_OBJECT
+public:
+    CheckVersion(QUrl url, bool isSolver = false);
+    ~CheckVersion();
+    void run(bool quiet);
 
-    static void exitQt(int sig);
+private:
+    bool m_quiet;
+    bool m_solver;
+    QUrl m_url;
+    QNetworkAccessManager *m_manager;
+    QNetworkReply *m_networkReply;
+
+private slots:
+    void downloadFinished(QNetworkReply *networkReply);
+    void handleError(QNetworkReply::NetworkError error);
 };
 
+#endif // UTIL_CHECKVERSION_H
 
-namespace SystemUtils
-{
-
-// Returns the peak (maximum so far) resident set size (physical
-// memory use) measured in bytes, or zero if the value cannot be
-// determined on this OS.
-AGROS_UTIL_API long getPeakRSS();
-
-// Returns the current resident set size (physical memory use) measured
-// in bytes, or zero if the value cannot be determined on this OS.
-AGROS_UTIL_API long getCurrentRSS();
-
-AGROS_UTIL_API bool isProcessRunning(int pid);
-
-AGROS_UTIL_API QString cpuType();
-AGROS_UTIL_API int numberOfThreads();
-AGROS_UTIL_API size_t totalMemorySize();
-AGROS_UTIL_API QString operatingSystem();
-
-}
-
-#endif // SYSTEM_UTILS_H

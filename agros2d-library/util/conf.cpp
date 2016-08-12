@@ -17,7 +17,6 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include "config.h"
 #include "scene.h"
 
 #include <deal.II/base/multithread_info.h>

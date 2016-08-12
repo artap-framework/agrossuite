@@ -21,10 +21,10 @@
 #include "linear_solver.h"
 #include "estimators.h"
 
-#include "util.h"
+#include "util/util.h"
 #include "util/global.h"
 #include "util/constants.h"
-#include "sparse_io.h"
+#include "util/sparse_io.h"
 
 #include "field.h"
 #include "problem.h"

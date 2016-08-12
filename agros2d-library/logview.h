@@ -20,7 +20,7 @@
 #ifndef TOOLTIPVIEW_H
 #define TOOLTIPVIEW_H
 
-#include "util.h"
+#include "util/util.h"
 #include "solver/solver.h"
 #include "solver/solver_utils.h"
 

@@ -20,7 +20,7 @@
 #ifndef UTIL_DXF_FILTER_H
 #define UTIL_DXF_FILTER_H
 
-#include "util.h"
+#include "util/util.h"
 
 #include "libdxfrw.h"
 

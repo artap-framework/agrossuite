@@ -20,7 +20,6 @@
 // #include "{{ID}}_extfunction.h"
 #include "{{ID}}_surfaceintegral.h"
 
-#include "util.h"
 #include "util/global.h"
 #include "util/constants.h"
 

@@ -20,7 +20,7 @@
 #ifndef GENERATOR_H
 #define GENERATOR_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/enums.h"
 
 #include "ctemplate/template.h"

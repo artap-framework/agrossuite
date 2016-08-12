@@ -22,7 +22,7 @@
 
 #include "deal.II/grid/manifold.h"
 #include "deal.II/grid/tria.h"
-#include "util.h"
+#include "util/util.h"
 #include "util/point.h"
 
 template <int dim, int spacedim = dim>

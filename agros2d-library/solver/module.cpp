@@ -23,7 +23,7 @@
 #include "problem.h"
 #include "logview.h"
 
-#include "util.h"
+#include "util/util.h"
 #include "util/global.h"
 #include "scene.h"
 #include "scenebasic.h"

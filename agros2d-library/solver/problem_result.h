@@ -20,7 +20,7 @@
 #ifndef PROBLEM_RESULT_H
 #define PROBLEM_RESULT_H
 
-#include "util.h"
+#include "util/util.h"
 #include "problem_config.h"
 #include "util/enums.h"
 

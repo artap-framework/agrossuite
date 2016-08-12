@@ -1,7 +1,7 @@
 #ifndef FORM_INFO_H
 #define FORM_INFO_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/enums.h"
 
 struct AGROS_LIBRARY_API FormInfo

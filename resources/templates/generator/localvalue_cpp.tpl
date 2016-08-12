@@ -21,7 +21,6 @@
 #include "{{ID}}_localvalue.h"
 #include "{{ID}}_interface.h"
 
-#include "util.h"
 #include "util/global.h"
 
 #include "solver/problem.h"

@@ -71,7 +71,7 @@
 #include "linear_solver.h"
 #include "estimators.h"
 
-#include "util.h"
+#include "util/util.h"
 #include "util/global.h"
 #include "util/constants.h"
 

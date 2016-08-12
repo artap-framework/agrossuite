@@ -21,7 +21,7 @@
 
 #include "util/constants.h"
 
-#include "util.h"
+#include "util/util.h"
 #include "logview.h"
 #include "scene.h"
 

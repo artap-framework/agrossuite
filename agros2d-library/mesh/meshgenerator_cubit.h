@@ -20,7 +20,7 @@
 #ifndef MESHGENERATOR_CUBIT_H
 #define MESHGENERATOR_CUBIT_H
 
-#include "util.h"
+#include "util/util.h"
 #include "meshgenerator.h"
 
 class MeshGeneratorCubitExternal : public MeshGenerator

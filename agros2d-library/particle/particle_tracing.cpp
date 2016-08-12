@@ -19,13 +19,13 @@
 
 #include "particle_tracing.h"
 
-#include "util.h"
+#include "util/util.h"
 #include "util/constants.h"
 
 #include "solver/problem.h"
 #include "solver/plugin_interface.h"
 
-#include "util.h"
+#include "util/util.h"
 #include "value.h"
 #include "logview.h"
 #include "scene.h"

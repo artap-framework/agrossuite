@@ -20,7 +20,7 @@
 #ifndef BDF2_H
 #define BDF2_H
 
-#include "util.h"
+#include "util/util.h"
 #include "plugin_interface.h"
 
 class Material;

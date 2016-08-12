@@ -20,7 +20,7 @@
 #ifndef FIELD_H
 #define FIELD_H
 
-#include "util.h"
+#include "util/util.h"
 #include "value.h"
 #include "sceneedge.h"
 #include "scenelabel.h"

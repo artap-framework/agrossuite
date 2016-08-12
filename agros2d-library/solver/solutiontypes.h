@@ -27,7 +27,7 @@
 #include <deal.II/grid/tria.h>
 #define signals public
 
-#include "util.h"
+#include "util/util.h"
 #include "util/enums.h"
 #include "field.h"
 

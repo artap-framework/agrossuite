@@ -20,7 +20,7 @@
 #ifndef FUNCTIONAL_H
 #define FUNCTIONAL_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/enums.h"
 
 class Computation;

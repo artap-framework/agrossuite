@@ -20,7 +20,7 @@
 #ifndef VALUE_H
 #define VALUE_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/point.h"
 #include "solver/module.h"
 

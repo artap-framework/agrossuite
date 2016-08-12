@@ -27,7 +27,6 @@
 #include "{{ID}}_surfaceintegral.h"
 #include "{{ID}}_volumeintegral.h"
 
-#include "util.h"
 #include "util/global.h"
 #include "util/constants.h"
 #include "solver/problem.h"

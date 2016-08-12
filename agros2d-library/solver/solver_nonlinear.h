@@ -20,7 +20,7 @@
 #ifndef SOLVER_NONLINEAR_H
 #define SOLVER_NONLINEAR_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/global.h"
 #include "solutiontypes.h"
 #include "scene.h"

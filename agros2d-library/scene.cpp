@@ -24,7 +24,7 @@
 #include "util/loops.h"
 #include "util/dxf_filter.h"
 
-#include "util.h"
+#include "util/util.h"
 #include "value.h"
 #include "logview.h"
 #include "scenebasic.h"

@@ -1,7 +1,7 @@
 #ifndef PARSER_MODULE_INFO_H
 #define PARSER_MODULE_INFO_H
 
-#include "util.h"
+#include "util/util.h"
 #include "util/enums.h"
 #include "../../resources_source/classes/module_xml.h"
 

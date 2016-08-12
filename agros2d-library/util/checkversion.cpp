@@ -19,7 +19,7 @@
 
 #include "checkversion.h"
 
-#include "../util.h"
+#include "util.h"
 #include "../config.h"
 #include "../util/system_utils.h"
 

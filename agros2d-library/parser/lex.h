@@ -27,7 +27,7 @@
 #include <QtCore/QDebug>
 #include <QStringList>
 
-#include "util.h"
+#include "util/util.h"
 
 enum ParserTokenType
 {

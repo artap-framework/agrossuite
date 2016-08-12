@@ -25,7 +25,7 @@
 #include <deal.II/numerics/data_out.h>
 #define signals public
 
-#include "util.h"
+#include "util/util.h"
 #include "value.h"
 #include "solutiontypes.h"
 #include "problem_config.h"

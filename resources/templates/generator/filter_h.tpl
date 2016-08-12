@@ -22,7 +22,7 @@
 
 #include <QObject>
 
-#include "util.h"
+#include "util/util.h"
 #include "util/enums.h"
 #include "solver/field.h"
 

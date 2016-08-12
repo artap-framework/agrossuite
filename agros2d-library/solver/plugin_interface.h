@@ -22,7 +22,7 @@
 
 #include <QtPlugin>
 
-#include "util.h"
+#include "util/util.h"
 
 #include "scene.h"
 #include "scenebasic.h"
