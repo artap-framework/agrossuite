@@ -26,7 +26,7 @@
 #include "paralution.hpp"
 
 #include "../3rdparty/tclap/CmdLine.h"
-#include "../util/sparse_io.h"
+#include "../agros2d-library/util/sparse_io.h"
 
 // typedef float ScalarType;
 typedef double ScalarType;

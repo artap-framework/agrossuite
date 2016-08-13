@@ -32,7 +32,7 @@
 #define USE_COMM_WORLD -987654
 
 #include "../../3rdparty/tclap/CmdLine.h"
-#include "../util/sparse_io.h"
+#include "../agros2d-library/util/sparse_io.h"
 
 int main(int argc, char *argv[])
 {
