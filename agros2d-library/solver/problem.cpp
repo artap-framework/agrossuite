@@ -26,6 +26,7 @@
 #include "problem_config.h"
 #include "problem_function.h"
 #include "problem_result.h"
+#include "plugin_interface.h"
 
 #include "util/global.h"
 #include "util/constants.h"
@@ -91,6 +92,262 @@ const QString TARGET_FIELDID = "target_field";
 
 const QString STUDIES = "studies";
 const QString RECIPES = "recipes";
+
+PostDeal::PostDeal(Computation *computation) :
+    m_computation(computation),
+    m_activeViewField(nullptr),
+    m_activeTimeStep(NOT_FOUND_SO_FAR),
+    m_activeAdaptivityStep(NOT_FOUND_SO_FAR),
+    m_isProcessed(false)
+{
+    connect(m_computation->scene(), SIGNAL(cleared()), this, SLOT(clear()));
+    // connect(m_problem, SIGNAL(fieldsChanged()), this, SLOT(clear()));
+}
+
+PostDeal::~PostDeal()
+{
+    clear();
+}
+
+void PostDeal::processRangeContour()
+{
+    if (m_computation->isSolved() && m_activeViewField && (m_computation->setting()->value(PostprocessorSetting::ShowContourView).toBool()))
+    {
+        Agros2D::log()->printMessage(tr("Post View"), tr("Contour view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString()));
+
+        QString variableName = m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString();
+        Module::LocalVariable variable = m_activeViewField->localVariable(m_computation->config()->coordinateType(), variableName);
+
+        m_contourValues.clear();
+
+        std::shared_ptr<PostDataOut> data_out;
+
+        if (variable.isScalar())
+            data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                                         m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString()),
+                                        PhysicFieldVariableComp_Scalar);
+
+        else
+            data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                                         m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString()),
+                                        PhysicFieldVariableComp_Magnitude);
+
+        data_out->compute_nodes(m_contourValues, (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformContour).toBool()));
+    }
+}
+
+void PostDeal::processRangeScalar()
+{
+    if (m_computation->setting()->value(PostprocessorSetting::ScalarRangeAuto).toBool())
+    {
+        m_computation->setting()->setValue(PostprocessorSetting::ScalarRangeMin, 0.0);
+        m_computation->setting()->setValue(PostprocessorSetting::ScalarRangeMax, 0.0);
+    }
+
+    if ((m_computation->isSolved()) && (m_activeViewField)
+            && ((m_computation->setting()->value(PostprocessorSetting::ShowScalarView).toBool())
+                || (((SceneViewPost3DMode) m_computation->setting()->value(PostprocessorSetting::ScalarView3DMode).toInt()) == SceneViewPost3DMode_ScalarView3D)))
+    {
+        Agros2D::log()->printMessage(tr("Post View"), tr("Scalar view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString()));
+
+        std::shared_ptr<PostDataOut> data_out = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                                                                  m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString()),
+                                                                 (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt());
+        data_out->compute_nodes(m_scalarValues, (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformScalar).toBool()));
+
+        if (m_computation->setting()->value(PostprocessorSetting::ScalarRangeAuto).toBool())
+        {
+            m_computation->setting()->setValue(PostprocessorSetting::ScalarRangeMin, data_out->min());
+            m_computation->setting()->setValue(PostprocessorSetting::ScalarRangeMax, data_out->max());
+        }
+    }
+}
+
+void PostDeal::processRangeVector()
+{
+    if ((m_computation->isSolved()) && (m_activeViewField) && (m_computation->setting()->value(PostprocessorSetting::ShowVectorView).toBool()))
+    {
+        bool contains = false;
+        foreach (Module::LocalVariable variable, m_activeViewField->viewVectorVariables(m_computation->config()->coordinateType()))
+        {
+            if (variable.id() == m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString())
+            {
+                contains = true;
+                break;
+            }
+        }
+
+        Agros2D::log()->printMessage(tr("Post View"), tr("Vector view (%1)").arg(m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()));
+
+        std::shared_ptr<PostDataOut> data_outX = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                                                                   m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()),
+                                                                  PhysicFieldVariableComp_X);
+
+        std::shared_ptr<PostDataOut> data_outY = viewScalarFilter(m_activeViewField->localVariable(m_computation->config()->coordinateType(),
+                                                                                                   m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString()),
+                                                                  PhysicFieldVariableComp_Y);
+
+        data_outX->compute_nodes(m_vectorXValues);
+        data_outY->compute_nodes(m_vectorYValues);
+    }
+}
+
+void PostDeal::clear()
+{
+    clearView();
+
+    m_activeViewField = nullptr;
+    m_activeTimeStep = NOT_FOUND_SO_FAR;
+    m_activeAdaptivityStep = NOT_FOUND_SO_FAR;
+}
+
+void PostDeal::clearView()
+{
+    m_isProcessed = false;
+
+    m_contourValues.clear();
+    m_scalarValues.clear();
+    m_vectorXValues.clear();
+    m_vectorYValues.clear();
+}
+
+void PostDeal::refresh()
+{
+    m_computation->setIsPostprocessingRunning();
+    clearView();
+
+    if (m_computation->isSolved())
+        processSolved();
+
+    m_isProcessed = true;
+    emit processed();
+    m_computation->setIsPostprocessingRunning(false);
+}
+
+void PostDeal::processSolved()
+{
+    FieldSolutionID fsid(activeViewField()->fieldId(), activeTimeStep(), activeAdaptivityStep());
+    if (m_computation->solutionStore()->contains(fsid))
+    {
+        // add icon to progress
+        // Agros2D::log()->addIcon(icon("scene-post2d"), tr("Postprocessor"));
+
+        processRangeContour();
+        processRangeScalar();
+        processRangeVector();
+    }
+}
+
+std::shared_ptr<PostDataOut> PostDeal::viewScalarFilter(Module::LocalVariable physicFieldVariable,
+                                                        PhysicFieldVariableComp physicFieldVariableComp)
+{
+    // QTime time;
+    // time.start();
+
+    std::shared_ptr<dealii::DataPostprocessorScalar<2> > post = activeViewField()->plugin()->filter(m_computation,
+                                                                                                    activeViewField(),
+                                                                                                    activeTimeStep(),
+                                                                                                    activeAdaptivityStep(),
+                                                                                                    physicFieldVariable.id(),
+                                                                                                    physicFieldVariableComp);
+
+    // This effectively deallocates the previous pointer.
+    this->m_post = post;
+
+    MultiArray ma = activeMultiSolutionArray();
+
+    std::shared_ptr<PostDataOut> data_out = std::shared_ptr<PostDataOut>(new PostDataOut(activeViewField(), m_computation));
+    data_out->attach_dof_handler(ma.doFHandler());
+    data_out->add_data_vector(ma.solution(), *post);
+    // deform shape
+    if (m_activeViewField->hasDeformableShape() && m_computation->setting()->value(PostprocessorSetting::DeformScalar).toBool())
+    {
+        std::vector<std::string> solution_names;
+        solution_names.push_back ("x_displacement");
+        solution_names.push_back ("y_displacement");
+
+        data_out->add_data_vector(ma.solution(), solution_names);
+    }
+    data_out->build_patches(2);
+
+    // qDebug() << "process - build patches (" << time.elapsed() << "ms )";
+
+    return data_out;
+}
+
+void PostDeal::setActiveViewField(FieldInfo* fieldInfo)
+{
+    // previous active field
+    FieldInfo* previousActiveViewField = m_activeViewField;
+
+    // set new field
+    m_activeViewField = fieldInfo;
+
+    // check for different field
+    if (previousActiveViewField != fieldInfo)
+    {
+        setActiveTimeStep(NOT_FOUND_SO_FAR);
+        setActiveAdaptivityStep(NOT_FOUND_SO_FAR);
+
+        // set default variables
+        Module::LocalVariable scalarVariable = m_activeViewField->defaultViewScalarVariable(m_computation->config()->coordinateType());
+        Module::LocalVariable vectorVariable = m_activeViewField->defaultViewVectorVariable(m_computation->config()->coordinateType());
+
+        QString scalarVariableDefault = scalarVariable.id();
+        PhysicFieldVariableComp scalarVariableCompDefault = scalarVariable.isScalar() ? PhysicFieldVariableComp_Scalar : PhysicFieldVariableComp_Magnitude;
+        QString contourVariableDefault = scalarVariable.id();
+        QString vectorVariableDefault = vectorVariable.id();
+
+        foreach (Module::LocalVariable local, m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
+        {
+            if (m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString() == local.id())
+            {
+                scalarVariableDefault = m_computation->setting()->value(PostprocessorSetting::ScalarVariable).toString();
+                scalarVariableCompDefault = (PhysicFieldVariableComp) m_computation->setting()->value(PostprocessorSetting::ScalarVariableComp).toInt();
+            }
+            if (m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString() == local.id())
+            {
+                contourVariableDefault = m_computation->setting()->value(PostprocessorSetting::ContourVariable).toString();
+            }
+        }
+        foreach (Module::LocalVariable local, m_activeViewField->viewScalarVariables(m_computation->config()->coordinateType()))
+        {
+            if (m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString() == local.id())
+            {
+                vectorVariableDefault = m_computation->setting()->value(PostprocessorSetting::VectorVariable).toString();
+            }
+        }
+
+        m_computation->setting()->setValue(PostprocessorSetting::ScalarVariable, scalarVariableDefault);
+        m_computation->setting()->setValue(PostprocessorSetting::ScalarVariableComp, scalarVariableCompDefault);
+        m_computation->setting()->setValue(PostprocessorSetting::ContourVariable, contourVariableDefault);
+        m_computation->setting()->setValue(PostprocessorSetting::VectorVariable, vectorVariableDefault);
+
+        // order component
+        m_computation->setting()->setValue(PostprocessorSetting::OrderComponent, 1);
+    }
+}
+
+void PostDeal::setActiveTimeStep(int ts)
+{
+    m_activeTimeStep = ts;
+}
+
+void PostDeal::setActiveAdaptivityStep(int as)
+{
+    m_activeAdaptivityStep = as;
+}
+
+MultiArray PostDeal::activeMultiSolutionArray()
+{
+    FieldSolutionID fsid(activeViewField()->fieldId(), activeTimeStep(), activeAdaptivityStep());
+    if (m_computation->solutionStore()->contains(fsid))
+        return m_computation->solutionStore()->multiArray(fsid);
+    else
+        assert(0);
+}
+
+// ************************************************************************************************
 
 PostDataOut::PostDataOut(FieldInfo *fieldInfo, Computation *parentProblem) : dealii::DataOut<2, dealii::hp::DoFHandler<2> >(),
     m_computation(parentProblem), m_fieldInfo(fieldInfo)
@@ -251,21 +508,6 @@ dealii::DataOut<2>::cell_iterator PostDataOut::next_cell(const DataOut<2>::cell_
 
 // ************************************************************************************************************************
 
-void MeshThread::run()
-{
-    Agros2D::log()->printHeading(QDateTime::currentDateTime().toString("hh:mm:ss.zzz"));
-
-    dealii::deal_II_exceptions::disable_abort_on_exception();
-
-    m_problem->mesh();
-}
-
-void MeshThread::finished()
-{
-    emit m_problem->meshedWithGUI();
-    deleteLater();
-}
-
 void SolveThread::run()
 {
     Agros2D::log()->printHeading(QDateTime::currentDateTime().toString("hh:mm:ss.zzz"));
@@ -277,11 +519,11 @@ void SolveThread::run()
 
 void SolveThread::finished()
 {
-    emit m_computation->solvedWithGUI();
+    emit m_computation->solvedWithThread();
     deleteLater();
 }
 
-// *******************************************************************
+// ************************************************************************************************************************
 
 ProblemBase::ProblemBase() :
     m_isMeshing(false),
@@ -716,15 +958,6 @@ bool ProblemBase::mesh()
 
     m_isMeshing = false;
     return false;
-}
-
-void ProblemBase::meshWithGUI()
-{
-    // LogDialog *logDialog = new LogDialog(this, tr("Mesh"));
-    // logDialog->show();
-
-    MeshThread *meshThread = new MeshThread(this);
-    meshThread->startCalculation();
 }
 
 void ProblemBase::readInitialMeshFromFile(const QString &problemDir, bool emitMeshed)
@@ -1677,11 +1910,11 @@ Computation::Computation(const QString &problemDir) : ProblemBase(),
     m_isSolving(false),
     m_abort(false),
     m_isPostprocessingRunning(false),
-    m_setting(new PostprocessorSetting(this)),
+    m_setting(new PostprocessorSetting(this)),    
     m_problemSolver(new ProblemSolver(this)),
-    // m_postDeal(new PostDeal(this)),
     m_solutionStore(new SolutionStore(this)),
-    m_results(new ComputationResults())
+    m_results(new ComputationResults()),
+    m_postDeal(new PostDeal(this))
 {
     connect(this, SIGNAL(fieldsChanged()), m_scene, SLOT(doFieldsChanged()));
 
@@ -1708,9 +1941,9 @@ Computation::~Computation()
 
     delete m_setting;
     delete m_problemSolver;
-    // delete m_postDeal;
     delete m_solutionStore;
     delete m_results;
+    delete m_postDeal;
 }
 
 void Computation::readFromProblem()
@@ -1937,19 +2170,11 @@ void Computation::doAbortSolve()
     Agros2D::log()->printError(QObject::tr("Solver"), QObject::tr("Aborting calculation..."));
 }
 
-/*
-void Computation::solveWithGUI()
+void Computation::solveWithThread()
 {
-    if (!isPreparedForAction())
-        return;
-
-    LogDialog *logDialog = new LogDialog(this, tr("Solver"));
-    logDialog->show();
-
     SolveThread *solveThread = new SolveThread(this);
     solveThread->startCalculation();
 }
-*/
 
 void Computation::solve()
 {

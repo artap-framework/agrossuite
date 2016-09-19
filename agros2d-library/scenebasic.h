@@ -42,6 +42,7 @@ class AGROS_LIBRARY_API SceneBasic
 
 public:
     SceneBasic(Scene *scene);
+    virtual ~SceneBasic() {}
 
     void setSelected(bool value = true) { m_isSelected = value; }
     inline bool isSelected() const { return m_isSelected; }
@@ -69,7 +70,7 @@ class AGROS_LIBRARY_API SceneBasicContainer
 {
 public:
     SceneBasicContainer() : m_data(QList<BasicType *>()) {}
-    ~SceneBasicContainer();
+    virtual ~SceneBasicContainer();
 
     /// items() should be removed step by step from the code.
     /// more methods operating with list data should be defined here
@@ -165,74 +166,5 @@ public:
     /// Filters for highlighted
     MarkedSceneBasicContainer<MarkerType, MarkedSceneBasicType> highlighted();
 };
-
-// *************************************************************************************************************************************
-
-/*
-class SceneBasicDialog : public QDialog
-{
-    Q_OBJECT
-
-public:
-    SceneBasicDialog(QWidget *parent, bool isNew = false);
-
-protected:
-    bool m_isNew;
-    SceneBasic *m_object;
-    QDialogButtonBox *buttonBox;
-
-    virtual QLayout *createContent() = 0;
-    void createControls();
-
-    virtual bool load() = 0;
-    virtual bool save() = 0;
-
-protected slots:
-    void evaluated(bool isError);
-
-private:    
-
-    QVBoxLayout *layout;
-
-private slots:
-    void doAccept();
-    void doReject();
-};
-
-// *************************************************************************************************************************************
-
-//TODO general undo framework should reduce code repetition.... TODO
-
-template <typename BasicType>
-class SceneBasicTrace
-{
-public:
-    virtual void save(const BasicType& original) = 0;
-    virtual void load(BasicType& destination) const = 0;
-    virtual void remove() const = 0;
-};
-
-template <typename MarkedBasicType>
-class MarkedSceneBasicTrace
-{
-    void saveMarkers(const MarkedBasicType& original);
-    void loadMarkers(MarkedBasicType& destination) const;
-};
-
-template <typename BasicType, typename BasicHistoryType>
-class SceneUndoCommand : public QUndoCommand
-{
-
-};
-
-template <typename BasicType, typename BasicHistoryType>
-class SceneCommandAdd : public SceneUndoCommand<BasicType, BasicHistoryType>
-{
-public:
-    SceneCommandAdd();
-    void undo();
-    void redo();
-};
-*/
 
 #endif // SCENEBASIC_H

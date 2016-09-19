@@ -35,11 +35,12 @@
 #include <cmath>
 #include <limits>
 #include <vector>
+#include <memory>
 #include <assert.h>
 #include <locale.h>
 #include <stdlib.h>
 
-#include "exprtk.hpp"
+#include "../3rdparty/exprtk/exprtk.hpp"
 
 // qt5
 #ifdef Q_OS_WIN

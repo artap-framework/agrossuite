@@ -26,7 +26,6 @@
 
 #include "scenenode.h"
 #include "logview.h"
-#include "pythonlab/pythonengine_agros.h"
 
 AgrosSolver::AgrosSolver(int &argc, char **argv)
     : AgrosApplication(argc, argv), m_log(NULL), m_enableLog(false), m_status(-1)

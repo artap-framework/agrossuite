@@ -5,8 +5,8 @@ const int VERSION_MAJOR = 4;
 const int VERSION_MINOR = 0;
 const int VERSION_SUB = 0;
 const int VERSION_YEAR = 2016;
-const int VERSION_MONTH = 08.0;
-const int VERSION_DAY = 12.0;
+const int VERSION_MONTH = 09.0;
+const int VERSION_DAY = 19.0;
 
 /* #undef WITH_OPENMP */
 #define DEAL_II_WITH_UMFPACK

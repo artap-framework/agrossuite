@@ -115,25 +115,9 @@ ostream& operator<<(ostream& output, FieldInfo& id)
 
 // ************************************************************************************************************************
 
-/*
-NewMarkerAction::NewMarkerAction(QIcon icon, QObject* parent, QString field) :
-    QAction(icon, Module::availableModules()[field], parent),
-    field(field)
-{
-    connect(this, SIGNAL(triggered()), this, SLOT(doTriggered()));
-}
-
-void NewMarkerAction::doTriggered()
-{
-    emit triggered(field);
-}
-*/
-
-// ************************************************************************************************************************
-
-Scene::Scene(ProblemBase *problem) : m_problem(problem), m_stopInvalidating(false),
-    m_loopsInfo(new LoopsInfo(this)),
-    // m_undoStack(new QUndoStack(this)),
+Scene::Scene(ProblemBase *problem) : m_problem(problem),
+    m_loopsInfo(new LoopsInfo(this)),    
+    m_stopInvalidating(false),
     boundaries(new SceneBoundaryContainer()), materials(new SceneMaterialContainer()),
     nodes(new SceneNodeContainer()), faces(new SceneFaceContainer()), labels(new SceneLabelContainer())
 
@@ -162,15 +146,6 @@ Scene::~Scene()
     delete nodes;
     delete faces;
     delete labels;
-
-    // clear actions
-    // foreach (QAction *action, actNewBoundaries.values())
-    //     delete action;
-    // actNewBoundaries.clear();
-
-    // foreach (QAction *action, actNewMaterials.values())
-    //     delete action;
-    // actNewMaterials.clear();
 }
 
 void Scene::copy(const Scene *origin)
@@ -220,61 +195,7 @@ void Scene::copy(const Scene *origin)
 void Scene::createActions()
 {
     /*
-    // scene - add items
-    actNewNode = new QAction(icon("scene-node"), tr("New &node..."), this);
-    actNewNode->setShortcut(tr("Alt+N"));
-    connect(actNewNode, SIGNAL(triggered()), this, SLOT(doNewNode()));
 
-    actNewEdge = new QAction(icon("scene-edge"), tr("New &edge..."), this);
-    actNewEdge->setShortcut(tr("Alt+E"));
-    connect(actNewEdge, SIGNAL(triggered()), this, SLOT(doNewEdge()));
-
-    actNewLabel = new QAction(icon("scene-label"), tr("New &label..."), this);
-    actNewLabel->setShortcut(tr("Alt+L"));
-    connect(actNewLabel, SIGNAL(triggered()), this, SLOT(doNewLabel()));
-
-    actDeleteSelected = new QAction(icon("edit-delete"), tr("Delete selected objects"), this);
-    connect(actDeleteSelected, SIGNAL(triggered()), this, SLOT(doDeleteSelected()));
-
-    actNewBoundary = new QAction(icon("scene-edgemarker"), tr("New &boundary condition..."), this);
-    actNewBoundary->setShortcut(tr("Alt+B"));
-    connect(actNewBoundary, SIGNAL(triggered()), this, SLOT(doNewBoundary()));
-
-    // clear actions
-    foreach (QAction *action, actNewBoundaries.values())
-        delete action;
-    actNewBoundaries.clear();
-
-    QMapIterator<QString, QString> iEdge(Module::availableModules());
-    while (iEdge.hasNext())
-    {
-        iEdge.next();
-
-        NewMarkerAction* action = new NewMarkerAction(icon("scene-edgemarker"), this, iEdge.key());
-        connect(action, SIGNAL(triggered(QString)), this, SLOT(doNewBoundary(QString)));
-        actNewBoundaries[iEdge.key()] = action;
-    }
-
-    actNewMaterial = new QAction(icon("scene-labelmarker"), tr("New &material..."), this);
-    actNewMaterial->setShortcut(tr("Alt+M"));
-    connect(actNewMaterial, SIGNAL(triggered()), this, SLOT(doNewMaterial()));
-
-    // clear actions
-    foreach (QAction *action, actNewMaterials.values())
-        delete action;
-    actNewMaterials.clear();
-
-    QMapIterator<QString, QString> iLabel(Module::availableModules());
-    while (iLabel.hasNext())
-    {
-        iLabel.next();
-
-        NewMarkerAction *action = new NewMarkerAction(icon("scene-labelmarker"), this, iLabel.key());
-        connect(action, SIGNAL(triggered(QString)), this, SLOT(doNewMaterial(QString)));
-        actNewMaterials[iLabel.key()] = action;
-    }
-
-    actTransform = new QAction(icon("scene-transform"), tr("&Transform"), this);
     */
 }
 
@@ -527,57 +448,6 @@ void Scene::selectAll(SceneGeometryMode sceneMode)
     }
 }
 
-/*
-void Scene::deleteSelected()
-{
-    m_undoStack->beginMacro(tr("Delete selected"));
-
-    // nodes
-    QList<PointValue> selectedNodePoints;
-    foreach (SceneNode *node, nodes->selected().items())
-        selectedNodePoints.append(node->pointValue());
-    if (!selectedNodePoints.isEmpty())
-        undoStack()->push(new SceneNodeCommandRemoveMulti(selectedNodePoints));
-
-    // edges
-    QList<PointValue> selectedEdgePointsStart;
-    QList<PointValue> selectedEdgePointsEnd;
-    QList<Value> selectedEdgeAngles;
-    QList<int> selectedEdgeSegments;
-    QList<bool> selectedEdgeIsCurvilinear;
-    QList<QMap<QString, QString> > selectedEdgeMarkers;
-    foreach (SceneFace *edge, faces->selected().items())
-    {
-        selectedEdgePointsStart.append(edge->nodeStart()->pointValue());
-        selectedEdgePointsEnd.append(edge->nodeEnd()->pointValue());
-        selectedEdgeAngles.append(edge->angleValue());
-        selectedEdgeSegments.append(edge->segments());
-        selectedEdgeIsCurvilinear.append(edge->isCurvilinear());
-        selectedEdgeMarkers.append(edge->markersKeys());
-    }
-    if (!selectedEdgePointsStart.isEmpty())
-        undoStack()->push(new SceneEdgeCommandRemoveMulti(selectedEdgePointsStart, selectedEdgePointsEnd,
-                                                          selectedEdgeMarkers, selectedEdgeAngles, selectedEdgeSegments, selectedEdgeIsCurvilinear));
-
-    // labels
-    QList<PointValue> selectedLabelPointsStart;
-    QList<double> selectedLabelAreas;
-    QList<QMap<QString, QString> > selectedLabelMarkers;
-    foreach (SceneLabel *label, labels->selected().items())
-    {
-        selectedLabelPointsStart.append(label->pointValue());
-        selectedLabelAreas.append(label->area());
-        selectedLabelMarkers.append(label->markersKeys());
-    }
-    if (!selectedLabelPointsStart.isEmpty())
-        undoStack()->push(new SceneLabelCommandRemoveMulti(selectedLabelPointsStart, selectedLabelMarkers, selectedLabelAreas));
-
-    m_undoStack->endMacro();
-
-    emit invalidated();
-}
-*/
-
 int Scene::selectedCount()
 {
     return nodes->selected().length() +
@@ -827,17 +697,13 @@ bool Scene::moveSelectedLabels(SceneTransformMode mode, Point point, double angl
     return true;
 }
 
-void Scene::transform(QString name, SceneTransformMode mode, const Point &point, double angle, double scaleFactor, bool copy, bool withMarkers)
+void Scene::transform(SceneTransformMode mode, const Point &point, double angle, double scaleFactor, bool copy, bool withMarkers)
 {
-    // m_undoStack->beginMacro(name);
-
     bool okNodes, okEdges = true;
     okNodes = moveSelectedNodes(mode, point, angle, scaleFactor, copy);
     if(okNodes)
         okEdges = moveSelectedEdges(mode, point, angle, scaleFactor, copy, withMarkers);
     moveSelectedLabels(mode, point, angle, scaleFactor, copy, withMarkers);
-
-    // m_undoStack->endMacro();
 
     if(!okNodes || !okEdges)
         nodes->setSelected(false);
@@ -847,17 +713,17 @@ void Scene::transform(QString name, SceneTransformMode mode, const Point &point,
 
 void Scene::transformTranslate(const Point &point, bool copy, bool withMarkers)
 {
-    transform(tr("Translation"), SceneTransformMode_Translate, point, 0.0, 0.0, copy, withMarkers);
+    transform(SceneTransformMode_Translate, point, 0.0, 0.0, copy, withMarkers);
 }
 
 void Scene::transformRotate(const Point &point, double angle, bool copy, bool withMarkers)
 {
-    transform(tr("Rotation"), SceneTransformMode_Rotate, point, angle, 0.0, copy, withMarkers);
+    transform(SceneTransformMode_Rotate, point, angle, 0.0, copy, withMarkers);
 }
 
 void Scene::transformScale(const Point &point, double scaleFactor, bool copy, bool withMarkers)
 {
-    transform(tr("Scale"), SceneTransformMode_Scale, point, 0.0, scaleFactor, copy, withMarkers);
+    transform(SceneTransformMode_Scale, point, 0.0, scaleFactor, copy, withMarkers);
 }
 
 void Scene::cacheGeometryConstraints()
@@ -872,110 +738,6 @@ void Scene::cacheGeometryConstraints()
     findNumberOfConnectedNodeEdges();
     findCrossings();
 }
-
-/*
-void Scene::doNewNode(const Point &point)
-{
-    SceneNode *node = new SceneNode(this, PointValue(m_problem, point));
-    if (node->showDialog(QCoreApplication::activeWindow(), true) == QDialog::Accepted)
-    {
-        SceneNode *nodeAdded = addNode(node);
-        if (nodeAdded == node) m_undoStack->push(new SceneNodeCommandAdd(node->pointValue()));
-    }
-    else
-        delete node;
-}
-
-void Scene::doNewEdge()
-{
-    SceneFace *edge = new SceneFace(this, nodes->at(0), nodes->at(1), Value(m_problem, 0.0));
-    if (edge->showDialog(QCoreApplication::activeWindow(), true) == QDialog::Accepted)
-    {
-        SceneFace *edgeAdded = addFace(edge);
-        if (edgeAdded == edge)
-            m_undoStack->push(edge->getAddCommand());
-    }
-    else
-        delete edge;
-}
-
-void Scene::doNewLabel(const Point &point)
-{
-    SceneLabel *label = new SceneLabel(this, PointValue(m_problem, point), 0.0);
-    if (label->showDialog(QCoreApplication::activeWindow(), true) == QDialog::Accepted)
-    {
-        SceneLabel *labelAdded = addLabel(label);
-
-        if (labelAdded == label)
-            m_undoStack->push(label->getAddCommand());
-    }
-    else
-        delete label;
-}
-
-void Scene::doDeleteSelected()
-{
-    deleteSelected();
-}
-
-void Scene::doNewBoundary()
-{
-    doNewBoundary(parentProblem()->fieldInfos().begin().key());
-}
-
-void Scene::doNewBoundary(QString field)
-{
-    SceneBoundary *boundary = new SceneBoundary(this,
-                                                parentProblem()->fieldInfo(field),
-                                                tr("new boundary"),
-                                                parentProblem()->fieldInfo(field)->boundaryTypeDefault().id());
-
-    if (boundary->showDialog(QCoreApplication::activeWindow()) == QDialog::Accepted)
-        addBoundary(boundary);
-    else
-        delete boundary;
-}
-
-void Scene::doNewMaterial()
-{
-    doNewMaterial(parentProblem()->fieldInfos().begin().key());
-}
-
-void Scene::doNewMaterial(QString field)
-{
-    SceneMaterial *material = new SceneMaterial(this,
-                                                parentProblem()->fieldInfo(field),
-                                                tr("new material"));
-
-    if (material->showDialog(QCoreApplication::activeWindow()) == QDialog::Accepted)
-        addMaterial(material);
-    else
-        delete material;
-}
-
-void Scene::addBoundaryAndMaterialMenuItems(QMenu* menu, QWidget* parent)
-{
-    if (parentProblem()->fieldInfos().count() == 1)
-    {
-        // one material and boundary
-        menu->addAction(actNewBoundary);
-        menu->addAction(actNewMaterial);
-    }
-    else if (parentProblem()->fieldInfos().count() > 1)
-    {
-        // multiple materials and boundaries
-        QMenu *mnuSubBoundaries = new QMenu(tr("New boundary condition"), parent);
-        menu->addMenu(mnuSubBoundaries);
-        foreach(FieldInfo* fieldInfo, parentProblem()->fieldInfos())
-            mnuSubBoundaries->addAction(actNewBoundaries[fieldInfo->fieldId()]);
-
-        QMenu *mnuSubMaterials = new QMenu(tr("New material"), parent);
-        menu->addMenu(mnuSubMaterials);
-        foreach(FieldInfo* fieldInfo, parentProblem()->fieldInfos())
-            mnuSubMaterials->addAction(actNewMaterials[fieldInfo->fieldId()]);
-    }
-}
-*/
 
 void Scene::doFieldsChanged()
 {

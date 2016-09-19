@@ -24,7 +24,6 @@
 #include "value.h"
 #include "scenebasic.h"
 
-class SceneNodeCommandRemove;
 class QDomElement;
 
 class SceneNode : public SceneBasic
@@ -48,10 +47,6 @@ public:
     bool isOutsideArea() const;
     bool isError();
     double distance(const Point &point) const;
-
-    // int showDialog(QWidget *parent, bool isNew = false);
-
-    // SceneNodeCommandRemove* getRemoveCommand();
 
     static SceneNode *findClosestNode(Scene *scene, const Point &point);
 
@@ -81,113 +76,5 @@ public:
     SceneNodeContainer selected();
     SceneNodeContainer highlighted();
 };
-
-
-// *************************************************************************************************************************************
-
-/*
-class SceneNodeDialog : public SceneBasicDialog
-{
-    Q_OBJECT
-
-public:
-    SceneNodeDialog(SceneNode *node, QWidget *parent, bool m_isNew = false);
-    ~SceneNodeDialog();
-
-protected:
-    QLayout *createContent();
-
-    bool load();
-    bool save();
-
-private:
-    ValueLineEdit *txtPointX;
-    ValueLineEdit *txtPointY;
-    QLabel *lblDistance;
-    QLabel *lblAngle;
-
-private slots:
-    void doEditingFinished();
-};
-
-// undo framework *******************************************************************************************************************
-
-class SceneNodeCommandAdd : public QUndoCommand
-{
-public:
-    SceneNodeCommandAdd(const PointValue &point, QUndoCommand *parent = 0);
-    void undo();
-    void redo();
-
-private:
-    PointValue m_point;
-};
-
-class SceneNodeCommandRemove : public QUndoCommand
-{
-public:
-    SceneNodeCommandRemove(const PointValue &point, QUndoCommand *parent = 0);
-    void undo();
-    void redo();
-
-private:
-    PointValue m_point;
-};
-
-class SceneNodeCommandEdit : public QUndoCommand
-{
-public:
-    SceneNodeCommandEdit(const PointValue &point, const PointValue &pointNew,  QUndoCommand *parent = 0);
-    void undo();
-    void redo();
-
-private:
-    PointValue m_point;
-    PointValue m_pointNew;
-};
-
-class SceneNodeCommandMoveMulti : public QUndoCommand
-{
-public:
-    SceneNodeCommandMoveMulti(QList<PointValue> points, QList<PointValue> pointsNew,  QUndoCommand *parent = 0);
-    void undo();
-    void redo();
-
-private:
-    static void moveAll(QList<PointValue> moveFrom, QList<PointValue> moveTo);
-
-    QList<PointValue> m_points;
-    QList<PointValue> m_pointsNew;
-};
-
-class SceneNodeCommandAddMulti : public QUndoCommand
-{
-public:
-    SceneNodeCommandAddMulti(QList<PointValue> points,  QUndoCommand *parent = 0);
-    void undo();
-    void redo();
-
-private:
-    QList<PointValue> m_points;
-};
-
-class SceneNodeCommandRemoveMulti : public QUndoCommand
-{
-public:
-    SceneNodeCommandRemoveMulti(QList<PointValue> points,  QUndoCommand *parent = 0);
-    void undo();
-    void redo();
-
-private:
-    // nodes
-    QList<PointValue> m_nodePoints;
-    // edges
-    QList<Point> m_edgePointStart;
-    QList<Point> m_edgePointEnd;
-    QList<QMap<QString, QString> > m_edgeMarkers;
-    QList<Value> m_edgeAngle;
-};
-
-*/
 
 #endif // SCENENODE_H

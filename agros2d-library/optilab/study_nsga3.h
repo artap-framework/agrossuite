@@ -45,28 +45,4 @@ private:
     friend class StudyNSGA3Dialog;
 };
 
-/*
-class StudyNSGA3Dialog : public StudyDialog
-{
-public:
-    StudyNSGA3Dialog(Study *study, QWidget *parent = 0);
-
-protected:
-    virtual inline StudyNSGA3 *study() { return dynamic_cast<StudyNSGA3 *>(m_study); }
-
-    virtual QLayout *createStudyControls();
-
-    virtual void load();
-    virtual void save();
-
-private:
-    QSpinBox *txtPopSize;
-    QSpinBox *txtNGen;
-    LineEditDouble *txtPCross;
-    // LineEditDouble *txtPMut;
-    LineEditDouble *txtEtaC;
-    LineEditDouble *txtEtaM;
-    QCheckBox *chkUseSurrogateFunction;
-};
-*/
-#endif // STUDY_NSGA2_H
+#endif // STUDY_NSGA3_H

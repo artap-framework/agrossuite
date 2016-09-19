@@ -842,8 +842,8 @@ QList<LoopsInfo::Triangle> LoopsInfo::triangulateLabel(const QList<Point> &polyl
 
 void LoopsInfo::processPolygonTriangles(bool force)
 {
-    if (!force)
-        return;
+    // if (!force)
+    //     return;
 
     {
         tbb::mutex::scoped_lock lock(processMutex);

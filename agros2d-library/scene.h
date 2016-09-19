@@ -55,42 +55,11 @@ class PluginInterface;
 
 QString generateSvgGeometry(QList<SceneFace *> edges);
 
-/*
-class AGROS_LIBRARY_API NewMarkerAction : public QAction
-{
-    Q_OBJECT
-
-public:
-    NewMarkerAction(QIcon icon, QObject* parent, QString field);
-
-public slots:
-    void doTriggered();
-
-signals:
-    void triggered(QString);
-
-private:
-    QString field;
-};
-*/
-
 class AGROS_LIBRARY_API Scene : public QObject
 {
     Q_OBJECT
 
 public slots:
-    /*
-    void doNewNode(const Point &point = Point());
-    void doNewEdge();
-    void doNewLabel(const Point &point = Point());
-    void doDeleteSelected();
-
-    void doNewBoundary();
-    void doNewBoundary(QString field);
-
-    void doNewMaterial();
-    void doNewMaterial(QString field);
-    */
     void doFieldsChanged();
 
     void cacheGeometryConstraints();
@@ -116,19 +85,6 @@ public:
     // boundaries and materials
     SceneBoundaryContainer *boundaries;
     SceneMaterialContainer *materials;
-
-    // QAction *actNewNode;
-    // QAction *actNewEdge;
-    // QAction *actNewLabel;
-    // QAction *actDeleteSelected;
-
-    // QAction *actNewBoundary;
-    // QMap<QString, QAction*> actNewBoundaries;
-
-    // QAction *actNewMaterial;
-    // QMap<QString, QAction*> actNewMaterials;
-
-    // QAction *actTransform;
 
     SceneNode *addNode(SceneNode *node);
     SceneNode *getNode(const Point &point);
@@ -157,7 +113,6 @@ public:
     void selectNone();
     void selectAll(SceneGeometryMode sceneMode);
     int selectedCount();
-    // void deleteSelected();
 
     void highlightNone();
     int highlightedCount();
@@ -180,17 +135,11 @@ public:
     void checkGeometryResult();
     void checkGeometryAssignement();
 
-    // void addBoundaryAndMaterialMenuItems(QMenu* menu, QWidget* parent);
-
-    // inline QUndoStack *undoStack() const { return m_undoStack; }
-
     void stopInvalidating(bool sI) { m_stopInvalidating = sI;}
     inline void invalidate() { emit invalidated(); }
 
 private:
     ProblemBase *m_problem;
-
-    // QUndoStack *m_undoStack;
 
     LoopsInfo *m_loopsInfo;
     QMultiMap<SceneFace *, SceneNode *> m_lyingEdgeNodes;
@@ -206,7 +155,7 @@ private:
     bool moveSelectedEdges(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy, bool withMarkers);
     bool moveSelectedLabels(SceneTransformMode mode, Point point, double angle, double scaleFactor, bool copy, bool withMarkers);
 
-    void transform(QString name, SceneTransformMode mode, const Point &point, double angle, double scaleFactor, bool copy, bool withMarkers);
+    void transform(SceneTransformMode mode, const Point &point, double angle, double scaleFactor, bool copy, bool withMarkers);
 
     // find lying nodes on edges, number of connected edges and crossings
     void findLyingEdgeNodes();

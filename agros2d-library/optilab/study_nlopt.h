@@ -53,28 +53,4 @@ private:
     friend class StudyNLoptDialog;
 };
 
-/*
-class StudyNLoptDialog : public StudyDialog
-{
-public:
-    StudyNLoptDialog(Study *study, QWidget *parent = 0);
-
-protected:
-    virtual inline StudyNLopt *study() { return dynamic_cast<StudyNLopt *>(m_study); }
-
-    virtual QLayout *createStudyControls();
-
-    virtual void load();
-    virtual void save();
-
-private:
-    QSpinBox *txtNIterations;
-    LineEditDouble *txtXRelTol;
-    LineEditDouble *txtXAbsTol;
-    LineEditDouble *txtFRelTol;
-    LineEditDouble *txtFAbsTol;
-    QComboBox *cmbAlgorithm;
-};
-*/
-
 #endif // STUDY_NLOPT_H

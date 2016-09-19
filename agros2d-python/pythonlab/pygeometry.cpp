@@ -89,7 +89,7 @@ int PyGeometry::addEdge(std::string x1, std::string y1, std::string x2, std::str
 
     try
     {
-        setBoundaries(edge, boundaries);       
+        setBoundaries(edge, boundaries);
     }
     catch (std::exception& e)
     {
@@ -135,7 +135,7 @@ int PyGeometry::addEdgeByNodes(int nodeStartIndex, int nodeEndIndex, std::string
 
     try
     {
-        setBoundaries(edge, boundaries);        
+        setBoundaries(edge, boundaries);
     }
     catch (std::exception& e)
     {
@@ -334,63 +334,95 @@ void PyGeometry::setPolynomialOrders(SceneLabel *label, const map<std::string, i
 }
 
 void PyGeometry::removeNodes(const vector<int> &nodes)
-{
-    Agros2D::problem()->scene()->selectNone();
-
-    if (!nodes.empty())
+{    
+    vector<int> tmp = nodes;
+    if (tmp.empty())
     {
-        for (vector<int>::const_iterator it = nodes.begin(); it != nodes.end(); ++it)
+        // add all nodes
+        for (int i = 0; i < Agros2D::problem()->scene()->nodes->count(); i++)
+            tmp.push_back(i);
+    }
+
+    if (!tmp.empty())
+    {
+        Agros2D::problem()->scene()->stopInvalidating(true);
+
+        for (vector<int>::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
         {
             if ((*it >= 0) && (*it < Agros2D::problem()->scene()->nodes->length()))
-                Agros2D::problem()->scene()->nodes->at(*it)->setSelected(true);
+            {
+                SceneNode *node = Agros2D::problem()->scene()->nodes->at(*it);
+                QList<SceneFace *> connectedEdges = node->connectedEdges();
+                foreach (SceneFace *edge, connectedEdges)
+                    Agros2D::problem()->scene()->faces->remove(edge);
+
+                Agros2D::problem()->scene()->nodes->remove(node);
+            }
             else
                 throw out_of_range(QObject::tr("Node index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->nodes->length()-1).toStdString());
         }
-    }
-    else
-        Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnNodes);
 
-    // Agros2D::problem()->scene()->deleteSelected();
+        Agros2D::problem()->scene()->stopInvalidating(false);
+        Agros2D::problem()->scene()->invalidate();
+    }
 }
 
 void PyGeometry::removeEdges(const vector<int> &edges)
 {
-    Agros2D::problem()->scene()->selectNone();
-
-    if (!edges.empty())
+    vector<int> tmp = edges;
+    if (tmp.empty())
     {
-        for (vector<int>::const_iterator it = edges.begin(); it != edges.end(); ++it)
+        // add all nodes
+        for (int i = 0; i < Agros2D::problem()->scene()->faces->count(); i++)
+            tmp.push_back(i);
+    }
+
+    if (!tmp.empty())
+    {
+        for (vector<int>::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
         {
             if ((*it >= 0) && (*it < Agros2D::problem()->scene()->faces->length()))
-                Agros2D::problem()->scene()->faces->at(*it)->setSelected(true);
+            {
+                SceneFace *face = Agros2D::problem()->scene()->faces->at(*it);
+                Agros2D::problem()->scene()->faces->remove(face);
+            }
             else
                 throw out_of_range(QObject::tr("Edge index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->faces->length()-1).toStdString());
         }
-    }
-    else
-        Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnEdges);
 
-    // Agros2D::problem()->scene()->deleteSelected();
+        Agros2D::problem()->scene()->stopInvalidating(false);
+        Agros2D::problem()->scene()->invalidate();
+    }
 }
 
 void PyGeometry::removeLabels(const vector<int> &labels)
 {
-    Agros2D::problem()->scene()->selectNone();
-
-    if (!labels.empty())
+    vector<int> tmp = labels;
+    if (tmp.empty())
     {
-        for (vector<int>::const_iterator it = labels.begin(); it != labels.end(); ++it)
+        // add all nodes
+        for (int i = 0; i < Agros2D::problem()->scene()->labels->count(); i++)
+            tmp.push_back(i);
+    }
+
+    if (!tmp.empty())
+    {
+        Agros2D::problem()->scene()->stopInvalidating(true);
+
+        for (vector<int>::const_iterator it = tmp.begin(); it != tmp.end(); ++it)
         {
             if ((*it >= 0) && (*it < Agros2D::problem()->scene()->labels->length()))
-                Agros2D::problem()->scene()->labels->at(*it)->setSelected(true);
+            {
+                SceneLabel *label = Agros2D::problem()->scene()->labels->at(*it);
+                Agros2D::problem()->scene()->labels->remove(label);
+            }
             else
                 throw out_of_range(QObject::tr("Label index must be between 0 and '%1'.").arg(Agros2D::problem()->scene()->labels->length()-1).toStdString());
         }
-    }
-    else
-        Agros2D::problem()->scene()->selectAll(SceneGeometryMode_OperateOnLabels);
 
-    // Agros2D::problem()->scene()->deleteSelected();
+        Agros2D::problem()->scene()->stopInvalidating(false);
+        Agros2D::problem()->scene()->invalidate();
+    }
 }
 
 void PyGeometry::selectNodes(const vector<int> &nodes)

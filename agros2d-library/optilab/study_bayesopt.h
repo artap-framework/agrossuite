@@ -82,30 +82,4 @@ protected:
     friend class StudyBayesOptDialog;
 };
 
-/*
-class StudyBayesOptDialog : public StudyDialog
-{
-public:
-    StudyBayesOptDialog(Study *study, QWidget *parent = 0);
-
-protected:
-    virtual inline StudyBayesOpt *study() { return dynamic_cast<StudyBayesOpt *>(m_study); }
-
-    virtual QLayout *createStudyControls();
-
-    virtual void load();
-    virtual void save();
-
-private:
-    QSpinBox *txtNInitSamples;
-    QSpinBox *txtNIterations;
-    QSpinBox *txtNIterRelearn;
-    QComboBox *cmbInitMethod;
-    QComboBox *cmbSurrogateNameMethod;
-    LineEditDouble *txtSurrogateNoise;
-    QComboBox *cmbHPLearningMethod;
-    QComboBox *cmbHPScoreFunction;
-};
-*/
-
 #endif // STUDY_BAYESOPT_H

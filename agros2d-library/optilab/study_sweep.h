@@ -64,23 +64,4 @@ protected:
     friend class StudySweepDialog;
 };
 
-/*
-class StudySweepDialog : public StudyDialog
-{
-public:
-    StudySweepDialog(Study *study, QWidget *parent = 0);
-
-protected:
-    virtual inline StudySweep *study() { return dynamic_cast<StudySweep *>(m_study); }
-
-    virtual QLayout *createStudyControls();
-
-    virtual void load();
-    virtual void save();
-
-private:
-    QSpinBox *txtNumSamples;
-    QComboBox *cmbInitMethod;
-};
-*/
 #endif // STUDY_SWEEP_H

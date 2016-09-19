@@ -38,7 +38,7 @@ class AGROS_LIBRARY_API MarkerContainer
 {
 public:
     MarkerContainer() : data(QList<MarkerType* >()) {}
-    ~MarkerContainer();
+    virtual ~MarkerContainer();
 
     /// items() should be removed step by step from the code.
     /// more methods operating with list data should be defined here

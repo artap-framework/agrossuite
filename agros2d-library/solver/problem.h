@@ -44,7 +44,6 @@ class PostprocessorSetting;
 class PyProblem;
 
 class Computation;
-class PostDeal;
 class SolutionStore;
 class ResultRecipes;
 class ComputationResults;
@@ -98,26 +97,76 @@ private:
                       const unsigned int n_subdivisions);
 };
 
-class MeshThread : public QThread
+class PostDeal : public QObject
 {
     Q_OBJECT
 
 public:
-    MeshThread(ProblemBase *problem) : QThread(), m_problem(problem)
-    {
-        connect(this, SIGNAL(finished()), this, SLOT(finished()));
-    }
+    PostDeal(Computation *computation);
+    ~PostDeal();
 
-    inline void startCalculation() { start(QThread::TimeCriticalPriority); }
+    // contour
+    inline QList<PostTriangle> &contourValues() { return m_contourValues; }
 
-protected:
-    virtual void run();
+    // scalar view
+    inline QList<PostTriangle> &scalarValues() { return m_scalarValues; }
 
-private slots:
-    void finished();
+    // vector view
+    inline QList<PostTriangle> &vectorXValues() { return m_vectorXValues; }
+    inline QList<PostTriangle> &vectorYValues() { return m_vectorYValues; }
+
+    std::shared_ptr<PostDataOut> viewScalarFilter(Module::LocalVariable physicFieldVariable,
+                                                  PhysicFieldVariableComp physicFieldVariableComp);
+
+    // view
+    inline FieldInfo* activeViewField() const { return m_activeViewField; }
+    void setActiveViewField(FieldInfo* fieldInfo);
+
+    inline int activeTimeStep() const { return m_activeTimeStep; }
+    void setActiveTimeStep(int ts);
+
+    inline int activeAdaptivityStep() const { return m_activeAdaptivityStep; }
+    void setActiveAdaptivityStep(int as);
+
+    MultiArray activeMultiSolutionArray();
+
+    inline bool isProcessed() const { return m_isProcessed; }
+
+signals:
+    void processed();
+
+public slots:
+    void refresh();
+    void clear();
+    void clearView();
 
 private:
-    ProblemBase *m_problem;
+    Computation *m_computation;
+
+    bool m_isProcessed;
+
+    // contour
+    QList<PostTriangle> m_contourValues;
+    // scalar view
+    QList<PostTriangle> m_scalarValues;
+    // vector view
+    QList<PostTriangle> m_vectorXValues;
+    QList<PostTriangle> m_vectorYValues;
+
+    // view
+    FieldInfo *m_activeViewField;
+    int m_activeTimeStep;
+    int m_activeAdaptivityStep;
+
+    // stored shared pointers for keeping the instance around
+    std::shared_ptr<dealii::DataPostprocessorScalar<2> > m_post;
+
+private slots:
+    void processSolved();
+
+    void processRangeContour();
+    void processRangeScalar();
+    void processRangeVector();
 };
 
 class SolveThread : public QThread
@@ -138,8 +187,8 @@ protected:
 private slots:
     void finished();
 
-private:
-    Computation *m_computation;
+ private:
+     Computation *m_computation;
 };
 
 class AGROS_LIBRARY_API ProblemBase : public QObject
@@ -185,8 +234,7 @@ public:
     bool isMeshed() const;
     bool isMeshing() const { return m_isMeshing; }
 
-    bool mesh();
-    void meshWithGUI();
+    bool mesh();    
 
     virtual QString problemFileName() const = 0;
 
@@ -204,7 +252,7 @@ signals:
     void couplingsChanged();
 
     void meshed();
-    void meshedWithGUI();
+
 public slots:
     virtual void clearFields();
     virtual void clearFieldsAndConfig();
@@ -305,7 +353,6 @@ public:
 
     inline PostprocessorSetting *setting() const { return m_setting; }
 
-    // inline PostDeal *postDeal() { return m_postDeal; }
     inline ProblemSolver *problemSolver() { return m_problemSolver; }
     inline SolutionStore *solutionStore() { return m_solutionStore; }
 
@@ -334,7 +381,7 @@ public:
     void setIsPostprocessingRunning(bool isPostprocessingRunning = true) { m_isPostprocessingRunning = isPostprocessingRunning; }
 
     void solve();
-    // void solveWithGUI();
+    void solveWithThread();
 
     virtual QString problemFileName() const;
     void readFromProblem();
@@ -343,10 +390,12 @@ public:
     // results
     inline ComputationResults *results() const { return m_results; }
 
+    inline PostDeal *postDeal() { return m_postDeal; }
+
 signals:
     void solved();
     void cleared();
-    void solvedWithGUI();
+    void solvedWithThread();
 
 public slots:    
     virtual void clearFields();
@@ -375,9 +424,7 @@ protected:
     // problem dir in cache
     QString m_problemDir;
 
-    // post deal
     ProblemSolver *m_problemSolver;
-    // PostDeal *m_postDeal;
 
     void solveInit(); // called by solve, can throw SolverException
 
@@ -386,6 +433,9 @@ protected:
 
     // results
     ComputationResults *m_results;
+
+    // post deal
+    PostDeal *m_postDeal;
 };
 
 #endif // PROBLEM_H
