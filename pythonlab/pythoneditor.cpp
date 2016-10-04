@@ -820,12 +820,6 @@ void PythonEditorDialog::doExecutedScript()
     }
 }
 
-void PythonEditorDialog::doCreatePythonFromModel()
-{
-    assert(0);
-    // txtEditor->setPlainText(createPythonFromModel());
-}
-
 void PythonEditorDialog::setEnabledControls(bool state)
 {
     txtEditor->setEnabled(state);

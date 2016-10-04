@@ -119,6 +119,9 @@ AGROS_LIBRARY_API QString compatibleFilename(const QString &fileName);
 // get datadir
 AGROS_LIBRARY_API QString datadir();
 
+// get external js functions
+AGROS_LIBRARY_API QString externalFunctions();
+
 // get temp dir
 AGROS_LIBRARY_API QString tempProblemDir();
 AGROS_LIBRARY_API QString cacheProblemDir();

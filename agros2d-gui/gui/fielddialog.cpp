@@ -36,8 +36,6 @@
 #include "gui/groupbox.h"
 #include "gui/common.h"
 
-#include "pythonlab/pythoneditor.h"
-
 FieldSelectDialog::FieldSelectDialog(QList<QString> fields, QWidget *parent) : QDialog(parent)
 {
     setWindowTitle(tr("Select field"));

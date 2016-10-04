@@ -20,7 +20,7 @@
 #ifndef PYTHONENGINE_H
 #define PYTHONENGINE_H
 
-#include "util/util.h"
+#include "util.h"
 
 typedef struct _object PyObject;
 

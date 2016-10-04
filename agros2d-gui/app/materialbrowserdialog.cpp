@@ -38,9 +38,6 @@
 #include "ctemplate/template.h"
 #include "qcustomplot/qcustomplot.h"
 
-#include "pythonlab/pythonengine.h"
-#include "pythonlab/pythoneditor.h"
-
 MaterialEditDialog::MaterialEditDialog(const QString &fileName, QWidget *parent) : QDialog(parent),
     m_fileName(fileName)
 {
@@ -139,12 +136,12 @@ void MaterialEditDialog::createControls()
     widNonlinearTable->setLayout(layoutTable);
 
     // function
-    txtPropertyFunction = new ScriptEditor(currentPythonEngine(), this);
+    // txtPropertyFunction = new ScriptEditor(currentPythonEngine(), this);
     txtPropertyFunctionFrom = new LineEditDouble(0.0);
     txtPropertyFunctionTo = new LineEditDouble(0.0);
 
     QGridLayout *layoutFunction = new QGridLayout();
-    layoutFunction->addWidget(txtPropertyFunction, 0, 0, 1, 4);
+    // layoutFunction->addWidget(txtPropertyFunction, 0, 0, 1, 4);
     layoutFunction->addWidget(new QLabel(tr("From:")), 1, 0);
     layoutFunction->addWidget(txtPropertyFunctionFrom, 1, 1);
     layoutFunction->addWidget(new QLabel(tr("To:")), 1, 2);
@@ -434,7 +431,7 @@ void MaterialEditDialog::readProperty(XMLMaterial::property prop)
     txtPropertyConstant->setValue(0.0);
     txtPropertyTableKeys->clear();
     txtPropertyTableValues->clear();
-    txtPropertyFunction->clear();
+    // txtPropertyFunction->clear();
     txtPropertyFunctionFrom->setValue(0.0);
     txtPropertyFunctionTo->setValue(0.0);
 
@@ -461,7 +458,7 @@ void MaterialEditDialog::readProperty(XMLMaterial::property prop)
         {
             XMLMaterial::function function = prop.nonlinearity().get().function().get();
 
-            txtPropertyFunction->setPlainText(QString::fromStdString(function.body()));
+            // txtPropertyFunction->setPlainText(QString::fromStdString(function.body()));
             txtPropertyFunctionFrom->setValue(function.interval_from());
             txtPropertyFunctionTo->setValue(function.interval_to());
         }
@@ -536,6 +533,7 @@ XMLMaterial::property MaterialEditDialog::writeProperty()
     XMLMaterial::nonlinearity nonlinearity;
 
     // table
+    /*
     if (((NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()) == MaterialEditDialog::Function)
     {
         // function
@@ -543,7 +541,9 @@ XMLMaterial::property MaterialEditDialog::writeProperty()
                                                           txtPropertyFunctionFrom->value(),
                                                           txtPropertyFunctionTo->value()));
     }
-    else if (((NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()) == MaterialEditDialog::Table)
+    else
+    */
+    if (((NonlinearityType) cmbPropertyNonlinearityType->itemData(cmbPropertyNonlinearityType->currentIndex()).toInt()) == MaterialEditDialog::Table)
     {
         nonlinearity.table().set(XMLMaterial::table(txtPropertyTableKeys->toPlainText().toStdString(),
                                                     txtPropertyTableValues->toPlainText().toStdString()));

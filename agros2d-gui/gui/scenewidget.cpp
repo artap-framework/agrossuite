@@ -29,7 +29,6 @@
 #include "app/scenemarkerdialog.h"
 #include "gui/infowidget.h"
 #include "gui/other.h"
-#include "pythonlab/pythoneditor.h"
 
 #include "optilab/optilab.h"
 #include "logwidget.h"
@@ -78,14 +77,6 @@ SceneViewWidget::SceneViewWidget(InfoWidget *widget, QWidget *parent) : QWidget(
 
     iconLeft(icon("scene-info"));
     labelLeft(tr("Info"));
-}
-
-SceneViewWidget::SceneViewWidget(PythonEditorDialog *widget, QWidget *parent) : QWidget(parent)
-{
-    createControls(widget);
-
-    iconLeft(icon("pythonlab"));
-    labelLeft(tr("PythonLab"));
 }
 
 SceneViewWidget::SceneViewWidget(OptiLab *widget, QWidget *parent) : QWidget(parent)

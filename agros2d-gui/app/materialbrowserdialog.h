@@ -29,7 +29,6 @@
 
 class LineEditDouble;
 class QCustomPlot;
-class ScriptEditor;
 
 class MaterialEditDialog : public QDialog
 {
@@ -95,7 +94,7 @@ private:
     QPlainTextEdit *txtPropertyTableKeys;
     QPlainTextEdit *txtPropertyTableValues;
 
-    ScriptEditor *txtPropertyFunction;
+    // ScriptEditor *txtPropertyFunction;
     LineEditDouble *txtPropertyFunctionFrom;
     LineEditDouble *txtPropertyFunctionTo;
 

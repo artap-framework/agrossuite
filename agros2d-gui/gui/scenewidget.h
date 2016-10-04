@@ -29,7 +29,6 @@ class Scene;
 class SceneViewCommon;
 class SceneViewInterface;
 class InfoWidget;
-class PythonEditorDialog;
 class OptiLab;
 class LogView;
 class SceneViewChart;
@@ -43,7 +42,6 @@ public:
    SceneViewWidget(SceneViewChart *widget, QWidget *parent = 0);
    SceneViewWidget(QWidget *widget, QWidget *parent = 0);
    SceneViewWidget(InfoWidget *widget, QWidget *parent = 0);
-   SceneViewWidget(PythonEditorDialog *widget, QWidget *parent = 0);
    SceneViewWidget(OptiLab *widget, QWidget *parent = 0);
    SceneViewWidget(LogView *widget, QWidget *parent = 0);
    ~SceneViewWidget();

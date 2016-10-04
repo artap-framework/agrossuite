@@ -67,4 +67,7 @@ private:
     Log *m_log;
 };
 
+// create script from model
+QString createPythonFromModel();
+
 #endif /* GLOBAL_H */

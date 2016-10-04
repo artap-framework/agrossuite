@@ -37,8 +37,6 @@
 #include "gui/groupbox.h"
 #include "gui/common.h"
 
-#include "pythonlab/pythoneditor.h"
-
 CouplingsWidget::CouplingsWidget(QWidget *parent) : QWidget(parent)
 {
     Agros2D::problem()->synchronizeCouplings();

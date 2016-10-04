@@ -17,7 +17,7 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#include "mainwindow.h"
+#include "pythonlabwindow.h"
 
 #include "gui/about.h"
 #include "gui/imageloader.h"
@@ -63,6 +63,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
 {
     setWindowIcon(icon("agros2d"));
 
+    m_startupScriptFilename = "";
     m_startupProblemFilename = "";
     m_startupExecute = false;
 
@@ -92,8 +93,12 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(pa
     exampleWidget = new ExamplesWidget(this, sceneInfoWidget);
     connect(exampleWidget, SIGNAL(problemOpen(QString)), this, SLOT(doDocumentOpen(QString)));
 
-    // view info
+    // view info    
     logView = new LogView(this);
+
+    // PythonLab
+    createPythonEngine(argc, argv, new PythonEngine());
+    scriptEditor = new PythonEditorDialog(this);
 
     // OptiLab
     optiLab = new OptiLab(this);
@@ -205,10 +210,6 @@ void MainWindow::createActions()
     actDocumentSaveGeometry = new QAction(tr("Export geometry..."), this);
     connect(actDocumentSaveGeometry, SIGNAL(triggered()), this, SLOT(doDocumentSaveGeometry()));
 
-    actCreateFromModel = new QAction(icon("script-create"), tr("&Create script from model"), this);
-    actCreateFromModel->setShortcut(QKeySequence(tr("Ctrl+M")));
-    connect(actCreateFromModel, SIGNAL(triggered()), this, SLOT(doCreatePythonFromModel()));
-
     actExit = new QAction(tr("E&xit"), this);
     actExit->setShortcut(tr("Ctrl+Q"));
     actExit->setMenuRole(QAction::QuitRole);
@@ -278,13 +279,14 @@ void MainWindow::createActions()
     actSceneModeGroup->addAction(exampleWidget->actExamples);
     actSceneModeGroup->addAction(sceneViewProblem->actSceneModeProblem);
     actSceneModeGroup->addAction(postprocessorWidget->actSceneModeResults);
+    actSceneModeGroup->addAction(scriptEditor->actSceneModePythonEditor);
     actSceneModeGroup->addAction(optiLab->actSceneModeOptiLab);
     actSceneModeGroup->addAction(logView->actLog);
 
     actHideControlPanel = new QAction(icon("showhide"), tr("Show/hide control panel"), this);
     actHideControlPanel->setShortcut(tr("Alt+0"));
     actHideControlPanel->setCheckable(true);
-    connect(actHideControlPanel, SIGNAL(triggered()), this, SLOT(doHideControlPanel()));
+    connect(actHideControlPanel, SIGNAL(triggered()), this, SLOT(doHideControlPanel()));    
 }
 
 void MainWindow::createMenus()
@@ -348,8 +350,6 @@ void MainWindow::createMenus()
     mnuProblem->addSeparator();
     mnuProblem->addAction(actSolve);
     mnuProblem->addAction(actSolveNewComputation);
-    mnuProblem->addSeparator();
-    mnuProblem->addAction(actCreateFromModel);
 
     mnuTools = menuBar()->addMenu(tr("&Tools"));
     mnuTools->addAction(actMaterialBrowser);
@@ -401,6 +401,7 @@ void MainWindow::createMain()
     sceneViewPost3DWidget = new SceneViewWidget(postprocessorWidget->sceneViewPost3D(), this);
     sceneViewPostParticleTracingWidget = new SceneViewWidget(postprocessorWidget->sceneViewParticleTracing(), this);
     sceneViewChartWidget = new SceneViewWidget(postprocessorWidget->sceneViewChart(), this);
+    sceneViewPythonEditorWidget = new SceneViewWidget(scriptEditor, this);
     sceneViewOptilabWidget = new SceneViewWidget(optiLab, this);
     sceneViewLogWidget = new SceneViewWidget(logView, this);
 
@@ -413,6 +414,7 @@ void MainWindow::createMain()
     tabViewLayout->addWidget(sceneViewPost3DWidget);
     tabViewLayout->addWidget(sceneViewPostParticleTracingWidget);
     tabViewLayout->addWidget(sceneViewChartWidget);
+    tabViewLayout->addWidget(sceneViewPythonEditorWidget);
     tabViewLayout->addWidget(sceneViewOptilabWidget);
     tabViewLayout->addWidget(sceneViewLogWidget);
 
@@ -425,6 +427,7 @@ void MainWindow::createMain()
     tabControlsLayout->addWidget(problemWidget);
     tabControlsLayout->addWidget(postprocessorWidget);
     tabControlsLayout->addWidget(optiLab->optiLabWidget());
+    tabControlsLayout->addWidget(scriptEditor->pythonEditorWidget());
     tabControlsLayout->addWidget(logView->logConfigWidget());
 
     viewControls = new QWidget();
@@ -461,11 +464,13 @@ void MainWindow::createMain()
     tlbLeftBar->addAction(postprocessorWidget->actSceneModeResults);
     tlbLeftBar->addSeparator();
     tlbLeftBar->addAction(optiLab->actSceneModeOptiLab);
+    tlbLeftBar->addAction(scriptEditor->actSceneModePythonEditor);
     tlbLeftBar->addSeparator();
     tlbLeftBar->addAction(logView->actLog);
     tlbLeftBar->addWidget(spacing);
     tlbLeftBar->addAction(actSolve);
     tlbLeftBar->addAction(actSolveNewComputation);
+    tlbLeftBar->addAction(scriptEditor->actRunPython);
     tlbLeftBar->addAction(optiLab->optiLabWidget()->actRunStudy);
 
     splitterMain = new QSplitter(Qt::Horizontal, this);
@@ -637,7 +642,7 @@ void MainWindow::doDocumentOpen(const QString &fileName)
     {
         QString dir = settings.value("General/LastProblemDir", "data").toString();
 
-        fileNameDocument = QFileDialog::getOpenFileName(this, tr("Open file"), dir, tr("Agros2D files (*.ags *.a2d *.py);;Agros2D data files (*.ags);;Agros2D data files - deprecated (*.a2d)"));
+        fileNameDocument = QFileDialog::getOpenFileName(this, tr("Open file"), dir, tr("Agros2D files (*.ags *.a2d *.py);;Agros2D data files (*.ags);;Python script (*.py);;Agros2D data files - deprecated (*.a2d)"));
     }
     else
     {
@@ -657,6 +662,14 @@ void MainWindow::doDocumentOpen(const QString &fileName)
 
             sceneViewProblem->actSceneModeProblem->trigger();
             sceneViewProblem->doZoomBestFit();
+
+            return;
+        }
+        else if (fileInfo.suffix() == "py")
+        {
+            // python script
+            scriptEditor->doFileOpen(fileNameDocument);
+            scriptEditor->actSceneModePythonEditor->trigger();
 
             return;
         }
@@ -835,15 +848,6 @@ void MainWindow::doDocumentSaveGeometry()
     }
 }
 
-void MainWindow::doCreatePythonFromModel()
-{
-    QString script = createPythonFromModel();
-    QString fn = tempProblemFileName() + ".txt";
-
-    writeStringContent(fn, script);
-    QDesktopServices::openUrl(QUrl(fn).toLocalFile());
-}
-
 void MainWindow::doSolve()
 {
     // disconnect signals
@@ -972,6 +976,8 @@ void MainWindow::setControls()
     actDeleteSolutionsAndResults->setEnabled(!Agros2D::computations().isEmpty());
 
     // set controls
+    scriptEditor->actRunPython->setEnabled(scriptEditor->actSceneModePythonEditor->isChecked());
+    scriptEditor->actRunPython->setVisible(scriptEditor->actSceneModePythonEditor->isChecked());
     actSolve->setEnabled(sceneViewProblem->actSceneModeProblem->isChecked());
     actSolve->setVisible(sceneViewProblem->actSceneModeProblem->isChecked());
     actSolveNewComputation->setEnabled(sceneViewProblem->actSceneModeProblem->isChecked());
@@ -1000,7 +1006,7 @@ void MainWindow::setControls()
     if (exampleWidget->actExamples->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewInfoWidget);
-        tabControlsLayout->setCurrentWidget(exampleWidget);
+        tabControlsLayout->setCurrentWidget(exampleWidget);        
     }
     else if (sceneViewProblem->actSceneModeProblem->isChecked())
     {
@@ -1010,7 +1016,7 @@ void MainWindow::setControls()
         connect(actSceneZoomIn, SIGNAL(triggered()), sceneViewProblem, SLOT(doZoomIn()));
         connect(actSceneZoomOut, SIGNAL(triggered()), sceneViewProblem, SLOT(doZoomOut()));
         connect(actSceneZoomBestFit, SIGNAL(triggered()), sceneViewProblem, SLOT(doZoomBestFit()));
-        sceneViewProblem->actSceneZoomRegion = actSceneZoomRegion;
+        sceneViewProblem->actSceneZoomRegion = actSceneZoomRegion;        
     }
     else if (postprocessorWidget->actSceneModeResults->isChecked())
     {
@@ -1069,6 +1075,11 @@ void MainWindow::setControls()
         tabViewLayout->setCurrentWidget(sceneViewOptilabWidget);
         tabControlsLayout->setCurrentWidget(optiLab->optiLabWidget());
     }
+    else if (scriptEditor->actSceneModePythonEditor->isChecked())
+    {
+        tabViewLayout->setCurrentWidget(sceneViewPythonEditorWidget);
+        tabControlsLayout->setCurrentWidget(scriptEditor->pythonEditorWidget());
+    }
     else if (logView->actLog->isChecked())
     {
         tabViewLayout->setCurrentWidget(sceneViewLogWidget);
@@ -1077,10 +1088,19 @@ void MainWindow::setControls()
 
     // menu bar
     menuBar()->clear();
-    menuBar()->addMenu(mnuFile);
-    menuBar()->addMenu(mnuEdit);
-    menuBar()->addMenu(mnuTools);
-    menuBar()->addMenu(mnuProblem);
+    if (scriptEditor->actSceneModePythonEditor->isChecked())
+    {
+        menuBar()->addMenu(scriptEditor->mnuFile);
+        menuBar()->addMenu(scriptEditor->mnuEdit);
+        menuBar()->addMenu(scriptEditor->mnuTools);
+    }
+    else
+    {
+        menuBar()->addMenu(mnuFile);
+        menuBar()->addMenu(mnuEdit);
+        menuBar()->addMenu(mnuTools);
+        menuBar()->addMenu(mnuProblem);
+    }
     menuBar()->addMenu(mnuSettings);
     menuBar()->addMenu(mnuHelp);
 
@@ -1191,5 +1211,16 @@ void MainWindow::showEvent(QShowEvent *event)
 
         if (m_startupExecute)
             doSolve();
+    }
+    else if (!m_startupScriptFilename.isEmpty())
+    {
+        // open script
+        scriptEditor->doFileOpen(m_startupScriptFilename);
+        scriptEditor->actSceneModePythonEditor->trigger();
+
+        m_startupScriptFilename = "";
+
+        if (m_startupExecute)
+            scriptEditor->doRunPython();
     }
 }

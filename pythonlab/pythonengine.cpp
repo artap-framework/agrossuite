@@ -437,9 +437,9 @@ bool PythonEngine::runScript(const QString &script, const QString &fileName)
 
         // release the thread, no Python API allowed beyond this point
         // PyGILState_Release(gstate);
-    }
 
-    emit executedScript();
+        emit executedScript();
+    }    
 
     return successfulRun;
 }

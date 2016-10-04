@@ -40,7 +40,7 @@ public:
     inline void setUpperBound(double upperBound) { m_upperBound = upperBound; }
 
     // penalty
-    inline double penaltyEnabled() const { return m_penaltyEnabled; }
+    inline bool penaltyEnabled() const { return m_penaltyEnabled; }
     inline void setPenaltyEnabled(bool enable) { m_penaltyEnabled = enable; }
     inline double scale() const { return m_scale; }
     inline void setScale(double scale) { m_scale = scale; }

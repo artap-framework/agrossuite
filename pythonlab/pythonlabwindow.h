@@ -17,12 +17,10 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef PYTHONLABWINDOW_H
+#define PYTHONLABWINDOW_H
 
-#include "gui/other.h"
-#include "util/util.h"
-#include "util/enums.h"
+#include "pythonlabutil.h"
 
 class PostDeal;
 class SceneViewPost2D;
@@ -41,6 +39,7 @@ class PostprocessorWidget;
 class TooltipView;
 class LogView;
 
+class PythonEditorDialog;
 class SceneTransformDialog;
 class SceneViewWidget;
 class LogStdOut;
@@ -55,7 +54,7 @@ public:
     ~MainWindow();
 
     inline void setStartupExecute(bool execute) { m_startupExecute = execute; }
-    inline void setStartupProblemFilename(const QString& fn) { m_startupProblemFilename = fn; }
+    inline void setStartupScriptFilename(const QString& fn) { m_startupScriptFilename = fn; }
 
 private slots:
     inline void doSetWindowTitle(const QString &name) { setWindowTitle("Agros2D - " + name); }
@@ -65,24 +64,7 @@ private slots:
     void doDocumentOpenRecent(QAction *action);
     void doDocumentSave();
     void doDocumentSaveAs();    
-    void doDeleteSolutions();
-    void doDeleteSolutionsAndResults();
     void doDocumentClose();
-    void doDocumentImportDXF();
-    void doDocumentExportDXF();
-    void doDocumentExportMeshFile();
-    void doExportVTKGeometry();
-    void doDocumentSaveImage();
-    void doDocumentSaveGeometry();    
-    void doCreatePythonFromModel();
-
-    void doMouseSceneModeChanged(MouseSceneMode mouseSceneMode);
-
-    void doSolve();
-    void doSolveNewComputation();
-
-    void doOptions();
-    void doMaterialBrowser();
 
     void doHideControlPanel();
     void doFullScreen();
@@ -93,7 +75,6 @@ private slots:
 
     void doHelp();
     void doHelpShortCut();
-    void doCheckVersion();
     void doAbout();
     void doStartedScript();
     void setEnabledControls(bool state);
@@ -128,7 +109,6 @@ private:
     QAction *actDocumentSaveImage;
     QAction *actDocumentSaveGeometry;
     QAction *actExportVTKGeometry;
-    QAction *actCreateFromModel;
 
     QAction *actExit;
     QActionGroup *actDocumentOpenRecentGroup;
@@ -137,50 +117,21 @@ private:
 
     QAction *actCopy;
 
-    QAction *actOptions;
     QAction *actFullScreen;
-
-    QAction *actMaterialBrowser;
-
-    QAction *actSolve;
-    QAction *actSolveNewComputation;
-    QAction *actDeleteSolutions;
-    QAction *actDeleteSolutionsAndResults;
 
     QAction *actHelp;
     QAction *actHelpShortCut;
-    QAction *actCheckVersion;
     QAction *actAbout;
     QAction *actAboutQt;
-
-    QMenu *mnuMesh;
-    QToolButton *btnMesh;
-
-    QComboBox *cmbTimeStep;
-
-    // pointers to actions (geometry, post2d and post3d)
-    QAction *actSceneZoomIn;
-    QAction *actSceneZoomOut;
-    QAction *actSceneZoomBestFit;
-    QAction *actSceneZoomRegion;
 
     // scene mode
     QActionGroup *actSceneModeGroup;
 
-    SceneViewWidget *sceneViewInfoWidget;
-    SceneViewWidget *sceneViewProblemWidget;
-    SceneViewWidget *sceneViewMeshWidget;
-    SceneViewWidget *sceneViewPost2DWidget;
-    SceneViewWidget *sceneViewPost3DWidget;
-    SceneViewWidget *sceneViewPostParticleTracingWidget;
-    SceneViewWidget *sceneViewChartWidget;
-    SceneViewWidget *sceneViewOptilabWidget;
+    SceneViewWidget *sceneViewPythonEditorWidget;
     SceneViewWidget *sceneViewLogWidget;
 
     QStackedLayout *tabViewLayout;
-    InfoWidget *sceneInfoWidget;
-    SceneViewPreprocessor *sceneViewProblem;
-    OptiLab *optiLab;
+    PythonEditorDialog *scriptEditor;
 
     QWidget *viewControls;
     QStackedLayout *tabControlsLayout;
@@ -194,7 +145,7 @@ private:
 
     LogStdOut *logStdOut;
 
-    QString m_startupProblemFilename;
+    QString m_startupScriptFilename;
     bool m_startupExecute;
 
     void setRecentFiles();
@@ -206,4 +157,4 @@ private:
     void createMain();
 };
 
-#endif // MAINWINDOW_H
+#endif // PYTHONLABWINDOW_H

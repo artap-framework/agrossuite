@@ -22,9 +22,6 @@ INCLUDE_DIRECTORIES(${CMAKE_HOME_DIRECTORY}/3rdparty/nsga3)
 # OpenGL
 FIND_PACKAGE(OpenGL REQUIRED)
 
-# Python
-FIND_PACKAGE(PythonLibs REQUIRED)
-INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_DIRS})
 
 SET(SOURCES main.cpp
     gui/about.cpp
@@ -80,12 +77,6 @@ SET(SOURCES main.cpp
     app/sceneview_post.cpp
     # app/sceneview_vtk2d.cpp
     app/videodialog.cpp
-    pythonlab/pythonbrowser.cpp
-    pythonlab/pythonconsole.cpp
-    pythonlab/pythonhighlighter.cpp
-    pythonlab/pythoncompleter.cpp
-    pythonlab/pythoneditor.cpp
-    pythonlab/pythonengine.cpp
     optilab/optilab.cpp
     optilab/study_dialog.cpp
     optilab/study_methoddialog.cpp)
@@ -144,12 +135,6 @@ SET(HEADERS gui/about.h
     app/sceneview_post.h
     # app/sceneview_vtk2d.h
     app/videodialog.h
-    pythonlab/pythonbrowser.h
-    pythonlab/pythonconsole.h
-    pythonlab/pythonhighlighter.h
-    pythonlab/pythoncompleter.h
-    pythonlab/pythoneditor.h
-    pythonlab/pythonengine.h
     optilab/optilab.h
     optilab/study_dialog.h
     optilab/study_methoddialog.h)
@@ -166,7 +151,7 @@ IF(WIN32)
 ENDIF(WIN32)
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${GUI} main.cpp ../resources_source/resources.rc ${RESOURCES_RCC})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_QTMAIN_LIBRARY} ${AGROS_LIBRARY} ${OPENGL_LIBRARIES} ${QCUSTOMPLOT_LIBRARY} ${PYTHON_LIBRARY})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_QTMAIN_LIBRARY} ${AGROS_LIBRARY} ${OPENGL_LIBRARIES} ${QCUSTOMPLOT_LIBRARY})
 
 QT5_USE_MODULES(${PROJECT_NAME} Core Widgets Network Xml XmlPatterns WebKit WebKitWidgets UiTools OpenGL Svg)
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES OUTPUT_NAME agros2d)

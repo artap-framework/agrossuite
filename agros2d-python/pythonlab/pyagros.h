@@ -28,9 +28,6 @@
 
 class Solution;
 
-// create script from model
-QString createPythonFromModel();
-
 // ************************************************************************************
 
 void openFile(const std::string &file, bool openWithSolution);

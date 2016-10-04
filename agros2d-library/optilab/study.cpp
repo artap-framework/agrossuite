@@ -258,7 +258,7 @@ void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncert
         catch (AgrosException &e)
         {
             Agros2D::log()->printError(tr("Problem"), e.toString());
-            return;
+            throw AgrosSolverException(tr("Problem was not solved."));
         }
     }
 

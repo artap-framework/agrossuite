@@ -92,7 +92,7 @@ public:
         {
             qDebug() << e.toString();
 
-            opt.set_force_stop(2);
+            // opt.set_force_stop(2);
             return numeric_limits<double>::max();
         }
     }
