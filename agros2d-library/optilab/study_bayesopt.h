@@ -33,8 +33,8 @@ class BayesOptProblem : public bayesopt::ContinuousModel
 public:
     BayesOptProblem(StudyBayesOpt *study, bayesopt::Parameters par);
 
-    double evaluateSample(const vectord& x);
-    bool checkReachability(const vectord &query) { return true; }
+    double evaluateSample(const vectord &x);
+    bool checkReachability(const vectord &x);
 
 private:
     StudyBayesOpt *m_study;

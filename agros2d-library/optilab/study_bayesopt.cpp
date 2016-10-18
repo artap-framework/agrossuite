@@ -49,7 +49,7 @@ BayesOptProblem::BayesOptProblem(StudyBayesOpt *study, bayesopt::Parameters par)
     setBoundingBox(lowerBound, upperBound);
 }
 
-double BayesOptProblem::evaluateSample(const vectord& x)
+double BayesOptProblem::evaluateSample(const vectord &x)
 {   
     // computation
     QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
@@ -63,6 +63,24 @@ double BayesOptProblem::evaluateSample(const vectord& x)
 
         query[i] = (x[i] - parameter.lowerBound()) / (parameter.upperBound() - parameter.lowerBound());
     }
+
+    // check geometry
+    /*
+    try
+    {
+        // invalidate scene (parameter update)
+        computation->scene()->cacheGeometryConstraints();
+        computation->scene()->invalidate();
+
+        computation->scene()->checkGeometryResult();
+        computation->scene()->checkGeometryAssignement();
+    }
+    catch (AgrosGeometryException& e)
+    {
+        qDebug() << e.toString();
+        return numeric_limits<double>::max();
+    }
+    */
 
     // evaluate step
     try
@@ -104,6 +122,39 @@ double BayesOptProblem::evaluateSample(const vectord& x)
 
         return numeric_limits<double>::max();
     }
+}
+
+bool BayesOptProblem::checkReachability(const vectord &x)
+{
+    return true;
+    /*
+    // computation
+    QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+
+    // set parameters
+    for (int i = 0; i < m_study->parameters().count(); i++)
+    {
+        Parameter parameter = m_study->parameters()[i];
+        computation->config()->parameters()->set(parameter.name(), x[i]);
+    }
+
+    // check geometry
+    try
+    {
+        // invalidate scene (parameter update)
+        computation->scene()->cacheGeometryConstraints();
+        computation->scene()->invalidate();
+
+        computation->scene()->checkGeometryResult();
+        computation->scene()->checkGeometryAssignement();
+
+        return true;
+    }
+    catch (AgrosGeometryException& e)
+    {
+        return false;
+    }
+    */
 }
 
 StudyBayesOpt::StudyBayesOpt() : Study()
@@ -234,7 +285,14 @@ void StudyBayesOpt::solve()
             break;
 
         // step
-        bayesOptProblem.stepOptimization();
+        try
+        {
+            bayesOptProblem.stepOptimization();
+        }
+        catch (std::exception &e)
+        {
+            std::cout << e.what() << std::endl;
+        }
     }
 
     // sort computations
