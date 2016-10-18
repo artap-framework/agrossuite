@@ -9,8 +9,8 @@ build:
     - cmake ..
     - make -j12 
     - cd ../../
-    - export CC=/usr/bin/clang
-    - export CXX=/usr/bin/clang++     
+    # - export CC=/usr/bin/clang
+    # - export CXX=/usr/bin/clang++     
     - cmake . 
     - make -j12
     - ./agros2d_generator
