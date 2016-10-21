@@ -33,10 +33,10 @@ FileBrowser::FileBrowser(QWidget *parent) : QListWidget(parent)
     actCreateFile = new QAction(icon("file-text"), tr("Create &file"), this);
     connect(actCreateFile, SIGNAL(triggered()), this, SLOT(createFile()));
 
-    actRename = new QAction(icon(""), tr("&Rename"), this);
+    actRename = new QAction(tr("&Rename"), this);
     connect(actRename, SIGNAL(triggered()), this, SLOT(renameObject()));
 
-    actDelete = new QAction(icon(""), tr("&Delete"), this);
+    actDelete = new QAction(tr("&Delete"), this);
     connect(actDelete, SIGNAL(triggered()), this, SLOT(deleteObject()));
 
     mnuContext = new QMenu(this);

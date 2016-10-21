@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'pythonengine.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.1)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.6.1)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'pythonengine.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.5.1. It"
+#error "This file was generated using the moc from 5.6.1. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -106,36 +106,42 @@ void PythonEngine::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
             typedef void (PythonEngine::*_t)();
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&PythonEngine::pythonClear)) {
                 *result = 0;
+                return;
             }
         }
         {
             typedef void (PythonEngine::*_t)(const QString & );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&PythonEngine::pythonShowMessage)) {
                 *result = 1;
+                return;
             }
         }
         {
             typedef void (PythonEngine::*_t)(const QString & );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&PythonEngine::pythonShowHtml)) {
                 *result = 2;
+                return;
             }
         }
         {
             typedef void (PythonEngine::*_t)(const QString & , int , int );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&PythonEngine::pythonShowImage)) {
                 *result = 3;
+                return;
             }
         }
         {
             typedef void (PythonEngine::*_t)();
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&PythonEngine::executedScript)) {
                 *result = 4;
+                return;
             }
         }
         {
             typedef void (PythonEngine::*_t)();
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&PythonEngine::startedScript)) {
                 *result = 5;
+                return;
             }
         }
     }

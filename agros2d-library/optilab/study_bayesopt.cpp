@@ -126,8 +126,7 @@ double BayesOptProblem::evaluateSample(const vectord &x)
 
 bool BayesOptProblem::checkReachability(const vectord &x)
 {
-    return true;
-    /*
+    // return true;
     // computation
     QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
 
@@ -146,15 +145,17 @@ bool BayesOptProblem::checkReachability(const vectord &x)
         computation->scene()->invalidate();
 
         computation->scene()->checkGeometryResult();
-        computation->scene()->checkGeometryAssignement();
+        // computation->scene()->checkGeometryAssignement();
 
         return true;
     }
     catch (AgrosGeometryException& e)
     {
+        qDebug() << e.toString();
+        m_study->updateParameters(m_study->parameters(), computation.data());
+
         return false;
     }
-    */
 }
 
 StudyBayesOpt::StudyBayesOpt() : Study()

@@ -29,7 +29,6 @@
 SceneTransformDialog::SceneTransformDialog(SceneViewPreprocessor *sceneViewPreprocessor, QWidget *parent)
     : QDialog(parent), m_sceneViewPreprocessor(sceneViewPreprocessor)
 {
-    setWindowIcon(icon("scene-transform"));
     setWindowTitle(tr("Transform"));
 
     createControls();
@@ -138,9 +137,9 @@ void SceneTransformDialog::createControls()
 
     // tab widget
     tabWidget = new QTabWidget();
-    tabWidget->addTab(widTranslate, icon(""), tr("Translate"));
-    tabWidget->addTab(widRotate, icon(""), tr("Rotate"));
-    tabWidget->addTab(widScale, icon(""), tr("Scale"));
+    tabWidget->addTab(widTranslate, tr("Translate"));
+    tabWidget->addTab(widRotate, tr("Rotate"));
+    tabWidget->addTab(widScale, tr("Scale"));
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(tabWidget);

@@ -41,7 +41,6 @@ public:
 
     QAction *actSceneModePost3D;
 
-    virtual QIcon iconView() { return icon("scene-post3d"); }
     virtual QString labelView() { return tr("Postprocessor 3D"); }
 
     void setControls();

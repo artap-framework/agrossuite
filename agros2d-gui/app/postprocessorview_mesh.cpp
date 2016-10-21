@@ -46,7 +46,6 @@
 PostprocessorSceneMeshWidget::PostprocessorSceneMeshWidget(PhysicalFieldWidget *fieldWidget, SceneViewMesh *sceneMesh)
     : PostprocessorSceneWidget(fieldWidget), m_sceneMesh(sceneMesh)
 {
-    setWindowIcon(icon("scene-properties"));
     setObjectName("PostprocessorMeshWidget");
 
     createControls();

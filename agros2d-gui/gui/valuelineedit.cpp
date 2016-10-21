@@ -67,30 +67,30 @@ ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, b
 
 #ifdef Q_WS_MAC
         btnMaterialDialog = new QToolButton();
-        btnMaterialDialog->setIcon(icon("three-dots"));
+        btnMaterialDialog->setIcon(iconAwesome(fa::caretup));
         btnMaterialDialog->setMaximumHeight(txtLineEdit->height() - 4);
 #else
-        btnMaterialDialog = new QPushButton(icon("three-dots"), "");
+        btnMaterialDialog = new QPushButton(iconAwesome(fa::caretup), "");
         btnMaterialDialog->setMaximumSize(btnMaterialDialog->sizeHint());
 #endif
         connect(btnMaterialDialog, SIGNAL(clicked()), this, SLOT(doOpenMaterialDialog()));
 
 #ifdef Q_WS_MAC
         btnDataTableDelete = new QToolButton();
-        btnDataTableDelete->setIcon(icon("remove-item"));
+        btnDataTableDelete->setIcon(iconAwesome(fa::remove));
         btnDataTableDelete->setMaximumHeight(txtLineEdit->height() - 4);
 #else
-        btnDataTableDelete = new QPushButton(icon("remove-item"), "");
+        btnDataTableDelete = new QPushButton(iconAwesome(fa::remove), "");
         btnDataTableDelete->setMaximumSize(btnDataTableDelete->sizeHint());
 #endif
         connect(btnDataTableDelete, SIGNAL(clicked()), this, SLOT(doOpenDataTableDelete()));
 
 #ifdef Q_WS_MAC
         btnDataTableDialog = new QToolButton();
-        btnDataTableDialog->setIcon(icon("three-dots"));
+        btnDataTableDialog->setIcon(iconAwesome(fa::caretup));
         btnDataTableDialog->setMaximumHeight(txtLineEdit->height() - 4);
 #else
-        btnDataTableDialog = new QPushButton(icon("three-dots"), "");
+        btnDataTableDialog = new QPushButton(iconAwesome(fa::caretup), "");
         btnDataTableDialog->setMaximumSize(btnDataTableDialog->sizeHint());
 #endif
         connect(btnDataTableDialog, SIGNAL(clicked()), this, SLOT(doOpenDataTableDialog()));
@@ -98,10 +98,10 @@ ValueLineEdit::ValueLineEdit(QWidget *parent, bool hasTimeDep, bool hasNonlin, b
         // timedep value
 #ifdef Q_WS_MAC
         btnEditTimeDep = new QToolButton();
-        btnEditTimeDep->setIcon(icon("three-dots"));
+        btnEditTimeDep->setIcon(iconAwesome(fa::caretup));
         btnEditTimeDep->setMaximumHeight(txtLineEdit->height() - 4);
 #else
-        btnEditTimeDep = new QPushButton(icon("three-dots"), "");
+        btnEditTimeDep = new QPushButton(iconAwesome(fa::caretup), "");
 #endif
         connect(btnEditTimeDep, SIGNAL(clicked()), this, SLOT(doOpenValueTimeDialog()));
     }

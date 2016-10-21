@@ -45,7 +45,6 @@ SceneViewWidget::SceneViewWidget(SceneViewCommon *widget, QWidget *parent) : QWi
 {
     createControls(widget);
 
-    iconLeft(widget->iconView());
     labelLeft(widget->labelView());
 
     connect(widget, SIGNAL(labelCenter(QString)), this, SLOT(labelCenter(QString)));
@@ -55,8 +54,6 @@ SceneViewWidget::SceneViewWidget(SceneViewCommon *widget, QWidget *parent) : QWi
 SceneViewWidget::SceneViewWidget(SceneViewChart *widget, QWidget *parent) : QWidget(parent)
 {
     createControls(widget);
-
-    iconLeft(icon("chart"));
     labelLeft(tr("Chart"));
 
     connect(widget, SIGNAL(labelCenter(QString)), this, SLOT(labelCenter(QString)));
@@ -66,32 +63,18 @@ SceneViewWidget::SceneViewWidget(SceneViewChart *widget, QWidget *parent) : QWid
 SceneViewWidget::SceneViewWidget(QWidget *widget, QWidget *parent) : QWidget(parent)
 {
     createControls(widget);
-
-    iconLeft(icon("scene-info"));
     labelLeft(tr("Info"));
 }
 
 SceneViewWidget::SceneViewWidget(InfoWidget *widget, QWidget *parent) : QWidget(parent)
 {
     createControls(widget);
-
-    iconLeft(icon("scene-info"));
     labelLeft(tr("Info"));
-}
-
-SceneViewWidget::SceneViewWidget(OptiLab *widget, QWidget *parent) : QWidget(parent)
-{
-    createControls(widget);
-
-    iconLeft(icon("optilab"));
-    labelLeft(tr("OptiLab"));
 }
 
 SceneViewWidget::SceneViewWidget(LogView *widget, QWidget *parent) : QWidget(parent)
 {
     createControls(widget);
-
-    iconLeft(icon("log"));
     labelLeft(tr("Application log"));
 }
 
@@ -102,7 +85,6 @@ SceneViewWidget::~SceneViewWidget()
 void SceneViewWidget::createControls(QWidget *widget)
 {
     // label
-    sceneViewLabelPixmap = new QLabel();
     sceneViewLabelLeft = new QLabel();
     sceneViewLabelLeft->setMinimumWidth(120);
     sceneViewLabelCenter = new QLabel();
@@ -111,7 +93,6 @@ void SceneViewWidget::createControls(QWidget *widget)
     sceneViewLabelRight->setMinimumWidth(150);
 
     QHBoxLayout *sceneViewLabelLayout = new QHBoxLayout();
-    sceneViewLabelLayout->addWidget(sceneViewLabelPixmap);
     sceneViewLabelLayout->addWidget(sceneViewLabelLeft);
     sceneViewLabelLayout->addStretch(1);
     sceneViewLabelLayout->addWidget(sceneViewLabelCenter);
@@ -140,10 +121,4 @@ void SceneViewWidget::labelCenter(const QString &center)
 void SceneViewWidget::labelRight(const QString &right)
 {
     sceneViewLabelRight->setText(right);
-}
-
-void SceneViewWidget::iconLeft(const QIcon &left)
-{
-    QPixmap pixmap = left.pixmap(QSize(16, 16));
-    sceneViewLabelPixmap->setPixmap(pixmap);
 }

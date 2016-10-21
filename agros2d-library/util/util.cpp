@@ -17,10 +17,6 @@
 // University of West Bohemia, Pilsen, Czech Republic
 // Email: info@agros2d.org, home page: http://agros2d.org/
 
-#ifdef WITH_UNITY
-#include <unity.h>
-#endif
-
 #include "util/util.h"
 #include "checkversion_version.h"
 

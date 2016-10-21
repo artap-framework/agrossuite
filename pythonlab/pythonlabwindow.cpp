@@ -179,9 +179,9 @@ void MainWindow::createActions()
     actDocumentSave->setShortcuts(QKeySequence::Save);
     connect(actDocumentSave, SIGNAL(triggered()), this, SLOT(doDocumentSave()));
 
-    actDeleteSolutions = new QAction(icon(""), tr("Delete solutions"), this);
+    actDeleteSolutions = new QAction(tr("Delete solutions"), this);
     connect(actDeleteSolutions, SIGNAL(triggered()), this, SLOT(doDeleteSolutions()));
-    actDeleteSolutionsAndResults = new QAction(icon(""), tr("Delete solutions and results"), this);
+    actDeleteSolutionsAndResults = new QAction(tr("Delete solutions and results"), this);
     connect(actDeleteSolutionsAndResults, SIGNAL(triggered()), this, SLOT(doDeleteSolutionsAndResults()));
 
     actDocumentSaveAs = new QAction(icon("document-save-as"), tr("Save &As..."), this);
@@ -224,11 +224,11 @@ void MainWindow::createActions()
     // actHelp->setEnabled(false);
     connect(actHelp, SIGNAL(triggered()), this, SLOT(doHelp()));
 
-    actHelpShortCut = new QAction(icon(""), tr("&Shortcuts"), this);
+    actHelpShortCut = new QAction(tr("&Shortcuts"), this);
     actHelpShortCut->setEnabled(false);
     connect(actHelpShortCut, SIGNAL(triggered()), this, SLOT(doHelpShortCut()));
 
-    actCheckVersion = new QAction(icon(""), tr("Check version"), this);
+    actCheckVersion = new QAction(tr("Check version"), this);
     connect(actCheckVersion, SIGNAL(triggered()), this, SLOT(doCheckVersion()));
 
     actAbout = new QAction(icon("about"), tr("About &Agros2D"), this);
@@ -250,7 +250,7 @@ void MainWindow::createActions()
     actDocumentOpenRecentGroup = new QActionGroup(this);
     connect(actDocumentOpenRecentGroup, SIGNAL(triggered(QAction *)), this, SLOT(doDocumentOpenRecent(QAction *)));
 
-    actMaterialBrowser = new QAction(icon(""), tr("Material browser..."), this);
+    actMaterialBrowser = new QAction(tr("Material browser..."), this);
     connect(actMaterialBrowser, SIGNAL(triggered()), this, SLOT(doMaterialBrowser()));
 
     actSolve = new QAction(icon("run"), tr("&Solve"), this);

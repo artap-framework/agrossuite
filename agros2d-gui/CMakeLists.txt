@@ -32,7 +32,6 @@ SET(SOURCES main.cpp
     gui/functiondialog.cpp
     gui/groupbox.cpp
     gui/htmledit.cpp
-    gui/imageloader.cpp
     gui/infowidget.cpp
     gui/lineeditdouble.cpp
     gui/logwidget.cpp
@@ -89,7 +88,6 @@ SET(HEADERS gui/about.h
     gui/functiondialog.h
     gui/groupbox.h
     gui/htmledit.h
-    gui/imageloader.h
     gui/infowidget.h
     gui/lineeditdouble.h
     gui/logwidget.h
@@ -151,7 +149,7 @@ IF(WIN32)
 ENDIF(WIN32)
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${GUI} main.cpp ../resources_source/resources.rc ${RESOURCES_RCC})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_QTMAIN_LIBRARY} ${AGROS_LIBRARY} ${OPENGL_LIBRARIES} ${QCUSTOMPLOT_LIBRARY})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${QT_QTMAIN_LIBRARY} ${AGROS_LIBRARY} ${OPENGL_LIBRARIES} ${QCUSTOMPLOT_LIBRARY} ${QTAWESOME_LIBRARY} )
 
 QT5_USE_MODULES(${PROJECT_NAME} Core Widgets Network Xml XmlPatterns WebKit WebKitWidgets UiTools OpenGL Svg)
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES OUTPUT_NAME agros2d)

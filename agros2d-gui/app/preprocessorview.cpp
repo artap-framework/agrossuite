@@ -49,8 +49,8 @@
 #include "solver/problem.h"
 #include "ctemplate/template.h"
 
-NewMarkerAction::NewMarkerAction(QIcon icon, QObject* parent, QString field) :
-    QAction(icon, Module::availableModules()[field], parent),
+NewMarkerAction::NewMarkerAction(QObject* parent, QString field) :
+    QAction(Module::availableModules()[field], parent),
     field(field)
 {
     connect(this, SIGNAL(triggered()), this, SLOT(doTriggered()));
@@ -111,35 +111,35 @@ PreprocessorWidget::~PreprocessorWidget()
 
 void PreprocessorWidget::createActions()
 {
-    actProperties = new QAction(icon(""), tr("&Properties"), this);
+    actProperties = new QAction(tr("&Properties"), this);
     connect(actProperties, SIGNAL(triggered()), this, SLOT(doProperties()));
 
-    actDelete = new QAction(icon(""), tr("&Delete"), this);
+    actDelete = new QAction(tr("&Delete"), this);
     connect(actDelete, SIGNAL(triggered()), this, SLOT(doDelete()));
-    actDeleteSelected = new QAction(icon("edit-delete"), tr("Delete selected objects"), this);
+    actDeleteSelected = new QAction(iconAwesome(fa::remove), tr("Delete selected objects"), this);
     connect(actDeleteSelected, SIGNAL(triggered()), m_sceneViewPreprocessor, SLOT(doDeleteSelected()));
 
-    actTransform = new QAction(icon("scene-transform"), tr("&Transform"), this);
+    actTransform = new QAction(iconAwesome(fa::calculator), tr("&Transform"), this);
 
-    actNewParameter = new QAction(icon(""), tr("New parameter..."), this);
+    actNewParameter = new QAction(tr("New parameter..."), this);
     connect(actNewParameter, SIGNAL(triggered()), this, SLOT(doNewParameter()));
 
-    actNewFunctionAnalytic = new QAction(icon(""), tr("Analytic function..."), this);
+    actNewFunctionAnalytic = new QAction(tr("Analytic function..."), this);
     connect(actNewFunctionAnalytic, SIGNAL(triggered()), this, SLOT(doNewFunctionAnalytic()));
-    actNewFunctionInterpolation = new QAction(icon(""), tr("Interpolation function..."), this);
+    actNewFunctionInterpolation = new QAction(tr("Interpolation function..."), this);
     connect(actNewFunctionInterpolation, SIGNAL(triggered()), this, SLOT(doNewFunctionInterpolation()));
 
-    actNewField = new QAction(icon(""), tr("New field..."), this);
+    actNewField = new QAction(tr("New field..."), this);
     connect(actNewField, SIGNAL(triggered()), this, SLOT(doNewField()));
 
-    actNewStudy = new QAction(icon(""), tr("New study..."), this);
+    actNewStudy = new QAction(tr("New study..."), this);
     connect(actNewStudy, SIGNAL(triggered()), this, SLOT(doNewStudy()));
 
-    actNewRecipeLocalValue = new QAction(icon(""), tr("Local value recipe..."), this);
+    actNewRecipeLocalValue = new QAction(tr("Local value recipe..."), this);
     connect(actNewRecipeLocalValue, SIGNAL(triggered()), this, SLOT(doNewRecipeLocalValue()));
-    actNewRecipeSurfaceIntegral = new QAction(icon(""), tr("Surface integral recipe..."), this);
+    actNewRecipeSurfaceIntegral = new QAction(tr("Surface integral recipe..."), this);
     connect(actNewRecipeSurfaceIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeSurfaceIntegral()));
-    actNewRecipeVolumeIntegral = new QAction(icon(""), tr("Volume integral recipe..."), this);
+    actNewRecipeVolumeIntegral = new QAction(tr("Volume integral recipe..."), this);
     connect(actNewRecipeVolumeIntegral, SIGNAL(triggered()), this, SLOT(doNewRecipeVolumeIntegral()));
 
     // scene - add items
@@ -156,7 +156,7 @@ void PreprocessorWidget::createActions()
     actNewLabel->setShortcut(tr("Alt+L"));
     connect(actNewLabel, SIGNAL(triggered()), this, SLOT(doNewLabel()));
 
-    actNewBoundary = new QAction(icon("scene-edgemarker"), tr("New &boundary condition..."), this);
+    actNewBoundary = new QAction(tr("New &boundary condition..."), this);
     actNewBoundary->setShortcut(tr("Alt+B"));
     connect(actNewBoundary, SIGNAL(triggered()), this, SLOT(doNewBoundary()));
 
@@ -170,12 +170,12 @@ void PreprocessorWidget::createActions()
     {
         iEdge.next();
 
-        NewMarkerAction* action = new NewMarkerAction(icon("scene-edgemarker"), this, iEdge.key());
+        NewMarkerAction* action = new NewMarkerAction(this, iEdge.key());
         connect(action, SIGNAL(triggered(QString)), this, SLOT(doNewBoundary(QString)));
         actNewBoundaries[iEdge.key()] = action;
     }
 
-    actNewMaterial = new QAction(icon("scene-labelmarker"), tr("New &material..."), this);
+    actNewMaterial = new QAction(tr("New &material..."), this);
     actNewMaterial->setShortcut(tr("Alt+M"));
     connect(actNewMaterial, SIGNAL(triggered()), this, SLOT(doNewMaterial()));
 
@@ -189,7 +189,7 @@ void PreprocessorWidget::createActions()
     {
         iLabel.next();
 
-        NewMarkerAction *action = new NewMarkerAction(icon("scene-labelmarker"), this, iLabel.key());
+        NewMarkerAction *action = new NewMarkerAction(this, iLabel.key());
         connect(action, SIGNAL(triggered(QString)), this, SLOT(doNewMaterial(QString)));
         actNewMaterials[iLabel.key()] = action;
     }
@@ -224,17 +224,18 @@ void PreprocessorWidget::createControls()
 
     // undo framework
     actUndo = undoStack()->createUndoAction(this);
-    actUndo->setIcon(icon("edit-undo"));
+    actUndo->setIcon(iconAwesome(fa::rotateleft));
     actUndo->setIconText(tr("&Undo"));
     actUndo->setShortcuts(QKeySequence::Undo);
 
     actRedo = undoStack()->createRedoAction(this);
-    actRedo->setIcon(icon("edit-redo"));
+    actRedo->setIcon(iconAwesome(fa::rotateright));
     actRedo->setIconText(tr("&Redo"));
     actRedo->setShortcuts(QKeySequence::Redo);
 
     // main toolbar
     toolBar = new QToolBar();
+    toolBar->setIconSize(QSize(16, 16));
     toolBar->addSeparator();
     toolBar->addAction(m_sceneViewPreprocessor->actOperateOnNodes);
     toolBar->addAction(m_sceneViewPreprocessor->actOperateOnEdges);

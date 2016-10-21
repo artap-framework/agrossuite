@@ -33,7 +33,6 @@
 SceneMarkerSelectDialog::SceneMarkerSelectDialog(SceneViewPost2D *sceneView, SceneModePostprocessor mode, QWidget *parent)
     : QDialog(parent), m_sceneViewPost2D(sceneView)
 {
-    setWindowIcon(icon(""));
     setWindowTitle(tr("Select by marker"));
 
     createControls();
@@ -95,8 +94,8 @@ void SceneMarkerSelectDialog::createControls()
 
     // tab widget
     tabWidget = new QTabWidget(this);
-    tabWidget->addTab(widSurface, icon(""), tr("Surface"));
-    tabWidget->addTab(widVolume, icon(""), tr("Volume"));
+    tabWidget->addTab(widSurface, tr("Surface"));
+    tabWidget->addTab(widVolume, tr("Volume"));
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(tabWidget, 1);

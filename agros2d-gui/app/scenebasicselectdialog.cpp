@@ -33,7 +33,6 @@ SceneBasicSelectDialog::SceneBasicSelectDialog(SceneViewCommon *sceneView, QWidg
 {
     m_sceneView = sceneView;
 
-    setWindowIcon(icon(""));
     setWindowTitle(tr("Select edge"));
 
     createControls();

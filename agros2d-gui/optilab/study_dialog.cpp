@@ -46,7 +46,6 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
 {
     setModal(true);
     
-    setWindowIcon(icon("run"));
     setWindowTitle(studyTypeString(study->type()));
     setAttribute(Qt::WA_DeleteOnClose);
     
@@ -55,6 +54,8 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
     connect(btnAbort, SIGNAL(clicked()), m_study, SLOT(doAbortSolve()));
     connect(btnAbort, SIGNAL(clicked()), this, SLOT(aborted()));
     connect(m_study, SIGNAL(updateChart(QList<double>, double, SolutionUncertainty)), this, SLOT(updateChart(QList<double>, double, SolutionUncertainty)));
+    connect(m_study, SIGNAL(updateParameters(QList<Parameter>, const Computation *)), this, SLOT(updateParameters(QList<Parameter>, const Computation *)));
+
     connect(m_study, SIGNAL(solved()), this, SLOT(solved()));
     
     int w = 2.0/3.0 * QApplication::desktop()->screenGeometry().width();
@@ -137,40 +138,29 @@ void LogOptimizationDialog::createControls()
     fontChart.setPointSize(fontSize);
     
     // objective functions
-    QVBoxLayout *layoutCharts = nullptr;
-    if (m_study->functionals().count() > 1)
+    QFormLayout *layoutFunctionals = new QFormLayout();
+    foreach (Functional functional, m_study->functionals())
     {
-        layoutCharts = new QVBoxLayout();
-        foreach (Functional functional, m_study->functionals())
-        {
-            QCustomPlot *chart = new QCustomPlot(this);
-            m_charts.append(chart);
-            
-            QCPPlotTitle *title = new QCPPlotTitle(chart, functional.name());
-            title->setFont(fontTitle);
-            chart->plotLayout()->insertRow(0);
-            chart->plotLayout()->addElement(0, 0, title);
-            
-            chart->xAxis->setTickLabelFont(fontChart);
-            chart->xAxis->setLabelFont(fontChart);
-            // chart->xAxis->setTickStep(1.0);
-            chart->xAxis->setAutoTickStep(true);
-            chart->xAxis->setLabel(tr("number of steps"));
-            
-            // chart->yAxis->setScaleType(QCPAxis::stLogarithmic);
-            chart->yAxis->setTickLabelFont(fontChart);
-            chart->yAxis->setLabelFont(fontChart);
-            chart->yAxis->setLabel(functional.name());
-            
-            QCPGraph *objectiveGraph = chart->addGraph(chart->xAxis, chart->yAxis);
-            objectiveGraph->setLineStyle(QCPGraph::lsLine);
-            objectiveGraph->setPen(pen);
-            objectiveGraph->setBrush(QBrush(QColor(0, 0, 255, 20)));
-            objectiveGraph->setName(functional.name());
-            
-            layoutCharts->addWidget(chart);
-        }
+        QLabel *label = new QLabel(this);
+        label->setText("0.0");
+        m_functionals.append(label);
+
+        layoutFunctionals->addRow(QString("%1:").arg(functional.name()), label);
     }
+    QGroupBox *groupFunctionals = new QGroupBox(tr("Functionals"), this);
+    groupFunctionals->setLayout(layoutFunctionals);
+
+    QFormLayout *layoutParameters = new QFormLayout();
+    foreach (Parameter parameter, m_study->parameters())
+    {
+        QLabel *label = new QLabel(this);
+        label->setText("0.0");
+        m_parameters.append(label);
+
+        layoutParameters->addRow(QString("%1:").arg(parameter.name()), label);
+    }
+    QGroupBox *groupParameters = new QGroupBox(tr("Parameters"), this);
+    groupParameters->setLayout(layoutParameters);
 
     // total objective function
     m_totalChart = new QCustomPlot(this);
@@ -220,9 +210,17 @@ void LogOptimizationDialog::createControls()
     m_progress = new QProgressBar(this);
     m_progress->setMaximum(m_study->estimatedNumberOfSteps());
     
+    QVBoxLayout *layoutParametersAndFunctionals = new QVBoxLayout();
+    layoutParametersAndFunctionals->addWidget(groupParameters);
+    layoutParametersAndFunctionals->addWidget(groupFunctionals);
+    layoutParametersAndFunctionals->addStretch();
+
+    QHBoxLayout *layoutParametersAndFunctionalsAndChart = new QHBoxLayout();
+    layoutParametersAndFunctionalsAndChart->addLayout(layoutParametersAndFunctionals);
+    layoutParametersAndFunctionalsAndChart->addWidget(m_totalChart, 10);
+
     QVBoxLayout *layoutObjective = new QVBoxLayout();
-    layoutObjective->addWidget(m_totalChart, 3);
-    if (layoutCharts) layoutObjective->addLayout(layoutCharts, 5);
+    layoutObjective->addLayout(layoutParametersAndFunctionalsAndChart, 1);
     layoutObjective->addWidget(m_progress, 1);
     
     QVBoxLayout *layout = new QVBoxLayout();
@@ -239,27 +237,10 @@ void LogOptimizationDialog::updateChart(QList<double> values, double totalValue,
     int computationSetsCount = m_study->computationSets(m_study->value(Study::View_Filter).toString()).count();
 
     // local objective functions
-    if (values.count() > 1)
+    for (int i = 0; i < values.count(); i++)
     {
-        for (int i = 0; i < values.count(); i++)
-        {
-            QCustomPlot *chart = m_charts[i];
-
-            // dashed line (populations)
-            if (m_computationSetsCount < computationSetsCount)
-            {
-                QCPItemStraightLine *line = new QCPItemStraightLine(chart);
-                chart->addItem(line);
-
-                line->point1->setCoords(QPointF(m_step - 0.5, 0));
-                line->point2->setCoords(QPointF(m_step - 0.5, 1));
-                line->setPen(QPen(QBrush(QColor(140, 40, 40)), 2, Qt::DashLine));
-            }
-
-            chart->graph(0)->addData(m_step, values[i]);
-            chart->rescaleAxes();
-            chart->replot(QCustomPlot::rpImmediate);
-        }
+        QLabel *labelValue = m_functionals[i];
+        labelValue->setText(QString::number(values[i]));
     }
 
     // total objective function
@@ -331,6 +312,15 @@ void LogOptimizationDialog::aborted()
 
 void LogOptimizationDialog::updateParameters(QList<Parameter> parameters, const Computation *computation)
 {
+    for (int i = 0; i < parameters.count(); i++)
+    {
+        QLabel *labelValue = m_parameters[i];
+        labelValue->setText(QString::number(computation->config()->parameters()->number(parameters[i].name())));
+        // qDebug() << parameters[i].name() << computation->config()->parameters()->number(parameters[i].name());
+    }
+    update();
+    repaint();
+
     QString params = "";
     foreach (Parameter parameter, parameters)
     {

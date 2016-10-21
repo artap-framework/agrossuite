@@ -35,7 +35,7 @@ class AGROS_LIBRARY_API NewMarkerAction : public QAction
     Q_OBJECT
 
 public:
-    NewMarkerAction(QIcon icon, QObject* parent, QString field);
+    NewMarkerAction(QObject* parent, QString field);
 
 public slots:
     void doTriggered();

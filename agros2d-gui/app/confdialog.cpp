@@ -36,7 +36,6 @@
 
 ConfigComputerDialog::ConfigComputerDialog(QWidget *parent) : QDialog(parent)
 {
-    setWindowIcon(icon("preferences-other"));
     setWindowTitle(tr("Options"));
 
     createControls();

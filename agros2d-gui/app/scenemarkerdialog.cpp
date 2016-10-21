@@ -333,7 +333,6 @@ void SceneFieldWidgetBoundary::readEquation()
 SceneBoundaryDialog::SceneBoundaryDialog(SceneBoundary *boundary, QWidget *parent)
     : QDialog(parent), m_boundary(boundary)
 {
-    setWindowIcon(icon("scene-edgemarker"));
     setWindowTitle(tr("Boundary condition - %1").arg(boundary->fieldInfo()->name()));
 
     layout = new QGridLayout();
@@ -425,7 +424,6 @@ void SceneBoundaryDialog::evaluated(bool isError)
 SceneMaterialDialog::SceneMaterialDialog(SceneMaterial *material, QWidget *parent)
     : QDialog(parent), m_material(material)
 {
-    setWindowIcon(icon("scene-labelmarker"));
     setWindowTitle(tr("Material - %1").arg(material->fieldInfo()->name()));
 
     layout = new QGridLayout();

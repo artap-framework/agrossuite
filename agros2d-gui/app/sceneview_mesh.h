@@ -38,7 +38,6 @@ public:
     QAction *actExportVTKOrder;
     QAction *actExportVTKMesh;
 
-    virtual QIcon iconView() { return icon("scene-mesh"); }
     virtual QString labelView() { return tr("Mesh and polynomial order view"); }
 
     void setControls();

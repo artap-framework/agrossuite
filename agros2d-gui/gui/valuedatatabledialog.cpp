@@ -26,7 +26,6 @@
 ValueDataTableDialog::ValueDataTableDialog(DataTable table, QWidget *parent, const QString &labelX, const QString &labelY, const QString &title)
     : QDialog(parent), m_labelX(labelX), m_labelY(labelY), m_table(table), m_title(title)
 {
-    setWindowIcon(icon("scene-function"));
     setWindowTitle(tr("Data Table"));
 
 

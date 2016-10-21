@@ -68,13 +68,13 @@ PythonBrowser::PythonBrowser(PythonScriptingConsole *console, QWidget *parent)
     connect(trvBrowser, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(executeCommand(QTreeWidgetItem *, int)));
     connect(trvBrowser, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doContextMenu(const QPoint &)));
 
-    actCopyName = new QAction(icon(""), tr("Copy name"), this);
+    actCopyName = new QAction(tr("Copy name"), this);
     connect(actCopyName, SIGNAL(triggered()), this, SLOT(copyName()));
 
-    actCopyValue = new QAction(icon(""), tr("Copy value"), this);
+    actCopyValue = new QAction(tr("Copy value"), this);
     connect(actCopyValue, SIGNAL(triggered()), this, SLOT(copyValue()));
 
-    actDelete = new QAction(icon(""), tr("&Delete"), this);
+    actDelete = new QAction(tr("&Delete"), this);
     connect(actDelete, SIGNAL(triggered()), this, SLOT(deleteVariable()));
 
     mnuContext = new QMenu(trvBrowser);

@@ -65,7 +65,6 @@ public:
     inline SceneGeometryMode sceneMode() const { return m_sceneMode; }
     void saveGeometryToSvg(const QString &fileName);
 
-    virtual QIcon iconView() { return icon("problem"); }
     virtual QString labelView() { return tr("Geometry editor"); }
 
     inline QMenu *menuScene() { return m_mnuScene; }

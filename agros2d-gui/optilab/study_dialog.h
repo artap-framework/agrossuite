@@ -59,7 +59,9 @@ private:
     QPushButton *btnAbort;
 
     QCustomPlot *m_totalChart;
-    QList<QCustomPlot *> m_charts;
+    // QList<QCustomPlot *> m_charts;
+    QList<QLabel *> m_functionals;
+    QList<QLabel *> m_parameters;
     QProgressBar *m_progress;
     int m_computationSetsCount;
 

@@ -86,7 +86,7 @@ class TestNSGA2Sphere(Agros2DTestCase):
         study_nsga2.solve_problem = False
         
         study_nsga2.settings["popsize"] = 12
-        study_nsga2.settings["ngen"] = 100
+        study_nsga2.settings["ngen"] = 150
         study_nsga2.settings["pcross"] = 0.6
         study_nsga2.settings["pmut"] = 0.2
         study_nsga2.settings["eta_c"] = 10
@@ -120,7 +120,7 @@ class TestNSGA3Sphere(Agros2DTestCase):
         study_nsga3.solve_problem = False
         
         study_nsga3.settings["popsize"] = 12
-        study_nsga3.settings["ngen"] = 100
+        study_nsga3.settings["ngen"] = 150
         study_nsga3.settings["pcross"] = 0.6
         study_nsga3.settings["eta_c"] = 10
         study_nsga3.settings["eta_m"] = 20

@@ -67,7 +67,6 @@ public:
     void saveImageToFile(const QString &fileName, int w = 0, int h = 0);
     QPixmap renderScenePixmap(int w = 0, int h = 0, bool useContext = false);
 
-    virtual QIcon iconView() { return QIcon(); }
     virtual QString labelView() { return ""; }
 
 signals:

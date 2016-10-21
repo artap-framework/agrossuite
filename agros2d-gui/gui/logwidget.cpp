@@ -88,17 +88,17 @@ void LogWidget::createActions()
 {
     QSettings settings;
 
-    actShowTimestamp = new QAction(icon(""), tr("Show timestamp"), this);
+    actShowTimestamp = new QAction(tr("Show timestamp"), this);
     actShowTimestamp->setCheckable(true);
     actShowTimestamp->setChecked(settings.value("LogWidget/ShowTimestamp", false).toBool());
     connect(actShowTimestamp, SIGNAL(triggered()), this, SLOT(showTimestamp()));
 
-    actShowDebug = new QAction(icon(""), tr("Show debug"), this);
+    actShowDebug = new QAction(tr("Show debug"), this);
     actShowDebug->setCheckable(true);
     actShowDebug->setChecked(settings.value("LogWidget/ShowDebug", false).toBool());
     connect(actShowDebug, SIGNAL(triggered()), this, SLOT(showDebug()));
 
-    actClear = new QAction(icon(""), tr("Clear"), this);
+    actClear = new QAction(tr("Clear"), this);
     connect(actClear, SIGNAL(triggered()), this, SLOT(clear()));
 }
 
@@ -239,7 +239,6 @@ LogDialog::LogDialog(Computation *computation, const QString &title) : QDialog(Q
 {
     setModal(true);
 
-    setWindowIcon(icon("run"));
     setWindowTitle(title);
     setAttribute(Qt::WA_DeleteOnClose);
 

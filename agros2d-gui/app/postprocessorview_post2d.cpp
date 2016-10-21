@@ -48,7 +48,6 @@
 PostprocessorScenePost2DWidget::PostprocessorScenePost2DWidget(PhysicalFieldWidget *fieldWidget, SceneViewPost2D *scenePost2D)
     : PostprocessorSceneWidget(fieldWidget), m_scenePost2D(scenePost2D)
 {
-    setWindowIcon(icon("scene-properties"));
     setObjectName("PostprocessorPost2DWidget");
 
     createControls();
@@ -58,6 +57,7 @@ void PostprocessorScenePost2DWidget::createControls()
 {
     // main toolbar
     toolBar = new QToolBar();
+    toolBar->setIconSize(QSize(16, 16));
     toolBar->addAction(m_scenePost2D->actPostprocessorModeNothing);
     toolBar->addAction(m_scenePost2D->actPostprocessorModeLocalPointValue);
     toolBar->addAction(m_scenePost2D->actPostprocessorModeSurfaceIntegral);

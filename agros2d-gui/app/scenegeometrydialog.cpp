@@ -72,7 +72,6 @@ SceneNodeDialog::SceneNodeDialog(SceneNode *node, QWidget *parent, bool isNew) :
 {
     m_object = node;
 
-    setWindowIcon(icon("scene-node"));
     setWindowTitle(tr("Node"));
 
     createControls();
@@ -390,7 +389,7 @@ SceneFaceMarker::SceneFaceMarker(SceneFace *edge, FieldInfo *fieldInfo, QWidget 
     cmbBoundary = new QComboBox();
     connect(cmbBoundary, SIGNAL(currentIndexChanged(int)), this, SLOT(doBoundaryChanged(int)));
 
-    btnBoundary = new QPushButton(icon("three-dots"), "");
+    btnBoundary = new QPushButton(iconAwesome(fa::caretup), "");
     btnBoundary->setMaximumSize(btnBoundary->sizeHint());
     connect(btnBoundary, SIGNAL(clicked()), this, SLOT(doBoundaryClicked()));
 
@@ -454,7 +453,6 @@ SceneFaceDialog::SceneFaceDialog(SceneFace *edge, QWidget *parent, bool isNew) :
 {
     m_object = edge;
 
-    setWindowIcon(icon("scene-edge"));
     setWindowTitle(tr("Edge"));
 
     createControls();
@@ -654,7 +652,6 @@ void SceneFaceDialog::angleChanged()
 SceneEdgeSelectDialog::SceneEdgeSelectDialog(MarkedSceneBasicContainer<SceneBoundary, SceneFace> edges, QWidget *parent)
     : QDialog(parent), m_edges(edges)
 {
-    setWindowIcon(icon("scene-edge"));
     setWindowTitle(tr("Edges"));
 
     // markers
@@ -902,7 +899,7 @@ SceneLabelMarker::SceneLabelMarker(SceneLabel *label, FieldInfo *fieldInfo, QWid
     cmbMaterial = new QComboBox();
     connect(cmbMaterial, SIGNAL(currentIndexChanged(int)), this, SLOT(doMaterialChanged(int)));
 
-    btnMaterial = new QPushButton(icon("three-dots"), "");
+    btnMaterial = new QPushButton(iconAwesome(fa::caretup), "");
     btnMaterial->setMaximumSize(btnMaterial->sizeHint());
     connect(btnMaterial, SIGNAL(clicked()), this, SLOT(doMaterialClicked()));
 
@@ -1031,7 +1028,6 @@ SceneLabelDialog::SceneLabelDialog(SceneLabel *label, QWidget *parent, bool isNe
 {
     m_object = label;
 
-    setWindowIcon(icon("scene-label"));
     setWindowTitle(tr("Label"));
 
     createControls();
@@ -1173,7 +1169,6 @@ void SceneLabelDialog::doArea(int state)
 SceneLabelSelectDialog::SceneLabelSelectDialog(MarkedSceneBasicContainer<SceneMaterial, SceneLabel> labels, QWidget *parent)
     : QDialog(parent), m_labels(labels)
 {
-    setWindowIcon(icon("scene-label"));
     setWindowTitle(tr("Labels"));
 
     // markers

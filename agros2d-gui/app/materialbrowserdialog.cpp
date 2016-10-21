@@ -41,7 +41,6 @@
 MaterialEditDialog::MaterialEditDialog(const QString &fileName, QWidget *parent) : QDialog(parent),
     m_fileName(fileName)
 {
-    setWindowIcon(icon(""));
     setWindowTitle(tr("Material editor"));
 
     createControls();

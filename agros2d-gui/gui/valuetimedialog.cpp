@@ -30,7 +30,6 @@
 
 ValueTimeDialog::ValueTimeDialog(QWidget *parent) : QDialog(parent)
 {
-    setWindowIcon(icon("timefunction"));
     setWindowTitle(tr("Time function"));
 
     createControls();

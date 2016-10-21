@@ -42,7 +42,6 @@ public:
    SceneViewWidget(SceneViewChart *widget, QWidget *parent = 0);
    SceneViewWidget(QWidget *widget, QWidget *parent = 0);
    SceneViewWidget(InfoWidget *widget, QWidget *parent = 0);
-   SceneViewWidget(OptiLab *widget, QWidget *parent = 0);
    SceneViewWidget(LogView *widget, QWidget *parent = 0);
    ~SceneViewWidget();
 
@@ -50,12 +49,10 @@ public slots:
    void labelLeft(const QString &left);
    void labelCenter(const QString &center);
    void labelRight(const QString &right);
-   void iconLeft(const QIcon &left);
 
 private:
    void createControls(QWidget *widget);
 
-   QLabel *sceneViewLabelPixmap;
    QLabel *sceneViewLabelLeft;
    QLabel *sceneViewLabelCenter;
    QLabel *sceneViewLabelRight;

@@ -376,7 +376,6 @@ void ResultsView::showSurfaceIntegral()
 
 LocalPointValueDialog::LocalPointValueDialog(Point point, Computation *computation, QWidget *parent) : QDialog(parent)
 {
-    setWindowIcon(icon("scene-node"));
     setWindowTitle(tr("Local point value"));
 
     setModal(true);

@@ -91,7 +91,7 @@ ProblemBase *SceneViewPreprocessor::problem() const
 
 void SceneViewPreprocessor::createActionsGeometry()
 {
-    actSceneModeProblem = new QAction(iconView(), tr("Problem"), this);
+    actSceneModeProblem = new QAction(icon("problem"), tr("Problem"), this);
     actSceneModeProblem->setShortcut(tr("Ctrl+2"));
     actSceneModeProblem->setCheckable(true);
 
@@ -117,16 +117,16 @@ void SceneViewPreprocessor::createActionsGeometry()
     connect(actOperateGroup, SIGNAL(triggered(QAction *)), this, SLOT(doSceneGeometryModeSet(QAction *)));
 
     // select region
-    actSceneViewSelectRegion = new QAction(icon("scene-select-region"), tr("&Select region"), this);
+    actSceneViewSelectRegion = new QAction(iconAwesome(fa::thlarge), tr("&Select region"), this);
     actSceneViewSelectRegion->setCheckable(true);
 
     // object properties
-    actSceneObjectProperties = new QAction(icon("scene-properties"), tr("Object properties"), this);
+    actSceneObjectProperties = new QAction(iconAwesome(fa::cog), tr("Object properties"), this);
     actSceneObjectProperties->setShortcut(Qt::Key_Space);
     connect(actSceneObjectProperties, SIGNAL(triggered()), this, SLOT(doSceneObjectProperties()));
 
     // scene edge swap points
-    actSceneEdgeSwapDirection = new QAction(icon(""), tr("Swap direction"), this);
+    actSceneEdgeSwapDirection = new QAction(tr("Swap direction"), this);
     connect(actSceneEdgeSwapDirection, SIGNAL(triggered()), this, SLOT(doSceneEdgeSwapDirection()));
 }
 

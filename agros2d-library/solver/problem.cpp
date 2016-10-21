@@ -741,6 +741,9 @@ bool ProblemBase::applyParametersInternal()
 
 void ProblemBase::clearFields()
 {
+    // clear scene
+    m_scene->clear();
+
     // clear couplings
     foreach (CouplingInfo* couplingInfo, m_couplingInfos)
         delete couplingInfo;
@@ -754,9 +757,6 @@ void ProblemBase::clearFields()
         delete i.value();
     }
     m_fieldInfos.clear();
-
-    // clear scene
-    m_scene->clear();
 
     // initial mesh
     m_initialMesh.clear();

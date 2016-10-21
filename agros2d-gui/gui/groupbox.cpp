@@ -64,8 +64,8 @@ void CollapsableGroupBoxButton::paintEvent(QPaintEvent *)
     paint.drawItemPixmap(option.rect.adjusted(0, 2, -10, 0),
                          Qt::AlignTop | Qt::AlignRight,
                          QPixmap(m_collapsed ?
-                                     icon("edit-right").pixmap(16, 16) :
-                                     icon("edit-down").pixmap(16, 16)));
+                                     iconAwesome(fa::toggleright).pixmap(16, 16) :
+                                     iconAwesome(fa::toggledown).pixmap(16, 16)));
 }
 
 void CollapsableGroupBoxButton::setCollapsed(bool collapse)

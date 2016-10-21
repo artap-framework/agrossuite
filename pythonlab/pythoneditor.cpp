@@ -358,8 +358,6 @@ void PythonEditorWidget::createControls()
 PythonEditorDialog::PythonEditorDialog(QWidget *parent)
     : QWidget(parent), pythonEngine(currentPythonEngine())
 {
-    setWindowIcon(icon("pythonlab"));
-
     createStatusBar();
     createActions();
     createControls();
@@ -493,11 +491,11 @@ void PythonEditorDialog::createActions()
     actFileOpenRecentGroup = new QActionGroup(this);
     connect(actFileOpenRecentGroup, SIGNAL(triggered(QAction *)), this, SLOT(doFileOpenRecent(QAction *)));
 
-    actFileClose = new QAction(icon(""), tr("&Close"), this);
+    actFileClose = new QAction(tr("&Close"), this);
     actFileClose->setShortcuts(QKeySequence::Close);
     connect(actFileClose, SIGNAL(triggered()), this, SLOT(doFileClose()));
 
-    actFilePrint = new QAction(icon(""), tr("&Print"), this);
+    actFilePrint = new QAction(tr("&Print"), this);
     actFilePrint->setShortcuts(QKeySequence::Print);
     connect(actFilePrint, SIGNAL(triggered()), this, SLOT(doFilePrint()));
 
@@ -539,15 +537,15 @@ void PythonEditorDialog::createActions()
     actReplace->setShortcut(QKeySequence::Replace);
     connect(actReplace, SIGNAL(triggered()), this, SLOT(doReplace()));
 
-    actIndentSelection = new QAction(icon(""), tr("Indent"), this);
+    actIndentSelection = new QAction(tr("Indent"), this);
     actIndentSelection->setShortcut(tr("Ctrl+>"));
-    actUnindentSelection = new QAction(icon(""), tr("Unindent"), this);
+    actUnindentSelection = new QAction(tr("Unindent"), this);
     actUnindentSelection->setShortcut(tr("Ctrl+<"));
 
-    actCommentAndUncommentSelection = new QAction(icon(""), tr("Toggle comment selection"), this);
+    actCommentAndUncommentSelection = new QAction(tr("Toggle comment selection"), this);
     actCommentAndUncommentSelection->setShortcut(tr("Ctrl+/"));
 
-    actGotoLine = new QAction(icon(""), tr("Goto line"), this);
+    actGotoLine = new QAction(tr("Goto line"), this);
     actGotoLine->setShortcut(tr("Alt+G"));
 
     actGotoToFileDirectory = new QAction(icon("options-plugin"), tr("Goto file directory"), this);
@@ -558,7 +556,7 @@ void PythonEditorDialog::createActions()
     actStopPython = new QAction(icon("stop"), tr("Stop Python script"), this);
     actStopPython->setEnabled(false);
 
-    actReplaceTabsWithSpaces = new QAction(icon(""), tr("Replace tabs with spaces"), this);
+    actReplaceTabsWithSpaces = new QAction(tr("Replace tabs with spaces"), this);
 
     actCheckPyLint = new QAction(icon("checkbox"), tr("&Check Python script (PyLint)"), this);
     actCheckPyLint->setShortcut(QKeySequence(tr("Alt+C")));
@@ -573,11 +571,11 @@ void PythonEditorDialog::createActions()
     actHelpOnWord->setEnabled(true);
     connect(actHelpOnWord, SIGNAL(triggered()), this, SLOT(doHelpOnWord()));
 
-    actGotoDefinition = new QAction(icon(""), tr("Goto definition"), this);
+    actGotoDefinition = new QAction(tr("Goto definition"), this);
     actGotoDefinition->setShortcut(tr("F2"));
     connect(actGotoDefinition, SIGNAL(triggered()), this, SLOT(doGotoDefinition()));
 
-    actPrintSelection = new QAction(icon(""), tr("Print selection"), this);
+    actPrintSelection = new QAction(tr("Print selection"), this);
     actPrintSelection->setShortcut(tr("F5"));
     connect(actPrintSelection, SIGNAL(triggered()), this, SLOT(doPrintSelection()));
 

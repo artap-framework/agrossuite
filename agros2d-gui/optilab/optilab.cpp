@@ -258,10 +258,10 @@ void OptiLabWidget::createControls()
     connect(trvComputations, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(doComputationContextMenu(const QPoint &)));
     connect(trvComputations, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doComputationChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
-    actComputationSolve = new QAction(icon(""), tr("Solve problem"), this);
+    actComputationSolve = new QAction(tr("Solve problem"), this);
     connect(actComputationSolve, SIGNAL(triggered(bool)), this, SLOT(doComputationSolve(bool)));
 
-    actComputationDelete = new QAction(icon(""), tr("Delete solution"), this);
+    actComputationDelete = new QAction(tr("Delete solution"), this);
     connect(actComputationDelete, SIGNAL(triggered(bool)), this, SLOT(doComputationDelete(bool)));
 
     mnuComputations = new QMenu(this);
@@ -623,26 +623,26 @@ QWidget *OptiLab::createControlsDistChart()
 
 QWidget *OptiLab::createControlsChart()
 {
-    actChartRescale = new QAction(icon(""), tr("Rescale chart"), this);
+    actChartRescale = new QAction(tr("Rescale chart"), this);
     connect(actChartRescale, SIGNAL(triggered(bool)), this, SLOT(chartRescale(bool)));
 
-    actChartLogHorizontal = new QAction(icon(""), tr("Logarithmic scale (x-axis)"), this);
+    actChartLogHorizontal = new QAction(tr("Logarithmic scale (x-axis)"), this);
     actChartLogHorizontal->setCheckable(true);
     connect(actChartLogHorizontal, SIGNAL(triggered(bool)), this, SLOT(chartLogHorizontal(bool)));
 
-    actChartLogVertical = new QAction(icon(""), tr("Logarithmic scale (y-axis)"), this);
+    actChartLogVertical = new QAction(tr("Logarithmic scale (y-axis)"), this);
     actChartLogVertical->setCheckable(true);
     connect(actChartLogVertical, SIGNAL(triggered(bool)), this, SLOT(chartLogVertical(bool)));
 
-    actChartShowTrend = new QAction(icon(""), tr("Show trend line"), this);
+    actChartShowTrend = new QAction(tr("Show trend line"), this);
     actChartShowTrend->setCheckable(true);
     connect(actChartShowTrend, SIGNAL(triggered(bool)), this, SLOT(chartShowTrend(bool)));
 
-    actChartShowAverageValue = new QAction(icon(""), tr("Show average value"), this);
+    actChartShowAverageValue = new QAction(tr("Show average value"), this);
     actChartShowAverageValue->setCheckable(true);
     connect(actChartShowAverageValue, SIGNAL(triggered(bool)), this, SLOT(chartShowAverageValue(bool)));
 
-    actChartParetoFront = new QAction(icon(""), tr("Show Pareto front"), this);
+    actChartParetoFront = new QAction(tr("Show Pareto front"), this);
     actChartParetoFront->setCheckable(true);
     connect(actChartParetoFront, SIGNAL(triggered(bool)), this, SLOT(chartShowParetoFront(bool)));
 
@@ -722,18 +722,18 @@ QWidget *OptiLab::createControlsResults()
     connect(trvResults, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(resultsContextMenu(const QPoint &)));
     connect(trvResults, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(doResultChanged(QTreeWidgetItem *, QTreeWidgetItem *)));
 
-    actResultsDependenceOnSteps = new QAction(icon(""), tr("Dependence on the number of steps"), this);
+    actResultsDependenceOnSteps = new QAction(tr("Dependence on the number of steps"), this);
     connect(actResultsDependenceOnSteps, SIGNAL(triggered(bool)), this, SLOT(resultsDependenceOnSteps(bool)));
 
-    actResultsSetHorizontal = new QAction(icon(""), tr("Set on horizontal axis"), this);
+    actResultsSetHorizontal = new QAction(tr("Set on horizontal axis"), this);
     connect(actResultsSetHorizontal, SIGNAL(triggered(bool)), this, SLOT(resultsSetHorizontal(bool)));
 
-    actResultsSetVertical = new QAction(icon(""), tr("Set on vertical axis"), this);
+    actResultsSetVertical = new QAction(tr("Set on vertical axis"), this);
     connect(actResultsSetVertical, SIGNAL(triggered(bool)), this, SLOT(resultsSetVertical(bool)));
 
-    actResultsFindMinimum = new QAction(icon(""), tr("Find minimum"), this);
+    actResultsFindMinimum = new QAction(tr("Find minimum"), this);
     connect(actResultsFindMinimum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMinimum(bool)));
-    actResultsFindMaximum = new QAction(icon(""), tr("Find maximum"), this);
+    actResultsFindMaximum = new QAction(tr("Find maximum"), this);
     connect(actResultsFindMaximum, SIGNAL(triggered(bool)), this, SLOT(resultsFindMaximum(bool)));
 
     mnuResults = new QMenu(trvResults);

@@ -20,7 +20,6 @@
 #include "mainwindow.h"
 
 #include "gui/about.h"
-#include "gui/imageloader.h"
 #include "gui/problemdialog.h"
 #include "gui/fielddialog.h"
 #include "gui/logwidget.h"
@@ -162,28 +161,28 @@ MainWindow::~MainWindow()
 
 void MainWindow::createActions()
 {
-    actDocumentNew = new QAction(icon("document-new"), tr("&New..."), this);
+    actDocumentNew = new QAction(iconAwesome(fa::fileo), tr("&New..."), this);
     actDocumentNew->setShortcuts(QKeySequence::New);
     connect(actDocumentNew, SIGNAL(triggered()), this, SLOT(doDocumentNew()));
 
-    actDocumentOpen = new QAction(icon("document-open"), tr("&Open..."), this);
+    actDocumentOpen = new QAction(iconAwesome(fa::folderopen), tr("&Open..."), this);
     actDocumentOpen->setShortcuts(QKeySequence::Open);
     connect(actDocumentOpen, SIGNAL(triggered()), this, SLOT(doDocumentOpen()));
 
-    actDocumentSave = new QAction(icon("document-save"), tr("&Save"), this);
+    actDocumentSave = new QAction(iconAwesome(fa::save), tr("&Save"), this);
     actDocumentSave->setShortcuts(QKeySequence::Save);
     connect(actDocumentSave, SIGNAL(triggered()), this, SLOT(doDocumentSave()));
 
-    actDeleteSolutions = new QAction(icon(""), tr("Delete solutions"), this);
+    actDeleteSolutions = new QAction(tr("Delete solutions"), this);
     connect(actDeleteSolutions, SIGNAL(triggered()), this, SLOT(doDeleteSolutions()));
-    actDeleteSolutionsAndResults = new QAction(icon(""), tr("Delete solutions and results"), this);
+    actDeleteSolutionsAndResults = new QAction(tr("Delete solutions and results"), this);
     connect(actDeleteSolutionsAndResults, SIGNAL(triggered()), this, SLOT(doDeleteSolutionsAndResults()));
 
-    actDocumentSaveAs = new QAction(icon("document-save-as"), tr("Save &As..."), this);
+    actDocumentSaveAs = new QAction(tr("Save &As..."), this);
     actDocumentSaveAs->setShortcuts(QKeySequence::SaveAs);
     connect(actDocumentSaveAs, SIGNAL(triggered()), this, SLOT(doDocumentSaveAs()));
 
-    actDocumentClose = new QAction(tr("&Close"), this);
+    actDocumentClose = new QAction(iconAwesome(fa::close), tr("&Close"), this);
     actDocumentClose->setShortcuts(QKeySequence::Close);
     connect(actDocumentClose, SIGNAL(triggered()), this, SLOT(doDocumentClose()));
 
@@ -205,7 +204,7 @@ void MainWindow::createActions()
     actDocumentSaveGeometry = new QAction(tr("Export geometry..."), this);
     connect(actDocumentSaveGeometry, SIGNAL(triggered()), this, SLOT(doDocumentSaveGeometry()));
 
-    actCreateFromModel = new QAction(icon("script-create"), tr("&Create script from model"), this);
+    actCreateFromModel = new QAction(iconAwesome(fa::filetexto), tr("&Create script from model"), this);
     actCreateFromModel->setShortcut(QKeySequence(tr("Ctrl+M")));
     connect(actCreateFromModel, SIGNAL(triggered()), this, SLOT(doCreatePythonFromModel()));
 
@@ -214,7 +213,7 @@ void MainWindow::createActions()
     actExit->setMenuRole(QAction::QuitRole);
     connect(actExit, SIGNAL(triggered()), this, SLOT(close()));
 
-    actCopy = new QAction(icon("edit-copy"), tr("Copy image to clipboard"), this);
+    actCopy = new QAction(iconAwesome(fa::copy), tr("Copy image to clipboard"), this);
     // actCopy->setShortcuts(QKeySequence::Copy);
     connect(actCopy, SIGNAL(triggered()), this, SLOT(doCopy()));
 
@@ -223,14 +222,14 @@ void MainWindow::createActions()
     // actHelp->setEnabled(false);
     connect(actHelp, SIGNAL(triggered()), this, SLOT(doHelp()));
 
-    actHelpShortCut = new QAction(icon(""), tr("&Shortcuts"), this);
+    actHelpShortCut = new QAction(tr("&Shortcuts"), this);
     actHelpShortCut->setEnabled(false);
     connect(actHelpShortCut, SIGNAL(triggered()), this, SLOT(doHelpShortCut()));
 
-    actCheckVersion = new QAction(icon(""), tr("Check version"), this);
+    actCheckVersion = new QAction(tr("Check version"), this);
     connect(actCheckVersion, SIGNAL(triggered()), this, SLOT(doCheckVersion()));
 
-    actAbout = new QAction(icon("about"), tr("About &Agros2D"), this);
+    actAbout = new QAction(tr("About &Agros2D"), this);
     actAbout->setMenuRole(QAction::AboutRole);
     connect(actAbout, SIGNAL(triggered()), this, SLOT(doAbout()));
 
@@ -242,36 +241,36 @@ void MainWindow::createActions()
     actOptions->setMenuRole(QAction::PreferencesRole);
     connect(actOptions, SIGNAL(triggered()), this, SLOT(doOptions()));
 
-    actFullScreen = new QAction(icon("view-fullscreen"), tr("Fullscreen mode"), this);
+    actFullScreen = new QAction(iconAwesome(fa::television), tr("Fullscreen mode"), this);
     actFullScreen->setShortcut(QKeySequence(tr("F11")));
     connect(actFullScreen, SIGNAL(triggered()), this, SLOT(doFullScreen()));
 
     actDocumentOpenRecentGroup = new QActionGroup(this);
     connect(actDocumentOpenRecentGroup, SIGNAL(triggered(QAction *)), this, SLOT(doDocumentOpenRecent(QAction *)));
 
-    actMaterialBrowser = new QAction(icon(""), tr("Material browser..."), this);
+    actMaterialBrowser = new QAction(tr("Material browser..."), this);
     connect(actMaterialBrowser, SIGNAL(triggered()), this, SLOT(doMaterialBrowser()));
 
     actSolve = new QAction(icon("run"), tr("&Solve"), this);
     actSolve->setShortcut(QKeySequence(tr("Alt+S")));
     connect(actSolve, SIGNAL(triggered()), this, SLOT(doSolve()));
 
-    actSolveNewComputation = new QAction(icon("run"), tr("&Solve new"), this);
+    actSolveNewComputation = new QAction(icon("run-step"), tr("&Solve new"), this);
     actSolveNewComputation->setShortcut(QKeySequence(tr("Alt+Shift+S")));
     connect(actSolveNewComputation, SIGNAL(triggered()), this, SLOT(doSolveNewComputation()));
 
     // zoom actions (geometry, post2d and post3d)
     // scene - zoom
-    actSceneZoomIn = new QAction(icon("zoom-in"), tr("Zoom in"), this);
+    actSceneZoomIn = new QAction(iconAwesome(fa::plussquareo), tr("Zoom in"), this);
     actSceneZoomIn->setShortcut(QKeySequence::ZoomIn);
 
-    actSceneZoomOut = new QAction(icon("zoom-out"), tr("Zoom out"), this);
+    actSceneZoomOut = new QAction(iconAwesome(fa::plussquareo), tr("Zoom out"), this);
     actSceneZoomOut->setShortcut(QKeySequence::ZoomOut);
 
-    actSceneZoomBestFit = new QAction(icon("zoom-original"), tr("Zoom best fit"), this);
+    actSceneZoomBestFit = new QAction(iconAwesome(fa::arrowsalt), tr("Zoom best fit"), this);
     actSceneZoomBestFit->setShortcut(tr("Ctrl+0"));
 
-    actSceneZoomRegion = new QAction(icon("zoom-fit-best"), tr("Zoom region"), this);
+    actSceneZoomRegion = new QAction(iconAwesome(fa::squareo), tr("Zoom region"), this);
     actSceneZoomRegion->setCheckable(true);
 
     actSceneModeGroup = new QActionGroup(this);
@@ -281,7 +280,7 @@ void MainWindow::createActions()
     actSceneModeGroup->addAction(optiLab->actSceneModeOptiLab);
     actSceneModeGroup->addAction(logView->actLog);
 
-    actHideControlPanel = new QAction(icon("showhide"), tr("Show/hide control panel"), this);
+    actHideControlPanel = new QAction(iconAwesome(fa::columns), tr("Show/hide control panel"), this);
     actHideControlPanel->setShortcut(tr("Alt+0"));
     actHideControlPanel->setCheckable(true);
     connect(actHideControlPanel, SIGNAL(triggered()), this, SLOT(doHideControlPanel()));
@@ -385,7 +384,7 @@ void MainWindow::createToolBars()
 
     QToolButton *toolButton = new QToolButton();
     toolButton->setMenu(menu);
-    toolButton->setIcon(icon("zoom"));
+    toolButton->setIcon(iconAwesome(fa::toggledown));
     toolButton->setPopupMode(QToolButton::InstantPopup);
 
     problemWidget->toolBar->addSeparator();
@@ -445,9 +444,9 @@ void MainWindow::createMain()
     int fontSize = 8;
 #endif
     tlbLeftBar->setStyleSheet(QString("QToolBar { border: 1px solid rgba(70, 70, 70, 255); }"
-                                      "QToolBar { background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(70, 70, 70, 255), stop:1 rgba(120, 120, 120, 255)); }"
+                                      "QToolBar { background-color: rgba(64, 66, 68, 255); }"
                                       "QToolButton { border: 0px; color: rgba(230, 230, 230, 255); font: bold; font-size: %1pt; width: 60px; }"
-                                      "QToolButton:hover { border: 0px; background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(70, 70, 70, 255), stop:0.5 rgba(160, 160, 160, 255), stop:1 rgba(150, 150, 150, 255)); }"
+                                      "QToolButton:hover { border: 0px; background: rgba(150, 150, 150, 255); }"
                                       "QToolButton:checked:hover, QToolButton:checked { border: 0px; color: rgba(30, 30, 30, 255); background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(160, 160, 160, 255), stop:0.5 rgba(220, 220, 220, 255), stop:1 rgba(160, 160, 160, 255)); }").arg(fontSize));
     // system layout
     // leftToolBar->setStyleSheet("QToolButton { font: bold; font-size: 8pt; width: 75px; }");

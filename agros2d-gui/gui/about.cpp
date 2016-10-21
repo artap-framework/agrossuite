@@ -45,7 +45,7 @@ AboutDialog::~AboutDialog()
 void AboutDialog::createControls()
 {
     QTabWidget *tab = new QTabWidget();
-    tab->addTab(createAgros2D(), icon(""), tr("Agros2D"));
+    tab->addTab(createAgros2D(), tr("Agros2D"));
     tab->addTab(createDealii(), tr("deal.ii"));
     tab->addTab(createLibraries(), tr("Libraries"));
     tab->addTab(createLicense(), tr("License"));

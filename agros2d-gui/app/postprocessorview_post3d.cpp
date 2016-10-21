@@ -46,7 +46,6 @@
 PostprocessorScenePost3DWidget::PostprocessorScenePost3DWidget(PhysicalFieldWidget *fieldWidget, SceneViewPost3D *scenePost3D)
     : PostprocessorSceneWidget(fieldWidget), m_scenePost3D(scenePost3D)
 {
-    setWindowIcon(icon("scene-properties"));
     setObjectName("PostprocessorPost3DWidget");
 
     createControls();

@@ -20,6 +20,8 @@
 #include "other.h"
 
 static QUndoStack *m_undoStack = nullptr;
+static QtAwesome *m_awesome = nullptr;
+static QMap<QString, QIcon> *m_iconCache = nullptr;
 
 // undo framework
 QUndoStack *undoStack()
@@ -29,35 +31,35 @@ QUndoStack *undoStack()
     return  m_undoStack;
 }
 
-QIcon icon(const QString &name)
+QIcon iconAwesome(int character)
 {
-    // memory leak but works with Qt5.2 and Ubuntu 14.04
-    static QMap<QString, QIcon> *iconCache = new QMap<QString, QIcon>();
-
-    if (iconCache->contains(name))
-        return iconCache->value(name);
-
-#ifdef Q_WS_WIN
-    if (QFile::exists(":/" + name + "-windows.png"))
-        iconCache->insert(name, QIcon(":/" + name + "-windows.png"));
-#endif
-
-#ifdef Q_WS_X11
-    if (QIcon::hasThemeIcon(name))
-        iconCache->insert(name, QIcon::fromTheme(name, QIcon(":/" + name + ".png")));
-#endif
-
-    if (!iconCache->contains(name))
+    if (!m_awesome)
     {
-        if (QFile::exists(":/" + name + ".svg"))
-            iconCache->insert(name, QIcon(":/" + name + ".svg"));
-        else if (QFile::exists(":/" + name + ".png"))
-            iconCache->insert(name, QIcon(":/" + name + ".png"));
-        else
-            iconCache->insert(name, QIcon());
+        m_awesome = new QtAwesome();
+        m_awesome->initFontAwesome();
     }
 
-    return iconCache->value(name);
+    return m_awesome->icon(character);
+}
+
+QIcon icon(const QString &name)
+{
+    if (!m_iconCache)
+       m_iconCache = new QMap<QString, QIcon>();
+
+    if (m_iconCache->contains(name))
+    {
+        return m_iconCache->value(name);
+    }
+    else
+    {
+        if (QFile::exists(":/" + name + ".png"))
+            m_iconCache->insert(name, QIcon(":/" + name + ".png"));
+        else
+            m_iconCache->insert(name, QIcon());
+
+        return m_iconCache->value(name);
+    }
 }
 
 QIcon iconAlphabet(const QChar &letter, AlphabetColor color)

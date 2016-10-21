@@ -27,6 +27,7 @@
 #include <QtSvg/QtSvg>
 
 #include "util/util.h"
+#include "../3rdparty/QtAwesome/QtAwesome.h"
 
 // undo framework
 AGROS_LIBRARY_API QUndoStack *undoStack();
@@ -35,6 +36,7 @@ AGROS_LIBRARY_API QUndoStack *undoStack();
 AGROS_LIBRARY_API void showPage(const QString &str = "");
 
 // get icon with respect to actual theme
+AGROS_LIBRARY_API QIcon iconAwesome(int character);
 AGROS_LIBRARY_API QIcon icon(const QString &name);
 enum AlphabetColor
 {

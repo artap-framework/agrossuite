@@ -40,7 +40,6 @@ public:
 
     QAction *actSceneModeParticleTracing;
 
-    virtual QIcon iconView() { return icon("scene-particle"); }
     virtual QString labelView() { return tr("Particle Tracing"); }
 
     void setControls();

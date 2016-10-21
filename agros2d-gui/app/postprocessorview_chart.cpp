@@ -69,7 +69,6 @@ QList<Point> ChartLine::getPoints()
 PostprocessorSceneChartWidget::PostprocessorSceneChartWidget(PhysicalFieldWidget *fieldWidget, SceneViewChart *sceneChart)
     : PostprocessorSceneWidget(fieldWidget), sceneChart(sceneChart)
 {
-    setWindowIcon(icon("chart"));
     setObjectName("PostprocessorChartWidget");
 
     createControls();
@@ -233,8 +232,8 @@ void PostprocessorSceneChartWidget::createControls()
     widTime->setLayout(controlsTimeLayout);
 
     tbxAnalysisType = new QTabWidget();
-    tbxAnalysisType->addTab(widGeometry, icon(""), tr("Geometry"));
-    tbxAnalysisType->addTab(widTime, icon(""), tr("Time"));
+    tbxAnalysisType->addTab(widGeometry, tr("Geometry"));
+    tbxAnalysisType->addTab(widTime, tr("Time"));
 
     // controls
     QVBoxLayout *layoutMain = new QVBoxLayout();
