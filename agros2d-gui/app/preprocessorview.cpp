@@ -235,7 +235,7 @@ void PreprocessorWidget::createControls()
 
     // main toolbar
     toolBar = new QToolBar();
-    toolBar->setIconSize(QSize(16, 16));
+    toolBar->setIconSize(QSize(20, 20));
     toolBar->addSeparator();
     toolBar->addAction(m_sceneViewPreprocessor->actOperateOnNodes);
     toolBar->addAction(m_sceneViewPreprocessor->actOperateOnEdges);

@@ -21,11 +21,9 @@
         <file alias="scene-function.png">images/scene-function.png</file>
         <file alias="script.png">images/script.png</file>
         <file alias="script-python.png">images/script-python.png</file>
-        <file alias="file-python.png">images/file-python.png</file>
         <file alias="check-convention.png">images/check-convention.png</file>
         <file alias="check-warning.png">images/check-warning.png</file>
         <file alias="check-error.png">images/check-error.png</file>
-        <file alias="checkbox.png">images/checkbox.png</file>
         <file alias="browser-class.png">images/browser-class.png</file>
         <file alias="browser-variable.png">images/browser-variable.png</file>
         <file alias="browser-function.png">images/browser-function.png</file>
@@ -40,13 +38,10 @@
         <file alias="browser-variable-class.png">images/browser-variable-class.png</file>
         <file alias="browser-variable-bool.png">images/browser-variable-bool.png</file>
         <file alias="browser-variable-unknown.png">images/browser-variable-unknown.png</file>
-        <file alias="history-command.png">images/history-command.png</file>
         <file alias="form-matrix.png">images/form-matrix.png</file>
         <file alias="form-vector.png">images/form-vector.png</file>
         <file alias="form-essential.png">images/form-essential.png</file>
-        <file alias="directory-add.png">images/directory-add.png</file>
         <file alias="connect.png">images/connect.png</file>
-        <file alias="profiler.png">images/profiler.png</file>
         <file alias="fields/empty.png">images/fields/empty.png</file>
         <file alias="fields/acoustic.png">images/fields/acoustic.png</file>
         <file alias="fields/current.png">images/fields/current.png</file>

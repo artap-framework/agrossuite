@@ -6,75 +6,9 @@ from math import *
 import sys
 sys.path.insert(0, ".")
 
-# interactive help hack
-#__pydoc_help__ = help
-#def __a2d_help__(obj = pythonlab):
-#    return __pydoc_help__(obj)
-
-#help = __a2d_help__
-
 # user functions
 def sgn(number):
     return (number >= 0) and 1 or -1
-
-# from rope.base.project import Project
-# pythonlab_rope_project = Project(".", ropefolder=None)
-
-# get completion list
-def python_engine_get_completion_script(script, row, column, filename = None):
-    import jedi
-    
-    jedi.settings.additional_dynamic_modules = [pythonlab]
-    
-    s = jedi.Script(script, row, column, filename)
-    completions = s.completions()
-    
-    comps = []
-    for completion in completions:
-        comps.append(completion.name)
-        
-    return comps
-    
-def python_engine_get_completion_interpreter(script):    
-    import jedi
-    
-    s = jedi.Interpreter(script, [globals()])
-    completions = s.completions()
-    
-    comps = []
-    for completion in completions:
-        comps.append(completion.name)
-        
-    return comps
-       
-def python_engine_goto_definition(path, line, column):
-    import jedi
-
-    script = jedi.Script(path = path, line = line, column = column)
-    d = script.goto_definitions()   
-
-    try:
-        if (len(d) > 0):
-            if (d[0].line):
-                return [d[0].module_path, d[0].line, d[0].full_name, d[0].name]
-    except:
-        pass
-    
-    return ["", -1, "", ""]
-
-def python_engine_code_help(path, line, column):
-    import jedi
-
-    script = jedi.Script(path = path, line = line, column = column)
-    d = script.goto_definitions()    
-    
-    try:
-        if (len(d) > 0):
-            return d[0].docstring()
-    except:
-        pass
-        
-    return ""
           
 def python_engine_pyflakes_check(filename):
     f = open(filename, 'r')

@@ -272,7 +272,7 @@ ADD_SUBDIRECTORY(agros2d-generator)
 ADD_SUBDIRECTORY(agros2d-python)
 # GUI
 ADD_SUBDIRECTORY(agros2d-gui)
-# ADD_SUBDIRECTORY(pythonlab)
+ADD_SUBDIRECTORY(pythonlab-gui)
 
 message("\nAgros2D Configuration results")
 message("---------------------")

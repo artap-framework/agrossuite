@@ -383,6 +383,7 @@ void MainWindow::createToolBars()
     menu->addAction(actSceneZoomOut);
 
     QToolButton *toolButton = new QToolButton();
+    toolButton->setIconSize(QSize(20, 20));
     toolButton->setMenu(menu);
     toolButton->setIcon(iconAwesome(fa::toggledown));
     toolButton->setPopupMode(QToolButton::InstantPopup);
