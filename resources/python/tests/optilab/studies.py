@@ -54,8 +54,8 @@ class TestLimboBooth(Agros2DTestCase):
         study_limbo.solve_problem = False
         
         study_limbo.settings["init_randomsampling_samples"] = 10
-        study_limbo.settings["stop_maxiterations_iterations"] = 30
-        study_limbo.settings["bayes_opt_boptimizer_noise"] = 1e-10
+        study_limbo.settings["stop_maxiterations_iterations"] = 60
+        study_limbo.settings["bayes_opt_boptimizer_noise"] = 0
         study_limbo.settings["bayes_opt_boptimizer_hp_period"] = 10
         
         study_limbo.solve()

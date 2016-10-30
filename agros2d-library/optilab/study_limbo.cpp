@@ -113,9 +113,9 @@ using kernel_t = kernel::SquaredExpARD<Params>;
 using mean_t = mean::FunctionARD<Params, mean::Constant<Params> >;
 
 // Gaussian Process - hyperparameter optimizer
-using gp_opt_t = model::gp::KernelLFOpt<Params>;
+// using gp_opt_t = model::gp::KernelLFOpt<Params>;
 // using gp_opt_t = model::gp::MeanLFOpt<Params>;
-// using gp_opt_t = model::gp::KernelMeanLFOpt<Params>;
+using gp_opt_t = model::gp::KernelMeanLFOpt<Params>;
 // using gp_opt_t = model::gp::NoLFOpt<Params>;
 
 // Gaussian Process
@@ -161,7 +161,7 @@ struct StateEval
         // qDebug() << "opt.get_population()" << opt.get_population();
 
         // computation
-        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);        
+        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
 
         // set parameters
         for (int i = 0; i < m_study->parameters().count(); i++)
@@ -170,6 +170,24 @@ struct StateEval
             // scale parameter from interval (0, 1)
             computation->config()->parameters()->set(parameter.name(), parameter.lowerBound() + x(i) * (parameter.upperBound() - parameter.lowerBound()));
             // qDebug() << x(i) << parameter.lowerBound() + x(i) * (parameter.upperBound() - parameter.lowerBound());
+        }
+
+        // check geometry
+        if (m_study->value(Study::General_SolveProblem).toBool())
+        {
+            try
+            {
+                // invalidate scene (parameter update)
+                computation->scene()->cacheGeometryConstraints();
+                computation->scene()->invalidate();
+
+                computation->scene()->checkGeometryResult();
+            }
+            catch (AgrosGeometryException& e)
+            {
+                qDebug() << e.toString();
+                return tools::make_vector(-numeric_limits<double>::max());
+            }
         }
 
         // compute uncertainty

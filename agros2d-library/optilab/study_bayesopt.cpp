@@ -64,24 +64,6 @@ double BayesOptProblem::evaluateSample(const vectord &x)
         query[i] = (x[i] - parameter.lowerBound()) / (parameter.upperBound() - parameter.lowerBound());
     }
 
-    // check geometry
-    /*
-    try
-    {
-        // invalidate scene (parameter update)
-        computation->scene()->cacheGeometryConstraints();
-        computation->scene()->invalidate();
-
-        computation->scene()->checkGeometryResult();
-        computation->scene()->checkGeometryAssignement();
-    }
-    catch (AgrosGeometryException& e)
-    {
-        qDebug() << e.toString();
-        return numeric_limits<double>::max();
-    }
-    */
-
     // evaluate step
     try
     {
@@ -155,7 +137,6 @@ bool BayesOptProblem::checkReachability(const vectord &x)
     catch (AgrosGeometryException& e)
     {
         qDebug() << e.toString();
-        m_study->updateParameters(m_study->parameters(), computation.data());
 
         return false;
     }
