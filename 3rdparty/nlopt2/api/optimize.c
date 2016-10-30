@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2012 Massachusetts Institute of Technology
+/* Copyright (c) 2007-2014 Massachusetts Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -339,6 +339,7 @@ static int elimdim_wrapcheck(nlopt_opt opt)
 	 case NLOPT_GN_DIRECT_L_RAND_NOSCAL: 
 	 case NLOPT_GN_ORIG_DIRECT:
 	 case NLOPT_GN_ORIG_DIRECT_L:
+         case NLOPT_GN_CRS2_LM:
 	 case NLOPT_LN_PRAXIS:
 	 case NLOPT_LN_COBYLA:
 	 case NLOPT_LN_NEWUOA:

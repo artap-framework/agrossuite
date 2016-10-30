@@ -34,7 +34,6 @@
 #define USE_NLOPT
 
 #include "nlopt.hpp"
-
 #include <limbo/limbo.hpp>
 
 using namespace limbo;
