@@ -67,7 +67,7 @@ InfoWidgetGeneral::InfoWidgetGeneral(QWidget *parent)
     ctemplate::ExpandTemplate(compatibleFilename(datadir() + TEMPLATEROOT + "/panels/style_common.css").toStdString(), ctemplate::DO_NOT_STRIP, &stylesheet, &style);
     m_cascadeStyleSheet = QString::fromStdString(style);
 
-    QVBoxLayout *layoutMain = new QVBoxLayout(this);
+    QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->setContentsMargins(2, 2, 2, 2);
     layoutMain->addWidget(webView);
 

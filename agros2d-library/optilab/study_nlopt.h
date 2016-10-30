@@ -26,8 +26,6 @@
 
 #include "nlopt.hpp"
 
-class LineEditDouble;
-
 class StudyNLopt : public Study
 {
 public:

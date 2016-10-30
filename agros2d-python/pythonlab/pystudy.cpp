@@ -180,6 +180,23 @@ void PyStudyBayesOpt::setLearningType(const std::string &learningType)
     }
 }
 
+// Limbo **************************************************************
+
+PyStudyLimbo::PyStudyLimbo(int index) : PyStudy()
+{
+    // add study
+    if (index == -1)
+    {
+        m_study = Study::factory(StudyType_Limbo);
+        Agros2D::problem()->studies()->addStudy(m_study);
+    }
+    else
+    {
+        if (index < Agros2D::problem()->studies()->items().count())
+            m_study = Agros2D::problem()->studies()->items().at(index);
+    }
+}
+
 // NLopt **************************************************************
 
 PyStudyNLopt::PyStudyNLopt(int index) : PyStudy()

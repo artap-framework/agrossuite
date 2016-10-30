@@ -31,6 +31,7 @@
 #include "optilab/study_nsga3.h"
 #include "optilab/study_nlopt.h"
 #include "optilab/study_bayesopt.h"
+#include "optilab/study_limbo.h"
 
 class StudySweepDialog : public StudyDialog
 {
@@ -141,6 +142,26 @@ private:
     LineEditDouble *txtSurrogateNoise;
     QComboBox *cmbHPLearningMethod;
     QComboBox *cmbHPScoreFunction;
+};
+
+class StudyLimboDialog : public StudyDialog
+{
+public:
+    StudyLimboDialog(Study *study, QWidget *parent = 0);
+
+protected:
+    virtual inline StudyLimbo *study() { return dynamic_cast<StudyLimbo *>(m_study); }
+
+    virtual QLayout *createStudyControls();
+
+    virtual void load();
+    virtual void save();
+
+private:
+    QSpinBox *txtNInitSamples;
+    QSpinBox *txtNIterations;
+    QSpinBox *txtHPIterRelearn;
+    LineEditDouble *txtHPNoise;
 };
 
 #endif // STUDY_METHODDIALOG_H

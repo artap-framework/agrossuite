@@ -31,6 +31,7 @@
 #include "optilab/study_nsga3.h"
 #include "optilab/study_nlopt.h"
 #include "optilab/study_sweep.h"
+#include "optilab/study_limbo.h"
 
 #include "nlopt.hpp"
 
@@ -105,6 +106,16 @@ public:
 
     inline std::string getLearningType() const { return m_study->value(Study::BayesOpt_l_type).toString().toStdString(); }
     void setLearningType(const std::string &learningType);
+};
+
+class PyStudyLimbo : public PyStudy
+{
+public:
+    PyStudyLimbo(int index = -1);
+    virtual ~PyStudyLimbo() {}
+
+    virtual StudyLimbo *study() { return static_cast<StudyLimbo *>(m_study); }
+    virtual StudyLimbo *study() const { return static_cast<StudyLimbo *>(m_study); }
 };
 
 class PyStudyNLopt : public PyStudy

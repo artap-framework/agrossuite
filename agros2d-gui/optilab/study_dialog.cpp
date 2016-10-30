@@ -29,6 +29,7 @@
 #include "optilab/study_nsga3.h"
 #include "optilab/study_nlopt.h"
 #include "optilab/study_bayesopt.h"
+#include "optilab/study_limbo.h"
 #include "optilab/study_methoddialog.h"
 
 #include "qcustomplot/qcustomplot.h"
@@ -428,6 +429,8 @@ StudyDialog *StudyDialog::factory(Study *study, QWidget *parent)
         return new StudyNLoptDialog(study, parent);
     else if (study->type() == StudyType_Sweep)
         return new StudySweepDialog(study, parent);
+    else if (study->type() == StudyType_Limbo)
+        return new StudyLimboDialog(study, parent);
     else
         assert(0);
     
@@ -471,14 +474,14 @@ void StudyDialog::createControls()
     chkClearSolution = new QCheckBox(tr("Clear solution after solving the problem"));
     chkSolveProblem = new QCheckBox(tr("Solve problem"));
     
-    QGridLayout *layoutGeneral = new QGridLayout(this);
+    QGridLayout *layoutGeneral = new QGridLayout();
     layoutGeneral->addWidget(chkClearSolution, 0, 0);
     layoutGeneral->addWidget(chkSolveProblem, 0, 1);
     
     QGroupBox *grpGeneral = new QGroupBox(tr("General"));
     grpGeneral->setLayout(layoutGeneral);
     
-    QVBoxLayout *layoutStudy = new QVBoxLayout(this);
+    QVBoxLayout *layoutStudy = new QVBoxLayout();
     layoutStudy->addWidget(grpGeneral);
     layoutStudy->addLayout(createStudyControls());
     layoutStudy->addStretch();
@@ -490,7 +493,7 @@ void StudyDialog::createControls()
     tabStudy->addTab(widgetStudy, tr("Study"));
     tabStudy->addTab(createParametersAndFunctionals(), tr("Parameters and functionals"));
     
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(tabStudy);
     layout->addLayout(layoutButtonBox);
     
@@ -502,19 +505,19 @@ void StudyDialog::createControls()
 
 QWidget *StudyDialog::createParametersAndFunctionals()
 {
-    QVBoxLayout *layoutParameters = new QVBoxLayout(this);
+    QVBoxLayout *layoutParameters = new QVBoxLayout();
     layoutParameters->addWidget(createParameters());
 
     QGroupBox *grpParameters = new QGroupBox(tr("Parameters"));
     grpParameters->setLayout(layoutParameters);
 
-    QVBoxLayout *layoutFunctionals = new QVBoxLayout(this);
+    QVBoxLayout *layoutFunctionals = new QVBoxLayout();
     layoutFunctionals->addWidget(createFunctionals());
 
     QGroupBox *grpFunctionals = new QGroupBox(tr("Functionals"));
     grpFunctionals->setLayout(layoutFunctionals);
 
-    QVBoxLayout *layoutPF = new QVBoxLayout(this);
+    QVBoxLayout *layoutPF = new QVBoxLayout();
     layoutPF->addWidget(grpParameters);
     layoutPF->addWidget(grpFunctionals);
     

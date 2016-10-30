@@ -85,6 +85,7 @@ double BayesOptProblem::evaluateSample(const vectord &x)
     // evaluate step
     try
     {
+        // compute uncertainty
         SolutionUncertainty solutionUncertainty;
         bayesopt::ProbabilityDistribution *pd = nullptr;
         if (m_study->computationSets().count() > 1)
@@ -126,7 +127,9 @@ double BayesOptProblem::evaluateSample(const vectord &x)
 
 bool BayesOptProblem::checkReachability(const vectord &x)
 {
-    // return true;
+    if (!m_study->value(Study::General_SolveProblem).toBool())
+        return true;
+
     // computation
     QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
 

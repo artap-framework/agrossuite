@@ -146,6 +146,11 @@ public:
         NSGA3_eta_m,
         NSGA3_use_surrogate,
 
+        LIMBO_init_randomsampling_samples,
+        LIMBO_stop_maxiterations_iterations,
+        LIMBO_bayes_opt_boptimizer_noise,
+        LIMBO_bayes_opt_boptimizer_hp_period,
+
         View_Filter,
         View_ChartHorizontal,
         View_ChartVertical,

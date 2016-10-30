@@ -34,25 +34,27 @@
 #include "alg_individual.h"
 #include "alg_population.h"
 #include "problem_base.h"
-
+/*
 #include "../../3rdparty/Eigen/Core"
-#include "../../3rdparty/limbo/model/gp.hpp"
-#include "../../3rdparty/limbo/model/gp/kernel_mean_lf_opt.hpp"
-#include "../../3rdparty/limbo/model/gp/kernel_lf_opt.hpp"
-#include "../../3rdparty/limbo/model/gp/mean_lf_opt.hpp"
-#include "../../3rdparty/limbo/model/gp/no_lf_opt.hpp"
-#include "../../3rdparty/limbo/kernel/squared_exp_ard.hpp"
-#include "../../3rdparty/limbo/mean/data.hpp"
-#include "../../3rdparty/limbo/mean/constant.hpp"
-#include "../../3rdparty/limbo/mean/function_ard.hpp"
+#include "limbo/model/gp.hpp"
+#include "limbo/model/gp/kernel_mean_lf_opt.hpp"
+#include "limbo/model/gp/kernel_lf_opt.hpp"
+#include "limbo/model/gp/mean_lf_opt.hpp"
+#include "limbo/model/gp/no_lf_opt.hpp"
+#include "limbo/kernel/squared_exp_ard.hpp"
+#include "limbo/mean/data.hpp"
+#include "limbo/mean/constant.hpp"
+#include "limbo/mean/function_ard.hpp"
+*/
 
+/*
 struct Params {
     // struct opt_rprop : public limbo::defaults::opt_rprop {};
     struct opt_rprop { BO_PARAM(int, iterations, 100); }; // default 300
     // struct opt_parallelrepeater : public limbo::defaults::opt_parallelrepeater {};
     struct opt_parallelrepeater { BO_PARAM(int, repeats, 10); }; // default 10
 };
-
+*/
 class NSGA3Problem : public NSGA3ProblemBase
 {
 public:
@@ -94,9 +96,9 @@ public:
         // m_study->addComputation(computation);
 
         // training patterns
-        Eigen::VectorXd samples(m_study->parameters().count());
+        // Eigen::VectorXd samples(m_study->parameters().count());
         // Gaussian process parameters
-        Eigen::VectorXd mu;
+        // Eigen::VectorXd mu;
         double sigma;
 
         // set parameters
@@ -107,16 +109,17 @@ public:
             computation->scene()->cacheGeometryConstraints();
 
             // training patterns
-            samples[i] = x[i];
+            // samples[i] = x[i];
         }
 
         // evaluate step
         try
         {
-            bool useSurrogate = m_study->value(Study::NSGA3_use_surrogate).toBool() && (gp.nb_samples() > relearn - 1);
+            bool useSurrogate = false; // m_study->value(Study::NSGA3_use_surrogate).toBool() && (gp.nb_samples() > relearn - 1);
 
             if (useSurrogate)
             {
+                /*
                 // estimate values
                 std::tie(mu, sigma) = gp.query(samples);
                 double lik = gp.get_lik();
@@ -157,56 +160,65 @@ public:
                     // force computation
                     useSurrogate = false;
                 }
+                */
             }
-
-            // real computation and model improvement
-            if (!useSurrogate)
+            else
             {
-                // qDebug() << "real computation";
-                m_study->evaluateStep(computation);
-                QList<double> values = m_study->evaluateMultiGoal(computation);
-
-                if (m_study->value(Study::General_ClearSolution).toBool())
-                    computation->clearSolution();
-
-                // penalty
-                double totalPenalty = 0.0;
-                for (int i = 0; i < m_study->parameters().count(); i++)
+                // real computation and model improvement
+                if (!useSurrogate)
                 {
-                    Parameter parameter = m_study->parameters()[i];
-                    if (parameter.penaltyEnabled())
-                        totalPenalty += parameter.penalty(x[i]);
-                }
+                    // qDebug() << "real computation";
+                    m_study->evaluateStep(computation);
+                    QList<double> values = m_study->evaluateMultiGoal(computation);
 
-                // set objective functions
-                countComputation++;
-                for (int i = 0; i < values.count(); i++)
-                    f[i] = values[i] + totalPenalty;
+                    if (m_study->value(Study::General_ClearSolution).toBool())
+                        computation->clearSolution();
 
-                // add computation
-                m_study->addComputation(computation);
-
-                if (m_study->value(Study::NSGA3_use_surrogate).toBool())
-                {
-                    // estimate values
-                    if (gp.nb_samples() > 1)
+                    // penalty
+                    double totalPenalty = 0.0;
+                    for (int i = 0; i < m_study->parameters().count(); i++)
                     {
-                        std::tie(mu, sigma) = gp.query(samples);
-                         for (int i = 0; i < values.count(); i++)
-                             qDebug() << i << " : value = " << values[i] << ", mu = " << mu[i] << ", sigma = " << sigma;
+                        Parameter parameter = m_study->parameters()[i];
+                        if (parameter.penaltyEnabled())
+                            totalPenalty += parameter.penalty(x[i]);
                     }
 
-                    // add samples and observations
-                    Eigen::VectorXd observations(m_study->functionals().count());
+                    // set objective functions
+                    countComputation++;
                     for (int i = 0; i < values.count(); i++)
-                        observations[i] = values[i];
+                        f[i] = values[i] + totalPenalty;
 
-                    m_samples.push_back(samples);
-                    m_observations.push_back(observations);
+                    // add computation
+                    m_study->addComputation(computation);
 
-                    // refresh model
-                    if (m_observations.size() % relearn == 0)
-                        gp.compute(m_samples, m_observations, 1e-10);                                         
+                    /*
+                    if (m_study->value(Study::NSGA3_use_surrogate).toBool())
+                    {
+                        // estimate values
+                        if (gp.nb_samples() > 1)
+                        {
+                            std::tie(mu, sigma) = gp.query(samples);
+                             for (int i = 0; i < values.count(); i++)
+                                 qDebug() << i << " : value = " << values[i] << ", mu = " << mu[i] << ", sigma = " << sigma;
+                        }
+
+                        // add samples and observations
+                        Eigen::VectorXd observations(m_study->functionals().count());
+                        for (int i = 0; i < values.count(); i++)
+                            observations[i] = values[i];
+
+                        Eigen::VectorXd noises(m_study->functionals().count());
+                        for (int i = 0; i < values.count(); i++)
+                            noises[i] = 0.0;
+
+                        m_samples.push_back(samples);
+                        m_observations.push_back(observations);
+
+                        // refresh model
+                        if (m_observations.size() % relearn == 0)
+                            gp.compute(m_samples, m_observations, noises, 1e-10);
+                    }
+                    */
                 }
             }
 
@@ -238,16 +250,14 @@ public:
 private:
     StudyNSGA3 *m_study;
 
-    mutable limbo::model::GP<Params, limbo::kernel::SquaredExpARD<Params>, limbo::mean::Data<Params>, limbo::model::gp::KernelLFOpt<Params> > gp;
-    // mutable limbo::model::GP<Params, limbo::kernel::SquaredExpARD<Params>, limbo::mean::Data<Params>, limbo::model::gp::NoLFOpt<Params> > gp;
-    // mutable limbo::model::GP<Params, limbo::kernel::SquaredExpARD<Params>, limbo::mean::FunctionARD<Params, limbo::mean::Data<Params> >, limbo::model::gp::MeanLFOpt<Params> > gp;
+    // mutable limbo::model::GP<Params, limbo::kernel::SquaredExpARD<Params>, limbo::mean::Data<Params>, limbo::model::gp::KernelLFOpt<Params> > gp;
+    // X mutable limbo::model::GP<Params, limbo::kernel::SquaredExpARD<Params>, limbo::mean::Data<Params>, limbo::model::gp::NoLFOpt<Params> > gp;
+    // X mutable limbo::model::GP<Params, limbo::kernel::SquaredExpARD<Params>, limbo::mean::FunctionARD<Params, limbo::mean::Data<Params> >, limbo::model::gp::MeanLFOpt<Params> > gp;
 
     // parameters
     int relearn;
-    mutable std::vector<Eigen::VectorXd> m_samples;
-    mutable std::vector<Eigen::VectorXd> m_observations;
-
-
+    // mutable std::vector<Eigen::VectorXd> m_samples;
+    // mutable std::vector<Eigen::VectorXd> m_observations;
 };
 
 StudyNSGA3::StudyNSGA3() : Study()

@@ -37,6 +37,36 @@ class TestBayesOptBooth(Agros2DTestCase):
         self.value_test("py", self.computation.parameters["py"], 3.0)
         self.lower_then_test("OF", self.computation.results["OF"], 2e-5)
 
+class TestLimboBooth(Agros2DTestCase):
+    def setUp(self):  
+        # problem
+        problem = agros2d.problem(clear = True)
+        problem.parameters["px"] = 0
+        problem.parameters["py"] = 0
+        
+        # studies
+        study_limbo = problem.add_study("limbo")
+        study_limbo.add_parameter("px", -10, 10)
+        study_limbo.add_parameter("py", -10, 10)
+        study_limbo.add_functional("OF", "(px+2*py-7)**2+(2*px+py-5)**2", 100)
+        
+        study_limbo.clear_solution = True
+        study_limbo.solve_problem = False
+        
+        study_limbo.settings["init_randomsampling_samples"] = 10
+        study_limbo.settings["stop_maxiterations_iterations"] = 30
+        study_limbo.settings["bayes_opt_boptimizer_noise"] = 1e-10
+        study_limbo.settings["bayes_opt_boptimizer_hp_period"] = 10
+        
+        study_limbo.solve()
+        
+        self.computation = study_limbo.find_extreme("functional", "OF", True)
+        
+    def test_values(self):    
+        self.value_test("px", self.computation.parameters["px"], 1.0)
+        self.value_test("py", self.computation.parameters["py"], 3.0)
+        self.lower_then_test("OF", self.computation.results["OF"], 5e-5)
+
 class TestNLoptBooth(Agros2DTestCase):
     def setUp(self):  
         # problem
@@ -139,6 +169,7 @@ if __name__ == '__main__':
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestLimboBooth))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestBayesOptBooth))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestNLoptBooth))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestNSGA2Sphere))

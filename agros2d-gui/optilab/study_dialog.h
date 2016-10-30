@@ -117,7 +117,7 @@ protected:
     QTabWidget *tabStudy;
 
     void createControls();
-    virtual QLayout *createStudyControls() { return new QHBoxLayout(this); }
+    virtual QLayout *createStudyControls() { return new QHBoxLayout(); }
     QWidget *createParametersAndFunctionals();
     QWidget *createParameters();
     QWidget *createFunctionals();

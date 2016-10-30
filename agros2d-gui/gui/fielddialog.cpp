@@ -299,7 +299,7 @@ QWidget *FieldWidget::createSolverWidget()
     txtPicardAndersonNumberOfLastVectors->setMinimum(1);
     txtPicardAndersonNumberOfLastVectors->setMaximum(5);
 
-    QGridLayout *layoutPicardSolver = new QGridLayout(this);
+    QGridLayout *layoutPicardSolver = new QGridLayout();
     layoutPicardSolver->addWidget(chkPicardAndersonAcceleration, 0, 0, 1, 2);
     layoutPicardSolver->addWidget(new QLabel(tr("Anderson beta:")), 1, 0);
     layoutPicardSolver->addWidget(txtPicardAndersonBeta, 1, 1);
@@ -314,7 +314,7 @@ QWidget *FieldWidget::createSolverWidget()
     tab->addTab(widgetNewtonSolver, tr("Newton's solver"));
     tab->addTab(widgetPicardSolver, tr("Picard's solver"));
 
-    QVBoxLayout *layoutSolver = new QVBoxLayout(this);
+    QVBoxLayout *layoutSolver = new QVBoxLayout();
     layoutSolver->addWidget(grpSolverConvergence);
     layoutSolver->addWidget(grpSolverDamping);
     layoutSolver->addWidget(tab);

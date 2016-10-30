@@ -335,6 +335,7 @@ void initLists()
     studyTypeList.insert(StudyType_NSGA3, "nsga3");
     studyTypeList.insert(StudyType_BayesOpt, "bayesopt");
     studyTypeList.insert(StudyType_NLopt, "nlopt");
+    studyTypeList.insert(StudyType_Limbo, "limbo");
 
     // computation result type
     computationResultTypeList.insert(ComputationResultType_Functional, "functional");
@@ -843,6 +844,8 @@ QString studyTypeString(StudyType type)
         return QObject::tr("NSGA3 (naturally multiobjective)");
     case StudyType_BayesOpt:
         return QObject::tr("BayesOpt (Bayesian optimization)");
+    case StudyType_Limbo:
+        return QObject::tr("Limbo (Bayesian optimization)");
     case StudyType_NLopt:
         return QObject::tr("NLopt (nonlinear optimization)");
     default:

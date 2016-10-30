@@ -114,7 +114,7 @@ void PostprocessorScenePost3DWidget::createControls()
     QGroupBox *viewWidget = new QGroupBox(tr("Settings"));
     viewWidget->setLayout(layout3D);
 
-    QVBoxLayout *layoutAll = new QVBoxLayout(this);
+    QVBoxLayout *layoutAll = new QVBoxLayout();
     layoutAll->addWidget(grpShowPost3D);
     layoutAll->addWidget(viewWidget);
     layoutAll->addWidget(solidWidget, 1);

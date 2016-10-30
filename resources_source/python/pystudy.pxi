@@ -38,6 +38,9 @@ cdef extern from "../../agros2d-python/pythonlab/pystudy.h":
         string getLearningType()
         void setLearningType(string &learningType) except +
 
+    cdef cppclass PyStudyLimbo(PyStudy):
+        PyStudyLimbo(int index)
+
     cdef cppclass PyStudyNLopt(PyStudy):
         PyStudyNLopt(int index)
 
@@ -153,6 +156,32 @@ cdef class __StudyBayesOpt__(__Study__):
         (<PyStudyBayesOpt*> self.thisptr).setSurrName(<string> settings['surr_name'].encode())
         (<PyStudyBayesOpt*> self.thisptr).setScoreType(<string> settings['sc_type'].encode())
         (<PyStudyBayesOpt*> self.thisptr).setLearningType(<string> settings['l_type'].encode())
+
+cdef class __StudyLimbo__(__Study__):
+    def __cinit__(self, index = -1):
+        self.thisptr = new PyStudyLimbo(index)
+
+        self.settings = __Parameters__(self.__get_settings__,
+                                       self.__set_settings__)
+
+    def __get_settings__(self):
+        return {'init_randomsampling_samples' : self.thisptr.getIntParameter(b'LIMBO_init_randomsampling_samples'),
+                'stop_maxiterations_iterations' : self.thisptr.getIntParameter(b'LIMBO_stop_maxiterations_iterations'),
+                'bayes_opt_boptimizer_hp_period' : self.thisptr.getIntParameter(b'LIMBO_bayes_opt_boptimizer_hp_period'),
+                'bayes_opt_boptimizer_noise' : self.thisptr.getDoubleParameter(b'LIMBO_bayes_opt_boptimizer_noise')}
+
+    def __set_settings__(self, settings):
+        positive_value(settings['init_randomsampling_samples'], 'init_randomsampling_samples')
+        self.thisptr.setParameter(string(b'LIMBO_init_randomsampling_samples'), <int> settings['init_randomsampling_samples'])
+
+        positive_value(settings['stop_maxiterations_iterations'], 'stop_maxiterations_iterations')
+        self.thisptr.setParameter(string(b'LIMBO_stop_maxiterations_iterations'), <int> settings['stop_maxiterations_iterations'])
+
+        positive_value(settings['bayes_opt_boptimizer_hp_period'], 'bayes_opt_boptimizer_hp_period')
+        self.thisptr.setParameter(string(b'LIMBO_bayes_opt_boptimizer_hp_period'), <int> settings['bayes_opt_boptimizer_hp_period'])
+
+        positive_value(settings['bayes_opt_boptimizer_noise'], 'bayes_opt_boptimizer_noise')
+        self.thisptr.setParameter(string(b'LIMBO_bayes_opt_boptimizer_noise'), <double> settings['bayes_opt_boptimizer_noise'])
 
 cdef class __StudyNLopt__(__Study__):
     def __cinit__(self, index = -1):

@@ -45,7 +45,7 @@ QLayout *StudySweepDialog::createStudyControls()
     foreach (QString key, study()->initMethodStringKeys())
         cmbInitMethod->addItem(study()->initMethodString(study()->initMethodFromStringKey(key)), key);
 
-    QGridLayout *layoutInitialization = new QGridLayout(this);
+    QGridLayout *layoutInitialization = new QGridLayout();
     layoutInitialization->addWidget(new QLabel(tr("Number of samples:")), 0, 0);
     layoutInitialization->addWidget(txtNumSamples, 0, 1);
     layoutInitialization->addWidget(new QLabel(tr("Initial strategy:")), 1, 0);
@@ -54,7 +54,7 @@ QLayout *StudySweepDialog::createStudyControls()
     QGroupBox *grpInitialization = new QGroupBox(tr("Sweep analysis"), this);
     grpInitialization->setLayout(layoutInitialization);
 
-    QVBoxLayout *layoutMain = new QVBoxLayout(this);
+    QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->addWidget(grpInitialization);
 
     return layoutMain;
@@ -109,7 +109,7 @@ QLayout *StudyNSGA3Dialog::createStudyControls()
 
     chkUseSurrogateFunction = new QCheckBox(tr("Use surrogate function (Gaussian process)"));
 
-    QGridLayout *layoutInitialization = new QGridLayout(this);
+    QGridLayout *layoutInitialization = new QGridLayout();
     layoutInitialization->addWidget(new QLabel(tr("Estimated population size:")), 0, 0);
     layoutInitialization->addWidget(txtPopSize, 0, 1);
     layoutInitialization->addWidget(new QLabel(tr("Maximum number of generations:")), 1, 0);
@@ -118,7 +118,7 @@ QLayout *StudyNSGA3Dialog::createStudyControls()
     QGroupBox *grpInitialization = new QGroupBox(tr("Initialization"), this);
     grpInitialization->setLayout(layoutInitialization);
 
-    QGridLayout *layoutConfig = new QGridLayout(this);
+    QGridLayout *layoutConfig = new QGridLayout();
     layoutConfig->addWidget(new QLabel(tr("Probability of crossover (0.6 - 1.0):")), 0, 0);
     layoutConfig->addWidget(txtPCross, 0, 1);
     // layoutConfig->addWidget(new QLabel(tr("Probability of mutation (0.6 - 1.0):")), 1, 0);
@@ -132,7 +132,7 @@ QLayout *StudyNSGA3Dialog::createStudyControls()
     QGroupBox *grpConfig = new QGroupBox(tr("Config"), this);
     grpConfig->setLayout(layoutConfig);
 
-    QVBoxLayout *layoutMain = new QVBoxLayout(this);
+    QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->addWidget(grpInitialization);
     layoutMain->addWidget(grpConfig);
 
@@ -203,7 +203,7 @@ QLayout *StudyNSGA2Dialog::createStudyControls()
     crowdGroup->addButton(radCrowdParameters);
     crowdGroup->addButton(radCrowdObjective);
 
-    QGridLayout *layoutInitialization = new QGridLayout(this);
+    QGridLayout *layoutInitialization = new QGridLayout();
     layoutInitialization->addWidget(new QLabel(tr("Population size:")), 0, 0);
     layoutInitialization->addWidget(txtPopSize, 0, 1);
     layoutInitialization->addWidget(new QLabel(tr("Maximum number of generations:")), 1, 0);
@@ -212,7 +212,7 @@ QLayout *StudyNSGA2Dialog::createStudyControls()
     QGroupBox *grpInitialization = new QGroupBox(tr("Initialization"), this);
     grpInitialization->setLayout(layoutInitialization);
 
-    QGridLayout *layoutConfig = new QGridLayout(this);
+    QGridLayout *layoutConfig = new QGridLayout();
     layoutConfig->addWidget(new QLabel(tr("Probability of crossover (0.6 - 1.0):")), 0, 0);
     layoutConfig->addWidget(txtPCross, 0, 1);
     layoutConfig->addWidget(new QLabel(tr("Probability of mutation (0.6 - 1.0):")), 1, 0);
@@ -228,7 +228,7 @@ QLayout *StudyNSGA2Dialog::createStudyControls()
     QGroupBox *grpConfig = new QGroupBox(tr("Config"), this);
     grpConfig->setLayout(layoutConfig);
 
-    QVBoxLayout *layoutMain = new QVBoxLayout(this);
+    QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->addWidget(grpInitialization);
     layoutMain->addWidget(grpConfig);
 
@@ -287,7 +287,7 @@ QLayout *StudyNLoptDialog::createStudyControls()
     foreach (QString key, study()->algorithmStringKeys())
         cmbAlgorithm->addItem(study()->algorithmString(study()->algorithmFromStringKey(key)), key);
 
-    QGridLayout *layoutInitialization = new QGridLayout(this);
+    QGridLayout *layoutInitialization = new QGridLayout();
     layoutInitialization->addWidget(new QLabel(tr("Algorithm:")), 0, 0);
     layoutInitialization->addWidget(cmbAlgorithm, 0, 1);
     layoutInitialization->addWidget(new QLabel(tr("Number of iterations:")), 1, 0);
@@ -296,7 +296,7 @@ QLayout *StudyNLoptDialog::createStudyControls()
     QGroupBox *grpInitialization = new QGroupBox(tr("Initialization"), this);
     grpInitialization->setLayout(layoutInitialization);
 
-    QGridLayout *layoutConfig = new QGridLayout(this);
+    QGridLayout *layoutConfig = new QGridLayout();
     layoutConfig->addWidget(new QLabel(tr("Relative tolerance")), 0, 0);
     layoutConfig->addWidget(new QLabel(QString("|&Delta;<i>x</i><sub>i</sub>|/|<i>x</i><sub>i</sub>|:")), 0, 1);
     layoutConfig->addWidget(txtXRelTol, 0, 2);
@@ -311,7 +311,7 @@ QLayout *StudyNLoptDialog::createStudyControls()
     QGroupBox *grpConfig = new QGroupBox(tr("Config"), this);
     grpConfig->setLayout(layoutConfig);
 
-    QVBoxLayout *layoutMain = new QVBoxLayout(this);
+    QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->addWidget(grpInitialization);
     layoutMain->addWidget(grpConfig);
 
@@ -367,7 +367,7 @@ QLayout *StudyBayesOptDialog::createStudyControls()
     foreach (QString key, study()->initMethodStringKeys())
         cmbInitMethod->addItem(study()->initMethodString(study()->initMethodFromStringKey(key)), key);
 
-    QGridLayout *layoutInitialization = new QGridLayout(this);
+    QGridLayout *layoutInitialization = new QGridLayout();
     layoutInitialization->addWidget(new QLabel(tr("Number of initial samples:")), 0, 0);
     layoutInitialization->addWidget(txtNInitSamples, 0, 1);
     layoutInitialization->addWidget(new QLabel(tr("Initial strategy:")), 1, 0);
@@ -387,7 +387,7 @@ QLayout *StudyBayesOptDialog::createStudyControls()
     txtSurrogateNoise = new LineEditDouble(0.0);
     txtSurrogateNoise->setBottom(0.0);
 
-    QGridLayout *layoutSurrogate = new QGridLayout(this);
+    QGridLayout *layoutSurrogate = new QGridLayout();
     layoutSurrogate->addWidget(new QLabel(tr("Function:")), 0, 0);
     layoutSurrogate->addWidget(cmbSurrogateNameMethod, 0, 1);
     layoutSurrogate->addWidget(new QLabel(tr("Noise:")), 1, 0);
@@ -404,7 +404,7 @@ QLayout *StudyBayesOptDialog::createStudyControls()
     foreach (QString key, study()->scoreTypeStringKeys())
         cmbHPScoreFunction->addItem(study()->scoreTypeString(study()->scoreTypeFromStringKey(key)), key);
 
-    QGridLayout *layoutKernelParameters = new QGridLayout(this);
+    QGridLayout *layoutKernelParameters = new QGridLayout();
     layoutKernelParameters->addWidget(new QLabel(tr("Learning method:")), 0, 0);
     layoutKernelParameters->addWidget(cmbHPLearningMethod, 0, 1);
     layoutKernelParameters->addWidget(new QLabel(tr("Score function:")), 1, 0);
@@ -413,7 +413,7 @@ QLayout *StudyBayesOptDialog::createStudyControls()
     QGroupBox *grpKernelParameters = new QGroupBox(tr("Kernel parameters"), this);
     grpKernelParameters->setLayout(layoutKernelParameters);
 
-    QVBoxLayout *layoutMain = new QVBoxLayout(this);
+    QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->addWidget(grpInitialization);
     layoutMain->addWidget(grpSurrogate);
     layoutMain->addWidget(grpKernelParameters);
@@ -447,4 +447,84 @@ void StudyBayesOptDialog::save()
     study()->setValue(Study::BayesOpt_surr_noise, txtSurrogateNoise->value());
     study()->setValue(Study::BayesOpt_l_type, cmbHPLearningMethod->itemData(cmbHPLearningMethod->currentIndex()).toString());
     study()->setValue(Study::BayesOpt_sc_type, cmbHPScoreFunction->itemData(cmbHPScoreFunction->currentIndex()).toString());
+}
+
+// *****************************************************************************************************
+
+StudyLimboDialog::StudyLimboDialog(Study *study, QWidget *parent)
+    : StudyDialog(study, parent)
+{
+
+}
+
+QLayout *StudyLimboDialog::createStudyControls()
+{
+    txtNInitSamples = new QSpinBox(this);
+    txtNInitSamples->setMinimum(1);
+    txtNInitSamples->setMaximum(1000);
+
+    txtNIterations = new QSpinBox(this);
+    txtNIterations->setMinimum(0);
+    txtNIterations->setMaximum(10000);
+
+    txtHPIterRelearn = new QSpinBox(this);
+    txtHPIterRelearn->setMinimum(1);
+    txtHPIterRelearn->setMaximum(10000);
+
+    txtHPNoise = new LineEditDouble(0.0);
+    txtHPNoise->setBottom(0.0);
+
+    // cmbAlgorithm = new QComboBox(this);
+    // cmbAlgorithm->addItem(tr("Global - DIviding RECTangles (locally biased)"), LIMBO::GN_DIRECT_L);
+
+    QGridLayout *layoutInitialization = new QGridLayout();
+    layoutInitialization->addWidget(new QLabel(tr("Number of initial samples:")), 0, 0);
+    layoutInitialization->addWidget(txtNInitSamples, 0, 1);
+    layoutInitialization->addWidget(new QLabel(tr("Number of iterations:")), 1, 0);
+    layoutInitialization->addWidget(txtNIterations, 1, 1);
+
+    QGroupBox *grpInitialization = new QGroupBox(tr("Initialization"), this);
+    grpInitialization->setLayout(layoutInitialization);
+
+    QGridLayout *layoutOptimizer = new QGridLayout();
+    layoutOptimizer->addWidget(new QLabel(tr("Number of iterations between re-learning:")), 0, 0);
+    layoutOptimizer->addWidget(txtHPIterRelearn, 0, 1);
+    layoutOptimizer->addWidget(new QLabel(tr("Noise:")), 1, 0);
+    layoutOptimizer->addWidget(txtHPNoise, 1, 1);
+
+    QGroupBox *grpOptimizer = new QGroupBox(tr("Bayesian optimizer"), this);
+    grpOptimizer->setLayout(layoutOptimizer);
+
+    QVBoxLayout *layoutMain = new QVBoxLayout();
+    layoutMain->addWidget(grpInitialization);
+    layoutMain->addWidget(grpOptimizer);
+
+    return layoutMain;
+}
+
+void StudyLimboDialog::load()
+{
+    StudyDialog::load();
+
+    txtNInitSamples->setValue(study()->value(Study::LIMBO_init_randomsampling_samples).toInt());
+    txtNIterations->setValue(study()->value(Study::LIMBO_stop_maxiterations_iterations).toInt());
+    txtHPIterRelearn->setValue(study()->value(Study::LIMBO_bayes_opt_boptimizer_hp_period).toInt());
+    txtHPNoise->setValue(study()->value(Study::LIMBO_bayes_opt_boptimizer_noise).toDouble());
+
+    /*
+    cmbAlgorithm->setCurrentIndex(cmbAlgorithm->findData(study()->value(Study::LIMBO_algorithm).toInt()));
+    */
+}
+
+void StudyLimboDialog::save()
+{
+    StudyDialog::save();
+
+    study()->setValue(Study::LIMBO_init_randomsampling_samples, txtNInitSamples->value());
+    study()->setValue(Study::LIMBO_stop_maxiterations_iterations, txtNIterations->value());
+    study()->setValue(Study::LIMBO_bayes_opt_boptimizer_hp_period, txtHPIterRelearn->value());
+    study()->setValue(Study::LIMBO_bayes_opt_boptimizer_noise, txtHPNoise->value());
+    /*
+    study()->setValue(Study::LIMBO_algorithm, (LIMBO::algorithm) cmbAlgorithm->itemData(cmbAlgorithm->currentIndex()).toInt());
+    */
 }

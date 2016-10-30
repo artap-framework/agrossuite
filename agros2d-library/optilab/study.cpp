@@ -29,6 +29,7 @@
 #include "study_nsga3.h"
 #include "study_nlopt.h"
 #include "study_bayesopt.h"
+#include "study_limbo.h"
 
 // consts
 const QString NAME = "name";
@@ -102,6 +103,8 @@ Study *Study::factory(StudyType type)
         study = new StudyBayesOpt();
     else if (type == StudyType_NLopt)
         study = new StudyNLopt();
+    else if (type == StudyType_Limbo)
+        study = new StudyLimbo();
     else
         assert(0);
 
