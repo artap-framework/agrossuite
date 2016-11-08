@@ -43,7 +43,7 @@ double logVal(double val)
 }
 
 LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplication::activeWindow()),
-    m_study(study), m_progress(nullptr), m_computationSetsCount(1), m_step(1)
+    m_study(study), progressBar(nullptr), m_computationSetsCount(1), m_step(1), m_totalValue(std::numeric_limits<double>::max())
 {
     setModal(true);
     
@@ -54,8 +54,8 @@ LogOptimizationDialog::LogOptimizationDialog(Study *study) : QDialog(QApplicatio
     
     connect(btnAbort, SIGNAL(clicked()), m_study, SLOT(doAbortSolve()));
     connect(btnAbort, SIGNAL(clicked()), this, SLOT(aborted()));
-    connect(m_study, SIGNAL(updateChart(QList<double>, double, SolutionUncertainty)), this, SLOT(updateChart(QList<double>, double, SolutionUncertainty)));
-    connect(m_study, SIGNAL(updateParameters(QList<Parameter>, const Computation *)), this, SLOT(updateParameters(QList<Parameter>, const Computation *)));
+    connect(m_study, SIGNAL(updateParametersAndFunctionals(QSharedPointer<Computation>, SolutionUncertainty)),
+            this, SLOT(updateParametersAndFunctionals(QSharedPointer<Computation>, SolutionUncertainty)));
 
     connect(m_study, SIGNAL(solved()), this, SLOT(solved()));
     
@@ -137,92 +137,130 @@ void LogOptimizationDialog::createControls()
     
     QFont fontChart(font());
     fontChart.setPointSize(fontSize);
-    
-    // objective functions
-    QFormLayout *layoutFunctionals = new QFormLayout();
-    foreach (Functional functional, m_study->functionals())
-    {
-        QLabel *label = new QLabel(this);
-        label->setText("0.0");
-        m_functionals.append(label);
 
-        layoutFunctionals->addRow(QString("%1:").arg(functional.name()), label);
-    }
-    QGroupBox *groupFunctionals = new QGroupBox(tr("Functionals"), this);
-    groupFunctionals->setLayout(layoutFunctionals);
+    trvProgress = new QTreeWidget(this);
+    trvProgress->setIndentation(trvProgress->indentation() - 4);
+    trvProgress->setHeaderHidden(true);
+    trvProgress->setColumnCount(2);
+    trvProgress->setColumnWidth(0, 150);
+    trvProgress->setColumnWidth(1, 130);
 
-    QFormLayout *layoutParameters = new QFormLayout();
+    // current and best parameters and functionals
+    QTreeWidgetItem *currentNode = new QTreeWidgetItem(trvProgress);
+    currentNode->setText(0, tr("Current"));
+    currentNode->setFont(0, fontTitle);
+    currentNode->setExpanded(true);
+
+    currentStepNode = new QTreeWidgetItem(currentNode);
+    currentStepNode->setIcon(0, iconAlphabet('S', AlphabetColor_Brown));
+    currentStepNode->setText(0, tr("Step"));
+
+    currentParametersNode = new QTreeWidgetItem(currentNode);
+    currentParametersNode->setIcon(0, iconAlphabet('P', AlphabetColor_Green));
+    currentParametersNode->setText(0, tr("Parameters"));
+    currentParametersNode->setExpanded(true);
+
+    currentFunctionalsNode = new QTreeWidgetItem(currentNode);
+    currentFunctionalsNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
+    currentFunctionalsNode->setText(0, tr("Functionals"));
+    currentFunctionalsNode->setExpanded(true);
+
+    QTreeWidgetItem *optimalNode = new QTreeWidgetItem(trvProgress);
+    optimalNode->setText(0, tr("Optimal"));
+    optimalNode->setFont(0, fontTitle);
+    optimalNode->setExpanded(true);
+
+    optimalStepNode = new QTreeWidgetItem(optimalNode);
+    optimalStepNode->setIcon(0, iconAlphabet('S', AlphabetColor_Brown));
+    optimalStepNode->setText(0, tr("Step"));
+
+    optimalParametersNode = new QTreeWidgetItem(optimalNode);
+    optimalParametersNode->setIcon(0, iconAlphabet('P', AlphabetColor_Green));
+    optimalParametersNode->setText(0, tr("Parameters"));
+    optimalParametersNode->setExpanded(true);
+
+    optimalFunctionalsNode = new QTreeWidgetItem(optimalNode);
+    optimalFunctionalsNode->setIcon(0, iconAlphabet('F', AlphabetColor_Blue));
+    optimalFunctionalsNode->setText(0, tr("Functionals"));
+    optimalFunctionalsNode->setExpanded(true);
+
     foreach (Parameter parameter, m_study->parameters())
     {
-        QLabel *label = new QLabel(this);
-        label->setText("0.0");
-        m_parameters.append(label);
+        QTreeWidgetItem *itemCurrent = new QTreeWidgetItem(currentParametersNode);
+        itemCurrent->setText(0, parameter.name());
 
-        layoutParameters->addRow(QString("%1:").arg(parameter.name()), label);
+        QTreeWidgetItem *itemBest = new QTreeWidgetItem(optimalParametersNode);
+        itemBest->setText(0, parameter.name());
     }
-    QGroupBox *groupParameters = new QGroupBox(tr("Parameters"), this);
-    groupParameters->setLayout(layoutParameters);
+
+    foreach (Functional functional, m_study->functionals())
+    {
+        QTreeWidgetItem *itemCurrent = new QTreeWidgetItem(currentFunctionalsNode);
+        itemCurrent->setText(0, functional.name());
+
+        QTreeWidgetItem *itemBest = new QTreeWidgetItem(optimalFunctionalsNode);
+        itemBest->setText(0, functional.name());
+    }
 
     // total objective function
-    m_totalChart = new QCustomPlot(this);
+    totalChart = new QCustomPlot(this);
 
-    QCPPlotTitle *title = new QCPPlotTitle(m_totalChart, tr("Total objective function"));
+    QCPPlotTitle *title = new QCPPlotTitle(totalChart, tr("Total objective function"));
     title->setFont(fontTitle);
-    m_totalChart->plotLayout()->insertRow(0);
-    m_totalChart->plotLayout()->addElement(0, 0, title);
+    totalChart->plotLayout()->insertRow(0);
+    totalChart->plotLayout()->addElement(0, 0, title);
 
-    m_totalChart->xAxis->setTickLabelFont(fontChart);
-    m_totalChart->xAxis->setLabelFont(fontChart);
+    totalChart->xAxis->setTickLabelFont(fontChart);
+    totalChart->xAxis->setLabelFont(fontChart);
     // chart->xAxis->setTickStep(1.0);
-    m_totalChart->xAxis->setAutoTickStep(true);
-    m_totalChart->xAxis->setLabel(tr("number of steps"));
+    totalChart->xAxis->setAutoTickStep(true);
+    totalChart->xAxis->setLabel(tr("number of steps"));
     // m_totalChart->yAxis->setScaleType(QCPAxis::stLogarithmic);
-    m_totalChart->yAxis->setTickLabelFont(fontChart);
-    m_totalChart->yAxis->setLabelFont(fontChart);
-    m_totalChart->yAxis->setLabel(tr("Objective"));
-    m_totalChart->yAxis2->setLabel(tr("Uncertainty"));
-    m_totalChart->yAxis2->setVisible(true);
-    m_totalChart->legend->setVisible(true);
+    totalChart->yAxis->setTickLabelFont(fontChart);
+    totalChart->yAxis->setLabelFont(fontChart);
+    totalChart->yAxis->setLabel(tr("Objective"));
+    totalChart->yAxis2->setLabel(tr("Uncertainty"));
+    totalChart->yAxis2->setVisible(true);
+    totalChart->legend->setVisible(true);
 
-    QCPGraph *totalObjectiveGraph = m_totalChart->addGraph(m_totalChart->xAxis, m_totalChart->yAxis);
+    QCPGraph *totalObjectiveGraph = totalChart->addGraph(totalChart->xAxis, totalChart->yAxis);
     totalObjectiveGraph->setLineStyle(QCPGraph::lsLine);
     totalObjectiveGraph->setPen(pen);
     totalObjectiveGraph->setBrush(QBrush(QColor(0, 0, 255, 20)));
     totalObjectiveGraph->setName(tr("Value"));
     totalObjectiveGraph->addToLegend();
 
-    QCPGraph *totalObjectiveGraphLower = m_totalChart->addGraph();
+    QCPGraph *totalObjectiveGraphLower = totalChart->addGraph();
     totalObjectiveGraphLower->removeFromLegend();
     totalObjectiveGraphLower->setPen(QPen(QBrush(QColor(180, 180, 180)), 1, Qt::DotLine));
 
-    QCPGraph *totalObjectiveGraphUpper = m_totalChart->addGraph();
+    QCPGraph *totalObjectiveGraphUpper = totalChart->addGraph();
     totalObjectiveGraphUpper->setPen(QPen(QBrush(QColor(180, 180, 180)), 1, Qt::DotLine));
     totalObjectiveGraphUpper->setBrush(QBrush(QColor(255, 50, 30, 20)));
     totalObjectiveGraphUpper->setChannelFillGraph(totalObjectiveGraphLower);
     totalObjectiveGraphUpper->setName(tr("Bounds (std. dev.)"));
     totalObjectiveGraphUpper->addToLegend();
 
-    QCPGraph *totalObjectiveUncertainty = m_totalChart->addGraph(m_totalChart->xAxis, m_totalChart->yAxis);
+    QCPGraph *totalObjectiveUncertainty = totalChart->addGraph(totalChart->xAxis, totalChart->yAxis);
     totalObjectiveUncertainty->setLineStyle(QCPGraph::lsLine);
     totalObjectiveUncertainty->setPen(QPen(QBrush(QColor(30, 10, 20)), 2, Qt::DashLine));
     totalObjectiveUncertainty->setName(tr("Uncertainty"));
     totalObjectiveUncertainty->addToLegend();
 
-    m_progress = new QProgressBar(this);
-    m_progress->setMaximum(m_study->estimatedNumberOfSteps());
+    progressBar = new QProgressBar(this);
+    progressBar->setMaximum(m_study->estimatedNumberOfSteps());
     
     QVBoxLayout *layoutParametersAndFunctionals = new QVBoxLayout();
-    layoutParametersAndFunctionals->addWidget(groupParameters);
-    layoutParametersAndFunctionals->addWidget(groupFunctionals);
-    layoutParametersAndFunctionals->addStretch();
+    layoutParametersAndFunctionals->addWidget(trvProgress);
+    // layoutParametersAndFunctionals->addStretch();
 
     QHBoxLayout *layoutParametersAndFunctionalsAndChart = new QHBoxLayout();
     layoutParametersAndFunctionalsAndChart->addLayout(layoutParametersAndFunctionals);
-    layoutParametersAndFunctionalsAndChart->addWidget(m_totalChart, 10);
+    layoutParametersAndFunctionalsAndChart->addWidget(totalChart, 10);
 
     QVBoxLayout *layoutObjective = new QVBoxLayout();
     layoutObjective->addLayout(layoutParametersAndFunctionalsAndChart, 1);
-    layoutObjective->addWidget(m_progress, 1);
+    layoutObjective->addWidget(progressBar, 1);
     
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addLayout(layoutObjective, 2);
@@ -233,55 +271,81 @@ void LogOptimizationDialog::createControls()
     setLayout(layout);
 }
 
-void LogOptimizationDialog::updateChart(QList<double> values, double totalValue, SolutionUncertainty solutionUncertainty)
+void LogOptimizationDialog::updateParametersAndFunctionals(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty)
 {
     int computationSetsCount = m_study->computationSets(m_study->value(Study::View_Filter).toString()).count();
+    double totalValue = m_study->evaluateSingleGoal(computation);
 
-    // local objective functions
-    for (int i = 0; i < values.count(); i++)
+    // update total value
+    bool updateTotalValue = (totalValue < m_totalValue);
+    if (updateTotalValue)
     {
-        QLabel *labelValue = m_functionals[i];
-        labelValue->setText(QString::number(values[i]));
+        m_totalValue = totalValue;
+        // set optimal step
+        optimalStepNode->setText(1, QString("%1").arg(m_step));
+    }
+
+    // parameters
+    for (int i = 0; i < m_study->parameters().count(); i++)
+    {
+        currentParametersNode->child(i)->setText(1, QString::number(computation->config()->parameters()->number(m_study->parameters()[i].name())));
+
+        if (updateTotalValue)
+            optimalParametersNode->child(i)->setText(1, QString::number(computation->config()->parameters()->number(m_study->parameters()[i].name())));
+    }
+
+    // functionals
+    for (int i = 0; i < m_study->functionals().count(); i++)
+    {
+        double value = computation->results()->value(m_study->functionals()[i].name());
+
+        currentFunctionalsNode->child(i)->setText(1, QString::number(value));
+
+        if (updateTotalValue)
+            optimalFunctionalsNode->child(i)->setText(1, QString::number(value));
     }
 
     // total objective function
-    m_totalChart->graph(0)->addData(m_step, (totalValue));
+    totalChart->graph(0)->addData(m_step, totalValue);
+
+    // uncertainties
     if (fabs(solutionUncertainty.lowerBound) > 0.0 && fabs(solutionUncertainty.upperBound) > 0.0)
     {
-        m_totalChart->legend->setVisible(true);
-        m_totalChart->graph(1)->setVisible(true);
-        m_totalChart->graph(2)->setVisible(true);
-        m_totalChart->graph(3)->setVisible(true);
+        totalChart->legend->setVisible(true);
+        totalChart->graph(1)->setVisible(true);
+        totalChart->graph(2)->setVisible(true);
+        totalChart->graph(3)->setVisible(true);
 
-        m_totalChart->graph(1)->addData(m_step, (solutionUncertainty.lowerBound));
-        m_totalChart->graph(2)->addData(m_step, (solutionUncertainty.upperBound));
-        m_totalChart->graph(3)->addData(m_step, (solutionUncertainty.uncertainty));
+        totalChart->graph(1)->addData(m_step, (solutionUncertainty.lowerBound));
+        totalChart->graph(2)->addData(m_step, (solutionUncertainty.upperBound));
+        totalChart->graph(3)->addData(m_step, (solutionUncertainty.uncertainty));
     }
     else
     {
-        m_totalChart->legend->setVisible(false);
-        m_totalChart->graph(1)->setVisible(false);
-        m_totalChart->graph(2)->setVisible(false);
-        m_totalChart->graph(3)->setVisible(false);
+        totalChart->legend->setVisible(false);
+        totalChart->graph(1)->setVisible(false);
+        totalChart->graph(2)->setVisible(false);
+        totalChart->graph(3)->setVisible(false);
     }
 
     // dashed line (populations)
     if (m_computationSetsCount < computationSetsCount)
     {
-        QCPItemStraightLine *line = new QCPItemStraightLine(m_totalChart);
-        m_totalChart->addItem(line);
+        QCPItemStraightLine *line = new QCPItemStraightLine(totalChart);
+        totalChart->addItem(line);
 
         line->point1->setCoords(QPointF(m_step - 0.5, 0));
         line->point2->setCoords(QPointF(m_step - 0.5, 1));
         line->setPen(QPen(QBrush(QColor(140, 40, 40)), 2, Qt::DashLine));
     }
 
-    m_totalChart->rescaleAxes();
-    m_totalChart->replot(QCustomPlot::rpImmediate);
+    totalChart->rescaleAxes();
+    totalChart->replot(QCustomPlot::rpImmediate);
     
     m_computationSetsCount = m_study->computationSets(m_study->value(Study::View_Filter).toString()).count();
     
-    m_progress->setValue(m_step);
+    currentStepNode->setText(1, QString("%1 / %2").arg(m_step).arg(progressBar->maximum()));
+    progressBar->setValue(m_step);
     QApplication::processEvents();
 
     m_step++;
@@ -299,7 +363,7 @@ void LogOptimizationDialog::solved()
     const int width = 650;
     const int height = 400;
 
-    m_totalChart->savePng(fn, width, height);
+    totalChart->savePng(fn, width, height);
     Agros2D::log()->appendImage(fn);
 
     tryClose();
@@ -309,36 +373,6 @@ void LogOptimizationDialog::aborted()
 {
     btnAbort->setEnabled(false);
     btnClose->setEnabled(true);
-}
-
-void LogOptimizationDialog::updateParameters(QList<Parameter> parameters, const Computation *computation)
-{
-    for (int i = 0; i < parameters.count(); i++)
-    {
-        QLabel *labelValue = m_parameters[i];
-        labelValue->setText(QString::number(computation->config()->parameters()->number(parameters[i].name())));
-        // qDebug() << parameters[i].name() << computation->config()->parameters()->number(parameters[i].name());
-    }
-    update();
-    repaint();
-
-    QString params = "";
-    foreach (Parameter parameter, parameters)
-    {
-        params += QString("%1 = %2, ").arg(parameter.name()).arg(computation->config()->parameters()->number(parameter.name()));
-    }
-    if (params.size() > 0)
-        params = params.left(params.size() - 2);
-    
-    QString res = "";
-    foreach (QString name, computation->results()->items().keys())
-    {
-        res += QString("%1 = %2, ").arg(name).arg(computation->results()->value(name));
-    }
-    if (res.size() > 0)
-        res = res.left(res.size() - 2);
-    
-    Agros2D::log()->printMessage(tr("Study"), tr("Parameters: %1, results: %2").arg(params).arg(res));
 }
 
 // ******************************************************************************************************************

@@ -39,10 +39,6 @@
 using namespace limbo;
 
 struct Params {
-    // we use the default parameters for acqui_ucb
-    struct acqui_ucb : public defaults::acqui_ucb {
-    };
-
     struct mean_constant : public defaults::mean_constant {
     };
 
@@ -54,12 +50,16 @@ struct Params {
     };
     struct kernel_maternfivehalves : public defaults::kernel_maternfivehalves {
     };
+    struct kernel_maternthreehalves : public defaults::kernel_maternthreehalves {
+    };
 
     // acquisition function
+    struct acqui_ucb : public defaults::acqui_ucb {
+    };
     struct acqui_gpucb : public defaults::acqui_gpucb {
     };
     struct acqui_ei {
-        BO_PARAM(double, jitter, 0.0);
+        BO_PARAM(double, jitter, 0.0)
     };
 
     // optimizer
@@ -100,34 +100,27 @@ BO_DECLARE_DYN_PARAM(int, Params::stop_maxiterations, iterations);
 BO_DECLARE_DYN_PARAM(double, Params::bayes_opt_boptimizer, noise);
 BO_DECLARE_DYN_PARAM(int, Params::bayes_opt_boptimizer, hp_period);
 
-// covariance function
-using kernel_t = kernel::SquaredExpARD<Params>;
-// using kernel_t = kernel::MaternFiveHalves<Params>;
-// using kernel_t = kernel::MaternThreeHalves<Params>;
-// using kernel_t = kernel::Exp<Params>;
+/*
+Eigen::VectorXd getOptMu(const Eigen::VectorXd& x)
+{
+    if (m_opt_gpucb)
+        return m_opt_gpucb->model().mu(x);
+    else if (m_opt_ei)
+        return m_opt_ei->model().mu(x);
+    else
+        assert(0);
+}
 
-// mean
-// using mean_t = mean::Data<Params>;
-// using mean_t = mean::Constant<Params>;
-using mean_t = mean::FunctionARD<Params, mean::Constant<Params> >;
-
-// Gaussian Process - hyperparameter optimizer
-// using gp_opt_t = model::gp::KernelLFOpt<Params>;
-// using gp_opt_t = model::gp::MeanLFOpt<Params>;
-using gp_opt_t = model::gp::KernelMeanLFOpt<Params>;
-// using gp_opt_t = model::gp::NoLFOpt<Params>;
-
-// Gaussian Process
-using GP_t = model::GP<Params, kernel_t, mean_t, gp_opt_t>;
-
-// acquisition function
-using acqui_t = acqui::GP_UCB<Params, GP_t>;
-// using acqui_t = acqui::EI<Params, GP_t>;
-// using acqui_t = acqui::UCB<Params, GP_t>;
-
-// optimizer
-using acqui_opt_t = opt::NLOptNoGrad<Params>;
-
+double getOptSigma(const Eigen::VectorXd& x)
+{
+    if (m_opt_gpucb)
+        return m_opt_gpucb->model().sigma(x);
+    else if (m_opt_ei)
+        return m_opt_ei->model().sigma(x);
+    else
+        assert(0);
+}
+*/
 struct StateEval
 {
     // number of input dimension (x.size())
@@ -135,13 +128,18 @@ struct StateEval
     // number of dimenions of the result (res.size())
     static size_t dim_out;
 
-    StateEval(StudyLimbo *study,
-              bayes_opt::BOptimizer<Params, modelfun<GP_t>, acquifun<acqui_t>, acquiopt<acqui_opt_t> > *opt)
-        : m_study(study), m_opt(opt)
+    StateEval(StudyLimbo *study)
+        : m_study(study)
     {
         // static variables
+        // input
         StateEval::dim_in = m_study->parameters().count();
-        StateEval::dim_out = 1;
+        // output
+        StateEval::dim_out = 0;
+        foreach(Functional functional, m_study->functionals())
+            if (functional.weight() > 0.0)
+                StateEval::dim_out++;
+        if (StateEval::dim_out == 0) StateEval::dim_out = 1;
     }
 
     Eigen::VectorXd operator()(const Eigen::VectorXd& x) const
@@ -153,8 +151,14 @@ struct StateEval
 
         if (m_study->isAborted())
         {
-            // opt.set_force_stop(1);
-            // return numeric_limits<double>::max();
+            // max iterations
+            Params::stop_maxiterations::set_iterations(Params::stop_maxiterations::iterations());
+
+            Eigen::VectorXd res(StateEval::dim_out);
+            for (int i = 0; i < StateEval::dim_out; i++)
+                res[i] = -numeric_limits<double>::max();
+
+            return res;
         }
 
         // qDebug() << "opt.get_population()" << opt.get_population();
@@ -193,26 +197,16 @@ struct StateEval
         SolutionUncertainty solutionUncertainty;
         if (m_study->computationSets().count() > 1)
         {
-            Eigen::VectorXd mu = m_opt->model().mu(x);
-            double sigma = m_opt->model().sigma(x);
+            Eigen::VectorXd mu = Eigen::VectorXd();
+            double sigma = 0.0;
 
-            solutionUncertainty.uncertainty = -mu(0); // -evaluateCriteria(query);
-            solutionUncertainty.lowerBound = -mu(0) - 2.0*sqrt(sigma);
-            solutionUncertainty.upperBound = -mu(0) + 2.0*sqrt(sigma);
+            // solutionUncertainty.uncertainty = mu(0);
+            // solutionUncertainty.lowerBound = mu(0) - 2.0*sqrt(sigma);
+            // solutionUncertainty.upperBound = mu(0) + 2.0*sqrt(sigma);
         }
 
         // evaluate step
         m_study->evaluateStep(computation, solutionUncertainty);
-        /*
-        QList<double> values = m_study->evaluateMultiGoal(computation);
-
-        if (m_study->value(Study::General_ClearSolution).toBool())
-            computation->clearSolution();
-
-        Eigen::VectorXd res(m_study->parameters().count());
-        for (int i = 0; i < values.count(); i++)
-            res[i] = values[i];
-        */
 
         double value = m_study->evaluateSingleGoal(computation);
 
@@ -228,19 +222,30 @@ struct StateEval
                 totalPenalty += parameter.penalty(x[i]);
         }
 
-        // Eigen::VectorXd res(1);
-        // res(0) = -value;
-        // return res;
-
         m_study->addComputation(computation);
 
-        // we return a 1-dimensional vector
-        return tools::make_vector(-(value + totalPenalty));
+        // output
+        Eigen::VectorXd res(StateEval::dim_out);
+        if (StateEval::dim_out == 1)
+        {
+            // single objective
+            double value = m_study->evaluateSingleGoal(computation);
+            res(0) = -value;
+        }
+        else
+        {
+            // multi objective
+            QList<double> values = m_study->evaluateMultiGoal(computation);
+
+            for (int i = 0; i < values.count(); i++)
+                res[i] = values[i];
+        }
+
+        return res;
     }
 
 private:
     StudyLimbo *m_study;
-    bayes_opt::BOptimizer<Params, modelfun<GP_t>, acquifun<acqui_t>, acquiopt<acqui_opt_t> > *m_opt;
 };
 
 size_t StateEval::dim_in = -1;
@@ -257,6 +262,20 @@ struct Average
 
 StudyLimbo::StudyLimbo() : Study()
 {
+    // mean
+    meanList.append("data");
+    meanList.append("constant");
+    meanList.append("function_ard");
+
+    // gp
+    gpList.append("kernel_lf");
+    gpList.append("mean_lf");
+    gpList.append("kernel_mean_lf");
+    gpList.append("no_opt");
+
+    // acqui
+    acquiList.append("gpucb");
+    acquiList.append("ei");
 }
 
 int StudyLimbo::estimatedNumberOfSteps() const
@@ -264,9 +283,69 @@ int StudyLimbo::estimatedNumberOfSteps() const
     return value(LIMBO_stop_maxiterations_iterations).toInt();
 }
 
+// covariance function
+// using kernel_xt = kernel::SquaredExpARD<Params>;
+// using kernel_xt = kernel::MaternFiveHalves<Params>;
+// using kernel_xt = kernel::MaternThreeHalves<Params>;
+// using kernel_xt = kernel::Exp<Params>;
+
+// mean
+// using mean_data_xt = mean::Data<Params>;
+// using mean_constant_xt = mean::Constant<Params>;
+// using mean_function_ard_xt = mean::FunctionARD<Params, mean::Constant<Params> >;
+
+// Gaussian Process - hyperparameter optimizer
+// using gp_kernel_lf_xt = model::gp::KernelLFOpt<Params>;
+// using gp_mean_lf_opt_xt = model::gp::MeanLFOpt<Params>;
+// using gp_kernel_mean_lf_opt_xt = model::gp::KernelMeanLFOpt<Params>;
+// using gp_no_opt_xt = model::gp::NoLFOpt<Params>;
+
+// acquisition function
+// using acqui_gpucb_xt = acqui::GP_UCB<Params, GP_t>;
+// using acqui_ei_xt = acqui::EI<Params, GP_t>;
+// using acqui_ucb_xt = acqui::UCB<Params, GP_t>;
+
+// optimizer
+// using acqui_opt_t = opt::NLOptNoGrad<Params>;
+
+// using GP_t = model::GP<Params, kernel::SquaredExpARD<Params>, mean::mean_t<Params>, model::gp::gp_opt_t<Params> >;
+#define LIMBO_OPTIMIZE(mean_t, gp_opt_t, acqui_t) \
+{ \
+    using GP_t = model::GP<Params, kernel::SquaredExpARD<Params>, mean::mean_t<Params>, model::gp::gp_opt_t<Params> >; \
+    bayes_opt::BOptimizer<Params, modelfun<GP_t>, acquifun<acqui::acqui_t<Params, GP_t> >, acquiopt<opt::NLOptNoGrad<Params> > > opt; \
+    opt.optimize(StateEval(this), Average()); \
+    } \
+
+#define LIMBO_OPTIMIZE_MEAN_ARD(gp_opt_t, acqui_t) \
+{ \
+    using GP_t = model::GP<Params, kernel::SquaredExpARD<Params>, mean::FunctionARD<Params, mean::Constant<Params> >, model::gp::gp_opt_t<Params> >; \
+    bayes_opt::BOptimizer<Params, modelfun<GP_t>, acquifun<acqui::acqui_t<Params, GP_t> >, acquiopt<opt::NLOptNoGrad<Params> > > opt; \
+    opt.optimize(StateEval(this), Average()); \
+    } \
+
 void StudyLimbo::solve()
 {
     m_computationSets.clear();
+
+    QString mean = meanToStringKey(value(LIMBO_mean).toString());
+    QString gp = gpToStringKey(value(LIMBO_gp).toString());
+    QString acqui = acquiToStringKey(value(LIMBO_acqui).toString());
+
+    // unsupported combinations
+    if (((mean == "data") && (gp == "mean_lf") && (acqui == "gpucb"))
+            || ((mean == "data") && (gp == "mean_lf") && (acqui == "ei"))
+            || ((mean == "data") && (gp == "kernel_mean_lf") && (acqui == "gpucb"))
+            || ((mean == "data") && (gp == "kernel_mean_lf") && (acqui == "ei"))
+            || ((mean == "constant") && (gp == "mean_lf") && (acqui == "gpucb"))
+            || ((mean == "constant") && (gp == "mean_lf") && (acqui == "ei"))
+            || ((mean == "constant") && (gp == "kernel_mean_lf") && (acqui == "gpucb"))
+            || ((mean == "constant") && (gp == "kernel_mean_lf") && (acqui == "ei")))
+    {
+        Agros2D::log()->errorMsg(tr("OptiLab"), tr("Unsupported combination: mean = %1, gp = %2, acqui = %3 ").arg(mean).arg(gp).arg(acqui));
+        emit solved();
+        return;
+    }
+
     m_isSolving = true;
 
     addComputationSet(tr("Initialization"));
@@ -277,18 +356,91 @@ void StudyLimbo::solve()
     Params::stop_maxiterations::set_iterations(value(LIMBO_stop_maxiterations_iterations).toInt());
     // Bayes Optimizer
     Params::bayes_opt_boptimizer::set_noise(value(LIMBO_bayes_opt_boptimizer_noise).toDouble());
-    Params::bayes_opt_boptimizer::set_hp_period(value(LIMBO_bayes_opt_boptimizer_hp_period).toInt());
-    // Params::bayes_opt_boptimizer::set_hp_period(-1);
+    if (gp == "no_opt")
+    {
+        // no optimizer
+        Params::bayes_opt_boptimizer::set_hp_period(-1);
+    }
+    else
+    {
+        // lf optimizer
+        Params::bayes_opt_boptimizer::set_hp_period(value(LIMBO_bayes_opt_boptimizer_hp_period).toInt());
+    }
 
     // Bayes Optimizer
-    bayes_opt::BOptimizer<Params, modelfun<GP_t>, acquifun<acqui_t>, acquiopt<acqui_opt_t> > opt;
-
-    // optimize
-    opt.optimize(StateEval(this, &opt), FirstElem());
-    // std::cout << "best obs based on Average aggregator: " << opt.best_observation(Average()) << " res  " << opt.best_sample(Average()).transpose() << std::endl;
+    if ((mean == "data") && (gp == "kernel_lf") && (acqui == "gpucb")) LIMBO_OPTIMIZE(Data, KernelLFOpt, GP_UCB)
+            else if ((mean == "data") && (gp == "kernel_lf") && (acqui == "ei")) LIMBO_OPTIMIZE(Data, KernelLFOpt, EI)
+            // else if ((mean == "data") && (gp == "mean_lf") && (acqui == "gpucb")) LIMBO_OPTIMIZE(Data, MeanLFOpt, GP_UCB)
+            // else if ((mean == "data") && (gp == "mean_lf") && (acqui == "ei")) LIMBO_OPTIMIZE(Data, MeanLFOpt, EI)
+            // else if ((mean == "data") && (gp == "kernel_mean_lf") && (acqui == "gpucb")) LIMBO_OPTIMIZE(Data, KernelMeanLFOpt, GP_UCB)
+            // else if ((mean == "data") && (gp == "kernel_mean_lf") && (acqui == "ei")) LIMBO_OPTIMIZE(Data, KernelMeanLFOpt, EI)
+            else if ((mean == "data") && (gp == "no_opt") && (acqui == "gpucb")) LIMBO_OPTIMIZE(Data, NoLFOpt, GP_UCB)
+            else if ((mean == "data") && (gp == "no_opt") && (acqui == "ei")) LIMBO_OPTIMIZE(Data, NoLFOpt, EI)
+            else if ((mean == "constant") && (gp == "kernel_lf") && (acqui == "gpucb")) LIMBO_OPTIMIZE(Constant, KernelLFOpt, GP_UCB)
+            else if ((mean == "constant") && (gp == "kernel_lf") && (acqui == "ei")) LIMBO_OPTIMIZE(Constant, KernelLFOpt, EI)
+            // else if ((mean == "constant") && (gp == "mean_lf") && (acqui == "gpucb")) LIMBO_OPTIMIZE(Constant, MeanLFOpt, GP_UCB)
+            // else if ((mean == "constant") && (gp == "mean_lf") && (acqui == "ei")) LIMBO_OPTIMIZE(Constant, MeanLFOpt, EI)
+            // else if ((mean == "constant") && (gp == "kernel_mean_lf") && (acqui == "gpucb")) LIMBO_OPTIMIZE(Constant, KernelMeanLFOpt, GP_UCB)
+            // else if ((mean == "constant") && (gp == "kernel_mean_lf") && (acqui == "ei")) LIMBO_OPTIMIZE(Constant, KernelMeanLFOpt, EI)
+            else if ((mean == "constant") && (gp == "no_opt") && (acqui == "gpucb")) LIMBO_OPTIMIZE(Constant, NoLFOpt, GP_UCB)
+            else if ((mean == "constant") && (gp == "no_opt") && (acqui == "ei")) LIMBO_OPTIMIZE(Constant, NoLFOpt, EI)
+            else if ((mean == "function_ard") && (gp == "kernel_lf") && (acqui == "gpucb")) LIMBO_OPTIMIZE_MEAN_ARD(KernelLFOpt, GP_UCB)
+            else if ((mean == "function_ard") && (gp == "kernel_lf") && (acqui == "ei")) LIMBO_OPTIMIZE_MEAN_ARD(KernelLFOpt, EI)
+            else if ((mean == "function_ard") && (gp == "mean_lf") && (acqui == "gpucb")) LIMBO_OPTIMIZE_MEAN_ARD(MeanLFOpt, GP_UCB)
+            else if ((mean == "function_ard") && (gp == "mean_lf") && (acqui == "ei")) LIMBO_OPTIMIZE_MEAN_ARD(MeanLFOpt, EI)
+            else if ((mean == "function_ard") && (gp == "kernel_mean_lf") && (acqui == "gpucb")) LIMBO_OPTIMIZE_MEAN_ARD(KernelMeanLFOpt, GP_UCB)
+            else if ((mean == "function_ard") && (gp == "kernel_mean_lf") && (acqui == "ei")) LIMBO_OPTIMIZE_MEAN_ARD(KernelMeanLFOpt, EI)
+            else if ((mean == "function_ard") && (gp == "no_opt") && (acqui == "gpucb")) LIMBO_OPTIMIZE_MEAN_ARD(NoLFOpt, GP_UCB)
+            else if ((mean == "function_ard") && (gp == "no_opt") && (acqui == "ei")) LIMBO_OPTIMIZE_MEAN_ARD(NoLFOpt, EI)
+            else assert(0);
 
     m_isSolving = false;
     emit solved();
+}
+
+QString StudyLimbo::meanString(const QString &meanType) const
+{
+    if (meanType == "data")
+        return QObject::tr("Data");
+    else if (meanType == "constant")
+        return QObject::tr("Constant");
+    else if (meanType == "function_ard")
+        return QObject::tr("FunctionARD");
+    else
+    {
+        std::cerr << "mean '" + meanType.toStdString() + "' is not implemented. meanType(const QString &meanType)" << endl;
+        throw;
+    }
+}
+
+QString StudyLimbo::gpString(const QString &gpType) const
+{
+    if (gpType == "kernel_lf")
+        return QObject::tr("Kernel LF");
+    else if (gpType == "mean_lf")
+        return QObject::tr("Mean LF");
+    else if (gpType == "kernel_mean_lf")
+        return QObject::tr("Kernel and mean LF");
+    else if (gpType == "no_opt")
+        return QObject::tr("No Optimization");
+    else
+    {
+        std::cerr << "mean '" + gpType.toStdString() + "' is not implemented. gpString(const QString &gpType)" << endl;
+        throw;
+    }
+}
+
+QString StudyLimbo::acquiString(const QString &acquiType) const
+{
+    if (acquiType == "gpucb")
+        return QObject::tr("GP-UCB (Upper Confidence Bound)");
+    else if (acquiType == "ei")
+        return QObject::tr("Classic EI (Expected Improvement)");
+    else
+    {
+        std::cerr << "mean '" + acquiType.toStdString() + "' is not implemented. acquiString(const QString &acquiType)" << endl;
+        throw;
+    }
 }
 
 void StudyLimbo::setDefaultValues()
@@ -299,15 +451,9 @@ void StudyLimbo::setDefaultValues()
     m_settingDefault[LIMBO_stop_maxiterations_iterations] = 20;
     m_settingDefault[LIMBO_bayes_opt_boptimizer_noise] = 1e-10;
     m_settingDefault[LIMBO_bayes_opt_boptimizer_hp_period] = 10;
-
-    /*
-    m_settingDefault[LIMBO_xtol_rel] = 1e-6;
-    m_settingDefault[LIMBO_xtol_abs] = 1e-12;
-    m_settingDefault[LIMBO_ftol_rel] = 1e-6;
-    m_settingDefault[LIMBO_ftol_abs] = 1e-12;
-
-    m_settingDefault[LIMBO_algorithm] = LIMBO::LN_BOBYQA;
-    */
+    m_settingDefault[LIMBO_mean] = meanToStringKey("data");
+    m_settingDefault[LIMBO_gp] = gpToStringKey("kernel_lf");
+    m_settingDefault[LIMBO_acqui] = acquiToStringKey("gpucb");
 }
 
 void StudyLimbo::setStringKeys()
@@ -318,13 +464,7 @@ void StudyLimbo::setStringKeys()
     m_settingKey[LIMBO_stop_maxiterations_iterations] = "LIMBO_stop_maxiterations_iterations";
     m_settingKey[LIMBO_bayes_opt_boptimizer_noise] = "LIMBO_bayes_opt_boptimizer_noise";
     m_settingKey[LIMBO_bayes_opt_boptimizer_hp_period] = "LIMBO_bayes_opt_boptimizer_hp_period";
-
-    /*
-    m_settingKey[LIMBO_xtol_rel] = "LIMBO_xtol_rel";
-    m_settingKey[LIMBO_xtol_abs] = "LIMBO_xtol_abs";
-    m_settingKey[LIMBO_ftol_rel] = "LIMBO_ftol_rel";
-    m_settingKey[LIMBO_ftol_abs] = "LIMBO_ftol_abs";
-
-    m_settingKey[LIMBO_algorithm] = "LIMBO_algorithm";
-    */
+    m_settingKey[LIMBO_mean] = "LIMBO_mean";
+    m_settingKey[LIMBO_gp] = "LIMBO_gp";
+    m_settingKey[LIMBO_acqui] = "LIMBO_acqui";
 }

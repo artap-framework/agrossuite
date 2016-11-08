@@ -150,6 +150,9 @@ public:
         LIMBO_stop_maxiterations_iterations,
         LIMBO_bayes_opt_boptimizer_noise,
         LIMBO_bayes_opt_boptimizer_hp_period,
+        LIMBO_mean,
+        LIMBO_gp,
+        LIMBO_acqui,
 
         View_Filter,
         View_ChartHorizontal,
@@ -220,8 +223,7 @@ public slots:
     void doAbortSolve();
 
 signals:
-    void updateChart(QList<double> values, double totalValue, SolutionUncertainty solutionUncertainty);
-    void updateParameters(QList<Parameter> parameters, const Computation *computation);
+    void updateParametersAndFunctionals(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty);
 
     void solved();
 

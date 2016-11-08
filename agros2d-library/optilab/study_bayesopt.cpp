@@ -109,6 +109,9 @@ double BayesOptProblem::evaluateSample(const vectord &x)
 
 bool BayesOptProblem::checkReachability(const vectord &x)
 {
+    return true;
+    // TODO: fix
+
     if (!m_study->value(Study::General_SolveProblem).toBool())
         return true;
 
@@ -126,11 +129,13 @@ bool BayesOptProblem::checkReachability(const vectord &x)
     try
     {
         // invalidate scene (parameter update)
+        computation->clearSolution();
         computation->scene()->cacheGeometryConstraints();
+        // computation->scene()->loopsInfo()->processPolygonTriangles(true);
         computation->scene()->invalidate();
 
         computation->scene()->checkGeometryResult();
-        // computation->scene()->checkGeometryAssignement();
+        computation->scene()->checkGeometryAssignement();
 
         return true;
     }

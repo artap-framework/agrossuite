@@ -33,7 +33,7 @@
 #include "optilab/study_bayesopt.h"
 #include "optilab/study_limbo.h"
 
-class StudySweepDialog : public StudyDialog
+class AGROS_LIBRARY_API StudySweepDialog : public StudyDialog
 {
 public:
     StudySweepDialog(Study *study, QWidget *parent = 0);
@@ -51,7 +51,7 @@ private:
     QComboBox *cmbInitMethod;
 };
 
-class StudyNSGA3Dialog : public StudyDialog
+class AGROS_LIBRARY_API StudyNSGA3Dialog : public StudyDialog
 {
 public:
     StudyNSGA3Dialog(Study *study, QWidget *parent = 0);
@@ -74,7 +74,7 @@ private:
     QCheckBox *chkUseSurrogateFunction;
 };
 
-class StudyNSGA2Dialog : public StudyDialog
+class AGROS_LIBRARY_API StudyNSGA2Dialog : public StudyDialog
 {
 public:
     StudyNSGA2Dialog(Study *study, QWidget *parent = 0);
@@ -98,7 +98,7 @@ private:
     QRadioButton *radCrowdObjective;
 };
 
-class StudyNLoptDialog : public StudyDialog
+class AGROS_LIBRARY_API StudyNLoptDialog : public StudyDialog
 {
 public:
     StudyNLoptDialog(Study *study, QWidget *parent = 0);
@@ -120,7 +120,7 @@ private:
     QComboBox *cmbAlgorithm;
 };
 
-class StudyBayesOptDialog : public StudyDialog
+class AGROS_LIBRARY_API StudyBayesOptDialog : public StudyDialog
 {
 public:
     StudyBayesOptDialog(Study *study, QWidget *parent = 0);
@@ -144,8 +144,10 @@ private:
     QComboBox *cmbHPScoreFunction;
 };
 
-class StudyLimboDialog : public StudyDialog
+class AGROS_LIBRARY_API StudyLimboDialog : public StudyDialog
 {
+    Q_OBJECT
+
 public:
     StudyLimboDialog(Study *study, QWidget *parent = 0);
 
@@ -162,6 +164,14 @@ private:
     QSpinBox *txtNIterations;
     QSpinBox *txtHPIterRelearn;
     LineEditDouble *txtHPNoise;
+
+    QComboBox *cmbMean;
+    QComboBox *cmbGP;
+    QComboBox *cmbAcqui;
+    QLabel *lblError;
+
+private slots:
+    void currentIndexChanged(int index);
 };
 
 #endif // STUDY_METHODDIALOG_H

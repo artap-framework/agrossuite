@@ -474,8 +474,25 @@ QLayout *StudyLimboDialog::createStudyControls()
     txtHPNoise = new LineEditDouble(0.0);
     txtHPNoise->setBottom(0.0);
 
-    // cmbAlgorithm = new QComboBox(this);
-    // cmbAlgorithm->addItem(tr("Global - DIviding RECTangles (locally biased)"), LIMBO::GN_DIRECT_L);
+    cmbMean = new QComboBox(this);
+    foreach (QString key, study()->meanStringKeys())
+        cmbMean->addItem(study()->meanString(study()->meanFromStringKey(key)), key);
+    connect(cmbMean, SIGNAL(currentIndexChanged(int)), this, SLOT(currentIndexChanged(int)));
+
+    cmbGP = new QComboBox(this);
+    foreach (QString key, study()->gpStringKeys())
+        cmbGP->addItem(study()->gpString(study()->gpFromStringKey(key)), key);
+    connect(cmbGP, SIGNAL(currentIndexChanged(int)), this, SLOT(currentIndexChanged(int)));
+
+    cmbAcqui = new QComboBox(this);
+    foreach (QString key, study()->acquiStringKeys())
+        cmbAcqui->addItem(study()->acquiString(study()->acquiFromStringKey(key)), key);
+    connect(cmbAcqui, SIGNAL(currentIndexChanged(int)), this, SLOT(currentIndexChanged(int)));
+
+    lblError = new QLabel("");
+    QPalette palette = lblError->palette();
+    palette.setColor(QPalette::WindowText, QColor(Qt::red));
+    lblError->setPalette(palette);
 
     QGridLayout *layoutInitialization = new QGridLayout();
     layoutInitialization->addWidget(new QLabel(tr("Number of initial samples:")), 0, 0);
@@ -491,6 +508,14 @@ QLayout *StudyLimboDialog::createStudyControls()
     layoutOptimizer->addWidget(txtHPIterRelearn, 0, 1);
     layoutOptimizer->addWidget(new QLabel(tr("Noise:")), 1, 0);
     layoutOptimizer->addWidget(txtHPNoise, 1, 1);
+    layoutOptimizer->addWidget(new QLabel(tr("Mean value:")), 2, 0);
+    layoutOptimizer->addWidget(cmbMean, 2, 1);
+    layoutOptimizer->addWidget(new QLabel(tr("Acquisition function:")), 3, 0);
+    layoutOptimizer->addWidget(cmbAcqui, 3, 1);
+    layoutOptimizer->addWidget(new QLabel(tr("Likelihood optimizer:")), 4, 0);
+    layoutOptimizer->addWidget(cmbGP, 4, 1);
+    layoutOptimizer->addWidget(new QLabel(tr("Kernel function:")), 5, 0);
+    layoutOptimizer->addWidget(new QLabel(tr("Squared exponential covariance function")), 5, 1);
 
     QGroupBox *grpOptimizer = new QGroupBox(tr("Bayesian optimizer"), this);
     grpOptimizer->setLayout(layoutOptimizer);
@@ -498,8 +523,35 @@ QLayout *StudyLimboDialog::createStudyControls()
     QVBoxLayout *layoutMain = new QVBoxLayout();
     layoutMain->addWidget(grpInitialization);
     layoutMain->addWidget(grpOptimizer);
+    layoutMain->addStretch();
+    layoutMain->addWidget(lblError);
 
     return layoutMain;
+}
+
+void StudyLimboDialog::currentIndexChanged(int index)
+{
+    lblError->clear();
+
+    QString mean = cmbMean->itemData(cmbMean->currentIndex()).toString();
+    QString gp = cmbGP->itemData(cmbGP->currentIndex()).toString();
+    QString acqui = cmbAcqui->itemData(cmbAcqui->currentIndex()).toString();
+
+    // unsupported combinations
+    if (((mean == "data") && (gp == "mean_lf") && (acqui == "gpucb"))
+            || ((mean == "data") && (gp == "mean_lf") && (acqui == "ei"))
+            || ((mean == "data") && (gp == "kernel_mean_lf") && (acqui == "gpucb"))
+            || ((mean == "data") && (gp == "kernel_mean_lf") && (acqui == "ei"))
+            || ((mean == "constant") && (gp == "mean_lf") && (acqui == "gpucb"))
+            || ((mean == "constant") && (gp == "mean_lf") && (acqui == "ei"))
+            || ((mean == "constant") && (gp == "kernel_mean_lf") && (acqui == "gpucb"))
+            || ((mean == "constant") && (gp == "kernel_mean_lf") && (acqui == "ei")))
+    {
+        lblError->setText(tr("Unsupported combination:<br/>   mean = %1,<br/>   gp = %2,<br/>   acqui = %3")
+                          .arg(cmbMean->currentText())
+                          .arg(cmbGP->currentText())
+                          .arg(cmbAcqui->currentText()));
+    }
 }
 
 void StudyLimboDialog::load()
@@ -510,10 +562,9 @@ void StudyLimboDialog::load()
     txtNIterations->setValue(study()->value(Study::LIMBO_stop_maxiterations_iterations).toInt());
     txtHPIterRelearn->setValue(study()->value(Study::LIMBO_bayes_opt_boptimizer_hp_period).toInt());
     txtHPNoise->setValue(study()->value(Study::LIMBO_bayes_opt_boptimizer_noise).toDouble());
-
-    /*
-    cmbAlgorithm->setCurrentIndex(cmbAlgorithm->findData(study()->value(Study::LIMBO_algorithm).toInt()));
-    */
+    cmbMean->setCurrentIndex(cmbMean->findData(study()->value(Study::LIMBO_mean).toString()));
+    cmbAcqui->setCurrentIndex(cmbAcqui->findData(study()->value(Study::LIMBO_acqui).toString()));
+    cmbGP->setCurrentIndex(cmbGP->findData(study()->value(Study::LIMBO_gp).toString()));
 }
 
 void StudyLimboDialog::save()
@@ -524,7 +575,7 @@ void StudyLimboDialog::save()
     study()->setValue(Study::LIMBO_stop_maxiterations_iterations, txtNIterations->value());
     study()->setValue(Study::LIMBO_bayes_opt_boptimizer_hp_period, txtHPIterRelearn->value());
     study()->setValue(Study::LIMBO_bayes_opt_boptimizer_noise, txtHPNoise->value());
-    /*
-    study()->setValue(Study::LIMBO_algorithm, (LIMBO::algorithm) cmbAlgorithm->itemData(cmbAlgorithm->currentIndex()).toInt());
-    */
+    study()->setValue(Study::LIMBO_mean, cmbMean->itemData(cmbMean->currentIndex()).toString());
+    study()->setValue(Study::LIMBO_acqui, cmbAcqui->itemData(cmbAcqui->currentIndex()).toString());
+    study()->setValue(Study::LIMBO_gp, cmbGP->itemData(cmbGP->currentIndex()).toString());
 }

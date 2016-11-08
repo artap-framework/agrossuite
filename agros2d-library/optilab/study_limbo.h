@@ -34,7 +34,26 @@ public:
 
     virtual int estimatedNumberOfSteps() const;
 
+    QString meanString(const QString &meanType) const;
+    inline QStringList meanStringKeys() const { return meanList; }
+    inline QString meanToStringKey(const QString &mean) const { return mean; }
+    inline QString meanFromStringKey(const QString &mean) const { return mean; }
+
+    QString gpString(const QString &gpType) const;
+    inline QStringList gpStringKeys() const { return gpList; }
+    inline QString gpToStringKey(const QString &gp) const { return gp; }
+    inline QString gpFromStringKey(const QString &gp) const { return gp; }
+
+    QString acquiString(const QString &acquiType) const;
+    inline QStringList acquiStringKeys() const { return acquiList; }
+    inline QString acquiToStringKey(const QString &acqui) const { return acqui; }
+    inline QString acquiFromStringKey(const QString &acqui) const { return acqui; }
+
 protected:
+    QStringList meanList;
+    QStringList gpList;
+    QStringList acquiList;
+
     virtual void setDefaultValues();
     virtual void setStringKeys();
 

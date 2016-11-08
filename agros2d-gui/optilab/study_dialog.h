@@ -58,21 +58,25 @@ private:
     QPushButton *btnClose;
     QPushButton *btnAbort;
 
-    QCustomPlot *m_totalChart;
-    // QList<QCustomPlot *> m_charts;
-    QList<QLabel *> m_functionals;
-    QList<QLabel *> m_parameters;
-    QProgressBar *m_progress;
+    QCustomPlot *totalChart;
+    QTreeWidget *trvProgress;
+    QTreeWidgetItem *currentStepNode;
+    QTreeWidgetItem *currentParametersNode;
+    QTreeWidgetItem *currentFunctionalsNode;
+    QTreeWidgetItem *optimalStepNode;
+    QTreeWidgetItem *optimalParametersNode;
+    QTreeWidgetItem *optimalFunctionalsNode;
+    QProgressBar *progressBar;
     int m_computationSetsCount;
 
     // steps
     int m_step;
+    double m_totalValue;
 
     void createControls();
 
 private slots:
-    void updateChart(QList<double> values, double totalValue, SolutionUncertainty solutionUncertainty);
-    void updateParameters(QList<Parameter> parameters, const Computation *computation);
+    void updateParametersAndFunctionals(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty);
 
     void solved();
     void aborted();

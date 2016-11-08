@@ -267,20 +267,10 @@ void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncert
 
     // evaluate functionals
     evaluateFunctionals(computation);
-
     computation->writeProblemToJson();
 
-    updateParameters(m_parameters, computation.data());
-
-    // functionals values
-    QList<double> values;
-    for (int i = 0; i < m_functionals.count(); i++)
-    {
-        double value = computation->results()->value(m_functionals[i].name());
-        values.append(value);
-    }
-    double totalValue = evaluateSingleGoal(computation);
-    updateChart(values, totalValue, solutionUncertainty);
+    // update GUI
+    updateParametersAndFunctionals(computation, solutionUncertainty);
 }
 
 double Study::evaluateSingleGoal(QSharedPointer<Computation> computation)
