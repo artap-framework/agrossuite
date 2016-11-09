@@ -174,6 +174,9 @@ public:
                     if (m_study->value(Study::General_ClearSolution).toBool())
                         computation->clearSolution();
 
+                    // add computation
+                    m_study->addComputation(computation);
+
                     // penalty
                     double totalPenalty = 0.0;
                     for (int i = 0; i < m_study->parameters().count(); i++)
@@ -187,9 +190,6 @@ public:
                     countComputation++;
                     for (int i = 0; i < values.count(); i++)
                         f[i] = values[i] + totalPenalty;
-
-                    // add computation
-                    m_study->addComputation(computation);
 
                     /*
                     if (m_study->value(Study::NSGA3_use_surrogate).toBool())

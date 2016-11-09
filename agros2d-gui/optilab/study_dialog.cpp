@@ -144,6 +144,7 @@ void LogOptimizationDialog::createControls()
     trvProgress->setColumnCount(2);
     trvProgress->setColumnWidth(0, 150);
     trvProgress->setColumnWidth(1, 130);
+    trvProgress->setMinimumWidth(300);
 
     // current and best parameters and functionals
     QTreeWidgetItem *currentNode = new QTreeWidgetItem(trvProgress);
@@ -250,12 +251,8 @@ void LogOptimizationDialog::createControls()
     progressBar = new QProgressBar(this);
     progressBar->setMaximum(m_study->estimatedNumberOfSteps());
     
-    QVBoxLayout *layoutParametersAndFunctionals = new QVBoxLayout();
-    layoutParametersAndFunctionals->addWidget(trvProgress);
-    // layoutParametersAndFunctionals->addStretch();
-
     QHBoxLayout *layoutParametersAndFunctionalsAndChart = new QHBoxLayout();
-    layoutParametersAndFunctionalsAndChart->addLayout(layoutParametersAndFunctionals);
+    layoutParametersAndFunctionalsAndChart->addWidget(trvProgress, 1);
     layoutParametersAndFunctionalsAndChart->addWidget(totalChart, 10);
 
     QVBoxLayout *layoutObjective = new QVBoxLayout();
@@ -264,8 +261,6 @@ void LogOptimizationDialog::createControls()
     
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addLayout(layoutObjective, 2);
-    // layout->addWidget(m_logWidget, 1);
-    // layout->addStretch();
     layout->addLayout(layoutStatus);
     
     setLayout(layout);

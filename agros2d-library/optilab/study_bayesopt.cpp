@@ -85,6 +85,9 @@ double BayesOptProblem::evaluateSample(const vectord &x)
         if (m_study->value(Study::General_ClearSolution).toBool())
             computation->clearSolution();
 
+        // add computation
+        m_study->addComputation(computation);
+
         // penalty
         double totalPenalty = 0.0;
         for (int i = 0; i < m_study->parameters().count(); i++)
@@ -93,9 +96,6 @@ double BayesOptProblem::evaluateSample(const vectord &x)
             if (parameter.penaltyEnabled())
                 totalPenalty += parameter.penalty(x[i]);
         }
-
-        // add computation
-        m_study->addComputation(computation);
 
         return value + totalPenalty;
     }

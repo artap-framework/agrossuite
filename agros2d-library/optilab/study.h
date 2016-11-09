@@ -186,8 +186,8 @@ public:
     QList<Functional> &functionals() { return m_functionals; }
     bool evaluateFunctionals(QSharedPointer<Computation> computation);
     void evaluateStep(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty = SolutionUncertainty());
-    double evaluateSingleGoal(QSharedPointer<Computation> computation);
-    QList<double> evaluateMultiGoal(QSharedPointer<Computation> computation);
+    double evaluateSingleGoal(QSharedPointer<Computation> computation) const;
+    QList<double> evaluateMultiGoal(QSharedPointer<Computation> computation) const;
 
     QList<QSharedPointer<Computation> > &computations(int index = -1);
     QList<ComputationSet> computationSets(const QString &filter = "") const;

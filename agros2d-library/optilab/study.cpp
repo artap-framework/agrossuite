@@ -248,7 +248,6 @@ void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncert
 {
     if (m_setting.value(Study::General_SolveProblem).toBool())
     {
-
         try
         {
             // solve problem
@@ -273,7 +272,7 @@ void Study::evaluateStep(QSharedPointer<Computation> computation, SolutionUncert
     updateParametersAndFunctionals(computation, solutionUncertainty);
 }
 
-double Study::evaluateSingleGoal(QSharedPointer<Computation> computation)
+double Study::evaluateSingleGoal(QSharedPointer<Computation> computation) const
 {
     double totalValue = 0.0;
     foreach (double value, evaluateMultiGoal(computation))
@@ -282,7 +281,7 @@ double Study::evaluateSingleGoal(QSharedPointer<Computation> computation)
     return totalValue;
 }
 
-QList<double> Study::evaluateMultiGoal(QSharedPointer<Computation> computation)
+QList<double> Study::evaluateMultiGoal(QSharedPointer<Computation> computation) const
 {
     QList<double> values;
 

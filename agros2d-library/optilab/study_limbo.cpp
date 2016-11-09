@@ -213,6 +213,9 @@ struct StateEval
         if (m_study->value(Study::General_ClearSolution).toBool())
             computation->clearSolution();
 
+        // add computation
+        m_study->addComputation(computation);
+        
         // penalty
         double totalPenalty = 0.0;
         for (int i = 0; i < m_study->parameters().count(); i++)
@@ -221,9 +224,7 @@ struct StateEval
             if (parameter.penaltyEnabled())
                 totalPenalty += parameter.penalty(x[i]);
         }
-
-        m_study->addComputation(computation);
-
+        
         // output
         Eigen::VectorXd res(StateEval::dim_out);
         if (StateEval::dim_out == 1)

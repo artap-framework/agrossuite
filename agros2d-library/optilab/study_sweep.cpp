@@ -71,6 +71,12 @@ double SweepProblem::evaluateSample(const vectord& x)
         m_study->evaluateStep(computation);
         double value = m_study->evaluateSingleGoal(computation);
 
+        if (m_study->value(Study::General_ClearSolution).toBool())
+            computation->clearSolution();
+
+        // add computation
+        m_study->addComputation(computation);
+
         // penalty
         double totalPenalty = 0.0;
         for (int i = 0; i < m_study->parameters().count(); i++)
@@ -79,12 +85,6 @@ double SweepProblem::evaluateSample(const vectord& x)
             if (parameter.penaltyEnabled())
                 totalPenalty += parameter.penalty(x[i]);
         }
-
-        if (m_study->value(Study::General_ClearSolution).toBool())
-            computation->clearSolution();
-
-        // add computation
-        m_study->addComputation(computation);
 
         return value + totalPenalty;
     }
