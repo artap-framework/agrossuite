@@ -66,7 +66,7 @@ cdef class __Study__:
     def __dealloc__(self):
         del self.thisptr
 
-    def add_parameter(self, name, lower_bound, upper_bound, bool penalty_enabled = False, double scale = 0.0, double mu = 0.0, double sigma = 0.0):
+    def add_parameter(self, name, lower_bound, upper_bound, penalty_enabled = False, scale = 0.0, mu = 0.0, sigma = 0.0):
         self.thisptr.addParameter(name.encode(), lower_bound, upper_bound, penalty_enabled, scale, mu, sigma)
 
     def add_functional(self, name, expression, weight = 100):
