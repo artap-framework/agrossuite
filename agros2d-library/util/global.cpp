@@ -87,7 +87,7 @@ void Agros2D::clear()
     delete m_singleton.data()->m_problem;
     m_singleton.data()->m_computations.clear();
 
-    delete m_singleton.data()->m_configComputer;   
+    delete m_singleton.data()->m_configComputer;
     delete m_singleton.data()->m_log;
 
     // remove temp and cache plugins
@@ -117,7 +117,7 @@ void Agros2D::clearComputations()
 
 void Agros2D::createSingleton()
 {
-    m_singleton = QSharedPointer<Agros2D>(new Agros2D());    
+    m_singleton = QSharedPointer<Agros2D>(new Agros2D());
 }
 
 Agros2D *Agros2D::singleton()
@@ -717,11 +717,23 @@ QString createPythonFromModel()
 
             // parameters
             foreach (Parameter parameter, study->parameters())
-                str += QString("study_%1.add_parameter(\"%2\", %3, %4)\n").
-                        arg(studyTypeToStringKey(study->type())).
-                        arg(parameter.name()).
-                        arg(parameter.lowerBound()).
-                        arg(parameter.upperBound());
+            {
+                if (parameter.penaltyEnabled())
+                    str += QString("study_%1.add_parameter(\"%2\", %3, %4, True, %5, %6, %7)\n").
+                            arg(studyTypeToStringKey(study->type())).
+                            arg(parameter.name()).
+                            arg(parameter.lowerBound()).
+                            arg(parameter.upperBound()).
+                            arg(parameter.scale()).
+                            arg(parameter.mu()).
+                            arg(parameter.sigma());
+                else
+                    str += QString("study_%1.add_parameter(\"%2\", %3, %4)\n").
+                            arg(studyTypeToStringKey(study->type())).
+                            arg(parameter.name()).
+                            arg(parameter.lowerBound()).
+                            arg(parameter.upperBound());
+            }
 
             // functionals
             foreach (Functional functional, study->functionals())

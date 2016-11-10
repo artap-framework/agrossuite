@@ -13,7 +13,7 @@ cdef extern from "../../agros2d-python/pythonlab/pystudy.h":
 
         string type()
 
-        void addParameter(string name, double lowerBound, double upperBound) except +
+        void addParameter(string name, double lowerBound, double upperBound, bool penaltyEnabled, double scale, double mu, double sigma) except +
         void addFunctional(string name, string expression, int weight) except +
 
         void solve() except +
@@ -66,8 +66,8 @@ cdef class __Study__:
     def __dealloc__(self):
         del self.thisptr
 
-    def add_parameter(self, name, lowerBound, upperBound):
-        self.thisptr.addParameter(name.encode(), lowerBound, upperBound)
+    def add_parameter(self, name, lower_bound, upper_bound, bool penalty_enabled = False, double scale = 0.0, double mu = 0.0, double sigma = 0.0):
+        self.thisptr.addParameter(name.encode(), lower_bound, upper_bound, penalty_enabled, scale, mu, sigma)
 
     def add_functional(self, name, expression, weight = 100):
         self.thisptr.addFunctional(name.encode(), expression.encode(), weight)
