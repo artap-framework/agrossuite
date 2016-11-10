@@ -25,7 +25,7 @@
 
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) : QMainWindow(parent)
 {
-    setWindowIcon(icon("agros2d"));
+    setWindowIcon(icon("pythonlab"));
 
     m_startupScriptFilename = "";
 

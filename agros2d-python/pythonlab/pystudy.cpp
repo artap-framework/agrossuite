@@ -199,6 +199,48 @@ PyStudyLimbo::PyStudyLimbo(int index) : PyStudy()
     }
 }
 
+void PyStudyLimbo::setMeanType(const std::string &meanType)
+{
+    if (study()->meanStringKeys().contains(QString::fromStdString(meanType)))
+        m_study->setValue(Study::LIMBO_mean, QString::fromStdString(meanType));
+    else
+    {
+        QStringList list;
+        foreach (QString key, study()->meanStringKeys())
+            list.append(study()->meanToStringKey(key));
+
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
+    }
+}
+
+void PyStudyLimbo::setGPType(const std::string &gpType)
+{
+    if (study()->gpStringKeys().contains(QString::fromStdString(gpType)))
+        m_study->setValue(Study::LIMBO_gp, QString::fromStdString(gpType));
+    else
+    {
+        QStringList list;
+        foreach (QString key, study()->gpStringKeys())
+            list.append(study()->gpToStringKey(key));
+
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
+    }
+}
+
+void PyStudyLimbo::setAcquiType(const std::string &acquiType)
+{
+    if (study()->acquiStringKeys().contains(QString::fromStdString(acquiType)))
+        m_study->setValue(Study::LIMBO_acqui, QString::fromStdString(acquiType));
+    else
+    {
+        QStringList list;
+        foreach (QString key, study()->acquiStringKeys())
+            list.append(study()->acquiToStringKey(key));
+
+        throw invalid_argument(QObject::tr("Invalid argument. Valid keys: %1").arg(stringListToString(list)).toStdString());
+    }
+}
+
 // NLopt **************************************************************
 
 PyStudyNLopt::PyStudyNLopt(int index) : PyStudy()

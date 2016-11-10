@@ -41,6 +41,15 @@ cdef extern from "../../agros2d-python/pythonlab/pystudy.h":
     cdef cppclass PyStudyLimbo(PyStudy):
         PyStudyLimbo(int index)
 
+        string getMeanType()
+        void setMeanType(string &meanType) except +
+
+        string getGPType()
+        void setGPType(string &gpType) except +
+
+        string getAcquiType()
+        void setAcquiType(string &acquiType) except +
+
     cdef cppclass PyStudyNLopt(PyStudy):
         PyStudyNLopt(int index)
 
@@ -168,7 +177,10 @@ cdef class __StudyLimbo__(__Study__):
         return {'init_randomsampling_samples' : self.thisptr.getIntParameter(b'LIMBO_init_randomsampling_samples'),
                 'stop_maxiterations_iterations' : self.thisptr.getIntParameter(b'LIMBO_stop_maxiterations_iterations'),
                 'bayes_opt_boptimizer_hp_period' : self.thisptr.getIntParameter(b'LIMBO_bayes_opt_boptimizer_hp_period'),
-                'bayes_opt_boptimizer_noise' : self.thisptr.getDoubleParameter(b'LIMBO_bayes_opt_boptimizer_noise')}
+                'bayes_opt_boptimizer_noise' : self.thisptr.getDoubleParameter(b'LIMBO_bayes_opt_boptimizer_noise'),
+                'mean' : (<PyStudyLimbo*> self.thisptr).getMeanType().decode(),
+                'gp' : (<PyStudyLimbo*> self.thisptr).getGPType().decode(),
+                'acqui' : (<PyStudyLimbo*> self.thisptr).getAcquiType().decode()}
 
     def __set_settings__(self, settings):
         positive_value(settings['init_randomsampling_samples'], 'init_randomsampling_samples')
@@ -182,6 +194,10 @@ cdef class __StudyLimbo__(__Study__):
 
         positive_value(settings['bayes_opt_boptimizer_noise'], 'bayes_opt_boptimizer_noise')
         self.thisptr.setParameter(string(b'LIMBO_bayes_opt_boptimizer_noise'), <double> settings['bayes_opt_boptimizer_noise'])
+
+        (<PyStudyLimbo*> self.thisptr).setMeanType(<string> settings['mean'].encode())
+        (<PyStudyLimbo*> self.thisptr).setGPType(<string> settings['gp'].encode())
+        (<PyStudyLimbo*> self.thisptr).setAcquiType (<string> settings['acqui'].encode())
 
 cdef class __StudyNLopt__(__Study__):
     def __cinit__(self, index = -1):

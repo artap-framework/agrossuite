@@ -850,7 +850,8 @@ StudyFunctionalDialog::StudyFunctionalDialog(Study *study, Functional *functiona
 void StudyFunctionalDialog::createControls()
 {
     setWindowTitle(tr("Functional: %1").arg(m_functional->name()));
-    
+    setMinimumWidth(400);
+
     lblError = new QLabel();
     
     txtName = new QLineEdit(m_functional->name());
@@ -883,7 +884,7 @@ void StudyFunctionalDialog::createControls()
     layoutWidget->addWidget(lblError);
     layoutWidget->addStretch();
     layoutWidget->addWidget(buttonBox);
-    
+        
     setLayout(layoutWidget);
     
     if (!m_functional->name().isEmpty())

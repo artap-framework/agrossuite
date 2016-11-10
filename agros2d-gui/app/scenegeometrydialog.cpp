@@ -73,6 +73,7 @@ SceneNodeDialog::SceneNodeDialog(SceneNode *node, QWidget *parent, bool isNew) :
     m_object = node;
 
     setWindowTitle(tr("Node"));
+    setMinimumWidth(350);
 
     createControls();
 
@@ -454,6 +455,7 @@ SceneFaceDialog::SceneFaceDialog(SceneFace *edge, QWidget *parent, bool isNew) :
     m_object = edge;
 
     setWindowTitle(tr("Edge"));
+    setMinimumWidth(350);
 
     createControls();
 
@@ -1029,6 +1031,7 @@ SceneLabelDialog::SceneLabelDialog(SceneLabel *label, QWidget *parent, bool isNe
     m_object = label;
 
     setWindowTitle(tr("Label"));
+    setMinimumWidth(350);
 
     createControls();
 

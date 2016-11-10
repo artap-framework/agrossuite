@@ -83,6 +83,7 @@ public:
                 if (parameter.penaltyEnabled())
                     totalPenalty += parameter.penalty(x[i]);
             }
+            qInfo() << totalPenalty;
 
             return value + totalPenalty;
         }

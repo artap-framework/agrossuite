@@ -117,6 +117,15 @@ public:
 
     virtual StudyLimbo *study() { return static_cast<StudyLimbo *>(m_study); }
     virtual StudyLimbo *study() const { return static_cast<StudyLimbo *>(m_study); }
+
+    inline std::string getMeanType() const { return m_study->value(Study::LIMBO_mean).toString().toStdString(); }
+    void setMeanType(const std::string &meanType);
+
+    inline std::string getGPType() const { return m_study->value(Study::LIMBO_gp).toString().toStdString(); }
+    void setGPType(const std::string &gpType);
+
+    inline std::string getAcquiType() const { return m_study->value(Study::LIMBO_acqui).toString().toStdString(); }
+    void setAcquiType(const std::string &acquiType);
 };
 
 class PyStudyNLopt : public PyStudy
