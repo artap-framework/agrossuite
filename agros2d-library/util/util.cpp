@@ -263,7 +263,7 @@ QString datadir()
 #endif
 
     // linux
-#ifdef Q_WS_X11
+#ifdef Q_WS_X11 
     // local installation
     // solver
     if (QFile::exists(QCoreApplication::applicationDirPath() + "/libs/libagros2d_library.so"))
@@ -272,6 +272,8 @@ QString datadir()
     // python
     if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/../../libs/libagros2d_library.so"))
         return QString::fromLatin1(getenv("PWD")) + "/../..";
+    if (QFile::exists(QString::fromLatin1(getenv("PWD")) + "/libs/libagros2d_library.so"))
+        return QString::fromLatin1(getenv("PWD")) + "/";
 
     // system installation
     if (QFile::exists(QCoreApplication::applicationDirPath() + "/../share/agros2d/libs/libagros2d_library.so"))

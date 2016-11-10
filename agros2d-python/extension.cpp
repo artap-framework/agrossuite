@@ -22,7 +22,7 @@ public:
         // qDebug() << __FILE__ << "has been initialized";
         setlocale(LC_NUMERIC, "C");
 
-        char *argv[] = {(char *) QString("%1/agros2d_solver").arg(getenv("PWD")).toStdString().c_str(), NULL};
+        char *argv[] = {(char *) QString("%1/agros2d_python").arg(getenv("PWD")).toStdString().c_str(), NULL};
         int argc = sizeof(argv) / sizeof(char*) - 1;
 
         app = new QCoreApplication(argc, argv);

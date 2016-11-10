@@ -838,10 +838,13 @@ void MainWindow::doDocumentSaveGeometry()
 void MainWindow::doCreatePythonFromModel()
 {
     QString script = createPythonFromModel();
-    QString fn = tempProblemFileName() + ".txt";
+    QString fn = tempProblemFileName() + ".py";
 
     writeStringContent(fn, script);
-    QDesktopServices::openUrl(QUrl(fn).toLocalFile());
+
+    QProcess process;
+    process.startDetached(QString("%1/pythonlab").arg(QCoreApplication::applicationDirPath()),
+                          QStringList() << "-s" << fn);
 }
 
 void MainWindow::doSolve()
