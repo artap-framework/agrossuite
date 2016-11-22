@@ -336,6 +336,7 @@ void initLists()
     studyTypeList.insert(StudyType_BayesOpt, "bayesopt");
     studyTypeList.insert(StudyType_NLopt, "nlopt");
     studyTypeList.insert(StudyType_Limbo, "limbo");
+    studyTypeList.insert(StudyType_CMAES, "cmaes");
 
     // computation result type
     computationResultTypeList.insert(ComputationResultType_Functional, "functional");
@@ -848,6 +849,8 @@ QString studyTypeString(StudyType type)
         return QObject::tr("Limbo (Bayesian optimization)");
     case StudyType_NLopt:
         return QObject::tr("NLopt (nonlinear optimization)");
+    case StudyType_CMAES:
+        return QObject::tr("CMA-ES (Covariance Matrix Adaptation ES)");
     default:
         std::cerr << "Study type '" + QString::number(type).toStdString() + "' is not implemented. studyTypeString(StudyType type)" << endl;
         throw;

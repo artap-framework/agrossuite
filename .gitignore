@@ -34,8 +34,6 @@ doc/doxygen
 pthreadGC2.dll
 mingwm10.dll
 resources_source/python/agros2d.cpp
-src/hermes2d/weakform/*
-src/hermes2d/weakform_factory.h
 data/scripts/test/jac.txt
 data/scripts/test/test_acoustic_planar.py.orig
 jac.txt
@@ -59,7 +57,7 @@ tmp
 *.sln
 *.suo
 agros2d_generator
-agros2d_pythonlab
+pythonlab
 agros2d_solver
 agros2d_remote
 agros2d_pythonlab
@@ -80,6 +78,7 @@ tcl
 .project
 resources_source/resources.rc
 *.depend
+*.depends
 *.stamp
 *.cache
 *.cmake
@@ -118,3 +117,6 @@ standalone
 optilab
 solver-external-paralution/paralution/build/
 libs/solver_stat
+.ipynb_checkpoints
+*ninja*
+agros2d-library/util/checkversion_version.h

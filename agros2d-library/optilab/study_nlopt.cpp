@@ -30,11 +30,6 @@
 
 #include "scene.h"
 
-const QString ALGORITHM = "algorithm";
-const QString TOL_REL = "tol_rel";
-const QString TOL_ABS = "tol_abs";
-const QString N_ITERATIONS = "n_iterations";
-
 class NLoptProblem
 {
 public:

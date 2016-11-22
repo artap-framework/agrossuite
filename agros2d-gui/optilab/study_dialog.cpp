@@ -460,6 +460,8 @@ StudyDialog *StudyDialog::factory(Study *study, QWidget *parent)
         return new StudySweepDialog(study, parent);
     else if (study->type() == StudyType_Limbo)
         return new StudyLimboDialog(study, parent);
+    else if (study->type() == StudyType_CMAES)
+        return new StudyCMAESDialog(study, parent);
     else
         assert(0);
     
@@ -824,6 +826,10 @@ void StudyDialog::doDuplicate()
             foreach (Functional functional, m_study->functionals())
                 study->addFunctional(Functional(functional.name(), functional.expression(), functional.weight()));
             
+            // clear and solve
+            study->setValue(Study::General_ClearSolution, m_study->value(Study::General_ClearSolution).toBool());
+            study->setValue(Study::General_SolveProblem, m_study->value(Study::General_SolveProblem).toBool());
+
             StudyDialog *studyDialog = StudyDialog::factory(study, this);
             if (studyDialog->showDialog() == QDialog::Accepted)
             {

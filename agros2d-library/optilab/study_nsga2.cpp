@@ -34,7 +34,7 @@
 
 // TODO: encapsulate
 static StudyNSGA2 *localStudy = nullptr;
-nsga2::NSGA2 *localNSGA2 = nullptr;
+static nsga2::NSGA2 *localNSGA2 = nullptr;
 
 void objectiveFunction(double *xreal, double *xbin, int **gene, double *obj, double *constr)
 {    

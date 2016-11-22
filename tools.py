@@ -136,10 +136,12 @@ def standalone_package():
     os.mkdir(dest)
     # copy binary files
     shutil.copy('agros2d', dest + '/agros2d')
-    shutil.copy('agros2d_remote', dest + '/agros2d_remote')
+    shutil.copy('pythonlab', dest + '/pythonlab')
     shutil.copy('agros2d_solver', dest + '/agros2d_solver')
     shutil.copytree('resources', dest + '/resources')
     shutil.copytree('libs', dest + '/libs', ignore=ignore_patterns('*.a'))
+    shutil.copy('dealii/build/lib/libdeal_II.so', dest + '/libs/libdeal_II.so')
+    shutil.copy('dealii/build/lib/libdeal_II.so.8.3.0', dest + '/libs/libdeal_II.so.8.3.0')
 
 def callgrind():
     call(['valgrind --tool=callgrind --smc-check=all-non-file --fn-skip=QMetaObject::activate* --fn-skip=QMetaObject::metacall* --fn-skip=*::qt_metacall* --fn-skip=*::qt_static_metacall* ./agros2d'])	  

@@ -154,6 +154,12 @@ public:
         LIMBO_gp,
         LIMBO_acqui,
 
+        CMAES_maxiter,
+        CMAES_maxeval,
+        CMAES_ftarget,
+        CMAES_algorithm,
+        CMAES_surrogate,
+
         View_Filter,
         View_ChartHorizontal,
         View_ChartVertical,
