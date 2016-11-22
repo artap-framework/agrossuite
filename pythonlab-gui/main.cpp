@@ -37,8 +37,8 @@ public:
 
         setWindowIcon(icon("pythonlab"));
         // setApplicationVersion(versionString());
-        setOrganizationName("agros2d");
-        setOrganizationDomain("agros2d");
+        setOrganizationName("pythonlab");
+        setOrganizationDomain("pythonlab");
         setApplicationName("PythonLab");
 
     #ifdef Q_WS_MAC
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     try
     {
         // command line info
-        TCLAP::CmdLine cmd("Agros2D", ' ', versionString().toStdString());
+        TCLAP::CmdLine cmd("PythonLab", ' ', versionString().toStdString());
 
         TCLAP::ValueArg<std::string> problemArg("s", "script", "Open script", false, "", "string");
 

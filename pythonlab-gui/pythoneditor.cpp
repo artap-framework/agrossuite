@@ -227,7 +227,7 @@ PythonEditorView::PythonEditorView(QWidget *parent)
     createControls();
 
     QSettings settings;
-    m_pythonEditorWidget->fileBrowser->setDir(settings.value("PythonEditorDialog/WorkDir", datadir()).value<QString>());
+    m_pythonEditorWidget->fileBrowser->setDir(settings.value("PythonEditorDialog/WorkDir").value<QString>());
     m_pythonEditorWidget->fileBrowser->refresh();
 
     connect(actRunPython, SIGNAL(triggered()), this, SLOT(doRunPython()));
@@ -235,8 +235,8 @@ PythonEditorView::PythonEditorView(QWidget *parent)
     connect(actReplaceTabsWithSpaces, SIGNAL(triggered()), this, SLOT(doReplaceTabsWithSpaces()));
     connect(actGotoToFileDirectory, SIGNAL(triggered()), this, SLOT(doGotoFileDirectory()));
 
-    connect(pythonEngine, SIGNAL(startedScript()), this, SLOT(doStartedScript()));
-    connect(pythonEngine, SIGNAL(executedScript()), this, SLOT(doExecutedScript()));
+    // connect(pythonEngine, SIGNAL(startedScript()), this, SLOT(doStartedScript()));
+    // connect(pythonEngine, SIGNAL(executedScript()), this, SLOT(doExecutedScript()));
 
     setAcceptDrops(true);
 

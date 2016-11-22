@@ -4,7 +4,7 @@ from math import *
 
 # add actual directory to the path
 import sys
-sys.path.insert(0, ".")
+sys.path.insert(0, '.')
 
 # user functions
 def sgn(number):
@@ -17,7 +17,7 @@ def python_engine_pyflakes_check(filename):
     # first, compile into an AST and handle syntax errors.
     try:
         import _ast
-        tree = compile(code, "", "exec", _ast.PyCF_ONLY_AST)
+        tree = compile(code, '', 'exec', _ast.PyCF_ONLY_AST)
     except SyntaxError:
         value = sys.exc_info()[1]
         msg = value.args[0]
@@ -29,19 +29,19 @@ def python_engine_pyflakes_check(filename):
         if offset is not None:
             offset = offset - (len(text) - len(line))
 
-            return ['%s:%d: %s' % ("", lineno, msg)]
+            return ['%s:%d: %s' % ('', lineno, msg)]
 
         return 1
     else:
         # okay, it's syntactically valid. Now check it.
         import pyflakes.checker as checker
 
-        w = checker.Checker(tree, "")       
+        w = checker.Checker(tree, '')       
         w.messages.sort(key=lambda m: m.lineno)
         return [warning.__str__() for warning in w.messages]
         
 # chart
-def chart(x, y, xlabel = "", ylabel = "", marker='o'):
+def chart(x, y, xlabel = '', ylabel = '', marker='o'):
     import pylab as pl
 
     fig = pl.figure()
@@ -49,7 +49,7 @@ def chart(x, y, xlabel = "", ylabel = "", marker='o'):
     pl.grid(True)
     pl.xlabel(xlabel)
     pl.ylabel(ylabel)
-    fn_chart = pythonlab.tempname("png")
+    fn_chart = pythonlab.tempname('png')
     pl.savefig(fn_chart, dpi=60)
     pl.clf()
     pl.close(fig)
@@ -57,7 +57,7 @@ def chart(x, y, xlabel = "", ylabel = "", marker='o'):
     # show in console
     pythonlab.image(fn_chart)
 
-setattr(pythonlab, "chart", chart)
+setattr(pythonlab, 'chart', chart)
 
 # redirect stdout and stderr
 class CatchOutErr:
@@ -65,7 +65,7 @@ class CatchOutErr:
         pythonlab.__stdout__(str)
 
     def writeln(self, str):
-        pythonlab.__stdout__(str + "\n")
+        pythonlab.__stdout__(str + '\n')
 
     def flush(self):
         pass

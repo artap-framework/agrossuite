@@ -32,6 +32,7 @@
 #include "optilab/study_nlopt.h"
 #include "optilab/study_sweep.h"
 #include "optilab/study_limbo.h"
+#include "optilab/study_cmaes.h"
 
 #include "nlopt.hpp"
 
@@ -139,6 +140,22 @@ public:
 
     inline std::string getAlgorithm() const { return m_study->value(Study::NLopt_algorithm).toString().toStdString(); }
     void setAlgorithm(const std::string &algorithm);
+};
+
+class PyStudyCMAES : public PyStudy
+{
+public:
+    PyStudyCMAES(int index = -1);
+    virtual ~PyStudyCMAES() {}
+
+    virtual StudyCMAES *study() { return static_cast<StudyCMAES *>(m_study); }
+    virtual StudyCMAES *study() const { return static_cast<StudyCMAES *>(m_study); }
+
+    inline std::string getAlgorithm() const { return m_study->value(Study::CMAES_algorithm).toString().toStdString(); }
+    void setAlgorithm(const std::string &algorithm);
+
+    inline std::string getSurrogate() const { return m_study->value(Study::CMAES_surrogate).toString().toStdString(); }
+    void setSurrogate(const std::string &surrogate);
 };
 
 class PyStudyNSGA2 : public PyStudy

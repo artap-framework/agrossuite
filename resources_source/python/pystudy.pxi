@@ -56,6 +56,15 @@ cdef extern from "../../agros2d-python/pythonlab/pystudy.h":
         string getAlgorithm()
         void setAlgorithm(string &algorithm) except +
 
+    cdef cppclass PyStudyCMAES(PyStudy):
+        PyStudyCMAES(int index)
+
+        string getAlgorithm()
+        void setAlgorithm(string &algorithm) except +
+
+        string getSurrogate()
+        void setSurrogate(string &surrogate) except +
+
     cdef cppclass PyStudyNSGA2(PyStudy):
         PyStudyNSGA2(int index)
 
@@ -208,7 +217,7 @@ cdef class __StudyNLopt__(__Study__):
 
     def __get_settings__(self):
         return {'n_iterations' : self.thisptr.getIntParameter(b'NLopt_n_iterations'),
-                'xtol_rel' : self.thisptr.getIntParameter(b'NLopt_xtol_rel'),
+                'xtol_rel' : self.thisptr.getDoubleParameter(b'NLopt_xtol_rel'),
                 'xtol_abs' : self.thisptr.getDoubleParameter(b'NLopt_xtol_abs'),
                 'ftol_rel' : self.thisptr.getDoubleParameter(b'NLopt_ftol_rel'),
                 'ftol_abs' : self.thisptr.getDoubleParameter(b'NLopt_ftol_abs'),
@@ -219,18 +228,45 @@ cdef class __StudyNLopt__(__Study__):
         self.thisptr.setParameter(string(b'NLopt_n_iterations'), <int> settings['n_iterations'])
 
         positive_value(settings['xtol_rel'], 'xtol_rel')
-        self.thisptr.setParameter(string(b'NLopt_xtol_rel'), <int> settings['xtol_rel'])
+        self.thisptr.setParameter(string(b'NLopt_xtol_rel'), <double> settings['xtol_rel'])
 
         positive_value(settings['xtol_abs'], 'xtol_abs')
-        self.thisptr.setParameter(string(b'NLopt_xtol_abs'), <int> settings['xtol_abs'])
+        self.thisptr.setParameter(string(b'NLopt_xtol_abs'), <double> settings['xtol_abs'])
 
         positive_value(settings['ftol_rel'], 'ftol_rel')
-        self.thisptr.setParameter(string(b'NLopt_ftol_rel'), <int> settings['ftol_rel'])
+        self.thisptr.setParameter(string(b'NLopt_ftol_rel'), <double> settings['ftol_rel'])
 
         positive_value(settings['ftol_abs'], 'ftol_abs')
-        self.thisptr.setParameter(string(b'NLopt_ftol_abs'), <int> settings['ftol_abs'])
+        self.thisptr.setParameter(string(b'NLopt_ftol_abs'), <double> settings['ftol_abs'])
 
         (<PyStudyNLopt*> self.thisptr).setAlgorithm(<string> settings['algorithm'].encode())
+
+cdef class __StudyCMAES__(__Study__):
+    def __cinit__(self, index = -1):
+        self.thisptr = new PyStudyCMAES(index)
+
+        self.settings = __Parameters__(self.__get_settings__,
+                                       self.__set_settings__)
+
+    def __get_settings__(self):
+        return {'maxiter' : self.thisptr.getIntParameter(b'CMAES_maxiter'),
+                'maxeval' : self.thisptr.getIntParameter(b'CMAES_maxeval'),
+                'ftarget' : self.thisptr.getDoubleParameter(b'CMAES_ftarget'),
+                'algorithm' : (<PyStudyCMAES*> self.thisptr).getAlgorithm().decode(),
+                'surrogate' : (<PyStudyCMAES*> self.thisptr).getSurrogate().decode()}
+
+    def __set_settings__(self, settings):
+        positive_value(settings['maxiter'], 'maxiter')
+        self.thisptr.setParameter(string(b'CMAES_maxiter'), <int> settings['maxiter'])
+
+        positive_value(settings['maxeval'], 'maxeval')
+        self.thisptr.setParameter(string(b'CMAES_maxeval'), <int> settings['maxeval'])
+
+        positive_value(settings['ftarget'], 'ftarget')
+        self.thisptr.setParameter(string(b'CMAES_ftarget'), <double> settings['ftarget'])
+
+        (<PyStudyCMAES*> self.thisptr).setAlgorithm(<string> settings['algorithm'].encode())
+        (<PyStudyCMAES*> self.thisptr).setSurrogate(<string> settings['surrogate'].encode())
 
 cdef class __StudyNSGA2__(__Study__):
     def __cinit__(self, index = -1):

@@ -352,7 +352,7 @@ void StudyCMAES::setStringKeys()
     Study::setStringKeys();
 
     m_settingKey[CMAES_maxiter] = "CMAES_maxiter";
-    m_settingKey[CMAES_maxeval] = "CMAES_maxiter";
+    m_settingKey[CMAES_maxeval] = "CMAES_maxeval";
     m_settingKey[CMAES_ftarget] = "CMAES_ftarget";
     m_settingKey[CMAES_surrogate] = "CMAES_surrogate";
     m_settingKey[CMAES_algorithm] = "CMAES_algorithm";

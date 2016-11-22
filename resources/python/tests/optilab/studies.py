@@ -37,7 +37,7 @@ class TestBayesOptBooth(Agros2DTestCase):
         self.value_test("py", self.computation.parameters["py"], 3.0)
         self.lower_then_test("OF", self.computation.results["OF"], 2e-5)
 
-class TestLimboBooth(Agros2DTestCase):
+class TestLimboSphere(Agros2DTestCase):
     def setUp(self):  
         # problem
         problem = agros2d.problem(clear = True)
@@ -48,7 +48,7 @@ class TestLimboBooth(Agros2DTestCase):
         study_limbo = problem.add_study("limbo")
         study_limbo.add_parameter("px", -10, 10)
         study_limbo.add_parameter("py", -10, 10)
-        study_limbo.add_functional("OF", "(px+2*py-7)**2+(2*px+py-5)**2", 100)
+        study_limbo.add_functional("OF", "(px-1.0)**2+(py+2.0)**2", 100)
         
         study_limbo.clear_solution = True
         study_limbo.solve_problem = False
@@ -64,9 +64,40 @@ class TestLimboBooth(Agros2DTestCase):
         
     def test_values(self):    
         self.value_test("px", self.computation.parameters["px"], 1.0)
-        self.value_test("py", self.computation.parameters["py"], 3.0)
-        self.lower_then_test("OF", self.computation.results["OF"], 5e-5)
+        self.value_test("py", self.computation.parameters["py"], -2.0)
+        self.lower_then_test("OF", self.computation.results["OF"], 1e-4)
 
+class TestCMAESSphere(Agros2DTestCase):
+    def setUp(self):  
+        # problem
+        problem = agros2d.problem(clear = True)
+        problem.parameters["px"] = 0
+        problem.parameters["py"] = 0
+        
+        # studies
+        study_cmaes = problem.add_study("cmaes")
+        study_cmaes.add_parameter("px", -10, 10)
+        study_cmaes.add_parameter("py", -10, 10)
+        study_cmaes.add_functional("OF", "(px-1.0)**2+(py+2.0)**2", 100)
+
+        study_cmaes.clear_solution = True
+        study_cmaes.solve_problem = False
+
+        study_cmaes.settings["maxiter"] = 500
+        study_cmaes.settings["maxeval"] = 500
+        study_cmaes.settings["ftarget"] = 0.0001
+        study_cmaes.settings["algorithm"] = "aCMAES"
+        study_cmaes.settings["surrogate"] = "rsvm"
+        
+        study_cmaes.solve()
+        
+        self.computation = study_cmaes.find_extreme("functional", "OF", True)
+        
+    def test_values(self):    
+        self.value_test("px", self.computation.parameters["px"], 1.0)
+        self.value_test("py", self.computation.parameters["py"], -2.0)
+        self.lower_then_test("OF", self.computation.results["OF"], 1e-4)
+        
 class TestNLoptBooth(Agros2DTestCase):
     def setUp(self):  
         # problem
@@ -110,7 +141,7 @@ class TestNSGA2Sphere(Agros2DTestCase):
         study_nsga2 = problem.add_study("nsga2")
         study_nsga2.add_parameter("px", -10, 10)
         study_nsga2.add_parameter("py", -10, 10)
-        study_nsga2.add_functional("OF", "px**2+py**2", 100)
+        study_nsga2.add_functional("OF", "(px-1.0)**2+(py+2.0)**2", 100)
 
         study_nsga2.clear_solution = True
         study_nsga2.solve_problem = False
@@ -128,11 +159,10 @@ class TestNSGA2Sphere(Agros2DTestCase):
         self.computation = study_nsga2.find_extreme("functional", "OF", True)
        
     def test_values(self):    
-        self.lower_then_test("px", abs(self.computation.parameters["px"]), 1e-1)
-        self.lower_then_test("py", abs(self.computation.parameters["py"]), 1e-1)
-        self.lower_then_test("OF", self.computation.results["OF"], 1e-2)
-        
-                                                 
+        self.value_test("px", self.computation.parameters["px"], 1.0)
+        self.value_test("py", self.computation.parameters["py"], -2.0)
+        self.lower_then_test("OF", self.computation.results["OF"], 1e-4)
+                                       
 class TestNSGA3Sphere(Agros2DTestCase):
     def setUp(self):  
         # problem
@@ -144,12 +174,12 @@ class TestNSGA3Sphere(Agros2DTestCase):
         study_nsga3 = problem.add_study("nsga3")
         study_nsga3.add_parameter("px", -10, 10)
         study_nsga3.add_parameter("py", -10, 10)
-        study_nsga3.add_functional("OF", "px**2+py**2", 100)
+        study_nsga3.add_functional("OF", "(px-1.0)**2+(py+2.0)**2", 100)
 
         study_nsga3.clear_solution = True
         study_nsga3.solve_problem = False
         
-        study_nsga3.settings["popsize"] = 12
+        study_nsga3.settings["popsize"] = 16
         study_nsga3.settings["ngen"] = 150
         study_nsga3.settings["pcross"] = 0.6
         study_nsga3.settings["eta_c"] = 10
@@ -160,8 +190,8 @@ class TestNSGA3Sphere(Agros2DTestCase):
         self.computation = study_nsga3.find_extreme("functional", "OF", True)
        
     def test_values(self):    
-        self.lower_then_test("px", abs(self.computation.parameters["px"]), 1e-1)
-        self.lower_then_test("py", abs(self.computation.parameters["py"]), 1e-1)
+        self.value_test("px", self.computation.parameters["px"], 1.0)
+        self.value_test("py", self.computation.parameters["py"], -2.0)
         self.lower_then_test("OF", self.computation.results["OF"], 1e-2)
                                                  
 if __name__ == '__main__':        
@@ -169,9 +199,10 @@ if __name__ == '__main__':
     
     suite = ut.TestSuite()
     result = Agros2DTestResult()
-    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestLimboBooth))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestLimboSphere))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestBayesOptBooth))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestNLoptBooth))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestNSGA2Sphere))
     suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestNSGA3Sphere))
+    suite.addTest(ut.TestLoader().loadTestsFromTestCase(TestCMAESSphere))    
     suite.run(result)

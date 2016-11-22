@@ -329,7 +329,7 @@ void PythonEngine::deleteUserModules()
     // files to be sure that changes made in imported modules were taken into account.
 
     QStringList filter_name;
-    filter_name << "pythonlab" << "agros2d" << "variant" << "sys" << "test_suite" << "jedi" << "pylint" << "pyflakes";
+    filter_name << "pythonlab" << "variant" << "sys" << "test_suite" << "jedi" << "pyflakes";
 
     QList<PythonVariable> list = variableList();
 
@@ -618,11 +618,11 @@ PythonGotoDefinition PythonEngine::codeGotoDefinition(const QString& filename, i
     PythonGotoDefinition out;
 
 
-    QString str = QString("agros2d_goto_definition = python_engine_goto_definition(path = '%1', line = %2, column = %3)").arg(filename).arg(row).arg(column);
+    QString str = QString("pythonlab_goto_definition = python_engine_goto_definition(path = '%1', line = %2, column = %3)").arg(filename).arg(row).arg(column);
     runExpression(str);
 
     // parse result
-    PyObject *result = PyDict_GetItemString(globalDict(), "agros2d_goto_definition");
+    PyObject *result = PyDict_GetItemString(globalDict(), "pythonlab_goto_definition");
     if (result)
     {
         Py_INCREF(result);
@@ -650,7 +650,7 @@ PythonGotoDefinition PythonEngine::codeGotoDefinition(const QString& filename, i
         Py_XDECREF(result);
     }
 
-    PyObject *del = PyRun_String(QString("del agros2d_goto_definition").toLatin1().data(), Py_single_input, globalDict(), localDict());
+    PyObject *del = PyRun_String(QString("del pythonlab_goto_definition").toLatin1().data(), Py_single_input, globalDict(), localDict());
     Py_XDECREF(del);
 
     return out;
@@ -660,11 +660,11 @@ QString PythonEngine::codeHelp(const QString& filename, int row, int column)
 {
     QString help = "";
 
-    QString str = QString("agros2d_code_help = python_engine_code_help(path = '%1', line = %2, column = %3)").arg(filename).arg(row).arg(column);
+    QString str = QString("pythonlab_code_help = python_engine_code_help(path = '%1', line = %2, column = %3)").arg(filename).arg(row).arg(column);
     runExpression(str);
 
     // parse result
-    PyObject *result = PyDict_GetItemString(globalDict(), "agros2d_code_help");
+    PyObject *result = PyDict_GetItemString(globalDict(), "pythonlab_code_help");
     if (result)
     {
         Py_INCREF(result);
@@ -672,7 +672,7 @@ QString PythonEngine::codeHelp(const QString& filename, int row, int column)
         Py_XDECREF(result);
     }
 
-    PyObject *del = PyRun_String(QString("del agros2d_code_help").toLatin1().data(), Py_single_input, globalDict(), localDict());
+    PyObject *del = PyRun_String(QString("del pythonlab_code_help").toLatin1().data(), Py_single_input, globalDict(), localDict());
     Py_XDECREF(del);
 
     return help;
@@ -772,7 +772,7 @@ QList<PythonVariable> PythonEngine::variableList()
                 << "pythonlab_rope_project"
                 << "python_engine_pyflakes_check"
                 << "CatchOutErr"
-                << "agros2d_material_eval"
+                << "pythonlab_material_eval"
                 << "chart"
                 << "memory_chart"
                 << "sgn"

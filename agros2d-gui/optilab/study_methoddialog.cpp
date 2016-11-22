@@ -407,6 +407,7 @@ void StudyCMAESDialog::load()
     txtMaxIter->setValue(study()->value(Study::CMAES_maxiter).toInt());
     txtMaxEval->setValue(study()->value(Study::CMAES_maxeval).toInt());
     cmbAlgorithm->setCurrentIndex(cmbAlgorithm->findData(study()->value(Study::CMAES_algorithm).toString()));
+    cmbSurrogate->setCurrentIndex(cmbSurrogate->findData(study()->value(Study::CMAES_surrogate).toString()));
 }
 
 void StudyCMAESDialog::save()
@@ -417,6 +418,7 @@ void StudyCMAESDialog::save()
     study()->setValue(Study::CMAES_maxiter, txtMaxIter->value());
     study()->setValue(Study::CMAES_maxeval, txtMaxEval->value());
     study()->setValue(Study::CMAES_algorithm, cmbAlgorithm->itemData(cmbAlgorithm->currentIndex()).toString());
+    study()->setValue(Study::CMAES_surrogate, cmbSurrogate->itemData(cmbSurrogate->currentIndex()).toString());
 }
 
 // *****************************************************************************************************

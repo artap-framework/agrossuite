@@ -83,7 +83,7 @@ PythonBrowser::PythonBrowser(PythonScriptingConsole *console, QWidget *parent)
     mnuContext->addSeparator();
     mnuContext->addAction(actDelete);
 
-    connect(currentPythonEngine(), SIGNAL(executedScript()), this, SLOT(executed()));
+    // connect(currentPythonEngine(), SIGNAL(executedScript()), this, SLOT(executed()));
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
