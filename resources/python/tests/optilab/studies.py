@@ -146,8 +146,8 @@ class TestNSGA2Sphere(Agros2DTestCase):
         study_nsga2.clear_solution = True
         study_nsga2.solve_problem = False
         
-        study_nsga2.settings["popsize"] = 12
-        study_nsga2.settings["ngen"] = 150
+        study_nsga2.settings["popsize"] = 16
+        study_nsga2.settings["ngen"] = 200
         study_nsga2.settings["pcross"] = 0.6
         study_nsga2.settings["pmut"] = 0.2
         study_nsga2.settings["eta_c"] = 10
@@ -161,7 +161,7 @@ class TestNSGA2Sphere(Agros2DTestCase):
     def test_values(self):    
         self.value_test("px", self.computation.parameters["px"], 1.0)
         self.value_test("py", self.computation.parameters["py"], -2.0)
-        self.lower_then_test("OF", self.computation.results["OF"], 1e-4)
+        self.lower_then_test("OF", self.computation.results["OF"], 1e-2)
                                        
 class TestNSGA3Sphere(Agros2DTestCase):
     def setUp(self):  
@@ -180,7 +180,7 @@ class TestNSGA3Sphere(Agros2DTestCase):
         study_nsga3.solve_problem = False
         
         study_nsga3.settings["popsize"] = 16
-        study_nsga3.settings["ngen"] = 150
+        study_nsga3.settings["ngen"] = 160
         study_nsga3.settings["pcross"] = 0.6
         study_nsga3.settings["eta_c"] = 10
         study_nsga3.settings["eta_m"] = 20
