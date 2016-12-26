@@ -140,7 +140,8 @@ def standalone_package():
     shutil.copy('agros2d_solver', dest + '/agros2d_solver')
     shutil.copytree('resources', dest + '/resources')
     shutil.copytree('libs', dest + '/libs', ignore=ignore_patterns('*.a'))
-    shutil.copy('dealii/build/lib/libdeal_II.so', dest + '/libs/libdeal_II.so')
+    # shutil.copy('dealii/build/lib/libdeal_II.so', dest + '/libs/libdeal_II.so')
+    os.symlink(os.readlink('dealii/build/lib/libdeal_II.so'), dest + '/libs/libdeal_II.so')    
     shutil.copy('dealii/build/lib/libdeal_II.so.8.3.0', dest + '/libs/libdeal_II.so.8.3.0')
 
 def callgrind():

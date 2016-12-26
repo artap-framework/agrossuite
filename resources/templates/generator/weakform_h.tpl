@@ -51,7 +51,7 @@ public:
             {{#COUPLING_SOURCE}}if (computation->hasField("{{COUPLING_SOURCE_ID}}"))
             {
                 const SolverDeal *{{COUPLING_SOURCE_ID}}_solver = computation->problemSolver()->solver("{{COUPLING_SOURCE_ID}}");
-                {{COUPLING_SOURCE_ID}}_hp_fe_values = new dealii::hp::FEValues<2>({{COUPLING_SOURCE_ID}}_solver->mappingCollection(), {{COUPLING_SOURCE_ID}}_solver->feCollection(), {{COUPLING_SOURCE_ID}}_solver->quadratureFormulas(), dealii::update_values | dealii::update_gradients);
+                {{COUPLING_SOURCE_ID}}_hp_fe_values = new dealii::hp::FEValues<2>(*computation->problemSolver()->mappingCollection(computation->fieldInfo("{{COUPLING_SOURCE_ID}}")), *computation->problemSolver()->feCollection(computation->fieldInfo("{{COUPLING_SOURCE_ID}}")), {{COUPLING_SOURCE_ID}}_solver->quadratureFormulas(), dealii::update_values | dealii::update_gradients);
             }
             {{/COUPLING_SOURCE}}
         }

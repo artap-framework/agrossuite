@@ -163,9 +163,6 @@ public:
     inline void set_time(const double new_time) { m_time = new_time; }
     inline double get_time() const { return m_time; }
 
-    // collections
-    inline const dealii::hp::MappingCollection<2> &mappingCollection() const { return *m_mappingCollection; }
-    inline const dealii::hp::FECollection<2> &feCollection() const { return *m_feCollection; }
     // quadrature cache
     inline const dealii::hp::QCollection<2> &quadratureFormulas() const { return m_quadratureFormulas; }
     inline const dealii::hp::QCollection<2-1> &quadratureFormulasFace() const { return m_quadratureFormulasFace; }
@@ -220,10 +217,6 @@ protected:
     // local reference
     Computation *m_computation;
     const FieldInfo *m_fieldInfo;
-
-    // assembling
-    dealii::hp::MappingCollection<2> *m_mappingCollection;
-    dealii::hp::FECollection<2> *m_feCollection;
 
     // assemble cache
     std::map<tbb::tbb_thread::id, AssembleCache> m_assembleCache;

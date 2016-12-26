@@ -242,23 +242,12 @@ enum TimeStepMethod
 
 enum MatrixSolverType
 {
-    SOLVER_UMFPACK = 0,
-    SOLVER_MUMPS = 4,
+    SOLVER_UMFPACK = 0,    
     SOLVER_EXTERNAL = 8,
     SOLVER_DEALII,
     SOLVER_EMPTY = 100
 };
 Q_DECLARE_METATYPE(MatrixSolverType)
-
-enum DirectMatrixSolverType
-{
-    DIRECT_SOLVER_UMFPACK = 0,
-    DIRECT_SOLVER_MUMPS = 4,
-    DIRECT_SOLVER_SUPERLU = 5,
-    DIRECT_SOLVER_AMESOS = 6,
-    // Solver external is here, because direct solvers are used in projections.
-    DIRECT_SOLVER_EXTERNAL = 8
-};
 
 enum IterSolverDealII
 {

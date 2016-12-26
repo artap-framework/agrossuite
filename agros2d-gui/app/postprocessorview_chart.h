@@ -24,7 +24,6 @@
 #include "postprocessorview.h"
 #include "solver/plugin_interface.h"
 
-class PostDeal;
 class SceneViewChart;
 class SceneViewSimpleGeometryChart;
 class LocalValue;

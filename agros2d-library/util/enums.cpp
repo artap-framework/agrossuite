@@ -258,9 +258,6 @@ void initLists()
     // matrixSolverTypeList.insert(SOLVER_EMPTY, "empty");
     matrixSolverTypeList.insert(SOLVER_UMFPACK, "umfpack");
     matrixSolverTypeList.insert(SOLVER_DEALII, "dealii");
-#ifdef WITH_MUMPS
-    matrixSolverTypeList.insert(SOLVER_MUMPS, "mumps");
-#endif
     matrixSolverTypeList.insert(SOLVER_EXTERNAL, "external");
 
     // dump format
@@ -682,8 +679,6 @@ QString matrixSolverTypeString(MatrixSolverType matrixSolverType)
         return QObject::tr("UMFPACK");
     case SOLVER_DEALII:
         return QObject::tr("deal.II (iter.)");
-    case SOLVER_MUMPS:
-        return QObject::tr("MUMPS");
     case SOLVER_EXTERNAL:
         return QObject::tr("External (out of core)");
     default:

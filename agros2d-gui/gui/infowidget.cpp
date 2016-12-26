@@ -86,6 +86,8 @@ void InfoWidgetGeneral::clear()
 
 void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
 {
+    return;
+
     // template
     std::string info;
     ctemplate::TemplateDictionary problemInfo("info");
@@ -301,6 +303,8 @@ InfoWidget::~InfoWidget()
 
 void InfoWidget::welcome()
 {
+    return;
+
     // template
     std::string info;
     ctemplate::TemplateDictionary problemInfo("welcome");

@@ -30,7 +30,6 @@
 class ValueLineEdit;
 class SceneMaterial;
 class Solution;
-class PostDeal;
 class Computation;
 class PostprocessorWidget;
 

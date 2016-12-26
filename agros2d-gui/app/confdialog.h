@@ -57,9 +57,6 @@ private:
     // cache
     QSpinBox *txtCacheSize;
 
-    // threads
-    QSpinBox *txtNumOfThreads;
-
     // grid
     QCheckBox *chkShowGrid;
 

@@ -44,10 +44,6 @@ std::string pyDatadir(std::string str = "");
 
 struct PyOptions
 {
-    // number of threads
-    inline int getNumberOfThreads() const { return Agros2D::configComputer()->value(Config::Config_NumberOfThreads).toInt(); }
-    void setNumberOfThreads(int threads);
-
     // cache size
     inline int getCacheSize() const { return Agros2D::configComputer()->value(Config::Config_CacheSize).toInt(); }
     void setCacheSize(int size);

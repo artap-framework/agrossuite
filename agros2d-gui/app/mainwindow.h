@@ -24,7 +24,6 @@
 #include "util/util.h"
 #include "util/enums.h"
 
-class PostDeal;
 class SceneViewPost2D;
 class SceneViewPost3D;
 class SceneViewPreprocessor;

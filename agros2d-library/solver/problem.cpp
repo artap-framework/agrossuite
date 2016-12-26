@@ -2160,7 +2160,6 @@ void Computation::solveInit()
         throw AgrosSolverException(tr("Could not create mesh"));
     }
 
-    // dealii - new concept without Blocks (not necessary)
     m_problemSolver->init();
 }
 

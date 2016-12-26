@@ -82,14 +82,6 @@ std::string pyDatadir(std::string str)
 
 // ************************************************************************************
 
-void PyOptions::setNumberOfThreads(int threads)
-{
-    // if (threads < 1 || threads > omp_get_max_threads())
-    //     throw out_of_range(QObject::tr("Number of threads is out of range (1 - %1).").arg(omp_get_max_threads()).toStdString());
-
-    Agros2D::configComputer()->setValue(Config::Config_NumberOfThreads, threads);
-}
-
 void PyOptions::setCacheSize(int size)
 {
     if (size < 2 || size > 50)

@@ -116,8 +116,8 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleSystem(const dealii::Vector
                             &SolverDeal{{CLASS}}::Assemble{{CLASS}}::localAssembleSystem,
                             &SolverDeal{{CLASS}}::Assemble{{CLASS}}::copyLocalToGlobal,
                             AssemblyScratchData{{CLASS}}(m_computation,
-                                                         m_solverDeal->feCollection(),
-                                                         m_solverDeal->mappingCollection(),
+                                                         *m_computation->problemSolver()->feCollection(m_fieldInfo),
+                                                         *m_computation->problemSolver()->mappingCollection(m_fieldInfo),
                                                          m_solverDeal->quadratureFormulas(),
                                                          m_solverDeal->quadratureFormulasFace(),
                                                          solutionNonlinearPrevious,
@@ -476,9 +476,10 @@ void SolverDeal{{CLASS}}::Assemble{{CLASS}}::assembleDirichlet(bool calculateDir
     }
 
     // hp face values
-    dealii::hp::FEFaceValues<2> hp_fe_face_values(m_solverDeal->mappingCollection(), feCollection, qCollection, dealii::update_quadrature_points);
+    dealii::hp::FEFaceValues<2> hp_fe_face_values(*m_computation->problemSolver()->mappingCollection(m_fieldInfo),
+                                                  feCollection, qCollection, dealii::update_quadrature_points);
 
-    // dealii::hp::FEFaceValues<2> hp_fe_face_values(m_solverDeal->mappingCollection(), m_solverDeal->feCollection(), m_solverDeal->quadratureFormulasFace(), dealii::update_values | dealii::update_quadrature_points);
+    // dealii::hp::FEFaceValues<2> hp_fe_face_values(*m_solverDeal->mappingCollection(), m_solverDeal->feCollection(), m_solverDeal->quadratureFormulasFace(), dealii::update_values | dealii::update_quadrature_points);
 
     dealii::hp::DoFHandler<2>::active_cell_iterator cell = doFHandler.begin_active(), endc = doFHandler.end();
     for(; cell != endc; ++cell)

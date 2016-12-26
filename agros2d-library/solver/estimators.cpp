@@ -382,7 +382,7 @@ void DifferenceErrorEstimator::estimate_cell(const dealii::SynchronousIterators<
 
 // ************************************************************************************************************************
 
-
+/*
 template <int dim>
 void
 WeightedResidual<dim>::estimate_error (dealii::Vector<float> &error_indicators) const
@@ -415,16 +415,7 @@ WeightedResidual<dim>::estimate_error (dealii::Vector<float> &error_indicators) 
     dealii::Vector<double> dual_weights (dual_solver->doFHandler.n_dofs());
     dual_weights = dual_solution;
     dual_weights.add(-1, primal_solution);
-    // NEW
 
-    /*
-    dealii::FETools::interpolation_difference (dual_solver->doFHandler,
-                                               dual_hanging_node_constraints,
-                                               dual_solver->solution,
-                                               primal_solver->doFHandler,
-                                               primal_hanging_node_constraints,
-                                               dual_weights);
-    */
 
     FaceIntegrals face_integrals;
     for (dealii::hp::DoFHandler<2>::active_cell_iterator cell = dual_solver->doFHandler.begin_active(); cell != dual_solver->doFHandler.end(); ++cell)
@@ -613,3 +604,4 @@ void WeightedResidual<dim>::integrate_over_irregular_face (const active_cell_ite
 }
 
 template class WeightedResidual<2>;
+*/

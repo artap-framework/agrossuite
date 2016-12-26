@@ -262,7 +262,7 @@ void PostprocessorWidget::createVideo()
     case PostprocessorWidgetMode_Post2D:
         videoDialog = new VideoDialog(m_sceneViewPost2D, currentComputation().data(), this);
         break;
-    case PostprocessorWidgetMode_Chart:
+    case PostprocessorWidgetMode_Post3D:
         videoDialog = new VideoDialog(m_sceneViewPost3D, currentComputation().data(), this);
         break;
     default:

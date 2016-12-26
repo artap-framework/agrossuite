@@ -23,7 +23,6 @@
 #include "util/util.h"
 #include "postprocessorview.h"
 
-class PostDeal;
 class SceneViewPost2D;
 class LineEditDouble;
 class ResultsView;

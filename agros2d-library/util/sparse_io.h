@@ -24,6 +24,7 @@
 #include <fstream>
 #include <assert.h>
 #include <cstring>
+#include <math.h>
 
 #include <chrono>
 

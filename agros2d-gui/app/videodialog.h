@@ -23,7 +23,6 @@
 #include "util/util.h"
 #include "gui/other.h"
 
-class PostDeal;
 class LineEditDouble;
 class SceneViewCommon;
 class FieldInfo;

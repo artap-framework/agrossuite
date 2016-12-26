@@ -73,11 +73,6 @@ void Config::load()
                 qDebug() << "Unknown datatype not found" << m_settingKey.value(key);
         }
     }
-
-    // number of threads
-    if (m_setting[Config_NumberOfThreads].toInt() > SystemUtils::numberOfThreads())
-        m_setting[Config_NumberOfThreads] = SystemUtils::numberOfThreads();
-    dealii::MultithreadInfo::set_thread_limit(m_setting[Config_NumberOfThreads].toInt());
 }
 
 void Config::save()
@@ -97,7 +92,6 @@ void Config::setStringKeys()
     m_settingKey[Config_LinearSystemFormat] = "Config_LinearSystemFormat";
     m_settingKey[Config_LinearSystemSave] = "Config_LinearSystemSave";
     m_settingKey[Config_CacheSize] = "Config_CacheSize";
-    m_settingKey[Config_NumberOfThreads] = "Config_NumberOfThreads";
     m_settingKey[Config_ShowGrid] = "Config_ShowGrid";
     m_settingKey[Config_ShowRulers] = "Config_ShowRulers";
     m_settingKey[Config_ShowAxes] = "Config_ShowAxes";
@@ -118,7 +112,6 @@ void Config::setDefaultValues()
     m_settingDefault[Config_LinearSystemFormat] = EXPORT_FORMAT_MATLAB_MATIO;
     m_settingDefault[Config_LinearSystemSave] = false;
     m_settingDefault[Config_CacheSize] = 10;
-    m_settingDefault[Config_NumberOfThreads] = -1;
     m_settingDefault[Config_ShowGrid] = true;
     m_settingDefault[Config_ShowRulers] = true;
     m_settingDefault[Config_ShowAxes] = true;

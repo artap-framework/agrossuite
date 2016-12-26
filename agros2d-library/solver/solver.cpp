@@ -303,7 +303,8 @@ void SolverDeal::AssembleBase::setup(bool useDirichletLift)
     QTime time;
     time.start();
 
-    doFHandler.distribute_dofs(m_solverDeal->feCollection());
+    assert(m_computation->problemSolver()->feCollection(m_fieldInfo));
+    doFHandler.distribute_dofs(*m_computation->problemSolver()->feCollection(m_fieldInfo));
     // std::cout << "Number of degrees of freedom: " << m_doFHandler.n_dofs() << std::endl;
 
     // Handle hanging nodes.
@@ -377,13 +378,11 @@ void SolverDeal::AssembleBase::solveProblemLinear()
 SolverDeal::SolverDeal(Computation *computation, const FieldInfo *fieldInfo)
     : m_computation(computation),
       m_fieldInfo(fieldInfo),
-      // fe collection
-      m_feCollection(m_computation->problemSolver()->feCollection(m_fieldInfo)),
-      // mapping collection
-      m_mappingCollection(m_computation->problemSolver()->mappingCollection(m_fieldInfo)),
-      // time
       m_time(0.0)
 {
+    assert(m_computation);
+    assert(m_fieldInfo);
+
     m_quadratureFormulas.push_back(dealii::QGauss<2>(1));
     m_quadratureFormulasFace.push_back(dealii::QGauss<2 - 1>(1));
 
@@ -419,7 +418,10 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                                                  m_quadratureFormulasFace,
                                                  TYPENAME dealii::FunctionMap<2>::type(),
                                                  primal->solution,
-                                                 estimated_error_per_cell);
+                                                 estimated_error_per_cell,
+                                                 dealii::ComponentMask(),
+                                                 0,
+                                                 dealii::MultithreadInfo::n_threads());
     }
         break;
     case AdaptivityEstimator_Gradient:
@@ -508,7 +510,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
         assert(0);
     }
 
-    // cout << estimated_error_per_cell.l2_norm() << endl;
+    cout << estimated_error_per_cell.l2_norm() << endl;
 
     // strategy
     switch ((AdaptivityStrategy) m_fieldInfo->value(FieldInfo::AdaptivityStrategy).toInt())
@@ -782,7 +784,7 @@ void SolverDeal::solveSteadyState()
             if (adaptiveStep > 0)
             {
                 // interpolate previous solution to current grid
-                dealii::Vector<double> previousSolutionInterpolated(primal->solution.size());
+                dealii::Vector<double> previousSolutionInterpolated(primal->doFHandler.n_dofs());
                 solutionTrans.interpolate(previousSolution, previousSolutionInterpolated);
 
                 relChangeSol = ErrorEstimator::relativeChangeBetweenSolutions(primal->doFHandler, quadratureFormulas(),

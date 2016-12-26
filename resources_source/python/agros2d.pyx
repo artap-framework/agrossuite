@@ -131,9 +131,6 @@ cdef extern from "../../agros2d-python/pythonlab/pyagros.h":
 
     # PyOptions
     cdef cppclass PyOptions:
-        int getNumberOfThreads()
-        void setNumberOfThreads(int threads) except +
-
         int getCacheSize()
         void setCacheSize(int size) except +
 
@@ -172,12 +169,6 @@ cdef class __Options__:
         self.thisptr = new PyOptions()
     def __dealloc__(self):
         del self.thisptr
-
-    property number_of_threads:
-        def __get__(self):
-            return self.thisptr.getNumberOfThreads()
-        def __set__(self, threads):
-            self.thisptr.setNumberOfThreads(threads)
 
     property cache_size:
         def __get__(self):

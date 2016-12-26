@@ -64,9 +64,6 @@ void ConfigComputerDialog::load()
     chkDiscreteSaveMatrixRHS->setChecked(Agros2D::configComputer()->value(Config::Config_LinearSystemSave).toBool());
     cmbDumpFormat->setCurrentIndex(cmbDumpFormat->findData((MatrixExportFormat) Agros2D::configComputer()->value(Config::Config_LinearSystemFormat).toInt(), Qt::UserRole));
 
-    // number of threads
-    txtNumOfThreads->setValue(Agros2D::configComputer()->value(Config::Config_NumberOfThreads).toInt());
-
     // cache size
     txtCacheSize->setValue(Agros2D::configComputer()->value(Config::Config_CacheSize).toInt());
 
@@ -103,10 +100,6 @@ void ConfigComputerDialog::save()
     // development
     Agros2D::configComputer()->setValue(Config::Config_LinearSystemSave, chkDiscreteSaveMatrixRHS->isChecked());
     Agros2D::configComputer()->setValue(Config::Config_LinearSystemFormat, (MatrixExportFormat) cmbDumpFormat->itemData(cmbDumpFormat->currentIndex(), Qt::UserRole).toInt());
-
-    // number of threads
-    Agros2D::configComputer()->setValue(Config::Config_NumberOfThreads, txtNumOfThreads->value());
-    dealii::MultithreadInfo::set_thread_limit(txtNumOfThreads->value());
 
     // cache size
     Agros2D::configComputer()->setValue(Config::Config_CacheSize, txtCacheSize->value());
@@ -234,13 +227,7 @@ QWidget *ConfigComputerDialog::createSolverWidget()
     txtCacheSize->setMinimum(2);
     txtCacheSize->setMaximum(50);
 
-    txtNumOfThreads = new QSpinBox(this);
-    txtNumOfThreads->setMinimum(1);
-    txtNumOfThreads->setMaximum(SystemUtils::numberOfThreads());
-
     QGridLayout *layoutSolver = new QGridLayout();
-    layoutSolver->addWidget(new QLabel(tr("Number of threads:")), 0, 0);
-    layoutSolver->addWidget(txtNumOfThreads, 0, 1);
     layoutSolver->addWidget(new QLabel(tr("Number of cache slots:")), 1, 0);
     layoutSolver->addWidget(txtCacheSize, 1, 1);
 
