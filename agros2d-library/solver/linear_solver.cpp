@@ -19,7 +19,6 @@
 
 // deal.ii
 #include <deal.II/base/quadrature_lib.h>
-#include <deal.II/base/multithread_info.h>
 
 #include <deal.II/base/function.h>
 #include <deal.II/numerics/vector_tools.h>

@@ -19,8 +19,6 @@
 
 #include "scene.h"
 
-#include <deal.II/base/multithread_info.h>
-
 #include "solver/module.h"
 #include "util/constants.h"
 #include "util/global.h"

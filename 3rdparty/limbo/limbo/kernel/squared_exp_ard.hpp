@@ -80,14 +80,14 @@ namespace limbo {
         */
         template <typename Params>
         struct SquaredExpARD {
-            SquaredExpARD(int dim = 1) : _sf2(0), _ell(dim), _A(dim, limbo::defaults::kernel_squared_exp_ard::k()), _input_dim(dim)
+            SquaredExpARD(int dim = 1) : _sf2(0), _ell(dim), _A(dim, Params::kernel_squared_exp_ard::k()), _input_dim(dim)
             {
-                Eigen::VectorXd p = Eigen::VectorXd::Zero(_ell.size() + _ell.size() * limbo::defaults::kernel_squared_exp_ard::k());
+                Eigen::VectorXd p = Eigen::VectorXd::Zero(_ell.size() + _ell.size() * Params::kernel_squared_exp_ard::k());
                 this->set_h_params(p);
-                _sf2 = limbo::defaults::kernel_squared_exp_ard::sigma_sq();
+                _sf2 = Params::kernel_squared_exp_ard::sigma_sq();
             }
 
-            size_t h_params_size() const { return _ell.size() + _ell.size() * limbo::defaults::kernel_squared_exp_ard::k(); }
+            size_t h_params_size() const { return _ell.size() + _ell.size() * Params::kernel_squared_exp_ard::k(); }
 
             // Return the hyper parameters in log-space
             const Eigen::VectorXd& h_params() const { return _h_params; }
@@ -98,7 +98,7 @@ namespace limbo {
                 _h_params = p;
                 for (size_t i = 0; i < _input_dim; ++i)
                     _ell(i) = std::exp(p(i));
-                for (size_t j = 0; j < (unsigned int)limbo::defaults::kernel_squared_exp_ard::k(); ++j)
+                for (size_t j = 0; j < (unsigned int)Params::kernel_squared_exp_ard::k(); ++j)
                     for (size_t i = 0; i < _input_dim; ++i)
                         _A(i, j) = std::exp(p((j + 1) * _input_dim + i));
             }
@@ -132,7 +132,7 @@ namespace limbo {
             {
                 assert(x1.size() == _ell.size());
                 double z;
-                if (limbo::defaults::kernel_squared_exp_ard::k() > 0) {
+                if (Params::kernel_squared_exp_ard::k() > 0) {
                     Eigen::MatrixXd K = (_A * _A.transpose());
                     K.diagonal() += (Eigen::MatrixXd)(_ell.array().inverse().square());
                     z = ((x1 - x2).transpose() * K * (x1 - x2)).norm();

@@ -56,7 +56,6 @@
 #include <boost/fusion/include/accumulate.hpp>
 #include <boost/fusion/include/for_each.hpp>
 #define BOOST_NO_SCOPED_ENUMS
-#define BOOST_NO_CXX11_SCOPED_ENUMS
 #include <boost/filesystem.hpp>
 
 #include <Eigen/Core>
@@ -280,8 +279,8 @@ namespace limbo {
                 if (!Params::bayes_opt_bobase::stats_enabled())
                     return;
                 _res_dir = tools::hostname() + "_" + tools::date() + "_" + tools::getpid();
-                // boost::filesystem::path my_path(_res_dir);
-                // boost::filesystem::create_directory(my_path);
+                boost::filesystem::path my_path(_res_dir);
+                boost::filesystem::create_directory(my_path);
             }
 
             std::string _res_dir;

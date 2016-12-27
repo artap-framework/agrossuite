@@ -1,6 +1,6 @@
 PROJECT(${LIMBO_LIBRARY})
 
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.56.0/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/dealii/bundled/boost-1.62.0/include/")
 
 #SET(HEADERS)
 SET(SOURCES ehvi/ehvi_calculations.cc

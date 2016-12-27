@@ -41,16 +41,6 @@ FIND_PACKAGE(Qt5Network REQUIRED)
 FIND_PACKAGE(Qt5Xml REQUIRED)
 FIND_PACKAGE(Qt5XmlPatterns REQUIRED)
 
-# tbb
-FIND_PACKAGE(TBB)
-if (TBB_FOUND)
-    add_definitions(-DTBB_FOUND)
-ENDIF(TBB_FOUND)
-
-# UMFPACK
-find_package(UMFPACK REQUIRED)
-INCLUDE_DIRECTORIES(${UMFPACK_INCLUDE_DIRS})
-
 # Build type.
 ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB)
 IF(AGROS_DEBUG)
@@ -156,10 +146,10 @@ include(${CMAKE_AGROS_DIRECTORY}/IncludeSubdirs.cmake)
 # deal.II
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/build/include/")
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/boost-1.56.0/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/boost-1.62.0/include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/UMFPACK/Include/")
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/umfpack/AMD/Include/")
-#INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/tbb41_20130401oss/include/")
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/tbb41_20130401oss/include/")
 #INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/../dealii/bundled/muparser_v2_2_3/include/")
 
 FIND_PACKAGE(deal.II HINTS "../dealii/build" REQUIRED)

@@ -40,7 +40,6 @@
 #include <deal.II/dofs/dof_accessor.h>
 
 #include <deal.II/base/quadrature_lib.h>
-#include <deal.II/base/multithread_info.h>
 
 #include <deal.II/base/function.h>
 #include <deal.II/numerics/vector_tools.h>
@@ -419,9 +418,7 @@ void SolverDeal::prepareGridRefinement(shared_ptr<SolverDeal::AssembleBase> prim
                                                  TYPENAME dealii::FunctionMap<2>::type(),
                                                  primal->solution,
                                                  estimated_error_per_cell,
-                                                 dealii::ComponentMask(),
-                                                 0,
-                                                 dealii::MultithreadInfo::n_threads());
+                                                 dealii::ComponentMask());
     }
         break;
     case AdaptivityEstimator_Gradient:

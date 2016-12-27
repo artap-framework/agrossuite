@@ -19,8 +19,6 @@
 
 #include "confdialog.h"
 
-#include <deal.II/base/multithread_info.h>
-
 #include "util/constants.h"
 #include "util/global.h"
 #include "gui/lineeditdouble.h"
