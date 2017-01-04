@@ -32,6 +32,8 @@
 #include "study_limbo.h"
 #include "study_cmaes.h"
 
+#include "doe.h"
+
 // consts
 const QString NAME = "name";
 const QString PARAMETERS = "parameters";
@@ -304,6 +306,59 @@ QList<double> Study::evaluateMultiGoal(QSharedPointer<Computation> computation) 
     return values;
 }
 
+double Study::doeEvaluatePoint(const QVector<double> &x)
+{
+    // sensitivity analysis
+    QSharedPointer<Computation> computation = QSharedPointer<Computation>(new Computation());
+    computation->readFromProblem();
+
+    // set parameters
+    for (int i = 0; i < m_parameters.count(); i++)
+    {
+        Parameter parameter = m_parameters[i];
+        computation->config()->parameters()->set(parameter.name(), x[i]);
+    }
+
+    if (m_setting.value(Study::General_SolveProblem).toBool())
+    {
+        try
+        {
+            // solve problem
+            computation->solve();
+
+            // TODO: better error handling
+            if (!computation->isSolved())
+                throw AgrosSolverException(tr("Problem was not solved."));
+        }
+        catch (AgrosException &e)
+        {
+            Agros2D::log()->printError(tr("Problem"), e.toString());
+            throw AgrosSolverException(tr("Problem was not solved."));
+        }
+    }
+
+    // evaluation
+    evaluateFunctionals(computation);
+    double value = evaluateSingleGoal(computation);
+    computation->clearSolution();
+    computation->clearFieldsAndConfig();
+    computation.clear();
+
+    return value;
+}
+
+void Study::doeCompute(QSharedPointer<Computation> computation, QVector<double> init, double optinalValue)
+{
+    SweepDoE doe(this, init, value(Study::General_DoE_Deviation).toDouble());
+    doe.setNSamples(value(Study::General_DoE_SweepSamples).toInt());
+    doe.setMethod(value(Study::General_DoE_SweepMethod).toInt());
+    if (!isnan(optinalValue))
+        doe.addValue(optinalValue);
+
+    // solve problem and compute statistics
+    doe.compute(computation);
+}
+
 void Study::addComputation(QSharedPointer<Computation> computation, bool newComputationSet)
 {
     if (m_computationSets.isEmpty() || newComputationSet)
@@ -530,6 +585,12 @@ void Study::setDefaultValues()
     m_settingDefault[General_ClearSolution] = true;
     m_settingDefault[General_SolveProblem] = true;
 
+    m_settingDefault[General_DoE] = false;
+    m_settingDefault[General_DoE_Deviation] = 0.01;
+
+    m_settingDefault[General_DoE_SweepSamples] = 5;
+    m_settingDefault[General_DoE_SweepMethod] = 1;
+
     m_settingDefault[View_Filter] = QString();
     m_settingDefault[View_ChartHorizontal] = QString();
     m_settingDefault[View_ChartVertical] = QString();
@@ -544,6 +605,12 @@ void Study::setStringKeys()
 {
     m_settingKey[General_ClearSolution] = "General_ClearSolution";
     m_settingKey[General_SolveProblem] = "General_SolveProblem";
+
+    m_settingKey[General_DoE] = "General_DoE";
+    m_settingKey[General_DoE_Deviation] = "General_DoE_Deviation";
+
+    m_settingKey[General_DoE_SweepSamples] = "General_DoE_SweepSamples";
+    m_settingKey[General_DoE_SweepMethod] = "General_DoE_SweepMethod";
 
     m_settingKey[View_Filter] = "View_Filter";
     m_settingKey[View_ChartHorizontal] = "View_ChartHorizontal";
@@ -572,7 +639,7 @@ QSharedPointer<Computation> Study::findExtreme(ResultType type, const QString &k
             double val = NAN;
             if (type == ResultType_Parameter)
                 val = computation->config()->parameters()->number(key);
-            else if (type == ResultType_Recipe || type == ResultType_Functional)
+            else if (type == ResultType_Recipe || type == ResultType_Functional || type == ResultType_Other)
                 val = computation->results()->value(key);
             else
                 assert(0);

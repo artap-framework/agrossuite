@@ -30,6 +30,112 @@
 class Computation;
 class Study;
 
+class Statistics
+{
+public:
+    Statistics(const QVector<double> x) : m_values(x), m_min(0.0), m_max(0.0), m_sum(0.0), m_mean(0.0), m_meanError(0.0), m_median(0.0), m_variance(0.0), m_stdDev(0.0)
+    {
+        if (x.isEmpty())
+            return;
+
+        // min and max
+        auto mm = std::minmax_element(x.begin(), x.end());
+        m_min = *mm.first;
+        m_max = *mm.second;
+
+        // sum
+        m_sum = std::accumulate(x.begin(), x.end(), 0.0);
+
+        // mean value
+        m_mean = m_sum / x.size();
+
+        // mean error
+        m_meanError = m_mean / sqrt(x.size());
+
+        // variance
+        m_variance = 0.0;
+        foreach (double val, x)
+            m_variance += (m_mean - val)*(m_mean - val);
+        m_variance = m_variance / x.size();
+
+        // standard deviation
+        m_stdDev = sqrt(m_variance);
+
+        // median
+        m_sortedValues = x;
+        std::sort(m_sortedValues.begin(), m_sortedValues.end());
+        if (m_sortedValues.size() % 2 == 0)
+            m_median = (m_sortedValues[(m_sortedValues.size() / 2) - 1] + m_sortedValues[m_sortedValues.size() / 2]) / 2.0;
+        else
+            m_median = m_sortedValues[m_sortedValues.size() / 2];
+    }
+
+    inline double min() const { return m_min; }
+    inline double max() const { return m_max; }
+    inline double sum() const { return m_sum; }
+    inline double mean() const { return m_mean; }
+    inline double meanError() const { return m_meanError; }
+    inline double median() const { return m_median; }
+    inline double variance() const { return m_variance; }
+    inline double stdDev() const { return m_stdDev; }
+
+    inline int const size() { return m_values.size(); }
+    inline QVector<double> const values() { return m_values; }
+    inline QVector<double> const sortedValues() { return m_sortedValues; }
+
+private:
+    QVector<double> m_values;
+    QVector<double> m_sortedValues;
+
+    double m_min;
+    double m_max;
+    double m_sum;
+    double m_mean;
+    double m_meanError;
+    double m_median;
+    double m_variance;
+    double m_stdDev;
+};
+
+class StatisticsCorrelation
+{
+public:
+    StatisticsCorrelation(const Statistics &x, const Statistics &y) : m_statsX(x), m_statsY(y), m_correlation(0.0), m_covariance(0.0)
+    {
+        compute();
+    }
+
+    StatisticsCorrelation(const QVector<double> x, const QVector<double> y) : m_statsX(Statistics(x)), m_statsY(Statistics(y)), m_correlation(0.0), m_covariance(0.0)
+    {
+        compute();
+    }
+
+    inline double covariance() const { return m_covariance; }
+    inline double correlation() const { return m_correlation; }
+
+private:
+    Statistics m_statsX;
+    Statistics m_statsY;
+
+    void compute()
+    {
+        assert(m_statsX.size() == m_statsY.size());
+
+        // Covariance
+        m_covariance = 0.0;
+        for (int i = 0; i < m_statsX.size(); i++)
+            m_covariance += (m_statsX.values()[i] - m_statsX.mean()) * (m_statsY.values()[i] - m_statsY.mean());
+
+        m_covariance /= m_statsX.size();
+
+        // Pearson product-moment correlation coefficient
+        m_correlation = m_covariance / (m_statsX.stdDev() * m_statsY.stdDev());
+    }
+
+    double m_covariance;
+    double m_correlation;
+};
+
 class SolutionUncertainty
 {
 public:
@@ -87,7 +193,8 @@ public:
     {
         ResultType_Parameter,
         ResultType_Functional,
-        ResultType_Recipe
+        ResultType_Recipe,
+        ResultType_Other
     };
 
     inline QString resultTypeToStringKey(ResultType type)
@@ -95,6 +202,7 @@ public:
         if (type == ResultType::ResultType_Parameter) return "parameter";
         else if (type == ResultType::ResultType_Functional) return "functional";
         else if (type == ResultType::ResultType_Recipe) return "recipe";
+        else if (type == ResultType::ResultType_Other) return "other";
         else assert(0);
     }
 
@@ -103,6 +211,7 @@ public:
         if (type == "parameter") return ResultType::ResultType_Parameter;
         else if (type == "functional") return ResultType::ResultType_Functional;
         else if (type == "recipe") return ResultType::ResultType_Recipe;
+        else if (type == "other") return ResultType::ResultType_Other;
         else assert(0);
     }
 
@@ -110,6 +219,12 @@ public:
     {
         General_ClearSolution,
         General_SolveProblem,
+
+        General_DoE,
+        General_DoE_Deviation,
+
+        General_DoE_SweepSamples,
+        General_DoE_SweepMethod,
 
         NLopt_xtol_rel,
         NLopt_xtol_abs,
@@ -194,6 +309,9 @@ public:
     void evaluateStep(QSharedPointer<Computation> computation, SolutionUncertainty solutionUncertainty = SolutionUncertainty());
     double evaluateSingleGoal(QSharedPointer<Computation> computation) const;
     QList<double> evaluateMultiGoal(QSharedPointer<Computation> computation) const;
+
+    double doeEvaluatePoint(const QVector<double> &x);
+    void doeCompute(QSharedPointer<Computation> computation, QVector<double> init, double optinalValue = NAN);
 
     QList<QSharedPointer<Computation> > &computations(int index = -1);
     QList<ComputationSet> computationSets(const QString &filter = "") const;

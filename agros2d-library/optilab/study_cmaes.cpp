@@ -81,6 +81,18 @@ public:
             m_study->evaluateStep(computation);
             double value = m_study->evaluateSingleGoal(computation);
 
+            // design of experiments
+            if (m_study->value(Study::General_DoE).toBool())
+            {
+                // base point for DoE
+                QVector<double> init(m_study->parameters().count());
+                for (int i = 0; i < m_study->parameters().count(); i++)
+                    init[i] = x[i];
+
+                // DoE
+                m_study->doeCompute(computation, init, value);
+            }
+
             if (m_study->value(Study::General_ClearSolution).toBool())
                 computation->clearSolution();
 
@@ -95,7 +107,7 @@ public:
                 if (parameter.penaltyEnabled())
                     totalPenalty += parameter.penalty(x[i]);
             }
-            qInfo() << totalPenalty;
+            // qInfo() << totalPenalty;
 
             return value + totalPenalty;
         }
@@ -313,12 +325,12 @@ void StudyCMAES::solve()
     // status
     if (cmasols.run_status() > 7)
     {
-        qInfo() << "optimization took " << cmasols.elapsed_time() / 1000.0 << " seconds, status: " << QString::fromStdString(cmasols.status_msg());
+        // qInfo() << "optimization took " << cmasols.elapsed_time() / 1000.0 << " seconds, status: " << QString::fromStdString(cmasols.status_msg());
         emit solved();
     }
     else
     {
-        qInfo() << "err: " << cmasols.run_status();
+        // qInfo() << "err: " << cmasols.run_status();
     }
 
     /*

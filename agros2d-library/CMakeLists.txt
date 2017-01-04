@@ -67,6 +67,7 @@ SET(SOURCES
     mesh/meshgenerator_triangle.cpp
     mesh/meshgenerator_gmsh.cpp
     parser/lex.cpp
+    optilab/doe.cpp
     optilab/study.cpp
     optilab/study_sweep.cpp
     optilab/study_nsga2.cpp
@@ -196,6 +197,7 @@ SET(HEADERS
   mesh/meshgenerator_cubit.h
   mesh/meshgenerator_triangle.h
   parser/lex.h
+  optilab/doe.h
   optilab/study.h
   optilab/study_sweep.h
   optilab/study_nsga2.h

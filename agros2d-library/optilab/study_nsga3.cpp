@@ -168,6 +168,19 @@ public:
                 if (!useSurrogate)
                 {
                     // qDebug() << "real computation";
+
+                    // design of experiments
+                    if (m_study->value(Study::General_DoE).toBool())
+                    {
+                        // base point for DoE
+                        QVector<double> init(m_study->parameters().count());
+                        for (int i = 0; i < m_study->parameters().count(); i++)
+                            init[i] = x[i];
+
+                        // DoE
+                        m_study->doeCompute(computation, init);
+                    }
+
                     m_study->evaluateStep(computation);
                     QList<double> values = m_study->evaluateMultiGoal(computation);
 

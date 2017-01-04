@@ -504,11 +504,23 @@ void StudyDialog::createControls()
     
     chkClearSolution = new QCheckBox(tr("Clear solution after solving the problem"));
     chkSolveProblem = new QCheckBox(tr("Solve problem"));
+
+    chkDoE = new QCheckBox(tr("Design of Experiments"));
+    txtDoEDeviation = new LineEditDouble();
+    txtDoEDeviation->setBottom(0.0);
+    txtDoESweepSamples = new QSpinBox();
+    txtDoESweepSamples->setMinimum(1);
+    txtDoESweepSamples->setMaximum(1000);
     
     QGridLayout *layoutGeneral = new QGridLayout();
     layoutGeneral->addWidget(chkClearSolution, 0, 0);
-    layoutGeneral->addWidget(chkSolveProblem, 0, 1);
-    
+    layoutGeneral->addWidget(chkSolveProblem, 1, 0);
+    layoutGeneral->addWidget(chkDoE, 0, 1, 1, 2);
+    layoutGeneral->addWidget(new QLabel(tr("Deviation (%):")), 1, 1);
+    layoutGeneral->addWidget(txtDoEDeviation, 1, 2);
+    layoutGeneral->addWidget(new QLabel(tr("Number of Samples:")), 2, 1);
+    layoutGeneral->addWidget(txtDoESweepSamples, 2, 2);
+
     QGroupBox *grpGeneral = new QGroupBox(tr("General"));
     grpGeneral->setLayout(layoutGeneral);
     
@@ -798,12 +810,20 @@ void StudyDialog::load()
 {
     chkClearSolution->setChecked(m_study->value(Study::General_ClearSolution).toBool());
     chkSolveProblem->setChecked(m_study->value(Study::General_SolveProblem).toBool());
+
+    chkDoE->setChecked(m_study->value(Study::General_DoE).toBool());
+    txtDoEDeviation->setValue(m_study->value(Study::General_DoE_Deviation).toDouble());
+    txtDoESweepSamples->setValue(m_study->value(Study::General_DoE_SweepSamples).toInt());
 }
 
 void StudyDialog::save()
 {
     m_study->setValue(Study::General_ClearSolution, chkClearSolution->isChecked());
     m_study->setValue(Study::General_SolveProblem, chkSolveProblem->isChecked());
+
+    m_study->setValue(Study::General_DoE, chkDoE->isChecked());
+    m_study->setValue(Study::General_DoE_Deviation, txtDoEDeviation->value());
+    m_study->setValue(Study::General_DoE_SweepSamples, txtDoESweepSamples->value());
 }
 
 void StudyDialog::doDuplicate()

@@ -71,6 +71,18 @@ double SweepProblem::evaluateSample(const vectord& x)
         m_study->evaluateStep(computation);
         double value = m_study->evaluateSingleGoal(computation);
 
+        // design of experiments
+        if (m_study->value(Study::General_DoE).toBool())
+        {
+            // base point for DoE
+            QVector<double> init(m_study->parameters().count());
+            for (int i = 0; i < m_study->parameters().count(); i++)
+                init[i] = x[i];
+
+            // DoE
+            m_study->doeCompute(computation, init, value);
+        }
+
         if (m_study->value(Study::General_ClearSolution).toBool())
             computation->clearSolution();
 
@@ -129,18 +141,18 @@ void StudySweep::solve()
     // parameters
     bayesopt::Parameters par = initialize_parameters_to_default();
     par.n_init_samples = value(Sweep_num_samples).toInt();
-    par.n_iterations = 1;
-    par.n_iter_relearn = 10000;
+    par.n_iterations = 0;
+    par.n_iter_relearn = 1000000;
     par.init_method = initMethodFromStringKey(value(Sweep_init_method).toString());
-    par.noise = 1e-10;
+    par.noise = 0;
     par.random_seed = 0;
-    par.verbose_level = 1;
+    par.verbose_level = 0;
 
-    SweepProblem SweepProblem(this, par);
+    SweepProblem sweepProblem(this, par);
 
     // init BayesOpt problem
     addComputationSet(tr("Sweep"));
-    SweepProblem.initializeOptimization();
+    sweepProblem.initializeOptimization();
 
     m_isSolving = false;
 

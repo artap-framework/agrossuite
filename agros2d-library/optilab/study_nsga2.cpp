@@ -58,6 +58,17 @@ void objectiveFunction(double *xreal, double *xbin, int **gene, double *obj, dou
     // evaluate step
     try
     {
+        if (localStudy->value(Study::General_DoE).toBool())
+        {
+            // base point for DoE
+            QVector<double> init(localStudy->parameters().count());
+            for (int i = 0; i < localStudy->parameters().count(); i++)
+                init[i] = xreal[i];
+
+            // DoE
+            localStudy->doeCompute(computation, init);
+        }
+
         // multiobjective optimization
         localStudy->evaluateStep(computation);
         QList<double> values = localStudy->evaluateMultiGoal(computation);

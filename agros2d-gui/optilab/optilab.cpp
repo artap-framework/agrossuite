@@ -100,112 +100,6 @@ private:
     double m_correlation_coef;
 };
 
-class Statistics
-{
-public:
-    Statistics(const QVector<double> x) : m_values(x), m_min(0.0), m_max(0.0), m_sum(0.0), m_mean(0.0), m_meanError(0.0), m_median(0.0), m_variance(0.0), m_stdDev(0.0)
-    {
-        if (x.isEmpty())
-            return;
-
-        // min and max
-        auto mm = std::minmax_element(x.begin(), x.end());
-        m_min = *mm.first;
-        m_max = *mm.second;
-
-        // sum
-        m_sum = std::accumulate(x.begin(), x.end(), 0.0);
-
-        // mean value
-        m_mean = m_sum / x.size();
-
-        // mean error
-        m_meanError = m_mean / sqrt(x.size());
-
-        // variance
-        m_variance = 0.0;
-        foreach (double val, x)
-            m_variance += (m_mean - val)*(m_mean - val);
-        m_variance = m_variance / x.size();
-
-        // standard deviation
-        m_stdDev = sqrt(m_variance);
-
-        // median
-        m_sortedValues = x;
-        std::sort(m_sortedValues.begin(), m_sortedValues.end());
-        if (m_sortedValues.size() % 2 == 0)
-            m_median = (m_sortedValues[(m_sortedValues.size() / 2) - 1] + m_sortedValues[m_sortedValues.size() / 2]) / 2.0;
-        else
-            m_median = m_sortedValues[m_sortedValues.size() / 2];
-    }
-
-    inline double min() const { return m_min; }
-    inline double max() const { return m_max; }
-    inline double sum() const { return m_sum; }
-    inline double mean() const { return m_mean; }
-    inline double meanError() const { return m_meanError; }
-    inline double median() const { return m_median; }
-    inline double variance() const { return m_variance; }
-    inline double stdDev() const { return m_stdDev; }
-
-    inline int const size() { return m_values.size(); }
-    inline QVector<double> const values() { return m_values; }
-    inline QVector<double> const sortedValues() { return m_sortedValues; }
-
-private:
-    QVector<double> m_values;
-    QVector<double> m_sortedValues;
-
-    double m_min;
-    double m_max;
-    double m_sum;
-    double m_mean;
-    double m_meanError;
-    double m_median;
-    double m_variance;
-    double m_stdDev;
-};
-
-class StatisticsCorrelation
-{
-public:
-    StatisticsCorrelation(const Statistics &x, const Statistics &y) : m_statsX(x), m_statsY(y), m_correlation(0.0), m_covariance(0.0)
-    {
-        compute();
-    }
-
-    StatisticsCorrelation(const QVector<double> x, const QVector<double> y) : m_statsX(Statistics(x)), m_statsY(Statistics(y)), m_correlation(0.0), m_covariance(0.0)
-    {
-        compute();
-    }
-
-    inline double covariance() const { return m_covariance; }
-    inline double correlation() const { return m_correlation; }
-
-private:
-    Statistics m_statsX;
-    Statistics m_statsY;
-
-    void compute()
-    {
-        assert(m_statsX.size() == m_statsY.size());
-
-        // Covariance
-        m_covariance = 0.0;
-        for (int i = 0; i < m_statsX.size(); i++)
-            m_covariance += (m_statsX.values()[i] - m_statsX.mean()) * (m_statsY.values()[i] - m_statsY.mean());
-
-        m_covariance /= m_statsX.size();
-
-        // Pearson product-moment correlation coefficient
-        m_correlation = m_covariance / (m_statsX.stdDev() * m_statsY.stdDev());
-    }
-
-    double m_covariance;
-    double m_correlation;
-};
-
 OptiLabWidget::OptiLabWidget(OptiLab *parent) : QWidget(parent), m_optilab(parent)
 {
     createControls();
@@ -972,6 +866,13 @@ void OptiLab::doComputationSelected(const QString &key)
             recipesNode->setIcon(0, iconAlphabet('R', AlphabetColor_Green));
             recipesNode->setExpanded(true);
 
+            // other
+            QTreeWidgetItem *otherNode = new QTreeWidgetItem(trvResults);
+            otherNode->setText(0, tr("Other"));
+            otherNode->setFont(0, fnt);
+            otherNode->setIcon(0, iconAlphabet('O', AlphabetColor_Purple));
+            otherNode->setExpanded(true);
+
             StringToDoubleMap results = computation->results()->items();
             foreach (QString key, results.keys())
             {
@@ -990,6 +891,14 @@ void OptiLab::doComputationSelected(const QString &key)
                     item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Recipe);
 
                     if (selectedType == Study::ResultType::ResultType_Recipe && selectedKey == key)
+                        selectedItem = item;
+                }
+                else if (computation->results()->type(key) == ComputationResultType_Other)
+                {
+                    item = new QTreeWidgetItem(otherNode);
+                    item->setData(1, Qt::UserRole, Study::ResultType::ResultType_Other);
+
+                    if (selectedType == Study::ResultType::ResultType_Other && selectedKey == key)
                         selectedItem = item;
                 }
                 else
@@ -1040,6 +949,8 @@ void OptiLab::doChartRefreshed(const QString &key)
         labelX = tr("%1 (functional)").arg(chartX.right(chartX.count() - 11));
     else if (chartX.contains("recipe:"))
         labelX = tr("%1 (recipe)").arg(chartX.right(chartX.count() - 7));
+    else if (chartX.contains("other:"))
+        labelX = tr("%1 (other)").arg(chartX.right(chartX.count() - 6));
     else
         assert(0);
 
@@ -1051,6 +962,8 @@ void OptiLab::doChartRefreshed(const QString &key)
         labelY = tr("%1 (functional)").arg(chartY.right(chartY.count() - 11));
     else if (chartY.contains("recipe:"))
         labelY = tr("%1 (recipe)").arg(chartY.right(chartY.count() - 7));
+    else if (chartY.contains("other:"))
+        labelY = tr("%1 (other)").arg(chartY.right(chartY.count() - 6));
     else
         assert(0);
 
@@ -1126,6 +1039,20 @@ void OptiLab::doChartRefreshed(const QString &key)
             if (chartY.contains("recipe:"))
             {
                 QString name = chartY.right(chartY.count() - 7);
+                double value = computation->results()->value(name);
+                dataSetY.append(value);
+            }
+
+            // other
+            if (chartX.contains("other:"))
+            {
+                QString name = chartX.right(chartX.count() - 6);
+                double value = computation->results()->value(name);
+                dataSetX.append(value);
+            }
+            if (chartY.contains("other:"))
+            {
+                QString name = chartY.right(chartY.count() - 6);
                 double value = computation->results()->value(name);
                 dataSetY.append(value);
             }
@@ -1327,7 +1254,7 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
 
                 if (type == Study::ResultType_Parameter)
                     data.append(computation->config()->parameters()->number(key));
-                else if (type == Study::ResultType_Recipe || type == Study::ResultType_Functional)
+                else if (type == Study::ResultType_Recipe || type == Study::ResultType_Functional || type == Study::ResultType_Other)
                     data.append(computation->results()->value(key));
 
                 step.append(step.count());
@@ -1337,81 +1264,83 @@ void OptiLab::doResultChanged(QTreeWidgetItem *source, QTreeWidgetItem *dest)
         if (data.size() > 0)
         {
             Statistics stats(data);
-
-            boost::math::normal_distribution<double> normalDistribution(stats.mean(), stats.stdDev());
-
-            // data distribution
-            int dataCount = 15;
-            double dataStep = (stats.max() - stats.min()) / (dataCount - 1);
-            QVector<double> dataPDF(dataCount);
-            QVector<double> dataCDF(dataCount);
-            QVector<double> normalCDFCorrelation(dataCount);
-            QVector<double> dataSteps(dataCount);
-
-            if ((stats.max() - stats.min()) > EPS_ZERO)
+            if (stats.stdDev() > 0.0)
             {
-                for (int i = 0; i < dataCount; i++)
-                    dataSteps[i] = stats.min() + dataStep * i;
+                boost::math::normal_distribution<double> normalDistribution(stats.mean(), stats.stdDev());
 
-                // construct probability density function (PDF)
-                foreach (double val, data)
+                // data distribution
+                int dataCount = 15;
+                double dataStep = (stats.max() - stats.min()) / (dataCount - 1);
+                QVector<double> dataPDF(dataCount);
+                QVector<double> dataCDF(dataCount);
+                QVector<double> normalCDFCorrelation(dataCount);
+                QVector<double> dataSteps(dataCount);
+
+                if ((stats.max() - stats.min()) > EPS_ZERO)
                 {
-                    int bin = round(((dataCount - 1) * ((val - stats.min()) / (stats.max() - stats.min()))));
-                    dataPDF[bin] += 1;
+                    for (int i = 0; i < dataCount; i++)
+                        dataSteps[i] = stats.min() + dataStep * i;
+
+                    // construct probability density function (PDF)
+                    foreach (double val, data)
+                    {
+                        int bin = round(((dataCount - 1) * ((val - stats.min()) / (stats.max() - stats.min()))));
+                        dataPDF[bin] += 1;
+                    }
+
+                    // construct cumulative distribution function (CDF)
+                    for (int i = 0; i < dataCount; i++)
+                        for (int j = 0; j <= i; j++)
+                            dataCDF[i] += dataPDF[j];
+
+                    // correlation with normal distribution
+                    for (int i = 0; i < dataCount; i++)
+                        normalCDFCorrelation[i] = boost::math::cdf(normalDistribution, dataSteps[i]);
                 }
 
-                // construct cumulative distribution function (CDF)
-                for (int i = 0; i < dataCount; i++)
-                    for (int j = 0; j <= i; j++)
-                        dataCDF[i] += dataPDF[j];
+                QCPBars *pdfDataBars = dynamic_cast<QCPBars *>(pdfChart->plottable(0));
+                pdfDataBars->setWidth(dataStep * 0.9);
+                pdfDataBars->setData(dataSteps, dataPDF);
+                QCPItemStraightLine *pdfDataMeanLine = dynamic_cast<QCPItemStraightLine *>(pdfChart->item(0));
+                pdfDataMeanLine->point1->setCoords(QPointF(stats.mean(), 0));
+                pdfDataMeanLine->point2->setCoords(QPointF(stats.mean(), 1));
 
-                // correlation with normal distribution
-                for (int i = 0; i < dataCount; i++)
-                    normalCDFCorrelation[i] = boost::math::cdf(normalDistribution, dataSteps[i]);
+                // normal distribution
+                int normalCount = 100;
+                QVector<double> normalPDF(normalCount);
+                QVector<double> normalCDF(normalCount);
+                QVector<double> normalSteps(normalCount);
+                for (int i = 0; i < normalCount; i++)
+                {
+                    normalSteps[i] = stats.min() + (stats.max() - stats.min()) / (100 - 1) * i;
+                    normalPDF[i] = boost::math::pdf(normalDistribution, normalSteps[i]);
+                    normalCDF[i] = boost::math::cdf(normalDistribution, normalSteps[i]);
+                }
+                pdfChart->graph(0)->setData(normalSteps, normalPDF);
+
+                pdfChart->xAxis->setLabel(key);
+                pdfChart->rescaleAxes();
+
+                // cdf
+                cdfChart->xAxis->setLabel(key);
+                cdfChart->graph(0)->setData(dataSteps, dataCDF);
+                cdfChart->graph(1)->setData(normalSteps, normalCDF);
+                cdfChart->rescaleAxes();
+
+                // labels
+                lblResultMin->setText(QString::number(stats.min()));
+                lblResultMax->setText(QString::number(stats.max()));
+                lblResultSum->setText(QString::number(stats.sum()));
+                lblResultMean->setText(QString::number(stats.mean()));
+                lblResultMedian->setText(QString::number(stats.median()));
+                lblResultVariance->setText(QString::number(stats.variance()));
+                lblResultStdDev->setText(QString::number(stats.stdDev()));
+
+                // correlation and covariance
+                StatisticsCorrelation statsCorrelation(dataCDF, normalCDFCorrelation);
+                lblResultNormalCovariance->setText(QString::number(statsCorrelation.covariance()));
+                lblResultNormalCorrelation->setText(QString::number(statsCorrelation.correlation()));
             }
-
-            QCPBars *pdfDataBars = dynamic_cast<QCPBars *>(pdfChart->plottable(0));
-            pdfDataBars->setWidth(dataStep * 0.9);
-            pdfDataBars->setData(dataSteps, dataPDF);
-            QCPItemStraightLine *pdfDataMeanLine = dynamic_cast<QCPItemStraightLine *>(pdfChart->item(0));
-            pdfDataMeanLine->point1->setCoords(QPointF(stats.mean(), 0));
-            pdfDataMeanLine->point2->setCoords(QPointF(stats.mean(), 1));
-
-            // normal distribution
-            int normalCount = 100;
-            QVector<double> normalPDF(normalCount);
-            QVector<double> normalCDF(normalCount);
-            QVector<double> normalSteps(normalCount);
-            for (int i = 0; i < normalCount; i++)
-            {
-                normalSteps[i] = stats.min() + (stats.max() - stats.min()) / (100 - 1) * i;
-                normalPDF[i] = boost::math::pdf(normalDistribution, normalSteps[i]);
-                normalCDF[i] = boost::math::cdf(normalDistribution, normalSteps[i]);
-            }
-            pdfChart->graph(0)->setData(normalSteps, normalPDF);
-
-            pdfChart->xAxis->setLabel(key);
-            pdfChart->rescaleAxes();
-
-            // cdf
-            cdfChart->xAxis->setLabel(key);
-            cdfChart->graph(0)->setData(dataSteps, dataCDF);
-            cdfChart->graph(1)->setData(normalSteps, normalCDF);
-            cdfChart->rescaleAxes();
-
-            // labels
-            lblResultMin->setText(QString::number(stats.min()));
-            lblResultMax->setText(QString::number(stats.max()));
-            lblResultSum->setText(QString::number(stats.sum()));
-            lblResultMean->setText(QString::number(stats.mean()));
-            lblResultMedian->setText(QString::number(stats.median()));
-            lblResultVariance->setText(QString::number(stats.variance()));
-            lblResultStdDev->setText(QString::number(stats.stdDev()));
-
-            // correlation and covariance
-            StatisticsCorrelation statsCorrelation(dataCDF, normalCDFCorrelation);
-            lblResultNormalCovariance->setText(QString::number(statsCorrelation.covariance()));
-            lblResultNormalCorrelation->setText(QString::number(statsCorrelation.correlation()));
         }
     }
 

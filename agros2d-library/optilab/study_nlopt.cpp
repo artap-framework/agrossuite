@@ -35,9 +35,14 @@ class NLoptProblem
 public:
     NLoptProblem(StudyNLopt *study) :  m_study(study),
         opt((nlopt::algorithm) study->algorithmFromStringKey(study->value(Study::NLopt_algorithm).toString()), study->parameters().count())
-        // m_penaltyLambda(1.0)
+      // m_penaltyLambda(1.0)
     {
 
+    }
+
+    double evaluatePoint(const std::vector<double> &x)
+    {
+        return 0;
     }
 
     double objectiveFunction(const std::vector<double> &x, std::vector<double> &grad, void *data)
@@ -64,6 +69,18 @@ public:
             m_study->evaluateStep(computation);
             double value = m_study->evaluateSingleGoal(computation);
 
+            // design of experiments
+            if (m_study->value(Study::General_DoE).toBool())
+            {
+                // base point for DoE
+                QVector<double> init(m_study->parameters().count());
+                for (int i = 0; i < m_study->parameters().count(); i++)
+                    init[i] = x[i];
+
+                // DoE
+                m_study->doeCompute(computation, init, value);
+            }
+
             if (m_study->value(Study::General_ClearSolution).toBool())
                 computation->clearSolution();
 
@@ -78,7 +95,6 @@ public:
                 if (parameter.penaltyEnabled())
                     totalPenalty += parameter.penalty(x[i]);
             }
-            qInfo() << totalPenalty;
 
             return value + totalPenalty;
         }
@@ -227,7 +243,7 @@ void StudyNLopt::solve()
 }
 
 void StudyNLopt::setDefaultValues()
-{    
+{
     Study::setDefaultValues();
 
     m_settingDefault[NLopt_xtol_rel] = 1e-6;
@@ -247,6 +263,6 @@ void StudyNLopt::setStringKeys()
     m_settingKey[NLopt_ftol_rel] = "NLopt_ftol_rel";
     m_settingKey[NLopt_ftol_abs] = "NLopt_ftol_abs";
     m_settingKey[NLopt_n_iterations] = "NLopt_n_iterations";
-    m_settingKey[NLopt_algorithm] = "NLopt_algorithm";    
+    m_settingKey[NLopt_algorithm] = "NLopt_algorithm";
 }
 

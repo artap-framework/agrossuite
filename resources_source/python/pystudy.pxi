@@ -101,14 +101,34 @@ cdef class __Study__:
     property clear_solution:
         def __get__(self):
             return self.thisptr.getBoolParameter(b'General_ClearSolution')
-        def __set__(self, clear):
-            self.thisptr.setParameter(string(b'General_ClearSolution'), <bool> clear)
+        def __set__(self, val):
+            self.thisptr.setParameter(string(b'General_ClearSolution'), <bool> val)
 
     property solve_problem:
         def __get__(self):
             return self.thisptr.getBoolParameter(b'General_SolveProblem')
-        def __set__(self, solve):
-            self.thisptr.setParameter(string(b'General_SolveProblem'), <bool> solve)
+        def __set__(self, val):
+            self.thisptr.setParameter(string(b'General_SolveProblem'), <bool> val)
+
+    property doe:
+        def __get__(self):
+            return self.thisptr.getBoolParameter(b'General_DoE')
+        def __set__(self, val):
+            self.thisptr.setParameter(string(b'General_DoE'), <bool> val)
+
+    property doe_deviation:
+        def __get__(self):
+            return self.thisptr.getIntParameter(b'General_DoE_Deviation')
+        def __set__(self, val):
+            positive_value(val)
+            self.thisptr.setParameter(string(b'General_DoE_Deviation'), <double> val)
+
+    property doe_sweep_samples:
+        def __get__(self):
+            return self.thisptr.getDoubleParameter(b'General_DoE_SweepSamples')
+        def __set__(self, val):
+            positive_value(val)
+            self.thisptr.setParameter(string(b'General_DoE_SweepSamples'), <int> val)
 
     # solve study
     def solve(self):

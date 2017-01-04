@@ -207,8 +207,22 @@ struct StateEval
 
         // evaluate step
         m_study->evaluateStep(computation, solutionUncertainty);
-
         double value = m_study->evaluateSingleGoal(computation);
+
+        // design of experiments
+        if (m_study->value(Study::General_DoE).toBool())
+        {
+            // base point for DoE
+            QVector<double> init(m_study->parameters().count());
+            for (int i = 0; i < m_study->parameters().count(); i++)
+            {
+                Parameter parameter = m_study->parameters()[i];
+                init[i] = parameter.lowerBound() + x(i) * (parameter.upperBound() - parameter.lowerBound());
+            }
+
+            // DoE
+            m_study->doeCompute(computation, init, value);
+        }
 
         if (m_study->value(Study::General_ClearSolution).toBool())
             computation->clearSolution();
@@ -281,7 +295,7 @@ StudyLimbo::StudyLimbo() : Study()
 
 int StudyLimbo::estimatedNumberOfSteps() const
 {
-    return value(LIMBO_stop_maxiterations_iterations).toInt();
+    return value(LIMBO_stop_maxiterations_iterations).toInt() + value(LIMBO_init_randomsampling_samples).toInt();
 }
 
 // covariance function
