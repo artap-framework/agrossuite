@@ -120,14 +120,14 @@ cdef class __Study__:
         def __get__(self):
             return self.thisptr.getIntParameter(b'General_DoE_Deviation')
         def __set__(self, val):
-            positive_value(val)
+            positive_value(val, 'doe_deviation')
             self.thisptr.setParameter(string(b'General_DoE_Deviation'), <double> val)
 
     property doe_sweep_samples:
         def __get__(self):
             return self.thisptr.getDoubleParameter(b'General_DoE_SweepSamples')
         def __set__(self, val):
-            positive_value(val)
+            positive_value(val, 'doe_sweep_samples')
             self.thisptr.setParameter(string(b'General_DoE_SweepSamples'), <int> val)
 
     # solve study
