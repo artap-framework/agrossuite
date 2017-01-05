@@ -505,27 +505,38 @@ void StudyDialog::createControls()
     chkClearSolution = new QCheckBox(tr("Clear solution after solving the problem"));
     chkSolveProblem = new QCheckBox(tr("Solve problem"));
 
-    chkDoE = new QCheckBox(tr("Design of Experiments"));
+    QGridLayout *layoutGeneral = new QGridLayout();
+    layoutGeneral->addWidget(chkClearSolution, 0, 0);
+    layoutGeneral->addWidget(chkSolveProblem, 1, 0);
+    layoutGeneral->setRowStretch(10, 1);
+
+    QGroupBox *grpGeneral = new QGroupBox(tr("General"));
+    grpGeneral->setLayout(layoutGeneral);
+    
+    chkDoE = new QCheckBox(tr("Enable DoE"));
     txtDoEDeviation = new LineEditDouble();
     txtDoEDeviation->setBottom(0.0);
     txtDoESweepSamples = new QSpinBox();
     txtDoESweepSamples->setMinimum(1);
     txtDoESweepSamples->setMaximum(1000);
-    
-    QGridLayout *layoutGeneral = new QGridLayout();
-    layoutGeneral->addWidget(chkClearSolution, 0, 0);
-    layoutGeneral->addWidget(chkSolveProblem, 1, 0);
-    layoutGeneral->addWidget(chkDoE, 0, 1, 1, 2);
-    layoutGeneral->addWidget(new QLabel(tr("Deviation (%):")), 1, 1);
-    layoutGeneral->addWidget(txtDoEDeviation, 1, 2);
-    layoutGeneral->addWidget(new QLabel(tr("Number of Samples:")), 2, 1);
-    layoutGeneral->addWidget(txtDoESweepSamples, 2, 2);
 
-    QGroupBox *grpGeneral = new QGroupBox(tr("General"));
-    grpGeneral->setLayout(layoutGeneral);
-    
+    QGridLayout *layoutDoE = new QGridLayout();
+    layoutDoE->addWidget(chkDoE, 0, 1, 1, 2);
+    layoutDoE->addWidget(new QLabel(tr("Deviation (%):")), 1, 1);
+    layoutDoE->addWidget(txtDoEDeviation, 1, 2);
+    layoutDoE->addWidget(new QLabel(tr("Number of Samples:")), 2, 1);
+    layoutDoE->addWidget(txtDoESweepSamples, 2, 2);
+    layoutDoE->setRowStretch(10, 1);
+
+    QGroupBox *grpDoE = new QGroupBox(tr("Design of Experiments"));
+    grpDoE->setLayout(layoutDoE);
+
+    QHBoxLayout *layoutOrdinary = new QHBoxLayout();
+    layoutOrdinary->addWidget(grpGeneral);
+    layoutOrdinary->addWidget(grpDoE);
+
     QVBoxLayout *layoutStudy = new QVBoxLayout();
-    layoutStudy->addWidget(grpGeneral);
+    layoutStudy->addLayout(layoutOrdinary);
     layoutStudy->addLayout(createStudyControls());
     layoutStudy->addStretch();
     

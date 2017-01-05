@@ -140,9 +140,9 @@ SolutionStore::~SolutionStore()
 QString SolutionStore::baseStoreFileName(FieldSolutionID solutionID) const
 {
     QString fn = QString("%1/%2/%3").
-        arg(cacheProblemDir()).
-        arg(m_computation->problemDir()).
-        arg(solutionID.toString());
+            arg(cacheProblemDir()).
+            arg(m_computation->problemDir()).
+            arg(solutionID.toString());
 
     return fn;
 }
@@ -155,8 +155,8 @@ void SolutionStore::clear()
 
     // remove runtime
     QString fn = QString("%1/%2/runtime.json").
-    arg(cacheProblemDir()).
-    arg(m_computation->problemDir());
+            arg(cacheProblemDir()).
+            arg(m_computation->problemDir());
     if (QFile::exists(fn))
         QFile::remove(fn);
 
@@ -225,10 +225,40 @@ void SolutionStore::addSolution(FieldSolutionID solutionID,
     // save soloution
     QString baseFN = baseStoreFileName(solutionID);
 
-    QString fnMesh = QString("%1.msh").arg(baseFN);
-    std::ofstream ofsMesh(fnMesh.toStdString());
-    boost::archive::binary_oarchive sbMesh(ofsMesh);
-    doFHandler.get_tria().save(sbMesh, 0);
+    bool forceSave = true;
+
+    // speedup for transient problems with same mesh
+    {
+        if (solutionID.timeStep > 0)
+        {
+            // decrease timestep
+            FieldSolutionID previousSolutionID = solutionID;
+            previousSolutionID.timeStep--;
+
+            if (contains(previousSolutionID))
+            {
+                MultiArray previousMA = m_multiSolutionDealCache[previousSolutionID];
+                if (doFHandler.get_tria().n_cells() == previousMA.doFHandler().get_tria().n_cells())
+                {
+                    // copy file
+                    forceSave = false;
+                    QString previousFN = baseStoreFileName(previousSolutionID);
+
+                    QString fnMesh = QString("%1.msh").arg(baseFN);
+                    QString previousMesh = QString("%1.msh").arg(previousFN);
+                    QFile::copy(previousMesh, fnMesh);
+                }
+            }
+        }
+
+        if (forceSave)
+        {
+            QString fnMesh = QString("%1.msh").arg(baseFN);
+            std::ofstream ofsMesh(fnMesh.toStdString());
+            boost::archive::binary_oarchive sbMesh(ofsMesh);
+            doFHandler.get_tria().save(sbMesh, 0);
+        }
+    }
 
     QString fnDoF = QString("%1.dof").arg(baseFN);
     std::ofstream ofsDoF(fnDoF.toStdString());
@@ -384,8 +414,8 @@ bool SolutionStore::loadRunTimeDetails()
         runTime.load(runtimeJson);
 
         FieldSolutionID solutionID(solutionJson[FIELDID].toString(),
-            solutionJson[TIMESTEP].toInt(),
-            solutionJson[ADAPTIVITYSTEP].toInt());
+                                   solutionJson[TIMESTEP].toInt(),
+                                   solutionJson[ADAPTIVITYSTEP].toInt());
         // append multisolution
         m_multiSolutions.append(solutionID);
 
