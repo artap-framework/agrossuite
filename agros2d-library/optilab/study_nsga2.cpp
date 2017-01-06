@@ -35,6 +35,7 @@
 // TODO: encapsulate
 static StudyNSGA2 *localStudy = nullptr;
 static nsga2::NSGA2 *localNSGA2 = nullptr;
+static int localSteps = 0;
 
 void objectiveFunction(double *xreal, double *xbin, int **gene, double *obj, double *constr)
 {    
@@ -90,6 +91,9 @@ void objectiveFunction(double *xreal, double *xbin, int **gene, double *obj, dou
 
         for (int i = 0; i < values.count(); i++)
             obj[i] = values[i] + totalPenalty;
+
+        localSteps++;
+        qInfo() << "NSGA-II: step " << localSteps << "/" << localStudy->estimatedNumberOfSteps();
     }
     catch (AgrosSolverException &e)
     {
@@ -111,6 +115,7 @@ StudyNSGA2::StudyNSGA2() : Study()
 {
     // study
     localStudy = this;    
+    localSteps = 0;
 }
 
 int StudyNSGA2::estimatedNumberOfSteps() const

@@ -26,6 +26,7 @@
 
 #include "util/system_utils.h"
 #include "logview.h"
+#include "optilab/study.h"
 
 #include "../3rdparty/tclap/CmdLine.h"
 
@@ -38,9 +39,13 @@ int main(int argc, char *argv[])
 
         TCLAP::SwitchArg logArg("l", "enable-log", "Enable log", true);
         TCLAP::ValueArg<std::string> problemArg("p", "problem", "Solve problem", false, "", "string");
+        TCLAP::SwitchArg writeArg("w", "write", "Write solution", false);
+        TCLAP::ValueArg<int> studyArg("s", "study", "Run study", false, -1, "int");
 
         cmd.add(logArg);
         cmd.add(problemArg);
+        cmd.add(writeArg);
+        cmd.add(studyArg);
 
         // parse the argv array.
         cmd.parse(argc, argv);
@@ -85,12 +90,25 @@ int main(int argc, char *argv[])
 
                         Agros2D::log()->printMessage(QObject::tr("Problem"), QObject::tr("Problem '%1' successfuly loaded").arg(QString::fromStdString(problemArg.getValue())));
 
-                        // solve
-                        QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
-                        computation->solve();
+                        if (studyArg.getValue() == -1)
+                        {
+                            // solve problem
+                            QSharedPointer<Computation> computation = Agros2D::problem()->createComputation(true);
+                            computation->solve();
+                        }
+                        else
+                        {
+                            // run study
+                            Study *study = Agros2D::problem()->studies()->items().at(studyArg.getValue());
+
+                            // solve
+                            if (study)
+                                study->solve();
+                        }
 
                         // save solution
-                        // Agros2D::problem()->writeProblemToArchive(QString::fromStdString(problemArg.getValue()), false);
+                        if (writeArg.getValue())
+                            Agros2D::problem()->writeProblemToArchive(QString::fromStdString(problemArg.getValue()), false);
 
                         Agros2D::log()->printMessage(QObject::tr("Solver"), QObject::tr("Problem was solved in %1").arg(milisecondsToTime(time.elapsed()).toString("mm:ss.zzz")));
 

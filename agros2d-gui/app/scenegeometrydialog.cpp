@@ -79,8 +79,7 @@ SceneNodeDialog::SceneNodeDialog(SceneNode *node, QWidget *parent, bool isNew) :
 
     load();
 
-    setMinimumSize(sizeHint());
-    // setMaximumSize(sizeHint());
+    setMinimumSize(sizeHint().width() * 1.8, sizeHint().height());
 }
 
 SceneNodeDialog::~SceneNodeDialog()
@@ -1037,8 +1036,7 @@ SceneLabelDialog::SceneLabelDialog(SceneLabel *label, QWidget *parent, bool isNe
 
     load();
 
-    setMinimumSize(sizeHint());
-    // setMaximumSize(sizeHint());
+    setMinimumSize(sizeHint().width() * 1.5, sizeHint().height());
 }
 
 QLayout* SceneLabelDialog::createContent()

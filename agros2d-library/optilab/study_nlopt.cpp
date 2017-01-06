@@ -33,7 +33,7 @@
 class NLoptProblem
 {
 public:
-    NLoptProblem(StudyNLopt *study) :  m_study(study),
+    NLoptProblem(StudyNLopt *study) :  m_study(study), m_steps(0),
         opt((nlopt::algorithm) study->algorithmFromStringKey(study->value(Study::NLopt_algorithm).toString()), study->parameters().count())
       // m_penaltyLambda(1.0)
     {
@@ -96,6 +96,9 @@ public:
                     totalPenalty += parameter.penalty(x[i]);
             }
 
+            m_steps++;
+            qInfo() << "NLOpt: step " << m_steps << "/" << m_study->estimatedNumberOfSteps();
+
             return value + totalPenalty;
         }
         catch (AgrosSolverException &e)
@@ -112,6 +115,7 @@ public:
 private:
     StudyNLopt *m_study;
     // double m_penaltyLambda;
+    int m_steps;
 };
 
 double objFunctionWrapper(const std::vector<double> &x, std::vector<double> &grad, void *data)

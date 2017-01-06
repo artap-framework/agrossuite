@@ -129,7 +129,7 @@ struct StateEval
     static size_t dim_out;
 
     StateEval(StudyLimbo *study)
-        : m_study(study)
+        : m_study(study), m_steps(0)
     {
         // static variables
         // input
@@ -256,11 +256,15 @@ struct StateEval
                 res[i] = values[i];
         }
 
+        m_steps++;
+        qInfo() << "Limbo: step " << m_steps << "/" << m_study->estimatedNumberOfSteps();
+
         return res;
     }
 
 private:
     StudyLimbo *m_study;
+    mutable int m_steps;
 };
 
 size_t StateEval::dim_in = -1;

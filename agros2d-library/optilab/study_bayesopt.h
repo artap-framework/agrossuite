@@ -38,6 +38,7 @@ public:
 
 private:
     StudyBayesOpt *m_study;
+    int m_steps;
 };
 
 class StudyBayesOpt : public Study

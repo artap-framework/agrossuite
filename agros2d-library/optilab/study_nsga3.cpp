@@ -58,7 +58,7 @@ struct Params {
 class NSGA3Problem : public NSGA3ProblemBase
 {
 public:
-    NSGA3Problem(StudyNSGA3 *study) : NSGA3ProblemBase("NSGA3"), m_study(study), relearn(30), countComputation(0), countSurrogate(0)
+    NSGA3Problem(StudyNSGA3 *study) : NSGA3ProblemBase("NSGA3"), m_study(study), relearn(30), countComputation(0), countSurrogate(0), m_steps(0)
     {
         lbs_.resize(m_study->parameters().count());
         ubs_.resize(m_study->parameters().count());
@@ -246,6 +246,9 @@ public:
                     m_study->addComputationSet(QObject::tr("Step %1").arg(computationCount / m_study->currentPopulationSize()));
             }
 
+            m_steps++;
+            qInfo() << "NSGA-III: step " << m_steps << "/" << m_study->estimatedNumberOfSteps();
+
             return true;
         }
         catch (AgrosSolverException &e)
@@ -271,6 +274,8 @@ private:
     int relearn;
     // mutable std::vector<Eigen::VectorXd> m_samples;
     // mutable std::vector<Eigen::VectorXd> m_observations;
+
+    mutable int m_steps;
 };
 
 StudyNSGA3::StudyNSGA3() : Study()

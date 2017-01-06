@@ -32,7 +32,7 @@
 #include "scene.h"
 
 BayesOptProblem::BayesOptProblem(StudyBayesOpt *study, bayesopt::Parameters par)
-    : ContinuousModel(study->parameters().count(), par), m_study(study)
+    : ContinuousModel(study->parameters().count(), par), m_study(study), m_steps(0)
 {
     vectord lowerBound(m_study->parameters().count());
     vectord upperBound(m_study->parameters().count());
@@ -108,6 +108,9 @@ double BayesOptProblem::evaluateSample(const vectord &x)
             if (parameter.penaltyEnabled())
                 totalPenalty += parameter.penalty(x[i]);
         }
+
+        m_steps++;
+        qInfo() << "BayesOpt: step " << m_steps << "/" << m_study->estimatedNumberOfSteps();
 
         return value + totalPenalty;
     }

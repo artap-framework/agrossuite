@@ -38,7 +38,7 @@ using namespace libcmaes;
 class CMAESProblem
 {
 public:
-    CMAESProblem(StudyCMAES *study) : m_study(study),
+    CMAESProblem(StudyCMAES *study) : m_study(study), m_steps(0),
         m_lowerBound(new double[study->parameters().count()]),
         m_upperBound(new double[study->parameters().count()])
     {
@@ -107,7 +107,9 @@ public:
                 if (parameter.penaltyEnabled())
                     totalPenalty += parameter.penalty(x[i]);
             }
-            // qInfo() << totalPenalty;
+
+            m_steps++;
+            qInfo() << "CMAES: step " << m_steps << "/" << m_study->estimatedNumberOfSteps();
 
             return value + totalPenalty;
         }
@@ -128,6 +130,8 @@ private:
     // double m_penaltyLambda;
     double *m_lowerBound;
     double *m_upperBound;
+
+    int m_steps;
 };
 
 static CMAESProblem *cmaesProblem = nullptr;

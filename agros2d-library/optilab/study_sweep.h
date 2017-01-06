@@ -38,6 +38,7 @@ public:
 
 private:
     StudySweep *m_study;
+    int m_steps;
 };
 
 class StudySweep : public Study

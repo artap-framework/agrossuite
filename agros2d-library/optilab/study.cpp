@@ -33,6 +33,7 @@
 #include "study_cmaes.h"
 
 #include "doe.h"
+#include <limits>
 
 // consts
 const QString NAME = "name";
@@ -328,12 +329,15 @@ double Study::doeEvaluatePoint(const QVector<double> &x)
 
             // TODO: better error handling
             if (!computation->isSolved())
+            {
                 throw AgrosSolverException(tr("Problem was not solved."));
+                return std::numeric_limits<double>::max();
+            }
         }
         catch (AgrosException &e)
         {
             Agros2D::log()->printError(tr("Problem"), e.toString());
-            throw AgrosSolverException(tr("Problem was not solved."));
+            return std::numeric_limits<double>::max();
         }
     }
 
