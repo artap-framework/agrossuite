@@ -1,6 +1,28 @@
 #!/bin/sh
 
+# set current dir
+if [ -z "${APPDIR}" ]; then APPDIR=$PWD; fi
 
+# change current dir
 cd $APPDIR
 export LD_LIBRARY_PATH=$APPDIR/libs/ 
-./agros2d
+
+echo "Run Agros Suite in " $APPDIR
+
+# run
+if [ $# -eq 0 ]; then
+    # run agros2d
+    ./agros2d
+elif [ $1 = "agros2d" ]; then
+    # shift args and run agros2d
+    shift
+    ./agros2d "$@"    
+elif [ $1 = "agros2d_solver" ]; then
+    # shift args and run solver
+    shift
+    ./agros2d_solver "$@"
+elif [ $1 = "pythonlab" ]; then
+    # shift args and run pythonlab
+    shift
+    ./pythonlab "$@"
+fi
