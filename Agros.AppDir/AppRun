@@ -2,4 +2,5 @@
 
 
 cd $APPDIR
+export LD_LIBRARY_PATH=$APPDIR/libs/ 
 ./agros2d
