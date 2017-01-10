@@ -86,7 +86,7 @@ void InfoWidgetGeneral::clear()
 
 void InfoWidgetGeneral::showProblemInfo(ProblemBase *problem)
 {
-    return;
+    // return;
 
     // template
     std::string info;
@@ -303,7 +303,7 @@ InfoWidget::~InfoWidget()
 
 void InfoWidget::welcome()
 {
-    return;
+    // return;
 
     // template
     std::string info;

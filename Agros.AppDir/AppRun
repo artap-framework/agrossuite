@@ -1,0 +1,5 @@
+#!/bin/sh
+
+
+cd $APPDIR
+./agros2d

@@ -125,24 +125,55 @@ def source_package(version):
 def binary_package():
     call(['dpkg-buildpackage', '-sgpg', '-rfakeroot'])
 
-def standalone_package():
+def appimage_package():
     from shutil import copytree, ignore_patterns
+    from os import remove, system
 
-    dest = 'standalone'
-    # rm dir
-    if (os.path.exists(dest)):
-        shutil.rmtree(dest)
-    # mk dir
-    os.mkdir(dest)
+    dest = 'Agros.AppDir'
+    
+    # rm files
+    try: 
+        os.remove(dest + '/agros2d') 
+    except OSError: 
+        pass
+    try: 
+        os.remove(dest + '/pythonlab') 
+    except OSError: 
+        pass
+    try: 
+        os.remove(dest + '/agros2d_solver') 
+    except OSError: 
+        pass
+    try: 
+        os.remove(dest + '/agros2d.so')
+    except OSError: 
+        pass
+    try: 
+        os.remove(dest + '/libs/libdeal_II.so') 
+    except OSError: 
+        pass
+    try: 
+        shutil.rmtree(dest + '/resources')
+    except:
+        pass        
+    try: 
+        shutil.rmtree(dest + '/libs')
+    except:
+        pass        
+    
     # copy binary files
     shutil.copy('agros2d', dest + '/agros2d')
     shutil.copy('pythonlab', dest + '/pythonlab')
     shutil.copy('agros2d_solver', dest + '/agros2d_solver')
     shutil.copytree('resources', dest + '/resources')
     shutil.copytree('libs', dest + '/libs', ignore=ignore_patterns('*.a'))
-    # shutil.copy('dealii/build/lib/libdeal_II.so', dest + '/libs/libdeal_II.so')
+    os.symlink('libs/libagros2d_python.so', dest + '/agros2d.so')    
     os.symlink(os.readlink('dealii/build/lib/libdeal_II.so'), dest + '/libs/libdeal_II.so')    
     shutil.copy('dealii/build/lib/libdeal_II.so.8.3.0', dest + '/libs/libdeal_II.so.8.3.0')
+    
+    # create AppImage
+    from subprocess import call
+    os.system("appimagetool Agros.AppDir Agros-x86_64.AppImage -n")
 
 def callgrind():
     call(['valgrind --tool=callgrind --smc-check=all-non-file --fn-skip=QMetaObject::activate* --fn-skip=QMetaObject::metacall* --fn-skip=*::qt_metacall* --fn-skip=*::qt_static_metacall* ./agros2d'])	  
@@ -185,7 +216,7 @@ if __name__ == "__main__":
                       help='version of package')
 
     # stand alone
-    pack = subparsers.add_parser('standalone', help='make standalone install')
+    pack = subparsers.add_parser('appimage', help='create appimage')
 
     # equations
     eqs = subparsers.add_parser('eqs', help='generate equations from modules')
@@ -216,8 +247,8 @@ if __name__ == "__main__":
         if (args.binary):
             binary_package()
 
-    if (args.command == 'standalone'):
-        standalone_package()
+    if (args.command == 'appimage'):
+        appimage_package()
 
     if (args.command == 'eqs'):
         equations()

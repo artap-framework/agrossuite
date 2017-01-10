@@ -83,8 +83,8 @@ class TestCMAESSphere(Agros2DTestCase):
         study_cmaes.clear_solution = True
         study_cmaes.solve_problem = False
 
-        study_cmaes.settings["maxiter"] = 500
-        study_cmaes.settings["maxeval"] = 500
+        study_cmaes.settings["maxiter"] = 1000
+        study_cmaes.settings["maxeval"] = 1000
         study_cmaes.settings["ftarget"] = 0.0001
         study_cmaes.settings["algorithm"] = "aCMAES"
         study_cmaes.settings["surrogate"] = "rsvm"

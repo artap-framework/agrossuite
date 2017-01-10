@@ -20,6 +20,14 @@ build:
     - cd ../resources/python
     - cmake .
     - ctest -D Experimental
+    # appimage 
+    - strip libs/*.so
+    - strip agros2d
+    - strip agros2d_solver
+    - strip pythonlab
+    - ./tools.py appimage
+    - mkdir ~/appimage/$CI_BUILD_REF
+    - cp Agros-x86_64.AppImage ~/appimage/$CI_BUILD_REF 
     
 build_mumps:
   tags:
