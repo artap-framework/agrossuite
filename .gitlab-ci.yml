@@ -18,6 +18,7 @@ build:
     - cmake .
     - make -j12
     # appimage 
+    - cd ..
     - strip libs/*.so
     - strip agros2d
     - strip agros2d_solver
@@ -26,7 +27,7 @@ build:
     - mkdir ~/appimage/$CI_BUILD_REF
     - cp Agros-x86_64.AppImage ~/appimage/$CI_BUILD_REF 
     # test
-    - cd ../resources/python
+    - cd resources/python
     - cmake .
     - ctest -D Experimental
     
