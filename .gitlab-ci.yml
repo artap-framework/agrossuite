@@ -21,6 +21,7 @@ build:
     - cmake .
     - ctest -D Experimental
     # appimage 
+    - cd ../../
     - strip libs/*.so
     - strip agros2d
     - strip agros2d_solver
