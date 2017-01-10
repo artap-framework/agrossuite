@@ -114,7 +114,7 @@ class TestNLoptBooth(Agros2DTestCase):
         study_nlopt.clear_solution = True
         study_nlopt.solve_problem = False
      
-        study_nlopt.settings["n_iterations"] = 30
+        study_nlopt.settings["n_iterations"] = 50
         study_nlopt.settings["xtol_rel"] = 1e-06
         study_nlopt.settings["xtol_abs"] = 1e-12
         study_nlopt.settings["ftol_rel"] = 1e-06
