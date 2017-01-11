@@ -6,8 +6,8 @@
 ##   ENABLE_TESTING()
 ##   INCLUDE(CTest)
 
-set(CTEST_PROJECT_NAME "Agros2D")
-set(CTEST_NIGHTLY_START_TIME "01:00:00 UTC")
+# set(CTEST_PROJECT_NAME "Agros2D")
+# set(CTEST_NIGHTLY_START_TIME "01:00:00 UTC")
 
 # set(CTEST_DROP_METHOD "https")
 # set(CTEST_DROP_SITE "edison.fel.zcu.cz:999")
