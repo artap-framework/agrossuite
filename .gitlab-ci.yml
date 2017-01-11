@@ -30,7 +30,7 @@ build:
     # test
     - cd resources/python
     - cmake .
-    - ctest -D Experimental
+    - ctest 
     
 build_mumps:
   tags:
@@ -41,7 +41,7 @@ build_mumps:
     - cd solver-external-mumps
     - cmake .
     - make 
-    - ctest --output-on-failure -D Experimental
+    - ctest --output-on-failure 
     
 build_umfpack:
   tags:
@@ -52,7 +52,7 @@ build_umfpack:
     - cd solver-external-umfpack
     - cmake .
     - make 
-    - ctest --output-on-failure -D Experimental
+    - ctest --output-on-failure 
     
 build_paralution:
   tags:
@@ -67,7 +67,7 @@ build_paralution:
     - cd ../../
     - cmake .
     - make 
-    - ctest -V -D Experimental
+    - ctest -V
     
 build_trilinos:
   tags:
@@ -78,7 +78,7 @@ build_trilinos:
     - cd solver-external-trilinos
     - cmake .
     - make 
-    - ctest --output-on-failure -D Experimental
+    - ctest --output-on-failure 
     
 build_petsc:
   tags:
@@ -87,4 +87,4 @@ build_petsc:
     - cd solver-external-petsc
     - cmake .
     - make 
-    - ctest --output-on-failure -D Experimental
+    - ctest --output-on-failure 
