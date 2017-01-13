@@ -842,9 +842,19 @@ void MainWindow::doCreatePythonFromModel()
 
     writeStringContent(fn, script);
 
-    QProcess process;
-    process.startDetached(QString("%1/pythonlab").arg(QCoreApplication::applicationDirPath()),
-                          QStringList() << "-s" << fn);
+    QStringList splitted = Agros2D::configComputer()->value(Config::Config_ExternalPythonEditor).toString().split(' ');
+
+    if (splitted.size() > 0)
+    {
+        QStringList args;
+        for (int i = 1; i < splitted.size(); i++)
+            args << splitted[i];
+        args << fn;
+
+        QProcess process;
+        process.startDetached(splitted[0], args);
+        // process.startDetached(QString("%1/pythonlab").arg(QCoreApplication::applicationDirPath()), QStringList() << "-s" << fn);
+    }
 }
 
 void MainWindow::doSolve()

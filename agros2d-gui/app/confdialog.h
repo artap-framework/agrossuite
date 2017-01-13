@@ -43,6 +43,7 @@ private:
     // main
     QComboBox *cmbGUIStyle;
     QComboBox *cmbLanguage;
+    QLineEdit *txtExternalPythonEditor;
 
     // show result in line edit value widget
     QCheckBox *chkLineEditValueShowResult;
