@@ -55,6 +55,9 @@ void ConfigComputerDialog::load()
     if (cmbLanguage->currentIndex() == -1 && cmbLanguage->count() > 0)
         cmbLanguage->setCurrentIndex(0);
 
+    // external python editor
+    txtExternalPythonEditor->setText(Agros2D::configComputer()->value(Config::Config_ExternalPythonEditor).toString());
+
     // show result in line edit value widget
     chkLineEditValueShowResult->setChecked(Agros2D::configComputer()->value(Config::Config_ShowResults).toBool());
 
@@ -91,6 +94,9 @@ void ConfigComputerDialog::save()
                              tr("Language change"),
                              tr("Interface language has been changed. You must restart the application."));
     Agros2D::configComputer()->setValue(Config::Config_Locale, cmbLanguage->currentText());
+
+    // external python editor
+    Agros2D::configComputer()->setValue(Config::Config_ExternalPythonEditor, txtExternalPythonEditor->text());
 
     // show result in line edit value widget
     Agros2D::configComputer()->setValue(Config::Config_ShowResults, chkLineEditValueShowResult->isChecked());
@@ -147,11 +153,15 @@ QWidget *ConfigComputerDialog::createMainWidget()
     cmbLanguage = new QComboBox(mainWidget);
     cmbLanguage->addItems(availableLanguages());
 
+    txtExternalPythonEditor = new QLineEdit(mainWidget);
+
     QGridLayout *layoutGeneral = new QGridLayout();
     layoutGeneral->addWidget(new QLabel(tr("UI:")), 0, 0);
     layoutGeneral->addWidget(cmbGUIStyle, 0, 1);
     layoutGeneral->addWidget(new QLabel(tr("Language:")), 1, 0);
     layoutGeneral->addWidget(cmbLanguage, 1, 1);
+    layoutGeneral->addWidget(new QLabel(tr("External Python editor:")), 2, 0);
+    layoutGeneral->addWidget(txtExternalPythonEditor, 2, 1);
 
     QGroupBox *grpGeneral = new QGroupBox(tr("General"));
     grpGeneral->setLayout(layoutGeneral);
