@@ -1,3 +1,5 @@
+Download and install cmake for Windows: https://cmake.org/download/
+
 0) Dependencies
 0.1) Recommended setup is to have the 32-bit dependencies in C:\hpfem\dependencies and the 64-bit ones in C:\hpfem\dependencies-64
 0.2) Visual Studio 2013 Professional
