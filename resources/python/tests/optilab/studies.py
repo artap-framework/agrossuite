@@ -146,8 +146,8 @@ class TestNSGA2Sphere(Agros2DTestCase):
         study_nsga2.clear_solution = True
         study_nsga2.solve_problem = False
         
-        study_nsga2.settings["popsize"] = 16
-        study_nsga2.settings["ngen"] = 200
+        study_nsga2.settings["popsize"] = 20
+        study_nsga2.settings["ngen"] = 300
         study_nsga2.settings["pcross"] = 0.6
         study_nsga2.settings["pmut"] = 0.2
         study_nsga2.settings["eta_c"] = 10
