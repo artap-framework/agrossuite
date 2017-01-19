@@ -1,7 +1,10 @@
 # SET dependencies directory.
 # If individual dependencies are not all in this common directory, it has to be changed further down.
-SET(DEPENDENCIES_DIR "c:/Users/VIRTUAL/Documents/agros-windows-dependencies")
-SET(DEPENDENCIES_DIR_WITH_SLASHES "c:\\Users\\VIRTUAL\\Documents\\agros-windows-dependencies")
+# SET(DEPENDENCIES_DIR "c:/Users/VIRTUAL/Documents/agros-windows-dependencies")
+# SET(DEPENDENCIES_DIR_WITH_SLASHES "c:\\Users\\VIRTUAL\\Documents\\agros-windows-dependencies")
+
+SET(DEPENDENCIES_DIR "C:\\agros_dependecies")
+SET(DEPENDENCIES_DIR_WITH_SLASHES "C:\\agros_dependecies")
 
 SET(AGROS_DEBUG YES)
 SET(AGROS_PLUGINS_DEBUG YES)
