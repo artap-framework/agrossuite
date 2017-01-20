@@ -1,7 +1,10 @@
 1) Preparing for compilation
 
 1.1) Download and install cmake for Windows: https://cmake.org/download/
-1.2) Download and install MS Visual Studio 2015 (Community Edition is enough). Don't forgot, after MSVC installation, to continue download and install necessary C++ packages (compiler and tools) - in File -> New  
+1.2) Download and install MS Visual Studio 2015 (Community Edition is enough). Don't forget, after MSVC installation, to continue download and install necessary C++ packages (compiler and tools) - in File -> New
+1.3 Download and instal Doxygen for Windows https://sourceforge.net/projects/doxygen/files/snapshots/
+Put it into the folder C:\Doxygen\
+Add path to binaries (dogygen.exe) to the Windows system variable PATH
 
 2) Dependencies
 
@@ -10,6 +13,7 @@
       mkdir build
       cd build
       cmake -D CMAKE_INSTALL_PREFIX=C:\agros2d\dealii\install ..
+--- ???
 
 2.2) Improve path to the Windows dependecies, for exaample "C:\agros_dependecies" at the beginning of the file "CMake.vars.Windows". In this case, the 32-bit dependencies in C:\agros_dependecies\32 and the 64-bit ones in C:\agros_dependecies\64
 
@@ -73,8 +77,9 @@ SET(DEPENDENCIES_DIR_WITH_SLASHES "C:\\agros_dependecies")
 5) Build
 
 5.1) CMake
+For MS Visual Studio 2015 (version 14):
 
-  - x86: cmake -G "Visual Studio 12"
-  - x64: cmake -G "Visual Studio 12 Win64"
+  - x86: cmake -G "Visual Studio 14"
+  - x64: cmake -G "Visual Studio 14 Win64"
 
 5.2) Open in Visual Studio and build
