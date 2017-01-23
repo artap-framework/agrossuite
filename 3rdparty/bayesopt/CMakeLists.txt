@@ -51,6 +51,15 @@ set(BAYESOPT_MATLAB_COMPATIBLE OFF) # "Build library compatible with Matlab?"
 set(BAYESOPT_BUILD_SOBOL ON) # "Build support for Sobol sequences?"
 set(BAYESOPT_BUILD_SHARED ON) # "Build BayesOpt as a shared library?"
 
+#  experimental - testing Win compilation
+MESSAGE("------------ WIN32 is " ${WIN32})
+IF(WIN32)    
+MESSAGE("------------ In IF - WIN32 is " ${WIN32})
+set (BOOST_ROOT ..\\..\\dealii\\bundled\\boost-1.62.0)
+set (BOOST_INCLUDEDIR ..\\..\\dealii\\bundled\\boost-1.62.0\\include)
+ENDIF(WIN32)
+#  -------------------------------------  
+
 find_package( Boost REQUIRED )
 if(Boost_FOUND)
    include_directories(${Boost_INCLUDE_DIRS})
