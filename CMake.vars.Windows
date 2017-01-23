@@ -1,6 +1,7 @@
 # SET dependencies directory.
 # If individual dependencies are not all in this common directory, it has to be changed further down.
-SET(DEPENDENCIES_DIR "C:\\agros_dependecies")
+# experimetal for deal.ii slah instead \\
+SET(DEPENDENCIES_DIR "C:/agros_dependecies")
 SET(DEPENDENCIES_DIR_WITH_SLASHES "C:\\agros_dependecies")
 
 SET(AGROS_DEBUG YES)
