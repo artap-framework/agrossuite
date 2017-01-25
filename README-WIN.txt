@@ -8,13 +8,13 @@ Add path to binaries (dogygen.exe) to the Windows system variable PATH
 
 2) Dependencies
 
-!!! 2.1) Compile deal.ii in Agros Suite subfolder dealii (we expect, that Agros suite project is, for example in C:\agros2d folder):
+2.1) Compile deal.ii in Agros Suite subfolder dealii (we expect, that Agros suite project is, for example in C:\agros2d folder):
       cd C:\agros2d\dealii
       mkdir build
       cd build
-      cmake -G "Visual Studio 14 Win64" -D CMAKE_INSTALL_PREFIX=C:\agros2d\dealii\install ..
+      cmake -G "Visual Studio 14 Win64" -D CMAKE_INSTALL_PREFIX=your_agros_folder\dealii\install ..
 
-2.2) Improve path to the Windows dependecies, for exaample "C:\agros_dependecies" at the beginning of the file "CMake.vars.Windows". In this case, the 32-bit dependencies in C:\agros_dependecies\32 and the 64-bit ones in C:\agros_dependecies\64
+2.2) Improve path to the Windows dependecies, for example "C:\agros_dependecies" at the beginning of the file "CMake.vars.Windows". In this case, the 32-bit dependencies in C:\agros_dependecies\32 and the 64-bit ones in C:\agros_dependecies\64
 
 The beginning of the file "CMake.vars.Windows":
 # SET dependencies directory.
