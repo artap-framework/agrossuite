@@ -3541,16 +3541,13 @@ ReadCompressedCharData(mat_t *mat,z_streamp z,char *data,
 
     switch ( data_type ) {
         case MAT_T_UTF8:
-            data_size = 1;
-            for ( i = 0; i < len; i++ )
-                InflateData(mat,z,data+i,data_size);
-            break;
         case MAT_T_INT8:
         case MAT_T_UINT8:
             data_size = 1;
             for ( i = 0; i < len; i++ )
                 InflateData(mat,z,data+i,data_size);
             break;
+        case MAT_T_UTF16:
         case MAT_T_INT16:
         case MAT_T_UINT16:
         {
@@ -3571,7 +3568,8 @@ ReadCompressedCharData(mat_t *mat,z_streamp z,char *data,
             break;
         }
         default:
-            printf("Character data not supported type: %d",data_type);
+            Mat_Warning("ReadCompressedCharData: %d is not a supported data "
+                "type for character data", data_type);
             break;
     }
     nBytes = len*data_size;
@@ -3589,14 +3587,12 @@ ReadCharData(mat_t *mat,char *data,enum matio_types data_type,int len)
 
     switch ( data_type ) {
         case MAT_T_UTF8:
-            for ( i = 0; i < len; i++ )
-                bytesread += fread(data+i,1,1,(FILE*)mat->fp);
-            break;
         case MAT_T_INT8:
         case MAT_T_UINT8:
             for ( i = 0; i < len; i++ )
                 bytesread += fread(data+i,1,1,(FILE*)mat->fp);
             break;
+        case MAT_T_UTF16:
         case MAT_T_INT16:
         case MAT_T_UINT16:
         {
@@ -3616,7 +3612,8 @@ ReadCharData(mat_t *mat,char *data,enum matio_types data_type,int len)
             break;
         }
         default:
-            printf("Character data not supported type: %d",data_type);
+            Mat_Warning("ReadCharData: %d is not a supported data type for ",
+                "character data", data_type);
             break;
     }
     bytesread *= data_size;
