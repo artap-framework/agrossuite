@@ -167,17 +167,222 @@ protected:
     int m_adaptivityStep;
 };
 
+// plugin module
+/*
+<module:volume>
+  <module:quantity id="electrostatic_permittivity" shortname="el_epsr"/>
+  <module:quantity id="electrostatic_charge_density" shortname="el_rho"/>
+  <module:matrix_form id="laplace" i="1" j="1" axi="el_epsr * EPS0 * r * (udr * vdr + udz * vdz)"
+                                               planar="el_epsr * EPS0 * (udx * vdx + udy * vdy)"
+                                               symmetric="1" />
+  <module:vector_form id="rhs" i="1" j="1" axi="el_rho * r * vval"
+                                           planar="el_rho * vval"
+                                           condition="fabs(el_rho) > 0.0" />
+
+  <module:weakforms_volume>
+    <module:weakform_volume analysistype="steadystate" equation="-\, \div \left( \varepsilon\,\, \grad \varphi \right) = \rho">
+      <module:quantity id="electrostatic_permittivity"/>
+      <module:quantity id="electrostatic_charge_density"/>
+
+      <module:linearity_option type="linear">
+        <module:matrix_form id="laplace" />
+        <module:vector_form id="rhs" />
+      </module:linearity_option>
+
+      </module:weakform_volume>
+  </module:weakforms_volume>
+</module:volume>
+*/
+
+class AGROS_LIBRARY_API PluginWeakFormRecipe
+{
+public:
+    class Variable
+    {
+    public:
+        QString id;
+        QString shortName;
+    };
+
+    class MatrixForm
+    {
+    public:
+        QString id;
+        int i, j;
+        QString axi;
+        QString planar;
+        QString cart;
+        QString condition;
+    };
+
+    class VectorForm
+    {
+    public:
+        QString id;
+        int i;
+        QString axi;
+        QString planar;
+        QString cart;
+        QString condition;
+    };
+
+    // only for surface form
+    class EssentialForm
+    {
+    public:
+        QString id;
+        int i;
+        QString axi;
+        QString planar;
+        QString cart;
+        QString condition;
+    };
+
+    QList<Variable> variables;
+    QList<MatrixForm> matrixForms;
+    QList<VectorForm> vectorForms;
+    QList<EssentialForm> essentialForms;
+};
+
+class AGROS_LIBRARY_API PluginWeakFormVolume
+{
+public:
+    class Variable
+    {
+    public:
+        QString id;
+        QString dependence;
+    };
+
+    class Volume
+    {
+    public:
+        QString equation;
+    };
+
+    class Surface
+    {
+    public:
+        QString equation;
+    };
+};
+
+class AGROS_LIBRARY_API PluginPreGroup
+{
+public:
+    class AGROS_LIBRARY_API Quantity
+    {
+    public:
+        QString id;
+        QString name;
+        QString condition;
+        double default_value;
+        bool is_source;
+        QString shortname;
+        QString shortname_html;
+        QString shortname_dependence;
+        QString shortname_dependence_html;
+        QString unit;
+        QString unit_html;
+    };
+
+    QString name;
+
+    QList<Quantity> quantities;
+};
+
+class AGROS_LIBRARY_API PluginPostVariable
+{
+public:
+    class AGROS_LIBRARY_API Expression
+    {
+    public:
+        Expression(const QString &analysis = "",
+                   const QString &planar = "", const QString &planar_x = "", const QString &planar_y = "",
+                   const QString &axi = "", const QString &axi_r = "", const QString &axi_z = "",
+                   const QString &cart = "", const QString &cart_x = "", const QString &cart_y = "", const QString &cart_z = "")
+            : analysis(analysis),
+              planar_x(planar_x), planar_y(planar_y),
+              axi_r(axi_r), axi_z(axi_z),
+              cart_x(cart_x), cart_y(cart_y), cart_z(cart_z) {}
+
+        QString analysis;
+        QString planar, planar_x, planar_y;
+        QString axi, axi_r, axi_z;
+        QString cart, cart_x, cart_y, cart_z;
+    };
+
+    QString name;
+    QString type;
+    QString shortname;
+    QString shortname_html;
+    QString unit;
+    QString unit_html;
+
+    QList<Expression> expresions;
+};
+
+class AGROS_LIBRARY_API PluginConstant
+{
+public:
+    QString id;
+    double value;
+};
+
+class AGROS_LIBRARY_API PluginModuleAnalysis
+{
+public:
+    class Equation
+    {
+    public:
+        QString type;
+        int orderIncrease;
+    };
+
+    QString id;
+    QString name;
+    int solutions;
+
+    QMap<int, Equation> configs;
+};
+
+class AGROS_LIBRARY_API PluginModule
+{
+public:
+    QString id;
+    QString name;
+
+    QList<PluginModuleAnalysis> analyses;
+    QList<PluginConstant> constants;
+
+    // preprocessor
+    QList<PluginPreGroup> preVolumeGroups;
+    QList<PluginPreGroup> preSurfaceGroups;
+
+    // postprocessor
+    QList<PluginPostVariable> postLocalVariables;
+    QList<PluginPostVariable> postVolumeIntegrals;
+    QList<PluginPostVariable> postSurfaceIntegrals;
+
+    // processor
+    PluginWeakFormRecipe weakFormRecipeVolume;
+    PluginWeakFormRecipe weakFormRecipeSurface;
+
+    void load(const QString &fileName);
+    void save(const QString &fileName);
+};
+
 // plugin interface
 class AGROS_LIBRARY_API PluginInterface
 {
-public:
-    inline PluginInterface() : m_module(NULL), m_coupling(NULL) {}
-    virtual ~PluginInterface() {}
+public:      
+    PluginInterface();
+    virtual ~PluginInterface();
 
     virtual QString fieldId() = 0;
 
     inline XMLModule::field *module() const { assert(m_module); return m_module; }
-    inline XMLModule::coupling *coupling() const { assert(m_coupling); return m_coupling; }
+    PluginModule *moduleJson() { return m_moduleJson; }
 
     // weak forms
     virtual SolverDeal *solverDeal(Computation *computation, const FieldInfo *fieldInfo) = 0;
@@ -221,7 +426,7 @@ public:
 
 protected:
     XMLModule::field *m_module;
-    XMLModule::coupling *m_coupling;
+    PluginModule *m_moduleJson;
 };
 
 

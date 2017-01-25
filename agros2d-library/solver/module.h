@@ -375,7 +375,6 @@ struct DialogRow
 
     inline QString unit() const { return m_unit; }
     inline QString unitHtml() const { return m_unitHtml; }
-    inline QString unitLatex() const { return m_unitLatex; }
 
     inline double defaultValue() const { return m_defaultValue; }
     inline QString condition() const { return m_condition; }
@@ -391,7 +390,6 @@ private:
 
     QString m_unit;
     QString m_unitHtml;
-    QString m_unitLatex;
 
     double m_defaultValue;
     QString m_condition;

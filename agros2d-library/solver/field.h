@@ -55,6 +55,8 @@ public:
     FieldInfo(QString fieldId);
     ~FieldInfo();
 
+    void convertJson();
+
     void copy(const FieldInfo *origin);
 
     void clear();
@@ -159,14 +161,8 @@ public:
     // name
     QString name() const;
 
-    // description
-    QString description() const;
-
     // deformable shape
     bool hasDeformableShape() const;
-
-    // latex equation
-    QString equation() const;
 
     // constants
     QMap<QString, double> constants() const;

@@ -505,7 +505,6 @@ Module::DialogRow::DialogRow(const FieldInfo *fieldInfo, XMLModule::quantity qty
 
     m_unit = (qty.unit().present()) ? QString::fromStdString(qty.unit().get()) : "";
     m_unitHtml = (qty.unit_html().present()) ? QString::fromStdString(qty.unit_html().get()) : "";
-    m_unitLatex = (qty.unit_latex().present()) ? QString::fromStdString(qty.unit_latex().get()) : "";
 
     m_defaultValue = (qty.default_().present()) ? qty.default_().get() : 0.0;
     m_condition = (qty.condition().present()) ? QString::fromStdString(qty.condition().get()) : "";

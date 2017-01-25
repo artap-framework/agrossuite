@@ -1563,6 +1563,7 @@ void ProblemBase::readProblemFromJsonInternal(QJsonObject &rootJson)
         QJsonObject fieldJson = fieldsJson[i].toObject();
 
         FieldInfo *fieldInfo = new FieldInfo(fieldJson[FIELDID].toString());
+        // fieldInfo->convertJson();
 
         // settings
         QJsonObject settingsJson = fieldJson[SETTINGS].toObject();
